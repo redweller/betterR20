@@ -695,7 +695,7 @@ $dmsDialog.dialog("open");
                         }
                         source = parseSource(source);
 
-												var avatar = "https://astranauta.github.io/5etools/img/" + source + "/" + name + ".png";
+												var avatar = "https://astranauta.github.io/img/" + source + "/" + name + ".png";
 
                         character.size = data.size;
                         character.name = name;
