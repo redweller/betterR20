@@ -581,7 +581,7 @@ $dmsDialog.dialog("open");
     // Create monster character from js data object
     d20plus.monsters.import = function(data) {
         var typeArr = data.type.split(",");
-        var source = ($("#import-monster-organizebysource").prop("checked")) ? typeArr[typeArr.length - 1] : typeArr[0].toLowerCase().replace(/\((any race)\)/g, "");
+        var source = ($("#import-monster-organizebysource").prop("checked")) ? typeArr[typeArr.length - 1] : typeArr.slice(0, -1).join(",").toLowerCase().replace(/\((any race)\)/g, "");
         var fname = source.trim().capFirstLetter(),
             findex = 1,
             folder;
