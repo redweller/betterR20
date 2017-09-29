@@ -736,7 +736,7 @@ $dmsDialog.dialog("open");
                                   imgsrc: avatar,
                                   width: 70 * tokensize,
                                   height: 70 * tokensize,
-                                  bar2_link: "ac",
+                                  bar2_link: "npc_ac",
                                   bar3_value: character.hp,
                                   bar3_max: character.hp,
                                   light_hassight: true,
