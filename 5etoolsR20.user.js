@@ -854,30 +854,30 @@ $dmsDialog.dialog("open");
                             name: "npc_speed",
                             current: data.speed != null ? data.speed : ""
                         });
-                        character.attribs.create({
-                            name: "strength",
-                            current: data.str
-                        });
-                        character.attribs.create({
-                            name: "dexterity",
-                            current: data.dex
-                        });
-                        character.attribs.create({
-                            name: "constitution",
-                            current: data.con
-                        });
-                        character.attribs.create({
-                            name: "intelligence",
-                            current: data.int
-                        });
-                        character.attribs.create({
-                            name: "wisdom",
-                            current: data.wis
-                        });
-                        character.attribs.create({
-                            name: "charisma",
-                            current: data.cha
-                        });
+						character.attribs.create({
+							name: "strength_base",
+							current: data.str
+						});
+						character.attribs.create({
+							name: "dexterity_base",
+							current: data.dex
+						});
+						character.attribs.create({
+							name: "constitution_base",
+							current: data.con
+						});
+						character.attribs.create({
+							name: "intelligence_base",
+							current: data.int
+						});
+						character.attribs.create({
+							name: "wisdom_base",
+							current: data.wis
+						});
+						character.attribs.create({
+							name: "charisma_base",
+							current: data.cha
+						});
                         character.attribs.create({
                             name: "passive",
                             current: passive
@@ -929,7 +929,7 @@ $dmsDialog.dialog("open");
                             $.each(savingthrows, function(i, v) {
                                 var save = v.split(" ");
                                 character.attribs.create({
-                                    name: "npc_" + save[0].toLowerCase() + "_save",
+                                    name: "npc_" + save[0].toLowerCase() + "_save_base",
                                     current: parseInt(save[1])
                                 });
                             });
@@ -938,7 +938,7 @@ $dmsDialog.dialog("open");
                         if (data.skill != null && data.skill.length > 0) {
                             var skills;
                             if (data.skill instanceof Array) {
-                                skills = data.skill;
+                                skills = data.skill[0].split(", ");
                             } else {
                                 skills = data.skill.split(", ");
                             }
@@ -950,7 +950,7 @@ $dmsDialog.dialog("open");
                                 if (v.length > 0) {
                                     var skill = v.match(/([\w+ ]*[^+-?\d])([+-?\d]+)/);
                                     character.attribs.create({
-                                        name: "npc_" + $.trim(skill[1]).toLowerCase(),
+                                        name: "npc_" + $.trim(skill[1]).toLowerCase().replace(/ /g,"_") + "_base",
                                         current: parseInt($.trim(skill[2])) || 0
                                     });
                                 }
@@ -1013,6 +1013,7 @@ $dmsDialog.dialog("open");
                                     actiontext = v.text;
                                 }
 
+								var action_desc = actiontext; // required for later reduction of information dump.
 
                                 var rollbase = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
 
@@ -1050,24 +1051,40 @@ $dmsDialog.dialog("open");
 
                                     var onhit = "";
 
-                                    damageregex = /\d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d?)\) (\S+) damage/g;
+                                    damageregex = /\d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage/g;
                                     damagesearches = damageregex.exec(actiontext);
-                                    if (damagesearches && damagesearches.length === 3) {
+                                    if (damagesearches) {
                                         onhit = damagesearches[0];
                                         damage = damagesearches[1];
-                                        damagetype = damagesearches[2];
+                                        damagetype = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
                                         damagesearches = damageregex.exec(actiontext);
-                                        console.log(damagesearches);
-                                        if (damagesearches && damagesearches.length === 3) {
+                                        if (damagesearches) {
                                             onhit += " plus " + damagesearches[0];
                                             damage2 = damagesearches[1];
-                                            damagetype2 = damagesearches[2];
+                                            damagetype2 = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
                                         }
                                     }
                                     onhit = onhit.trim();
-
+									
                                     var attacktarget = (actiontext.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1];
-
+									
+									// Cut the information dump in the description									
+									var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
+									var atk_desc_complex_regex = /(Hit:.*)/g;
+									
+									// is it a simple attack (just 1 damage type)?
+									var match_simple_atk = atk_desc_simple_regex.exec(actiontext);
+									if (match_simple_atk != null) {
+										//if yes, then only display special effects, if any
+										action_desc = match_simple_atk[3].trim();
+									} else {
+										//if not, simply cut everything before "Hit:" so there are no details lost.
+										var match_compl_atk = atk_desc_complex_regex.exec(actiontext);										
+										if (match_compl_atk != null) {
+											action_desc = match_compl_atk[1].trim();
+										} 
+									}
+									
                                     var tohitrange = "+" + tohit + ", " + rangetype + " " + attackrange + ", " + attacktarget + ".";
 
 
@@ -1131,6 +1148,14 @@ $dmsDialog.dialog("open");
                                         name: "repeating_npcaction_" + newRowId + "_attack_tohitrange",
                                         current: tohitrange
                                     });
+									character.attribs.create({
+										name: "repeating_npcaction_" + newRowId + "_attack_range",
+										current: attackrange
+									});
+									character.attribs.create({
+										name: "repeating_npcaction_" + newRowId + "_attack_target",
+										current: attacktarget
+									});
                                     character.attribs.create({
                                         name: "repeating_npcaction_" + newRowId + "_damage_flag",
                                         current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"
@@ -1162,7 +1187,7 @@ $dmsDialog.dialog("open");
                                 var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
                                 character.attribs.create({
                                     name: "repeating_npcaction_" + newRowId + "_description",
-                                    current: text
+                                    current: action_desc
                                 });
                                 character.attribs.create({
                                     name: "repeating_npcaction_" + newRowId + "_description_flag",
