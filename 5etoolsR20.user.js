@@ -776,11 +776,19 @@ $dmsDialog.dialog("open");
                         });
                         character.attribs.create({
                             name: "wtype",
-                            current: "/w gm"
+                            current: "@{whispertoggle}"
                         });
                         character.attribs.create({
                             name: "rtype",
-                            current: "{{always=1}} {{r2=[[1d20"
+                            current: "@{advantagetoggle}"
+                        });
+                        character.attribs.create({
+                            name: "advantagetoggle",
+                            current: "{{query=1}} {{advantage=1}} {{r2=[[@{d20}"
+                        });
+						character.attribs.create({
+                            name: "whispertoggle",
+                            current: "/w gm "
                         });
                         character.attribs.create({
                             name: "dtype",
@@ -854,30 +862,30 @@ $dmsDialog.dialog("open");
                             name: "npc_speed",
                             current: data.speed != null ? data.speed : ""
                         });
+                        character.attribs.create({
+                            name: "strength_base",
+                            current: data.str
+                        });
+                        character.attribs.create({
+                            name: "dexterity_base",
+                            current: data.dex
+                        });
+                        character.attribs.create({
+                            name: "constitution_base",
+                            current: data.con
+                        });
+                        character.attribs.create({
+                            name: "intelligence_base",
+                            current: data.int
+                        });
 						character.attribs.create({
-							name: "strength_base",
-							current: data.str
-						});
-						character.attribs.create({
-							name: "dexterity_base",
-							current: data.dex
-						});
-						character.attribs.create({
-							name: "constitution_base",
-							current: data.con
-						});
-						character.attribs.create({
-							name: "intelligence_base",
-							current: data.int
-						});
-						character.attribs.create({
-							name: "wisdom_base",
-							current: data.wis
-						});
-						character.attribs.create({
-							name: "charisma_base",
-							current: data.cha
-						});
+                            name: "wisdom_base",
+                            current: data.wis
+                        });
+                        character.attribs.create({
+                            name: "charisma_base",
+                            current: data.cha
+                        });
                         character.attribs.create({
                             name: "passive",
                             current: passive
