@@ -1256,7 +1256,7 @@ if (data.legendary != null) {
     });
     character.attribs.create({
         name: "npc_legendary_actions",
-        current: "4"
+        current: "(Unknown Number)"
     });
     $.each(data.legendary, function(i, v) {
         var newRowId = d20plus.generateRowId(),
@@ -2604,7 +2604,7 @@ d20plus.items.parseType = function(type) {
     </p>
     <p>
     <h4>Item Importing</h4>
-    <label for="import-items-url">Spell Data URL:</label>
+    <label for="import-items-url">Item Data URL:</label>
     <input type="text" id="import-items-url" value="` + itemdataurl + `">
     <a class="btn" href="#" id="import-items-load">Import Items</a>
     </p>
