@@ -3,8 +3,8 @@
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      0.5.5
-// @updateURL    https://github.com/5egmegaanon/5etoolsR20/raw/master/5etoolsR20.user.js(broken)
-// @downloadURL  https://github.com/5eg/5etoolsR20/raw/master/5etoolsR20.user.js(broken)
+// @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
+// @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit
 // @match        https://app.roll20.net/editor/
