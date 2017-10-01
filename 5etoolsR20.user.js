@@ -2128,6 +2128,7 @@ if (d20plus.remaining == 0) {
         if (source === "Plane Shift Zendikar") source = "PSZ";
         if (source === "Tomb of Annihilation") source = "ToA";
         if (source === "The Tortle Package") source = "TTP";
+        return source;
     }
 
     // Import spell button was clicked
