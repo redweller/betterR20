@@ -367,9 +367,6 @@ $dmsDialog.dialog("open");
 			$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
 		}
 		$span.text("Difficulty: " + d20plus.getDifficulty());
-		if (!$btnpane.hasClass("buttonpane-absolute-position")) {
-			$btnpane.addClass("buttonpane-absolute-position");
-		}
 	};
 
 	// Inject external JS libraries
@@ -2502,7 +2499,7 @@ $dmsDialog.dialog("open");
     <iframe src="//ftwinston.github.io/5edmscreen/mobile"></iframe>
     </div>`;
 
-	d20plus.difficultyHtml = `<span class="difficulty"></span>`;
+	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute"></span>`;
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 
@@ -2612,7 +2609,7 @@ $dmsDialog.dialog("open");
 
 	d20plus.cssRules = [{
 		s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.ac,#initiativewindow ul li span.hp,#initiativewindow ul li span.pp,#initiativewindow ul li span.cr,#initiativewindow ul li span.initmacro",
-		r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 5px;width: 10%;min-height: 20px;"
+		r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;"
 	}, {
 		s: "#initiativewindow ul li span.editable input",
 		r: "width: 100%; box-sizing: border-box;height: 100%;"
@@ -2652,7 +2649,7 @@ $dmsDialog.dialog("open");
   <![CDATA[
   <li class='token <$ if (this.layer == "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
   <span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
-  <button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos bigbuttonwithicons' role='button' aria-disabled='false'>
+  <button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
   <span class='ui-button-text'>N</span>
   </button>
   </span>
