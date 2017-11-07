@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.5
+// @version      0.5.6
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -16,7 +16,8 @@
 
 var D20plus = function(version) {
 
-	var monsterdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/bestiary.json";
+	var monsterdataurl = "https://raw.githubusercontent.com/TheGiddyLimit/astranauta.github.io/bestiary-real-JSON/data/bestiary.json";
+	var monsterdataurlTob = "https://raw.githubusercontent.com/TheGiddyLimit/astranauta.github.io/bestiary-real-JSON/data/bestiary-tob.json";
 	var spelldataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/spells.json";
 	var itemdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/items.json";
 	var jsUtilsUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/utils.js";
@@ -307,6 +308,8 @@ var D20plus = function(version) {
 	d20plus.addHTML = function() {
 		$("#mysettings > .content").children("hr").first().before(d20plus.settingsHtml);
 
+		$("#mysettings > .content a#button-monsters-sel-default").on(window.mousedowntype, function() { $("#import-monster-url").val(monsterdataurl); });
+		$("#mysettings > .content a#button-monsters-self-tob").on(window.mousedowntype, function() { $("#import-monster-url").val(monsterdataurlTob); });
 		$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
 		$("#mysettings > .content a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
 		$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
@@ -496,9 +499,9 @@ $dmsDialog.dialog("open");
 					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
 					monsterdata = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^var .* \= /g, ""));
 
-					var length = monsterdata.compendium.monster.length;
+					var length = monsterdata.monster.length;
 
-					monsterdata.compendium.monster.sort(function(a,b) {
+					monsterdata.monster.sort(function(a,b) {
 						if (a.name < b.name) return -1;
 						if (a.name > b.name) return 1;
 						return 0;
@@ -506,7 +509,7 @@ $dmsDialog.dialog("open");
 
 					// building list for checkboxes
 					$("#import-list .list").html("");
-					$.each(monsterdata.compendium.monster, function(i, v) {
+					$.each(monsterdata.monster, function(i, v) {
 						try {
 							$("#import-list .list").append(`<label><input type="checkbox" data-listid="` + i + `"> <span class="name">` + v.name + `</span></label>`);
 						} catch (e) {
@@ -538,7 +541,7 @@ $dmsDialog.dialog("open");
 						$("#import-list .list input").each(function() {
 							if (!$(this).prop("checked")) return;
 							var monsternum = parseInt($(this).data("listid"));
-							var curmonster = monsterdata.compendium.monster[monsternum];
+							var curmonster = monsterdata.monster[monsternum];
 							try {
 								console.log("> " + (monsternum + 1) + "/" + length + " Attempting to import monster [" + curmonster.name + "]");
 								d20plus.monsters.import(curmonster);
@@ -2588,6 +2591,7 @@ $dmsDialog.dialog("open");
     <p>
     <h4>Monster Importing</h4>
     <label for="import-monster-url">Monster Data URL:</label>
+    <p><a class="btn" href="#" id="button-monsters-sel-default">Default URL</a> <a class="btn" href="#" id="button-monsters-self-tob">Tome of Beasts URL</a></p>
     <input type="text" id="import-monster-url" value="` + monsterdataurl + `">
     <a class="btn" href="#" id="button-monsters-load">Import Monsters</a>
     </p>
