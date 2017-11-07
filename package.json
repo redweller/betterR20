@@ -1,0 +1,13 @@
+{
+  "name": "5etoolsR20",
+  "author": "astranauta",
+  "version": "1.0.0",
+  "description": "The script.",
+  "scripts": {
+    "test": "eslint js"
+  },
+  "repository": "astranauta/5etoolsR20",
+  "dependencies": {
+    "eslint": "^4.9.0"
+  }
+}
