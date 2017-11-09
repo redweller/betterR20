@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.7
+// @version      0.5.8
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1802,9 +1802,9 @@ $dmsDialog.dialog("open");
 				try {
 					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
 					spelldata = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^var .* \= /g, ""));
-					var length = spelldata.compendium.spell.length;
+					var length = spelldata.spell.length;
 
-					spelldata.compendium.spell.sort(function(a,b) {
+					spelldata.spell.sort(function(a,b) {
 						if (a.name < b.name) return -1;
 						if (a.name > b.name) return 1;
 						return 0;
@@ -1812,7 +1812,7 @@ $dmsDialog.dialog("open");
 
 					// building list for checkboxes
 					$("#import-list .list").html("");
-					$.each(spelldata.compendium.spell, function(i, v) {
+					$.each(spelldata.spell, function(i, v) {
 						try {
 							var vname = v.name;
 							if (v.level[0] === "P") vname += " (Psionics)";
@@ -1848,7 +1848,7 @@ $dmsDialog.dialog("open");
 						$("#import-list .list input").each(function() {
 							if (!$(this).prop("checked")) return;
 							var spellnum = parseInt($(this).data("listid"));
-							var curspell = spelldata.compendium.spell[spellnum];
+							var curspell = spelldata.spell[spellnum];
 							try {
 								console.log("> " + (spellnum + 1) + "/" + length + " Attempting to import spell [" + curspell.name + "]");
 								d20plus.spells.import(curspell, overwritespells);
