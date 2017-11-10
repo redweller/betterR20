@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.8
+// @version      0.5.9
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -695,7 +695,7 @@ $dmsDialog.dialog("open");
 						}
 						source = parseSource(source);
 
-						var avatar = "https://astranauta.github.io/img/" + source + "/" + name + ".png";
+						let avatar = "https://astranauta.github.io/img/" + source + "/" + name + ".png";
 
 						character.size = data.size;
 						character.name = name;
@@ -707,47 +707,52 @@ $dmsDialog.dialog("open");
 							type: 'HEAD',
 							error: function() {
 								//file not exists
+								getSetAvatarImage("https://astranauta.github.io/img/blank.png");
 							},
 							success: function() {
 								//file exists
-								character.attributes.avatar = avatar;
-
-								var tokensize = 1;
-								if (character.size === "T") tokensize = 1;
-								if (character.size === "L") tokensize = 2;
-								if (character.size === "H") tokensize = 3;
-								if (character.size === "G") tokensize = 4;
-
-								var lightradius = 5;
-								if(character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) {
-									lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
-								}
-
-								var lightmin = 0;
-
-								if(character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) {
-									lightmin = lightradius;
-								}
-
-								var defaulttoken = {
-									represents: character.id,
-									name: character.name,
-									showname: 1,
-									imgsrc: avatar,
-									width: 70 * tokensize,
-									height: 70 * tokensize,
-									bar2_value: data.ac.match(/^\d+/),
-									bar3_value: character.hp,
-									bar3_max: character.hp,
-									light_hassight: true,
-									light_radius: lightradius,
-									light_dimradius: lightmin
-								}
-
-								character.updateBlobs({ avatar: avatar, defaulttoken: JSON.stringify(defaulttoken) });
-								character.save({defaulttoken: (new Date).getTime()});
+								getSetAvatarImage(avatar);
 							}
 						});
+
+						function getSetAvatarImage(avatar) {
+							character.attributes.avatar = avatar;
+
+							var tokensize = 1;
+							if (character.size === "T") tokensize = 1;
+							if (character.size === "L") tokensize = 2;
+							if (character.size === "H") tokensize = 3;
+							if (character.size === "G") tokensize = 4;
+
+							var lightradius = 5;
+							if(character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) {
+								lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
+							}
+
+							var lightmin = 0;
+
+							if(character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) {
+								lightmin = lightradius;
+							}
+
+							var defaulttoken = {
+								represents: character.id,
+								name: character.name,
+								showname: 1,
+								imgsrc: avatar,
+								width: 70 * tokensize,
+								height: 70 * tokensize,
+								bar2_value: data.ac.match(/^\d+/),
+								bar3_value: character.hp,
+								bar3_max: character.hp,
+								light_hassight: true,
+								light_radius: lightradius,
+								light_dimradius: lightmin
+							}
+
+							character.updateBlobs({ avatar: avatar, defaulttoken: JSON.stringify(defaulttoken) });
+							character.save({defaulttoken: (new Date).getTime()});
+						}
 
 						var ac = data.ac.match(/^\d+/),
 							actype = /\(([^)]+)\)/.exec(data.ac),
