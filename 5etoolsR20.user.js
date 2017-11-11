@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.10
+// @version      0.5.12
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2052,7 +2052,7 @@ $dmsDialog.dialog("open");
 					notecontents += `<strong>Duration:</strong> ` + data.duration + `<br>`;
 					notecontents += `</p>`;
 
-					notecontents += utils_combineText(data.text, "p");
+					if (data.text) notecontents += utils_combineText(data.text, "p");
 
 					notecontents += `<p><strong>Classes:</strong> ` + data.classes + `</p>`;
 					gmnotes = JSON.stringify(r20json);
@@ -2236,7 +2236,7 @@ $dmsDialog.dialog("open");
 
 	// Import individual items
 	d20plus.items.import = function(data, overwriteitems) {
-		var fname = d20plus.items.parseType(data.type.split(",")[0]);
+		var fname = d20plus.items.parseType(data.type ? data.type.split(",")[0] : (data.wondrous ? "Wondrous Item" : data.technology));
 		var findex = 1;
 		var folder;
 
@@ -2336,12 +2336,11 @@ $dmsDialog.dialog("open");
 					var notecontents = "";
 
 					var ismagicitem = false;
-					if (data.rarity || data.type.indexOf("W") !== -1 || data.name.search(/((Devastation Orb)|(Storm Boomerang)|(\s?Spiked Armor\s?)(Bottled Breath))/g) > 0) ismagicitem = true;
+					if (data.rarity || data.wondrous || data.name.search(/((Devastation Orb)|(Storm Boomerang)|(\s?Spiked Armor\s?)(Bottled Breath))/g) > 0) ismagicitem = true;
 					// if (data.text.search(/(Requires Attunement)/g) > 0) ismagicitem = true;
 
-					var type = data.type.split(",");
-					var source = data.text[data.text.length - 1].split(",")[0].split(":")[1];
-
+					var type = data.type ? data.type.split(",") : "";
+					var source = data.text ? data.text[data.text.length - 1].split(",")[0].split(":")[1] : "";
 					var rarity = data.rarity;
 					if (!rarity) {
 						rarity = "None";
@@ -2369,7 +2368,6 @@ $dmsDialog.dialog("open");
 						type[j] = d20plus.items.parseType(type[j]);
 					}
 
-
 					var properties = "";
 					if (data.property) {
 						var propertieslist = data.property.split(",");
@@ -2386,16 +2384,13 @@ $dmsDialog.dialog("open");
 
 					var textstring = "";
 					var attunementstring = ""
-					var itemtext = data.text;
-					if (itemtext[0].length === 1) {
-						notecontents += `<p>` + itemtext + `</p>`;
-					} else
-						for (var n = 0; n < itemtext.length; n++) {
-							if (!itemtext[n]) continue;
-							if (itemtext[n].trim().toLowerCase() === "requires attunement") attunementstring = " (Requires Attunement)";
-							if (itemtext[n].toLowerCase().match(/^((rarity\:)|(requires attunement)|(source: ))/g)) continue;
-							textstring += `<p>` + itemtext[n] + `</p>`;
-						}
+					var itemtext = data.text ? data.text : "";
+					for (var n = 0; n < itemtext.length; n++) {
+						if (!itemtext[n]) continue;
+						if (itemtext[n].trim().toLowerCase() === "requires attunement") attunementstring = " (Requires Attunement)";
+						if (itemtext[n].toLowerCase().match(/^((rarity\:)|(requires attunement)|(source: ))/g)) continue;
+						textstring += `<p>` + itemtext[n] + `</p>`;
+					}
 
 					notecontents += `<p><h3>` + data.name + `</h3></p><em>`;
 					notecontents += typestring;
@@ -2432,9 +2427,7 @@ $dmsDialog.dialog("open");
 				}, 1000);
 			}
 		}, timeout);
-
 	};
-
 
 	d20plus.items.parseType = function(type) {
 		if (type === "$") return "Treasure"
