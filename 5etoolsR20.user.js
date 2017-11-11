@@ -2152,9 +2152,9 @@ $dmsDialog.dialog("open");
 				try {
 					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
 					itemdata = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^var .* \= /g, ""));
-					var length = itemdata.compendium.item.length;
+					var length = itemdata.item.length;
 
-					itemdata.compendium.item.sort(function(a,b) {
+					itemdata.item.sort(function(a,b) {
 						if (a.name < b.name) return -1;
 						if (a.name > b.name) return 1;
 						return 0;
@@ -2163,7 +2163,7 @@ $dmsDialog.dialog("open");
 
 					// building list for checkboxes
 					$("#import-list .list").html("");
-					$.each(itemdata.compendium.item, function(i, v) {
+					$.each(itemdata.item, function(i, v) {
 						try {
 							$("#import-list .list").append(`<label><input type="checkbox" data-listid="` + i + `"> <span class="name">` + v.name + `</span></label>`);
 						} catch (e) {
@@ -2196,7 +2196,7 @@ $dmsDialog.dialog("open");
 						$("#import-list .list input").each(function() {
 							if (!$(this).prop("checked")) return;
 							var itemnum = parseInt($(this).data("listid"));
-							var curitem = itemdata.compendium.item[itemnum];
+							var curitem = itemdata.item[itemnum];
 							try {
 								console.log("> " + (itemnum + 1) + "/" + length + " Attempting to import item [" + curitem.name + "]");
 								d20plus.items.import(curitem, overwriteitems);
