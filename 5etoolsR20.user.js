@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.12
+// @version      0.5.14
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1820,8 +1820,9 @@ $dmsDialog.dialog("open");
 					$.each(spelldata.spell, function(i, v) {
 						try {
 							var vname = v.name;
+							var vsource = v.source ? v.source : "PHB";
 							if (v.level[0] === "P") vname += " (Psionics)";
-							$("#import-list .list").append(`<label><input type="checkbox" data-listid="` + i + `"> <span class="name">` + vname + `</span></label>`);
+							$("#import-list .list").append(`<label><input type="checkbox" data-listid="` + i + `"> <span class="name">` + vname + `</span> <span class="source">` + "- " + vsource + `</span></label>`);
 						} catch (e) {
 							console.log("Error building list!", e);
 							d20plus.addImportError(v.name);
@@ -1925,7 +1926,8 @@ $dmsDialog.dialog("open");
 			return a.n && a.n == "Spells"
 		});
 
-		var name = data.name || "(Unknown Name)";
+		var datas = data.source ? data.source : "PHB";
+		var name = data.name + " " + datas || "(Unknown Name)";
 
 		// check for duplicates
 		var dupe = false;
