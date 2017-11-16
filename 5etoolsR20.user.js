@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.14
+// @version      0.5.15
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -21,6 +21,7 @@ var D20plus = function(version) {
 	var spelldataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/spells.json";
 	var itemdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/items.json";
 	var jsUtilsUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/utils.js";
+	var jsRenderUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/entryrender.js";
 
 	var d20plus = {
 		sheet: "ogl",
@@ -681,19 +682,9 @@ $dmsDialog.dialog("open");
 				success: function(character) {
 					/* OGL Sheet */
 					try {
-
-						var source = "";
-						var type = "";
-						if (data.source === undefined) {
-							source = data.type.split(",");
-							type = source.slice(0, source.length - 1).join(",")
-							type = type.split(", Volo's Guide")[0];
-							source = source[source.length - 1];
-						} else {
-							source = data.source;
-							type = data.type;
-						}
-						source = parseSource(source);
+						
+						let type = data.type;
+						let source = data.source;
 
 						let avatar = "https://astranauta.github.io/img/" + source + "/" + name + ".png";
 
@@ -1820,8 +1811,7 @@ $dmsDialog.dialog("open");
 					$.each(spelldata.spell, function(i, v) {
 						try {
 							var vname = v.name;
-							var vsource = v.source ? v.source : "PHB";
-							if (v.level[0] === "P") vname += " (Psionics)";
+							var vsource = v.source;
 							$("#import-list .list").append(`<label><input type="checkbox" data-listid="` + i + `"> <span class="name">` + vname + `</span> <span class="source">` + "- " + vsource + `</span></label>`);
 						} catch (e) {
 							console.log("Error building list!", e);
@@ -1895,11 +1885,9 @@ $dmsDialog.dialog("open");
 	// Import individual spells
 	d20plus.spells.import = function(data, overwritespells) {
 
-		var source = parseSpellLevel(data.level);
-		if (source !== "cantrip") source += " level";
-		var fname = source.trim().capFirstLetter();
-		if (fname === "Pd Level") fname = "Psionic Disciplines";
-		if (fname === "Pt Level") fname = "Psionic Talents";
+		var level = parseSpellLevel(data.level);
+		if (level !== "cantrip") level += " level";
+		var fname = level.trim().capFirstLetter();
 		var findex = 1;
 		var folder;
 
@@ -2006,6 +1994,7 @@ $dmsDialog.dialog("open");
 					if (!data.components) data.components = "";
 					if (!data.time) data.components = "1 action";
 
+					// TODO fix this
 					var r20json = {
 						name: data.name,
 						content: "",
@@ -2027,14 +2016,6 @@ $dmsDialog.dialog("open");
 
 					if (data.components.indexOf("(") > 0) {
 						r20json.data["Material"] = data.components.split("(")[1].replace(")", "");
-					}
-
-					if (data.level === "PD") {
-						r20json.data["Level"] = "1";
-					}
-
-					if (data.level === "PT") {
-						r20json.data["Level"] = "0";
 					}
 
 					var notecontents = "";
@@ -2089,45 +2070,24 @@ $dmsDialog.dialog("open");
 	// parse spell levels
 	function parseSpellLevel(level) {
 		if (isNaN(level)) return level;
-		if (level === "0") return "cantrip"
-		if (level === "2") return level + "nd";
-		if (level === "3") return level + "rd";
-		if (level === "1") return level + "st";
+		if (level === 0) return "cantrip"
+		if (level === 2) return level + "nd";
+		if (level === 3) return level + "rd";
+		if (level === 1) return level + "st";
 		return level + "th";
 	}
 
 	// parse spell school
 	function parseSpellSchool(school) {
 		if (school == "A") return "abjuration";
-		if (school == "EV") return "evocation";
-		if (school == "EN") return "enchantment";
+		if (school == "V") return "evocation";
+		if (school == "E") return "enchantment";
 		if (school == "I") return "illusion";
 		if (school == "D") return "divination";
 		if (school == "N") return "necromancy";
 		if (school == "T") return "transmutation";
 		if (school == "C") return "conjuration";
 		return school;
-	}
-
-	function parseSource(src) {
-		source = src.trim();
-		if (source === "monster manual") source = "MM";
-		if (source === "Volo's Guide") source = "VGM";
-		if (source === "elemental evil") source = "PotA";
-		if (source === "storm kings thunder") source = "SKT";
-		if (source === "tyranny of dragons") source = "ToD";
-		if (source === "out of the abyss") source = "OotA";
-		if (source === "curse of strahd") source = "CoS";
-		if (source === "lost mine of phandelver") source = "LMoP";
-		if (source === "Tales from the Yawning Portal") source = "TYP";
-		if (source === "tome of beasts") source = "ToB 3pp";
-		if (source === "Plane Shift Amonkhet") source = "PSA";
-		if (source === "Plane Shift Innistrad") source = "PSI";
-		if (source === "Plane Shift Kaladesh") source = "PSK";
-		if (source === "Plane Shift Zendikar") source = "PSZ";
-		if (source === "Tomb of Annihilation") source = "ToA";
-		if (source === "The Tortle Package") source = "TTP";
-		return source;
 	}
 
 	// Import spell button was clicked
@@ -2544,6 +2504,10 @@ $dmsDialog.dialog("open");
 		{
 			name: "5etoolsutils",
 			url: jsUtilsUrl
+		},
+		{
+			name: "5etoolsrender",
+			url: jsRenderUrl
 		}
 	];
 
