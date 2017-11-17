@@ -20,8 +20,10 @@ var D20plus = function(version) {
 	var monsterdataurlTob = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/bestiary-tob.json";
 	var spelldataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/spells.json";
 	var itemdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/items.json";
-	var jsUtilsUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/utils.js";
-	var jsRenderUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/entryrender.js";
+	// var jsUtilsUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/utils.js"; // TODO restore me
+	var jsUtilsUrl = "https://raw.githubusercontent.com/TheGiddyLimit/astranauta.github.io/dev-4/js/utils.js";
+	// var jsRenderUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/entryrender.js"; // TODO restore me
+	var jsRenderUrl = "https://raw.githubusercontent.com/TheGiddyLimit/astranauta.github.io/dev-4/js/entryrender.js";
 
 	var d20plus = {
 		sheet: "ogl",
@@ -1885,7 +1887,7 @@ $dmsDialog.dialog("open");
 	// Import individual spells
 	d20plus.spells.import = function(data, overwritespells) {
 
-		var level = parseSpellLevel(data.level);
+		var level = Parser.spLevelToFull(data.level);
 		if (level !== "cantrip") level += " level";
 		var fname = level.trim().capFirstLetter();
 		var findex = 1;
@@ -1994,28 +1996,27 @@ $dmsDialog.dialog("open");
 					if (!data.components) data.components = "";
 					if (!data.time) data.components = "1 action";
 
-					// TODO fix this
 					var r20json = {
 						name: data.name,
 						content: "",
 						htmlcontent: "",
 						data: {
-							"Level": data.level,
-							"Range": data.range,
+							"Level": String(data.level),
+							"Range": Parser.spRangeToFull(data.range),
 							"Ritual": "No",
-							"School": parseSpellSchool(data.school),
+							"School": Parser.spSchoolAbvToFull(data.school),
 							"Source": "5etoolsR20",
-							"Classes": data.classes,
+							"Classes": Parser.spClassesToFull(data.classes),
 							"Category": "Spells",
-							"Duration": data.duration,
+							"Duration": Parser.spDurationToFull(data.duration),
 							"Material": "",
-							"Components": data.components.split("(")[0].replace(",", ""),
-							"Casting Time": data.time
+							"Components": parseComponents(data.components),
+							"Casting Time": Parser.spTimeListToFull(data.time)
 						}
 					};
 
-					if (data.components.indexOf("(") > 0) {
-						r20json.data["Material"] = data.components.split("(")[1].replace(")", "");
+					if (data.components.m && data.components.m.length) {
+						r20json.data["Material"] = data.components.m;
 					}
 
 					var notecontents = "";
@@ -2023,21 +2024,31 @@ $dmsDialog.dialog("open");
 
 					notecontents += `<p><h3>` + data.name + `</h3>`;
 
-					var level = parseSpellLevel(data.level);
-					var school = parseSpellSchool(data.school);
-					var levelschool = (level === "cantrip") ? school + " " + level : level + "-level " + school;
+					var level = Parser.spLevelToFull(data.level);
+					var school = Parser.spSchoolAbvToFull(data.school);
+					var levelschool = (level === STR_CANTRIP) ? school + " " + level : level + "-level " + school;
 					levelschool = levelschool.charAt(0).toUpperCase() + levelschool.slice(1)
 					notecontents += `<em>` + levelschool + `</em></p><p>`;
 
-					notecontents += `<strong>Casting Time:</strong> ` + data.time + `<br>`;
-					notecontents += `<strong>Range:</strong> ` + data.range + `<br>`;
-					notecontents += `<strong>Components:</strong> ` + data.components + `<br>`;
-					notecontents += `<strong>Duration:</strong> ` + data.duration + `<br>`;
+					notecontents += `<strong>Casting Time:</strong> ` + Parser.spTimeListToFull(data.time) + `<br>`;
+					notecontents += `<strong>Range:</strong> ` + Parser.spRangeToFull(data.range) + `<br>`;
+					notecontents += `<strong>Components:</strong> ` + Parser.spComponentsToFull(data.components) + `<br>`;
+					notecontents += `<strong>Duration:</strong> ` + Parser.spDurationToFull(data.duration) + `<br>`;
 					notecontents += `</p>`;
 
-					if (data.text) notecontents += utils_combineText(data.text, "p");
+					const renderer = new EntryRenderer();
+					const renderStack = [];
+					const entryList = {type: "entries", entries: data.entries};
+					console.log(data.entries);
+					renderer.recursiveEntryRender(entryList, renderStack, 1);
+					if (data.entriesHigherLevel) {
+						const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
+						renderer.recursiveEntryRender(higherLevelsEntryList, renderStack, 2);
+					}
 
-					notecontents += `<p><strong>Classes:</strong> ` + data.classes + `</p>`;
+					notecontents += renderStack.join("");
+
+					notecontents += `<p><strong>Classes:</strong> ` + Parser.spClassesToFull(data.classes) + `</p>`;
 					gmnotes = JSON.stringify(r20json);
 
 					console.log(notecontents);
@@ -2067,27 +2078,13 @@ $dmsDialog.dialog("open");
 
 	};
 
-	// parse spell levels
-	function parseSpellLevel(level) {
-		if (isNaN(level)) return level;
-		if (level === 0) return "cantrip"
-		if (level === 2) return level + "nd";
-		if (level === 3) return level + "rd";
-		if (level === 1) return level + "st";
-		return level + "th";
-	}
-
-	// parse spell school
-	function parseSpellSchool(school) {
-		if (school == "A") return "abjuration";
-		if (school == "V") return "evocation";
-		if (school == "E") return "enchantment";
-		if (school == "I") return "illusion";
-		if (school == "D") return "divination";
-		if (school == "N") return "necromancy";
-		if (school == "T") return "transmutation";
-		if (school == "C") return "conjuration";
-		return school;
+	// parse spell components
+	function parseComponents(components) {
+		const out = [];
+		if (components.v) out.push("V");
+		if (components.s) out.push("S");
+		if (components.m) out.push("M");
+		return out.join(" ");
 	}
 
 	// Import spell button was clicked
