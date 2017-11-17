@@ -20,10 +20,8 @@ var D20plus = function(version) {
 	var monsterdataurlTob = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/bestiary-tob.json";
 	var spelldataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/spells.json";
 	var itemdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/items.json";
-	// var jsUtilsUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/utils.js"; // TODO restore me
-	var jsUtilsUrl = "https://raw.githubusercontent.com/TheGiddyLimit/astranauta.github.io/dev-4/js/utils.js";
-	// var jsRenderUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/entryrender.js"; // TODO restore me
-	var jsRenderUrl = "https://raw.githubusercontent.com/TheGiddyLimit/astranauta.github.io/dev-4/js/entryrender.js";
+	var jsUtilsUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/utils.js";
+	var jsRenderUrl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/js/entryrender.js";
 
 	var d20plus = {
 		sheet: "ogl",
