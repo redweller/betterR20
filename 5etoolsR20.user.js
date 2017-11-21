@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.15
+// @version      0.5.16
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -410,7 +410,6 @@ $dmsDialog.dialog("open");
 		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Spells')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable");
 		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Items')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable");
 
-
 		d20.Campaign.characters.models.each(function(v, i) {
 			v.view.rebindCompendiumDropTargets = function() {
 				// ready character sheet for draggable
@@ -437,24 +436,23 @@ $dmsDialog.dialog("open");
 										gmnotes: gmnotes
 									});
 									data = JSON.parse(data);
-									n = data.data;
-									n.Name = data.name, n.Content = data.content;
+									inputData = data.data;
+									inputData.Name = data.name, inputData.Content = data.content;
 									var r = $(t.target);
 									r.find("*[accept]").each(function() {
-										var t = $(this),
-											i = t.attr("accept");
+										var t = $(this), acceptTag = t.attr("accept");
 										// this is arcane bullshit
-										n[i] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == n[i] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == n[i] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+										inputData[acceptTag] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == inputData[acceptTag] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == inputData[acceptTag] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
 											var e = $(this);
-											(e.attr("value") === n[i] || e.text() === n[i]) && e.attr("selected", "selected")
-										}) : $(this).val(n[i]), character.saveSheetValues(this))
+											(e.attr("value") === inputData[acceptTag] || e.text() === inputData[acceptTag]) && e.attr("selected", "selected")
+										}) : $(this).val(inputData[acceptTag]), character.saveSheetValues(this))
 									});
 
 								});
 							} else {
 								console.log("Compendium item dropped onto target!"), t.originalEvent.dropHandled = !0;
-								var n = $(i.helper[0]).attr("data-pagename");
-								console.log("https://app.roll20.net/compendium/" + COMPENDIUM_BOOK_NAME + "/" + n + ".json?plaintext=true"), $.get("https://app.roll20.net/compendium/" + COMPENDIUM_BOOK_NAME + "/" + n + ".json?plaintext=true", function(i) {
+								var inputData = $(i.helper[0]).attr("data-pagename");
+								console.log("https://app.roll20.net/compendium/" + COMPENDIUM_BOOK_NAME + "/" + inputData + ".json?plaintext=true"), $.get("https://app.roll20.net/compendium/" + COMPENDIUM_BOOK_NAME + "/" + inputData + ".json?plaintext=true", function(i) {
 									var n = i.data;
 									n.Name = i.name, n.Content = i.content;
 									var r = $(t.target);
@@ -1987,7 +1985,6 @@ $dmsDialog.dialog("open");
 			}, {
 				success: function(handout) {
 
-					// debugger;
 					if (!data.school) data.school = "A";
 					if (!data.range) data.range = "Self";
 					if (!data.duration) data.duration = "Instantaneous"
@@ -2001,7 +1998,7 @@ $dmsDialog.dialog("open");
 						data: {
 							"Level": String(data.level),
 							"Range": Parser.spRangeToFull(data.range),
-							"Ritual": "No",
+							"Ritual": false,
 							"School": Parser.spSchoolAbvToFull(data.school),
 							"Source": "5etoolsR20",
 							"Classes": Parser.spClassesToFull(data.classes),
@@ -2017,16 +2014,18 @@ $dmsDialog.dialog("open");
 						r20json.data["Material"] = data.components.m;
 					}
 
+					if (data.meta) {
+						if (data.meta.ritual) {
+							r20json.ritual = true;
+						}
+					}
+
 					var notecontents = "";
 					var gmnotes = "";
 
 					notecontents += `<p><h3>` + data.name + `</h3>`;
 
-					var level = Parser.spLevelToFull(data.level);
-					var school = Parser.spSchoolAbvToFull(data.school);
-					var levelschool = (level === STR_CANTRIP) ? school + " " + level : level + "-level " + school;
-					levelschool = levelschool.charAt(0).toUpperCase() + levelschool.slice(1)
-					notecontents += `<em>` + levelschool + `</em></p><p>`;
+					notecontents += `<em>` + Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta) + `</em></p><p>`;
 
 					notecontents += `<strong>Casting Time:</strong> ` + Parser.spTimeListToFull(data.time) + `<br>`;
 					notecontents += `<strong>Range:</strong> ` + Parser.spRangeToFull(data.range) + `<br>`;
@@ -2037,11 +2036,15 @@ $dmsDialog.dialog("open");
 					const renderer = new EntryRenderer();
 					const renderStack = [];
 					const entryList = {type: "entries", entries: data.entries};
-					console.log(data.entries);
+
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
+					r20json.content = renderStack.join(" ");
 					if (data.entriesHigherLevel) {
+						const hLevelRenderStack = [];
 						const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
-						renderer.recursiveEntryRender(higherLevelsEntryList, renderStack, 2);
+						renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
+						r20json.data["Higher Spell Slot Bonus"] = hLevelRenderStack.join(" ");
+						notecontents += hLevelRenderStack.join("");
 					}
 
 					notecontents += renderStack.join("");
