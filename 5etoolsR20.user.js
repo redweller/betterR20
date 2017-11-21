@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.16
+// @version      0.5.17
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -329,7 +329,9 @@ var D20plus = function(version) {
 
 		d20plus.addJournalCommands();
 
-		$("#journal > .content:eq(1) > button.btn.superadd").after(` <button class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-right: 0.5em;">Bind</button> `)
+		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-right: 0.5em;">Bind</button>`);
+		altBindButton.on("click", function(){d20plus.bindDropLocations()});
+		$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
 		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 
 		$("body").append(d20plus.importDialogHtml);
@@ -437,17 +439,46 @@ $dmsDialog.dialog("open");
 									});
 									data = JSON.parse(data);
 									inputData = data.data;
-									inputData.Name = data.name, inputData.Content = data.content;
-									var r = $(t.target);
-									r.find("*[accept]").each(function() {
-										var t = $(this), acceptTag = t.attr("accept");
-										// this is arcane bullshit
-										inputData[acceptTag] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == inputData[acceptTag] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == inputData[acceptTag] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-											var e = $(this);
-											(e.attr("value") === inputData[acceptTag] || e.text() === inputData[acceptTag]) && e.attr("selected", "selected")
-										}) : $(this).val(inputData[acceptTag]), character.saveSheetValues(this))
-									});
+									inputData.Name = data.name;
+									inputData.Content = data.content;
 
+									const r = $(t.target);
+									r.find("*[accept]").each(function() {
+										const $this = $(this);
+										const acceptTag = $this.attr("accept");
+
+										if (inputData[acceptTag] !== undefined) {
+											if ("input" === this.tagName.toLowerCase()) {
+												if ("checkbox" === $this.attr("type")) {
+													if (inputData[acceptTag]) {
+														$this.attr("checked", "checked")
+													} else {
+														$this.removeAttr("checked")
+													}
+												} else if ("radio" === $this.attr("type")) {
+													if (inputData[acceptTag]) {
+														$this.attr("checked", "checked")
+													} else {
+														$this.removeAttr("checked")
+													}
+												} else {
+													$this.val(inputData[acceptTag]);
+												}
+											} else if ("select" === this.tagName.toLowerCase()) {
+												$this.find("option").each(function () {
+													const $this = $(this);
+													if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) {
+														$this.attr("selected", "selected")
+													}
+												})
+											} else {
+												$this.val(inputData[acceptTag]);
+											}
+
+											// persist the value
+											character.saveSheetValues(this);
+										}
+									});
 								});
 							} else {
 								console.log("Compendium item dropped onto target!"), t.originalEvent.dropHandled = !0;
@@ -1998,7 +2029,6 @@ $dmsDialog.dialog("open");
 						data: {
 							"Level": String(data.level),
 							"Range": Parser.spRangeToFull(data.range),
-							"Ritual": false,
 							"School": Parser.spSchoolAbvToFull(data.school),
 							"Source": "5etoolsR20",
 							"Classes": Parser.spClassesToFull(data.classes),
@@ -2016,7 +2046,7 @@ $dmsDialog.dialog("open");
 
 					if (data.meta) {
 						if (data.meta.ritual) {
-							r20json.ritual = true;
+							r20json.data["Ritual"] = "Yes";
 						}
 					}
 
