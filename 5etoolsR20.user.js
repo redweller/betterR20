@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.17
+// @version      0.5.18
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2605,37 +2605,55 @@ $dmsDialog.dialog("open");
     <a class="btn" href="#" id="import-items-load">Import Items</a>
     </p>
     <p>
-    <a class="btn" href="#" id="bind-drop-locations">Prepare Drag-and-Drop Spells/Items</a>
+    <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Prepare Drag-and-Drop Spells/Items</a>
     </p>`;
 
-	d20plus.cssRules = [{
-		s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.ac,#initiativewindow ul li span.hp,#initiativewindow ul li span.pp,#initiativewindow ul li span.cr,#initiativewindow ul li span.initmacro",
-		r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;"
-	}, {
-		s: "#initiativewindow ul li span.editable input",
-		r: "width: 100%; box-sizing: border-box;height: 100%;"
-	}, {
-		s: "#initiativewindow div.header",
-		r: "height: 30px;"
-	}, {
-		s: "#initiativewindow div.header span",
-		r: "cursor: default;font-size: 15px;font-weight: bold;text-align: right;float: right;width: 10%;min-height: 20px;padding: 5px;"
-	}, {
-		s: ".ui-dialog-buttonpane span.difficulty",
-		r: "display: inline-block;padding: 5px 4px 6px;margin: .5em .4em .5em 0;font-size: 18px;"
-	}, {
-		s: ".ui-dialog-buttonpane.buttonpane-absolute-position",
-		r: "position: absolute;bottom: 0;box-sizing: border-box;width: 100%;"
-	}, {
-		s: ".ui-dialog.dialog-collapsed .ui-dialog-buttonpane",
-		r: "position: initial;"
-	}, {
-		s: "#dmscreen-dialog iframe",
-		r: "width: 100%;height: 100%;position: absolute;top: 0;left: 0;border: 0;"
-	}, {
-		s: ".token .cr,.header .cr",
-		r: "display: none!important;"
-	}];
+	d20plus.cssRules = [
+		{
+			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.ac,#initiativewindow ul li span.hp,#initiativewindow ul li span.pp,#initiativewindow ul li span.cr,#initiativewindow ul li span.initmacro",
+			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;"
+		},
+		{
+			s: "#initiativewindow ul li span.editable input",
+			r: "width: 100%; box-sizing: border-box;height: 100%;"
+		},
+		{
+			s: "#initiativewindow div.header",
+			r: "height: 30px;"
+		},
+		{
+			s: "#initiativewindow div.header span",
+			r: "cursor: default;font-size: 15px;font-weight: bold;text-align: right;float: right;width: 10%;min-height: 20px;padding: 5px;"
+		},
+		{
+			s: ".ui-dialog-buttonpane span.difficulty",
+			r: "display: inline-block;padding: 5px 4px 6px;margin: .5em .4em .5em 0;font-size: 18px;"
+		},
+		{
+			s: ".ui-dialog-buttonpane.buttonpane-absolute-position",
+			r: "position: absolute;bottom: 0;box-sizing: border-box;width: 100%;"
+		},
+		{
+			s: ".ui-dialog.dialog-collapsed .ui-dialog-buttonpane",
+			r: "position: initial;"
+		},
+		{
+			s: "#dmscreen-dialog iframe",
+			r: "width: 100%;height: 100%;position: absolute;top: 0;left: 0;border: 0;"
+		},
+		{
+			s: ".token .cr,.header .cr",
+			r: "display: none!important;"
+		},
+		{
+			s: "li.handout.compendium-item .namecontainer",
+			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);"
+		},
+		{
+			s: ".bind-drop-locations:active",
+			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);"
+		}
+	];
 
 	d20plus.initiativeHeaders = `<div class="header">
   <span class="ui-button-text initmacro">Sheet</span>
