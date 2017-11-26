@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.18
+// @version      0.5.19
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -610,7 +610,7 @@ $dmsDialog.dialog("open");
 
 	// Create monster character from js data object
 	d20plus.monsters.import = function(data) {
-		var typeArr = data.type.split(",");
+		var typeArr = Parser.monTypeToFullObj(data.type).asText.split(",");
 		var source = ($("#import-monster-organizebysource").prop("checked")) ? typeArr[typeArr.length - 1] : typeArr[0].toLowerCase().replace(/\((any race)\)/g, "");
 		var fname = source.trim().capFirstLetter(),
 			findex = 1,
@@ -712,7 +712,7 @@ $dmsDialog.dialog("open");
 					/* OGL Sheet */
 					try {
 						
-						let type = data.type;
+						let type = Parser.monTypeToFullObj(data.type).asText;
 						let source = data.source;
 
 						let avatar = "https://astranauta.github.io/img/" + source + "/" + name + ".png";
