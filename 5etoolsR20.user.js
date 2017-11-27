@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.19
+// @version      0.5.20
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2048,6 +2048,10 @@ $dmsDialog.dialog("open");
 						if (data.meta.ritual) {
 							r20json.data["Ritual"] = "Yes";
 						}
+					}
+
+					if (data.duration.filter(d => d.concentration).length > 0) {
+						r20json.data["Concentration"] = "Yes";
 					}
 
 					var notecontents = "";
