@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.21
+// @version      0.5.22
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -88,6 +88,42 @@ var D20plus = function(version) {
 		d20plus.addHTML();
 		d20plus.setSheet();
 		d20plus.log("> Bind Graphics");
+		d20.Campaign.pages.each(d20plus.bindGraphics);
+		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
+	};
+
+	// Bind Graphics Add on page
+	d20plus.bindGraphics = function(page) {
+		try {
+			if (page.get("archived") == false) {
+				page.thegraphics.on("add", function(e) {
+					var character = e.character;
+					if (character) {
+						var npc = character.attribs.find(function(a) {return a.get("name").toLowerCase() == "npc";});
+						var isNPC = npc ? parseInt(npc.get("current")) : 0;
+						if (isNPC) {
+							var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == "npc_hpformula";});
+							if (hpf) {
+								var hpformula = hpf.get("current");
+								if (hpformula) {
+									d20plus.randomRoll(hpformula, function(result) {
+										e.attributes.bar3_value = result.total;
+										e.attributes.bar3_max = result.total;
+										d20plus.log("> Rolled HP for [" + character.get("name") + "]");
+									}, function(error) {
+										d20plus.log("> Error Rolling HP Dice");
+										console.log(error);
+									});
+								}
+							}
+						}
+					}
+				});
+			}
+		} catch (e) {
+			console.log("D20Plus bindGraphics Exception", e);
+			console.log("PAGE", page);
+		}
 	};
 
 	// Create new Journal commands
@@ -1724,6 +1760,10 @@ var D20plus = function(version) {
 	d20plus.initiativeHeaders = `<div class="header">
 	<span class="ui-button-text initmacro">Sheet</span>
 	<span class="initiative" alt="Initiative" title="Initiative">Init</span>
+  <span class="pp" alt="Passive Perception" title="Passive Perception">PP</span>
+  <span class="ac" alt="AC" title="AC">AC</span>
+  <span class="cr" alt="CR" title="CR">CR</span>
+  <span class="hp" alt="HP" title="HP">HP</span>
 </div>`;
 
 	d20plus.initiativeTemplate = `<script id="tmpl_initiativecharacter" type="text/html">
@@ -1737,6 +1777,33 @@ var D20plus = function(version) {
 			<span alt='Initiative' title='Initiative' class='initiative <$ if (this.iseditable) { $>editable<$ } $>'>
 				<$!this.pr$>
 			</span>
+			<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
+			<$ var char = (token) ? token.character : null; $>
+			<$ if (char) { $>
+				<$ var npc = char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }); $>
+				<$ var passive = char.autoCalcFormula('@{passive}') || char.autoCalcFormula('||PP||'); $>
+				<span class='pp' alt='Passive Perception' title='Passive Perception'><$!passive$></span>
+				<span class='ac' alt='AC' title='AC'>
+					<$ if(npc && npc.get("current") == "1") { $>
+						<$!char.autoCalcFormula('||NPCAC||')$>
+					<$ } else { $>
+						<$!char.autoCalcFormula('||AC||')$>
+					<$ } $>
+				</span>
+				<span class='cr' alt='CR' title='CR'>
+					<$ if(npc && npc.get("current") == "1") { $>
+						<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
+					<$ } $>
+				</span>
+				<span class='hp editable' alt='HP' title='HP'>
+					<$ if(npc && npc.get("current") == "1") { $>
+						<$!token.attributes.bar3_value$>
+					<$ } else { $>
+						<$!char.autoCalcFormula('||HP||')$>
+					<$ } $>
+				</span>
+			<$ } $>
+			<$ if (this.avatar) { $><img src='<$!this.avatar$>' /><$ } $>
 			<span class='name'><$!this.name$></span>
 				<div class='clear' style='height: 0px;'></div>
 				<div class='controls'>
