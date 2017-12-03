@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.22
+// @version      0.5.23
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -711,23 +711,16 @@ var D20plus = function(version) {
 								character.attribs.create({name: save[0].toLowerCase() + "_saving_throw_proficient", current: parseInt(save[1])});
 							});
 						}
-						if (data.skill != null && data.skill.length > 0) {
-							var skills;
-							if (data.skill instanceof Array) {
-								skills = data.skill[0].split(", ");
-							} else {
-								skills = data.skill.split(", ");
-							}
+						if (data.skill != null) {
+							const skills = data.skill;
+                            const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k]}).join(', ');
 							character.attribs.create({name: "npc_skills_flag", current: 1});
-							character.attribs.create({name: "npc_skills", current: skills});
+							character.attribs.create({name: "npc_skills", current: skillsString});
 							var newRowId = d20plus.generateRowId();
 							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: "NPC Skills"});
-							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: skills});
-							$.each(skills, function(i, v) {
-								if (v.length > 0) {
-									var skill = v.match(/([\w+ ]*[^+-?\d])([+-?\d]+)/);
-									character.attribs.create({name: "npc_" + $.trim(skill[1]).toLowerCase().replace(/ /g,"_") + "_base", current: parseInt($.trim(skill[2])) || 0});
-								}
+							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: skillsString});
+							$.each(skills, function(k, v) {
+								character.attribs.create({name: "npc_" + $.trim(k).toLowerCase().replace(/ /g,"_") + "_base", current: parseInt($.trim(v)) || 0});
 							});
 						}
 						if (data.trait != null) {
