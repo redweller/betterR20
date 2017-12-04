@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.25
+// @version      0.5.26
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -19,7 +19,7 @@ var D20plus = function(version) {
 	var monsterdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/bestiary.json";
 	var monsterdataurlTob = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/bestiary-tob.json";
 	var spelldataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/spells.json";
-	var spellmetaurl = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/roll20-spell-details/data/spells-roll20.json?" + (new Date).getTime(); // FIXME use 5etools URL once merged; remove the "Date" anti-caching hack
+	var spellmetaurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/spells-roll20.json";
 	var itemdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/items.json";
 
 	var d20plus = {
