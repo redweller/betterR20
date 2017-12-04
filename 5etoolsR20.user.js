@@ -1356,14 +1356,14 @@ var D20plus = function(version) {
 					renderer.setBaseUrl("https://astranauta.github.io/");
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
 					r20json.content = renderStack.join(" ");
+					notecontents += renderStack.join("");
 					if (data.entriesHigherLevel) {
 						const hLevelRenderStack = [];
 						const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
 						renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
-						r20json.data["Higher Spell Slot Bonus"] = hLevelRenderStack.join(" ");
+						r20json.content += "\n\nAt Higher Levels: " + hLevelRenderStack.join(" ").replace("At Higher Levels.", "");
 						notecontents += hLevelRenderStack.join("");
 					}
-					notecontents += renderStack.join("");
 					notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
 					gmnotes = JSON.stringify(r20json);
 					console.log(notecontents);
