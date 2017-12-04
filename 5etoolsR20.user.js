@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.23
+// @version      0.5.24
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -19,6 +19,7 @@ var D20plus = function(version) {
 	var monsterdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/bestiary.json";
 	var monsterdataurlTob = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/bestiary-tob.json";
 	var spelldataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/spells.json";
+	var spellmetaurl = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/roll20-spell-details/data/spells-roll20.json?" + (new Date).getTime(); // FIXME use 5etools URL once merged; remove the "Date" anti-caching hack
 	var itemdataurl = "https://raw.githubusercontent.com/astranauta/astranauta.github.io/master/data/items.json";
 
 	var d20plus = {
@@ -1125,67 +1126,108 @@ var D20plus = function(version) {
 		var x2js = new X2JS();
 		var datatype = $("#import-datatype").val();
 		if (datatype === "json") datatype = "text";
-		$.ajax({
-			type: "GET",
-			url: url,
-			dataType: datatype,
-			success: function(data) {
-				try {
-					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
-					spelldata = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^var .* \= /g, ""));
-					var length = spelldata.spell.length;
-					spelldata.spell.sort(function(a,b) {
-						if (a.name < b.name) return -1;
-						if (a.name > b.name) return 1;
-						return 0;
-					});
-					// building list for checkboxes
-					$("#import-list .list").html("");
-					$.each(spelldata.spell, function(i, v) {
+
+		// if we're importing from 5etools, fetch spell metadata and merge it in
+		if (url === spelldataurl) {
+			$.ajax({
+				type: "GET",
+				url: spellmetaurl,
+				dataType: datatype,
+				success: chainLoad,
+				error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
+			});
+
+			function chainLoad(metadata) {
+				const parsedMeta = JSON.parse(metadata);
+
+				$.ajax({
+					type: "GET",
+					url: url,
+					dataType: datatype,
+					success: function(data) {handleSuccess(data, parsedMeta)},
+					error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
+				});
+			}
+		}  else {
+			$.ajax({
+				type: "GET",
+				url: url,
+				dataType: datatype,
+				success: handleSuccess,
+				error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
+			});
+		}
+
+		d20plus.timeout = 500;
+
+		function handleSuccess(data, meta) {
+			try {
+				d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
+				spelldata = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^var .* \= /g, ""));
+				var length = spelldata.spell.length;
+				spelldata.spell.sort(function(a,b) {
+					if (a.name < b.name) return -1;
+					if (a.name > b.name) return 1;
+					return 0;
+				});
+
+				if (meta) {
+					for (let i = 0; i < spelldata.spell.length; ++i) {
+						const curSpell = spelldata.spell[i];
+						for (let j = 0; j < meta.spell.length; ++j) {
+							const curMeta = meta.spell[j];
+							if (curSpell.name === curMeta.name && curSpell.source === curMeta.source) {
+								curSpell.roll20 = curMeta.data;
+								break;
+							}
+						}
+					}
+				}
+
+				// building list for checkboxes
+				$("#import-list .list").html("");
+				$.each(spelldata.spell, function(i, v) {
+					try {
+						$("#import-list .list").append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${v.name}</span> <span class="source">- ${v.source}</span></label>`);
+					} catch (e) {
+						console.log("Error building list!", e);
+						d20plus.addImportError(v.name);
+					}
+				});
+				var options = {valueNames: [ 'name' ]};
+				var importList = new List ("import-list", options);
+				$("#import-options label").hide();
+				$("#import-overwrite").parent().show();
+				$("#delete-existing").parent().show();
+				$("#organize-by-source").parent().show();
+				$("#import-showplayers").parent().show();
+				$("#d20plus-importlist").dialog("open");
+				$("#d20plus-importlist input#importlist-selectall").unbind("click");
+				$("#d20plus-importlist input#importlist-selectall").bind("click", function() {
+					$("#import-list .list input").prop("checked", $(this).prop("checked"));
+				});
+				$("#d20plus-importlist button").unbind("click");
+				$("#d20plus-importlist button#importstart").bind("click", function() {
+					$("#d20plus-importlist").dialog("close");
+					var overwrite = $("#import-overwrite").prop("checked");
+					var deleteExisting = $("#delete-existing").prop("checked");
+					$("#import-list .list input").each(function() {
+						if (!$(this).prop("checked")) return;
+						var spellnum = parseInt($(this).data("listid"));
+						var curspell = spelldata.spell[spellnum];
 						try {
-							$("#import-list .list").append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${v.name}</span> <span class="source">- ${v.source}</span></label>`);
+							console.log("> " + (spellnum + 1) + "/" + length + " Attempting to import spell [" + curspell.name + "]");
+							d20plus.spells.import(curspell, overwrite, deleteExisting);
 						} catch (e) {
-							console.log("Error building list!", e);
-							d20plus.addImportError(v.name);
+							console.log("Error Importing!", e);
+							d20plus.addImportError(curspell.name);
 						}
 					});
-					var options = {valueNames: [ 'name' ]};
-					var importList = new List ("import-list", options);
-					$("#import-options label").hide();
-					$("#import-overwrite").parent().show();
-					$("#delete-existing").parent().show();
-					$("#organize-by-source").parent().show();
-					$("#import-showplayers").parent().show();
-					$("#d20plus-importlist").dialog("open");
-					$("#d20plus-importlist input#importlist-selectall").unbind("click");
-					$("#d20plus-importlist input#importlist-selectall").bind("click", function() {
-						$("#import-list .list input").prop("checked", $(this).prop("checked"));
-					});
-					$("#d20plus-importlist button").unbind("click");
-					$("#d20plus-importlist button#importstart").bind("click", function() {
-						$("#d20plus-importlist").dialog("close");
-						var overwrite = $("#import-overwrite").prop("checked");
-						var deleteExisting = $("#delete-existing").prop("checked");
-						$("#import-list .list input").each(function() {
-							if (!$(this).prop("checked")) return;
-							var spellnum = parseInt($(this).data("listid"));
-							var curspell = spelldata.spell[spellnum];
-							try {
-								console.log("> " + (spellnum + 1) + "/" + length + " Attempting to import spell [" + curspell.name + "]");
-								d20plus.spells.import(curspell, overwrite, deleteExisting);
-							} catch (e) {
-								console.log("Error Importing!", e);
-								d20plus.addImportError(curspell.name);
-							}
-						});
-					});
-				} catch (e) {
-					console.log("> Exception ", e);
-				}
-			},
-			error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
-		});
-		d20plus.timeout = 500;
+				});
+			} catch (e) {
+				console.log("> Exception ", e);
+			}
+		}
 	};
 
 	// Import individual spells
@@ -1267,11 +1309,12 @@ var D20plus = function(version) {
 					if (!data.duration) data.duration = "Instantaneous";
 					if (!data.components) data.components = "";
 					if (!data.time) data.components = "1 action";
-					var r20json = {
-						name: data.name,
-						content: "",
-						htmlcontent: "",
-						data: {
+
+					const r20Data = {};
+					if (data.roll20) Object.assign(r20Data, data.roll20);
+					Object.assign(
+						r20Data,
+						{
 							"Level": String(data.level),
 							"Range": Parser.spRangeToFull(data.range),
 							"School": Parser.spSchoolAbvToFull(data.school),
@@ -1283,6 +1326,13 @@ var D20plus = function(version) {
 							"Components": parseComponents(data.components),
 							"Casting Time": Parser.spTimeListToFull(data.time)
 						}
+					);
+
+					var r20json = {
+						name: data.name,
+						content: "",
+						htmlcontent: "",
+						data: r20Data
 					};
 					if (data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
 					if (data.meta) {
