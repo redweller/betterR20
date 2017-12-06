@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.26
+// @version      0.5.27
 // @updateURL    https://github.com/TheGiddyLimit/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/TheGiddyLimit/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -617,7 +617,7 @@ var D20plus = function(version) {
 					try {
 						const type = Parser.monTypeToFullObj(data.type).asText;
 						const source = data.source;
-						const avatar = "https://astranauta.github.io/img/" + source + "/" + name + ".png";
+						const avatar = "https://TheGiddyLimit.github.io/img/" + source + "/" + name + ".png";
 						character.size = data.size;
 						character.name = name;
 						character.senses = data.senses;
@@ -625,7 +625,7 @@ var D20plus = function(version) {
 						$.ajax({
 							url: avatar,
 							type: 'HEAD',
-							error: function() {getSetAvatarImage("https://astranauta.github.io/img/blank.png");},
+							error: function() {getSetAvatarImage("https://TheGiddyLimit.github.io/img/blank.png");},
 							success: function() {getSetAvatarImage(avatar);}
 						});
 						var ac = data.ac.match(/^\d+/);
@@ -1354,7 +1354,7 @@ var D20plus = function(version) {
 					const renderer = new EntryRenderer();
 					const renderStack = [];
 					const entryList = {type: "entries", entries: data.entries};
-					renderer.setBaseUrl("https://astranauta.github.io/");
+					renderer.setBaseUrl("https://TheGiddyLimit.github.io/");
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
 					r20json.content = renderStack.join(" ");
 					notecontents += renderStack.join("");
@@ -1595,7 +1595,7 @@ var D20plus = function(version) {
 					const renderer = new EntryRenderer();
 					const renderStack = [];
 					const entryList = {type: "entries", entries: data.entries};
-					renderer.setBaseUrl("https://astranauta.github.io/");
+					renderer.setBaseUrl("https://TheGiddyLimit.github.io/");
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
 					var textstring = renderStack.join("");
 					if (textstring) {
