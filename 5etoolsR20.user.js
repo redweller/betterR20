@@ -11,6 +11,7 @@
 // @grant        unsafeWindow
 // @run-at       document-start
 // ==/UserScript==
+// TODO fix update/download URL once we have Jenkins operational
 
 /* eslint no-console: "off" */
 
