@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.27
+// @version      0.5.28
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -19,8 +19,20 @@ var D20plus = function(version) {
 
 	var monsterdataurl = "https://5etools.com/data/bestiary.json";
 	var monsterdataurlTob = "https://5etools.com/data/bestiary-tob.json";
-	var spelldataurl = "https://5etools.com/data/spells.json";
-	var spellmetaurl = "https://5etools.com/data/spells-roll20.json";
+
+	var spellDataDir = "https://5etools.com/data/spells/";
+	// TODO this is the contents of "https://5etools.com/data/spells/index.json" -- should be loaded instead of redefined
+	var spellDataUrls = {
+		"PHB": "spells-phb.json",
+		"SCAG": "spells-scag.json",
+		"UAModernMagic": "spells-ua-mm.json",
+		"UAStarterSpells": "spells-ua-ss.json",
+		"UAThatOldBlackMagic": "spells-ua-tobm.json",
+		"XGE": "spells-xge.json",
+		"BoLS 3pp": "spells-bols.json"
+	};
+
+	var spellmetaurl = "https://5etools.com/data/spells/roll20.json";
 	var itemdataurl = "https://5etools.com/data/items.json";
 
 	var d20plus = {
@@ -43,22 +55,53 @@ var D20plus = function(version) {
 	];
 
 	// Inject external JS libraries
-	d20plus.addScripts = function() {
-		$.each(d20plus.scripts, function(i, v) {
+	d20plus.addScripts = function(onLoadFunction) {
+		d20plus.chainLoad(d20plus.scripts, 0, onLoadFunction);
+	};
+
+	d20plus.chainLoad = function (toLoads, index, onLoadFunction) {
+		const toLoad = toLoads[index];
+		// on loading the last item, run onLoadFunction
+		if (index === toLoads.length-1) {
 			$.ajax({
 				type: "GET",
-				url: v.url,
+				url: toLoad.url+d20plus.getAntiCacheSuffix(),
 				success: function(js) {
 					try {
 						window.eval(js);
-						d20plus.log(`> JS [${v.name}] Loaded`);
+						d20plus.log(`> JS [${toLoad.name}] Loaded`);
+						onLoadFunction();
 					} catch (e) {
-						d20plus.log(`> Error loading ${v.name}`);
+						d20plus.log(`> Error loading ${toLoad.name}`);
 					}
+				},
+				error: function() {
+					d20plus.log(`> Error loading ${toLoad.name}`);
 				}
 			});
-		});
+		} else {
+			$.ajax({
+				type: "GET",
+				url: toLoad.url+d20plus.getAntiCacheSuffix(),
+				success: function(js) {
+					try {
+						window.eval(js);
+						d20plus.log(`> JS [${toLoad.name}] Loaded`);
+						d20plus.chainLoad(toLoads, index+1, onLoadFunction)
+					} catch (e) {
+						d20plus.log(`> Error loading ${toLoad.name}`);
+					}
+				},
+				error: function() {
+					d20plus.log(`> Error loading ${toLoad.name}`);
+				}
+			});
+		}
 	};
+
+	d20plus.getAntiCacheSuffix = function() {
+		return "?" + (new Date).getTime();
+	}
 
 	// Window loaded
 	window.onload = function() {
@@ -83,7 +126,11 @@ var D20plus = function(version) {
 			return;
 		}
 		d20plus.log("> Add JS");
-		d20plus.addScripts();
+		d20plus.addScripts(d20plus.onScriptLoad);
+	};
+
+	// continue init once scripts load
+	d20plus.onScriptLoad = function() {
 		d20plus.log("> Add CSS");
 		_.each(d20plus.cssRules, function(r) {d20plus.addCSS(window.document.styleSheets[window.document.styleSheets.length - 1], r.s, r.r);});
 		d20plus.log("> Add HTML");
@@ -92,7 +139,7 @@ var D20plus = function(version) {
 		d20plus.log("> Bind Graphics");
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-	};
+	}
 
 	// Bind Graphics Add on page
 	d20plus.bindGraphics = function(page) {
@@ -274,7 +321,9 @@ var D20plus = function(version) {
 	// Inject HTML
 	d20plus.addHTML = function() {
 		$("#mysettings > .content").children("hr").first().before(d20plus.settingsHtml);
-		$("#mysettings > .content #button-monsters-select").change(function() { $("#import-monster-url").val(this.value); });
+		$("#mysettings > .content #button-monsters-select").change(function () {
+			$("#import-monster-url").val(this.value);
+		});
 		$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
 		$("#mysettings > .content a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
 		$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
@@ -283,11 +332,15 @@ var D20plus = function(version) {
 		d20plus.getInitTemplate();
 		d20.Campaign.initiativewindow.rebuildInitiativeList();
 		d20plus.hpAllowEdit();
-		d20.Campaign.initiativewindow.model.on("change:turnorder", function() {d20plus.updateDifficulty();});
+		d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
+			d20plus.updateDifficulty();
+		});
 		d20plus.updateDifficulty();
 		d20plus.addJournalCommands();
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-right: 0.5em;">Bind</button>`);
-		altBindButton.on("click", function(){d20plus.bindDropLocations();});
+		altBindButton.on("click", function () {
+			d20plus.bindDropLocations();
+		});
 		$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
 		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 		$("body").append(d20plus.importDialogHtml);
@@ -311,6 +364,20 @@ var D20plus = function(version) {
 		});
 		$("#floatingtoolbar > ul").append(d20plus.dmscreenButton);
 		$("#dmscreen-button").on(window.mousedowntype, function(){$dmsDialog.dialog($dmsDialog.dialog("isOpen") ? "close" : "open");});*/
+		const spellDropdown = $('#button-spell-select');
+		$.each(Object.keys(spellDataUrls), function (i, src) {
+			spellDropdown.append($('<option>', {
+				value: d20plus.spells.formSpellUrl(spellDataUrls[src]),
+				text: Parser.sourceJsonToFullCompactPrefix(src)
+			}));
+		});
+		spellDropdown.append($('<option>', {
+			value: "",
+			text: "Custom"
+		}));
+		spellDropdown.change(function () {
+			$("#import-spell-url").val(this.value);
+		});
 	};
 
 	d20plus.updateDifficulty = function() {
@@ -1116,6 +1183,10 @@ var D20plus = function(version) {
 		};
 	};
 
+	d20plus.spells.formSpellUrl = function (fileName) {
+		return spellDataDir + fileName;
+	}
+
 	// Import Spells button was clicked
 	d20plus.spells.button = function() {
 		var url = $("#import-spell-url").val();
@@ -1130,7 +1201,7 @@ var D20plus = function(version) {
 		if (datatype === "json") datatype = "text";
 
 		// if we're importing from 5etools, fetch spell metadata and merge it in
-		if (url === spelldataurl) {
+		if (Object.values(spellDataUrls).map(file => d20plus.spells.formSpellUrl(file)).includes(url)) {
 			$.ajax({
 				type: "GET",
 				url: spellmetaurl,
@@ -1750,7 +1821,10 @@ var D20plus = function(version) {
 <h4>Spell Importing</h4>
 <p>
 <label for="import-spell-url">Spell Data URL:</label>
-<input type="text" id="import-spell-url" value="${spelldataurl}">
+<select id="button-spell-select">
+<!-- populate with JS-->
+</select>
+<input type="text" id="import-spell-url" value="${d20plus.spells.formSpellUrl(spellDataUrls.PHB)}">
 <a class="btn" href="#" id="button-spells-load">Import Spells</a>
 </p>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Prepare Drag-and-Drop Spells/Items</a>`;
