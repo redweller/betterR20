@@ -3,8 +3,8 @@
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      0.5.27
-// @updateURL    https://github.com/TheGiddyLimit/5etoolsR20/raw/master/5etoolsR20.user.js
-// @downloadURL  https://github.com/TheGiddyLimit/5etoolsR20/raw/master/5etoolsR20.user.js
+// @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
+// @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan
 // @match        https://app.roll20.net/editor/
@@ -16,11 +16,11 @@
 
 var D20plus = function(version) {
 
-	var monsterdataurl = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/data/bestiary.json";
-	var monsterdataurlTob = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/data/bestiary-tob.json";
-	var spelldataurl = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/data/spells.json";
-	var spellmetaurl = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/data/spells-roll20.json";
-	var itemdataurl = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/data/items.json";
+	var monsterdataurl = "https://5etools.com/data/bestiary.json";
+	var monsterdataurlTob = "https://5etools.com/data/bestiary-tob.json";
+	var spelldataurl = "https://5etools.com/data/spells.json";
+	var spellmetaurl = "https://5etools.com/data/spells-roll20.json";
+	var itemdataurl = "https://5etools.com/data/items.json";
 
 	var d20plus = {
 		sheet: "ogl",
@@ -37,8 +37,8 @@ var D20plus = function(version) {
 	d20plus.scripts = [
 		{name: "xml2json", url: "https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.min.js"},
 		{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
-		{name: "5etoolsutils", url: "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/js/utils.js"},
-		{name: "5etoolsrender", url: "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/js/entryrender.js"}
+		{name: "5etoolsutils", url: "https://5etools.com/js/utils.js"},
+		{name: "5etoolsrender", url: "https://5etools.com/js/entryrender.js"}
 	];
 
 	// Inject external JS libraries
@@ -603,8 +603,8 @@ var D20plus = function(version) {
 							imgsrc: avatar,
 							width: 70 * tokensize,
 							height: 70 * tokensize,
-							bar2_value: data.ac.match(/^\d+/),		
-							bar3_value: character.hp,		
+							bar2_value: data.ac.match(/^\d+/),
+							bar3_value: character.hp,
 							bar3_max: character.hp,
 							light_hassight: true,
 							light_radius: lightradius,
@@ -617,7 +617,7 @@ var D20plus = function(version) {
 					try {
 						const type = Parser.monTypeToFullObj(data.type).asText;
 						const source = data.source;
-						const avatar = "https://TheGiddyLimit.github.io/img/" + source + "/" + name + ".png";
+						const avatar = "https://5etools.com/img/" + source + "/" + name + ".png";
 						character.size = data.size;
 						character.name = name;
 						character.senses = data.senses;
@@ -625,7 +625,7 @@ var D20plus = function(version) {
 						$.ajax({
 							url: avatar,
 							type: 'HEAD',
-							error: function() {getSetAvatarImage("https://TheGiddyLimit.github.io/img/blank.png");},
+							error: function() {getSetAvatarImage("https://5etools.com/img/blank.png");},
 							success: function() {getSetAvatarImage(avatar);}
 						});
 						var ac = data.ac.match(/^\d+/);
@@ -714,7 +714,7 @@ var D20plus = function(version) {
 						}
 						if (data.skill != null) {
 							const skills = data.skill;
-                            const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k]}).join(', ');
+							const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k]}).join(', ');
 							character.attribs.create({name: "npc_skills_flag", current: 1});
 							character.attribs.create({name: "npc_skills", current: skillsString});
 							var newRowId = d20plus.generateRowId();
@@ -1354,7 +1354,7 @@ var D20plus = function(version) {
 					const renderer = new EntryRenderer();
 					const renderStack = [];
 					const entryList = {type: "entries", entries: data.entries};
-					renderer.setBaseUrl("https://TheGiddyLimit.github.io/");
+					renderer.setBaseUrl("https://5etools.com/");
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
 					r20json.content = renderStack.join(" ");
 					notecontents += renderStack.join("");
@@ -1595,7 +1595,7 @@ var D20plus = function(version) {
 					const renderer = new EntryRenderer();
 					const renderStack = [];
 					const entryList = {type: "entries", entries: data.entries};
-					renderer.setBaseUrl("https://TheGiddyLimit.github.io/");
+					renderer.setBaseUrl("https://5etools.com/");
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
 					var textstring = renderStack.join("");
 					if (textstring) {
