@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.27
+// @version      0.5.29
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -11,16 +11,56 @@
 // @grant        unsafeWindow
 // @run-at       document-start
 // ==/UserScript==
+// TODO fix update/download URL once we have Jenkins operational
 
 /* eslint no-console: "off" */
 
 var D20plus = function(version) {
 
-	var monsterdataurl = "https://5etools.com/data/bestiary.json";
-	var monsterdataurlTob = "https://5etools.com/data/bestiary-tob.json";
-	var spelldataurl = "https://5etools.com/data/spells.json";
-	var spellmetaurl = "https://5etools.com/data/spells-roll20.json";
-	var itemdataurl = "https://5etools.com/data/items.json";
+	// var BASE_SITE_URL = "https://5etools.com/"; // FIXME use new URL where appropriate
+	var BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME use new URL where appropriate
+
+	var DATA_URL = BASE_SITE_URL+"data/";
+	var JS_URL = BASE_SITE_URL+"js/";
+	var IMG_URL = BASE_SITE_URL+"img/";
+
+	var spellDataDir = `${DATA_URL}spells/`;
+	// TODO this is the contents of "https://5etools.com/data/spells/index.json" -- should be loaded instead of redefined
+	var spellDataUrls = {
+		"PHB": 					"spells-phb.json",
+		"SCAG": 				"spells-scag.json",
+		"UAModernMagic": 		"spells-ua-mm.json",
+		"UAStarterSpells": 		"spells-ua-ss.json",
+		"UAThatOldBlackMagic": 	"spells-ua-tobm.json",
+		"XGE": 					"spells-xge.json",
+		"BoLS 3pp": 			"spells-3pp-bols.json"
+	};
+	var spellmetaurl = `${spellDataDir}roll20.json`;
+
+	var monsterDataDir = `${DATA_URL}bestiary/`;
+	// TODO this is the contents of "https://5etools.com/data/bestiary/index.json" -- should be loaded instead of redefined
+	var monsterDataUrls = {
+		"CoS":		"bestiary-cos.json",
+		"DMG":		"bestiary-dmg.json",
+		"LMoP":		"bestiary-lmop.json",
+		"MM":		"bestiary-mm.json",
+		"OotA":		"bestiary-oota.json",
+		"PSA":		"bestiary-ps-a.json",
+		"PSI":		"bestiary-ps-i.json",
+		"PSK":		"bestiary-ps-k.json",
+		"PSZ":		"bestiary-ps-z.json",
+		"PotA":		"bestiary-pota.json",
+		"SKT":		"bestiary-skt.json",
+		"TTP":		"bestiary-ttp.json",
+		"TftYP":	"bestiary-tftyp.json",
+		"ToA":		"bestiary-toa.json",
+		"ToD":		"bestiary-tod.json",
+		"VGM":		"bestiary-vgm.json",
+		"XGE":		"bestiary-xge.json",
+		"ToB 3pp":  "bestiary-3pp-tob.json"
+	}
+
+	var itemdataurl = `${DATA_URL}items.json`;
 
 	var d20plus = {
 		sheet: "ogl",
@@ -37,27 +77,58 @@ var D20plus = function(version) {
 	d20plus.scripts = [
 		{name: "xml2json", url: "https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.min.js"},
 		{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
-		{name: "5etoolsutils", url: "https://5etools.com/js/utils.js"},
-		{name: "5etoolsrender", url: "https://5etools.com/js/entryrender.js"}
+		{name: "5etoolsutils", url: `${JS_URL}utils.js`},
+		{name: "5etoolsrender", url: `${JS_URL}entryrender.js`}
 	];
 
 	// Inject external JS libraries
-	d20plus.addScripts = function() {
-		$.each(d20plus.scripts, function(i, v) {
+	d20plus.addScripts = function(onLoadFunction) {
+		d20plus.chainLoad(d20plus.scripts, 0, onLoadFunction);
+	};
+
+	d20plus.chainLoad = function (toLoads, index, onLoadFunction) {
+		const toLoad = toLoads[index];
+		// on loading the last item, run onLoadFunction
+		if (index === toLoads.length-1) {
 			$.ajax({
 				type: "GET",
-				url: v.url,
+				url: toLoad.url+d20plus.getAntiCacheSuffix(),
 				success: function(js) {
 					try {
 						window.eval(js);
-						d20plus.log(`> JS [${v.name}] Loaded`);
+						d20plus.log(`> JS [${toLoad.name}] Loaded`);
+						onLoadFunction();
 					} catch (e) {
-						d20plus.log(`> Error loading ${v.name}`);
+						d20plus.log(`> Error loading ${toLoad.name}`);
 					}
+				},
+				error: function() {
+					d20plus.log(`> Error loading ${toLoad.name}`);
 				}
 			});
-		});
+		} else {
+			$.ajax({
+				type: "GET",
+				url: toLoad.url+d20plus.getAntiCacheSuffix(),
+				success: function(js) {
+					try {
+						window.eval(js);
+						d20plus.log(`> JS [${toLoad.name}] Loaded`);
+						d20plus.chainLoad(toLoads, index+1, onLoadFunction)
+					} catch (e) {
+						d20plus.log(`> Error loading ${toLoad.name}`);
+					}
+				},
+				error: function() {
+					d20plus.log(`> Error loading ${toLoad.name}`);
+				}
+			});
+		}
 	};
+
+	d20plus.getAntiCacheSuffix = function() {
+		return "?" + (new Date).getTime();
+	}
 
 	// Window loaded
 	window.onload = function() {
@@ -82,7 +153,11 @@ var D20plus = function(version) {
 			return;
 		}
 		d20plus.log("> Add JS");
-		d20plus.addScripts();
+		d20plus.addScripts(d20plus.onScriptLoad);
+	};
+
+	// continue init once scripts load
+	d20plus.onScriptLoad = function() {
 		d20plus.log("> Add CSS");
 		_.each(d20plus.cssRules, function(r) {d20plus.addCSS(window.document.styleSheets[window.document.styleSheets.length - 1], r.s, r.r);});
 		d20plus.log("> Add HTML");
@@ -91,7 +166,8 @@ var D20plus = function(version) {
 		d20plus.log("> Bind Graphics");
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-	};
+		d20plus.log("> All systems operational");
+	}
 
 	// Bind Graphics Add on page
 	d20plus.bindGraphics = function(page) {
@@ -270,10 +346,13 @@ var D20plus = function(version) {
 		return result;
 	};
 
+	d20plus.formSrcUrl = function (dataDir, fileName) {
+		return dataDir + fileName;
+	}
+
 	// Inject HTML
 	d20plus.addHTML = function() {
 		$("#mysettings > .content").children("hr").first().before(d20plus.settingsHtml);
-		$("#mysettings > .content #button-monsters-select").change(function() { $("#import-monster-url").val(this.value); });
 		$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
 		$("#mysettings > .content a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
 		$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
@@ -282,11 +361,15 @@ var D20plus = function(version) {
 		d20plus.getInitTemplate();
 		d20.Campaign.initiativewindow.rebuildInitiativeList();
 		d20plus.hpAllowEdit();
-		d20.Campaign.initiativewindow.model.on("change:turnorder", function() {d20plus.updateDifficulty();});
+		d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
+			d20plus.updateDifficulty();
+		});
 		d20plus.updateDifficulty();
 		d20plus.addJournalCommands();
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-right: 0.5em;">Bind</button>`);
-		altBindButton.on("click", function(){d20plus.bindDropLocations();});
+		altBindButton.on("click", function () {
+			d20plus.bindDropLocations();
+		});
 		$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
 		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 		$("body").append(d20plus.importDialogHtml);
@@ -310,6 +393,27 @@ var D20plus = function(version) {
 		});
 		$("#floatingtoolbar > ul").append(d20plus.dmscreenButton);
 		$("#dmscreen-button").on(window.mousedowntype, function(){$dmsDialog.dialog($dmsDialog.dialog("isOpen") ? "close" : "open");});*/
+
+		populateDropdown("#button-spell-select", "#import-spell-url", spellDataDir, spellDataUrls, "PHB");
+		populateDropdown("#button-monsters-select", "#import-monster-url", monsterDataDir, monsterDataUrls, "MM");
+
+		function populateDropdown(dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel) {
+			const dropdown = $(dropdownId);
+			$.each(Object.keys(srcUrlObject), function (i, src) {
+				dropdown.append($('<option>', {
+					value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
+					text: Parser.sourceJsonToFullCompactPrefix(src)
+				}));
+			});
+			dropdown.append($('<option>', {
+				value: "",
+				text: "Custom"
+			}));
+			dropdown.val(d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]));
+			dropdown.change(function () {
+				$(inputFieldId).val(this.value);
+			});
+		}
 	};
 
 	d20plus.updateDifficulty = function() {
@@ -450,6 +554,10 @@ var D20plus = function(version) {
 		if (url !== null) d20plus.monsters.load(url);
 	};
 
+	d20plus.monsters.formMonsterUrl = function (fileName) {
+		return d20plus.formSrcUrl(monsterDataDir, fileName)
+	}
+
 	// Fetch monster data from XML url and import it
 	d20plus.monsters.load = function(url) {
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
@@ -482,6 +590,7 @@ var D20plus = function(version) {
 					});
 					var options = {valueNames: [ 'name' ]};
 					var importList = new List ("import-list", options);
+					importList.search($(`#import-list > .search`).val());
 					$("#import-options label").hide();
 					$("#import-overwrite").parent().show();
 					$("#delete-existing").parent().show();
@@ -603,8 +712,8 @@ var D20plus = function(version) {
 							imgsrc: avatar,
 							width: 70 * tokensize,
 							height: 70 * tokensize,
-							bar2_value: data.ac.match(/^\d+/),		
-							bar3_value: character.hp,		
+							bar2_value: data.ac.match(/^\d+/),
+							bar3_value: character.hp,
 							bar3_max: character.hp,
 							light_hassight: true,
 							light_radius: lightradius,
@@ -617,7 +726,7 @@ var D20plus = function(version) {
 					try {
 						const type = Parser.monTypeToFullObj(data.type).asText;
 						const source = data.source;
-						const avatar = "https://5etools.com/img/" + source + "/" + name + ".png";
+						const avatar = `${IMG_URL}${source}/${name}.png`;
 						character.size = data.size;
 						character.name = name;
 						character.senses = data.senses;
@@ -625,7 +734,7 @@ var D20plus = function(version) {
 						$.ajax({
 							url: avatar,
 							type: 'HEAD',
-							error: function() {getSetAvatarImage("https://5etools.com/img/blank.png");},
+							error: function() {getSetAvatarImage(`${IMG_URL}blank.png`);},
 							success: function() {getSetAvatarImage(avatar);}
 						});
 						var ac = data.ac.match(/^\d+/);
@@ -714,7 +823,7 @@ var D20plus = function(version) {
 						}
 						if (data.skill != null) {
 							const skills = data.skill;
-                            const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k]}).join(', ');
+							const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k]}).join(', ');
 							character.attribs.create({name: "npc_skills_flag", current: 1});
 							character.attribs.create({name: "npc_skills", current: skillsString});
 							var newRowId = d20plus.generateRowId();
@@ -1115,6 +1224,10 @@ var D20plus = function(version) {
 		};
 	};
 
+	d20plus.spells.formSpellUrl = function (fileName) {
+		return d20plus.formSrcUrl(spellDataDir, fileName)
+	}
+
 	// Import Spells button was clicked
 	d20plus.spells.button = function() {
 		var url = $("#import-spell-url").val();
@@ -1129,7 +1242,7 @@ var D20plus = function(version) {
 		if (datatype === "json") datatype = "text";
 
 		// if we're importing from 5etools, fetch spell metadata and merge it in
-		if (url === spelldataurl) {
+		if (Object.values(spellDataUrls).map(file => d20plus.spells.formSpellUrl(file)).includes(url)) {
 			$.ajax({
 				type: "GET",
 				url: spellmetaurl,
@@ -1189,7 +1302,7 @@ var D20plus = function(version) {
 				$("#import-list .list").html("");
 				$.each(spelldata.spell, function(i, v) {
 					try {
-						$("#import-list .list").append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${v.name}</span> <span class="source">- ${v.source}</span></label>`);
+						$("#import-list .list").append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${v.name}</span></label>`);
 					} catch (e) {
 						console.log("Error building list!", e);
 						d20plus.addImportError(v.name);
@@ -1197,6 +1310,7 @@ var D20plus = function(version) {
 				});
 				var options = {valueNames: [ 'name' ]};
 				var importList = new List ("import-list", options);
+				importList.search($(`#import-list > .search`).val());
 				$("#import-options label").hide();
 				$("#import-overwrite").parent().show();
 				$("#delete-existing").parent().show();
@@ -1234,7 +1348,7 @@ var D20plus = function(version) {
 	// Import individual spells
 	d20plus.spells.import = function(data, overwrite, deleteExisting) {
 		var level = Parser.spLevelToFull(data.level);
-		if (level !== "cantrip") level += " level";
+		if (level.toLowerCase() !== "cantrip") level += " level";
 		var fname = $("#organize-by-source").prop("checked") ? Parser.sourceJsonToFull(data.source) : level.trim().capFirstLetter();
 		var findex = 1;
 		var folder;
@@ -1252,8 +1366,7 @@ var D20plus = function(version) {
 		journalFolder = d20.Campaign.get("journalfolder");
 		journalFolderObj = JSON.parse(journalFolder);
 		spells = journalFolderObj.find(function(a) {return a.n && a.n === "Spells";});
-		var datas = data.source ? data.source : "PHB";
-		var name = data.name + " " + datas || "(Unknown Name)";
+		var name = data.name || "(Unknown Name)";
 		// check for duplicates
 		var dupe = false;
 		$.each(spells.i, function(i, v) {
@@ -1354,7 +1467,7 @@ var D20plus = function(version) {
 					const renderer = new EntryRenderer();
 					const renderStack = [];
 					const entryList = {type: "entries", entries: data.entries};
-					renderer.setBaseUrl("https://5etools.com/");
+					renderer.setBaseUrl(BASE_SITE_URL);
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
 					r20json.content = renderStack.join(" ");
 					notecontents += renderStack.join("");
@@ -1434,6 +1547,7 @@ var D20plus = function(version) {
 						valueNames: [ 'name' ]
 					};
 					var importList = new List ("import-list", options);
+					importList.search($(`#import-list > .search`).val());
 					$("#import-options label").hide();
 					$("#import-overwrite").parent().show();
 					$("#delete-existing").parent().show();
@@ -1595,7 +1709,7 @@ var D20plus = function(version) {
 					const renderer = new EntryRenderer();
 					const renderStack = [];
 					const entryList = {type: "entries", entries: data.entries};
-					renderer.setBaseUrl("https://5etools.com/");
+					renderer.setBaseUrl(BASE_SITE_URL);
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
 					var textstring = renderStack.join("");
 					if (textstring) {
@@ -1733,11 +1847,9 @@ var D20plus = function(version) {
 <p>
 <label for="import-monster-url">Monster Data URL:</label>
 <select id="button-monsters-select">
-	<option value="${monsterdataurl}">Default</option>
-	<option value="${monsterdataurlTob}">Tome of Beasts</option>
-	<option value="">Custom</option>
+	<!-- populate with JS-->
 </select>
-<input type="text" id="import-monster-url" value="${monsterdataurl}">
+<input type="text" id="import-monster-url" value="${d20plus.monsters.formMonsterUrl(monsterDataUrls.MM)}">
 <a class="btn" href="#" id="button-monsters-load">Import Monsters</a>
 </p>
 <h4>Item Importing</h4>
@@ -1749,7 +1861,10 @@ var D20plus = function(version) {
 <h4>Spell Importing</h4>
 <p>
 <label for="import-spell-url">Spell Data URL:</label>
-<input type="text" id="import-spell-url" value="${spelldataurl}">
+<select id="button-spell-select">
+	<!-- populate with JS-->
+</select>
+<input type="text" id="import-spell-url" value="${d20plus.spells.formSpellUrl(spellDataUrls.PHB)}">
 <a class="btn" href="#" id="button-spells-load">Import Spells</a>
 </p>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Prepare Drag-and-Drop Spells/Items</a>`;
