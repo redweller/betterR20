@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.31
+// @version      0.5.32
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1883,8 +1883,7 @@ var D20plus = function(version) {
 		}
 			
 		#initiativewindow ul li {
-			min-height: 15px; 
-			max-height: 15px;
+			min-height: 15px;
 		}
 			
 		#initiativewindow ul li span.initiative,
@@ -1898,7 +1897,7 @@ var D20plus = function(version) {
 			text-align: right;
 			float: right;
 			padding: 0 5px;
-			width: 10%;
+			width: 7%;
 			min-height: 20px;
 		}
 		
