@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.30
+// @version      0.5.31
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -359,6 +359,7 @@ var D20plus = function(version) {
 		$("#mysettings > .content a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
 		$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
 		$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+		$("#mysettings > .content a#toggle-init-style").on(window.mousedowntype, d20plus.toggleInitStyle);
 		$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
 		d20plus.getInitTemplate();
 		d20.Campaign.initiativewindow.rebuildInitiativeList();
@@ -1860,6 +1861,65 @@ var D20plus = function(version) {
 	<iframe src="//ftwinston.github.io/5edmscreen/mobile"></iframe>
 </div>`;
 
+	d20plus.miniInitStyle = `
+		#initiativewindow button.initmacrobutton {
+			padding: 1px 4px;
+		}
+		
+		#initiativewindow input {
+			font-size: 8px;
+		}
+		
+		#initiativewindow ul li span.name {
+			font-size: 13px; 
+			padding-top: 0;
+			padding-left: 4px;
+			margin-top: -3px;
+		}
+			
+		#initiativewindow ul li img {
+			min-height: 15px; 
+			max-height: 15px;
+		}
+			
+		#initiativewindow ul li {
+			min-height: 15px; 
+			max-height: 15px;
+		}
+			
+		#initiativewindow ul li span.initiative,
+		#initiativewindow ul li span.ac,
+		#initiativewindow ul li span.hp,
+		#initiativewindow ul li span.pp,
+		#initiativewindow ul li span.cr,
+		#initiativewindow ul li span.initmacro {
+			font-size: 12px;
+			font-weight: bold;
+			text-align: right;
+			float: right;
+			padding: 0 5px;
+			width: 10%;
+			min-height: 20px;
+		}
+		
+		#initiativewindow ul li .controls {
+			padding: 0 3px;
+		}
+	`;
+	d20plus.initStyleToggled = false;
+	d20plus.toggleInitStyle = function() {
+		const toggleButton = $(`#toggle-init-style`);
+		const customStyle = $(`#dynamicStyle`);
+		if (d20plus.initStyleToggled) {
+			toggleButton.text("Shrink Turn Order Text");
+			customStyle.html("");
+		} else {
+			toggleButton.text("Unshrink Turn Order Text");
+			customStyle.html(d20plus.miniInitStyle);
+		}
+		d20plus.initStyleToggled = !d20plus.initStyleToggled;
+	};
+
 	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute"></span>`;
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
@@ -1954,7 +2014,10 @@ var D20plus = function(version) {
 <p><a class="btn" href="#" id="button-spells-load">Import Spells</a><p/>
 <p><a class="btn" href="#" id="button-spells-load-all" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
 <div style="width: 1px; height: 5px;"/>
-<a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>`;
+<a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
+<div style="width: 1px; height: 5px;"/>
+<a class="btn" href="#" id="toggle-init-style" title="Helpful if you have a massive amount of creatures in the turn tracker">Shrink Turn Order Text</a>
+<style id="dynamicStyle"></style>`;
 
 	d20plus.cssRules = [
 		{
