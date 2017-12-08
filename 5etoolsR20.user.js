@@ -1234,12 +1234,20 @@ var D20plus = function(version) {
 	};
 
 	// Return Initiative Tracker template with formulas
+	d20plus.initErrorHandler = null;
 	d20plus.getInitTemplate = function() {
 		var cachedFunction = d20.Campaign.initiativewindow.rebuildInitiativeList;
+		const chachedTemplate = $("#tmpl_initiativecharacter").clone();
 		d20.Campaign.initiativewindow.rebuildInitiativeList = function() {
 			var html = d20plus.initiativeTemplate;
-			_.each(d20plus.formulas[d20plus.sheet], function(v, i) {html = html.replace("||" + i + "||", v);});
+			_.each(d20plus.formulas[d20plus.sheet], function(v, i) {
+				html = html.replace("||" + i + "||", v);
+			});
 			$("#tmpl_initiativecharacter").replaceWith(html);
+
+			// Hack to catch errors, part 1
+			const startTime = (new Date).getTime();
+
 			var results = cachedFunction.apply(this, []);
 			setTimeout(function() {
 				$(".initmacrobutton").unbind("click");
@@ -1256,6 +1264,21 @@ var D20plus = function(version) {
 					}
 				});
 			}, 100);
+
+			// Hack to catch errors, part 2
+			if (d20plus.initErrorHandler) {
+				window.removeEventListener("error", d20plus.initErrorHandler);
+			}
+			d20plus.initErrorHandler = function (event) {
+				// if we see an error within 150 msec of trying to override the initiative window...
+				if (((new Date).getTime() - startTime) < 150) {
+					d20plus.log(" > ERROR: failed to populate custom initiative tracker, restoring default...")
+					// restore the default functionality
+					$("#tmpl_initiativecharacter").replaceWith(chachedTemplate);
+					return cachedFunction();
+				}
+			};
+			window.addEventListener("error", d20plus.initErrorHandler);
 			return results;
 		};
 	};
