@@ -625,14 +625,17 @@ var D20plus = function(version) {
 				});
 				var options = {valueNames: [ 'name' ]};
 				var importList = new List ("import-list", options);
+				$(`#import-list > .search`).val("");
 				importList.search("");
 				$("#import-options label").hide();
 				$("#import-overwrite").parent().show();
 				$("#delete-existing").parent().show();
 				$("#organize-by-source").parent().show();
 				$("#d20plus-importlist").dialog("open");
-				$("#d20plus-importlist input#importlist-selectall").unbind("click");
-				$("#d20plus-importlist input#importlist-selectall").bind("click", function() {$("#import-list .list input").prop("checked", $(this).prop("checked"));});
+				const selectAllBox = $("#d20plus-importlist input#importlist-selectall");
+				selectAllBox.unbind("click");
+				selectAllBox.prop("checked", false);
+				selectAllBox.bind("click", function() {$("#import-list .list input").prop("checked", $(this).prop("checked"));});
 				$("#d20plus-importlist button").unbind("click");
 				$("#d20plus-importlist button#importstart").bind("click", function() {
 					$("#d20plus-importlist").dialog("close");
@@ -1360,6 +1363,7 @@ var D20plus = function(version) {
 				});
 				var options = {valueNames: [ 'name' ]};
 				var importList = new List ("import-list", options);
+				$(`#import-list > .search`).val("");
 				importList.search("");
 				$("#import-options label").hide();
 				$("#import-overwrite").parent().show();
@@ -1367,8 +1371,10 @@ var D20plus = function(version) {
 				$("#organize-by-source").parent().show();
 				$("#import-showplayers").parent().show();
 				$("#d20plus-importlist").dialog("open");
-				$("#d20plus-importlist input#importlist-selectall").unbind("click");
-				$("#d20plus-importlist input#importlist-selectall").bind("click", function() {
+				const selectAllBox = $("#d20plus-importlist input#importlist-selectall");
+				selectAllBox.unbind("click");
+				selectAllBox.prop("checked", false);
+				selectAllBox.bind("click", function() {
 					$("#import-list .list input").prop("checked", $(this).prop("checked"));
 				});
 				$("#d20plus-importlist button").unbind("click");
@@ -1598,6 +1604,7 @@ var D20plus = function(version) {
 						valueNames: [ 'name' ]
 					};
 					var importList = new List ("import-list", options);
+					$(`#import-list > .search`).val("");
 					importList.search("");
 					$("#import-options label").hide();
 					$("#import-overwrite").parent().show();
@@ -1605,8 +1612,10 @@ var D20plus = function(version) {
 					$("#organize-by-source").parent().show();
 					$("#import-showplayers").parent().show();
 					$("#d20plus-importlist").dialog("open");
-					$("#d20plus-importlist input#importlist-selectall").unbind("click");
-					$("#d20plus-importlist input#importlist-selectall").bind("click", function() {$("#import-list .list input").prop("checked", $(this).prop("checked"));});
+					const selectAllBox = $("#d20plus-importlist input#importlist-selectall");
+					selectAllBox.unbind("click");
+					selectAllBox.prop("checked", false);
+					selectAllBox.bind("click", function() {$("#import-list .list input").prop("checked", $(this).prop("checked"));});
 					$("#d20plus-importlist button").unbind("click");
 					$("#d20plus-importlist button#importstart").bind("click", function() {
 						$("#d20plus-importlist").dialog("close");
