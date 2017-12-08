@@ -625,7 +625,7 @@ var D20plus = function(version) {
 				});
 				var options = {valueNames: [ 'name' ]};
 				var importList = new List ("import-list", options);
-				importList.search($(`#import-list > .search`).val());
+				importList.search("");
 				$("#import-options label").hide();
 				$("#import-overwrite").parent().show();
 				$("#delete-existing").parent().show();
@@ -1360,7 +1360,7 @@ var D20plus = function(version) {
 				});
 				var options = {valueNames: [ 'name' ]};
 				var importList = new List ("import-list", options);
-				importList.search($(`#import-list > .search`).val());
+				importList.search("");
 				$("#import-options label").hide();
 				$("#import-overwrite").parent().show();
 				$("#delete-existing").parent().show();
@@ -1598,7 +1598,7 @@ var D20plus = function(version) {
 						valueNames: [ 'name' ]
 					};
 					var importList = new List ("import-list", options);
-					importList.search($(`#import-list > .search`).val());
+					importList.search("");
 					$("#import-options label").hide();
 					$("#import-overwrite").parent().show();
 					$("#delete-existing").parent().show();
