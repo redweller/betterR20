@@ -2,11 +2,11 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.32
+// @version      0.5.33
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau
 // @match        https://app.roll20.net/editor/
 // @grant        unsafeWindow
 // @run-at       document-start
@@ -23,6 +23,21 @@ var D20plus = function(version) {
 	var DATA_URL = BASE_SITE_URL+"data/";
 	var JS_URL = BASE_SITE_URL+"js/";
 	var IMG_URL = BASE_SITE_URL+"img/";
+
+	var CONFIG_HANDOUT = '5etools';
+
+	// build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
+	function SheetAttribute (name, ogl, shaped) {
+		this.name = name;
+		this.ogl = ogl;
+		this.shaped = shaped;
+	}
+	var NPC_SHEET_ATRIBS= {};
+	// these are all lowercased; any comparison should be lowercased
+	NPC_SHEET_ATRIBS["npc_hpbase"] = new SheetAttribute("Max HP", "npc_hpbase", "npc_hpbase")
+	NPC_SHEET_ATRIBS["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac")
+	NPC_SHEET_ATRIBS["passive"] = new SheetAttribute("Passive Perception", "passive", "passive")
+	NPC_SHEET_ATRIBS["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula")
 
 	var spellDataDir = `${DATA_URL}spells/`;
 	// TODO this is the contents of "https://5etools.com/data/spells/index.json" -- should be loaded instead of redefined
@@ -58,7 +73,7 @@ var D20plus = function(version) {
 		"VGM":		"bestiary-vgm.json",
 		"XGE":		"bestiary-xge.json",
 		"ToB 3pp":  "bestiary-3pp-tob.json"
-	}
+	};
 
 	var itemdataurl = `${DATA_URL}items.json`;
 
@@ -71,7 +86,8 @@ var D20plus = function(version) {
 		monsters: {},
 		spells: {},
 		items: {},
-		initiative: {}
+		initiative: {},
+		config: {}
 	};
 
 	d20plus.scripts = [
@@ -114,7 +130,7 @@ var D20plus = function(version) {
 					try {
 						window.eval(js);
 						d20plus.log(`> JS [${toLoad.name}] Loaded`);
-						d20plus.chainLoad(toLoads, index+1, onLoadFunction)
+						d20plus.chainLoad(toLoads, index+1, onLoadFunction);
 					} catch (e) {
 						d20plus.log(`> Error loading ${toLoad.name}`);
 					}
@@ -127,7 +143,114 @@ var D20plus = function(version) {
 	};
 
 	d20plus.getAntiCacheSuffix = function() {
-		return "?" + (new Date).getTime();
+		return "?" + (new Date()).getTime();
+	};
+
+	d20plus.loadConfig = function() {
+		function getConfigHandout() {
+			return d20.Campaign.handouts.models.find(function(handout) { return handout.attributes.name.toLowerCase() == CONFIG_HANDOUT;});
+		}
+
+		var configHandout = getConfigHandout();
+
+		if(!configHandout) {
+			d20plus.log("> No config found! Initialising new config...");
+			d20.Campaign.handouts.create({
+				name: CONFIG_HANDOUT
+			}, {
+				success: function(handout) {
+					notecontents = "The GM notes of this handout contain config options 5etools script options saved between sessions. If you want to wipe your saved settings, simply delete this handout. If you want to edit your settings, click the \"Edit Properties\" button in the <b>Settings</b> (cog) panel."
+
+					// default settings
+					// token settings mimic official content; other settings as vanilla as possible
+					gmnotes = `
+{
+	"token": {
+		"bar1": {
+			"name": "Bar 1",
+			"val": "npc_hpbase",
+			"_type": "_SHEET_ATTRIBUTE"
+		},
+		"bar1_max": {
+			"name": "Display Bar 1",
+			"val": true,
+			"_type": "boolean"
+		},
+		"bar2": {
+			"name": "Bar 2",
+			"val": "npc_ac",
+			"_type": "_SHEET_ATTRIBUTE"
+		},
+		"bar3": {
+			"name": "Bar 3",
+			"val": "passive",
+			"_type": "_SHEET_ATTRIBUTE"
+		},
+		"rollHP": {
+			"name": "Roll Token HP",
+			"val": false,
+			"_type": "boolean"
+		}
+	},
+	"interface": {
+		"minifyTracker": {
+			"name": "Shrink Initiative Tracker Text",
+			"val": false,
+			"_type": "boolean"
+		}
+	}
+}
+					`;
+
+					handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
+					handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+				}
+			});
+		}
+
+		configHandout = getConfigHandout();
+		if(configHandout) {
+			configHandout.view.render();
+			configHandout._getLatestBlob("gmnotes", function(gmnotes) {
+				var decoded = decodeURIComponent(gmnotes);
+
+				/* Legacy key:value version
+				gmnotes = decoded.split("<br>");
+				gmnotes.forEach(function(item, index) {
+					var option = item.split(":").map(function(o) {
+						return o.trim();
+					});
+					if (option[0] && option[1]) d20plus.config[option[0]] = option[1];
+				});
+				*/
+
+				d20plus.config = JSON.parse(decoded);
+
+				d20plus.log("> Config Loaded:");
+				d20plus.log(d20plus.config);
+			});
+		}
+	};
+
+	d20plus.getCfgKey = function (group, val) {
+		if (val === undefined || d20plus.config[group] === undefined) return undefined;
+		const gr = d20plus.config[group];
+		for (const key of Object.keys(d20plus.config[group])) {
+			if (gr[key] !== undefined && gr[key].val === val) {
+				return key;
+			}
+		}
+		return undefined;
+	}
+
+	d20plus.getCfgVal = function (group, key) {
+		if (d20plus.config[group] === undefined) return undefined;
+		if (d20plus.config[group][key] === undefined) return undefined;
+		if (d20plus.config[group][key].val === undefined) return undefined;
+		if (d20plus.config[group][key]._type === "_SHEET_ATTRIBUTE") {
+			return NPC_SHEET_ATRIBS[d20plus.config[group][key].val][d20plus.sheet];
+		}
+		return d20plus.config[group][key].val;
 	}
 
 	// Window loaded
@@ -144,6 +267,8 @@ var D20plus = function(version) {
 	// Page fully loaded and visible
 	d20plus.Init = function() {
 		d20plus.log("> Init (v" + d20plus.version + ")");
+		d20plus.log("> Reading Config...");
+		d20plus.loadConfig();
 		d20plus.bindDropLocations();
 		// Firebase will deny changes if we're not GM. Better to fail gracefully.
 		if (window.is_gm) {
@@ -167,30 +292,50 @@ var D20plus = function(version) {
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 		d20plus.log("> All systems operational");
-	}
+	};
 
 	// Bind Graphics Add on page
 	d20plus.bindGraphics = function(page) {
 		try {
-			if (page.get("archived") == false) {
+			if (page.get("archived") === false) {
 				page.thegraphics.on("add", function(e) {
 					var character = e.character;
 					if (character) {
 						var npc = character.attribs.find(function(a) {return a.get("name").toLowerCase() == "npc";});
 						var isNPC = npc ? parseInt(npc.get("current")) : 0;
 						if (isNPC) {
-							var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == "npc_hpformula";});
-							if (hpf) {
-								var hpformula = hpf.get("current");
-								if (hpformula) {
-									d20plus.randomRoll(hpformula, function(result) {
-										e.attributes.bar3_value = result.total;
-										e.attributes.bar3_max = result.total;
-										d20plus.log("> Rolled HP for [" + character.get("name") + "]");
-									}, function(error) {
-										d20plus.log("> Error Rolling HP Dice");
-										console.log(error);
-									});
+							// Set bars if configured to do so
+							var barsList = ["bar1", "bar2", "bar3"];
+							$.each(barsList, (i, barName) => {
+								const confVal = d20plus.getCfgVal("token", barName)
+								if (confVal) {
+									const charAttr = character.attribs.find(a => a.get("name").toLowerCase() == confVal);
+									if (charAttr) {
+										e.attributes[barName + "_value"] = charAttr.get("current");
+										if (d20plus.getCfgVal("token", barName + "_max")) {
+											e.attributes[barName + "_max"] = charAttr.get("current");
+										}
+									}
+								}
+							})
+
+							// Roll HP
+							debugger
+							if (d20plus.getCfgVal("token", "rollHP") && d20plus.getCfgKey("token", "npc_hpbase")) {
+								var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == NPC_SHEET_ATRIBS["npc_hpformula"][d20plus.sheet];});
+								var barName = d20plus.getCfgKey("token", "npc_hpbase");
+								if (hpf) {
+									var hpformula = hpf.get("current");
+									if (hpformula) {
+										d20plus.randomRoll(hpformula, function(result) {
+											e.attributes[barName + "_value"] = result.total;
+											e.attributes[barName + "_max"] = result.total;
+											d20plus.log("> Rolled HP for [" + character.get("name") + "]");
+										}, function(error) {
+											d20plus.log("> Error Rolling HP Dice");
+											console.log(error);
+										});
+									}
 								}
 							}
 						}
@@ -348,7 +493,7 @@ var D20plus = function(version) {
 
 	d20plus.formSrcUrl = function (dataDir, fileName) {
 		return dataDir + fileName;
-	}
+	};
 
 	// Inject HTML
 	d20plus.addHTML = function() {
@@ -559,20 +704,20 @@ var D20plus = function(version) {
 
 	// Import All Spells button was clicked
 	d20plus.monsters.buttonAll = function() {
-		const toLoad = Object.keys(monsterDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]))
+		const toLoad = Object.keys(monsterDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
 		d20plus.monsters.load(toLoad, true);
 	};
 
 	d20plus.monsters.formMonsterUrl = function (fileName) {
-		return d20plus.formSrcUrl(monsterDataDir, fileName)
-	}
+		return d20plus.formSrcUrl(monsterDataDir, fileName);
+	};
 
 	// Fetch monster data from XML url and import it
 	d20plus.monsters.load = function(urls) {
 		if (urls.length === 0) {
 			d20plus.log("> ERROR: no URLs!");
 			return;
-		};
+		}
 
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 		var x2js = new X2JS();
@@ -591,12 +736,12 @@ var D20plus = function(version) {
 					loaded++;
 					allData.push(data);
 					if (loaded >= urls.length) {
-						handleSuccess(allData)
+						handleSuccess(allData);
 					}
 				},
 				error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
 			});
-		})
+		});
 
 		d20plus.timeout = 500;
 
@@ -748,15 +893,13 @@ var D20plus = function(version) {
 							imgsrc: avatar,
 							width: 70 * tokensize,
 							height: 70 * tokensize,
-							bar2_value: data.ac.match(/^\d+/),
-							bar3_value: character.hp,
-							bar3_max: character.hp,
 							light_hassight: true,
 							light_radius: lightradius,
 							light_dimradius: lightmin
 						};
+
 						character.updateBlobs({ avatar: avatar, defaulttoken: JSON.stringify(defaulttoken) });
-						character.save({defaulttoken: (new Date).getTime()});
+						character.save({defaulttoken: (new Date()).getTime()});
 					}
 					/* OGL Sheet */
 					try {
@@ -859,7 +1002,7 @@ var D20plus = function(version) {
 						}
 						if (data.skill != null) {
 							const skills = data.skill;
-							const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k]}).join(', ');
+							const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k];}).join(', ');
 							character.attribs.create({name: "npc_skills_flag", current: 1});
 							character.attribs.create({name: "npc_skills", current: skillsString});
 							var newRowId = d20plus.generateRowId();
@@ -931,7 +1074,7 @@ var D20plus = function(version) {
 									var attackrange = "";
 									var rangetype = "";
 									if (attacktype.indexOf("Melee") > -1) {
-										attackrange = (actiontext.match(/reach (.*?),/) || ["", ""])[1]
+										attackrange = (actiontext.match(/reach (.*?),/) || ["", ""])[1];
 										rangetype = "Reach";
 									} else {
 										attackrange = (actiontext.match(/range (.*?),/) || ["", ""])[1];
@@ -1273,7 +1416,7 @@ var D20plus = function(version) {
 			d20plus.initErrorHandler = function (event) {
 				// if we see an error within 150 msec of trying to override the initiative window...
 				if (((new Date).getTime() - startTime) < 150) {
-					d20plus.log(" > ERROR: failed to populate custom initiative tracker, restoring default...")
+					d20plus.log(" > ERROR: failed to populate custom initiative tracker, restoring default...");
 					// restore the default functionality
 					$("#tmpl_initiativecharacter").replaceWith(chachedTemplate);
 					return cachedFunction();
@@ -1285,8 +1428,8 @@ var D20plus = function(version) {
 	};
 
 	d20plus.spells.formSpellUrl = function (fileName) {
-		return d20plus.formSrcUrl(spellDataDir, fileName)
-	}
+		return d20plus.formSrcUrl(spellDataDir, fileName);
+	};
 
 	// Import Spells button was clicked
 	d20plus.spells.button = function() {
@@ -1296,7 +1439,7 @@ var D20plus = function(version) {
 
 	// Import All Spells button was clicked
 	d20plus.spells.buttonAll = function() {
-		const toLoad = Object.keys(spellDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]))
+		const toLoad = Object.keys(spellDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
 		d20plus.spells.load(toLoad, true);
 	};
 
@@ -1320,7 +1463,7 @@ var D20plus = function(version) {
 				type: "GET",
 				url: spellmetaurl,
 				dataType: datatype,
-				success: function(metaData) { chainLoad(JSON.parse(metaData)) },
+				success: function(metaData) { chainLoad(JSON.parse(metaData));},
 				error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
 			});
 		} else {
@@ -1337,12 +1480,12 @@ var D20plus = function(version) {
 						loaded++;
 						allData.push(data);
 						if (loaded >= urls.length) {
-							handleSuccess(allData, metadata)
+							handleSuccess(allData, metadata);
 						}
 					},
 					error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
 				});
-			})
+			});
 		}
 
 		d20plus.timeout = 500;
@@ -1771,9 +1914,9 @@ var D20plus = function(version) {
 					var attunementstring = "";
 					if (reqAttune) {
 						if (reqAttune === "YES") {
-							attunementstring = " (Requires Attunement)"
+							attunementstring = " (Requires Attunement)";
 						} else if (reqAttune === "OPTIONAL") {
-							attunementstring = " (Attunement Optional)"
+							attunementstring = " (Attunement Optional)";
 						} else {
 							reqAttune = " (Requires Attunement "+reqAttune+")";
 						}
@@ -1846,7 +1989,7 @@ var D20plus = function(version) {
 		if (property === "2H") return "two-handed";
 		if (property === "V") return "versatile";
 		return "n/a";
-	}
+	};
 
 	String.prototype.capFirstLetter = function() {
 		return this.replace(/\w\S*/g, function(w) {return w.charAt(0).toUpperCase() + w.substr(1).toLowerCase();});
@@ -1865,27 +2008,27 @@ var D20plus = function(version) {
 		#initiativewindow button.initmacrobutton {
 			padding: 1px 4px;
 		}
-		
+
 		#initiativewindow input {
 			font-size: 8px;
 		}
-		
+
 		#initiativewindow ul li span.name {
-			font-size: 13px; 
+			font-size: 13px;
 			padding-top: 0;
 			padding-left: 4px;
 			margin-top: -3px;
 		}
-			
+
 		#initiativewindow ul li img {
-			min-height: 15px; 
+			min-height: 15px;
 			max-height: 15px;
 		}
-			
+
 		#initiativewindow ul li {
 			min-height: 15px;
 		}
-			
+
 		#initiativewindow ul li span.initiative,
 		#initiativewindow ul li span.ac,
 		#initiativewindow ul li span.hp,
@@ -1900,7 +2043,7 @@ var D20plus = function(version) {
 			width: 7%;
 			min-height: 20px;
 		}
-		
+
 		#initiativewindow ul li .controls {
 			padding: 0 3px;
 		}
@@ -1964,7 +2107,7 @@ var D20plus = function(version) {
 	<button type="button" id="importstart" alt="Load" title="Load Monsters" class="btn" role="button" aria-disabled="false">
 	<span>Load</span>
 	</button>
-</div>`
+</div>`;
 
 	d20plus.importDialogHtml = `<div id="d20plus-import" title="Importing...">
 	<p>
