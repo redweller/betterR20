@@ -34,10 +34,49 @@ var D20plus = function(version) {
 	}
 	var NPC_SHEET_ATRIBS= {};
 	// these are all lowercased; any comparison should be lowercased
-	NPC_SHEET_ATRIBS["npc_hpbase"] = new SheetAttribute("Max HP", "npc_hpbase", "npc_hpbase")
-	NPC_SHEET_ATRIBS["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac")
-	NPC_SHEET_ATRIBS["passive"] = new SheetAttribute("Passive Perception", "passive", "passive")
-	NPC_SHEET_ATRIBS["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula")
+	NPC_SHEET_ATRIBS["npc_hpbase"] = new SheetAttribute("Max HP", "npc_hpbase", "npc_hpbase");
+	NPC_SHEET_ATRIBS["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
+	NPC_SHEET_ATRIBS["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
+	NPC_SHEET_ATRIBS["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
+
+	var CONFIG_OPTIONS = {
+		"token": {
+			"_name": "Tokens",
+			"bar1": {
+				"name": "Bar 1",
+				"default": "npc_hpbase",
+				"_type": "_SHEET_ATTRIBUTE"
+			},
+			"bar1_max": {
+				"name": "Display Bar 1",
+				"default": true,
+				"_type": "boolean"
+			},
+			"bar2": {
+				"name": "Bar 2",
+				"default": "npc_ac",
+				"_type": "_SHEET_ATTRIBUTE"
+			},
+			"bar3": {
+				"name": "Bar 3",
+				"default": "passive",
+				"_type": "_SHEET_ATTRIBUTE"
+			},
+			"rollHP": {
+				"name": "Roll Token HP",
+				"default": false,
+				"_type": "boolean"
+			}
+		},
+		"interface": {
+			"_name": "Interface",
+			"minifyTracker": {
+				"name": "Shrink Initiative Tracker Text",
+				"default": false,
+				"_type": "boolean"
+			}
+		}
+	};
 
 	var spellDataDir = `${DATA_URL}spells/`;
 	// TODO this is the contents of "https://5etools.com/data/spells/index.json" -- should be loaded instead of redefined
@@ -146,112 +185,261 @@ var D20plus = function(version) {
 		return "?" + (new Date()).getTime();
 	};
 
+	d20plus.makeDefaultConfig = function (nextFn) {
+		d20.Campaign.handouts.create({
+			name: CONFIG_HANDOUT
+		}, {
+			success: function(handout) {
+				notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel."
+
+				// default settings
+				// token settings mimic official content; other settings as vanilla as possible
+				const gmnotes = JSON.stringify(d20plus.getDefaultConfig());
+
+				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
+				handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+
+				if (nextFn) nextFn();
+			}
+		});
+	};
+
+	d20plus.getConfigHandout = function () {
+		return d20.Campaign.handouts.models.find(function(handout) { return handout.attributes.name.toLowerCase() == CONFIG_HANDOUT;});
+	};
+
+	d20plus.loadConfigFailed = false;
 	d20plus.loadConfig = function() {
-		function getConfigHandout() {
-			return d20.Campaign.handouts.models.find(function(handout) { return handout.attributes.name.toLowerCase() == CONFIG_HANDOUT;});
-		}
+		var configHandout = d20plus.getConfigHandout();
 
-		var configHandout = getConfigHandout();
-
-		if(!configHandout) {
+		if (!configHandout) {
 			d20plus.log("> No config found! Initialising new config...");
-			d20.Campaign.handouts.create({
-				name: CONFIG_HANDOUT
-			}, {
-				success: function(handout) {
-					notecontents = "The GM notes of this handout contain config options 5etools script options saved between sessions. If you want to wipe your saved settings, simply delete this handout. If you want to edit your settings, click the \"Edit Properties\" button in the <b>Settings</b> (cog) panel."
-
-					// default settings
-					// token settings mimic official content; other settings as vanilla as possible
-					gmnotes = `
-{
-	"token": {
-		"bar1": {
-			"name": "Bar 1",
-			"val": "npc_hpbase",
-			"_type": "_SHEET_ATTRIBUTE"
-		},
-		"bar1_max": {
-			"name": "Display Bar 1",
-			"val": true,
-			"_type": "boolean"
-		},
-		"bar2": {
-			"name": "Bar 2",
-			"val": "npc_ac",
-			"_type": "_SHEET_ATTRIBUTE"
-		},
-		"bar3": {
-			"name": "Bar 3",
-			"val": "passive",
-			"_type": "_SHEET_ATTRIBUTE"
-		},
-		"rollHP": {
-			"name": "Roll Token HP",
-			"val": false,
-			"_type": "boolean"
-		}
-	},
-	"interface": {
-		"minifyTracker": {
-			"name": "Shrink Initiative Tracker Text",
-			"val": false,
-			"_type": "boolean"
-		}
-	}
-}
-					`;
-
-					handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-					handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
-				}
-			});
+			d20plus.makeDefaultConfig(doLoad);
+		} else {
+			doLoad();
 		}
 
-		configHandout = getConfigHandout();
-		if(configHandout) {
-			configHandout.view.render();
-			configHandout._getLatestBlob("gmnotes", function(gmnotes) {
-				var decoded = decodeURIComponent(gmnotes);
+		function doLoad() {
+			configHandout = d20plus.getConfigHandout();
+			if (configHandout) {
+				configHandout.view.render();
+				configHandout._getLatestBlob("gmnotes", function(gmnotes) {
+					var decoded = decodeURIComponent(gmnotes);
 
-				/* Legacy key:value version
-				gmnotes = decoded.split("<br>");
-				gmnotes.forEach(function(item, index) {
-					var option = item.split(":").map(function(o) {
-						return o.trim();
-					});
-					if (option[0] && option[1]) d20plus.config[option[0]] = option[1];
+					try {
+						d20plus.config = JSON.parse(decoded);
+
+						d20plus.log("> Config Loaded:");
+						d20plus.log(d20plus.config);
+					} catch (e) {
+						if (!d20plus.loadConfigFailed) {
+							// prevent infinite loops
+							d20plus.loadConfigFailed = true;
+
+							d20plus.log("> Corrupted config! Rebuilding...:");
+							gmnotes = JSON.stringify(d20plus.getDefaultConfig());
+
+							configHandout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
+							configHandout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+
+							d20plus.loadConfig();
+						}
+					}
 				});
-				*/
-
-				d20plus.config = JSON.parse(decoded);
-
-				d20plus.log("> Config Loaded:");
-				d20plus.log(d20plus.config);
-			});
+			}
 		}
+	};
+
+	d20plus.handleConfigChange = function () {
+		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"))
 	};
 
 	d20plus.getCfgKey = function (group, val) {
 		if (val === undefined || d20plus.config[group] === undefined) return undefined;
 		const gr = d20plus.config[group];
 		for (const key of Object.keys(d20plus.config[group])) {
-			if (gr[key] !== undefined && gr[key].val === val) {
+			if (gr[key] !== undefined && gr[key] === val) {
 				return key;
 			}
 		}
 		return undefined;
-	}
+	};
 
 	d20plus.getCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
 		if (d20plus.config[group][key] === undefined) return undefined;
-		if (d20plus.config[group][key].val === undefined) return undefined;
-		if (d20plus.config[group][key]._type === "_SHEET_ATTRIBUTE") {
-			return NPC_SHEET_ATRIBS[d20plus.config[group][key].val][d20plus.sheet];
+		if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
+			return NPC_SHEET_ATRIBS[d20plus.config[group][key]][d20plus.sheet];
 		}
-		return d20plus.config[group][key].val;
+		return d20plus.config[group][key];
+	};
+
+	d20plus.setCfgVal = function(group, key, val) {
+		if (d20plus.config[group] === undefined) d20plus.config[group] = {};
+		d20plus.config[group][key] = val;
 	}
+
+	d20plus.getDefaultConfig = function() {
+		const outCpy = {}
+		$.each(CONFIG_OPTIONS, (sectK, sect) => {
+			outCpy[sectK] = outCpy[sectK] || {};
+			$.each(sect, (k, data) => {
+				if (!k.startsWith("_")) {
+					outCpy[sectK][k] = data.default;
+				}
+			});
+		});
+		return outCpy;
+	};
+
+	// TODO this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
+	d20plus.makeTabPane = function ($addTo, headers, content) {
+		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!")
+
+		if ($addTo.attr("hastabs") !== "YES") {
+			const $tabBar = $(`<ul class="nav nav-tabs"/>`);
+
+			const tabList = [];
+			const paneList = [];
+			const $tabPanes = $(`<div class="tabcontent"/>`);
+
+			$.each(content, (i, e) => {
+				const toAdd = $(`<div class="plustab${i} tab-pane" ${i === 0 ? "" : `style="display: none"`}/>`);
+				toAdd.append(e);
+				paneList[i] = toAdd;
+				$tabPanes.append(toAdd);
+			});
+
+			$.each(headers, (i, e) => {
+				const toAdd = $(`<li ${i === 0 ? `class="active"` : ""}><a data-tab="plustab${i}" href="#">${e}</a></li>`).on("click", () => {
+					paneList.forEach((p, i2) => {
+						if (i2 === i) {
+							tabList[i2].addClass("active");
+							paneList[i2].show();
+						} else {
+							tabList[i2].removeClass("active");
+							paneList[i2].hide();
+						}
+					});
+				});
+				tabList[i] = (toAdd);
+				$tabBar.append(toAdd);
+			});
+
+			$addTo
+				.append($tabBar)
+				.append($tabPanes);
+
+			$addTo.attr("hastabs", "YES");
+		}
+	}
+
+	d20plus.openConfigEditor = function () {
+		const cEdit = $("#d20plus-configeditor");
+		cEdit.dialog("open");
+
+		if (cEdit.attr("hastabs") !== "YES") {
+			cEdit.attr("hastabs", "YES");
+			const appendTo = $(`<div/>`);
+			cEdit.prepend(appendTo);
+
+			const configFields = {};
+
+			const sortedKeys = Object.keys(CONFIG_OPTIONS).sort();
+			const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
+			const contentList = sortedKeys.map(k => makeTab(k));
+
+			function makeTab (cfgK) {
+				const cfgGroup = CONFIG_OPTIONS[cfgK];
+				configFields[cfgK] = {};
+
+				const content = $(`
+				<div class="config-table-wrapper">
+					<table class="config-table">
+						<thead><tr><th>Property</th><th>Value</th></tr></thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			`);
+				const tbody = content.find(`tbody`);
+
+				const sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_")).sort(); // sorting alphabetically on key, instead of on display name (allows e.g. "Bar 1" and "Display Bar 1" to be kept together)
+				sortedTabKeys.forEach(grpK => {
+					const prop = cfgGroup[grpK];
+
+					const toAdd = $(`<tr><td>${prop.name}</td></tr>`)
+
+					// Each config `_type` should have a case here. TODO clean this up - no need for the "getter" stuff probably, just bake a function and store that instead
+					switch (prop._type) {
+						case "boolean": {
+							const field = $(`<input type="checkbox" ${d20plus.getCfgVal(cfgK, grpK) ? `checked` : ""}>`);
+							field.data("getter", () => {
+								return field.prop("checked")
+							});
+							configFields[cfgK][grpK] = field;
+
+							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
+						case "_SHEET_ATTRIBUTE": {
+							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATRIBS).sort((at1, at2) => ascSort(NPC_SHEET_ATRIBS[at1].name, NPC_SHEET_ATRIBS[at2].name));
+							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATRIBS[npcK].name}</option>`)}</select>`)
+							const cur = d20plus.getCfgVal(cfgK, grpK);
+							if (cur !== undefined) {
+								field.val(cur);
+							}
+							field.data("getter", () => {
+								return field.val()
+							})
+							configFields[cfgK][grpK] = field;
+
+							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
+
+					}
+					tbody.append(toAdd);
+				})
+
+				return content;
+			}
+
+			d20plus.makeTabPane(
+				appendTo,
+				tabList,
+				contentList
+			)
+
+			const saveButton = $(`#configsave`);
+			saveButton.unbind("click");
+			$(`#configsave`).bind("click", () => {
+				let handout = d20plus.getConfigHandout();
+				if (!handout) {
+					d20plus.makeDefaultConfig(doSave);
+				} else {
+					doSave();
+				}
+
+				function doSave () {
+					$.each(configFields, (cfgK, grp) => {
+						$.each(grp, (grpK, grpVField) => {
+							d20plus.setCfgVal(cfgK, grpK, grpVField.data("getter")());
+						})
+					})
+
+					const gmnotes = JSON.stringify(d20plus.config);
+					handout.updateBlobs({gmnotes: gmnotes});
+					handout.save({notes: (new Date).getTime()});
+
+					d20plus.log(" > Saved config")
+
+					d20plus.handleConfigChange();
+				}
+			});
+		}
+	};
 
 	// Window loaded
 	window.onload = function() {
@@ -291,6 +479,8 @@ var D20plus = function(version) {
 		d20plus.log("> Bind Graphics");
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
+		d20plus.log("> Applying config");
+		d20plus.handleConfigChange();
 		d20plus.log("> All systems operational");
 	};
 
@@ -504,7 +694,7 @@ var D20plus = function(version) {
 		$("#mysettings > .content a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
 		$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
 		$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
-		$("#mysettings > .content a#toggle-init-style").on(window.mousedowntype, d20plus.toggleInitStyle);
+		$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
 		$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
 		d20plus.getInitTemplate();
 		d20.Campaign.initiativewindow.rebuildInitiativeList();
@@ -522,6 +712,7 @@ var D20plus = function(version) {
 		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 		$("body").append(d20plus.importDialogHtml);
 		$("body").append(d20plus.importListHTML);
+		$("body").append(d20plus.configEditorHTML);
 		$("#d20plus-import").dialog({
 			autoOpen: false,
 			resizable: false
@@ -529,6 +720,12 @@ var D20plus = function(version) {
 		$("#d20plus-importlist").dialog({
 			autoOpen: false,
 			resizable: true
+		});
+		$("#d20plus-configeditor").dialog({
+			autoOpen: false,
+			resizable: true,
+			width: 800,
+			height: 400,
 		});
 		/* Removed until I can figure out a way to show the new version without the certificate error
 		$("body").append(d20plus.dmscreenHtml);
@@ -2048,18 +2245,14 @@ var D20plus = function(version) {
 			padding: 0 3px;
 		}
 	`;
-	d20plus.initStyleToggled = false;
-	d20plus.toggleInitStyle = function() {
-		const toggleButton = $(`#toggle-init-style`);
+
+	d20plus.setInitiativeShrink = function(doShrink) {
 		const customStyle = $(`#dynamicStyle`);
-		if (d20plus.initStyleToggled) {
-			toggleButton.text("Shrink Turn Order Text");
-			customStyle.html("");
-		} else {
-			toggleButton.text("Unshrink Turn Order Text");
+		if (doShrink) {
 			customStyle.html(d20plus.miniInitStyle);
+		} else {
+			customStyle.html("");
 		}
-		d20plus.initStyleToggled = !d20plus.initStyleToggled;
 	};
 
 	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute"></span>`;
@@ -2092,6 +2285,16 @@ var D20plus = function(version) {
 			"macro": "shaped_statblock"
 		}
 	};
+
+	d20plus.configEditorHTML = `
+<div id="d20plus-configeditor" title="Config Editor">
+	<p>
+		<!-- populate with JS -->
+	</p>
+	<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
+		<span>Save</span>
+	</button>
+</div>`;
 
 	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import...">
 	<p><input type="checkbox" title="Select all" id="importlist-selectall"></p>
@@ -2158,7 +2361,7 @@ var D20plus = function(version) {
 <div style="width: 1px; height: 5px;"/>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
 <div style="width: 1px; height: 5px;"/>
-<a class="btn" href="#" id="toggle-init-style" title="Helpful if you have a massive amount of creatures in the turn tracker">Shrink Turn Order Text</a>
+<a class="btn" href="#" id="button-edit-config">Edit Config</a>
 <style id="dynamicStyle"></style>`;
 
 	d20plus.cssRules = [
@@ -2205,6 +2408,22 @@ var D20plus = function(version) {
 		{
 			s: ".bind-drop-locations:active",
 			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);"
+		},
+		{
+			s: "div.config-table-wrapper",
+			r: "min-height: 200px; width: 100%; height: 100%; max-height: 600px; overflow-y: auto;"
+		},
+		{
+			s: "table.config-table",
+			r: "width: 100%; table-layout: fixed;"
+		},
+		{
+			s: "table.config-table tbody tr:nth-child(odd)",
+			r: "background-color: #f8f8f8;"
+		},
+		{
+			s: "table.config-table tbody td > *",
+			r: "vertical-align: middle;"
 		}
 	];
 
