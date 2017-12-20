@@ -38,6 +38,8 @@ var D20plus = function(version) {
 	NPC_SHEET_ATRIBS["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
 	NPC_SHEET_ATRIBS["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
 	NPC_SHEET_ATRIBS["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
+	NPC_SHEET_ATRIBS["npc_speed"] = new SheetAttribute("Speed", "npc_speed", "npc_speed");
+	NPC_SHEET_ATRIBS["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_DC");
 
 	var CONFIG_OPTIONS = {
 		"token": {
@@ -57,10 +59,20 @@ var D20plus = function(version) {
 				"default": "npc_ac",
 				"_type": "_SHEET_ATTRIBUTE"
 			},
+			"bar2_max": {
+				"name": "Display Bar 2",
+				"default": false,
+				"_type": "boolean"
+			},
 			"bar3": {
 				"name": "Bar 3",
 				"default": "passive",
 				"_type": "_SHEET_ATTRIBUTE"
+			},
+			"bar3_max": {
+				"name": "Display Bar 3",
+				"default": false,
+				"_type": "boolean"
 			},
 			"rollHP": {
 				"name": "Roll Token HP",
@@ -103,6 +115,7 @@ var D20plus = function(version) {
 		"PSI":		"bestiary-ps-i.json",
 		"PSK":		"bestiary-ps-k.json",
 		"PSZ":		"bestiary-ps-z.json",
+		"PSX":		"bestiary-ps-x.json",
 		"PotA":		"bestiary-pota.json",
 		"SKT":		"bestiary-skt.json",
 		"TTP":		"bestiary-ttp.json",
@@ -292,7 +305,7 @@ var D20plus = function(version) {
 		return outCpy;
 	};
 
-	// TODO this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
+	// FIXME this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
 	d20plus.makeTabPane = function ($addTo, headers, content) {
 		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!")
 
@@ -354,13 +367,13 @@ var D20plus = function(version) {
 				configFields[cfgK] = {};
 
 				const content = $(`
-				<div class="config-table-wrapper">
-					<table class="config-table">
-						<thead><tr><th>Property</th><th>Value</th></tr></thead>
-						<tbody></tbody>
-					</table>
-				</div>
-			`);
+					<div class="config-table-wrapper">
+						<table class="config-table">
+							<thead><tr><th>Property</th><th>Value</th></tr></thead>
+							<tbody></tbody>
+						</table>
+					</div>
+				`);
 				const tbody = content.find(`tbody`);
 
 				const sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_")).sort(); // sorting alphabetically on key, instead of on display name (allows e.g. "Bar 1" and "Display Bar 1" to be kept together)
@@ -369,14 +382,14 @@ var D20plus = function(version) {
 
 					const toAdd = $(`<tr><td>${prop.name}</td></tr>`)
 
-					// Each config `_type` should have a case here. TODO clean this up - no need for the "getter" stuff probably, just bake a function and store that instead
+					// Each config `_type` should have a case here. Each case should add a function to the map [configFields:[cfgK:grpK]]. These functions should return the value of the input.
 					switch (prop._type) {
 						case "boolean": {
 							const field = $(`<input type="checkbox" ${d20plus.getCfgVal(cfgK, grpK) ? `checked` : ""}>`);
-							field.data("getter", () => {
+
+							configFields[cfgK][grpK] = () => {
 								return field.prop("checked")
-							});
-							configFields[cfgK][grpK] = field;
+							};
 
 							const td = $(`<td/>`).append(field);
 							toAdd.append(td);
@@ -389,10 +402,10 @@ var D20plus = function(version) {
 							if (cur !== undefined) {
 								field.val(cur);
 							}
-							field.data("getter", () => {
+
+							configFields[cfgK][grpK] = () => {
 								return field.val()
-							})
-							configFields[cfgK][grpK] = field;
+							};
 
 							const td = $(`<td/>`).append(field);
 							toAdd.append(td);
@@ -425,7 +438,7 @@ var D20plus = function(version) {
 				function doSave () {
 					$.each(configFields, (cfgK, grp) => {
 						$.each(grp, (grpK, grpVField) => {
-							d20plus.setCfgVal(cfgK, grpK, grpVField.data("getter")());
+							d20plus.setCfgVal(cfgK, grpK, grpVField());
 						})
 					})
 
@@ -510,7 +523,6 @@ var D20plus = function(version) {
 							})
 
 							// Roll HP
-							debugger
 							if (d20plus.getCfgVal("token", "rollHP") && d20plus.getCfgKey("token", "npc_hpbase")) {
 								var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == NPC_SHEET_ATRIBS["npc_hpformula"][d20plus.sheet];});
 								var barName = d20plus.getCfgKey("token", "npc_hpbase");
@@ -727,6 +739,7 @@ var D20plus = function(version) {
 			width: 800,
 			height: 400,
 		});
+		$("#d20plus-configeditor").parent().append(d20plus.configEditorHTML2);
 		/* Removed until I can figure out a way to show the new version without the certificate error
 		$("body").append(d20plus.dmscreenHtml);
 		var $dmsDialog = $("#dmscreen-dialog");
@@ -2287,14 +2300,19 @@ var D20plus = function(version) {
 	};
 
 	d20plus.configEditorHTML = `
-<div id="d20plus-configeditor" title="Config Editor">
-	<p>
-		<!-- populate with JS -->
-	</p>
-	<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
-		<span>Save</span>
-	</button>
-</div>`;
+<div id="d20plus-configeditor" title="Config Editor" style="position: relative">
+	<!-- populate with js -->
+</div>`
+
+	d20plus.configEditorHTML2 = `
+<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+	<div class="ui-dialog-buttonset">
+		<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
+			<span>Save</span>
+		</button>
+	</div>
+</div>
+`;
 
 	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import...">
 	<p><input type="checkbox" title="Select all" id="importlist-selectall"></p>
