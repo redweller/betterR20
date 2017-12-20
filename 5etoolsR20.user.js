@@ -739,7 +739,7 @@ var D20plus = function(version) {
 			width: 800,
 			height: 400,
 		});
-		$("#d20plus-configeditor").parent().append(d20plus.configEditorHTML2);
+		$("#d20plus-configeditor").parent().append(d20plus.configEditorButtonBarHTML);
 		/* Removed until I can figure out a way to show the new version without the certificate error
 		$("body").append(d20plus.dmscreenHtml);
 		var $dmsDialog = $("#dmscreen-dialog");
@@ -2304,7 +2304,7 @@ var D20plus = function(version) {
 	<!-- populate with js -->
 </div>`
 
-	d20plus.configEditorHTML2 = `
+	d20plus.configEditorButtonBarHTML = `
 <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 	<div class="ui-dialog-buttonset">
 		<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
