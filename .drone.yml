@@ -26,3 +26,4 @@ pipeline:
       message: Script build {{ build.number }} to {{ build.branch }} by {{ build.author }} finished with {{ build.status }}. ({{build.link }})
       when:
         status: [ success, failure ]
+        branch: master
