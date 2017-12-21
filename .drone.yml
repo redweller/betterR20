@@ -1,0 +1,29 @@
+workspace:
+  base: /srv/app
+clone:
+  git:
+    image: plugins/git:1
+    depth: 50
+    tags: false
+
+pipeline:
+  Deploy:
+    image: appleboy/drone-ssh
+    host: ianthe.rem.uz
+    port: 22
+    user: root
+    secrets: [ ssh_key ]
+    script:
+      - bash /scripts/script-deploy.sh
+    when:
+      branch: master
+      event: push
+
+  Notify:
+      image: appleboy/drone-discord
+      pull: true
+      secrets: [ discord_webhook_id, discord_webhook_token ]
+      message: Script build {{ build.number }} to {{ build.branch }} by {{ build.author }} finished with {{ build.status }}. ({{ 
+build.link }})
+      when:
+        status: [ success, failure ]
