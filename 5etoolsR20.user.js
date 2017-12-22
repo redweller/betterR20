@@ -34,7 +34,10 @@ var D20plus = function(version) {
 	}
 	var NPC_SHEET_ATRIBS= {};
 	// these are all lowercased; any comparison should be lowercased
-	NPC_SHEET_ATRIBS["npc_hpbase"] = new SheetAttribute("Max HP", "npc_hpbase", "npc_hpbase");
+	NPC_SHEET_ATRIBS["empty"] = new SheetAttribute("--Empty--", "", "");
+	// TODO: implement custom entry (enable textarea)
+	//NPC_SHEET_ATRIBS["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
+	NPC_SHEET_ATRIBS["npc_hpbase"] = new SheetAttribute("Avg HP", "npc_hpbase", "npc_hpbase");
 	NPC_SHEET_ATRIBS["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
 	NPC_SHEET_ATRIBS["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
 	NPC_SHEET_ATRIBS["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
@@ -50,8 +53,13 @@ var D20plus = function(version) {
 				"_type": "_SHEET_ATTRIBUTE"
 			},
 			"bar1_max": {
-				"name": "Display Bar 1",
+				"name": "Set Bar 1 Max",
 				"default": true,
+				"_type": "boolean"
+			},
+			"bar1_reveal": {
+				"name": "Reveal Bar 1",
+				"default": false,
 				"_type": "boolean"
 			},
 			"bar2": {
@@ -60,7 +68,12 @@ var D20plus = function(version) {
 				"_type": "_SHEET_ATTRIBUTE"
 			},
 			"bar2_max": {
-				"name": "Display Bar 2",
+				"name": "Set Bar 2 Max",
+				"default": false,
+				"_type": "boolean"
+			},
+			"bar2_reveal": {
+				"name": "Reveal Bar 2",
 				"default": false,
 				"_type": "boolean"
 			},
@@ -70,7 +83,12 @@ var D20plus = function(version) {
 				"_type": "_SHEET_ATTRIBUTE"
 			},
 			"bar3_max": {
-				"name": "Display Bar 3",
+				"name": "Set Bar 3 Max",
+				"default": false,
+				"_type": "boolean"
+			},
+			"bar3_reveal": {
+				"name": "Reveal Bar 3",
 				"default": false,
 				"_type": "boolean"
 			},
@@ -78,7 +96,18 @@ var D20plus = function(version) {
 				"name": "Roll Token HP",
 				"default": false,
 				"_type": "boolean"
+			},
+			"name": {
+				"name": "Show Nameplate",
+				"default": true,
+				"_type": "boolean"
+			},
+			"name_reveal": {
+				"name": "Reveal Nameplate",
+				"default": false,
+				"_type": "boolean"
 			}
+
 		},
 		"interface": {
 			"_name": "Interface",
@@ -285,6 +314,13 @@ var D20plus = function(version) {
 			return NPC_SHEET_ATRIBS[d20plus.config[group][key]][d20plus.sheet];
 		}
 		return d20plus.config[group][key];
+	};
+
+	// Helpful for checking if a boolean option is set even if false
+	d20plus.hasCfgVal = function (group, key) {
+		if (d20plus.config[group] === undefined) return undefined;
+		if (d20plus.config[group][key] === undefined) return false;
+		return true;
 	};
 
 	d20plus.setCfgVal = function(group, key, val) {
@@ -515,14 +551,29 @@ var D20plus = function(version) {
 									const charAttr = character.attribs.find(a => a.get("name").toLowerCase() == confVal);
 									if (charAttr) {
 										e.attributes[barName + "_value"] = charAttr.get("current");
-										if (d20plus.getCfgVal("token", barName + "_max")) {
-											e.attributes[barName + "_max"] = charAttr.get("current");
+										if (d20plus.hasCfgVal("token", barName + "_max")) {
+											// TODO: Setting a value to empty/null does not overwrite existing values on the token.
+											// setting a specific value does. Must figure this out.
+											e.attributes[barName + "_max"] = d20plus.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
+										}
+										if (d20plus.hasCfgVal("token", barName + "_reveal")) {
+											e.attributes["showplayers_" + barName] = d20plus.getCfgVal("token", barName + "_reveal");
 										}
 									}
 								}
 							})
 
+							// Set Nametag
+							if (d20plus.hasCfgVal("token", "name")) {
+								e.attributes["showname"] = d20plus.getCfgVal("token", "name");
+								if (d20plus.hasCfgVal("token", "name_reveal")) {
+									e.attributes["showplayers_name"] = d20plus.getCfgVal("token", "name_reveal");
+								}
+							}
+
 							// Roll HP
+							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATRIBS?
+							// Saw this while working on other things, unclear if it's necessary or not.
 							if (d20plus.getCfgVal("token", "rollHP") && d20plus.getCfgKey("token", "npc_hpbase")) {
 								var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == NPC_SHEET_ATRIBS["npc_hpformula"][d20plus.sheet];});
 								var barName = d20plus.getCfgKey("token", "npc_hpbase");
@@ -1099,7 +1150,6 @@ var D20plus = function(version) {
 						var defaulttoken = {
 							represents: character.id,
 							name: character.name,
-							showname: 1,
 							imgsrc: avatar,
 							width: 70 * tokensize,
 							height: 70 * tokensize,
@@ -1215,9 +1265,15 @@ var D20plus = function(version) {
 							const skillsString = Object.keys(skills).map(function(k){return k.uppercaseFirst() + ' ' + skills[k];}).join(', ');
 							character.attribs.create({name: "npc_skills_flag", current: 1});
 							character.attribs.create({name: "npc_skills", current: skillsString});
-							var newRowId = d20plus.generateRowId();
-							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: "NPC Skills"});
-							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: skillsString});
+
+							// Shaped Sheet currently doesn't correctly load NPC Skills
+							// This adds a visual representation as a Trait for reference
+							if (d20plus.sheet === "shaped") {
+								var newRowId = d20plus.generateRowId();
+								character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: "NPC Skills"});
+								character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: skillsString});
+							}
+							
 							$.each(skills, function(k, v) {
 								character.attribs.create({name: "npc_" + $.trim(k).toLowerCase().replace(/ /g,"_") + "_base", current: parseInt($.trim(v)) || 0});
 							});
