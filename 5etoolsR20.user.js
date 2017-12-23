@@ -1317,12 +1317,12 @@ var D20plus = function(version) {
 								} else {
 									text = v.text;
 								}
-								var actiontext = "";
-								if (v.text instanceof Array) {
-									actiontext = v.text[0];
-								} else {
-									actiontext = v.text;
-								}
+								var actiontext = text;
+								// if (v.text instanceof Array) {
+								// 	actiontext = v.text[0];
+								// } else {
+								// 	actiontext = v.text;
+								// }
 								var action_desc = actiontext; // required for later reduction of information dump.
 								var rollbase = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
 								// attack parsing
