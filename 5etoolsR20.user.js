@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.33
+// @version      0.5.34
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1114,7 +1114,7 @@ var D20plus = function(version) {
 					/* OGL Sheet */
 					try {
 						const type = Parser.monTypeToFullObj(data.type).asText;
-						const source = data.source;
+						const source = Parser.sourceJsonToAbv(data.source);
 						const avatar = `${IMG_URL}${source}/${name}.png`;
 						character.size = data.size;
 						character.name = name;
