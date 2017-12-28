@@ -134,27 +134,33 @@ var D20plus = function(version) {
 
 	var monsterDataDir = `${DATA_URL}bestiary/`;
 	// TODO this is the contents of "https://5etools.com/data/bestiary/index.json" -- should be loaded instead of redefined
-	var monsterDataUrls = {
-		"CoS":		"bestiary-cos.json",
-		"DMG":		"bestiary-dmg.json",
-		"LMoP":		"bestiary-lmop.json",
-		"MM":		"bestiary-mm.json",
-		"OotA":		"bestiary-oota.json",
-		"PSA":		"bestiary-ps-a.json",
-		"PSI":		"bestiary-ps-i.json",
-		"PSK":		"bestiary-ps-k.json",
-		"PSZ":		"bestiary-ps-z.json",
-		"PSX":		"bestiary-ps-x.json",
-		"PotA":		"bestiary-pota.json",
-		"SKT":		"bestiary-skt.json",
-		"TTP":		"bestiary-ttp.json",
-		"TftYP":	"bestiary-tftyp.json",
-		"ToA":		"bestiary-toa.json",
-		"ToD":		"bestiary-tod.json",
-		"VGM":		"bestiary-vgm.json",
-		"XGE":		"bestiary-xge.json",
-		"ToB 3pp":  "bestiary-3pp-tob.json"
-	};
+
+	var monsterDataUrls = {};
+	$.getJSON(`${DATA_URL}bestiary/index.json`, function(data) {
+	    monsterDataUrls = data;
+	});
+
+	// var monsterDataUrls = {
+	// 	"CoS":		"bestiary-cos.json",
+	// 	"DMG":		"bestiary-dmg.json",
+	// 	"LMoP":		"bestiary-lmop.json",
+	// 	"MM":		"bestiary-mm.json",
+	// 	"OotA":		"bestiary-oota.json",
+	// 	"PSA":		"bestiary-ps-a.json",
+	// 	"PSI":		"bestiary-ps-i.json",
+	// 	"PSK":		"bestiary-ps-k.json",
+	// 	"PSZ":		"bestiary-ps-z.json",
+	// 	"PSX":		"bestiary-ps-x.json",
+	// 	"PotA":		"bestiary-pota.json",
+	// 	"SKT":		"bestiary-skt.json",
+	// 	"TTP":		"bestiary-ttp.json",
+	// 	"TftYP":	"bestiary-tftyp.json",
+	// 	"ToA":		"bestiary-toa.json",
+	// 	"ToD":		"bestiary-tod.json",
+	// 	"VGM":		"bestiary-vgm.json",
+	// 	"XGE":		"bestiary-xge.json",
+	// 	"ToB 3pp":  "bestiary-3pp-tob.json"
+	// };
 
 	var itemdataurl = `${DATA_URL}items.json`;
 
@@ -627,6 +633,13 @@ var D20plus = function(version) {
 					}
 				});
 			}
+		});
+		// New command on FOLDERS
+		var last = $("#journalmenu ul li").last();
+		last.after("<li style=\"background-color: #FA5050; color: white;\" data-action-type=\"fulldelete\">Delete All</li>");
+		$("#journalmenu ul").on(window.mousedowntype, "li[data-action-type=fulldelete]", function() {
+			d20plus.log("Trying something..");
+			console.log($currentTarget);
 		});
 	};
 
