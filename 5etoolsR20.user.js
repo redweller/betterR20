@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.37
+// @version      0.5.38
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -150,8 +150,8 @@ var D20plus = function(version) {
 	];
 
 	d20plus.json = [
-		{name: "spell index", url: `${DATA_URL}spells/index.json`},
-		{name: "bestiary index", url: `${DATA_URL}bestiary/index.json`}
+		{name: "spell index", url: `${spellDataDir}index.json`},
+		{name: "bestiary index", url: `${monsterDataDir}index.json`}
 	]
 
 	// add JSON index/metadata
@@ -1047,30 +1047,48 @@ var D20plus = function(version) {
 				const selectAllBox = $("#d20plus-importlist input#importlist-selectall");
 				selectAllBox.unbind("click");
 				selectAllBox.prop("checked", false);
-				selectAllBox.bind("click", function() {$("#import-list .list input").prop("checked", $(this).prop("checked"));});
+				selectAllBox.bind("click", function() {
+					d20plus._importToggleSelectAll(importList, this);
+				});
 				$("#d20plus-importlist button").unbind("click");
 				$("#d20plus-importlist button#importstart").bind("click", function() {
-					$("#d20plus-importlist").dialog("close");
-					var overwrite = $("#import-overwrite").prop("checked");
-					var deleteExisting = $("#delete-existing").prop("checked");
-					$("#import-list .list input").each(function() {
-						if (!$(this).prop("checked")) return;
-						var monsternum = parseInt($(this).data("listid"));
-						var curmonster = monsterdata.monster[monsternum];
-						try {
-							console.log(`> ${(monsternum + 1)}/${length} Attempting to import monster [${curmonster.name}]`);
-							d20plus.monsters.import(curmonster, overwrite, deleteExisting);
-						} catch (e) {
-							console.log("Error Importing!", e);
-							d20plus.addImportError(curmonster.name);
-						}
-					});
+					d20plus._importHandleStart(importList, monsterdata.monster, "monster", d20plus.monsters.import)
 				});
 			} catch (e) {
 				console.log("> Exception ", e);
 			}
 		}
 	};
+
+	d20plus._importToggleSelectAll = function (importList, selectAllCb) {
+		const $sa = $(selectAllCb);
+		importList.items.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
+			if (e.tagName === "INPUT") {
+				$(e).prop("checked", $sa.prop("checked"));
+			}
+		}));
+	};
+
+	d20plus._importHandleStart = function (importList, dataList, stringItemType, importFunction) {
+		$("#d20plus-importlist").dialog("close");
+		var overwrite = $("#import-overwrite").prop("checked");
+		var deleteExisting = $("#delete-existing").prop("checked");
+		const items = importList.items
+		importList.items.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
+			const $e = $(e);
+			if ($e.is("input") && $e.prop("checked")) {
+				var dataIndex = parseInt($e.data("listid"));
+				var curItem = dataList[dataIndex];
+				try {
+					console.log(`> ${(dataIndex + 1)}/${length} Attempting to import ${stringItemType} [${curItem.name}]`);
+					importFunction(curItem, overwrite, deleteExisting);
+				} catch (x) {
+					console.log("Error Importing!", x);
+					d20plus.addImportError(curItem.name);
+				}
+			}
+		}));
+	}
 
 	// Create monster character from js data object
 	d20plus.monsters.import = function(data, overwrite, deleteExisting) {
@@ -1813,25 +1831,11 @@ var D20plus = function(version) {
 				selectAllBox.unbind("click");
 				selectAllBox.prop("checked", false);
 				selectAllBox.bind("click", function() {
-					$("#import-list .list input").prop("checked", $(this).prop("checked"));
+					d20plus._importToggleSelectAll(importList, this);
 				});
 				$("#d20plus-importlist button").unbind("click");
 				$("#d20plus-importlist button#importstart").bind("click", function() {
-					$("#d20plus-importlist").dialog("close");
-					var overwrite = $("#import-overwrite").prop("checked");
-					var deleteExisting = $("#delete-existing").prop("checked");
-					$("#import-list .list input").each(function() {
-						if (!$(this).prop("checked")) return;
-						var spellnum = parseInt($(this).data("listid"));
-						var curspell = spelldata.spell[spellnum];
-						try {
-							console.log("> " + (spellnum + 1) + "/" + length + " Attempting to import spell [" + curspell.name + "]");
-							d20plus.spells.import(curspell, overwrite, deleteExisting);
-						} catch (e) {
-							console.log("Error Importing!", e);
-							d20plus.addImportError(curspell.name);
-						}
-					});
+					d20plus._importHandleStart(importList, spelldata.spell, "spell", d20plus.spells.import)
 				});
 			} catch (e) {
 				console.log("> Exception ", e);
@@ -2053,24 +2057,12 @@ var D20plus = function(version) {
 					const selectAllBox = $("#d20plus-importlist input#importlist-selectall");
 					selectAllBox.unbind("click");
 					selectAllBox.prop("checked", false);
-					selectAllBox.bind("click", function() {$("#import-list .list input").prop("checked", $(this).prop("checked"));});
+					selectAllBox.bind("click", function() {
+						d20plus._importToggleSelectAll(importList, this);
+					});
 					$("#d20plus-importlist button").unbind("click");
 					$("#d20plus-importlist button#importstart").bind("click", function() {
-						$("#d20plus-importlist").dialog("close");
-						var overwrite = $("#import-overwrite").prop("checked");
-						var deleteExisting = $("#delete-existing").prop("checked");
-						$("#import-list .list input").each(function() {
-							if (!$(this).prop("checked")) return;
-							var itemnum = parseInt($(this).data("listid"));
-							var curitem = itemdata.item[itemnum];
-							try {
-								console.log("> " + (itemnum + 1) + "/" + length + " Attempting to import item [" + curitem.name + "]");
-								d20plus.items.import(curitem, overwrite, deleteExisting);
-							} catch (e) {
-								console.log("Error Importing!", e);
-								d20plus.addImportError(curitem.name);
-							}
-						});
+						d20plus._importHandleStart(importList, itemdata.item, "item", d20plus.items.import)
 					});
 				} catch (e) {
 					console.log("> Exception ", e);
