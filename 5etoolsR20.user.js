@@ -140,28 +140,6 @@ var D20plus = function(version) {
 	    monsterDataUrls = data;
 	});
 
-	// var monsterDataUrls = {
-	// 	"CoS":		"bestiary-cos.json",
-	// 	"DMG":		"bestiary-dmg.json",
-	// 	"LMoP":		"bestiary-lmop.json",
-	// 	"MM":		"bestiary-mm.json",
-	// 	"OotA":		"bestiary-oota.json",
-	// 	"PSA":		"bestiary-ps-a.json",
-	// 	"PSI":		"bestiary-ps-i.json",
-	// 	"PSK":		"bestiary-ps-k.json",
-	// 	"PSZ":		"bestiary-ps-z.json",
-	// 	"PSX":		"bestiary-ps-x.json",
-	// 	"PotA":		"bestiary-pota.json",
-	// 	"SKT":		"bestiary-skt.json",
-	// 	"TTP":		"bestiary-ttp.json",
-	// 	"TftYP":	"bestiary-tftyp.json",
-	// 	"ToA":		"bestiary-toa.json",
-	// 	"ToD":		"bestiary-tod.json",
-	// 	"VGM":		"bestiary-vgm.json",
-	// 	"XGE":		"bestiary-xge.json",
-	// 	"ToB 3pp":  "bestiary-3pp-tob.json"
-	// };
-
 	var itemdataurl = `${DATA_URL}items.json`;
 
 	var d20plus = {
