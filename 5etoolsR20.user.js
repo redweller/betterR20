@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.36
+// @version      0.5.37
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -120,25 +120,12 @@ var D20plus = function(version) {
 	};
 
 	var spellDataDir = `${DATA_URL}spells/`;
-	// TODO this is the contents of "https://5etools.com/data/spells/index.json" -- should be loaded instead of redefined
-	var spellDataUrls = {
-		"PHB": 					"spells-phb.json",
-		"SCAG": 				"spells-scag.json",
-		"UAModernMagic": 		"spells-ua-mm.json",
-		"UAStarterSpells": 		"spells-ua-ss.json",
-		"UAThatOldBlackMagic": 	"spells-ua-tobm.json",
-		"XGE": 					"spells-xge.json",
-		"BoLS 3pp": 			"spells-3pp-bols.json"
-	};
+	var spellDataUrls = {};
+
 	var spellmetaurl = `${spellDataDir}roll20.json`;
 
 	var monsterDataDir = `${DATA_URL}bestiary/`;
-	// TODO this is the contents of "https://5etools.com/data/bestiary/index.json" -- should be loaded instead of redefined
-
 	var monsterDataUrls = {};
-	$.getJSON(`${DATA_URL}bestiary/index.json`, function(data) {
-	    monsterDataUrls = data;
-	});
 
 	var itemdataurl = `${DATA_URL}items.json`;
 
@@ -162,26 +149,46 @@ var D20plus = function(version) {
 		{name: "5etoolsrender", url: `${JS_URL}entryrender.js`}
 	];
 
+	d20plus.json = [
+		{name: "spell index", url: `${DATA_URL}spells/index.json`},
+		{name: "bestiary index", url: `${DATA_URL}bestiary/index.json`}
+	]
+
+	// add JSON index/metadata
+	d20plus.addJson = function (onLoadFunction) {
+		const onEachLoadFunction = function (name, url, data) {
+			if (name === "spell index") spellDataUrls = data;
+			else if (name === "bestiary index") monsterDataUrls = data;
+			else throw new Error(`Unhandled data from JSON ${name} (${url})`)
+
+			d20plus.log(`> JSON [${name}] Loaded`);
+		}
+		d20plus.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
+	}
+
 	// Inject external JS libraries
 	d20plus.addScripts = function(onLoadFunction) {
-		d20plus.chainLoad(d20plus.scripts, 0, onLoadFunction);
+		const onEachLoadFunction = function(name, url, js) {
+			try {
+				window.eval(js);
+				d20plus.log(`> JS [${name}] Loaded`);
+			} catch (e) {
+				d20plus.log(`> Error loading ${name}`);
+			}
+		};
+		d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
 	};
 
-	d20plus.chainLoad = function (toLoads, index, onLoadFunction) {
+	d20plus.chainLoad = function (toLoads, index, onEachLoadFunction, onFinalLoadFunction) {
 		const toLoad = toLoads[index];
 		// on loading the last item, run onLoadFunction
 		if (index === toLoads.length-1) {
 			$.ajax({
 				type: "GET",
 				url: toLoad.url+d20plus.getAntiCacheSuffix(),
-				success: function(js) {
-					try {
-						window.eval(js);
-						d20plus.log(`> JS [${toLoad.name}] Loaded`);
-						onLoadFunction();
-					} catch (e) {
-						d20plus.log(`> Error loading ${toLoad.name}`);
-					}
+				success: function(data) {
+					onEachLoadFunction(toLoad.name, toLoad.url, data);
+					onFinalLoadFunction();
 				},
 				error: function() {
 					d20plus.log(`> Error loading ${toLoad.name}`);
@@ -191,11 +198,10 @@ var D20plus = function(version) {
 			$.ajax({
 				type: "GET",
 				url: toLoad.url+d20plus.getAntiCacheSuffix(),
-				success: function(js) {
+				success: function(data) {
 					try {
-						window.eval(js);
-						d20plus.log(`> JS [${toLoad.name}] Loaded`);
-						d20plus.chainLoad(toLoads, index+1, onLoadFunction);
+						onEachLoadFunction(toLoad.name, toLoad.url, data);
+						d20plus.chainLoad(toLoads, index+1, onEachLoadFunction, onFinalLoadFunction);
 					} catch (e) {
 						d20plus.log(`> Error loading ${toLoad.name}`);
 					}
@@ -498,9 +504,15 @@ var D20plus = function(version) {
 			d20plus.log("> Not GM. Exiting.");
 			return;
 		}
+		d20plus.log("> Load JSON");
+		d20plus.addJson(d20plus.onJsonLoad);
+	};
+
+	// continue init once JSON loads
+	d20plus.onJsonLoad = function() {
 		d20plus.log("> Add JS");
 		d20plus.addScripts(d20plus.onScriptLoad);
-	};
+	}
 
 	// continue init once scripts load
 	d20plus.onScriptLoad = function() {
@@ -798,6 +810,8 @@ var D20plus = function(version) {
 		populateDropdown("#button-monsters-select", "#import-monster-url", monsterDataDir, monsterDataUrls, "MM");
 
 		function populateDropdown(dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel) {
+			const defaultUrl = d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]);
+			$(inputFieldId).val(defaultUrl);
 			const dropdown = $(dropdownId);
 			$.each(Object.keys(srcUrlObject), function (i, src) {
 				dropdown.append($('<option>', {
@@ -809,7 +823,7 @@ var D20plus = function(version) {
 				value: "",
 				text: "Custom"
 			}));
-			dropdown.val(d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]));
+			dropdown.val(defaultUrl);
 			dropdown.change(function () {
 				$(inputFieldId).val(this.value);
 			});
@@ -2403,7 +2417,7 @@ var D20plus = function(version) {
 <select id="button-monsters-select">
 	<!-- populate with JS-->
 </select>
-<input type="text" id="import-monster-url" value="${d20plus.monsters.formMonsterUrl(monsterDataUrls.MM)}">
+<input type="text" id="import-monster-url">
 </p>
 <p><a class="btn" href="#" id="button-monsters-load">Import Monsters</a></p>
 <p><a class="btn" href="#" id="button-monsters-load-all" title="Standard sources only; no third-party or UA">Import Monsters From All Sources</a></p>
@@ -2419,7 +2433,7 @@ var D20plus = function(version) {
 <select id="button-spell-select">
 	<!-- populate with JS-->
 </select>
-<input type="text" id="import-spell-url" value="${d20plus.spells.formSpellUrl(spellDataUrls.PHB)}">
+<input type="text" id="import-spell-url">
 </p>
 <p><a class="btn" href="#" id="button-spells-load">Import Spells</a><p/>
 <p><a class="btn" href="#" id="button-spells-load-all" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
