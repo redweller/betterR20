@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.38
+// @version      0.5.39
 // @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -597,8 +597,18 @@ var D20plus = function(version) {
 		}
 	};
 
+	d20plus.lastClickedFolderId = null
+
 	// Create new Journal commands
 	d20plus.addJournalCommands = function() {
+		// stash the folder ID of the last folder clicked
+		$("#journalfolderroot").on("contextmenu", ".dd-content", function(e) {
+			if ($(this).parent().hasClass("dd-folder")) {
+				const lastClicked = $(this).parent();
+				d20plus.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
+			}
+		})
+
 		var first = $("#journalitemmenu ul li").first();
 		first.after("<li data-action-type=\"cloneitem\">Duplicate</li>");
 		first.after("<li style=\"height: 10px;\">&nbsp;</li>");
@@ -628,8 +638,23 @@ var D20plus = function(version) {
 		var last = $("#journalmenu ul li").last();
 		last.after("<li style=\"background-color: #FA5050; color: white;\" data-action-type=\"fulldelete\">Delete All</li>");
 		$("#journalmenu ul").on(window.mousedowntype, "li[data-action-type=fulldelete]", function() {
-			d20plus.log("Trying something..");
-			console.log($currentTarget);
+			d20plus.log(" > Nuking folder...");
+			const conf = confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.");
+			if (conf) {
+				const folder = $(`[data-globalfolderid='${d20plus.lastClickedFolderId}']`);
+				const childItems = folder.find("[data-itemid]").each((i, e) => {
+					const $e = $(e);
+					const itemId = $e.attr("data-itemid");
+					let toDel = d20.Campaign.handouts.get(itemId);
+					toDel || (toDel = d20.Campaign.characters.get(itemId))
+					if (toDel) toDel.destroy();
+				});
+				const childFolders = folder.find(`[data-globalfolderid]`).remove();
+				folder.remove();
+			}
+			$("#journalfolderroot").trigger("change");
+			d20plus.lastClickedFolderId = null;
+			$("#journalmenu").hide();
 		});
 	};
 
