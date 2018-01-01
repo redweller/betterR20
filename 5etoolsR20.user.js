@@ -2,23 +2,21 @@
 // @name         5etoolsR20
 // @namespace    https://github.com/astranauta/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.39
-// @updateURL    https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
-// @downloadURL  https://github.com/astranauta/5etoolsR20/raw/master/5etoolsR20.user.js
+// @version      0.5.40
+// @updateURL    https://get.5etools.com/script/5etoolsR20.user.js
+// @downloadURL  https://get.5etools.com/script/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz
 // @match        https://app.roll20.net/editor/
 // @grant        unsafeWindow
 // @run-at       document-start
 // ==/UserScript==
-// TODO fix update/download URL once we have Jenkins operational
 
 /* eslint no-console: "off" */
 
 var D20plus = function(version) {
 
-	// var BASE_SITE_URL = "https://5etools.com/"; // FIXME use new URL where appropriate
-	var BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME use new URL where appropriate
+	var BASE_SITE_URL = "https://5etools.com/";
 
 	var DATA_URL = BASE_SITE_URL+"data/";
 	var JS_URL = BASE_SITE_URL+"js/";
@@ -501,8 +499,7 @@ var D20plus = function(version) {
 		if (window.is_gm) {
 			d20plus.log("> Is GM");
 		} else {
-			d20plus.log("> Not GM. Exiting.");
-			return;
+			d20plus.log("> Not GM. Some functionality will be unavailable.");
 		}
 		d20plus.log("> Load JSON");
 		d20plus.addJson(d20plus.onJsonLoad);
@@ -521,11 +518,14 @@ var D20plus = function(version) {
 		d20plus.log("> Add HTML");
 		d20plus.addHTML();
 		d20plus.setSheet();
-		d20plus.log("> Bind Graphics");
-		d20.Campaign.pages.each(d20plus.bindGraphics);
-		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-		d20plus.log("> Applying config");
-		d20plus.handleConfigChange();
+
+		if (window.is_gm) {
+			d20plus.log("> Bind Graphics");
+			d20.Campaign.pages.each(d20plus.bindGraphics);
+			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
+			d20plus.log("> Applying config");
+			d20plus.handleConfigChange();
+		}
 		d20plus.log("> All systems operational");
 	};
 
@@ -636,7 +636,7 @@ var D20plus = function(version) {
 		});
 		// New command on FOLDERS
 		var last = $("#journalmenu ul li").last();
-		last.after("<li style=\"background-color: #FA5050; color: white;\" data-action-type=\"fulldelete\">Delete All</li>");
+		last.after("<li style=\"background-color: #FA5050; color: white;\" data-action-type=\"fulldelete\">Delete Folder + Contents</li>");
 		$("#journalmenu ul").on(window.mousedowntype, "li[data-action-type=fulldelete]", function() {
 			d20plus.log(" > Nuking folder...");
 			const conf = confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.");
@@ -778,81 +778,85 @@ var D20plus = function(version) {
 
 	// Inject HTML
 	d20plus.addHTML = function() {
-		$("#mysettings > .content").children("hr").first().before(d20plus.settingsHtml);
-		$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
-		$("#mysettings > .content a#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
-		$("#mysettings > .content a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
-		$("#mysettings > .content a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
-		$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
-		$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
-		$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
-		$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
-		d20plus.getInitTemplate();
-		d20.Campaign.initiativewindow.rebuildInitiativeList();
-		d20plus.hpAllowEdit();
-		d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
+		if (window.is_gm) {
+			$("#mysettings > .content").children("hr").first().before(d20plus.settingsHtml);
+			$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
+			$("#mysettings > .content a#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
+			$("#mysettings > .content a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
+			$("#mysettings > .content a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
+			$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
+			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
+			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
+			d20plus.getInitTemplate();
+			d20.Campaign.initiativewindow.rebuildInitiativeList();
+			d20plus.hpAllowEdit();
+			d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
+				d20plus.updateDifficulty();
+			});
 			d20plus.updateDifficulty();
-		});
-		d20plus.updateDifficulty();
-		d20plus.addJournalCommands();
+			d20plus.addJournalCommands();
+
+			$("body").append(d20plus.importDialogHtml);
+			$("body").append(d20plus.importListHTML);
+			$("body").append(d20plus.configEditorHTML);
+			$("#d20plus-import").dialog({
+				autoOpen: false,
+				resizable: false
+			});
+			$("#d20plus-importlist").dialog({
+				autoOpen: false,
+				resizable: true
+			});
+			$("#d20plus-configeditor").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 400,
+			});
+			$("#d20plus-configeditor").parent().append(d20plus.configEditorButtonBarHTML);
+			/* Removed until I can figure out a way to show the new version without the certificate error
+			$("body").append(d20plus.dmscreenHtml);
+			var $dmsDialog = $("#dmscreen-dialog");
+			$dmsDialog.dialog({
+				title: "DM Screen",
+				width: 700,
+				height: 515,
+				autoOpen: false
+			});
+			$("#floatingtoolbar > ul").append(d20plus.dmscreenButton);
+			$("#dmscreen-button").on(window.mousedowntype, function(){$dmsDialog.dialog($dmsDialog.dialog("isOpen") ? "close" : "open");});*/
+
+			populateDropdown("#button-spell-select", "#import-spell-url", spellDataDir, spellDataUrls, "PHB");
+			populateDropdown("#button-monsters-select", "#import-monster-url", monsterDataDir, monsterDataUrls, "MM");
+
+			function populateDropdown(dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel) {
+				const defaultUrl = d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]);
+				$(inputFieldId).val(defaultUrl);
+				const dropdown = $(dropdownId);
+				$.each(Object.keys(srcUrlObject), function (i, src) {
+					dropdown.append($('<option>', {
+						value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
+						text: Parser.sourceJsonToFullCompactPrefix(src)
+					}));
+				});
+				dropdown.append($('<option>', {
+					value: "",
+					text: "Custom"
+				}));
+				dropdown.val(defaultUrl);
+				dropdown.change(function () {
+					$(inputFieldId).val(this.value);
+				});
+			}
+		}
+		// add a bind button to the journal for players
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-right: 0.5em;">Bind Drag-n-Drop</button>`);
 		altBindButton.on("click", function () {
 			d20plus.bindDropLocations();
 		});
 		$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
 		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
-		$("body").append(d20plus.importDialogHtml);
-		$("body").append(d20plus.importListHTML);
-		$("body").append(d20plus.configEditorHTML);
-		$("#d20plus-import").dialog({
-			autoOpen: false,
-			resizable: false
-		});
-		$("#d20plus-importlist").dialog({
-			autoOpen: false,
-			resizable: true
-		});
-		$("#d20plus-configeditor").dialog({
-			autoOpen: false,
-			resizable: true,
-			width: 800,
-			height: 400,
-		});
-		$("#d20plus-configeditor").parent().append(d20plus.configEditorButtonBarHTML);
-		/* Removed until I can figure out a way to show the new version without the certificate error
-		$("body").append(d20plus.dmscreenHtml);
-		var $dmsDialog = $("#dmscreen-dialog");
-		$dmsDialog.dialog({
-			title: "DM Screen",
-			width: 700,
-			height: 515,
-			autoOpen: false
-		});
-		$("#floatingtoolbar > ul").append(d20plus.dmscreenButton);
-		$("#dmscreen-button").on(window.mousedowntype, function(){$dmsDialog.dialog($dmsDialog.dialog("isOpen") ? "close" : "open");});*/
-
-		populateDropdown("#button-spell-select", "#import-spell-url", spellDataDir, spellDataUrls, "PHB");
-		populateDropdown("#button-monsters-select", "#import-monster-url", monsterDataDir, monsterDataUrls, "MM");
-
-		function populateDropdown(dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel) {
-			const defaultUrl = d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]);
-			$(inputFieldId).val(defaultUrl);
-			const dropdown = $(dropdownId);
-			$.each(Object.keys(srcUrlObject), function (i, src) {
-				dropdown.append($('<option>', {
-					value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
-					text: Parser.sourceJsonToFullCompactPrefix(src)
-				}));
-			});
-			dropdown.append($('<option>', {
-				value: "",
-				text: "Custom"
-			}));
-			dropdown.val(defaultUrl);
-			dropdown.change(function () {
-				$(inputFieldId).val(this.value);
-			});
-		}
 	};
 
 	d20plus.updateDifficulty = function() {
@@ -1139,8 +1143,10 @@ var D20plus = function(version) {
 		// check for duplicates
 		var dupe = false;
 		$.each(monsters.i, function(i, v) {
-			if (d20plus.objectExists(monsters.i, v.id, name)) dupe = true;
-			if (overwrite || deleteExisting) d20plus.deleteObject(monsters.i, v.id, name);
+			if (v.id !== undefined) {
+				if (d20plus.objectExists(monsters.i, v.id, name)) dupe = true;
+				if (overwrite || deleteExisting) d20plus.deleteObject(monsters.i, v.id, name);
+			}
 		});
 		if (deleteExisting || (dupe && !overwrite)) return;
 		var timeout = 0;
@@ -1893,8 +1899,10 @@ var D20plus = function(version) {
 		// check for duplicates
 		var dupe = false;
 		$.each(spells.i, function(i, v) {
-			if (d20plus.objectExists(spells.i, v.id, name)) dupe = true;
-			if (overwrite || deleteExisting) d20plus.deleteObject(spells.i, v.id, name);
+			if (v.id !== undefined) {
+				if (d20plus.objectExists(spells.i, v.id, name)) dupe = true;
+				if (overwrite || deleteExisting) d20plus.deleteObject(spells.i, v.id, name);
+			}
 		});
 		if (deleteExisting || (dupe && !overwrite)) return;
 		d20plus.remaining++;
@@ -2121,8 +2129,10 @@ var D20plus = function(version) {
 		// check for duplicates
 		var dupe = false;
 		$.each(items.i, function(i, v) {
-			if (d20plus.objectExists(items.i, v.id, name)) dupe = true;
-			if (overwrite || deleteExisting) d20plus.deleteObject(items.i, v.id, name);
+			if (v.id !== undefined) {
+				if (d20plus.objectExists(items.i, v.id, name)) dupe = true;
+				if (overwrite || deleteExisting) d20plus.deleteObject(items.i, v.id, name);
+			}
 		});
 		if (deleteExisting || (dupe && !overwrite)) return;
 		d20plus.remaining++;
