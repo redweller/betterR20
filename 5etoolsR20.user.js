@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.5.41
+// @version      0.5.42
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -859,7 +859,12 @@ var D20plus = function(version) {
 		altBindButton.on("click", function () {
 			d20plus.bindDropLocations();
 		});
-		$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
+		if (window.is_gm) {
+			$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
+		} else {
+			$(`#journal .content`).before(altBindButton);
+			altBindButton.after(`<br>`);
+		}
 		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 	};
 
@@ -885,8 +890,28 @@ var D20plus = function(version) {
 		}
 		var journalFolderObj = JSON.parse(journalFolder);
 		var handouts = journalFolderObj.find(function(a) {return a.n && (a.n === "Spells" || a.n === "Items");});
-		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Spells')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable");
-		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Items')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable");
+		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Spells')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable").addClass("Vetools-draggable");
+		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Items')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable").addClass("Vetools-draggable");
+
+		// if player, force-enable dragging
+		if (!window.is_gm) {
+			$(`.Vetools-draggable`).draggable({
+				revert: true,
+				distance: 10,
+				revertDuration: 0,
+				helper: "clone",
+				handle: ".namecontainer",
+				appendTo: "body",
+				scroll: true,
+				start: function() {
+					$("#journalfolderroot").addClass("externaldrag")
+				},
+				stop: function() {
+					$("#journalfolderroot").removeClass("externaldrag")
+				}
+			})
+		}
+
 		d20.Campaign.characters.models.each(function(v, i) {
 			v.view.rebindCompendiumDropTargets = function() {
 				// ready character sheet for draggable
@@ -907,9 +932,20 @@ var D20plus = function(version) {
 								var handout = d20.Campaign.handouts.get(id);
 								console.log(character);
 								var data = "";
-								handout._getLatestBlob("gmnotes", function(gmnotes) {
-									data = gmnotes;
-									handout.updateBlobs({gmnotes: gmnotes});
+								if (window.is_gm) {
+									handout._getLatestBlob("gmnotes", function(gmnotes) {
+										data = gmnotes;
+										handout.updateBlobs({gmnotes: gmnotes});
+										handleData(data);
+									});
+								} else {
+									handout._getLatestBlob("notes", function(notes) {
+										data = $(notes).filter("del").html();
+										handleData(data);
+									});
+								}
+
+								function handleData (data) {
 									data = JSON.parse(data);
 									inputData = data.data;
 									inputData.Name = data.name;
@@ -947,8 +983,9 @@ var D20plus = function(version) {
 											character.saveSheetValues(this);
 										}
 									});
-								});
-							} else {
+								}
+							}
+							 else {
 								console.log("Compendium item dropped onto target!");
 								t.originalEvent.dropHandled = !0;
 								inputData = $(i.helper[0]).attr("data-pagename");
@@ -1968,7 +2005,7 @@ var D20plus = function(version) {
 							"Range": Parser.spRangeToFull(data.range),
 							"School": Parser.spSchoolAbvToFull(data.school),
 							"Source": "5etoolsR20",
-							"Classes": Parser.spClassesToFull(data.classes),
+							"Classes": $(Parser.spClassesToFull(data.classes)).text(),
 							"Category": "Spells",
 							"Duration": Parser.spDurationToFull(data.duration),
 							"Material": "",
@@ -2004,17 +2041,18 @@ var D20plus = function(version) {
 					const entryList = {type: "entries", entries: data.entries};
 					renderer.setBaseUrl(BASE_SITE_URL);
 					renderer.recursiveEntryRender(entryList, renderStack, 1);
-					r20json.content = renderStack.join(" ");
+					r20json.content = $(renderStack.join(" ")).text();
 					notecontents += renderStack.join("");
 					if (data.entriesHigherLevel) {
 						const hLevelRenderStack = [];
 						const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
 						renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
-						r20json.content += "\n\nAt Higher Levels: " + hLevelRenderStack.join(" ").replace("At Higher Levels.", "");
+						r20json.content += "\n\nAt Higher Levels: " + $(hLevelRenderStack.join(" ").replace("At Higher Levels.", "")).text();
 						notecontents += hLevelRenderStack.join("");
 					}
 					notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
 					gmnotes = JSON.stringify(r20json);
+					notecontents += `<del>${gmnotes}</del>`
 					console.log(notecontents);
 					handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
 					var injournals = ($("#import-showplayers").prop("checked")) ? ["all"].join(",") : "";
@@ -2570,6 +2608,10 @@ var D20plus = function(version) {
 		{
 			s: "table.config-table tbody td > *",
 			r: "vertical-align: middle;"
+		},
+		{
+			s: "del",
+			r: "display: none;"
 		}
 	];
 
