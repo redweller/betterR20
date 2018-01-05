@@ -126,6 +126,7 @@ var D20plus = function(version) {
 	var monsterDataUrls = {};
 
 	var itemdataurl = `${DATA_URL}items.json`;
+	var featdataurl = `${DATA_URL}feats.json`;
 
 	var d20plus = {
 		sheet: "ogl",
@@ -136,8 +137,10 @@ var D20plus = function(version) {
 		monsters: {},
 		spells: {},
 		items: {},
+		feats: {},
 		initiative: {},
-		config: {}
+		config: {},
+		importer: {}
 	};
 
 	d20plus.scripts = [
@@ -785,6 +788,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
 			$("#mysettings > .content a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
 			$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
+			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
@@ -2047,63 +2051,7 @@ var D20plus = function(version) {
 
 	// Fetch items data from file
 	d20plus.items.load = function(url) {
-		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
-		var x2js = new X2JS();
-		var datatype = $("#import-datatype").val();
-		if (datatype === "json") datatype = "text";
-		$.ajax({
-			type: "GET",
-			url: url,
-			dataType: datatype,
-			success: function(data) {
-				try {
-					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
-					itemdata = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^var .* \= /g, ""));
-					var length = itemdata.item.length;
-					itemdata.item.sort(function(a,b) {
-						if (a.name < b.name) return -1;
-						if (a.name > b.name) return 1;
-						return 0;
-					});
-					// building list for checkboxes
-					$("#import-list .list").html("");
-					$.each(itemdata.item, function(i, v) {
-						try {
-							$("#import-list .list").append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${v.name}</span></label>`);
-						} catch (e) {
-							console.log("Error building list!", e);
-							d20plus.addImportError(v.name);
-						}
-					});
-					var options = {
-						valueNames: [ 'name' ]
-					};
-					var importList = new List ("import-list", options);
-					$(`#import-list > .search`).val("");
-					importList.search("");
-					$("#import-options label").hide();
-					$("#import-overwrite").parent().show();
-					$("#delete-existing").parent().show();
-					$("#organize-by-source").parent().show();
-					$("#import-showplayers").parent().show();
-					$("#d20plus-importlist").dialog("open");
-					const selectAllBox = $("#d20plus-importlist input#importlist-selectall");
-					selectAllBox.unbind("click");
-					selectAllBox.prop("checked", false);
-					selectAllBox.bind("click", function() {
-						d20plus._importToggleSelectAll(importList, this);
-					});
-					$("#d20plus-importlist button").unbind("click");
-					$("#d20plus-importlist button#importstart").bind("click", function() {
-						d20plus._importHandleStart(importList, itemdata.item, "item", d20plus.items.import)
-					});
-				} catch (e) {
-					console.log("> Exception ", e);
-				}
-			},
-			error: function(jqXHR, exception) {d20plus.handleAjaxError(jqXHR, exception);}
-		});
-		d20plus.timeout = 500;
+		d20plus.importer.simple(url, "item", "item", d20plus.items.import);
 	};
 
 	// Import individual items
@@ -2289,6 +2237,92 @@ var D20plus = function(version) {
 		return "n/a";
 	};
 
+	// Import Feats button was clicked
+	d20plus.feats.button = function () {
+		var url = $("#import-feats-url").val();
+		if (url !== null) d20plus.feats.load(url);
+	};
+
+	// Fetch feat data from file
+	d20plus.feats.load = function (url) {
+		d20plus.importer.simple(url, "feat", "feat", d20plus.feats.import);
+	};
+
+	// TODO
+	// Import individual feats
+	d20plus.feats.import = function (data, overwrite, deleteExisting) {
+
+	};
+
+	d20plus.importer.simple = function (url, listProp, stringItemType, importFunction) {
+		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+		const x2js = new X2JS();
+		let datatype = $("#import-datatype").val();
+		if (datatype === "json") datatype = "text";
+		$.ajax({
+			type: "GET",
+			url: url,
+			dataType: datatype,
+			success: function (data) {
+				try {
+					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
+					data = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^\s*var\s*.*\s*=\s*/g, ""));
+					data.listProp.sort(function (a, b) {
+						if (a.name < b.name) return -1;
+						if (a.name > b.name) return 1;
+						return 0;
+					});
+					const $impList = $("#import-list");
+					const $l = $impList.find(".list");
+					$l.html("");
+					// build checkbox list
+					data.listProp.forEach((it, i) => {
+						try {
+							$l.append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${it.name}</span></label>`);
+						} catch (e) {
+							console.log("Error building list!", e);
+							d20plus.addImportError(it.name);
+						}
+					});
+					const options = {
+						valueNames: ["name"]
+					};
+					const importList = new List ("import-list", options);
+					// reset search
+					$impList.find(".search").val("");
+					importList.search("");
+
+					$("#import-options").find("label").hide();
+					$("#import-overwrite").parent().show();
+					$("#delete-existing").parent().show();
+					$("#organize-by-source").parent().show();
+					$("#import-showplayers").parent().show();
+
+					const $importWindow = $("#d20plus-importlist");
+					$importWindow.dialog("open");
+
+					const $selectAllBox = $importWindow.find("input#importlist-selectall");
+					$selectAllBox.unbind("click");
+					$selectAllBox.prop("checked", false);
+					$selectAllBox.bind("click", () => {
+						d20plus._importToggleSelectAll(importList, this);
+					});
+
+					$importWindow.find("button").unbind("click");
+					$importWindow.find("button#importstart").bind("click", () => {
+						d20plus._importHandleStart(importList, data.listProp, stringItemType, importFunction)
+					})
+				} catch (e) {
+					console.log("> Exception ", e);
+				}
+			},
+			error: function(jqXHR, exception) {
+				d20plus.handleAjaxError(jqXHR, exception);
+			}
+		});
+		d20plus.timeout = 500;
+	};
+
 	String.prototype.capFirstLetter = function() {
 		return this.replace(/\w\S*/g, function(w) {return w.charAt(0).toUpperCase() + w.substr(1).toLowerCase();});
 	};
@@ -2464,6 +2498,12 @@ var D20plus = function(version) {
 </p>
 <p><a class="btn" href="#" id="button-spells-load">Import Spells</a><p/>
 <p><a class="btn" href="#" id="button-spells-load-all" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
+<h4>Feat Importing</h4>
+<p>
+<label for="import-feats-url">Item Data URL:</label>
+<input type="text" id="import-feats-url" value="${featdataurl}">
+<a class="btn" href="#" id="import-feats-load">Import Feats</a>
+</p>
 <div style="width: 1px; height: 5px;"/>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
 <div style="width: 1px; height: 5px;"/>
