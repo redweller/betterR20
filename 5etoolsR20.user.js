@@ -885,13 +885,19 @@ var D20plus = function(version) {
 		if (journalFolder === "") {
 			d20.journal.addFolderToFolderStructure("Spells");
 			d20.journal.addFolderToFolderStructure("Items");
+			d20.journal.addFolderToFolderStructure("Feats");
 			d20.journal.refreshJournalList();
 			journalFolder = d20.Campaign.get("journalfolder");
 		}
 		var journalFolderObj = JSON.parse(journalFolder);
 		var handouts = journalFolderObj.find(function(a) {return a.n && (a.n === "Spells" || a.n === "Items");});
-		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Spells')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable").addClass("Vetools-draggable");
-		$("#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains('Items')").parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable").addClass("Vetools-draggable");
+
+		function addClasses (folderName) {
+			$(`#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains(${folderName})`).parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable").addClass("Vetools-draggable");
+		}
+		addClasses("Spells");
+		addClasses("Items");
+		addClasses("Feats");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -939,7 +945,7 @@ var D20plus = function(version) {
 										handleData(data);
 									});
 								} else {
-									handout._getLatestBlob("notes", function(notes) {
+									handout._getLatestBlob("notes", function (notes) {
 										data = $(notes).filter("del").html();
 										handleData(data);
 									});
@@ -947,42 +953,72 @@ var D20plus = function(version) {
 
 								function handleData (data) {
 									data = JSON.parse(data);
-									inputData = data.data;
-									inputData.Name = data.name;
-									inputData.Content = data.content;
-									const r = $(t.target);
-									r.find("*[accept]").each(function() {
-										const $this = $(this);
-										const acceptTag = $this.attr("accept");
-										if (inputData[acceptTag] !== undefined) {
-											if ("input" === this.tagName.toLowerCase()) {
-												if ("checkbox" === $this.attr("type")) {
-													if (inputData[acceptTag]) {
-														$this.attr("checked", "checked");
+
+									// FIXME remove Feat workaround when roll20 supports feat drag-n-drop properly
+									if (data.data.Category === "Feats") {
+										const rowId = d20plus.generateRowId();
+										character.model.attribs.create({
+											"name": `repeating_traits_${rowId}_options-flag`,
+											"current": "0"
+										});
+
+										character.model.attribs.create({
+											"name": `repeating_traits_${rowId}_name`,
+											"current": data.name
+										});
+
+										character.model.attribs.create({
+											"name": `repeating_traits_${rowId}_description`,
+											"current": data.Vetoolscontent
+										});
+
+										character.model.attribs.create({
+											"name": `repeating_traits_${rowId}_source`,
+											"current": "Feat"
+										});
+
+										character.model.view._updateSheetValues();
+										var dirty = [];
+										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
+										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
+									} else {
+										inputData = data.data;
+										inputData.Name = data.name;
+										inputData.Content = data.content;
+										const r = $(t.target);
+										r.find("*[accept]").each(function() {
+											const $this = $(this);
+											const acceptTag = $this.attr("accept");
+											if (inputData[acceptTag] !== undefined) {
+												if ("input" === this.tagName.toLowerCase()) {
+													if ("checkbox" === $this.attr("type")) {
+														if (inputData[acceptTag]) {
+															$this.attr("checked", "checked");
+														} else {
+															$this.removeAttr("checked");
+														}
+													} else if ("radio" === $this.attr("type")) {
+														if (inputData[acceptTag]) {
+															$this.attr("checked", "checked");
+														} else {
+															$this.removeAttr("checked");
+														}
 													} else {
-														$this.removeAttr("checked");
+														$this.val(inputData[acceptTag]);
 													}
-												} else if ("radio" === $this.attr("type")) {
-													if (inputData[acceptTag]) {
-														$this.attr("checked", "checked");
-													} else {
-														$this.removeAttr("checked");
-													}
+												} else if ("select" === this.tagName.toLowerCase()) {
+													$this.find("option").each(function () {
+														const $this = $(this);
+														if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) $this.attr("selected", "selected");
+													});
 												} else {
 													$this.val(inputData[acceptTag]);
 												}
-											} else if ("select" === this.tagName.toLowerCase()) {
-												$this.find("option").each(function () {
-													const $this = $(this);
-													if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) $this.attr("selected", "selected");
-												});
-											} else {
-												$this.val(inputData[acceptTag]);
+												// persist the value
+												character.saveSheetValues(this);
 											}
-											// persist the value
-											character.saveSheetValues(this);
-										}
-									});
+										});
+									}
 								}
 							}
 							 else {
@@ -1919,158 +1955,88 @@ var D20plus = function(version) {
 	d20plus.spells.import = function(data, overwrite, deleteExisting) {
 		var level = Parser.spLevelToFull(data.level);
 		if (level.toLowerCase() !== "cantrip") level += " level";
-		var fname = $("#organize-by-source").prop("checked") ? Parser.sourceJsonToFull(data.source) : level.trim().capFirstLetter();
-		var findex = 1;
-		var folder;
-		d20.journal.refreshJournalList();
-		var journalFolder = d20.Campaign.get("journalfolder");
-		if (journalFolder === "") {
-			d20.journal.addFolderToFolderStructure("Characters");
-			d20.journal.refreshJournalList();
-			journalFolder = d20.Campaign.get("journalfolder");
-		}
-		var journalFolderObj = JSON.parse(journalFolder);
-		var spells = journalFolderObj.find(function(a) {return a.n && a.n === "Spells";});
-		if (!spells) d20.journal.addFolderToFolderStructure("Spells");
-		d20.journal.refreshJournalList();
-		journalFolder = d20.Campaign.get("journalfolder");
-		journalFolderObj = JSON.parse(journalFolder);
-		spells = journalFolderObj.find(function(a) {return a.n && a.n === "Spells";});
-		var name = data.name || "(Unknown Name)";
-		// check for duplicates
-		var dupe = false;
-		$.each(spells.i, function(i, v) {
-			if (v.id !== undefined) {
-				if (d20plus.objectExists(spells.i, v.id, name)) dupe = true;
-				if (overwrite || deleteExisting) d20plus.deleteObject(spells.i, v.id, name);
-			}
-		});
-		if (deleteExisting || (dupe && !overwrite)) return;
-		d20plus.remaining++;
-		if (d20plus.timeout === 500) {
-			$("#d20plus-import").dialog("open");
-			$("#import-remaining").text("d20plus.remaining");
-		}
-		timeout = d20plus.timeout;
-		d20plus.timeout += 2500;
-		setTimeout(function() {
-			d20plus.log("Running import of [" + name + "]");
-			$("#import-remaining").text(d20plus.remaining);
-			$("#import-name").text(name);
-			d20.journal.refreshJournalList();
-			journalFolder = d20.Campaign.get("journalfolder");
-			journalFolderObj = JSON.parse(journalFolder);
-			spells = journalFolderObj.find(function(a) {return a.n && a.n === "Spells";});
-			// make source folder
-			for (i = -1; i < spells.i.length; i++) {
-				var theFolderName = (findex === 1) ? fname : fname + " " + findex;
-				folder = spells.i.find(function(f) {return f.n === theFolderName;});
-				if (folder) {
-					if (folder.i.length >= 90) {
-						findex++;
-					} else {
-						break;
+		level = level.trim().capFirstLetter()
+
+		d20plus.importer.initFolder(data, overwrite, deleteExisting, "Spells", level, d20plus.spells.handoutBuilder)
+	};
+
+	d20plus.spells.handoutBuilder = function (name, data, folder) {
+		// build spell handout
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function(handout) {
+				if (!data.school) data.school = "A";
+				if (!data.range) data.range = "Self";
+				if (!data.duration) data.duration = "Instantaneous";
+				if (!data.components) data.components = "";
+				if (!data.time) data.components = "1 action";
+
+				const r20Data = {};
+				if (data.roll20) Object.assign(r20Data, data.roll20);
+				Object.assign(
+					r20Data,
+					{
+						"Level": String(data.level),
+						"Range": Parser.spRangeToFull(data.range),
+						"School": Parser.spSchoolAbvToFull(data.school),
+						"Source": "5etoolsR20",
+						"Classes": d20plus.importer.getCleanText(Parser.spClassesToFull(data.classes)),
+						"Category": "Spells",
+						"Duration": Parser.spDurationToFull(data.duration),
+						"Material": "",
+						"Components": parseComponents(data.components),
+						"Casting Time": Parser.spTimeListToFull(data.time)
 					}
-				} else {
-					d20.journal.addFolderToFolderStructure(theFolderName, spells.id);
-					d20.journal.refreshJournalList();
-					journalFolder = d20.Campaign.get("journalfolder");
-					journalFolderObj = JSON.parse(journalFolder);
-					spells = journalFolderObj.find(function(a) {return a.n && a.n === "Spells";});
-					folder = spells.i.find(function(f) {return f.n === theFolderName;});
-					break;
+				);
+
+				var r20json = {
+					name: data.name,
+					content: "",
+					htmlcontent: "",
+					data: r20Data
+				};
+				if (data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
+				if (data.meta) {
+					if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
 				}
-			}
-			if (!folder) {
-				console.log("> Failed to find or create source folder!");
-				return;
-			}
-			// build spell handout
-			d20.Campaign.handouts.create({
-				name: name
-			}, {
-				success: function(handout) {
-					if (!data.school) data.school = "A";
-					if (!data.range) data.range = "Self";
-					if (!data.duration) data.duration = "Instantaneous";
-					if (!data.components) data.components = "";
-					if (!data.time) data.components = "1 action";
-
-					const r20Data = {};
-					if (data.roll20) Object.assign(r20Data, data.roll20);
-					Object.assign(
-						r20Data,
-						{
-							"Level": String(data.level),
-							"Range": Parser.spRangeToFull(data.range),
-							"School": Parser.spSchoolAbvToFull(data.school),
-							"Source": "5etoolsR20",
-							"Classes": $(Parser.spClassesToFull(data.classes)).text(),
-							"Category": "Spells",
-							"Duration": Parser.spDurationToFull(data.duration),
-							"Material": "",
-							"Components": parseComponents(data.components),
-							"Casting Time": Parser.spTimeListToFull(data.time)
-						}
-					);
-
-					var r20json = {
-						name: data.name,
-						content: "",
-						htmlcontent: "",
-						data: r20Data
-					};
-					if (data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
-					if (data.meta) {
-						if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
-					}
-					if (data.duration.filter(d => d.concentration).length > 0) {
-						r20json.data["Concentration"] = "Yes";
-					}
-					var notecontents = "";
-					var gmnotes = "";
-					notecontents += `<p><h3>${data.name}</h3>
+				if (data.duration.filter(d => d.concentration).length > 0) {
+					r20json.data["Concentration"] = "Yes";
+				}
+				var notecontents = "";
+				var gmnotes = "";
+				notecontents += `<p><h3>${data.name}</h3>
 <em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}</em></p><p>
 <strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
 <strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
 <strong>Components:</strong> ${Parser.spComponentsToFull(data.components)}<br>
 <strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>
 </p>`;
-					const renderer = new EntryRenderer();
-					const renderStack = [];
-					const entryList = {type: "entries", entries: data.entries};
-					renderer.setBaseUrl(BASE_SITE_URL);
-					renderer.recursiveEntryRender(entryList, renderStack, 1);
-					r20json.content = $(renderStack.join(" ")).text();
-					notecontents += renderStack.join("");
-					if (data.entriesHigherLevel) {
-						const hLevelRenderStack = [];
-						const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
-						renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
-						r20json.content += "\n\nAt Higher Levels: " + $(hLevelRenderStack.join(" ").replace("At Higher Levels.", "")).text();
-						notecontents += hLevelRenderStack.join("");
-					}
-					notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
-					gmnotes = JSON.stringify(r20json);
-					notecontents += `<del>${gmnotes}</del>`
-					console.log(notecontents);
-					handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-					var injournals = ($("#import-showplayers").prop("checked")) ? ["all"].join(",") : "";
-					handout.save({notes: (new Date).getTime(), inplayerjournals: injournals});
-					d20.journal.addItemToFolderStructure(handout.id, folder.id);
+				const renderer = new EntryRenderer();
+				const renderStack = [];
+				const entryList = {type: "entries", entries: data.entries};
+				renderer.setBaseUrl(BASE_SITE_URL);
+				renderer.recursiveEntryRender(entryList, renderStack, 1);
+				r20json.content = d20plus.importer.getCleanText(renderStack.join(" "));
+				notecontents += renderStack.join("");
+				if (data.entriesHigherLevel) {
+					const hLevelRenderStack = [];
+					const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
+					renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
+					r20json.content += "\n\nAt Higher Levels: " + d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
+					notecontents += hLevelRenderStack.join("");
 				}
-			});
-			d20plus.remaining--;
-			if (d20plus.remaining === 0) {
-				setTimeout(function() {
-					$("#import-name").text("DONE!");
-					$("#import-remaining").text("0");
-					d20plus.bindDropLocations();
-				}, 1000);
+				notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
+				gmnotes = JSON.stringify(r20json);
+				notecontents += `<del>${gmnotes}</del>`
+				console.log(notecontents);
+				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
+				var injournals = ($("#import-showplayers").prop("checked")) ? ["all"].join(",") : "";
+				handout.save({notes: (new Date).getTime(), inplayerjournals: injournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
 			}
-			d20plus.log(`Finished import of [${name}]`);
-		}, timeout);
-	};
+		});
+	}
 
 	// parse spell components
 	function parseComponents(components) {
@@ -2283,16 +2249,135 @@ var D20plus = function(version) {
 
 	// Fetch feat data from file
 	d20plus.feats.load = function (url) {
-		d20plus.importer.simple(url, "feat", "feat", d20plus.feats.import);
+		d20plus.importer.simple(url, "feat", "feat", d20plus.feats.import, true);
 	};
 
-	// TODO
 	// Import individual feats
 	d20plus.feats.import = function (data, overwrite, deleteExisting) {
-
+		const subFolder = data.name[0].toUpperCase();
+		d20plus.importer.initFolder(data, overwrite, deleteExisting, "Feats", subFolder, d20plus.feats.handoutBuilder)
 	};
 
-	d20plus.importer.simple = function (url, listProp, stringItemType, importFunction) {
+	d20plus.feats.handoutBuilder = function (name, data, folder) {
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function (handout) {
+
+				const renderer = new EntryRenderer();
+				const prerequisite = EntryRenderer.feat.getPrerequisiteText(data.prerequisite);
+				EntryRenderer.feat.mergeAbilityIncrease(data);
+
+				const renderStack = [];
+				renderer.recursiveEntryRender({entries: data.entries}, renderStack, 2);
+				const rendered = renderStack.join("");
+
+				const r20json = {
+					"name": data.name,
+					"content": `${prerequisite ? `**Prerequisite**: ${prerequisite}\n\n` : ""}${$(rendered).text()}`,
+					"Vetoolscontent": d20plus.importer.getCleanText(rendered),
+					"htmlcontent": "",
+					"data": {
+						"Category": "Feats"
+					}
+				};
+				const gmNotes = JSON.stringify(r20json);
+
+				const baseNoteContents = `${prerequisite ? `<p><i>Prerequisite: ${prerequisite}.</i></p> ` : ""}${rendered}`;
+				const noteContents = `${baseNoteContents}<del>${gmNotes}</del>`;
+
+				console.log(noteContents);
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				var injournals = ($("#import-showplayers").prop("checked")) ? ["all"].join(",") : "";
+				handout.save({notes: (new Date).getTime(), inplayerjournals: injournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			}
+		});
+	};
+
+	d20plus.importer.initFolder = function (data, overwrite, deleteExisting, parentFolderName, folderName, handoutBuilder) {
+		var fname = $("#organize-by-source").prop("checked") ? Parser.sourceJsonToFull(data.source) : folderName;
+		var findex = 1;
+		var folder;
+		d20.journal.refreshJournalList();
+		var journalFolder = d20.Campaign.get("journalfolder");
+		if (journalFolder === "") {
+			d20.journal.addFolderToFolderStructure("Characters");
+			d20.journal.refreshJournalList();
+			journalFolder = d20.Campaign.get("journalfolder");
+		}
+		var journalFolderObj = JSON.parse(journalFolder);
+		var parentFolder = journalFolderObj.find(function(a) {return a.n && a.n === parentFolderName;});
+		if (!parentFolder) d20.journal.addFolderToFolderStructure(parentFolderName);
+		d20.journal.refreshJournalList();
+		journalFolder = d20.Campaign.get("journalfolder");
+		journalFolderObj = JSON.parse(journalFolder);
+		parentFolder = journalFolderObj.find(function(a) {return a.n && a.n === parentFolderName;});
+		var name = data.name || "(Unknown Name)";
+		// check for duplicates
+		var dupe = false;
+		$.each(parentFolder.i, function(i, v) {
+			if (v.id !== undefined) {
+				if (d20plus.objectExists(parentFolder.i, v.id, name)) dupe = true;
+				if (overwrite || deleteExisting) d20plus.deleteObject(parentFolder.i, v.id, name);
+			}
+		});
+		if (deleteExisting || (dupe && !overwrite)) return;
+		d20plus.remaining++;
+		if (d20plus.timeout === 500) {
+			$("#d20plus-import").dialog("open");
+			$("#import-remaining").text("d20plus.remaining");
+		}
+		timeout = d20plus.timeout;
+		d20plus.timeout += 2500;
+		setTimeout(function() {
+			d20plus.log("Running import of [" + name + "]");
+			$("#import-remaining").text(d20plus.remaining);
+			$("#import-name").text(name);
+			d20.journal.refreshJournalList();
+			journalFolder = d20.Campaign.get("journalfolder");
+			journalFolderObj = JSON.parse(journalFolder);
+			parentFolder = journalFolderObj.find(function(a) {return a.n && a.n === parentFolderName;});
+			// make source folder
+			for (i = -1; i < parentFolder.i.length; i++) {
+				var theFolderName = (findex === 1) ? fname : fname + " " + findex;
+				folder = parentFolder.i.find(function(f) {return f.n === theFolderName;});
+				if (folder) {
+					if (folder.i.length >= 90) {
+						findex++;
+					} else {
+						break;
+					}
+				} else {
+					d20.journal.addFolderToFolderStructure(theFolderName, parentFolder.id);
+					d20.journal.refreshJournalList();
+					journalFolder = d20.Campaign.get("journalfolder");
+					journalFolderObj = JSON.parse(journalFolder);
+					parentFolder = journalFolderObj.find(function(a) {return a.n && a.n === parentFolderName;});
+					folder = parentFolder.i.find(function(f) {return f.n === theFolderName;});
+					break;
+				}
+			}
+			if (!folder) {
+				console.log("> Failed to find or create source folder!");
+				return;
+			}
+
+			handoutBuilder(name, data, folder);
+
+			d20plus.remaining--;
+			if (d20plus.remaining === 0) {
+				setTimeout(function() {
+					$("#import-name").text("DONE!");
+					$("#import-remaining").text("0");
+					d20plus.bindDropLocations();
+				}, 1000);
+			}
+			d20plus.log(`Finished import of [${name}]`);
+		}, timeout);
+	}
+
+	d20plus.importer.simple = function (url, listProp, stringItemType, importFunction, addSource) {
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 		const x2js = new X2JS();
 		let datatype = $("#import-datatype").val();
@@ -2305,7 +2390,7 @@ var D20plus = function(version) {
 				try {
 					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
 					data = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^\s*var\s*.*\s*=\s*/g, ""));
-					data.listProp.sort(function (a, b) {
+					data[listProp].sort(function (a, b) {
 						if (a.name < b.name) return -1;
 						if (a.name > b.name) return 1;
 						return 0;
@@ -2314,9 +2399,9 @@ var D20plus = function(version) {
 					const $l = $impList.find(".list");
 					$l.html("");
 					// build checkbox list
-					data.listProp.forEach((it, i) => {
+					data[listProp].forEach((it, i) => {
 						try {
-							$l.append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${it.name}</span></label>`);
+							$l.append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${it.name}${addSource ? `${Parser.sourceJsonToAbv(it.source)}` : ""}</span></label>`);
 						} catch (e) {
 							console.log("Error building list!", e);
 							d20plus.addImportError(it.name);
@@ -2348,7 +2433,7 @@ var D20plus = function(version) {
 
 					$importWindow.find("button").unbind("click");
 					$importWindow.find("button#importstart").bind("click", () => {
-						d20plus._importHandleStart(importList, data.listProp, stringItemType, importFunction)
+						d20plus._importHandleStart(importList, data[listProp], stringItemType, importFunction)
 					})
 				} catch (e) {
 					console.log("> Exception ", e);
@@ -2360,6 +2445,12 @@ var D20plus = function(version) {
 		});
 		d20plus.timeout = 500;
 	};
+
+	d20plus.importer.getCleanText = function (str) {
+		const $ele = $(str);
+		$ele.find("p, li, br").append("\n\n");
+		return $ele.text();
+	}
 
 	String.prototype.capFirstLetter = function() {
 		return this.replace(/\w\S*/g, function(w) {return w.charAt(0).toUpperCase() + w.substr(1).toLowerCase();});
