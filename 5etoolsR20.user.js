@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.6.0
+// @version      0.6.1
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2401,7 +2401,7 @@ var D20plus = function(version) {
 					// build checkbox list
 					data[listProp].forEach((it, i) => {
 						try {
-							$l.append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${it.name}${addSource ? `${Parser.sourceJsonToAbv(it.source)}` : ""}</span></label>`);
+							$l.append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${it.name}${addSource ? ` (${Parser.sourceJsonToAbv(it.source)})` : ""}</span></label>`);
 						} catch (e) {
 							console.log("Error building list!", e);
 							d20plus.addImportError(it.name);
