@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.6.3
+// @version      0.6.4
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -600,6 +600,23 @@ var D20plus = function(version) {
 		}
 	};
 
+	d20plus.bindToken = function (token) {
+		function getToken () {
+			return $("#initiativewindow").find(`li.token`).filter((i, e) => {
+				return $(e).data("tokenid") === token.id;
+			});
+		}
+		getToken().find(`.hp.editable`).text(token.attributes.bar1_value)
+
+		token.on("change", (token, changes) => {
+			// FIXME use correct bar number
+			// FIXME rebind on page change and initial load
+			if (changes.changes.bar1_value) {
+				getToken().find(`.hp.editable`).text(token.changed.bar1_value)
+			}
+		});
+	};
+
 	d20plus.lastClickedFolderId = null
 
 	// Create new Journal commands
@@ -790,6 +807,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
 			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+			$("#mysettings > .content a#bind-tokens").on(window.mousedowntype, d20plus.bindTokens);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
 			d20plus.getInitTemplate();
@@ -876,6 +894,16 @@ var D20plus = function(version) {
 			$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
 		}
 		$span.text("Difficulty: " + d20plus.getDifficulty());
+	};
+
+	// bind tokens to the initiative tracker
+	// TODO automate this on page load/battlemap change
+	d20plus.bindTokens = function () {
+		// Gets a list of all the tokens on the current page:
+		const curTokens = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.toArray();
+		curTokens.forEach(t => {
+			d20plus.bindToken(t);
+		});
 	};
 
 	// bind drop locations on sheet to accept custom handouts
@@ -2636,6 +2664,8 @@ var D20plus = function(version) {
 </p>
 <div style="width: 1px; height: 5px;"/>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
+<div style="width: 1px; height: 5px;"/>
+<a class="btn bind-tokens" href="#" id="bind-tokens" title="Lets you update token HP and have the tracker window update">Bind Tokens to Tracker</a>
 <div style="width: 1px; height: 5px;"/>
 <a class="btn" href="#" id="button-edit-config">Edit Config</a>
 <style id="dynamicStyle"></style>`;
