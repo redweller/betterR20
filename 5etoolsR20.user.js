@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.6.2
+// @version      0.6.3
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1723,7 +1723,8 @@ var D20plus = function(version) {
 				char = token.character;
 				npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
 				if (npc && npc.get("current") == "1") {
-					token.attributes.bar3_value = total;
+					// FIXME use the right bar
+					token.attributes.bar1_value = total;
 				} else {
 					hp = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "hp";});
 					if (hp) {
@@ -2715,6 +2716,7 @@ var D20plus = function(version) {
   <span class="hp" alt="HP" title="HP">HP</span>
 </div>`;
 
+	// FIXME use the right bar for HP
 	d20plus.initiativeTemplate = `<script id="tmpl_initiativecharacter" type="text/html">
 	<![CDATA[
 		<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
