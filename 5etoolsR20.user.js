@@ -589,6 +589,9 @@ var D20plus = function(version) {
 		d20plus.log("> Add HTML");
 		d20plus.addHTML();
 		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
+		d20plus.log("> All systems operational");
+		// REMOVE BEFORE COMMIT
+		alert("Config loaded, ready to go!");
 	}
 	if (window.is_gm) {
 		d20plus.log("> Bind Graphics");
@@ -597,7 +600,6 @@ var D20plus = function(version) {
 		d20plus.log("> Applying config");
 		d20plus.handleConfigChange();
 	}
-		d20plus.log("> All systems operational");
 	};
 
 	// Bind Graphics Add on page
@@ -1878,17 +1880,33 @@ var D20plus = function(version) {
 	d20plus.getInitTemplate = function() {
 		var cachedFunction = d20.Campaign.initiativewindow.rebuildInitiativeList;
 		const chachedTemplate = $("#tmpl_initiativecharacter").clone();
+		console.log(chachedTemplate);
 		d20.Campaign.initiativewindow.rebuildInitiativeList = function() {
 			var html = d20plus.initiativeTemplate;
 			var columnsAdded = [];
 			$(".tracker-header-extra-columns").empty();
 			// TODO: blank out empty columns. CSS class per column to change display?
-			// Also figure out how to point to the bar containing current HP if it's an NPC
+
+			//	<span class='tracker-col hp editable' alt='HP' title='HP'>
+			//		<$ if(npc && npc.get("current") == "1") { $>
+			//			<$!token.attributes.bar1_value$>
+			//		<$ } else { $>
+			//			<$!char.autoCalcFormula('||HP||')$>
+			//		<$ } $>
+			//	</span>
+
 			_.each(d20plus.config.interface, function(v, i) {
 				if (i.includes("trackerCol") && !columnsAdded.includes(i)) {
 					columnsAdded.push(i);
 					if(d20plus.getCfgVal("interface", i) != "") {
-						html = html.replace("||" + i + "||", d20plus.getCfgVal("interface", i));
+						if (d20plus.config["interface"][i] == "hp" && d20plus.getCfgKey("token", "hp")) {
+							var barName = d20plus.getCfgKey("token", "hp");
+							html = html.replace("||" + i + "_Class||", d20plus.getCfgVal("interface", i) + " editable");
+							html = html.replace("<$!char.autoCalcFormula('||" + i + "||')$>", "<$!token.attributes." + barName + "_value$>");
+						} else {
+							html = html.replace("||" + i + "_Class||", d20plus.getCfgVal("interface", i));
+							html = html.replace("||" + i + "||", d20plus.getCfgVal("interface", i));
+						}
 						$(".tracker-header-extra-columns").prepend(
 							`<span class='tracker-col'>` + d20plus.getCfgVal("interface", i).toUpperCase() + `</span>`
 						);
@@ -2816,14 +2834,14 @@ var D20plus = function(version) {
 				<$!this.pr$>
 			</span>
 			<div class="tracker-extra-columns">
-				<span class='tracker-col'>
-					<$!char.autoCalcFormula('@{||trackerCol3||}')$>
+				<span class='tracker-col ||trackerCol3_Class||'>
+					<$!char.autoCalcFormula('||trackerCol3||')$>
 				</span>
-				<span class='tracker-col'>
-					<$!char.autoCalcFormula('@{||trackerCol2||}')$>
+				<span class='tracker-col ||trackerCol2_Class||'>
+					<$!char.autoCalcFormula('||trackerCol2||')$>
 				</span>
-				<span class='tracker-col'>
-					<$!char.autoCalcFormula('@{||trackerCol1||}')$>
+				<span class='tracker-col ||trackerCol1_Class||'>
+					<$!char.autoCalcFormula('||trackerCol1||')$>
 				</span>
 			</div>
 			<$ if (char) { $>
@@ -2831,13 +2849,6 @@ var D20plus = function(version) {
 				<span class='cr' alt='CR' title='CR'>
 					<$ if(npc && npc.get("current") == "1") { $>
 						<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
-					<$ } $>
-				</span>
-				<span class='hp editable' alt='HP' title='HP'>
-					<$ if(npc && npc.get("current") == "1") { $>
-						<$!token.attributes.bar1_value$>
-					<$ } else { $>
-						<$!char.autoCalcFormula('||HP||')$>
 					<$ } $>
 				</span>
 			<$ } $>
