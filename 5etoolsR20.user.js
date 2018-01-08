@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.6.4
+// @version      0.6.5
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1182,7 +1182,7 @@ var D20plus = function(version) {
 				selectAllBox.unbind("click");
 				selectAllBox.prop("checked", false);
 				selectAllBox.bind("click", function() {
-					d20plus._importToggleSelectAll(importList, this);
+					d20plus._importToggleSelectAll(importList, selectAllBox);
 				});
 				$("#d20plus-importlist button").unbind("click");
 				$("#d20plus-importlist button#importstart").bind("click", function() {
@@ -1968,7 +1968,7 @@ var D20plus = function(version) {
 				selectAllBox.unbind("click");
 				selectAllBox.prop("checked", false);
 				selectAllBox.bind("click", function() {
-					d20plus._importToggleSelectAll(importList, this);
+					d20plus._importToggleSelectAll(importList, selectAllBox);
 				});
 				$("#d20plus-importlist button").unbind("click");
 				$("#d20plus-importlist button#importstart").bind("click", function() {
@@ -2457,7 +2457,7 @@ var D20plus = function(version) {
 					$selectAllBox.unbind("click");
 					$selectAllBox.prop("checked", false);
 					$selectAllBox.bind("click", () => {
-						d20plus._importToggleSelectAll(importList, this);
+						d20plus._importToggleSelectAll(importList, $selectAllBox);
 					});
 
 					$importWindow.find("button").unbind("click");
