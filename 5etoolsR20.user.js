@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.7.0
+// @version      0.7.1
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1054,7 +1054,7 @@ var D20plus = function(version) {
 														makeSpellTrait(smLevel, rowId, "spellname", `${m.name} (${sm.name})`);
 														const renderStack = [];
 														renderer.recursiveEntryRender({entries: sm.entries}, renderStack, 3);
-														makeSpellTrait(smLevel, rowId, "spelldescription", renderStack.join(""));
+														makeSpellTrait(smLevel, rowId, "spelldescription", d20plus.importer.getCleanText(renderStack.join("")));
 														const costStr = sm.cost.min === sm.cost.max ? sm.cost.min : `${sm.cost.min}-${sm.cost.max}`;
 														makeSpellTrait(smLevel, rowId, "spellcomp_materials", `${costStr} psi points`);
 														noComponents(smLevel, rowId, true);
@@ -1066,7 +1066,7 @@ var D20plus = function(version) {
 													makeSpellTrait(mLevel, rowId, "spellname", `${m.name}`);
 													const renderStack = [];
 													renderer.recursiveEntryRender({entries: m.entries}, renderStack, 3);
-													makeSpellTrait(mLevel, rowId, "spelldescription", `Psionic Discipline mode\n\n${renderStack.join("")}`);
+													makeSpellTrait(mLevel, rowId, "spelldescription", `Psionic Discipline mode\n\n${d20plus.importer.getCleanText(renderStack.join(""))}`);
 													const costStr = m.cost.min === m.cost.max ? m.cost.min : `${m.cost.min}-${m.cost.max}`;
 													makeSpellTrait(mLevel, rowId, "spellcomp_materials", `${costStr} psi points`);
 													if (m.concentration) {
@@ -1080,7 +1080,7 @@ var D20plus = function(version) {
 											const level = "cantrip";
 											makeSpellTrait(level, rowId, "spelllevel", "cantrip");
 											makeSpellTrait(level, rowId, "spellname", data.name);
-											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${EntryRenderer.psionic.getTalentText(data, renderer)}`);
+											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${d20plus.importer.getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
 											noComponents(level, rowId, false);
 										}
 
