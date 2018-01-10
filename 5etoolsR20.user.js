@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.6.5
+// @version      0.7.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -127,6 +127,7 @@ var D20plus = function(version) {
 
 	var itemdataurl = `${DATA_URL}items.json`;
 	var featdataurl = `${DATA_URL}feats.json`;
+	var psionicdataurl = `${DATA_URL}psionics.json`;
 
 	var d20plus = {
 		sheet: "ogl",
@@ -136,6 +137,7 @@ var D20plus = function(version) {
 		scriptsLoaded: false,
 		monsters: {},
 		spells: {},
+		psionics: {},
 		items: {},
 		feats: {},
 		initiative: {},
@@ -804,6 +806,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
 			$("#mysettings > .content a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
 			$("#mysettings > .content a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
+			$("#mysettings > .content a#import-psionics-load").on(window.mousedowntype, d20plus.psionics.button);
 			$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
 			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
@@ -912,6 +915,7 @@ var D20plus = function(version) {
 		var journalFolder = d20.Campaign.get("journalfolder");
 		if (journalFolder === "") {
 			d20.journal.addFolderToFolderStructure("Spells");
+			d20.journal.addFolderToFolderStructure("Psionics");
 			d20.journal.addFolderToFolderStructure("Items");
 			d20.journal.addFolderToFolderStructure("Feats");
 			d20.journal.refreshJournalList();
@@ -924,6 +928,7 @@ var D20plus = function(version) {
 			$(`#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains(${folderName})`).parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable").addClass("Vetools-draggable");
 		}
 		addClasses("Spells");
+		addClasses("Psionics");
 		addClasses("Items");
 		addClasses("Feats");
 
@@ -1006,7 +1011,81 @@ var D20plus = function(version) {
 										});
 
 										character.model.view._updateSheetValues();
-										var dirty = [];
+										const dirty = [];
+										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
+										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
+									} else if (data.data.Category === "Psionics") {
+										function makeSpellTrait(level, rowId, propName, content) {
+											character.model.attribs.create({
+												"name": `repeating_spell-${level}_${rowId}_${propName}`,
+												"current": `${content}`
+											});
+										}
+										// disable all components
+										function noComponents(level, rowId, hasM) {
+											makeSpellTrait(level, rowId, "spellcomp_v", 0);
+											makeSpellTrait(level, rowId, "spellcomp_s", 0);
+											if (!hasM) {
+												makeSpellTrait(level, rowId, "spellcomp_m", 0);
+											}
+											makeSpellTrait(level, rowId, "options-flag", 0);
+										}
+
+										const renderer = new EntryRenderer();
+										renderer.setBaseUrl(BASE_SITE_URL);
+
+										if (data.type === "D") {
+											const rowId = d20plus.generateRowId();
+
+											// make focus
+											const focusLevel = "cantrip";
+											makeSpellTrait(focusLevel, rowId, "spelllevel", "cantrip");
+											makeSpellTrait(focusLevel, rowId, "spellname", `${data.name} Focus`);
+											makeSpellTrait(focusLevel, rowId, "spelldescription", data.focus);
+											makeSpellTrait(focusLevel, rowId, "spellcastingtime", "1 bonus action");
+											noComponents(focusLevel, rowId);
+
+											data.modes.forEach(m => {
+												if (m.submodes) {
+													m.submodes.forEach(sm => {
+														const rowId = d20plus.generateRowId();
+														const smLevel = sm.cost.min;
+														makeSpellTrait(smLevel, rowId, "spelllevel", smLevel);
+														makeSpellTrait(smLevel, rowId, "spellname", `${m.name} (${sm.name})`);
+														const renderStack = [];
+														renderer.recursiveEntryRender({entries: sm.entries}, renderStack, 3);
+														makeSpellTrait(smLevel, rowId, "spelldescription", renderStack.join(""));
+														const costStr = sm.cost.min === sm.cost.max ? sm.cost.min : `${sm.cost.min}-${sm.cost.max}`;
+														makeSpellTrait(smLevel, rowId, "spellcomp_materials", `${costStr} psi points`);
+														noComponents(smLevel, rowId, true);
+													});
+												} else {
+													const rowId = d20plus.generateRowId();
+													const mLevel = m.cost.min;
+													makeSpellTrait(mLevel, rowId, "spelllevel", mLevel);
+													makeSpellTrait(mLevel, rowId, "spellname", `${m.name}`);
+													const renderStack = [];
+													renderer.recursiveEntryRender({entries: m.entries}, renderStack, 3);
+													makeSpellTrait(mLevel, rowId, "spelldescription", `Psionic Discipline mode\n\n${renderStack.join("")}`);
+													const costStr = m.cost.min === m.cost.max ? m.cost.min : `${m.cost.min}-${m.cost.max}`;
+													makeSpellTrait(mLevel, rowId, "spellcomp_materials", `${costStr} psi points`);
+													if (m.concentration) {
+														makeSpellTrait(mLevel, rowId, "spellduration", `${m.concentration.duration} ${m.concentration.unit}`);
+													}
+													noComponents(mLevel, rowId, true);
+												}
+											});
+										} else {
+											const rowId = d20plus.generateRowId();
+											const level = "cantrip";
+											makeSpellTrait(level, rowId, "spelllevel", "cantrip");
+											makeSpellTrait(level, rowId, "spellname", data.name);
+											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${EntryRenderer.psionic.getTalentText(data, renderer)}`);
+											noComponents(level, rowId, false);
+										}
+
+										character.model.view._updateSheetValues();
+										const dirty = [];
 										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
 										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 									} else {
@@ -2270,6 +2349,58 @@ var D20plus = function(version) {
 		return "n/a";
 	};
 
+	// Import Psionics button was clicked
+	d20plus.psionics.button = function () {
+		var url = $("#import-psionics-url").val();
+		if (url !== null) d20plus.psionics.load(url);
+	}
+
+	// Fetch psionic data from file
+	d20plus.psionics.load = function (url) {
+		d20plus.importer.simple(url, "psionic", "psionic", d20plus.psionics.import, false);
+	};
+
+	// Import individual psionics
+	d20plus.psionics.import = function (data, overwrite, deleteExisting) {
+		const subFolder = data.name[0].toUpperCase();
+		d20plus.importer.initFolder(data, overwrite, deleteExisting, "Psionics", subFolder, d20plus.psionics.handoutBuilder)
+	};
+
+	d20plus.psionics.handoutBuilder = function (name, data, folder) {
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function (handout) {
+				function renderTalent() {
+					const renderStack = [];
+					renderer.recursiveEntryRender(({entries: data.entries, type: "entries"}), renderStack);
+					return renderStack.join(" ");
+				}
+
+				const renderer = new EntryRenderer();
+				renderer.setBaseUrl(BASE_SITE_URL);
+				data.data = {
+					Category: "Psionics"
+				};
+				const gmNotes = JSON.stringify(data);
+
+				const baseNoteContents = `
+				<h3>${data.name}</h3>
+				<p><em>${data.type === "D" ? `${data.order} ${Parser.psiTypeToFull(data.type)}` : `${Parser.psiTypeToFull(data.type)}`}</em></p>
+				${data.type === "D" ? `${EntryRenderer.psionic.getDisciplineText(data, renderer)}` : `${renderTalent()}`}
+				`
+
+				const noteContents = `${baseNoteContents}<br><del>${gmNotes}</del>`;
+
+				console.log(noteContents);
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				const injournals = ($("#import-showplayers").prop("checked")) ? ["all"].join(",") : "";
+				handout.save({notes: (new Date).getTime(), inplayerjournals: injournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			}
+		});
+	};
+
 	// Import Feats button was clicked
 	d20plus.feats.button = function () {
 		var url = $("#import-feats-url").val();
@@ -2294,6 +2425,7 @@ var D20plus = function(version) {
 			success: function (handout) {
 
 				const renderer = new EntryRenderer();
+				renderer.setBaseUrl(BASE_SITE_URL);
 				const prerequisite = EntryRenderer.feat.getPrerequisiteText(data.prerequisite);
 				EntryRenderer.feat.mergeAbilityIncrease(data);
 
@@ -2656,9 +2788,15 @@ var D20plus = function(version) {
 </p>
 <p><a class="btn" href="#" id="button-spells-load">Import Spells</a><p/>
 <p><a class="btn" href="#" id="button-spells-load-all" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
+<h4>Psionic Importing</h4>
+<p>
+<label for="import-psionics-url">Psionics Data URL:</label>
+<input type="text" id="import-psionics-url" value="${psionicdataurl}">
+<a class="btn" href="#" id="import-psionics-load">Import Psionics</a>
+</p>
 <h4>Feat Importing</h4>
 <p>
-<label for="import-feats-url">Item Data URL:</label>
+<label for="import-feats-url">Feat Data URL:</label>
 <input type="text" id="import-feats-url" value="${featdataurl}">
 <a class="btn" href="#" id="import-feats-load">Import Feats</a>
 </p>
