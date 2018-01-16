@@ -118,7 +118,7 @@ var D20plus = function(version) {
 		"import": {
 			"_name": "Import",
 			"importInterval": {
-				"name": "Rest Time Between Imports (msec)",
+				"name": "Rest Time between Each Handout (msec)",
 				"default": 100,
 				"_type": "integer"
 			}
@@ -2552,9 +2552,9 @@ var D20plus = function(version) {
 			d20.journal.refreshJournalList();
 			madeSoFar.push(toMake);
 
+			// we have to save -> reread the entire directory JSON -> walk back to where we were
 			let nextDir = {i: JSON.parse(d20.Campaign.get("journalfolder"))};
 			madeSoFar.forEach(f => {
-				// walk back to the point where we should be...
 				nextDir = nextDir.i.find(dir => dir.n.toLowerCase() === f.toLowerCase());
 			})
 
@@ -2657,7 +2657,7 @@ var D20plus = function(version) {
 						return;
 					}
 
-					// pull items out the queue in LIFO order, for journal ordering (last created at will be at the top)
+					// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
 					const entry = addQueue.pop();
 					entry.name = entry.name || "(Unknown)";
 					$stsName.text(entry.name);
