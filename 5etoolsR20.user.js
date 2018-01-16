@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.7.1
+// @version      0.8.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -114,6 +114,14 @@ var D20plus = function(version) {
 				"default": false,
 				"_type": "boolean"
 			}
+		},
+		"import": {
+			"_name": "Import",
+			"importInterval": {
+				"name": "Rest Time between Each Handout (msec)",
+				"default": 100,
+				"_type": "integer"
+			}
 		}
 	};
 
@@ -124,6 +132,9 @@ var D20plus = function(version) {
 
 	var monsterDataDir = `${DATA_URL}bestiary/`;
 	var monsterDataUrls = {};
+
+	var adventureDataDir = `${DATA_URL}adventure/`;
+	var adventureMetadata = {};
 
 	var itemdataurl = `${DATA_URL}items.json`;
 	var featdataurl = `${DATA_URL}feats.json`;
@@ -140,6 +151,7 @@ var D20plus = function(version) {
 		psionics: {},
 		items: {},
 		feats: {},
+		adventures: {},
 		initiative: {},
 		config: {},
 		importer: {}
@@ -154,7 +166,8 @@ var D20plus = function(version) {
 
 	d20plus.json = [
 		{name: "spell index", url: `${spellDataDir}index.json`},
-		{name: "bestiary index", url: `${monsterDataDir}index.json`}
+		{name: "bestiary index", url: `${monsterDataDir}index.json`},
+		{name: "adventures index", url: `${DATA_URL}adventures.json`}
 	]
 
 	// add JSON index/metadata
@@ -162,6 +175,7 @@ var D20plus = function(version) {
 		const onEachLoadFunction = function (name, url, data) {
 			if (name === "spell index") spellDataUrls = data;
 			else if (name === "bestiary index") monsterDataUrls = data;
+			else if (name === "adventures index") adventureMetadata = data;
 			else throw new Error(`Unhandled data from JSON ${name} (${url})`)
 
 			d20plus.log(`> JSON [${name}] Loaded`);
@@ -309,6 +323,12 @@ var D20plus = function(version) {
 		return d20plus.config[group][key];
 	};
 
+	d20plus.getCfgDefaultVal = function (group, key) {
+		if (CONFIG_OPTIONS[group] === undefined) return undefined;
+		if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
+		return CONFIG_OPTIONS[group][key].default
+	};
+
 	// Helpful for checking if a boolean option is set even if false
 	d20plus.hasCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
@@ -440,7 +460,17 @@ var D20plus = function(version) {
 							toAdd.append(td);
 							break;
 						}
+						case "integer": {
+							const field = $(`<input type="number" value="${d20plus.getCfgVal(cfgK, grpK)}">`);
 
+							configFields[cfgK][grpK] = () => {
+								return Number(field.val());
+							};
+
+							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
 					}
 					tbody.append(toAdd);
 				})
@@ -764,7 +794,9 @@ var D20plus = function(version) {
 
 	// Determine if folder contains monster by that name
 	d20plus.objectExists = function(folderObj, folderId, name) {
-		const container = folderObj.find(function(a) {return a.id === folderId;});
+		const container = folderObj.find(function (a) {
+			return a.id === folderId;
+		});
 		let result = false;
 		$.each(container.i, function(i, v) {
 			var char = d20.Campaign.characters.get(v);
@@ -777,7 +809,9 @@ var D20plus = function(version) {
 
 	// Find and delete object in folder of given name
 	d20plus.deleteObject = function(folderObj, folderId, name) {
-		const container = folderObj.find(function(a) {return a.id === folderId;});
+		const container = folderObj.find(function (a) {
+			return a.id === folderId;
+		});
 		let result = false;
 		$.each(container.i, function(i, v) {
 			var char = d20.Campaign.characters.get(v);
@@ -809,6 +843,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#import-psionics-load").on(window.mousedowntype, d20plus.psionics.button);
 			$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
 			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
+			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#mysettings > .content a#bind-tokens").on(window.mousedowntype, d20plus.bindTokens);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
@@ -854,6 +889,7 @@ var D20plus = function(version) {
 
 			populateDropdown("#button-spell-select", "#import-spell-url", spellDataDir, spellDataUrls, "PHB");
 			populateDropdown("#button-monsters-select", "#import-monster-url", monsterDataDir, monsterDataUrls, "MM");
+			populateAdventuresDropdown();
 
 			function populateDropdown(dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel) {
 				const defaultUrl = d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]);
@@ -872,6 +908,30 @@ var D20plus = function(version) {
 				dropdown.val(defaultUrl);
 				dropdown.change(function () {
 					$(inputFieldId).val(this.value);
+				});
+			}
+
+			function populateAdventuresDropdown () {
+				const defaultAdvUrl = d20plus.formSrcUrl(adventureDataDir, "adventure-lmop.json");
+				const $iptUrl = $("#import-adventures-url");
+				$iptUrl.val(defaultAdvUrl);
+				$iptUrl.data("id", "lmop")
+				const $sel = $("#button-adventures-select");
+				adventureMetadata.adventure.forEach(a => {
+					$sel.append($('<option>', {
+						value: d20plus.formSrcUrl(adventureDataDir, `adventure-${a.id.toLowerCase()}.json|${a.id}`),
+						text: a.name
+					}));
+				})
+				$sel.append($('<option>', {
+					value: "",
+					text: "Custom"
+				}));
+				$sel.val(defaultAdvUrl);
+				$sel.change(() => {
+					const [url, id] = $sel.val().split("|");
+					$($iptUrl).val(url);
+					$iptUrl.data("id", id);
 				});
 			}
 		}
@@ -1337,6 +1397,7 @@ var D20plus = function(version) {
 		d20plus.remaining++;
 		if (d20plus.timeout == 500) {
 			$("#d20plus-import").dialog("open");
+			$(`#importcancel`).hide(); // TODO enable import cancel
 			$("#import-remaining").text(d20plus.remaining);
 		}
 		timeout = d20plus.timeout;
@@ -2198,6 +2259,7 @@ var D20plus = function(version) {
 		d20plus.remaining++;
 		if (d20plus.timeout === 500) {
 			$("#d20plus-import").dialog("open");
+			$(`#importcancel`).hide(); // TODO enable import cancel
 			$("#import-remaining").text("d20plus.remaining");
 		}
 		timeout = d20plus.timeout;
@@ -2456,24 +2518,197 @@ var D20plus = function(version) {
 		});
 	};
 
-	d20plus.importer.initFolder = function (data, overwrite, deleteExisting, parentFolderName, folderName, handoutBuilder) {
-		var fname = $("#organize-by-source").prop("checked") ? Parser.sourceJsonToFull(data.source) : folderName;
-		var findex = 1;
-		var folder;
+	// Import Feats button was clicked
+	d20plus.adventures.button = function () {
+		var url = $("#import-adventures-url").val();
+		if (url !== null) d20plus.adventures.load(url);
+	};
+
+	d20plus.importer.makeDirTree = function (path) {
+		// path e.g. Spells/Cantrips/1
+		const parts = path.split("/").map(s => s.trim()).filter(s => s);
+		// roll20 allows a max directory depth of 4 :joy: (5, but the 5th level is unusable)
+		if (parts.length > 4) throw new Error("Max directory depth exceeded! The maximum is 4.")
+
+		const madeSoFar = [];
+
+		const root = {i: d20plus.importer.getJournalFolderObj()};
+
+		// roll20 folder management is dumb, so just pick the first folder with the right name if there's multiple
+		let curDir = root;
+		parts.forEach(toMake => {
+			const existing = curDir.i.find((it) => {
+				// n is folder name
+				return it.n && it.n === toMake;
+			})
+			if (!existing) {
+				if (curDir.id) {
+					d20.journal.addFolderToFolderStructure(toMake, curDir.id);
+				} else {
+					// root has no id
+					d20.journal.addFolderToFolderStructure(toMake);
+				}
+			}
+			d20.journal.refreshJournalList();
+			madeSoFar.push(toMake);
+
+			// we have to save -> reread the entire directory JSON -> walk back to where we were
+			let nextDir = {i: JSON.parse(d20.Campaign.get("journalfolder"))};
+			madeSoFar.forEach(f => {
+				nextDir = nextDir.i.find(dir => dir.n.toLowerCase() === f.toLowerCase());
+			})
+
+			curDir = nextDir;
+		});
+		return curDir;
+	}
+
+	// Fetch adventure data from file
+	d20plus.adventures.load = function (url) {
+		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+		const x2js = new X2JS();
+		let datatype = $("#import-datatype").val();
+		if (datatype === "json") datatype = "text";
+		$.ajax({
+			type: "GET",
+			url: url,
+			dataType: datatype,
+			success: function (data) {
+				d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
+				data = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data);
+
+				// open progress window
+				$("#d20plus-import").dialog("open");
+				$("#import-remaining").text("Initialising...");
+
+				// get metadata
+				const adMeta = adventureMetadata.adventure.find(a => a.id.toLowerCase() === $("#import-adventures-url").data("id").toLowerCase())
+
+				const addQueue = [];
+				const sections = data.data;
+				const adDir = `${Parser.sourceJsonToFull(adMeta.id)}`;
+				sections.forEach((s, i) => {
+					if (i >= adMeta.contents.length) return;
+
+					const chapterDir = `${adDir}/${adMeta.contents[i].name}`;
+
+					let front;
+					const introEntries = [];
+					if (s.entries && typeof s.entries[0] === "string") {
+						while (typeof (front = s.entries.shift()) === "string") {
+							introEntries.push(front);
+						}
+					}
+					addQueue.push({
+						dir: chapterDir,
+						type: "entries",
+						name: s.name,
+						entries: introEntries,
+					});
+
+					// compact entries into layers
+					front = null;
+					let tempStack = [];
+					let textIndex = 1;
+					while ((front = s.entries.shift())) {
+						if (typeof front === "string" || typeof front === "object" && front.type !== "entries") {
+							tempStack.push(front);
+						} else {
+							if (tempStack.length) {
+								addQueue.push({
+									dir: chapterDir,
+									type: "entries",
+									name: `Text ${textIndex++}`,
+									entries: tempStack
+								});
+								tempStack = [];
+							}
+							front.dir = chapterDir;
+							addQueue.push(front);
+						}
+					}
+				});
+
+				const renderer = new EntryRenderer();
+				renderer.setBaseUrl(BASE_SITE_URL);
+
+				let cancelWorker = false;
+				const $btnCancel = $(`#importcancel`);
+				$btnCancel.show();
+				$btnCancel.off("click");
+				$btnCancel.on("click", () => {
+					cancelWorker = true;
+				});
+
+				const $stsName = $("#import-name");
+				const $stsRemain = $("#import-remaining");
+				let remaining = addQueue.length;
+				const interval = d20plus.getCfgVal("import", "importInterval") || d20plus.getCfgDefaultVal("import", "importInterval");
+
+				d20plus.log(`Running import of [${adMeta.name}] with ${interval} ms delay between each handout create`);
+				let lastId = null;
+
+				const worker = setInterval(() => {
+					if (!addQueue.length || cancelWorker) {
+						clearInterval(worker);
+						$stsName.text("DONE!");
+						$stsRemain.text("0");
+						d20plus.log(`Finished import of [${adMeta.name}]`);
+						return;
+					}
+
+					// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
+					const entry = addQueue.pop();
+					entry.name = entry.name || "(Unknown)";
+					$stsName.text(entry.name);
+					$stsRemain.text(remaining--);
+					const folder = d20plus.importer.makeDirTree(entry.dir);
+
+					d20.Campaign.handouts.create({
+						name: entry.name
+					}, {
+						success: function (handout) {
+							const renderStack = [];
+							renderer.recursiveEntryRender(entry, renderStack);
+							if (lastId && lastName) renderStack.push(`<br><p>Next handout: <a href="http://journal.roll20.net/handout/${lastId}">${lastName}</a></p>`);
+							const rendered = renderStack.join("");
+
+							lastId = handout.id;
+							lastName = entry.name
+							handout.updateBlobs({notes: rendered});
+							handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+							d20.journal.addItemToFolderStructure(handout.id, folder.id);
+						}
+					});
+				}, interval);
+			}
+		});
+	};
+
+	d20plus.importer.getJournalFolderObj = function () {
 		d20.journal.refreshJournalList();
-		var journalFolder = d20.Campaign.get("journalfolder");
+		let journalFolder = d20.Campaign.get("journalfolder");
 		if (journalFolder === "") {
 			d20.journal.addFolderToFolderStructure("Characters");
 			d20.journal.refreshJournalList();
 			journalFolder = d20.Campaign.get("journalfolder");
 		}
-		var journalFolderObj = JSON.parse(journalFolder);
+		return JSON.parse(journalFolder);
+	}
+
+	d20plus.importer.initFolder = function (data, overwrite, deleteExisting, parentFolderName, folderName, handoutBuilder) {
+		var fname = $("#organize-by-source").prop("checked") ? Parser.sourceJsonToFull(data.source) : folderName;
+		var findex = 1;
+		var folder;
+		var journalFolderObj = d20plus.importer.getJournalFolderObj();
+
 		var parentFolder = journalFolderObj.find(function(a) {return a.n && a.n === parentFolderName;});
 		if (!parentFolder) d20.journal.addFolderToFolderStructure(parentFolderName);
 		d20.journal.refreshJournalList();
 		journalFolder = d20.Campaign.get("journalfolder");
 		journalFolderObj = JSON.parse(journalFolder);
 		parentFolder = journalFolderObj.find(function(a) {return a.n && a.n === parentFolderName;});
+
 		var name = data.name || "(Unknown Name)";
 		// check for duplicates
 		var dupe = false;
@@ -2487,6 +2722,7 @@ var D20plus = function(version) {
 		d20plus.remaining++;
 		if (d20plus.timeout === 500) {
 			$("#d20plus-import").dialog("open");
+			$(`#importcancel`).hide(); // TODO enable import cancel
 			$("#import-remaining").text("d20plus.remaining");
 		}
 		timeout = d20plus.timeout;
@@ -2611,6 +2847,25 @@ var D20plus = function(version) {
 		const $ele = $(str);
 		$ele.find("p, li, br").append("\n\n");
 		return $ele.text();
+
+		/* version which preserves images, and converts dice
+		const IMG_TAG = "R20IMGTAG";
+		let imgIndex = 0;
+		const imgStack = [];
+		str.replace(/(<img.*>)/, (match) => {
+			imgStack.push(match);
+			return ` ${IMG_TAG}_${imgIndex++} `;
+		});
+		const $ele = $(str);
+		$ele.find("p, li, br").append("\n\n");
+		let out = $ele.text();
+		out = out.replace(DICE_REGEX, (match) => {
+			return `[[${match}]]`;
+		});
+		return out.replace(/R20IMGTAG_(\d+)/, (match, g1) => {
+			return imgStack[Number(g1)];
+		});
+		*/
 	}
 
 	String.prototype.capFirstLetter = function() {
@@ -2747,8 +3002,14 @@ var D20plus = function(version) {
 	<h3 id="import-name"></h3>
 	</p>
 	<span id="import-remaining"></span> remaining
-	<p></p>
+	<p>
 	Errors: <span id="import-errors">0</span>
+	</p>
+	<p>
+	<button type="button" id="importcancel" alt="Cancel" title="Cancel Import" class="btn" role="button" aria-disabled="false">
+		<span>Cancel</span>
+	</button>
+	</p>
 </div>`;
 
 	d20plus.refreshButtonHtml = `<button type="button" alt="Refresh" title="Refresh" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos bigbuttonwithicons" role="button" aria-disabled="false">
@@ -2800,6 +3061,15 @@ var D20plus = function(version) {
 <input type="text" id="import-feats-url" value="${featdataurl}">
 <a class="btn" href="#" id="import-feats-load">Import Feats</a>
 </p>
+<h4>Adventure Importing</h4>
+<p style="margin-bottom: 0;">
+<label for="import-adventures-url">Adventure Data URL:</label>
+<select id="button-adventures-select">
+	<!-- populate with JS-->
+</select>
+<input type="text" id="import-adventures-url">
+</p>
+<p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 <div style="width: 1px; height: 5px;"/>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
 <div style="width: 1px; height: 5px;"/>
