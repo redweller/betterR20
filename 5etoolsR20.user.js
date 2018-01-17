@@ -30,17 +30,49 @@ var D20plus = function(version) {
 		this.ogl = ogl;
 		this.shaped = shaped;
 	}
-	var NPC_SHEET_ATRIBS= {};
+	var NPC_SHEET_ATTRIBUTES= {};
 	// these are all lowercased; any comparison should be lowercased
-	NPC_SHEET_ATRIBS["empty"] = new SheetAttribute("--Empty--", "", "");
+	NPC_SHEET_ATTRIBUTES["empty"] = new SheetAttribute("--Empty--", "", "");
 	// TODO: implement custom entry (enable textarea)
-	//NPC_SHEET_ATRIBS["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
-	NPC_SHEET_ATRIBS["npc_hpbase"] = new SheetAttribute("Avg HP", "npc_hpbase", "npc_hpbase");
-	NPC_SHEET_ATRIBS["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
-	NPC_SHEET_ATRIBS["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
-	NPC_SHEET_ATRIBS["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
-	NPC_SHEET_ATRIBS["npc_speed"] = new SheetAttribute("Speed", "npc_speed", "npc_speed");
-	NPC_SHEET_ATRIBS["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_DC");
+	//NPC_SHEET_ATTRIBUTES["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
+	NPC_SHEET_ATTRIBUTES["npc_hpbase"] = new SheetAttribute("Avg HP", "npc_hpbase", "npc_hpbase");
+	NPC_SHEET_ATTRIBUTES["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
+	NPC_SHEET_ATTRIBUTES["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
+	NPC_SHEET_ATTRIBUTES["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
+	NPC_SHEET_ATTRIBUTES["npc_speed"] = new SheetAttribute("Speed", "npc_speed", "npc_speed");
+	NPC_SHEET_ATTRIBUTES["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_DC");
+
+	// Old formulas entered in as sheet attributes, consider keeping these separate
+	NPC_SHEET_ATTRIBUTES["npc_challenge"] = new SheetAttribute("CR", "npc_challenge", "challenge");
+	NPC_SHEET_ATTRIBUTES["hp"] = new SheetAttribute("Current HP", "hp", "HP");
+
+	// d20plus.formulas = {
+	// 	"ogl": {
+	// 		"CR": "@{npc_challenge}",
+	// 		"AC": "@{ac}",
+	// 		"NPCAC": "@{npc_ac}",
+	// 		"HP": "@{hp}",
+	// 		"PP": "@{passive_wisdom}",
+	// 		"macro": ""
+	// 	},
+	// 	"community": {
+	// 		"CR": "@{npc_challenge}",
+	// 		"AC": "@{AC}",
+	// 		"NPCAC": "@{AC}",
+	// 		"HP": "@{HP}",
+	// 		"PP": "10 + @{perception}",
+	// 		"macro": ""
+	// 	},
+	// 	"shaped": {
+	// 		"CR": "@{challenge}",
+	// 		"AC": "@{AC}",
+	// 		"NPCAC": "@{AC}",
+	// 		"HP": "@{HP}",
+	// 		"PP": "@{repeating_skill_$11_passive}",
+	// 		"macro": "shaped_statblock"
+	// 	}
+	// };
+
 
 	var CONFIG_OPTIONS = {
 		"token": {
@@ -109,9 +141,34 @@ var D20plus = function(version) {
 		},
 		"interface": {
 			"_name": "Interface",
+			"customTracker": {
+				"name": "Add Additional Info to Tracker",
+				"default": true,
+				"_type": "boolean"
+			},
+			"trackerCol1": {
+				"name": "Tracker Column 1",
+				"default": "hp",
+				"_type": "_SHEET_ATTRIBUTE"
+			},
+			"trackerCol2": {
+				"name": "Tracker Column 2",
+				"default": "npc_ac",
+				"_type": "_SHEET_ATTRIBUTE"
+			},
+			"trackerCol3": {
+				"name": "Tracker Column 3",
+				"default": "passive",
+				"_type": "_SHEET_ATTRIBUTE"
+			},
 			"minifyTracker": {
 				"name": "Shrink Initiative Tracker Text",
 				"default": false,
+				"_type": "boolean"
+			},
+			"showDifficulty": {
+				"name": "Show Difficutlty in Tracker",
+				"default": true,
 				"_type": "boolean"
 			}
 		},
@@ -280,6 +337,7 @@ var D20plus = function(version) {
 
 						d20plus.log("> Config Loaded:");
 						d20plus.log(d20plus.config);
+						d20plus.afterConfigLoaded();
 					} catch (e) {
 						if (!d20plus.loadConfigFailed) {
 							// prevent infinite loops
@@ -300,7 +358,7 @@ var D20plus = function(version) {
 	};
 
 	d20plus.handleConfigChange = function () {
-		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"))
+		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
 	};
 
 	d20plus.getCfgKey = function (group, val) {
@@ -314,11 +372,17 @@ var D20plus = function(version) {
 		return undefined;
 	};
 
+	d20plus.getCfgAttrName = function (group, key) {
+		if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
+			return NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]]["name"];
+		}
+	};
+
 	d20plus.getCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
 		if (d20plus.config[group][key] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
-			return NPC_SHEET_ATRIBS[d20plus.config[group][key]][d20plus.sheet];
+			return NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]][d20plus.sheet];
 		}
 		return d20plus.config[group][key];
 	};
@@ -445,9 +509,9 @@ var D20plus = function(version) {
 							break;
 						}
 						case "_SHEET_ATTRIBUTE": {
-							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATRIBS).sort((at1, at2) => ascSort(NPC_SHEET_ATRIBS[at1].name, NPC_SHEET_ATRIBS[at2].name));
-							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATRIBS[npcK].name}</option>`)}</select>`)
-							const cur = d20plus.getCfgVal(cfgK, grpK);
+							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
+							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`)
+							const cur = d20plus.config[cfgK][grpK];
 							if (cur !== undefined) {
 								field.val(cur);
 							}
@@ -550,18 +614,24 @@ var D20plus = function(version) {
 	d20plus.onScriptLoad = function() {
 		d20plus.log("> Add CSS");
 		_.each(d20plus.cssRules, function(r) {d20plus.addCSS(window.document.styleSheets[window.document.styleSheets.length - 1], r.s, r.r);});
-		d20plus.log("> Add HTML");
-		d20plus.addHTML();
 		d20plus.setSheet();
 
-		if (window.is_gm) {
-			d20plus.log("> Bind Graphics");
-			d20.Campaign.pages.each(d20plus.bindGraphics);
-			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-			d20plus.log("> Applying config");
-			d20plus.handleConfigChange();
-		}
+	// continue more init after config loaded
+	d20plus.afterConfigLoaded = function() {
+		d20plus.log("> Add HTML");
+		d20plus.addHTML();
+		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
 		d20plus.log("> All systems operational");
+		// REMOVE BEFORE COMMIT
+		alert("Config loaded, ready to go!");
+	}
+	if (window.is_gm) {
+		d20plus.log("> Bind Graphics");
+		d20.Campaign.pages.each(d20plus.bindGraphics);
+		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
+		d20plus.log("> Applying config");
+		d20plus.handleConfigChange();
+	}
 	};
 
 	// Bind Graphics Add on page
@@ -603,10 +673,10 @@ var D20plus = function(version) {
 							}
 
 							// Roll HP
-							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATRIBS?
+							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
 							// Saw this while working on other things, unclear if it's necessary or not.
 							if (d20plus.getCfgVal("token", "rollHP") && d20plus.getCfgKey("token", "npc_hpbase")) {
-								var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == NPC_SHEET_ATRIBS["npc_hpformula"][d20plus.sheet];});
+								var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];});
 								var barName = d20plus.getCfgKey("token", "npc_hpbase");
 								if (hpf) {
 									var hpformula = hpf.get("current");
@@ -950,13 +1020,15 @@ var D20plus = function(version) {
 	};
 
 	d20plus.updateDifficulty = function() {
-		var $span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
-		var $btnpane = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane");
-		if (!$span.length) {
-			$btnpane.prepend(d20plus.difficultyHtml);
-			$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+		if (d20plus.getCfgVal("interface", "showDifficulty")) {
+			var $span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+			var $btnpane = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane");
+			if (!$span.length) {
+				$btnpane.prepend(d20plus.difficultyHtml);
+				$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+			}
+			$span.text("Difficulty: " + d20plus.getDifficulty());
 		}
-		$span.text("Difficulty: " + d20plus.getDifficulty());
 	};
 
 	// bind tokens to the initiative tracker
@@ -1948,10 +2020,38 @@ var D20plus = function(version) {
 	d20plus.getInitTemplate = function() {
 		var cachedFunction = d20.Campaign.initiativewindow.rebuildInitiativeList;
 		const chachedTemplate = $("#tmpl_initiativecharacter").clone();
+		console.log(chachedTemplate);
 		d20.Campaign.initiativewindow.rebuildInitiativeList = function() {
 			var html = d20plus.initiativeTemplate;
-			_.each(d20plus.formulas[d20plus.sheet], function(v, i) {
-				html = html.replace("||" + i + "||", v);
+			var columnsAdded = [];
+			$(".tracker-header-extra-columns").empty();
+			// TODO: blank out empty columns. CSS class per column to change display?
+
+			//	<span class='tracker-col hp editable' alt='HP' title='HP'>
+			//		<$ if(npc && npc.get("current") == "1") { $>
+			//			<$!token.attributes.bar1_value$>
+			//		<$ } else { $>
+			//			<$!char.autoCalcFormula('||HP||')$>
+			//		<$ } $>
+			//	</span>
+
+			_.each(d20plus.config.interface, function(v, i) {
+				if (i.includes("trackerCol") && !columnsAdded.includes(i)) {
+					columnsAdded.push(i);
+					if(d20plus.getCfgVal("interface", i) != "") {
+						if (d20plus.config["interface"][i] == "hp" && d20plus.getCfgKey("token", "hp")) {
+							var barName = d20plus.getCfgKey("token", "hp");
+							html = html.replace("||" + i + "_Class||", d20plus.getCfgVal("interface", i) + " editable");
+							html = html.replace("<$!char.autoCalcFormula('||" + i + "||')$>", "<$!token.attributes." + barName + "_value$>");
+						} else {
+							html = html.replace("||" + i + "_Class||", d20plus.getCfgVal("interface", i));
+							html = html.replace("||" + i + "||", d20plus.getCfgVal("interface", i));
+						}
+						$(".tracker-header-extra-columns").prepend(
+							`<span class='tracker-col'>` + d20plus.getCfgVal("interface", i).toUpperCase() + `</span>`
+						);
+					}
+				}
 			});
 			$("#tmpl_initiativecharacter").replaceWith(html);
 
@@ -2906,19 +3006,21 @@ var D20plus = function(version) {
 			min-height: 15px;
 		}
 
+		#initiativewindow div.header span.initiative,
 		#initiativewindow ul li span.initiative,
-		#initiativewindow ul li span.ac,
-		#initiativewindow ul li span.hp,
-		#initiativewindow ul li span.pp,
-		#initiativewindow ul li span.cr,
+		#initiativewindow ul li span.tracker-col,
+		#initiativewindow div.header span.tracker-col,
+		#initiativewindow div.header span.initmacro,
 		#initiativewindow ul li span.initmacro {
-			font-size: 12px;
+			font-size: 10px;
 			font-weight: bold;
 			text-align: right;
 			float: right;
 			padding: 0 5px;
 			width: 7%;
 			min-height: 20px;
+			display: block;
+			overflow: hidden;
 		}
 
 		#initiativewindow ul li .controls {
@@ -2938,33 +3040,6 @@ var D20plus = function(version) {
 	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute"></span>`;
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
-
-	d20plus.formulas = {
-		"ogl": {
-			"CR": "@{npc_challenge}",
-			"AC": "@{ac}",
-			"NPCAC": "@{npc_ac}",
-			"HP": "@{hp}",
-			"PP": "@{passive_wisdom}",
-			"macro": ""
-		},
-		"community": {
-			"CR": "@{npc_challenge}",
-			"AC": "@{AC}",
-			"NPCAC": "@{AC}",
-			"HP": "@{HP}",
-			"PP": "10 + @{perception}",
-			"macro": ""
-		},
-		"shaped": {
-			"CR": "@{challenge}",
-			"AC": "@{AC}",
-			"NPCAC": "@{AC}",
-			"HP": "@{HP}",
-			"PP": "@{repeating_skill_$11_passive}",
-			"macro": "shaped_statblock"
-		}
-	};
 
 	d20plus.configEditorHTML = `
 <div id="d20plus-configeditor" title="Config Editor" style="position: relative">
@@ -3080,8 +3155,8 @@ var D20plus = function(version) {
 
 	d20plus.cssRules = [
 		{
-			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.ac,#initiativewindow ul li span.hp,#initiativewindow ul li span.pp,#initiativewindow ul li span.cr,#initiativewindow ul li span.initmacro",
-			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;"
+			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.tracker-col,#initiativewindow ul li span.initmacro",
+			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;display: block;"
 		},
 		{
 			s: "#initiativewindow ul li span.editable input",
@@ -3148,16 +3223,16 @@ var D20plus = function(version) {
 	d20plus.initiativeHeaders = `<div class="header">
 	<span class="ui-button-text initmacro">Sheet</span>
 	<span class="initiative" alt="Initiative" title="Initiative">Init</span>
-  <span class="pp" alt="Passive Perception" title="Passive Perception">PP</span>
-  <span class="ac" alt="AC" title="AC">AC</span>
-  <span class="cr" alt="CR" title="CR">CR</span>
-  <span class="hp" alt="HP" title="HP">HP</span>
-</div>`;
+ 	<span class="cr" alt="CR" title="CR">CR</span>
+ 	<div class="tracker-header-extra-columns"></div>
+	</div>`;
 
 	// FIXME use the right bar for HP
 	d20plus.initiativeTemplate = `<script id="tmpl_initiativecharacter" type="text/html">
 	<![CDATA[
 		<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
+			<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
+			<$ var char = (token) ? token.character : null; $>
 			<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
 				<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
 				<span class='ui-button-text'>N</span>
@@ -3166,29 +3241,22 @@ var D20plus = function(version) {
 			<span alt='Initiative' title='Initiative' class='initiative <$ if (this.iseditable) { $>editable<$ } $>'>
 				<$!this.pr$>
 			</span>
-			<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
-			<$ var char = (token) ? token.character : null; $>
+			<div class="tracker-extra-columns">
+				<span class='tracker-col ||trackerCol3_Class||'>
+					<$!char.autoCalcFormula('||trackerCol3||')$>
+				</span>
+				<span class='tracker-col ||trackerCol2_Class||'>
+					<$!char.autoCalcFormula('||trackerCol2||')$>
+				</span>
+				<span class='tracker-col ||trackerCol1_Class||'>
+					<$!char.autoCalcFormula('||trackerCol1||')$>
+				</span>
+			</div>
 			<$ if (char) { $>
 				<$ var npc = char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }); $>
-				<$ var passive = char.autoCalcFormula('@{passive}') || char.autoCalcFormula('||PP||'); $>
-				<span class='pp' alt='Passive Perception' title='Passive Perception'><$!passive$></span>
-				<span class='ac' alt='AC' title='AC'>
-					<$ if(npc && npc.get("current") == "1") { $>
-						<$!char.autoCalcFormula('||NPCAC||')$>
-					<$ } else { $>
-						<$!char.autoCalcFormula('||AC||')$>
-					<$ } $>
-				</span>
 				<span class='cr' alt='CR' title='CR'>
 					<$ if(npc && npc.get("current") == "1") { $>
 						<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
-					<$ } $>
-				</span>
-				<span class='hp editable' alt='HP' title='HP'>
-					<$ if(npc && npc.get("current") == "1") { $>
-						<$!token.attributes.bar1_value$>
-					<$ } else { $>
-						<$!char.autoCalcFormula('||HP||')$>
 					<$ } $>
 				</span>
 			<$ } $>
