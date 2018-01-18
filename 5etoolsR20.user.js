@@ -742,48 +742,46 @@ var D20plus = function(version) {
 		const $initToken = getInitTrackerToken();
 		if (!$initToken.length) return;
 		const $iptHp = $initToken.find(`.hp.editable`);
-		if (token.character && token.character.attribs) {
-			const npcFlag = token.character.attribs.find((a) => {
-				return a.get("name").toLowerCase() === "npc";
-			});
-			// if there's a HP column enabled
-			if ($iptHp.length) {
-				let toBind;
-				if (npcFlag && npcFlag.get("current") == "1") {
+		const npcFlag = token.character ? token.character.attribs.find((a) => {
+			return a.get("name").toLowerCase() === "npc";
+		}) : null;
+		// if there's a HP column enabled
+		if ($iptHp.length) {
+			let toBind;
+			if (!token.character || npcFlag && npcFlag.get("current") == "1") {
+				const hpBar = d20plus.getCfgHpBarNumber();
+				// and a HP bar chosen
+				if (hpBar) {
+					$iptHp.text(token.attributes[`bar${hpBar}_value`])
+				}
+
+				toBind = (token, changes) => {
+					const $initToken = getInitTrackerToken();
+					if (!$initToken.length) return;
+					const $iptHp = $initToken.find(`.hp.editable`);
 					const hpBar = d20plus.getCfgHpBarNumber();
-					// and a HP bar chosen
-					if (hpBar) {
-						$iptHp.text(token.attributes[`bar${hpBar}_value`])
+
+					if ($iptHp && hpBar) {
+						if (changes.changes[`bar${hpBar}_value`]) {
+							$iptHp.text(token.changed[`bar${hpBar}_value`]);
+						}
 					}
-
-					toBind = (token, changes) => {
-						const $initToken = getInitTrackerToken();
-						if (!$initToken.length) return;
-						const $iptHp = $initToken.find(`.hp.editable`);
-						const hpBar = d20plus.getCfgHpBarNumber();
-
-						if ($iptHp && hpBar) {
-							if (changes.changes[`bar${hpBar}_value`]) {
-								$iptHp.text(token.changed[`bar${hpBar}_value`]);
-							}
-						}
-					};
-				} else {
-					toBind = (token, changes) => {
-						const $initToken = getInitTrackerToken();
-						if (!$initToken.length) return;
-						const $iptHp = $initToken.find(`.hp.editable`);
-						if ($iptHp) {
-							$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
-						}
+				};
+			} else {
+				toBind = (token, changes) => {
+					const $initToken = getInitTrackerToken();
+					if (!$initToken.length) return;
+					const $iptHp = $initToken.find(`.hp.editable`);
+					if ($iptHp) {
+						$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
 					}
 				}
-				// clean up old handler
-				if (d20plus.tokenBindings[token.id]) token.off("change", d20plus.tokenBindings[token.id]);
-				// add new handler
-				d20plus.tokenBindings[token.id] = toBind;
-				token.on("change", toBind);
 			}
+			// clean up old handler
+			if (d20plus.tokenBindings[token.id]) token.off("change", d20plus.tokenBindings[token.id]);
+			// add new handler
+			d20plus.tokenBindings[token.id] = toBind;
+			token.on("change", toBind);
 		}
 	};
 	d20plus.tokenBindings = {};
@@ -2044,9 +2042,10 @@ var D20plus = function(version) {
 					token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(id);
 					char = token.character;
 
-					npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
+					npc = char.attribs ? char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";}) : null;
 					let total;
-					if (npc && npc.get("current") == "1") {
+					// char.attribs doesn't exist for generico tokens, in this case stick stuff in an appropriate bar
+					if (!char.attribs || npc && npc.get("current") == "1") {
 						const hpBar = d20plus.getCfgHpBarNumber();
 						if (hpBar) {
 							total;
@@ -2168,7 +2167,7 @@ var D20plus = function(version) {
 							<span class='hp editable tracker-col' alt='HP' title='HP'>
 								<$ if(npc && npc.get("current") == "1") { $>
 									${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
-								<$ } else { $>
+								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
 								<$ } $>
 							</span>						
@@ -2181,8 +2180,10 @@ var D20plus = function(version) {
 							<span class='ac tracker-col' alt='AC' title='AC'>
 								<$ if(npc && npc.get("current") == "1") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
-								<$ } else { $>
+								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
+								<$ } else { $>	
+									<$!"\u2014"$>
 								<$ } $>
 							</span>	
 						`);
@@ -2191,7 +2192,7 @@ var D20plus = function(version) {
 					}
 					case "PP": {
 						replaceStack.push(`
-							<$ var passive = char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}'); $>
+							<$ var passive = typeof char.autoCalcFormula !== "undefined" ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
 							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
 						`);
 						headerStack.push(`<span class='tracker-col'>PP</span>`);
@@ -3400,7 +3401,7 @@ var D20plus = function(version) {
 				<$!this.pr$>
 			</span>
 			<$ if (char) { $>
-				<$ var npc = char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }); $>
+				<$ var npc = char.attribs ? char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }) : null; $>
 			<$ } $>
 			<div class="tracker-extra-columns">
 				<!--5ETOOLS_REPLACE_TARGET-->
