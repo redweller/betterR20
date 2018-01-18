@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.8.0
+// @version      0.9.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -31,7 +31,7 @@ var D20plus = function(version) {
 		this.shaped = shaped;
 	}
 	var NPC_SHEET_ATTRIBUTES= {};
-	// these are all lowercased; any comparison should be lowercased
+	// these (other than the name, which is for display only) are all lowercased; any comparison should be lowercased
 	NPC_SHEET_ATTRIBUTES["empty"] = new SheetAttribute("--Empty--", "", "");
 	// TODO: implement custom entry (enable textarea)
 	//NPC_SHEET_ATTRIBUTES["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
@@ -45,34 +45,6 @@ var D20plus = function(version) {
 	// Old formulas entered in as sheet attributes, consider keeping these separate
 	NPC_SHEET_ATTRIBUTES["npc_challenge"] = new SheetAttribute("CR", "npc_challenge", "challenge");
 	NPC_SHEET_ATTRIBUTES["hp"] = new SheetAttribute("Current HP", "hp", "HP");
-
-	// d20plus.formulas = {
-	// 	"ogl": {
-	// 		"CR": "@{npc_challenge}",
-	// 		"AC": "@{ac}",
-	// 		"NPCAC": "@{npc_ac}",
-	// 		"HP": "@{hp}",
-	// 		"PP": "@{passive_wisdom}",
-	// 		"macro": ""
-	// 	},
-	// 	"community": {
-	// 		"CR": "@{npc_challenge}",
-	// 		"AC": "@{AC}",
-	// 		"NPCAC": "@{AC}",
-	// 		"HP": "@{HP}",
-	// 		"PP": "10 + @{perception}",
-	// 		"macro": ""
-	// 	},
-	// 	"shaped": {
-	// 		"CR": "@{challenge}",
-	// 		"AC": "@{AC}",
-	// 		"NPCAC": "@{AC}",
-	// 		"HP": "@{HP}",
-	// 		"PP": "@{repeating_skill_$11_passive}",
-	// 		"macro": "shaped_statblock"
-	// 	}
-	// };
-
 
 	var CONFIG_OPTIONS = {
 		"token": {
@@ -148,18 +120,18 @@ var D20plus = function(version) {
 			},
 			"trackerCol1": {
 				"name": "Tracker Column 1",
-				"default": "hp",
-				"_type": "_SHEET_ATTRIBUTE"
+				"default": "HP",
+				"_type": "_FORMULA"
 			},
 			"trackerCol2": {
 				"name": "Tracker Column 2",
-				"default": "npc_ac",
-				"_type": "_SHEET_ATTRIBUTE"
+				"default": "AC",
+				"_type": "_FORMULA"
 			},
 			"trackerCol3": {
 				"name": "Tracker Column 3",
-				"default": "passive",
-				"_type": "_SHEET_ATTRIBUTE"
+				"default": "PP",
+				"_type": "_FORMULA"
 			},
 			"minifyTracker": {
 				"name": "Shrink Initiative Tracker Text",
@@ -212,6 +184,34 @@ var D20plus = function(version) {
 		initiative: {},
 		config: {},
 		importer: {}
+	};
+
+	d20plus.formulas = {
+		_options: ["--Empty--", "AC", "HP", "PP"],
+		"ogl": {
+			"cr": "@{npc_challenge}",
+			"ac": "@{ac}",
+			"npcac": "@{npc_ac}",
+			"hp": "@{hp}",
+			"pp": "@{passive_wisdom}",
+			"macro": ""
+		},
+		"community": {
+			"cr": "@{npc_challenge}",
+			"ac": "@{AC}",
+			"npcac": "@{AC}",
+			"hp": "@{HP}",
+			"pp": "10 + @{perception}",
+			"macro": ""
+		},
+		"shaped": {
+			"cr": "@{challenge}",
+			"ac": "@{AC}",
+			"npcac": "@{AC}",
+			"hp": "@{HP}",
+			"pp": "@{repeating_skill_$11_passive}",
+			"macro": "shaped_statblock"
+		}
 	};
 
 	d20plus.scripts = [
@@ -315,10 +315,11 @@ var D20plus = function(version) {
 	};
 
 	d20plus.loadConfigFailed = false;
-	d20plus.loadConfig = function() {
+	d20plus.loadConfig = function(nextFn) {
 		var configHandout = d20plus.getConfigHandout();
 
 		if (!configHandout) {
+			debugger
 			d20plus.log("> No config found! Initialising new config...");
 			d20plus.makeDefaultConfig(doLoad);
 		} else {
@@ -337,19 +338,19 @@ var D20plus = function(version) {
 
 						d20plus.log("> Config Loaded:");
 						d20plus.log(d20plus.config);
-						d20plus.afterConfigLoaded();
+						nextFn();
 					} catch (e) {
 						if (!d20plus.loadConfigFailed) {
 							// prevent infinite loops
 							d20plus.loadConfigFailed = true;
 
-							d20plus.log("> Corrupted config! Rebuilding...:");
-							gmnotes = JSON.stringify(d20plus.getDefaultConfig());
-
-							configHandout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-							configHandout.save({notes: (new Date).getTime(), inplayerjournals: ""});
-
-							d20plus.loadConfig();
+							d20plus.log("> Corrupted config! Rebuilding...");
+							d20plus.makeDefaultConfig(() => {
+								d20plus.loadConfig(nextFn)
+							});
+						} else {
+							// if the config fails, continue to load anyway
+							nextFn();
 						}
 					}
 				});
@@ -359,6 +360,8 @@ var D20plus = function(version) {
 
 	d20plus.handleConfigChange = function () {
 		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
+		d20.Campaign.initiativewindow.rebuildInitiativeList();
+		d20plus.updateDifficulty();
 	};
 
 	d20plus.getCfgKey = function (group, val) {
@@ -372,11 +375,18 @@ var D20plus = function(version) {
 		return undefined;
 	};
 
+	// FIXME unused; remove this?
 	d20plus.getCfgAttrName = function (group, key) {
 		if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
 			return NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]]["name"];
 		}
 	};
+
+	d20plus.getRawCfgVal = function (group, key) {
+		if (d20plus.config[group] === undefined) return undefined;
+		if (d20plus.config[group][key] === undefined) return undefined;
+		return d20plus.config[group][key];
+	}
 
 	d20plus.getCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
@@ -511,7 +521,7 @@ var D20plus = function(version) {
 						case "_SHEET_ATTRIBUTE": {
 							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
 							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`)
-							const cur = d20plus.config[cfgK][grpK];
+							const cur = d20plus.getCfgVal(cfgK, grpK);
 							if (cur !== undefined) {
 								field.val(cur);
 							}
@@ -532,6 +542,22 @@ var D20plus = function(version) {
 							};
 
 							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
+						case "_FORMULA": {
+							const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.formulas._options.sort().map(opt => `<option value="${opt}">${opt}</option>`)}</select>`);
+
+							const cur = d20plus.getCfgVal(cfgK, grpK);
+							if (cur !== undefined) {
+								$field.val(cur);
+							}
+
+							configFields[cfgK][grpK] = () => {
+								return $field.val();
+							};
+
+							const td = $(`<td/>`).append($field);
 							toAdd.append(td);
 							break;
 						}
@@ -591,8 +617,13 @@ var D20plus = function(version) {
 	// Page fully loaded and visible
 	d20plus.Init = function() {
 		d20plus.log("> Init (v" + d20plus.version + ")");
+		d20plus.setSheet();
 		d20plus.log("> Reading Config...");
-		d20plus.loadConfig();
+		d20plus.loadConfig(d20plus.onConfigLoad);
+	};
+
+	// continue more init after config loaded
+	d20plus.onConfigLoad = function () {
 		d20plus.bindDropLocations();
 		// Firebase will deny changes if we're not GM. Better to fail gracefully.
 		if (window.is_gm) {
@@ -611,27 +642,22 @@ var D20plus = function(version) {
 	}
 
 	// continue init once scripts load
-	d20plus.onScriptLoad = function() {
+	d20plus.onScriptLoad = function () {
 		d20plus.log("> Add CSS");
-		_.each(d20plus.cssRules, function(r) {d20plus.addCSS(window.document.styleSheets[window.document.styleSheets.length - 1], r.s, r.r);});
-		d20plus.setSheet();
-
-	// continue more init after config loaded
-	d20plus.afterConfigLoaded = function() {
+		_.each(d20plus.cssRules, function (r) {
+			d20plus.addCSS(window.document.styleSheets[window.document.styleSheets.length - 1], r.s, r.r);
+		});
 		d20plus.log("> Add HTML");
 		d20plus.addHTML();
-		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
+
+		if (window.is_gm) {
+			d20plus.log("> Bind Graphics");
+			d20.Campaign.pages.each(d20plus.bindGraphics);
+			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
+			d20plus.log("> Applying config");
+			d20plus.handleConfigChange();
+		}
 		d20plus.log("> All systems operational");
-		// REMOVE BEFORE COMMIT
-		alert("Config loaded, ready to go!");
-	}
-	if (window.is_gm) {
-		d20plus.log("> Bind Graphics");
-		d20.Campaign.pages.each(d20plus.bindGraphics);
-		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-		d20plus.log("> Applying config");
-		d20plus.handleConfigChange();
-	}
 	};
 
 	// Bind Graphics Add on page
@@ -708,6 +734,7 @@ var D20plus = function(version) {
 				return $(e).data("tokenid") === token.id;
 			});
 		}
+		// FIXME use correct bar number
 		getToken().find(`.hp.editable`).text(token.attributes.bar1_value)
 
 		token.on("change", (token, changes) => {
@@ -918,7 +945,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#bind-tokens").on(window.mousedowntype, d20plus.bindTokens);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
-			d20plus.getInitTemplate();
+			d20plus.setTurnOrderTemplate();
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
 			d20plus.hpAllowEdit();
 			d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
@@ -1020,14 +1047,17 @@ var D20plus = function(version) {
 	};
 
 	d20plus.updateDifficulty = function() {
+		var $span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+		var $btnpane = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane");
+		if (!$span.length) {
+			$btnpane.prepend(d20plus.difficultyHtml);
+			$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+		}
 		if (d20plus.getCfgVal("interface", "showDifficulty")) {
-			var $span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
-			var $btnpane = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane");
-			if (!$span.length) {
-				$btnpane.prepend(d20plus.difficultyHtml);
-				$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
-			}
 			$span.text("Difficulty: " + d20plus.getDifficulty());
+			$span.show();
+		} else {
+			$span.hide();
 		}
 	};
 
@@ -2017,48 +2047,96 @@ var D20plus = function(version) {
 
 	// Return Initiative Tracker template with formulas
 	d20plus.initErrorHandler = null;
-	d20plus.getInitTemplate = function() {
-		var cachedFunction = d20.Campaign.initiativewindow.rebuildInitiativeList;
-		const chachedTemplate = $("#tmpl_initiativecharacter").clone();
-		console.log(chachedTemplate);
+	d20plus.setTurnOrderTemplate = function() {
+		if (!d20plus.turnOrderCachedFunction) {
+			d20plus.turnOrderCachedFunction = d20.Campaign.initiativewindow.rebuildInitiativeList;
+			d20plus.turnOrderCachedTemplate = $("#tmpl_initiativecharacter").clone();
+		}
+
 		d20.Campaign.initiativewindow.rebuildInitiativeList = function() {
 			var html = d20plus.initiativeTemplate;
 			var columnsAdded = [];
 			$(".tracker-header-extra-columns").empty();
-			// TODO: blank out empty columns. CSS class per column to change display?
 
-			//	<span class='tracker-col hp editable' alt='HP' title='HP'>
-			//		<$ if(npc && npc.get("current") == "1") { $>
-			//			<$!token.attributes.bar1_value$>
-			//		<$ } else { $>
-			//			<$!char.autoCalcFormula('||HP||')$>
-			//		<$ } $>
-			//	</span>
+			const cols = [
+				d20plus.getCfgVal("interface", "trackerCol1"),
+				d20plus.getCfgVal("interface", "trackerCol2"),
+				d20plus.getCfgVal("interface", "trackerCol3")
+			];
 
-			_.each(d20plus.config.interface, function(v, i) {
-				if (i.includes("trackerCol") && !columnsAdded.includes(i)) {
-					columnsAdded.push(i);
-					if(d20plus.getCfgVal("interface", i) != "") {
-						if (d20plus.config["interface"][i] == "hp" && d20plus.getCfgKey("token", "hp")) {
-							var barName = d20plus.getCfgKey("token", "hp");
-							html = html.replace("||" + i + "_Class||", d20plus.getCfgVal("interface", i) + " editable");
-							html = html.replace("<$!char.autoCalcFormula('||" + i + "||')$>", "<$!token.attributes." + barName + "_value$>");
-						} else {
-							html = html.replace("||" + i + "_Class||", d20plus.getCfgVal("interface", i));
-							html = html.replace("||" + i + "||", d20plus.getCfgVal("interface", i));
-						}
-						$(".tracker-header-extra-columns").prepend(
-							`<span class='tracker-col'>` + d20plus.getCfgVal("interface", i).toUpperCase() + `</span>`
-						);
+			const bars = [
+				d20plus.getCfgVal("token", "bar1"),
+				d20plus.getCfgVal("token", "bar2"),
+				d20plus.getCfgVal("token", "bar3")
+			];
+
+			const headerStack = [];
+			const replaceStack = [
+				// this is hidden by CSS
+				`<span class='cr' alt='CR' title='CR'>
+					<$ if(npc && npc.get("current") == "1") { $>
+						<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
+					<$ } $>
+				</span>`
+			];
+			cols.forEach((c, i) => {
+				switch (c) {
+					case "HP": {
+						const hpBar = bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
+						replaceStack.push(`
+							<span class='hp editable tracker-col' alt='HP' title='HP'>
+								<$ if(npc && npc.get("current") == "1") { $>
+									${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
+								<$ } else { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
+								<$ } $>
+							</span>						
+						`);
+						headerStack.push(`<span class='tracker-col'>HP</span>`);
+						break;
+					}
+					case "AC": {
+						replaceStack.push(`
+							<span class='ac tracker-col' alt='AC' title='AC'>
+								<$ if(npc && npc.get("current") == "1") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
+								<$ } else { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
+								<$ } $>
+							</span>	
+						`);
+						headerStack.push(`<span class='tracker-col'>AC</span>`);
+						break;
+					}
+					case "PP": {
+						replaceStack.push(`
+							<$ var passive = char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}'); $>
+							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
+						`);
+						headerStack.push(`<span class='tracker-col'>PP</span>`);
+						break;
+					}
+					default: {
+						replaceStack.push(`<span class="tracker-col"/>`);
+						headerStack.push(`<span class="tracker-col"/>`);
 					}
 				}
 			});
+
+			console.log("use custom tracker val was ", d20plus.getCfgVal("interface", "customTracker"))
+			if (d20plus.getCfgVal("interface", "customTracker")) {
+				const $header = $(".tracker-header-extra-columns");
+				// prepend/reverse used since tracker gets populated in right-to-left order
+				headerStack.forEach(h => $header.prepend(h))
+				html = html.replace(`<!--5ETOOLS_REPLACE_TARGET-->`, replaceStack.reverse().join(" \n"));
+			}
+
 			$("#tmpl_initiativecharacter").replaceWith(html);
 
 			// Hack to catch errors, part 1
 			const startTime = (new Date).getTime();
 
-			var results = cachedFunction.apply(this, []);
+			var results = d20plus.turnOrderCachedFunction.apply(this, []);
 			setTimeout(function() {
 				$(".initmacrobutton").unbind("click");
 				$(".initmacrobutton").bind("click", function() {
@@ -2080,12 +2158,12 @@ var D20plus = function(version) {
 				window.removeEventListener("error", d20plus.initErrorHandler);
 			}
 			d20plus.initErrorHandler = function (event) {
-				// if we see an error within 150 msec of trying to override the initiative window...
-				if (((new Date).getTime() - startTime) < 150) {
+				// if we see an error within 250 msec of trying to override the initiative window...
+				if (((new Date).getTime() - startTime) < 250) {
 					d20plus.log(" > ERROR: failed to populate custom initiative tracker, restoring default...");
 					// restore the default functionality
-					$("#tmpl_initiativecharacter").replaceWith(chachedTemplate);
-					return cachedFunction();
+					$("#tmpl_initiativecharacter").replaceWith(d20plus.turnOrderCachedTemplate);
+					return d20plus.turnOrderCachedFunction();
 				}
 			};
 			window.addEventListener("error", d20plus.initErrorHandler);
@@ -3227,7 +3305,6 @@ var D20plus = function(version) {
  	<div class="tracker-header-extra-columns"></div>
 	</div>`;
 
-	// FIXME use the right bar for HP
 	d20plus.initiativeTemplate = `<script id="tmpl_initiativecharacter" type="text/html">
 	<![CDATA[
 		<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
@@ -3241,25 +3318,12 @@ var D20plus = function(version) {
 			<span alt='Initiative' title='Initiative' class='initiative <$ if (this.iseditable) { $>editable<$ } $>'>
 				<$!this.pr$>
 			</span>
-			<div class="tracker-extra-columns">
-				<span class='tracker-col ||trackerCol3_Class||'>
-					<$!char.autoCalcFormula('||trackerCol3||')$>
-				</span>
-				<span class='tracker-col ||trackerCol2_Class||'>
-					<$!char.autoCalcFormula('||trackerCol2||')$>
-				</span>
-				<span class='tracker-col ||trackerCol1_Class||'>
-					<$!char.autoCalcFormula('||trackerCol1||')$>
-				</span>
-			</div>
 			<$ if (char) { $>
 				<$ var npc = char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }); $>
-				<span class='cr' alt='CR' title='CR'>
-					<$ if(npc && npc.get("current") == "1") { $>
-						<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
-					<$ } $>
-				</span>
 			<$ } $>
+			<div class="tracker-extra-columns">
+				<!--5ETOOLS_REPLACE_TARGET-->
+			</div>
 			<$ if (this.avatar) { $><img src='<$!this.avatar$>' /><$ } $>
 			<span class='name'><$!this.name$></span>
 				<div class='clear' style='height: 0px;'></div>
