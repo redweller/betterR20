@@ -2005,10 +2005,18 @@ var D20plus = function(version) {
 	// Create editable HP variable and autocalculate + or -
 	d20plus.hpAllowEdit = function() {
 		$("#initiativewindow").on(window.mousedowntype, ".hp.editable", function() {
-			if ($(this).find("input").length > 0) return void $(this).find("input").focus();
+			if ($(this).find("input").length > 0) return void $(this).find("input").select();
 			var val = $.trim($(this).text());
-			$(this).html(`<input type='text' value='${val}'/>`);
-			$(this).find("input").focus();
+			const $span = $(this);
+			$span.html(`<input type='text' value='${val}'/>`);
+			const $ipt = $(this).find("input");
+			$ipt.on("focusout", () => {
+				// after a brief delay, convert the field back to text
+				setTimeout(() => {
+					$span.html($ipt.val());
+				}, 25);
+			});
+			$ipt.select();
 		});
 		$("#initiativewindow").on("keydown", ".hp.editable", function(event) {
 			if (event.which == 13) {
