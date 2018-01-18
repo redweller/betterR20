@@ -375,13 +375,6 @@ var D20plus = function(version) {
 		return undefined;
 	};
 
-	// FIXME unused; remove this?
-	d20plus.getCfgAttrName = function (group, key) {
-		if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
-			return NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]]["name"];
-		}
-	};
-
 	d20plus.getRawCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
 		if (d20plus.config[group][key] === undefined) return undefined;
@@ -401,6 +394,16 @@ var D20plus = function(version) {
 		if (CONFIG_OPTIONS[group] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
 		return CONFIG_OPTIONS[group][key].default
+	};
+
+	// get the user config'd token HP bar
+	d20plus.getCfgHpBarNumber = function () {
+		const bars = [
+			d20plus.getCfgVal("token", "bar1"),
+			d20plus.getCfgVal("token", "bar2"),
+			d20plus.getCfgVal("token", "bar3")
+		];
+		return bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
 	};
 
 	// Helpful for checking if a boolean option is set even if false
@@ -428,7 +431,7 @@ var D20plus = function(version) {
 		return outCpy;
 	};
 
-	// FIXME this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
+	// this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
 	d20plus.makeTabPane = function ($addTo, headers, content) {
 		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!")
 
@@ -728,23 +731,54 @@ var D20plus = function(version) {
 		}
 	};
 
+	// bind token HP to initiative tracker window HP field
 	d20plus.bindToken = function (token) {
-		function getToken () {
+		function getInitTrackerToken () {
 			return $("#initiativewindow").find(`li.token`).filter((i, e) => {
 				return $(e).data("tokenid") === token.id;
 			});
 		}
-		// FIXME use correct bar number
-		getToken().find(`.hp.editable`).text(token.attributes.bar1_value)
-
-		token.on("change", (token, changes) => {
-			// FIXME use correct bar number
-			// FIXME rebind on page change and initial load
-			if (changes.changes.bar1_value) {
-				getToken().find(`.hp.editable`).text(token.changed.bar1_value)
-			}
+		const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+		const npcFlag = token.character.attribs.find((a) => {
+			return a.get("name").toLowerCase() === "npc";
 		});
+		// if there's a HP column enabled
+		if ($iptHp.length) {
+			let toBind;
+			if (npcFlag && npcFlag.get("current") == "1") {
+				const hpBar = d20plus.getCfgHpBarNumber();
+				// and a HP bar chosen
+				if (hpBar) {
+					$iptHp.text(token.attributes[`bar${hpBar}_value`])
+				}
+
+				toBind = (token, changes) => {
+					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					const hpBar = d20plus.getCfgHpBarNumber();
+
+					if ($iptHp && hpBar) {
+						if (changes.changes[`bar${hpBar}_value`]) {
+							$iptHp.text(token.changed[`bar${hpBar}_value`]);
+						}
+					}
+				};
+			} else {
+				toBind = (token, changes) => {
+					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					if ($iptHp) {
+						$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
+					}
+					debugger
+				}
+			}
+			// clean up old handler
+			if (d20plus.tokenBindings[token.id]) token.off("change", d20plus.tokenBindings[token.id]);
+			// add new handler
+			d20plus.tokenBindings[token.id] = toBind;
+			token.on("change", toBind);
+		}
 	};
+	d20plus.tokenBindings = {};
 
 	d20plus.lastClickedFolderId = null
 
@@ -942,7 +976,6 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
-			$("#mysettings > .content a#bind-tokens").on(window.mousedowntype, d20plus.bindTokens);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
 			d20plus.setTurnOrderTemplate();
@@ -1062,7 +1095,6 @@ var D20plus = function(version) {
 	};
 
 	// bind tokens to the initiative tracker
-	// TODO automate this on page load/battlemap change
 	d20plus.bindTokens = function () {
 		// Gets a list of all the tokens on the current page:
 		const curTokens = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.toArray();
@@ -1149,7 +1181,7 @@ var D20plus = function(version) {
 								function handleData (data) {
 									data = JSON.parse(data);
 
-									// FIXME remove Feat workaround when roll20 supports feat drag-n-drop properly
+									// TODO remove Feat workaround when roll20 supports feat drag-n-drop properly
 									if (data.data.Category === "Feats") {
 										const rowId = d20plus.generateRowId();
 										character.model.attribs.create({
@@ -1975,32 +2007,63 @@ var D20plus = function(version) {
 		$("#initiativewindow").on(window.mousedowntype, ".hp.editable", function() {
 			if ($(this).find("input").length > 0) return void $(this).find("input").focus();
 			var val = $.trim($(this).text());
-			$(this).html("<input type='text' value='" + val + "'/>");
+			$(this).html(`<input type='text' value='${val}'/>`);
 			$(this).find("input").focus();
 		});
 		$("#initiativewindow").on("keydown", ".hp.editable", function(event) {
 			if (event.which == 13) {
-				var total = 0,
-					el, token, id, char, hp,
-					val = $.trim($(this).find("input").val()),
-					matches = val.match(/[+\-]*(\.\d+|\d+(\.\d+)?)/g) || [];
-				while (matches.length) {
-					total += parseFloat(matches.shift());
-				}
-				el = $(this).parents("li.token");
-				id = el.data("tokenid");
-				token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(id);
-				char = token.character;
-				npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
-				if (npc && npc.get("current") == "1") {
-					// FIXME use the right bar
-					token.attributes.bar1_value = total;
-				} else {
-					hp = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "hp";});
-					if (hp) {
-						hp.syncedSave({current: total});
+				var el, token, id, char, hp,
+					val = $.trim($(this).find("input").val());
+
+				// roll20 token modification supports plus/minus for a single integer; mimic this
+				const m = /([+-])?(\d+)/.exec(val);
+				if (m) {
+					let op = null;
+					if (m[1]) {
+						op = m[1] === "+" ? "ADD" : "SUB";
+					}
+					const num = Number(m[2]);
+
+					el = $(this).parents("li.token");
+					id = el.data("tokenid");
+					token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(id);
+					char = token.character;
+
+					npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
+					if (npc && npc.get("current") == "1") {
+						const hpBar = d20plus.getCfgHpBarNumber();
+						if (hpBar) {
+							let total;
+							if (op) {
+								const curr = token.attributes[`bar${hpBar}_value`];
+								if (op === "ADD") total = curr + num;
+								else total = curr - num;
+							} else {
+								total = num;
+							}
+							token.attributes[`bar${hpBar}_value`] = total;
+						}
 					} else {
-						char.attribs.create({name: "hp", current: total});
+						hp = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "hp";});
+						if (hp) {
+							let total;
+							if (op) {
+								if (op === "ADD") total = hp.attributes.current + num;
+								else total = hp.attributes.current - num;
+							} else {
+								total = num;
+							}
+							hp.syncedSave({current: total});
+						} else {
+							let total;
+							if (op) {
+								if (op === "ADD") total = num;
+								else total = 0 - num;
+							} else {
+								total = num;
+							}
+							char.attribs.create({name: "hp", current: total});
+						}
 					}
 				}
 				d20.Campaign.initiativewindow.rebuildInitiativeList();
@@ -2064,12 +2127,6 @@ var D20plus = function(version) {
 				d20plus.getCfgVal("interface", "trackerCol3")
 			];
 
-			const bars = [
-				d20plus.getCfgVal("token", "bar1"),
-				d20plus.getCfgVal("token", "bar2"),
-				d20plus.getCfgVal("token", "bar3")
-			];
-
 			const headerStack = [];
 			const replaceStack = [
 				// this is hidden by CSS
@@ -2082,7 +2139,7 @@ var D20plus = function(version) {
 			cols.forEach((c, i) => {
 				switch (c) {
 					case "HP": {
-						const hpBar = bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
+						const hpBar = d20plus.getCfgHpBarNumber();
 						replaceStack.push(`
 							<span class='hp editable tracker-col' alt='HP' title='HP'>
 								<$ if(npc && npc.get("current") == "1") { $>
@@ -2151,6 +2208,8 @@ var D20plus = function(version) {
 						// d20.textchat.doChatInput(`%{` + char.id + `|` + d20plus.formulas[d20plus.sheet]["macro"] + `}`)
 					}
 				});
+
+				d20plus.bindTokens();
 			}, 100);
 
 			// Hack to catch errors, part 2
@@ -3225,8 +3284,6 @@ var D20plus = function(version) {
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 <div style="width: 1px; height: 5px;"/>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
-<div style="width: 1px; height: 5px;"/>
-<a class="btn bind-tokens" href="#" id="bind-tokens" title="Lets you update token HP and have the tracker window update">Bind Tokens to Tracker</a>
 <div style="width: 1px; height: 5px;"/>
 <a class="btn" href="#" id="button-edit-config">Edit Config</a>
 <style id="dynamicStyle"></style>`;
