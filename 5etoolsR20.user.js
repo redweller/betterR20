@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.9.0
+// @version      0.9.3
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -319,7 +319,6 @@ var D20plus = function(version) {
 		var configHandout = d20plus.getConfigHandout();
 
 		if (!configHandout) {
-			debugger
 			d20plus.log("> No config found! Initialising new config...");
 			d20plus.makeDefaultConfig(doLoad);
 		} else {
@@ -734,18 +733,22 @@ var D20plus = function(version) {
 	// bind token HP to initiative tracker window HP field
 	d20plus.bindToken = function (token) {
 		function getInitTrackerToken () {
-			return $("#initiativewindow").find(`li.token`).filter((i, e) => {
+			const $window = $("#initiativewindow");
+			if (!$window.length) return [];
+			return $window.find(`li.token`).filter((i, e) => {
 				return $(e).data("tokenid") === token.id;
 			});
 		}
-		const $iptHp = getInitTrackerToken().find(`.hp.editable`);
-		const npcFlag = token.character.attribs.find((a) => {
+		const $initToken = getInitTrackerToken();
+		if (!$initToken.length) return;
+		const $iptHp = $initToken.find(`.hp.editable`);
+		const npcFlag = token.character ? token.character.attribs.find((a) => {
 			return a.get("name").toLowerCase() === "npc";
-		});
+		}) : null;
 		// if there's a HP column enabled
 		if ($iptHp.length) {
 			let toBind;
-			if (npcFlag && npcFlag.get("current") == "1") {
+			if (!token.character || npcFlag && npcFlag.get("current") == "1") {
 				const hpBar = d20plus.getCfgHpBarNumber();
 				// and a HP bar chosen
 				if (hpBar) {
@@ -753,7 +756,9 @@ var D20plus = function(version) {
 				}
 
 				toBind = (token, changes) => {
-					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					const $initToken = getInitTrackerToken();
+					if (!$initToken.length) return;
+					const $iptHp = $initToken.find(`.hp.editable`);
 					const hpBar = d20plus.getCfgHpBarNumber();
 
 					if ($iptHp && hpBar) {
@@ -764,11 +769,12 @@ var D20plus = function(version) {
 				};
 			} else {
 				toBind = (token, changes) => {
-					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					const $initToken = getInitTrackerToken();
+					if (!$initToken.length) return;
+					const $iptHp = $initToken.find(`.hp.editable`);
 					if ($iptHp) {
 						$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
 					}
-					debugger
 				}
 			}
 			// clean up old handler
@@ -2036,9 +2042,10 @@ var D20plus = function(version) {
 					token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(id);
 					char = token.character;
 
-					npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
+					npc = char.attribs ? char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";}) : null;
 					let total;
-					if (npc && npc.get("current") == "1") {
+					// char.attribs doesn't exist for generico tokens, in this case stick stuff in an appropriate bar
+					if (!char.attribs || npc && npc.get("current") == "1") {
 						const hpBar = d20plus.getCfgHpBarNumber();
 						if (hpBar) {
 							total;
@@ -2160,7 +2167,7 @@ var D20plus = function(version) {
 							<span class='hp editable tracker-col' alt='HP' title='HP'>
 								<$ if(npc && npc.get("current") == "1") { $>
 									${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
-								<$ } else { $>
+								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
 								<$ } $>
 							</span>						
@@ -2173,8 +2180,10 @@ var D20plus = function(version) {
 							<span class='ac tracker-col' alt='AC' title='AC'>
 								<$ if(npc && npc.get("current") == "1") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
-								<$ } else { $>
+								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
+								<$ } else { $>	
+									<$!"\u2014"$>
 								<$ } $>
 							</span>	
 						`);
@@ -2183,7 +2192,7 @@ var D20plus = function(version) {
 					}
 					case "PP": {
 						replaceStack.push(`
-							<$ var passive = char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}'); $>
+							<$ var passive = typeof char.autoCalcFormula !== "undefined" ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
 							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
 						`);
 						headerStack.push(`<span class='tracker-col'>PP</span>`);
@@ -2572,7 +2581,7 @@ var D20plus = function(version) {
 					if (type === "HA") armorclass = data.ac;
 					var properties = "";
 					if (data.property) {
-						var propertieslist = data.property.split(",");
+						var propertieslist = data.property;
 						for (var i = 0; i < propertieslist.length; i++) {
 							var a = d20plus.items.parseProperty(propertieslist[i]);
 							var b = propertieslist[i];
@@ -3392,7 +3401,7 @@ var D20plus = function(version) {
 				<$!this.pr$>
 			</span>
 			<$ if (char) { $>
-				<$ var npc = char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }); $>
+				<$ var npc = char.attribs ? char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }) : null; $>
 			<$ } $>
 			<div class="tracker-extra-columns">
 				<!--5ETOOLS_REPLACE_TARGET-->
