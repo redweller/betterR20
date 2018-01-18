@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.9.1
+// @version      0.9.2
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -742,46 +742,48 @@ var D20plus = function(version) {
 		const $initToken = getInitTrackerToken();
 		if (!$initToken.length) return;
 		const $iptHp = $initToken.find(`.hp.editable`);
-		const npcFlag = token.character.attribs.find((a) => {
-			return a.get("name").toLowerCase() === "npc";
-		});
-		// if there's a HP column enabled
-		if ($iptHp.length) {
-			let toBind;
-			if (npcFlag && npcFlag.get("current") == "1") {
-				const hpBar = d20plus.getCfgHpBarNumber();
-				// and a HP bar chosen
-				if (hpBar) {
-					$iptHp.text(token.attributes[`bar${hpBar}_value`])
-				}
-
-				toBind = (token, changes) => {
-					const $initToken = getInitTrackerToken();
-					if (!$initToken.length) return;
-					const $iptHp = $initToken.find(`.hp.editable`);
+		if (token.character && token.character.attribs) {
+			const npcFlag = token.character.attribs.find((a) => {
+				return a.get("name").toLowerCase() === "npc";
+			});
+			// if there's a HP column enabled
+			if ($iptHp.length) {
+				let toBind;
+				if (npcFlag && npcFlag.get("current") == "1") {
 					const hpBar = d20plus.getCfgHpBarNumber();
+					// and a HP bar chosen
+					if (hpBar) {
+						$iptHp.text(token.attributes[`bar${hpBar}_value`])
+					}
 
-					if ($iptHp && hpBar) {
-						if (changes.changes[`bar${hpBar}_value`]) {
-							$iptHp.text(token.changed[`bar${hpBar}_value`]);
+					toBind = (token, changes) => {
+						const $initToken = getInitTrackerToken();
+						if (!$initToken.length) return;
+						const $iptHp = $initToken.find(`.hp.editable`);
+						const hpBar = d20plus.getCfgHpBarNumber();
+
+						if ($iptHp && hpBar) {
+							if (changes.changes[`bar${hpBar}_value`]) {
+								$iptHp.text(token.changed[`bar${hpBar}_value`]);
+							}
+						}
+					};
+				} else {
+					toBind = (token, changes) => {
+						const $initToken = getInitTrackerToken();
+						if (!$initToken.length) return;
+						const $iptHp = $initToken.find(`.hp.editable`);
+						if ($iptHp) {
+							$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
 						}
 					}
-				};
-			} else {
-				toBind = (token, changes) => {
-					const $initToken = getInitTrackerToken();
-					if (!$initToken.length) return;
-					const $iptHp = $initToken.find(`.hp.editable`);
-					if ($iptHp) {
-						$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
-					}
 				}
+				// clean up old handler
+				if (d20plus.tokenBindings[token.id]) token.off("change", d20plus.tokenBindings[token.id]);
+				// add new handler
+				d20plus.tokenBindings[token.id] = toBind;
+				token.on("change", toBind);
 			}
-			// clean up old handler
-			if (d20plus.tokenBindings[token.id]) token.off("change", d20plus.tokenBindings[token.id]);
-			// add new handler
-			d20plus.tokenBindings[token.id] = toBind;
-			token.on("change", toBind);
 		}
 	};
 	d20plus.tokenBindings = {};
