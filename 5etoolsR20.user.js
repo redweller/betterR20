@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      0.8.0
+// @version      0.9.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -30,17 +30,21 @@ var D20plus = function(version) {
 		this.ogl = ogl;
 		this.shaped = shaped;
 	}
-	var NPC_SHEET_ATRIBS= {};
-	// these are all lowercased; any comparison should be lowercased
-	NPC_SHEET_ATRIBS["empty"] = new SheetAttribute("--Empty--", "", "");
+	var NPC_SHEET_ATTRIBUTES= {};
+	// these (other than the name, which is for display only) are all lowercased; any comparison should be lowercased
+	NPC_SHEET_ATTRIBUTES["empty"] = new SheetAttribute("--Empty--", "", "");
 	// TODO: implement custom entry (enable textarea)
-	//NPC_SHEET_ATRIBS["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
-	NPC_SHEET_ATRIBS["npc_hpbase"] = new SheetAttribute("Avg HP", "npc_hpbase", "npc_hpbase");
-	NPC_SHEET_ATRIBS["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
-	NPC_SHEET_ATRIBS["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
-	NPC_SHEET_ATRIBS["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
-	NPC_SHEET_ATRIBS["npc_speed"] = new SheetAttribute("Speed", "npc_speed", "npc_speed");
-	NPC_SHEET_ATRIBS["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_DC");
+	//NPC_SHEET_ATTRIBUTES["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
+	NPC_SHEET_ATTRIBUTES["npc_hpbase"] = new SheetAttribute("Avg HP", "npc_hpbase", "npc_hpbase");
+	NPC_SHEET_ATTRIBUTES["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
+	NPC_SHEET_ATTRIBUTES["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
+	NPC_SHEET_ATTRIBUTES["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
+	NPC_SHEET_ATTRIBUTES["npc_speed"] = new SheetAttribute("Speed", "npc_speed", "npc_speed");
+	NPC_SHEET_ATTRIBUTES["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_DC");
+
+	// Old formulas entered in as sheet attributes, consider keeping these separate
+	NPC_SHEET_ATTRIBUTES["npc_challenge"] = new SheetAttribute("CR", "npc_challenge", "challenge");
+	NPC_SHEET_ATTRIBUTES["hp"] = new SheetAttribute("Current HP", "hp", "HP");
 
 	var CONFIG_OPTIONS = {
 		"token": {
@@ -109,9 +113,34 @@ var D20plus = function(version) {
 		},
 		"interface": {
 			"_name": "Interface",
+			"customTracker": {
+				"name": "Add Additional Info to Tracker",
+				"default": true,
+				"_type": "boolean"
+			},
+			"trackerCol1": {
+				"name": "Tracker Column 1",
+				"default": "HP",
+				"_type": "_FORMULA"
+			},
+			"trackerCol2": {
+				"name": "Tracker Column 2",
+				"default": "AC",
+				"_type": "_FORMULA"
+			},
+			"trackerCol3": {
+				"name": "Tracker Column 3",
+				"default": "PP",
+				"_type": "_FORMULA"
+			},
 			"minifyTracker": {
 				"name": "Shrink Initiative Tracker Text",
 				"default": false,
+				"_type": "boolean"
+			},
+			"showDifficulty": {
+				"name": "Show Difficutlty in Tracker",
+				"default": true,
 				"_type": "boolean"
 			}
 		},
@@ -155,6 +184,34 @@ var D20plus = function(version) {
 		initiative: {},
 		config: {},
 		importer: {}
+	};
+
+	d20plus.formulas = {
+		_options: ["--Empty--", "AC", "HP", "PP"],
+		"ogl": {
+			"cr": "@{npc_challenge}",
+			"ac": "@{ac}",
+			"npcac": "@{npc_ac}",
+			"hp": "@{hp}",
+			"pp": "@{passive_wisdom}",
+			"macro": ""
+		},
+		"community": {
+			"cr": "@{npc_challenge}",
+			"ac": "@{AC}",
+			"npcac": "@{AC}",
+			"hp": "@{HP}",
+			"pp": "10 + @{perception}",
+			"macro": ""
+		},
+		"shaped": {
+			"cr": "@{challenge}",
+			"ac": "@{AC}",
+			"npcac": "@{AC}",
+			"hp": "@{HP}",
+			"pp": "@{repeating_skill_$11_passive}",
+			"macro": "shaped_statblock"
+		}
 	};
 
 	d20plus.scripts = [
@@ -258,10 +315,11 @@ var D20plus = function(version) {
 	};
 
 	d20plus.loadConfigFailed = false;
-	d20plus.loadConfig = function() {
+	d20plus.loadConfig = function(nextFn) {
 		var configHandout = d20plus.getConfigHandout();
 
 		if (!configHandout) {
+			debugger
 			d20plus.log("> No config found! Initialising new config...");
 			d20plus.makeDefaultConfig(doLoad);
 		} else {
@@ -280,18 +338,19 @@ var D20plus = function(version) {
 
 						d20plus.log("> Config Loaded:");
 						d20plus.log(d20plus.config);
+						nextFn();
 					} catch (e) {
 						if (!d20plus.loadConfigFailed) {
 							// prevent infinite loops
 							d20plus.loadConfigFailed = true;
 
-							d20plus.log("> Corrupted config! Rebuilding...:");
-							gmnotes = JSON.stringify(d20plus.getDefaultConfig());
-
-							configHandout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-							configHandout.save({notes: (new Date).getTime(), inplayerjournals: ""});
-
-							d20plus.loadConfig();
+							d20plus.log("> Corrupted config! Rebuilding...");
+							d20plus.makeDefaultConfig(() => {
+								d20plus.loadConfig(nextFn)
+							});
+						} else {
+							// if the config fails, continue to load anyway
+							nextFn();
 						}
 					}
 				});
@@ -300,7 +359,9 @@ var D20plus = function(version) {
 	};
 
 	d20plus.handleConfigChange = function () {
-		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"))
+		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
+		d20.Campaign.initiativewindow.rebuildInitiativeList();
+		d20plus.updateDifficulty();
 	};
 
 	d20plus.getCfgKey = function (group, val) {
@@ -314,11 +375,17 @@ var D20plus = function(version) {
 		return undefined;
 	};
 
+	d20plus.getRawCfgVal = function (group, key) {
+		if (d20plus.config[group] === undefined) return undefined;
+		if (d20plus.config[group][key] === undefined) return undefined;
+		return d20plus.config[group][key];
+	}
+
 	d20plus.getCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
 		if (d20plus.config[group][key] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
-			return NPC_SHEET_ATRIBS[d20plus.config[group][key]][d20plus.sheet];
+			return NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]][d20plus.sheet];
 		}
 		return d20plus.config[group][key];
 	};
@@ -327,6 +394,16 @@ var D20plus = function(version) {
 		if (CONFIG_OPTIONS[group] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
 		return CONFIG_OPTIONS[group][key].default
+	};
+
+	// get the user config'd token HP bar
+	d20plus.getCfgHpBarNumber = function () {
+		const bars = [
+			d20plus.getCfgVal("token", "bar1"),
+			d20plus.getCfgVal("token", "bar2"),
+			d20plus.getCfgVal("token", "bar3")
+		];
+		return bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
 	};
 
 	// Helpful for checking if a boolean option is set even if false
@@ -354,7 +431,7 @@ var D20plus = function(version) {
 		return outCpy;
 	};
 
-	// FIXME this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
+	// this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
 	d20plus.makeTabPane = function ($addTo, headers, content) {
 		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!")
 
@@ -445,8 +522,8 @@ var D20plus = function(version) {
 							break;
 						}
 						case "_SHEET_ATTRIBUTE": {
-							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATRIBS).sort((at1, at2) => ascSort(NPC_SHEET_ATRIBS[at1].name, NPC_SHEET_ATRIBS[at2].name));
-							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATRIBS[npcK].name}</option>`)}</select>`)
+							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
+							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`)
 							const cur = d20plus.getCfgVal(cfgK, grpK);
 							if (cur !== undefined) {
 								field.val(cur);
@@ -468,6 +545,22 @@ var D20plus = function(version) {
 							};
 
 							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
+						case "_FORMULA": {
+							const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.formulas._options.sort().map(opt => `<option value="${opt}">${opt}</option>`)}</select>`);
+
+							const cur = d20plus.getCfgVal(cfgK, grpK);
+							if (cur !== undefined) {
+								$field.val(cur);
+							}
+
+							configFields[cfgK][grpK] = () => {
+								return $field.val();
+							};
+
+							const td = $(`<td/>`).append($field);
 							toAdd.append(td);
 							break;
 						}
@@ -527,8 +620,13 @@ var D20plus = function(version) {
 	// Page fully loaded and visible
 	d20plus.Init = function() {
 		d20plus.log("> Init (v" + d20plus.version + ")");
+		d20plus.setSheet();
 		d20plus.log("> Reading Config...");
-		d20plus.loadConfig();
+		d20plus.loadConfig(d20plus.onConfigLoad);
+	};
+
+	// continue more init after config loaded
+	d20plus.onConfigLoad = function () {
 		d20plus.bindDropLocations();
 		// Firebase will deny changes if we're not GM. Better to fail gracefully.
 		if (window.is_gm) {
@@ -547,12 +645,13 @@ var D20plus = function(version) {
 	}
 
 	// continue init once scripts load
-	d20plus.onScriptLoad = function() {
+	d20plus.onScriptLoad = function () {
 		d20plus.log("> Add CSS");
-		_.each(d20plus.cssRules, function(r) {d20plus.addCSS(window.document.styleSheets[window.document.styleSheets.length - 1], r.s, r.r);});
+		_.each(d20plus.cssRules, function (r) {
+			d20plus.addCSS(window.document.styleSheets[window.document.styleSheets.length - 1], r.s, r.r);
+		});
 		d20plus.log("> Add HTML");
 		d20plus.addHTML();
-		d20plus.setSheet();
 
 		if (window.is_gm) {
 			d20plus.log("> Bind Graphics");
@@ -603,10 +702,10 @@ var D20plus = function(version) {
 							}
 
 							// Roll HP
-							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATRIBS?
+							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
 							// Saw this while working on other things, unclear if it's necessary or not.
 							if (d20plus.getCfgVal("token", "rollHP") && d20plus.getCfgKey("token", "npc_hpbase")) {
-								var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == NPC_SHEET_ATRIBS["npc_hpformula"][d20plus.sheet];});
+								var hpf = character.attribs.find(function(a) {return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];});
 								var barName = d20plus.getCfgKey("token", "npc_hpbase");
 								if (hpf) {
 									var hpformula = hpf.get("current");
@@ -632,22 +731,54 @@ var D20plus = function(version) {
 		}
 	};
 
+	// bind token HP to initiative tracker window HP field
 	d20plus.bindToken = function (token) {
-		function getToken () {
+		function getInitTrackerToken () {
 			return $("#initiativewindow").find(`li.token`).filter((i, e) => {
 				return $(e).data("tokenid") === token.id;
 			});
 		}
-		getToken().find(`.hp.editable`).text(token.attributes.bar1_value)
-
-		token.on("change", (token, changes) => {
-			// FIXME use correct bar number
-			// FIXME rebind on page change and initial load
-			if (changes.changes.bar1_value) {
-				getToken().find(`.hp.editable`).text(token.changed.bar1_value)
-			}
+		const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+		const npcFlag = token.character.attribs.find((a) => {
+			return a.get("name").toLowerCase() === "npc";
 		});
+		// if there's a HP column enabled
+		if ($iptHp.length) {
+			let toBind;
+			if (npcFlag && npcFlag.get("current") == "1") {
+				const hpBar = d20plus.getCfgHpBarNumber();
+				// and a HP bar chosen
+				if (hpBar) {
+					$iptHp.text(token.attributes[`bar${hpBar}_value`])
+				}
+
+				toBind = (token, changes) => {
+					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					const hpBar = d20plus.getCfgHpBarNumber();
+
+					if ($iptHp && hpBar) {
+						if (changes.changes[`bar${hpBar}_value`]) {
+							$iptHp.text(token.changed[`bar${hpBar}_value`]);
+						}
+					}
+				};
+			} else {
+				toBind = (token, changes) => {
+					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					if ($iptHp) {
+						$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
+					}
+					debugger
+				}
+			}
+			// clean up old handler
+			if (d20plus.tokenBindings[token.id]) token.off("change", d20plus.tokenBindings[token.id]);
+			// add new handler
+			d20plus.tokenBindings[token.id] = toBind;
+			token.on("change", toBind);
+		}
 	};
+	d20plus.tokenBindings = {};
 
 	d20plus.lastClickedFolderId = null
 
@@ -845,10 +976,9 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
-			$("#mysettings > .content a#bind-tokens").on(window.mousedowntype, d20plus.bindTokens);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
-			d20plus.getInitTemplate();
+			d20plus.setTurnOrderTemplate();
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
 			d20plus.hpAllowEdit();
 			d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
@@ -956,11 +1086,15 @@ var D20plus = function(version) {
 			$btnpane.prepend(d20plus.difficultyHtml);
 			$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
 		}
-		$span.text("Difficulty: " + d20plus.getDifficulty());
+		if (d20plus.getCfgVal("interface", "showDifficulty")) {
+			$span.text("Difficulty: " + d20plus.getDifficulty());
+			$span.show();
+		} else {
+			$span.hide();
+		}
 	};
 
 	// bind tokens to the initiative tracker
-	// TODO automate this on page load/battlemap change
 	d20plus.bindTokens = function () {
 		// Gets a list of all the tokens on the current page:
 		const curTokens = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.toArray();
@@ -1047,7 +1181,7 @@ var D20plus = function(version) {
 								function handleData (data) {
 									data = JSON.parse(data);
 
-									// FIXME remove Feat workaround when roll20 supports feat drag-n-drop properly
+									// TODO remove Feat workaround when roll20 supports feat drag-n-drop properly
 									if (data.data.Category === "Feats") {
 										const rowId = d20plus.generateRowId();
 										character.model.attribs.create({
@@ -1873,33 +2007,80 @@ var D20plus = function(version) {
 		$("#initiativewindow").on(window.mousedowntype, ".hp.editable", function() {
 			if ($(this).find("input").length > 0) return void $(this).find("input").focus();
 			var val = $.trim($(this).text());
-			$(this).html("<input type='text' value='" + val + "'/>");
-			$(this).find("input").focus();
+			const $span = $(this);
+			$span.html(`<input type='text' value='${val}'/>`);
+			const $ipt = $(this).find("input");
+			$ipt[0].focus();
 		});
 		$("#initiativewindow").on("keydown", ".hp.editable", function(event) {
 			if (event.which == 13) {
-				var total = 0,
-					el, token, id, char, hp,
-					val = $.trim($(this).find("input").val()),
-					matches = val.match(/[+\-]*(\.\d+|\d+(\.\d+)?)/g) || [];
-				while (matches.length) {
-					total += parseFloat(matches.shift());
-				}
-				el = $(this).parents("li.token");
-				id = el.data("tokenid");
-				token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(id);
-				char = token.character;
-				npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
-				if (npc && npc.get("current") == "1") {
-					// FIXME use the right bar
-					token.attributes.bar1_value = total;
-				} else {
-					hp = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "hp";});
-					if (hp) {
-						hp.syncedSave({current: total});
-					} else {
-						char.attribs.create({name: "hp", current: total});
+				const $span = $(this);
+				const $ipt = $span.find("input");
+				if (!$ipt.length) return;
+
+				var el, token, id, char, hp,
+					val = $.trim($ipt.val());
+
+				// roll20 token modification supports plus/minus for a single integer; mimic this
+				const m = /^((\d+)?([+-]))?(\d+)$/.exec(val);
+				if (m) {
+					let op = null;
+					if (m[3]) {
+						op = m[3] === "+" ? "ADD" : "SUB";
 					}
+					const base = m[2] ? eval(m[0]) : null;
+					const mod = Number(m[4]);
+
+					el = $(this).parents("li.token");
+					id = el.data("tokenid");
+					token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(id);
+					char = token.character;
+
+					npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
+					let total;
+					if (npc && npc.get("current") == "1") {
+						const hpBar = d20plus.getCfgHpBarNumber();
+						if (hpBar) {
+							total;
+							if (base !== null) {
+								total = base;
+							} else if (op) {
+								const curr = token.attributes[`bar${hpBar}_value`];
+								if (op === "ADD") total = curr + mod;
+								else total = curr - mod;
+							} else {
+								total = mod;
+							}
+							token.attributes[`bar${hpBar}_value`] = total;
+						}
+					} else {
+						hp = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "hp";});
+						if (hp) {
+							total;
+							if (base !== null) {
+								total = base;
+							} else if (op) {
+								if (op === "ADD") total = hp.attributes.current + mod;
+								else total = hp.attributes.current - mod;
+							} else {
+								total = mod;
+							}
+							hp.syncedSave({current: total});
+						} else {
+							total;
+							if (base !== null) {
+								total = base;
+							} else if (op) {
+								if (op === "ADD") total = mod;
+								else total = 0 - mod;
+							} else {
+								total = mod;
+							}
+							char.attribs.create({name: "hp", current: total});
+						}
+					}
+					// convert the field back to text
+					$span.html(total);
 				}
 				d20.Campaign.initiativewindow.rebuildInitiativeList();
 			}
@@ -1945,20 +2126,90 @@ var D20plus = function(version) {
 
 	// Return Initiative Tracker template with formulas
 	d20plus.initErrorHandler = null;
-	d20plus.getInitTemplate = function() {
-		var cachedFunction = d20.Campaign.initiativewindow.rebuildInitiativeList;
-		const chachedTemplate = $("#tmpl_initiativecharacter").clone();
+	d20plus.setTurnOrderTemplate = function() {
+		if (!d20plus.turnOrderCachedFunction) {
+			d20plus.turnOrderCachedFunction = d20.Campaign.initiativewindow.rebuildInitiativeList;
+			d20plus.turnOrderCachedTemplate = $("#tmpl_initiativecharacter").clone();
+		}
+
 		d20.Campaign.initiativewindow.rebuildInitiativeList = function() {
 			var html = d20plus.initiativeTemplate;
-			_.each(d20plus.formulas[d20plus.sheet], function(v, i) {
-				html = html.replace("||" + i + "||", v);
+			var columnsAdded = [];
+			$(".tracker-header-extra-columns").empty();
+
+			const cols = [
+				d20plus.getCfgVal("interface", "trackerCol1"),
+				d20plus.getCfgVal("interface", "trackerCol2"),
+				d20plus.getCfgVal("interface", "trackerCol3")
+			];
+
+			const headerStack = [];
+			const replaceStack = [
+				// this is hidden by CSS
+				`<span class='cr' alt='CR' title='CR'>
+					<$ if(npc && npc.get("current") == "1") { $>
+						<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
+					<$ } $>
+				</span>`
+			];
+			cols.forEach((c, i) => {
+				switch (c) {
+					case "HP": {
+						const hpBar = d20plus.getCfgHpBarNumber();
+						replaceStack.push(`
+							<span class='hp editable tracker-col' alt='HP' title='HP'>
+								<$ if(npc && npc.get("current") == "1") { $>
+									${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
+								<$ } else { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
+								<$ } $>
+							</span>						
+						`);
+						headerStack.push(`<span class='tracker-col'>HP</span>`);
+						break;
+					}
+					case "AC": {
+						replaceStack.push(`
+							<span class='ac tracker-col' alt='AC' title='AC'>
+								<$ if(npc && npc.get("current") == "1") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
+								<$ } else { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
+								<$ } $>
+							</span>	
+						`);
+						headerStack.push(`<span class='tracker-col'>AC</span>`);
+						break;
+					}
+					case "PP": {
+						replaceStack.push(`
+							<$ var passive = char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}'); $>
+							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
+						`);
+						headerStack.push(`<span class='tracker-col'>PP</span>`);
+						break;
+					}
+					default: {
+						replaceStack.push(`<span class="tracker-col"/>`);
+						headerStack.push(`<span class="tracker-col"/>`);
+					}
+				}
 			});
+
+			console.log("use custom tracker val was ", d20plus.getCfgVal("interface", "customTracker"))
+			if (d20plus.getCfgVal("interface", "customTracker")) {
+				const $header = $(".tracker-header-extra-columns");
+				// prepend/reverse used since tracker gets populated in right-to-left order
+				headerStack.forEach(h => $header.prepend(h))
+				html = html.replace(`<!--5ETOOLS_REPLACE_TARGET-->`, replaceStack.reverse().join(" \n"));
+			}
+
 			$("#tmpl_initiativecharacter").replaceWith(html);
 
 			// Hack to catch errors, part 1
 			const startTime = (new Date).getTime();
 
-			var results = cachedFunction.apply(this, []);
+			var results = d20plus.turnOrderCachedFunction.apply(this, []);
 			setTimeout(function() {
 				$(".initmacrobutton").unbind("click");
 				$(".initmacrobutton").bind("click", function() {
@@ -1973,6 +2224,8 @@ var D20plus = function(version) {
 						// d20.textchat.doChatInput(`%{` + char.id + `|` + d20plus.formulas[d20plus.sheet]["macro"] + `}`)
 					}
 				});
+
+				d20plus.bindTokens();
 			}, 100);
 
 			// Hack to catch errors, part 2
@@ -1980,12 +2233,12 @@ var D20plus = function(version) {
 				window.removeEventListener("error", d20plus.initErrorHandler);
 			}
 			d20plus.initErrorHandler = function (event) {
-				// if we see an error within 150 msec of trying to override the initiative window...
-				if (((new Date).getTime() - startTime) < 150) {
+				// if we see an error within 250 msec of trying to override the initiative window...
+				if (((new Date).getTime() - startTime) < 250) {
 					d20plus.log(" > ERROR: failed to populate custom initiative tracker, restoring default...");
 					// restore the default functionality
-					$("#tmpl_initiativecharacter").replaceWith(chachedTemplate);
-					return cachedFunction();
+					$("#tmpl_initiativecharacter").replaceWith(d20plus.turnOrderCachedTemplate);
+					return d20plus.turnOrderCachedFunction();
 				}
 			};
 			window.addEventListener("error", d20plus.initErrorHandler);
@@ -2906,19 +3159,21 @@ var D20plus = function(version) {
 			min-height: 15px;
 		}
 
+		#initiativewindow div.header span.initiative,
 		#initiativewindow ul li span.initiative,
-		#initiativewindow ul li span.ac,
-		#initiativewindow ul li span.hp,
-		#initiativewindow ul li span.pp,
-		#initiativewindow ul li span.cr,
+		#initiativewindow ul li span.tracker-col,
+		#initiativewindow div.header span.tracker-col,
+		#initiativewindow div.header span.initmacro,
 		#initiativewindow ul li span.initmacro {
-			font-size: 12px;
+			font-size: 10px;
 			font-weight: bold;
 			text-align: right;
 			float: right;
 			padding: 0 5px;
 			width: 7%;
 			min-height: 20px;
+			display: block;
+			overflow: hidden;
 		}
 
 		#initiativewindow ul li .controls {
@@ -2938,33 +3193,6 @@ var D20plus = function(version) {
 	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute"></span>`;
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
-
-	d20plus.formulas = {
-		"ogl": {
-			"CR": "@{npc_challenge}",
-			"AC": "@{ac}",
-			"NPCAC": "@{npc_ac}",
-			"HP": "@{hp}",
-			"PP": "@{passive_wisdom}",
-			"macro": ""
-		},
-		"community": {
-			"CR": "@{npc_challenge}",
-			"AC": "@{AC}",
-			"NPCAC": "@{AC}",
-			"HP": "@{HP}",
-			"PP": "10 + @{perception}",
-			"macro": ""
-		},
-		"shaped": {
-			"CR": "@{challenge}",
-			"AC": "@{AC}",
-			"NPCAC": "@{AC}",
-			"HP": "@{HP}",
-			"PP": "@{repeating_skill_$11_passive}",
-			"macro": "shaped_statblock"
-		}
-	};
 
 	d20plus.configEditorHTML = `
 <div id="d20plus-configeditor" title="Config Editor" style="position: relative">
@@ -3073,15 +3301,13 @@ var D20plus = function(version) {
 <div style="width: 1px; height: 5px;"/>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
 <div style="width: 1px; height: 5px;"/>
-<a class="btn bind-tokens" href="#" id="bind-tokens" title="Lets you update token HP and have the tracker window update">Bind Tokens to Tracker</a>
-<div style="width: 1px; height: 5px;"/>
 <a class="btn" href="#" id="button-edit-config">Edit Config</a>
 <style id="dynamicStyle"></style>`;
 
 	d20plus.cssRules = [
 		{
-			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.ac,#initiativewindow ul li span.hp,#initiativewindow ul li span.pp,#initiativewindow ul li span.cr,#initiativewindow ul li span.initmacro",
-			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;"
+			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.tracker-col,#initiativewindow ul li span.initmacro",
+			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;display: block;"
 		},
 		{
 			s: "#initiativewindow ul li span.editable input",
@@ -3148,16 +3374,15 @@ var D20plus = function(version) {
 	d20plus.initiativeHeaders = `<div class="header">
 	<span class="ui-button-text initmacro">Sheet</span>
 	<span class="initiative" alt="Initiative" title="Initiative">Init</span>
-  <span class="pp" alt="Passive Perception" title="Passive Perception">PP</span>
-  <span class="ac" alt="AC" title="AC">AC</span>
-  <span class="cr" alt="CR" title="CR">CR</span>
-  <span class="hp" alt="HP" title="HP">HP</span>
-</div>`;
+ 	<span class="cr" alt="CR" title="CR">CR</span>
+ 	<div class="tracker-header-extra-columns"></div>
+	</div>`;
 
-	// FIXME use the right bar for HP
 	d20plus.initiativeTemplate = `<script id="tmpl_initiativecharacter" type="text/html">
 	<![CDATA[
 		<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
+			<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
+			<$ var char = (token) ? token.character : null; $>
 			<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
 				<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
 				<span class='ui-button-text'>N</span>
@@ -3166,32 +3391,12 @@ var D20plus = function(version) {
 			<span alt='Initiative' title='Initiative' class='initiative <$ if (this.iseditable) { $>editable<$ } $>'>
 				<$!this.pr$>
 			</span>
-			<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
-			<$ var char = (token) ? token.character : null; $>
 			<$ if (char) { $>
 				<$ var npc = char.attribs.find(function(a){return a.get("name").toLowerCase() == "npc" }); $>
-				<$ var passive = char.autoCalcFormula('@{passive}') || char.autoCalcFormula('||PP||'); $>
-				<span class='pp' alt='Passive Perception' title='Passive Perception'><$!passive$></span>
-				<span class='ac' alt='AC' title='AC'>
-					<$ if(npc && npc.get("current") == "1") { $>
-						<$!char.autoCalcFormula('||NPCAC||')$>
-					<$ } else { $>
-						<$!char.autoCalcFormula('||AC||')$>
-					<$ } $>
-				</span>
-				<span class='cr' alt='CR' title='CR'>
-					<$ if(npc && npc.get("current") == "1") { $>
-						<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
-					<$ } $>
-				</span>
-				<span class='hp editable' alt='HP' title='HP'>
-					<$ if(npc && npc.get("current") == "1") { $>
-						<$!token.attributes.bar1_value$>
-					<$ } else { $>
-						<$!char.autoCalcFormula('||HP||')$>
-					<$ } $>
-				</span>
 			<$ } $>
+			<div class="tracker-extra-columns">
+				<!--5ETOOLS_REPLACE_TARGET-->
+			</div>
 			<$ if (this.avatar) { $><img src='<$!this.avatar$>' /><$ } $>
 			<span class='name'><$!this.name$></span>
 				<div class='clear' style='height: 0px;'></div>
