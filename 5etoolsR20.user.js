@@ -2005,32 +2005,31 @@ var D20plus = function(version) {
 	// Create editable HP variable and autocalculate + or -
 	d20plus.hpAllowEdit = function() {
 		$("#initiativewindow").on(window.mousedowntype, ".hp.editable", function() {
-			if ($(this).find("input").length > 0) return void $(this).find("input").select();
+			if ($(this).find("input").length > 0) return void $(this).find("input").focus();
 			var val = $.trim($(this).text());
 			const $span = $(this);
 			$span.html(`<input type='text' value='${val}'/>`);
 			const $ipt = $(this).find("input");
-			$ipt.on("focusout", () => {
-				// after a brief delay, convert the field back to text
-				setTimeout(() => {
-					$span.html($ipt.val());
-				}, 25);
-			});
-			$ipt.select();
+			$ipt[0].focus();
 		});
 		$("#initiativewindow").on("keydown", ".hp.editable", function(event) {
 			if (event.which == 13) {
+				const $span = $(this);
+				const $ipt = $span.find("input");
+				if (!$ipt.length) return;
+
 				var el, token, id, char, hp,
-					val = $.trim($(this).find("input").val());
+					val = $.trim($ipt.val());
 
 				// roll20 token modification supports plus/minus for a single integer; mimic this
-				const m = /([+-])?(\d+)/.exec(val);
+				const m = /^((\d+)?([+-]))?(\d+)$/.exec(val);
 				if (m) {
 					let op = null;
-					if (m[1]) {
-						op = m[1] === "+" ? "ADD" : "SUB";
+					if (m[3]) {
+						op = m[3] === "+" ? "ADD" : "SUB";
 					}
-					const num = Number(m[2]);
+					const base = m[2] ? eval(m[0]) : null;
+					const mod = Number(m[4]);
 
 					el = $(this).parents("li.token");
 					id = el.data("tokenid");
@@ -2038,41 +2037,50 @@ var D20plus = function(version) {
 					char = token.character;
 
 					npc = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "npc";});
+					let total;
 					if (npc && npc.get("current") == "1") {
 						const hpBar = d20plus.getCfgHpBarNumber();
 						if (hpBar) {
-							let total;
-							if (op) {
+							total;
+							if (base !== null) {
+								total = base;
+							} else if (op) {
 								const curr = token.attributes[`bar${hpBar}_value`];
-								if (op === "ADD") total = curr + num;
-								else total = curr - num;
+								if (op === "ADD") total = curr + mod;
+								else total = curr - mod;
 							} else {
-								total = num;
+								total = mod;
 							}
 							token.attributes[`bar${hpBar}_value`] = total;
 						}
 					} else {
 						hp = char.attribs.find(function(a) {return a.get("name").toLowerCase() === "hp";});
 						if (hp) {
-							let total;
-							if (op) {
-								if (op === "ADD") total = hp.attributes.current + num;
-								else total = hp.attributes.current - num;
+							total;
+							if (base !== null) {
+								total = base;
+							} else if (op) {
+								if (op === "ADD") total = hp.attributes.current + mod;
+								else total = hp.attributes.current - mod;
 							} else {
-								total = num;
+								total = mod;
 							}
 							hp.syncedSave({current: total});
 						} else {
-							let total;
-							if (op) {
-								if (op === "ADD") total = num;
-								else total = 0 - num;
+							total;
+							if (base !== null) {
+								total = base;
+							} else if (op) {
+								if (op === "ADD") total = mod;
+								else total = 0 - mod;
 							} else {
-								total = num;
+								total = mod;
 							}
 							char.attribs.create({name: "hp", current: total});
 						}
 					}
+					// convert the field back to text
+					$span.html(total);
 				}
 				d20.Campaign.initiativewindow.rebuildInitiativeList();
 			}
