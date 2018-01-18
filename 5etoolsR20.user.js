@@ -2578,7 +2578,7 @@ var D20plus = function(version) {
 					if (type === "HA") armorclass = data.ac;
 					var properties = "";
 					if (data.property) {
-						var propertieslist = data.property.split(",");
+						var propertieslist = data.property;
 						for (var i = 0; i < propertieslist.length; i++) {
 							var a = d20plus.items.parseProperty(propertieslist[i]);
 							var b = propertieslist[i];
