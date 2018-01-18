@@ -319,7 +319,6 @@ var D20plus = function(version) {
 		var configHandout = d20plus.getConfigHandout();
 
 		if (!configHandout) {
-			debugger
 			d20plus.log("> No config found! Initialising new config...");
 			d20plus.makeDefaultConfig(doLoad);
 		} else {
@@ -734,11 +733,15 @@ var D20plus = function(version) {
 	// bind token HP to initiative tracker window HP field
 	d20plus.bindToken = function (token) {
 		function getInitTrackerToken () {
-			return $("#initiativewindow").find(`li.token`).filter((i, e) => {
+			const $window = $("#initiativewindow");
+			if (!$window.length) return [];
+			return $window.find(`li.token`).filter((i, e) => {
 				return $(e).data("tokenid") === token.id;
 			});
 		}
-		const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+		const $initToken = getInitTrackerToken();
+		if (!$initToken.length) return;
+		const $iptHp = $initToken.find(`.hp.editable`);
 		const npcFlag = token.character.attribs.find((a) => {
 			return a.get("name").toLowerCase() === "npc";
 		});
@@ -753,7 +756,9 @@ var D20plus = function(version) {
 				}
 
 				toBind = (token, changes) => {
-					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					const $initToken = getInitTrackerToken();
+					if (!$initToken.length) return;
+					const $iptHp = $initToken.find(`.hp.editable`);
 					const hpBar = d20plus.getCfgHpBarNumber();
 
 					if ($iptHp && hpBar) {
@@ -764,11 +769,12 @@ var D20plus = function(version) {
 				};
 			} else {
 				toBind = (token, changes) => {
-					const $iptHp = getInitTrackerToken().find(`.hp.editable`);
+					const $initToken = getInitTrackerToken();
+					if (!$initToken.length) return;
+					const $iptHp = $initToken.find(`.hp.editable`);
 					if ($iptHp) {
 						$iptHp.text(token.character.autoCalcFormula(d20plus.formulas[d20plus.sheet].hp));
 					}
-					debugger
 				}
 			}
 			// clean up old handler
