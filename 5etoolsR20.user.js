@@ -148,7 +148,7 @@ var D20plus = function(version) {
 			"_name": "Import",
 			"importInterval": {
 				"name": "Rest Time between Each Handout (msec)",
-				"default": 100,
+				"default": 1000,
 				"_type": "integer"
 			}
 		}
@@ -1077,6 +1077,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
+			$("#mysettings > .content select#import-mode-select").on("change", d20plus.importer.importModeSwitch);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
 			d20plus.setTurnOrderTemplate();
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
@@ -2588,9 +2589,15 @@ var D20plus = function(version) {
 
 	// Import Adventures button was clicked
 	d20plus.adventures.button = function () {
-		var url = $("#import-adventures-url").val();
+		const url = $("#import-adventures-url").val();
 		if (url !== null) d20plus.adventures.load(url);
 	};
+
+	d20plus.importer.importModeSwitch = function () {
+		$(`.importer-section`).hide();
+		const toShow = $(`#import-mode-select`).val();
+		$(`.importer-section[data-import-group="${toShow}"]`).show();
+	}
 
 	d20plus.importer.showImportList = function (dataType, dataArray, handoutBuilder, options) {
 		/*
@@ -3220,57 +3227,89 @@ var D20plus = function(version) {
 
 	d20plus.settingsHtml = `<hr>
 <h3>5etoolsR20 v${d20plus.version}</h3>
+
+<a class="btn" href="#" id="button-edit-config">Edit Config</a>
+<a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
+<p>
+You can drag-and-drop imported handouts to character sheets.
+If a handout is glowing green in the journal, it's draggable. This breaks when Roll20 decides to hard-refresh the journal.
+To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
+<i>Note: to drag a handout to a character sheet, you need to drag the name, and not the handout icon.</i>
+</p>
+
+<h4>Importing</h4>
+<select id="import-mode-select">
+	<option value="none" disabled selected>Select category...</option>
+	<option value="monster">Monsters</option>
+	<option value="spell">Spells</option>
+	<option value="item">Items</option>
+	<option value="psionic">Psionics</option>
+	<option value="spell">Spells</option>
+	<option value="feat">Feats</option>
+	<option value="adventure">Adventures</option>
+</select>
+
+<div class="importer-section" data-import-group="monster">
 <h4>Monster Importing</h4>
-<p style="margin-bottom: 0;">
 <label for="import-monster-url">Monster Data URL:</label>
 <select id="button-monsters-select">
 	<!-- populate with JS-->
 </select>
 <input type="text" id="import-monster-url">
-</p>
 <p><a class="btn" href="#" id="button-monsters-load">Import Monsters</a></p>
 <p><a class="btn" href="#" id="button-monsters-load-all" title="Standard sources only; no third-party or UA">Import Monsters From All Sources</a></p>
-<h4>Item Importing</h4>
 <p>
+The "Import Monsters From All Sources" button presents a list containing monsters from official sources only. 
+To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Monsters."
+</p>
+</div>
+
+<div class="importer-section" data-import-group="item">
+<h4>Item Importing</h4>
 <label for="import-items-url">Item Data URL:</label>
 <input type="text" id="import-items-url" value="${itemdataurl}">
 <a class="btn" href="#" id="import-items-load">Import Items</a>
-</p>
+</div>
+
+<div class="importer-section" data-import-group="spell">
 <h4>Spell Importing</h4>
-<p style="margin-bottom: 0;">
 <label for="import-spell-url">Spell Data URL:</label>
 <select id="button-spell-select">
 	<!-- populate with JS-->
 </select>
 <input type="text" id="import-spell-url">
-</p>
 <p><a class="btn" href="#" id="button-spells-load">Import Spells</a><p/>
 <p><a class="btn" href="#" id="button-spells-load-all" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
-<h4>Psionic Importing</h4>
 <p>
+The "Import Spells From All Sources" button presents a list containing spells from official sources only. 
+To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."
+</p>
+</div>
+
+<div class="importer-section" data-import-group="psionic">
+<h4>Psionic Importing</h4>
 <label for="import-psionics-url">Psionics Data URL:</label>
 <input type="text" id="import-psionics-url" value="${psionicdataurl}">
 <a class="btn" href="#" id="import-psionics-load">Import Psionics</a>
-</p>
+</div>
+
+<div class="importer-section" data-import-group="feat">
 <h4>Feat Importing</h4>
-<p>
 <label for="import-feats-url">Feat Data URL:</label>
 <input type="text" id="import-feats-url" value="${featdataurl}">
 <a class="btn" href="#" id="import-feats-load">Import Feats</a>
-</p>
+</div>
+
+<div class="importer-section" data-import-group="adventure">
 <h4>Adventure Importing</h4>
-<p style="margin-bottom: 0;">
 <label for="import-adventures-url">Adventure Data URL:</label>
 <select id="button-adventures-select">
 	<!-- populate with JS-->
 </select>
 <input type="text" id="import-adventures-url">
-</p>
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
-<div style="width: 1px; height: 5px;"/>
-<a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
-<div style="width: 1px; height: 5px;"/>
-<a class="btn" href="#" id="button-edit-config">Edit Config</a>
+</div>
+
 <style id="dynamicStyle"></style>`;
 
 	d20plus.cssRules = [
@@ -3345,6 +3384,10 @@ var D20plus = function(version) {
 		{
 			s: ".import-cb-label .source",
 			r: "font-style: italic;"
+		},
+		{
+			s: ".importer-section",
+			r: "display: none;"
 		}
 	];
 
