@@ -3228,16 +3228,7 @@ var D20plus = function(version) {
 	d20plus.settingsHtml = `<hr>
 <h3>5etoolsR20 v${d20plus.version}</h3>
 
-<a class="btn" href="#" id="button-edit-config">Edit Config</a>
-<a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
-<p>
-You can drag-and-drop imported handouts to character sheets.
-If a handout is glowing green in the journal, it's draggable. This breaks when Roll20 decides to hard-refresh the journal.
-To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
-<i>Note: to drag a handout to a character sheet, you need to drag the name, and not the handout icon.</i>
-</p>
-
-<h4>Importing</h4>
+<h4>Import By Category</h4>
 <select id="import-mode-select">
 	<option value="none" disabled selected>Select category...</option>
 	<option value="monster">Monsters</option>
@@ -3309,6 +3300,15 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-adventures-url">
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 </div>
+
+<a class="btn" href="#" id="button-edit-config">Edit Config</a>
+<a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
+<p>
+You can drag-and-drop imported handouts to character sheets.
+If a handout is glowing green in the journal, it's draggable. This breaks when Roll20 decides to hard-refresh the journal.
+To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
+<i>Note: to drag a handout to a character sheet, you need to drag the name, and not the handout icon.</i>
+</p>
 
 <style id="dynamicStyle"></style>`;
 
