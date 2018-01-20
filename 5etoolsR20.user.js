@@ -1488,7 +1488,8 @@ var D20plus = function(version) {
 					toAdd,
 					d20plus.monsters.handoutBuilder,
 					{
-						groupOptions: d20plus.monsters._groupOptions
+						groupOptions: d20plus.monsters._groupOptions,
+						showSource: true
 					}
 				);
 			});
@@ -2190,7 +2191,8 @@ var D20plus = function(version) {
 					data.spell,
 					d20plus.spells.handoutBuilder,
 					{
-						groupOptions: d20plus.spells._groupOptions
+						groupOptions: d20plus.spells._groupOptions,
+						showSource: true
 					}
 				);
 			});
@@ -2523,7 +2525,6 @@ var D20plus = function(version) {
 		});
 	};
 
-	d20plus.feats._groupOptions = ["Alphabetical", "Source"];
 	// Import Feats button was clicked
 	d20plus.feats.button = function () {
 		const url = $("#import-feats-url").val();
@@ -2534,7 +2535,6 @@ var D20plus = function(version) {
 					data.feat,
 					d20plus.feats.handoutBuilder,
 					{
-						groupOptions: d20plus.feats._groupOptions,
 						showSource: true
 					}
 				);
@@ -2608,11 +2608,10 @@ var D20plus = function(version) {
 		const $list = $("#import-list .list");
 		$list.html("");
 		dataArray.forEach((it, i) => {
-			// TODO right-align source
 			$list.append(`
-				<label>
+				<label class="import-cb-label">
 					<input type="checkbox" data-listid="${i}">
-					<span class="name">${it.name}${options.showSource ? ` (${it.source})` : ""}</span>
+					<span class="name"><span>${it.name}</span>${options.showSource ? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">(${Parser.sourceJsonToAbv(it.source)})</span>` : ""}</span>
 				</label>
 			`);
 		});
@@ -3338,6 +3337,14 @@ var D20plus = function(version) {
 		{
 			s: "del",
 			r: "display: none;"
+		},
+		{
+			s: ".import-cb-label .name",
+			r: "display: inline-flex; width: calc(100% - 20px); justify-content: space-between;"
+		},
+		{
+			s: ".import-cb-label .source",
+			r: "font-style: italic;"
 		}
 	];
 
