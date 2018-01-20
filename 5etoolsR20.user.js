@@ -1458,7 +1458,7 @@ var D20plus = function(version) {
 		d20plus.log("> ERROR: " + msg);
 	};
 
-	d20plus.monsters._groupOptions = ["Source", "CR", "Alphabetical", "Type"];
+	d20plus.monsters._groupOptions = ["Type", "CR", "Alphabetical", "Source"];
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function() {
 		const url = $("#import-monster-url").val();
@@ -2179,7 +2179,7 @@ var D20plus = function(version) {
 		return d20plus.formSrcUrl(spellDataDir, fileName);
 	};
 
-	d20plus.spells._groupOptions = ["Source", "Alphabetical", "Level"];
+	d20plus.spells._groupOptions = ["Level", "Alphabetical", "Source"];
 	// Import Spells button was clicked
 	d20plus.spells.button = function() {
 		const url = $("#import-spell-url").val();
@@ -2312,7 +2312,7 @@ var D20plus = function(version) {
 		return out.join(" ");
 	}
 
-	d20plus.items._groupOptions = ["Source", "Rarity", "Alphabetical"];
+	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
 	// Import Items button was clicked
 	d20plus.items.button = function() {
 		const url = $("#import-items-url").val();
@@ -2464,7 +2464,7 @@ var D20plus = function(version) {
 		return "n/a";
 	};
 
-	d20plus.psionics._groupOptions = ["Source", "Alphabetical", "Order"];
+	d20plus.psionics._groupOptions = ["Alphabetical", "Order", "Source"];
 	// Import Psionics button was clicked
 	d20plus.psionics.button = function () {
 		const url = $("#import-psionics-url").val();
@@ -2484,8 +2484,8 @@ var D20plus = function(version) {
 
 	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
-		const path = ["Monsters", folderName, data.name];
+		const folder = d20plus.importer.makeDirTree(`Psionics`, folderName);
+		const path = ["Psionics", folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -2523,7 +2523,7 @@ var D20plus = function(version) {
 		});
 	};
 
-	d20plus.feats._groupOptions = ["Source", "Alphabetical", "Type"];
+	d20plus.feats._groupOptions = ["Alphabetical", "Source"];
 	// Import Feats button was clicked
 	d20plus.feats.button = function () {
 		const url = $("#import-feats-url").val();
@@ -2545,7 +2545,7 @@ var D20plus = function(version) {
 	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Feats`, folderName);
-		const path = ["Monsters", folderName, data.name];
+		const path = ["Feats", folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -2639,7 +2639,7 @@ var D20plus = function(version) {
 		$("#d20plus-importlist button").unbind("click");
 		const $selGroupBy = $(`#organize-by`);
 		$selGroupBy.html("");
-		options.groupOptions = (options.groupOptions || ["Source", "Alphabetical"]).sort();
+		options.groupOptions = options.groupOptions || ["Alphabetical", "Source"];
 		options.groupOptions.forEach(g => {
 			$selGroupBy.append(`<option value="${g}">${g}</option>`);
 		});
@@ -2752,8 +2752,11 @@ var D20plus = function(version) {
 						folderName = it.rarity;
 						break;
 					case "Alphabetical":
-					default:
 						folderName = it.name[0].uppercaseFirst();
+						break;
+					case "Type":
+					default:
+						folderName = Parser.itemTypeToAbv(it.type);
 						break;
 				}
 				return folderName;
@@ -2774,7 +2777,19 @@ var D20plus = function(version) {
 				}
 				return folderName;
 			}
-			case "feat":
+			case "feat": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
 			default:
 				throw new Error(`Unknown import type '${dataType}'`);
 		}
