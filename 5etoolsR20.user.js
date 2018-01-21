@@ -1160,27 +1160,35 @@ var D20plus = function(version) {
 			}
 		}
 		// add a bind button to the journal for players
-		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-top: 5px;">Bind Drag-n-Drop</button>`);
+		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
 		altBindButton.on("click", function () {
 			d20plus.bindDropLocations();
 		});
+		const $iptSearch = $(`<input id="player-search" class="ui-autocomplete-input" autocomplete="off" placeholder="Quick search by name...">`);
+		const $wrprResults = $(`<div id="player-search-results" class="content searchbox"/>`);
 		if (window.is_gm) {
-			$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
+			altBindButton.css("margin-right", "5px");
+			$iptSearch.css("width", "calc(100% - 5px)");
+			const $addPoint = $("#journal button.btn.superadd");
+			$addPoint.after($wrprResults);
+			$addPoint.after(`<br>`);
+			$addPoint.after($iptSearch);
+			$addPoint.after(`<br><br>`);
+			$addPoint.after(altBindButton);
 		} else {
+			altBindButton.css("margin-top", "5px");
 			const $wrprControls = $(`<div class="content searchbox"/>`);
-			const $wrprResults = $(`<div id="player-search-results" class="content searchbox"/>`);
 			$(`#journal .content`).before($wrprControls).before($wrprResults);
-			$wrprControls.append(`<input id="player-search" class="ui-autocomplete-input" autocomplete="off" placeholder="Search by name..." style="max-width: calc(100% - 140px);">`);
+			$iptSearch.css("max-width", "calc(100% - 140px)");
+			$wrprControls.append($iptSearch);
 			$wrprControls.append(altBindButton);
-			d20plus.initPlayerSearch();
 		}
-		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+		d20plus.initQuickSearch($iptSearch, $wrprResults);
+
+		$("#journal btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 	};
 
-	d20plus.initPlayerSearch = function () {
-		const $winSearch = $("#d20plus-playersearch")
-		const $iptSearch = $(`#player-search`);
-		const $outSearch = $(`#player-search-results`);
+	d20plus.initQuickSearch = function ($iptSearch, $outSearch) {
 		$iptSearch.on("keyup", () => {
 			const searchVal = ($iptSearch.val() || "").trim();
 			$outSearch.empty();
