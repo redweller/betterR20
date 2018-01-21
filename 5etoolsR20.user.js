@@ -23,6 +23,7 @@ var D20plus = function(version) {
 	var IMG_URL = BASE_SITE_URL+"img/";
 
 	var CONFIG_HANDOUT = '5etools';
+	const ART_HANDOUT = "5etools-art";
 
 	// build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
 	function SheetAttribute (name, ogl, shaped) {
@@ -319,8 +320,16 @@ var D20plus = function(version) {
 	};
 
 	d20plus.getConfigHandout = function () {
-		return d20.Campaign.handouts.models.find(function(handout) { return handout.attributes.name.toLowerCase() == CONFIG_HANDOUT;});
+		return d20.Campaign.handouts.models.find(function (handout) {
+			return handout.attributes.name.toLowerCase() == CONFIG_HANDOUT;
+		});
 	};
+
+	d20plus.getArtHandout = function () {
+		return d20.Campaign.handouts.models.find((handout) => {
+			return handout.attributes.name.toLowerCase() == ART_HANDOUT;
+		});
+	}
 
 	d20plus.loadConfigFailed = false;
 	d20plus.loadConfig = function(nextFn) {
@@ -362,6 +371,26 @@ var D20plus = function(version) {
 					}
 				});
 			}
+		}
+	};
+
+	d20plus.loadArt = function (nextFn) {
+		const handout = d20plus.getArtHandout();
+		if (handout) {
+			handout.view.render();
+			handout._getLatestBlob("gmnotes", function (gmnotes) {
+				const decoded = decodeURIComponent(gmnotes);
+
+				try {
+					d20plus.art.custom = JSON.parse(decoded);
+
+					nextFn();
+				} catch (e) {
+					nextFn();
+				}
+			});
+		} else {
+			nextFn();
 		}
 	};
 
@@ -629,7 +658,7 @@ var D20plus = function(version) {
 		d20plus.log("> Init (v" + d20plus.version + ")");
 		d20plus.setSheet();
 		if (window.is_gm) {
-			d20plus.log("> Reading Config...");
+			d20plus.log("> Reading Config");
 			d20plus.loadConfig(d20plus.onConfigLoad);
 		} else {
 			d20plus.onConfigLoad();
@@ -638,6 +667,16 @@ var D20plus = function(version) {
 
 	// continue more init after config loaded
 	d20plus.onConfigLoad = function () {
+		if (window.is_gm) {
+			d20plus.log("> Loading custom art");
+			d20plus.loadArt(d20plus.onArtLoad);
+		} else {
+			d20plus.onArtLoad();
+		}
+	};
+
+	// continue more init after art loaded
+	d20plus.onArtLoad = function () {
 		d20plus.bindDropLocations();
 		// Firebase will deny changes if we're not GM. Better to fail gracefully.
 		if (window.is_gm) {
@@ -669,8 +708,8 @@ var D20plus = function(version) {
 			d20plus.log("> Bind Graphics");
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-			d20plus.log("> Add custom art");
-			d20plus.addCustomArt();
+			d20plus.log("> Add custom art search");
+			d20plus.addCustomArtSearch();
 			d20plus.log("> Applying config");
 			d20plus.handleConfigChange();
 		}
@@ -747,7 +786,7 @@ var D20plus = function(version) {
 		}
 	};
 
-	d20plus.addCustomArt = function () {
+	d20plus.addCustomArtSearch = function () {
 		const $afterTo = $(`#libraryresults`);
 		$afterTo.after(d20plus.artListHTML);
 
@@ -3342,6 +3381,7 @@ var D20plus = function(version) {
 			});
 			d20plus.art.custom = custom;
 			makeDraggables();
+			saveToHandout();
 		}
 
 		function makeDraggables () {
@@ -3352,6 +3392,27 @@ var D20plus = function(version) {
 				helper: "clone",
 				appendTo: "body"
 			})
+		}
+
+		function saveToHandout () {
+			const handout = d20plus.getArtHandout();
+			if (!handout) {
+				d20.Campaign.handouts.create({
+					name: ART_HANDOUT
+				}, {
+					success: function(handout) {
+						notecontents = "This handout is used to store custom art URLs."
+
+						const gmnotes = JSON.stringify(d20plus.art.custom);
+						handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
+						handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+					}
+				});
+			} else {
+				const gmnotes = JSON.stringify(d20plus.art.custom);
+				handout.updateBlobs({gmnotes: gmnotes});
+				handout.save({notes: (new Date).getTime()});
+			}
 		}
 	};
 
