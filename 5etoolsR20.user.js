@@ -759,7 +759,7 @@ var D20plus = function(version) {
 		$srchImages.on("keyup", () => {
 			$olArt.empty();
 			const searched = $srchImages.val().trim().toLowerCase();
-			if (searched.length <= 2) {
+			if (searched.length === 0) {
 				$olNone.show();
 				$olHasResults.hide();
 				return;
@@ -3236,9 +3236,6 @@ var D20plus = function(version) {
 		const $artList = $art.find(`.list`);
 		$artList.empty();
 
-		// FIXME remove
-		d20plus.art.custom = [{url: "nasda", name: "asdasda"}, {url: "XDXDXDnasda", name: "asdasda222"}]
-
 		if (d20plus.art.custom) {
 			d20plus.art.custom.forEach(a => {
 				const $liArt = getArtLi(a.name, a.url);
@@ -3272,12 +3269,13 @@ var D20plus = function(version) {
 
 		function getArtLi (name, url) {
 			const $liArt = $(`
-					<li class="Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
-						<span class="name" style="display: inline-block; width: 40%;">${name}</span>
-						<span class="url" style="display: inline-block; width: 50%; overflow-x: auto;">${url}</span>
+					<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
+						<img src="${url}" style="max-width: 10%; max-height: 30px; display: inline-block" draggable="false">
+						<div class="dd-content name" style="display: inline-block; width: 35%;" data-url="${url}">${name}</div>
+						<span class="url" style="display: inline-block; width: 40%;">${url}</span>
 					</li>
 				`);
-			const $btnDel = $(`<button class="delete btn btn-danger"><span class="pictos">#</span></button>`).on("click", () => {
+			const $btnDel = $(`<span class="delete btn btn-danger"><span class="pictos">#</span></span>`).on("click", () => {
 				$liArt.remove();
 				refreshCustomArtList();
 			});
@@ -3299,15 +3297,14 @@ var D20plus = function(version) {
 			makeDraggables();
 		}
 
-		// FIXME doesn't work
 		function makeDraggables () {
 			$(`.Vetools-draggable-art`).draggable({
-				handle: ".name",
+				handle: ".dd-content",
 				revert: true,
 				revertDuration: 0,
 				helper: "clone",
 				appendTo: "body"
-			});
+			})
 		}
 	};
 
@@ -3390,7 +3387,7 @@ var D20plus = function(version) {
 		<span style="display: inline-block; width: 40%; font-weight: bold;">Name</span>
 		<span style="display: inline-block; font-weight: bold;">Url</span>
 	</p>
-	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin-top: 1em;"></ul>
+	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
 </div>
 </div>`;
 
@@ -3624,7 +3621,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		},
 		{
 			s: ".Vetoolsresult",
-			r: "background: #ff00ff;"
+			r: "background: #ff8080;"
 		}
 	];
 
