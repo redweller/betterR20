@@ -183,7 +183,8 @@ var D20plus = function(version) {
 		adventures: {},
 		initiative: {},
 		config: {},
-		importer: {}
+		importer: {},
+		art: {}
 	};
 
 	d20plus.formulas = {
@@ -237,6 +238,14 @@ var D20plus = function(version) {
 			d20plus.log(`> JSON [${name}] Loaded`);
 		}
 		d20plus.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
+
+		// TODO load this from somewhere
+		d20plus.art.default = [
+			{
+				name: "Phoenix",
+				url: "http://www.discgolfbirmingham.com/wordpress/wp-content/uploads/2014/04/phoenix-rising.jpg"
+			}
+		]
 	}
 
 	// Inject external JS libraries
@@ -660,10 +669,14 @@ var D20plus = function(version) {
 			d20plus.log("> Bind Graphics");
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
+			d20plus.log("> Add custom art");
+			d20plus.addCustomArt();
 			d20plus.log("> Applying config");
 			d20plus.handleConfigChange();
 		}
 		d20plus.log("> All systems operational");
+
+		d20.textchat.incoming(false, ({who: "system", type: "system", content: `<span style="font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">5etoolsR20 v${d20plus.version} ready</span>`}))
 	};
 
 	// Bind Graphics Add on page
@@ -732,6 +745,58 @@ var D20plus = function(version) {
 			console.log("D20Plus bindGraphics Exception", e);
 			console.log("PAGE", page);
 		}
+	};
+
+	d20plus.addCustomArt = function () {
+		const $afterTo = $(`#libraryresults`);
+		$afterTo.after(d20plus.artListHTML);
+
+		const $olNone = $(`#image-search-none`);
+		const $olHasResults = $(`#image-search-has-results`);
+
+		const $olArt = $(`#custom-art-results`);
+		const $srchImages = $(`#imagedialog .searchbox input.keywords`);
+		$srchImages.on("keyup", () => {
+			$olArt.empty();
+			const searched = $srchImages.val().trim().toLowerCase();
+			if (searched.length <= 2) {
+				$olNone.show();
+				$olHasResults.hide();
+				return;
+			};
+
+			let toShow = d20plus.art.default.filter(a => a.name.toLowerCase().includes(searched));
+			if (d20plus.art.custom) toShow = toShow.concat(d20plus.art.custom.filter(a => a.name.toLowerCase().includes(searched)));
+
+			if (!toShow.length) {
+				$olNone.show();
+				$olHasResults.hide();
+			} else {
+				$olNone.hide();
+				$olHasResults.show();
+
+				toShow.forEach(a => {
+					$olArt.append(`
+					<li class="dd-item library-item draggableresult Vetoolsresult ui-draggable" data-fullsizeurl="${a.url}">
+						<div class="dd-content">
+							<div class="token"><img src="${a.url}" draggable="false"></div>
+							<div class="name">
+								<div class="namecontainer"><a href="${a.url}" rel="external">${a.name}</a></div>
+							</div>
+						</div>
+					</li>
+				`);
+				});
+			}
+
+			$("#imagedialog #Vetoolsresults .draggableresult").draggable({
+				handle: ".dd-content",
+				revert: true,
+				revertDuration: 0,
+				helper: "clone",
+				appendTo: "body"
+			}).addTouch();
+		});
 	};
 
 	// bind token HP to initiative tracker window HP field
@@ -1070,6 +1135,9 @@ var D20plus = function(version) {
 	// Inject HTML
 	d20plus.addHTML = function() {
 		if (window.is_gm) {
+			$(`#imagedialog .searchbox`).find(`.tabcontainer`).first().after(d20plus.artTabHtml);
+			$(`a#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
+
 			$("#mysettings > .content").children("hr").first().before(d20plus.settingsHtml);
 			$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
 			$("#mysettings > .content a#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
@@ -1095,6 +1163,7 @@ var D20plus = function(version) {
 			$("body").append(d20plus.importDialogHtml);
 			$("body").append(d20plus.importListHTML);
 			$("body").append(d20plus.configEditorHTML);
+			$("body").append(d20plus.addArtHTML);
 			$("#d20plus-import").dialog({
 				autoOpen: false,
 				resizable: false
@@ -1110,6 +1179,12 @@ var D20plus = function(version) {
 				height: 400,
 			});
 			$("#d20plus-configeditor").parent().append(d20plus.configEditorButtonBarHTML);
+			$("#d20plus-artfolder").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 400,
+			});
 
 			populateDropdown("#button-spell-select", "#import-spell-url", spellDataDir, spellDataUrls, "PHB");
 			populateDropdown("#button-monsters-select", "#import-monster-url", monsterDataDir, monsterDataUrls, "MM");
@@ -3154,6 +3229,88 @@ var D20plus = function(version) {
 		*/
 	};
 
+	// add external art button was clicked
+	d20plus.art.button = function () {
+		const $art = $("#d20plus-artfolder");
+		$art.dialog("open");
+		const $artList = $art.find(`.list`);
+		$artList.empty();
+
+		// FIXME remove
+		d20plus.art.custom = [{url: "nasda", name: "asdasda"}, {url: "XDXDXDnasda", name: "asdasda222"}]
+
+		if (d20plus.art.custom) {
+			d20plus.art.custom.forEach(a => {
+				const $liArt = getArtLi(a.name, a.url);
+				$artList.append($liArt);
+			});
+		}
+
+		// init list library
+		const artList = new List("art-list-container", {
+			valueNames: ["name"],
+			listClass: "artlist"
+		});
+
+		const $btnAdd = $(`#art-list-add-btn`);
+		const $iptAddName = $(`#art-list-add-name`);
+		const $iptAddUrl = $(`#art-list-add-url`);
+		$btnAdd.off("click");
+		$btnAdd.on("click", () => {
+			const name = $iptAddName.val().trim();
+			const url = $iptAddUrl.val().trim();
+			if (!name || !url) {
+				alert("Missing required fields!")
+			} else {
+				const $liArt = getArtLi(name, url);
+				$artList.append($liArt);
+				refreshCustomArtList();
+			}
+		});
+
+		makeDraggables();
+
+		function getArtLi (name, url) {
+			const $liArt = $(`
+					<li class="Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
+						<span class="name" style="display: inline-block; width: 40%;">${name}</span>
+						<span class="url" style="display: inline-block; width: 50%; overflow-x: auto;">${url}</span>
+					</li>
+				`);
+			const $btnDel = $(`<button class="delete btn btn-danger"><span class="pictos">#</span></button>`).on("click", () => {
+				$liArt.remove();
+				refreshCustomArtList();
+			});
+			$liArt.append($btnDel);
+			return $liArt;
+		}
+
+		function refreshCustomArtList () {
+			artList.reIndex();
+			const custom = [];
+			artList.items.forEach(i => {
+				const $ele = $(i.elm);
+				custom.push({
+					name: $ele.find(`.name`).text(),
+					url: $ele.find(`.url`).text()
+				});
+			});
+			d20plus.art.custom = custom;
+			makeDraggables();
+		}
+
+		// FIXME doesn't work
+		function makeDraggables () {
+			$(`.Vetools-draggable-art`).draggable({
+				handle: ".name",
+				revert: true,
+				revertDuration: 0,
+				helper: "clone",
+				appendTo: "body"
+			});
+		}
+	};
+
 	d20plus.miniInitStyle = `
 		#initiativewindow button.initmacrobutton {
 			padding: 1px 4px;
@@ -3214,10 +3371,48 @@ var D20plus = function(version) {
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 
+	d20plus.artTabHtml = `
+		<p><a class="btn" href="#" id="button-add-external-art">Link External Art</a></p>
+	`;
+
+	d20plus.addArtHTML = `
+<div id="d20plus-artfolder" title="External Art" style="position: relative">
+<p>
+	<input placeholder="Name*" id="art-list-add-name">
+	<input placeholder="URL*" id="art-list-add-url">
+	<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
+<p/>
+<hr>
+<div id="art-list-container">
+	<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
+	<br>
+	<p>
+		<span style="display: inline-block; width: 40%; font-weight: bold;">Name</span>
+		<span style="display: inline-block; font-weight: bold;">Url</span>
+	</p>
+	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin-top: 1em;"></ul>
+</div>
+</div>`;
+
+	d20plus.artListHTML = `
+<div id="Vetoolsresults">
+	<ol class="dd-list" id="image-search-none"><div class="alert white">No results found in 5etools for those keywords.</div></ol>
+
+	<ol class="dd-list" id="image-search-has-results">
+		<li class="dd-item dd-folder Vetoolsresult">
+			<div class="dd-content">
+				<div class="folder-title">From 5etools</div>
+			</div>
+	
+			<ol class="dd-list Vetoolsresultfolder" id="custom-art-results"></ol>
+		</li>
+	</ol>
+</div>`;
+
 	d20plus.configEditorHTML = `
 <div id="d20plus-configeditor" title="Config Editor" style="position: relative">
 	<!-- populate with js -->
-</div>`
+</div>`;
 
 	d20plus.configEditorButtonBarHTML = `
 <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
@@ -3426,6 +3621,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".importer-section",
 			r: "display: none;"
+		},
+		{
+			s: ".Vetoolsresult",
+			r: "background: #ff00ff;"
 		}
 	];
 
