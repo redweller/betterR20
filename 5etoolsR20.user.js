@@ -1164,6 +1164,7 @@ var D20plus = function(version) {
 			$("body").append(d20plus.importListHTML);
 			$("body").append(d20plus.configEditorHTML);
 			$("body").append(d20plus.addArtHTML);
+			$("body").append(d20plus.addArtMassAdderHTML);
 			$("#d20plus-import").dialog({
 				autoOpen: false,
 				resizable: false
@@ -1180,6 +1181,12 @@ var D20plus = function(version) {
 			});
 			$("#d20plus-configeditor").parent().append(d20plus.configEditorButtonBarHTML);
 			$("#d20plus-artfolder").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 400,
+			});
+			$("#d20plus-artmassadd").dialog({
 				autoOpen: false,
 				resizable: true,
 				width: 800,
@@ -3265,6 +3272,46 @@ var D20plus = function(version) {
 			}
 		});
 
+		const $btnMassAdd = $(`#art-list-multi-add-btn`);
+		$btnMassAdd.off("click");
+		$btnMassAdd.on("click", () => {
+			$("#d20plus-artmassadd").dialog("open");
+			const $btnMassAddSubmit = $(`#art-list-multi-add-btn-submit`);
+			$btnMassAddSubmit.off("click");
+			$btnMassAddSubmit.on("click", () => {
+				const $iptUrls = $(`#art-list-multi-add-area`);
+				const massUrls = $iptUrls.val();
+				const spl = massUrls.split("\n").map(s => s.trim()).filter(s => s);
+				if (!spl.length) return;
+				else {
+					const delim = "---";
+					const toAdd = [];
+					for(const s of spl) {
+						if (!s.includes(delim)) {
+							alert(`Badly formatted line: ${s}`)
+							return;
+						} else {
+							const parts = s.split(delim);
+							if (parts.length !== 2) {
+								alert(`Badly formatted line: ${s}`)
+								return;
+							} else {
+								toAdd.push({
+									name: parts[0],
+									url: parts[1]
+								});
+							}
+						}
+					}
+					toAdd.forEach(a => {
+						$artList.append(getArtLi(a.name, a.url));
+					})
+					refreshCustomArtList();
+					$("#d20plus-artmassadd").dialog("close");
+				}
+			});
+		});
+
 		makeDraggables();
 
 		function getArtLi (name, url) {
@@ -3378,6 +3425,7 @@ var D20plus = function(version) {
 	<input placeholder="Name*" id="art-list-add-name">
 	<input placeholder="URL*" id="art-list-add-url">
 	<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
+	<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
 <p/>
 <hr>
 <div id="art-list-container">
@@ -3389,6 +3437,12 @@ var D20plus = function(version) {
 	</p>
 	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
 </div>
+</div>`;
+
+	d20plus.addArtMassAdderHTML = `
+<div id="d20plus-artmassadd">
+	<p>One entry per line; entry format: <b>[name]---[URL]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
+	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;"></textarea></p>
 </div>`;
 
 	d20plus.artListHTML = `
