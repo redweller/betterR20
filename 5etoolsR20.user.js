@@ -619,8 +619,12 @@ var D20plus = function(version) {
 	d20plus.Init = function() {
 		d20plus.log("> Init (v" + d20plus.version + ")");
 		d20plus.setSheet();
-		d20plus.log("> Reading Config...");
-		d20plus.loadConfig(d20plus.onConfigLoad);
+		if (window.is_gm) {
+			d20plus.log("> Reading Config...");
+			d20plus.loadConfig(d20plus.onConfigLoad);
+		} else {
+			d20plus.onConfigLoad();
+		}
 	};
 
 	// continue more init after config loaded
@@ -1156,17 +1160,43 @@ var D20plus = function(version) {
 			}
 		}
 		// add a bind button to the journal for players
-		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-right: 0.5em;">Bind Drag-n-Drop</button>`);
+		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts" style="margin-top: 5px;">Bind Drag-n-Drop</button>`);
 		altBindButton.on("click", function () {
 			d20plus.bindDropLocations();
 		});
 		if (window.is_gm) {
 			$("#journal > .content:eq(1) > button.btn.superadd").after(altBindButton);
 		} else {
-			$(`#journal .content`).before(altBindButton);
-			altBindButton.after(`<br>`);
+			const $wrprControls = $(`<div class="content searchbox"/>`);
+			const $wrprResults = $(`<div id="player-search-results" class="content searchbox"/>`);
+			$(`#journal .content`).before($wrprControls).before($wrprResults);
+			$wrprControls.append(`<input id="player-search" class="ui-autocomplete-input" autocomplete="off" placeholder="Search by name..." style="max-width: calc(100% - 140px);">`);
+			$wrprControls.append(altBindButton);
+			d20plus.initPlayerSearch();
 		}
 		$("#journal > .content:eq(1) btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+	};
+
+	d20plus.initPlayerSearch = function () {
+		const $winSearch = $("#d20plus-playersearch")
+		const $iptSearch = $(`#player-search`);
+		const $outSearch = $(`#player-search-results`);
+		$iptSearch.on("keyup", () => {
+			const searchVal = ($iptSearch.val() || "").trim();
+			$outSearch.empty();
+			if (searchVal.length <= 2) return; // ignore 2 characters or less, for performance reasons
+			const found = $(`#journal .content`).find(`li[data-itemid]`).filter((i, ele) => {
+				const $ele = $(ele);
+				return $ele.find(`.name`).text().trim().toLowerCase().includes(searchVal.toLowerCase());
+			});
+			if (found.length) {
+				$outSearch.append(`<p><b>Search results:</b></p>`);
+				const $outList = $(`<ol class="dd-list"/>`);
+				$outSearch.append($outList);
+				found.clone().appendTo($outList);
+				$outSearch.append(`<hr>`);
+			}
+		});
 	};
 
 	d20plus.updateDifficulty = function() {
