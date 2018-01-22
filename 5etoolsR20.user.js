@@ -3415,7 +3415,7 @@ var D20plus = function(version) {
 		function getArtLi (name, url) {
 			const $liArt = $(`
 					<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
-						<img src="${url}" style="max-width: 10%; max-height: 30px; display: inline-block" draggable="false">
+						<img src="${url}" style="width: 30px; max-height: 30px; display: inline-block" draggable="false">
 						<div class="dd-content name" style="display: inline-block; width: 35%;" data-url="${url}">${name}</div>
 						<span class="url" style="display: inline-block; width: 40%;">${url}</span>
 					</li>
