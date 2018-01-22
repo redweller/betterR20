@@ -157,6 +157,7 @@ var D20plus = function(version) {
 
 	var spellDataDir = `${DATA_URL}spells/`;
 	var spellDataUrls = {};
+	var spellMetaData = {};
 
 	var spellmetaurl = `${spellDataDir}roll20.json`;
 
@@ -224,20 +225,22 @@ var D20plus = function(version) {
 
 	d20plus.json = [
 		{name: "spell index", url: `${spellDataDir}index.json`},
+		{name: "spell metadata", url: spellmetaurl},
 		{name: "bestiary index", url: `${monsterDataDir}index.json`},
 		{name: "adventures index", url: `${DATA_URL}adventures.json`}
-	]
+	];
 
 	// add JSON index/metadata
 	d20plus.addJson = function (onLoadFunction) {
 		const onEachLoadFunction = function (name, url, data) {
 			if (name === "spell index") spellDataUrls = data;
+			else if (name === "spell metadata") spellMetaData = data;
 			else if (name === "bestiary index") monsterDataUrls = data;
 			else if (name === "adventures index") adventureMetadata = data;
-			else throw new Error(`Unhandled data from JSON ${name} (${url})`)
+			else throw new Error(`Unhandled data from JSON ${name} (${url})`);
 
 			d20plus.log(`> JSON [${name}] Loaded`);
-		}
+		};
 		d20plus.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
 
 		// TODO load this from somewhere
@@ -247,7 +250,7 @@ var D20plus = function(version) {
 				url: "http://www.discgolfbirmingham.com/wordpress/wp-content/uploads/2014/04/phoenix-rising.jpg"
 			}
 		]
-	}
+	};
 
 	// Inject external JS libraries
 	d20plus.addScripts = function(onLoadFunction) {
@@ -1820,6 +1823,49 @@ var D20plus = function(version) {
 						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer);
 						character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: "Spellcasting"});
 						character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: d20plus.importer.getCleanText(spellTrait)});
+						
+						const allSpells = [];
+						data.spellcasting.forEach(sc => {
+							const toAdd = ["constant", "will", "rest", "daily", "weekly"];
+							toAdd.forEach(k => {
+								if (sc[k]) {
+									Object.values(sc[k]).forEach(spArr => {
+										Array.prototype.push.apply(allSpells, spArr);
+									});
+								}
+							});
+							if (sc.spells) {
+								Object.keys(sc.spells).forEach(lvl => {
+									if (sc.spells[lvl].slots) {
+										// TODO populate sheet with slot count for this lvl
+									}
+									if (sc.spells[lvl].spells) {
+										Array.prototype.push.apply(allSpells, sc.spells[lvl].spells);
+									}
+								});
+							}
+						});
+
+						allSpells.forEach(sp => {
+							const tagSplit = EntryRenderer.splitByTags(sp);
+							tagSplit.forEach(s => {
+								if (!s || !s.trim()) return;
+								if (s.charAt(0) === "@") {
+									const [tag, text] = EntryRenderer.splitFirstSpace(s);
+									if (tag === "@spell") {
+										const [name, source, displayText, ...others] = text.split("|");
+										const rawUrl = Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase());
+										const url = d20plus.spells.formSpellUrl(rawUrl);
+										// the JSON gets cached by the script, so this is fine
+										DataUtil.loadJSON(url, (data) => {
+											const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
+											// TODO add spell to sheet
+											console.log(spell)
+										});
+									}
+								}
+							});
+						})
 					}
 					if (data.trait != null) {
 						if (!(data.trait instanceof Array)) {
@@ -2397,6 +2443,11 @@ var D20plus = function(version) {
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
 		const name = data.name;
+		// merge in roll20 metadata, if available
+		const spellMeta = spellMetaData.spell.find(sp => sp.name.toLowerCase() === data.name.toLowerCase() && sp.source.toLowerCase() === data.source.toLowerCase());
+		if (spellMeta) {
+			data.roll20 = spellMeta.data;
+		}
 		// build spell handout
 		d20.Campaign.handouts.create({
 			name: name
