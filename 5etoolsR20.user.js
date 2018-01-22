@@ -3536,7 +3536,7 @@ var D20plus = function(version) {
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 
 	d20plus.artTabHtml = `
-		<p><a class="btn" href="#" id="button-add-external-art">Link External Art</a></p>
+		<p><a class="btn" href="#" id="button-add-external-art">Manage External Art</a></p>
 	`;
 
 	d20plus.addArtHTML = `
