@@ -1813,6 +1813,14 @@ var D20plus = function(version) {
 							character.attribs.create({name: "npc_" + $.trim(k).toLowerCase().replace(/ /g,"_") + "_base", current: parseInt($.trim(v)) || 0});
 						});
 					}
+					if (data.spellcasting) {
+						const newRowId = d20plus.generateRowId();
+						const renderer = new EntryRenderer();
+						renderer.setBaseUrl(BASE_SITE_URL);
+						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer);
+						character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: "Spellcasting"});
+						character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: d20plus.importer.getCleanText(spellTrait)});
+					}
 					if (data.trait != null) {
 						if (!(data.trait instanceof Array)) {
 							var tmp1 = data.trait;
