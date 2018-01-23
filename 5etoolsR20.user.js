@@ -1057,7 +1057,7 @@ var D20plus = function(version) {
 			// we have to save -> reread the entire directory JSON -> walk back to where we were
 			let nextDir = {i: JSON.parse(d20.Campaign.get("journalfolder"))};
 			madeSoFar.forEach(f => {
-				nextDir = nextDir.i.find(dir => dir.n.toLowerCase() === f.toLowerCase());
+				nextDir = nextDir.i.find(dir => dir.n && (dir.n.toLowerCase() === f.toLowerCase()));
 			})
 
 			curDir = nextDir;
@@ -1323,10 +1323,25 @@ var D20plus = function(version) {
 			});
 			if (found.length) {
 				$outSearch.append(`<p><b>Search results:</b></p>`);
-				const $outList = $(`<ol class="dd-list"/>`);
+				const $outList = $(`<ol class="dd-list Vetools-search-results"/>`);
 				$outSearch.append($outList);
 				found.clone().appendTo($outList);
 				$outSearch.append(`<hr>`);
+				$(`.Vetools-search-results .Vetools-draggable`).draggable({
+					revert: true,
+					distance: 10,
+					revertDuration: 0,
+					helper: "clone",
+					handle: ".namecontainer",
+					appendTo: "body",
+					scroll: true,
+					start: function() {
+						$("#journalfolderroot").addClass("externaldrag")
+					},
+					stop: function() {
+						$("#journalfolderroot").removeClass("externaldrag")
+					}
+				});
 			}
 		});
 	};
@@ -1394,7 +1409,7 @@ var D20plus = function(version) {
 				stop: function() {
 					$("#journalfolderroot").removeClass("externaldrag")
 				}
-			})
+			});
 		}
 
 		d20.Campaign.characters.models.each(function(v, i) {
@@ -1535,42 +1550,7 @@ var D20plus = function(version) {
 										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
 										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 									} else {
-										inputData = data.data;
-										inputData.Name = data.name;
-										inputData.Content = data.content;
-										const r = $(t.target);
-										r.find("*[accept]").each(function() {
-											const $this = $(this);
-											const acceptTag = $this.attr("accept");
-											if (inputData[acceptTag] !== undefined) {
-												if ("input" === this.tagName.toLowerCase()) {
-													if ("checkbox" === $this.attr("type")) {
-														if (inputData[acceptTag]) {
-															$this.attr("checked", "checked");
-														} else {
-															$this.removeAttr("checked");
-														}
-													} else if ("radio" === $this.attr("type")) {
-														if (inputData[acceptTag]) {
-															$this.attr("checked", "checked");
-														} else {
-															$this.removeAttr("checked");
-														}
-													} else {
-														$this.val(inputData[acceptTag]);
-													}
-												} else if ("select" === this.tagName.toLowerCase()) {
-													$this.find("option").each(function () {
-														const $this = $(this);
-														if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) $this.attr("selected", "selected");
-													});
-												} else {
-													$this.val(inputData[acceptTag]);
-												}
-												// persist the value
-												character.saveSheetValues(this);
-											}
-										});
+										d20plus._handleSpellDrop(character, data);
 									}
 								}
 							}
@@ -1598,6 +1578,44 @@ var D20plus = function(version) {
 					});
 				});
 			};
+		});
+	};
+
+	d20plus._handleSpellDrop = function (characterView, data) {
+		inputData = data.data;
+		inputData.Name = data.name;
+		inputData.Content = data.content;
+		characterView.$charsheet.find("*[accept]").each(function() {
+			const $this = $(this);
+			const acceptTag = $this.attr("accept");
+			if (inputData[acceptTag] !== undefined) {
+				if ("input" === this.tagName.toLowerCase()) {
+					if ("checkbox" === $this.attr("type")) {
+						if (inputData[acceptTag]) {
+							$this.attr("checked", "checked");
+						} else {
+							$this.removeAttr("checked");
+						}
+					} else if ("radio" === $this.attr("type")) {
+						if (inputData[acceptTag]) {
+							$this.attr("checked", "checked");
+						} else {
+							$this.removeAttr("checked");
+						}
+					} else {
+						$this.val(inputData[acceptTag]);
+					}
+				} else if ("select" === this.tagName.toLowerCase()) {
+					$this.find("option").each(function () {
+						const $this = $(this);
+						if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) $this.attr("selected", "selected");
+					});
+				} else {
+					$this.val(inputData[acceptTag]);
+				}
+				// persist the value
+				characterView.saveSheetValues(this);
+			}
 		});
 	};
 
@@ -1758,19 +1776,35 @@ var D20plus = function(version) {
 						if (data.npc_speed && data.npc_speed.includes('hover')) character.attribs.create({name: "speed_fly_hover", current: 1});
 						data.npc_speed = '';
 					}
+					function calcMod (score) {
+						return Math.floor((Number(score) - 10) / 2);
+					}
+
 					character.attribs.create({name: "npc_speed", current: data.speed != null ? data.speed : ""});
 					character.attribs.create({name: "strength", current: data.str});
 					character.attribs.create({name: "strength_base", current: data.str});
+					character.attribs.create({name: "strength_mod", current: calcMod(data.str)});
+
 					character.attribs.create({name: "dexterity", current: data.dex});
 					character.attribs.create({name: "dexterity_base", current: data.dex});
+					character.attribs.create({name: "dexterity_mod", current: calcMod(data.dex)});
+
 					character.attribs.create({name: "constitution", current: data.con});
 					character.attribs.create({name: "constitution_base", current: data.con});
+					character.attribs.create({name: "constitution_mod", current: calcMod(data.con)});
+
 					character.attribs.create({name: "intelligence", current: data.int});
 					character.attribs.create({name: "intelligence_base", current: data.int});
+					character.attribs.create({name: "intelligence_mod", current: calcMod(data.int)});
+
 					character.attribs.create({name: "wisdom", current: data.wis});
 					character.attribs.create({name: "wisdom_base", current: data.wis});
+					character.attribs.create({name: "wisdom_mod", current: calcMod(data.wis)});
+
 					character.attribs.create({name: "charisma", current: data.cha});
 					character.attribs.create({name: "charisma_base", current: data.cha});
+					character.attribs.create({name: "charisma_mod", current: calcMod(data.cha)});
+
 					character.attribs.create({name: "passive", current: passive});
 					character.attribs.create({name: "npc_languages", current: data.languages != null ? data.languages : ""});
 					character.attribs.create({name: "npc_challenge", current: cr});
@@ -1817,13 +1851,67 @@ var D20plus = function(version) {
 						});
 					}
 					if (data.spellcasting) {
+						// make it a spellcaster
+						character.attribs.create({name: `npcspellcastingflag`, current: "1"});
+
+						// figure out the casting ability or spell DC
+						let spellDc;
+						let spellAbility;
+						let casterLevel;
+						for (const sc of data.spellcasting) {
+							const abils = [];
+							const toCheck = sc.headerEntries.join("");
+
+							// use the first ability/DC we find, since roll20 doesn't support multiple
+							const abM = /(strength|constitution|dexterity|intelligence|wisdom|charisma)/i.exec(toCheck);
+							const dcM = /DC (\d+)/i.exec(toCheck);
+							const lvlM = /(\d+)(st|nd|rd|th).level\s+spellcaster/i.exec(toCheck);
+							if (dcM) {
+								spellDc = dcM[1];
+							}
+							if (lvlM) {
+								casterLevel = lvlM[1];
+							}
+							if (abM) {
+								spellAbility = abM[1];
+								break;
+							}
+						}
+						// delay these, does nothing otherwise (getting overwritten by turning on npc_spellcasting after, perhaps?)
+						// if (spellDc) character.attribs.create({name: `spell_save_dc`, current: spellDc});
+						// if (spellAbility) character.attribs.create({name: "spellcasting_ability", current: `@{${spellAbility.toLowerCase()}_mod}+`})
+						// if (casterLevel) character.attribs.create({name: "caster_level", current: casterLevel})
+						// TODO investigate setting character class + level as an alternative
+						const spAbilsDelayMs = 250;
+						function findAttrId (name) {
+							return character.attribs.toJSON().find(a => a.name === name).id;
+						}
+						setTimeout(() => {
+							if (spellDc) {
+								const spDcId = findAttrId("spell_save_dc");
+								character.attribs.get(spDcId).set("current", spellDc);
+							}
+							if (spellAbility) {
+								const spAbilId = findAttrId("spellcasting_ability");
+								character.attribs.get(spAbilId).set("current", `@{${spellAbility.toLowerCase()}_mod}+`);
+							}
+							if (casterLevel) {
+								const spCLvl = findAttrId("caster_level");
+								character.attribs.get(spCLvl).set("current", casterLevel);
+								const cLvl = findAttrId("level");
+								character.attribs.get(cLvl).set("current", Number(casterLevel));
+							}
+						}, spAbilsDelayMs);
+
+						// add the spellcasting text
 						const newRowId = d20plus.generateRowId();
 						const renderer = new EntryRenderer();
 						renderer.setBaseUrl(BASE_SITE_URL);
 						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer);
-						character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: "Spellcasting"});
-						character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: d20plus.importer.getCleanText(spellTrait)});
-						
+						character.attribs.create({name: `repeating_npctrait_${newRowId}_name`, current: "Spellcasting"});
+						character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: d20plus.importer.getCleanText(spellTrait)});
+
+						// add the spells
 						const allSpells = [];
 						data.spellcasting.forEach(sc => {
 							const toAdd = ["constant", "will", "rest", "daily", "weekly"];
@@ -1836,9 +1924,15 @@ var D20plus = function(version) {
 							});
 							if (sc.spells) {
 								Object.keys(sc.spells).forEach(lvl => {
-									if (sc.spells[lvl].slots) {
-										// TODO populate sheet with slot count for this lvl
-									}
+									// delated creation of spell slots, once it's a spellcaster
+									setTimeout(() => {
+										if (sc.spells[lvl].slots) {
+											const slotName = `lvl${lvl}_slots_total`;
+											const slotId = findAttrId("spell_save_dc");
+											character.attribs.get(slotId).set("current", String(sc.spells[lvl].slots));
+										}
+									}, spAbilsDelayMs);
+
 									if (sc.spells[lvl].spells) {
 										Array.prototype.push.apply(allSpells, sc.spells[lvl].spells);
 									}
@@ -1846,6 +1940,9 @@ var D20plus = function(version) {
 							}
 						});
 
+						// add spells to sheet
+						character.view.render();
+						let chainTimeout = 0;
 						allSpells.forEach(sp => {
 							const tagSplit = EntryRenderer.splitByTags(sp);
 							tagSplit.forEach(s => {
@@ -1853,19 +1950,65 @@ var D20plus = function(version) {
 								if (s.charAt(0) === "@") {
 									const [tag, text] = EntryRenderer.splitFirstSpace(s);
 									if (tag === "@spell") {
-										const [name, source, displayText, ...others] = text.split("|");
-										const rawUrl = Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase());
+										let [name, source] = text.split("|");
+										if (!source) source = "PHB";
+										const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
 										const url = d20plus.spells.formSpellUrl(rawUrl);
 										// the JSON gets cached by the script, so this is fine
 										DataUtil.loadJSON(url, (data) => {
 											const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
-											// TODO add spell to sheet
-											console.log(spell)
+
+											const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
+
+											addSpell(JSON.parse(gmnotes), spell);
 										});
 									}
 								}
 							});
-						})
+						});
+
+						function addSpell (sp, VeSp) {
+							console.log(sp)
+							const rId = d20plus.generateRowId();
+							const lvl = sp.data.Level === "0" ? "cantrip" : sp.data.Level;
+							const base = `repeating_spell-${lvl}_${rId}_`;
+
+							makeAttrib("spelllevel", lvl);
+							makeAttrib("spellname", sp.name);
+							makeAttrib("spellschool", sp.data.School);
+							makeAttrib("spellcastingtime", sp.data["Casting Time"]); // spaces in property names l m a o
+							makeAttrib("spellrange", sp.data.Range);
+							makeAttrib("spelltarget", sp.data.Target);
+							makeAttrib("spellcomp_v", Number(!!VeSp.components.v));
+							makeAttrib("spellcomp_s", Number(!!VeSp.components.s));
+							makeAttrib("spellcomp_materials", sp.data.Material);
+							if (!sp.data.Material && !VeSp.components.m) makeAttrib("spellcomp_m", "0");
+							makeAttrib("spellconcentration", sp.data.Concentration)
+							makeAttrib("spellduration", sp.data.Duration);
+							// Would have to set this -> save spell -> enter damage numbers -> save spell, so just do inline rollers instead.
+							// makeAttrib("spelloutput", "ATTACK");
+							makeAttrib("spelldamage", sp.data.Damage);
+							makeAttrib("spelldamagetype", sp.data["Damage Type"]);
+							makeAttrib("spellsave", sp.data.Save);
+							makeAttrib("spellsavesuccess", sp.data["Save Success"]);
+							makeAttrib("spellhldie", sp.data["Higher Spell Slot Dice"]);
+							makeAttrib("spellhldietype", sp.data["Higher Spell Slot Die"]);
+							const [text, hlText] = sp.content.split("\n\nAt Higher Levels:")
+							makeAttrib("spelldescription", addInlineRollers(text));
+							makeAttrib("spellathigherlevels", addInlineRollers(hlText));
+							makeAttrib("options-flag", "0");
+
+							function makeAttrib(name, current) {
+								if (current !== undefined && current !== null) character.attribs.create({name: `${base}${name}`, current: current});
+							}
+
+							function addInlineRollers (text) {
+								if (!text) return text;
+								return text.replace(DICE_REGEX, (match) => {
+									return `[[${match}]]`;
+								});
+							}
+						}
 					}
 					if (data.trait != null) {
 						if (!(data.trait instanceof Array)) {
@@ -2405,8 +2548,7 @@ var D20plus = function(version) {
 					data.spell,
 					d20plus.spells.handoutBuilder,
 					{
-						groupOptions: d20plus.spells._groupOptions,
-						showSource: true
+						groupOptions: d20plus.spells._groupOptions
 					}
 				);
 			});
@@ -2426,7 +2568,8 @@ var D20plus = function(version) {
 					toAdd,
 					d20plus.spells.handoutBuilder,
 					{
-						groupOptions: d20plus.spells._groupOptions
+						groupOptions: d20plus.spells._groupOptions,
+						showSource: true
 					}
 				);
 			});
@@ -2453,75 +2596,82 @@ var D20plus = function(version) {
 			name: name
 		}, {
 			success: function(handout) {
-				if (!data.school) data.school = "A";
-				if (!data.range) data.range = "Self";
-				if (!data.duration) data.duration = "Instantaneous";
-				if (!data.components) data.components = "";
-				if (!data.time) data.components = "1 action";
+				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data);
 
-				const r20Data = {};
-				if (data.roll20) Object.assign(r20Data, data.roll20);
-				Object.assign(
-					r20Data,
-					{
-						"Level": String(data.level),
-						"Range": Parser.spRangeToFull(data.range),
-						"School": Parser.spSchoolAbvToFull(data.school),
-						"Source": "5etoolsR20",
-						"Classes": d20plus.importer.getCleanText(Parser.spClassesToFull(data.classes)),
-						"Category": "Spells",
-						"Duration": Parser.spDurationToFull(data.duration),
-						"Material": "",
-						"Components": parseComponents(data.components),
-						"Casting Time": Parser.spTimeListToFull(data.time)
-					}
-				);
-
-				var r20json = {
-					name: data.name,
-					content: "",
-					htmlcontent: "",
-					data: r20Data
-				};
-				if (data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
-				if (data.meta) {
-					if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
-				}
-				if (data.duration.filter(d => d.concentration).length > 0) {
-					r20json.data["Concentration"] = "Yes";
-				}
-				var notecontents = "";
-				var gmnotes = "";
-				notecontents += `<p><h3>${data.name}</h3>
-<em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}</em></p><p>
-<strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
-<strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
-<strong>Components:</strong> ${Parser.spComponentsToFull(data.components)}<br>
-<strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>
-</p>`;
-				const renderer = new EntryRenderer();
-				const renderStack = [];
-				const entryList = {type: "entries", entries: data.entries};
-				renderer.setBaseUrl(BASE_SITE_URL);
-				renderer.recursiveEntryRender(entryList, renderStack, 1);
-				r20json.content = d20plus.importer.getCleanText(renderStack.join(" "));
-				notecontents += renderStack.join("");
-				if (data.entriesHigherLevel) {
-					const hLevelRenderStack = [];
-					const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
-					renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
-					r20json.content += "\n\nAt Higher Levels: " + d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
-					notecontents += hLevelRenderStack.join("");
-				}
-				notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
-				gmnotes = JSON.stringify(r20json);
-				notecontents += `<del>${gmnotes}</del>`
 				console.log(notecontents);
 				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
 				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
 			}
 		});
+	}
+
+	d20plus.spells._getHandoutData = function (data) {
+		if (!data.school) data.school = "A";
+		if (!data.range) data.range = "Self";
+		if (!data.duration) data.duration = "Instantaneous";
+		if (!data.components) data.components = "";
+		if (!data.time) data.components = "1 action";
+
+		const r20Data = {};
+		if (data.roll20) Object.assign(r20Data, data.roll20);
+		Object.assign(
+			r20Data,
+			{
+				"Level": String(data.level),
+				"Range": Parser.spRangeToFull(data.range),
+				"School": Parser.spSchoolAbvToFull(data.school),
+				"Source": "5etoolsR20",
+				"Classes": d20plus.importer.getCleanText(Parser.spClassesToFull(data.classes)),
+				"Category": "Spells",
+				"Duration": Parser.spDurationToFull(data.duration),
+				"Material": "",
+				"Components": parseComponents(data.components),
+				"Casting Time": Parser.spTimeListToFull(data.time)
+			}
+		);
+
+		var r20json = {
+			name: data.name,
+			content: "",
+			htmlcontent: "",
+			data: r20Data
+		};
+		if (data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
+		if (data.meta) {
+			if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
+		}
+		if (data.duration.filter(d => d.concentration).length > 0) {
+			r20json.data["Concentration"] = "Yes";
+		}
+		var notecontents = "";
+		var gmnotes = "";
+		notecontents += `<p><h3>${data.name}</h3>
+<em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}</em></p><p>
+<strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
+<strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
+<strong>Components:</strong> ${Parser.spComponentsToFull(data.components)}<br>
+<strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>
+</p>`;
+		const renderer = new EntryRenderer();
+		const renderStack = [];
+		const entryList = {type: "entries", entries: data.entries};
+		renderer.setBaseUrl(BASE_SITE_URL);
+		renderer.recursiveEntryRender(entryList, renderStack, 1);
+		r20json.content = d20plus.importer.getCleanText(renderStack.join(" "));
+		notecontents += renderStack.join("");
+		if (data.entriesHigherLevel) {
+			const hLevelRenderStack = [];
+			const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
+			renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
+			r20json.content += "\n\nAt Higher Levels: " + d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
+			notecontents += hLevelRenderStack.join("");
+		}
+		notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
+		gmnotes = JSON.stringify(r20json);
+		notecontents += `<del>${gmnotes}</del>`;
+
+		return [notecontents, gmnotes];
 	}
 
 	// parse spell components
@@ -3654,7 +3804,8 @@ var D20plus = function(version) {
 <p><a class="btn" href="#" id="button-monsters-load">Import Monsters</a></p>
 <p><a class="btn" href="#" id="button-monsters-load-all" title="Standard sources only; no third-party or UA">Import Monsters From All Sources</a></p>
 <p>
-The "Import Monsters From All Sources" button presents a list containing monsters from official sources only. 
+WARNING: Importing huge numbers of character sheets slows the game down. We recommend you import them as needed.<br>
+The "Import Monsters From All Sources" button presents a list containing monsters from official sources only.<br>
 To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Monsters."
 </p>
 </div>
@@ -3676,7 +3827,7 @@ To import from third-party sources, either individually select one available in 
 <p><a class="btn" href="#" id="button-spells-load">Import Spells</a><p/>
 <p><a class="btn" href="#" id="button-spells-load-all" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
 <p>
-The "Import Spells From All Sources" button presents a list containing spells from official sources only. 
+The "Import Spells From All Sources" button presents a list containing spells from official sources only.<br>
 To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."
 </p>
 </div>
@@ -3708,8 +3859,8 @@ To import from third-party sources, either individually select one available in 
 <a class="btn" href="#" id="button-edit-config">Edit Config</a>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
 <p>
-You can drag-and-drop imported handouts to character sheets.
-If a handout is glowing green in the journal, it's draggable. This breaks when Roll20 decides to hard-refresh the journal.
+You can drag-and-drop imported handouts to character sheets.<br>
+If a handout is glowing green in the journal, it's draggable. This breaks when Roll20 decides to hard-refresh the journal.<br>
 To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 <i>Note: to drag a handout to a character sheet, you need to drag the name, and not the handout icon.</i>
 </p>
