@@ -1565,7 +1565,41 @@ var D20plus = function(version) {
 										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
 										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 									} else {
-										d20plus._handleSpellDrop(character, data);
+										inputData = data.data;
+										inputData.Name = data.name;
+										inputData.Content = data.content;
+										character.$charsheet.find("*[accept]").each(function() {
+											const $this = $(this);
+											const acceptTag = $this.attr("accept");
+											if (inputData[acceptTag] !== undefined) {
+												if ("input" === this.tagName.toLowerCase()) {
+													if ("checkbox" === $this.attr("type")) {
+														if (inputData[acceptTag]) {
+															$this.attr("checked", "checked");
+														} else {
+															$this.removeAttr("checked");
+														}
+													} else if ("radio" === $this.attr("type")) {
+														if (inputData[acceptTag]) {
+															$this.attr("checked", "checked");
+														} else {
+															$this.removeAttr("checked");
+														}
+													} else {
+														$this.val(inputData[acceptTag]);
+													}
+												} else if ("select" === this.tagName.toLowerCase()) {
+													$this.find("option").each(function () {
+														const $this = $(this);
+														if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) $this.attr("selected", "selected");
+													});
+												} else {
+													$this.val(inputData[acceptTag]);
+												}
+												// persist the value
+												character.saveSheetValues(this);
+											}
+										});
 									}
 								}
 							}
@@ -1593,44 +1627,6 @@ var D20plus = function(version) {
 					});
 				});
 			};
-		});
-	};
-
-	d20plus._handleSpellDrop = function (characterView, data) {
-		inputData = data.data;
-		inputData.Name = data.name;
-		inputData.Content = data.content;
-		characterView.$charsheet.find("*[accept]").each(function() {
-			const $this = $(this);
-			const acceptTag = $this.attr("accept");
-			if (inputData[acceptTag] !== undefined) {
-				if ("input" === this.tagName.toLowerCase()) {
-					if ("checkbox" === $this.attr("type")) {
-						if (inputData[acceptTag]) {
-							$this.attr("checked", "checked");
-						} else {
-							$this.removeAttr("checked");
-						}
-					} else if ("radio" === $this.attr("type")) {
-						if (inputData[acceptTag]) {
-							$this.attr("checked", "checked");
-						} else {
-							$this.removeAttr("checked");
-						}
-					} else {
-						$this.val(inputData[acceptTag]);
-					}
-				} else if ("select" === this.tagName.toLowerCase()) {
-					$this.find("option").each(function () {
-						const $this = $(this);
-						if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) $this.attr("selected", "selected");
-					});
-				} else {
-					$this.val(inputData[acceptTag]);
-				}
-				// persist the value
-				characterView.saveSheetValues(this);
-			}
 		});
 	};
 
@@ -2796,13 +2792,25 @@ var D20plus = function(version) {
 		}, {
 			success: function(handout) {
 				var notecontents = "";
+				roll20Data = {
+					name: data.name,
+					data: {
+						Category: "Items"
+					}
+				};
 				const typeArray = [];
 				if (data.wondrous) typeArray.push("Wondrous Item");
 				if (data.technology) typeArray.push(data.technology);
 				if (data.age) typeArray.push(data.age);
 				if (data.weaponCategory) typeArray.push(data.weaponCategory+" Weapon");
 				var type = data.type;
-				if (data.type) typeArray.push(d20plus.items.parseType(data.type));
+				if (data.type) {
+					const fullType = d20plus.items.parseType(data.type);
+					typeArray.push(fullType);
+					roll20Data.data["Item Type"] = fullType;
+				} else if (data.typeText) {
+					roll20Data.data["Item Type"] = data.typeText;
+				}
 				var typestring = typeArray.join(", ");
 				var damage = "";
 				if (data.dmg1 && data.dmgType) damage = data.dmg1 + " " + Parser.dmgTypeToFull(data.dmgType);
@@ -2843,9 +2851,18 @@ var D20plus = function(version) {
 				if (attunementstring) notecontents += attunementstring;
 				notecontents += `</em>`;
 				if (damage) notecontents += `<p><strong>Damage: </strong>${damage}</p>`;
-				if (properties) notecontents += `<p><strong>Properties: </strong>${properties}</p>`;
-				if (armorclass) notecontents += `<p><strong>Armor Class: </strong>${armorclass}</p>`;
-				if (data.weight) notecontents += `<p><strong>Weight: </strong>${data.weight} lbs.</p>`;
+				if (properties) {
+					notecontents += `<p><strong>Properties: </strong>${properties}</p>`;
+					roll20Data.data.Properties = properties;
+				}
+				if (armorclass) {
+					notecontents += `<p><strong>Armor Class: </strong>${armorclass}</p>`;
+					roll20Data.data.AC = String(data.ac);
+				}
+				if (data.weight) {
+					notecontents += `<p><strong>Weight: </strong>${data.weight} lbs.</p>`;
+					roll20Data.data.Weight = String(data.weight);
+				}
 				var itemtext = data.entries ? data.entries : "";
 				const renderer = new EntryRenderer();
 				const renderStack = [];
@@ -2857,7 +2874,49 @@ var D20plus = function(version) {
 					notecontents += `<hr>`;
 					notecontents += textstring;
 				}
-				handout.updateBlobs({notes: notecontents});
+
+				if (data.range) {
+					roll20Data.data.Range = data.range;
+				}
+				if (data.dmg1 && data.dmgType) {
+					roll20Data.data.Damage = data.dmg1;
+					roll20Data.data["Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
+				}
+				if (textstring.trim()) {
+					roll20Data.content = d20plus.importer.getCleanText(textstring);
+					roll20Data.htmlcontent = roll20Data.content;
+				}
+				if (data.stealth) {
+					roll20Data.data.Stealth = "Disadvantage";
+				}
+				// roll20Data.data.Duration = "1 Minute"; // used by e.g. poison; not show in sheet
+				// roll20Data.data.Save = "Constitution"; // used by e.g. poison, ball bearings; not shown in sheet
+				// roll20Data.data.Target = "Each creature in a 10-foot square centered on a point within range"; // used by e.g. ball bearings; not shown in sheet
+				// roll20Data.data["Item Rarity"] = "Wondrous"; // used by Iron Bands of Binding... and nothing else?; not shown in sheet
+				if (data.reqAttune === "YES") {
+					roll20Data.data["Requires Attunement"] = "Yes";
+				} else {
+					roll20Data.data["Requires Attunement"] = "No";
+				}
+				// TODO handle other magic versions
+				// roll20Data.data.Modifiers = ... ; // this can be a variety of things, and is a comma separated list
+				// some examples, that are currently handled:
+				// "Ranged Attacks +3, Ranged Damage +3"
+				// "Ac +2"
+				// "Spell Attack +2"
+				// "Saving Throws +1"
+				// "AC +15, Spell Attack +2, Spell DC +2"
+				// ...and some examples, that are not:
+				// "Constitution +2"
+				// "Strength: 21"
+				if (data.modifier) {
+					const allModifiers = data.modifier.filter(m => m.__text).map(m => m.__text.split(" ").map(s => s.uppercaseFirst()).join(" ")).join(", ");
+					roll20Data.data.Modifiers = allModifiers;
+				}
+
+				gmnotes = JSON.stringify(roll20Data);
+
+				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
 				handout.save({
 					notes: (new Date).getTime(),
 					inplayerjournals: inJournals
@@ -3281,7 +3340,13 @@ var D20plus = function(version) {
 						break;
 					case "Type":
 					default:
-						folderName = Parser.itemTypeToAbv(it.type);
+						if (it.type) {
+							folderName = Parser.itemTypeToAbv(it.type);
+						} else if (it.typeText) {
+							folderName = it.typeText;
+						} else {
+							folderName = "Unknown";
+						}
 						break;
 				}
 				return folderName;
@@ -3947,6 +4012,7 @@ var D20plus = function(version) {
 <h3>5etoolsR20 v${d20plus.version}</h3>
 
 <h4>Import By Category</h4>
+<p><small><i>We strongly recommend the OGL sheet for importing. You can switch afterwards.</i></small></p>
 <select id="import-mode-select">
 	<option value="none" disabled selected>Select category...</option>
 	<option value="monster">Monsters</option>
