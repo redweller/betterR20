@@ -170,6 +170,7 @@ var D20plus = function(version) {
 	var itemdataurl = `${DATA_URL}items.json`;
 	var featdataurl = `${DATA_URL}feats.json`;
 	var psionicdataurl = `${DATA_URL}psionics.json`;
+	var objectdataurl = `${DATA_URL}objects.json`;
 
 	var d20plus = {
 		sheet: "ogl",
@@ -182,6 +183,7 @@ var D20plus = function(version) {
 		psionics: {},
 		items: {},
 		feats: {},
+		objects: {},
 		adventures: {},
 		initiative: {},
 		config: {},
@@ -1188,6 +1190,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#import-psionics-load").on(window.mousedowntype, d20plus.psionics.button);
 			$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
 			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
+			$("#mysettings > .content a#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
 			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
@@ -1681,6 +1684,127 @@ var D20plus = function(version) {
 		return d20plus.formSrcUrl(monsterDataDir, fileName);
 	};
 
+	d20plus.importer.getSetAvatarImage = function (character, avatar) {
+		character.attributes.avatar = avatar;
+		var tokensize = 1;
+		if (character.size === "L") tokensize = 2;
+		if (character.size === "H") tokensize = 3;
+		if (character.size === "G") tokensize = 4;
+		var lightradius = 5;
+		if(character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
+		var lightmin = 0;
+		if(character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
+		var defaulttoken = {
+			represents: character.id,
+			name: character.name,
+			imgsrc: avatar,
+			width: 70 * tokensize,
+			height: 70 * tokensize,
+			light_hassight: true,
+			light_radius: lightradius,
+			light_dimradius: lightmin
+		};
+
+		character.updateBlobs({ avatar: avatar, defaulttoken: JSON.stringify(defaulttoken) });
+		character.save({defaulttoken: (new Date()).getTime()});
+	};
+
+	d20plus.importer.addAction = function (character, name, text) {
+		var newRowId = d20plus.generateRowId();
+		var actiontext = text;
+		var action_desc = actiontext; // required for later reduction of information dump.
+		var rollbase = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
+		// attack parsing
+		if (actiontext.indexOf(" Attack:") > -1) {
+			var attacktype = "";
+			var attacktype2 = "";
+			if (actiontext.indexOf(" Weapon Attack:") > -1) {
+				attacktype = actiontext.split(" Weapon Attack:")[0];
+				attacktype2 = " Weapon Attack:";
+			} else if (actiontext.indexOf(" Spell Attack:") > -1) {
+				attacktype = actiontext.split(" Spell Attack:")[0];
+				attacktype2 = " Spell Attack:";
+			}
+			var attackrange = "";
+			var rangetype = "";
+			if (attacktype.indexOf("Melee") > -1) {
+				attackrange = (actiontext.match(/reach (.*?),/) || ["", ""])[1];
+				rangetype = "Reach";
+			} else {
+				attackrange = (actiontext.match(/range (.*?),/) || ["", ""])[1];
+				rangetype = "Range";
+			}
+			var tohit = (actiontext.match(/\+(.*) to hit/) || ["", ""])[1];
+			var damage = "";
+			var damagetype = "";
+			var damage2 = "";
+			var damagetype2 = "";
+			var onhit = "";
+			damageregex = /\d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage/g;
+			damagesearches = damageregex.exec(actiontext);
+			if (damagesearches) {
+				onhit = damagesearches[0];
+				damage = damagesearches[1];
+				damagetype = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
+				damagesearches = damageregex.exec(actiontext);
+				if (damagesearches) {
+					onhit += " plus " + damagesearches[0];
+					damage2 = damagesearches[1];
+					damagetype2 = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
+				}
+			}
+			onhit = onhit.trim();
+			var attacktarget = (actiontext.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1];
+			// Cut the information dump in the description
+			var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
+			var atk_desc_complex_regex = /(Hit:.*)/g;
+			// is it a simple attack (just 1 damage type)?
+			var match_simple_atk = atk_desc_simple_regex.exec(actiontext);
+			if (match_simple_atk != null) {
+				//if yes, then only display special effects, if any
+				action_desc = match_simple_atk[3].trim();
+			} else {
+				//if not, simply cut everything before "Hit:" so there are no details lost.
+				var match_compl_atk = atk_desc_complex_regex.exec(actiontext);
+				if (match_compl_atk != null) action_desc = match_compl_atk[1].trim();
+			}
+			var tohitrange = "+" + tohit + ", " + rangetype + " " + attackrange + ", " + attacktarget + ".";
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_flag", current: "on"});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_display_flag", current: "{{attack=1}}"});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_options", current: "{{attack=1}}"});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damagetype", current: damagetype});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage2", current: damage2});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damagetype2", current: damagetype2});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type", current: attacktype});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type_display", current: attacktype + attacktype2});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohitrange", current: tohitrange});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_range", current: attackrange});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_target", current: attacktarget});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: onhit});
+		} else {
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name});
+		}
+		var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
+		character.attribs.create({
+			name: "repeating_npcaction_" + newRowId + "_description",
+			current: action_desc
+		});
+		character.attribs.create({
+			name: "repeating_npcaction_" + newRowId + "_description_flag",
+			current: descriptionFlag
+		});
+	}
+
 	// Create monster character from js data object
 	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName) {
 		// make dir
@@ -1693,30 +1817,6 @@ var D20plus = function(version) {
 		const name = data.name;
 		d20.Campaign.characters.create({name: name}, {
 			success: function(character) {
-				function getSetAvatarImage(avatar) {
-					character.attributes.avatar = avatar;
-					var tokensize = 1;
-					if (character.size === "L") tokensize = 2;
-					if (character.size === "H") tokensize = 3;
-					if (character.size === "G") tokensize = 4;
-					var lightradius = 5;
-					if(character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
-					var lightmin = 0;
-					if(character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
-					var defaulttoken = {
-						represents: character.id,
-						name: character.name,
-						imgsrc: avatar,
-						width: 70 * tokensize,
-						height: 70 * tokensize,
-						light_hassight: true,
-						light_radius: lightradius,
-						light_dimradius: lightmin
-					};
-
-					character.updateBlobs({ avatar: avatar, defaulttoken: JSON.stringify(defaulttoken) });
-					character.save({defaulttoken: (new Date()).getTime()});
-				}
 				/* OGL Sheet */
 				try {
 					const type = Parser.monTypeToFullObj(data.type).asText;
@@ -1729,8 +1829,12 @@ var D20plus = function(version) {
 					$.ajax({
 						url: avatar,
 						type: 'HEAD',
-						error: function() {getSetAvatarImage(`${IMG_URL}blank.png`);},
-						success: function() {getSetAvatarImage(avatar);}
+						error: function () {
+							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+						},
+						success: function () {
+							d20plus.importer.getSetAvatarImage(character, avatar);
+						}
 					});
 					var ac = data.ac.match(/^\d+/);
 					var actype = /\(([^)]+)\)/.exec(data.ac);
@@ -1968,7 +2072,6 @@ var D20plus = function(version) {
 						});
 
 						function addSpell (sp, VeSp) {
-							console.log(sp)
 							const rId = d20plus.generateRowId();
 							const lvl = sp.data.Level === "0" ? "cantrip" : sp.data.Level;
 							const base = `repeating_spell-${lvl}_${rId}_`;
@@ -2039,7 +2142,6 @@ var D20plus = function(version) {
 						}
 						var npc_exception_actions = ["Web (Recharge 5-6)"];
 						$.each(data.action, function(i, v) {
-							var newRowId = d20plus.generateRowId();
 							var text = "";
 							if (v.text instanceof Array) {
 								$.each(v.text, function(z, x) {
@@ -2049,99 +2151,7 @@ var D20plus = function(version) {
 							} else {
 								text = v.text;
 							}
-							var actiontext = text;
-							var action_desc = actiontext; // required for later reduction of information dump.
-							var rollbase = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
-							// attack parsing
-							if (actiontext.indexOf(" Attack:") > -1) {
-								var name = v.name;
-								var attacktype = "";
-								var attacktype2 = "";
-								if (actiontext.indexOf(" Weapon Attack:") > -1) {
-									attacktype = actiontext.split(" Weapon Attack:")[0];
-									attacktype2 = " Weapon Attack:";
-								} else if (actiontext.indexOf(" Spell Attack:") > -1) {
-									attacktype = actiontext.split(" Spell Attack:")[0];
-									attacktype2 = " Spell Attack:";
-								}
-								var attackrange = "";
-								var rangetype = "";
-								if (attacktype.indexOf("Melee") > -1) {
-									attackrange = (actiontext.match(/reach (.*?),/) || ["", ""])[1];
-									rangetype = "Reach";
-								} else {
-									attackrange = (actiontext.match(/range (.*?),/) || ["", ""])[1];
-									rangetype = "Range";
-								}
-								var tohit = (actiontext.match(/\+(.*) to hit/) || ["", ""])[1];
-								var damage = "";
-								var damagetype = "";
-								var damage2 = "";
-								var damagetype2 = "";
-								var onhit = "";
-								damageregex = /\d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage/g;
-								damagesearches = damageregex.exec(actiontext);
-								if (damagesearches) {
-									onhit = damagesearches[0];
-									damage = damagesearches[1];
-									damagetype = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
-									damagesearches = damageregex.exec(actiontext);
-									if (damagesearches) {
-										onhit += " plus " + damagesearches[0];
-										damage2 = damagesearches[1];
-										damagetype2 = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
-									}
-								}
-								onhit = onhit.trim();
-								var attacktarget = (actiontext.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1];
-								// Cut the information dump in the description
-								var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
-								var atk_desc_complex_regex = /(Hit:.*)/g;
-								// is it a simple attack (just 1 damage type)?
-								var match_simple_atk = atk_desc_simple_regex.exec(actiontext);
-								if (match_simple_atk != null) {
-									//if yes, then only display special effects, if any
-									action_desc = match_simple_atk[3].trim();
-								} else {
-									//if not, simply cut everything before "Hit:" so there are no details lost.
-									var match_compl_atk = atk_desc_complex_regex.exec(actiontext);
-									if (match_compl_atk != null) action_desc = match_compl_atk[1].trim();
-								}
-								var tohitrange = "+" + tohit + ", " + rangetype + " " + attackrange + ", " + attacktarget + ".";
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_flag", current: "on"});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_display_flag", current: "{{attack=1}}"});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_options", current: "{{attack=1}}"});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damagetype", current: damagetype});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage2", current: damage2});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damagetype2", current: damagetype2});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type", current: attacktype});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type_display", current: attacktype + attacktype2});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohitrange", current: tohitrange});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_range", current: attackrange});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_target", current: attacktarget});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: onhit});
-							} else {
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: v.name});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase});
-								character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: v.name});
-							}
-							var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
-							character.attribs.create({
-								name: "repeating_npcaction_" + newRowId + "_description",
-								current: action_desc
-							});
-							character.attribs.create({
-								name: "repeating_npcaction_" + newRowId + "_description_flag",
-								current: descriptionFlag
-							});
+							d20plus.importer.addAction(character, v.name, text);
 						});
 					}
 					if (data.reaction != null) {
@@ -2955,6 +2965,96 @@ var D20plus = function(version) {
 		});
 	};
 
+
+	// Import Object button was clicked
+	d20plus.objects.button = function () {
+		const url = $("#import-objects-url").val();
+		if (url && url.trim()) {
+			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.showImportList(
+					"object",
+					data.object,
+					d20plus.objects.handoutBuilder
+				);
+			});
+		}
+	};
+
+	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+		// make dir
+		const folder = d20plus.importer.makeDirTree(`Objects`, folderName);
+		const path = ["Objects", folderName, data.name];
+
+		// handle duplicates/overwrites
+		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+		const name = data.name;
+		d20.Campaign.characters.create({name: name}, {
+			success: function(character) {
+				try {
+					const avatar = `${IMG_URL}objects/${name}.png`;
+					character.size = data.size;
+					character.name = name;
+					character.senses = data.senses;
+					character.hp = data.hp;
+					$.ajax({
+						url: avatar,
+						type: 'HEAD',
+						error: function () {
+							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+						},
+						success: function () {
+							d20plus.importer.getSetAvatarImage(character, avatar);
+						}
+					});
+					const ac = data.ac.match(/^\d+/);
+					const size = Parser.sizeAbvToFull(data.size);
+					character.attribs.create({name: "npc", current: 1});
+					character.attribs.create({name: "npc_toggle", current: 1});
+					character.attribs.create({name: "npc_options-flag", current: 0});
+					character.attribs.create({name: "wtype", current: "@{whispertoggle}"});
+					character.attribs.create({name: "rtype", current: "@{advantagetoggle}"});
+					character.attribs.create({name: "advantagetoggle", current: "{{query=1}} {{advantage=1}} {{r2=[[@{d20}"});
+					character.attribs.create({name: "whispertoggle", current: "/w gm "});
+					character.attribs.create({name: "dtype", current: "full"});
+					character.attribs.create({name: "npc_name", current: name});
+					character.attribs.create({name: "npc_size", current: size});
+					character.attribs.create({name: "type", current: data.type});
+					character.attribs.create({name: "npc_type", current: `${size} ${data.type}`});
+					character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
+					character.attribs.create({name: "npc_actype", current: ""});
+					character.attribs.create({name: "npc_hpbase", current: data.hp});
+					character.attribs.create({name: "npc_hpformula", current: data.hp ? `${data.hp}d1` : ""});
+
+					character.attribs.create({name: "npc_immunities", current: data.immune || ""});
+					character.attribs.create({name: "damage_immunities", current: data.immune || ""});
+
+					const renderer = new EntryRenderer();
+					renderer.setBaseUrl(BASE_SITE_URL);
+					if (data.actionEntries) {
+						data.actionEntries.forEach(e => {
+							const renderStack = [];
+							renderer.recursiveEntryRender({entries: e.entries}, renderStack, 2);
+							const actionText = d20plus.importer.getCleanText(renderStack.join(""));
+							d20plus.importer.addAction(character, e.name, actionText);
+						});
+					}
+
+					character.view._updateSheetValues();
+					var dirty = [];
+					$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
+					d20.journal.notifyWorkersOfAttrChanges(character.view.model.id, dirty, true);
+				} catch (e) {
+					d20plus.log(`> Error loading [${name}]`);
+					d20plus.addImportError(name);
+					console.log(data);
+					console.log(e);
+				}
+				d20.journal.addItemToFolderStructure(character.id, folder.id);
+			}
+		});
+	};
+
 	// Import Adventures button was clicked
 	d20plus.adventures.button = function () {
 		const url = $("#import-adventures-url").val();
@@ -2968,6 +3068,7 @@ var D20plus = function(version) {
 	}
 
 	d20plus.importer.showImportList = function (dataType, dataArray, handoutBuilder, options) {
+		if (!options) options = {};
 		/*
 		options = {
 			showSource: true,
@@ -3152,6 +3253,19 @@ var D20plus = function(version) {
 				return folderName;
 			}
 			case "feat": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
+			case "object": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":
@@ -3462,7 +3576,7 @@ var D20plus = function(version) {
 	d20plus.importer.getCleanText = function (str) {
 		const $ele = $(str);
 		$ele.find("p, li, br").append("\n\n");
-		return $ele.text();
+		return $ele.text().replace(/[ ]+/g, " ");
 
 		/* version which preserves images, and converts dice
 		const IMG_TAG = "R20IMGTAG";
@@ -3791,6 +3905,7 @@ var D20plus = function(version) {
 	<option value="psionic">Psionics</option>
 	<option value="spell">Spells</option>
 	<option value="feat">Feats</option>
+	<option value="object">Objects</option>
 	<option value="adventure">Adventures</option>
 </select>
 
@@ -3846,6 +3961,13 @@ To import from third-party sources, either individually select one available in 
 <a class="btn" href="#" id="import-feats-load">Import Feats</a>
 </div>
 
+<div class="importer-section" data-import-group="object">
+<h4>Object Importing</h4>
+<label for="import-objects-url">Object Data URL:</label>
+<input type="text" id="import-objects-url" value="${objectdataurl}">
+<a class="btn" href="#" id="import-objects-load">Import Objects</a>
+</div>
+
 <div class="importer-section" data-import-group="adventure">
 <h4>Adventure Importing</h4>
 <label for="import-adventures-url">Adventure Data URL:</label>
@@ -3856,6 +3978,7 @@ To import from third-party sources, either individually select one available in 
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 </div>
 
+<br>
 <a class="btn" href="#" id="button-edit-config">Edit Config</a>
 <a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
 <p>
