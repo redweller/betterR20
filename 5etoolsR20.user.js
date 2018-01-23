@@ -2750,7 +2750,8 @@ var D20plus = function(version) {
 						itemList,
 						d20plus.items.handoutBuilder,
 						{
-							groupOptions: d20plus.items._groupOptions
+							groupOptions: d20plus.items._groupOptions,
+							showSource: true
 						}
 					);
 				},
