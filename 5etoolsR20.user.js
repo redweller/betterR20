@@ -6,7 +6,7 @@
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth
 // @match        https://app.roll20.net/editor/
 // @grant        unsafeWindow
 // @run-at       document-start
@@ -107,6 +107,16 @@ var D20plus = function(version) {
 			},
 			"name_reveal": {
 				"name": "Reveal Nameplate",
+				"default": false,
+				"_type": "boolean"
+			},
+			"tokenactions": {
+				"name": "Add TokenAction Macros",
+				"default": true,
+				"_type": "boolean"
+			},
+			"togglepublic": {
+				"name": "Make Rolls Public",
 				"default": false,
 				"_type": "boolean"
 			}
@@ -1222,7 +1232,7 @@ var D20plus = function(version) {
 				autoOpen: false,
 				resizable: true,
 				width: 800,
-				height: 400,
+				height: 650,
 			});
 			$("#d20plus-configeditor").parent().append(d20plus.configEditorButtonBarHTML);
 			$("#d20plus-artfolder").dialog({
@@ -1350,17 +1360,19 @@ var D20plus = function(version) {
 	};
 
 	d20plus.updateDifficulty = function() {
-		var $span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
-		var $btnpane = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane");
-		if (!$span.length) {
-			$btnpane.prepend(d20plus.difficultyHtml);
-			$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
-		}
-		if (d20plus.getCfgVal("interface", "showDifficulty")) {
-			$span.text("Difficulty: " + d20plus.getDifficulty());
-			$span.show();
-		} else {
-			$span.hide();
+		if (!$("div#initiativewindow").parent().is("body")) {
+			var $span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+			var $btnpane = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane");
+			if (!$span.length) {
+				$btnpane.prepend(d20plus.difficultyHtml);
+				$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+			}
+			if (d20plus.getCfgVal("interface", "showDifficulty")) {
+				$span.text("Difficulty: " + d20plus.getDifficulty());
+				$span.show();
+			} else {
+				$span.hide();
+			}
 		}
 	};
 
@@ -1709,7 +1721,11 @@ var D20plus = function(version) {
 		character.save({defaulttoken: (new Date()).getTime()});
 	};
 
-	d20plus.importer.addAction = function (character, name, text) {
+	d20plus.importer.addAction = function (character, name, text, index) {
+		if (d20plus.hasCfgVal("token", "tokenactions")) {
+			character.abilities.create({name: index  +": " + name, istokenaction: true, action: d20plus.actionMacroAction(index)});
+		}
+
 		var newRowId = d20plus.generateRowId();
 		var actiontext = text;
 		var action_desc = actiontext; // required for later reduction of information dump.
@@ -1854,7 +1870,8 @@ var D20plus = function(version) {
 					character.attribs.create({name: "wtype", current: "@{whispertoggle}"});
 					character.attribs.create({name: "rtype", current: "@{advantagetoggle}"});
 					character.attribs.create({name: "advantagetoggle", current: "{{query=1}} {{advantage=1}} {{r2=[[@{d20}"});
-					character.attribs.create({name: "whispertoggle", current: "/w gm "});
+					if (d20plus.hasCfgVal("token", "togglepublic")) character.attribs.create({name: "whispertoggle", current: " "});
+					else character.attribs.create({name: "whispertoggle", current: "/w gm "});
 					character.attribs.create({name: "dtype", current: "full"});
 					character.attribs.create({name: "npc_name", current: name});
 					character.attribs.create({name: "npc_size", current: size});
@@ -1922,6 +1939,18 @@ var D20plus = function(version) {
 					character.attribs.create({name: "npc_condition_immunities", current: data.conditionImmune != null ? data.conditionImmune : ""});
 					character.attribs.create({name: "damage_condition_immunities", current: data.conditionImmune != null ? data.conditionImmune : ""});
 					character.attribs.create({name: "npc_senses", current: sensesStr});
+
+					// add Tokenaction Macros
+					if (d20plus.hasCfgVal("token", "tokenactions")) {
+						character.abilities.create({name: "Perception", istokenaction: true, action: d20plus.actionMacroPerception});
+						character.abilities.create({name: "Init", istokenaction: true, action: d20plus.actionMacroInit});
+						character.abilities.create({name: "DR/Immunities", istokenaction: true, action: d20plus.actionMacroDrImmunities});
+						character.abilities.create({name: "Stats", istokenaction: true, action: d20plus.actionMacroStats});
+						character.abilities.create({name: "Saves", istokenaction: true, action: d20plus.actionMacroSaves});
+						character.abilities.create({name: "Skill-Check", istokenaction: true, action: d20plus.actionMacroSkillCheck});
+						character.abilities.create({name: "Ability-Check", istokenaction: true, action: d20plus.actionMacroAbilityCheck});
+					}
+
 					if (data.save != null && data.save.length > 0) {
 						var savingthrows;
 						if (data.save instanceof Array) {
@@ -2123,6 +2152,11 @@ var D20plus = function(version) {
 							var newRowId = d20plus.generateRowId();
 							var text = "";
 							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: v.name});
+
+							if (d20plus.hasCfgVal("token", "tokenactions")) {
+								character.abilities.create({name: "Trait" + i  +": " + v.name, istokenaction: true, action: d20plus.actionMacroTrait(i)});
+							}
+
 							if (v.text instanceof Array) {
 								$.each(v.text, function(z, x) {
 									if (!x) return;
@@ -2151,7 +2185,7 @@ var D20plus = function(version) {
 							} else {
 								text = v.text;
 							}
-							d20plus.importer.addAction(character, v.name, text);
+							d20plus.importer.addAction(character, v.name, text, i);
 						});
 					}
 					if (data.reaction != null) {
@@ -2166,6 +2200,12 @@ var D20plus = function(version) {
 							var newRowId = d20plus.generateRowId();
 							var text = "";
 							character.attribs.create({name: "repeating_npcreaction_" + newRowId + "_name", current: v.name});
+
+							// roll20 only supports a single reaction, so only use the first
+							if (d20plus.hasCfgVal("token", "tokenactions") && i === 0) {
+								character.abilities.create({name: "Reaction: " + v.name, istokenaction: true, action: d20plus.actionMacroReaction});
+							}
+
 							if (v.text instanceof Array) {
 								$.each(v.text, function(z, x) {
 									if (!x) return;
@@ -2187,10 +2227,16 @@ var D20plus = function(version) {
 						character.attribs.create({name: "legendary_flag", current: "1"});
 						let legendaryActions = data.legendaryActions || 3;
 						character.attribs.create({name: "npc_legendary_actions", current: legendaryActions.toString()});
+						let tokenactiontext = "";
 						$.each(data.legendary, function(i, v) {
 							var newRowId = d20plus.generateRowId();
 							var actiontext = "";
 							var text = "";
+
+							if (d20plus.hasCfgVal("token", "tokenactions")) {
+								tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
+							}
+
 							var rollbase = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
 							if (v.attack != null) {
 								if (!(v.attack instanceof Array)) {
@@ -2260,6 +2306,9 @@ var D20plus = function(version) {
 							character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_description", current: text});
 							character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_description_flag", current: descriptionFlag});
 						});
+						if (d20plus.hasCfgVal("token", "tokenactions")) {
+							character.abilities.create({name: "Legendary Actions", istokenaction: true, action: d20plus.actionMacroLegendary(tokenactiontext)});
+						}
 					}
 					character.view._updateSheetValues();
 					var dirty = [];
@@ -2458,7 +2507,7 @@ var D20plus = function(version) {
 								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
 								<$ } $>
-							</span>						
+							</span>
 						`);
 						headerStack.push(`<span class='tracker-col'>HP</span>`);
 						break;
@@ -2470,10 +2519,10 @@ var D20plus = function(version) {
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
 								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
-								<$ } else { $>	
+								<$ } else { $>
 									<$!"\u2014"$>
 								<$ } $>
-							</span>	
+							</span>
 						`);
 						headerStack.push(`<span class='tracker-col'>AC</span>`);
 						break;
@@ -3015,7 +3064,8 @@ var D20plus = function(version) {
 					character.attribs.create({name: "wtype", current: "@{whispertoggle}"});
 					character.attribs.create({name: "rtype", current: "@{advantagetoggle}"});
 					character.attribs.create({name: "advantagetoggle", current: "{{query=1}} {{advantage=1}} {{r2=[[@{d20}"});
-					character.attribs.create({name: "whispertoggle", current: "/w gm "});
+					if (d20plus.hasCfgVal("token", "togglepublic")) character.attribs.create({name: "whispertoggle", current: " "});
+					else character.attribs.create({name: "whispertoggle", current: "/w gm "});
 					character.attribs.create({name: "dtype", current: "full"});
 					character.attribs.create({name: "npc_name", current: name});
 					character.attribs.create({name: "npc_size", current: size});
@@ -3032,11 +3082,11 @@ var D20plus = function(version) {
 					const renderer = new EntryRenderer();
 					renderer.setBaseUrl(BASE_SITE_URL);
 					if (data.actionEntries) {
-						data.actionEntries.forEach(e => {
+						data.actionEntries.forEach((e, i) => {
 							const renderStack = [];
 							renderer.recursiveEntryRender({entries: e.entries}, renderStack, 2);
 							const actionText = d20plus.importer.getCleanText(renderStack.join(""));
-							d20plus.importer.addAction(character, e.name, actionText);
+							d20plus.importer.addAction(character, e.name, actionText, i);
 						});
 					}
 
@@ -4108,6 +4158,28 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		</li>
 	]]>
 </script>`;
+
+	d20plus.actionMacroPerception = "%{Selected|npc_perception} /w gm &{template:default} {{name=Senses}}  /w gm @{Selected|npc_senses} ";
+	d20plus.actionMacroInit = "%{selected|npc_init}";
+	d20plus.actionMacroDrImmunities = "/w gm &{template:default} {{name=DR/Immunities}} {{Damage Resistance= @{selected|npc_resistances}}} {{Damage Vulnerability= @{selected|npc_vulnerabilities}}} {{Damage Immunity= @{selected|npc_immunities}}} {{Condition Immunity= @{selected|npc_condition_immunities}}} ";
+	d20plus.actionMacroStats = "/w gm &{template:default} {{name=Stats}} {{Armor Class= @{selected|npc_AC}}} {{Hit Dice= @{selected|npc_hpformula}}} {{Speed= @{selected|npc_speed}}} {{Skills= @{selected|npc_skills}}} {{Senses= @{selected|npc_senses}}} {{Languages= @{selected|npc_languages}}} {{Challenge= @{selected|npc_challenge}(@{selected|npc_xp}xp)}}";
+	d20plus.actionMacroSaves = "/w gm &{template:simple}{{always=1}}?{Saving Throw?|STR,{{rname=Strength Save&#125;&#125;{{mod=@{npc_str_save}&#125;&#125; {{r1=[[1d20+@{npc_str_save}]]&#125;&#125;{{r2=[[1d20+@{npc_str_save}]]&#125;&#125;|DEX,{{rname=Dexterity Save&#125;&#125;{{mod=@{npc_dex_save}&#125;&#125; {{r1=[[1d20+@{npc_dex_save}]]&#125;&#125;{{r2=[[1d20+@{npc_dex_save}]]&#125;&#125;|CON,{{rname=Constitution Save&#125;&#125;{{mod=@{npc_con_save}&#125;&#125; {{r1=[[1d20+@{npc_con_save}]]&#125;&#125;{{r2=[[1d20+@{npc_con_save}]]&#125;&#125;|INT,{{rname=Intelligence Save&#125;&#125;{{mod=@{npc_int_save}&#125;&#125; {{r1=[[1d20+@{npc_int_save}]]&#125;&#125;{{r2=[[1d20+@{npc_int_save}]]&#125;&#125;|WIS,{{rname=Wisdom Save&#125;&#125;{{mod=@{npc_wis_save}&#125;&#125; {{r1=[[1d20+@{npc_wis_save}]]&#125;&#125;{{r2=[[1d20+@{npc_wis_save}]]&#125;&#125;|CHA,{{rname=Charisma Save&#125;&#125;{{mod=@{npc_cha_save}&#125;&#125; {{r1=[[1d20+@{npc_cha_save}]]&#125;&#125;{{r2=[[1d20+@{npc_cha_save}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.actionMacroSkillCheck = "/w gm &{template:simple}{{always=1}}?{Ability?|Acrobatics,{{rname=Acrobatics&#125;&#125;{{mod=@{npc_acrobatics}&#125;&#125; {{r1=[[1d20+@{npc_acrobatics}]]&#125;&#125;{{r2=[[1d20+@{npc_acrobatics}]]&#125;&#125;|Animal Handling,{{rname=Animal Handling&#125;&#125;{{mod=@{npc_animal_handling}&#125;&#125; {{r1=[[1d20+@{npc_animal_handling}]]&#125;&#125;{{r2=[[1d20+@{npc_animal_handling}]]&#125;&#125;|Arcana,{{rname=Arcana&#125;&#125;{{mod=@{npc_arcana}&#125;&#125; {{r1=[[1d20+@{npc_arcana}]]&#125;&#125;{{r2=[[1d20+@{npc_arcana}]]&#125;&#125;|Athletics,{{rname=Athletics&#125;&#125;{{mod=@{npc_athletics}&#125;&#125; {{r1=[[1d20+@{npc_athletics}]]&#125;&#125;{{r2=[[1d20+@{npc_athletics}]]&#125;&#125;|Deception,{{rname=Deception&#125;&#125;{{mod=@{npc_deception}&#125;&#125; {{r1=[[1d20+@{npc_deception}]]&#125;&#125;{{r2=[[1d20+@{npc_deception}]]&#125;&#125;|History,{{rname=History&#125;&#125;{{mod=@{npc_history}&#125;&#125; {{r1=[[1d20+@{npc_history}]]&#125;&#125;{{r2=[[1d20+@{npc_history}]]&#125;&#125;|Insight,{{rname=Insight&#125;&#125;{{mod=@{npc_insight}&#125;&#125; {{r1=[[1d20+@{npc_insight}]]&#125;&#125;{{r2=[[1d20+@{npc_insight}]]&#125;&#125;|Intimidation,{{rname=Intimidation&#125;&#125;{{mod=@{npc_intimidation}&#125;&#125; {{r1=[[1d20+@{npc_intimidation}]]&#125;&#125;{{r2=[[1d20+@{npc_intimidation}]]&#125;&#125;|Investigation,{{rname=Investigation&#125;&#125;{{mod=@{npc_investigation}&#125;&#125; {{r1=[[1d20+@{npc_investigation}]]&#125;&#125;{{r2=[[1d20+@{npc_investigation}]]&#125;&#125;|Medicine,{{rname=Medicine&#125;&#125;{{mod=@{npc_medicine}&#125;&#125; {{r1=[[1d20+@{npc_medicine}]]&#125;&#125;{{r2=[[1d20+@{npc_medicine}]]&#125;&#125;|Nature,{{rname=Nature&#125;&#125;{{mod=@{npc_nature}&#125;&#125; {{r1=[[1d20+@{npc_nature}]]&#125;&#125;{{r2=[[1d20+@{npc_nature}]]&#125;&#125;|Perception,{{rname=Perception&#125;&#125;{{mod=@{npc_perception}&#125;&#125; {{r1=[[1d20+@{npc_perception}]]&#125;&#125;{{r2=[[1d20+@{npc_perception}]]&#125;&#125;|Performance,{{rname=Performance&#125;&#125;{{mod=@{npc_performance}&#125;&#125; {{r1=[[1d20+@{npc_performance}]]&#125;&#125;{{r2=[[1d20+@{npc_performance}]]&#125;&#125;|Persuasion,{{rname=Persuasion&#125;&#125;{{mod=@{npc_persuasion}&#125;&#125; {{r1=[[1d20+@{npc_persuasion}]]&#125;&#125;{{r2=[[1d20+@{npc_persuasion}]]&#125;&#125;|Religion,{{rname=Religion&#125;&#125;{{mod=@{npc_religion}&#125;&#125; {{r1=[[1d20+@{npc_religion}]]&#125;&#125;{{r2=[[1d20+@{npc_religion}]]&#125;&#125;|Sleight of Hand,{{rname=Sleight of Hand&#125;&#125;{{mod=@{npc_sleight_of_hand}&#125;&#125; {{r1=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;{{r2=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;|Stealth,{{rname=Stealth&#125;&#125;{{mod=@{npc_stealth}&#125;&#125; {{r1=[[1d20+@{npc_stealth}]]&#125;&#125;{{r2=[[1d20+@{npc_stealth}]]&#125;&#125;|Survival,{{rname=Survival&#125;&#125;{{mod=@{npc_survival}&#125;&#125; {{r1=[[1d20+@{npc_survival}]]&#125;&#125;{{r2=[[1d20+@{npc_survival}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.actionMacroAbilityCheck = "/w gm &{template:simple}{{always=1}}?{Ability?|STR,{{rname=Strength&#125;&#125;{{mod=@{strength_mod}&#125;&#125; {{r1=[[1d20+@{strength_mod}]]&#125;&#125;{{r2=[[1d20+@{strength_mod}]]&#125;&#125;|DEX,{{rname=Dexterity&#125;&#125;{{mod=@{dexterity_mod}&#125;&#125; {{r1=[[1d20+@{dexterity_mod}]]&#125;&#125;{{r2=[[1d20+@{dexterity_mod}]]&#125;&#125;|CON,{{rname=Constitution&#125;&#125;{{mod=@{constitution_mod}&#125;&#125; {{r1=[[1d20+@{constitution_mod}]]&#125;&#125;{{r2=[[1d20+@{constitution_mod}]]&#125;&#125;|INT,{{rname=Intelligence&#125;&#125;{{mod=@{intelligence_mod}&#125;&#125; {{r1=[[1d20+@{intelligence_mod}]]&#125;&#125;{{r2=[[1d20+@{intelligence_mod}]]&#125;&#125;|WIS,{{rname=Wisdom&#125;&#125;{{mod=@{wisdom_mod}&#125;&#125; {{r1=[[1d20+@{wisdom_mod}]]&#125;&#125;{{r2=[[1d20+@{wisdom_mod}]]&#125;&#125;|CHA,{{rname=Charisma&#125;&#125;{{mod=@{charisma_mod}&#125;&#125; {{r1=[[1d20+@{charisma_mod}]]&#125;&#125;{{r2=[[1d20+@{charisma_mod}]]&#125;&#125;}{{charname=@{character_name}}} ";
+
+	d20plus.actionMacroTrait = function (index) {
+		return "/w gm &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npctrait_$" + index + "_name}}} {{description=@{selected|repeating_npctrait_$" + index + "_desc} }}";
+	};
+
+	d20plus.actionMacroAction = function (index) {
+		return "%{selected|repeating_npcaction_$"+ index + "_npc_action}";
+	};
+
+	d20plus.actionMacroReaction = "/w gm &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$0_name}}} {{description=@{selected|repeating_npcreaction_$0_desc} }} ";
+
+	d20plus.actionMacroLegendary = function (tokenactiontext) {
+		return "/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r" + tokenactiontext + "}} ";
+	}
 
 	/* object.watch polyfill by Eli Grey, http://eligrey.com */
 	if (!Object.prototype.watch) {
