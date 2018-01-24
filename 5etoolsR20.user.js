@@ -1041,9 +1041,30 @@ var D20plus = function(version) {
 		return difficulty;
 	};
 
+	/**
+	 * Takes a path made up of strings and arrays of strings, and turns it into one flat array of strings
+	 */
+	d20plus.importer.getCleanPath = function (...path) {
+		const clean = [];
+		getStrings(clean, path);
+		return clean.map(s => s.trim()).filter(s => s);
+
+		function getStrings (stack, toProc) {
+			toProc.forEach(tp => {
+				if (typeof tp === "string") {
+					stack.push(tp);
+				} else if (tp instanceof Array) {
+					getStrings(stack, tp);
+				} else {
+					throw new Error("Object in path was not a string or an array")
+				}
+			});
+		}
+	};
+
 	d20plus.importer.makeDirTree = function (...path) {
+		const parts = d20plus.importer.getCleanPath(path);
 		// path e.g. d20plus.importer.makeDirTree("Spells", "Cantrips", "1")
-		const parts = path.map(s => s.trim()).filter(s => s);
 		// roll20 allows a max directory depth of 4 :joy: (5, but the 5th level is unusable)
 		if (parts.length > 4) throw new Error("Max directory depth exceeded! The maximum is 4.")
 
@@ -1057,7 +1078,7 @@ var D20plus = function(version) {
 			const existing = curDir.i.find((it) => {
 				// n is folder name (only folders have the n property)
 				return it.n && it.n === toMake && it.i;
-			})
+			});
 			if (!existing) {
 				if (curDir.id) {
 					d20.journal.addFolderToFolderStructure(toMake, curDir.id);
@@ -1073,12 +1094,12 @@ var D20plus = function(version) {
 			let nextDir = {i: JSON.parse(d20.Campaign.get("journalfolder"))};
 			madeSoFar.forEach(f => {
 				nextDir = nextDir.i.find(dir => dir.n && (dir.n.toLowerCase() === f.toLowerCase()));
-			})
+			});
 
 			curDir = nextDir;
 		});
 		return curDir;
-	}
+	};
 
 	d20plus.importer.recursiveRemoveDirById = function (folderId, withConfirmation) {
 		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
@@ -1089,7 +1110,7 @@ var D20plus = function(version) {
 					const $e = $(e);
 					const itemId = $e.attr("data-itemid");
 					let toDel = d20.Campaign.handouts.get(itemId);
-					toDel || (toDel = d20.Campaign.characters.get(itemId))
+					toDel || (toDel = d20.Campaign.characters.get(itemId));
 					if (toDel) toDel.destroy();
 				});
 				const childFolders = folder.find(`[data-globalfolderid]`).remove();
@@ -1097,23 +1118,20 @@ var D20plus = function(version) {
 				$("#journalfolderroot").trigger("change");
 			}
 		}
-	}
+	};
 
 	d20plus.importer.removeDirByPath = function (...path) {
-		// allow arrays to be passed, e.g. [a, b, c]
-		// the spread operator converts these to e.g. [[a, b, c]]
-		// so unpack anything that matches this pattern
-		if (typeof path[0] === "object" && path.length === 1) path = path[0];
+		path = d20plus.importer.getCleanPath(path);
 		return d20plus.importer._checkOrRemoveDirByPath(true, path);
 	};
 
 	d20plus.importer.checkDirExistsByPath = function (...path) {
-		if (typeof path[0] === "object" && path.length === 1) path = path[0];
+		path = d20plus.importer.getCleanPath(path);
 		return d20plus.importer._checkOrRemoveDirByPath(false, path);
 	};
 
 	d20plus.importer._checkOrRemoveDirByPath = function (doDelete, path) {
-		const parts = path.map(s => s.trim()).filter(s => s);
+		const parts = d20plus.importer.getCleanPath(path);
 
 		const root = {i: d20plus.importer.getJournalFolderObj()};
 
@@ -1136,17 +1154,17 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.removeFileByPath = function (...path) {
-		if (typeof path[0] === "object" && path.length === 1) path = path[0];
+		path = d20plus.importer.getCleanPath(path);
 		return d20plus.importer._checkOrRemoveFileByPath(true, path);
 	};
 
 	d20plus.importer.checkFileExistsByPath = function (...path) {
-		if (typeof path[0] === "object" && path.length === 1) path = path[0];
+		path = d20plus.importer.getCleanPath(path);
 		return d20plus.importer._checkOrRemoveFileByPath(false, path);
 	};
 
 	d20plus.importer._checkOrRemoveFileByPath = function (doDelete, path) {
-		const parts = path.map(s => s.trim()).filter(s => s);
+		const parts = d20plus.importer.getCleanPath(path);
 
 		const root = {i: d20plus.importer.getJournalFolderObj()};
 
@@ -1183,7 +1201,7 @@ var D20plus = function(version) {
 			}
 		}
 		return false;
-	}
+	};
 
 	d20plus.formSrcUrl = function (dataDir, fileName) {
 		return dataDir + fileName;
@@ -3302,7 +3320,8 @@ var D20plus = function(version) {
 			data.subclasses.forEach(sc => {
 				sc.class = data.name;
 				const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
-				d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, folderName);
+				const path = [folderName, sc.source || data.source];
+				d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path);
 			});
 		}
 	};
