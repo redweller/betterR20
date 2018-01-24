@@ -115,10 +115,20 @@ var D20plus = function(version) {
 				"default": true,
 				"_type": "boolean"
 			},
-			"togglepublic": {
-				"name": "Make Rolls Public on Import",
-				"default": false,
-				"_type": "boolean"
+			"whispermode": {
+				"name": "Whipser Mode on Import",
+				"default": "Toggle (Default GM)",
+				"_type": "_WHISPERMODE"
+			},
+			"advantagemode": {
+				"name": "Advantage Mode on Import",
+				"default": "Toggle (Default Advantage)",
+				"_type": "_ADVANTAGEMODE"
+			},
+			"damagemode": {
+				"name": "Auto Roll Damage Mode on Import",
+				"default": "Auto Roll",
+				"_type": "_DAMAGEMODE"
 			}
 
 		},
@@ -203,6 +213,10 @@ var D20plus = function(version) {
 		importer: {},
 		art: {}
 	};
+
+	d20plus.advantageModes = ["Toggle (Default Advantage)", "Toggle", "Toggle (Default Disadvantage)", "Always", "Query", "Never"];
+	d20plus.whisperModes = ["Toggle (Default GM)", "Toggle (Default Public)", "Always", "Query", "Never"];
+	d20plus.damageModes = ["Auto Roll", "Don't Auto Roll"];
 
 	d20plus.formulas = {
 		_options: ["--Empty--", "AC", "HP", "PP"],
@@ -538,7 +552,7 @@ var D20plus = function(version) {
 
 			const configFields = {};
 
-			const sortedKeys = Object.keys(CONFIG_OPTIONS).sort();
+			const sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
 			const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
 			const contentList = sortedKeys.map(k => makeTab(k));
 
@@ -556,7 +570,7 @@ var D20plus = function(version) {
 				`);
 				const tbody = content.find(`tbody`);
 
-				const sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_")).sort(); // sorting alphabetically on key, instead of on display name (allows e.g. "Bar 1" and "Display Bar 1" to be kept together)
+				const sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_"));
 				sortedTabKeys.forEach(grpK => {
 					const prop = cfgGroup[grpK];
 
@@ -604,6 +618,54 @@ var D20plus = function(version) {
 						}
 						case "_FORMULA": {
 							const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.formulas._options.sort().map(opt => `<option value="${opt}">${opt}</option>`)}</select>`);
+
+							const cur = d20plus.getCfgVal(cfgK, grpK);
+							if (cur !== undefined) {
+								$field.val(cur);
+							}
+
+							configFields[cfgK][grpK] = () => {
+								return $field.val();
+							};
+
+							const td = $(`<td/>`).append($field);
+							toAdd.append(td);
+							break;
+						}
+						case "_WHISPERMODE": {
+							const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.whisperModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
+
+							const cur = d20plus.getCfgVal(cfgK, grpK);
+							if (cur !== undefined) {
+								$field.val(cur);
+							}
+
+							configFields[cfgK][grpK] = () => {
+								return $field.val();
+							};
+
+							const td = $(`<td/>`).append($field);
+							toAdd.append(td);
+							break;
+						}
+						case "_ADVANTAGEMODE": {
+							const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.advantageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
+
+							const cur = d20plus.getCfgVal(cfgK, grpK);
+							if (cur !== undefined) {
+								$field.val(cur);
+							}
+
+							configFields[cfgK][grpK] = () => {
+								return $field.val();
+							};
+
+							const td = $(`<td/>`).append($field);
+							toAdd.append(td);
+							break;
+						}
+						case "_DAMAGEMODE": {
+							const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.damageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
 
 							const cur = d20plus.getCfgVal(cfgK, grpK);
 							if (cur !== undefined) {
@@ -1941,12 +2003,11 @@ var D20plus = function(version) {
 					character.attribs.create({name: "npc", current: 1});
 					character.attribs.create({name: "npc_toggle", current: 1});
 					character.attribs.create({name: "npc_options-flag", current: 0});
-					character.attribs.create({name: "wtype", current: "@{whispertoggle}"});
-					character.attribs.create({name: "rtype", current: "@{advantagetoggle}"});
-					character.attribs.create({name: "advantagetoggle", current: "{{query=1}} {{advantage=1}} {{r2=[[@{d20}"});
-					if (d20plus.hasCfgVal("token", "togglepublic")) character.attribs.create({name: "whispertoggle", current: " "});
-					else character.attribs.create({name: "whispertoggle", current: "/w gm "});
-					character.attribs.create({name: "dtype", current: "full"});
+					character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
+					character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
+					character.attribs.create({name: "advantagetoggle", current: d20plus.importer.getDesiredAdvantageToggle()});
+					character.attribs.create({name: "whispertoggle", current: d20plus.importer.getDesiredWhisperToggle()});
+					character.attribs.create({name: "dtype", current: d20plus.importer.getDesiredDamageType()});
 					character.attribs.create({name: "npc_name", current: name});
 					character.attribs.create({name: "npc_size", current: size});
 					character.attribs.create({name: "type", current: type});
@@ -3212,12 +3273,11 @@ var D20plus = function(version) {
 					character.attribs.create({name: "npc", current: 1});
 					character.attribs.create({name: "npc_toggle", current: 1});
 					character.attribs.create({name: "npc_options-flag", current: 0});
-					character.attribs.create({name: "wtype", current: "@{whispertoggle}"});
-					character.attribs.create({name: "rtype", current: "@{advantagetoggle}"});
-					character.attribs.create({name: "advantagetoggle", current: "{{query=1}} {{advantage=1}} {{r2=[[@{d20}"});
-					if (d20plus.hasCfgVal("token", "togglepublic")) character.attribs.create({name: "whispertoggle", current: " "});
-					else character.attribs.create({name: "whispertoggle", current: "/w gm "});
-					character.attribs.create({name: "dtype", current: "full"});
+					character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
+					character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
+					character.attribs.create({name: "advantagetoggle", current: d20plus.importer.getDesiredAdvantageToggle()});
+					character.attribs.create({name: "whispertoggle", current: d20plus.importer.getDesiredWhisperToggle()});
+					character.attribs.create({name: "dtype", current: d20plus.importer.getDesiredDamageType()});
 					character.attribs.create({name: "npc_name", current: name});
 					character.attribs.create({name: "npc_size", current: size});
 					character.attribs.create({name: "type", current: data.type});
@@ -3255,6 +3315,118 @@ var D20plus = function(version) {
 			}
 		});
 	};
+
+	d20plus.importer.getDesiredRollType = function () {
+		// rtype
+		const toggle = "@{advantagetoggle}";
+		const never = "{{normal=1}} {{r2=[[0d20";
+		const always = "{{always=1}} {{r2=[[@{d20}";
+		const query = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[@{d20}|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[@{d20}}";
+		const desired = d20plus.getCfgVal("token", "advantagemode");
+		if (desired) {
+			switch (desired) {
+				case "Toggle (Default Advantage)":
+				case "Toggle":
+				case "Toggle (Default Disadvantage)":
+					return toggle;
+				case "Always":
+					return always;
+				case "Query":
+					return query;
+				case "Never":
+					return never;
+			}
+		} else {
+			return toggle;
+		}
+	};
+
+	d20plus.importer.getDesiredAdvantageToggle = function () {
+		// advantagetoggle
+		const advantage = "{{query=1}} {{advantage=1}} {{r2=[[@{d20}";
+		const disadvantage = "{{query=1}} {{disadvantage=1}} {{r2=[[@{d20}";
+		const desired = d20plus.getCfgVal("token", "advantagemode");
+		const neither = "";
+		if (desired) {
+			switch (desired) {
+				case "Toggle (Default Advantage)":
+					return advantage;
+				case "Toggle (Default Disadvantage)":
+					return desired;
+				case "Toggle":
+				case "Always":
+				case "Query":
+				case "Never":
+					return neither;
+			}
+		} else {
+			return neither;
+		}
+	};
+
+	d20plus.importer.getDesiredWhisperType = function () {
+		// wtype
+		const toggle = "@{whispertoggle}";
+		const never = " ";
+		const always = "/w gm ";
+		const query = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
+		const desired = d20plus.getCfgVal("token", "whispermode");
+		if (desired) {
+			switch (desired) {
+				case "Toggle (Default GM)":
+				case "Toggle (Default Public)":
+					return toggle;
+				case "Always":
+					return always;
+				case "Query":
+					return query;
+				case "Never":
+					return never;
+			}
+		} else {
+			return toggle;
+		}
+	};
+
+	d20plus.importer.getDesiredWhisperToggle = function () {
+		// whispertoggle
+		const gm = "/w gm ";
+		const pblic = " ";
+		const desired = d20plus.getCfgVal("token", "whispermode");
+		if (desired) {
+			switch (desired) {
+				case "Toggle (Default GM)":
+					return gm;
+				case "Toggle (Default Public)":
+					return pblic;
+				case "Always":
+					return "";
+				case "Query":
+					return "";
+				case "Never":
+					return "";
+			}
+		} else {
+			return gm;
+		}
+	};
+
+	d20plus.importer.getDesiredDamageType = function () {
+		// dtype
+		const on = "full";
+		const off = "pick";
+		const desired = d20plus.getCfgVal("token", "damagemode");
+		if (desired) {
+			switch (desired) {
+				case "Auto Roll":
+					return on;
+				case "Don't Auto Roll":
+					return off;
+			}
+		} else {
+			return on;
+		}
+	}
 
 	// Import Classes button was clicked
 	d20plus.classes.button = function () {
@@ -3482,6 +3654,7 @@ var D20plus = function(version) {
 			});
 
 			// start worker to process list
+			$("#d20plus-import").dialog("open")
 			const worker = setInterval(() => {
 				if (!importQueue.length || cancelWorker) {
 					clearInterval(worker);
