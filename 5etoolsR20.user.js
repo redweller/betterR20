@@ -181,6 +181,7 @@ var D20plus = function(version) {
 	var featdataurl = `${DATA_URL}feats.json`;
 	var psionicdataurl = `${DATA_URL}psionics.json`;
 	var objectdataurl = `${DATA_URL}objects.json`;
+	var classdataurl = `${DATA_URL}classes.json`;
 
 	var d20plus = {
 		sheet: "ogl",
@@ -194,6 +195,8 @@ var D20plus = function(version) {
 		items: {},
 		feats: {},
 		objects: {},
+		classes: {},
+		subclasses: {},
 		adventures: {},
 		initiative: {},
 		config: {},
@@ -482,7 +485,7 @@ var D20plus = function(version) {
 		return outCpy;
 	};
 
-	// this should be do-able with built-in roll20 code -- someone with hacker-tier debugging skills pls help
+	// this should be do-able with built-in roll20 code -- someone with hacker-tier reverse engineering skills pls help
 	d20plus.makeTabPane = function ($addTo, headers, content) {
 		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!")
 
@@ -1201,7 +1204,10 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#import-items-load").on(window.mousedowntype, d20plus.items.button);
 			$("#mysettings > .content a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 			$("#mysettings > .content a#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
+			$("#mysettings > .content a#import-classes-load").on(window.mousedowntype, d20plus.classes.button);
+			$("#mysettings > .content a#import-subclasses-load").on(window.mousedowntype, d20plus.subclasses.button);
 			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
+
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
 			$("#mysettings > .content select#import-mode-select").on("change", d20plus.importer.importModeSwitch);
@@ -1394,11 +1400,11 @@ var D20plus = function(version) {
 			d20.journal.addFolderToFolderStructure("Psionics");
 			d20.journal.addFolderToFolderStructure("Items");
 			d20.journal.addFolderToFolderStructure("Feats");
+			d20.journal.addFolderToFolderStructure("Classes");
+			d20.journal.addFolderToFolderStructure("Subclasses");
 			d20.journal.refreshJournalList();
 			journalFolder = d20.Campaign.get("journalfolder");
 		}
-		var journalFolderObj = JSON.parse(journalFolder);
-		var handouts = journalFolderObj.find(function(a) {return a.n && (a.n === "Spells" || a.n === "Items");});
 
 		function addClasses (folderName) {
 			$(`#journalfolderroot > ol.dd-list > li.dd-folder > div.dd-content:contains(${folderName})`).parent().find("ol li[data-itemid]").addClass("compendium-item").addClass("ui-draggable").addClass("Vetools-draggable");
@@ -1407,6 +1413,8 @@ var D20plus = function(version) {
 		addClasses("Psionics");
 		addClasses("Items");
 		addClasses("Feats");
+		addClasses("Classes");
+		addClasses("Subclasses");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -1462,6 +1470,7 @@ var D20plus = function(version) {
 
 								function handleData (data) {
 									data = JSON.parse(data);
+									const extraDirty = [];
 
 									// TODO remove Feat workaround when roll20 supports feat drag-n-drop properly
 									if (data.data.Category === "Feats") {
@@ -1490,6 +1499,54 @@ var D20plus = function(version) {
 										const dirty = [];
 										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
 										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
+									} else if (data.data.Category === "Classes") {
+										let level = prompt("What level?", "1");
+										if (level && level.trim()) {
+											level = Number(level);
+											if (level) {
+												if (level < 0 || level > 20) {
+													alert("Please enter a number between one and 20!")
+													return;
+												}
+
+												const clss = data.Vetoolscontent;
+
+												// d20plus.importer.addOrUpdateAttr(character.model, "class", data.name);
+												// d20plus.importer.addOrUpdateAttr(character.model, "level", level);
+												// debugger // FIXME this seems broken. Dirtying doesn't work either.
+												// d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(level));
+												// extraDirty.push("level", "base_level");
+
+												character.$charsheet.find(`.sheet-pc .sheet-core select[name=attr_class]`).val(data.name).trigger("change");
+												debugger // FIXME this doesn't work
+												character.$charsheet.find(`.sheet-pc .sheet-core input[name=attr_base_level]`)
+													.val(String(level))
+													.text(String(level))
+													.trigger("change");
+												// TODO check the roll20 character sheet for event handlers?
+
+												// TODO
+												console.log(clss);
+
+												character.model.persisted = false;
+											}
+										}
+									} else if (data.data.Category === "Subclasses") {
+										let level = prompt("What level?", "1");
+										if (level && level.trim()) {
+											level = Number(level);
+											if (level) {
+												if (level < 0 || level > 20) {
+													alert("Please enter a number between one and 20!")
+													return;
+												}
+
+												const sc = data.Vetoolscontent;
+
+												// TODO
+												console.log(sc);
+											}
+										}
 									} else if (data.data.Category === "Psionics") {
 										function makeSpellTrait(level, rowId, propName, content) {
 											character.model.attribs.create({
@@ -1559,11 +1616,6 @@ var D20plus = function(version) {
 											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${d20plus.importer.getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
 											noComponents(level, rowId, false);
 										}
-
-										character.model.view._updateSheetValues();
-										const dirty = [];
-										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
-										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 									} else {
 										inputData = data.data;
 										inputData.Name = data.name;
@@ -1601,6 +1653,14 @@ var D20plus = function(version) {
 											}
 										});
 									}
+
+									character.model.view._updateSheetValues();
+									const dirty = [];
+									extraDirty.forEach(ed => {
+										dirty.push(ed);
+									});
+									$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
+									d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 								}
 							}
 							 else {
@@ -2012,22 +2072,19 @@ var D20plus = function(version) {
 						// if (casterLevel) character.attribs.create({name: "caster_level", current: casterLevel})
 						// TODO investigate setting character class + level as an alternative
 						const spAbilsDelayMs = 250;
-						function findAttrId (name) {
-							return character.attribs.toJSON().find(a => a.name === name).id;
-						}
 						setTimeout(() => {
 							if (spellDc) {
-								const spDcId = findAttrId("spell_save_dc");
+								const spDcId = d20plus.importer.findAttrId(character, "spell_save_dc");
 								character.attribs.get(spDcId).set("current", spellDc);
 							}
 							if (spellAbility) {
-								const spAbilId = findAttrId("spellcasting_ability");
+								const spAbilId = d20plus.importer.findAttrId(character, "spellcasting_ability");
 								character.attribs.get(spAbilId).set("current", `@{${spellAbility.toLowerCase()}_mod}+`);
 							}
 							if (casterLevel) {
-								const spCLvl = findAttrId("caster_level");
+								const spCLvl = d20plus.importer.findAttrId(character, "caster_level");
 								character.attribs.get(spCLvl).set("current", casterLevel);
-								const cLvl = findAttrId("level");
+								const cLvl = d20plus.importer.findAttrId(character, "level");
 								character.attribs.get(cLvl).set("current", Number(casterLevel));
 							}
 						}, spAbilsDelayMs);
@@ -2057,7 +2114,7 @@ var D20plus = function(version) {
 									setTimeout(() => {
 										if (sc.spells[lvl].slots) {
 											const slotName = `lvl${lvl}_slots_total`;
-											const slotId = findAttrId("spell_save_dc");
+											const slotId = d20plus.importer.findAttrId(character, "spell_save_dc");
 											character.attribs.get(slotId).set("current", String(sc.spells[lvl].slots));
 										}
 									}, spAbilsDelayMs);
@@ -2320,6 +2377,23 @@ var D20plus = function(version) {
 				d20.journal.addItemToFolderStructure(character.id, folder.id);
 			}
 		});
+	};
+
+	d20plus.importer.findAttrId = function (character, attrName) {
+		const found = character.attribs.toJSON().find(a => a.name === attrName);
+		return found ? found.id : undefined;
+	};
+
+	d20plus.importer.addOrUpdateAttr = function (character, attrName, value) {
+		const id = d20plus.importer.findAttrId(character, attrName);
+		if (id) {
+			character.attribs.get(id).set("current", value);
+		} else {
+			character.attribs.create({
+				"name": attrName,
+				"current": value
+			});
+		}
 	};
 
 	// Import dialog showing names of monsters failed to import
@@ -3043,7 +3117,6 @@ var D20plus = function(version) {
 			name: name
 		}, {
 			success: function (handout) {
-
 				const renderer = new EntryRenderer();
 				renderer.setBaseUrl(BASE_SITE_URL);
 				const prerequisite = EntryRenderer.feat.getPrerequisiteText(data.prerequisite);
@@ -3161,6 +3234,137 @@ var D20plus = function(version) {
 					console.log(e);
 				}
 				d20.journal.addItemToFolderStructure(character.id, folder.id);
+			}
+		});
+	};
+
+	// Import Classes button was clicked
+	d20plus.classes.button = function () {
+		const url = $("#import-classes-url").val();
+		if (url && url.trim()) {
+			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.showImportList(
+					"class",
+					data.class,
+					d20plus.classes.handoutBuilder
+				);
+			});
+		}
+	};
+
+	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+		// make dir
+		const folder = d20plus.importer.makeDirTree(`Classes`, folderName);
+		const path = ["Classes", folderName, data.name];
+
+		// handle duplicates/overwrites
+		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+		const name = data.name;
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function (handout) {
+				const renderer = new EntryRenderer();
+				renderer.setBaseUrl(BASE_SITE_URL);
+
+				const renderStack = [];
+				// make a copy of the data to modify
+				const curClass = JSON.parse(JSON.stringify(data));
+				// render the class text
+				for (let i = 0; i < 20; i++) {
+					const lvlFeatureList = curClass.classFeatures[i];
+					for (let j = 0; j < lvlFeatureList.length; j++) {
+						const feature = lvlFeatureList[j];
+						renderer.recursiveEntryRender(feature, renderStack);
+					}
+				}
+				const rendered = renderStack.join("");
+
+				const r20json = {
+					"name": data.name,
+					"Vetoolscontent": data,
+					"data": {
+						"Category": "Classes"
+					}
+				};
+				const gmNotes = JSON.stringify(r20json);
+				const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			}
+		});
+
+		// import subclasses
+		if (data.subclasses) {
+			data.subclasses.forEach(sc => {
+				sc.class = data.name;
+				const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
+				d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, folderName);
+			});
+		}
+	};
+
+	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
+	// Import Subclasses button was clicked
+	d20plus.subclasses.button = function () {
+		const url = $("#import-subclasses-url").val();
+		if (url && url.trim()) {
+			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.showImportList(
+					"subclass",
+					data.subclass,
+					d20plus.subclasses.handoutBuilder,
+					{
+						groupOptions: d20plus.subclasses._groupOptions,
+						showSource: true
+					}
+				);
+			});
+		}
+	};
+
+	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+		// make dir
+		const folder = d20plus.importer.makeDirTree(`Subclasses`, folderName);
+		const path = ["Sublasses", folderName, data.name];
+
+		// handle duplicates/overwrites
+		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+		const name = `${data.shortName} (${data.class})`;
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function (handout) {
+				const renderer = new EntryRenderer();
+				renderer.setBaseUrl(BASE_SITE_URL);
+
+				const renderStack = [];
+
+				data.subclassFeatures.forEach(lvl => {
+					lvl.forEach(f => {
+						renderer.recursiveEntryRender(f, renderStack);
+					});
+				});
+
+				const rendered = renderStack.join("");
+
+				const r20json = {
+					"name": data.name,
+					"Vetoolscontent": data,
+					"data": {
+						"Category": "Subclasses"
+					}
+				};
+				const gmNotes = JSON.stringify(r20json);
+				const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
 			}
 		});
 	};
@@ -3391,6 +3595,34 @@ var D20plus = function(version) {
 					default:
 						folderName = it.name[0].uppercaseFirst();
 						break;
+				}
+				return folderName;
+			}
+			case "class": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
+			case "subclass": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+						folderName = it.name[0].uppercaseFirst();
+						break;
+					case "Class":
+					default:
+						folderName = it.class;
 				}
 				return folderName;
 			}
@@ -4023,6 +4255,8 @@ var D20plus = function(version) {
 	<option value="spell">Spells</option>
 	<option value="feat">Feats</option>
 	<option value="object">Objects</option>
+	<option value="class">Classes</option>
+	<option value="subclass">Subclasses</option>
 	<option value="adventure">Adventures</option>
 </select>
 
@@ -4083,6 +4317,24 @@ To import from third-party sources, either individually select one available in 
 <label for="import-objects-url">Object Data URL:</label>
 <input type="text" id="import-objects-url" value="${objectdataurl}">
 <a class="btn" href="#" id="import-objects-load">Import Objects</a>
+</div>
+
+<div class="importer-section" data-import-group="class">
+<h4>Class Importing</h4>
+<label for="import-classes-url">Class Data URL:</label>
+<input type="text" id="import-classes-url" value="${classdataurl}">
+<a class="btn" href="#" id="import-classes-load">Import Classes</a>
+</div>
+
+
+<div class="importer-section" data-import-group="subclass">
+<h4>Subclass Importing</h4>
+<label for="import-subclasses-url">Subclass Data URL:</label>
+<input type="text" id="import-subclasses-url" value="">
+<a class="btn" href="#" id="import-subclasses-load">Import Subclasses</a>
+<p>
+Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.
+</p>
 </div>
 
 <div class="importer-section" data-import-group="adventure">
@@ -4187,6 +4439,22 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".Vetoolsresult",
 			r: "background: #ff8080;"
+		},
+		{
+			s: ".userscript-entry-title",
+			r: "font-weight: bold;"
+		},
+		{
+			s: ".userscript-statsBlockHead > .userscript-entry-title",
+			r: "font-weight: bold; font-size: 1.5em;"
+		},
+		{
+			s: ".userscript-statsBlockHead > .userscript-statsBlockSubHead > .userscript-entry-title",
+			r: "font-weight: bold; font-size: 1.3em;"
+		},
+		{
+			s: ".userscript-statsInlineHead > .userscript-entry-title, .userscript-statsInlineHeadSubVariant > .userscript-entry-title",
+			r: "font-style: italic"
 		}
 	];
 
