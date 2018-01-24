@@ -16,13 +16,13 @@
 
 var D20plus = function(version) {
 
-	var BASE_SITE_URL = "https://5etools.com/";
+	const BASE_SITE_URL = "https://5etools.com/";
 
-	var DATA_URL = BASE_SITE_URL+"data/";
-	var JS_URL = BASE_SITE_URL+"js/";
-	var IMG_URL = BASE_SITE_URL+"img/";
+	const DATA_URL = BASE_SITE_URL+"data/";
+	const JS_URL = BASE_SITE_URL+"js/";
+	const IMG_URL = BASE_SITE_URL+"img/";
 
-	var CONFIG_HANDOUT = '5etools';
+	const CONFIG_HANDOUT = '5etools';
 	const ART_HANDOUT = "5etools-art";
 
 	// build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
@@ -31,7 +31,7 @@ var D20plus = function(version) {
 		this.ogl = ogl;
 		this.shaped = shaped;
 	}
-	var NPC_SHEET_ATTRIBUTES= {};
+	const NPC_SHEET_ATTRIBUTES= {};
 	// these (other than the name, which is for display only) are all lowercased; any comparison should be lowercased
 	NPC_SHEET_ATTRIBUTES["empty"] = new SheetAttribute("--Empty--", "", "");
 	// TODO: implement custom entry (enable textarea)
@@ -47,7 +47,7 @@ var D20plus = function(version) {
 	NPC_SHEET_ATTRIBUTES["npc_challenge"] = new SheetAttribute("CR", "npc_challenge", "challenge");
 	NPC_SHEET_ATTRIBUTES["hp"] = new SheetAttribute("Current HP", "hp", "HP");
 
-	var CONFIG_OPTIONS = {
+	const CONFIG_OPTIONS = {
 		"token": {
 			"_name": "Tokens",
 			"bar1": {
@@ -175,25 +175,25 @@ var D20plus = function(version) {
 		}
 	};
 
-	var spellDataDir = `${DATA_URL}spells/`;
-	var spellDataUrls = {};
-	var spellMetaData = {};
+	const spellDataDir = `${DATA_URL}spells/`;
+	let spellDataUrls = {};
+	let spellMetaData = {};
 
-	var spellmetaurl = `${spellDataDir}roll20.json`;
+	const spellmetaurl = `${spellDataDir}roll20.json`;
 
-	var monsterDataDir = `${DATA_URL}bestiary/`;
-	var monsterDataUrls = {};
+	const monsterDataDir = `${DATA_URL}bestiary/`;
+	let monsterDataUrls = {};
 
-	var adventureDataDir = `${DATA_URL}adventure/`;
-	var adventureMetadata = {};
+	const adventureDataDir = `${DATA_URL}adventure/`;
+	let adventureMetadata = {};
 
-	var itemdataurl = `${DATA_URL}items.json`;
-	var featdataurl = `${DATA_URL}feats.json`;
-	var psionicdataurl = `${DATA_URL}psionics.json`;
-	var objectdataurl = `${DATA_URL}objects.json`;
-	var classdataurl = `${DATA_URL}classes.json`;
+	const itemdataurl = `${DATA_URL}items.json`;
+	const featdataurl = `${DATA_URL}feats.json`;
+	const psionicdataurl = `${DATA_URL}psionics.json`;
+	const objectdataurl = `${DATA_URL}objects.json`;
+	const classdataurl = `${DATA_URL}classes.json`;
 
-	var d20plus = {
+	const d20plus = {
 		sheet: "ogl",
 		version: version,
 		timeout: 500,
@@ -337,7 +337,7 @@ var D20plus = function(version) {
 			name: CONFIG_HANDOUT
 		}, {
 			success: function(handout) {
-				notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel."
+				notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel.";
 
 				// default settings
 				// token settings mimic official content; other settings as vanilla as possible
@@ -353,19 +353,19 @@ var D20plus = function(version) {
 
 	d20plus.getConfigHandout = function () {
 		return d20.Campaign.handouts.models.find(function (handout) {
-			return handout.attributes.name.toLowerCase() == CONFIG_HANDOUT;
+			return handout.attributes.name.toLowerCase() === CONFIG_HANDOUT;
 		});
 	};
 
 	d20plus.getArtHandout = function () {
 		return d20.Campaign.handouts.models.find((handout) => {
-			return handout.attributes.name.toLowerCase() == ART_HANDOUT;
+			return handout.attributes.name.toLowerCase() === ART_HANDOUT;
 		});
-	}
+	};
 
 	d20plus.loadConfigFailed = false;
 	d20plus.loadConfig = function(nextFn) {
-		var configHandout = d20plus.getConfigHandout();
+		let configHandout = d20plus.getConfigHandout();
 
 		if (!configHandout) {
 			d20plus.log("> No config found! Initialising new config...");
@@ -379,7 +379,7 @@ var D20plus = function(version) {
 			if (configHandout) {
 				configHandout.view.render();
 				configHandout._getLatestBlob("gmnotes", function(gmnotes) {
-					var decoded = decodeURIComponent(gmnotes);
+					const decoded = decodeURIComponent(gmnotes);
 
 					try {
 						d20plus.config = JSON.parse(decoded);
@@ -447,7 +447,7 @@ var D20plus = function(version) {
 		if (d20plus.config[group] === undefined) return undefined;
 		if (d20plus.config[group][key] === undefined) return undefined;
 		return d20plus.config[group][key];
-	}
+	};
 
 	d20plus.getCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
@@ -477,17 +477,16 @@ var D20plus = function(version) {
 	// Helpful for checking if a boolean option is set even if false
 	d20plus.hasCfgVal = function (group, key) {
 		if (d20plus.config[group] === undefined) return undefined;
-		if (d20plus.config[group][key] === undefined) return false;
-		return true;
+		return d20plus.config[group][key] !== undefined;
 	};
 
 	d20plus.setCfgVal = function(group, key, val) {
 		if (d20plus.config[group] === undefined) d20plus.config[group] = {};
 		d20plus.config[group][key] = val;
-	}
+	};
 
 	d20plus.getDefaultConfig = function() {
-		const outCpy = {}
+		const outCpy = {};
 		$.each(CONFIG_OPTIONS, (sectK, sect) => {
 			outCpy[sectK] = outCpy[sectK] || {};
 			$.each(sect, (k, data) => {
@@ -501,7 +500,7 @@ var D20plus = function(version) {
 
 	// this should be do-able with built-in roll20 code -- someone with hacker-tier reverse engineering skills pls help
 	d20plus.makeTabPane = function ($addTo, headers, content) {
-		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!")
+		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!");
 
 		if ($addTo.attr("hastabs") !== "YES") {
 			const $tabBar = $(`<ul class="nav nav-tabs"/>`);
@@ -539,7 +538,7 @@ var D20plus = function(version) {
 
 			$addTo.attr("hastabs", "YES");
 		}
-	}
+	};
 
 	d20plus.openConfigEditor = function () {
 		const cEdit = $("#d20plus-configeditor");
@@ -574,7 +573,7 @@ var D20plus = function(version) {
 				sortedTabKeys.forEach(grpK => {
 					const prop = cfgGroup[grpK];
 
-					const toAdd = $(`<tr><td>${prop.name}</td></tr>`)
+					const toAdd = $(`<tr><td>${prop.name}</td></tr>`);
 
 					// Each config `_type` should have a case here. Each case should add a function to the map [configFields:[cfgK:grpK]]. These functions should return the value of the input.
 					switch (prop._type) {
@@ -591,7 +590,7 @@ var D20plus = function(version) {
 						}
 						case "_SHEET_ATTRIBUTE": {
 							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
-							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`)
+							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`);
 							const cur = d20plus.getCfgVal(cfgK, grpK);
 							if (cur !== undefined) {
 								field.val(cur);
@@ -682,7 +681,7 @@ var D20plus = function(version) {
 						}
 					}
 					tbody.append(toAdd);
-				})
+				});
 
 				return content;
 			}
@@ -691,11 +690,11 @@ var D20plus = function(version) {
 				appendTo,
 				tabList,
 				contentList
-			)
+			);
 
 			const saveButton = $(`#configsave`);
 			saveButton.unbind("click");
-			$(`#configsave`).bind("click", () => {
+			saveButton.bind("click", () => {
 				let handout = d20plus.getConfigHandout();
 				if (!handout) {
 					d20plus.makeDefaultConfig(doSave);
@@ -708,13 +707,13 @@ var D20plus = function(version) {
 						$.each(grp, (grpK, grpVField) => {
 							d20plus.setCfgVal(cfgK, grpK, grpVField());
 						})
-					})
+					});
 
 					const gmnotes = JSON.stringify(d20plus.config);
 					handout.updateBlobs({gmnotes: gmnotes});
 					handout.save({notes: (new Date).getTime()});
 
-					d20plus.log(" > Saved config")
+					d20plus.log(" > Saved config");
 
 					d20plus.handleConfigChange();
 				}
@@ -725,7 +724,7 @@ var D20plus = function(version) {
 	// Window loaded
 	window.onload = function() {
 		window.unwatch("d20");
-		var checkLoaded = setInterval(function() {
+		const checkLoaded = setInterval(function() {
 			if (!$("#loading-overlay").is(":visible")) {
 				clearInterval(checkLoaded);
 				d20plus.Init();
@@ -772,7 +771,7 @@ var D20plus = function(version) {
 	d20plus.onJsonLoad = function() {
 		d20plus.log("> Add JS");
 		d20plus.addScripts(d20plus.onScriptLoad);
-	}
+	};
 
 	// continue init once scripts load
 	d20plus.onScriptLoad = function () {
@@ -1591,24 +1590,29 @@ var D20plus = function(version) {
 
 												const clss = data.Vetoolscontent;
 
+												// --- these don't work
 												// d20plus.importer.addOrUpdateAttr(character.model, "class", data.name);
 												// d20plus.importer.addOrUpdateAttr(character.model, "level", level);
-												// debugger // FIXME this seems broken. Dirtying doesn't work either.
 												// d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(level));
-												// extraDirty.push("level", "base_level");
 
-												character.$charsheet.find(`.sheet-pc .sheet-core select[name=attr_class]`).val(data.name).trigger("change");
-												debugger // FIXME this doesn't work
-												character.$charsheet.find(`.sheet-pc .sheet-core input[name=attr_base_level]`)
-													.val(String(level))
-													.text(String(level))
-													.trigger("change");
-												// TODO check the roll20 character sheet for event handlers?
+												// operation "kitchen sink"
+												setTimeout(() => {
+													d20plus.importer.addOrUpdateAttr(character.model, "level", level);
+													d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(level));
+													d20plus.importer.addOrUpdateAttr(character.model, "pb", d20plus.getProfBonusFromLevel(Number(level)));
+													character.$charsheet.find(`.sheet-pc .sheet-core input[name=attr_base_level]`)
+														.val(String(level))
+														.text(String(level))
+														.trigger("change");
+													character.$charsheet.find(`.sheet-pc .sheet-core select[name=attr_class]`).val(data.name).trigger("change");
+													character.model.persisted = false;
+													extraDirty.add("level", "base_level", "pb");
+												}, 500);
+
 
 												// TODO
 												console.log(clss);
 
-												character.model.persisted = false;
 											}
 										}
 									} else if (data.data.Category === "Subclasses") {
@@ -1768,6 +1772,14 @@ var D20plus = function(version) {
 				});
 			};
 		});
+	};
+
+	d20plus.getProfBonusFromLevel = function (level) {
+		if (level < 5) return "2";
+		if (level < 9) return "3";
+		if (level < 13) return "4";
+		if (level < 17) return "5";
+		return "6";
 	};
 
 	d20plus.handleAjaxError = function(jqXHR, exception) {
