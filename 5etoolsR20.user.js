@@ -111,12 +111,12 @@ var D20plus = function(version) {
 				"_type": "boolean"
 			},
 			"tokenactions": {
-				"name": "Add TokenAction Macros",
+				"name": "Add TokenAction Macros on Import",
 				"default": true,
 				"_type": "boolean"
 			},
 			"togglepublic": {
-				"name": "Make Rolls Public",
+				"name": "Make Rolls Public on Import",
 				"default": false,
 				"_type": "boolean"
 			}
@@ -3489,13 +3489,17 @@ var D20plus = function(version) {
 						$stsName.text("Import cancelled");
 						$stsRemain.text(`${$stsRemain.text()} (cancelled)`);
 						d20plus.log(` > Import cancelled`);
-						d20plus.bindDropLocations();
+						setTimeout(() => {
+							d20plus.bindDropLocations();
+						}, 250);
 					}
 					else {
 						$stsName.text("Import complete");
 						$stsRemain.text("0");
 						d20plus.log(` > Import complete`);
-						d20plus.bindDropLocations();
+						setTimeout(() => {
+							d20plus.bindDropLocations();
+						}, 250);
 					}
 					return;
 				}
