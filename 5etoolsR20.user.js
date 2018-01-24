@@ -1584,7 +1584,7 @@ var D20plus = function(version) {
 											level = Number(level);
 											if (level) {
 												if (level < 0 || level > 20) {
-													alert("Please enter a number between one and 20!")
+													alert("Please enter a number between one and 20!");
 													return;
 												}
 
@@ -1597,38 +1597,109 @@ var D20plus = function(version) {
 
 												// operation "kitchen sink"
 												setTimeout(() => {
+													d20plus.importer.addOrUpdateAttr(character.model, "pb", d20plus.getProfBonusFromLevel(Number(level)));
+													// try to set level -- none of these actually work lol
 													d20plus.importer.addOrUpdateAttr(character.model, "level", level);
 													d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(level));
-													d20plus.importer.addOrUpdateAttr(character.model, "pb", d20plus.getProfBonusFromLevel(Number(level)));
 													character.$charsheet.find(`.sheet-pc .sheet-core input[name=attr_base_level]`)
 														.val(String(level))
 														.text(String(level))
 														.trigger("change");
+													// hack to set class
 													character.$charsheet.find(`.sheet-pc .sheet-core select[name=attr_class]`).val(data.name).trigger("change");
 													character.model.persisted = false;
 													extraDirty.add("level", "base_level", "pb");
 												}, 500);
 
+												const renderer = new EntryRenderer();
+												renderer.setBaseUrl(BASE_SITE_URL);
+												for (let i = 0; i < level; i++) {
+													const lvlFeatureList = clss.classFeatures[i];
+													for (let j = 0; j < lvlFeatureList.length; j++) {
+														const feature = lvlFeatureList[j];
+														// don't add "you gain a subclass feature" or ASI's
+														if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
+															const renderStack = [];
+															renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 
-												// TODO
-												console.log(clss);
-
+															const fRowId = d20plus.generateRowId();
+															character.model.attribs.create({name: `repeating_traits_${fRowId}_name`, current: feature.name});
+															character.model.attribs.create({name: `repeating_traits_${fRowId}_source`, current: "Class"});
+															character.model.attribs.create({name: `repeating_traits_${fRowId}_source_type`, current: clss.name});
+															character.model.attribs.create({name: `repeating_traits_${fRowId}_description`, current: d20plus.importer.getCleanText(renderStack.join(""))});
+															character.model.attribs.create({name: `repeating_traits_${fRowId}_options-flag`, current: "0"});
+														}
+													}
+												}
 											}
 										}
 									} else if (data.data.Category === "Subclasses") {
-										let level = prompt("What level?", "1");
-										if (level && level.trim()) {
-											level = Number(level);
-											if (level) {
-												if (level < 0 || level > 20) {
-													alert("Please enter a number between one and 20!")
-													return;
+										const sc = data.Vetoolscontent;
+										let maxIndex = sc.subclassFeatures.length;
+										// _gainAtLevels should be a 20-length array of booleans
+										if (sc._gainAtLevels) {
+											maxIndex = 0;
+
+											let level = prompt("What level?", "1");
+											if (level && level.trim()) {
+												level = Number(level);
+												if (level) {
+													if (level < 0 || level > 20) {
+														alert("Please enter a number between one and 20!");
+														return;
+													}
+
+													for (let i = 0; i < level; i++) {
+														if (sc._gainAtLevels[i]) maxIndex++;
+													}
+												}
+											} else {
+												return;
+											}
+										}
+
+										if (maxIndex === 0) return;
+
+										const renderer = new EntryRenderer();
+										renderer.setBaseUrl(BASE_SITE_URL);
+										for (let i = 0; i < maxIndex; i++) {
+											const lvlFeatureList = sc.subclassFeatures[i];
+											for (let j = 0; j < lvlFeatureList.length; j++) {
+												const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
+												let feature = lvlFeatureList[j];
+												const renderStack = [];
+
+												try {
+													while (!feature.name || (feature[0] && !feature[0].name)) {
+														if (feature.entries && feature.entries.name) {
+															feature = feature.entries;
+															continue;
+														} else if (feature.entries[0] && feature.entries[0].name) {
+															feature = feature.entries[0];
+															continue;
+														} else {
+															feature = feature.entries;
+														}
+
+														if (!feature) {
+															// in case something goes wrong, reset break the loop
+															feature = featureCpy;
+															break;
+														}
+													}
+												} catch (e) {
+													// in case something goes _really_ wrong, reset
+													feature = featureCpy;
 												}
 
-												const sc = data.Vetoolscontent;
+												renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 
-												// TODO
-												console.log(sc);
+												const fRowId = d20plus.generateRowId();
+												character.model.attribs.create({name: `repeating_traits_${fRowId}_name`, current: feature.name});
+												character.model.attribs.create({name: `repeating_traits_${fRowId}_source`, current: "Class"});
+												character.model.attribs.create({name: `repeating_traits_${fRowId}_source_type`, current: `${sc.class} (${sc.name})`});
+												character.model.attribs.create({name: `repeating_traits_${fRowId}_description`, current: d20plus.importer.getCleanText(renderStack.join(""))});
+												character.model.attribs.create({name: `repeating_traits_${fRowId}_options-flag`, current: "0"});
 											}
 										}
 									} else if (data.data.Category === "Psionics") {
@@ -3501,8 +3572,22 @@ var D20plus = function(version) {
 
 		// import subclasses
 		if (data.subclasses) {
+			const gainFeatureArray = [];
+			outer: for (let i = 0; i < 20; i++) {
+				const lvlFeatureList = data.classFeatures[i];
+				for (let j = 0; j < lvlFeatureList.length; j++) {
+					const feature = lvlFeatureList[j];
+					if (feature.gainSubclassFeature) {
+						gainFeatureArray.push(true);
+						continue outer;
+					}
+				}
+				gainFeatureArray.push(false);
+			}
+
 			data.subclasses.forEach(sc => {
 				sc.class = data.name;
+				sc._gainAtLevels = gainFeatureArray;
 				const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
 				const path = [folderName, sc.source || data.source];
 				d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path);
