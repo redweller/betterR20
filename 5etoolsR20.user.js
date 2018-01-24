@@ -721,6 +721,62 @@ var D20plus = function(version) {
 		}
 	};
 
+	d20plus.openJournalCleaner = function () {
+		const $win = $("#d20plus-quickdelete");
+		$win.dialog("open");
+
+		const journal = d20plus.importer.getJournalFolderObj();
+		const rootItems = [];
+		journal.forEach(it => {
+			if (it.i) return; // skip folders
+			const handout = d20.Campaign.handouts.get(it);
+			if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return; // skip 5etools handouts
+			const character = d20.Campaign.characters.get(it);
+			if (handout) rootItems.push({type: "handouts", id: it, name: handout.get("name")});
+			if (character) rootItems.push({type: "characters", id: it, name: character.get("name")});
+		});
+
+		const $delList = $win.find(`.list`);
+		$delList.empty();
+
+		rootItems.forEach((it, i) => {
+			$delList.append(`
+				<label class="import-cb-label">
+					<input type="checkbox" data-listid="${i}">
+					<span class="name">${it.name}</span>
+				</label>
+			`);
+		});
+
+		// init list library
+		const delList = new List("delete-list-container", {
+			valueNames: ["name"],
+			listClass: "deletelist"
+		});
+
+		const $cbAll = $("#deletelist-selectall");
+		$cbAll.unbind("click");
+		$cbAll.prop("checked", false);
+		$cbAll.bind("click", function() {
+			d20plus.importer._importToggleSelectAll(delList, $cbAll);
+		});
+
+		const $btnDel = $(`#quickdelete-btn-submit`);
+		$btnDel.off("click");
+		$btnDel.on("click", () => {
+			delList.items.forEach(it => Array.prototype.forEach.call(it.elm.children, (e) => {
+				const $e = $(e);
+				if ($e.is("input") && $e.prop("checked")) {
+					const dataIndex = parseInt($e.data("listid"));
+					const toDel = rootItems[dataIndex];
+					d20.Campaign[toDel.type].get(toDel.id).destroy();
+				}
+			}));
+			$win.dialog("close");
+			$("#journalfolderroot").trigger("change");
+		});
+	};
+
 	// Window loaded
 	window.onload = function() {
 		window.unwatch("d20");
@@ -1289,6 +1345,7 @@ var D20plus = function(version) {
 
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
+			$("#mysettings > .content a#button-mass-deleter").on(window.mousedowntype, d20plus.openJournalCleaner);
 			$("#mysettings > .content select#import-mode-select").on("change", d20plus.importer.importModeSwitch);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
 			d20plus.setTurnOrderTemplate();
@@ -1300,11 +1357,13 @@ var D20plus = function(version) {
 			d20plus.updateDifficulty();
 			d20plus.addJournalCommands();
 
-			$("body").append(d20plus.importDialogHtml);
-			$("body").append(d20plus.importListHTML);
-			$("body").append(d20plus.configEditorHTML);
-			$("body").append(d20plus.addArtHTML);
-			$("body").append(d20plus.addArtMassAdderHTML);
+			const $body = $("body");
+			$body.append(d20plus.importDialogHtml);
+			$body.append(d20plus.importListHTML);
+			$body.append(d20plus.configEditorHTML);
+			$body.append(d20plus.addArtHTML);
+			$body.append(d20plus.addArtMassAdderHTML);
+			$body.append(d20plus.quickDeleterHtml);
 			$("#d20plus-import").dialog({
 				autoOpen: false,
 				resizable: false
@@ -1331,6 +1390,12 @@ var D20plus = function(version) {
 				resizable: true,
 				width: 800,
 				height: 400,
+			});
+			$("#d20plus-quickdelete").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 650,
 			});
 
 			populateDropdown("#button-spell-select", "#import-spell-url", spellDataDir, spellDataUrls, "PHB");
@@ -3667,7 +3732,7 @@ var D20plus = function(version) {
 		$(`.importer-section`).hide();
 		const toShow = $(`#import-mode-select`).val();
 		$(`.importer-section[data-import-group="${toShow}"]`).show();
-	}
+	};
 
 	d20plus.importer.showImportList = function (dataType, dataArray, handoutBuilder, options) {
 		if (!options) options = {};
@@ -3751,7 +3816,7 @@ var D20plus = function(version) {
 			});
 
 			// start worker to process list
-			$("#d20plus-import").dialog("open")
+			$("#d20plus-import").dialog("open");
 			const worker = setInterval(() => {
 				if (!importQueue.length || cancelWorker) {
 					clearInterval(worker);
@@ -4058,6 +4123,7 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.getJournalFolderObj = function () {
+		$("#journalfolderroot").trigger("change");
 		d20.journal.refreshJournalList();
 		let journalFolder = d20.Campaign.get("journalfolder");
 		if (journalFolder === "") {
@@ -4066,7 +4132,7 @@ var D20plus = function(version) {
 			journalFolder = d20.Campaign.get("journalfolder");
 		}
 		return JSON.parse(journalFolder);
-	}
+	};
 
 	d20plus.importer.initFolder = function (data, overwrite, deleteExisting, parentFolderName, folderName, handoutBuilder) {
 		var fname = $("#organize-by-source").prop("checked") ? Parser.sourceJsonToFull(data.source) : folderName;
@@ -4308,7 +4374,7 @@ var D20plus = function(version) {
 					}
 					toAdd.forEach(a => {
 						$artList.append(getArtLi(a.name, a.url));
-					})
+					});
 					refreshCustomArtList();
 					$("#d20plus-artmassadd").dialog("close");
 				}
@@ -4440,6 +4506,18 @@ var D20plus = function(version) {
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 
+	d20plus.quickDeleterHtml = `
+<div id="d20plus-quickdelete" title="Journal Root Cleaner">
+	<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
+	<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
+	<div id="delete-list-container">
+		<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
+		<br><br>
+		<ul class="list deletelist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
+	</div>
+</div>;
+	`;
+
 	d20plus.artTabHtml = `
 		<p><a class="btn" href="#" id="button-add-external-art">Manage External Art</a></p>
 	`;
@@ -4465,7 +4543,7 @@ var D20plus = function(version) {
 </div>`;
 
 	d20plus.addArtMassAdderHTML = `
-<div id="d20plus-artmassadd">
+<div id="d20plus-artmassadd" title="Mass Add Art URLs">
 	<p>One entry per line; entry format: <b>[name]---[URL]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
 	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;"></textarea></p>
 </div>`;
@@ -4641,13 +4719,18 @@ Default subclasses are imported as part of Classes import. This can be used to l
 </div>
 
 <br>
-<a class="btn" href="#" id="button-edit-config">Edit Config</a>
-<a class="btn bind-drop-locations" href="#" id="bind-drop-locations">Bind Drag-n-Drop</a>
+<a class="btn" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
+<a class="btn bind-drop-locations" href="#" id="bind-drop-locations" style="margin-top: 3px;">Bind Drag-n-Drop</a>
+<a class="btn" href="#" id="button-mass-deleter" style="margin-top: 3px;">Journal Cleaner</a>
+<p><strong>Readme</strong></p>
 <p>
 You can drag-and-drop imported handouts to character sheets.<br>
 If a handout is glowing green in the journal, it's draggable. This breaks when Roll20 decides to hard-refresh the journal.<br>
 To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 <i>Note: to drag a handout to a character sheet, you need to drag the name, and not the handout icon.</i>
+</p>
+<p>
+For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_blank" style="color: #08c;">join our Discord!</a>
 </p>
 
 <style id="dynamicStyle"></style>`;
