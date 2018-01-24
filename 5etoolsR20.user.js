@@ -192,6 +192,7 @@ var D20plus = function(version) {
 	const psionicdataurl = `${DATA_URL}psionics.json`;
 	const objectdataurl = `${DATA_URL}objects.json`;
 	const classdataurl = `${DATA_URL}classes.json`;
+	const backgrounddataurl = `${DATA_URL}backgrounds.json`;
 
 	const d20plus = {
 		sheet: "ogl",
@@ -207,6 +208,7 @@ var D20plus = function(version) {
 		objects: {},
 		classes: {},
 		subclasses: {},
+		backgrounds: {},
 		adventures: {},
 		initiative: {},
 		config: {},
@@ -1341,6 +1343,7 @@ var D20plus = function(version) {
 			$("#mysettings > .content a#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
 			$("#mysettings > .content a#import-classes-load").on(window.mousedowntype, d20plus.classes.button);
 			$("#mysettings > .content a#import-subclasses-load").on(window.mousedowntype, d20plus.subclasses.button);
+			$("#mysettings > .content a#import-backgrounds-load").on(window.mousedowntype, d20plus.backgrounds.button);
 			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 
 			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
@@ -1546,6 +1549,7 @@ var D20plus = function(version) {
 			d20.journal.addFolderToFolderStructure("Feats");
 			d20.journal.addFolderToFolderStructure("Classes");
 			d20.journal.addFolderToFolderStructure("Subclasses");
+			d20.journal.addFolderToFolderStructure("Backgrounds");
 			d20.journal.refreshJournalList();
 			journalFolder = d20.Campaign.get("journalfolder");
 		}
@@ -1559,6 +1563,7 @@ var D20plus = function(version) {
 		addClasses("Feats");
 		addClasses("Classes");
 		addClasses("Subclasses");
+		addClasses("Backgrounds");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -1643,6 +1648,38 @@ var D20plus = function(version) {
 										const dirty = [];
 										$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
 										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
+									} else if (data.data.Category === "Backgrounds") { // TODO remove Background workaround when roll20 supports background drag-n-drop properly
+										const bg = data.Vetoolscontent;
+
+										const renderer = new EntryRenderer();
+										renderer.setBaseUrl(BASE_SITE_URL);
+										const renderStack = [];
+										let feature;
+										bg.entries.forEach(e => {
+											if (e.name.includes("Feature:")) {
+												feature = JSON.parse(JSON.stringify(e));
+												feature.name = feature.name.replace("Feature:", "").trim();
+											}
+										});
+										if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+
+										d20plus.importer.addOrUpdateAttr(character.model, "background", bg.name);
+
+										const fRowId = d20plus.generateRowId();
+										character.model.attribs.create({name: `repeating_traits_${fRowId}_name`, current: bg.name});
+										character.model.attribs.create({name: `repeating_traits_${fRowId}_source`, current: "Background"});
+										character.model.attribs.create({name: `repeating_traits_${fRowId}_source_type`, current: bg.name});
+										if (renderStack.length) {
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_description`, current: d20plus.importer.getCleanText(renderStack.join(""))});
+										}
+										character.model.attribs.create({name: `repeating_traits_${fRowId}_options-flag`, current: "0"});
+
+										if (bg.skillProficiencies) {
+											const skills = bg.skillProficiencies.split(",").map(s => s.toLowerCase().trim().replace(/ /g, "_"));
+											skills.forEach(s => {
+												d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
+											});
+										}
 									} else if (data.data.Category === "Classes") {
 										let level = prompt("What level?", "1");
 										if (level && level.trim()) {
@@ -3722,6 +3759,61 @@ var D20plus = function(version) {
 		});
 	};
 
+	d20plus.backgrounds.button = function () {
+		const url = $("#import-backgrounds-url").val();
+		if (url && url.trim()) {
+			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.showImportList(
+					"background",
+					data.background,
+					d20plus.backgrounds.handoutBuilder,
+					{
+						showSource: true
+					}
+				);
+			});
+		}
+	};
+
+	d20plus.backgrounds.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+		// make dir
+		const folder = d20plus.importer.makeDirTree(`Backgrounds`, folderName);
+		const path = ["Backgrounds", folderName, data.name];
+
+		// handle duplicates/overwrites
+		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+		const name = data.name;
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function (handout) {
+				const renderer = new EntryRenderer();
+				renderer.setBaseUrl(BASE_SITE_URL);
+
+				const renderStack = [];
+
+				renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
+
+				const rendered = renderStack.join("");
+
+				const r20json = {
+					"name": data.name,
+					"Vetoolscontent": data,
+					"data": {
+						"Category": "Backgrounds"
+					}
+				};
+				const gmNotes = JSON.stringify(r20json);
+				const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			}
+		});
+	};
+
 	// Import Adventures button was clicked
 	d20plus.adventures.button = function () {
 		const url = $("#import-adventures-url").val();
@@ -3984,6 +4076,19 @@ var D20plus = function(version) {
 				}
 				return folderName;
 			}
+			case "background": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
 			default:
 				throw new Error(`Unknown import type '${dataType}'`);
 		}
@@ -4123,7 +4228,6 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.getJournalFolderObj = function () {
-		$("#journalfolderroot").trigger("change");
 		d20.journal.refreshJournalList();
 		let journalFolder = d20.Campaign.get("journalfolder");
 		if (journalFolder === "") {
@@ -4628,6 +4732,7 @@ var D20plus = function(version) {
 	<option value="object">Objects</option>
 	<option value="class">Classes</option>
 	<option value="subclass">Subclasses</option>
+	<option value="background">Backgrounds</option>
 	<option value="adventure">Adventures</option>
 </select>
 
@@ -4697,7 +4802,6 @@ To import from third-party sources, either individually select one available in 
 <a class="btn" href="#" id="import-classes-load">Import Classes</a>
 </div>
 
-
 <div class="importer-section" data-import-group="subclass">
 <h4>Subclass Importing</h4>
 <label for="import-subclasses-url">Subclass Data URL:</label>
@@ -4706,6 +4810,13 @@ To import from third-party sources, either individually select one available in 
 <p>
 Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.
 </p>
+</div>
+
+<div class="importer-section" data-import-group="background">
+<h4>Background Importing</h4>
+<label for="import-backgrounds-url">Background Data URL:</label>
+<input type="text" id="import-backgrounds-url" value="${backgrounddataurl}">
+<a class="btn" href="#" id="import-backgrounds-load">Import Backgrounds</a>
 </div>
 
 <div class="importer-section" data-import-group="adventure">
