@@ -2445,8 +2445,6 @@ var D20plus = function(version) {
 							if (!sp.data.Material && !VeSp.components.m) makeAttrib("spellcomp_m", "0");
 							makeAttrib("spellconcentration", sp.data.Concentration)
 							makeAttrib("spellduration", sp.data.Duration);
-							// Would have to set this -> save spell -> enter damage numbers -> save spell, so just do inline rollers instead.
-							// makeAttrib("spelloutput", "ATTACK");
 							makeAttrib("spelldamage", sp.data.Damage);
 							makeAttrib("spelldamagetype", sp.data["Damage Type"]);
 							makeAttrib("spellsave", sp.data.Save);
@@ -2457,6 +2455,20 @@ var D20plus = function(version) {
 							makeAttrib("spelldescription", addInlineRollers(text));
 							makeAttrib("spellathigherlevels", addInlineRollers(hlText));
 							makeAttrib("options-flag", "0");
+
+							// TODO reverse engineer/add the other ~20 attributes needed to make this work
+							if (sp.content.toLowerCase().includes("ranged spell attack")) {
+								makeAttrib("spelloutput", "ATTACK");
+								makeAttrib("spellattack", "Ranged");
+							} else if (sp.content.toLowerCase().includes("melee spell attack")) {
+								makeAttrib("spelloutput", "ATTACK");
+								makeAttrib("spellattack", "Melee");
+							} else if (sp.data.Damage && !sp.data.Save) {
+								// for things like Magic Missile and Cloud of Daggers
+								// probably picks up a few things it shouldn't
+								makeAttrib("spelloutput", "ATTACK");
+								makeAttrib("spellattack", "None");
+							}
 
 							tokenActionStack.push(`[${sp.name}](~selected|${base}spell)`);
 
@@ -3001,11 +3013,6 @@ var D20plus = function(version) {
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
 		const name = data.name;
-		// merge in roll20 metadata, if available
-		const spellMeta = spellMetaData.spell.find(sp => sp.name.toLowerCase() === data.name.toLowerCase() && sp.source.toLowerCase() === data.source.toLowerCase());
-		if (spellMeta) {
-			data.roll20 = spellMeta.data;
-		}
 		// build spell handout
 		d20.Campaign.handouts.create({
 			name: name
@@ -3022,6 +3029,12 @@ var D20plus = function(version) {
 	}
 
 	d20plus.spells._getHandoutData = function (data) {
+		// merge in roll20 metadata, if available
+		const spellMeta = spellMetaData.spell.find(sp => sp.name.toLowerCase() === data.name.toLowerCase() && sp.source.toLowerCase() === data.source.toLowerCase());
+		if (spellMeta) {
+			data.roll20 = spellMeta.data;
+		}
+
 		if (!data.school) data.school = "A";
 		if (!data.range) data.range = "Self";
 		if (!data.duration) data.duration = "Instantaneous";
