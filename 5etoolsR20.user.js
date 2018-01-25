@@ -4727,7 +4727,6 @@ var D20plus = function(version) {
 	<option value="spell">Spells</option>
 	<option value="item">Items</option>
 	<option value="psionic">Psionics</option>
-	<option value="spell">Spells</option>
 	<option value="feat">Feats</option>
 	<option value="object">Objects</option>
 	<option value="class">Classes</option>
