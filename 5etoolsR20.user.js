@@ -1491,7 +1491,7 @@ var D20plus = function(version) {
 				$outSearch.append(`<p><b>Search results:</b></p>`);
 				const $outList = $(`<ol class="dd-list Vetools-search-results"/>`);
 				$outSearch.append($outList);
-				found.clone().appendTo($outList);
+				found.clone().addClass("Vetools-draggable").appendTo($outList);
 				$outSearch.append(`<hr>`);
 				$(`.Vetools-search-results .Vetools-draggable`).draggable({
 					revert: true,
