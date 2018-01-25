@@ -2049,14 +2049,14 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.addAction = function (character, name, text, index) {
-		if (d20plus.hasCfgVal("token", "tokenactions")) {
+		if (d20plus.getCfgVal("token", "tokenactions")) {
 			character.abilities.create({name: index  +": " + name, istokenaction: true, action: d20plus.actionMacroAction(index)});
 		}
 
 		var newRowId = d20plus.generateRowId();
 		var actiontext = text;
 		var action_desc = actiontext; // required for later reduction of information dump.
-		var rollbase = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
+		var rollbase = d20plus.importer.rollbase;
 		// attack parsing
 		if (actiontext.indexOf(" Attack:") > -1) {
 			var attacktype = "";
@@ -2267,7 +2267,7 @@ var D20plus = function(version) {
 					character.attribs.create({name: "npc_senses", current: sensesStr});
 
 					// add Tokenaction Macros
-					if (d20plus.hasCfgVal("token", "tokenactions")) {
+					if (d20plus.getCfgVal("token", "tokenactions")) {
 						character.abilities.create({name: "Perception", istokenaction: true, action: d20plus.actionMacroPerception});
 						character.abilities.create({name: "Init", istokenaction: true, action: d20plus.actionMacroInit});
 						character.abilities.create({name: "DR/Immunities", istokenaction: true, action: d20plus.actionMacroDrImmunities});
@@ -2475,7 +2475,7 @@ var D20plus = function(version) {
 							tokenActionStack.push(`[${sp.name}](~selected|${base}spell)`);
 
 							if (index === addMacroIndex) {
-								if (d20plus.hasCfgVal("token", "tokenactions")) {
+								if (d20plus.getCfgVal("token", "tokenactions")) {
 									character.abilities.create({
 										name: "Spells",
 										istokenaction: true,
@@ -2523,7 +2523,7 @@ var D20plus = function(version) {
 							var text = "";
 							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: v.name});
 
-							if (d20plus.hasCfgVal("token", "tokenactions")) {
+							if (d20plus.getCfgVal("token", "tokenactions")) {
 								character.abilities.create({name: "Trait" + i  +": " + v.name, istokenaction: true, action: d20plus.actionMacroTrait(i)});
 							}
 
@@ -2572,7 +2572,7 @@ var D20plus = function(version) {
 							character.attribs.create({name: "repeating_npcreaction_" + newRowId + "_name", current: v.name});
 
 							// roll20 only supports a single reaction, so only use the first
-							if (d20plus.hasCfgVal("token", "tokenactions") && i === 0) {
+							if (d20plus.getCfgVal("token", "tokenactions") && i === 0) {
 								character.abilities.create({name: "Reaction: " + v.name, istokenaction: true, action: d20plus.actionMacroReaction});
 							}
 
@@ -2603,11 +2603,11 @@ var D20plus = function(version) {
 							var actiontext = "";
 							var text = "";
 
-							if (d20plus.hasCfgVal("token", "tokenactions")) {
+							if (d20plus.getCfgVal("token", "tokenactions")) {
 								tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
 							}
 
-							var rollbase = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
+							var rollbase = d20plus.importer.rollbase;
 							if (v.attack != null) {
 								if (!(v.attack instanceof Array)) {
 									var tmp = v.attack;
@@ -2676,7 +2676,7 @@ var D20plus = function(version) {
 							character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_description", current: text});
 							character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_description_flag", current: descriptionFlag});
 						});
-						if (d20plus.hasCfgVal("token", "tokenactions")) {
+						if (d20plus.getCfgVal("token", "tokenactions")) {
 							character.abilities.create({name: "Legendary Actions", istokenaction: true, action: d20plus.actionMacroLegendary(tokenactiontext)});
 						}
 					}
@@ -3554,6 +3554,11 @@ var D20plus = function(version) {
 			}
 		});
 	};
+
+	// version from previous scripts. Might be useless now?
+	d20plus.importer.rollbaseOld = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
+	// from OGL sheet, Jan 2018
+	d20plus.importer.rollbase = "@{wtype}&{template:npcaction} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=@{name}}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{show_desc}}} @{charname_output}";
 
 	d20plus.importer.getDesiredRollType = function () {
 		// rtype
