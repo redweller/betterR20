@@ -167,9 +167,14 @@ var D20plus = function(version) {
 		},
 		"import": {
 			"_name": "Import",
-			"importInterval": {
+			"importIntervalHandout": {
 				"name": "Rest Time between Each Handout (msec)",
-				"default": 1000,
+				"default": 100,
+				"_type": "integer"
+			},
+			"importIntervalCharacter": {
+				"name": "Rest Time between Each Character (msec)",
+				"default": 2500,
 				"_type": "integer"
 			}
 		}
@@ -607,7 +612,7 @@ var D20plus = function(version) {
 							break;
 						}
 						case "integer": {
-							const field = $(`<input type="number" value="${d20plus.getCfgVal(cfgK, grpK)}">`);
+							const field = $(`<input type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" placeholder="${d20plus.getCfgDefaultVal(cfgK, grpK)}">`);
 
 							configFields[cfgK][grpK] = () => {
 								return Number(field.val());
@@ -2327,7 +2332,6 @@ var D20plus = function(version) {
 							}
 							if (abM) {
 								spellAbility = abM[1];
-								break;
 							}
 						}
 						// delay these, does nothing otherwise (getting overwritten by turning on npc_spellcasting after, perhaps?)
@@ -2338,18 +2342,14 @@ var D20plus = function(version) {
 						const spAbilsDelayMs = 250;
 						setTimeout(() => {
 							if (spellDc) {
-								const spDcId = d20plus.importer.findAttrId(character, "spell_save_dc");
-								character.attribs.get(spDcId).set("current", spellDc);
+								d20plus.importer.addOrUpdateAttr(character, "spell_save_dc", spellDc);
 							}
 							if (spellAbility) {
-								const spAbilId = d20plus.importer.findAttrId(character, "spellcasting_ability");
-								character.attribs.get(spAbilId).set("current", `@{${spellAbility.toLowerCase()}_mod}+`);
+								d20plus.importer.addOrUpdateAttr(character, "spellcasting_ability", `@{${spellAbility.toLowerCase()}_mod}+`);
 							}
 							if (casterLevel) {
-								const spCLvl = d20plus.importer.findAttrId(character, "caster_level");
-								character.attribs.get(spCLvl).set("current", casterLevel);
-								const cLvl = d20plus.importer.findAttrId(character, "level");
-								character.attribs.get(cLvl).set("current", Number(casterLevel));
+								d20plus.importer.addOrUpdateAttr(character, "caster_level", casterLevel);
+								d20plus.importer.addOrUpdateAttr(character, "level", Number(casterLevel));
 							}
 						}, spAbilsDelayMs);
 
@@ -2367,19 +2367,22 @@ var D20plus = function(version) {
 							const toAdd = ["constant", "will", "rest", "daily", "weekly"];
 							toAdd.forEach(k => {
 								if (sc[k]) {
-									Object.values(sc[k]).forEach(spArr => {
-										Array.prototype.push.apply(allSpells, spArr);
+									Object.values(sc[k]).forEach(spOrSpArr => {
+										if (spOrSpArr instanceof Array) {
+											Array.prototype.push.apply(allSpells, spOrSpArr);
+										} else {
+											allSpells.push(spOrSpArr);
+										}
 									});
 								}
 							});
 							if (sc.spells) {
 								Object.keys(sc.spells).forEach(lvl => {
-									// delated creation of spell slots, once it's a spellcaster
+									// delayed creation of spell slots, once it's a spellcaster
 									setTimeout(() => {
 										if (sc.spells[lvl].slots) {
 											const slotName = `lvl${lvl}_slots_total`;
-											const slotId = d20plus.importer.findAttrId(character, "spell_save_dc");
-											character.attribs.get(slotId).set("current", String(sc.spells[lvl].slots));
+											d20plus.importer.addOrUpdateAttr(character, slotName, String(sc.spells[lvl].slots));
 										}
 									}, spAbilsDelayMs);
 
@@ -3898,7 +3901,12 @@ var D20plus = function(version) {
 			const $stsName = $("#import-name");
 			const $stsRemain = $("#import-remaining");
 			let remaining = importQueue.length;
-			const interval = d20plus.getCfgVal("import", "importInterval") || d20plus.getCfgDefaultVal("import", "importInterval");
+			let interval;
+			if (dataType === "monster" || dataType === "object") {
+				interval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+			} else {
+				interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
+			}
 
 			let cancelWorker = false;
 			const $btnCancel = $(`#importcancel`);
@@ -3941,6 +3949,10 @@ var D20plus = function(version) {
 				folderName = d20plus.importer._getHandoutPath(dataType, it, groupBy);
 				handoutBuilder(it, overwrite, inJournals, folderName);
 			}, interval);
+
+			function workerFn() {
+
+			}
 		});
 	};
 
