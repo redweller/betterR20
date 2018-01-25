@@ -771,16 +771,18 @@ var D20plus = function(version) {
 		const $btnDel = $(`#quickdelete-btn-submit`);
 		$btnDel.off("click");
 		$btnDel.on("click", () => {
-			delList.items.forEach(it => Array.prototype.forEach.call(it.elm.children, (e) => {
-				const $e = $(e);
-				if ($e.is("input") && $e.prop("checked")) {
-					const dataIndex = parseInt($e.data("listid"));
-					const toDel = rootItems[dataIndex];
-					d20.Campaign[toDel.type].get(toDel.id).destroy();
-				}
-			}));
-			$win.dialog("close");
-			$("#journalfolderroot").trigger("change");
+			if (confirm("Delete selected?")) {
+				delList.items.forEach(it => Array.prototype.forEach.call(it.elm.children, (e) => {
+					const $e = $(e);
+					if ($e.is("input") && $e.prop("checked")) {
+						const dataIndex = parseInt($e.data("listid"));
+						const toDel = rootItems[dataIndex];
+						d20.Campaign[toDel.type].get(toDel.id).destroy();
+					}
+				}));
+				$win.dialog("close");
+				$("#journalfolderroot").trigger("change");
+			}
 		});
 	};
 
