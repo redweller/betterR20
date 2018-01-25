@@ -2311,8 +2311,6 @@ var D20plus = function(version) {
 						// make it a spellcaster
 						character.attribs.create({name: `npcspellcastingflag`, current: "1"});
 
-						let spelltokenactiontext = "";
-
 						// figure out the casting ability or spell DC
 						let spellDc;
 						let spellAbility;
@@ -2359,10 +2357,12 @@ var D20plus = function(version) {
 						const renderer = new EntryRenderer();
 						renderer.setBaseUrl(BASE_SITE_URL);
 						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer);
+						const cleanDescription = d20plus.importer.getCleanText(spellTrait);
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_name`, current: "Spellcasting"});
-						character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: d20plus.importer.getCleanText(spellTrait)});
+						character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: cleanDescription});
 
-						spelltokenactiontext += d20plus.importer.getCleanText(spellTrait) //this adds the spellcasting text in on the top
+						// begin building a spells macro
+						const tokenActionStack = [cleanDescription];
 
 						// add the spells
 						const allSpells = [];
@@ -2398,7 +2398,7 @@ var D20plus = function(version) {
 
 						// add spells to sheet
 						character.view.render();
-						let chainTimeout = 0;
+						const toAdd = [];
 						allSpells.forEach(sp => {
 							const tagSplit = EntryRenderer.splitByTags(sp);
 							tagSplit.forEach(s => {
@@ -2406,24 +2406,29 @@ var D20plus = function(version) {
 								if (s.charAt(0) === "@") {
 									const [tag, text] = EntryRenderer.splitFirstSpace(s);
 									if (tag === "@spell") {
-										let [name, source] = text.split("|");
-										if (!source) source = "PHB";
-										const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
-										const url = d20plus.spells.formSpellUrl(rawUrl);
-										// the JSON gets cached by the script, so this is fine
-										DataUtil.loadJSON(url, (data) => {
-											const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
-
-											const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
-
-											addSpell(JSON.parse(gmnotes), spell);
-										});
+										toAdd.push(text);
 									}
 								}
 							});
 						});
 
-						function addSpell (sp, VeSp) {
+						const addMacroIndex = toAdd.length - 1;
+						toAdd.forEach((text, i) => {
+							let [name, source] = text.split("|");
+							if (!source) source = "PHB";
+							const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
+							const url = d20plus.spells.formSpellUrl(rawUrl);
+							// the JSON gets cached by the script, so this is fine
+							DataUtil.loadJSON(url, (data) => {
+								const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
+
+								const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
+
+								addSpell(JSON.parse(gmnotes), spell, i, addMacroIndex);
+							});
+						});
+
+						function addSpell (sp, VeSp, index, addMacroIndex) {
 							const rId = d20plus.generateRowId();
 							const lvl = sp.data.Level === "0" ? "cantrip" : sp.data.Level;
 							const base = `repeating_spell-${lvl}_${rId}_`;
@@ -2453,10 +2458,16 @@ var D20plus = function(version) {
 							makeAttrib("spellathigherlevels", addInlineRollers(hlText));
 							makeAttrib("options-flag", "0");
 
-							spelltokenactiontext += "[" + sp.name + "](~selected|" + `${base}` + "spell)"; //this bit easily builds the macros thanks to giddys new code
-							//this next line builds the spell tokenaction... but it builds it for each and every spell which is bad. im not sure how to edit it and when i place it after this loop it only returns a blank tokenaction so it needs fixing
-							character.abilities.create({name: "Spells", istokenaction: true, action: "/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=" + spelltokenactiontext + "}}"});
+							tokenActionStack.push(`[${sp.name}](~selected|${base}spell)`);
 
+							console.log(index, addMacroIndex)
+							if (index === addMacroIndex && d20plus.hasCfgVal("token", "tokenactions")) {
+								character.abilities.create({
+									name: "Spells",
+									istokenaction: true,
+									action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+								});
+							}
 
 							function makeAttrib(name, current) {
 								if (current !== undefined && current !== null) character.attribs.create({name: `${base}${name}`, current: current});
