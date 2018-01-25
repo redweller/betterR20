@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.0.1
+// @version      1.0.2
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2340,7 +2340,7 @@ var D20plus = function(version) {
 						// if (spellAbility) character.attribs.create({name: "spellcasting_ability", current: `@{${spellAbility.toLowerCase()}_mod}+`})
 						// if (casterLevel) character.attribs.create({name: "caster_level", current: casterLevel})
 						// TODO investigate setting character class + level as an alternative
-						const spAbilsDelayMs = 250;
+						const spAbilsDelayMs = 350;
 						setTimeout(() => {
 							if (spellDc) {
 								d20plus.importer.addOrUpdateAttr(character, "spell_save_dc", spellDc);
@@ -2398,8 +2398,10 @@ var D20plus = function(version) {
 							}
 						});
 
-						// add spells to sheet
+						// render sheet
 						character.view.render();
+
+						// add spells to sheet
 						const toAdd = [];
 						allSpells.forEach(sp => {
 							const tagSplit = EntryRenderer.splitByTags(sp);
@@ -2458,29 +2460,44 @@ var D20plus = function(version) {
 							makeAttrib("spellathigherlevels", addInlineRollers(hlText));
 							makeAttrib("options-flag", "0");
 
-							// TODO reverse engineer/add the other ~20 attributes needed to make this work
+							// TODO reverse engineer/add the other ~20 attributes needed to make this work (see `enableSpellattackHack()`)
 							if (sp.content.toLowerCase().includes("ranged spell attack")) {
 								makeAttrib("spelloutput", "ATTACK");
 								makeAttrib("spellattack", "Ranged");
 							} else if (sp.content.toLowerCase().includes("melee spell attack")) {
 								makeAttrib("spelloutput", "ATTACK");
 								makeAttrib("spellattack", "Melee");
-							} else if (sp.data.Damage && !sp.data.Save) {
-								// for things like Magic Missile and Cloud of Daggers
-								// probably picks up a few things it shouldn't
+							} else if (sp.data.Damage) {
 								makeAttrib("spelloutput", "ATTACK");
 								makeAttrib("spellattack", "None");
 							}
 
 							tokenActionStack.push(`[${sp.name}](~selected|${base}spell)`);
 
-							console.log(index, addMacroIndex)
-							if (index === addMacroIndex && d20plus.hasCfgVal("token", "tokenactions")) {
-								character.abilities.create({
-									name: "Spells",
-									istokenaction: true,
-									action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
-								});
+							if (index === addMacroIndex) {
+								if (d20plus.hasCfgVal("token", "tokenactions")) {
+									character.abilities.create({
+										name: "Spells",
+										istokenaction: true,
+										action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+									});
+								}
+								enableSpellattackHack();
+							}
+
+							function enableSpellattackHack () {
+								// temporary(?) hack to avoid creating all the properties manually
+								setTimeout(() => {
+									const $sel = character.view.$charsheet.find(`select[name=attr_spelloutput]`).filter((i, ele) => {
+										return $(ele).val() === "ATTACK";
+									});
+									setTimeout(() => {
+										$sel.val("SPELLCARD").trigger("change")
+										setTimeout(() => {
+											$sel.val("ATTACK").trigger("change");
+										}, spAbilsDelayMs);
+									}, spAbilsDelayMs);
+								}, spAbilsDelayMs);
 							}
 
 							function makeAttrib(name, current) {
