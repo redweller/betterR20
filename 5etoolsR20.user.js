@@ -3912,30 +3912,26 @@ var D20plus = function(version) {
 			const $btnCancel = $(`#importcancel`);
 			$btnCancel.off("click");
 			$btnCancel.on("click", () => {
+				handleWorkerComplete();
 				cancelWorker = true;
 			});
 
 			// start worker to process list
 			$("#d20plus-import").dialog("open");
-			const worker = setInterval(() => {
-				if (!importQueue.length || cancelWorker) {
-					clearInterval(worker);
-					if (cancelWorker) {
-						$stsName.text("Import cancelled");
-						$stsRemain.text(`${$stsRemain.text()} (cancelled)`);
-						d20plus.log(` > Import cancelled`);
-						setTimeout(() => {
-							d20plus.bindDropLocations();
-						}, 250);
-					}
-					else {
-						$stsName.text("Import complete");
-						$stsRemain.text("0");
-						d20plus.log(` > Import complete`);
-						setTimeout(() => {
-							d20plus.bindDropLocations();
-						}, 250);
-					}
+
+			// run one immediately
+			let worker;
+			workerFn();
+			worker = setInterval(() => {
+				workerFn();
+			}, interval);
+
+			function workerFn () {
+				if (!importQueue.length) {
+					handleWorkerComplete();
+					return;
+				}
+				if (cancelWorker) {
 					return;
 				}
 
@@ -3948,10 +3944,25 @@ var D20plus = function(version) {
 
 				folderName = d20plus.importer._getHandoutPath(dataType, it, groupBy);
 				handoutBuilder(it, overwrite, inJournals, folderName);
-			}, interval);
+			}
 
-			function workerFn() {
-
+			function handleWorkerComplete () {
+				if (worker) clearInterval(worker);
+				if (cancelWorker) {
+					$stsName.text("Import cancelled");
+					$stsRemain.text(`${$stsRemain.text()} (cancelled)`);
+					d20plus.log(` > Import cancelled`);
+					setTimeout(() => {
+						d20plus.bindDropLocations();
+					}, 250);
+				} else {
+					$stsName.text("Import complete");
+					$stsRemain.text("0");
+					d20plus.log(` > Import complete`);
+					setTimeout(() => {
+						d20plus.bindDropLocations();
+					}, 250);
+				}
 			}
 		});
 	};
