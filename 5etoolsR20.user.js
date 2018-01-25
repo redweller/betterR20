@@ -1924,8 +1924,7 @@ var D20plus = function(version) {
 									$.each(d20.journal.customSheets.attrDeps, function(i, v) {dirty.push(i);});
 									d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 								}
-							}
-							 else {
+							} else {
 								console.log("Compendium item dropped onto target!");
 								t.originalEvent.dropHandled = !0;
 								inputData = $(i.helper[0]).attr("data-pagename");
@@ -2312,6 +2311,8 @@ var D20plus = function(version) {
 						// make it a spellcaster
 						character.attribs.create({name: `npcspellcastingflag`, current: "1"});
 
+						let spelltokenactiontext = "";
+
 						// figure out the casting ability or spell DC
 						let spellDc;
 						let spellAbility;
@@ -2360,6 +2361,8 @@ var D20plus = function(version) {
 						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer);
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_name`, current: "Spellcasting"});
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: d20plus.importer.getCleanText(spellTrait)});
+
+						spelltokenactiontext += d20plus.importer.getCleanText(spellTrait) //this adds the spellcasting text in on the top
 
 						// add the spells
 						const allSpells = [];
@@ -2449,6 +2452,11 @@ var D20plus = function(version) {
 							makeAttrib("spelldescription", addInlineRollers(text));
 							makeAttrib("spellathigherlevels", addInlineRollers(hlText));
 							makeAttrib("options-flag", "0");
+
+							spelltokenactiontext += "[" + sp.name + "](~selected|" + `${base}` + "spell)"; //this bit easily builds the macros thanks to giddys new code
+							//this next line builds the spell tokenaction... but it builds it for each and every spell which is bad. im not sure how to edit it and when i place it after this loop it only returns a blank tokenaction so it needs fixing
+							character.abilities.create({name: "Spells", istokenaction: true, action: "/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=" + spelltokenactiontext + "}}"});
+
 
 							function makeAttrib(name, current) {
 								if (current !== undefined && current !== null) character.attribs.create({name: `${base}${name}`, current: current});
@@ -3086,21 +3094,21 @@ var D20plus = function(version) {
 		if (url && url.trim()) {
 			if (url.trim() === "https://5etools.com/data/items.json") {
 				EntryRenderer.item.buildList((itemList) => {
-					d20plus.importer.showImportList(
-						"item",
-						itemList,
-						d20plus.items.handoutBuilder,
-						{
-							groupOptions: d20plus.items._groupOptions,
-							showSource: true
-						}
-					);
-				},
-				{
-					items: "https://5etools.com/data/items.json",
-					basicitems: "https://5etools.com/data/basicitems.json",
-					magicvariants: "https://5etools.com/data/magicvariants.json"
-				});
+						d20plus.importer.showImportList(
+							"item",
+							itemList,
+							d20plus.items.handoutBuilder,
+							{
+								groupOptions: d20plus.items._groupOptions,
+								showSource: true
+							}
+						);
+					},
+					{
+						items: "https://5etools.com/data/items.json",
+						basicitems: "https://5etools.com/data/basicitems.json",
+						magicvariants: "https://5etools.com/data/magicvariants.json"
+					});
 			} else {
 				// for non-standard URLs, do a generic import
 				DataUtil.loadJSON(url, (data) => {
