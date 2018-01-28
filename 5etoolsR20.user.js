@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.0.3
+// @version      1.0.4
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2339,7 +2339,6 @@ var D20plus = function(version) {
 						// if (spellDc) character.attribs.create({name: `spell_save_dc`, current: spellDc});
 						// if (spellAbility) character.attribs.create({name: "spellcasting_ability", current: `@{${spellAbility.toLowerCase()}_mod}+`})
 						// if (casterLevel) character.attribs.create({name: "caster_level", current: casterLevel})
-						// TODO investigate setting character class + level as an alternative
 						const spAbilsDelayMs = 350;
 						setTimeout(() => {
 							if (spellDc) {
@@ -2353,6 +2352,11 @@ var D20plus = function(version) {
 								d20plus.importer.addOrUpdateAttr(character, "level", Number(casterLevel));
 							}
 						}, spAbilsDelayMs);
+
+						// set spellcaster class, since this seems to reliably set spellcasting ability
+						if (spellAbility == "Intelligence") d20plus.importer.addOrUpdateAttr(character, "class", `Wizard`);
+						if (spellAbility == "Wisdom") d20plus.importer.addOrUpdateAttr(character, "class", `Cleric`);
+						if (spellAbility == "Charisma") d20plus.importer.addOrUpdateAttr(character, "class", `Bard`);
 
 						// add the spellcasting text
 						const newRowId = d20plus.generateRowId();
@@ -3530,6 +3534,15 @@ var D20plus = function(version) {
 					character.attribs.create({name: "npc_immunities", current: data.immune || ""});
 					character.attribs.create({name: "damage_immunities", current: data.immune || ""});
 
+					//Should only be one entry for objects
+					if (data.entries != null) {
+						character.attribs.create({name: "repeating_npctrait_0_name", current: name});
+						character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
+						if (d20plus.getCfgVal("token", "tokenactions")) {
+							character.abilities.create({name: "Information: " + name, istokenaction: true, action: d20plus.actionMacroTrait(0)});
+						}
+					}
+
 					const renderer = new EntryRenderer();
 					renderer.setBaseUrl(BASE_SITE_URL);
 					if (data.actionEntries) {
@@ -4265,7 +4278,7 @@ var D20plus = function(version) {
 				const $stsName = $("#import-name");
 				const $stsRemain = $("#import-remaining");
 				let remaining = addQueue.length;
-				const interval = d20plus.getCfgVal("import", "importInterval") || d20plus.getCfgDefaultVal("import", "importInterval");
+				const interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
 
 				d20plus.log(`Running import of [${adMeta.name}] with ${interval} ms delay between each handout create`);
 				let lastId = null;
