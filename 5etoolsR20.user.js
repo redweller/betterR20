@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.0.4
+// @version      1.0.5
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2077,13 +2077,13 @@ var D20plus = function(version) {
 				attackrange = (actiontext.match(/range (.*?),/) || ["", ""])[1];
 				rangetype = "Range";
 			}
-			var tohit = (actiontext.match(/\+(.*) to hit/) || ["", ""])[1];
+			var tohit = (actiontext.match(/\+(.*?) to hit/) || ["", ""])[1];
 			var damage = "";
 			var damagetype = "";
 			var damage2 = "";
 			var damagetype2 = "";
 			var onhit = "";
-			damageregex = /\d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage/g;
+			damageregex = /\d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage/g;
 			damagesearches = damageregex.exec(actiontext);
 			if (damagesearches) {
 				onhit = damagesearches[0];
@@ -2099,7 +2099,7 @@ var D20plus = function(version) {
 			onhit = onhit.trim();
 			var attacktarget = (actiontext.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1];
 			// Cut the information dump in the description
-			var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
+			var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
 			var atk_desc_complex_regex = /(Hit:.*)/g;
 			// is it a simple attack (just 1 damage type)?
 			var match_simple_atk = atk_desc_simple_regex.exec(actiontext);
@@ -2162,6 +2162,9 @@ var D20plus = function(version) {
 			success: function(character) {
 				/* OGL Sheet */
 				try {
+					const renderer = new EntryRenderer();
+					renderer.setBaseUrl(BASE_SITE_URL);
+
 					const type = Parser.monTypeToFullObj(data.type).asText;
 					const source = Parser.sourceJsonToAbv(data.source);
 					const avatar = `${IMG_URL}${source}/${name}.png`;
@@ -2360,8 +2363,6 @@ var D20plus = function(version) {
 
 						// add the spellcasting text
 						const newRowId = d20plus.generateRowId();
-						const renderer = new EntryRenderer();
-						renderer.setBaseUrl(BASE_SITE_URL);
 						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer);
 						const cleanDescription = d20plus.importer.getCleanText(spellTrait);
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_name`, current: "Spellcasting"});
@@ -2516,15 +2517,9 @@ var D20plus = function(version) {
 							}
 						}
 					}
-					if (data.trait != null) {
-						if (!(data.trait instanceof Array)) {
-							var tmp1 = data.trait;
-							data.trait = [];
-							data.trait.push(tmp1);
-						}
+					if (data.trait) {
 						$.each(data.trait, function(i, v) {
 							var newRowId = d20plus.generateRowId();
-							var text = "";
 							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: v.name});
 
 							if (d20plus.getCfgVal("token", "tokenactions")) {
@@ -2532,43 +2527,17 @@ var D20plus = function(version) {
 								character.abilities.create({name: "Trait" + offsetIndex +": " + v.name, istokenaction: true, action: d20plus.actionMacroTrait(offsetIndex)});
 							}
 
-							if (v.text instanceof Array) {
-								$.each(v.text, function(z, x) {
-									if (!x) return;
-									text += (z > 0 ? "\r\n" : "") + x;
-								});
-							} else {
-								text = v.text;
-							}
+							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
 							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: text});
 						});
 					}
-					if (data.action != null) {
-						if (!(data.action instanceof Array)) {
-							var tmp2 = data.action;
-							data.action = [];
-							data.action.push(tmp2);
-						}
-						var npc_exception_actions = ["Web (Recharge 5-6)"];
+					if (data.action) {
 						$.each(data.action, function(i, v) {
-							var text = "";
-							if (v.text instanceof Array) {
-								$.each(v.text, function(z, x) {
-									if (!x) return;
-									text += (z > 0 ? "\r\n" : "") + x;
-								});
-							} else {
-								text = v.text;
-							}
+							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
 							d20plus.importer.addAction(character, v.name, text, i);
 						});
 					}
-					if (data.reaction != null) {
-						if (!(data.reaction instanceof Array)) {
-							var tmp3 = data.reaction;
-							data.reaction = [];
-							data.reaction.push(tmp3);
-						}
+					if (data.reaction) {
 						character.attribs.create({name: "reaction_flag", current: 1});
 						character.attribs.create({name: "npcreactionsflag", current: 1});
 						$.each(data.reaction, function(i, v) {
@@ -2581,32 +2550,18 @@ var D20plus = function(version) {
 								character.abilities.create({name: "Reaction: " + v.name, istokenaction: true, action: d20plus.actionMacroReaction});
 							}
 
-							if (v.text instanceof Array) {
-								$.each(v.text, function(z, x) {
-									if (!x) return;
-									text += (z > 0 ? "\r\n" : "") + x;
-								});
-							} else {
-								text = v.text;
-							}
+							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
 							character.attribs.create({name: "repeating_npcreaction_" + newRowId + "_desc", current: text});
 							character.attribs.create({name: "repeating_npcreaction_" + newRowId + "_description", current: text});
 						});
 					}
-					if (data.legendary != null) {
-						if (!(data.legendary instanceof Array)) {
-							var tmp4 = data.legendary;
-							data.legendary = [];
-							data.legendary.push(tmp4);
-						}
+					if (data.legendary) {
 						character.attribs.create({name: "legendary_flag", current: "1"});
 						let legendaryActions = data.legendaryActions || 3;
 						character.attribs.create({name: "npc_legendary_actions", current: legendaryActions.toString()});
 						let tokenactiontext = "";
 						$.each(data.legendary, function(i, v) {
 							var newRowId = d20plus.generateRowId();
-							var actiontext = "";
-							var text = "";
 
 							if (d20plus.getCfgVal("token", "tokenactions")) {
 								tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
@@ -2649,7 +2604,7 @@ var D20plus = function(version) {
 									character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_attack_tohitrange", current: ""});
 									character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_damage_flag", current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"});
 									if (damage !== "") {
-										damage1 = damage.replace(/\s/g, "").split(/d|(?=\+|\-)/g);
+										damage1 = damage.replace(/\s/g, "").split(/d|(?=\+|-)/g);
 										if (damage1[1])
 											damage1[1] = damage1[1].replace(/[^0-9-+]/g, "");
 										damage2 = isNaN(eval(damage1[1])) === false ? eval(damage1[1]) : 0;
@@ -2669,14 +2624,8 @@ var D20plus = function(version) {
 								character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_rollbase", current: rollbase});
 								character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_name_display", current: v.name});
 							}
-							if (v.text instanceof Array) {
-								$.each(v.text, function(z, x) {
-									if (!x) return;
-									text += (z > 0 ? "\r\n" : "") + x;
-								});
-							} else {
-								text = v.text;
-							}
+
+							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
 							var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
 							character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_description", current: text});
 							character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_description_flag", current: descriptionFlag});
