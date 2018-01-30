@@ -2083,7 +2083,7 @@ var D20plus = function(version) {
 			var damage2 = "";
 			var damagetype2 = "";
 			var onhit = "";
-			damageregex = /\d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage/g;
+			damageregex = /\d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage/g;
 			damagesearches = damageregex.exec(actiontext);
 			if (damagesearches) {
 				onhit = damagesearches[0];
@@ -2099,7 +2099,7 @@ var D20plus = function(version) {
 			onhit = onhit.trim();
 			var attacktarget = (actiontext.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1];
 			// Cut the information dump in the description
-			var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|\-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
+			var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
 			var atk_desc_complex_regex = /(Hit:.*)/g;
 			// is it a simple attack (just 1 damage type)?
 			var match_simple_atk = atk_desc_simple_regex.exec(actiontext);
@@ -2649,7 +2649,7 @@ var D20plus = function(version) {
 									character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_attack_tohitrange", current: ""});
 									character.attribs.create({name: "repeating_npcaction-l_" + newRowId + "_damage_flag", current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"});
 									if (damage !== "") {
-										damage1 = damage.replace(/\s/g, "").split(/d|(?=\+|\-)/g);
+										damage1 = damage.replace(/\s/g, "").split(/d|(?=\+|-)/g);
 										if (damage1[1])
 											damage1[1] = damage1[1].replace(/[^0-9-+]/g, "");
 										damage2 = isNaN(eval(damage1[1])) === false ? eval(damage1[1]) : 0;
