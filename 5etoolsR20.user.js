@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.0.5
+// @version      1.0.6
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2523,7 +2523,7 @@ var D20plus = function(version) {
 							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_name", current: v.name});
 
 							if (d20plus.getCfgVal("token", "tokenactions")) {
-								const offsetIndex = i + data.spellcasting ? 1 : 0;
+								const offsetIndex = data.spellcasting ? 1 + i : i;
 								character.abilities.create({name: "Trait" + offsetIndex +": " + v.name, istokenaction: true, action: d20plus.actionMacroTrait(offsetIndex)});
 							}
 
