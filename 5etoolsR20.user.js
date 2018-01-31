@@ -3960,7 +3960,8 @@ var D20plus = function(version) {
 
 		const importId = d20plus.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-		d20plus.importer.makePlayerDraggable(importId, data.name);
+		const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
+		d20plus.importer.makePlayerDraggable(importId, name);
 	};
 
 	d20plus.subclasses._getHandoutData = function (data) {
