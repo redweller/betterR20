@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.0.7
+// @version      1.0.8
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1626,7 +1626,7 @@ var D20plus = function(version) {
 
 								function handleData (data) {
 									// if the handout is edited/saved, things get URI encoded
-									if (data && data.trim().startsWith("%7b")) data = decodeURIComponent(data);
+									if (data && data.trim().toLowerCase().startsWith("%7b")) data = decodeURIComponent(data);
 									data = JSON.parse(data);
 									const extraDirty = [];
 
