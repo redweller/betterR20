@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.1.0
+// @version      1.1.1
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1492,7 +1492,7 @@ var D20plus = function(version) {
 				<div style="padding: 0 10px">
 					<div style="clear: both"></div>
 				</div>`);
-			const $btnPlayerImport = $(`<button class="btn" href="#" title="Player Importer" style="margin-top: 5px">Player Importer</button>`)
+			const $btnPlayerImport = $(`<button class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Import Spells, Items, Classes, etc...</button>`)
 				.on("click", () => {
 					$winPlayer.dialog("open");
 				});
@@ -3038,7 +3038,7 @@ var D20plus = function(version) {
 				console.log("drag stop")
 			}
 		});
-		$appTo.append($li);
+		$appTo.prepend($li);
 	};
 
 	d20plus.spells.formSpellUrl = function (fileName) {
