@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.1.2
+// @version      1.1.3
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2191,17 +2191,23 @@ var D20plus = function(version) {
 				if (match_compl_atk != null) action_desc = match_compl_atk[1].trim();
 			}
 			var tohitrange = "+" + tohit + ", " + rangetype + " " + attackrange + ", " + attacktarget + ".";
+			var damageflags = `{{damage=1}} {{dmg1flag=1}}${damage2 ? ` {{dmg2flag=1}}` : ""}`
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_flag", current: "on"});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: "0"});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_display_flag", current: "{{attack=1}}"});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_options", current: "{{attack=1}}"});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit", current: damage});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damagetype", current: damagetype});
 			if (damage2) {
 				character.attribs.create({
 					name: "repeating_npcaction_" + newRowId + "_attack_damage2",
+					current: damage2
+				});
+				character.attribs.create({
+					name: "repeating_npcaction_" + newRowId + "_attack_crit2",
 					current: damage2
 				});
 				character.attribs.create({
@@ -2216,7 +2222,7 @@ var D20plus = function(version) {
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohitrange", current: tohitrange});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_range", current: attackrange});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_target", current: attacktarget});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: damageflags});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: onhit});
 		} else {
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name});
