@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.1.1
+// @version      1.1.2
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1617,18 +1617,20 @@ var D20plus = function(version) {
 
 	// bind drop locations on sheet to accept custom handouts
 	d20plus.bindDropLocations = function() {
-		// Bind Spells and Items, add compendium-item to each of them
-		var journalFolder = d20.Campaign.get("journalfolder");
-		if (journalFolder === "") {
-			d20.journal.addFolderToFolderStructure("Spells");
-			d20.journal.addFolderToFolderStructure("Psionics");
-			d20.journal.addFolderToFolderStructure("Items");
-			d20.journal.addFolderToFolderStructure("Feats");
-			d20.journal.addFolderToFolderStructure("Classes");
-			d20.journal.addFolderToFolderStructure("Subclasses");
-			d20.journal.addFolderToFolderStructure("Backgrounds");
-			d20.journal.refreshJournalList();
-			journalFolder = d20.Campaign.get("journalfolder");
+		if (window.is_gm) {
+			// Bind Spells and Items, add compendium-item to each of them
+			var journalFolder = d20.Campaign.get("journalfolder");
+			if (journalFolder === "") {
+				d20.journal.addFolderToFolderStructure("Spells");
+				d20.journal.addFolderToFolderStructure("Psionics");
+				d20.journal.addFolderToFolderStructure("Items");
+				d20.journal.addFolderToFolderStructure("Feats");
+				d20.journal.addFolderToFolderStructure("Classes");
+				d20.journal.addFolderToFolderStructure("Subclasses");
+				d20.journal.addFolderToFolderStructure("Backgrounds");
+				d20.journal.refreshJournalList();
+				journalFolder = d20.Campaign.get("journalfolder");
+			}
 		}
 
 		function addClasses (folderName) {
@@ -2197,8 +2199,16 @@ var D20plus = function(version) {
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damagetype", current: damagetype});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage2", current: damage2});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damagetype2", current: damagetype2});
+			if (damage2) {
+				character.attribs.create({
+					name: "repeating_npcaction_" + newRowId + "_attack_damage2",
+					current: damage2
+				});
+				character.attribs.create({
+					name: "repeating_npcaction_" + newRowId + "_attack_damagetype2",
+					current: damagetype2
+				});
+			}
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase});
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type", current: attacktype});
