@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.1.3
+// @version      1.1.4
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -558,7 +558,7 @@ var D20plus = function(version) {
 
 			const configFields = {};
 
-			const sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
+			const sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => SortUtil.ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
 			const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
 			const contentList = sortedKeys.map(k => makeTab(k));
 
@@ -596,7 +596,7 @@ var D20plus = function(version) {
 							break;
 						}
 						case "_SHEET_ATTRIBUTE": {
-							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
+							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => SortUtil.ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
 							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`);
 							const cur = d20plus.getCfgVal(cfgK, grpK);
 							if (cur !== undefined) {
@@ -1947,6 +1947,7 @@ var D20plus = function(version) {
 													makeSpellTrait(mLevel, rowId, "spellcomp_materials", `${costStr} psi points`);
 													if (m.concentration) {
 														makeSpellTrait(mLevel, rowId, "spellduration", `${m.concentration.duration} ${m.concentration.unit}`);
+														makeSpellTrait(mLevel, rowId, "spellconcentration", "Yes");
 													}
 													noComponents(mLevel, rowId, true);
 												}
@@ -4112,7 +4113,7 @@ var D20plus = function(version) {
 		}
 
 		// sort data
-		dataArray.sort((a, b) => ascSort(a.name, b.name));
+		dataArray.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 		// build checkbox list
 		const $list = $("#import-list .list");
