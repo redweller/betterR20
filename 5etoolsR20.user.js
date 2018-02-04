@@ -869,6 +869,8 @@ var D20plus = function(version) {
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.log("> Add custom art search");
 			d20plus.addCustomArtSearch();
+			d20plus.log("> Enhancing page selector");
+			d20plus.enhancePageSelector();
 			d20plus.log("> Applying config");
 			d20plus.handleConfigChange();
 		}
@@ -995,6 +997,35 @@ var D20plus = function(version) {
 				appendTo: "body"
 			}).addTouch();
 		});
+	};
+
+	d20plus.enhancePageSelector = function () {
+		function overwriteDraggables () {
+			// make them draggable on both axes
+			$("#page-toolbar .playerbookmark").draggable("destroy");
+			$("#page-toolbar .playerbookmark").draggable({
+				revert: "invalid",
+				appendTo: "#page-toolbar",
+				helper: "original"
+			}).addTouch();
+			$("#page-toolbar .playerspecificbookmark").draggable("destroy");
+			$("#page-toolbar .playerspecificbookmark").draggable({
+				revert: "invalid",
+				appendTo: "#page-toolbar",
+				helper: "original"
+			}).addTouch();
+		}
+		overwriteDraggables();
+		$(`#page-toolbar`).css("top", "calc(-100vh + 40px)");
+
+		const originalFn = d20.pagetoolbar.refreshPageListing;
+		d20.pagetoolbar.refreshPageListing = () => {
+			originalFn();
+			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+			_.debounce(() => {
+				overwriteDraggables();
+			}, 110)();
+		}
 	};
 
 	// bind token HP to initiative tracker window HP field
@@ -5448,6 +5479,27 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		{
 			s: ".userscript-statsInlineHead > .userscript-entry-title, .userscript-statsInlineHeadSubVariant > .userscript-entry-title",
 			r: "font-style: italic"
+		},
+		// page view enhancement
+		{
+			s: "#page-toolbar",
+			r: "height: calc(100vh - 40px);"
+		},
+		{
+			s: "#page-toolbar .container",
+			r: "height: 100%; white-space: normal;"
+		},
+		{
+			s: "#page-toolbar .pages .availablepage",
+			r: "width: 100px; height: 100px;"
+		},
+		{
+			s: "#page-toolbar .pages .availablepage img.pagethumb",
+			r: "max-width: 60px; max-height: 60px;"
+		},
+		{
+			s: "#page-toolbar .pages .availablepage span",
+			r: "bottom: 1px;"
 		}
 	];
 
@@ -5565,6 +5617,7 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		newValue.environment = "production";
 		return newValue;
 	});
+	window.d20plus = d20plus;
 	d20plus.log("> Injected");
 };
 
