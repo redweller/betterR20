@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.1.4
+// @version      1.2.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -198,6 +198,7 @@ var D20plus = function(version) {
 	const objectdataurl = `${DATA_URL}objects.json`;
 	const classdataurl = `${DATA_URL}classes.json`;
 	const backgrounddataurl = `${DATA_URL}backgrounds.json`;
+	const racedataurl = `${DATA_URL}races.json`;
 
 	const d20plus = {
 		sheet: "ogl",
@@ -210,6 +211,7 @@ var D20plus = function(version) {
 		psionics: {},
 		items: {},
 		feats: {},
+		races: {},
 		objects: {},
 		classes: {},
 		subclasses: {},
@@ -867,6 +869,8 @@ var D20plus = function(version) {
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.log("> Add custom art search");
 			d20plus.addCustomArtSearch();
+			d20plus.log("> Enhancing page selector");
+			d20plus.enhancePageSelector();
 			d20plus.log("> Applying config");
 			d20plus.handleConfigChange();
 		}
@@ -995,6 +999,35 @@ var D20plus = function(version) {
 		});
 	};
 
+	d20plus.enhancePageSelector = function () {
+		function overwriteDraggables () {
+			// make them draggable on both axes
+			$("#page-toolbar .playerbookmark").draggable("destroy");
+			$("#page-toolbar .playerbookmark").draggable({
+				revert: "invalid",
+				appendTo: "#page-toolbar",
+				helper: "original"
+			}).addTouch();
+			$("#page-toolbar .playerspecificbookmark").draggable("destroy");
+			$("#page-toolbar .playerspecificbookmark").draggable({
+				revert: "invalid",
+				appendTo: "#page-toolbar",
+				helper: "original"
+			}).addTouch();
+		}
+		overwriteDraggables();
+		$(`#page-toolbar`).css("top", "calc(-100vh + 40px)");
+
+		const originalFn = d20.pagetoolbar.refreshPageListing;
+		d20.pagetoolbar.refreshPageListing = () => {
+			originalFn();
+			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+			_.debounce(() => {
+				overwriteDraggables();
+			}, 110)();
+		}
+	};
+
 	// bind token HP to initiative tracker window HP field
 	d20plus.bindToken = function (token) {
 		function getInitTrackerToken () {
@@ -1061,9 +1094,53 @@ var D20plus = function(version) {
 				const lastClicked = $(this).parent();
 				d20plus.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
 			}
-		})
+
+
+			if ($(this).parent().hasClass("character")) {
+				$(`.Vetools-make-tokenactions`).show();
+			} else {
+				$(`.Vetools-make-tokenactions`).hide();
+			}
+		});
 
 		var first = $("#journalitemmenu ul li").first();
+		// "Make Tokenactions" option
+		first.after(`<li class="Vetools-make-tokenactions" data-action-type="additem">Make Tokenactions</li>`);
+		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=additem]", function() {
+			var id = $currentItemTarget.attr("data-itemid");
+			var character = d20.Campaign.characters.get(id);
+			d20plus.log("> Making Token Actions..");
+			if (character) {
+				var npc = character.attribs.find(function(a) {return a.get("name").toLowerCase() == "npc";});
+				var isNPC = npc ? parseInt(npc.get("current")) : 0;
+				if (isNPC) {
+					//Npc specific tokenactions
+					character.abilities.create({name: "Perception", istokenaction: true, action: d20plus.actionMacroPerception});
+					character.abilities.create({name: "DR/Immunities", istokenaction: true, action: d20plus.actionMacroDrImmunities});
+					character.abilities.create({name: "Stats", istokenaction: true, action: d20plus.actionMacroStats});
+					character.abilities.create({name: "Saves", istokenaction: true, action: d20plus.actionMacroSaves});
+					character.abilities.create({name: "Skill-Check", istokenaction: true, action: d20plus.actionMacroSkillCheck});
+					character.abilities.create({name: "Ability-Check", istokenaction: true, action: d20plus.actionMacroAbilityCheck});
+				} else {
+					//player specific tokenactions
+					//@{selected|repeating_attack_$0_atkname}
+					character.abilities.create({name: "Attack 1", istokenaction: true, action: "%{selected|repeating_attack_$0_attack}"});
+					character.abilities.create({name: "Attack 2", istokenaction: true, action: "%{selected|repeating_attack_$1_attack}"});
+					character.abilities.create({name: "Attack 3", istokenaction: true, action: "%{selected|repeating_attack_$2_attack}"});
+					character.abilities.create({name: "Tool 1", istokenaction: true, action: "%{selected|repeating_tool_$0_tool}"});
+					//" + character.get("name") + "
+					character.abilities.create({name: "Whisper GM", istokenaction: true, action: "/w gm ?{Message to whisper the GM?}"});
+					character.abilities.create({name: "Favorite Spells", istokenaction: true, action: "/w @{character_name} &{template:npcaction} {{rname=Favorite Spells}} {{description=Favorite Spells are the first spells in each level of your spellbook.\n\r[Cantrip](~selected|repeating_spell-cantrip_$0_spell)\n[1st Level](~selected|repeating_spell-1_$0_spell)\n\r[2nd Level](~selected|repeating_spell-2_$0_spell)\n\r[3rd Level](~selected|repeating_spell-3_$0_spell)\n\r[4th Level](~selected|repeating_spell-4_$0_spell)\n\r[5th Level](~selected|repeating_spell-5_$0_spell)}}"});
+					character.abilities.create({name: "Dual Attack", istokenaction: false, action: "%{selected|repeating_attack_$0_attack}\n\r%{selected|repeating_attack_$0_attack}"});
+					character.abilities.create({name: "Saves", istokenaction: true, action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Save|Strength, +@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Strength Save&#125;&#125 {{mod=@{selected|strength_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Dexterity, +@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Dexterity Save&#125;&#125 {{mod=@{selected|dexterity_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Constitution, +@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Constitution Save&#125;&#125 {{mod=@{selected|constitution_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Intelligence, +@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Intelligence Save&#125;&#125 {{mod=@{selected|intelligence_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Wisdom, +@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Wisdom Save&#125;&#125 {{mod=@{selected|wisdom_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Charisma, +@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Charisma Save&#125;&#125 {{mod=@{selected|charisma_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125;}@{selected|global_save_mod}@{selected|charname_output"});
+					character.abilities.create({name: "Skill-Check", istokenaction: true, action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Ability|Acrobatics, +@{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Acrobatics&#125;&#125; {{mod=@{selected|acrobatics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Animal Handling, +@{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Animal Handling&#125;&#125; {{mod=@{selected|animal_handling_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Arcana, +@{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Arcana&#125;&#125; {{mod=@{selected|arcana_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Athletics, +@{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Athletics&#125;&#125; {{mod=@{selected|athletics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Deception, +@{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Deception&#125;&#125; {{mod=@{selected|deception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |History, +@{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=History&#125;&#125; {{mod=@{selected|history_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Insight, +@{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Insight&#125;&#125; {{mod=@{selected|insight_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Intimidation, +@{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Intimidation&#125;&#125; {{mod=@{selected|intimidation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Investigation, +@{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Investigation&#125;&#125; {{mod=@{selected|investigation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Medicine, +@{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Medicine&#125;&#125; {{mod=@{selected|medicine_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Nature, +@{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Nature&#125;&#125; {{mod=@{selected|nature_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Perception, +@{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Perception&#125;&#125; {{mod=@{selected|perception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Performance, +@{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Performance&#125;&#125; {{mod=@{selected|performance_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Persuasion, +@{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Persuasion&#125;&#125; {{mod=@{selected|persuasion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Religion, +@{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Religion&#125;&#125; {{mod=@{selected|religion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Sleight of Hand, +@{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Sleight of Hand&#125;&#125; {{mod=@{selected|sleight_of_hand_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Stealth, +@{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Stealth&#125;&#125; {{mod=@{selected|stealth_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Survival, +@{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Survival&#125;&#125; {{mod=@{selected|survival_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Strength, +@{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; {{rname=Strength&#125;&#125; {{mod=@{selected|strength_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; |Dexterity, +@{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; {{rname=Dexterity&#125;&#125; {{mod=@{selected|dexterity_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; |Constitution, +@{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; {{rname=Constitution&#125;&#125; {{mod=@{selected|constitution_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; |Intelligence, +@{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; {{rname=Intelligence&#125;&#125; {{mod=@{selected|intelligence_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; |Wisdom, +@{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; {{rname=Wisdom&#125;&#125; {{mod=@{selected|wisdom_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; |Charisma, +@{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; {{rname=Charisma&#125;&#125; {{mod=@{selected|charisma_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; } @{selected|global_skill_mod} @{selected|charname_output}"});
+				}
+				//for everyone
+				character.abilities.create({name: "Initiative", istokenaction: true, action: d20plus.actionMacroInit});
+			}
+		});
+
+		// "Duplicate" option
 		first.after("<li data-action-type=\"cloneitem\">Duplicate</li>");
 		first.after("<li style=\"height: 10px;\">&nbsp;</li>");
 		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=cloneitem]", function() {
@@ -1088,6 +1165,7 @@ var D20plus = function(version) {
 				});
 			}
 		});
+
 		// New command on FOLDERS
 		var last = $("#journalmenu ul li").last();
 		last.after("<li style=\"background-color: #FA5050; color: white;\" data-action-type=\"fulldelete\">Delete Folder + Contents</li>");
@@ -1381,6 +1459,7 @@ var D20plus = function(version) {
 			$wrpSettings.append(d20plus.settingsHtmlPtItems);
 			$wrpSettings.append(d20plus.settingsHtmlPtSpells);
 			$wrpSettings.append(d20plus.settingsHtmlPtPsionics);
+			$wrpSettings.append(d20plus.settingsHtmlPtRaces);
 			$wrpSettings.append(d20plus.settingsHtmlPtFeats);
 			$wrpSettings.append(d20plus.settingsHtmlPtObjects);
 			$wrpSettings.append(d20plus.settingsHtmlPtClasses);
@@ -1471,6 +1550,7 @@ var D20plus = function(version) {
 			$appTo.append(d20plus.settingsHtmlPtItems);
 			$appTo.append(d20plus.settingsHtmlPtSpells);
 			$appTo.append(d20plus.settingsHtmlPtPsionics);
+			$appTo.append(d20plus.settingsHtmlPtRaces);
 			$appTo.append(d20plus.settingsHtmlPtFeats);
 			$appTo.append(d20plus.settingsHtmlPtClasses);
 			$appTo.append(d20plus.settingsHtmlPtSubclasses);
@@ -1505,6 +1585,7 @@ var D20plus = function(version) {
 		$("a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
 		$("a#import-psionics-load").on(window.mousedowntype, d20plus.psionics.button);
 		$("a#import-items-load").on(window.mousedowntype, d20plus.items.button);
+		$("a#import-races-load").on(window.mousedowntype, d20plus.races.button);
 		$("a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 		$("a#import-classes-load").on(window.mousedowntype, d20plus.classes.button);
 		$("a#import-subclasses-load").on(window.mousedowntype, d20plus.subclasses.button);
@@ -1628,6 +1709,7 @@ var D20plus = function(version) {
 				d20.journal.addFolderToFolderStructure("Classes");
 				d20.journal.addFolderToFolderStructure("Subclasses");
 				d20.journal.addFolderToFolderStructure("Backgrounds");
+				d20.journal.addFolderToFolderStructure("Races");
 				d20.journal.refreshJournalList();
 				journalFolder = d20.Campaign.get("journalfolder");
 			}
@@ -1643,6 +1725,7 @@ var D20plus = function(version) {
 		addClasses("Classes");
 		addClasses("Subclasses");
 		addClasses("Backgrounds");
+		addClasses("Races");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -1766,6 +1849,24 @@ var D20plus = function(version) {
 												d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
 											});
 										}
+									} else if (data.data.Category === "Races") { // TODO remove Race workaround when roll20 supports background drag-n-drop properly
+										const race = data.Vetoolscontent;
+
+										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
+										d20plus.importer.addOrUpdateAttr(character.model, `speed`, EntryRenderer.race.getSpeedString(race));
+										race.entries.forEach(e => {
+											const renderer = new EntryRenderer();
+											renderer.setBaseUrl(BASE_SITE_URL);
+											const renderStack = [];
+											renderer.recursiveEntryRender({entries: e.entries}, renderStack);
+
+											const fRowId = d20plus.generateRowId();
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_name`, current: e.name});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_source`, current: "Race"});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_source_type`, current: race.name});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_description`, current: d20plus.importer.getCleanText(renderStack.join(""))});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_options-flag`, current: "0"});
+										});
 									} else if (data.data.Category === "Classes") {
 										let level = prompt("What level?", "1");
 										if (level && level.trim()) {
@@ -3528,6 +3629,86 @@ var D20plus = function(version) {
 		return [noteContents, gmNotes];
 	};
 
+	// Import Races button was clicked
+	d20plus.races.button = function () {
+		const url = $("#import-races-url").val();
+		if (url && url.trim()) {
+			const handoutBuilder = window.is_gm ? d20plus.races.handoutBuilder : d20plus.races.playerImportBuilder;
+
+			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.showImportList(
+					"race",
+					data.race,
+					handoutBuilder,
+					{
+						showSource: true
+					}
+				);
+			});
+		}
+	};
+
+	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+		// make dir
+		const folder = d20plus.importer.makeDirTree(`Races`, folderName);
+		const path = ["Races", folderName, data.name];
+
+		// handle duplicates/overwrites
+		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+		const name = data.name;
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function (handout) {
+				const [noteContents, gmNotes] = d20plus.races._getHandoutData(data);
+
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			}
+		});
+	};
+
+	d20plus.races.playerImportBuilder = function (data) {
+		const [notecontents, gmnotes] = d20plus.races._getHandoutData(data);
+
+		const importId = d20plus.generateRowId();
+		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
+		d20plus.importer.makePlayerDraggable(importId, data.name);
+	};
+
+	d20plus.races._getHandoutData = function (data) {
+		const renderer = new EntryRenderer();
+		renderer.setBaseUrl(BASE_SITE_URL);
+
+		// TODO
+		const renderStack = [];
+		const ability = utils_getAbilityData(data.ability);
+		renderStack.push(`
+			<h3>${data.name}</h3>
+			<p>
+				<strong>Ability Scores:</strong> ${ability.asText}<br>
+				<strong>Size:</strong> ${Parser.sizeAbvToFull(data.size)}<br>
+				<strong>Speed:</strong> ${EntryRenderer.race.getSpeedString(data)}<br>
+			</p>
+		`);
+		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
+		const rendered = renderStack.join("");
+
+		const r20json = {
+			"name": data.name,
+			"Vetoolscontent": data,
+			"data": {
+				"Category": "Races"
+			}
+		};
+		const gmNotes = JSON.stringify(r20json);
+		const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+
+		return [noteContents, gmNotes];
+	};
+
 	// Import Feats button was clicked
 	d20plus.feats.button = function () {
 		const url = $("#import-feats-url").val();
@@ -4122,7 +4303,8 @@ var D20plus = function(version) {
 			$list.append(`
 				<label class="import-cb-label">
 					<input type="checkbox" data-listid="${i}">
-					<span class="name"><span>${it.name}</span>${options.showSource ? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">(${Parser.sourceJsonToAbv(it.source)})</span>` : ""}</span>
+										<span class="name"><span>${it.name}</span>${options.showSource ? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">(CR ${it.cr}) (${Parser.sourceJsonToAbv(it.source)})</span>` : `(CR ${it.cr})`}</span>
+
 				</label>
 			`);
 		});
@@ -4377,6 +4559,19 @@ var D20plus = function(version) {
 				return folderName;
 			}
 			case "background": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
+			case "race": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":
@@ -5032,13 +5227,14 @@ var D20plus = function(version) {
 <h4>Import By Category</h4>
 <p><small><i>We strongly recommend the OGL sheet for importing. You can switch afterwards.</i></small></p>
 `
-		d20plus.settingsHtmlSelector = `
+	d20plus.settingsHtmlSelector = `
 <select id="import-mode-select">
 	<option value="none" disabled selected>Select category...</option>
 	<option value="monster">Monsters</option>
 	<option value="spell">Spells</option>
 	<option value="item">Items</option>
 	<option value="psionic">Psionics</option>
+	<option value="race">Races</option>
 	<option value="feat">Feats</option>
 	<option value="object">Objects</option>
 	<option value="class">Classes</option>
@@ -5115,6 +5311,15 @@ To import from third-party sources, either individually select one available in 
 <label for="import-objects-url">Object Data URL:</label>
 <input type="text" id="import-objects-url" value="${objectdataurl}">
 <a class="btn" href="#" id="import-objects-load">Import Objects</a>
+</div>
+`
+
+	d20plus.settingsHtmlPtRaces = `
+<div class="importer-section" data-import-group="race">
+<h4>Race Importing</h4>
+<label for="import-races-url">Race Data URL:</label>
+<input type="text" id="import-races-url" value="${racedataurl}">
+<a class="btn" href="#" id="import-races-load">Import Races</a>
 </div>
 `
 
@@ -5274,6 +5479,27 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		{
 			s: ".userscript-statsInlineHead > .userscript-entry-title, .userscript-statsInlineHeadSubVariant > .userscript-entry-title",
 			r: "font-style: italic"
+		},
+		// page view enhancement
+		{
+			s: "#page-toolbar",
+			r: "height: calc(100vh - 40px);"
+		},
+		{
+			s: "#page-toolbar .container",
+			r: "height: 100%; white-space: normal;"
+		},
+		{
+			s: "#page-toolbar .pages .availablepage",
+			r: "width: 100px; height: 100px;"
+		},
+		{
+			s: "#page-toolbar .pages .availablepage img.pagethumb",
+			r: "max-width: 60px; max-height: 60px;"
+		},
+		{
+			s: "#page-toolbar .pages .availablepage span",
+			r: "bottom: 1px;"
 		}
 	];
 
@@ -5391,6 +5617,7 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		newValue.environment = "production";
 		return newValue;
 	});
+	window.d20plus = d20plus;
 	d20plus.log("> Injected");
 };
 
