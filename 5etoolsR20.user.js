@@ -1090,8 +1090,7 @@ var D20plus = function(version) {
 					character.abilities.create({name: "Saves", istokenaction: true, action: d20plus.actionMacroSaves});
 					character.abilities.create({name: "Skill-Check", istokenaction: true, action: d20plus.actionMacroSkillCheck});
 					character.abilities.create({name: "Ability-Check", istokenaction: true, action: d20plus.actionMacroAbilityCheck});
-				}
-				else {
+				} else {
 					//player specific tokenactions
 					//@{selected|repeating_attack_$0_atkname}
 					character.abilities.create({name: "Attack 1", istokenaction: true, action: "%{selected|repeating_attack_$0_attack}"});
