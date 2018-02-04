@@ -1782,7 +1782,7 @@ var D20plus = function(version) {
 											const renderer = new EntryRenderer();
 											renderer.setBaseUrl(BASE_SITE_URL);
 											const renderStack = [];
-											renderer.recursiveEntryRender({entries: race.entries}, renderStack);
+											renderer.recursiveEntryRender({entries: e.entries}, renderStack);
 
 											const fRowId = d20plus.generateRowId();
 											character.model.attribs.create({name: `repeating_traits_${fRowId}_name`, current: e.name});
