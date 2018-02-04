@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.1.4
+// @version      1.1.5
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -198,6 +198,7 @@ var D20plus = function(version) {
 	const objectdataurl = `${DATA_URL}objects.json`;
 	const classdataurl = `${DATA_URL}classes.json`;
 	const backgrounddataurl = `${DATA_URL}backgrounds.json`;
+	const racedataurl = `${DATA_URL}races.json`;
 
 	const d20plus = {
 		sheet: "ogl",
@@ -210,6 +211,7 @@ var D20plus = function(version) {
 		psionics: {},
 		items: {},
 		feats: {},
+		races: {},
 		objects: {},
 		classes: {},
 		subclasses: {},
@@ -1381,6 +1383,7 @@ var D20plus = function(version) {
 			$wrpSettings.append(d20plus.settingsHtmlPtItems);
 			$wrpSettings.append(d20plus.settingsHtmlPtSpells);
 			$wrpSettings.append(d20plus.settingsHtmlPtPsionics);
+			$wrpSettings.append(d20plus.settingsHtmlPtRaces);
 			$wrpSettings.append(d20plus.settingsHtmlPtFeats);
 			$wrpSettings.append(d20plus.settingsHtmlPtObjects);
 			$wrpSettings.append(d20plus.settingsHtmlPtClasses);
@@ -1471,6 +1474,7 @@ var D20plus = function(version) {
 			$appTo.append(d20plus.settingsHtmlPtItems);
 			$appTo.append(d20plus.settingsHtmlPtSpells);
 			$appTo.append(d20plus.settingsHtmlPtPsionics);
+			$appTo.append(d20plus.settingsHtmlPtRaces);
 			$appTo.append(d20plus.settingsHtmlPtFeats);
 			$appTo.append(d20plus.settingsHtmlPtClasses);
 			$appTo.append(d20plus.settingsHtmlPtSubclasses);
@@ -1505,6 +1509,7 @@ var D20plus = function(version) {
 		$("a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
 		$("a#import-psionics-load").on(window.mousedowntype, d20plus.psionics.button);
 		$("a#import-items-load").on(window.mousedowntype, d20plus.items.button);
+		$("a#import-races-load").on(window.mousedowntype, d20plus.races.button);
 		$("a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
 		$("a#import-classes-load").on(window.mousedowntype, d20plus.classes.button);
 		$("a#import-subclasses-load").on(window.mousedowntype, d20plus.subclasses.button);
@@ -1628,6 +1633,7 @@ var D20plus = function(version) {
 				d20.journal.addFolderToFolderStructure("Classes");
 				d20.journal.addFolderToFolderStructure("Subclasses");
 				d20.journal.addFolderToFolderStructure("Backgrounds");
+				d20.journal.addFolderToFolderStructure("Races");
 				d20.journal.refreshJournalList();
 				journalFolder = d20.Campaign.get("journalfolder");
 			}
@@ -1643,6 +1649,7 @@ var D20plus = function(version) {
 		addClasses("Classes");
 		addClasses("Subclasses");
 		addClasses("Backgrounds");
+		addClasses("Races");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -1766,6 +1773,24 @@ var D20plus = function(version) {
 												d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
 											});
 										}
+									} else if (data.data.Category === "Races") { // TODO remove Race workaround when roll20 supports background drag-n-drop properly
+										const race = data.Vetoolscontent;
+
+										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
+										d20plus.importer.addOrUpdateAttr(character.model, `speed`, EntryRenderer.race.getSpeedString(race));
+										race.entries.forEach(e => {
+											const renderer = new EntryRenderer();
+											renderer.setBaseUrl(BASE_SITE_URL);
+											const renderStack = [];
+											renderer.recursiveEntryRender({entries: race.entries}, renderStack);
+
+											const fRowId = d20plus.generateRowId();
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_name`, current: e.name});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_source`, current: "Race"});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_source_type`, current: race.name});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_description`, current: d20plus.importer.getCleanText(renderStack.join(""))});
+											character.model.attribs.create({name: `repeating_traits_${fRowId}_options-flag`, current: "0"});
+										});
 									} else if (data.data.Category === "Classes") {
 										let level = prompt("What level?", "1");
 										if (level && level.trim()) {
@@ -3528,6 +3553,86 @@ var D20plus = function(version) {
 		return [noteContents, gmNotes];
 	};
 
+	// Import Races button was clicked
+	d20plus.races.button = function () {
+		const url = $("#import-races-url").val();
+		if (url && url.trim()) {
+			const handoutBuilder = window.is_gm ? d20plus.races.handoutBuilder : d20plus.races.playerImportBuilder;
+
+			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.showImportList(
+					"race",
+					data.race,
+					handoutBuilder,
+					{
+						showSource: true
+					}
+				);
+			});
+		}
+	};
+
+	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+		// make dir
+		const folder = d20plus.importer.makeDirTree(`Races`, folderName);
+		const path = ["Races", folderName, data.name];
+
+		// handle duplicates/overwrites
+		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+		const name = data.name;
+		d20.Campaign.handouts.create({
+			name: name
+		}, {
+			success: function (handout) {
+				const [noteContents, gmNotes] = d20plus.races._getHandoutData(data);
+
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			}
+		});
+	};
+
+	d20plus.races.playerImportBuilder = function (data) {
+		const [notecontents, gmnotes] = d20plus.races._getHandoutData(data);
+
+		const importId = d20plus.generateRowId();
+		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
+		d20plus.importer.makePlayerDraggable(importId, data.name);
+	};
+
+	d20plus.races._getHandoutData = function (data) {
+		const renderer = new EntryRenderer();
+		renderer.setBaseUrl(BASE_SITE_URL);
+
+		// TODO
+		const renderStack = [];
+		const ability = utils_getAbilityData(data.ability);
+		renderStack.push(`
+			<h3>${data.name}</h3>
+			<p>
+				<strong>Ability Scores:</strong> ${ability.asText}<br>
+				<strong>Size:</strong> ${Parser.sizeAbvToFull(data.size)}<br>
+				<strong>Speed:</strong> ${EntryRenderer.race.getSpeedString(data)}<br>
+			</p>
+		`);
+		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
+		const rendered = renderStack.join("");
+
+		const r20json = {
+			"name": data.name,
+			"Vetoolscontent": data,
+			"data": {
+				"Category": "Races"
+			}
+		};
+		const gmNotes = JSON.stringify(r20json);
+		const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+
+		return [noteContents, gmNotes];
+	};
+
 	// Import Feats button was clicked
 	d20plus.feats.button = function () {
 		const url = $("#import-feats-url").val();
@@ -4389,6 +4494,19 @@ var D20plus = function(version) {
 				}
 				return folderName;
 			}
+			case "race": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
 			default:
 				throw new Error(`Unknown import type '${dataType}'`);
 		}
@@ -5039,6 +5157,7 @@ var D20plus = function(version) {
 	<option value="spell">Spells</option>
 	<option value="item">Items</option>
 	<option value="psionic">Psionics</option>
+	<option value="race">Races</option>
 	<option value="feat">Feats</option>
 	<option value="object">Objects</option>
 	<option value="class">Classes</option>
@@ -5115,6 +5234,15 @@ To import from third-party sources, either individually select one available in 
 <label for="import-objects-url">Object Data URL:</label>
 <input type="text" id="import-objects-url" value="${objectdataurl}">
 <a class="btn" href="#" id="import-objects-load">Import Objects</a>
+</div>
+`
+
+	d20plus.settingsHtmlPtRaces = `
+<div class="importer-section" data-import-group="race">
+<h4>Race Importing</h4>
+<label for="import-races-url">Race Data URL:</label>
+<input type="text" id="import-races-url" value="${racedataurl}">
+<a class="btn" href="#" id="import-races-load">Import Races</a>
 </div>
 `
 
