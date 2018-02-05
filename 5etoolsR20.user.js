@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.0
+// @version      1.2.1
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1000,8 +1000,33 @@ var D20plus = function(version) {
 	};
 
 	d20plus.enhancePageSelector = function () {
+		var updatePageOrder = function () {
+			d20plus.log("> Saving page order...");
+			var pos = 0;
+			$("#page-toolbar .pages .chooseablepage").each(function () {
+				var page = d20.Campaign.pages.get($(this).attr("data-pageid"));
+				page && page.save({
+					placement: pos
+				});
+				pos++;
+			});
+			d20.pagetoolbar.noReload = false;
+			d20.pagetoolbar.refreshPageListing();
+		}
+
 		function overwriteDraggables () {
 			// make them draggable on both axes
+			$("#page-toolbar .pages").sortable("destroy");
+			$("#page-toolbar .pages").sortable({
+				items: "> .chooseablepage",
+				start: function() {
+					d20.pagetoolbar.noReload = true;
+				},
+				stop: function() {
+					updatePageOrder()
+				},
+				distance: 15
+			}).addTouch();
 			$("#page-toolbar .playerbookmark").draggable("destroy");
 			$("#page-toolbar .playerbookmark").draggable({
 				revert: "invalid",
