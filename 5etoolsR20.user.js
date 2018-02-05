@@ -1000,17 +1000,15 @@ var D20plus = function(version) {
 	};
 
 	d20plus.enhancePageSelector = function () {
-		var n = function () {
-			d20plus.log("> capture page order!");
-			var e = {};
-			var t = 0;
+		var updatePageOrder = function () {
+			d20plus.log("> Saving page order...");
+			var pos = 0;
 			$("#page-toolbar .pages .chooseablepage").each(function () {
-				e[$(this).attr("data-pageid")] = t;
-				var n = d20.Campaign.pages.get($(this).attr("data-pageid"));
-				n && n.save({
-					placement: t
+				var page = d20.Campaign.pages.get($(this).attr("data-pageid"));
+				page && page.save({
+					placement: pos
 				});
-				t++;
+				pos++;
 			});
 			d20.pagetoolbar.noReload = false;
 			d20.pagetoolbar.refreshPageListing();
@@ -1025,7 +1023,7 @@ var D20plus = function(version) {
 					d20.pagetoolbar.noReload = true;
 				},
 				stop: function() {
-					n()
+					updatePageOrder()
 				},
 				distance: 15
 			}).addTouch();
