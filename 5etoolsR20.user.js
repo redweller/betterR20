@@ -3638,7 +3638,7 @@ var D20plus = function(version) {
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
 					"race",
-					data.race,
+					EntryRenderer.race.mergeSubraces(data.race),
 					handoutBuilder,
 					{
 						showSource: true
