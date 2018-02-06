@@ -4355,7 +4355,11 @@ var D20plus = function(version) {
 			$list.append(`
 				<label class="import-cb-label">
 					<input type="checkbox" data-listid="${i}">
-										<span class="name"><span>${it.name}</span>${options.showSource ? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">(CR ${it.cr}) (${Parser.sourceJsonToAbv(it.source)})</span>` : `(CR ${it.cr})`}</span>
+						<span class="name">
+							<span>${it.name}</span>
+				${options.showSource 
+				? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">${it.cr ? `(CR ${it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>` 
+				: it.cr ? `(CR ${it.cr})` : ""}</span>
 
 				</label>
 			`);
