@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.1
+// @version      1.2.2
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -163,6 +163,11 @@ var D20plus = function(version) {
 				"name": "Show Difficutlty in Tracker",
 				"default": true,
 				"_type": "boolean"
+			},
+			"emoji": {
+				"name": "Add emoji replacement to chat",
+				"default": false,
+				"_type": "boolean"
 			}
 		},
 		"import": {
@@ -220,7 +225,8 @@ var D20plus = function(version) {
 		initiative: {},
 		config: {},
 		importer: {},
-		art: {}
+		art: {},
+		chat: {}
 	};
 
 	d20plus.advantageModes = ["Toggle (Default Advantage)", "Toggle", "Toggle (Default Disadvantage)", "Always", "Query", "Never"];
@@ -871,6 +877,8 @@ var D20plus = function(version) {
 			d20plus.addCustomArtSearch();
 			d20plus.log("> Enhancing page selector");
 			d20plus.enhancePageSelector();
+			d20plus.log("> Enhancing chat");
+			d20plus.enhanceChat();
 			d20plus.log("> Applying config");
 			d20plus.handleConfigChange();
 		}
@@ -1052,6 +1060,25 @@ var D20plus = function(version) {
 			}, 110)();
 		}
 	};
+
+	d20plus.chat.emoji = {
+		":thinking:": "[thinking](https://github.com/TheGiddyLimit/emoji-dump/raw/master/thinking.png)",
+		":ok_hand:": "[ok_hand](https://github.com/TheGiddyLimit/emoji-dump/raw/master/ok_hand.png)",
+		":100:": "[100](https://github.com/TheGiddyLimit/emoji-dump/raw/master/100.png)",
+		":joy:": "[joy](https://github.com/TheGiddyLimit/emoji-dump/raw/master/joy.png)",
+		":smirk:": "[smirk](https://github.com/TheGiddyLimit/emoji-dump/raw/master/smirk.png)",
+		":muscle:": "[muscle](https://github.com/TheGiddyLimit/emoji-dump/raw/master/muscle.png)"
+	}
+	d20plus.enhanceChat = function () {
+		const tc = d20.textchat.$textarea;
+		tc.on("keyup", () => {
+			if (d20plus.getCfgVal("interface", "emoji")) {
+				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
+					return d20plus.chat.emoji[m1] ? d20plus.chat.emoji[m1] : m1;
+				}));
+			}
+		});
+	}
 
 	// bind token HP to initiative tracker window HP field
 	d20plus.bindToken = function (token) {
@@ -3663,7 +3690,7 @@ var D20plus = function(version) {
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
 					"race",
-					data.race,
+					EntryRenderer.race.mergeSubraces(data.race),
 					handoutBuilder,
 					{
 						showSource: true
@@ -4328,7 +4355,11 @@ var D20plus = function(version) {
 			$list.append(`
 				<label class="import-cb-label">
 					<input type="checkbox" data-listid="${i}">
-										<span class="name"><span>${it.name}</span>${options.showSource ? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">(CR ${it.cr}) (${Parser.sourceJsonToAbv(it.source)})</span>` : `(CR ${it.cr})`}</span>
+						<span class="name">
+							<span>${it.name}</span>
+				${options.showSource 
+				? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">${it.cr ? `(CR ${it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>` 
+				: it.cr ? `(CR ${it.cr})` : ""}</span>
 
 				</label>
 			`);
