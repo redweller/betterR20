@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.2
+// @version      1.2.3
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -166,7 +166,7 @@ var D20plus = function(version) {
 			},
 			"emoji": {
 				"name": "Add emoji replacement to chat",
-				"default": false,
+				"default": true,
 				"_type": "boolean"
 			}
 		},
