@@ -1071,12 +1071,16 @@ var D20plus = function(version) {
 	}
 	d20plus.enhanceChat = function () {
 		const tc = d20.textchat.$textarea;
-		tc.on("keyup", () => {
+		$("#textchat-input").off("click", "button")
+		$("#textchat-input").on("click", "button", function() {
 			if (d20plus.getCfgVal("interface", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					return d20plus.chat.emoji[m1] ? d20plus.chat.emoji[m1] : m1;
 				}));
 			}
+			const toSend = $.trim(tc.val());
+			d20.textchat.doChatInput(toSend);
+			tc.val("").focus();
 		});
 	}
 
