@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.3
+// @version      1.2.4
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -877,11 +877,11 @@ var D20plus = function(version) {
 			d20plus.addCustomArtSearch();
 			d20plus.log("> Enhancing page selector");
 			d20plus.enhancePageSelector();
-			d20plus.log("> Enhancing chat");
-			d20plus.enhanceChat();
 			d20plus.log("> Applying config");
 			d20plus.handleConfigChange();
 		}
+		d20plus.log("> Enhancing chat");
+		d20plus.enhanceChat();
 		d20plus.log("> All systems operational");
 
 		d20.textchat.incoming(false, ({who: "system", type: "system", content: `<span style="font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">5etoolsR20 v${d20plus.version} ready</span>`}))
@@ -1065,7 +1065,7 @@ var D20plus = function(version) {
 		const tc = d20.textchat.$textarea;
 		$("#textchat-input").off("click", "button")
 		$("#textchat-input").on("click", "button", function() {
-			if (d20plus.getCfgVal("interface", "emoji")) {
+			if (!window.is_gm ||d20plus.getCfgVal("interface", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					const clean = m1.replace(/:/g, "");
 					return d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
