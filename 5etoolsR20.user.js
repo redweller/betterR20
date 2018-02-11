@@ -3048,6 +3048,10 @@ var D20plus = function(version) {
 	// Change character sheet formulas
 	d20plus.setSheet = function() {
 		d20plus.sheet = "ogl";
+		if (window.is_gm && (!d20.journal.customSheets || !d20.journal.customSheets)) {
+			d20.textchat.incoming(false, ({who: "system", type: "system", content: `<span style="color: red;">5etoolsR20: no character sheet selected! Exiting...</span>`}));
+			throw new Error("No character sheet selected!");
+		}
 		if (d20.journal.customSheets.layouthtml.indexOf("shaped_d20") > 0) d20plus.sheet = "shaped";
 		if (d20.journal.customSheets.layouthtml.indexOf("DnD5e_Character_Sheet") > 0) d20plus.sheet = "community";
 		d20plus.log("> Switched Character Sheet Template to " + d20plus.sheet);
