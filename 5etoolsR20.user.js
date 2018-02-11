@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.4
+// @version      1.2.5
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1049,7 +1049,7 @@ var D20plus = function(version) {
 			}).addTouch();
 		}
 		overwriteDraggables();
-		$(`#page-toolbar`).css("top", "calc(-100vh + 40px)");
+		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
 
 		const originalFn = d20.pagetoolbar.refreshPageListing;
 		d20.pagetoolbar.refreshPageListing = () => {
@@ -5536,7 +5536,7 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		// page view enhancement
 		{
 			s: "#page-toolbar",
-			r: "height: calc(100vh - 40px);"
+			r: "height: calc(90vh - 40px);"
 		},
 		{
 			s: "#page-toolbar .container",
