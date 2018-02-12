@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.4
+// @version      1.2.6
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -129,6 +129,11 @@ var D20plus = function(version) {
 				"name": "Auto Roll Damage Mode on Import",
 				"default": "Auto Roll",
 				"_type": "_DAMAGEMODE"
+			},
+			"namesuffix": {
+				"name": "Append Text to Names",
+				"default": "",
+				"_type": "String"
 			}
 
 		},
@@ -367,6 +372,8 @@ var D20plus = function(version) {
 	};
 
 	d20plus.getConfigHandout = function () {
+		d20plus.importer.getJournalFolderObj(); // ensure journal init
+
 		return d20.Campaign.handouts.models.find(function (handout) {
 			return handout.attributes.name.toLowerCase() === CONFIG_HANDOUT;
 		});
@@ -394,9 +401,10 @@ var D20plus = function(version) {
 			if (configHandout) {
 				configHandout.view.render();
 				configHandout._getLatestBlob("gmnotes", function(gmnotes) {
-					const decoded = decodeURIComponent(gmnotes);
 
 					try {
+						const decoded = decodeURIComponent(gmnotes);
+
 						d20plus.config = JSON.parse(decoded);
 
 						d20plus.log("> Config Loaded:");
@@ -603,6 +611,18 @@ var D20plus = function(version) {
 							toAdd.append(td);
 							break;
 						}
+						case "String": {
+							const curr = d20plus.getCfgVal(cfgK, grpK) || "";
+							const field = $(`<input value="${curr}" placeholder="${curr}">`);
+
+							configFields[cfgK][grpK] = () => {
+								return field.val() ? field.val().trim() : "";
+							};
+
+							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
 						case "_SHEET_ATTRIBUTE": {
 							const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => SortUtil.ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
 							const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`);
@@ -724,7 +744,7 @@ var D20plus = function(version) {
 						})
 					});
 
-					const gmnotes = JSON.stringify(d20plus.config);
+					const gmnotes = JSON.stringify(d20plus.config).replace(/%/g, "%25");
 					handout.updateBlobs({gmnotes: gmnotes});
 					handout.save({notes: (new Date).getTime()});
 
@@ -1049,7 +1069,7 @@ var D20plus = function(version) {
 			}).addTouch();
 		}
 		overwriteDraggables();
-		$(`#page-toolbar`).css("top", "calc(-100vh + 40px)");
+		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
 
 		const originalFn = d20.pagetoolbar.refreshPageListing;
 		d20.pagetoolbar.refreshPageListing = () => {
@@ -2263,9 +2283,10 @@ var D20plus = function(version) {
 		if(character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
 		var lightmin = 0;
 		if(character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
+		const nameSuffix = d20plus.getCfgVal("token", "namesuffix");
 		var defaulttoken = {
 			represents: character.id,
-			name: character.name,
+			name: character.name + nameSuffix,
 			imgsrc: avatar,
 			width: 70 * tokensize,
 			height: 70 * tokensize,
@@ -3048,6 +3069,10 @@ var D20plus = function(version) {
 	// Change character sheet formulas
 	d20plus.setSheet = function() {
 		d20plus.sheet = "ogl";
+		if (window.is_gm && (!d20.journal.customSheets || !d20.journal.customSheets)) {
+			d20.textchat.incoming(false, ({who: "system", type: "system", content: `<span style="color: red;">5etoolsR20: no character sheet selected! Exiting...</span>`}));
+			throw new Error("No character sheet selected!");
+		}
 		if (d20.journal.customSheets.layouthtml.indexOf("shaped_d20") > 0) d20plus.sheet = "shaped";
 		if (d20.journal.customSheets.layouthtml.indexOf("DnD5e_Character_Sheet") > 0) d20plus.sheet = "community";
 		d20plus.log("> Switched Character Sheet Template to " + d20plus.sheet);
@@ -4676,7 +4701,7 @@ var D20plus = function(version) {
 				const adMeta = adventureMetadata.adventure.find(a => a.id.toLowerCase() === $("#import-adventures-url").data("id").toLowerCase())
 
 				const addQueue = [];
-				const sections = data.data;
+				const sections = JSON.parse(JSON.stringify(data.data));
 				const adDir = `${Parser.sourceJsonToFull(adMeta.id)}`;
 				sections.forEach((s, i) => {
 					if (i >= adMeta.contents.length) return;
@@ -4750,6 +4775,7 @@ var D20plus = function(version) {
 					// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
 					const entry = addQueue.pop();
 					entry.name = entry.name || "(Unknown)";
+					entry.name = d20plus.importer.getCleanText(renderer.renderEntry(entry.name));
 					$stsName.text(entry.name);
 					$stsRemain.text(remaining--);
 					const folder = d20plus.importer.makeDirTree(entry.dir);
@@ -5536,7 +5562,7 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		// page view enhancement
 		{
 			s: "#page-toolbar",
-			r: "height: calc(100vh - 40px);"
+			r: "height: calc(90vh - 40px);"
 		},
 		{
 			s: "#page-toolbar .container",
