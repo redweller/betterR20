@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.7
+// @version      1.2.8
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -4959,6 +4959,10 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.getCleanText = function (str) {
+		const check = jQuery.parseHTML(str);
+		if (check.length === 1 && check[0].constructor === Text) {
+			return str;
+		}
 		const $ele = $(str);
 		$ele.find("p, li, br").append("\n\n");
 		return $ele.text().replace(/[ ]+/g, " ");
