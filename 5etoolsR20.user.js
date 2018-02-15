@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.8
+// @version      1.2.9
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -4693,6 +4693,10 @@ var D20plus = function(version) {
 			success: function (data) {
 				data = JSON.parse(data);
 
+				function isPart (e) {
+					return typeof e === "string" || typeof e === "object" && (e.type !== "entries");
+				}
+
 				// open progress window
 				$("#d20plus-import").dialog("open");
 				$("#import-remaining").text("Initialising...");
@@ -4708,11 +4712,11 @@ var D20plus = function(version) {
 
 					const chapterDir = [adDir, adMeta.contents[i].name];
 
-					let front;
 					const introEntries = [];
-					if (s.entries && typeof s.entries[0] === "string") {
-						while (typeof (front = s.entries.shift()) === "string") {
-							introEntries.push(front);
+					if (s.entries && s.entries.length && isPart(s.entries[0])) {
+						while (isPart(s.entries[0])) {
+							introEntries.push(s.entries[0]);
+							s.entries.shift();
 						}
 					}
 					addQueue.push({
@@ -4727,7 +4731,7 @@ var D20plus = function(version) {
 					let tempStack = [];
 					let textIndex = 1;
 					while ((front = s.entries.shift())) {
-						if (typeof front === "string" || typeof front === "object" && front.type !== "entries") {
+						if (isPart(front)) {
 							tempStack.push(front);
 						} else {
 							if (tempStack.length) {
@@ -5583,6 +5587,10 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		{
 			s: "#page-toolbar .pages .availablepage span",
 			r: "bottom: 1px;"
+		},
+		{
+			s: ".userscript-statsBlockInsetReadaloud",
+			r: "background: #cbd6c688 !important"
 		}
 	];
 
