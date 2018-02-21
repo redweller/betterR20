@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.9
+// @version      1.2.10
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -5220,6 +5220,7 @@ var D20plus = function(version) {
 
 	d20plus.addArtHTML = `
 <div id="d20plus-artfolder" title="External Art" style="position: relative">
+<p>Add external images by URL. Any direct link to an image should work.</p>
 <p>
 	<input placeholder="Name*" id="art-list-add-name">
 	<input placeholder="URL*" id="art-list-add-url">
@@ -5240,8 +5241,8 @@ var D20plus = function(version) {
 
 	d20plus.addArtMassAdderHTML = `
 <div id="d20plus-artmassadd" title="Mass Add Art URLs">
-	<p>One entry per line; entry format: <b>[name]---[URL]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
-	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;"></textarea></p>
+	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
+	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://pics.me/img1.png"></textarea></p>
 </div>`;
 
 	d20plus.artListHTML = `
