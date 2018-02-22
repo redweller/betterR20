@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.7
+// @version      1.2.10
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -4693,6 +4693,10 @@ var D20plus = function(version) {
 			success: function (data) {
 				data = JSON.parse(data);
 
+				function isPart (e) {
+					return typeof e === "string" || typeof e === "object" && (e.type !== "entries");
+				}
+
 				// open progress window
 				$("#d20plus-import").dialog("open");
 				$("#import-remaining").text("Initialising...");
@@ -4708,11 +4712,11 @@ var D20plus = function(version) {
 
 					const chapterDir = [adDir, adMeta.contents[i].name];
 
-					let front;
 					const introEntries = [];
-					if (s.entries && typeof s.entries[0] === "string") {
-						while (typeof (front = s.entries.shift()) === "string") {
-							introEntries.push(front);
+					if (s.entries && s.entries.length && isPart(s.entries[0])) {
+						while (isPart(s.entries[0])) {
+							introEntries.push(s.entries[0]);
+							s.entries.shift();
 						}
 					}
 					addQueue.push({
@@ -4727,7 +4731,7 @@ var D20plus = function(version) {
 					let tempStack = [];
 					let textIndex = 1;
 					while ((front = s.entries.shift())) {
-						if (typeof front === "string" || typeof front === "object" && front.type !== "entries") {
+						if (isPart(front)) {
 							tempStack.push(front);
 						} else {
 							if (tempStack.length) {
@@ -4959,6 +4963,10 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.getCleanText = function (str) {
+		const check = jQuery.parseHTML(str);
+		if (check.length === 1 && check[0].constructor === Text) {
+			return str;
+		}
 		const $ele = $(str);
 		$ele.find("p, li, br").append("\n\n");
 		return $ele.text().replace(/[ ]+/g, " ");
@@ -5212,6 +5220,7 @@ var D20plus = function(version) {
 
 	d20plus.addArtHTML = `
 <div id="d20plus-artfolder" title="External Art" style="position: relative">
+<p>Add external images by URL. Any direct link to an image should work.</p>
 <p>
 	<input placeholder="Name*" id="art-list-add-name">
 	<input placeholder="URL*" id="art-list-add-url">
@@ -5232,8 +5241,8 @@ var D20plus = function(version) {
 
 	d20plus.addArtMassAdderHTML = `
 <div id="d20plus-artmassadd" title="Mass Add Art URLs">
-	<p>One entry per line; entry format: <b>[name]---[URL]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
-	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;"></textarea></p>
+	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
+	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://pics.me/img1.png"></textarea></p>
 </div>`;
 
 	d20plus.artListHTML = `
@@ -5579,6 +5588,10 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 		{
 			s: "#page-toolbar .pages .availablepage span",
 			r: "bottom: 1px;"
+		},
+		{
+			s: ".userscript-statsBlockInsetReadaloud",
+			r: "background: #cbd6c688 !important"
 		}
 	];
 
