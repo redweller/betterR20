@@ -2628,7 +2628,7 @@ var D20plus = function(version) {
 
 						// add the spellcasting text
 						const newRowId = d20plus.generateRowId();
-						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer);
+						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer).map(it => it.rendered).filter(it => it).join("");
 						const cleanDescription = d20plus.importer.getCleanText(spellTrait);
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_name`, current: "Spellcasting"});
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: cleanDescription});
