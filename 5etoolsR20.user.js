@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.10
+// @version      1.2.11
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2628,7 +2628,7 @@ var D20plus = function(version) {
 
 						// add the spellcasting text
 						const newRowId = d20plus.generateRowId();
-						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedString(data, renderer).map(it => it.rendered).filter(it => it).join("");
+						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedTraits(data, renderer).map(it => it.rendered).filter(it => it).join("");
 						const cleanDescription = d20plus.importer.getCleanText(spellTrait);
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_name`, current: "Spellcasting"});
 						character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: cleanDescription});
