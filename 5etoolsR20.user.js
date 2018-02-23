@@ -2274,6 +2274,7 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.getSetAvatarImage = function (character, avatar) {
+		avatar = avatar.replace(/"/g, "");
 		character.attributes.avatar = avatar;
 		var tokensize = 1;
 		if (character.size === "L") tokensize = 2;
