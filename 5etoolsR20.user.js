@@ -2274,7 +2274,6 @@ var D20plus = function(version) {
 	};
 
 	d20plus.importer.getSetAvatarImage = function (character, avatar) {
-		avatar = avatar.replace(/"/g, "");
 		character.attributes.avatar = avatar;
 		var tokensize = 1;
 		if (character.size === "L") tokensize = 2;
@@ -2433,7 +2432,7 @@ var D20plus = function(version) {
 
 					const type = Parser.monTypeToFullObj(data.type).asText;
 					const source = Parser.sourceJsonToAbv(data.source);
-					const avatar = `${IMG_URL}${source}/${name}.png`;
+					const avatar = `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
 					character.size = data.size;
 					character.name = name;
 					character.senses = data.senses;
@@ -2458,7 +2457,7 @@ var D20plus = function(version) {
 					var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
 					var size = d20plus.getSizeString(data.size || "");
 					var alignment = data.alignment || "(Unknown Alignment)";
-					var cr = data.cr != null ? data.cr : "";
+					var cr = data.cr ? (data.cr.cr || data.cr) : "";
 					var xp = Parser.crToXp(cr);
 					character.attribs.create({name: "npc", current: 1});
 					character.attribs.create({name: "npc_toggle", current: 1});
