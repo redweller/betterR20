@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.10
+// @version      1.2.11
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -2522,7 +2522,7 @@ var D20plus = function(version) {
 
 					character.attribs.create({name: "passive", current: passive});
 					character.attribs.create({name: "npc_languages", current: data.languages != null ? data.languages : ""});
-					character.attribs.create({name: "npc_challenge", current: cr});
+					character.attribs.create({name: "npc_challenge", current: cr.cr || cr});
 					character.attribs.create({name: "npc_xp", current: xp});
 					character.attribs.create({name: "npc_vulnerabilities", current: data.vulnerable != null ? data.vulnerable : ""});
 					character.attribs.create({name: "damage_vulnerabilities", current: data.vulnerable != null ? data.vulnerable : ""});
@@ -4380,8 +4380,8 @@ var D20plus = function(version) {
 						<span class="name">
 							<span>${it.name}</span>
 				${options.showSource 
-				? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">${it.cr ? `(CR ${it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>` 
-				: it.cr ? `(CR ${it.cr})` : ""}</span>
+				? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>` 
+				: it.cr ? `(CR ${it.cr.cr || it.cr})` : ""}</span>
 
 				</label>
 			`);
@@ -4513,7 +4513,7 @@ var D20plus = function(version) {
 						folderName = Parser.sourceJsonToFull(it.source);
 						break;
 					case "CR":
-						folderName = it.cr;
+						folderName = it.cr ? (it.cr.cr || it.cr) : "Unknown";
 						break;
 					case "Alphabetical":
 						folderName = it.name[0].uppercaseFirst();
