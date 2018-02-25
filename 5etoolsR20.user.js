@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.12
+// @version      1.2.13
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -3114,8 +3114,10 @@ var D20plus = function(version) {
 							<span class='hp editable tracker-col' alt='HP' title='HP'>
 								<$ if(npc && npc.get("current") == "1") { $>
 									${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
-								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
+								<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
+								<$ } else { $>
+									<$!"\u2014"$>
 								<$ } $>
 							</span>
 						`);
@@ -3125,9 +3127,9 @@ var D20plus = function(version) {
 					case "AC": {
 						replaceStack.push(`
 							<span class='ac tracker-col' alt='AC' title='AC'>
-								<$ if(npc && npc.get("current") == "1") { $>
+								<$ if(npc && npc.get("current") == "1" && typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
-								<$ } else if (typeof char.autoCalcFormula !== "undefined") { $>
+								<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
 									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
 								<$ } else { $>
 									<$!"\u2014"$>
@@ -3139,7 +3141,7 @@ var D20plus = function(version) {
 					}
 					case "PP": {
 						replaceStack.push(`
-							<$ var passive = typeof char.autoCalcFormula !== "undefined" ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
+							<$ var passive = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
 							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
 						`);
 						headerStack.push(`<span class='tracker-col'>PP</span>`);
