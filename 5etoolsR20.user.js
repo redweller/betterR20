@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.13
+// @version      1.2.14
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -4402,13 +4402,22 @@ var D20plus = function(version) {
 		$("#import-showplayers").parent().show();
 		$("#organize-by").parent().show();
 		$("#d20plus-importlist").dialog("open");
-		const selectAllBox = $("#d20plus-importlist input#importlist-selectall");
-		selectAllBox.unbind("click");
-		selectAllBox.prop("checked", false);
-		selectAllBox.bind("click", function() {
-			d20plus.importer._importToggleSelectAll(importList, selectAllBox);
-		});
+
 		$("#d20plus-importlist button").unbind("click");
+
+		$("#importlist-selectall").prop("checked", false).bind("click", () => {
+			d20plus.importer._importSelectAll(importList);
+		});
+		$("#importlist-deselectall").prop("checked", false).bind("click", () => {
+			d20plus.importer._importDeselectAll(importList);
+		});
+		$("#importlist-selectvis").prop("checked", false).bind("click", () => {
+			d20plus.importer._importSelectVisible(importList);
+		});
+		$("#importlist-deselectvis").prop("checked", false).bind("click", () => {
+			d20plus.importer._importDeselectVisible(importList);
+		});
+
 		const $selGroupBy = $(`#organize-by`);
 		$selGroupBy.html("");
 		options.groupOptions = options.groupOptions || ["Alphabetical", "Source"];
@@ -4685,6 +4694,39 @@ var D20plus = function(version) {
 		}));
 	};
 
+	d20plus.importer._importSelectAll = function (importList) {
+		importList.items.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
+			if (e.tagName === "INPUT") {
+				$(e).prop("checked", true);
+			}
+		}));
+	};
+
+	d20plus.importer._importSelectVisible = function (importList) {
+		importList.visibleItems.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
+			if (e.tagName === "INPUT") {
+				$(e).prop("checked", true);
+			}
+		}));
+	};
+
+	d20plus.importer._importDeselectAll = function (importList) {
+		importList.items.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
+			if (e.tagName === "INPUT") {
+				$(e).prop("checked", false);
+			}
+		}));
+	};
+
+
+	d20plus.importer._importDeselectVisible = function (importList) {
+		importList.visibleItems.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
+			if (e.tagName === "INPUT") {
+				$(e).prop("checked", false);
+			}
+		}));
+	};
+
 	// Fetch adventure data from file
 	d20plus.adventures.load = function (url) {
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
@@ -4894,75 +4936,6 @@ var D20plus = function(version) {
 			d20plus.log(`Finished import of [${name}]`);
 		}, timeout);
 	}
-
-	d20plus.importer.simple = function (url, listProp, stringItemType, importFunction, addSource) {
-		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
-		const x2js = new X2JS();
-		let datatype = $("#import-datatype").val();
-		if (datatype === "json") datatype = "text";
-		$.ajax({
-			type: "GET",
-			url: url,
-			dataType: datatype,
-			success: function (data) {
-				try {
-					d20plus.log("Importing Data (" + $("#import-datatype").val().toUpperCase() + ")");
-					data = (datatype === "XML") ? x2js.xml2json(data) : JSON.parse(data.replace(/^\s*var\s*.*\s*=\s*/g, ""));
-					data[listProp].sort(function (a, b) {
-						if (a.name < b.name) return -1;
-						if (a.name > b.name) return 1;
-						return 0;
-					});
-					const $impList = $("#import-list");
-					const $l = $impList.find(".list");
-					$l.html("");
-					// build checkbox list
-					data[listProp].forEach((it, i) => {
-						try {
-							$l.append(`<label><input type="checkbox" data-listid="${i}"> <span class="name">${it.name}${addSource ? ` (${Parser.sourceJsonToAbv(it.source)})` : ""}</span></label>`);
-						} catch (e) {
-							console.log("Error building list!", e);
-							d20plus.addImportError(it.name);
-						}
-					});
-					const options = {
-						valueNames: ["name"]
-					};
-					const importList = new List ("import-list", options);
-					// reset search
-					$impList.find(".search").val("");
-					importList.search("");
-
-					$("#import-options").find("label").hide();
-					$("#import-overwrite").parent().show();
-					$("#delete-existing").parent().show();
-					$("#organize-by-source").parent().show();
-					$("#import-showplayers").parent().show();
-
-					const $importWindow = $("#d20plus-importlist");
-					$importWindow.dialog("open");
-
-					const $selectAllBox = $importWindow.find("input#importlist-selectall");
-					$selectAllBox.unbind("click");
-					$selectAllBox.prop("checked", false);
-					$selectAllBox.bind("click", () => {
-						d20plus._importToggleSelectAll(importList, $selectAllBox);
-					});
-
-					$importWindow.find("button").unbind("click");
-					$importWindow.find("button#importstart").bind("click", () => {
-						d20plus._importHandleStart(importList, data[listProp], stringItemType, importFunction)
-					})
-				} catch (e) {
-					console.log("> Exception ", e);
-				}
-			},
-			error: function(jqXHR, exception) {
-				d20plus.handleAjaxError(jqXHR, exception);
-			}
-		});
-		d20plus.timeout = 500;
-	};
 
 	d20plus.importer.getCleanText = function (str) {
 		const check = jQuery.parseHTML(str);
@@ -5278,9 +5251,18 @@ var D20plus = function(version) {
 `;
 
 	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import...">
-	<p><input type="checkbox" title="Select all" id="importlist-selectall"></p>
+	<p style="display: flex">
+		<button type="button" id="importlist-selectall" class="btn" style="margin: 0 2px;"><span>Select All</span></button>
+		<button type="button" id="importlist-deselectall" class="btn" style="margin: 0 2px;"><span>Deselect All</span></button>
+		<button type="button" id="importlist-selectvis" class="btn" style="margin: 0 2px;"><span>Select Visible</span></button>
+		<button type="button" id="importlist-deselectvis" class="btn" style="margin: 0 2px;"><span>Deselect Visible</span></button>
+	</p>
 	<p>
-	<span id="import-list"><input class="search" autocomplete="off" placeholder="Search list..."><br><span class="list" style="max-height: 600px; overflow-y: scroll; display: block; margin-top: 1em;"></span></span>
+	<span id="import-list">
+		<input class="search" autocomplete="off" placeholder="Search list...">
+		<br>
+		<span class="list" style="max-height: 550px; overflow-y: scroll; display: block; margin-top: 1em;"></span>
+	</span>
 	</p>
 	<p id="import-options">
 	<label>Group Handouts By... <select id="organize-by"></select></label>
