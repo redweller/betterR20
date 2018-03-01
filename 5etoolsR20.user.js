@@ -2135,38 +2135,44 @@ var D20plus = function(version) {
 										inputData = data.data;
 										inputData.Name = data.name;
 										inputData.Content = data.content;
-										character.$charsheet.find("*[accept]").each(function() {
+
+										const $charSheet = $(t.target);
+										$charSheet.find("*[accept]").each(function() {
 											const $this = $(this);
 											const acceptTag = $this.attr("accept");
-											if (inputData[acceptTag] !== undefined) {
-												if ("input" === this.tagName.toLowerCase()) {
-													if ("checkbox" === $this.attr("type")) {
-														if (inputData[acceptTag]) {
+											if (inputData[acceptTag]) {
+												if ("input" === $this[0].tagName.toLowerCase() && "checkbox" === $this.attr("type")) {
+													if ($this.attr("value") == inputData[acceptTag]) {
+														$this.attr("checked", "checked");
+														character.saveSheetValues(this);
+													} else {
+														$this.removeAttr("checked");
+														character.saveSheetValues(this);
+													}
+												} else {
+													if ("input" === $this[0].tagName.toLowerCase() && "radio" === $this.attr("type")) {
+														if ($this.attr("value") == inputData[acceptTag]) {
 															$this.attr("checked", "checked");
+															character.saveSheetValues(this);
 														} else {
 															$this.removeAttr("checked");
-														}
-													} else if ("radio" === $this.attr("type")) {
-														if (inputData[acceptTag]) {
-															$this.attr("checked", "checked");
-														} else {
-															$this.removeAttr("checked");
+															character.saveSheetValues(this);
 														}
 													} else {
-														$this.val(inputData[acceptTag]);
+														if ("select" === $this[0].tagName.toLowerCase()) {
+															$this.find("option").each(function () {
+																var e = $(this);
+																(e.attr("value") === inputData[acceptTag] || e.text() === inputData[acceptTag]) && e.attr("selected", "selected")
+															});
+															character.saveSheetValues(this);
+														} else {
+															$(this).val(inputData[acceptTag]);
+															character.saveSheetValues(this)
+														}
 													}
-												} else if ("select" === this.tagName.toLowerCase()) {
-													$this.find("option").each(function () {
-														const $this = $(this);
-														if ($this.attr("value") === inputData[acceptTag] || $this.text() === inputData[acceptTag]) $this.attr("selected", "selected");
-													});
-												} else {
-													$this.val(inputData[acceptTag]);
 												}
-												// persist the value
-												character.saveSheetValues(this);
 											}
-										});
+										})
 									}
 
 									character.model.view._updateSheetValues();
@@ -2178,23 +2184,32 @@ var D20plus = function(version) {
 									d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 								}
 							} else {
+								// rename some variables...
+								const e = character;
+								const n = i;
+
+								// original roll20 code
 								console.log("Compendium item dropped onto target!");
 								t.originalEvent.dropHandled = !0;
-								inputData = $(i.helper[0]).attr("data-pagename");
-								console.log("https://app.roll20.net/compendium/" + COMPENDIUM_BOOK_NAME + "/" + inputData + ".json?plaintext=true");
-								$.get("https://app.roll20.net/compendium/" + COMPENDIUM_BOOK_NAME + "/" + inputData + ".json?plaintext=true", function(i) {
-									var n = i.data;
-									n.Name = i.name;
-									n.Content = i.content;
-									var r = $(t.target);
-									r.find("*[accept]").each(function() {
-										var t = $(this);
-										var i = t.attr("accept");
-										n[i] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") === n[i] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") === n[i] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-											var e = $(this);
-											(e.attr("value") === n[i] || e.text() === n[i]) && e.attr("selected", "selected");
-										}) : $(this).val(n[i]), character.saveSheetValues(this));
-									});
+								window.wantsToReceiveDrop(this, t, function() {
+									var i = $(n.helper[0]).attr("data-pagename");
+									console.log(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true"),
+										$.get(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true", function(n) {
+											var r = n.data;
+											r.Name = n.name,
+												r.uniqueName = i,
+												r.Content = n.content;
+											var o = $(t.target);
+											o.find("*[accept]").each(function() {
+												var t = $(this)
+													, n = t.attr("accept");
+												r[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+													var e = $(this);
+													(e.attr("value") === r[n] || e.text() === r[n]) && e.attr("selected", "selected")
+												}) : $(this).val(r[n]),
+													e.saveSheetValues(this))
+											})
+										})
 								});
 							}
 						}
