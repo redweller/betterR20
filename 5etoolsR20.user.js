@@ -2492,7 +2492,7 @@ var D20plus = function(version) {
 					character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
 					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp[0] : ""});
 					character.attribs.create({name: "npc_hpformula", current: hpformula != null ? hpformula[1] || "" : ""});
-					const parsedSpeed =Parser.getSpeedString(data.speed);
+					const parsedSpeed = Parser.getSpeedString(data);
 					data.npc_speed = parsedSpeed;
 					if (d20plus.sheet === "shaped") {
 						data.npc_speed = data.npc_speed.toLowerCase();
