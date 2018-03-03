@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.15
+// @version      1.2.16
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1923,7 +1923,7 @@ var D20plus = function(version) {
 										const race = data.Vetoolscontent;
 
 										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
-										d20plus.importer.addOrUpdateAttr(character.model, `speed`, EntryRenderer.race.getSpeedString(race));
+										d20plus.importer.addOrUpdateAttr(character.model, `speed`, Parser.getSpeedString(race));
 										race.entries.forEach(e => {
 											const renderer = new EntryRenderer();
 											renderer.setBaseUrl(BASE_SITE_URL);
@@ -2492,7 +2492,8 @@ var D20plus = function(version) {
 					character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
 					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp[0] : ""});
 					character.attribs.create({name: "npc_hpformula", current: hpformula != null ? hpformula[1] || "" : ""});
-					data.npc_speed = data.speed;
+					const parsedSpeed = Parser.getSpeedString(data);
+					data.npc_speed = parsedSpeed;
 					if (d20plus.sheet === "shaped") {
 						data.npc_speed = data.npc_speed.toLowerCase();
 						var match = data.npc_speed.match(/^\s*(\d+)\s?(ft\.?|m\.?)/);
@@ -2500,7 +2501,7 @@ var D20plus = function(version) {
 							data.speed = match[1] + ' ' + match[2];
 							character.attribs.create({name: "speed", current: match[1] + ' ' + match[2]});
 						}
-						data.npc_speed = data.speed;
+						data.npc_speed = parsedSpeed;
 						var regex = /(burrow|climb|fly|swim)\s+(\d+)\s?(ft\.?|m\.?)/g;
 						var speeds = void 0;
 						while ((speeds = regex.exec(data.npc_speed)) !== null) character.attribs.create({name: "speed_"+speeds[1], current: speeds[2] + ' ' + speeds[3]});
@@ -2511,7 +2512,7 @@ var D20plus = function(version) {
 						return Math.floor((Number(score) - 10) / 2);
 					}
 
-					character.attribs.create({name: "npc_speed", current: data.speed != null ? data.speed : ""});
+					character.attribs.create({name: "npc_speed", current: parsedSpeed != null ? parsedSpeed : ""});
 					character.attribs.create({name: "strength", current: data.str});
 					character.attribs.create({name: "strength_base", current: data.str});
 					character.attribs.create({name: "strength_mod", current: calcMod(data.str)});
@@ -3782,7 +3783,7 @@ var D20plus = function(version) {
 			<p>
 				<strong>Ability Scores:</strong> ${ability.asText}<br>
 				<strong>Size:</strong> ${Parser.sizeAbvToFull(data.size)}<br>
-				<strong>Speed:</strong> ${EntryRenderer.race.getSpeedString(data)}<br>
+				<strong>Speed:</strong> ${Parser.getSpeedString(data)}<br>
 			</p>
 		`);
 		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
