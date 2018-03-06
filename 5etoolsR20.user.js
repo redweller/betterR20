@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.16
+// @version      1.2.17
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -5066,7 +5066,7 @@ var D20plus = function(version) {
 					<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
 						<img src="${url}" style="width: 30px; max-height: 30px; display: inline-block" draggable="false">
 						<div class="dd-content name" style="display: inline-block; width: 35%;" data-url="${url}">${name}</div>
-						<span class="url" style="display: inline-block; width: 40%;">${url}</span>
+						<a href="${url}"><span class="url" style="display: inline-block; width: 40%;">${url}</span></a>
 					</li>
 				`);
 			const $btnDel = $(`<span class="delete btn btn-danger"><span class="pictos">#</span></span>`).on("click", () => {
