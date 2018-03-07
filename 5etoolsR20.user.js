@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.20
+// @version      1.2.21
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -5019,6 +5019,8 @@ var D20plus = function(version) {
 			if (!name || !url) {
 				alert("Missing required fields!")
 			} else {
+				artList.search();
+				artList.filter();
 				const $liArt = getArtLi(name, url);
 				$artList.append($liArt);
 				refreshCustomArtList();
@@ -5032,6 +5034,8 @@ var D20plus = function(version) {
 			const $btnMassAddSubmit = $(`#art-list-multi-add-btn-submit`);
 			$btnMassAddSubmit.off("click");
 			$btnMassAddSubmit.on("click", () => {
+				artList.search();
+				artList.filter();
 				const $iptUrls = $(`#art-list-multi-add-area`);
 				const massUrls = $iptUrls.val();
 				const spl = massUrls.split("\n").map(s => s.trim()).filter(s => s);
@@ -5086,8 +5090,6 @@ var D20plus = function(version) {
 		}
 
 		function refreshCustomArtList () {
-			artList.search();
-			artList.filter();
 			artList.reIndex();
 			const custom = [];
 			artList.items.forEach(i => {
