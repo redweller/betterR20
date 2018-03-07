@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.18
+// @version      1.2.19
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -171,7 +171,12 @@ var D20plus = function(version) {
 				"_type": "boolean"
 			},
 			"emoji": {
-				"name": "Add emoji replacement to chat",
+				"name": "Add Emoji Replacement to Chat",
+				"default": true,
+				"_type": "boolean"
+			},
+			"showCustomArtPreview": {
+				"name": "Show Custom Art Previews",
 				"default": true,
 				"_type": "boolean"
 			}
@@ -454,6 +459,7 @@ var D20plus = function(version) {
 		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
 		d20.Campaign.initiativewindow.rebuildInitiativeList();
 		d20plus.updateDifficulty();
+		if (d20plus.art.refreshList) d20plus.art.refreshList();
 	};
 
 	d20plus.getCfgKey = function (group, val) {
@@ -1086,7 +1092,7 @@ var D20plus = function(version) {
 		const tc = d20.textchat.$textarea;
 		$("#textchat-input").off("click", "button")
 		$("#textchat-input").on("click", "button", function() {
-			if (!window.is_gm ||d20plus.getCfgVal("interface", "emoji")) {
+			if (!window.is_gm || d20plus.getCfgVal("interface", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					const clean = m1.replace(/:/g, "");
 					return d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
@@ -5060,12 +5066,15 @@ var D20plus = function(version) {
 		});
 
 		makeDraggables();
+		d20plus.art.refreshList = refreshCustomArtList;
 
 		function getArtLi (name, url) {
+			const showImage = d20plus.getCfgVal("interface", "showCustomArtPreview");
 			const $liArt = $(`
 					<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
+						${showImage ? `<img src="${url}" style="width: 30px; max-height: 30px; display: inline-block" draggable="false">` : ""}
 						<div class="dd-content name" style="display: inline-block; width: 35%;" data-url="${url}">${name}</div>
-						<a href="${url}"><span class="url" style="display: inline-block; width: 55%;">${url}</span></a>
+						<a href="${url}"><span class="url" style="display: inline-block; width: ${showImage ? "40%" : "55%%"};">${url}</span></a>
 					</li>
 				`);
 			const $btnDel = $(`<span class="delete btn btn-danger"><span class="pictos">#</span></span>`).on("click", () => {
@@ -5077,6 +5086,8 @@ var D20plus = function(version) {
 		}
 
 		function refreshCustomArtList () {
+			artList.search();
+			artList.filter();
 			artList.reIndex();
 			const custom = [];
 			artList.items.forEach(i => {
