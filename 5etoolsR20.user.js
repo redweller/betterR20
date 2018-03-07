@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.17
+// @version      1.2.18
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -5064,9 +5064,8 @@ var D20plus = function(version) {
 		function getArtLi (name, url) {
 			const $liArt = $(`
 					<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
-						<img src="${url}" style="width: 30px; max-height: 30px; display: inline-block" draggable="false">
 						<div class="dd-content name" style="display: inline-block; width: 35%;" data-url="${url}">${name}</div>
-						<a href="${url}"><span class="url" style="display: inline-block; width: 40%;">${url}</span></a>
+						<a href="${url}"><span class="url" style="display: inline-block; width: 55%;">${url}</span></a>
 					</li>
 				`);
 			const $btnDel = $(`<span class="delete btn btn-danger"><span class="pictos">#</span></span>`).on("click", () => {
@@ -5225,7 +5224,7 @@ var D20plus = function(version) {
 	<br>
 	<p>
 		<span style="display: inline-block; width: 40%; font-weight: bold;">Name</span>
-		<span style="display: inline-block; font-weight: bold;">Url</span>
+		<span style="display: inline-block; font-weight: bold;">URL</span>
 	</p>
 	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
 </div>
