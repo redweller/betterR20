@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.21
+// @version      1.3.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -897,6 +897,8 @@ var D20plus = function(version) {
 		d20plus.addHTML();
 
 		if (window.is_gm) {
+			d20plus.log("> Add FX Tools");
+			d20plus.addFXTools();
 			d20plus.log("> Bind Graphics");
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
@@ -1711,6 +1713,60 @@ var D20plus = function(version) {
 
 		$("#journal btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 	};
+
+	d20plus.addFXTools = function () {
+		function setMode(e) {
+			console.log(e),
+			"text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+				"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
+				$("#floatingtoolbar li").removeClass("activebutton"),
+				$("#" + e).addClass("activebutton"),
+			"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
+			"rect" == e && ($("#drawingtools").addClass("activebutton"),
+				$("#drawingtools").removeClass("text path polygon").addClass("rect")),
+			"text" == e && ($("#drawingtools").addClass("activebutton"),
+				$("#drawingtools").removeClass("rect path polygon").addClass("text")),
+			"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon").addClass("path"),
+				"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+			"pan" !== e && "select" !== e && d20.engine.unselect(),
+				"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
+					d20.token_editor.removeRadialMenu(),
+					$("#editor-wrapper").addClass("panning")) : $("#editor-wrapper").removeClass("panning"),
+			"select" == e && $("#select").addClass("select").removeClass("pan").addClass("activebutton"),
+				$("#floatingtoolbar .mode").hide(),
+			("text" == e || "select" == e) && $("#floatingtoolbar ." + e).show(),
+				"gridalign" == e ? $("#gridaligninstructions").show() : "gridalign" === d20.engine.mode && $("#gridaligninstructions").hide(),
+				"targeting" === e ? ($("#targetinginstructions").show(),
+					$("#upperCanvas").addClass("targeting"),
+					d20.engine.canvas.hoverCursor = "crosshair") : "targeting" === d20.engine.mode && ($("#targetinginstructions").hide(),
+					$("#upperCanvas").removeClass("targeting"),
+				d20.engine.nextTargetCallback && _.defer(function() {
+					d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
+				}),
+					d20.engine.canvas.hoverCursor = "move"),
+				console.log("Switch mode to " + e),
+				d20.engine.mode = e,
+				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1,
+				"text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e ? ($("#secondary-toolbar").show(),
+					$("#secondary-toolbar .mode").hide(),
+					$("#secondary-toolbar ." + e).show(),
+				("path" == e || "rect" == e || "polygon" == e) && ("objects" == window.currentEditingLayer ? ($("#path_strokecolor").val(window.currentPlayer.get("color")).trigger("change-silent"),
+					$("#path_fillcolor").val("transparent").trigger("change-silent")) : "" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
+					$("#path_fillcolor").val("transparent").trigger("change-silent")),
+					d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
+					d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
+					$("#path_width").trigger("change")),
+				"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent")) : $("#secondary-toolbar").hide(),
+				$("#floatingtoolbar").trigger("blur")
+		}
+		d20plus.setMode = setMode;
+
+		const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
+		$fxMode.on("click", () => {
+			d20plus.setMode("fxtools");
+		});
+		$(`#drawingtools`).after($fxMode);
+	}
 
 	d20plus.initQuickSearch = function ($iptSearch, $outSearch) {
 		$iptSearch.on("keyup", () => {
