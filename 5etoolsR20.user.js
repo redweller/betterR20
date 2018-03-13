@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.2.21
+// @version      1.3.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -13,6 +13,20 @@
 // ==/UserScript==
 
 /* eslint no-console: "off" */
+
+OBJECT_DEFINE_PROPERTY = Object.defineProperty;
+Object.defineProperty = function (obj, prop, vals) {
+	try {
+		if (prop === "largefeats" || prop === "xlfeats") {
+			vals.value = true;
+		}
+		OBJECT_DEFINE_PROPERTY(obj, prop, vals);
+	} catch (e) {
+		console.log("failed to define property:");
+		console.log(e);
+		console.log(obj, prop, vals);
+	}
+};
 
 var D20plus = function(version) {
 
@@ -897,6 +911,8 @@ var D20plus = function(version) {
 		d20plus.addHTML();
 
 		if (window.is_gm) {
+			d20plus.log("> Add Pro features");
+			d20plus.addProFeatures();
 			d20plus.log("> Bind Graphics");
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
@@ -1711,6 +1727,72 @@ var D20plus = function(version) {
 
 		$("#journal btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 	};
+
+	d20plus.addProFeatures = function () {
+		function setMode(e) {
+			console.log(e),
+			"text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+				"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
+				$("#floatingtoolbar li").removeClass("activebutton"),
+				$("#" + e).addClass("activebutton"),
+			"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
+			"rect" == e && ($("#drawingtools").addClass("activebutton"),
+				$("#drawingtools").removeClass("text path polygon").addClass("rect")),
+			"text" == e && ($("#drawingtools").addClass("activebutton"),
+				$("#drawingtools").removeClass("rect path polygon").addClass("text")),
+			"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon").addClass("path"),
+				"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+			"pan" !== e && "select" !== e && d20.engine.unselect(),
+				"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
+					d20.token_editor.removeRadialMenu(),
+					$("#editor-wrapper").addClass("panning")) : $("#editor-wrapper").removeClass("panning"),
+			"select" == e && $("#select").addClass("select").removeClass("pan").addClass("activebutton"),
+				$("#floatingtoolbar .mode").hide(),
+			("text" == e || "select" == e) && $("#floatingtoolbar ." + e).show(),
+				"gridalign" == e ? $("#gridaligninstructions").show() : "gridalign" === d20.engine.mode && $("#gridaligninstructions").hide(),
+				"targeting" === e ? ($("#targetinginstructions").show(),
+					$("#upperCanvas").addClass("targeting"),
+					d20.engine.canvas.hoverCursor = "crosshair") : "targeting" === d20.engine.mode && ($("#targetinginstructions").hide(),
+					$("#upperCanvas").removeClass("targeting"),
+				d20.engine.nextTargetCallback && _.defer(function() {
+					d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
+				}),
+					d20.engine.canvas.hoverCursor = "move"),
+				console.log("Switch mode to " + e),
+				d20.engine.mode = e,
+				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1,
+				"text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e ? ($("#secondary-toolbar").show(),
+					$("#secondary-toolbar .mode").hide(),
+					$("#secondary-toolbar ." + e).show(),
+				("path" == e || "rect" == e || "polygon" == e) && ("objects" == window.currentEditingLayer ? ($("#path_strokecolor").val(window.currentPlayer.get("color")).trigger("change-silent"),
+					$("#path_fillcolor").val("transparent").trigger("change-silent")) : "" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
+					$("#path_fillcolor").val("transparent").trigger("change-silent")),
+					d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
+					d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
+					$("#path_width").trigger("change")),
+				"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent")) : $("#secondary-toolbar").hide(),
+				$("#floatingtoolbar").trigger("blur")
+		}
+		d20plus.setMode = setMode;
+
+		const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
+		$fxMode.on("click", () => {
+			d20plus.setMode("fxtools");
+		});
+		$(`#drawingtools`).after($fxMode);
+
+		// add lighting layer tool
+		$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+
+		// ensure tokens have editable sight
+		$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
+		// show dynamic lighting/etc page settings
+		$("#tmpl_pagesettings").replaceWith(d20plus.template_pageSettings);
+		$("#page-toolbar").on("mousedown", ".settings", function() {
+			var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
+			e.view._template = $.jqotec("#tmpl_pagesettings");
+		});
+	}
 
 	d20plus.initQuickSearch = function ($iptSearch, $outSearch) {
 		$iptSearch.on("keyup", () => {
@@ -5665,6 +5747,451 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 	d20plus.actionMacroLegendary = function (tokenactiontext) {
 		return "/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r" + tokenactiontext + "}} ";
 	}
+
+	d20plus.template_TokenEditor = `
+	 <script id='tmpl_tokeneditor' type='text/html'>
+      <div class='dialog largedialog tokeneditor' style='display: block;'>
+        <ul class='nav nav-tabs'>
+          <li class='active'>
+            <a data-tab='basic' href='javascript:void(0);'>Basic</a>
+          </li>
+          <li>
+            <a data-tab='advanced' href='javascript:void(0);'>Advanced</a>
+          </li>
+        </ul>
+        <div class='tab-content'>
+          <div class='basic tab-pane'>
+            <div style='float: left; width: 300px;'>
+              <div style='float: right; margin-right: 85px; font-size: 1.2em; position: relative; top: -4px; cursor: help;'>
+                <a class='showtip pictos' title="You can choose to have the token represent a Character from the Journal. If you do, the token's name, controlling players, and bar values will be based on the Character. Most times you'll just leave this set to None/Generic.">?</a>
+              </div>
+              <label>Represents Character</label>
+              <select class='represents'>
+                <option value=''>None/Generic Token</option>
+                <$ _.each(window.Campaign.activeCharacters(), function(char) { $>
+                <option value="<$!char.id$>"><$!char.get("name")$></option>
+                <$ }); $>
+              </select>
+              <div class='clear'></div>
+              <div style='float: right; margin-right: 75px;'>
+                <label>
+                  <input class='showname' type='checkbox' value='1'>
+                  Show nameplate?
+                </label>
+              </div>
+              <label>Name</label>
+              <input class='name' style='width: 210px;' type='text'>
+              <div class='clear'></div>
+              <label>Controlled By</label>
+              <$ if(this.character) { $>
+              <p>(Determined by Character settings)</p>
+              <$ } else { $>
+              <select class='controlledby chosen' multiple='true'>
+                <option value='all'>All Players</option>
+                <$ window.Campaign.players.each(function(player) { $>
+                <option value="<$!player.id$>"><$!player.get("displayname")$></option>
+                <$ }); $>
+              </select>
+              <$ } $>
+              <div class='clear' style='height: 10px;'></div>
+              <label>
+                Tint Color
+              </label>
+              <input class='tint_color colorpicker' type='text'>
+              <div class='clear'></div>
+            </div>
+            <div style='float: left; width: 300px;'>
+              <label>
+                <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar1_color')$>'></span>
+                Bar 1
+              </label>
+              <div class='clear' style='height: 1px;'></div>
+              <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+                <input class='bar1_value' type='text'>
+                /
+                <input class='bar1_max' type='text'>
+                <$ if(this.character) { $>
+                <div style='float: right;'>
+                  <select class='bar1_link' style='width: 125px;'>
+                    <option value=''>None</option>
+                    <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
+                    <option value="<$!attrib.id$>"><$!attrib.name$>
+                    <$ }); $>
+                  </select>
+                  <a class='pictos showtip' style='font-size: 1.2em; position: relative; top: -5px; margin-left: 10px; cursor: help;' title='You can choose an Attribute from the Character this token represents. The values for this bar will be synced to the values of that Attribute.'>?</a>
+                </div>
+                <$ } $>
+              </div>
+              <span style='color: #888;'>(Leave blank for no bar)</span>
+              <div class='clear'></div>
+              <label>
+                <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar2_color')$>'></span>
+                Bar 2
+              </label>
+              <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+                <input class='bar2_value' type='text'>
+                /
+                <input class='bar2_max' type='text'>
+                <$ if(this.character) { $>
+                <div style='float: right; margin-right: 30px;'>
+                  <select class='bar2_link' style='width: 125px;'>
+                    <option value=''>None</option>
+                    <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
+                    <option value="<$!attrib.id$>"><$!attrib.name$>
+                    <$ }); $>
+                  </select>
+                </div>
+                <$ } $>
+              </div>
+              <span style='color: #888;'>(Leave blank for no bar)</span>
+              <div class='clear'></div>
+              <label>
+                <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar3_color')$>'></span>
+                Bar 3
+              </label>
+              <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+                <input class='bar3_value' type='text'>
+                /
+                <input class='bar3_max' type='text'>
+                <$ if(this.character) { $>
+                <div style='float: right; margin-right: 30px;'>
+                  <select class='bar3_link' style='width: 125px;'>
+                    <option value=''>None</option>
+                    <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
+                    <option value="<$!attrib.id$>"><$!attrib.name$>
+                    <$ }); $>
+                  </select>
+                </div>
+                <$ } $>
+              </div>
+              <span style='color: #888;'>(Leave blank for no bar)</span>
+              <div class='clear' style='height: 10px;'></div>
+              <div style='float: left; width: 130px;'>
+                <div style='float: right;'>
+                  <label>
+                    <input class='aura1_square' type='checkbox'>
+                    Square
+                  </label>
+                </div>
+                <label>
+                  Aura 1
+                </label>
+                <div class='inlineinputs' style='margin-top: 5px;'>
+                  <input class='aura1_radius' type='text'>
+                  <$!window.Campaign.activePage().get("scale_units")$>.
+                  <input class='aura1_color colorpicker' type='text'>
+                </div>
+              </div>
+              <div style='float: left; width: 130px; margin-left: 20px;'>
+                <div style='float: right;'>
+                  <label>
+                    <input class='aura2_square' type='checkbox'>
+                    Square
+                  </label>
+                </div>
+                <label>
+                  Aura 2
+                </label>
+                <div class='inlineinputs' style='margin-top: 5px;'>
+                  <input class='aura2_radius' type='text'>
+                  <$!window.Campaign.activePage().get("scale_units")$>.
+                  <input class='aura2_color colorpicker' type='text'>
+                </div>
+              </div>
+              <div class='clear'></div>
+            </div>
+            <div class='clear'></div>
+            <hr>
+            <h4>
+              GM Notes
+              <span style='font-weight: regular; font-size: 0.9em;'>(Only visible to GMs)</span>
+            </h4>
+            <textarea class='gmnotes'></textarea>
+            <div class='clear'></div>
+            <label>&nbsp;</label>
+          </div>
+          <div class='advanced tab-pane'>
+            <div class='row-fluid'>
+              <div class='span6'>
+                <h4>Player Permissions</h4>
+                <div style='margin-left: 5px;'>
+                  <div class='inlineinputs'>
+                    <label style='width: 40px;'>Name</label>
+                    <label>
+                      <input class='showplayers_name' type='checkbox'>
+                      See
+                    </label>
+                    <label>
+                      <input class='playersedit_name' type='checkbox'>
+                      Edit
+                    </label>
+                  </div>
+                  <div class='clear' style='height: 5px;'></div>
+                  <div class='inlineinputs'>
+                    <label style='width: 40px;'>Bar 1</label>
+                    <label>
+                      <input class='showplayers_bar1' type='checkbox'>
+                      See
+                    </label>
+                    <label>
+                      <input class='playersedit_bar1' type='checkbox'>
+                      Edit
+                    </label>
+                  </div>
+                  <div class='clear' style='height: 5px;'></div>
+                  <div class='inlineinputs'>
+                    <label style='width: 40px;'>Bar 2</label>
+                    <label>
+                      <input class='showplayers_bar2' type='checkbox'>
+                      See
+                    </label>
+                    <label>
+                      <input class='playersedit_bar2' type='checkbox'>
+                      Edit
+                    </label>
+                  </div>
+                  <div class='clear' style='height: 5px;'></div>
+                  <div class='inlineinputs'>
+                    <label style='width: 40px;'>Bar 3</label>
+                    <label>
+                      <input class='showplayers_bar3' type='checkbox'>
+                      See
+                    </label>
+                    <label>
+                      <input class='playersedit_bar3' type='checkbox'>
+                      Edit
+                    </label>
+                  </div>
+                  <div class='clear' style='height: 5px;'></div>
+                  <div class='inlineinputs'>
+                    <label style='width: 40px;'>Aura 1</label>
+                    <label>
+                      <input class='showplayers_aura1' type='checkbox'>
+                      See
+                    </label>
+                    <label>
+                      <input class='playersedit_aura1' type='checkbox'>
+                      Edit
+                    </label>
+                  </div>
+                  <div class='clear' style='height: 5px;'></div>
+                  <div class='inlineinputs'>
+                    <label style='width: 40px;'>Aura 2</label>
+                    <label>
+                      <input class='showplayers_aura2' type='checkbox'>
+                      See
+                    </label>
+                    <label>
+                      <input class='playersedit_aura2' type='checkbox'>
+                      Edit
+                    </label>
+                  </div>
+                  <div class='clear' style='height: 10px;'></div>
+                  <small style='text-align: left; font-size: 0.9em;'>
+                    See: All Players can view
+                    <br>
+                    Edit: Controlling players can view and change
+                  </small>
+                </div>
+                <div class='clear'></div>
+              </div>
+              <div class='span6'>
+                <h4>Emits Light</h4>
+                <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+                  <input class='light_radius' type='text'>
+                  <$!window.Campaign.activePage().get("scale_units")$>.
+                  <input class='light_dimradius' type='text'>
+                  <$!window.Campaign.activePage().get("scale_units")$>.
+                  <input class='light_angle' placeholder='360' type='text'>
+                  <span style='font-size: 2.0em;'>&deg;</span>
+                </div>
+                <span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
+                <div class='inlineinputs' style='margin-top: 5px;'>
+                  <label style='margin-left: 7px;'>
+                    <input class='light_otherplayers' type='checkbox'>
+                    All Players See Light
+                  </label>
+                </div>
+                <div class='inlineinputs' style='margin-top: 2px;'>
+                  <label style='margin-left: 7px;'>
+                    <input class='light_hassight' type='checkbox'>
+                    Has Sight
+                  </label>
+                  <span style="margin-left: 9px; margin-right: 28px;">/</span>
+                  Angle:
+                  <input class='light_losangle' placeholder='360' type='text'>
+                  <span style='font-size: 2.0em;'>&deg;</span>
+                </div>
+                <div class='inlineinputs' style='margin-left: 90px; margin-top: 5px;'>
+                  <span style="margin-left: 8px; margin-right: 12px;">/</span>
+                  Multiplyer:
+                  <input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
+                </div>
+                <h4>Advanced Fog of War</h4>
+                <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+                  <input class='advfow_viewdistance' type='text'>
+                  <$!window.Campaign.activePage().get("scale_units")$>.
+                </div>
+                <span style='color: #888; padding-left: 5px;'>View Distance</span>
+                <!-- %h4 -->
+                <!-- Token Actions -->
+                <!-- %a.pictos.showtip(style="margin-left: 15px; cursor: help; font-size: 1.1em; position: relative; top: -2px;" title="Choose from Macros and Abilities of linked Character to show when token is selected") ? -->
+                <!-- %p -->
+                <!-- %strong Add New Token Action: -->
+                <!-- %br -->
+                <!-- %select.chosen(placeholder="Choose from the list...") -->
+                <!-- %option(value="") Choose from the list... -->
+                <!-- <$ if(this.character) { $> -->
+                <!-- <optgroup label="Abilities"> -->
+                <!-- <$ this.character.abilities.each(function(abil) { $> -->
+                <!-- <option value="ability|<$!abil.get('id')$>"><$!abil.get('name')$></option> -->
+                <!-- <$ }); $> -->
+                <!-- </optgroup> -->
+                <!-- <$ } $> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+	</script>
+	`
+
+	d20plus.template_pageSettings = `
+<script id="tmpl_pagesettings" type="text/html">
+      <label style='padding-top: 4px;'>
+        <strong>Page Size</strong>
+      </label>
+      <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" />
+      un. by
+      <input type="number" class="height" style="width: 50px; margin-left: 5px;" value="<$!this.model.get("height")$>" />
+      un.
+      <small style='display: block; font-size: 0.9em; margin-left: 110px;'>width by height, 1 unit = 70 pixels</small>
+      <div class='clear' style='height: 15px;'></div>
+      <label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
+      <input type="number" class="scale_number" style="width: 35px;" value="<$!this.model.get("scale_number")$>" />
+      <select class='scale_units' style='width: 50px; position: relative; top: 2px;'>
+        <option value='ft'>ft.</option>
+        <option value='m'>m.</option>
+        <option value='km'>km.</option>
+        <option value='mi'>mi.</option>
+        <option value='in'>in.</option>
+        <option value='cm'>cm.</option>
+        <option value='un'>un.</option>
+        <option value='hex'>hex</option>
+        <option value='sq.'>sq.</option>
+      </select>
+      <div class='clear' style='height: 15px;'></div>
+      <label>
+        <strong>Background</strong>
+      </label>
+      <input class='pagebackground' type='text'>
+      <hr>
+      <label style='position: relative; top: 8px;'>
+        <strong>Grid</strong>
+      </label>
+      <label class='checkbox'>
+        <input class='gridenabled' type='checkbox' value='1'>
+        Enabled, Size:
+      </label>
+      <input type="number" class="snappingincrement" style="width: 35px;" value="<$!this.model.get("snapping_increment")$>" /> units
+      <div class='clear' style='height: 7px;'></div>
+      <label style='margin-left: 55px; position: relative; top: 4px;'>
+        <a class='showtip pictos' title='Type of formula to use for calculating distances when using the measurement tool. Note: does not apply to Hex grids.'>?</a>
+        Diagonals
+      </label>
+      <select class='diagonaltype' style='width: 100px;'>
+        <option value="foure" <$ if(this.model.get("diagonaltype") == "foure") { $>selected<$ } $> >D&D 4E Compatible (Default)</option>
+        <option value="threefive" <$ if(this.model.get("diagonaltype") == "threefive") { $>selected<$ } $> >Pathfinder/3.5E Compatible</option>
+        <option value="pythagorean" <$ if(this.model.get("diagonaltype") == "pythagorean") { $>selected<$ } $> >Euclidean</option>
+        <option value="manhattan" <$ if(this.model.get("diagonaltype") == "manhattan") { $>selected<$ } $> >Manhattan</option>
+      </select>
+      <div class='clear' style='height: 7px;'></div>
+      <label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
+      <select class='gridtype' style='width: 100px;'>
+        <option value="square" <$ if(this.model.get("grid_type") == "square") { $>selected<$ } $> >Square</option>
+        <option value="hex" <$ if(this.model.get("grid_type") == "hex") { $>selected<$ } $> >Hex (V)</option>
+        <option value="hexr" <$ if(this.model.get("grid_type") == "hexr") { $>selected<$ } $> >Hex (H)</option>
+      </select>
+      <div class='clear' style='height: 2px;'></div>
+      <label class='checkbox' style='margin-left: 130px;'>
+        <input class='gridlabels' type='checkbox' value='1'>&nbsp; Show Labels (Hex Only)</input>
+      </label>
+      <div class='clear' style='height: 10px;'></div>
+      <label style='margin-left: 55px;'>Color</label>
+      <input class='gridcolor' type='text'>
+      <div class='clear' style='height: 7px;'></div>
+      <label style='margin-left: 55px;'>Opacity</label>
+      <div class='gridopacity'></div>
+      <div class='clear' style='height: 10px'></div>
+      <hr>
+      <label style='position: relative; top: -2px;'>
+        <strong>Fog of War</strong>
+      </label>
+      <label class='checkbox'>
+        <input class='darknessenabled' type='checkbox' value='1'>&nbsp; Enabled</input>
+      </label>
+      <hr>
+      <label style='position: relative; top: 3px; width: 85px; padding-left: 15px;'>
+        <strong>Advanced Fog of War</strong>
+      </label>
+      <label class='checkbox'>
+        <input class='advancedfowenabled showtip' style='margin-top: 8px; margin-bottom: 8px;' type='checkbox' value='1'>&nbsp; Enabled</input>
+      </label>
+      <span class='no_grid' style='display: none;'>
+        , Size:
+        <input type="number" class="advancedfowgridsize" style="width: 30px;" value="<$!this.model.get("adv_fow_grid_size")$>" /> units
+      </span>
+      <br>
+      <label class='checkbox'>
+        <input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>&nbsp; Show Grid</input>
+      </label>
+      <br>
+      <label class='checkbox' style='margin-left: 110px;'>
+        <input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>&nbsp; Dim Light Reveals</input>
+      </label>
+      <br>
+      <br>
+      <label style='position: relative; top: -2px;'>
+        <strong>Dynamic Lighting</strong>
+      </label>
+      <label class='checkbox'>
+        <input class='lightingenabled showtip' type='checkbox' value='1'>&nbsp; Enabled</input>
+      </label>
+      <br>
+      <label class='checkbox'>
+        <input class='lightenforcelos showtip' title="Player's line of sight set by what tokens they can control." type='checkbox' value='1'>&nbsp; Enforce Line of Sight</input>
+      </label>
+      <br>
+      <br>
+      <label class='checkbox' style='margin-left: 110px;'>
+        <input class='lightingupdate' type='checkbox' value='1'>&nbsp; Only Update on Drop</input>
+      </label>
+      <br>
+      <label class='checkbox' style='margin-left: 110px;'>
+        <input class='lightrestrictmove' title="Don't allow player tokens to move through Dynamic Lighting walls. Can be enabled even if lighting is not used." type='checkbox' value='1'>&nbsp; Restrict Movement</input>
+      </label>
+      <br>
+      <label class='checkbox' style='margin-left: 110px;'>
+        <input class='lightglobalillum' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>&nbsp; Global Illumination</input>
+      </label>
+      <hr>
+      <label style='font-weight: bold;'>GM Opacity</label>
+      <div class='fogopacity'></div>
+      <div class='clear'></div>
+      <hr>
+      <label style='font-weight: bold;'>Play on Load</label>
+      <select class='pagejukeboxtrigger' style='width: 180px;'></select>
+      <div class='clear'></div>
+      <hr>
+      <button class='delete btn btn-danger' style='float: right;'>
+        Delete Page
+      </button>
+      <button class='archive btn'>
+        Archive Page
+      </button>
+      <div class='clear'></div>
+</script>
+	`;
 	
 	d20plus.chat.emojiIndex = {joy:!0,heart:!0,heart_eyes:!0,sob:!0,blush:!0,unamused:!0,kissing_heart:!0,two_hearts:!0,weary:!0,ok_hand:!0,pensive:!0,smirk:!0,grin:!0,recycle:!0,wink:!0,thumbsup:!0,pray:!0,relieved:!0,notes:!0,flushed:!0,raised_hands:!0,see_no_evil:!0,cry:!0,sunglasses:!0,v:!0,eyes:!0,sweat_smile:!0,sparkles:!0,sleeping:!0,smile:!0,purple_heart:!0,broken_heart:!0,expressionless:!0,sparkling_heart:!0,blue_heart:!0,confused:!0,information_desk_person:!0,stuck_out_tongue_winking_eye:!0,disappointed:!0,yum:!0,neutral_face:!0,sleepy:!0,clap:!0,cupid:!0,heartpulse:!0,revolving_hearts:!0,arrow_left:!0,speak_no_evil:!0,kiss:!0,point_right:!0,cherry_blossom:!0,scream:!0,fire:!0,rage:!0,smiley:!0,tada:!0,tired_face:!0,camera:!0,rose:!0,stuck_out_tongue_closed_eyes:!0,muscle:!0,skull:!0,sunny:!0,yellow_heart:!0,triumph:!0,new_moon_with_face:!0,laughing:!0,sweat:!0,point_left:!0,heavy_check_mark:!0,heart_eyes_cat:!0,grinning:!0,mask:!0,green_heart:!0,wave:!0,persevere:!0,heartbeat:!0,arrow_forward:!0,arrow_backward:!0,arrow_right_hook:!0,leftwards_arrow_with_hook:!0,crown:!0,kissing_closed_eyes:!0,stuck_out_tongue:!0,disappointed_relieved:!0,innocent:!0,headphones:!0,white_check_mark:!0,confounded:!0,arrow_right:!0,angry:!0,grimacing:!0,star2:!0,gun:!0,raising_hand:!0,thumbsdown:!0,dancer:!0,musical_note:!0,no_mouth:!0,dizzy:!0,fist:!0,point_down:!0,red_circle:!0,no_good:!0,boom:!0,thought_balloon:!0,tongue:!0,poop:!0,cold_sweat:!0,gem:!0,ok_woman:!0,pizza:!0,joy_cat:!0,sun_with_face:!0,leaves:!0,sweat_drops:!0,penguin:!0,zzz:!0,walking:!0,airplane:!0,balloon:!0,star:!0,ribbon:!0,ballot_box_with_check:!0,worried:!0,underage:!0,fearful:!0,four_leaf_clover:!0,hibiscus:!0,microphone:!0,open_hands:!0,ghost:!0,palm_tree:!0,bangbang:!0,nail_care:!0,x:!0,alien:!0,bow:!0,cloud:!0,soccer:!0,angel:!0,dancers:!0,exclamation:!0,snowflake:!0,point_up:!0,kissing_smiling_eyes:!0,rainbow:!0,crescent_moon:!0,heart_decoration:!0,gift_heart:!0,gift:!0,beers:!0,anguished:!0,earth_africa:!0,movie_camera:!0,anchor:!0,zap:!0,heavy_multiplication_x:!0,runner:!0,sunflower:!0,earth_americas:!0,bouquet:!0,dog:!0,moneybag:!0,herb:!0,couple:!0,fallen_leaf:!0,tulip:!0,birthday:!0,cat:!0,coffee:!0,dizzy_face:!0,point_up_2:!0,open_mouth:!0,hushed:!0,basketball:!0,christmas_tree:!0,ring:!0,full_moon_with_face:!0,astonished:!0,two_women_holding_hands:!0,money_with_wings:!0,crying_cat_face:!0,hear_no_evil:!0,dash:!0,cactus:!0,hotsprings:!0,telephone:!0,maple_leaf:!0,princess:!0,massage:!0,love_letter:!0,trophy:!0,person_frowning:!0,us:!0,confetti_ball:!0,blossom:!0,lips:!0,fries:!0,doughnut:!0,frowning:!0,ocean:!0,bomb:!0,ok:!0,cyclone:!0,rocket:!0,umbrella:!0,couplekiss:!0,couple_with_heart:!0,lollipop:!0,clapper:!0,pig:!0,smiling_imp:!0,imp:!0,bee:!0,kissing_cat:!0,anger:!0,musical_score:!0,santa:!0,earth_asia:!0,football:!0,guitar:!0,panda_face:!0,speech_balloon:!0,strawberry:!0,smirk_cat:!0,banana:!0,watermelon:!0,snowman:!0,smile_cat:!0,top:!0,eggplant:!0,crystal_ball:!0,fork_and_knife:!0,calling:!0,iphone:!0,partly_sunny:!0,warning:!0,scream_cat:!0,small_orange_diamond:!0,baby:!0,feet:!0,footprints:!0,beer:!0,wine_glass:!0,o:!0,video_camera:!0,rabbit:!0,tropical_drink:!0,smoking:!0,space_invader:!0,peach:!0,snake:!0,turtle:!0,cherries:!0,kissing:!0,frog:!0,milky_way:!0,rotating_light:!0,hatching_chick:!0,closed_book:!0,candy:!0,hamburger:!0,bear:!0,tiger:!0,fast_forward:!0,icecream:!0,pineapple:!0,ear_of_rice:!0,syringe:!0,put_litter_in_its_place:!0,chocolate_bar:!0,black_small_square:!0,tv:!0,pill:!0,octopus:!0,jack_o_lantern:!0,grapes:!0,smiley_cat:!0,cd:!0,cocktail:!0,cake:!0,video_game:!0,arrow_down:!0,no_entry_sign:!0,lipstick:!0,whale:!0,cookie:!0,dolphin:!0,loud_sound:!0,man:!0,hatched_chick:!0,monkey:!0,books:!0,japanese_ogre:!0,guardsman:!0,loudspeaker:!0,scissors:!0,girl:!0,mortar_board:!0,fr:!0,baseball:!0,vertical_traffic_light:!0,woman:!0,fireworks:!0,stars:!0,sos:!0,mushroom:!0,pouting_cat:!0,left_luggage:!0,high_heel:!0,dart:!0,swimmer:!0,key:!0,bikini:!0,family:!0,pencil2:!0,elephant:!0,droplet:!0,seedling:!0,apple:!0,cool:!0,telephone_receiver:!0,dollar:!0,house_with_garden:!0,book:!0,haircut:!0,computer:!0,bulb:!0,question:!0,back:!0,boy:!0,closed_lock_with_key:!0,person_with_pouting_face:!0,tangerine:!0,sunrise:!0,poultry_leg:!0,blue_circle:!0,oncoming_automobile:!0,shaved_ice:!0,bird:!0,first_quarter_moon_with_face:!0,eyeglasses:!0,goat:!0,night_with_stars:!0,older_woman:!0,black_circle:!0,new_moon:!0,two_men_holding_hands:!0,white_circle:!0,customs:!0,tropical_fish:!0,house:!0,arrows_clockwise:!0,last_quarter_moon_with_face:!0,round_pushpin:!0,full_moon:!0,athletic_shoe:!0,lemon:!0,baby_bottle:!0,spaghetti:!0,wind_chime:!0,fish_cake:!0,evergreen_tree:!0,up:!0,arrow_up:!0,arrow_upper_right:!0,arrow_lower_right:!0,arrow_lower_left:!0,performing_arts:!0,nose:!0,pig_nose:!0,fish:!0,man_with_turban:!0,koala:!0,ear:!0,eight_spoked_asterisk:!0,small_blue_diamond:!0,shower:!0,bug:!0,ramen:!0,tophat:!0,bride_with_veil:!0,fuelpump:!0,checkered_flag:!0,horse:!0,watch:!0,monkey_face:!0,baby_symbol:!0,new:!0,free:!0,sparkler:!0,corn:!0,tennis:!0,alarm_clock:!0,battery:!0,grey_exclamation:!0,wolf:!0,moyai:!0,cow:!0,mega:!0,older_man:!0,dress:!0,link:!0,chicken:!0,whale2:!0,arrow_upper_left:!0,deciduous_tree:!0,bento:!0,pushpin:!0,soon:!0,repeat:!0,dragon:!0,hamster:!0,golf:!0,surfer:!0,mouse:!0,waxing_crescent_moon:!0,blue_car:!0,a:!0,interrobang:!0,u5272:!0,electric_plug:!0,first_quarter_moon:!0,cancer:!0,trident:!0,bread:!0,cop:!0,tea:!0,fishing_pole_and_fish:!0,bike:!0,rice:!0,radio:!0,baby_chick:!0,arrow_heading_down:!0,waning_crescent_moon:!0,arrow_up_down:!0,last_quarter_moon:!0,radio_button:!0,sheep:!0,person_with_blond_hair:!0,waning_gibbous_moon:!0,lock:!0,green_apple:!0,japanese_goblin:!0,curly_loop:!0,triangular_flag_on_post:!0,arrows_counterclockwise:!0,racehorse:!0,fried_shrimp:!0,sunrise_over_mountains:!0,volcano:!0,rooster:!0,inbox_tray:!0,wedding:!0,sushi:!0,wavy_dash:!0,ice_cream:!0,rewind:!0,tomato:!0,rabbit2:!0,eight_pointed_black_star:!0,small_red_triangle:!0,high_brightness:!0,heavy_plus_sign:!0,man_with_gua_pi_mao:!0,convenience_store:!0,busts_in_silhouette:!0,beetle:!0,small_red_triangle_down:!0,arrow_heading_up:!0,name_badge:!0,bath:!0,no_entry:!0,crocodile:!0,dog2:!0,cat2:!0,hammer:!0,meat_on_bone:!0,shell:!0,sparkle:!0,b:!0,m:!0,poodle:!0,aquarius:!0,stew:!0,jeans:!0,honey_pot:!0,musical_keyboard:!0,unlock:!0,black_nib:!0,statue_of_liberty:!0,heavy_dollar_sign:!0,snowboarder:!0,white_flower:!0,necktie:!0,diamond_shape_with_a_dot_inside:!0,aries:!0,womens:!0,ant:!0,scorpius:!0,city_sunset:!0,hourglass_flowing_sand:!0,o2:!0,dragon_face:!0,snail:!0,dvd:!0,shirt:!0,game_die:!0,heavy_minus_sign:!0,dolls:!0,sagittarius:!0,"8ball":!0,bus:!0,custard:!0,crossed_flags:!0,part_alternation_mark:!0,camel:!0,curry:!0,steam_locomotive:!0,hospital:!0,large_blue_diamond:!0,tanabata_tree:!0,bell:!0,leo:!0,gemini:!0,pear:!0,large_orange_diamond:!0,taurus:!0,globe_with_meridians:!0,door:!0,clock6:!0,oncoming_police_car:!0,envelope_with_arrow:!0,closed_umbrella:!0,saxophone:!0,church:!0,bicyclist:!0,pisces:!0,dango:!0,capricorn:!0,office:!0,rowboat:!0,womans_hat:!0,mans_shoe:!0,love_hotel:!0,mount_fuji:!0,dromedary_camel:!0,handbag:!0,hourglass:!0,negative_squared_cross_mark:!0,trumpet:!0,school:!0,cow2:!0,construction_worker:!0,toilet:!0,pig2:!0,grey_question:!0,beginner:!0,violin:!0,on:!0,credit_card:!0,id:!0,secret:!0,ferris_wheel:!0,bowling:!0,libra:!0,virgo:!0,barber:!0,purse:!0,roller_coaster:!0,rat:!0,date:!0,rugby_football:!0,ram:!0,arrow_up_small:!0,black_square_button:!0,mobile_phone_off:!0,tokyo_tower:!0,congratulations:!0,kimono:!0,ship:!0,mag_right:!0,mag:!0,fire_engine:!0,clock1130:!0,police_car:!0,black_joker:!0,bridge_at_night:!0,package:!0,oncoming_taxi:!0,calendar:!0,horse_racing:!0,tiger2:!0,boot:!0,ambulance:!0,white_square_button:!0,boar:!0,school_satchel:!0,loop:!0,pound:!0,information_source:!0,ox:!0,rice_ball:!0,vs:!0,end:!0,parking:!0,sandal:!0,tent:!0,seat:!0,taxi:!0,black_medium_small_square:!0,briefcase:!0,newspaper:!0,circus_tent:!0,six_pointed_star:!0,mens:!0,european_castle:!0,flashlight:!0,foggy:!0,arrow_double_up:!0,bamboo:!0,ticket:!0,helicopter:!0,minidisc:!0,oncoming_bus:!0,melon:!0,white_small_square:!0,european_post_office:!0,keycap_ten:!0,notebook:!0,no_bell:!0,oden:!0,flags:!0,carousel_horse:!0,blowfish:!0,chart_with_upwards_trend:!0,sweet_potato:!0,ski:!0,clock12:!0,signal_strength:!0,construction:!0,black_medium_square:!0,satellite:!0,euro:!0,womans_clothes:!0,ledger:!0,leopard:!0,low_brightness:!0,clock3:!0,department_store:!0,truck:!0,sake:!0,railway_car:!0,speedboat:!0,vhs:!0,clock1:!0,arrow_double_down:!0,water_buffalo:!0,arrow_down_small:!0,yen:!0,mute:!0,running_shirt_with_sash:!0,white_large_square:!0,wheelchair:!0,clock2:!0,paperclip:!0,atm:!0,cinema:!0,telescope:!0,rice_scene:!0,blue_book:!0,white_medium_square:!0,postbox:!0,"e-mail":!0,mouse2:!0,bullettrain_side:!0,ideograph_advantage:!0,nut_and_bolt:!0,ng:!0,hotel:!0,wc:!0,izakaya_lantern:!0,repeat_one:!0,mailbox_with_mail:!0,chart_with_downwards_trend:!0,green_book:!0,tractor:!0,fountain:!0,metro:!0,clipboard:!0,no_mobile_phones:!0,clock4:!0,no_smoking:!0,black_large_square:!0,slot_machine:!0,clock5:!0,bathtub:!0,scroll:!0,station:!0,rice_cracker:!0,bank:!0,wrench:!0,u6307:!0,articulated_lorry:!0,page_facing_up:!0,ophiuchus:!0,bar_chart:!0,no_pedestrians:!0,vibration_mode:!0,clock10:!0,clock9:!0,bullettrain_front:!0,minibus:!0,tram:!0,clock8:!0,u7a7a:!0,traffic_light:!0,mountain_bicyclist:!0,microscope:!0,japanese_castle:!0,bookmark:!0,bookmark_tabs:!0,pouch:!0,ab:!0,page_with_curl:!0,flower_playing_cards:!0,clock11:!0,fax:!0,clock7:!0,white_medium_small_square:!0,currency_exchange:!0,sound:!0,chart:!0,cl:!0,floppy_disk:!0,post_office:!0,speaker:!0,japan:!0,u55b6:!0,mahjong:!0,incoming_envelope:!0,orange_book:!0,restroom:!0,u7121:!0,u6709:!0,triangular_ruler:!0,train:!0,u7533:!0,trolleybus:!0,u6708:!0,notebook_with_decorative_cover:!0,u7981:!0,u6e80:!0,postal_horn:!0,factory:!0,children_crossing:!0,train2:!0,straight_ruler:!0,pager:!0,accept:!0,u5408:!0,lock_with_ink_pen:!0,clock130:!0,sa:!0,outbox_tray:!0,twisted_rightwards_arrows:!0,mailbox:!0,light_rail:!0,clock930:!0,busstop:!0,open_file_folder:!0,file_folder:!0,potable_water:!0,card_index:!0,clock230:!0,monorail:!0,clock1230:!0,clock1030:!0,abc:!0,mailbox_closed:!0,clock430:!0,mountain_railway:!0,do_not_litter:!0,clock330:!0,heavy_division_sign:!0,clock730:!0,clock530:!0,capital_abcd:!0,mailbox_with_no_mail:!0,symbols:!0,aerial_tramway:!0,clock830:!0,clock630:!0,abcd:!0,mountain_cableway:!0,koko:!0,passport_control:!0,"non-potable_water":!0,suspension_railway:!0,baggage_claim:!0,no_bicycles:!0,skull_crossbones:!0,hugging:!0,thinking:!0,nerd:!0,zipper_mouth:!0,rolling_eyes:!0,upside_down:!0,slight_smile:!0,middle_finger:!0,writing_hand:!0,dark_sunglasses:!0,eye:!0,man_in_suit:!0,golfer:!0,heart_exclamation:!0,star_of_david:!0,cross:!0,"fleur-de-lis":!0,atom:!0,wheel_of_dharma:!0,yin_yang:!0,peace:!0,star_and_crescent:!0,orthodox_cross:!0,biohazard:!0,radioactive:!0,place_of_worship:!0,anger_right:!0,menorah:!0,om_symbol:!0,coffin:!0,gear:!0,alembic:!0,scales:!0,crossed_swords:!0,keyboard:!0,shield:!0,bed:!0,shopping_bags:!0,sleeping_accommodation:!0,ballot_box:!0,compression:!0,wastebasket:!0,file_cabinet:!0,trackball:!0,printer:!0,joystick:!0,hole:!0,candle:!0,prayer_beads:!0,camera_with_flash:!0,amphora:!0,label:!0,flag_black:!0,flag_white:!0,film_frames:!0,control_knobs:!0,level_slider:!0,thermometer:!0,airplane_arriving:!0,airplane_departure:!0,railway_track:!0,motorway:!0,synagogue:!0,mosque:!0,kaaba:!0,stadium:!0,desert:!0,classical_building:!0,cityscape:!0,camping:!0,bow_and_arrow:!0,rosette:!0,volleyball:!0,medal:!0,reminder_ribbon:!0,popcorn:!0,champagne:!0,hot_pepper:!0,burrito:!0,taco:!0,hotdog:!0,shamrock:!0,comet:!0,turkey:!0,scorpion:!0,lion_face:!0,crab:!0,spider_web:!0,spider:!0,chipmunk:!0,wind_blowing_face:!0,fog:!0,play_pause:!0,track_previous:!0,track_next:!0,beach_umbrella:!0,chains:!0,pick:!0,stopwatch:!0,ferry:!0,mountain:!0,shinto_shrine:!0,ice_skate:!0,skier:!0,flag_ac:!0,flag_ad:!0,flag_ae:!0,flag_af:!0,flag_ag:!0,flag_ai:!0,flag_al:!0,flag_am:!0,"flag-ao":!0,"flag-aq":!0,"flag-ar":!0,"flag-as":!0,"flag-at":!0,"flag-au":!0,"flag-aw":!0,"flag-ax":!0,"flag-az":!0,"flag-ba":!0,"flag-bb":!0,"flag-bd":!0,"flag-be":!0,"flag-bf":!0,"flag-bg":!0,"flag-bh":!0,"flag-bi":!0,"flag-bj":!0,"flag-bl":!0,"flag-bm":!0,"flag-bn":!0,"flag-bo":!0,"flag-bq":!0,"flag-br":!0,"flag-bs":!0,"flag-bt":!0,"flag-bv":!0,"flag-bw":!0,"flag-by":!0,"flag-bz":!0,"flag-ca":!0,"flag-cc":!0,"flag-cd":!0,"flag-cf":!0,"flag-cg":!0,"flag-ch":!0,"flag-ci":!0,"flag-ck":!0,"flag-cl":!0,"flag-cm":!0,"flag-cn":!0,"flag-co":!0,"flag-cp":!0,"flag-cr":!0,"flag-cu":!0,"flag-cv":!0,"flag-cw":!0,"flag-cx":!0,"flag-cy":!0,"flag-cz":!0,"flag-de":!0,"flag-dg":!0,"flag-dj":!0,"flag-dk":!0,"flag-dm":!0,"flag-do":!0,"flag-dz":!0,"flag-ea":!0,"flag-ec":!0,"flag-ee":!0,"flag-eg":!0,"flag-eh":!0,"flag-er":!0,"flag-es":!0,"flag-et":!0,"flag-eu":!0,"flag-fi":!0,"flag-fj":!0,"flag-fk":!0,"flag-fm":!0,"flag-fo":!0,"flag-fr":!0,"flag-ga":!0,"flag-gb":!0,"flag-gd":!0,"flag-ge":!0,"flag-gf":!0,"flag-gg":!0,"flag-gh":!0,"flag-gi":!0,"flag-gl":!0,"flag-gm":!0,"flag-gn":!0,"flag-gp":!0,"flag-gq":!0,"flag-gr":!0,"flag-gs":!0,"flag-gt":!0,"flag-gu":!0,"flag-gw":!0,"flag-gy":!0,"flag-hk":!0,"flag-hm":!0,"flag-hn":!0,"flag-hr":!0,"flag-ht":!0,"flag-hu":!0,"flag-ic":!0,"flag-id":!0,"flag-ie":!0,"flag-il":!0,"flag-im":!0,"flag-in":!0,"flag-io":!0,"flag-iq":!0,"flag-ir":!0,"flag-is":!0,"flag-it":!0,"flag-je":!0,"flag-jm":!0,"flag-jo":!0,"flag-jp":!0,"flag-ke":!0,"flag-kg":!0,"flag-kh":!0,"flag-ki":!0,"flag-km":!0,"flag-kn":!0,"flag-kp":!0,"flag-kr":!0,"flag-kw":!0,"flag-ky":!0,"flag-kz":!0,"flag-la":!0,"flag-lb":!0,"flag-lc":!0,"flag-li":!0,"flag-lk":!0,"flag-lr":!0,"flag-ls":!0,"flag-lt":!0,"flag-lu":!0,"flag-lv":!0,"flag-ly":!0,"flag-ma":!0,"flag-mc":!0,"flag-md":!0,"flag-me":!0,"flag-mf":!0,"flag-mg":!0,"flag-mh":!0,"flag-mk":!0,"flag-ml":!0,"flag-mm":!0,"flag-mn":!0,"flag-mo":!0,"flag-mp":!0,"flag-mq":!0,"flag-mr":!0,"flag-ms":!0,"flag-mt":!0,"flag-mu":!0,"flag-mv":!0,"flag-mw":!0,"flag-mx":!0,"flag-my":!0,"flag-mz":!0,"flag-na":!0,"flag-nc":!0,"flag-ne":!0,"flag-nf":!0,"flag-ng":!0,"flag-ni":!0,"flag-nl":!0,"flag-no":!0,"flag-np":!0,"flag-nr":!0,"flag-nu":!0,"flag-nz":!0,"flag-om":!0,"flag-pa":!0,"flag-pe":!0,"flag-pf":!0,"flag-pg":!0,"flag-ph":!0,"flag-pk":!0,"flag-pl":!0,"flag-pm":!0,"flag-pn":!0,"flag-pr":!0,"flag-ps":!0,"flag-pt":!0,"flag-pw":!0,"flag-py":!0,"flag-qa":!0,"flag-re":!0,"flag-ro":!0,"flag-rs":!0,"flag-ru":!0,"flag-rw":!0,"flag-sa":!0,"flag-sb":!0,"flag-sc":!0,"flag-sd":!0,"flag-se":!0,"flag-sg":!0,"flag-sh":!0,"flag-si":!0,"flag-sj":!0,"flag-sk":!0,"flag-sl":!0,"flag-sm":!0,"flag-sn":!0,"flag-so":!0,"flag-sr":!0,"flag-ss":!0,"flag-st":!0,"flag-sv":!0,"flag-sx":!0,"flag-sy":!0,"flag-sz":!0,"flag-ta":!0,"flag-tc":!0,"flag-td":!0,"flag-tf":!0,"flag-tg":!0,"flag-th":!0,"flag-tj":!0,"flag-tk":!0,"flag-tl":!0,"flag-tm":!0,"flag-tn":!0,"flag-to":!0,"flag-tr":!0,"flag-tt":!0,"flag-tv":!0,"flag-tw":!0,"flag-tz":!0,"flag-ua":!0,"flag-ug":!0,"flag-um":!0,"flag-us":!0,"flag-uy":!0,"flag-uz":!0,"flag-va":!0,"flag-vc":!0,"flag-ve":!0,"flag-vg":!0,"flag-vi":!0,"flag-vn":!0,flag_vu:!0,flag_wf:!0,flag_ws:!0,flag_xk:!0,flag_ye:!0,flag_yt:!0,flag_za:!0,flag_zm:!0,flag_zw:!0,black_heart:!0,speech_left:!0,egg:!0,octagonal_sign:!0,spades:!0,hearts:!0,diamonds:!0,clubs:!0,drum:!0,left_right_arrow:!0,tm:!0,"100":!0}
 
@@ -5714,6 +6241,9 @@ For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_bla
 	window.watch("d20ext", function(id, oldValue, newValue) {
 		d20plus.log("> Set Development");
 		newValue.environment = "development";
+		Object.defineProperty(newValue, 'seenad', {
+			value: true
+		})
 		return newValue;
 	});
 	window.d20 = {};
