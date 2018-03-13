@@ -14,6 +14,20 @@
 
 /* eslint no-console: "off" */
 
+OBJECT_DEFINE_PROPERTY = Object.defineProperty;
+Object.defineProperty = function (obj, prop, vals) {
+	try {
+		if (prop === "largefeats" || prop === "xlfeats") {
+			vals.value = true;
+		}
+		OBJECT_DEFINE_PROPERTY(obj, prop, vals);
+	} catch (e) {
+		console.log("failed to define property:");
+		console.log(e);
+		console.log(obj, prop, vals);
+	}
+};
+
 var D20plus = function(version) {
 
 	const BASE_SITE_URL = "https://5etools.com/";
