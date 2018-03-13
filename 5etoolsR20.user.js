@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.3.0
+// @version      1.3.1
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -1775,14 +1775,18 @@ var D20plus = function(version) {
 		}
 		d20plus.setMode = setMode;
 
-		const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
-		$fxMode.on("click", () => {
-			d20plus.setMode("fxtools");
-		});
-		$(`#drawingtools`).after($fxMode);
+		if (!$(`#fxtools`).length) {
+			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
+			$fxMode.on("click", () => {
+				d20plus.setMode("fxtools");
+			});
+			$(`#drawingtools`).after($fxMode);
+		}
 
 		// add lighting layer tool
-		$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+		if (!$(`#editinglayer .choosewalls`).length) {
+			$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+		}
 
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
