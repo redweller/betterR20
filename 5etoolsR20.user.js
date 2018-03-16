@@ -2,7 +2,7 @@
 // @name         5etoolsR20
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.3.1
+// @version      1.4.0
 // @updateURL    https://get.5etools.com/5etoolsR20.user.js
 // @downloadURL  https://get.5etools.com/5etoolsR20.user.js
 // @description  Enhance your Roll20 experience
@@ -923,6 +923,8 @@ var D20plus = function(version) {
 			d20plus.log("> Applying config");
 			d20plus.handleConfigChange();
 		}
+		d20plus.log("> Enhance Measure tool");
+		d20plus.enhanceMeasureTool();
 		d20plus.log("> Enhancing chat");
 		d20plus.enhanceChat();
 		d20plus.log("> All systems operational");
@@ -1796,7 +1798,72 @@ var D20plus = function(version) {
 			var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 			e.view._template = $.jqotec("#tmpl_pagesettings");
 		});
-	}
+	};
+
+	d20plus.enhanceMeasureTool = function () {
+		// ROLL20 CODE
+		var T = function(e, t, n, i, r, o) {
+			var a = d20.engine.getDistanceInScale({
+				x: t.x,
+				y: t.y
+			}, {
+				x: t.to_x,
+				y: t.to_y
+			}, o)
+				, s = a[0];
+			void 0 !== r && (s = Math.round(10 * (s + r)) / 10);
+			var l = s + "" + d20.Campaign.activePage().get("scale_units");
+			if (e.strokeStyle = t.color,
+					n) {
+				// BEGIN MOD
+				var fontSize = (1 / d20.engine.canvasZoom) * 12;
+				e.font = fontSize + "pt Arial Black";
+				// END MOD
+				var c = e.measureText(l);
+				e.fillStyle = "rgba(255,255,255,0.75)",
+					e.beginPath(),
+					e.rect(t.to_x - 35, t.to_y - 35, c.width + 10, 20),
+					e.closePath(),
+					e.fill()
+			}
+			e.beginPath();
+			var u = 15
+				, d = Math.atan2(t.to_y - t.y, t.to_x - t.x);
+			return e.moveTo(t.x, t.y),
+				e.lineTo(t.to_x, t.to_y),
+			(i === !0 || "arrow" === i) && (e.lineTo(t.to_x - u * Math.cos(d - Math.PI / 6), t.to_y - u * Math.sin(d - Math.PI / 6)),
+				e.moveTo(t.to_x, t.to_y),
+				e.lineTo(t.to_x - u * Math.cos(d + Math.PI / 6), t.to_y - u * Math.sin(d + Math.PI / 6))),
+				e.closePath(),
+				e.stroke(),
+			"nub" === i && (e.beginPath(),
+				e.arc(t.to_x, t.to_y, 7, 0, 2 * Math.PI, !0),
+				e.closePath(),
+				e.fillStyle = e.strokeStyle,
+				e.fill()),
+			n && (e.fillStyle = "rgba(0,0,0,1)",
+				e.fillText(l, t.to_x - 30, t.to_y - 20)),
+				a
+		};
+		d20.engine.drawMeasurements = function(e) {
+			e.globalCompositeOperation = "source-over",
+				e.lineWidth = 3,
+				e.globalAlpha = 1,
+				_.each(d20.engine.measurements, function(t) {
+					if (t.pageid === d20.Campaign.activePage().id) {
+						var n = _.clone(t)
+							, i = d20.Campaign.players.get(n.player);
+						n.color = i.get("color"),
+							n.to_x = n.to_x - d20.engine.currentCanvasOffset[0],
+							n.to_y = n.to_y - d20.engine.currentCanvasOffset[1],
+							n.x = n.x - d20.engine.currentCanvasOffset[0],
+							n.y = n.y - d20.engine.currentCanvasOffset[1],
+							T(e, n, !0, !0)
+					}
+				})
+		}
+		// END ROLL20 CODE
+	};
 
 	d20plus.initQuickSearch = function ($iptSearch, $outSearch) {
 		$iptSearch.on("keyup", () => {
