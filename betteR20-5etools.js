@@ -301,8 +301,10 @@ const betteR205etools = function () {
 		d20plus.log("Init (v" + d20plus.version + ")");
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 		d20plus.addAllCss();
-		d20plus.enhancePageSelector();
-		if (window.is_gm) d20plus.log("Is GM");
+		if (window.is_gm) {
+			d20plus.log("Is GM");
+			d20plus.enhancePageSelector();
+		}
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
 		d20plus.addJson(d20plus.onJsonLoad);
@@ -332,8 +334,8 @@ const betteR205etools = function () {
 		d20plus.addHtmlHeader();
 		d20plus.addCustomHTML();
 		d20plus.addHtmlFooter();
+		d20plus.addProFeatures();
 		if (window.is_gm) {
-			d20plus.addProFeatures();
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.addCustomArtSearch();

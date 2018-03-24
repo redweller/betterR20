@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.4.0";
+const SCRIPT_VERSION = "1.4.1";
 
 const HEADER_CORE = `
 // ==UserScript==

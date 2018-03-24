@@ -784,9 +784,13 @@ var betteR20Base = function() {
 		addProFeatures: () => {
 		d20plus.log("Add Pro features");
 
+		// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
+		// BEGIN ROLL20 CODE
 		function setMode (e) {
-			console.log(e),
-			"text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+			d20plus.log("Setting mode " + e);
+			// BEGIN MOD
+			// "text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+			// END MOD
 				"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
 				$("#floatingtoolbar li").removeClass("activebutton"),
 				$("#" + e).addClass("activebutton"),
@@ -814,22 +818,52 @@ var betteR20Base = function() {
 				}),
 					d20.engine.canvas.hoverCursor = "move"),
 				console.log("Switch mode to " + e),
-				d20.engine.mode = e,
-				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1,
-				"text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e ? ($("#secondary-toolbar").show(),
-					$("#secondary-toolbar .mode").hide(),
-					$("#secondary-toolbar ." + e).show(),
-				("path" == e || "rect" == e || "polygon" == e) && ("objects" == window.currentEditingLayer ? ($("#path_strokecolor").val(window.currentPlayer.get("color")).trigger("change-silent"),
-					$("#path_fillcolor").val("transparent").trigger("change-silent")) : "" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
+				// BEGIN MOD
+				d20.engine.mode = e;
+				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
+			if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e) {
+				$("#secondary-toolbar").show();
+				$("#secondary-toolbar .mode").hide();
+				$("#secondary-toolbar ." + e).show();
+				("path" == e || "rect" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
 					$("#path_fillcolor").val("transparent").trigger("change-silent")),
 					d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
 					d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
 					$("#path_width").trigger("change")),
-				"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent")) : $("#secondary-toolbar").hide(),
-				$("#floatingtoolbar").trigger("blur")
+				"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent"),
+					$("#floatingtoolbar").trigger("blur")
+			} else {
+				$("#secondary-toolbar").hide();
+				$("#floatingtoolbar").trigger("blur");
+			}
+			// END MOD
+			// END ROLL20 CODE
 		}
 
 		d20plus.setMode = setMode;
+
+		// rebind buttons with new setMode
+		const $drawTools = $("#drawingtools");
+		const $rect = $drawTools.find(".chooserect");
+		const $path = $drawTools.find(".choosepath");
+		const $poly = $drawTools.find(".choosepolygon");
+		$drawTools.unbind(clicktype).bind(clicktype, () => {
+			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
+		});
+		$rect.unbind(clicktype).bind(clicktype, () => {
+			setMode("rect");
+			return false;
+		});
+		$path.unbind(clicktype).bind(clicktype, () => {
+			setMode("path");
+			return false;
+		});
+		$poly.unbind(clicktype).bind(clicktype, () => {
+			setMode("polygon");
+			return false;
+		});
+		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
+		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
 
 		if (!$(`#fxtools`).length) {
 			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
@@ -839,19 +873,21 @@ var betteR20Base = function() {
 			$(`#drawingtools`).after($fxMode);
 		}
 
-		// add lighting layer tool
-		if (!$(`#editinglayer .choosewalls`).length) {
-			$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
-		}
+		if (window.is_gm) {
+			// add lighting layer tool
+			if (!$(`#editinglayer .choosewalls`).length) {
+				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+			}
 
-		// ensure tokens have editable sight
-		$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
-		// show dynamic lighting/etc page settings
-		$("#tmpl_pagesettings").replaceWith(d20plus.template_pageSettings);
-		$("#page-toolbar").on("mousedown", ".settings", function () {
-			var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
-			e.view._template = $.jqotec("#tmpl_pagesettings");
-		});
+			// ensure tokens have editable sight
+			$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
+			// show dynamic lighting/etc page settings
+			$("#tmpl_pagesettings").replaceWith(d20plus.template_pageSettings);
+			$("#page-toolbar").on("mousedown", ".settings", function () {
+				var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
+				e.view._template = $.jqotec("#tmpl_pagesettings");
+			});
+		}
 	},
 
 		enhanceMeasureTool: () => {
@@ -936,6 +972,9 @@ var betteR20Base = function() {
 				d20.engine.canvasDirty = true;
 				d20.engine.canvasTopDirty = true;
 				d20.engine.canvas._objects.forEach(it => {
+					// avoid adding it to any objects that wouldn't have it to begin with
+					if (!it.model || !it.model.view || !it.model.view.updateBackdrops) return;
+
 					it.model.view.updateBackdrops = function (e) {
 						if (!this.nohud && ("objects" == this.model.get("layer") || "gmlayer" == this.model.get("layer")) && "image" == this.model.get("type") && this.model && this.model.collection && this.graphic) {
 							// BEGIN MOD
