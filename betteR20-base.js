@@ -1,4 +1,4 @@
-var betteR20Base = function() {
+var betteR20Base = function () {
 	const d20plus = {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
 		scriptsLoaded: false,
@@ -782,113 +782,113 @@ var betteR20Base = function() {
 		// UI ENHANCEMENTS /////////////////////////////////////////////////////////////////////////////////////////////////
 
 		addProFeatures: () => {
-		d20plus.log("Add Pro features");
+			d20plus.log("Add Pro features");
 
-		// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
-		// BEGIN ROLL20 CODE
-		function setMode (e) {
-			d20plus.log("Setting mode " + e);
-			// BEGIN MOD
-			// "text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
-			// END MOD
-				"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
-				$("#floatingtoolbar li").removeClass("activebutton"),
-				$("#" + e).addClass("activebutton"),
-			"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
-			"rect" == e && ($("#drawingtools").addClass("activebutton"),
-				$("#drawingtools").removeClass("text path polygon").addClass("rect")),
-			"text" == e && ($("#drawingtools").addClass("activebutton"),
-				$("#drawingtools").removeClass("rect path polygon").addClass("text")),
-			"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon").addClass("path"),
-				"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path").addClass("polygon") : d20.engine.finishCurrentPolygon(),
-			"pan" !== e && "select" !== e && d20.engine.unselect(),
-				"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
-					d20.token_editor.removeRadialMenu(),
-					$("#editor-wrapper").addClass("panning")) : $("#editor-wrapper").removeClass("panning"),
-			"select" == e && $("#select").addClass("select").removeClass("pan").addClass("activebutton"),
-				$("#floatingtoolbar .mode").hide(),
-			("text" == e || "select" == e) && $("#floatingtoolbar ." + e).show(),
-				"gridalign" == e ? $("#gridaligninstructions").show() : "gridalign" === d20.engine.mode && $("#gridaligninstructions").hide(),
-				"targeting" === e ? ($("#targetinginstructions").show(),
-					$("#upperCanvas").addClass("targeting"),
-					d20.engine.canvas.hoverCursor = "crosshair") : "targeting" === d20.engine.mode && ($("#targetinginstructions").hide(),
-					$("#upperCanvas").removeClass("targeting"),
-				d20.engine.nextTargetCallback && _.defer(function () {
-					d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
-				}),
-					d20.engine.canvas.hoverCursor = "move"),
-				console.log("Switch mode to " + e),
+			// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
+			// BEGIN ROLL20 CODE
+			function setMode (e) {
+				d20plus.log("Setting mode " + e);
 				// BEGIN MOD
-				d20.engine.mode = e;
+				// "text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+				// END MOD
+				"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
+					$("#floatingtoolbar li").removeClass("activebutton"),
+					$("#" + e).addClass("activebutton"),
+				"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
+				"rect" == e && ($("#drawingtools").addClass("activebutton"),
+					$("#drawingtools").removeClass("text path polygon").addClass("rect")),
+				"text" == e && ($("#drawingtools").addClass("activebutton"),
+					$("#drawingtools").removeClass("rect path polygon").addClass("text")),
+				"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon").addClass("path"),
+					"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+				"pan" !== e && "select" !== e && d20.engine.unselect(),
+					"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
+						d20.token_editor.removeRadialMenu(),
+						$("#editor-wrapper").addClass("panning")) : $("#editor-wrapper").removeClass("panning"),
+				"select" == e && $("#select").addClass("select").removeClass("pan").addClass("activebutton"),
+					$("#floatingtoolbar .mode").hide(),
+				("text" == e || "select" == e) && $("#floatingtoolbar ." + e).show(),
+					"gridalign" == e ? $("#gridaligninstructions").show() : "gridalign" === d20.engine.mode && $("#gridaligninstructions").hide(),
+					"targeting" === e ? ($("#targetinginstructions").show(),
+						$("#upperCanvas").addClass("targeting"),
+						d20.engine.canvas.hoverCursor = "crosshair") : "targeting" === d20.engine.mode && ($("#targetinginstructions").hide(),
+						$("#upperCanvas").removeClass("targeting"),
+					d20.engine.nextTargetCallback && _.defer(function () {
+						d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
+					}),
+						d20.engine.canvas.hoverCursor = "move"),
+					console.log("Switch mode to " + e),
+					// BEGIN MOD
+					d20.engine.mode = e;
 				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
-			if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e) {
-				$("#secondary-toolbar").show();
-				$("#secondary-toolbar .mode").hide();
-				$("#secondary-toolbar ." + e).show();
-				("path" == e || "rect" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
-					$("#path_fillcolor").val("transparent").trigger("change-silent")),
-					d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
-					d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
-					$("#path_width").trigger("change")),
-				"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent"),
-					$("#floatingtoolbar").trigger("blur")
-			} else {
-				$("#secondary-toolbar").hide();
-				$("#floatingtoolbar").trigger("blur");
-			}
-			// END MOD
-			// END ROLL20 CODE
-		}
-
-		d20plus.setMode = setMode;
-
-		// rebind buttons with new setMode
-		const $drawTools = $("#drawingtools");
-		const $rect = $drawTools.find(".chooserect");
-		const $path = $drawTools.find(".choosepath");
-		const $poly = $drawTools.find(".choosepolygon");
-		$drawTools.unbind(clicktype).bind(clicktype, () => {
-			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
-		});
-		$rect.unbind(clicktype).bind(clicktype, () => {
-			setMode("rect");
-			return false;
-		});
-		$path.unbind(clicktype).bind(clicktype, () => {
-			setMode("path");
-			return false;
-		});
-		$poly.unbind(clicktype).bind(clicktype, () => {
-			setMode("polygon");
-			return false;
-		});
-		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
-		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
-
-		if (!$(`#fxtools`).length) {
-			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
-			$fxMode.on("click", () => {
-				d20plus.setMode("fxtools");
-			});
-			$(`#drawingtools`).after($fxMode);
-		}
-
-		if (window.is_gm) {
-			// add lighting layer tool
-			if (!$(`#editinglayer .choosewalls`).length) {
-				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e) {
+					$("#secondary-toolbar").show();
+					$("#secondary-toolbar .mode").hide();
+					$("#secondary-toolbar ." + e).show();
+					("path" == e || "rect" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
+						$("#path_fillcolor").val("transparent").trigger("change-silent")),
+						d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
+						d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
+						$("#path_width").trigger("change")),
+					"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent"),
+						$("#floatingtoolbar").trigger("blur")
+				} else {
+					$("#secondary-toolbar").hide();
+					$("#floatingtoolbar").trigger("blur");
+				}
+				// END MOD
+				// END ROLL20 CODE
 			}
 
-			// ensure tokens have editable sight
-			$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
-			// show dynamic lighting/etc page settings
-			$("#tmpl_pagesettings").replaceWith(d20plus.template_pageSettings);
-			$("#page-toolbar").on("mousedown", ".settings", function () {
-				var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
-				e.view._template = $.jqotec("#tmpl_pagesettings");
+			d20plus.setMode = setMode;
+
+			// rebind buttons with new setMode
+			const $drawTools = $("#drawingtools");
+			const $rect = $drawTools.find(".chooserect");
+			const $path = $drawTools.find(".choosepath");
+			const $poly = $drawTools.find(".choosepolygon");
+			$drawTools.unbind(clicktype).bind(clicktype, () => {
+				$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
 			});
-		}
-	},
+			$rect.unbind(clicktype).bind(clicktype, () => {
+				setMode("rect");
+				return false;
+			});
+			$path.unbind(clicktype).bind(clicktype, () => {
+				setMode("path");
+				return false;
+			});
+			$poly.unbind(clicktype).bind(clicktype, () => {
+				setMode("polygon");
+				return false;
+			});
+			$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
+			$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
+
+			if (!$(`#fxtools`).length) {
+				const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
+				$fxMode.on("click", () => {
+					d20plus.setMode("fxtools");
+				});
+				$(`#drawingtools`).after($fxMode);
+			}
+
+			if (window.is_gm) {
+				// add lighting layer tool
+				if (!$(`#editinglayer .choosewalls`).length) {
+					$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+				}
+
+				// ensure tokens have editable sight
+				$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
+				// show dynamic lighting/etc page settings
+				$("#tmpl_pagesettings").replaceWith(d20plus.template_pageSettings);
+				$("#page-toolbar").on("mousedown", ".settings", function () {
+					var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
+					e.view._template = $.jqotec("#tmpl_pagesettings");
+				});
+			}
+		},
 
 		enhanceMeasureTool: () => {
 			d20plus.log("Enhance Measure tool");
@@ -1144,6 +1144,7 @@ var betteR20Base = function() {
 					}
 				});
 			}
+
 			overwriteStatusEffects();
 
 			// the holy trinity
@@ -1183,94 +1184,94 @@ var betteR20Base = function() {
 		},
 
 		enhancePageSelector: () => {
-		d20plus.log("Enhancing page selector");
-		var updatePageOrder = function () {
-			d20plus.log("Saving page order...");
-			var pos = 0;
-			$("#page-toolbar .pages .chooseablepage").each(function () {
-				var page = d20.Campaign.pages.get($(this).attr("data-pageid"));
-				page && page.save({
-					placement: pos
+			d20plus.log("Enhancing page selector");
+			var updatePageOrder = function () {
+				d20plus.log("Saving page order...");
+				var pos = 0;
+				$("#page-toolbar .pages .chooseablepage").each(function () {
+					var page = d20.Campaign.pages.get($(this).attr("data-pageid"));
+					page && page.save({
+						placement: pos
+					});
+					pos++;
 				});
-				pos++;
-			});
-			d20.pagetoolbar.noReload = false;
-			d20.pagetoolbar.refreshPageListing();
-		}
+				d20.pagetoolbar.noReload = false;
+				d20.pagetoolbar.refreshPageListing();
+			}
 
-		function overwriteDraggables () {
-			// make them draggable on both axes
-			$("#page-toolbar .pages").sortable("destroy");
-			$("#page-toolbar .pages").sortable({
-				items: "> .chooseablepage",
-				start: function () {
-					d20.pagetoolbar.noReload = true;
-				},
-				stop: function () {
-					updatePageOrder()
-				},
-				distance: 15
-			}).addTouch();
-			$("#page-toolbar .playerbookmark").draggable("destroy");
-			$("#page-toolbar .playerbookmark").draggable({
-				revert: "invalid",
-				appendTo: "#page-toolbar",
-				helper: "original"
-			}).addTouch();
-			$("#page-toolbar .playerspecificbookmark").draggable("destroy");
-			$("#page-toolbar .playerspecificbookmark").draggable({
-				revert: "invalid",
-				appendTo: "#page-toolbar",
-				helper: "original"
-			}).addTouch();
-		}
-
-		overwriteDraggables();
-		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
-
-		const originalFn = d20.pagetoolbar.refreshPageListing;
-		d20.pagetoolbar.refreshPageListing = () => {
-			originalFn();
-			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-			_.debounce(() => {
-				overwriteDraggables();
-			}, 110)();
-		}
-	},
-
-		initQuickSearch: ($iptSearch, $outSearch) => {
-		$iptSearch.on("keyup", () => {
-			const searchVal = ($iptSearch.val() || "").trim();
-			$outSearch.empty();
-			if (searchVal.length <= 2) return; // ignore 2 characters or less, for performance reasons
-			const found = $(`#journal .content`).find(`li[data-itemid]`).filter((i, ele) => {
-				const $ele = $(ele);
-				return $ele.find(`.name`).text().trim().toLowerCase().includes(searchVal.toLowerCase());
-			});
-			if (found.length) {
-				$outSearch.append(`<p><b>Search results:</b></p>`);
-				const $outList = $(`<ol class="dd-list Vetools-search-results"/>`);
-				$outSearch.append($outList);
-				found.clone().addClass("Vetools-draggable").appendTo($outList);
-				$outSearch.append(`<hr>`);
-				$(`.Vetools-search-results .Vetools-draggable`).draggable({
-					revert: true,
-					distance: 10,
-					revertDuration: 0,
-					helper: "clone",
-					handle: ".namecontainer",
-					appendTo: "body",
-					scroll: true,
+			function overwriteDraggables () {
+				// make them draggable on both axes
+				$("#page-toolbar .pages").sortable("destroy");
+				$("#page-toolbar .pages").sortable({
+					items: "> .chooseablepage",
 					start: function () {
-						$("#journalfolderroot").addClass("externaldrag")
+						d20.pagetoolbar.noReload = true;
 					},
 					stop: function () {
-						$("#journalfolderroot").removeClass("externaldrag")
-					}
-				});
+						updatePageOrder()
+					},
+					distance: 15
+				}).addTouch();
+				$("#page-toolbar .playerbookmark").draggable("destroy");
+				$("#page-toolbar .playerbookmark").draggable({
+					revert: "invalid",
+					appendTo: "#page-toolbar",
+					helper: "original"
+				}).addTouch();
+				$("#page-toolbar .playerspecificbookmark").draggable("destroy");
+				$("#page-toolbar .playerspecificbookmark").draggable({
+					revert: "invalid",
+					appendTo: "#page-toolbar",
+					helper: "original"
+				}).addTouch();
 			}
-		});
-	},
+
+			overwriteDraggables();
+			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
+
+			const originalFn = d20.pagetoolbar.refreshPageListing;
+			d20.pagetoolbar.refreshPageListing = () => {
+				originalFn();
+				// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+				_.debounce(() => {
+					overwriteDraggables();
+				}, 110)();
+			}
+		},
+
+		initQuickSearch: ($iptSearch, $outSearch) => {
+			$iptSearch.on("keyup", () => {
+				const searchVal = ($iptSearch.val() || "").trim();
+				$outSearch.empty();
+				if (searchVal.length <= 2) return; // ignore 2 characters or less, for performance reasons
+				const found = $(`#journal .content`).find(`li[data-itemid]`).filter((i, ele) => {
+					const $ele = $(ele);
+					return $ele.find(`.name`).text().trim().toLowerCase().includes(searchVal.toLowerCase());
+				});
+				if (found.length) {
+					$outSearch.append(`<p><b>Search results:</b></p>`);
+					const $outList = $(`<ol class="dd-list Vetools-search-results"/>`);
+					$outSearch.append($outList);
+					found.clone().addClass("Vetools-draggable").appendTo($outList);
+					$outSearch.append(`<hr>`);
+					$(`.Vetools-search-results .Vetools-draggable`).draggable({
+						revert: true,
+						distance: 10,
+						revertDuration: 0,
+						helper: "clone",
+						handle: ".namecontainer",
+						appendTo: "body",
+						scroll: true,
+						start: function () {
+							$("#journalfolderroot").addClass("externaldrag")
+						},
+						stop: function () {
+							$("#journalfolderroot").removeClass("externaldrag")
+						}
+					});
+				}
+			});
+		},
 
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
 
