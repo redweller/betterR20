@@ -867,7 +867,9 @@ const betteR205etools = function () {
 		});
 		$("#d20plus-importlist").dialog({
 			autoOpen: false,
-			resizable: true
+			resizable: true,
+			width: 500,
+			height: 700
 		});
 
 		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB");
@@ -4385,7 +4387,7 @@ const betteR205etools = function () {
 <span id="import-list">
 	<input class="search" autocomplete="off" placeholder="Search list...">
 	<br>
-	<span class="list" style="max-height: 550px; overflow-y: scroll; display: block; margin-top: 1em;"></span>
+	<span class="list" style="max-height: 400px; overflow-y: scroll; display: block; margin-top: 1em;"></span>
 </span>
 </p>
 <p id="import-options">
