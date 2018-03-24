@@ -3499,7 +3499,7 @@ const betteR205etools = function () {
 		} else {
 			return on;
 		}
-	}
+	};
 
 // Import Classes button was clicked
 	d20plus.classes.button = function () {
@@ -3541,7 +3541,7 @@ const betteR205etools = function () {
 		d20plus.classes._handleSubclasses(data, overwrite, inJournals, folderName);
 	};
 
-	d20plus.classes._handleSubclasses = function (data, overwrite, inJournals, folderName) {
+	d20plus.classes._handleSubclasses = function (data, overwrite, inJournals, outerFolderName) {
 		// import subclasses
 		if (data.subclasses) {
 			const gainFeatureArray = [];
@@ -3562,7 +3562,8 @@ const betteR205etools = function () {
 				sc._gainAtLevels = gainFeatureArray;
 				if (window.is_gm) {
 					const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
-					const path = [folderName, sc.source || data.source];
+					const path = [folderName];
+					if (outerFolderName) path.push(sc.source || data.source); // if it wasn't None, group by source
 					d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path);
 				} else {
 					d20plus.subclasses.playerImportBuilder(sc);
@@ -3845,7 +3846,7 @@ const betteR205etools = function () {
 
 		const $selGroupBy = $(`#organize-by`);
 		$selGroupBy.html("");
-		options.groupOptions = options.groupOptions || ["Alphabetical", "Source"];
+		options.groupOptions = (options.groupOptions || ["Alphabetical", "Source"]).concat(["None"]);
 		options.groupOptions.forEach(g => {
 			$selGroupBy.append(`<option value="${g}">${g}</option>`);
 		});
@@ -3912,7 +3913,7 @@ const betteR205etools = function () {
 				$stsRemain.text(remaining--);
 
 				if (window.is_gm) {
-					folderName = d20plus.importer._getHandoutPath(dataType, it, groupBy);
+					const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
 					handoutBuilder(it, overwrite, inJournals, folderName);
 				} else {
 					handoutBuilder(it);
@@ -4108,7 +4109,7 @@ const betteR205etools = function () {
 		if (dupe && !overwrite) return false;
 		else if (dupe) d20plus.importer.removeFileByPath(path);
 		return true;
-	}
+	};
 
 	d20plus.importer._importToggleSelectAll = function (importList, selectAllCb) {
 		const $sa = $(selectAllCb);
@@ -4415,7 +4416,7 @@ Errors: <span id="import-errors">0</span>
 	d20plus.settingsHtmlImportHeader = `
 <h4>Import By Category</h4>
 <p><small><i>We strongly recommend the OGL sheet for importing. You can switch afterwards.</i></small></p>
-`
+`;
 	d20plus.settingsHtmlSelector = `
 <select id="import-mode-select">
 <option value="none" disabled selected>Select category...</option>
@@ -4431,7 +4432,7 @@ Errors: <span id="import-errors">0</span>
 <option value="background">Backgrounds</option>
 <option value="adventure">Adventures</option>
 </select>
-`
+`;
 	d20plus.settingsHtmlPtMonsters = `
 <div class="importer-section" data-import-group="monster">
 <h4>Monster Importing</h4>
@@ -4448,7 +4449,7 @@ The "Import Monsters From All Sources" button presents a list containing monster
 To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Monsters."
 </p>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtItems = `
 <div class="importer-section" data-import-group="item">
@@ -4457,7 +4458,7 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-items-url" value="${ITEM_DATA_URL}">
 <a class="btn" href="#" id="import-items-load">Import Items</a>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtSpells = `
 <div class="importer-section" data-import-group="spell">
@@ -4474,7 +4475,7 @@ The "Import Spells From All Sources" button presents a list containing spells fr
 To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."
 </p>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtPsionics = `
 <div class="importer-section" data-import-group="psionic">
@@ -4483,7 +4484,7 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-psionics-url" value="${PSIONIC_DATA_URL}">
 <a class="btn" href="#" id="import-psionics-load">Import Psionics</a>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtFeats = `
 <div class="importer-section" data-import-group="feat">
@@ -4492,7 +4493,7 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-feats-url" value="${FEAT_DATA_URL}">
 <a class="btn" href="#" id="import-feats-load">Import Feats</a>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtObjects = `
 <div class="importer-section" data-import-group="object">
@@ -4501,7 +4502,7 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-objects-url" value="${OBJECT_DATA_URL}">
 <a class="btn" href="#" id="import-objects-load">Import Objects</a>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtRaces = `
 <div class="importer-section" data-import-group="race">
@@ -4510,7 +4511,7 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-races-url" value="${RACE_DATA_URL}">
 <a class="btn" href="#" id="import-races-load">Import Races</a>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtClasses = `
 <div class="importer-section" data-import-group="class">
@@ -4519,7 +4520,7 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-classes-url" value="${CLASS_DATA_URL}">
 <a class="btn" href="#" id="import-classes-load">Import Classes</a>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtSubclasses = `
 <div class="importer-section" data-import-group="subclass">
@@ -4531,7 +4532,7 @@ To import from third-party sources, either individually select one available in 
 Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.
 </p>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtBackgrounds = `
 <div class="importer-section" data-import-group="background">
@@ -4540,7 +4541,7 @@ Default subclasses are imported as part of Classes import. This can be used to l
 <input type="text" id="import-backgrounds-url" value="${BACKGROUND_DATA_URL}">
 <a class="btn" href="#" id="import-backgrounds-load">Import Backgrounds</a>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtAdventures = `
 <div class="importer-section" data-import-group="adventure">
@@ -4552,7 +4553,7 @@ Default subclasses are imported as part of Classes import. This can be used to l
 <input type="text" id="import-adventures-url">
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 </div>
-`
+`;
 
 	d20plus.settingsHtmlPtImportFooter = `
 <br>
