@@ -6,9 +6,9 @@
 	"description": "The script.",
 	"scripts": {
 		"test": "eslint js",
-		"build": "npm node/build-scripts.js"
+		"build": "node node/build-scripts.js"
 	},
-	"repository": "astranauta/5etoolsR20",
+	"repository": "5etools/5etoolsR20",
 	"dependencies": {
 		"eslint": "^4.9.0"
 	}
