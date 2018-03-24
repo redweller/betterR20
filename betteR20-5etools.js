@@ -339,10 +339,10 @@ const betteR205etools = function () {
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.addCustomArtSearch();
-			d20plus.enhanceMeasureTool();
-			d20plus.enhanceStatusEffects();
 			d20plus.handleConfigChange();
 		}
+		d20plus.enhanceStatusEffects();
+		d20plus.enhanceMeasureTool();
 		d20plus.enhanceChat();
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);
@@ -1219,12 +1219,12 @@ const betteR205etools = function () {
 
 										const renderer = new EntryRenderer();
 										renderer.setBaseUrl(BASE_SITE_URL);
+										let firstFeatures = true;
 										for (let i = 0; i < maxIndex; i++) {
 											const lvlFeatureList = sc.subclassFeatures[i];
 											for (let j = 0; j < lvlFeatureList.length; j++) {
 												const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
 												let feature = lvlFeatureList[j];
-												const renderStack = [];
 
 												try {
 													while (!feature.name || (feature[0] && !feature[0].name)) {
@@ -1245,33 +1245,56 @@ const betteR205etools = function () {
 														}
 													}
 												} catch (e) {
+													console.error("Failed to find feature");
 													// in case something goes _really_ wrong, reset
 													feature = featureCpy;
 												}
 
-												renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+												// for the first batch of subclass features, try to split them up
+												if (firstFeatures && feature.name && feature.entries) {
+													const subFeatures = [];
+													const baseFeatures = feature.entries.filter(f => {
+														if (f.name && f.type === "entries") {
+															subFeatures.push(f);
+															return false;
+														} else return true;
+													});
+													addFeatureToSheet({name: feature.name, type: feature.type, entries: baseFeatures});
+													subFeatures.forEach(sf => {
+														addFeatureToSheet(sf);
+													})
+												} else {
+													addFeatureToSheet(feature);
+												}
 
-												const fRowId = d20plus.generateRowId();
-												character.model.attribs.create({
-													name: `repeating_traits_${fRowId}_name`,
-													current: feature.name
-												});
-												character.model.attribs.create({
-													name: `repeating_traits_${fRowId}_source`,
-													current: "Class"
-												});
-												character.model.attribs.create({
-													name: `repeating_traits_${fRowId}_source_type`,
-													current: `${sc.class} (${sc.name})`
-												});
-												character.model.attribs.create({
-													name: `repeating_traits_${fRowId}_description`,
-													current: d20plus.importer.getCleanText(renderStack.join(""))
-												});
-												character.model.attribs.create({
-													name: `repeating_traits_${fRowId}_options-flag`,
-													current: "0"
-												});
+												function addFeatureToSheet (feature) {
+													const renderStack = [];
+													renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+
+													const fRowId = d20plus.generateRowId();
+													character.model.attribs.create({
+														name: `repeating_traits_${fRowId}_name`,
+														current: feature.name
+													});
+													character.model.attribs.create({
+														name: `repeating_traits_${fRowId}_source`,
+														current: "Class"
+													});
+													character.model.attribs.create({
+														name: `repeating_traits_${fRowId}_source_type`,
+														current: `${sc.class} (${sc.name})`
+													});
+													character.model.attribs.create({
+														name: `repeating_traits_${fRowId}_description`,
+														current: d20plus.importer.getCleanText(renderStack.join(""))
+													});
+													character.model.attribs.create({
+														name: `repeating_traits_${fRowId}_options-flag`,
+														current: "0"
+													});
+												}
+
+												firstFeatures = false;
 											}
 										}
 									} else if (data.data.Category === "Psionics") {
@@ -3546,7 +3569,7 @@ const betteR205etools = function () {
 				}
 			});
 		}
-	}
+	};
 
 	d20plus.classes.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.classes._getHandoutData(data);
