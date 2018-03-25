@@ -482,63 +482,116 @@ var betteR20Base = function () {
 			}
 		},
 
-		// JOURNAL CLEANER /////////////////////////////////////////////////////////////////////////////////////////////////
+		// SETTINGS TOOLS //////////////////////////////////////////////////////////////////////////////////////////////
+		tools: [
+			{
+				name: "Journal Cleaner",
+				desc: "Quickly select and delete journal items from the root folder, useful for cleaning up loose items after deleting a folder.",
+				html: `
+				<div id="d20plus-quickdelete" title="Journal Root Cleaner">
+				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
+				<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
+				<div id="delete-list-container">
+					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
+					<br><br>
+					<ul class="list deletelist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
+				</div>
+				</div>;
+				`,
+				dialogFn: () => {
+					$("#d20plus-quickdelete").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 800,
+						height: 650,
+					});
+				},
+				openFn: () => {
+					const $win = $("#d20plus-quickdelete");
+					$win.dialog("open");
 
-		openJournalCleaner: () => {
-			const $win = $("#d20plus-quickdelete");
-			$win.dialog("open");
+					const journal = d20plus.getJournalFolderObj();
+					const rootItems = [];
+					journal.forEach(it => {
+						if (it.i) return; // skip folders
+						const handout = d20.Campaign.handouts.get(it);
+						if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return; // skip 5etools handouts
+						const character = d20.Campaign.characters.get(it);
+						if (handout) rootItems.push({type: "handouts", id: it, name: handout.get("name")});
+						if (character) rootItems.push({type: "characters", id: it, name: character.get("name")});
+					});
 
-			const journal = d20plus.getJournalFolderObj();
-			const rootItems = [];
-			journal.forEach(it => {
-				if (it.i) return; // skip folders
-				const handout = d20.Campaign.handouts.get(it);
-				if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return; // skip 5etools handouts
-				const character = d20.Campaign.characters.get(it);
-				if (handout) rootItems.push({type: "handouts", id: it, name: handout.get("name")});
-				if (character) rootItems.push({type: "characters", id: it, name: character.get("name")});
-			});
+					const $delList = $win.find(`.list`);
+					$delList.empty();
 
-			const $delList = $win.find(`.list`);
-			$delList.empty();
+					rootItems.forEach((it, i) => {
+						$delList.append(`
+							<label class="import-cb-label">
+								<input type="checkbox" data-listid="${i}">
+								<span class="name">${it.name}</span>
+							</label>
+						`);
+					});
 
-			rootItems.forEach((it, i) => {
-				$delList.append(`
-			<label class="import-cb-label">
-				<input type="checkbox" data-listid="${i}">
-				<span class="name">${it.name}</span>
-			</label>
-		`);
-			});
+					// init list library
+					const delList = new List("delete-list-container", {
+						valueNames: ["name"],
+						listClass: "deletelist"
+					});
 
-			// init list library
-			const delList = new List("delete-list-container", {
-				valueNames: ["name"],
-				listClass: "deletelist"
-			});
+					const $cbAll = $("#deletelist-selectall");
+					$cbAll.unbind("click");
+					$cbAll.prop("checked", false);
+					$cbAll.bind("click", function () {
+						d20plus.importer._importToggleSelectAll(delList, $cbAll);
+					});
 
-			const $cbAll = $("#deletelist-selectall");
-			$cbAll.unbind("click");
-			$cbAll.prop("checked", false);
-			$cbAll.bind("click", function () {
-				d20plus.importer._importToggleSelectAll(delList, $cbAll);
-			});
-
-			const $btnDel = $(`#quickdelete-btn-submit`);
-			$btnDel.off("click");
-			$btnDel.on("click", () => {
-				if (confirm("Delete selected?")) {
-					delList.items.forEach(it => Array.prototype.forEach.call(it.elm.children, (e) => {
-						const $e = $(e);
-						if ($e.is("input") && $e.prop("checked")) {
-							const dataIndex = parseInt($e.data("listid"));
-							const toDel = rootItems[dataIndex];
-							d20.Campaign[toDel.type].get(toDel.id).destroy();
+					const $btnDel = $(`#quickdelete-btn-submit`);
+					$btnDel.off("click");
+					$btnDel.on("click", () => {
+						if (confirm("Delete selected?")) {
+							delList.items.forEach(it => Array.prototype.forEach.call(it.elm.children, (e) => {
+								const $e = $(e);
+								if ($e.is("input") && $e.prop("checked")) {
+									const dataIndex = parseInt($e.data("listid"));
+									const toDel = rootItems[dataIndex];
+									d20.Campaign[toDel.type].get(toDel.id).destroy();
+								}
+							}));
+							$win.dialog("close");
+							$("#journalfolderroot").trigger("change");
 						}
-					}));
-					$win.dialog("close");
-					$("#journalfolderroot").trigger("change");
+					});
 				}
+			}
+		],
+
+		addTools: () => {
+			const $body = $(`body`);
+			const $tools = $(`#d20-tools-list`);
+			const $toolsList = $tools.find(`.tools-list`);
+			d20plus.tools.forEach(t => {
+				$body.append(t.html); // add HTML
+				t.dialogFn(); // init window
+				// add tool row
+				const $wrp = $(`<div class="tool-row"/>`);
+				$wrp.append(`<p style="width: 20%;">${t.name}</p>`);
+				$wrp.append(`<p style="width: 60%;">${t.desc}</p>`);
+				$(`<a style="width: 15%;" class="btn" href="#">Open</a>`).on(mousedowntype, () => {
+					t.openFn();
+					$tools.dialog("close");
+				}).appendTo($wrp);
+				$toolsList.append($wrp);
+			});
+
+			$tools.dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 650,
+			});
+			$(`#button-view-tools`).on(mousedowntype, () => {
+				$tools.dialog("open");
 			});
 		},
 
@@ -1865,6 +1918,19 @@ var betteR20Base = function () {
 			{
 				s: "table.config-table tbody td > *",
 				r: "vertical-align: middle;"
+			},
+			// tool list
+			{
+				s: ".tools-list",
+				r: "max-height: 70vh;"
+			},
+			{
+				s: ".tool-row",
+				r: "display: flex; flex-direction: row; align-items: center;"
+			},
+			{
+				s: ".tool-row > *",
+				r: "flex-shrink: 0;"
 			}
 		],
 
@@ -1887,7 +1953,7 @@ var betteR20Base = function () {
 				$body.append(d20plus.configEditorHTML);
 				$body.append(d20plus.addArtHTML);
 				$body.append(d20plus.addArtMassAdderHTML);
-				$body.append(d20plus.quickDeleterHtml);
+				$body.append(d20plus.toolsListHtml);
 				const $cfgEditor = $("#d20plus-configeditor");
 				$cfgEditor.dialog({
 					autoOpen: false,
@@ -1907,12 +1973,6 @@ var betteR20Base = function () {
 					resizable: true,
 					width: 800,
 					height: 400,
-				});
-				$("#d20plus-quickdelete").dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 800,
-					height: 650,
 				});
 
 				d20plus.addJournalCommands();
@@ -1945,33 +2005,24 @@ var betteR20Base = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtFooter);
 
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
-			$("#mysettings > .content a#button-mass-deleter").on(window.mousedowntype, d20plus.openJournalCleaner);
+			d20plus.addTools();
 		},
 
 		settingsHtmlPtFooter:
-			`<br>
-		<a class="btn" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
-		<a class="btn" href="#" id="button-mass-deleter" style="margin-top: 3px;">Journal Cleaner</a>
-		<p>
-		For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_blank" style="color: #08c;">join our Discord!</a>
-		</p>
-		<style id="dynamicStyle"></style>
-	`,
+			`<p>
+			<a class="btn" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
+			</p>
+			<p>
+			For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_blank" style="color: #08c;">join our Discord!</a>
+			</p>
+			<p>
+			<a class="btn" href="#" id="button-view-tools" style="margin-top: 3px;">Open Tools List</a>
+			</p>
+			<style id="dynamicStyle"></style>
+		`,
 
 		artTabHtml: `
 	<p><a class="btn" href="#" id="button-add-external-art">Manage External Art</a></p>
-	`,
-
-		quickDeleterHtml: `
-	<div id="d20plus-quickdelete" title="Journal Root Cleaner">
-	<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
-	<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
-	<div id="delete-list-container">
-		<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
-		<br><br>
-		<ul class="list deletelist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
-	</div>
-	</div>;
 	`,
 
 		addArtHTML: `
@@ -2030,6 +2081,14 @@ var betteR20Base = function () {
 	</div>
 	</div>
 	`,
+
+		toolsListHtml: `
+		<div id="d20-tools-list" title="Tools List" style="position: relative">
+		<div class="tools-list">
+		<!-- populate with js -->
+		</div>
+		</div>
+		`,
 
 		template_TokenEditor: `
 	 <script id='tmpl_tokeneditor' type='text/html'>
