@@ -868,7 +868,7 @@ const betteR205etools = function () {
 		$("#d20plus-importlist").dialog({
 			autoOpen: false,
 			resizable: true,
-			width: 500,
+			width: 600,
 			height: 700
 		});
 
@@ -3546,6 +3546,8 @@ const betteR205etools = function () {
 	d20plus.classes._handleSubclasses = function (data, overwrite, inJournals, outerFolderName) {
 		// import subclasses
 		if (data.subclasses) {
+			const onlyPublished = window.confirm("Subclasses: import published only?");
+
 			const gainFeatureArray = [];
 			outer: for (let i = 0; i < 20; i++) {
 				const lvlFeatureList = data.classFeatures[i];
@@ -3560,6 +3562,8 @@ const betteR205etools = function () {
 			}
 
 			data.subclasses.forEach(sc => {
+				if (onlyPublished && isNonstandardSource(sc.source)) return;
+
 				sc.class = data.name;
 				sc._gainAtLevels = gainFeatureArray;
 				if (window.is_gm) {
@@ -3807,19 +3811,18 @@ const betteR205etools = function () {
 			$list.append(`
 			<label class="import-cb-label">
 				<input type="checkbox" data-listid="${i}">
-					<span class="name">
-						<span>${it.name}</span>
-			${options.showSource
-				? ` <span class="source" title="${Parser.sourceJsonToFull(it.source)}">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`
-				: it.cr ? `(CR ${it.cr.cr || it.cr})` : ""}</span>
-
+					<span class="name">${it.name}</span>
+				${options.showSource
+				? ` <span title="${Parser.sourceJsonToFull(it.source)}">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`
+				: it.cr ? `<span>(CR ${it.cr.cr || it.cr})</span>` : ""}
+					<span class="source" style="display: none">${it.source}</span>
 			</label>
 		`);
 		});
 
 		// init list library
 		const importList = new List("import-list", {
-			valueNames: ["name"]
+			valueNames: ["name", "source"]
 		});
 
 		// reset the UI and add handlers
@@ -3833,17 +3836,21 @@ const betteR205etools = function () {
 
 		$("#d20plus-importlist button").unbind("click");
 
-		$("#importlist-selectall").prop("checked", false).bind("click", () => {
+		$("#importlist-selectall").bind("click", () => {
 			d20plus.importer._importSelectAll(importList);
 		});
-		$("#importlist-deselectall").prop("checked", false).bind("click", () => {
+		$("#importlist-deselectall").bind("click", () => {
 			d20plus.importer._importDeselectAll(importList);
 		});
-		$("#importlist-selectvis").prop("checked", false).bind("click", () => {
+		$("#importlist-selectvis").bind("click", () => {
 			d20plus.importer._importSelectVisible(importList);
 		});
-		$("#importlist-deselectvis").prop("checked", false).bind("click", () => {
+		$("#importlist-deselectvis").bind("click", () => {
 			d20plus.importer._importDeselectVisible(importList);
+		});
+
+		$("#importlist-selectall-published").bind("click", () => {
+			d20plus.importer._importSelectPublished(importList);
 		});
 
 		const $selGroupBy = $(`#organize-by`);
@@ -4146,13 +4153,31 @@ const betteR205etools = function () {
 		}));
 	};
 
-
 	d20plus.importer._importDeselectVisible = function (importList) {
 		importList.visibleItems.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
 			if (e.tagName === "INPUT") {
 				$(e).prop("checked", false);
 			}
 		}));
+	};
+
+	d20plus.importer._importSelectPublished = function (importList) {
+		function setSelection (i, setTo) {
+			Array.prototype.forEach.call(i.elm.children, (e) => {
+				if (e.tagName === "INPUT") {
+					$(e).prop("checked", setTo);
+				}
+			})
+		}
+
+		importList.items.forEach(i => {
+			if (isNonstandardSource(i.values().source)) {
+				setSelection(i, false);
+			} else {
+				setSelection(i, true);
+			}
+
+		});
 	};
 
 // Fetch adventure data from file
@@ -4382,6 +4407,8 @@ const betteR205etools = function () {
 	<button type="button" id="importlist-deselectall" class="btn" style="margin: 0 2px;"><span>Deselect All</span></button>
 	<button type="button" id="importlist-selectvis" class="btn" style="margin: 0 2px;"><span>Select Visible</span></button>
 	<button type="button" id="importlist-deselectvis" class="btn" style="margin: 0 2px;"><span>Deselect Visible</span></button>
+	<span style="width:1px;background: #bbb;height: 26px;margin: 2px;"></span>
+	<button type="button" id="importlist-selectall-published" class="btn" style="margin: 0 2px;"><span>Select All Published</span></button>
 </p>
 <p>
 <span id="import-list">
@@ -4615,8 +4642,12 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			r: "display: none;"
 		},
 		{
+			s: ".import-cb-label",
+			r: "display: flex; justify-content: space-between;"
+		},
+		{
 			s: ".import-cb-label .name",
-			r: "display: inline-flex; width: calc(100% - 20px); justify-content: space-between;"
+			r: "width: calc(100% - 20px);"
 		},
 		{
 			s: ".import-cb-label .source",
