@@ -1683,7 +1683,18 @@ const betteR205etools = function () {
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
 		const name = data.name;
-		d20.Campaign.characters.create({name: name}, {
+		const pType = Parser.monTypeToFullObj(data.type);
+		d20.Campaign.characters.create(
+			{
+				name: name,
+				tags: d20plus.importer.getTagString([
+					pType.type,
+					...pType.tags,
+					`cr ${data.cr.replace(/\//g, " over ")}` || "unknown cr",
+					Parser.sourceJsonToFull(data.source)
+				], "monsters")
+			},
+			{
 			success: function (character) {
 				/* OGL Sheet */
 				try {
@@ -2697,7 +2708,11 @@ const betteR205etools = function () {
 		}
 	};
 
-// Create spell handout from js data object
+	d20plus.importer.getTagString = function (data, prefix) {
+		return JSON.stringify(data.map(d => `${prefix}-${Parser.stringToSlug(d.toString())}`).concat([prefix]));
+	};
+
+	// Create spell handout from js data object
 	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Spells`, folderName);
@@ -2709,7 +2724,13 @@ const betteR205etools = function () {
 		const name = data.name;
 		// build spell handout
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags: d20plus.importer.getTagString([
+				Parser.spSchoolAbvToFull(data.school),
+				Parser.spLevelToFull(data.level),
+				...data.classes.fromClassList.map(c => c.name),
+				Parser.sourceJsonToFull(data.source)
+			], "spell")
 		}, {
 			success: function (handout) {
 				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data);
@@ -2720,7 +2741,7 @@ const betteR205etools = function () {
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
 			}
 		});
-	}
+	};
 
 	d20plus.spells.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data);
@@ -2866,7 +2887,12 @@ const betteR205etools = function () {
 
 		// build item handout
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags: d20plus.importer.getTagString([
+				`rarity ${data.rarity}`,
+				...data.procType,
+				Parser.sourceJsonToFull(data.source)
+			], "items")
 		}, {
 			success: function (handout) {
 				const [notecontents, gmnotes] = d20plus.items._getHandoutData(data);
@@ -3075,7 +3101,12 @@ const betteR205etools = function () {
 
 		const name = data.name;
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags: d20plus.importer.getTagString([
+				Parser.psiTypeToFull(data.type),
+				data.order || "orderless",
+				Parser.sourceJsonToFull(data.source)
+				], "psionics")
 		}, {
 			success: function (handout) {
 				const [noteContents, gmNotes] = d20plus.psionics._getHandoutData(data);
@@ -3149,7 +3180,11 @@ const betteR205etools = function () {
 
 		const name = data.name;
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags: d20plus.importer.getTagString([
+				Parser.sizeAbvToFull(data.size),
+				Parser.sourceJsonToFull(data.source)
+			], "races")
 		}, {
 			success: function (handout) {
 				const [noteContents, gmNotes] = d20plus.races._getHandoutData(data);
@@ -3229,7 +3264,10 @@ const betteR205etools = function () {
 
 		const name = data.name;
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags: d20plus.importer.getTagString([
+				Parser.sourceJsonToFull(data.source)
+			], "feats")
 		}, {
 			success: function (handout) {
 				const [noteContents, gmNotes] = d20plus.feats._getHandoutData(data);
@@ -3299,7 +3337,15 @@ const betteR205etools = function () {
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
 		const name = data.name;
-		d20.Campaign.characters.create({name: name}, {
+		d20.Campaign.characters.create(
+			{
+				name: name,
+				tags: d20plus.importer.getTagString([
+					Parser.sizeAbvToFull(data.size),
+					Parser.sourceJsonToFull(data.source)
+				], "objects")
+			},
+			{
 			success: function (character) {
 				try {
 					const avatar = `${IMG_URL}objects/${name}.png`;
@@ -3529,7 +3575,10 @@ const betteR205etools = function () {
 
 		const name = data.name;
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags:  d20plus.importer.getTagString([
+				Parser.sourceJsonToFull(data.source)
+			], "classes")
 		}, {
 			success: function (handout) {
 				const [noteContents, gmNotes] = d20plus.classes._getHandoutData(data);
@@ -3649,7 +3698,11 @@ const betteR205etools = function () {
 
 		const name = `${data.shortName} (${data.class})`;
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags: d20plus.importer.getTagString([
+				data.class,
+				Parser.sourceJsonToFull(data.source)
+			], "subclasses")
 		}, {
 			success: function (handout) {
 				const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
@@ -3725,7 +3778,10 @@ const betteR205etools = function () {
 
 		const name = data.name;
 		d20.Campaign.handouts.create({
-			name: name
+			name: name,
+			tags:  d20plus.importer.getTagString([
+				Parser.sourceJsonToFull(data.source)
+			], "backgrounds")
 		}, {
 			success: function (handout) {
 				const [noteContents, gmNotes] = d20plus.backgrounds._getHandoutData(data);
@@ -3813,9 +3869,9 @@ const betteR205etools = function () {
 				<input type="checkbox" data-listid="${i}">
 					<span class="name">${it.name}</span>
 				${options.showSource
-				? ` <span title="${Parser.sourceJsonToFull(it.source)}">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`
-				: it.cr ? `<span>(CR ${it.cr.cr || it.cr})</span>` : ""}
-					<span class="source" style="display: none">${it.source}</span>
+				? ` <span title="${Parser.sourceJsonToFull(it.source)}" class="no-shrink">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`
+				: it.cr ? `<span class="no-shrink">(CR ${it.cr.cr || it.cr})</span>` : ""}
+					<span class="source no-shrink" style="display: none">${it.source}</span>
 			</label>
 		`);
 		});
@@ -4597,6 +4653,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 `;
 
 	d20plus.cssRules = d20plus.cssRules.concat([
+		{
+			s: ".no-shrink",
+			r: "flex-shrink: 0;"
+		},
 		{
 			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.tracker-col,#initiativewindow ul li span.initmacro",
 			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;display: block;"
