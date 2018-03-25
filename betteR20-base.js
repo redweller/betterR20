@@ -1273,6 +1273,385 @@ var betteR20Base = function () {
 			});
 		},
 
+		addSelectedTokenCommands: () => {
+			d20plus.log("Add token rightclick commands");
+			$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
+
+			// BEGIN ROLL20 CODE
+			var e, t = !1, n = [];
+			var i = function() {
+				t && (t.remove(),
+					t = !1),
+				e && clearTimeout(e)
+			};
+			var r = function (r) {
+				var o, a;
+				r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
+					a = r.changedTouches[0].pageY) : (o = r.pageX,
+					a = r.pageY),
+					i(),
+					n = [];
+				for (var s = [], l = d20.engine.selected(), c = 0; c < l.length; c++)
+					n.push(l[c]),
+						s.push(l[c].type);
+				if (s = _.uniq(s),
+					n.length > 0)
+					if (1 == s.length) {
+						var u = n[0];
+						t = $("image" == u.type && 0 == u.model.get("isdrawing") ? $("#tmpl_actions_menu").jqote(u.model) : $("#tmpl_actions_menu").jqote(u.model))
+					} else {
+						var u = n[0];
+						t = $($("#tmpl_actions_menu").jqote(u.model))
+					}
+				else
+					t = $($("#tmpl_actions_menu").jqote({}));
+				if (!window.is_gm && t[0].lastElementChild.childElementCount < 1)
+					return !1;
+				t.appendTo("body");
+				var d = t.height()
+					, h = t.width()
+					, p = {};
+				return p.top = a > $("#editor-wrapper").height() - $("#playerzone").height() - d - 100 ? a - d + "px" : a + "px",
+					p.left = o > $("#editor-wrapper").width() - h ? o + 10 - h + "px" : o + 10 + "px",
+					t.css(p),
+					$(".actions_menu").bind("mousedown mouseup touchstart", function(e) {
+						e.stopPropagation()
+					}),
+					$(".actions_menu ul > li").bind("mouseover touchend", function() {
+						if (e && (clearTimeout(e),
+								e = !1),
+							$(this).parents(".hasSub").length > 0)
+							;
+						else if ($(this).hasClass("hasSub")) {
+							$(".actions_menu").css({
+								width: "215px",
+								height: "250px"
+							});
+							var t = this;
+							_.defer(function() {
+								$(".actions_menu ul.submenu").hide(),
+									$(t).find("ul.submenu:hidden").show()
+							})
+						} else
+							$(".actions_menu ul.submenu").hide()
+					}),
+					$(".actions_menu ul.submenu").live("mouseover", function() {
+						e && (clearTimeout(e),
+							e = !1)
+					}),
+					$(".actions_menu, .actions_menu ul.submenu").live("mouseleave", function() {
+						e || (e = setTimeout(function() {
+							$(".actions_menu ul.submenu").hide(),
+								$(".actions_menu").css("width", "100px").css("height", "auto"),
+								e = !1
+						}, 500))
+					}),
+					$(".actions_menu li").on(clicktype, function() {
+						var e = $(this).attr("data-action-type");
+						if (null != e) {
+							if ("copy" == e)
+								d20.clipboard.doCopy(),
+									i();
+							else if ("paste" == e)
+								d20.clipboard.doPaste(),
+									i();
+							else if ("delete" == e) {
+								var t = d20.engine.selected();
+								d20.engine.canvas.deactivateAllWithDispatch();
+								for (var r = 0; r < t.length; r++)
+									t[r].model.destroy();
+								i()
+							} else if ("undo" == e)
+								d20.undo && d20.undo.doUndo(),
+									i();
+							else if ("tofront" == e)
+								d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+									_.each(n, function(e) {
+										d20.engine.canvas.bringToFront(e)
+									}),
+									d20.Campaign.activePage().debounced_recordZIndexes(),
+									i();
+							else if ("toback" == e)
+								d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+									_.each(n, function(e) {
+										d20.engine.canvas.sendToBack(e)
+									}),
+									d20.Campaign.activePage().debounced_recordZIndexes(),
+									i();
+							else if (-1 !== e.indexOf("tolayer_")) {
+								d20.engine.unselect();
+								var o = e.replace("tolayer_", "");
+								_.each(n, function(e) {
+									e.model.save({
+										layer: o
+									})
+								}),
+									i(),
+									d20.token_editor.removeRadialMenu()
+							} else if ("addturn" == e)
+								_.each(n, function(e) {
+									d20.Campaign.initiativewindow.addTokenToList(e.model.id)
+								}),
+									i(),
+								d20.tutorial && d20.tutorial.active && $(document.body).trigger("addedTurn");
+							else if ("group" == e) {
+								var a = [];
+								d20.engine.unselect(),
+									_.each(n, function(e) {
+										a.push(e.model.id)
+									}),
+									_.each(n, function(e) {
+										e.model.addToGroup(a)
+									}),
+									i();
+								var s = n[0];
+								d20.engine.select(s)
+							} else if ("ungroup" == e)
+								d20.engine.unselect(),
+									_.each(n, function(e) {
+										e.model.clearGroup()
+									}),
+									d20.token_editor.removeRadialMenu(),
+									i();
+							else if ("toggledrawing" == e)
+								d20.engine.unselect(),
+									_.each(n, function(e) {
+										e.model.set({
+											isdrawing: !e.model.get("isdrawing")
+										}).save()
+									}),
+									i(),
+									d20.token_editor.removeRadialMenu();
+							else if ("toggleflipv" == e)
+								d20.engine.unselect(),
+									_.each(n, function(e) {
+										e.model.set({
+											flipv: !e.model.get("flipv")
+										}).save()
+									}),
+									i(),
+									d20.token_editor.removeRadialMenu();
+							else if ("togglefliph" == e)
+								d20.engine.unselect(),
+									_.each(n, function(e) {
+										e.model.set({
+											fliph: !e.model.get("fliph")
+										}).save()
+									}),
+									i(),
+									d20.token_editor.removeRadialMenu();
+							else if ("takecard" == e)
+								d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+									_.each(n, function(e) {
+										var t = d20.decks.cardByID(e.model.get("cardid"));
+										if (e.model.get("isdrawing") === !1)
+											var n = {
+												bar1_value: e.model.get("bar1_value"),
+												bar1_max: e.model.get("bar1_max"),
+												bar2_value: e.model.get("bar2_value"),
+												bar2_max: e.model.get("bar2_max"),
+												bar3_value: e.model.get("bar3_value"),
+												bar3_max: e.model.get("bar3_max")
+											};
+										d20.Campaign.hands.addCardToHandForPlayer(t, window.currentPlayer, n ? n : void 0),
+											_.defer(function() {
+												e.model.destroy()
+											})
+									}),
+									d20.engine.unselect(),
+									i();
+							else if ("flipcard" == e)
+								d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+									_.each(n, function(e) {
+										var t = e.model.get("sides").split("|")
+											, n = e.model.get("currentSide")
+											, i = n + 1;
+										i > t.length - 1 && (i = 0),
+											e.model.set({
+												currentSide: i,
+												imgsrc: unescape(t[i])
+											}).save()
+									}),
+									i();
+							else if ("setdimensions" == e) {
+								var l = n[0]
+									, c = $($("#tmpl_setdimensions").jqote()).dialog({
+									title: "Set Dimensions",
+									width: 325,
+									height: 225,
+									buttons: {
+										Set: function() {
+											var e, t;
+											"pixels" == c.find(".dimtype").val() ? (e = parseInt(c.find("input.width").val(), 10),
+												t = parseInt(c.find("input.height").val(), 10)) : (e = parseFloat(c.find("input.width").val()) * window.dpi,
+												t = parseFloat(c.find("input.height").val()) * window.dpi),
+												l.model.save({
+													width: e,
+													height: t
+												}),
+												c.off("change"),
+												c.dialog("destroy").remove()
+										},
+										Cancel: function() {
+											c.off("change"),
+												c.dialog("destroy").remove()
+										}
+									},
+									beforeClose: function() {
+										c.off("change"),
+											c.dialog("destroy").remove()
+									}
+								});
+								c.on("change", ".dimtype", function() {
+									"pixels" == $(this).val() ? (c.find("input.width").val(Math.round(l.get("width"))),
+										c.find("input.height").val(Math.round(l.get("height")))) : (c.find("input.width").val(l.get("width") / window.dpi),
+										c.find("input.height").val(l.get("height") / window.dpi))
+								}),
+									c.find(".dimtype").trigger("change"),
+									i()
+							} else if ("aligntogrid" == e)
+								if (0 === d20.Campaign.activePage().get("snapping_increment")) {
+									i();
+									var u = $($("#tmpl_grid-disabled").jqote(h)).dialog({
+										title: "Grid Off",
+										buttons: {
+											Ok: function() {
+												u.off("change"),
+													u.dialog("destroy").remove()
+											}
+										},
+										beforeClose: function() {
+											u.off("change"),
+												u.dialog("destroy").remove()
+										}
+									})
+								} else
+									d20.engine.gridaligner.target = n[0],
+										setMode("gridalign"),
+										i();
+							else if ("side_random" == e) {
+								d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
+								var d = [];
+								_.each(n, function(e) {
+									if (e.model && "" != e.model.get("sides")) {
+										var t = e.model.get("sides").split("|")
+											, n = t.length
+											, i = d20.textchat.diceengine.random(n);
+										e.model.save({
+											currentSide: i,
+											imgsrc: unescape(t[i])
+										}),
+											d.push(t[i])
+									}
+								}),
+									d20.textchat.rawChatInput({
+										type: "tokenroll",
+										content: d.join("|")
+									}),
+									i()
+							} else if ("side_choose" == e) {
+								var l = n[0]
+									, h = l.model.toJSON()
+									, p = h.currentSide;
+								h.sidesarray = h.sides.split("|");
+								var c = $($("#tmpl_chooseside").jqote(h)).dialog({
+									title: "Choose Side",
+									width: 325,
+									height: 225,
+									buttons: {
+										Choose: function() {
+											d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+												l.model.save({
+													currentSide: p,
+													imgsrc: unescape(h.sidesarray[p])
+												}),
+												l = null,
+												h = null,
+												c.off("slide"),
+												c.dialog("destroy").remove()
+										},
+										Cancel: function() {
+											l = null,
+												h = null,
+												c.off("slide"),
+												c.dialog("destroy").remove()
+										}
+									},
+									beforeClose: function() {
+										l = null,
+											h = null,
+											c.off("slide"),
+											c.dialog("destroy").remove()
+									}
+								});
+								c.find(".sideslider").slider({
+									min: 0,
+									max: h.sidesarray.length - 1,
+									step: 1,
+									value: h.currentSide
+								}),
+									c.on("slide", function(e, t) {
+										t.value != p && (p = t.value,
+											c.find(".sidechoices .sidechoice").hide().eq(t.value).show())
+									}),
+									c.find(".sidechoices .sidechoice").hide().eq(h.currentSide).show(),
+									i()
+							}
+							// BEGIN MOD
+							if ("rollsaves" === e) {
+								const sel = d20.engine.selected();
+
+								const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => `<option value='${it}'>${Parser.attAbvToFull(it)}</option>`);
+								const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags("Select Save") + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
+								dialog.dialog({
+									title: "Input Value",
+									beforeClose: function() {
+										return false;
+									},
+									buttons: {
+										Submit: function() {
+											const val = Parser.attAbvToFull(dialog.find("select").val());
+											console.log(val);
+
+											sel.forEach(it => {
+												let name;
+												const charId = it.model.get("represents"); // if it has a character sheet
+												if (charId) {
+													const char = d20.Campaign.characters.get(charId);
+													if (char) name = char.get("name");
+												} else {
+													name = it.model.get("name");
+												}
+												if (name) {
+													const toRoll = `@{${name}|wtype} ${name} (${val.toLowerCase()} save) [[1d20+@{${name}|${val.toLowerCase()}_save_bonus}]]`;
+													d20.textchat.doChatInput(toRoll);
+												}
+											});
+
+
+											dialog.off();
+											dialog.dialog("destroy").remove();
+											d20.textchat.$textarea.focus();
+										},
+										Cancel: function() {
+											dialog.off();
+											dialog.dialog("destroy").remove();
+										}
+									}
+								});
+
+								i();
+							}
+							// END MOD
+							return !1
+						}
+					}),
+					!1
+			};
+			// END ROLL20 CODE
+			d20.token_editor.showContextMenu = r;
+		},
+
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		lastClickedFolderId: null,
@@ -1537,6 +1916,7 @@ var betteR20Base = function () {
 				});
 
 				d20plus.addJournalCommands();
+				d20plus.addSelectedTokenCommands();
 			}
 
 			// shared GM/player conent
@@ -2094,7 +2474,72 @@ var betteR20Base = function () {
 		  </button>
 		  <div class='clear'></div>
 	</script>
-	`
+	`,
+
+		template_actionsMenu: `
+	 <script id='tmpl_actions_menu' type='text/html'>
+      <div class='actions_menu d20contextmenu'>
+        <ul>
+          <$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
+          <li class='head hasSub' data-action-type='takecard'>Take Card</li>
+          <li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
+          <$ } $>
+          <$ if(window.is_gm) { $>
+          <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
+          <!-- BEGIN MOD -->
+          <li class='head hasSub' data-action-type='rollsaves'>Roll Save</li>
+          <!-- END MOD -->
+          <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
+          <$ } $>
+          <li class='head'>Edit</li>
+          <$ if(this.view) { $>
+          <li data-action-type='delete'>Delete</li>
+          <li data-action-type='copy'>Copy</li>
+          <$ } $>
+          <li data-action-type='paste'>Paste</li>
+          <li data-action-type='undo'>Undo</li>
+          <$ if(this.view) { $>
+          <li data-action-type='tofront'>To Front</li>
+          <li data-action-type='toback'>To Back</li>
+          <li class='head hasSub' data-menuname='advanced'>
+            Advanced &raquo;
+            <ul class='submenu' data-menuname='advanced'>
+              <li data-action-type='group'>Group</li>
+              <li data-action-type='ungroup'>Ungroup</li>
+              <$ if(this.get("type") == "image") { $>
+              <li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
+              <li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
+              <li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
+              <li data-action-type='setdimensions'>Set Dimensions</li>
+              <$ if(window.currentEditingLayer == "map") { $>
+              <li data-action-type='aligntogrid'>Align to Grid</li>
+              <$ } $>
+              <$ } $>
+            </ul>
+          </li>
+          <li class='head hasSub' data-menuname='positioning'>
+            Layer &raquo;
+            <ul class='submenu' data-menuname='positioning'>
+              <li data-action-type="tolayer_map" class='<$ if(this && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
+              <li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
+              <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
+            </ul>
+          </li>
+          <$ } $>
+          <$ } $>
+          <$ if(this.view && this.get("sides") !== "" && this.get("cardid") === "") { $>
+          <li class='head hasSub' data-menuname='mutliside'>
+            Multi-Sided &raquo;
+            <ul class='submenu' data-menuname='multiside'>
+              <li data-action-type='side_random'>Random Side</li>
+              <li data-action-type='side_choose'>Choose Side</li>
+            </ul>
+          </li>
+          <$ } $>
+        </ul>
+      </div>
+    </script>
+		`
 	};
 };
 
