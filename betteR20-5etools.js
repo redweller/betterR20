@@ -1928,9 +1928,19 @@ const betteR205etools = function () {
 						}
 
 						$.each(skills, function (k, v) {
+							const cleanSKill = $.trim(k).toLowerCase().replace(/ /g, "_");
+							const cleanBonus = parseInt($.trim(v)) || 0;
 							character.attribs.create({
-								name: "npc_" + $.trim(k).toLowerCase().replace(/ /g, "_") + "_base",
+								name: "npc_" + cleanSKill + "_base",
 								current: parseInt($.trim(v)) || 0
+							});
+							character.attribs.create({
+								name: "npc_" + cleanSKill + "_base",
+								current: cleanBonus
+							});
+							character.attribs.create({
+								name: "npc_" + cleanSKill,
+								current: cleanBonus
 							});
 						});
 					}
