@@ -114,7 +114,7 @@ const betteR205etools = function () {
 			"_type": "boolean"
 		},
 		"whispermode": {
-			"name": "Whipser Mode on Import",
+			"name": "Whisper Mode on Import",
 			"default": "Toggle (Default GM)",
 			"_type": "_WHISPERMODE"
 		},
@@ -176,7 +176,7 @@ const betteR205etools = function () {
 			"_type": "boolean"
 		},
 		"showDifficulty": {
-			"name": "Show Difficutlty in Tracker",
+			"name": "Show Difficulty in Tracker",
 			"default": true,
 			"_type": "boolean"
 		},

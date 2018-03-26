@@ -755,7 +755,7 @@ var betteR20Base = function () {
 
 		getArtHandout: () => {
 			return d20.Campaign.handouts.models.find((handout) => {
-				return handout.attributes.name.toLowerCase() === ART_HANDOUT;
+				return handout.attributes.name === ART_HANDOUT;
 			});
 		},
 
@@ -1694,6 +1694,15 @@ var betteR20Base = function () {
 								});
 
 								i();
+							} else if ("rollinit" === e) {
+								const sel = d20.engine.selected();
+								d20.engine.unselect();
+								sel.forEach(it => {
+									d20.engine.select(it);
+									const toRoll = `@{selected|wtype} @{selected|token_name}: [[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]`;
+									d20.textchat.doChatInput(toRoll);
+								});
+								i();
 							}
 							// END MOD
 							return !1
@@ -1703,6 +1712,8 @@ var betteR20Base = function () {
 			};
 			// END ROLL20 CODE
 			d20.token_editor.showContextMenu = r;
+			d20.token_editor.closeContextMenu = i;
+			$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 		},
 
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2546,6 +2557,7 @@ var betteR20Base = function () {
           <$ if(window.is_gm) { $>
           <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
           <!-- BEGIN MOD -->
+          <li class='head hasSub' data-action-type='rollinit'>Roll Initiative</li>
           <li class='head hasSub' data-action-type='rollsaves'>Roll Save</li>
           <!-- END MOD -->
           <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
