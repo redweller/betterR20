@@ -1,9 +1,8 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.4.2";
+const SCRIPT_VERSION = "1.4.3";
 
-const HEADER_CORE = `
-// ==UserScript==
+const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
@@ -18,8 +17,7 @@ const HEADER_CORE = `
 // ==/UserScript==
 `;
 
-const HEADER_5ETOOLS = `
-// ==UserScript==
+const HEADER_5ETOOLS = `// ==UserScript==
 // @name         betteR20-5etools
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
