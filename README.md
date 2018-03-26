@@ -16,7 +16,7 @@
 ## Development
 Node.js is required.
 
-Usable scripts can be produced with `npm run build`; output to the `build/` directory.
+Usable scripts can be produced with `npm run build`; output to the `dist/` directory.
 
 The "core" userscript includes generic improvements which can be used in all games.
 The "5etools" userscript includes the above, and various tools to import content from [5e.tools](https://5e.tools) 
