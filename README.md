@@ -12,3 +12,11 @@
 5. Let it run. The journal will start fill up with the stuff you selected. It's not too laggy but can take a long time depending on the amount of stuff you selected.
 
 6. Bam. Done. If you are using the Shaped sheet, be sure to open up the NPC sheets and let them convert before using it.
+
+## Development
+Node.js is required.
+
+Usable scripts can be produced with `npm run build`; output to the `dist/` directory.
+
+The "core" userscript includes generic improvements which can be used in all games.
+The "5etools" userscript includes the above, and various tools to import content from [5e.tools](https://5e.tools) 
