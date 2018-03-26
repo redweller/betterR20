@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.4.1";
+const SCRIPT_VERSION = "1.4.2";
 
 const HEADER_CORE = `
 // ==UserScript==
@@ -8,8 +8,8 @@ const HEADER_CORE = `
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5etools.com/betteR20-user-core.js
-// @downloadURL  https://get.5etools.com/betteR20-user-core.js
+// @updateURL    https://get.5etools.com/script/betteR20-user-core.js
+// @downloadURL  https://get.5etools.com/script/betteR20-user-core.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 // @match        https://app.roll20.net/editor/
@@ -24,8 +24,8 @@ const HEADER_5ETOOLS = `
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5etools.com/betteR20-user-5etools.js
-// @downloadURL  https://get.5etools.com/betteR20-user-5etools.js
+// @updateURL    https://get.5etools.com/script/betteR20-user-5etools.js
+// @downloadURL  https://get.5etools.com/script/betteR20-user-5etools.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth
 // @match        https://app.roll20.net/editor/
