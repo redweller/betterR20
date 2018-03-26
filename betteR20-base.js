@@ -755,7 +755,7 @@ var betteR20Base = function () {
 
 		getArtHandout: () => {
 			return d20.Campaign.handouts.models.find((handout) => {
-				return handout.attributes.name.toLowerCase() === ART_HANDOUT;
+				return handout.attributes.name === ART_HANDOUT;
 			});
 		},
 
