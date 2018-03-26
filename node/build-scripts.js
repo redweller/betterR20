@@ -38,7 +38,7 @@ function joinParts (...parts) {
 	return parts.join("\n\n");
 }
 
-const buildDir = "./build";
+const buildDir = "./dist";
 if (!fs.existsSync(buildDir)){
 	fs.mkdirSync(buildDir);
 }
