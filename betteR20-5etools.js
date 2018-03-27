@@ -634,7 +634,7 @@ const betteR205etools = function () {
 		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
 			const folder = $(`[data-globalfolderid='${folderId}']`);
 			if (folder.length) {
-				d20plus.log(" > Nuking folder...");
+				d20plus.log("Nuking folder...");
 				const childItems = folder.find("[data-itemid]").each((i, e) => {
 					const $e = $(e);
 					const itemId = $e.attr("data-itemid");
@@ -2638,7 +2638,7 @@ const betteR205etools = function () {
 			d20plus.initErrorHandler = function (event) {
 				// if we see an error within 250 msec of trying to override the initiative window...
 				if (((new Date).getTime() - startTime) < 250) {
-					d20plus.log(" > ERROR: failed to populate custom initiative tracker, restoring default...");
+					d20plus.log("ERROR: failed to populate custom initiative tracker, restoring default...");
 					// restore the default functionality
 					$("#tmpl_initiativecharacter").replaceWith(d20plus.turnOrderCachedTemplate);
 					return d20plus.turnOrderCachedFunction();
@@ -4009,15 +4009,15 @@ const betteR205etools = function () {
 				if (worker) clearInterval(worker);
 				if (cancelWorker) {
 					$stsName.text("Import cancelled");
-					$stsRemain.text(`${$stsRemain.text()} (cancelled)`);
-					d20plus.log(` > Import cancelled`);
+					if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
+					d20plus.log(`Import cancelled`);
 					setTimeout(() => {
 						d20plus.bindDropLocations();
 					}, 250);
 				} else {
 					$stsName.text("Import complete");
 					$stsRemain.text("0");
-					d20plus.log(` > Import complete`);
+					d20plus.log(`Import complete`);
 					setTimeout(() => {
 						d20plus.bindDropLocations();
 					}, 250);
