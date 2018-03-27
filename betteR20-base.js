@@ -1,4 +1,14 @@
 var betteR20Base = function () {
+	addConfigOptions("token", {
+			"_name": "Tokens",
+			"enhanceStatus": {
+				"name": "More Status Icons",
+				"default": true,
+				"_type": "boolean"
+			}
+		}
+	);
+
 	const d20plus = {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
 		scriptsLoaded: false,
@@ -1011,8 +1021,10 @@ var betteR20Base = function () {
 
 		enhanceStatusEffects: () => {
 			d20plus.log("Enhance status effects");
-			d20.token_editor.statussheet.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png";
-			d20.token_editor.statussheet_small.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png";
+			if (d20plus.getCfgVal("token", "enhanceStatus")) {
+				d20.token_editor.statussheet.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png";
+				d20.token_editor.statussheet_small.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png";
+			}
 
 			const xSize = 34;
 			const iMin = 47;
@@ -1668,6 +1680,7 @@ var betteR20Base = function () {
 
 											sel.forEach(it => {
 												let name;
+												const tokenName = it.model.get("name");
 												const charId = it.model.get("represents"); // if it has a character sheet
 												if (charId) {
 													const char = d20.Campaign.characters.get(charId);
@@ -1676,7 +1689,7 @@ var betteR20Base = function () {
 													name = it.model.get("name");
 												}
 												if (name) {
-													const toRoll = `@{${name}|wtype} ${name} (${val.toLowerCase()} save) [[1d20+@{${name}|${val.toLowerCase()}_save_bonus}]]`;
+													const toRoll = `@{${name}|wtype} ${tokenName} (${val.toLowerCase()} save) [[1d20+@{${name}|${val.toLowerCase()}_save_bonus}]]`;
 													d20.textchat.doChatInput(toRoll);
 												}
 											});
@@ -1701,6 +1714,7 @@ var betteR20Base = function () {
 									d20.engine.select(it);
 									const toRoll = `@{selected|wtype} @{selected|token_name}: [[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]`;
 									d20.textchat.doChatInput(toRoll);
+									d20.engine.unselect();
 								});
 								i();
 							}
