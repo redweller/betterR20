@@ -1688,23 +1688,13 @@ var betteR20Base = function () {
 										Submit: function() {
 											const val = Parser.attAbvToFull(dialog.find("select").val());
 											console.log(val);
-
+											d20.engine.unselect();
 											sel.forEach(it => {
-												let name;
-												const tokenName = it.model.get("name");
-												const charId = it.model.get("represents"); // if it has a character sheet
-												if (charId) {
-													const char = d20.Campaign.characters.get(charId);
-													if (char) name = char.get("name");
-												} else {
-													name = it.model.get("name");
-												}
-												if (name) {
-													const toRoll = `@{${name}|wtype} ${tokenName} (${val.toLowerCase()} save) [[1d20+@{${name}|${val.toLowerCase()}_save_bonus}]]`;
-													d20.textchat.doChatInput(toRoll);
-												}
+												d20.engine.select(it);
+												const toRoll = `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`;
+												d20.textchat.doChatInput(toRoll);
+												d20.engine.unselect();
 											});
-
 
 											dialog.off();
 											dialog.dialog("destroy").remove();
@@ -1723,7 +1713,7 @@ var betteR20Base = function () {
 								d20.engine.unselect();
 								sel.forEach(it => {
 									d20.engine.select(it);
-									const toRoll = `@{selected|wtype} @{selected|token_name}: [[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]`;
+									const toRoll = `@{selected|wtype} &{template:simple} {{rname=Initiative}} {{charname=@{selected|token_name}}} {{mod=[[@{selected|initiative_bonus}]]}} {{r1=[[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]}}{{normal=1}}`;
 									d20.textchat.doChatInput(toRoll);
 									d20.engine.unselect();
 								});
@@ -1739,6 +1729,219 @@ var betteR20Base = function () {
 			d20.token_editor.showContextMenu = r;
 			d20.token_editor.closeContextMenu = i;
 			$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		},
+
+		enhanceSnap: () => {
+			function getClosestHexPoint (c, u) {
+				/**
+				 * Dumb variable names copy-pasted from uglified code
+				 * @param c x co-ord
+				 * @param u y c-ord
+				 * @returns {*[]} 2-len array; [0] = x and [1] = y
+				 */
+				const hx = d20.canvas_overlay.activeHexGrid.GetHexAt({
+					X: c,
+					Y: u
+				});
+
+				let minDist = 1000000;
+				let minPoint = [c, u];
+				hx.Points.forEach(pt => {
+					const dist = Math.sqrt(Math.pow(c - pt.X, 2) + Math.pow(u - pt.Y, 2));
+					if (dist < minDist) {
+						minDist =  dist;
+						minPoint = [pt.X, pt.Y];
+					}
+				});
+
+				return minPoint;
+			}
+
+			// BEGIN ROLL20 CODE
+			const M = function(e) {
+				//BEGIN MOD
+				var t = d20.engine.canvas;
+				// END MOD
+				var n, r;
+				if (d20.tddice && d20.tddice.handleInteraction && d20.tddice.handleInteraction(),
+						e.touches) {
+					if ("pan" == d20.engine.mode)
+						return;
+					e.touches.length > 1 && (R = d20.engine.mode,
+						d20.engine.mode = "pan",
+						d20.engine.leftMouseIsDown = !0),
+						d20.engine.lastTouchStarted = (new Date).getTime(),
+						n = e.touches[0].pageX,
+						r = e.touches[0].pageY,
+						e.preventDefault()
+				} else
+					n = e.pageX,
+						r = e.pageY;
+				for (var o = d20.engine.showLastPaths.length; o--; )
+					"selected" == d20.engine.showLastPaths[o].type && d20.engine.showLastPaths.splice(o, 1);
+				d20.engine.handleMetaKeys(e),
+				("select" == d20.engine.mode || "path" == d20.engine.mode) && t.__onMouseDown(e),
+				(1 == e.which || e.touches && 1 == e.touches.length) && (d20.engine.leftMouseIsDown = !0);
+				var a = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
+					, l = Math.floor(r / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
+				if (d20.engine.lastMousePos = [a, l],
+					!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
+					if (d20.engine.leftMouseIsDown && "fog-polygonreveal" == d20.engine.mode) {
+						// BEGIN MOD
+						var c = a;
+						var u = l;
+						if (0 != d20.engine.snapTo && (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled"))) {
+							if ("square" == d20.Campaign.activePage().get("grid_type")) {
+								c = d20.engine.snapToIncrement(c, d20.engine.snapTo);
+								u = d20.engine.snapToIncrement(u, d20.engine.snapTo);
+							} else {
+								const minPoint = getClosestHexPoint(c, u);
+								c = minPoint[0];
+								u = minPoint[1];
+							}
+
+							if (d20.engine.fog.points.length > 0 && Math.abs(d20.engine.fog.points[0][0] - c) + Math.abs(d20.engine.fog.points[0][1] - u) < 15) {
+								d20.engine.fog.points.push([d20.engine.fog.points[0][0], d20.engine.fog.points[0][1]]);
+								d20.engine.finishPolygonReveal();
+							} else {
+								d20.engine.fog.points.push([c, u]);
+							}
+							d20.engine.drawOverlays()
+						}
+						// END MOD
+					} else if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode) {
+						if (d20.engine.measure.down[0] = a,
+								d20.engine.measure.down[1] = l,
+							0 != d20.engine.snapTo && !e.altKey)
+							if ("square" == d20.Campaign.activePage().get("grid_type"))
+								d20.engine.measure.down[1] = d20.engine.snapToIncrement(d20.engine.measure.down[1] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2),
+									d20.engine.measure.down[0] = d20.engine.snapToIncrement(d20.engine.measure.down[0] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2);
+							else {
+								var d = d20.canvas_overlay.activeHexGrid.GetHexAt({
+									X: d20.engine.measure.down[0],
+									Y: d20.engine.measure.down[1]
+								});
+								d20.engine.measure.down[1] = d.MidPoint.Y,
+									d20.engine.measure.down[0] = d.MidPoint.X
+							}
+					} else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode)
+						d20.engine.fx.current || (d20.engine.fx.current = d20.fx.handleClick(a, l));
+					else if (d20.engine.leftMouseIsDown && "text" == d20.engine.mode) {
+						var h = {
+							fontFamily: $("#font-family").val(),
+							fontSize: $("#font-size").val(),
+							fill: $("#font-color").val(),
+							text: "",
+							left: a,
+							top: l
+						}
+							, p = d20.Campaign.activePage().addText(h);
+						_.defer(function() {
+							d20.engine.editText(p.view.graphic, h.top, h.left),
+								setTimeout(function() {
+									$(".texteditor").focus()
+								}, 300)
+						})
+					} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
+						var g = parseInt($("#path_width").val(), 10)
+							, f = d20.engine.drawshape.shape = {
+							strokewidth: g,
+							x: 0,
+							y: 0,
+							width: 10,
+							height: 10,
+							type: e.altKey ? "circle" : "rect"
+						}
+							, c = a
+							, u = l;
+						0 != d20.engine.snapTo && e.shiftKey && (c = d20.engine.snapToIncrement(c, d20.engine.snapTo),
+							u = d20.engine.snapToIncrement(u, d20.engine.snapTo)),
+							f.x = c,
+							f.y = u,
+							f.fill = $("#path_fillcolor").val(),
+							f.stroke = $("#path_strokecolor").val(),
+							d20.engine.drawshape.start = [n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], r + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
+							d20.engine.renderTop()
+					} else if (d20.engine.leftMouseIsDown && "polygon" == d20.engine.mode) {
+						if (d20.engine.drawshape.shape)
+							var f = d20.engine.drawshape.shape;
+						else {
+							var g = parseInt($("#path_width").val(), 10)
+								, f = d20.engine.drawshape.shape = {
+								strokewidth: g,
+								points: [],
+								type: "polygon"
+							};
+							f.fill = $("#path_fillcolor").val(),
+								f.stroke = $("#path_strokecolor").val()
+						}
+						// BEGIN MOD
+						var c = a;
+						var u = l;
+						if (0 != d20.engine.snapTo && e.shiftKey) {
+							if ("square" == d20.Campaign.activePage().get("grid_type")) {
+								c = d20.engine.snapToIncrement(c, d20.engine.snapTo);
+								u = d20.engine.snapToIncrement(u, d20.engine.snapTo);
+							} else {
+								const minPoint = getClosestHexPoint(c, u);
+								c = minPoint[0];
+								u = minPoint[1];
+							}
+							if (f.points.length > 0 && Math.abs(f.points[0][0] - c) + Math.abs(f.points[0][1] - u) < 15) {
+								f.points.push([f.points[0][0], f.points[0][1]]);
+								d20.engine.finishCurrentPolygon();
+							} else {
+								f.points.push([c, u]);
+							}
+							d20.engine.debounced_renderTop()
+						}
+						// END MOD
+					} else if (d20.engine.leftMouseIsDown && "targeting" === d20.engine.mode) {
+						var m = d20.engine.canvas.findTarget(e, !0, !0);
+						return void (void 0 !== m && "image" === m.type && m.model && d20.engine.nextTargetCallback(m))
+					}
+				} else
+					d20.engine.fog.down[0] = a,
+						d20.engine.fog.down[1] = l,
+					0 != d20.engine.snapTo && "square" == d20.Campaign.activePage().get("grid_type") && ("gridalign" == d20.engine.mode ? e.shiftKey && (d20.engine.fog.down[0] = d20.engine.snapToIncrement(d20.engine.fog.down[0], d20.engine.snapTo),
+						d20.engine.fog.down[1] = d20.engine.snapToIncrement(d20.engine.fog.down[1], d20.engine.snapTo)) : (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled")) && (d20.engine.fog.down[0] = d20.engine.snapToIncrement(d20.engine.fog.down[0], d20.engine.snapTo),
+						d20.engine.fog.down[1] = d20.engine.snapToIncrement(d20.engine.fog.down[1], d20.engine.snapTo)));
+				if (window.currentPlayer && d20.engine.leftMouseIsDown && "select" == d20.engine.mode) {
+					if (d20.engine.pings[window.currentPlayer.id] && d20.engine.pings[window.currentPlayer.id].radius > 20)
+						return;
+					var y = a
+						, v = l
+						, b = {
+						left: y,
+						top: v,
+						radius: -5,
+						player: window.currentPlayer.id,
+						pageid: d20.Campaign.activePage().id,
+						currentLayer: window.currentEditingLayer
+					};
+					window.is_gm && e.shiftKey && (b.scrollto = !0),
+						d20.engine.pings[window.currentPlayer.id] = b,
+						d20.engine.pinging = {
+							downx: n,
+							downy: r
+						},
+						d20.engine.renderTop()
+				}
+				3 == e.which && (d20.engine.rightMouseIsDown = !0),
+					d20.engine.rightMouseIsDown && ("select" == d20.engine.mode || "path" == d20.engine.mode || "text" == d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" == d20.engine.mode ? (d20.engine.pan.beginPos = [s.scrollLeft(), s.scrollTop()],
+						d20.engine.pan.panXY = [n, r],
+						d20.engine.pan.panning = !0) : d20.engine.pan.panning = !1,
+					// BEGIN MOD
+				$(`#upperCanvas`).hasClass("hasfocus") || $(`#upperCanvas`).focus()
+				// END MOD
+			};
+			// END ROLL20 CODE
+
+			if (UPPER_CANVAS_MOUSEDOWN) {
+				d20plus.log("Enhancing hex snap");
+				d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
+				d20.engine.uppercanvas.addEventListener("mousedown", M);
+			}
 		},
 
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////

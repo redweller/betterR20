@@ -23,6 +23,7 @@ const betteR20Core = function () {
 		d20plus.addCustomArtSearch();
 		d20plus.enhancePageSelector();
 		d20plus.enhanceMeasureTool();
+		d20plus.enhanceSnap();
 		d20plus.enhanceStatusEffects();
 		d20plus.addHtmlHeader();
 		d20plus.addHtmlFooter();
