@@ -1732,13 +1732,17 @@ var betteR20Base = function () {
 		},
 
 		enhanceSnap: () => {
+			/**
+			 * Dumb variable names copy-pasted from uglified code
+			 * @param c x co-ord
+			 * @param u y c-ord
+			 * @returns {*[]} 2-len array; [0] = x and [1] = y
+			 */
 			function getClosestHexPoint (c, u) {
-				/**
-				 * Dumb variable names copy-pasted from uglified code
-				 * @param c x co-ord
-				 * @param u y c-ord
-				 * @returns {*[]} 2-len array; [0] = x and [1] = y
-				 */
+				function getEuclidDist (x1, y1, x2, y2) {
+					return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+				}
+
 				const hx = d20.canvas_overlay.activeHexGrid.GetHexAt({
 					X: c,
 					Y: u
@@ -1746,13 +1750,18 @@ var betteR20Base = function () {
 
 				let minDist = 1000000;
 				let minPoint = [c, u];
-				hx.Points.forEach(pt => {
-					const dist = Math.sqrt(Math.pow(c - pt.X, 2) + Math.pow(u - pt.Y, 2));
+
+				function checkDist(x1, y1) {
+					const dist = getEuclidDist(x1, y1, c, u);
 					if (dist < minDist) {
 						minDist =  dist;
-						minPoint = [pt.X, pt.Y];
+						minPoint = [x1, y1];
 					}
+				}
+				hx.Points.forEach(pt => {
+					checkDist(pt.X, pt.Y);
 				});
+				checkDist(hx.MidPoint.X, hx.MidPoint.Y);
 
 				return minPoint;
 			}
@@ -1800,15 +1809,14 @@ var betteR20Base = function () {
 								c = minPoint[0];
 								u = minPoint[1];
 							}
-
-							if (d20.engine.fog.points.length > 0 && Math.abs(d20.engine.fog.points[0][0] - c) + Math.abs(d20.engine.fog.points[0][1] - u) < 15) {
-								d20.engine.fog.points.push([d20.engine.fog.points[0][0], d20.engine.fog.points[0][1]]);
-								d20.engine.finishPolygonReveal();
-							} else {
-								d20.engine.fog.points.push([c, u]);
-							}
-							d20.engine.drawOverlays()
 						}
+						if (d20.engine.fog.points.length > 0 && Math.abs(d20.engine.fog.points[0][0] - c) + Math.abs(d20.engine.fog.points[0][1] - u) < 15) {
+							d20.engine.fog.points.push([d20.engine.fog.points[0][0], d20.engine.fog.points[0][1]]);
+							d20.engine.finishPolygonReveal();
+						} else {
+							d20.engine.fog.points.push([c, u]);
+						}
+						d20.engine.drawOverlays();
 						// END MOD
 					} else if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode) {
 						if (d20.engine.measure.down[0] = a,
@@ -1888,17 +1896,17 @@ var betteR20Base = function () {
 								c = minPoint[0];
 								u = minPoint[1];
 							}
-							if (f.points.length > 0 && Math.abs(f.points[0][0] - c) + Math.abs(f.points[0][1] - u) < 15) {
-								f.points.push([f.points[0][0], f.points[0][1]]);
-								if (f.points.length > 2) {
-									f.points.push([f.points[1][0], f.points[1][1]]);
-								}
-								d20.engine.finishCurrentPolygon();
-							} else {
-								f.points.push([c, u]);
-							}
-							d20.engine.debounced_renderTop()
 						}
+						if (f.points.length > 0 && Math.abs(f.points[0][0] - c) + Math.abs(f.points[0][1] - u) < 15) {
+							f.points.push([f.points[0][0], f.points[0][1]]);
+							if (f.points.length > 2) {
+								f.points.push([f.points[1][0], f.points[1][1]]);
+							}
+							d20.engine.finishCurrentPolygon();
+						} else {
+							f.points.push([c, u]);
+						}
+						d20.engine.debounced_renderTop();
 						// END MOD
 					} else if (d20.engine.leftMouseIsDown && "targeting" === d20.engine.mode) {
 						var m = d20.engine.canvas.findTarget(e, !0, !0);
