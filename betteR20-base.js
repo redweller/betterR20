@@ -484,11 +484,22 @@ var betteR20Base = function () {
 						handout.updateBlobs({gmnotes: gmnotes});
 						handout.save({notes: (new Date).getTime()});
 
-						d20plus.log(" > Saved config");
+						d20plus.log("Saved config");
 
-						d20plus.handleConfigChange();
+						d20plus.baseHandleConfigChange();
+						if (d20plus.handleConfigChange) d20plus.handleConfigChange();
 					}
 				});
+			}
+		},
+
+		baseHandleConfigChange: () => {
+			if (d20plus.getCfgVal("token", "enhanceStatus")) {
+				d20.token_editor.statussheet.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png";
+				d20.token_editor.statussheet_small.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png";
+			} else {
+				d20.token_editor.statussheet.src = "/images/statussheet.png";
+				d20.token_editor.statussheet_small.src = "/images/statussheet_small.png";
 			}
 		},
 
