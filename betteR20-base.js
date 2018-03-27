@@ -1761,6 +1761,7 @@ var betteR20Base = function () {
 			const M = function(e) {
 				//BEGIN MOD
 				var t = d20.engine.canvas;
+				var s = $("#editor-wrapper");
 				// END MOD
 				var n, r;
 				if (d20.tddice && d20.tddice.handleInteraction && d20.tddice.handleInteraction(),
@@ -1889,6 +1890,9 @@ var betteR20Base = function () {
 							}
 							if (f.points.length > 0 && Math.abs(f.points[0][0] - c) + Math.abs(f.points[0][1] - u) < 15) {
 								f.points.push([f.points[0][0], f.points[0][1]]);
+								if (f.points.length > 2) {
+									f.points.push([f.points[1][0], f.points[1][1]]);
+								}
 								d20.engine.finishCurrentPolygon();
 							} else {
 								f.points.push([c, u]);
