@@ -361,6 +361,16 @@ const betteR205etools = function () {
 						});
 						var isNPC = npc ? parseInt(npc.get("current")) : 0;
 						if (isNPC) {
+							// Append text if configured to do so
+							const nameSuffix = d20plus.getCfgVal("token", "namesuffix");
+							if (nameSuffix && nameSuffix.trim()) {
+								setTimeout(() => {
+									if (e.attributes["name"]) {
+										e.attributes["name"] = e.attributes["name"] + " " + nameSuffix;
+									}
+								}, 750);
+							}
+
 							// Set bars if configured to do so
 							var barsList = ["bar1", "bar2", "bar3"];
 							$.each(barsList, (i, barName) => {
@@ -379,7 +389,7 @@ const betteR205etools = function () {
 										}
 									}
 								}
-							})
+							});
 
 							// Set Nametag
 							if (d20plus.hasCfgVal("token", "name")) {
@@ -1521,10 +1531,9 @@ const betteR205etools = function () {
 		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
 		var lightmin = 0;
 		if (character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
-		const nameSuffix = d20plus.getCfgVal("token", "namesuffix");
 		var defaulttoken = {
 			represents: character.id,
-			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
+			name: character.name,
 			imgsrc: avatar,
 			width: 70 * tokensize,
 			height: 70 * tokensize,

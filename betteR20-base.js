@@ -1688,23 +1688,13 @@ var betteR20Base = function () {
 										Submit: function() {
 											const val = Parser.attAbvToFull(dialog.find("select").val());
 											console.log(val);
-
+											d20.engine.unselect();
 											sel.forEach(it => {
-												let name;
-												const tokenName = it.model.get("name");
-												const charId = it.model.get("represents"); // if it has a character sheet
-												if (charId) {
-													const char = d20.Campaign.characters.get(charId);
-													if (char) name = char.get("name");
-												} else {
-													name = it.model.get("name");
-												}
-												if (name) {
-													const toRoll = `@{${name}|wtype} ${tokenName} (${val.toLowerCase()} save) [[1d20+@{${name}|${val.toLowerCase()}_save_bonus}]]`;
-													d20.textchat.doChatInput(toRoll);
-												}
+												d20.engine.select(it);
+												const toRoll = `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`;
+												d20.textchat.doChatInput(toRoll);
+												d20.engine.unselect();
 											});
-
 
 											dialog.off();
 											dialog.dialog("destroy").remove();
@@ -1723,7 +1713,7 @@ var betteR20Base = function () {
 								d20.engine.unselect();
 								sel.forEach(it => {
 									d20.engine.select(it);
-									const toRoll = `@{selected|wtype} @{selected|token_name}: [[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]`;
+									const toRoll = `@{selected|wtype} &{template:simple} {{rname=Initiative}} {{charname=@{selected|token_name}}} {{mod=[[@{selected|initiative_bonus}]]}} {{r1=[[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]}}{{normal=1}}`;
 									d20.textchat.doChatInput(toRoll);
 									d20.engine.unselect();
 								});
