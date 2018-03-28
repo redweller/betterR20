@@ -1603,7 +1603,7 @@ var betteR20Base = function () {
 									})
 								} else
 									d20.engine.gridaligner.target = n[0],
-										setMode("gridalign"),
+										d20plus.setMode("gridalign"),
 										i();
 							else if ("side_random" == e) {
 								d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
@@ -2225,9 +2225,6 @@ var betteR20Base = function () {
 					width: 800,
 					height: 400,
 				});
-
-				d20plus.addJournalCommands();
-				d20plus.addSelectedTokenCommands();
 			}
 
 			// shared GM/player conent

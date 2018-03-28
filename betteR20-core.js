@@ -20,13 +20,17 @@ const betteR20Core = function () {
 	// continue more init after art loaded
 	d20plus.onArtLoad = function () {
 		d20plus.addProFeatures();
-		d20plus.addCustomArtSearch();
 		d20plus.enhancePageSelector();
 		d20plus.enhanceMeasureTool();
 		d20plus.enhanceSnap();
 		d20plus.enhanceStatusEffects();
 		d20plus.addHtmlHeader();
 		d20plus.addHtmlFooter();
+		if (window.is_gm) {
+			d20plus.addJournalCommands();
+			d20plus.addSelectedTokenCommands();
+			d20plus.addCustomArtSearch();
+		}
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-core v${d20plus.version}`);
 	};
