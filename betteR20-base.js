@@ -2225,9 +2225,6 @@ var betteR20Base = function () {
 					width: 800,
 					height: 400,
 				});
-
-				d20plus.addJournalCommands();
-				d20plus.addSelectedTokenCommands();
 			}
 
 			// shared GM/player conent
