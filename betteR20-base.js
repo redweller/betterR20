@@ -1603,7 +1603,7 @@ var betteR20Base = function () {
 									})
 								} else
 									d20.engine.gridaligner.target = n[0],
-										setMode("gridalign"),
+										d20plus.setMode("gridalign"),
 										i();
 							else if ("side_random" == e) {
 								d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
