@@ -3,6 +3,7 @@ const betteR20Core = function () {
 		d20plus.log("Init (v" + d20plus.version + ")");
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 		d20plus.addAllCss();
+		if (window.is_gm) d20plus.enhancePageSelector();
 		d20plus.addScripts(d20plus.onScriptLoad);
 	};
 
@@ -20,7 +21,6 @@ const betteR20Core = function () {
 	// continue more init after art loaded
 	d20plus.onArtLoad = function () {
 		d20plus.addProFeatures();
-		d20plus.enhancePageSelector();
 		d20plus.enhanceMeasureTool();
 		d20plus.enhanceSnap();
 		d20plus.enhanceStatusEffects();

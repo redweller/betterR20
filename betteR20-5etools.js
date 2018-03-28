@@ -1674,7 +1674,7 @@ const betteR205etools = function () {
 			name: "repeating_npcaction_" + newRowId + "_description_flag",
 			current: descriptionFlag
 		});
-	}
+	};
 
 // Create monster character from js data object
 	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName) {

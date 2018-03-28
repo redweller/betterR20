@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.4.11";
+const SCRIPT_VERSION = "1.4.12";
 
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
