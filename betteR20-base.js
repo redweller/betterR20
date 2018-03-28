@@ -68,6 +68,11 @@ var betteR20Base = function () {
 			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", arg);
 		},
 
+		ascSort: (a, b) => {
+			if (b === a) return 0;
+			return b < a ? 1 : -1;
+		},
+
 		chatTag: (message) => {
 			d20.textchat.incoming(false, ({
 				who: "system",
@@ -91,6 +96,11 @@ var betteR20Base = function () {
 			_.each(d20plus.baseCssRules, function (r) {
 				d20plus.addCSS(targetSheet, r.s, r.r);
 			});
+			if (!window.is_gm) {
+				_.each(d20plus.baseCssRulesPlayer, function (r) {
+					d20plus.addCSS(targetSheet, r.s, r.r);
+				});
+			}
 			_.each(d20plus.cssRules, function (r) {
 				d20plus.addCSS(targetSheet, r.s, r.r);
 			});
@@ -310,7 +320,7 @@ var betteR20Base = function () {
 
 				const configFields = {};
 
-				const sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => SortUtil.ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
+				const sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => d20plus.ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
 				const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
 				const contentList = sortedKeys.map(k => makeTab(k));
 
@@ -360,7 +370,7 @@ var betteR20Base = function () {
 								break;
 							}
 							case "_SHEET_ATTRIBUTE": {
-								const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => SortUtil.ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
+								const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => d20plus.ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
 								const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`);
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
@@ -493,14 +503,20 @@ var betteR20Base = function () {
 			}
 		},
 
-		baseHandleConfigChange: () => {
+		_handleStatusTokenConfigChange: () => {
 			if (d20plus.getCfgVal("token", "enhanceStatus")) {
 				d20.token_editor.statussheet.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png";
 				d20.token_editor.statussheet_small.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png";
+				d20plus._addStatusEffectEntries();
 			} else {
 				d20.token_editor.statussheet.src = "/images/statussheet.png";
 				d20.token_editor.statussheet_small.src = "/images/statussheet_small.png";
+				d20plus._removeStatusEffectEntries();
 			}
+		},
+
+		baseHandleConfigChange: () => {
+			d20plus._handleStatusTokenConfigChange();
 		},
 
 		// SETTINGS TOOLS //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1030,19 +1046,27 @@ var betteR20Base = function () {
 			// END ROLL20 CODE
 		},
 
-		enhanceStatusEffects: () => {
-			d20plus.log("Enhance status effects");
-			if (d20plus.getCfgVal("token", "enhanceStatus")) {
-				d20.token_editor.statussheet.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png";
-				d20.token_editor.statussheet_small.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png";
-			}
-
+		_addStatusEffectEntries: () => {
 			const xSize = 34;
 			const iMin = 47;
 			const iMax = 101;
 			for (let i = iMin; i < iMax; ++i) {
 				d20.token_editor.statusmarkers["5etools_" + (i - iMin)] = String(i * xSize);
 			}
+			$(`#5etools-status-css`).html(`#radial-menu .markermenu .markericon {
+				background-image: url(https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png);
+			}`);
+		},
+
+		_removeStatusEffectEntries: () => {
+			$(`#5etools-status-css`).html("");
+			Object.keys(d20.token_editor.statusmarkers).filter(k => k.startsWith("5etools_")).forEach(k => delete d20.token_editor.statusmarkers[k]);
+		},
+
+		enhanceStatusEffects: () => {
+			d20plus.log("Enhance status effects");
+			$(`head`).append(`<style id="5etools-status-css"/>`);
+			d20plus._handleStatusTokenConfigChange();
 
 			function overwriteStatusEffects () {
 				d20.engine.canvasDirty = true;
@@ -1223,8 +1247,11 @@ var betteR20Base = function () {
 
 			overwriteStatusEffects();
 
-			// the holy trinity
+			d20.engine.canvas.off("object:added");
 			d20.engine.canvas.on("object:added", overwriteStatusEffects);
+
+			// the holy trinity
+			// d20.engine.canvas.on("object:removed", () => console.log("added"));
 			// d20.engine.canvas.on("object:removed", () => console.log("removed"));
 			// d20.engine.canvas.on("object:modified", () => console.log("modified"));
 
@@ -2122,11 +2149,6 @@ var betteR20Base = function () {
 
 		// CSS /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		baseCssRules: [
-			// status icon enhancement
-			{
-				s: "#radial-menu .markermenu .markericon",
-				r: "background-image: url(https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png);"
-			},
 			// page view enhancement
 			{
 				s: "#page-toolbar",
@@ -2182,6 +2204,13 @@ var betteR20Base = function () {
 			{
 				s: ".tool-row > *",
 				r: "flex-shrink: 0;"
+			}
+		],
+
+		baseCssRulesPlayer: [
+			{
+				s: ".player-hidden",
+				r: "display: none !important;"
 			}
 		],
 
@@ -2258,13 +2287,13 @@ var betteR20Base = function () {
 
 		settingsHtmlPtFooter:
 			`<p>
-			<a class="btn" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
+			<a class="btn player-hidden" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
 			</p>
 			<p>
 			For help, advice, and updates, <a href="https://discord.gg/v3AXzcW" target="_blank" style="color: #08c;">join our Discord!</a>
 			</p>
 			<p>
-			<a class="btn" href="#" id="button-view-tools" style="margin-top: 3px;">Open Tools List</a>
+			<a class="btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px;">Open Tools List</a>
 			</p>
 			<style id="dynamicStyle"></style>
 		`,
