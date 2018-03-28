@@ -1693,7 +1693,7 @@ const betteR205etools = function () {
 				tags: d20plus.importer.getTagString([
 					pType.type,
 					...pType.tags,
-					`cr ${data.cr.replace(/\//g, " over ")}` || "unknown cr",
+					`cr ${(data.cr ? (data.cr.cr || data.cr) : "").replace(/\//g, " over ")}` || "unknown cr",
 					Parser.sourceJsonToFull(data.source)
 				], "monsters")
 			},
