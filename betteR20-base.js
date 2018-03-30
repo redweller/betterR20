@@ -8,6 +8,20 @@ var betteR20Base = function () {
 			}
 		}
 	);
+	addConfigOptions("canvas", {
+			"_name": "Canvas",
+			"halfGridSnap": {
+				"name": "Snap to Half-Grid",
+				"default": true,
+				"_type": "boolean"
+			},
+			"scaleNamesStatuses": {
+				"name": "Scaled Names and Status Icons",
+				"default": true,
+				"_type": "boolean"
+			}
+		}
+	);
 
 	const d20plus = {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
@@ -1078,7 +1092,9 @@ var betteR20Base = function () {
 					it.model.view.updateBackdrops = function (e) {
 						if (!this.nohud && ("objects" == this.model.get("layer") || "gmlayer" == this.model.get("layer")) && "image" == this.model.get("type") && this.model && this.model.collection && this.graphic) {
 							// BEGIN MOD
-							const scaleFact = d20.Campaign.activePage().get("snapping_increment");
+							const scaleFact = (d20plus.getCfgVal("canvas", "scaleNamesStatuses") && d20.Campaign.activePage().get("snapping_increment"))
+								? d20.Campaign.activePage().get("snapping_increment")
+								: 1;
 							// END MOD
 							var t = this.model.collection.page
 								, n = e || d20.engine.canvas.getContext();
@@ -1980,6 +1996,14 @@ var betteR20Base = function () {
 				d20plus.log("Enhancing hex snap");
 				d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
 				d20.engine.uppercanvas.addEventListener("mousedown", M);
+			}
+
+			// add half-grid snap
+			d20.engine.snapToIncrement = function(e, t) {
+				if (d20plus.getCfgVal("canvas", "halfGridSnap")) {
+					t = t / 2;
+				}
+				return t * Math.round(e / t);
 			}
 		},
 
