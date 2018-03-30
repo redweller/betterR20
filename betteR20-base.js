@@ -518,7 +518,7 @@ var betteR20Base = function () {
 		},
 
 		_handleStatusTokenConfigChange: () => {
-			if (d20plus.getCfgVal("token", "enhanceStatus")) {
+			if (d20plus.getCfgVal("token", "enhanceStatus") || !window.is_gm) { // force the players to always see them FIXME better solution?
 				d20.token_editor.statussheet.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png";
 				d20.token_editor.statussheet_small.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png";
 				d20plus._addStatusEffectEntries();
