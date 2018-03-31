@@ -1842,11 +1842,11 @@ const betteR205etools = function () {
 					});
 					character.attribs.create({
 						name: "npc_condition_immunities",
-						current: data.conditionImmune != null ? data.conditionImmune : ""
+						current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
 					});
 					character.attribs.create({
 						name: "damage_condition_immunities",
-						current: data.conditionImmune != null ? data.conditionImmune : ""
+						current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
 					});
 					character.attribs.create({name: "npc_senses", current: sensesStr});
 
