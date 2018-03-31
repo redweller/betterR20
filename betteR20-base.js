@@ -148,6 +148,16 @@ var betteR20Base = function () {
 			return JSON.parse(journalFolder);
 		},
 
+		getCleanText: (str) => {
+			const check = jQuery.parseHTML(str);
+			if (check.length === 1 && check[0].constructor === Text) {
+				return str;
+			}
+			const $ele = $(str);
+			$ele.find("p, li, br").append("\n\n");
+			return $ele.text().replace(/[ ]+/g, " ");
+		},
+
 		// CONFIG //////////////////////////////////////////////////////////////////////////////////////////////////////
 		config: {},
 
@@ -1014,11 +1024,11 @@ var betteR20Base = function () {
 					var fontSize = (1 / d20.engine.canvasZoom) * 12;
 					e.font = fontSize + "pt Arial Black";
 					var c = e.measureText(l);
-					e.fillStyle = "rgba(255,255,255,0.75)",
-						e.beginPath(),
-						e.rect(t.to_x - 35, t.to_y - (23 + fontSize), c.width + 10, (10 + fontSize)),
-						e.closePath(),
-						e.fill()
+					e.fillStyle = "rgba(255,255,255,0.75)";
+					e.beginPath();
+					e.rect(t.to_x - 35, t.to_y - (23 + fontSize), c.width + 10, (10 + fontSize));
+					e.closePath();
+					e.fill();
 					// END MOD
 				}
 				e.beginPath();
@@ -2005,6 +2015,64 @@ var betteR20Base = function () {
 				}
 				return t * Math.round(e / t);
 			}
+		},
+
+		_tokenHover: null,
+		_drawTokenHover: () => {
+			if (!d20plus._tokenHover || !d20plus._tokenHover.text) return;
+
+			const pt = d20plus._tokenHover.pt;
+			const txt = d20plus.getCleanText(decodeURIComponent(d20plus._tokenHover.text));
+
+			const ctx = d20.engine.canvas.contextTop || d20.engine.canvas.contextContainer;
+
+			const fontSize = (1 / d20.engine.canvasZoom) * 12;
+			ctx.font = fontSize + "pt Arial Black";
+			const c = ctx.measureText(txt);
+			ctx.fillStyle = "rgba(255,255,255,0.75)";
+			ctx.beginPath();
+			ctx.rect(pt.x - 35, pt.y - (23 + fontSize), c.width + 10, (10 + fontSize));
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.fillStyle = "rgba(0,0,0,1)";
+			ctx.fillText(txt, pt.x - 30, pt.y - 20);
+		},
+		addTokenHover: () => {
+			// BEGIN ROLL20 CODE
+			d20.engine.drawOverlaysTop = function(e) {
+				e.globalCompositeOperation = "lighter";
+				d20.fx.render(e);
+				e.globalCompositeOperation = "source-over";
+				d20.engine.redrawSightTokens(e);
+				d20.engine.drawShadowMovements(e);
+				d20.engine.drawMeasurements(e);
+				d20.engine.drawPings(e);
+				d20.engine.drawInProgressDrawings(e);
+
+				// BEGIN MOD
+				d20plus._drawTokenHover();
+				// END MOD
+			};
+			// END ROLL20 CODE
+
+			// store data for the rendering function to access
+			d20.engine.canvas.on("mouse:move", (data, ...others) => {
+				if (data.target) {
+					d20.engine.renderTop();
+					const gmNotes = data.target.model.get("gmnotes");
+					const pt = d20.engine.canvas.getPointer(data.e);
+					pt.x -= d20.engine.currentCanvasOffset[0];
+					pt.y -= d20.engine.currentCanvasOffset[1];
+					d20plus._tokenHover = {
+						pt: pt,
+						text: gmNotes
+					}
+				} else {
+					if (d20plus._tokenHover) d20.engine.renderTop();
+					d20plus._tokenHover = null;
+				}
+			})
 		},
 
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
