@@ -342,6 +342,7 @@ const betteR205etools = function () {
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.addCustomArtSearch();
 			d20plus.handleConfigChange();
+			d20plus.addTokenHover();
 		}
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
@@ -1828,16 +1829,16 @@ const betteR205etools = function () {
 					});
 					character.attribs.create({
 						name: "npc_resistances",
-						current: data.resist != null ? data.resist : ""
+						current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
 					});
 					character.attribs.create({
 						name: "damage_resistances",
-						current: data.resist != null ? data.resist : ""
+						current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
 					});
-					character.attribs.create({name: "npc_immunities", current: data.immune != null ? data.immune : ""});
+					character.attribs.create({name: "npc_immunities", current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""});
 					character.attribs.create({
 						name: "damage_immunities",
-						current: data.immune != null ? data.immune : ""
+						current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""
 					});
 					character.attribs.create({
 						name: "npc_condition_immunities",
@@ -3401,8 +3402,8 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_hpbase", current: data.hp});
 					character.attribs.create({name: "npc_hpformula", current: data.hp ? `${data.hp}d1` : ""});
 
-					character.attribs.create({name: "npc_immunities", current: data.immune || ""});
-					character.attribs.create({name: "damage_immunities", current: data.immune || ""});
+					character.attribs.create({name: "npc_immunities", current: data.immune ? Parser.monImmResToFull(data.immune) : ""});
+					character.attribs.create({name: "damage_immunities", current: data.immune ? Parser.monImmResToFull(data.immune) : ""});
 
 					//Should only be one entry for objects
 					if (data.entries != null) {

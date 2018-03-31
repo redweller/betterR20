@@ -30,6 +30,7 @@ const betteR20Core = function () {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
 			d20plus.addCustomArtSearch();
+			d20plus.addTokenHover();
 		}
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-core v${d20plus.version}`);
