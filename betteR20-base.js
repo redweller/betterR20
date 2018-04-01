@@ -2017,6 +2017,16 @@ var betteR20Base = function () {
 			}
 		},
 
+		_getHoverGmNoteStr: (str) => {
+			const check = jQuery.parseHTML(str);
+			if (check.length === 1 && check[0].constructor === Text) {
+				return str;
+			}
+			const $ele = $(str);
+			const temp = $(`<div/>`);
+			temp.append($ele);
+			return temp.html().replace(/<br\s*\/?>/gi, "\n\n").trim();
+		},
 		_tokenHover: null,
 		_drawTokenHover: () => {
 			if (!d20plus._tokenHover || !d20plus._tokenHover.text) return;
@@ -2024,21 +2034,26 @@ var betteR20Base = function () {
 			const pt = d20plus._tokenHover.pt;
 			let txt;
 			try {
-				txt = d20plus.getCleanText(decodeURIComponent(d20plus._tokenHover.text));
+				txt = d20plus._getHoverGmNoteStr(unescape(d20plus._tokenHover.text));
 			} catch (e) {
 				txt = "[Error - could not read GM notes - try re-save]"
 			}
 
 			function wrapText (context, text, x, y, maxWidth, lineHeight, doDraw) {
-				const words = text.split(' ');
+				const words = text.replace(/\n/g, " \n ").split(/[ ]+/);
 				let line = '';
 
 				for(let n = 0; n < words.length; n++) {
+					if (words[n] === "\n") {
+						if (doDraw) context.fillText(line.trim(), x, y);
+						line = '';
+						y += lineHeight;
+					}
 					const testLine = line + words[n] + ' ';
 					const metrics = context.measureText(testLine);
 					const testWidth = metrics.width;
 					if (testWidth > maxWidth && n > 0) {
-						if (doDraw) context.fillText(line, x, y);
+						if (doDraw) context.fillText(line.trim(), x, y);
 						line = words[n] + ' ';
 						y += lineHeight;
 					}
@@ -2046,26 +2061,28 @@ var betteR20Base = function () {
 						line = testLine;
 					}
 				}
-				if (doDraw) context.fillText(line, x, y);
+				if (doDraw) context.fillText(line.trim(), x, y);
 				return y;
 			}
 
 			const ctx = d20.engine.canvas.contextTop || d20.engine.canvas.contextContainer;
 
-			const fontSize = (1 / d20.engine.canvasZoom) * 12;
-			const lineHeight = (1 / d20.engine.canvasZoom) * 18;
+			const scaleFact = (1 / d20.engine.canvasZoom);
+			const xOffset = pt.x > (d20.engine.canvasWidth / 2) ? -300 * scaleFact : 0;
+			const fontSize = scaleFact * 12;
+			const lineHeight = scaleFact * 18;
 			ctx.font = fontSize + "pt Arial Black";
 
-			const finalY = wrapText(ctx, txt, pt.x, pt.y, 300, lineHeight, false);
+			const finalY = wrapText(ctx, txt, pt.x + xOffset, pt.y, 300 * scaleFact, lineHeight, false);
 
 			ctx.fillStyle = "rgba(255,255,255,0.75)";
 			ctx.beginPath();
-			ctx.rect(pt.x - 10, pt.y - lineHeight, 320, (finalY - pt.y) + (lineHeight + fontSize));
+			ctx.rect(pt.x - (10 * scaleFact) + xOffset, pt.y - lineHeight, 320 * scaleFact, (finalY - pt.y) + (lineHeight + fontSize));
 			ctx.closePath();
 			ctx.fill();
 
 			ctx.fillStyle = "rgba(0,0,0,1)";
-			wrapText(ctx, txt, pt.x, pt.y, 300, lineHeight, true);
+			wrapText(ctx, txt, pt.x + xOffset, pt.y, 300 * scaleFact, lineHeight, true);
 		},
 		addTokenHover: () => {
 			// BEGIN ROLL20 CODE
