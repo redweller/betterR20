@@ -2022,21 +2022,50 @@ var betteR20Base = function () {
 			if (!d20plus._tokenHover || !d20plus._tokenHover.text) return;
 
 			const pt = d20plus._tokenHover.pt;
-			const txt = d20plus.getCleanText(decodeURIComponent(d20plus._tokenHover.text));
+			let txt;
+			try {
+				txt = d20plus.getCleanText(decodeURIComponent(d20plus._tokenHover.text));
+			} catch (e) {
+				txt = "[Error - could not read GM notes - try re-save]"
+			}
+
+			function wrapText (context, text, x, y, maxWidth, lineHeight, doDraw) {
+				const words = text.split(' ');
+				let line = '';
+
+				for(let n = 0; n < words.length; n++) {
+					const testLine = line + words[n] + ' ';
+					const metrics = context.measureText(testLine);
+					const testWidth = metrics.width;
+					if (testWidth > maxWidth && n > 0) {
+						if (doDraw) context.fillText(line, x, y);
+						line = words[n] + ' ';
+						y += lineHeight;
+					}
+					else {
+						line = testLine;
+					}
+				}
+				if (doDraw) context.fillText(line, x, y);
+				return y;
+			}
 
 			const ctx = d20.engine.canvas.contextTop || d20.engine.canvas.contextContainer;
 
 			const fontSize = (1 / d20.engine.canvasZoom) * 12;
+			const lineHeight = (1 / d20.engine.canvasZoom) * 18;
 			ctx.font = fontSize + "pt Arial Black";
-			const c = ctx.measureText(txt);
+
+			const finalY = wrapText(ctx, txt, pt.x, pt.y, 300, lineHeight, false);
+
 			ctx.fillStyle = "rgba(255,255,255,0.75)";
 			ctx.beginPath();
-			ctx.rect(pt.x - 35, pt.y - (23 + fontSize), c.width + 10, (10 + fontSize));
+			ctx.rect(pt.x - 10, pt.y - lineHeight, 320, (finalY - pt.y) + (lineHeight + fontSize));
 			ctx.closePath();
 			ctx.fill();
 
 			ctx.fillStyle = "rgba(0,0,0,1)";
-			ctx.fillText(txt, pt.x - 30, pt.y - 20);
+			wrapText(ctx, txt, pt.x, pt.y, 300, lineHeight, true);
 		},
 		addTokenHover: () => {
 			// BEGIN ROLL20 CODE
@@ -2058,7 +2087,7 @@ var betteR20Base = function () {
 
 			// store data for the rendering function to access
 			d20.engine.canvas.on("mouse:move", (data, ...others) => {
-				if (data.target) {
+				if (data.target && data.e.shiftKey) {
 					d20.engine.renderTop();
 					const gmNotes = data.target.model.get("gmnotes");
 					const pt = d20.engine.canvas.getPointer(data.e);
