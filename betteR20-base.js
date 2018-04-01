@@ -2018,14 +2018,8 @@ var betteR20Base = function () {
 		},
 
 		_getHoverGmNoteStr: (str) => {
-			const check = jQuery.parseHTML(str);
-			if (check.length === 1 && check[0].constructor === Text) {
-				return str;
-			}
-			const $ele = $(str);
-			const temp = $(`<div/>`);
-			temp.append($ele);
-			return temp.html().replace(/<br\s*\/?>/gi, "\n\n").trim();
+			const $ele = $(`<div>${str}</div>`);
+			return $ele.html().replace(/<br\s*\/?>/gi, "\n").trim();
 		},
 		_tokenHover: null,
 		_drawTokenHover: () => {
