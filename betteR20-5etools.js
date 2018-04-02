@@ -1825,11 +1825,11 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_xp", current: xp});
 					character.attribs.create({
 						name: "npc_vulnerabilities",
-						current: data.vulnerable != null ? data.vulnerable : ""
+						current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
 					});
 					character.attribs.create({
 						name: "damage_vulnerabilities",
-						current: data.vulnerable != null ? data.vulnerable : ""
+						current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
 					});
 					character.attribs.create({
 						name: "npc_resistances",
