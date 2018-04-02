@@ -393,7 +393,7 @@ var betteR20Base = function () {
 							}
 							case "String": {
 								const curr = d20plus.getCfgVal(cfgK, grpK) || "";
-								const def = d20plus.getDefaultConfig(cfgK, grpK) || "";
+								const def = d20plus.getCfgDefaultVal(cfgK, grpK) || "";
 								const field = $(`<input value="${curr}" placeholder="${def}">`);
 
 								configFields[cfgK][grpK] = () => {
