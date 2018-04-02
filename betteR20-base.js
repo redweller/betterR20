@@ -2,9 +2,19 @@ var betteR20Base = function () {
 	addConfigOptions("token", {
 			"_name": "Tokens",
 			"enhanceStatus": {
-				"name": "More Status Icons",
+				"name": "Use Custom Status Icons",
 				"default": true,
 				"_type": "boolean"
+			},
+			"statusSheetUrl": {
+				"name": `Custom Status Spritesheet Url (<a style="color: blue" href="https://app.roll20.net/images/statussheet.png" target="_blank">Original</a>)`,
+				"default": "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png",
+				"_type": "String"
+			},
+			"statusSheetSmallUrl": {
+				"name": `Custom Status Spritesheet (Small) Url (<a style="color: blue" href="https://app.roll20.net/images/statussheet_small.png" target="_blank">Original</a>)`,
+				"default": "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png",
+				"_type": "String"
 			}
 		}
 	);
@@ -383,7 +393,8 @@ var betteR20Base = function () {
 							}
 							case "String": {
 								const curr = d20plus.getCfgVal(cfgK, grpK) || "";
-								const field = $(`<input value="${curr}" placeholder="${curr}">`);
+								const def = d20plus.getCfgDefaultVal(cfgK, grpK) || "";
+								const field = $(`<input value="${curr}" placeholder="${def}">`);
 
 								configFields[cfgK][grpK] = () => {
 									return field.val() ? field.val().trim() : "";
@@ -528,19 +539,60 @@ var betteR20Base = function () {
 		},
 
 		_handleStatusTokenConfigChange: () => {
-			if (d20plus.getCfgVal("token", "enhanceStatus") || !window.is_gm) { // force the players to always see them FIXME better solution?
-				d20.token_editor.statussheet.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png";
-				d20.token_editor.statussheet_small.src = "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png";
-				d20plus._addStatusEffectEntries();
+			if (window.is_gm) {
+				if (d20plus.getCfgVal("token", "enhanceStatus")) {
+					const sheetUrl = d20plus.getCfgVal("token", "statusSheetUrl") || d20plus.getCfgDefaultVal("token", "statusSheetUrl");
+					const sheetSmallUrl = d20plus.getCfgVal("token", "statusSheetSmallUrl") || d20plus.getCfgDefaultVal("token", "statusSheetSmallUrl");
+
+					window.Campaign && window.Campaign.save({
+						"bR20cfg_statussheet": sheetUrl,
+						"bR20cfg_statussheet_small": sheetSmallUrl
+					});
+
+					d20.token_editor.statussheet.src = sheetUrl;
+					d20.token_editor.statussheet_small.src =  sheetSmallUrl;
+					d20plus._removeStatusEffectEntries(); // clean up any old data
+					d20plus._addStatusEffectEntries();
+				} else {
+					window.Campaign && window.Campaign.save({
+						"bR20cfg_statussheet": "",
+						"bR20cfg_statussheet_small": ""
+					});
+
+					d20.token_editor.statussheet.src = "/images/statussheet.png";
+					d20.token_editor.statussheet_small.src = "/images/statussheet_small.png";
+					d20plus._removeStatusEffectEntries();
+				}
 			} else {
-				d20.token_editor.statussheet.src = "/images/statussheet.png";
-				d20.token_editor.statussheet_small.src = "/images/statussheet_small.png";
-				d20plus._removeStatusEffectEntries();
+				if (window.Campaign && window.Campaign.attributes && window.Campaign.attributes.bR20cfg_statussheet && window.Campaign.attributes.bR20cfg_statussheet_small) {
+					d20.token_editor.statussheet.src = window.Campaign.attributes.bR20cfg_statussheet;
+					d20.token_editor.statussheet_small.src =  window.Campaign.attributes.bR20cfg_statussheet_small;
+					d20plus._addStatusEffectEntries();
+				} else {
+					d20.token_editor.statussheet.src = "/images/statussheet.png";
+					d20.token_editor.statussheet_small.src = "/images/statussheet_small.png";
+					d20plus._removeStatusEffectEntries();
+				}
 			}
 		},
 
 		baseHandleConfigChange: () => {
 			d20plus._handleStatusTokenConfigChange();
+		},
+
+		startPlayerConfigHandler: () => {
+			function handlePlayerCfg () {
+				d20plus.baseHandleConfigChange();
+				if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+			}
+
+			// every 5 seconds, poll and apply any config changes the GM might have made
+			if (!window.is_gm) {
+				setInterval(() => {
+					handlePlayerCfg();
+				}, 5000);
+			}
+			handlePlayerCfg();
 		},
 
 		// SETTINGS TOOLS //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1070,14 +1122,22 @@ var betteR20Base = function () {
 		},
 
 		_addStatusEffectEntries: () => {
-			const xSize = 34;
-			const iMin = 47;
-			const iMax = 101;
-			for (let i = iMin; i < iMax; ++i) {
-				d20.token_editor.statusmarkers["5etools_" + (i - iMin)] = String(i * xSize);
-			}
+			const sheetUrl = window.is_gm ? d20plus.getCfgVal("token", "statusSheetUrl") || d20plus.getCfgDefaultVal("token", "statusSheetUrl"): window.Campaign.attributes.bR20cfg_statussheet;
+
+			const temp = new Image();
+			temp.onload = () => {
+				const xSize = 34;
+				const iMin = 47;
+				// const iMax = 101;
+				const iMax = Math.ceil(temp.width / xSize); // round the last one up to a full image
+				for (let i = iMin; i < iMax; ++i) {
+					d20.token_editor.statusmarkers["5etools_" + (i - iMin)] = String(i * xSize);
+				}
+			};
+			temp.src = sheetUrl;
+
 			$(`#5etools-status-css`).html(`#radial-menu .markermenu .markericon {
-				background-image: url(https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png);
+				background-image: url(${sheetUrl});
 			}`);
 		},
 

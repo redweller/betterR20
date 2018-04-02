@@ -31,6 +31,8 @@ const betteR20Core = function () {
 			d20plus.addSelectedTokenCommands();
 			d20plus.addCustomArtSearch();
 			d20plus.addTokenHover();
+		} else {
+			d20plus.startPlayerConfigHandler();
 		}
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-core v${d20plus.version}`);

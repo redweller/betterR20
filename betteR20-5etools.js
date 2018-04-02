@@ -266,11 +266,13 @@ const betteR205etools = function () {
 	};
 
 	d20plus.handleConfigChange = function () {
-		d20plus.log("Applying config");
-		d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
-		d20.Campaign.initiativewindow.rebuildInitiativeList();
-		d20plus.updateDifficulty();
-		if (d20plus.art.refreshList) d20plus.art.refreshList();
+		if (window.is_gm) {
+			d20plus.log("Applying config");
+			d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
+			d20.Campaign.initiativewindow.rebuildInitiativeList();
+			d20plus.updateDifficulty();
+			if (d20plus.art.refreshList) d20plus.art.refreshList();
+		}
 	};
 
 // get the user config'd token HP bar
@@ -343,6 +345,8 @@ const betteR205etools = function () {
 			d20plus.addCustomArtSearch();
 			d20plus.handleConfigChange();
 			d20plus.addTokenHover();
+		} else {
+			d20plus.startPlayerConfigHandler();
 		}
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
