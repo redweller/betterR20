@@ -857,7 +857,6 @@ var betteR20Base = function () {
 					$olHasResults.hide();
 					return;
 				}
-				;
 
 				let toShow = d20plus.art.default.filter(a => a.name.toLowerCase().includes(searched));
 				if (d20plus.art.custom) toShow = toShow.concat(d20plus.art.custom.filter(a => a.name.toLowerCase().includes(searched)));
@@ -2018,8 +2017,59 @@ var betteR20Base = function () {
 		},
 
 		_getHoverGmNoteStr: (str) => {
-			const $ele = $(`<div>${str}</div>`);
-			return $ele.html().replace(/<br\s*\/?>/gi, "\n").trim();
+			const $initial = $(`<div>${str}</div>`);
+
+			let stack = "";
+			function recurse ($ele, depth, listDepth, inTable, inTd) {
+				const nodes = $ele.contents().get();
+
+				nodes.forEach(n => {
+					if (n.nodeType === 3) { // text node
+						const pre = listDepth ? ` ${"-".repeat(listDepth)}` : "";
+						const doLineEnd = !inTd;
+						stack += `${pre}${n.data}${doLineEnd ? "\n" : ""}`;
+					} else {
+						const $n = $(n);
+
+						if ($n.is("br")) {
+							stack += "\n";
+							return;
+						}
+
+						let nxtInTable = inTable;
+						if ($n.is("table")) {
+							nxtInTable = true;
+						}
+
+						if ($n.is("tr")) {
+							stack += "----------\n"
+						}
+
+						let nxtInTd = inTd;
+						if ($n.is("td")) {
+							stack += "|";
+							nxtInTd = true;
+						}
+
+						let nxtListDepth = listDepth;
+						if ($n.is("ul") || $n.is("li")) {
+							nxtListDepth = listDepth ? listDepth + 1 : 1;
+						}
+
+						recurse($(n), depth + 1, nxtListDepth, nxtInTable, nxtInTd);
+
+						// end TRs with a newline
+						if ($n.is("tr")) {
+							stack += "\n";
+						}
+					}
+				})
+
+			}
+
+			recurse($initial, 0, 0, false, false);
+
+			return stack;
 		},
 		_tokenHover: null,
 		_drawTokenHover: () => {
