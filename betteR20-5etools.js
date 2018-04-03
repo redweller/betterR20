@@ -1735,7 +1735,7 @@ const betteR205etools = function () {
 					var senses = data.senses || "";
 					var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
 					var size = d20plus.getSizeString(data.size || "");
-					var alignment = data.alignment || "(Unknown Alignment)";
+					var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
 					var cr = data.cr ? (data.cr.cr || data.cr) : "";
 					var xp = Parser.crToXp(cr);
 					character.attribs.create({name: "npc", current: 1});
