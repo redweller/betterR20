@@ -1720,7 +1720,7 @@ const betteR205etools = function () {
 						url: avatar,
 						type: 'HEAD',
 						error: function () {
-							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+							d20plus.importer.getSetAvatarImage(character, data.tokenURL || `${IMG_URL}blank.png`);
 						},
 						success: function () {
 							d20plus.importer.getSetAvatarImage(character, avatar);
@@ -1735,7 +1735,7 @@ const betteR205etools = function () {
 					var senses = data.senses || "";
 					var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
 					var size = d20plus.getSizeString(data.size || "");
-					var alignment = data.alignment || "(Unknown Alignment)";
+					var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
 					var cr = data.cr ? (data.cr.cr || data.cr) : "";
 					var xp = Parser.crToXp(cr);
 					character.attribs.create({name: "npc", current: 1});
@@ -3375,7 +3375,7 @@ const betteR205etools = function () {
 						url: avatar,
 						type: 'HEAD',
 						error: function () {
-							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+							d20plus.importer.getSetAvatarImage(character, data.tokenURL || `${IMG_URL}blank.png`);
 						},
 						success: function () {
 							d20plus.importer.getSetAvatarImage(character, avatar);
