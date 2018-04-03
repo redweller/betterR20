@@ -1720,7 +1720,7 @@ const betteR205etools = function () {
 						url: avatar,
 						type: 'HEAD',
 						error: function () {
-							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+							d20plus.importer.getSetAvatarImage(character, data.tokenURL || `${IMG_URL}blank.png`);
 						},
 						success: function () {
 							d20plus.importer.getSetAvatarImage(character, avatar);
