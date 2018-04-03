@@ -394,7 +394,7 @@ var betteR20Base = function () {
 							case "String": {
 								const curr = d20plus.getCfgVal(cfgK, grpK) || "";
 								const def = d20plus.getCfgDefaultVal(cfgK, grpK) || "";
-								const field = $(`<input value="${curr}" placeholder="${def}">`);
+								const field = $(`<input value="${curr}" placeholder="Default: ${def}">`);
 
 								configFields[cfgK][grpK] = () => {
 									return field.val() ? field.val().trim() : "";
@@ -421,7 +421,7 @@ var betteR20Base = function () {
 								break;
 							}
 							case "integer": {
-								const field = $(`<input type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" placeholder="${d20plus.getCfgDefaultVal(cfgK, grpK)}">`);
+								const field = $(`<input type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" placeholder="Default: ${d20plus.getCfgDefaultVal(cfgK, grpK)}">`);
 
 								configFields[cfgK][grpK] = () => {
 									return Number(field.val());
