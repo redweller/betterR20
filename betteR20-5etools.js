@@ -1711,7 +1711,7 @@ const betteR205etools = function () {
 
 					const type = Parser.monTypeToFullObj(data.type).asText;
 					const source = Parser.sourceJsonToAbv(data.source);
-					const avatar = `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
+					const avatar = data.tokenURL || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
 					character.size = data.size;
 					character.name = name;
 					character.senses = data.senses;
@@ -1720,7 +1720,7 @@ const betteR205etools = function () {
 						url: avatar,
 						type: 'HEAD',
 						error: function () {
-							d20plus.importer.getSetAvatarImage(character, data.tokenURL || `${IMG_URL}blank.png`);
+							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
 						},
 						success: function () {
 							d20plus.importer.getSetAvatarImage(character, avatar);
@@ -3366,7 +3366,7 @@ const betteR205etools = function () {
 			{
 			success: function (character) {
 				try {
-					const avatar = `${IMG_URL}objects/${name}.png`;
+					const avatar = data.tokenURL || `${IMG_URL}objects/${name}.png`;
 					character.size = data.size;
 					character.name = name;
 					character.senses = data.senses;
@@ -3375,7 +3375,7 @@ const betteR205etools = function () {
 						url: avatar,
 						type: 'HEAD',
 						error: function () {
-							d20plus.importer.getSetAvatarImage(character, data.tokenURL || `${IMG_URL}blank.png`);
+							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
 						},
 						success: function () {
 							d20plus.importer.getSetAvatarImage(character, avatar);
