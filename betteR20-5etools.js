@@ -148,6 +148,12 @@ const betteR205etools = function () {
 			"name": "Rest Time between Each Character (msec)",
 			"default": 2500,
 			"_type": "integer"
+		},
+		"importFluffAs": {
+			"name": "Import Creature Fluff As...",
+			"default": "Bio",
+			"_type": "_enum",
+			"_values": ["Bio", "GM Notes"]
 		}
 	});
 	addConfigOptions("interface", {
@@ -2463,11 +2469,13 @@ const betteR205etools = function () {
 
 					if (renderFluff) {
 						setTimeout(() => {
+							const fluffAs = d20plus.getCfgVal("import", "importFluffAs") || d20plus.getCfgDefaultVal("import", "importFluffAs");
+							let k = fluffAs === "Bio"? "bio" : "gmnotes";
 							character.updateBlobs({
-								bio: Markdown.parse(renderFluff)
+								[k]: Markdown.parse(renderFluff)
 							});
 							character.save({
-								bio: (new Date).getTime()
+								[k]: (new Date).getTime()
 							});
 						}, 500);
 					}

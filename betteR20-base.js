@@ -278,6 +278,12 @@ var betteR20Base = function () {
 			return CONFIG_OPTIONS[group][key].default
 		},
 
+		getCfgEnumVals: (group, key) => {
+			if (CONFIG_OPTIONS[group] === undefined) return undefined;
+			if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
+			return CONFIG_OPTIONS[group][key]._values
+		},
+
 		getDefaultConfig: () => {
 			const outCpy = {};
 			$.each(CONFIG_OPTIONS, (sectK, sect) => {
@@ -485,6 +491,27 @@ var betteR20Base = function () {
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
 									$field.val(cur);
+								}
+
+								configFields[cfgK][grpK] = () => {
+									return $field.val();
+								};
+
+								const td = $(`<td/>`).append($field);
+								toAdd.append(td);
+								break;
+							}
+							case "_enum": { // for generic String enums not covered above
+								const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.getCfgEnumVals(cfgK, grpK).map(it => `<option value="${it}">${it}</option>`)}</select>`);
+
+								const cur = d20plus.getCfgVal(cfgK, grpK);
+								if (cur !== undefined) {
+									$field.val(cur);
+								} else {
+									const def = d20plus.getCfgDefaultVal(cfgK, grpK);
+									if (def !== undefined) {
+										$field.val(def);
+									}
 								}
 
 								configFields[cfgK][grpK] = () => {
