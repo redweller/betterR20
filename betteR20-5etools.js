@@ -20,6 +20,8 @@ const betteR205etools = function () {
 	let spellDataUrls = {};
 	let spellMetaData = {};
 	let monsterDataUrls = {};
+	let monsterFluffDataUrls = {};
+	let monsterFluffData = {};
 	let adventureMetadata = {};
 
 // build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
@@ -247,6 +249,7 @@ const betteR205etools = function () {
 		{name: "spell index", url: `${SPELL_DATA_DIR}index.json`},
 		{name: "spell metadata", url: SPELL_META_URL},
 		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`},
+		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`},
 		{name: "adventures index", url: `${DATA_URL}adventures.json`}
 	];
 
@@ -257,6 +260,7 @@ const betteR205etools = function () {
 			if (name === "spell index") spellDataUrls = data;
 			else if (name === "spell metadata") spellMetaData = data;
 			else if (name === "bestiary index") monsterDataUrls = data;
+			else if (name === "bestiary fluff index") monsterFluffDataUrls = data;
 			else if (name === "adventures index") adventureMetadata = data;
 			else throw new Error(`Unhandled data from JSON ${name} (${url})`);
 
@@ -1479,8 +1483,7 @@ const betteR205etools = function () {
 	d20plus.monsters._groupOptions = ["Type", "CR", "Alphabetical", "Source"];
 // Import Monsters button was clicked
 	d20plus.monsters.button = function () {
-		const url = $("#import-monster-url").val();
-		if (url && url.trim()) {
+		function loadData (url) {
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
 					"monster",
@@ -1492,26 +1495,65 @@ const betteR205etools = function () {
 				);
 			});
 		}
+
+		const url = $("#import-monster-url").val();
+		if (url && url.trim()) {
+			// ugly hack to pre-load fluff
+			const fileName = url.split("/").reverse()[0];
+			const src = Object.keys(monsterDataUrls).find(k => monsterDataUrls[k] === fileName);
+			if (src && monsterFluffDataUrls[src]) {
+				const fluffUrl = d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]);
+				DataUtil.loadJSON(fluffUrl, (data) => {
+					monsterFluffData[src] = data;
+					loadData(url);
+				});
+			} else {
+				loadData(url);
+			}
+		}
 	};
 
 // Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
-		const toLoad = Object.keys(monsterDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
-		if (toLoad.length) {
-			DataUtil.multiLoadJSON(toLoad.map(url => ({url: url})), () => {
-			}, (dataStack) => {
-				let toAdd = [];
-				dataStack.forEach(d => toAdd = toAdd.concat(d.monster));
-				d20plus.importer.showImportList(
-					"monster",
-					toAdd,
-					d20plus.monsters.handoutBuilder,
-					{
-						groupOptions: d20plus.monsters._groupOptions,
-						showSource: true
+		function loadData () {
+			const toLoad = Object.keys(monsterDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+			if (toLoad.length) {
+				DataUtil.multiLoadJSON(
+					toLoad.map(url => ({url})),
+					() => {},
+					(dataStack) => {
+						let toAdd = [];
+						dataStack.forEach(d => toAdd = toAdd.concat(d.monster));
+						d20plus.importer.showImportList(
+							"monster",
+							toAdd,
+							d20plus.monsters.handoutBuilder,
+							{
+								groupOptions: d20plus.monsters._groupOptions,
+								showSource: true
+							}
+						);
 					}
 				);
-			});
+			}
+		}
+
+		// preload fluff if available
+		const toLoadFluff = Object.keys(monsterFluffDataUrls)
+			.filter(src => !isNonstandardSource(src))
+			.map(src => ({url: d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]), src}));
+		if (toLoadFluff.length) {
+			DataUtil.multiLoadJSON(
+				toLoadFluff,
+				(tl, data) => {
+					monsterFluffData[tl.src] = data;
+				},
+				() => {
+					loadData();
+				}
+			);
+		} else {
+			loadData();
 		}
 	};
 
@@ -1692,6 +1734,56 @@ const betteR205etools = function () {
 
 		const name = data.name;
 		const pType = Parser.monTypeToFullObj(data.type);
+
+		const renderer = new EntryRenderer();
+		renderer.setBaseUrl(BASE_SITE_URL);
+
+		// get fluff, if available
+		const includedFluff = data.fluff;
+		let renderFluff = null;
+		// prefer fluff directly attached to the creature
+		if (includedFluff) {
+			if (includedFluff.entries) {
+				const depth = includedFluff.entries.type === "section" ? -1 : 2;
+				renderFluff = renderer.renderEntry(includedFluff.entries, depth);
+			}
+		} else {
+			const fluffData = monsterFluffData[data.source] ? monsterFluffData[data.source] : null;
+			const fluff = fluffData ? monsterFluffData[data.source].monster.find(it => it.name === data.name) : null;
+			if (fluff) {
+				if (fluff._copy) {
+					const cpy = fluffData.monster.find(it => fluff._copy.name === it.name);
+					// preserve these
+					const name = fluff.name;
+					const src = fluff.source;
+					const images = fluff.images;
+					Object.assign(fluff, cpy);
+					fluff.name = name;
+					fluff.source = src;
+					if (images) fluff.images = images;
+					delete fluff._copy;
+				}
+
+				if (fluff._appendCopy) {
+					const cpy = fluffData.monster.find(it => fluff._appendCopy.name === it.name);
+					if (cpy.images) {
+						if (!fluff.images) fluff.images = cpy.images;
+						else fluff.images = fluff.images.concat(cpy.images);
+					}
+					if (cpy.entries) {
+						if (!fluff.entries) fluff.entries = cpy.entries;
+						else fluff.entries.entries = fluff.entries.entries.concat(cpy.entries.entries);
+					}
+					delete fluff._appendCopy;
+				}
+
+				if (fluff.entries) {
+					const depth = fluff.entries.type === "section" ? -1 : 2;
+					renderFluff = renderer.renderEntry(fluff.entries, depth);
+				}
+			}
+		}
+
 		d20.Campaign.characters.create(
 			{
 				name: name,
@@ -1706,9 +1798,6 @@ const betteR205etools = function () {
 			success: function (character) {
 				/* OGL Sheet */
 				try {
-					const renderer = new EntryRenderer();
-					renderer.setBaseUrl(BASE_SITE_URL);
-
 					const type = Parser.monTypeToFullObj(data.type).asText;
 					const source = Parser.sourceJsonToAbv(data.source);
 					const avatar = data.tokenURL || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
@@ -2370,6 +2459,18 @@ const betteR205etools = function () {
 						dirty.push(i);
 					});
 					d20.journal.notifyWorkersOfAttrChanges(character.view.model.id, dirty, true);
+
+
+					if (renderFluff) {
+						setTimeout(() => {
+							character.updateBlobs({
+								bio: Markdown.parse(renderFluff)
+							});
+							character.save({
+								bio: (new Date).getTime()
+							});
+						}, 500);
+					}
 				} catch (e) {
 					d20plus.log("Error loading [" + name + "]");
 					d20plus.addImportError(name);
