@@ -807,7 +807,7 @@ const betteR205etools = function () {
 				const defaultAdvUrl = d20plus.formSrcUrl(ADVENTURE_DATA_DIR, "adventure-lmop.json");
 				const $iptUrl = $("#import-adventures-url");
 				$iptUrl.val(defaultAdvUrl);
-				$iptUrl.data("id", "lmop")
+				$iptUrl.data("id", "lmop");
 				const $sel = $("#button-adventures-select");
 				adventureMetadata.adventure.forEach(a => {
 					$sel.append($('<option>', {
@@ -826,56 +826,65 @@ const betteR205etools = function () {
 					$iptUrl.data("id", id);
 				});
 			}
+
+			// import
+			$("a#button-spells-load").on(window.mousedowntype, () => d20plus.spells.button());
+			$("a#button-spells-load-all").on(window.mousedowntype, () => d20plus.spells.buttonAll());
+			$("a#import-psionics-load").on(window.mousedowntype, () => d20plus.psionics.button());
+			$("a#import-items-load").on(window.mousedowntype, () => d20plus.items.button());
+			$("a#import-races-load").on(window.mousedowntype, () => d20plus.races.button());
+			$("a#import-feats-load").on(window.mousedowntype, () => d20plus.feats.button());
+			$("a#import-classes-load").on(window.mousedowntype, () => d20plus.classes.button());
+			$("a#import-subclasses-load").on(window.mousedowntype, () => d20plus.subclasses.button());
+			$("a#import-backgrounds-load").on(window.mousedowntype, () => d20plus.backgrounds.button());
+			$("select#import-mode-select").on("change", () => d20plus.importer.importModeSwitch());
 		} else {
-			$body.append(d20plus.playerImportHtml);
-			const $winPlayer = $("#d20plus-playerimport");
-			const $appTo = $winPlayer.find(`.append-target`);
-			$appTo.append(d20plus.settingsHtmlSelector);
-			$appTo.append(d20plus.settingsHtmlPtItems);
-			$appTo.append(d20plus.settingsHtmlPtSpells);
-			$appTo.append(d20plus.settingsHtmlPtPsionics);
-			$appTo.append(d20plus.settingsHtmlPtRaces);
-			$appTo.append(d20plus.settingsHtmlPtFeats);
-			$appTo.append(d20plus.settingsHtmlPtClasses);
-			$appTo.append(d20plus.settingsHtmlPtSubclasses);
-			$appTo.append(d20plus.settingsHtmlPtBackgrounds);
+			// player-only HTML if required
+		}
 
-			$(`#import-mode-select`).find(`option`).filter((i, e) => {
-				const val = $(e).prop("value");
-				return val === "monster" || val === "object" || val === "adventure";
-			}).remove();
+		$body.append(d20plus.playerImportHtml);
+		const $winPlayer = $("#d20plus-playerimport");
+		const $appTo = $winPlayer.find(`.append-target`);
+		$appTo.append(d20plus.settingsHtmlSelectorPlayer);
+		$appTo.append(d20plus.settingsHtmlPtItemsPlayer);
+		$appTo.append(d20plus.settingsHtmlPtSpellsPlayer);
+		$appTo.append(d20plus.settingsHtmlPtPsionicsPlayer);
+		$appTo.append(d20plus.settingsHtmlPtRacesPlayer);
+		$appTo.append(d20plus.settingsHtmlPtFeatsPlayer);
+		$appTo.append(d20plus.settingsHtmlPtClassesPlayer);
+		$appTo.append(d20plus.settingsHtmlPtSubclassesPlayer);
+		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
 
-			$winPlayer.dialog({
-				autoOpen: false,
-				resizable: true,
-				width: 800,
-				height: 650,
-			});
+		$winPlayer.dialog({
+			autoOpen: false,
+			resizable: true,
+			width: 800,
+			height: 650,
+		});
 
-			const $wrpPlayerImport = $(`
+		const $wrpPlayerImport = $(`
 			<div style="padding: 0 10px">
 				<div style="clear: both"></div>
 			</div>`);
-			const $btnPlayerImport = $(`<button class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Import Spells, Items, Classes, etc...</button>`)
-				.on("click", () => {
-					$winPlayer.dialog("open");
-				});
-			$wrpPlayerImport.prepend($btnPlayerImport);
-			$(`#journal`).prepend($wrpPlayerImport);
-		}
+		const $btnPlayerImport = $(`<button class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Temp Import Spells, Items, Classes,...</button>`)
+			.on("click", () => {
+				$winPlayer.dialog("open");
+			});
+		$wrpPlayerImport.prepend($btnPlayerImport);
+		$(`#journal`).prepend($wrpPlayerImport);
 
 		// SHARED WINDOWS/BUTTONS
 		// import
-		$("a#button-spells-load").on(window.mousedowntype, d20plus.spells.button);
-		$("a#button-spells-load-all").on(window.mousedowntype, d20plus.spells.buttonAll);
-		$("a#import-psionics-load").on(window.mousedowntype, d20plus.psionics.button);
-		$("a#import-items-load").on(window.mousedowntype, d20plus.items.button);
-		$("a#import-races-load").on(window.mousedowntype, d20plus.races.button);
-		$("a#import-feats-load").on(window.mousedowntype, d20plus.feats.button);
-		$("a#import-classes-load").on(window.mousedowntype, d20plus.classes.button);
-		$("a#import-subclasses-load").on(window.mousedowntype, d20plus.subclasses.button);
-		$("a#import-backgrounds-load").on(window.mousedowntype, d20plus.backgrounds.button);
-		$("select#import-mode-select").on("change", d20plus.importer.importModeSwitch);
+		$("a#button-spells-load-player").on(window.mousedowntype, () => d20plus.spells.button(true));
+		$("a#button-spells-load-all-player").on(window.mousedowntype, () => d20plus.spells.buttonAll(true));
+		$("a#import-psionics-load-player").on(window.mousedowntype, () => d20plus.psionics.button(true));
+		$("a#import-items-load-player").on(window.mousedowntype, () => d20plus.items.button(true));
+		$("a#import-races-load-player").on(window.mousedowntype, () => d20plus.races.button(true));
+		$("a#import-feats-load-player").on(window.mousedowntype, () => d20plus.feats.button(true));
+		$("a#import-classes-load-player").on(window.mousedowntype, () => d20plus.classes.button(true));
+		$("a#import-subclasses-load-player").on(window.mousedowntype, () => d20plus.subclasses.button(true));
+		$("a#import-backgrounds-load-player").on(window.mousedowntype, () => d20plus.backgrounds.button(true));
+		$("select#import-mode-select-player").on("change", () => d20plus.importer.importModeSwitch());
 
 		$body.append(d20plus.importDialogHtml);
 		$body.append(d20plus.importListHTML);
@@ -891,6 +900,7 @@ const betteR205etools = function () {
 		});
 
 		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB");
+		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB");
 
 		// bind tokens button
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
@@ -2793,10 +2803,11 @@ const betteR205etools = function () {
 
 	d20plus.spells._groupOptions = ["Level", "Alphabetical", "Source"];
 // Import Spells button was clicked
-	d20plus.spells.button = function () {
-		const url = $("#import-spell-url").val();
+	d20plus.spells.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-spell-url-player").val() : $("#import-spell-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -2804,7 +2815,8 @@ const betteR205etools = function () {
 					data.spell,
 					handoutBuilder,
 					{
-						groupOptions: d20plus.spells._groupOptions
+						groupOptions: d20plus.spells._groupOptions,
+						forcePlayer
 					}
 				);
 			});
@@ -2812,11 +2824,11 @@ const betteR205etools = function () {
 	};
 
 // Import All Spells button was clicked
-	d20plus.spells.buttonAll = function () {
+	d20plus.spells.buttonAll = function (forcePlayer) {
 		const toLoad = Object.keys(spellDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
 
 		if (toLoad.length) {
-			const handoutBuilder = window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
+			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
 
 			DataUtil.multiLoadJSON(toLoad.map(url => ({url: url})), () => {
 			}, (dataStack) => {
@@ -2828,7 +2840,8 @@ const betteR205etools = function () {
 					handoutBuilder,
 					{
 						groupOptions: d20plus.spells._groupOptions,
-						showSource: true
+						showSource: true,
+						forcePlayer
 					}
 				);
 			});
@@ -2963,10 +2976,11 @@ const betteR205etools = function () {
 
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
 // Import Items button was clicked
-	d20plus.items.button = function () {
-		const url = $("#import-items-url").val();
+	d20plus.items.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-items-url-player").val() : $("#import-items-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = window.is_gm ? d20plus.items.handoutBuilder : d20plus.items.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
 			if (url.trim() === "https://5etools.com/data/items.json") {
 				EntryRenderer.item.buildList((itemList) => {
@@ -2976,7 +2990,8 @@ const betteR205etools = function () {
 							handoutBuilder,
 							{
 								groupOptions: d20plus.items._groupOptions,
-								showSource: true
+								showSource: true,
+								forcePlayer
 							}
 						);
 					},
@@ -2993,7 +3008,8 @@ const betteR205etools = function () {
 						data.item,
 						handoutBuilder,
 						{
-							groupOptions: d20plus.items._groupOptions
+							groupOptions: d20plus.items._groupOptions,
+							forcePlayer
 						}
 					);
 				});
@@ -3200,10 +3216,11 @@ const betteR205etools = function () {
 
 	d20plus.psionics._groupOptions = ["Alphabetical", "Order", "Source"];
 // Import Psionics button was clicked
-	d20plus.psionics.button = function () {
-		const url = $("#import-psionics-url").val();
+	d20plus.psionics.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-psionics-url-player").val() : $("#import-psionics-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = window.is_gm ? d20plus.psionics.handoutBuilder : d20plus.psionics.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.psionics.playerImportBuilder : d20plus.psionics.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3211,7 +3228,8 @@ const betteR205etools = function () {
 					data.psionic,
 					handoutBuilder,
 					{
-						groupOptions: d20plus.psionics._groupOptions
+						groupOptions: d20plus.psionics._groupOptions,
+						forcePlayer
 					}
 				);
 			});
@@ -3279,10 +3297,11 @@ const betteR205etools = function () {
 	};
 
 // Import Races button was clicked
-	d20plus.races.button = function () {
-		const url = $("#import-races-url").val();
+	d20plus.races.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-races-url-player").val() : $("#import-races-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = window.is_gm ? d20plus.races.handoutBuilder : d20plus.races.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3290,7 +3309,8 @@ const betteR205etools = function () {
 					EntryRenderer.race.mergeSubraces(data.race),
 					handoutBuilder,
 					{
-						showSource: true
+						showSource: true,
+						forcePlayer
 					}
 				);
 			});
@@ -3363,10 +3383,11 @@ const betteR205etools = function () {
 	};
 
 // Import Feats button was clicked
-	d20plus.feats.button = function () {
-		const url = $("#import-feats-url").val();
+	d20plus.feats.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-feats-url-player").val() : $("#import-feats-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = window.is_gm ? d20plus.feats.handoutBuilder : d20plus.feats.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3374,7 +3395,8 @@ const betteR205etools = function () {
 					data.feat,
 					handoutBuilder,
 					{
-						showSource: true
+						showSource: true,
+						forcePlayer
 					}
 				);
 			});
@@ -3677,16 +3699,20 @@ const betteR205etools = function () {
 	};
 
 // Import Classes button was clicked
-	d20plus.classes.button = function () {
-		const url = $("#import-classes-url").val();
+	d20plus.classes.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-classes-url-player").val() : $("#import-classes-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
 					"class",
 					data.class,
-					handoutBuilder
+					handoutBuilder,
+					{
+						forcePlayer
+					}
 				);
 			});
 		}
@@ -3796,11 +3822,12 @@ const betteR205etools = function () {
 
 	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
 // Import Subclasses button was clicked
-	d20plus.subclasses.button = function () {
-		const url = $("#import-subclasses-url").val();
+	d20plus.subclasses.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-subclasses-url-player").val() : $("#import-subclasses-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url, (data) => {
-				const handoutBuilder = window.is_gm ? d20plus.subclasses.handoutBuilder : d20plus.subclasses.playerImportBuilder;
+				const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
 				d20plus.importer.showImportList(
 					"subclass",
@@ -3808,7 +3835,8 @@ const betteR205etools = function () {
 					handoutBuilder,
 					{
 						groupOptions: d20plus.subclasses._groupOptions,
-						showSource: true
+						showSource: true,
+						forcePlayer
 					}
 				);
 			});
@@ -3877,10 +3905,11 @@ const betteR205etools = function () {
 		return [noteContents, gmNotes];
 	};
 
-	d20plus.backgrounds.button = function () {
-		const url = $("#import-backgrounds-url").val();
+	d20plus.backgrounds.button = function (forcePlayer) {
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-backgrounds-url-player").val() : $("#import-backgrounds-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = window.is_gm ? d20plus.backgrounds.handoutBuilder : d20plus.backgrounds.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.backgrounds.playerImportBuilder : d20plus.backgrounds.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3888,7 +3917,8 @@ const betteR205etools = function () {
 					data.background,
 					handoutBuilder,
 					{
-						showSource: true
+						showSource: true,
+						forcePlayer
 					}
 				);
 			});
@@ -3963,7 +3993,9 @@ const betteR205etools = function () {
 
 		$(`.importer-section`).hide();
 		const toShow = $(`#import-mode-select`).val();
-		$(`.importer-section[data-import-group="${toShow}"]`).show();
+		$(`#betteR20-settings`).find(`.importer-section[data-import-group="${toShow}"]`).show();
+		const toShowPlayer = $(`#import-mode-select-player`).val();
+		$(`#d20plus-playerimport`).find(`.importer-section[data-import-group="${toShowPlayer}"]`).show();
 	};
 
 	d20plus.importer.showImportList = function (dataType, dataArray, handoutBuilder, options) {
@@ -3971,12 +4003,13 @@ const betteR205etools = function () {
 		/*
 	options = {
 		showSource: true,
-		groupOptions: ["Source", "CR", "Alphabetical", "Type"]
+		groupOptions: ["Source", "CR", "Alphabetical", "Type"],
+		forcePlayer: true
 	}
 	 */
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 
-		if (!window.is_gm) {
+		if (!window.is_gm || options.forcePlayer) {
 			d20plus.importer.clearPlayerImport();
 			const $winPlayer = $(`#d20plus-playerimport`);
 			const $appPlayer = $winPlayer.find(`.append-list-journal`);
@@ -4104,11 +4137,11 @@ const betteR205etools = function () {
 				$stsName.text(it.name);
 				$stsRemain.text(remaining--);
 
-				if (window.is_gm) {
+				if (!window.is_gm || options.forcePlayer) {
+					handoutBuilder(it);
+				} else {
 					const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
 					handoutBuilder(it, overwrite, inJournals, folderName);
-				} else {
-					handoutBuilder(it);
 				}
 			}
 
@@ -4574,14 +4607,14 @@ const betteR205etools = function () {
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 
-	d20plus.playerImportHtml = `<div id="d20plus-playerimport" title="Player Import">
+	d20plus.playerImportHtml = `<div id="d20plus-playerimport" title="Temporary Import">
 	<div class="append-target">
 		<!-- populate with js -->
 	</div>
 	<div class="append-list-journal" style="max-height: 400px; overflow-y: auto;">
 		<!-- populate with js -->		
 	</div>
-	<p><i>Player-imported items are temporary, as players can't make handouts. Once imported, items can be drag-dropped to character sheets.</i></p>
+	<p><i>Player-imported items are temporary, as players can't make handouts. GMs may also use this functionality to avoid cluttering the journal. Once imported, items can be drag-dropped to character sheets.</i></p>
 </div>`;
 
 	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import...">
@@ -4645,6 +4678,19 @@ Errors: <span id="import-errors">0</span>
 <option value="adventure">Adventures</option>
 </select>
 `;
+	d20plus.settingsHtmlSelectorPlayer = `
+<select id="import-mode-select-player">
+<option value="none" disabled selected>Select category...</option>
+<option value="spell">Spells</option>
+<option value="item">Items</option>
+<option value="psionic">Psionics</option>
+<option value="race">Races</option>
+<option value="feat">Feats</option>
+<option value="class">Classes</option>
+<option value="subclass">Subclasses</option>
+<option value="background">Backgrounds</option>
+</select>
+`;
 	d20plus.settingsHtmlPtMonsters = `
 <div class="importer-section" data-import-group="monster">
 <h4>Monster Importing</h4>
@@ -4672,6 +4718,15 @@ To import from third-party sources, either individually select one available in 
 </div>
 `;
 
+	d20plus.settingsHtmlPtItemsPlayer = `
+<div class="importer-section" data-import-group="item">
+<h4>Item Importing</h4>
+<label for="import-items-url-player">Item Data URL:</label>
+<input type="text" id="import-items-url-player" value="${ITEM_DATA_URL}">
+<a class="btn" href="#" id="import-items-load-player">Import Items</a>
+</div>
+`;
+
 	d20plus.settingsHtmlPtSpells = `
 <div class="importer-section" data-import-group="spell">
 <h4>Spell Importing</h4>
@@ -4689,6 +4744,23 @@ To import from third-party sources, either individually select one available in 
 </div>
 `;
 
+	d20plus.settingsHtmlPtSpellsPlayer = `
+<div class="importer-section" data-import-group="spell">
+<h4>Spell Importing</h4>
+<label for="import-spell-url-player">Spell Data URL:</label>
+<select id="button-spell-select-player">
+<!-- populate with JS-->
+</select>
+<input type="text" id="import-spell-url-player">
+<p><a class="btn" href="#" id="button-spells-load-player">Import Spells</a><p/>
+<p><a class="btn" href="#" id="button-spells-load-all-player" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
+<p>
+The "Import Spells From All Sources" button presents a list containing spells from official sources only.<br>
+To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."
+</p>
+</div>
+`;
+
 	d20plus.settingsHtmlPtPsionics = `
 <div class="importer-section" data-import-group="psionic">
 <h4>Psionic Importing</h4>
@@ -4698,12 +4770,30 @@ To import from third-party sources, either individually select one available in 
 </div>
 `;
 
+	d20plus.settingsHtmlPtPsionicsPlayer = `
+<div class="importer-section" data-import-group="psionic">
+<h4>Psionic Importing</h4>
+<label for="import-psionics-url-player">Psionics Data URL:</label>
+<input type="text" id="import-psionics-url-player" value="${PSIONIC_DATA_URL}">
+<a class="btn" href="#" id="import-psionics-load=player">Import Psionics</a>
+</div>
+`;
+
 	d20plus.settingsHtmlPtFeats = `
 <div class="importer-section" data-import-group="feat">
 <h4>Feat Importing</h4>
 <label for="import-feats-url">Feat Data URL:</label>
 <input type="text" id="import-feats-url" value="${FEAT_DATA_URL}">
 <a class="btn" href="#" id="import-feats-load">Import Feats</a>
+</div>
+`;
+
+	d20plus.settingsHtmlPtFeatsPlayer = `
+<div class="importer-section" data-import-group="feat">
+<h4>Feat Importing</h4>
+<label for="import-feats-url-player">Feat Data URL:</label>
+<input type="text" id="import-feats-url-player" value="${FEAT_DATA_URL}">
+<a class="btn" href="#" id="import-feats-load-player">Import Feats</a>
 </div>
 `;
 
@@ -4725,12 +4815,30 @@ To import from third-party sources, either individually select one available in 
 </div>
 `;
 
+	d20plus.settingsHtmlPtRacesPlayer = `
+<div class="importer-section" data-import-group="race">
+<h4>Race Importing</h4>
+<label for="import-races-url-player">Race Data URL:</label>
+<input type="text" id="import-races-url-player" value="${RACE_DATA_URL}">
+<a class="btn" href="#" id="import-races-load-player">Import Races</a>
+</div>
+`;
+
 	d20plus.settingsHtmlPtClasses = `
 <div class="importer-section" data-import-group="class">
 <h4>Class Importing</h4>
 <label for="import-classes-url">Class Data URL:</label>
 <input type="text" id="import-classes-url" value="${CLASS_DATA_URL}">
 <a class="btn" href="#" id="import-classes-load">Import Classes</a>
+</div>
+`;
+
+	d20plus.settingsHtmlPtClassesPlayer = `
+<div class="importer-section" data-import-group="class">
+<h4>Class Importing</h4>
+<label for="import-classes-url-player">Class Data URL:</label>
+<input type="text" id="import-classes-url-player" value="${CLASS_DATA_URL}">
+<a class="btn" href="#" id="import-classes-load-player">Import Classes</a>
 </div>
 `;
 
@@ -4746,12 +4854,33 @@ Default subclasses are imported as part of Classes import. This can be used to l
 </div>
 `;
 
+	d20plus.settingsHtmlPtSubclassesPlayer = `
+<div class="importer-section" data-import-group="subclass">
+<h4>Subclass Importing</h4>
+<label for="import-subclasses-url-player">Subclass Data URL:</label>
+<input type="text" id="import-subclasses-url-player" value="">
+<a class="btn" href="#" id="import-subclasses-load-player">Import Subclasses</a>
+<p>
+Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.
+</p>
+</div>
+`;
+
 	d20plus.settingsHtmlPtBackgrounds = `
 <div class="importer-section" data-import-group="background">
 <h4>Background Importing</h4>
 <label for="import-backgrounds-url">Background Data URL:</label>
 <input type="text" id="import-backgrounds-url" value="${BACKGROUND_DATA_URL}">
 <a class="btn" href="#" id="import-backgrounds-load">Import Backgrounds</a>
+</div>
+`;
+
+	d20plus.settingsHtmlPtBackgroundsPlayer = `
+<div class="importer-section" data-import-group="background">
+<h4>Background Importing</h4>
+<label for="import-backgrounds-url-player">Background Data URL:</label>
+<input type="text" id="import-backgrounds-url-player" value="${BACKGROUND_DATA_URL}">
+<a class="btn" href="#" id="import-backgrounds-load-player">Import Backgrounds</a>
 </div>
 `;
 
