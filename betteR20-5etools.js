@@ -2804,7 +2804,7 @@ const betteR205etools = function () {
 	d20plus.spells._groupOptions = ["Level", "Alphabetical", "Source"];
 // Import Spells button was clicked
 	d20plus.spells.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-spell-url-player").val() : $("#import-spell-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
@@ -2977,7 +2977,7 @@ const betteR205etools = function () {
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
 // Import Items button was clicked
 	d20plus.items.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-items-url-player").val() : $("#import-items-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
@@ -3217,7 +3217,7 @@ const betteR205etools = function () {
 	d20plus.psionics._groupOptions = ["Alphabetical", "Order", "Source"];
 // Import Psionics button was clicked
 	d20plus.psionics.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-psionics-url-player").val() : $("#import-psionics-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.psionics.playerImportBuilder : d20plus.psionics.handoutBuilder;
@@ -3298,7 +3298,7 @@ const betteR205etools = function () {
 
 // Import Races button was clicked
 	d20plus.races.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-races-url-player").val() : $("#import-races-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
@@ -3384,7 +3384,7 @@ const betteR205etools = function () {
 
 // Import Feats button was clicked
 	d20plus.feats.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-feats-url-player").val() : $("#import-feats-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
@@ -3700,7 +3700,7 @@ const betteR205etools = function () {
 
 // Import Classes button was clicked
 	d20plus.classes.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-classes-url-player").val() : $("#import-classes-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
@@ -3823,7 +3823,7 @@ const betteR205etools = function () {
 	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
 // Import Subclasses button was clicked
 	d20plus.subclasses.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-subclasses-url-player").val() : $("#import-subclasses-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url, (data) => {
@@ -3906,7 +3906,7 @@ const betteR205etools = function () {
 	};
 
 	d20plus.backgrounds.button = function (forcePlayer) {
-		const playerMode = forcePlayer || window.is_gm;
+		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-backgrounds-url-player").val() : $("#import-backgrounds-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.backgrounds.playerImportBuilder : d20plus.backgrounds.handoutBuilder;
