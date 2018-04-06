@@ -866,7 +866,7 @@ const betteR205etools = function () {
 			<div style="padding: 0 10px">
 				<div style="clear: both"></div>
 			</div>`);
-		const $btnPlayerImport = $(`<button class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Temporarily Import Spells, Items, Classes, etc...</button>`)
+		const $btnPlayerImport = $(`<button class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Temp Import Spells, Items, Classes,...</button>`)
 			.on("click", () => {
 				$winPlayer.dialog("open");
 			});
@@ -2804,9 +2804,10 @@ const betteR205etools = function () {
 	d20plus.spells._groupOptions = ["Level", "Alphabetical", "Source"];
 // Import Spells button was clicked
 	d20plus.spells.button = function (forcePlayer) {
-		const url = $("#import-spell-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-spell-url-player").val() : $("#import-spell-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -2976,9 +2977,10 @@ const betteR205etools = function () {
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
 // Import Items button was clicked
 	d20plus.items.button = function (forcePlayer) {
-		const url = $("#import-items-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-items-url-player").val() : $("#import-items-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.items.handoutBuilder : d20plus.items.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
 			if (url.trim() === "https://5etools.com/data/items.json") {
 				EntryRenderer.item.buildList((itemList) => {
@@ -3215,9 +3217,10 @@ const betteR205etools = function () {
 	d20plus.psionics._groupOptions = ["Alphabetical", "Order", "Source"];
 // Import Psionics button was clicked
 	d20plus.psionics.button = function (forcePlayer) {
-		const url = $("#import-psionics-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-psionics-url-player").val() : $("#import-psionics-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.psionics.handoutBuilder : d20plus.psionics.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.psionics.playerImportBuilder : d20plus.psionics.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3295,9 +3298,10 @@ const betteR205etools = function () {
 
 // Import Races button was clicked
 	d20plus.races.button = function (forcePlayer) {
-		const url = $("#import-races-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-races-url-player").val() : $("#import-races-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.races.handoutBuilder : d20plus.races.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3380,9 +3384,10 @@ const betteR205etools = function () {
 
 // Import Feats button was clicked
 	d20plus.feats.button = function (forcePlayer) {
-		const url = $("#import-feats-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-feats-url-player").val() : $("#import-feats-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.feats.handoutBuilder : d20plus.feats.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3695,9 +3700,10 @@ const betteR205etools = function () {
 
 // Import Classes button was clicked
 	d20plus.classes.button = function (forcePlayer) {
-		const url = $("#import-classes-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-classes-url-player").val() : $("#import-classes-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
@@ -3817,10 +3823,11 @@ const betteR205etools = function () {
 	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
 // Import Subclasses button was clicked
 	d20plus.subclasses.button = function (forcePlayer) {
-		const url = $("#import-subclasses-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-subclasses-url-player").val() : $("#import-subclasses-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url, (data) => {
-				const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.subclasses.handoutBuilder : d20plus.subclasses.playerImportBuilder;
+				const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
 				d20plus.importer.showImportList(
 					"subclass",
@@ -3899,9 +3906,10 @@ const betteR205etools = function () {
 	};
 
 	d20plus.backgrounds.button = function (forcePlayer) {
-		const url = $("#import-backgrounds-url").val();
+		const playerMode = forcePlayer || window.is_gm;
+		const url = playerMode ? $("#import-backgrounds-url-player").val() : $("#import-backgrounds-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.backgrounds.handoutBuilder : d20plus.backgrounds.playerImportBuilder;
+			const handoutBuilder = playerMode ? d20plus.backgrounds.playerImportBuilder : d20plus.backgrounds.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
 				d20plus.importer.showImportList(
