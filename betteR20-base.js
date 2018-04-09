@@ -709,8 +709,10 @@ var betteR20Base = function () {
 				desc: "Paste SVG data as text to automatically draw the paths.",
 				html: `
 				<div id="d20plus-svgdraw" title="SVG Drawing Tool">
-				<p>Paste SVG data as text to automatically draw the paths. Draws to the current layer.</p>
+				<p>Paste SVG data as text to automatically draw any included &lt;path&gt;s. Draws to the current layer, in the top-left corner, with no scaling. Takes colour information from &quot;stroke&quot; attributes.</p>
+				<p>Line width (px; default values are 1, 3, 5, 8, 14): <input name="stroke-width" placeholder="5" value="5" type="number"></p>
 				<textarea rows="10" cols="100" placeholder="Paste SVG data here"></textarea>
+				<br>
 				<button class="btn">Draw</button>
 				</div>
 				`,
@@ -740,19 +742,18 @@ var betteR20Base = function () {
 					$win.dialog("open");
 
 					$win.find(`button`).on("click", () => {
-						debugger
 						const input = $win.find(`textarea`).val();
 						const svg = $.parseXML(input);
 
 						const toDraw = $(svg).find("path").map((i, e) => {
 							const $e = $(e);
-							return {fill: $e.attr("fill"), d: $e.attr("d")}
+							return {stroke: $e.attr("stroke"), d: $e.attr("d")}
 						}).get();
 
-						const strokeWidth = 5; // default r20 width -- TODO allow user to set this
+						const strokeWidth = Math.max(1, Number($win.find(`input[name="stroke-width"]`).val()));
 
 						toDraw.forEach(it => {
-							addShape(it.d, it.fill, strokeWidth)
+							addShape(it.d, it.stroke, strokeWidth)
 						});
 					});
 				}
