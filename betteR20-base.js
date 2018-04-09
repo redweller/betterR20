@@ -742,12 +742,13 @@ var betteR20Base = function () {
 					$win.dialog("open");
 
 					$win.find(`button`).on("click", () => {
+						d20plus.log("Drawing paths");
 						const input = $win.find(`textarea`).val();
 						const svg = $.parseXML(input);
 
 						const toDraw = $(svg).find("path").map((i, e) => {
 							const $e = $(e);
-							return {stroke: $e.attr("stroke"), d: $e.attr("d")}
+							return {stroke: $e.attr("stroke") || "black", d: $e.attr("d")}
 						}).get();
 
 						const strokeWidth = Math.max(1, Number($win.find(`input[name="stroke-width"]`).val()));
