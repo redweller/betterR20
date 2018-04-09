@@ -703,6 +703,60 @@ var betteR20Base = function () {
 						}
 					});
 				}
+			},
+			{
+				name: "SVG Draw",
+				desc: "Paste SVG data as text to automatically draw the paths.",
+				html: `
+				<div id="d20plus-svgdraw" title="SVG Drawing Tool">
+				<p>Paste SVG data as text to automatically draw any included &lt;path&gt;s. Draws to the current layer, in the top-left corner, with no scaling. Takes colour information from &quot;stroke&quot; attributes.</p>
+				<p>Line width (px; default values are 1, 3, 5, 8, 14): <input name="stroke-width" placeholder="5" value="5" type="number"></p>
+				<textarea rows="10" cols="100" placeholder="Paste SVG data here"></textarea>
+				<br>
+				<button class="btn">Draw</button>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-svgdraw").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 800,
+						height: 650,
+					});
+				},
+				openFn: () => {
+					// adapted from `d20.engine.finishCurrentPolygon`
+					function addShape(path, pathStroke, strokeWidth) {
+						let i = d20.engine.convertAbsolutePathStringtoFabric(path);
+						i = _.extend(i, {
+							strokeWidth: strokeWidth,
+							fill: "transparent",
+							stroke: pathStroke,
+							path: JSON.parse(i.path)
+						});
+						d20.Campaign.activePage().addPath(i);
+						d20.engine.debounced_renderTop();
+					}
+
+					const $win = $("#d20plus-svgdraw");
+					$win.dialog("open");
+
+					$win.find(`button`).on("click", () => {
+						const input = $win.find(`textarea`).val();
+						const svg = $.parseXML(input);
+
+						const toDraw = $(svg).find("path").map((i, e) => {
+							const $e = $(e);
+							return {stroke: $e.attr("stroke"), d: $e.attr("d")}
+						}).get();
+
+						const strokeWidth = Math.max(1, Number($win.find(`input[name="stroke-width"]`).val()));
+
+						toDraw.forEach(it => {
+							addShape(it.d, it.stroke, strokeWidth)
+						});
+					});
+				}
 			}
 		],
 
@@ -3148,6 +3202,7 @@ var betteR20Base = function () {
               <li data-action-type="tolayer_map" class='<$ if(this && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
               <li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
               <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
+              <li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer (will not block LoS)</li>
             </ul>
           </li>
           <$ } $>
