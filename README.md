@@ -1,7 +1,7 @@
 **If you wish to use creatures with the Shaped sheet, import with your game using the OGL sheet, and then switch to the shaped sheet afterwards.** Due to the complexity of the process (read: it's a colossal hack), we are unable to support both sheets natively.
 
 ## Discord
-For help, advice, and updates; or to suggest improvements and changes, please [join our Discord](https://discord.gg/v3AXzcW)!
+For help, advice, and updates; or to suggest improvements and changes, please [join our Discord](https://discord.gg/Zk34CUZ)!
 
 ## How to Import 5etools Data (Monsters, Spells, Items, ...)
 1. Install the Tampermonkey browser extension ([Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)/[Firefox](https://addons.mozilla.org/en-GB/firefox/addon/tampermonkey/)).
