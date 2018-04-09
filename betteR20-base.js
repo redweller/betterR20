@@ -741,7 +741,7 @@ var betteR20Base = function () {
 					const $win = $("#d20plus-svgdraw");
 					$win.dialog("open");
 
-					$win.find(`button`).on("click", () => {
+					$win.find(`button`).off("click").on("click", () => {
 						d20plus.log("Drawing paths");
 						const input = $win.find(`textarea`).val();
 						const svg = $.parseXML(input);
