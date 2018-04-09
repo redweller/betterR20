@@ -703,6 +703,59 @@ var betteR20Base = function () {
 						}
 					});
 				}
+			},
+			{
+				name: "SVG Draw",
+				desc: "Paste SVG data as text to automatically draw the paths.",
+				html: `
+				<div id="d20plus-svgdraw" title="SVG Drawing Tool">
+				<p>Paste SVG data as text to automatically draw the paths. Draws to the current layer.</p>
+				<textarea rows="10" cols="100" placeholder="Paste SVG data here"></textarea>
+				<button class="btn">Draw</button>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-svgdraw").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 800,
+						height: 650,
+					});
+				},
+				openFn: () => {
+					// adapted from `d20.engine.finishCurrentPolygon`
+					function addShape(path, pathStroke, strokeWidth) {
+						let i = d20.engine.convertAbsolutePathStringtoFabric(path);
+						i = _.extend(i, {
+							strokeWidth: strokeWidth,
+							fill: "transparent",
+							stroke: pathStroke,
+							path: JSON.parse(i.path)
+						});
+						d20.Campaign.activePage().addPath(i);
+						d20.engine.debounced_renderTop();
+					}
+
+					const $win = $("#d20plus-svgdraw");
+					$win.dialog("open");
+
+					$win.find(`button`).on("click", () => {
+						debugger
+						const input = $win.find(`textarea`).val();
+						const svg = $.parseXML(input);
+
+						const toDraw = $(svg).find("path").map((i, e) => {
+							const $e = $(e);
+							return {fill: $e.attr("fill"), d: $e.attr("d")}
+						}).get();
+
+						const strokeWidth = 5; // default r20 width -- TODO allow user to set this
+
+						toDraw.forEach(it => {
+							addShape(it.d, it.fill, strokeWidth)
+						});
+					});
+				}
 			}
 		],
 
