@@ -2606,7 +2606,7 @@ var betteR20Base = function () {
 
 			if (window.is_gm) {
 				$iptSearch.css("width", "calc(100% - 5px)");
-				const $addPoint = $("#journal button.btn.superadd");
+				const $addPoint = $("#journal").find("button.btn.superadd");
 				$addPoint.after($wrprResults);
 				$addPoint.after(`<br>`);
 				$addPoint.after($iptSearch);
