@@ -823,12 +823,26 @@ var betteR20Base = function () {
 				function getArtLi (name, url) {
 					const showImage = d20plus.getCfgVal("interface", "showCustomArtPreview");
 					const $liArt = $(`
-				<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
-					${showImage ? `<img src="${url}" style="width: 30px; max-height: 30px; display: inline-block" draggable="false">` : ""}
-					<div class="dd-content name" style="display: inline-block; width: 35%;" data-url="${url}">${name}</div>
-					<a href="${url}"><span class="url" style="display: inline-block; width: ${showImage ? "40%" : "55%"};">${url}</span></a>
-				</li>
-			`);
+						<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
+							${showImage ? `<img src="${url}" style="width: 30px; max-height: 30px; display: inline-block" draggable="false">` : ""}
+							<div class="dd-content name" style="display: inline-block; width: 35%;" data-url="${url}">${name}</div>
+							<a href="${url}"><span class="url" style="display: inline-block; width: ${showImage ? "40%" : "55%"};">${url}</span></a>
+						</li>
+					`);
+					if (!showImage) {
+						$liArt.on("mousedown", () => {
+							const $loader = $(`<div class="temp-warning">Loading image - don't drop yet!</div>`);
+							const $img = $(`<img src="${url}" style="width: 30px; max-height: 30px; display: none">`);
+							if (!$img.prop("complete")) {
+								$(`body`).append($loader);
+								$img.on("load", () => {
+									$loader.remove();
+								});
+								$loader.append($img);
+							}
+						});
+					}
+
 					const $btnDel = $(`<span class="delete btn btn-danger"><span class="pictos">#</span></span>`).on("click", () => {
 						$liArt.remove();
 						refreshCustomArtList();
@@ -2473,6 +2487,11 @@ var betteR20Base = function () {
 			{
 				s: ".tool-row > *",
 				r: "flex-shrink: 0;"
+			},
+			// warning overlay
+			{
+				s: "temp-warning",
+				r: "position: fixed; top: 12px; left: calc(50vw - 200px); z-index: 10000; width: 320px; background: transparent; color: red; font-weight: bold; font-size: 150%; font-variant: small-caps; border: 1px solid red; padding: 4px; text-align: center; border-radius: 4px;"
 			}
 		],
 
