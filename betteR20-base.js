@@ -101,8 +101,16 @@ var betteR20Base = function () {
 			d20.textchat.incoming(false, ({
 				who: "system",
 				type: "system",
-				content: `<span style="font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">${message}</span>`
-			}))
+				content: `<span style="margin-left: -45px; margin-right: -5px; margin-bottom: -7px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">
+					${message}
+					<br>
+					<br>
+					Need help? Join our <a style="color: white;" href="https://discord.gg/Zk34CUZ">Discord</a>.
+					<br>
+					<br>
+					<span title="You'd think this would be obvious.">Please DO NOT post about this script or any related content in official channels, such as the Roll20 forums.</span>
+				</span>`
+			}));
 		},
 
 		addCSS: (sheet, selector, rules) => {
@@ -3093,6 +3101,7 @@ var betteR20Base = function () {
 			<input class='darknessenabled' type='checkbox' value='1'>&nbsp; Enabled</input>
 		  </label>
 		  <hr>
+		  <strong><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
 		  <label style='position: relative; top: 3px; width: 85px; padding-left: 15px;'>
 			<strong>Advanced Fog of War</strong>
 		  </label>
