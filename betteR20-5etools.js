@@ -3745,10 +3745,11 @@ const betteR205etools = function () {
 		d20plus.classes._handleSubclasses(data, overwrite, inJournals, folderName);
 	};
 
-	d20plus.classes._handleSubclasses = function (data, overwrite, inJournals, outerFolderName) {
+	d20plus.classes._handleSubclasses = function (data, overwrite, inJournals, outerFolderName, forcePlayer) {
+		const playerMode = forcePlayer || !window.is_gm;
 		// import subclasses
 		if (data.subclasses) {
-			const onlyPublished = window.confirm("Subclasses: import published only?");
+			const allSubclasses = (data.source && isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published only?`);
 
 			const gainFeatureArray = [];
 			outer: for (let i = 0; i < 20; i++) {
@@ -3764,17 +3765,17 @@ const betteR205etools = function () {
 			}
 
 			data.subclasses.forEach(sc => {
-				if (onlyPublished && isNonstandardSource(sc.source)) return;
+				if (!allSubclasses && isNonstandardSource(sc.source)) return;
 
 				sc.class = data.name;
 				sc._gainAtLevels = gainFeatureArray;
-				if (window.is_gm) {
+				if (playerMode) {
+					d20plus.subclasses.playerImportBuilder(sc);
+				} else {
 					const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
 					const path = [folderName];
 					if (outerFolderName) path.push(sc.source || data.source); // if it wasn't None, group by source
 					d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path);
-				} else {
-					d20plus.subclasses.playerImportBuilder(sc);
 				}
 			});
 		}
@@ -3787,7 +3788,7 @@ const betteR205etools = function () {
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 
-		d20plus.classes._handleSubclasses(data);
+		d20plus.classes._handleSubclasses(data, false, false, null, true);
 	};
 
 	d20plus.classes._getHandoutData = function (data) {
@@ -4849,7 +4850,7 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-subclasses-url" value="">
 <a class="btn" href="#" id="import-subclasses-load">Import Subclasses</a>
 <p>
-Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.
+<b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
 </p>
 </div>
 `;
@@ -4861,7 +4862,7 @@ Default subclasses are imported as part of Classes import. This can be used to l
 <input type="text" id="import-subclasses-url-player" value="">
 <a class="btn" href="#" id="import-subclasses-load-player">Import Subclasses</a>
 <p>
-Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.
+<b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
 </p>
 </div>
 `;
