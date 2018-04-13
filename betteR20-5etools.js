@@ -4776,7 +4776,7 @@ To import from third-party sources, either individually select one available in 
 <h4>Psionic Importing</h4>
 <label for="import-psionics-url-player">Psionics Data URL:</label>
 <input type="text" id="import-psionics-url-player" value="${PSIONIC_DATA_URL}">
-<a class="btn" href="#" id="import-psionics-load=player">Import Psionics</a>
+<a class="btn" href="#" id="import-psionics-load-player">Import Psionics</a>
 </div>
 `;
 
