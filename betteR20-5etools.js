@@ -1012,6 +1012,8 @@ const betteR205etools = function () {
 							var inputData;
 							const $hlpr = $(i.helper[0]);
 
+							let doSetDirty = true;
+
 							if ($hlpr.hasClass("handout")) {
 								console.log("Handout item dropped onto target!");
 								t.originalEvent.dropHandled = !0;
@@ -1399,58 +1401,42 @@ const betteR205etools = function () {
 											noComponents(level, rowId, false);
 										}
 									} else {
-										inputData = data.data;
-										inputData.Name = data.name;
-										inputData.Content = data.content;
+										function doDefaultDrop (n, outerI) {
+											const e = character;
+											var i = $(outerI.helper[0]).attr("data-pagename");
 
-										const $charSheet = $(t.target);
-										$charSheet.find("*[accept]").each(function () {
-											const $this = $(this);
-											const acceptTag = $this.attr("accept");
-											if (inputData[acceptTag]) {
-												if ("input" === $this[0].tagName.toLowerCase() && "checkbox" === $this.attr("type")) {
-													if ($this.attr("value") == inputData[acceptTag]) {
-														$this.attr("checked", "checked");
-														character.saveSheetValues(this);
-													} else {
-														$this.removeAttr("checked");
-														character.saveSheetValues(this);
-													}
-												} else {
-													if ("input" === $this[0].tagName.toLowerCase() && "radio" === $this.attr("type")) {
-														if ($this.attr("value") == inputData[acceptTag]) {
-															$this.attr("checked", "checked");
-															character.saveSheetValues(this);
-														} else {
-															$this.removeAttr("checked");
-															character.saveSheetValues(this);
-														}
-													} else {
-														if ("select" === $this[0].tagName.toLowerCase()) {
-															$this.find("option").each(function () {
-																var e = $(this);
-																(e.attr("value") === inputData[acceptTag] || e.text() === inputData[acceptTag]) && e.attr("selected", "selected")
-															});
-															character.saveSheetValues(this);
-														} else {
-															$(this).val(inputData[acceptTag]);
-															character.saveSheetValues(this)
-														}
-													}
-												}
-											}
-										})
+											// BEGIN ROLL20 CODE
+											var r = n.data;
+											r.Name = n.name,
+												r.uniqueName = i,
+												r.Content = n.content;
+											var o = $(t.target);
+											o.find("*[accept]").each(function() {
+												var t = $(this)
+													, n = t.attr("accept");
+												r[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+													var e = $(this);
+													(e.attr("value") === r[n] || e.text() === r[n]) && e.attr("selected", "selected")
+												}) : $(this).val(r[n]),
+													e.saveSheetValues(this))
+											})
+											// END ROLL20 CODE
+										}
+										doDefaultDrop(data, i);
+										doSetDirty = false;
 									}
 
-									character.model.view._updateSheetValues();
-									const dirty = [];
-									extraDirty.forEach(ed => {
-										dirty.push(ed);
-									});
-									$.each(d20.journal.customSheets.attrDeps, function (i, v) {
-										dirty.push(i);
-									});
-									d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
+									if (doSetDirty) {
+										character.model.view._updateSheetValues();
+										const dirty = [];
+										extraDirty.forEach(ed => {
+											dirty.push(ed);
+										});
+										$.each(d20.journal.customSheets.attrDeps, function (i, v) {
+											dirty.push(i);
+										});
+										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
+									}
 								}
 							} else {
 								// rename some variables...
