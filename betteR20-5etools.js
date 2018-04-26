@@ -1223,7 +1223,7 @@ const betteR205etools = function () {
 															});
 															character.model.attribs.create({
 																name: `repeating_traits_${fRowId}_source_type`,
-																current: clss.name
+																current: `${clss.name} ${i + 1}`
 															});
 															character.model.attribs.create({
 																name: `repeating_traits_${fRowId}_description`,
@@ -1241,6 +1241,7 @@ const betteR205etools = function () {
 									} else if (data.data.Category === "Subclasses") {
 										const sc = data.Vetoolscontent;
 										let maxIndex = sc.subclassFeatures.length;
+										const gainLevels = [];
 										// _gainAtLevels should be a 20-length array of booleans
 										if (sc._gainAtLevels) {
 											maxIndex = 0;
@@ -1255,7 +1256,10 @@ const betteR205etools = function () {
 													}
 
 													for (let i = 0; i < level; i++) {
-														if (sc._gainAtLevels[i]) maxIndex++;
+														if (sc._gainAtLevels[i]) {
+															maxIndex++;
+															gainLevels.push(i + 1);
+														}
 													}
 												}
 											} else {
@@ -1330,7 +1334,7 @@ const betteR205etools = function () {
 													});
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_source_type`,
-														current: `${sc.class} (${sc.name})`
+														current: `${sc.class} (${sc.name} ${gainLevels[i]})`
 													});
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_description`,
