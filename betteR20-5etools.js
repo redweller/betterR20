@@ -100,6 +100,11 @@ const betteR205etools = function () {
 			"default": false,
 			"_type": "boolean"
 		},
+		"maximiseHp": {
+			"name": "Maximise Token HP",
+			"default": false,
+			"_type": "boolean"
+		},
 		"name": {
 			"name": "Show Nameplate",
 			"default": true,
@@ -138,11 +143,6 @@ const betteR205etools = function () {
 			"default": "Bio",
 			"_type": "_enum",
 			"_values": ["Bio", "GM Notes"]
-		},
-		"maximiseHp": {
-			"name": "Maximise Creature HP on Import",
-			"default": false,
-			"_type": "boolean"
 		},
 		"whispermode": {
 			"name": "Sheet Whisper Mode on Import",
@@ -413,15 +413,27 @@ const betteR205etools = function () {
 
 							// Roll HP
 							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
-							// Saw this while working on other things, unclear if it's necessary or not.
-							if (d20plus.getCfgVal("token", "rollHP") && d20plus.getCfgKey("token", "npc_hpbase")) {
+							if ((d20plus.getCfgVal("token", "rollHP") || d20plus.getCfgVal("token", "maximiseHp")) && d20plus.getCfgKey("token", "npc_hpbase")) {
 								var hpf = character.attribs.find(function (a) {
 									return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
 								});
 								var barName = d20plus.getCfgKey("token", "npc_hpbase");
-								if (hpf) {
-									var hpformula = hpf.get("current");
-									if (hpformula) {
+								var hpformula = hpf.get("current");
+
+								if (hpformula && hpf) {
+									if (d20plus.getCfgVal("token", "maximiseHp")) {
+										const maxSum = hpformula.replace("d", "*");
+										try {
+											const max = eval(maxSum);
+											if (!isNaN(max)) {
+												e.attributes[barName + "_value"] = max;
+												e.attributes[barName + "_max"] = max;
+											}
+										} catch (error) {
+											d20plus.log("Error Maximising HP");
+											console.log(error);
+										}
+									} else {
 										d20plus.randomRoll(hpformula, function (result) {
 											e.attributes[barName + "_value"] = result.total;
 											e.attributes[barName + "_max"] = result.total;
@@ -1855,17 +1867,10 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
 					character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
 					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp[0] : ""});
-					if (d20plus.getCfgVal("import", "maximiseHp")) {
-						character.attribs.create({
-							name: "npc_hpformula",
-							current: hpformula != null ? hpformula[1].replace("d", "*") || "" : ""
-						});
-					} else {
-						character.attribs.create({
-							name: "npc_hpformula",
-							current: hpformula != null ? hpformula[1] || "" : ""
-						});
-					}
+					character.attribs.create({
+						name: "npc_hpformula",
+						current: hpformula != null ? hpformula[1] || "" : ""
+					});
 					const parsedSpeed = Parser.getSpeedString(data);
 					data.npc_speed = parsedSpeed;
 					if (d20plus.sheet === "shaped") {
