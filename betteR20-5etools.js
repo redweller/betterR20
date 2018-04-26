@@ -115,27 +115,11 @@ const betteR205etools = function () {
 			"default": true,
 			"_type": "boolean"
 		},
-		"whispermode": {
-			"name": "Whisper Mode on Import",
-			"default": "Toggle (Default GM)",
-			"_type": "_WHISPERMODE"
-		},
-		"advantagemode": {
-			"name": "Advantage Mode on Import",
-			"default": "Toggle (Default Advantage)",
-			"_type": "_ADVANTAGEMODE"
-		},
-		"damagemode": {
-			"name": "Auto Roll Damage Mode on Import",
-			"default": "Auto Roll",
-			"_type": "_DAMAGEMODE"
-		},
 		"namesuffix": {
 			"name": "Append Text to Names on Import",
 			"default": "",
 			"_type": "String"
 		}
-
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
@@ -154,7 +138,27 @@ const betteR205etools = function () {
 			"default": "Bio",
 			"_type": "_enum",
 			"_values": ["Bio", "GM Notes"]
-		}
+		},
+		"maximiseHp": {
+			"name": "Maximise Creature HP on Import",
+			"default": false,
+			"_type": "boolean"
+		},
+		"whispermode": {
+			"name": "Sheet Whisper Mode on Import",
+			"default": "Toggle (Default GM)",
+			"_type": "_WHISPERMODE"
+		},
+		"advantagemode": {
+			"name": "Sheet Advantage Mode on Import",
+			"default": "Toggle (Default Advantage)",
+			"_type": "_ADVANTAGEMODE"
+		},
+		"damagemode": {
+			"name": "Sheet Auto Roll Damage Mode on Import",
+			"default": "Auto Roll",
+			"_type": "_DAMAGEMODE"
+		},
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
@@ -1851,10 +1855,17 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
 					character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
 					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp[0] : ""});
-					character.attribs.create({
-						name: "npc_hpformula",
-						current: hpformula != null ? hpformula[1] || "" : ""
-					});
+					if (d20plus.getCfgVal("import", "maximiseHp")) {
+						character.attribs.create({
+							name: "npc_hpformula",
+							current: hpformula != null ? hpformula[1].replace("d", "*") || "" : ""
+						});
+					} else {
+						character.attribs.create({
+							name: "npc_hpformula",
+							current: hpformula != null ? hpformula[1] || "" : ""
+						});
+					}
 					const parsedSpeed = Parser.getSpeedString(data);
 					data.npc_speed = parsedSpeed;
 					if (d20plus.sheet === "shaped") {
@@ -3578,7 +3589,7 @@ const betteR205etools = function () {
 		const never = "{{normal=1}} {{r2=[[0d20";
 		const always = "{{always=1}} {{r2=[[@{d20}";
 		const query = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[@{d20}|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[@{d20}}";
-		const desired = d20plus.getCfgVal("token", "advantagemode");
+		const desired = d20plus.getCfgVal("import", "advantagemode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default Advantage)":
@@ -3601,7 +3612,7 @@ const betteR205etools = function () {
 		// advantagetoggle
 		const advantage = "{{query=1}} {{advantage=1}} {{r2=[[@{d20}";
 		const disadvantage = "{{query=1}} {{disadvantage=1}} {{r2=[[@{d20}";
-		const desired = d20plus.getCfgVal("token", "advantagemode");
+		const desired = d20plus.getCfgVal("import", "advantagemode");
 		const neither = "";
 		if (desired) {
 			switch (desired) {
@@ -3626,7 +3637,7 @@ const betteR205etools = function () {
 		const never = " ";
 		const always = "/w gm ";
 		const query = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-		const desired = d20plus.getCfgVal("token", "whispermode");
+		const desired = d20plus.getCfgVal("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -3648,7 +3659,7 @@ const betteR205etools = function () {
 		// whispertoggle
 		const gm = "/w gm ";
 		const pblic = " ";
-		const desired = d20plus.getCfgVal("token", "whispermode");
+		const desired = d20plus.getCfgVal("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -3671,7 +3682,7 @@ const betteR205etools = function () {
 		// dtype
 		const on = "full";
 		const off = "pick";
-		const desired = d20plus.getCfgVal("token", "damagemode");
+		const desired = d20plus.getCfgVal("import", "damagemode");
 		if (desired) {
 			switch (desired) {
 				case "Auto Roll":

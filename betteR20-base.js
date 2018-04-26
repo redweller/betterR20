@@ -22,7 +22,7 @@ var betteR20Base = function () {
 			"_name": "Canvas",
 			"halfGridSnap": {
 				"name": "Snap to Half-Grid",
-				"default": true,
+				"default": false,
 				"_type": "boolean"
 			},
 			"scaleNamesStatuses": {
