@@ -100,6 +100,11 @@ const betteR205etools = function () {
 			"default": false,
 			"_type": "boolean"
 		},
+		"maximiseHp": {
+			"name": "Maximise Token HP",
+			"default": false,
+			"_type": "boolean"
+		},
 		"name": {
 			"name": "Show Nameplate",
 			"default": true,
@@ -115,27 +120,11 @@ const betteR205etools = function () {
 			"default": true,
 			"_type": "boolean"
 		},
-		"whispermode": {
-			"name": "Whisper Mode on Import",
-			"default": "Toggle (Default GM)",
-			"_type": "_WHISPERMODE"
-		},
-		"advantagemode": {
-			"name": "Advantage Mode on Import",
-			"default": "Toggle (Default Advantage)",
-			"_type": "_ADVANTAGEMODE"
-		},
-		"damagemode": {
-			"name": "Auto Roll Damage Mode on Import",
-			"default": "Auto Roll",
-			"_type": "_DAMAGEMODE"
-		},
 		"namesuffix": {
 			"name": "Append Text to Names on Import",
 			"default": "",
 			"_type": "String"
 		}
-
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
@@ -154,7 +143,22 @@ const betteR205etools = function () {
 			"default": "Bio",
 			"_type": "_enum",
 			"_values": ["Bio", "GM Notes"]
-		}
+		},
+		"whispermode": {
+			"name": "Sheet Whisper Mode on Import",
+			"default": "Toggle (Default GM)",
+			"_type": "_WHISPERMODE"
+		},
+		"advantagemode": {
+			"name": "Sheet Advantage Mode on Import",
+			"default": "Toggle (Default Advantage)",
+			"_type": "_ADVANTAGEMODE"
+		},
+		"damagemode": {
+			"name": "Sheet Auto Roll Damage Mode on Import",
+			"default": "Auto Roll",
+			"_type": "_DAMAGEMODE"
+		},
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
@@ -409,15 +413,27 @@ const betteR205etools = function () {
 
 							// Roll HP
 							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
-							// Saw this while working on other things, unclear if it's necessary or not.
-							if (d20plus.getCfgVal("token", "rollHP") && d20plus.getCfgKey("token", "npc_hpbase")) {
+							if ((d20plus.getCfgVal("token", "rollHP") || d20plus.getCfgVal("token", "maximiseHp")) && d20plus.getCfgKey("token", "npc_hpbase")) {
 								var hpf = character.attribs.find(function (a) {
 									return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
 								});
 								var barName = d20plus.getCfgKey("token", "npc_hpbase");
-								if (hpf) {
-									var hpformula = hpf.get("current");
-									if (hpformula) {
+								var hpformula = hpf.get("current");
+
+								if (hpformula && hpf) {
+									if (d20plus.getCfgVal("token", "maximiseHp")) {
+										const maxSum = hpformula.replace("d", "*");
+										try {
+											const max = eval(maxSum);
+											if (!isNaN(max)) {
+												e.attributes[barName + "_value"] = max;
+												e.attributes[barName + "_max"] = max;
+											}
+										} catch (error) {
+											d20plus.log("Error Maximising HP");
+											console.log(error);
+										}
+									} else {
 										d20plus.randomRoll(hpformula, function (result) {
 											e.attributes[barName + "_value"] = result.total;
 											e.attributes[barName + "_max"] = result.total;
@@ -1207,7 +1223,7 @@ const betteR205etools = function () {
 															});
 															character.model.attribs.create({
 																name: `repeating_traits_${fRowId}_source_type`,
-																current: clss.name
+																current: `${clss.name} ${i + 1}`
 															});
 															character.model.attribs.create({
 																name: `repeating_traits_${fRowId}_description`,
@@ -1225,6 +1241,7 @@ const betteR205etools = function () {
 									} else if (data.data.Category === "Subclasses") {
 										const sc = data.Vetoolscontent;
 										let maxIndex = sc.subclassFeatures.length;
+										const gainLevels = [];
 										// _gainAtLevels should be a 20-length array of booleans
 										if (sc._gainAtLevels) {
 											maxIndex = 0;
@@ -1239,7 +1256,10 @@ const betteR205etools = function () {
 													}
 
 													for (let i = 0; i < level; i++) {
-														if (sc._gainAtLevels[i]) maxIndex++;
+														if (sc._gainAtLevels[i]) {
+															maxIndex++;
+															gainLevels.push(i + 1);
+														}
 													}
 												}
 											} else {
@@ -1314,7 +1334,7 @@ const betteR205etools = function () {
 													});
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_source_type`,
-														current: `${sc.class} (${sc.name})`
+														current: `${sc.class} (${sc.name} ${gainLevels[i]})`
 													});
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_description`,
@@ -3578,7 +3598,7 @@ const betteR205etools = function () {
 		const never = "{{normal=1}} {{r2=[[0d20";
 		const always = "{{always=1}} {{r2=[[@{d20}";
 		const query = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[@{d20}|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[@{d20}}";
-		const desired = d20plus.getCfgVal("token", "advantagemode");
+		const desired = d20plus.getCfgVal("import", "advantagemode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default Advantage)":
@@ -3601,7 +3621,7 @@ const betteR205etools = function () {
 		// advantagetoggle
 		const advantage = "{{query=1}} {{advantage=1}} {{r2=[[@{d20}";
 		const disadvantage = "{{query=1}} {{disadvantage=1}} {{r2=[[@{d20}";
-		const desired = d20plus.getCfgVal("token", "advantagemode");
+		const desired = d20plus.getCfgVal("import", "advantagemode");
 		const neither = "";
 		if (desired) {
 			switch (desired) {
@@ -3626,7 +3646,7 @@ const betteR205etools = function () {
 		const never = " ";
 		const always = "/w gm ";
 		const query = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-		const desired = d20plus.getCfgVal("token", "whispermode");
+		const desired = d20plus.getCfgVal("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -3648,7 +3668,7 @@ const betteR205etools = function () {
 		// whispertoggle
 		const gm = "/w gm ";
 		const pblic = " ";
-		const desired = d20plus.getCfgVal("token", "whispermode");
+		const desired = d20plus.getCfgVal("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -3671,7 +3691,7 @@ const betteR205etools = function () {
 		// dtype
 		const on = "full";
 		const off = "pick";
-		const desired = d20plus.getCfgVal("token", "damagemode");
+		const desired = d20plus.getCfgVal("import", "damagemode");
 		if (desired) {
 			switch (desired) {
 				case "Auto Roll":
