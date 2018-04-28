@@ -1746,7 +1746,7 @@ const betteR205etools = function () {
 	};
 
 // Create monster character from js data object
-	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
 		const path = ["Monsters", folderName, data.name];
@@ -1818,6 +1818,7 @@ const betteR205etools = function () {
 			},
 			{
 			success: function (character) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BESTIARY](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
 				/* OGL Sheet */
 				try {
 					const type = Parser.monTypeToFullObj(data.type).asText;
@@ -2859,7 +2860,7 @@ const betteR205etools = function () {
 	};
 
 	// Create spell handout from js data object
-	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Spells`, folderName);
 		const path = ["Spells", folderName, data.name];
@@ -2879,6 +2880,8 @@ const betteR205etools = function () {
 			], "spell")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_SPELLS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data);
 
 				console.log(notecontents);
@@ -2969,7 +2972,7 @@ const betteR205etools = function () {
 		notecontents += `<del>${gmnotes}</del>`;
 
 		return [notecontents, gmnotes];
-	}
+	};
 
 // parse spell components
 	function parseComponents (components) {
@@ -3024,7 +3027,7 @@ const betteR205etools = function () {
 	};
 
 // Import individual items
-	d20plus.items.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.items.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Items`, folderName);
 		const path = ["Items", folderName, data.name];
@@ -3044,6 +3047,8 @@ const betteR205etools = function () {
 			], "items")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [notecontents, gmnotes] = d20plus.items._getHandoutData(data);
 
 				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
@@ -3242,7 +3247,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Psionics`, folderName);
 		const path = ["Psionics", folderName, data.name];
@@ -3260,6 +3265,8 @@ const betteR205etools = function () {
 				], "psionics")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_PSIONICS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [noteContents, gmNotes] = d20plus.psionics._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
@@ -3323,7 +3330,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Races`, folderName);
 		const path = ["Races", folderName, data.name];
@@ -3340,6 +3347,8 @@ const betteR205etools = function () {
 			], "races")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RACES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [noteContents, gmNotes] = d20plus.races._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
@@ -3409,7 +3418,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Feats`, folderName);
 		const path = ["Feats", folderName, data.name];
@@ -3425,6 +3434,8 @@ const betteR205etools = function () {
 			], "feats")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_FEATS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [noteContents, gmNotes] = d20plus.feats._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
@@ -3483,7 +3494,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Objects`, folderName);
 		const path = ["Objects", folderName, data.name];
@@ -3502,6 +3513,8 @@ const betteR205etools = function () {
 			},
 			{
 			success: function (character) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OBJECTS](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
+
 				try {
 					const avatar = data.tokenURL || `${IMG_URL}objects/${name}.png`;
 					character.size = data.size;
@@ -3724,7 +3737,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Classes`, folderName);
 		const path = ["Classes", folderName, data.name];
@@ -3740,6 +3753,8 @@ const betteR205etools = function () {
 			], "classes")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [noteContents, gmNotes] = d20plus.classes._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
@@ -3850,7 +3865,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Subclasses`, folderName);
 		const path = ["Sublasses", folderName, data.name];
@@ -3867,6 +3882,8 @@ const betteR205etools = function () {
 			], "subclasses")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
@@ -3932,7 +3949,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.backgrounds.handoutBuilder = function (data, overwrite, inJournals, folderName) {
+	d20plus.backgrounds.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Backgrounds`, folderName);
 		const path = ["Backgrounds", folderName, data.name];
@@ -3948,6 +3965,8 @@ const betteR205etools = function () {
 			], "backgrounds")
 		}, {
 			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BACKGROUNDS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
 				const [noteContents, gmNotes] = d20plus.backgrounds._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
@@ -3988,7 +4007,7 @@ const betteR205etools = function () {
 		return [noteContents, gmNotes];
 	};
 
-// Import Adventures button was clicked
+	// Import Adventures button was clicked
 	d20plus.adventures.button = function () {
 		const url = $("#import-adventures-url").val();
 		if (url !== null) d20plus.adventures.load(url);
@@ -4008,12 +4027,14 @@ const betteR205etools = function () {
 	d20plus.importer.showImportList = function (dataType, dataArray, handoutBuilder, options) {
 		if (!options) options = {};
 		/*
-	options = {
-		showSource: true,
-		groupOptions: ["Source", "CR", "Alphabetical", "Type"],
-		forcePlayer: true
-	}
-	 */
+		options = {
+			showSource: true,
+			groupOptions: ["Source", "CR", "Alphabetical", "Type"],
+			forcePlayer: true,
+			callback: () => console.log("hello world"),
+			saveIdsTo: {} // object to recieve IDs of created handouts/creatures
+		}
+		 */
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 
 		if (!window.is_gm || options.forcePlayer) {
@@ -4148,7 +4169,7 @@ const betteR205etools = function () {
 					handoutBuilder(it);
 				} else {
 					const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
-					handoutBuilder(it, overwrite, inJournals, folderName);
+					handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo);
 				}
 			}
 
@@ -4168,6 +4189,7 @@ const betteR205etools = function () {
 					setTimeout(() => {
 						d20plus.bindDropLocations();
 					}, 250);
+					if (options.callback) options.callback();
 				}
 			}
 		});
@@ -4403,7 +4425,7 @@ const betteR205etools = function () {
 		});
 	};
 
-// Fetch adventure data from file
+	// Fetch adventure data from file
 	d20plus.adventures.load = function (url) {
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 		$.ajax({
@@ -4472,55 +4494,143 @@ const betteR205etools = function () {
 				const renderer = new EntryRenderer();
 				renderer.setBaseUrl(BASE_SITE_URL);
 
-				let cancelWorker = false;
-				const $btnCancel = $(`#importcancel`);
-				$btnCancel.off("click");
-				$btnCancel.on("click", () => {
-					cancelWorker = true;
-				});
-
 				const $stsName = $("#import-name");
 				const $stsRemain = $("#import-remaining");
-				let remaining = addQueue.length;
 				const interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
 
-				d20plus.log(`Running import of [${adMeta.name}] with ${interval} ms delay between each handout create`);
-				let lastId = null;
+				////////////////////////////////////////////////////////////////////////////////////////////////////////
+				EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
+				// pre-import tags
+				const tags = {};
+				renderer.doExportTags(tags);
+				addQueue.forEach(entry => {
+					renderer.recursiveEntryRender(entry, []);
+				});
 
-				const worker = setInterval(() => {
-					if (!addQueue.length || cancelWorker) {
-						clearInterval(worker);
-						$stsName.text("DONE!");
-						$stsRemain.text("0");
-						d20plus.log(`Finished import of [${adMeta.name}]`);
-						return;
-					}
+				// storage for returned handout/character IDs
+				const RETURNED_IDS = {};
 
-					// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
-					const entry = addQueue.pop();
-					entry.name = entry.name || "(Unknown)";
-					entry.name = d20plus.importer.getCleanText(renderer.renderEntry(entry.name));
-					$stsName.text(entry.name);
-					$stsRemain.text(remaining--);
-					const folder = d20plus.importer.makeDirTree(entry.dir);
+				// monsters
+				const preMonsters = Object.keys(tags)
+					.filter(k => tags[k].page === "bestiary.html")
+					.map(k => tags[k]);
+				if (confirm("Import creatures from this adventure?")) doPreImport(preMonsters, showMonsterImport);
+				else doItemImport();
 
-					d20.Campaign.handouts.create({
-						name: entry.name
-					}, {
-						success: function (handout) {
-							const renderStack = [];
-							renderer.recursiveEntryRender(entry, renderStack);
-							if (lastId && lastName) renderStack.push(`<br><p>Next handout: <a href="http://journal.roll20.net/handout/${lastId}">${lastName}</a></p>`);
-							const rendered = renderStack.join("");
+				function showMonsterImport (toImport) {
+					d20plus.log(`Displaying monster import list for [${adMeta.name}]`);
+					d20plus.importer.showImportList(
+						"monster",
+						toImport,
+						d20plus.monsters.handoutBuilder,
+						{
+							groupOptions: d20plus.monsters._groupOptions,
+							saveIdsTo: RETURNED_IDS,
+							callback: doItemImport
+						}
+					);
+				}
 
-							lastId = handout.id;
-							lastName = entry.name
-							handout.updateBlobs({notes: rendered});
-							handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
-							d20.journal.addItemToFolderStructure(handout.id, folder.id);
+				// items
+				function doItemImport () {
+					const preItems = Object.keys(tags)
+						.filter(k => tags[k].page === "items.html")
+						.map(k => tags[k]);
+					if (confirm("Import items from this adventure?")) doPreImport(preItems, showItemImport);
+					else doMainImport();
+				}
+
+				function showItemImport (toImport) {
+					d20plus.log(`Displaying item import list for [${adMeta.name}]`);
+					d20plus.importer.showImportList(
+						"item",
+						toImport,
+						d20plus.items.handoutBuilder,
+						{
+							groupOptions: d20plus.items._groupOptions,
+							showSource: true,
+							saveIdsTo: RETURNED_IDS,
+							callback: doMainImport
+						}
+					);
+				}
+
+				function doPreImport (asTags, callback) {
+					const tmp = [];
+					let cachedCount = asTags.length;
+					asTags.forEach(it => {
+						try {
+							EntryRenderer.hover._doFillThenCall(
+								it.page,
+								it.source,
+								it.hash,
+								() => {
+									tmp.push(EntryRenderer.hover._getFromCache(it.page, it.source, it.hash));
+									cachedCount--;
+									if (cachedCount <= 0) callback(tmp);
+								}
+							);
+						} catch (x) {
+							console.log(x);
+							cachedCount--;
+							if (cachedCount <= 0) callback(tmp);
 						}
 					});
-				}, interval);
+				}
+				////////////////////////////////////////////////////////////////////////////////////////////////////////
+				function doMainImport () {
+					// pass in any created handouts/characters to use for links in the renderer
+					renderer.setRoll20Ids(RETURNED_IDS);
+
+					let cancelWorker = false;
+					const $btnCancel = $(`#importcancel`);
+					$btnCancel.off("click");
+					$btnCancel.on("click", () => {
+						cancelWorker = true;
+					});
+
+					let remaining = addQueue.length;
+
+					d20plus.log(`Running import of [${adMeta.name}] with ${interval} ms delay between each handout create`);
+					let lastId = null;
+					let lastName = null;
+
+					const worker = setInterval(() => {
+						if (!addQueue.length || cancelWorker) {
+							clearInterval(worker);
+							$stsName.text("DONE!");
+							$stsRemain.text("0");
+							d20plus.log(`Finished import of [${adMeta.name}]`);
+							renderer.resetRoll20Ids();
+							return;
+						}
+
+						// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
+						const entry = addQueue.pop();
+						entry.name = entry.name || "(Unknown)";
+						entry.name = d20plus.importer.getCleanText(renderer.renderEntry(entry.name));
+						$stsName.text(entry.name);
+						$stsRemain.text(remaining--);
+						const folder = d20plus.importer.makeDirTree(entry.dir);
+
+						d20.Campaign.handouts.create({
+							name: entry.name
+						}, {
+							success: function (handout) {
+								const renderStack = [];
+								renderer.recursiveEntryRender(entry, renderStack);
+								if (lastId && lastName) renderStack.push(`<br><p>Next handout: <a href="http://journal.roll20.net/handout/${lastId}">${lastName}</a></p>`);
+								const rendered = renderStack.join("");
+
+								lastId = handout.id;
+								lastName = entry.name;
+								handout.updateBlobs({notes: rendered});
+								handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+								d20.journal.addItemToFolderStructure(handout.id, folder.id);
+							}
+						});
+					}, interval);
+				}
 			}
 		});
 	};
