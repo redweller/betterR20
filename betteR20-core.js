@@ -29,6 +29,7 @@ const betteR20Core = function () {
 		if (window.is_gm) {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
+			d20plus.initArtFromUrlButtons();
 			d20plus.addCustomArtSearch();
 			d20plus.addTokenHover();
 		} else {
