@@ -2006,23 +2006,16 @@ const betteR205etools = function () {
 						});
 					}
 
-					if (data.save != null && data.save.length > 0) {
-						var savingthrows;
-						if (data.save instanceof Array) {
-							savingthrows = data.save;
-						} else {
-							savingthrows = data.save.split(", ");
-						}
+					if (data.save != null) {
 						character.attribs.create({name: "npc_saving_flag", current: 1});
-						$.each(savingthrows, function (i, v) {
-							var save = v.split(" ");
+						Object.keys(data.save).forEach(k => {
 							character.attribs.create({
-								name: "npc_" + save[0].toLowerCase() + "_save_base",
-								current: parseInt(save[1])
+								name: "npc_" + k + "_save_base",
+								current: data.save[k]
 							});
 							character.attribs.create({
-								name: save[0].toLowerCase() + "_saving_throw_proficient",
-								current: parseInt(save[1])
+								name: k + "_saving_throw_proficient",
+								current: data.save[k]
 							});
 						});
 					}
