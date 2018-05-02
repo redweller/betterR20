@@ -1828,7 +1828,7 @@ const betteR205etools = function () {
 					character.size = data.size;
 					character.name = name;
 					character.senses = data.senses;
-					character.hp = data.hp.match(/^\d+/);
+					character.hp = data.hp.average || 0;
 					$.ajax({
 						url: avatar,
 						type: 'HEAD',
@@ -1841,8 +1841,8 @@ const betteR205etools = function () {
 					});
 					var ac = data.ac.match(/^\d+/);
 					var actype = /\(([^)]+)\)/.exec(data.ac);
-					var hp = data.hp.match(/^\d+/);
-					var hpformula = /\(([^)]+)\)/.exec(data.hp);
+					var hp = data.hp.average || 0;
+					var hpformula = data.hp.formula;
 					var passive = data.passive != null ? data.passive : "";
 					var passiveStr = passive !== "" ? "passive Perception " + passive : "";
 					var senses = data.senses || "";
