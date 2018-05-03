@@ -2351,6 +2351,41 @@ var betteR20Base = function () {
 			})
 		},
 
+		enhanceMarkdown: () => {
+			// BEGIN ROLL20 CODE
+			window.Markdown.parse = function(e) {
+					{
+						var t = e
+							, n = []
+							, i = [];
+						-1 != t.indexOf("\r\n") ? "\r\n" : -1 != t.indexOf("\n") ? "\n" : ""
+					}
+					return t = t.replace(/{{{([\s\S]*?)}}}/g, function(e) {
+						return n.push(e.substring(3, e.length - 3)),
+							"{{{}}}"
+					}),
+						t = t.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(e) {
+							return i.push(e.substring(5, e.length - 6)),
+								"<pre></pre>"
+						}),
+						// BEGIN MOD
+						t = t.replace(/~~(.*?)~~/g, "<span style='text-decoration: line-through'>$1</span>"),
+						// END MOD
+						t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+						t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
+						t = t.replace(/``(.*?)``/g, "<code>$1</code>"),
+						t = t.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
+						t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
+						t = t.replace(new RegExp("<pre></pre>","g"), function() {
+							return "<pre>" + i.shift() + "</pre>"
+						}),
+						t = t.replace(/{{{}}}/g, function() {
+							return n.shift()
+						})
+				}
+			// END ROLL20 CODE
+		},
+
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		lastClickedFolderId: null,
@@ -3471,10 +3506,6 @@ var betteR20Base = function () {
       </div>
     </script>
 		`,
-
-		testStuff (ele) {
-			debugger
-		}
 	};
 };
 

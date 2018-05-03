@@ -350,6 +350,7 @@ const betteR205etools = function () {
 		d20plus.addHtmlHeader();
 		d20plus.addCustomHTML();
 		d20plus.addHtmlFooter();
+		d20plus.enhanceMarkdown();
 		d20plus.addProFeatures();
 		if (window.is_gm) {
 			d20plus.addJournalCommands();

@@ -20,6 +20,7 @@ const betteR20Core = function () {
 
 	// continue more init after art loaded
 	d20plus.onArtLoad = function () {
+		d20plus.enhanceMarkdown();
 		d20plus.addProFeatures();
 		d20plus.enhanceMeasureTool();
 		d20plus.enhanceSnap();
