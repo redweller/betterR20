@@ -1873,10 +1873,10 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_alignment", current: alignment});
 					character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
 					character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
-					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp[0] : ""});
+					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp : ""});
 					character.attribs.create({
 						name: "npc_hpformula",
-						current: hpformula != null ? hpformula[1] || "" : ""
+						current: hpformula != null ? hpformula || "" : ""
 					});
 					const parsedSpeed = Parser.getSpeedString(data);
 					data.npc_speed = parsedSpeed;
@@ -2089,7 +2089,9 @@ const betteR205etools = function () {
 						// if (spellDc) character.attribs.create({name: `spell_save_dc`, current: spellDc});
 						// if (spellAbility) character.attribs.create({name: "spellcasting_ability", current: `@{${spellAbility.toLowerCase()}_mod}+`})
 						// if (casterLevel) character.attribs.create({name: "caster_level", current: casterLevel})
-						const spAbilsDelayMs = 350;
+						const charInterval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+						const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
+						console.log(`Spellcasting import interval: ${spAbilsDelayMs} ms`);
 						setTimeout(() => {
 							if (spellDc) {
 								d20plus.importer.addOrUpdateAttr(character, "spell_save_dc", spellDc);
