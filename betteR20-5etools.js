@@ -350,10 +350,12 @@ const betteR205etools = function () {
 		d20plus.addHtmlHeader();
 		d20plus.addCustomHTML();
 		d20plus.addHtmlFooter();
+		d20plus.enhanceMarkdown();
 		d20plus.addProFeatures();
 		if (window.is_gm) {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
+			d20plus.initArtFromUrlButtons();
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.addCustomArtSearch();
@@ -1827,7 +1829,7 @@ const betteR205etools = function () {
 					character.size = data.size;
 					character.name = name;
 					character.senses = data.senses;
-					character.hp = data.hp.match(/^\d+/);
+					character.hp = data.hp.average || 0;
 					$.ajax({
 						url: avatar,
 						type: 'HEAD',
@@ -1840,8 +1842,8 @@ const betteR205etools = function () {
 					});
 					var ac = data.ac.match(/^\d+/);
 					var actype = /\(([^)]+)\)/.exec(data.ac);
-					var hp = data.hp.match(/^\d+/);
-					var hpformula = /\(([^)]+)\)/.exec(data.hp);
+					var hp = data.hp.average || 0;
+					var hpformula = data.hp.formula;
 					var passive = data.passive != null ? data.passive : "";
 					var passiveStr = passive !== "" ? "passive Perception " + passive : "";
 					var senses = data.senses || "";
@@ -1871,10 +1873,10 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_alignment", current: alignment});
 					character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
 					character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
-					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp[0] : ""});
+					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp : ""});
 					character.attribs.create({
 						name: "npc_hpformula",
-						current: hpformula != null ? hpformula[1] || "" : ""
+						current: hpformula != null ? hpformula || "" : ""
 					});
 					const parsedSpeed = Parser.getSpeedString(data);
 					data.npc_speed = parsedSpeed;
@@ -2005,23 +2007,16 @@ const betteR205etools = function () {
 						});
 					}
 
-					if (data.save != null && data.save.length > 0) {
-						var savingthrows;
-						if (data.save instanceof Array) {
-							savingthrows = data.save;
-						} else {
-							savingthrows = data.save.split(", ");
-						}
+					if (data.save != null) {
 						character.attribs.create({name: "npc_saving_flag", current: 1});
-						$.each(savingthrows, function (i, v) {
-							var save = v.split(" ");
+						Object.keys(data.save).forEach(k => {
 							character.attribs.create({
-								name: "npc_" + save[0].toLowerCase() + "_save_base",
-								current: parseInt(save[1])
+								name: "npc_" + k + "_save_base",
+								current: data.save[k]
 							});
 							character.attribs.create({
-								name: save[0].toLowerCase() + "_saving_throw_proficient",
-								current: parseInt(save[1])
+								name: k + "_saving_throw_proficient",
+								current: data.save[k]
 							});
 						});
 					}
@@ -2094,7 +2089,9 @@ const betteR205etools = function () {
 						// if (spellDc) character.attribs.create({name: `spell_save_dc`, current: spellDc});
 						// if (spellAbility) character.attribs.create({name: "spellcasting_ability", current: `@{${spellAbility.toLowerCase()}_mod}+`})
 						// if (casterLevel) character.attribs.create({name: "caster_level", current: casterLevel})
-						const spAbilsDelayMs = 350;
+						const charInterval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+						const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
+						console.log(`Spellcasting import interval: ${spAbilsDelayMs} ms`);
 						setTimeout(() => {
 							if (spellDc) {
 								d20plus.importer.addOrUpdateAttr(character, "spell_save_dc", spellDc);
