@@ -159,6 +159,11 @@ const betteR205etools = function () {
 			"default": "Auto Roll",
 			"_type": "_DAMAGEMODE"
 		},
+		"skipSenses": {
+			"name": "Skip Importing Creature Senses",
+			"default": false,
+			"_type": "boolean"
+		},
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
@@ -1601,11 +1606,13 @@ const betteR205etools = function () {
 			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
 			imgsrc: avatar,
 			width: 70 * tokensize,
-			height: 70 * tokensize,
-			light_hassight: true,
-			light_radius: lightradius,
-			light_dimradius: lightmin
+			height: 70 * tokensize
 		};
+		if (!d20plus.getCfgVal("import", "skipSenses")) {
+			defaulttoken.light_hassight = true;
+			defaulttoken.light_radius = lightradius;
+			defaulttoken.light_dimradius = lightmin;
+		}
 
 		character.updateBlobs({avatar: avatar, defaulttoken: JSON.stringify(defaulttoken)});
 		character.save({defaulttoken: (new Date()).getTime()});
