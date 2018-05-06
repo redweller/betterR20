@@ -356,7 +356,10 @@ const betteR205etools = function () {
 // continue init once scripts load
 	d20plus.onScriptLoad = function () {
 		IS_ROLL20 = true; // global variable from 5etools' utils.js
-		BrewUtil._buildSourceCache = function () {}; // no-op when building source cache; we'll handle this elsewhere
+		BrewUtil._buildSourceCache = function () {
+			// no-op when building source cache; we'll handle this elsewhere
+			BrewUtil._sourceCache = BrewUtil._sourceCache || {};
+		};
 		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
 		else d20plus.onConfigLoad();
@@ -2889,8 +2892,8 @@ const betteR205etools = function () {
 		return d20plus.formSrcUrl(SPELL_DATA_DIR, fileName);
 	};
 
-	d20plus.spells._groupOptions = ["Level", "Alphabetical", "Source"];
-// Import Spells button was clicked
+	d20plus.spells._groupOptions = ["Level", "Spell Points", "Alphabetical", "Source"];
+	// Import Spells button was clicked
 	d20plus.spells.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-spell-url-player").val() : $("#import-spell-url").val();
@@ -2942,7 +2945,7 @@ const betteR205etools = function () {
 	};
 
 	// Create spell handout from js data object
-	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, builderOptions) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Spells`, folderName);
 		const path = ["Spells", folderName, data.name];
@@ -2964,7 +2967,7 @@ const betteR205etools = function () {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_SPELLS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
 
-				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data);
+				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data, builderOptions);
 
 				console.log(notecontents);
 				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
@@ -2982,7 +2985,8 @@ const betteR205etools = function () {
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
 
-	d20plus.spells._getHandoutData = function (data) {
+	d20plus.spells._getHandoutData = function (data, builderOptions) {
+		builderOptions = builderOptions || {};
 		// merge in roll20 metadata, if available
 		const spellMeta = spellMetaData.spell.find(sp => sp.name.toLowerCase() === data.name.toLowerCase() && sp.source.toLowerCase() === data.source.toLowerCase());
 		if (spellMeta) {
@@ -3000,7 +3004,7 @@ const betteR205etools = function () {
 		Object.assign(
 			r20Data,
 			{
-				"Level": String(data.level),
+				"Level": builderOptions.isSpellPoints ? String(Math.min(9, d20plus.spells.spLevelToSpellPoints(data.level))) : String(data.level),
 				"Range": Parser.spRangeToFull(data.range),
 				"School": Parser.spSchoolAbvToFull(data.school),
 				"Source": "5etoolsR20",
@@ -3029,7 +3033,7 @@ const betteR205etools = function () {
 		var notecontents = "";
 		var gmnotes = "";
 		notecontents += `<p><h3>${data.name}</h3>
-<em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}</em></p><p>
+<em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}${builderOptions.isSpellPoints && data.level ? ` (${d20plus.spells.spLevelToSpellPoints(data.level)} spell points)` : ""}</em></p><p>
 <strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
 <strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
 <strong>Components:</strong> ${Parser.spComponentsToFull(data.components)}<br>
@@ -4139,7 +4143,7 @@ const betteR205etools = function () {
 			groupOptions: ["Source", "CR", "Alphabetical", "Type"],
 			forcePlayer: true,
 			callback: () => console.log("hello world"),
-			saveIdsTo: {} // object to recieve IDs of created handouts/creatures
+			saveIdsTo: {} // object to receive IDs of created handouts/creatures
 		}
 		 */
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
@@ -4276,7 +4280,9 @@ const betteR205etools = function () {
 					handoutBuilder(it);
 				} else {
 					const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
-					handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo);
+					const builderOptions = {};
+					if (dataType === "spell" && groupBy === "Spell Points") builderOptions.isSpellPoints = true;
+					handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo, builderOptions);
 				}
 			}
 
@@ -4300,6 +4306,32 @@ const betteR205etools = function () {
 				}
 			}
 		});
+	};
+
+	d20plus.spells.spLevelToSpellPoints = function (level) {
+		switch (level) {
+			case 1:
+				return 2;
+			case 2:
+				return 3;
+			case 3:
+				return 5;
+			case 4:
+				return 6;
+			case 5:
+				return 7;
+			case 6:
+				return 8;
+			case 7:
+				return 10;
+			case 8:
+				return 11;
+			case 9:
+				return 13;
+			case 0:
+			default:
+				return 0;
+		}
 	};
 
 	d20plus.importer._getHandoutPath = function (dataType, it, groupBy) {
@@ -4332,9 +4364,12 @@ const betteR205etools = function () {
 					case "Alphabetical":
 						folderName = it.name[0].uppercaseFirst();
 						break;
+					case "Spell Points":
+						folderName = `${d20plus.spells.spLevelToSpellPoints(it.level)} spell points`;
+						break;
 					case "Level":
 					default:
-						folderName = Parser.spLevelToFull(it.level);
+						folderName = `${Parser.spLevelToFull(it.level)}${it.level ? " level" : ""}`;
 						break;
 				}
 				return folderName;
