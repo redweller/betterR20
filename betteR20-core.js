@@ -27,10 +27,10 @@ const betteR20Core = function () {
 		d20plus.enhanceStatusEffects();
 		d20plus.addHtmlHeader();
 		d20plus.addHtmlFooter();
+		d20plus.initArtFromUrlButtons();
 		if (window.is_gm) {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
-			d20plus.initArtFromUrlButtons();
 			d20plus.addCustomArtSearch();
 			d20plus.addTokenHover();
 		} else {
