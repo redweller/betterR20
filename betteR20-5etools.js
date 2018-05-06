@@ -17,6 +17,13 @@ const betteR205etools = function () {
 	const BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
 	const RACE_DATA_URL = `${DATA_URL}races.json`;
 
+	const HOMEBREW_REPO_URL = `https://api.github.com/repos/TheGiddyLimit/homebrew/`;
+	// the GitHub API has a 60 requests/hour limit per IP which we quickly hit if the user refreshes their Roll20 a couple of times
+	// embed shitty OAth2 details here to enable 5k/hour requests per IP (sending them with requests to the API relaxes the limit)
+	// naturally these are client-visible and should not be used to secure anything
+	const HOMEBREW_CLIENT_ID = `67e57877469da38a85a7`;
+	const HOMEBREW_CLIENT_SECRET = `c00dede21ca63a855abcd9a113415e840aca3f92`;
+
 	let spellDataUrls = {};
 	let spellMetaData = {};
 	let monsterDataUrls = {};
@@ -317,6 +324,16 @@ const betteR205etools = function () {
 		d20plus.importer._playerImports = {};
 	};
 
+	d20plus.importer.addMeta = function (meta) {
+		if (!meta) return;
+		BrewUtil._sourceCache = BrewUtil._sourceCache || {};
+		if (meta.sources) {
+			meta.sources.forEach(src => {
+				BrewUtil._sourceCache[src.json] = {abbreviation: src.abbreviation, full: src.full};
+			})
+		}
+	};
+
 // Page fully loaded and visible
 	d20plus.Init = function () {
 		d20plus.log("Init (v" + d20plus.version + ")");
@@ -339,6 +356,8 @@ const betteR205etools = function () {
 // continue init once scripts load
 	d20plus.onScriptLoad = function () {
 		IS_ROLL20 = true; // global variable from 5etools' utils.js
+		BrewUtil._buildSourceCache = function () {}; // no-op when building source cache; we'll handle this elsewhere
+		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
 		else d20plus.onConfigLoad();
 	};
@@ -767,7 +786,7 @@ const betteR205etools = function () {
 	};
 
 	d20plus.addCustomHTML = function () {
-		function populateDropdown (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel) {
+		function populateDropdown (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, homebrewDir) {
 			const defaultUrl = d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]);
 			$(inputFieldId).val(defaultUrl);
 			const dropdown = $(dropdownId);
@@ -781,10 +800,58 @@ const betteR205etools = function () {
 				value: "",
 				text: "Custom"
 			}));
+
+			const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
+			DataUtil.loadJSON(brewUrl, (data, debugUrl) => {
+				if (data.message) console.error(debugUrl, data.message);
+				data.forEach(it => {
+					dropdown.append($('<option>', {
+						value: `${it.download_url}${d20plus.getAntiCacheSuffix()}`,
+						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
+					}));
+				});
+			}, brewUrl);
+
 			dropdown.val(defaultUrl);
 			dropdown.change(function () {
 				$(inputFieldId).val(this.value);
 			});
+		}
+
+		function populateBasicDropdown (dropdownId, inputFieldId, defaultSel, homebrewDir, addForPlayers) {
+			function doPopulate (dropdownId, inputFieldId) {
+				const $sel = $(dropdownId);
+				if (defaultSel) {
+					$(inputFieldId).val(defaultSel);
+					$sel.append($('<option>', {
+						value: defaultSel,
+						text: "Official Sources"
+					}));
+				}
+				$sel.append($('<option>', {
+					value: "",
+					text: "Custom"
+				}));
+
+				const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
+				DataUtil.loadJSON(brewUrl, (data, debugUrl) => {
+					if (data.message) console.error(debugUrl, data.message);
+					data.forEach(it => {
+						$sel.append($('<option>', {
+							value: `${it.download_url}${d20plus.getAntiCacheSuffix()}`,
+							text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
+						}));
+					});
+				}, brewUrl);
+
+				$sel.val(defaultSel);
+				$sel.change(function () {
+					$(inputFieldId).val(this.value);
+				});
+			}
+
+			doPopulate(dropdownId, inputFieldId, defaultSel, homebrewDir);
+			if (addForPlayers) doPopulate(`${dropdownId}-player`, `${inputFieldId}-player`, defaultSel, homebrewDir);
 		}
 
 		const $body = $("body");
@@ -822,7 +889,8 @@ const betteR205etools = function () {
 			});
 			d20plus.updateDifficulty();
 
-			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM");
+			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", "creature");
+			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, "object");
 
 			populateAdventuresDropdown();
 
@@ -922,8 +990,16 @@ const betteR205etools = function () {
 			height: 700
 		});
 
-		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB");
-		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB");
+		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
+		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
+
+		populateBasicDropdown("#button-items-select", "#import-items-url", ITEM_DATA_URL, "item", true);
+		populateBasicDropdown("#button-psionics-select", "#import-psionics-url", PSIONIC_DATA_URL, "psionic", true);
+		populateBasicDropdown("#button-feats-select", "#import-feats-url", FEAT_DATA_URL, "feat", true);
+		populateBasicDropdown("#button-races-select", "#import-races-url", RACE_DATA_URL, "race", true);
+		populateBasicDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_URL, "class", true);
+		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", "subclass", true);
+		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, "background", true);
 
 		// bind tokens button
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
@@ -1514,6 +1590,7 @@ const betteR205etools = function () {
 	d20plus.monsters.button = function () {
 		function loadData (url) {
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"monster",
 					data.monster,
@@ -2821,6 +2898,7 @@ const betteR205etools = function () {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"spell",
 					data.spell,
@@ -3016,6 +3094,7 @@ const betteR205etools = function () {
 			} else {
 				// for non-standard URLs, do a generic import
 				DataUtil.loadJSON(url, (data) => {
+					d20plus.importer.addMeta(data._meta);
 					d20plus.importer.showImportList(
 						"item",
 						data.item,
@@ -3040,6 +3119,8 @@ const betteR205etools = function () {
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
 		const name = data.name;
+
+		if (!data._isEnhanced) EntryRenderer.item.enhanceItem(data); // for homebrew items
 
 		// build item handout
 		d20.Campaign.handouts.create({
@@ -3238,6 +3319,7 @@ const betteR205etools = function () {
 			const handoutBuilder = playerMode ? d20plus.psionics.playerImportBuilder : d20plus.psionics.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"psionic",
 					data.psionic,
@@ -3321,6 +3403,7 @@ const betteR205etools = function () {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"race",
 					EntryRenderer.race.mergeSubraces(data.race),
@@ -3409,6 +3492,7 @@ const betteR205etools = function () {
 			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"feat",
 					data.feat,
@@ -3489,6 +3573,7 @@ const betteR205etools = function () {
 		const url = $("#import-objects-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"object",
 					data.object,
@@ -3560,8 +3645,8 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_hpbase", current: data.hp});
 					character.attribs.create({name: "npc_hpformula", current: data.hp ? `${data.hp}d1` : ""});
 
-					character.attribs.create({name: "npc_immunities", current: data.immune ? Parser.monImmResToFull(data.immune) : ""});
-					character.attribs.create({name: "damage_immunities", current: data.immune ? Parser.monImmResToFull(data.immune) : ""});
+					character.attribs.create({name: "npc_immunities", current: data.immune ? data.immune : ""});
+					character.attribs.create({name: "damage_immunities", current: data.immune ? data.immune : ""});
 
 					//Should only be one entry for objects
 					if (data.entries != null) {
@@ -3593,6 +3678,21 @@ const betteR205etools = function () {
 						dirty.push(i);
 					});
 					d20.journal.notifyWorkersOfAttrChanges(character.view.model.id, dirty, true);
+
+					if (data.entries) {
+						const bio = renderer.renderEntry({type: "entries", entries: data.entries});
+
+						setTimeout(() => {
+							const fluffAs = d20plus.getCfgVal("import", "importFluffAs") || d20plus.getCfgDefaultVal("import", "importFluffAs");
+							let k = fluffAs === "Bio"? "bio" : "gmnotes";
+							character.updateBlobs({
+								[k]: Markdown.parse(bio)
+							});
+							character.save({
+								[k]: (new Date).getTime()
+							});
+						}, 500);
+					}
 				} catch (e) {
 					d20plus.log(`Error loading [${name}]`);
 					d20plus.addImportError(name);
@@ -3729,6 +3829,7 @@ const betteR205etools = function () {
 			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"class",
 					data.class,
@@ -3852,9 +3953,10 @@ const betteR205etools = function () {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-subclasses-url-player").val() : $("#import-subclasses-url").val();
 		if (url && url.trim()) {
-			DataUtil.loadJSON(url, (data) => {
-				const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
+			const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
+			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"subclass",
 					data.subclass,
@@ -3940,6 +4042,7 @@ const betteR205etools = function () {
 			const handoutBuilder = playerMode ? d20plus.backgrounds.playerImportBuilder : d20plus.backgrounds.handoutBuilder;
 
 			DataUtil.loadJSON(url, (data) => {
+				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"background",
 					data.background,
@@ -4834,7 +4937,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="item">
 <h4>Item Importing</h4>
 <label for="import-items-url">Item Data URL:</label>
-<input type="text" id="import-items-url" value="${ITEM_DATA_URL}">
+<select id="button-items-select"><!-- populate with JS--></select>
+<input type="text" id="import-items-url">
 <a class="btn" href="#" id="import-items-load">Import Items</a>
 </div>
 `;
@@ -4843,7 +4947,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="item">
 <h4>Item Importing</h4>
 <label for="import-items-url-player">Item Data URL:</label>
-<input type="text" id="import-items-url-player" value="${ITEM_DATA_URL}">
+<select id="button-items-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-items-url-player">
 <a class="btn" href="#" id="import-items-load-player">Import Items</a>
 </div>
 `;
@@ -4886,7 +4991,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="psionic">
 <h4>Psionic Importing</h4>
 <label for="import-psionics-url">Psionics Data URL:</label>
-<input type="text" id="import-psionics-url" value="${PSIONIC_DATA_URL}">
+<select id="button-psionics-select"><!-- populate with JS--></select>
+<input type="text" id="import-psionics-url">
 <a class="btn" href="#" id="import-psionics-load">Import Psionics</a>
 </div>
 `;
@@ -4895,7 +5001,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="psionic">
 <h4>Psionic Importing</h4>
 <label for="import-psionics-url-player">Psionics Data URL:</label>
-<input type="text" id="import-psionics-url-player" value="${PSIONIC_DATA_URL}">
+<select id="button-psionics-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-psionics-url-player">
 <a class="btn" href="#" id="import-psionics-load-player">Import Psionics</a>
 </div>
 `;
@@ -4904,7 +5011,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="feat">
 <h4>Feat Importing</h4>
 <label for="import-feats-url">Feat Data URL:</label>
-<input type="text" id="import-feats-url" value="${FEAT_DATA_URL}">
+<select id="button-feats-select"><!-- populate with JS--></select>
+<input type="text" id="import-feats-url">
 <a class="btn" href="#" id="import-feats-load">Import Feats</a>
 </div>
 `;
@@ -4913,7 +5021,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="feat">
 <h4>Feat Importing</h4>
 <label for="import-feats-url-player">Feat Data URL:</label>
-<input type="text" id="import-feats-url-player" value="${FEAT_DATA_URL}">
+<select id="button-feats-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-feats-url-player">
 <a class="btn" href="#" id="import-feats-load-player">Import Feats</a>
 </div>
 `;
@@ -4922,7 +5031,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="object">
 <h4>Object Importing</h4>
 <label for="import-objects-url">Object Data URL:</label>
-<input type="text" id="import-objects-url" value="${OBJECT_DATA_URL}">
+<select id="button-objects-select"><!-- populate with JS--></select>
+<input type="text" id="import-objects-url">
 <a class="btn" href="#" id="import-objects-load">Import Objects</a>
 </div>
 `;
@@ -4931,7 +5041,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="race">
 <h4>Race Importing</h4>
 <label for="import-races-url">Race Data URL:</label>
-<input type="text" id="import-races-url" value="${RACE_DATA_URL}">
+<select id="button-races-select"><!-- populate with JS--></select>
+<input type="text" id="import-races-url">
 <a class="btn" href="#" id="import-races-load">Import Races</a>
 </div>
 `;
@@ -4940,7 +5051,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="race">
 <h4>Race Importing</h4>
 <label for="import-races-url-player">Race Data URL:</label>
-<input type="text" id="import-races-url-player" value="${RACE_DATA_URL}">
+<select id="button-races-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-races-url-player">
 <a class="btn" href="#" id="import-races-load-player">Import Races</a>
 </div>
 `;
@@ -4949,7 +5061,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="class">
 <h4>Class Importing</h4>
 <label for="import-classes-url">Class Data URL:</label>
-<input type="text" id="import-classes-url" value="${CLASS_DATA_URL}">
+<select id="button-classes-select"><!-- populate with JS--></select>
+<input type="text" id="import-classes-url">
 <a class="btn" href="#" id="import-classes-load">Import Classes</a>
 </div>
 `;
@@ -4958,7 +5071,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="class">
 <h4>Class Importing</h4>
 <label for="import-classes-url-player">Class Data URL:</label>
-<input type="text" id="import-classes-url-player" value="${CLASS_DATA_URL}">
+<select id="button-classes-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-classes-url-player">
 <a class="btn" href="#" id="import-classes-load-player">Import Classes</a>
 </div>
 `;
@@ -4967,7 +5081,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="subclass">
 <h4>Subclass Importing</h4>
 <label for="import-subclasses-url">Subclass Data URL:</label>
-<input type="text" id="import-subclasses-url" value="">
+<select id="button-subclasses-select"><!-- populate with JS--></select>
+<input type="text" id="import-subclasses-url">
 <a class="btn" href="#" id="import-subclasses-load">Import Subclasses</a>
 <p>
 <b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
@@ -4979,7 +5094,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="subclass">
 <h4>Subclass Importing</h4>
 <label for="import-subclasses-url-player">Subclass Data URL:</label>
-<input type="text" id="import-subclasses-url-player" value="">
+<select id="button-subclasses-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-subclasses-url-player">
 <a class="btn" href="#" id="import-subclasses-load-player">Import Subclasses</a>
 <p>
 <b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
@@ -4991,7 +5107,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="background">
 <h4>Background Importing</h4>
 <label for="import-backgrounds-url">Background Data URL:</label>
-<input type="text" id="import-backgrounds-url" value="${BACKGROUND_DATA_URL}">
+<select id="button-backgrounds-select"><!-- populate with JS--></select>
+<input type="text" id="import-backgrounds-url">
 <a class="btn" href="#" id="import-backgrounds-load">Import Backgrounds</a>
 </div>
 `;
@@ -5000,7 +5117,8 @@ To import from third-party sources, either individually select one available in 
 <div class="importer-section" data-import-group="background">
 <h4>Background Importing</h4>
 <label for="import-backgrounds-url-player">Background Data URL:</label>
-<input type="text" id="import-backgrounds-url-player" value="${BACKGROUND_DATA_URL}">
+<select id="button-backgrounds-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-backgrounds-url-player">
 <a class="btn" href="#" id="import-backgrounds-load-player">Import Backgrounds</a>
 </div>
 `;

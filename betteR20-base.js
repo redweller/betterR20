@@ -2352,6 +2352,8 @@ var betteR20Base = function () {
 		},
 
 		enhanceMarkdown: () => {
+			const OUT_STRIKE = "<span style='text-decoration: line-through'>$1</span>";
+
 			// BEGIN ROLL20 CODE
 			window.Markdown.parse = function(e) {
 					{
@@ -2369,7 +2371,7 @@ var betteR20Base = function () {
 								"<pre></pre>"
 						}),
 						// BEGIN MOD
-						t = t.replace(/~~(.*?)~~/g, "<span style='text-decoration: line-through'>$1</span>"),
+						t = t.replace(/~~(.*?)~~/g, OUT_STRIKE),
 						// END MOD
 						t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
 						t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
@@ -2384,6 +2386,13 @@ var betteR20Base = function () {
 						})
 				}
 			// END ROLL20 CODE
+
+			// after a short delay, replace any old content in the chat
+			setTimeout(() => {
+				$(`.message`).each(function () {
+					$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
+				})
+			}, 2500);
 		},
 
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3158,7 +3167,7 @@ var betteR20Base = function () {
 			<input class='darknessenabled' type='checkbox' value='1'>&nbsp; Enabled</input>
 		  </label>
 		  <hr>
-		  <strong><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+		  <strong style="display: block;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
 		  <label style='position: relative; top: 3px; width: 85px; padding-left: 15px;'>
 			<strong>Advanced Fog of War</strong>
 		  </label>
