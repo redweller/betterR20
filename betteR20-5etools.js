@@ -5372,6 +5372,134 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		},
 	]);
 
+	d20plus.tools = d20plus.tools.concat([
+		{
+			name: "Shapeshifter Token Builder",
+			desc: "Build a rollable table and related token to represent a shapeshifting creature.",
+			html: `
+				<div id="d20plus-shapeshiftbuild" title="Shapeshitfer Token Builder">
+					<div id="shapeshiftbuild-list">
+						<input type="search" class="search" placeholder="Search creatures...">
+						<input type="search" class="filter" placeholder="Filter...">
+						<span title="Filter format example: 'cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<input id="shapeshift-name" placeholder="Table name">
+				<button class="btn">Create Table</button>
+				</div>
+				`,
+			dialogFn: () => {
+				$("#d20plus-shapeshiftbuild").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 800,
+					height: 650,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-shapeshiftbuild");
+				$win.dialog("open");
+
+				const toLoad = Object.keys(monsterDataUrls).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+
+				const $fltr = $win.find(`.filter`);
+				$fltr.off("keydown").off("keyup");
+				$win.find(`button`).off("click");
+
+				const $lst = $win.find(`.list`);
+				let tokenList;
+
+				DataUtil.multiLoadJSON(
+					toLoad.map(url => ({url})),
+					() => {},
+					(dataStack) => {
+						$lst.empty();
+
+						let toShow = [];
+						dataStack.forEach(d => toShow = toShow.concat(d.monster));
+						toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+
+						let tmp = "";
+						toShow.forEach((m, i)  => {
+							m.__pType = Parser.monTypeToFullObj(m.type).asText;
+
+							tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="checkbox">
+									<span class="name col-4">${m.name}</span>
+									<span class="type col-4">TYP[${m.__pType.uppercaseFirst()}]</span>
+									<span class="cr col-2">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
+									<span title="${Parser.sourceJsonToFull(m.source)}" class="source">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
+								</label>
+							`;
+						});
+						$lst.html(tmp);
+						tmp = null;
+
+						tokenList = new List("shapeshiftbuild-list", {
+							valueNames: ["name", "type", "cr", "source"]
+						});
+
+						const TYPE_TIMEOUT_MS = 100;
+						let typeTimer;
+						$fltr.on("keyup", () => {
+							clearTimeout(typeTimer);
+							typeTimer = setTimeout(() => {
+								const exps = $fltr.val().split(";");
+								const filters = exps.map(it => it.trim())
+									.filter(it => it)
+									.map(it => it.toLowerCase().split(":"))
+									.filter(it => it.length === 2)
+									.map(it => ({field: it[0], value: it[1]}));
+
+								tokenList.filter((item) => {
+									const m = toShow[$(item.elm).attr("data-listid")];
+									m._filterVs = m._filterVs || {
+										name: m.name.toLowerCase(),
+										type: m.__pType.toLowerCase(),
+										cr: m.cr === undefined ? "unknown" : (m.cr.cr || m.cr).toLowerCase(),
+										source: Parser.sourceJsonToAbv(m.source).toLowerCase()
+									};
+									return !filters.find(f => m._filterVs[f.field] && m._filterVs[f.field] !== f.value);
+								});
+							}, TYPE_TIMEOUT_MS);
+						});
+						$fltr.on("keydown", () => {
+							clearTimeout(typeTimer);
+						});
+
+						$win.find(`button`).on("click", () => {
+							console.log("Assembling creature list");
+							if (tokenList) {
+								$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
+
+								const sel = tokenList.items
+									.filter(it => $(it.elm).find(`input`).prop("checked"))
+									.map(it => toShow[$(it.elm).attr("data-listid")]);
+
+								const id = d20.Campaign.rollabletables.create().id;
+								const table = d20.Campaign.rollabletables.get(id);
+								table.set("name", $(`#shapeshift-name`).val().trim() || "Shapeshifter");
+								table.save();
+								sel.forEach(m => {
+									const item = table.tableitems.create();
+									item.set("name", m.name);
+									const avatar = m.tokenURL || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png`;
+									item.set("avatar", avatar);
+									item.save();
+								});
+								table.save();
+								d20.rollabletables.refreshTablesList();
+								alert("Created table!")
+							}
+						});
+					}
+				);
+			}
+		}
+	]);
+
 	d20plus.initiativeHeaders = `<div class="header">
 <span class="ui-button-text initmacro">Sheet</span>
 <span class="initiative" alt="Initiative" title="Initiative">Init</span>
