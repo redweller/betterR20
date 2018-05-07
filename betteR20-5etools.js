@@ -989,7 +989,7 @@ const betteR205etools = function () {
 		$("#d20plus-importlist").dialog({
 			autoOpen: false,
 			resizable: true,
-			width: 600,
+			width: 1000,
 			height: 700
 		});
 
@@ -1589,7 +1589,13 @@ const betteR205etools = function () {
 	};
 
 	d20plus.monsters._groupOptions = ["Type", "CR", "Alphabetical", "Source"];
-// Import Monsters button was clicked
+	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
+	d20plus.monsters._listItemBuilder = (it, showSource) => `
+		<span class="name col-4">${it.name}</span>
+		<span class="type col-4">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
+		<span class="cr col-2">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
+		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
+	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
 		function loadData (url) {
 			DataUtil.loadJSON(url, (data) => {
@@ -1599,7 +1605,9 @@ const betteR205etools = function () {
 					data.monster,
 					d20plus.monsters.handoutBuilder,
 					{
-						groupOptions: d20plus.monsters._groupOptions
+						groupOptions: d20plus.monsters._groupOptions,
+						listItemBuilder: d20plus.monsters._listItemBuilder,
+						listIndex: d20plus.monsters._listCols
 					}
 				);
 			});
@@ -1639,7 +1647,9 @@ const betteR205etools = function () {
 							d20plus.monsters.handoutBuilder,
 							{
 								groupOptions: d20plus.monsters._groupOptions,
-								showSource: true
+								showSource: true,
+								listItemBuilder: d20plus.monsters._listItemBuilder,
+								listIndex: d20plus.monsters._listCols
 							}
 						);
 					}
@@ -2893,6 +2903,11 @@ const betteR205etools = function () {
 	};
 
 	d20plus.spells._groupOptions = ["Level", "Spell Points", "Alphabetical", "Source"];
+	d20plus.spells._listCols = ["name", "level", "source"];
+	d20plus.spells._listItemBuilder = (it, showSource) => `
+		<span class="name col-7">${it.name}</span>
+		<span class="level col-3">LVL[${Parser.spLevelToFull(it.level)}]</span>
+		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
 	// Import Spells button was clicked
 	d20plus.spells.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -2908,7 +2923,9 @@ const betteR205etools = function () {
 					handoutBuilder,
 					{
 						groupOptions: d20plus.spells._groupOptions,
-						forcePlayer
+						forcePlayer,
+						listItemBuilder: d20plus.spells._listItemBuilder,
+						listIndex: d20plus.spells._listCols
 					}
 				);
 			});
@@ -2933,7 +2950,9 @@ const betteR205etools = function () {
 					{
 						groupOptions: d20plus.spells._groupOptions,
 						showSource: true,
-						forcePlayer
+						forcePlayer,
+						listItemBuilder: d20plus.spells._listItemBuilder,
+						listIndex: d20plus.spells._listCols
 					}
 				);
 			});
@@ -3070,6 +3089,16 @@ const betteR205etools = function () {
 	}
 
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
+	d20plus.items._listCols = ["name", "type", "rarity", "source"];
+	d20plus.items._listItemBuilder = (it, showSource) => {
+		if (!it._isEnhanced) EntryRenderer.item.enhanceItem(it);
+
+		return `
+		<span class="name col-3">${it.name}</span>
+		<span class="type col-5">${it.typeText.split(",").map(t => `TYP[${t.trim()}]`).join(", ")}</span>
+		<span class="rarity col-2">RAR[${it.rarity}]</span>
+		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
+	};
 // Import Items button was clicked
 	d20plus.items.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -3086,7 +3115,9 @@ const betteR205etools = function () {
 							{
 								groupOptions: d20plus.items._groupOptions,
 								showSource: true,
-								forcePlayer
+								forcePlayer,
+								listItemBuilder: d20plus.items._listItemBuilder,
+								listIndex: d20plus.items._listCols
 							}
 						);
 					},
@@ -3105,7 +3136,9 @@ const betteR205etools = function () {
 						handoutBuilder,
 						{
 							groupOptions: d20plus.items._groupOptions,
-							forcePlayer
+							forcePlayer,
+							listItemBuilder: d20plus.items._listItemBuilder,
+							listIndex: d20plus.items._listCols
 						}
 					);
 				});
@@ -3315,6 +3348,11 @@ const betteR205etools = function () {
 	};
 
 	d20plus.psionics._groupOptions = ["Alphabetical", "Order", "Source"];
+	d20plus.psionics._listCols = ["name", "order", "source"];
+	d20plus.psionics._listItemBuilder = (it, showSource) => `
+		<span class="name col-6">${it.name}</span>
+		<span class="order col-4">ORD[${it.order || "None"}]</span>
+		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
 // Import Psionics button was clicked
 	d20plus.psionics.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -3330,7 +3368,9 @@ const betteR205etools = function () {
 					handoutBuilder,
 					{
 						groupOptions: d20plus.psionics._groupOptions,
-						forcePlayer
+						forcePlayer,
+						listItemBuilder: d20plus.psionics._listItemBuilder,
+						listIndex: d20plus.psionics._listCols
 					}
 				);
 			});
@@ -3952,6 +3992,11 @@ const betteR205etools = function () {
 	};
 
 	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
+	d20plus.subclasses._listCols = ["name", "class", "cr", "source"];
+	d20plus.subclasses._listItemBuilder = (it, showSource) => `
+		<span class="name col-6">${it.name}</span>
+		<span class="class col-4">CLS[${it.class}]</span>
+		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
 // Import Subclasses button was clicked
 	d20plus.subclasses.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -3968,7 +4013,9 @@ const betteR205etools = function () {
 					{
 						groupOptions: d20plus.subclasses._groupOptions,
 						showSource: true,
-						forcePlayer
+						forcePlayer,
+						listItemBuilder: d20plus.subclasses._listItemBuilder,
+						listIndex: d20plus.subclasses._listCols
 					}
 				);
 			});
@@ -4143,7 +4190,10 @@ const betteR205etools = function () {
 			groupOptions: ["Source", "CR", "Alphabetical", "Type"],
 			forcePlayer: true,
 			callback: () => console.log("hello world"),
-			saveIdsTo: {} // object to receive IDs of created handouts/creatures
+			saveIdsTo: {}, // object to receive IDs of created handouts/creatures
+			// these two generally used together
+			listItemBuilder: (it, showSource) => `<span class="name col-8">${it.name}</span><span title="${Parser.sourceJsonToFull(it.source)}" class="source col-4">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`,
+			listIndex: ["name", "source"]
 		}
 		 */
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
@@ -4163,21 +4213,21 @@ const betteR205etools = function () {
 		const $list = $("#import-list .list");
 		$list.html("");
 		dataArray.forEach((it, i) => {
+			if (it.noDisplay) return;
+
+			const inner = options.listItemBuilder ? options.listItemBuilder(it, options.showSource) :  `<span class="name col-10">${it.name}</span>`;
+
 			$list.append(`
 			<label class="import-cb-label">
 				<input type="checkbox" data-listid="${i}">
-					<span class="name">${it.name}</span>
-				${options.showSource
-				? ` <span title="${Parser.sourceJsonToFull(it.source)}" class="no-shrink">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`
-				: it.cr ? `<span class="no-shrink">(CR ${it.cr.cr || it.cr})</span>` : ""}
-					<span class="source no-shrink" style="display: none">${it.source}</span>
+				${inner}
 			</label>
 		`);
 		});
 
 		// init list library
 		const importList = new List("import-list", {
-			valueNames: ["name", "source"]
+			valueNames: options.listIndex || ["name"]
 		});
 
 		// reset the UI and add handlers
@@ -4668,7 +4718,9 @@ const betteR205etools = function () {
 						{
 							groupOptions: d20plus.monsters._groupOptions,
 							saveIdsTo: RETURNED_IDS,
-							callback: doItemImport
+							callback: doItemImport,
+							listItemBuilder: d20plus.monsters._listItemBuilder,
+							listIndex: d20plus.monsters._listCols
 						}
 					);
 				}
@@ -4692,7 +4744,9 @@ const betteR205etools = function () {
 							groupOptions: d20plus.items._groupOptions,
 							showSource: true,
 							saveIdsTo: RETURNED_IDS,
-							callback: doMainImport
+							callback: doMainImport,
+							listItemBuilder: d20plus.items._listItemBuilder,
+							listIndex: d20plus.items._listCols
 						}
 					);
 				}
@@ -4876,7 +4930,7 @@ const betteR205etools = function () {
 	<p><i>Player-imported items are temporary, as players can't make handouts. GMs may also use this functionality to avoid cluttering the journal. Once imported, items can be drag-dropped to character sheets.</i></p>
 </div>`;
 
-	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import...">
+	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import..." style="width: 1000px;">
 <p style="display: flex">
 	<button type="button" id="importlist-selectall" class="btn" style="margin: 0 2px;"><span>Select All</span></button>
 	<button type="button" id="importlist-deselectall" class="btn" style="margin: 0 2px;"><span>Deselect All</span></button>
@@ -4889,7 +4943,7 @@ const betteR205etools = function () {
 <span id="import-list">
 	<input class="search" autocomplete="off" placeholder="Search list...">
 	<br>
-	<span class="list" style="max-height: 400px; overflow-y: scroll; display: block; margin-top: 1em;"></span>
+	<span class="list" style="max-height: 400px; overflow-y: scroll; overflow-x: hidden; display: block; margin-top: 1em; transform: translateZ(0);"></span>
 </span>
 </p>
 <p id="import-options">
@@ -5233,15 +5287,15 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		},
 		{
 			s: ".import-cb-label",
-			r: "display: flex; justify-content: space-between;"
+			r: "display: block; margin-right: -13px !important;"
 		},
 		{
-			s: ".import-cb-label .name",
-			r: "width: calc(100% - 20px);"
+			s: ".import-cb-label span",
+			r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;"
 		},
 		{
 			s: ".import-cb-label .source",
-			r: "font-style: italic;"
+			r: "width: calc(16.667% - 28px);'"
 		},
 		{
 			s: ".importer-section",
@@ -5266,7 +5320,56 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".userscript-statsBlockInsetReadaloud",
 			r: "background: #cbd6c688 !important"
-		}
+		},
+		// some generic width stuff
+		{
+			s: ".col-1",
+			r: "width: 8.333%;"
+		},
+		{
+			s: ".col-2",
+			r: "width: 16.666%;"
+		},
+		{
+			s: ".col-3",
+			r: "width: 25%;"
+		},
+		{
+			s: ".col-4",
+			r: "width: 33.333%;"
+		},
+		{
+			s: ".col-5",
+			r: "width: 41.667%;"
+		},
+		{
+			s: ".col-6",
+			r: "width: 50%;"
+		},
+		{
+			s: ".col-7",
+			r: "width: 58.333%;"
+		},
+		{
+			s: ".col-8",
+			r: "width: 66.667%;"
+		},
+		{
+			s: ".col-9",
+			r: "width: 75%;"
+		},
+		{
+			s: ".col-10",
+			r: "width: 83.333%;"
+		},
+		{
+			s: ".col-11",
+			r: "width: 91.667%;"
+		},
+		{
+			s: ".col-12",
+			r: "width: 100%;"
+		},
 	]);
 
 	d20plus.initiativeHeaders = `<div class="header">
