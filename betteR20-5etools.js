@@ -24,6 +24,89 @@ const betteR205etools = function () {
 	const HOMEBREW_CLIENT_ID = `67e57877469da38a85a7`;
 	const HOMEBREW_CLIENT_SECRET = `c00dede21ca63a855abcd9a113415e840aca3f92`;
 
+	const REQUIRED_PROPS = {
+		"monster": [
+			"ac",
+			"alignment",
+			"cha",
+			"con",
+			"cr",
+			"dex",
+			"hp",
+			"int",
+			"name",
+			"passive",
+			"size",
+			"source",
+			"speed",
+			"str",
+			"type",
+			"wis"
+		],
+		"spell": [
+			"name",
+			"level",
+			"school",
+			"time",
+			"range",
+			"components",
+			"duration",
+			"classes",
+			"entries",
+			"source"
+		],
+		"item": [
+			"name",
+			"rarity",
+			"source"
+		],
+		"psionic": [
+			"name",
+			"source",
+			"type"
+		],
+		"feat": [
+			"name",
+			"source",
+			"entries"
+		],
+		"object": [
+			"name",
+			"source",
+			"size",
+			"type",
+			"ac",
+			"hp",
+			"immune",
+			"entries"
+		],
+		"class": [
+			"name",
+			"source",
+			"hd",
+			"proficiency",
+			"classTableGroups",
+			"startingProficiencies",
+			"startingEquipment",
+			"classFeatures",
+			"subclassTitle",
+			"subclasses"
+		],
+		"subclass": [
+
+		],
+		"background": [
+			"name",
+			"source",
+			"skillProficiencies",
+			"entries"
+		],
+		"race": [
+			"name",
+			"source"
+		]
+	};
+
 	let spellDataUrls = {};
 	let spellMetaData = {};
 	let monsterDataUrls = {};
@@ -982,6 +1065,7 @@ const betteR205etools = function () {
 
 		$body.append(d20plus.importDialogHtml);
 		$body.append(d20plus.importListHTML);
+		$body.append(d20plus.importListPropsHTML);
 		$("#d20plus-import").dialog({
 			autoOpen: false,
 			resizable: false
@@ -991,6 +1075,12 @@ const betteR205etools = function () {
 			resizable: true,
 			width: 1000,
 			height: 700
+		});
+		$("#d20plus-import-props").dialog({
+			autoOpen: false,
+			resizable: true,
+			width: 300,
+			height: 600
 		});
 
 		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
@@ -4209,6 +4299,10 @@ const betteR205etools = function () {
 		// sort data
 		dataArray.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
+		// collect available properties
+		const propSet = {}; // represent this as an object instead of a set, to maintain some semblence of ordering
+		dataArray.map(it => Object.keys(it)).forEach(keys => keys.forEach(k => propSet[k] = true));
+
 		// build checkbox list
 		const $list = $("#import-list .list");
 		$list.html("");
@@ -4256,6 +4350,33 @@ const betteR205etools = function () {
 
 		$("#importlist-selectall-published").bind("click", () => {
 			d20plus.importer._importSelectPublished(importList);
+		});
+
+		const excludedProps = new Set();
+		const $winProps = $("#d20plus-import-props");
+		$winProps.find(`button`).bind("click", () => {
+			excludedProps.clear();
+			$winProps.find(`.prop-row`).each((i, ele) => {
+				if (!$(ele).find(`input`).prop("checked")) excludedProps.add($(ele).find(`span`).text());
+			});
+		});
+		const $btnProps = $(`#save-import-props`);
+		$btnProps.bind("click", () => {
+			$winProps.dialog("close");
+		});
+		const $props = $winProps.find(`.select-props`);
+		$props.empty();
+		$(`#import-open-props`).bind("click", () => {
+			Object.keys(propSet).forEach(p => {
+				const req = REQUIRED_PROPS[dataType] && REQUIRED_PROPS[dataType].includes(p);
+				$props.append(`
+					<label style="display: block; ${req ? "color: red;" : ""}" class="prop-row">
+						<input type="checkbox" checked="true">
+						<span>${p}</span>
+					</label>
+				`)
+			});
+			$winProps.dialog("open");
 		});
 
 		const $selGroupBy = $(`#organize-by`);
@@ -4320,11 +4441,16 @@ const betteR205etools = function () {
 				}
 
 				// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
-				const it = importQueue.pop();
+				let it = importQueue.pop();
 				it.name = it.name || "(Unknown)";
 
 				$stsName.text(it.name);
 				$stsRemain.text(remaining--);
+
+				if (excludedProps.size) {
+					it = JSON.parse(JSON.stringify(it));
+					[...excludedProps].forEach(k => delete it[k]);
+				}
 
 				if (!window.is_gm || options.forcePlayer) {
 					handoutBuilder(it);
@@ -4947,14 +5073,26 @@ const betteR205etools = function () {
 </span>
 </p>
 <p id="import-options">
-<label>Group Handouts By... <select id="organize-by"></select></label>
+<label style="display: inline-block">Group Handouts By... <select id="organize-by"></select></label>
+<button type="button" id="import-open-props" class="btn" role="button" aria-disabled="false" style="padding: 3px; display: inline-block;">Select Properties</button>
 <label>Make handouts visible to all players? <input type="checkbox" title="Make items visible to all players" id="import-showplayers" checked></label>
 <label>Overwrite existing? <input type="checkbox" title="Overwrite existing" id="import-overwrite"></label>
 </p>
-<button type="button" id="importstart" alt="Load" class="btn" role="button" aria-disabled="false">
+<button type="button" id="importstart" class="btn" role="button" aria-disabled="false">
 <span>Start Import</span>
 </button>
 </div>`;
+
+	d20plus.importListPropsHTML = `<div id="d20plus-import-props" title="Choose Properties to Import">
+	<div class="select-props" style="max-height: 400px; overflow-y: scroll; transform: translateZ(0)">
+		<!-- populate with JS -->		
+	</div>
+	<p>
+		Warning: this feature is highly experimental, and disabling <span style="color: red;">properties which are assumed to always exist</span> is not recommended.
+		<br>
+		<button type="button" id="save-import-props" class="btn" role="button" aria-disabled="false">Save</button>
+	</p>
+	</div>`;
 
 	d20plus.importDialogHtml = `<div id="d20plus-import" title="Importing...">
 <p>
