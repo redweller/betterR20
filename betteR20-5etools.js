@@ -5381,7 +5381,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					<div id="shapeshiftbuild-list">
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
-						<span title="Filter format example: 'cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
+						<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
 						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
 					</div>
 				<br>
@@ -5452,6 +5452,12 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									.map(it => it.toLowerCase().split(":"))
 									.filter(it => it.length === 2)
 									.map(it => ({field: it[0], value: it[1]}));
+								const grouped = [];
+								filters.forEach(f => {
+									const existing = grouped.find(it => it.field === f.field);
+									if (existing) existing.values.push(f.value);
+									else grouped.push({field: f.field, values: [f.value]})
+								});
 
 								tokenList.filter((item) => {
 									const m = toShow[$(item.elm).attr("data-listid")];
@@ -5461,7 +5467,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										cr: m.cr === undefined ? "unknown" : (m.cr.cr || m.cr).toLowerCase(),
 										source: Parser.sourceJsonToAbv(m.source).toLowerCase()
 									};
-									return !filters.find(f => m._filterVs[f.field] && m._filterVs[f.field] !== f.value);
+									return !grouped.find(f => m._filterVs[f.field] && !f.values.includes(m._filterVs[f.field]));
 								});
 							}, TYPE_TIMEOUT_MS);
 						});
