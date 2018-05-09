@@ -4354,7 +4354,9 @@ const betteR205etools = function () {
 		dataArray.forEach((it, i) => {
 			if (it.noDisplay) return;
 
-			const inner = options.listItemBuilder ? options.listItemBuilder(it) :  `<span class="name col-10">${it.name}</span>`;
+			const inner = options.listItemBuilder
+				? options.listItemBuilder(it)
+				:  `<span class="name col-10">${it.name}</span><span class="source" title="${Parser.sourceJsonToFull(it.source)}">${Parser.sourceJsonToAbv(it.source)}</span>`;
 
 			$list.append(`
 			<label class="import-cb-label" data-listid="${i}">
@@ -4398,9 +4400,13 @@ const betteR205etools = function () {
 		});
 
 		if (options.listIndexConverter) {
-			const $iptFilter = $(`#import-list-filter`);
+			const $iptFilter = $(`#import-list-filter`).show();
+			$(`#import-list-filter-help`).show();
 			$iptFilter.off("keydown").off("keyup");
 			d20plus.importer.addListFilter($iptFilter, dataArray, importList, options.listIndexConverter);
+		} else {
+			$(`#import-list-filter`).hide();
+			$(`#import-list-filter-help`).hide();
 		}
 
 		const excludedProps = new Set();
@@ -5129,7 +5135,7 @@ const betteR205etools = function () {
 <span id="import-list">
 	<input class="search" autocomplete="off" placeholder="Search list...">
 	<input type="search" id="import-list-filter" class="filter" placeholder="Filter...">
-	<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM' -- hover over the columns to see the filterable name." style="cursor: help;">[?]</span>
+	<span id ="import-list-filter-help" title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM' -- hover over the columns to see the filterable name." style="cursor: help;">[?]</span>
 	<br>
 	<span class="list" style="max-height: 400px; overflow-y: scroll; overflow-x: hidden; display: block; margin-top: 1em; transform: translateZ(0);"></span>
 </span>
