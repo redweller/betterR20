@@ -1680,11 +1680,20 @@ const betteR205etools = function () {
 
 	d20plus.monsters._groupOptions = ["Type", "CR", "Alphabetical", "Source"];
 	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
-	d20plus.monsters._listItemBuilder = (it, showSource) => `
-		<span class="name col-4">${it.name}</span>
-		<span class="type col-4">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
-		<span class="cr col-2">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
-		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
+	d20plus.monsters._listItemBuilder = (it) => `
+		<span class="name col-4" title="name">${it.name}</span>
+		<span class="type col-4" title="type">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
+		<span class="cr col-2" title="cr">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
+		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+	d20plus.monsters._listIndexConverter = (m) => {
+		m.__pType = m.__pType || Parser.monTypeToFullObj(m.type).type; // only filter using primary type
+		return {
+			name: m.name.toLowerCase(),
+			type: m.__pType.toLowerCase(),
+			cr: m.cr === undefined ? "unknown" : (m.cr.cr || m.cr).toLowerCase(),
+			source: Parser.sourceJsonToAbv(m.source).toLowerCase()
+		};
+	};
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
 		function loadData (url) {
@@ -1697,7 +1706,8 @@ const betteR205etools = function () {
 					{
 						groupOptions: d20plus.monsters._groupOptions,
 						listItemBuilder: d20plus.monsters._listItemBuilder,
-						listIndex: d20plus.monsters._listCols
+						listIndex: d20plus.monsters._listCols,
+						listIndexConverter: d20plus.monsters._listIndexConverter
 					}
 				);
 			});
@@ -1737,9 +1747,9 @@ const betteR205etools = function () {
 							d20plus.monsters.handoutBuilder,
 							{
 								groupOptions: d20plus.monsters._groupOptions,
-								showSource: true,
 								listItemBuilder: d20plus.monsters._listItemBuilder,
-								listIndex: d20plus.monsters._listCols
+								listIndex: d20plus.monsters._listCols,
+								listIndexConverter: d20plus.monsters._listIndexConverter
 							}
 						);
 					}
@@ -2993,11 +3003,20 @@ const betteR205etools = function () {
 	};
 
 	d20plus.spells._groupOptions = ["Level", "Spell Points", "Alphabetical", "Source"];
-	d20plus.spells._listCols = ["name", "level", "source"];
-	d20plus.spells._listItemBuilder = (it, showSource) => `
-		<span class="name col-7">${it.name}</span>
-		<span class="level col-3">LVL[${Parser.spLevelToFull(it.level)}]</span>
-		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
+	d20plus.spells._listCols = ["name", "class", "level", "source"];
+	d20plus.spells._listItemBuilder = (it) => `
+		<span class="name col-4" title="name">${it.name}</span>
+		<span class="class col-3" title="class">${it.classes.fromClassList.map(c => `CLS[${c.name}]`).join(", ")}</span>
+		<span class="level col-3" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
+		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+	d20plus.spells._listIndexConverter = (sp) => {
+		return {
+			name: sp.name.toLowerCase(),
+			class: sp.classes.fromClassList.map(c => c.name.toLowerCase()),
+			level: Parser.spLevelToFull(sp.level).toLowerCase(),
+			source: Parser.sourceJsonToAbv(sp.source).toLowerCase()
+		};
+	};
 	// Import Spells button was clicked
 	d20plus.spells.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -3015,7 +3034,8 @@ const betteR205etools = function () {
 						groupOptions: d20plus.spells._groupOptions,
 						forcePlayer,
 						listItemBuilder: d20plus.spells._listItemBuilder,
-						listIndex: d20plus.spells._listCols
+						listIndex: d20plus.spells._listCols,
+						listIndexConverter: d20plus.spells._listIndexConverter
 					}
 				);
 			});
@@ -3039,10 +3059,10 @@ const betteR205etools = function () {
 					handoutBuilder,
 					{
 						groupOptions: d20plus.spells._groupOptions,
-						showSource: true,
 						forcePlayer,
 						listItemBuilder: d20plus.spells._listItemBuilder,
-						listIndex: d20plus.spells._listCols
+						listIndex: d20plus.spells._listCols,
+						listIndexConverter: d20plus.spells._listIndexConverter
 					}
 				);
 			});
@@ -3180,14 +3200,23 @@ const betteR205etools = function () {
 
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
 	d20plus.items._listCols = ["name", "type", "rarity", "source"];
-	d20plus.items._listItemBuilder = (it, showSource) => {
+	d20plus.items._listItemBuilder = (it) => {
 		if (!it._isEnhanced) EntryRenderer.item.enhanceItem(it);
 
 		return `
-		<span class="name col-3">${it.name}</span>
-		<span class="type col-5">${it.typeText.split(",").map(t => `TYP[${t.trim()}]`).join(", ")}</span>
-		<span class="rarity col-2">RAR[${it.rarity}]</span>
-		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
+		<span class="name col-3" title="name">${it.name}</span>
+		<span class="type col-5" title="type">${it.typeText.split(",").map(t => `TYP[${t.trim()}]`).join(", ")}</span>
+		<span class="rarity col-2" title="rarity">RAR[${it.rarity}]</span>
+		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+	};
+	d20plus.items._listIndexConverter = (it) => {
+		if (!it._isEnhanced) EntryRenderer.item.enhanceItem(it);
+		return {
+			name: it.name.toLowerCase(),
+			type: it.typeText.toLowerCase().split(","),
+			rarity: it.rarity.toLowerCase(),
+			source: Parser.sourceJsonToAbv(it.source).toLowerCase()
+		};
 	};
 // Import Items button was clicked
 	d20plus.items.button = function (forcePlayer) {
@@ -3204,10 +3233,10 @@ const betteR205etools = function () {
 							handoutBuilder,
 							{
 								groupOptions: d20plus.items._groupOptions,
-								showSource: true,
 								forcePlayer,
 								listItemBuilder: d20plus.items._listItemBuilder,
-								listIndex: d20plus.items._listCols
+								listIndex: d20plus.items._listCols,
+								listIndexConverter: d20plus.items._listIndexConverter
 							}
 						);
 					},
@@ -3228,7 +3257,8 @@ const betteR205etools = function () {
 							groupOptions: d20plus.items._groupOptions,
 							forcePlayer,
 							listItemBuilder: d20plus.items._listItemBuilder,
-							listIndex: d20plus.items._listCols
+							listIndex: d20plus.items._listCols,
+							listIndexConverter: d20plus.items._listIndexConverter
 						}
 					);
 				});
@@ -3439,10 +3469,17 @@ const betteR205etools = function () {
 
 	d20plus.psionics._groupOptions = ["Alphabetical", "Order", "Source"];
 	d20plus.psionics._listCols = ["name", "order", "source"];
-	d20plus.psionics._listItemBuilder = (it, showSource) => `
+	d20plus.psionics._listItemBuilder = (it) => `
 		<span class="name col-6">${it.name}</span>
 		<span class="order col-4">ORD[${it.order || "None"}]</span>
-		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
+		<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+	d20plus.psionics._listIndexConverter = (p) => {
+		return {
+			name: p.name.toLowerCase(),
+			order: (p.order || "none").toLowerCase(),
+			source: Parser.sourceJsonToAbv(p.source).toLowerCase()
+		};
+	};
 // Import Psionics button was clicked
 	d20plus.psionics.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -3460,7 +3497,8 @@ const betteR205etools = function () {
 						groupOptions: d20plus.psionics._groupOptions,
 						forcePlayer,
 						listItemBuilder: d20plus.psionics._listItemBuilder,
-						listIndex: d20plus.psionics._listCols
+						listIndex: d20plus.psionics._listCols,
+						listIndexConverter: d20plus.psionics._listIndexConverter
 					}
 				);
 			});
@@ -3543,7 +3581,6 @@ const betteR205etools = function () {
 					EntryRenderer.race.mergeSubraces(data.race),
 					handoutBuilder,
 					{
-						showSource: true,
 						forcePlayer
 					}
 				);
@@ -3632,7 +3669,6 @@ const betteR205etools = function () {
 					data.feat,
 					handoutBuilder,
 					{
-						showSource: true,
 						forcePlayer
 					}
 				);
@@ -4082,11 +4118,18 @@ const betteR205etools = function () {
 	};
 
 	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
-	d20plus.subclasses._listCols = ["name", "class", "cr", "source"];
-	d20plus.subclasses._listItemBuilder = (it, showSource) => `
+	d20plus.subclasses._listCols = ["name", "class", "source"];
+	d20plus.subclasses._listItemBuilder = (it) => `
 		<span class="name col-6">${it.name}</span>
 		<span class="class col-4">CLS[${it.class}]</span>
-		${showSource ? `<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>` : ""}`;
+		<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+	d20plus.subclasses._listIndexConverter = (sc) => {
+		return {
+			name: sc.name.toLowerCase(),
+			class: sc.class.toLowerCase(),
+			source: Parser.sourceJsonToAbv(sc.source).toLowerCase()
+		};
+	};
 // Import Subclasses button was clicked
 	d20plus.subclasses.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -4102,10 +4145,10 @@ const betteR205etools = function () {
 					handoutBuilder,
 					{
 						groupOptions: d20plus.subclasses._groupOptions,
-						showSource: true,
 						forcePlayer,
 						listItemBuilder: d20plus.subclasses._listItemBuilder,
-						listIndex: d20plus.subclasses._listCols
+						listIndex: d20plus.subclasses._listCols,
+						listIndexConverter: d20plus.subclasses._listIndexConverter
 					}
 				);
 			});
@@ -4189,7 +4232,6 @@ const betteR205etools = function () {
 					data.background,
 					handoutBuilder,
 					{
-						showSource: true,
 						forcePlayer
 					}
 				);
@@ -4276,14 +4318,17 @@ const betteR205etools = function () {
 		if (!options) options = {};
 		/*
 		options = {
-			showSource: true,
 			groupOptions: ["Source", "CR", "Alphabetical", "Type"],
 			forcePlayer: true,
 			callback: () => console.log("hello world"),
 			saveIdsTo: {}, // object to receive IDs of created handouts/creatures
-			// these two generally used together
-			listItemBuilder: (it, showSource) => `<span class="name col-8">${it.name}</span><span title="${Parser.sourceJsonToFull(it.source)}" class="source col-4">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`,
-			listIndex: ["name", "source"]
+			// these three generally used together
+			listItemBuilder: (it) => `<span class="name col-8">${it.name}</span><span title="${Parser.sourceJsonToFull(it.source)}" class="source col-4">${it.cr ? `(CR ${it.cr.cr || it.cr}) ` : ""}(${Parser.sourceJsonToAbv(it.source)})</span>`,
+			listIndex: ["name", "source"],
+			listIndexConverter: (mon) => {
+				name: mon.name.toLowerCase(),
+				source: Parser.sourceJsonToAbv(m.source).toLowerCase() // everything is assumed to be lowercase
+			};
 		}
 		 */
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
@@ -4300,7 +4345,7 @@ const betteR205etools = function () {
 		dataArray.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 		// collect available properties
-		const propSet = {}; // represent this as an object instead of a set, to maintain some semblence of ordering
+		const propSet = {}; // represent this as an object instead of a set, to maintain some semblance of ordering
 		dataArray.map(it => Object.keys(it)).forEach(keys => keys.forEach(k => propSet[k] = true));
 
 		// build checkbox list
@@ -4309,11 +4354,13 @@ const betteR205etools = function () {
 		dataArray.forEach((it, i) => {
 			if (it.noDisplay) return;
 
-			const inner = options.listItemBuilder ? options.listItemBuilder(it, options.showSource) :  `<span class="name col-10">${it.name}</span>`;
+			const inner = options.listItemBuilder
+				? options.listItemBuilder(it)
+				:  `<span class="name col-10">${it.name}</span><span class="source" title="${Parser.sourceJsonToFull(it.source)}">${Parser.sourceJsonToAbv(it.source)}</span>`;
 
 			$list.append(`
-			<label class="import-cb-label">
-				<input type="checkbox" data-listid="${i}">
+			<label class="import-cb-label" data-listid="${i}">
+				<input type="checkbox">
 				${inner}
 			</label>
 		`);
@@ -4351,6 +4398,16 @@ const betteR205etools = function () {
 		$("#importlist-selectall-published").bind("click", () => {
 			d20plus.importer._importSelectPublished(importList);
 		});
+
+		if (options.listIndexConverter) {
+			const $iptFilter = $(`#import-list-filter`).show();
+			$(`#import-list-filter-help`).show();
+			$iptFilter.off("keydown").off("keyup");
+			d20plus.importer.addListFilter($iptFilter, dataArray, importList, options.listIndexConverter);
+		} else {
+			$(`#import-list-filter`).hide();
+			$(`#import-list-filter-help`).hide();
+		}
 
 		const excludedProps = new Set();
 		const $winProps = $("#d20plus-import-props");
@@ -4394,6 +4451,14 @@ const betteR205etools = function () {
 
 			// build list of items to process
 			const importQueue = [];
+			importList.items.forEach((e) => {
+				if ($(e).find("input").prop("checked")) {
+					const dataIndex = parseInt($(e).data("listid"));
+					const it = dataArray[dataIndex];
+					importQueue.push(it);
+				}
+			});
+
 			importList.items.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
 				const $e = $(e);
 				if ($e.is("input") && $e.prop("checked")) {
@@ -4846,7 +4911,8 @@ const betteR205etools = function () {
 							saveIdsTo: RETURNED_IDS,
 							callback: doItemImport,
 							listItemBuilder: d20plus.monsters._listItemBuilder,
-							listIndex: d20plus.monsters._listCols
+							listIndex: d20plus.monsters._listCols,
+							listIndexConverter: d20plus.monsters._listIndexConverter
 						}
 					);
 				}
@@ -4868,11 +4934,11 @@ const betteR205etools = function () {
 						d20plus.items.handoutBuilder,
 						{
 							groupOptions: d20plus.items._groupOptions,
-							showSource: true,
 							saveIdsTo: RETURNED_IDS,
 							callback: doMainImport,
 							listItemBuilder: d20plus.items._listItemBuilder,
-							listIndex: d20plus.items._listCols
+							listIndex: d20plus.items._listCols,
+							listIndexConverter: d20plus.items._listIndexConverter
 						}
 					);
 				}
@@ -5068,6 +5134,8 @@ const betteR205etools = function () {
 <p>
 <span id="import-list">
 	<input class="search" autocomplete="off" placeholder="Search list...">
+	<input type="search" id="import-list-filter" class="filter" placeholder="Filter...">
+	<span id ="import-list-filter-help" title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM' -- hover over the columns to see the filterable name." style="cursor: help;">[?]</span>
 	<br>
 	<span class="list" style="max-height: 400px; overflow-y: scroll; overflow-x: hidden; display: block; margin-top: 1em; transform: translateZ(0);"></span>
 </span>
@@ -5579,39 +5647,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 							valueNames: ["name", "type", "cr", "source"]
 						});
 
-						const TYPE_TIMEOUT_MS = 100;
-						let typeTimer;
-						$fltr.on("keyup", () => {
-							clearTimeout(typeTimer);
-							typeTimer = setTimeout(() => {
-								const exps = $fltr.val().split(";");
-								const filters = exps.map(it => it.trim())
-									.filter(it => it)
-									.map(it => it.toLowerCase().split(":"))
-									.filter(it => it.length === 2)
-									.map(it => ({field: it[0], value: it[1]}));
-								const grouped = [];
-								filters.forEach(f => {
-									const existing = grouped.find(it => it.field === f.field);
-									if (existing) existing.values.push(f.value);
-									else grouped.push({field: f.field, values: [f.value]})
-								});
-
-								tokenList.filter((item) => {
-									const m = toShow[$(item.elm).attr("data-listid")];
-									m._filterVs = m._filterVs || {
-										name: m.name.toLowerCase(),
-										type: m.__pType.toLowerCase(),
-										cr: m.cr === undefined ? "unknown" : (m.cr.cr || m.cr).toLowerCase(),
-										source: Parser.sourceJsonToAbv(m.source).toLowerCase()
-									};
-									return !grouped.find(f => m._filterVs[f.field] && !f.values.includes(m._filterVs[f.field]));
-								});
-							}, TYPE_TIMEOUT_MS);
-						});
-						$fltr.on("keydown", () => {
-							clearTimeout(typeTimer);
-						});
+						d20plus.importer.addListFilter($fltr, toShow, tokenList, d20plus.monsters._listIndexConverter);
 
 						$win.find(`button`).on("click", () => {
 							console.log("Assembling creature list");
@@ -5643,6 +5679,48 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			}
 		}
 	]);
+
+	// caller should run `$iptFilter.off("keydown").off("keyup");` before calling this
+	d20plus.importer.addListFilter = function ($iptFilter, dataList, listObj, listIndexConverter) {
+		$iptFilter.val("");
+		const TYPE_TIMEOUT_MS = 100;
+		let typeTimer;
+		$iptFilter.on("keyup", () => {
+			clearTimeout(typeTimer);
+			typeTimer = setTimeout(() => {
+				const exps = $iptFilter.val().split(";");
+				const filters = exps.map(it => it.trim())
+					.filter(it => it)
+					.map(it => it.toLowerCase().split(":"))
+					.filter(it => it.length === 2)
+					.map(it => ({field: it[0], value: it[1]}));
+				const grouped = [];
+				filters.forEach(f => {
+					const existing = grouped.find(it => it.field === f.field);
+					if (existing) existing.values.push(f.value);
+					else grouped.push({field: f.field, values: [f.value]})
+				});
+
+				listObj.filter((item) => {
+					const it = dataList[$(item.elm).attr("data-listid")];
+					it._filterVs = it._filterVs || listIndexConverter(it);
+					return !grouped.find(f => {
+						if (it._filterVs[f.field]) {
+							if (it._filterVs[f.field] instanceof Array) {
+								return !(it._filterVs[f.field].find(v => f.values.includes(v)));
+							} else {
+								return !f.values.includes(it._filterVs[f.field])
+							}
+						}
+						return false;
+					});
+				});
+			}, TYPE_TIMEOUT_MS);
+		});
+		$iptFilter.on("keydown", () => {
+			clearTimeout(typeTimer);
+		});
+	};
 
 	d20plus.initiativeHeaders = `<div class="header">
 <span class="ui-button-text initmacro">Sheet</span>
