@@ -3560,7 +3560,7 @@ const betteR205etools = function () {
 			<h3>${data.name}</h3>
 			<p><em>${data.type === "D" ? `${data.order} ${Parser.psiTypeToFull(data.type)}` : `${Parser.psiTypeToFull(data.type)}`}</em></p>
 			${data.type === "D" ? `${EntryRenderer.psionic.getDisciplineText(data, renderer)}` : `${renderTalent()}`}
-			`
+			`;
 
 		const noteContents = `${baseNoteContents}<br><del>${gmNotes}</del>`;
 
