@@ -5574,7 +5574,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			name: "Shapeshifter Token Builder",
 			desc: "Build a rollable table and related token to represent a shapeshifting creature.",
 			html: `
-				<div id="d20plus-shapeshiftbuild" title="Shapeshitfer Token Builder">
+				<div id="d20plus-shapeshiftbuild" title="Shapeshifter Token Builder">
 					<div id="shapeshiftbuild-list">
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
