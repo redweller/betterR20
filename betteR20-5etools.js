@@ -4452,21 +4452,12 @@ const betteR205etools = function () {
 			// build list of items to process
 			const importQueue = [];
 			importList.items.forEach((e) => {
-				if ($(e).find("input").prop("checked")) {
-					const dataIndex = parseInt($(e).data("listid"));
+				if ($(e.elm).find("input").prop("checked")) {
+					const dataIndex = parseInt($(e.elm).data("listid"));
 					const it = dataArray[dataIndex];
 					importQueue.push(it);
 				}
 			});
-
-			importList.items.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
-				const $e = $(e);
-				if ($e.is("input") && $e.prop("checked")) {
-					const dataIndex = parseInt($e.data("listid"));
-					const it = dataArray[dataIndex];
-					importQueue.push(it);
-				}
-			}));
 
 			const $stsName = $("#import-name");
 			const $stsRemain = $("#import-remaining");
