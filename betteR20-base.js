@@ -277,6 +277,9 @@ var betteR20Base = function () {
 			if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
 				return NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]][d20plus.sheet];
 			}
+			if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE_PC") {
+				return PC_SHEET_ATTRIBUTES[d20plus.config[group][key]][d20plus.sheet];
+			}
 			return d20plus.config[group][key];
 		},
 
@@ -418,9 +421,11 @@ var betteR20Base = function () {
 								toAdd.append(td);
 								break;
 							}
+							case "_SHEET_ATTRIBUTE_PC":
 							case "_SHEET_ATTRIBUTE": {
-								const sortedNpcsAttKeys = Object.keys(NPC_SHEET_ATTRIBUTES).sort((at1, at2) => d20plus.ascSort(NPC_SHEET_ATTRIBUTES[at1].name, NPC_SHEET_ATTRIBUTES[at2].name));
-								const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${NPC_SHEET_ATTRIBUTES[npcK].name}</option>`)}</select>`);
+								const DICT = prop._type === "_SHEET_ATTRIBUTE" ? NPC_SHEET_ATTRIBUTES : PC_SHEET_ATTRIBUTES;
+								const sortedNpcsAttKeys = Object.keys(DICT).sort((at1, at2) => d20plus.ascSort(DICT[at1].name, DICT[at2].name));
+								const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${DICT[npcK].name}</option>`)}</select>`);
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
 									field.val(cur);

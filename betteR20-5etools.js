@@ -133,17 +133,24 @@ const betteR205etools = function () {
 	NPC_SHEET_ATTRIBUTES["npc_speed"] = new SheetAttribute("Speed", "npc_speed", "npc_speed");
 	NPC_SHEET_ATTRIBUTES["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_DC");
 	NPC_SHEET_ATTRIBUTES["npc_legendary_actions"] = new SheetAttribute("Legendary Actions", "npc_legendary_actions", "npc_legendary_actions");
-
-// Old formulas entered in as sheet attributes, consider keeping these separate
 	NPC_SHEET_ATTRIBUTES["npc_challenge"] = new SheetAttribute("CR", "npc_challenge", "challenge");
-	NPC_SHEET_ATTRIBUTES["hp"] = new SheetAttribute("Current HP", "hp", "HP");
+
+	PC_SHEET_ATTRIBUTES = {};
+	PC_SHEET_ATTRIBUTES["hp"] = new SheetAttribute("Current HP", "hp", "HP");
+	PC_SHEET_ATTRIBUTES["ac"] = new SheetAttribute("AC", "ac", "ac"); // TODO check shaped
+	PC_SHEET_ATTRIBUTES["passive_wisdom"] = new SheetAttribute("Passive Perception", "passive_wisdom", "passive_wisdom"); // TODO check shaped
 
 	addConfigOptions("token", {
 		"_name": "Tokens",
 		"bar1": {
-			"name": "Bar 1",
+			"name": "Bar 1 (NPC)",
 			"default": "npc_hpbase",
 			"_type": "_SHEET_ATTRIBUTE"
+		},
+		"bar1_pc": {
+			"name": "Bar 1 (PC)",
+			"default": "hp",
+			"_type": "_SHEET_ATTRIBUTE_PC"
 		},
 		"bar1_max": {
 			"name": "Set Bar 1 Max",
@@ -156,9 +163,14 @@ const betteR205etools = function () {
 			"_type": "boolean"
 		},
 		"bar2": {
-			"name": "Bar 2",
+			"name": "Bar 2 (NPC)",
 			"default": "npc_ac",
 			"_type": "_SHEET_ATTRIBUTE"
+		},
+		"bar2_pc": {
+			"name": "Bar 2 (PC)",
+			"default": "ac",
+			"_type": "_SHEET_ATTRIBUTE_PC"
 		},
 		"bar2_max": {
 			"name": "Set Bar 2 Max",
@@ -171,9 +183,14 @@ const betteR205etools = function () {
 			"_type": "boolean"
 		},
 		"bar3": {
-			"name": "Bar 3",
+			"name": "Bar 3 (NPC)",
 			"default": "passive",
 			"_type": "_SHEET_ATTRIBUTE"
+		},
+		"bar3_pc": {
+			"name": "Bar 3 (PC)",
+			"default": "passive_wisdom",
+			"_type": "_SHEET_ATTRIBUTE_PC"
 		},
 		"bar3_max": {
 			"name": "Set Bar 3 Max",
@@ -494,67 +511,66 @@ const betteR205etools = function () {
 							return a.get("name").toLowerCase() == "npc";
 						});
 						var isNPC = npc ? parseInt(npc.get("current")) : 0;
-						if (isNPC) {
-							// Set bars if configured to do so
-							var barsList = ["bar1", "bar2", "bar3"];
-							$.each(barsList, (i, barName) => {
-								const confVal = d20plus.getCfgVal("token", barName)
-								if (confVal) {
-									const charAttr = character.attribs.find(a => a.get("name").toLowerCase() == confVal);
-									if (charAttr) {
-										e.attributes[barName + "_value"] = charAttr.get("current");
-										if (d20plus.hasCfgVal("token", barName + "_max")) {
-											// TODO: Setting a value to empty/null does not overwrite existing values on the token.
-											// setting a specific value does. Must figure this out.
-											e.attributes[barName + "_max"] = d20plus.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
-										}
-										if (d20plus.hasCfgVal("token", barName + "_reveal")) {
-											e.attributes["showplayers_" + barName] = d20plus.getCfgVal("token", barName + "_reveal");
-										}
+						// Set bars if configured to do so
+						var barsList = ["bar1", "bar2", "bar3"];
+						$.each(barsList, (i, barName) => {
+							// PC config keys are suffixed "_pc"
+							const confVal = d20plus.getCfgVal("token", `${barName}${isNPC ? "" : "_pc"}`);
+							if (confVal) {
+								const charAttr = character.attribs.find(a => a.get("name").toLowerCase() == confVal);
+								if (charAttr) {
+									e.attributes[barName + "_value"] = charAttr.get("current");
+									if (d20plus.hasCfgVal("token", barName + "_max")) {
+										// TODO: Setting a value to empty/null does not overwrite existing values on the token.
+										// setting a specific value does. Must figure this out.
+										e.attributes[barName + "_max"] = d20plus.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
 									}
-								}
-							});
-
-							// Set Nametag
-							if (d20plus.hasCfgVal("token", "name")) {
-								e.attributes["showname"] = d20plus.getCfgVal("token", "name");
-								if (d20plus.hasCfgVal("token", "name_reveal")) {
-									e.attributes["showplayers_name"] = d20plus.getCfgVal("token", "name_reveal");
+									if (d20plus.hasCfgVal("token", barName + "_reveal")) {
+										e.attributes["showplayers_" + barName] = d20plus.getCfgVal("token", barName + "_reveal");
+									}
 								}
 							}
+						});
 
-							// Roll HP
-							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
-							if ((d20plus.getCfgVal("token", "rollHP") || d20plus.getCfgVal("token", "maximiseHp")) && d20plus.getCfgKey("token", "npc_hpbase")) {
-								var hpf = character.attribs.find(function (a) {
-									return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
-								});
-								var barName = d20plus.getCfgKey("token", "npc_hpbase");
-								var hpformula = hpf.get("current");
+						// Set Nametag
+						if (d20plus.hasCfgVal("token", "name")) {
+							e.attributes["showname"] = d20plus.getCfgVal("token", "name");
+							if (d20plus.hasCfgVal("token", "name_reveal")) {
+								e.attributes["showplayers_name"] = d20plus.getCfgVal("token", "name_reveal");
+							}
+						}
 
-								if (hpformula && hpf) {
-									if (d20plus.getCfgVal("token", "maximiseHp")) {
-										const maxSum = hpformula.replace("d", "*");
-										try {
-											const max = eval(maxSum);
-											if (!isNaN(max)) {
-												e.attributes[barName + "_value"] = max;
-												e.attributes[barName + "_max"] = max;
-											}
-										} catch (error) {
-											d20plus.log("Error Maximising HP");
-											console.log(error);
+						// Roll HP
+						// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
+						if ((d20plus.getCfgVal("token", "rollHP") || d20plus.getCfgVal("token", "maximiseHp")) && d20plus.getCfgKey("token", "npc_hpbase")) {
+							var hpf = character.attribs.find(function (a) {
+								return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
+							});
+							var barName = d20plus.getCfgKey("token", "npc_hpbase");
+							var hpformula = hpf.get("current");
+
+							if (hpformula && hpf) {
+								if (d20plus.getCfgVal("token", "maximiseHp")) {
+									const maxSum = hpformula.replace("d", "*");
+									try {
+										const max = eval(maxSum);
+										if (!isNaN(max)) {
+											e.attributes[barName + "_value"] = max;
+											e.attributes[barName + "_max"] = max;
 										}
-									} else {
-										d20plus.randomRoll(hpformula, function (result) {
-											e.attributes[barName + "_value"] = result.total;
-											e.attributes[barName + "_max"] = result.total;
-											d20plus.log("Rolled HP for [" + character.get("name") + "]");
-										}, function (error) {
-											d20plus.log("Error Rolling HP Dice");
-											console.log(error);
-										});
+									} catch (error) {
+										d20plus.log("Error Maximising HP");
+										console.log(error);
 									}
+								} else {
+									d20plus.randomRoll(hpformula, function (result) {
+										e.attributes[barName + "_value"] = result.total;
+										e.attributes[barName + "_max"] = result.total;
+										d20plus.log("Rolled HP for [" + character.get("name") + "]");
+									}, function (error) {
+										d20plus.log("Error Rolling HP Dice");
+										console.log(error);
+									});
 								}
 							}
 						}
