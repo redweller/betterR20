@@ -813,19 +813,22 @@ var betteR20Base = function () {
 							const toMsg = $wrp.find(`input[data-player-id]:checked`).filter(":visible").map((ii, e) => $(e).attr("data-player-id")).get();
 							const content = $wrp.find(`.message`).val().trim();
 							toMsg.forEach(targetId => {
-								d20.textchat.incoming(
-									false,
-									{
-										avatar: `/users/avatar/${window.currentPlayer.get("d20userid")}/30`,
-										who: d20.textchat.$speakingas.find("option:first-child").text(),
-										type: "whisper",
-										content: content,
-										playerid: window.currentPlayer.id,
-										id: d20plus.generateRowId(),
-										target: targetId,
-										target_name: d20.Campaign.players.get(targetId).get("displayname") || ""
-									}
-								);
+								d20.textchat.doChatInput(`/w ${d20.Campaign.players.get(targetId).get("displayname").split(" ")[0]} ${content}`);
+
+								// This only posts to local player's chat, sadly
+								// d20.textchat.incoming(
+								// 	false,
+								// 	{
+								// 		avatar: `/users/avatar/${window.currentPlayer.get("d20userid")}/30`,
+								// 		who: d20.textchat.$speakingas.find("option:first-child").text(),
+								// 		type: "whisper",
+								// 		content: content,
+								// 		playerid: window.currentPlayer.id,
+								// 		id: d20plus.generateRowId(),
+								// 		target: targetId,
+								// 		target_name: d20.Campaign.players.get(targetId).get("displayname") || ""
+								// 	}
+								// );
 							})
 						});
 
