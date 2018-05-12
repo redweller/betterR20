@@ -834,7 +834,7 @@ var betteR20Base = function () {
 								<div>
 									${players.map((pp, ii) => `<label style="margin-right: 10px; ${p.online || ` display: none;`}" data-online="${p.online}" class="display-inline-block">${pp.displayname} <input data-player-id="${pp.id}" type="checkbox" ${i === ii ? `checked="true"` : ""}></label>`).join("")}
 								</div>
-								<textarea style="display: block; width: 100%;" placeholder="Enter whisper" class="message"></textarea>
+								<textarea style="display: block; width: 95%;" placeholder="Enter whisper" class="message"></textarea>
 							</div>						
 						`).append($btnSend).append(`<hr>`));
 					});
