@@ -390,15 +390,16 @@ var betteR20Base = function () {
 					const tbody = content.find(`tbody`);
 
 					const sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_"));
-					sortedTabKeys.forEach(grpK => {
+					sortedTabKeys.forEach((grpK, idx) => {
 						const prop = cfgGroup[grpK];
 
-						const toAdd = $(`<tr><td>${prop.name}</td></tr>`);
+						// IDs only used for label linking
+						const toAdd = $(`<tr><td><label for="conf_field_${idx}" class="config-name">${prop.name}</label></td></tr>`);
 
 						// Each config `_type` should have a case here. Each case should add a function to the map [configFields:[cfgK:grpK]]. These functions should return the value of the input.
 						switch (prop._type) {
 							case "boolean": {
-								const field = $(`<input type="checkbox" ${d20plus.getCfgVal(cfgK, grpK) ? `checked` : ""}>`);
+								const field = $(`<input type="checkbox" id="conf_field_${idx}" ${d20plus.getCfgVal(cfgK, grpK) ? `checked` : ""}>`);
 
 								configFields[cfgK][grpK] = () => {
 									return field.prop("checked")
@@ -411,7 +412,7 @@ var betteR20Base = function () {
 							case "String": {
 								const curr = d20plus.getCfgVal(cfgK, grpK) || "";
 								const def = d20plus.getCfgDefaultVal(cfgK, grpK) || "";
-								const field = $(`<input value="${curr}" placeholder="Default: ${def}">`);
+								const field = $(`<input id="conf_field_${idx}" value="${curr}" ${def ? `placeholder="Default: ${def}"` : ""}>`);
 
 								configFields[cfgK][grpK] = () => {
 									return field.val() ? field.val().trim() : "";
@@ -425,7 +426,7 @@ var betteR20Base = function () {
 							case "_SHEET_ATTRIBUTE": {
 								const DICT = prop._type === "_SHEET_ATTRIBUTE" ? NPC_SHEET_ATTRIBUTES : PC_SHEET_ATTRIBUTES;
 								const sortedNpcsAttKeys = Object.keys(DICT).sort((at1, at2) => d20plus.ascSort(DICT[at1].name, DICT[at2].name));
-								const field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${DICT[npcK].name}</option>`)}</select>`);
+								const field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${DICT[npcK].name}</option>`)}</select>`);
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
 									field.val(cur);
@@ -440,7 +441,8 @@ var betteR20Base = function () {
 								break;
 							}
 							case "integer": {
-								const field = $(`<input type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" placeholder="Default: ${d20plus.getCfgDefaultVal(cfgK, grpK)}">`);
+								const def = d20plus.getCfgDefaultVal(cfgK, grpK);
+								const field = $(`<input id="conf_field_${idx}" type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" ${def != null ? `placeholder="Default: ${def}"` : ""}>`);
 
 								configFields[cfgK][grpK] = () => {
 									return Number(field.val());
@@ -451,7 +453,7 @@ var betteR20Base = function () {
 								break;
 							}
 							case "_FORMULA": {
-								const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.formulas._options.sort().map(opt => `<option value="${opt}">${opt}</option>`)}</select>`);
+								const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.formulas._options.sort().map(opt => `<option value="${opt}">${opt}</option>`)}</select>`);
 
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
@@ -467,7 +469,7 @@ var betteR20Base = function () {
 								break;
 							}
 							case "_WHISPERMODE": {
-								const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.whisperModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
+								const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.whisperModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
 
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
@@ -483,7 +485,7 @@ var betteR20Base = function () {
 								break;
 							}
 							case "_ADVANTAGEMODE": {
-								const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.advantageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
+								const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.advantageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
 
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
@@ -499,7 +501,7 @@ var betteR20Base = function () {
 								break;
 							}
 							case "_DAMAGEMODE": {
-								const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.damageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
+								const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.damageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
 
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
@@ -515,7 +517,7 @@ var betteR20Base = function () {
 								break;
 							}
 							case "_enum": { // for generic String enums not covered above
-								const $field = $(`<select class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.getCfgEnumVals(cfgK, grpK).map(it => `<option value="${it}">${it}</option>`)}</select>`);
+								const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.getCfgEnumVals(cfgK, grpK).map(it => `<option value="${it}">${it}</option>`)}</select>`);
 
 								const cur = d20plus.getCfgVal(cfgK, grpK);
 								if (cur !== undefined) {
@@ -2680,7 +2682,7 @@ var betteR20Base = function () {
 			// config editor
 			{
 				s: "div.config-table-wrapper",
-				r: "min-height: 200px; width: 100%; height: 100%; max-height: 600px; overflow-y: auto;"
+				r: "min-height: 200px; width: 100%; height: 100%; max-height: 460px; overflow-y: auto; transform: translateZ(0);"
 			},
 			{
 				s: "table.config-table",
@@ -2692,7 +2694,11 @@ var betteR20Base = function () {
 			},
 			{
 				s: "table.config-table tbody td > *",
-				r: "vertical-align: middle;"
+				r: "vertical-align: middle; margin: 0;"
+			},
+			{
+				s: ".config-name",
+				r: "display: inline-block; line-height: 35px; width: 100%;"
 			},
 			// tool list
 			{
@@ -2701,7 +2707,11 @@ var betteR20Base = function () {
 			},
 			{
 				s: ".tool-row",
-				r: "display: flex; flex-direction: row; align-items: center;"
+				r: "min-height: 40px; display: flex; flex-direction: row; align-items: center;"
+			},
+			{
+				s: ".tool-row:nth-child(odd)",
+				r: "background-color: #f0f0f0;"
 			},
 			{
 				s: ".tool-row > *",
