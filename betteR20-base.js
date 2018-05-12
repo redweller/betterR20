@@ -771,6 +771,83 @@ var betteR20Base = function () {
 						});
 					});
 				}
+			},
+			{
+				name: "Multi-Whisper",
+				desc: "Send whispers to multiple players ",
+				html: `
+				<div id="d20plus-whispers" title="Multi-Whisper Tool">
+				<div>
+					<button class="btn toggle-dc">Show Disconnected Players</button>
+					<button class="btn send-all">Send All Messages</button>
+				</div>
+				<hr>
+				<div class="messages" style="max-height: 600px; overflow-y: auto; overflow-x: hidden; transform: translateZ(0)">
+					<!-- populate with JS -->
+				</div>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-whispers").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 1000,
+						height: 760,
+					});
+				},
+				openFn: () => {
+					$("a.ui-tabs-anchor[href='#textchat']").trigger("click");
+
+					const $win = $("#d20plus-whispers");
+					$win.dialog("open");
+
+					const $btnToggleDc = $win.find(`.toggle-dc`).off("click").text("Show Disconnected Players");
+					const $btnSendAll = $win.find(`.send-all`).off("click");
+
+					const $pnlMessages = $win.find(`.messages`).empty();
+					const players = d20.Campaign.players.toJSON();
+					players.forEach((p, i) => {
+						const $btnSend = $(`<button class="btn send">Send</button>`).on("click", function () {
+							const $btn = $(this);
+							const $wrp = $btn.closest(`.wrp-message`);
+							const toMsg = $wrp.find(`input[data-player-id]:checked`).filter(":visible").map((ii, e) => $(e).attr("data-player-id")).get();
+							const content = $wrp.find(`.message`).val().trim();
+							toMsg.forEach(targetId => {
+								d20.textchat.incoming(
+									false,
+									{
+										avatar: `/users/avatar/${window.currentPlayer.get("d20userid")}/30`,
+										who: d20.textchat.$speakingas.find("option:first-child").text(),
+										type: "whisper",
+										content: content,
+										playerid: window.currentPlayer.id,
+										id: d20plus.generateRowId(),
+										target: targetId,
+										target_name: d20.Campaign.players.get(targetId).get("displayname") || ""
+									}
+								);
+							})
+						});
+
+						$pnlMessages.append($(`
+							<div ${p.online || `style="display: none;"`} data-online="${p.online}" class="wrp-message">
+								<div>
+									${players.map((pp, ii) => `<label style="margin-right: 10px; ${p.online || ` display: none;`}" data-online="${p.online}" class="display-inline-block">${pp.displayname} <input data-player-id="${pp.id}" type="checkbox" ${i === ii ? `checked="true"` : ""}></label>`).join("")}
+								</div>
+								<textarea style="display: block; width: 100%;" placeholder="Enter whisper" class="message"></textarea>
+							</div>						
+						`).append($btnSend).append(`<hr>`));
+					});
+
+					$btnToggleDc.on("click", () => {
+						$btnToggleDc.text($btnToggleDc.text().startsWith("Show") ? "Hide Disconnected Players" : "Show Disconnected Players");
+						$pnlMessages.find(`[data-online="false"]`).toggle();
+					});
+
+					$btnSendAll.on("click", () => {
+						$pnlMessages.find(`button.send`).click();
+					});
+				}
 			}
 		],
 
@@ -2566,6 +2643,11 @@ var betteR20Base = function () {
 
 		// CSS /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		baseCssRules: [
+			// generic
+			{
+				s: ".display-inline-block",
+				r: "display: inline-block !important;"
+			},
 			// page view enhancement
 			{
 				s: "#page-toolbar",
