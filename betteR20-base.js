@@ -832,7 +832,7 @@ var betteR20Base = function () {
 						$pnlMessages.append($(`
 							<div ${p.online || `style="display: none;"`} data-online="${p.online}" class="wrp-message">
 								<div>
-									${players.map((pp, ii) => `<label style="margin-right: 10px; ${p.online || ` display: none;`}" data-online="${p.online}" class="display-inline-block">${pp.displayname} <input data-player-id="${pp.id}" type="checkbox" ${i === ii ? `checked="true"` : ""}></label>`).join("")}
+									${players.map((pp, ii) => `<label style="margin-right: 10px; ${pp.online || ` display: none;`}" data-online="${pp.online}" class="display-inline-block">${pp.displayname} <input data-player-id="${pp.id}" type="checkbox" ${i === ii ? `checked="true"` : ""}></label>`).join("")}
 								</div>
 								<textarea style="display: block; width: 95%;" placeholder="Enter whisper" class="message"></textarea>
 							</div>						
@@ -2646,7 +2646,7 @@ var betteR20Base = function () {
 			// generic
 			{
 				s: ".display-inline-block",
-				r: "display: inline-block !important;"
+				r: "display: inline-block;"
 			},
 			// page view enhancement
 			{
