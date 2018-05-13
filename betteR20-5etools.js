@@ -136,6 +136,7 @@ const betteR205etools = function () {
 	NPC_SHEET_ATTRIBUTES["npc_challenge"] = new SheetAttribute("CR", "npc_challenge", "challenge");
 
 	PC_SHEET_ATTRIBUTES = {};
+	PC_SHEET_ATTRIBUTES["empty"] = new SheetAttribute("--Empty--", "", "");
 	PC_SHEET_ATTRIBUTES["hp"] = new SheetAttribute("Current HP", "hp", "HP");
 	PC_SHEET_ATTRIBUTES["ac"] = new SheetAttribute("AC", "ac", "ac"); // TODO check shaped
 	PC_SHEET_ATTRIBUTES["passive_wisdom"] = new SheetAttribute("Passive Perception", "passive_wisdom", "passive_wisdom"); // TODO check shaped
