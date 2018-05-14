@@ -275,9 +275,11 @@ var betteR20Base = function () {
 			if (d20plus.config[group] === undefined) return undefined;
 			if (d20plus.config[group][key] === undefined) return undefined;
 			if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
+				if (!NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]]) return undefined;
 				return NPC_SHEET_ATTRIBUTES[d20plus.config[group][key]][d20plus.sheet];
 			}
 			if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE_PC") {
+				if (!PC_SHEET_ATTRIBUTES[d20plus.config[group][key]]) return undefined;
 				return PC_SHEET_ATTRIBUTES[d20plus.config[group][key]][d20plus.sheet];
 			}
 			return d20plus.config[group][key];
