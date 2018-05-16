@@ -2423,7 +2423,7 @@ var betteR20Base = function () {
 
 			// store data for the rendering function to access
 			d20.engine.canvas.on("mouse:move", (data, ...others) => {
-				if (data.target && data.e.shiftKey) {
+				if (data.target && data.target.model && data.e.shiftKey) {
 					d20.engine.renderTop();
 					const gmNotes = data.target.model.get("gmnotes");
 					const pt = d20.engine.canvas.getPointer(data.e);
