@@ -527,9 +527,16 @@ const betteR205etools = function () {
 										if (d20plus.getCfgVal("token", barName + "_max") && !isNPC && confVal === "hp") { // player HP is current; need to set max to max
 											e.attributes[barName + "_max"] = charAttr.get("max");
 										} else {
-											// TODO: Setting a value to empty/null does not overwrite existing values on the token.
-											// setting a specific value does. Must figure this out.
-											e.attributes[barName + "_max"] = d20plus.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
+											if (isNPC) {
+												// TODO: Setting a value to empty/null does not overwrite existing values on the token.
+												// setting a specific value does. Must figure this out.
+												e.attributes[barName + "_max"] = d20plus.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
+											} else {
+												// preserve default token for player tokens
+												if (d20plus.getCfgVal("token", barName + "_max")) {
+													e.attributes[barName + "_max"] = charAttr.get("current");
+												}
+											}
 										}
 									}
 									if (d20plus.hasCfgVal("token", barName + "_reveal")) {
