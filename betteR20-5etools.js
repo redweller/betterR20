@@ -5760,7 +5760,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 							if (!json.char) {
 								window.alert("Failed to import character! See the log for details.");
-								console.error(`No "char" found in parsed JSON!`);
+								console.error(`No "char" attribute found in parsed JSON!`);
 								return;
 							}
 							const char = json.char;
@@ -5776,7 +5776,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										try {
 											character.attribs.reset();
 											if (!char.attribs) {
-												window.alert(`Warning: Uploaded character had no "attribs" field. The character sheet will contain no data.`);
+												window.alert(`Warning: Uploaded character had no "attribs" attribute. The character sheet will contain no data.`);
 												return;
 											}
 											const toSave = char.attribs.map(a => character.attribs.push(a));
