@@ -5729,7 +5729,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 				const $selChar = $win.find(`select`);
 
-				$selChar.append(d20.Campaign.characters.toJSON().map(c => {
+				$selChar.append(d20.Campaign.characters.toJSON().sort((a, b) => SortUtil.ascSort(a.name, b.name)).map(c => {
 					return `<option value="${c.id}">${c.name || `(Unnamed; ID ${c.id})`}</option>`
 				}).join(""));
 
@@ -5737,7 +5737,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				$btnDl.off("click");
 				$btnDl.on("click", () => {
 					const id = $selChar.val();
-					const char = d20.Campaign.characters.get(id).toJSON();
+					const rawChar = d20.Campaign.characters.get(id);
+					const char = rawChar.toJSON();
+					char.attribs = rawChar.attribs.toJSON();
 					DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify({
 						char
 					}, null, "\t"));
@@ -5760,7 +5762,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 							if (!json.char) {
 								window.alert("Failed to import character! See the log for details.");
-								console.error(`No "char" found in parsed JSON!`);
+								console.error(`No "char" attribute found in parsed JSON!`);
 								return;
 							}
 							const char = json.char;
@@ -5775,6 +5777,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									success: function (character) {
 										try {
 											character.attribs.reset();
+											if (!char.attribs) {
+												window.alert(`Warning: Uploaded character had no "attribs" attribute. The character sheet will contain no data.`);
+												return;
+											}
 											const toSave = char.attribs.map(a => character.attribs.push(a));
 											toSave.forEach(s => s.syncedSave());
 										} catch (e) {
