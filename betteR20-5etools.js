@@ -4928,7 +4928,7 @@ const betteR205etools = function () {
 					d20plus.log(`Displaying monster import list for [${adMeta.name}]`);
 					d20plus.importer.showImportList(
 						"monster",
-						toImport,
+						toImport.filter(it => it),
 						d20plus.monsters.handoutBuilder,
 						{
 							groupOptions: d20plus.monsters._groupOptions,
@@ -4954,7 +4954,7 @@ const betteR205etools = function () {
 					d20plus.log(`Displaying item import list for [${adMeta.name}]`);
 					d20plus.importer.showImportList(
 						"item",
-						toImport,
+						toImport.filter(it => it),
 						d20plus.items.handoutBuilder,
 						{
 							groupOptions: d20plus.items._groupOptions,
