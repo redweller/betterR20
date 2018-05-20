@@ -5701,6 +5701,101 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					}
 				);
 			}
+		},
+		{
+			name: "Pauper's Character Vault",
+			desc: "Dump characters to JSON, or import dumped characters.",
+			html: `
+				<div id="d20plus-paupervault" title="Pauper's Character Vault">
+				<p>
+					This experimental tool allows you to download characters as JSON, to later upload to other games.
+				</p>
+				<select style="margin-bottom: 0;"></select> <button class="btn download">Download</button>
+				<hr>
+				<button class="btn upload">Upload</button><input accept=".json" type="file" style="position: absolute; left: -9999px;"> (Previously Download-ed files only)
+				</div>
+				`,
+			dialogFn: () => {
+				$("#d20plus-paupervault").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 400,
+					height: 250,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-paupervault");
+				$win.dialog("open");
+
+				const $selChar = $win.find(`select`);
+
+				$selChar.append(d20.Campaign.characters.toJSON().map(c => {
+					return `<option value="${c.id}">${c.name || `(Unnamed; ID ${c.id})`}</option>`
+				}).join(""));
+
+				const $btnDl = $win.find(`.download`);
+				$btnDl.off("click");
+				$btnDl.on("click", () => {
+					const id = $selChar.val();
+					const char = d20.Campaign.characters.get(id).toJSON();
+					DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify({
+						char
+					}, null, "\t"));
+				});
+
+				const $btnUl = $win.find(`.upload`);
+				$btnUl.off("click");
+				$btnUl.on("click", () => {
+					const $iptFile = $win.find(`input[type="file"]`);
+
+					const input = $iptFile[0];
+
+					const reader = new FileReader();
+					reader.onload = () => {
+						$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+
+						try {
+							const text = reader.result;
+							const json = JSON.parse(text);
+
+							if (!json.char) {
+								window.alert("Failed to import character! See the log for details.");
+								console.error(`No "char" found in parsed JSON!`);
+								return;
+							}
+							const char = json.char;
+
+							const newId = d20plus.generateRowId();
+							d20.Campaign.characters.create(
+								{
+									...char,
+									id: newId
+								},
+								{
+									success: function (character) {
+										try {
+											character.attribs.reset();
+											const toSave = char.attribs.map(a => character.attribs.push(a));
+											toSave.forEach(s => s.syncedSave());
+										} catch (e) {
+											window.alert("Failed to import character! See the log for details.");
+											console.error(e);
+										}
+									}
+								}
+							);
+						} catch (e) {
+							console.error(e);
+							window.alert("Failed to load file! See the log for details.")
+						}
+					};
+					input.onchange = function () {
+						reader.readAsText(input.files[0]);
+					};
+
+					$iptFile.click();
+				});
+			}
 		}
 	]);
 
