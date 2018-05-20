@@ -5775,6 +5775,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									success: function (character) {
 										try {
 											character.attribs.reset();
+											if (!char.attribs) {
+												window.alert(`Warning: Uploaded character had no "attribs" field. The character sheet will contain no data.`);
+												return;
+											}
 											const toSave = char.attribs.map(a => character.attribs.push(a));
 											toSave.forEach(s => s.syncedSave());
 										} catch (e) {
