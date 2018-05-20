@@ -3468,7 +3468,7 @@ const betteR205etools = function () {
 			roll20Data.data.Modifiers = allModifiers;
 		}
 
-		gmnotes = JSON.stringify(roll20Data);
+		const gmnotes = JSON.stringify(roll20Data);
 
 		return [notecontents, gmnotes];
 	};
