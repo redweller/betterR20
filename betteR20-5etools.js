@@ -5729,7 +5729,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 				const $selChar = $win.find(`select`);
 
-				$selChar.append(d20.Campaign.characters.toJSON().map(c => {
+				$selChar.append(d20.Campaign.characters.toJSON().sort((a, b) => SortUtil.ascSort(a.name, b.name)).map(c => {
 					return `<option value="${c.id}">${c.name || `(Unnamed; ID ${c.id})`}</option>`
 				}).join(""));
 
@@ -5737,7 +5737,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				$btnDl.off("click");
 				$btnDl.on("click", () => {
 					const id = $selChar.val();
-					const char = d20.Campaign.characters.get(id).toJSON();
+					const rawChar = d20.Campaign.characters.get(id);
+					const char = rawChar.toJSON();
+					char.attribs = rawChar.attribs.toJSON();
 					DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify({
 						char
 					}, null, "\t"));

@@ -64,7 +64,8 @@ var betteR20Base = function () {
 						onEachLoadFunction(toLoad.name, toLoad.url, data);
 						onFinalLoadFunction();
 					},
-					error: function () {
+					error: function (...err) {
+						console.error(err);
 						d20plus.log(`Error loading ${toLoad.name}`);
 					}
 				});
@@ -80,7 +81,8 @@ var betteR20Base = function () {
 							d20plus.log(`Error loading ${toLoad.name}`);
 						}
 					},
-					error: function () {
+					error: function (...err) {
+						console.error(err);
 						d20plus.log(`Error loading ${toLoad.name}`);
 					}
 				});
