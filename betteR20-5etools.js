@@ -5708,7 +5708,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			html: `
 				<div id="d20plus-paupervault" title="Pauper's Character Vault">
 				<p>
-					This tool allows you to download characters as JSON, to later upload to other games.
+					This experimental tool allows you to download characters as JSON, to later upload to other games.
 				</p>
 				<select style="margin-bottom: 0;"></select> <button class="btn download">Download</button>
 				<hr>
