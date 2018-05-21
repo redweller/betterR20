@@ -1,5 +1,5 @@
 const betteR205etools = function () {
-	const BASE_SITE_URL = "https://5etools.com/";
+	const BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME restore when the main site is back up/automate this
 	const DATA_URL = BASE_SITE_URL + "data/";
 	const JS_URL = BASE_SITE_URL + "js/";
 	const IMG_URL = BASE_SITE_URL + "img/";
@@ -375,7 +375,8 @@ const betteR205etools = function () {
 		{name: "spell metadata", url: SPELL_META_URL},
 		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`},
 		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`},
-		{name: "adventures index", url: `${DATA_URL}adventures.json`}
+		{name: "adventures index", url: `${DATA_URL}adventures.json`},
+		{name: "basic items", url: `${DATA_URL}basicitems.json`}
 	];
 
 	// add JSON index/metadata
@@ -387,6 +388,10 @@ const betteR205etools = function () {
 			else if (name === "bestiary index") monsterDataUrls = data;
 			else if (name === "bestiary fluff index") monsterFluffDataUrls = data;
 			else if (name === "adventures index") adventureMetadata = data;
+			else if (name === "basic items") {
+				data.itemProperty.forEach(p => EntryRenderer.item._addProperty(p));
+				data.itemType.forEach(t => EntryRenderer.item._addType(t));
+			}
 			else throw new Error(`Unhandled data from JSON ${name} (${url})`);
 
 			d20plus.log(`JSON [${name}] Loaded`);
@@ -448,16 +453,16 @@ const betteR205etools = function () {
 		}
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
-		d20plus.addJson(d20plus.onJsonLoad);
-	};
-
-// continue init once JSON loads
-	d20plus.onJsonLoad = function () {
 		d20plus.addScripts(d20plus.onScriptLoad);
 	};
 
-// continue init once scripts load
+// continue init once JSON loads
 	d20plus.onScriptLoad = function () {
+		d20plus.addJson(d20plus.onJsonLoad);
+	};
+
+// continue init once scripts load
+	d20plus.onJsonLoad = function () {
 		IS_ROLL20 = true; // global variable from 5etools' utils.js
 		BrewUtil._buildSourceCache = function () {
 			// no-op when building source cache; we'll handle this elsewhere
