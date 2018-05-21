@@ -913,7 +913,7 @@ var betteR20Base = function () {
 
 							sel.forEach(t => {
 								const r20t = d20.Campaign.rollabletables.create({
-									name: t.name,
+									name: t.name.replace(/\s+/g, "-"),
 									showplayers: t.isShown,
 									id: d20plus.generateRowId()
 								});
