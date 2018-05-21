@@ -2,7 +2,7 @@
 // @name         betteR20-5etools
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.6.3
+// @version      1.7.0
 // @updateURL    https://get.5etools.com/script/betteR20-5etools.user.js
 // @downloadURL  https://get.5etools.com/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
@@ -15,6 +15,8 @@
 
 ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
+
+BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME restore when the main site is back up/automate this
 
 SCRIPT_EXTENSIONS = [];
 
@@ -56,7 +58,6 @@ EventTarget.prototype.addEventListener = function(type, listener, options, ...ot
 };
 
 const betteR205etools = function () {
-	const BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME restore when the main site is back up/automate this
 	const DATA_URL = BASE_SITE_URL + "data/";
 	const JS_URL = BASE_SITE_URL + "js/";
 	const IMG_URL = BASE_SITE_URL + "img/";
@@ -8038,6 +8039,82 @@ var betteR20Base = function () {
 
 					$btnSendAll.on("click", () => {
 						$pnlMessages.find(`button.send`).click();
+					});
+				}
+			},
+			{
+				name: "Table Importer",
+				desc: "Import TableExport data",
+				html: `
+				<div id="d20plus-tables" title="Table Importer">
+					<div id="table-list">
+						<input type="search" class="search" placeholder="Search tables...">
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<button class="btn start-import">Import</button>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-tables").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 800,
+						height: 650,
+					});
+				},
+				openFn: () => {
+					const $win = $("#d20plus-tables");
+					$win.dialog("open");
+
+					const $btnImport = $win.find(`.start-import`).off("click");
+
+					const url = `${BASE_SITE_URL}/data/roll20-tables.json`;
+					DataUtil.loadJSON(url, (data) => {
+						const $lst = $win.find(`.list`);
+
+						const tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+						let tmp = "";
+						tables.forEach((t, i) => {
+							tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="checkbox">
+									<span class="name col-10">${t.name}</span>
+									<span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
+								</label>
+							`;
+						});
+						$lst.html(tmp);
+						tmp = null;
+
+						const tableList = new List("table-list", {
+							valueNames: ["name", "source"]
+						});
+
+						$btnImport.on("click", () => {
+							$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
+							const sel = tableList.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => tables[$(it.elm).attr("data-listid")]);
+
+							sel.forEach(t => {
+								const r20t = d20.Campaign.rollabletables.create({
+									name: t.name.replace(/\s+/g, "-"),
+									showplayers: t.isShown,
+									id: d20plus.generateRowId()
+								});
+
+								r20t.tableitems.reset(t.items.map(i => {
+									const out = {
+										id: d20plus.generateRowId(),
+										name: i.row
+									};
+									if (i.weight !== undefined) out.weight = i.weight;
+									if (i.avatar) out.avatar = i.avatar;
+									return out;
+								}))
+							})
+						});
 					});
 				}
 			}
