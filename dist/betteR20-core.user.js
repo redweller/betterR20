@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.7.0
+// @version      1.7.1
 // @updateURL    https://get.5etools.com/script/betteR20-core.user.js
 // @downloadURL  https://get.5etools.com/script/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -1033,6 +1033,67 @@ var betteR20Base = function () {
 								}))
 							})
 						});
+					});
+				}
+			},
+
+			{
+				name: "Token Avatar URL Fixer",
+				desc: "Change the root URL for tokens en-masse.",
+				html: `
+				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
+				<p>Current URLs (view only): <select class="view-only"></select></p>
+				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
+				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
+				<p><button class="btn">Go!</button></p>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-avatar-fixer").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 400,
+						height: 400,
+					});
+				},
+				openFn: () => {
+					function replaceAll (str, search, replacement) {
+						return str.split(search).join(replacement);
+					}
+
+					const $win = $("#d20plus-avatar-fixer");
+					$win.dialog("open");
+
+					const $selView = $win.find(`.view-only`);
+					const toView = [];
+					d20.Campaign.characters.toJSON().forEach(c => {
+						if (c.avatar && c.avatar.trim()) {
+							toView.push(c.avatar);
+						}
+					});
+					toView.sort(SortUtil.ascSort).forEach(url => $selView.append(`<option disabled>${url}</option>`));
+
+					const $btnGo = $win.find(`button`).off("click");
+					$btnGo.on("click", () => {
+						let count = 0;
+						$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+
+						const search = $win.find(`[name="search"]`).val();
+						const replace = $win.find(`[name="replace"]`).val();
+
+						d20.Campaign.characters.toJSON().forEach(c => {
+							const id = c.id;
+
+							const realC = d20.Campaign.characters.get(id);
+
+							const curr = realC.get("avatar");
+							if (curr.includes(search)) {
+								count++;
+								realC.set("avatar", replaceAll(curr, search, replace));
+								realC.save();
+							}
+						});
+						window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
 					});
 				}
 			}

@@ -938,6 +938,7 @@ var betteR20Base = function () {
 				desc: "Change the root URL for tokens en-masse.",
 				html: `
 				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
+				<p>Current URLs (view only): <select class="view-only"></select></p>
 				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
 				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
 				<p><button class="btn">Go!</button></p>
@@ -958,6 +959,15 @@ var betteR20Base = function () {
 
 					const $win = $("#d20plus-avatar-fixer");
 					$win.dialog("open");
+
+					const $selView = $win.find(`.view-only`);
+					const toView = [];
+					d20.Campaign.characters.toJSON().forEach(c => {
+						if (c.avatar && c.avatar.trim()) {
+							toView.push(c.avatar);
+						}
+					});
+					toView.sort(SortUtil.ascSort).forEach(url => $selView.append(`<option disabled>${url}</option>`));
 
 					const $btnGo = $win.find(`button`).off("click");
 					$btnGo.on("click", () => {
