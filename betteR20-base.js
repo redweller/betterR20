@@ -56,37 +56,35 @@ var betteR20Base = function () {
 		chainLoad: (toLoads, index, onEachLoadFunction, onFinalLoadFunction) => {
 			const toLoad = toLoads[index];
 			// on loading the last item, run onLoadFunction
-			if (index === toLoads.length - 1) {
+			let retries = 3;
+			function withRetries () {
 				$.ajax({
 					type: "GET",
-					url: toLoad.url + d20plus.getAntiCacheSuffix(),
+					url: toLoad.url + d20plus.getAntiCacheSuffix() + retries,
 					success: function (data) {
-						onEachLoadFunction(toLoad.name, toLoad.url, data);
-						onFinalLoadFunction();
-					},
-					error: function (...err) {
-						console.error(err);
-						d20plus.log(`Error loading ${toLoad.name}`);
-					}
-				});
-			} else {
-				$.ajax({
-					type: "GET",
-					url: toLoad.url + d20plus.getAntiCacheSuffix(),
-					success: function (data) {
-						try {
+						if (index === toLoads.length - 1) {
+							onEachLoadFunction(toLoad.name, toLoad.url, data);
+							onFinalLoadFunction();
+						} else {
 							onEachLoadFunction(toLoad.name, toLoad.url, data);
 							d20plus.chainLoad(toLoads, index + 1, onEachLoadFunction, onFinalLoadFunction);
-						} catch (e) {
-							d20plus.log(`Error loading ${toLoad.name}`);
 						}
 					},
-					error: function (...err) {
-						console.error(err);
-						d20plus.log(`Error loading ${toLoad.name}`);
+					error: function (resp, qq, pp) {
+						if (resp && resp.status === 500 && retries-- > 0) {
+							console.error(resp, qq, pp);
+							d20plus.log(`Error loading ${toLoad.name}; retrying`);
+							setTimeout(() => {
+								withRetries();
+							}, 500);
+						} else {
+							console.error(resp, qq, pp);
+							d20plus.log(`Error loading ${toLoad.name}`);
+						}
 					}
 				});
 			}
+			withRetries();
 		},
 
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
