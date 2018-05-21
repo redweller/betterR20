@@ -855,6 +855,82 @@ var betteR20Base = function () {
 						$pnlMessages.find(`button.send`).click();
 					});
 				}
+			},
+			{
+				name: "Table Importer",
+				desc: "Import TableExport data",
+				html: `
+				<div id="d20plus-tables" title="Table Importer">
+					<div id="table-list">
+						<input type="search" class="search" placeholder="Search tables...">
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<button class="btn start-import">Import</button>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-tables").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 800,
+						height: 650,
+					});
+				},
+				openFn: () => {
+					const $win = $("#d20plus-tables");
+					$win.dialog("open");
+
+					const $btnImport = $win.find(`.start-import`).off("click");
+
+					const url = `${BASE_SITE_URL}/data/roll20-tables.json`;
+					DataUtil.loadJSON(url, (data) => {
+						const $lst = $win.find(`.list`);
+
+						const tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+						let tmp = "";
+						tables.forEach((t, i) => {
+							tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="checkbox">
+									<span class="name col-10">${t.name}</span>
+									<span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
+								</label>
+							`;
+						});
+						$lst.html(tmp);
+						tmp = null;
+
+						const tableList = new List("table-list", {
+							valueNames: ["name", "source"]
+						});
+
+						$btnImport.on("click", () => {
+							$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
+							const sel = tableList.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => tables[$(it.elm).attr("data-listid")]);
+
+							sel.forEach(t => {
+								const r20t = d20.Campaign.rollabletables.create({
+									name: t.name,
+									showplayers: t.isShown,
+									id: d20plus.generateRowId()
+								});
+
+								r20t.tableitems.reset(t.items.map(i => {
+									const out = {
+										id: d20plus.generateRowId(),
+										name: i.row
+									};
+									if (i.weight !== undefined) out.weight = i.weight;
+									if (i.avatar) out.avatar = i.avatar;
+									return out;
+								}))
+							})
+						});
+					});
+				}
 			}
 		],
 

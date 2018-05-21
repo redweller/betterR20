@@ -1,5 +1,4 @@
 const betteR205etools = function () {
-	const BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME restore when the main site is back up/automate this
 	const DATA_URL = BASE_SITE_URL + "data/";
 	const JS_URL = BASE_SITE_URL + "js/";
 	const IMG_URL = BASE_SITE_URL + "img/";
