@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.6.2
+// @version      1.6.3
 // @updateURL    https://get.5etools.com/script/betteR20-core.user.js
 // @downloadURL  https://get.5etools.com/script/betteR20-core.user.js
 // @description  Enhance your Roll20 experience

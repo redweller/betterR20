@@ -2,7 +2,7 @@
 // @name         betteR20-5etools
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.6.2
+// @version      1.6.3
 // @updateURL    https://get.5etools.com/script/betteR20-5etools.user.js
 // @downloadURL  https://get.5etools.com/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
@@ -56,7 +56,7 @@ EventTarget.prototype.addEventListener = function(type, listener, options, ...ot
 };
 
 const betteR205etools = function () {
-	const BASE_SITE_URL = "https://thegiddylimit.github.io/";
+	const BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME restore when the main site is back up/automate this
 	const DATA_URL = BASE_SITE_URL + "data/";
 	const JS_URL = BASE_SITE_URL + "js/";
 	const IMG_URL = BASE_SITE_URL + "img/";
