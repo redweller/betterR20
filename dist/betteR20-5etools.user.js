@@ -2,7 +2,7 @@
 // @name         betteR20-5etools
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.7.1
+// @version      1.7.3
 // @updateURL    https://get.5etools.com/script/betteR20-5etools.user.js
 // @downloadURL  https://get.5etools.com/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
@@ -1774,7 +1774,7 @@ const betteR205etools = function () {
 		return "6";
 	};
 
-	d20plus.monsters._groupOptions = ["Type", "CR", "Alphabetical", "Source"];
+	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "Alphabetical", "Source"];
 	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
 	d20plus.monsters._listItemBuilder = (it) => `
 		<span class="name col-4" title="name">${it.name}</span>
@@ -4675,6 +4675,9 @@ const betteR205etools = function () {
 						break;
 					case "Alphabetical":
 						folderName = it.name[0].uppercaseFirst();
+						break;
+					case "Type (with tags)":
+						folderName = Parser.monTypeToFullObj(it.type).asText.uppercaseFirst();
 						break;
 					case "Type":
 					default:
@@ -8124,6 +8127,7 @@ var betteR20Base = function () {
 				desc: "Change the root URL for tokens en-masse.",
 				html: `
 				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
+				<p><b>Warning:</b> this thing doesn't really work.</p>
 				<p>Current URLs (view only): <select class="view-only"></select></p>
 				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
 				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
@@ -8169,9 +8173,22 @@ var betteR20Base = function () {
 							const realC = d20.Campaign.characters.get(id);
 
 							const curr = realC.get("avatar");
+							let toSave = false;
 							if (curr.includes(search)) {
 								count++;
 								realC.set("avatar", replaceAll(curr, search, replace));
+								toSave = true;
+							}
+							if (realC.get("defaulttoken")) {
+								realC._getLatestBlob("defaulttoken", (bl) => {
+									if (bl && bl.imgsrc && bl.imgsrc.includes(search)) {
+										count++;
+										realC.updateBlobs({imgsrc: replaceAll(bl.imgsrc, search, replace)});
+										toSave = true;
+									}
+								});
+							}
+							if (toSave) {
 								realC.save();
 							}
 						});
