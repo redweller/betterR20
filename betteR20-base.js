@@ -938,6 +938,7 @@ var betteR20Base = function () {
 				desc: "Change the root URL for tokens en-masse.",
 				html: `
 				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
+				<p><b>Warning:</b> this thing doesn't really work.</p>
 				<p>Current URLs (view only): <select class="view-only"></select></p>
 				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
 				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
@@ -983,9 +984,22 @@ var betteR20Base = function () {
 							const realC = d20.Campaign.characters.get(id);
 
 							const curr = realC.get("avatar");
+							let toSave = false;
 							if (curr.includes(search)) {
 								count++;
 								realC.set("avatar", replaceAll(curr, search, replace));
+								toSave = true;
+							}
+							const currToken = realC.get("defaulttoken") && typeof realC.get("defaulttoken") === "object" ? realC.get("defaulttoken") : null;
+							if (currToken && currToken.imgsrc && typeof currToken.imgsrc === "string" && currToken.imgsrc.includes(search)) {
+								count++;
+								realC.set("defaulttoken", {
+									...currToken,
+									imgsrc: replaceAll(currToken.imgsrc, search, replace)
+								});
+								toSave = true;
+							}
+							if (toSave) {
 								realC.save();
 							}
 						});
