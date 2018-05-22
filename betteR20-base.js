@@ -56,37 +56,35 @@ var betteR20Base = function () {
 		chainLoad: (toLoads, index, onEachLoadFunction, onFinalLoadFunction) => {
 			const toLoad = toLoads[index];
 			// on loading the last item, run onLoadFunction
-			if (index === toLoads.length - 1) {
+			let retries = 3;
+			function withRetries () {
 				$.ajax({
 					type: "GET",
-					url: toLoad.url + d20plus.getAntiCacheSuffix(),
+					url: toLoad.url + d20plus.getAntiCacheSuffix() + retries,
 					success: function (data) {
-						onEachLoadFunction(toLoad.name, toLoad.url, data);
-						onFinalLoadFunction();
-					},
-					error: function (...err) {
-						console.error(err);
-						d20plus.log(`Error loading ${toLoad.name}`);
-					}
-				});
-			} else {
-				$.ajax({
-					type: "GET",
-					url: toLoad.url + d20plus.getAntiCacheSuffix(),
-					success: function (data) {
-						try {
+						if (index === toLoads.length - 1) {
+							onEachLoadFunction(toLoad.name, toLoad.url, data);
+							onFinalLoadFunction();
+						} else {
 							onEachLoadFunction(toLoad.name, toLoad.url, data);
 							d20plus.chainLoad(toLoads, index + 1, onEachLoadFunction, onFinalLoadFunction);
-						} catch (e) {
-							d20plus.log(`Error loading ${toLoad.name}`);
 						}
 					},
-					error: function (...err) {
-						console.error(err);
-						d20plus.log(`Error loading ${toLoad.name}`);
+					error: function (resp, qq, pp) {
+						if (resp && resp.status === 500 && retries-- > 0) {
+							console.error(resp, qq, pp);
+							d20plus.log(`Error loading ${toLoad.name}; retrying`);
+							setTimeout(() => {
+								withRetries();
+							}, 500);
+						} else {
+							console.error(resp, qq, pp);
+							d20plus.log(`Error loading ${toLoad.name}`);
+						}
 					}
 				});
 			}
+			withRetries();
 		},
 
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -855,6 +853,157 @@ var betteR20Base = function () {
 
 					$btnSendAll.on("click", () => {
 						$pnlMessages.find(`button.send`).click();
+					});
+				}
+			},
+			{
+				name: "Table Importer",
+				desc: "Import TableExport data",
+				html: `
+				<div id="d20plus-tables" title="Table Importer">
+					<div id="table-list">
+						<input type="search" class="search" placeholder="Search tables...">
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<button class="btn start-import">Import</button>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-tables").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 800,
+						height: 650,
+					});
+				},
+				openFn: () => {
+					const $win = $("#d20plus-tables");
+					$win.dialog("open");
+
+					const $btnImport = $win.find(`.start-import`).off("click");
+
+					const url = `${BASE_SITE_URL}/data/roll20-tables.json`;
+					DataUtil.loadJSON(url, (data) => {
+						const $lst = $win.find(`.list`);
+
+						const tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+						let tmp = "";
+						tables.forEach((t, i) => {
+							tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="checkbox">
+									<span class="name col-10">${t.name}</span>
+									<span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
+								</label>
+							`;
+						});
+						$lst.html(tmp);
+						tmp = null;
+
+						const tableList = new List("table-list", {
+							valueNames: ["name", "source"]
+						});
+
+						$btnImport.on("click", () => {
+							$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
+							const sel = tableList.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => tables[$(it.elm).attr("data-listid")]);
+
+							sel.forEach(t => {
+								const r20t = d20.Campaign.rollabletables.create({
+									name: t.name.replace(/\s+/g, "-"),
+									showplayers: t.isShown,
+									id: d20plus.generateRowId()
+								});
+
+								r20t.tableitems.reset(t.items.map(i => {
+									const out = {
+										id: d20plus.generateRowId(),
+										name: i.row
+									};
+									if (i.weight !== undefined) out.weight = i.weight;
+									if (i.avatar) out.avatar = i.avatar;
+									return out;
+								}))
+							})
+						});
+					});
+				}
+			},
+
+			{
+				name: "Token Avatar URL Fixer",
+				desc: "Change the root URL for tokens en-masse.",
+				html: `
+				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
+				<p><b>Warning:</b> this thing doesn't really work.</p>
+				<p>Current URLs (view only): <select class="view-only"></select></p>
+				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
+				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
+				<p><button class="btn">Go!</button></p>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-avatar-fixer").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 400,
+						height: 400,
+					});
+				},
+				openFn: () => {
+					function replaceAll (str, search, replacement) {
+						return str.split(search).join(replacement);
+					}
+
+					const $win = $("#d20plus-avatar-fixer");
+					$win.dialog("open");
+
+					const $selView = $win.find(`.view-only`);
+					const toView = [];
+					d20.Campaign.characters.toJSON().forEach(c => {
+						if (c.avatar && c.avatar.trim()) {
+							toView.push(c.avatar);
+						}
+					});
+					toView.sort(SortUtil.ascSort).forEach(url => $selView.append(`<option disabled>${url}</option>`));
+
+					const $btnGo = $win.find(`button`).off("click");
+					$btnGo.on("click", () => {
+						let count = 0;
+						$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+
+						const search = $win.find(`[name="search"]`).val();
+						const replace = $win.find(`[name="replace"]`).val();
+
+						d20.Campaign.characters.toJSON().forEach(c => {
+							const id = c.id;
+
+							const realC = d20.Campaign.characters.get(id);
+
+							const curr = realC.get("avatar");
+							let toSave = false;
+							if (curr.includes(search)) {
+								count++;
+								realC.set("avatar", replaceAll(curr, search, replace));
+								toSave = true;
+							}
+							if (realC.get("defaulttoken")) {
+								realC._getLatestBlob("defaulttoken", (bl) => {
+									if (bl && bl.imgsrc && bl.imgsrc.includes(search)) {
+										count++;
+										realC.updateBlobs({imgsrc: replaceAll(bl.imgsrc, search, replace)});
+										toSave = true;
+									}
+								});
+							}
+							if (toSave) {
+								realC.save();
+							}
+						});
+						window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
 					});
 				}
 			}

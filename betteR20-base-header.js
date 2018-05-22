@@ -1,6 +1,8 @@
 ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
+BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME restore when the main site is back up/automate this
+
 SCRIPT_EXTENSIONS = [];
 
 CONFIG_OPTIONS = {
