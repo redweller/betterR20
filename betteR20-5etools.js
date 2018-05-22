@@ -1715,7 +1715,7 @@ const betteR205etools = function () {
 		return "6";
 	};
 
-	d20plus.monsters._groupOptions = ["Type", "CR", "Alphabetical", "Source"];
+	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "Alphabetical", "Source"];
 	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
 	d20plus.monsters._listItemBuilder = (it) => `
 		<span class="name col-4" title="name">${it.name}</span>
@@ -4616,6 +4616,9 @@ const betteR205etools = function () {
 						break;
 					case "Alphabetical":
 						folderName = it.name[0].uppercaseFirst();
+						break;
+					case "Type (with tags)":
+						folderName = Parser.monTypeToFullObj(it.type).asText.uppercaseFirst();
 						break;
 					case "Type":
 					default:
