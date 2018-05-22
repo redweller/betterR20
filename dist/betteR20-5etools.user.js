@@ -284,7 +284,22 @@ const betteR205etools = function () {
 			"_type": "boolean"
 		},
 		"tokenactions": {
-			"name": "Add TokenAction Macros on Import",
+			"name": "Add TokenAction Macros on Import (Actions)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsTraits": {
+			"name": "Add TokenAction Macros on Import (Traits)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsSkillsSaves": {
+			"name": "Add TokenAction Macros on Import (Skills, Checks, and Saves)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsSpells": {
+			"name": "Add TokenAction Macros on Import (Spells)",
 			"default": true,
 			"_type": "boolean"
 		},
@@ -2262,7 +2277,7 @@ const betteR205etools = function () {
 					character.attribs.create({name: "npc_senses", current: sensesStr});
 
 					// add Tokenaction Macros
-					if (d20plus.getCfgVal("token", "tokenactions")) {
+					if (d20plus.getCfgVal("token", "tokenactionsSkillsSaves")) {
 						character.abilities.create({
 							name: "Perception",
 							istokenaction: true,
@@ -2528,7 +2543,7 @@ const betteR205etools = function () {
 							tokenActionStack.push(`[${sp.name}](~selected|${base}spell)`);
 
 							if (index === addMacroIndex) {
-								if (d20plus.getCfgVal("token", "tokenactions")) {
+								if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
 									character.abilities.create({
 										name: "Spells",
 										istokenaction: true,
@@ -2576,7 +2591,7 @@ const betteR205etools = function () {
 								current: v.name
 							});
 
-							if (d20plus.getCfgVal("token", "tokenactions")) {
+							if (d20plus.getCfgVal("token", "tokenactionsTraits")) {
 								const offsetIndex = data.spellcasting ? 1 + i : i;
 								character.abilities.create({
 									name: "Trait" + offsetIndex + ": " + v.name,
@@ -3918,7 +3933,7 @@ const betteR205etools = function () {
 					if (data.entries != null) {
 						character.attribs.create({name: "repeating_npctrait_0_name", current: name});
 						character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
-						if (d20plus.getCfgVal("token", "tokenactions")) {
+						if (d20plus.getCfgVal("token", "tokenactionsTraits")) {
 							character.abilities.create({
 								name: "Information: " + name,
 								istokenaction: true,
