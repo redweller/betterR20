@@ -3277,7 +3277,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
-			if (url.trim() === "https://5etools.com/data/items.json") {
+			if (url.trim() === `${DATA_URL}items.json`) {
 				EntryRenderer.item.buildList((itemList) => {
 						d20plus.importer.showImportList(
 							"item",
@@ -3293,9 +3293,9 @@ const betteR205etools = function () {
 						);
 					},
 					{
-						items: "https://5etools.com/data/items.json",
-						basicitems: "https://5etools.com/data/basicitems.json",
-						magicvariants: "https://5etools.com/data/magicvariants.json"
+						items: `${DATA_URL}items.json`,
+						basicitems: `${DATA_URL}basicitems.json`,
+						magicvariants: `${DATA_URL}magicvariants.json`
 					});
 			} else {
 				// for non-standard URLs, do a generic import
