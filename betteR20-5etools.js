@@ -940,7 +940,7 @@ const betteR205etools = function () {
 			}));
 
 			const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
-			DataUtil.loadJSON(brewUrl, (data, debugUrl) => {
+			DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
 				if (data.message) console.error(debugUrl, data.message);
 				data.forEach(it => {
 					dropdown.append($('<option>', {
@@ -972,7 +972,7 @@ const betteR205etools = function () {
 				}));
 
 				const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
-				DataUtil.loadJSON(brewUrl, (data, debugUrl) => {
+				DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
 					if (data.message) console.error(debugUrl, data.message);
 					data.forEach(it => {
 						$sel.append($('<option>', {
@@ -1749,7 +1749,7 @@ const betteR205etools = function () {
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
 		function loadData (url) {
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"monster",
@@ -1772,7 +1772,7 @@ const betteR205etools = function () {
 			const src = Object.keys(monsterDataUrls).find(k => monsterDataUrls[k] === fileName);
 			if (src && monsterFluffDataUrls[src]) {
 				const fluffUrl = d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]);
-				DataUtil.loadJSON(fluffUrl, (data) => {
+				DataUtil.loadJSON(fluffUrl).then((data) => {
 					monsterFluffData[src] = data;
 					loadData(url);
 				});
@@ -2432,7 +2432,7 @@ const betteR205etools = function () {
 							const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
 							const url = d20plus.spells.formSpellUrl(rawUrl);
 							// the JSON gets cached by the script, so this is fine
-							DataUtil.loadJSON(url, (data) => {
+							DataUtil.loadJSON(url).then((data) => {
 								const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
 
 								const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
@@ -3076,7 +3076,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"spell",
@@ -3299,7 +3299,7 @@ const betteR205etools = function () {
 					});
 			} else {
 				// for non-standard URLs, do a generic import
-				DataUtil.loadJSON(url, (data) => {
+				DataUtil.loadJSON(url).then((data) => {
 					d20plus.importer.addMeta(data._meta);
 					d20plus.importer.showImportList(
 						"item",
@@ -3539,7 +3539,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.psionics.playerImportBuilder : d20plus.psionics.handoutBuilder;
 
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"psionic",
@@ -3626,7 +3626,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
 
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"race",
@@ -3714,7 +3714,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
 
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"feat",
@@ -3794,7 +3794,7 @@ const betteR205etools = function () {
 	d20plus.objects.button = function () {
 		const url = $("#import-objects-url").val();
 		if (url && url.trim()) {
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"object",
@@ -4050,7 +4050,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then( (data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"class",
@@ -4189,7 +4189,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"subclass",
@@ -4277,7 +4277,7 @@ const betteR205etools = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.backgrounds.playerImportBuilder : d20plus.backgrounds.handoutBuilder;
 
-			DataUtil.loadJSON(url, (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"background",

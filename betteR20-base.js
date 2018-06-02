@@ -884,7 +884,7 @@ var betteR20Base = function () {
 					const $btnImport = $win.find(`.start-import`).off("click");
 
 					const url = `${BASE_SITE_URL}/data/roll20-tables.json`;
-					DataUtil.loadJSON(url, (data) => {
+					DataUtil.loadJSON(url).then((data) => {
 						const $lst = $win.find(`.list`);
 
 						const tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
