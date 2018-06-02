@@ -1,5 +1,4 @@
-# FIXME uncomment this when we have a server to deploy to
-# dist/*
+dist/*
 
 # Windows image file caches
 Thumbs.db
@@ -114,3 +113,4 @@ typings/
 .next
 
 .idea
+*.iml
