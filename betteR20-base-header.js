@@ -1,7 +1,7 @@
 ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
-BASE_SITE_URL = "https://thegiddylimit.github.io/"; // FIXME restore when the main site is back up/automate this
+BASE_SITE_URL = "https://5etools.com/"; // TODO automate to use mirror if main site is unavailable
 
 SCRIPT_EXTENSIONS = [];
 
