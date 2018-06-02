@@ -14,6 +14,7 @@ const betteR205etools = function () {
 	const OBJECT_DATA_URL = `${DATA_URL}objects.json`;
 	const CLASS_DATA_URL = `${DATA_URL}classes.json`;
 	const BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
+	const INVOCATION_DATA_URL = `${DATA_URL}invocations.json`;
 	const RACE_DATA_URL = `${DATA_URL}races.json`;
 
 	const HOMEBREW_REPO_URL = `https://api.github.com/repos/TheGiddyLimit/homebrew/`;
@@ -103,6 +104,11 @@ const betteR205etools = function () {
 		"race": [
 			"name",
 			"source"
+		],
+		"invocation": [
+			"name",
+			"source",
+			"entries"
 		]
 	};
 
@@ -348,6 +354,7 @@ const betteR205etools = function () {
 	d20plus.subclasses = {};
 	d20plus.backgrounds = {};
 	d20plus.adventures = {};
+	d20plus.invocations = {};
 
 	d20plus.advantageModes = ["Toggle (Default Advantage)", "Toggle", "Toggle (Default Disadvantage)", "Always", "Query", "Never"];
 	d20plus.whisperModes = ["Toggle (Default GM)", "Toggle (Default Public)", "Always", "Query", "Never"];
@@ -1008,6 +1015,7 @@ const betteR205etools = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtClasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtSubclasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtBackgrounds);
+			$wrpSettings.append(d20plus.settingsHtmlPtInvocations);
 			$wrpSettings.append(d20plus.settingsHtmlPtAdventures);
 			$wrpSettings.append(d20plus.settingsHtmlPtImportFooter);
 
@@ -1066,6 +1074,7 @@ const betteR205etools = function () {
 			$("a#import-classes-load").on(window.mousedowntype, () => d20plus.classes.button());
 			$("a#import-subclasses-load").on(window.mousedowntype, () => d20plus.subclasses.button());
 			$("a#import-backgrounds-load").on(window.mousedowntype, () => d20plus.backgrounds.button());
+			$("a#import-invocations-load").on(window.mousedowntype, () => d20plus.invocations.button());
 			$("select#import-mode-select").on("change", () => d20plus.importer.importModeSwitch());
 		} else {
 			// player-only HTML if required
@@ -1083,6 +1092,7 @@ const betteR205etools = function () {
 		$appTo.append(d20plus.settingsHtmlPtClassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtSubclassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
+		$appTo.append(d20plus.settingsHtmlPtInvocationsPlayer);
 
 		$winPlayer.dialog({
 			autoOpen: false,
@@ -1113,6 +1123,7 @@ const betteR205etools = function () {
 		$("a#import-classes-load-player").on(window.mousedowntype, () => d20plus.classes.button(true));
 		$("a#import-subclasses-load-player").on(window.mousedowntype, () => d20plus.subclasses.button(true));
 		$("a#import-backgrounds-load-player").on(window.mousedowntype, () => d20plus.backgrounds.button(true));
+		$("a#import-invocations-load-player").on(window.mousedowntype, () => d20plus.invocations.button(true));
 		$("select#import-mode-select-player").on("change", () => d20plus.importer.importModeSwitch());
 
 		$body.append(d20plus.importDialogHtml);
@@ -1145,6 +1156,7 @@ const betteR205etools = function () {
 		populateBasicDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_URL, "class", true);
 		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", "subclass", true);
 		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, "background", true);
+		populateBasicDropdown("#button-invocations-select", "#import-invocations-url", INVOCATION_DATA_URL, "invocation", true);
 
 		// bind tokens button
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
@@ -1204,6 +1216,7 @@ const betteR205etools = function () {
 				d20.journal.addFolderToFolderStructure("Subclasses");
 				d20.journal.addFolderToFolderStructure("Backgrounds");
 				d20.journal.addFolderToFolderStructure("Races");
+				d20.journal.addFolderToFolderStructure("Invocations");
 				d20.journal.refreshJournalList();
 				journalFolder = d20.Campaign.get("journalfolder");
 			}
@@ -1221,6 +1234,7 @@ const betteR205etools = function () {
 		addClasses("Subclasses");
 		addClasses("Backgrounds");
 		addClasses("Races");
+		addClasses("Invocations");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -1363,7 +1377,7 @@ const betteR205etools = function () {
 												d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
 											});
 										}
-									} else if (data.data.Category === "Races") { // TODO remove Race workaround when roll20 supports background drag-n-drop properly
+									} else if (data.data.Category === "Races") { // TODO remove Race workaround when roll20 supports race drag-n-drop properly
 										const race = data.Vetoolscontent;
 
 										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
@@ -1395,6 +1409,33 @@ const betteR205etools = function () {
 												name: `repeating_traits_${fRowId}_options-flag`,
 												current: "0"
 											});
+										});
+									} else if (data.data.Category === "Invocations") { // TODO remove Invocation workaround when roll20 supports invocation drag-n-drop properly
+										const invo = data.Vetoolscontent;
+										const renderer = new EntryRenderer();
+										renderer.setBaseUrl(BASE_SITE_URL);
+										const rendered = renderer.renderEntry({entries: invo.entries});
+
+										const fRowId = d20plus.generateRowId();
+										character.model.attribs.create({
+											name: `repeating_traits_${fRowId}_name`,
+											current: invo.name
+										});
+										character.model.attribs.create({
+											name: `repeating_traits_${fRowId}_source`,
+											current: "Invocation"
+										});
+										character.model.attribs.create({
+											name: `repeating_traits_${fRowId}_source_type`,
+											current: invo.name
+										});
+										character.model.attribs.create({
+											name: `repeating_traits_${fRowId}_description`,
+											current: d20plus.importer.getCleanText(rendered)
+										});
+										character.model.attribs.create({
+											name: `repeating_traits_${fRowId}_options-flag`,
+											current: "0"
 										});
 									} else if (data.data.Category === "Classes") {
 										let level = prompt("What level?", "1");
@@ -4349,6 +4390,85 @@ const betteR205etools = function () {
 		return [noteContents, gmNotes];
 	};
 
+	d20plus.invocations.button = function (forcePlayer) {
+		const playerMode = forcePlayer || !window.is_gm;
+		const url = playerMode ? $("#import-invocations-url-player").val() : $("#import-invocations-url").val();
+		if (url && url.trim()) {
+			const handoutBuilder = playerMode ? d20plus.invocations.playerImportBuilder : d20plus.invocations.handoutBuilder;
+
+			DataUtil.loadJSON(url).then((data) => {
+				d20plus.importer.addMeta(data._meta);
+				d20plus.importer.showImportList(
+					"invocation",
+					data.invocation,
+					handoutBuilder,
+					{
+						forcePlayer
+					}
+				);
+			});
+		}
+	};
+
+	d20plus.invocations.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+		// make dir
+		const folder = d20plus.importer.makeDirTree(`Invocations`, folderName);
+		const path = ["Invocations", folderName, data.name];
+
+		// handle duplicates/overwrites
+		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+		const name = data.name;
+		d20.Campaign.handouts.create({
+			name: name,
+			tags:  d20plus.importer.getTagString([
+				Parser.sourceJsonToFull(data.source)
+			], "invocations")
+		}, {
+			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_INVOCATIONS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+
+				const [noteContents, gmNotes] = d20plus.invocations._getHandoutData(data);
+
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			}
+		});
+	};
+
+	d20plus.invocations.playerImportBuilder = function (data) {
+		const [notecontents, gmnotes] = d20plus.invocations._getHandoutData(data);
+
+		const importId = d20plus.generateRowId();
+		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
+		d20plus.importer.makePlayerDraggable(importId, data.name);
+	};
+
+	d20plus.invocations._getHandoutData = function (data) {
+		const renderer = new EntryRenderer();
+		renderer.setBaseUrl(BASE_SITE_URL);
+
+		const renderStack = [];
+
+		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
+
+		const rendered = renderStack.join("");
+		const prereqs = EntryRenderer.invocation.getPrerequisiteText(data.prerequisites);
+
+		const r20json = {
+			"name": data.name,
+			"Vetoolscontent": data,
+			"data": {
+				"Category": "Invocations"
+			}
+		};
+		const gmNotes = JSON.stringify(r20json);
+		const noteContents = `${prereqs ? `<p><i>Prerequisite: ${prereqs}.</i></p>` : ""}${rendered}\n\n<del>${gmNotes}</del>`;
+
+		return [noteContents, gmNotes];
+	};
+
 	// Import Adventures button was clicked
 	d20plus.adventures.button = function () {
 		const url = $("#import-adventures-url").val();
@@ -4757,6 +4877,19 @@ const betteR205etools = function () {
 				return folderName;
 			}
 			case "background": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
+			case "invocation": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":
@@ -5240,6 +5373,7 @@ Errors: <span id="import-errors">0</span>
 <option value="class">Classes</option>
 <option value="subclass">Subclasses</option>
 <option value="background">Backgrounds</option>
+<option value="invocation">Invocations</option>
 <option value="adventure">Adventures</option>
 </select>
 `;
@@ -5254,6 +5388,7 @@ Errors: <span id="import-errors">0</span>
 <option value="class">Classes</option>
 <option value="subclass">Subclasses</option>
 <option value="background">Backgrounds</option>
+<option value="invocation">Invocations</option>
 </select>
 `;
 	d20plus.settingsHtmlPtMonsters = `
@@ -5461,6 +5596,27 @@ To import from third-party sources, either individually select one available in 
 <select id="button-backgrounds-select-player"><!-- populate with JS--></select>
 <input type="text" id="import-backgrounds-url-player">
 <a class="btn" href="#" id="import-backgrounds-load-player">Import Backgrounds</a>
+</div>
+`;
+
+
+	d20plus.settingsHtmlPtInvocations = `
+<div class="importer-section" data-import-group="invocation">
+<h4>Invocation Importing</h4>
+<label for="import-invocations-url">Invocation Data URL:</label>
+<select id="button-invocations-select"><!-- populate with JS--></select>
+<input type="text" id="import-invocations-url">
+<a class="btn" href="#" id="import-invocations-load">Import Invocations</a>
+</div>
+`;
+
+	d20plus.settingsHtmlPtInvocationsPlayer = `
+<div class="importer-section" data-import-group="invocation">
+<h4>Invocation Importing</h4>
+<label for="import-invocation-url-player">Invocation Data URL:</label>
+<select id="button-invocation-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-invocations-url-player">
+<a class="btn" href="#" id="import-invocations-load-player">Import Invocations</a>
 </div>
 `;
 
