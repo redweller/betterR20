@@ -1,6 +1,7 @@
 const betteR20Core = function () {
 	d20plus.Init = () => {
 		d20plus.log("Init (v" + d20plus.version + ")");
+		d20plus.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 		d20plus.addAllCss();
 		if (window.is_gm) d20plus.enhancePageSelector();

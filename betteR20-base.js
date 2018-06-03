@@ -97,6 +97,50 @@ var betteR20Base = function () {
 			return b < a ? 1 : -1;
 		},
 
+		checkVersion () {
+			function cmpVersions (a, b) {
+				const regExStrip0 = /(\.0+)+$/;
+				const segmentsA = a.replace(regExStrip0, '').split('.');
+				const segmentsB = b.replace(regExStrip0, '').split('.');
+				const l = Math.min(segmentsA.length, segmentsB.length);
+
+				for (let i = 0; i < l; i++) {
+					const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
+					if (diff) {
+						return diff;
+					}
+				}
+				return segmentsA.length - segmentsB.length;
+			}
+
+			d20plus.log("Checking current version");
+			$.ajax({
+				url: `https://get.5e.tools`,
+				success: (data) => {
+					const m = /<!--\s*(\d+\.\d+\.\d+)\s*-->/.exec(data);
+					if (m) {
+						const curr = d20plus.version;
+						const avail = m[1];
+						const cmp = cmpVersions(curr, avail);
+						if (cmp < 0) {
+							setTimeout(() => {
+								d20.textchat.incoming(false, ({
+									who: "system",
+									type: "system",
+									content: `<span style="margin-left: -45px; margin-right: -5px; margin-bottom: -7px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">
+										A newer version of the script is available. Get ${avail} <a style="color: white;" href="https://get.5e.tools/">here</a>.
+									</span>`
+								}));
+							}, 1000);
+						}
+					}
+				},
+				error: () => {
+					d20plus.log("Failed to check version");
+				}
+			})
+		},
+
 		chatTag: (message) => {
 			d20.textchat.incoming(false, ({
 				who: "system",
