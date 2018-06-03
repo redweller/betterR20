@@ -466,6 +466,7 @@ const betteR205etools = function () {
 // Page fully loaded and visible
 	d20plus.Init = function () {
 		d20plus.log("Init (v" + d20plus.version + ")");
+		d20plus.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 		d20plus.addAllCss();
 		if (window.is_gm) {
