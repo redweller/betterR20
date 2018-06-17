@@ -1827,7 +1827,7 @@ const betteR205etools = function () {
 // Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
 		function loadData () {
-			const toLoad = Object.keys(monsterDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+			const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
 			if (toLoad.length) {
 				DataUtil.multiLoadJSON(
 					toLoad.map(url => ({url})),
@@ -1853,7 +1853,7 @@ const betteR205etools = function () {
 
 		// preload fluff if available
 		const toLoadFluff = Object.keys(monsterFluffDataUrls)
-			.filter(src => !isNonstandardSource(src))
+			.filter(src => !SourceUtil.isNonstandardSource(src))
 			.map(src => ({url: d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]), src}));
 		if (toLoadFluff.length) {
 			DataUtil.multiLoadJSON(
@@ -3138,7 +3138,7 @@ const betteR205etools = function () {
 
 // Import All Spells button was clicked
 	d20plus.spells.buttonAll = function (forcePlayer) {
-		const toLoad = Object.keys(spellDataUrls).filter(src => !isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
+		const toLoad = Object.keys(spellDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
 
 		if (toLoad.length) {
 			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
@@ -4139,7 +4139,7 @@ const betteR205etools = function () {
 		const playerMode = forcePlayer || !window.is_gm;
 		// import subclasses
 		if (data.subclasses) {
-			const allSubclasses = (data.source && isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published only?`);
+			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published only?`);
 
 			const gainFeatureArray = [];
 			outer: for (let i = 0; i < 20; i++) {
@@ -4155,7 +4155,7 @@ const betteR205etools = function () {
 			}
 
 			data.subclasses.forEach(sc => {
-				if (!allSubclasses && isNonstandardSource(sc.source)) return;
+				if (!allSubclasses && !SourceUtil.isNonstandardSource(sc.source)) return;
 
 				sc.class = data.name;
 				sc._gainAtLevels = gainFeatureArray;
@@ -4979,7 +4979,7 @@ const betteR205etools = function () {
 		}
 
 		importList.items.forEach(i => {
-			if (isNonstandardSource(i.values().source)) {
+			if (SourceUtil.isNonstandardSource(i.values().source)) {
 				setSelection(i, false);
 			} else {
 				setSelection(i, true);
