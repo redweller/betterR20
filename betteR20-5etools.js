@@ -3278,7 +3278,7 @@ const betteR205etools = function () {
 		}
 		notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
 		gmnotes = JSON.stringify(r20json);
-		notecontents += `<del>${gmnotes}</del>`;
+		notecontents += `<del class="hidden">${gmnotes}</del>`;
 
 		return [notecontents, gmnotes];
 	};
@@ -3656,7 +3656,7 @@ const betteR205etools = function () {
 			${data.type === "D" ? `${EntryRenderer.psionic.getDisciplineText(data, renderer)}` : `${renderTalent()}`}
 			`;
 
-		const noteContents = `${baseNoteContents}<br><del>${gmNotes}</del>`;
+		const noteContents = `${baseNoteContents}<br><del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
@@ -3744,7 +3744,7 @@ const betteR205etools = function () {
 			}
 		};
 		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
@@ -3827,7 +3827,7 @@ const betteR205etools = function () {
 		const gmNotes = JSON.stringify(r20json);
 
 		const baseNoteContents = `${prerequisite ? `<p><i>Prerequisite: ${prerequisite}.</i></p> ` : ""}${rendered}`;
-		const noteContents = `${baseNoteContents}<del>${gmNotes}</del>`;
+		const noteContents = `${baseNoteContents}<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
@@ -4206,7 +4206,7 @@ const betteR205etools = function () {
 			}
 		};
 		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
@@ -4308,7 +4308,7 @@ const betteR205etools = function () {
 			}
 		};
 		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
@@ -4386,7 +4386,7 @@ const betteR205etools = function () {
 			}
 		};
 		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${rendered}\n\n<del>${gmNotes}</del>`;
+		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
@@ -4465,7 +4465,7 @@ const betteR205etools = function () {
 			}
 		};
 		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${prereqs ? `<p><i>Prerequisite: ${prereqs}.</i></p>` : ""}${rendered}\n\n<del>${gmNotes}</del>`;
+		const noteContents = `${prereqs ? `<p><i>Prerequisite: ${prereqs}.</i></p>` : ""}${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
@@ -5691,7 +5691,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);"
 		},
 		{
-			s: "del",
+			s: "del.userscript-hidden",
 			r: "display: none;"
 		},
 		{
