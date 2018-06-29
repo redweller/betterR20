@@ -2131,8 +2131,9 @@ const betteR205etools = function () {
 							d20plus.importer.getSetAvatarImage(character, avatar);
 						}
 					});
-					var ac = data.ac.match(/^\d+/);
-					var actype = /\(([^)]+)\)/.exec(data.ac);
+					const parsedAc = typeof data.ac === "string" ? data.ac : Parser.acToFull(data.ac);
+					var ac = parsedAc.match(/^\d+/);
+					var actype = /\(([^)]+)\)/.exec(parsedAc);
 					var hp = data.hp.average || 0;
 					var hpformula = data.hp.formula;
 					var passive = data.passive != null ? data.passive : "";
