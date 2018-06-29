@@ -970,7 +970,8 @@ var betteR20Base = function () {
 									if (i.weight !== undefined) out.weight = i.weight;
 									if (i.avatar) out.avatar = i.avatar;
 									return out;
-								}))
+								}));
+								r20t.tableitems.forEach(it => it.save());
 							})
 						});
 					});
