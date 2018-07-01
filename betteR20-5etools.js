@@ -2131,7 +2131,7 @@ const betteR205etools = function () {
 							d20plus.importer.getSetAvatarImage(character, avatar);
 						}
 					});
-					const parsedAc = typeof data.ac === "string" ? data.ac : Parser.acToFull(data.ac);
+					const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
 					var ac = parsedAc.match(/^\d+/);
 					var actype = /\(([^)]+)\)/.exec(parsedAc);
 					var hp = data.hp.average || 0;
