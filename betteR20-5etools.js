@@ -2499,7 +2499,7 @@ const betteR205etools = function () {
 							makeAttrib("spellcomp_s", Number(!!VeSp.components.s));
 							makeAttrib("spellcomp_materials", sp.data.Material);
 							if (!sp.data.Material && !VeSp.components.m) makeAttrib("spellcomp_m", "0");
-							makeAttrib("spellconcentration", sp.data.Concentration)
+							makeAttrib("spellconcentration", sp.data.Concentration);
 							makeAttrib("spellduration", sp.data.Duration);
 							makeAttrib("spelldamage", sp.data.Damage);
 							makeAttrib("spelldamagetype", sp.data["Damage Type"]);
@@ -2507,10 +2507,13 @@ const betteR205etools = function () {
 							makeAttrib("spellsavesuccess", sp.data["Save Success"]);
 							makeAttrib("spellhldie", sp.data["Higher Spell Slot Dice"]);
 							makeAttrib("spellhldietype", sp.data["Higher Spell Slot Die"]);
-							const [text, hlText] = sp.content.split("\n\nAt Higher Levels:")
+							const [text, hlText] = sp.content.split("\n\nAt Higher Levels:");
 							makeAttrib("spelldescription", addInlineRollers(text));
 							makeAttrib("spellathigherlevels", addInlineRollers(hlText));
 							makeAttrib("options-flag", "0");
+							setTimeout(() => {
+								makeAttrib("spell_ability", `@{${spellAbility.toLowerCase()}_mod}+`);
+							}, spAbilsDelayMs);
 
 							// TODO reverse engineer/add the other ~20 attributes needed to make this work (see `enableSpellattackHack()`)
 							if (sp.content.toLowerCase().includes("ranged spell attack")) {
