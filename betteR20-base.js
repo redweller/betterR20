@@ -1053,7 +1053,6 @@ var betteR20Base = function () {
 					});
 				}
 			},
-
 			{
 				name: "Token Avatar URL Fixer",
 				desc: "Change the root URL for tokens en-masse.",
@@ -2212,10 +2211,9 @@ var betteR20Base = function () {
 										var t = e.model.get("sides").split("|")
 											, n = t.length
 											, i = d20.textchat.diceengine.random(n);
-										e.model.save({
-											currentSide: i,
-											imgsrc: unescape(t[i])
-										}),
+
+										const imgUrl = unescape(t[i]);
+										e.model.save(getRollableTokenUpdate(imgUrl, i)),
 											d.push(t[i])
 									}
 								}),
@@ -2235,11 +2233,9 @@ var betteR20Base = function () {
 									height: 225,
 									buttons: {
 										Choose: function() {
+											const imgUrl = unescape(h.sidesarray[p]);
 											d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-												l.model.save({
-													currentSide: p,
-													imgsrc: unescape(h.sidesarray[p])
-												}),
+												l.model.save(getRollableTokenUpdate(imgUrl, p)),
 												l = null,
 												h = null,
 												c.off("slide"),
@@ -2317,6 +2313,9 @@ var betteR20Base = function () {
 									d20.engine.unselect();
 								});
 								i();
+							} else if ("rollertokenresize" === e) {
+								resizeToken();
+								i();
 							}
 							// END MOD
 							return !1
@@ -2325,6 +2324,70 @@ var betteR20Base = function () {
 					!1
 			};
 			// END ROLL20 CODE
+
+			function getRollableTokenUpdate (imgUrl, curSide) {
+				const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
+				const toSave = {
+					currentSide: curSide,
+					imgsrc: imgUrl
+				};
+				if (m) {
+					toSave.width = 70 * Number(m[1]);
+					toSave.height = 70 * Number(m[1])
+				}
+				return toSave;
+			}
+
+			function resizeToken () {
+				const sel = d20.engine.selected();
+
+				const options = [["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5], ["Small", 1], ["Tiny", 0.5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
+				const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
+				dialog.dialog({
+					title: "New Size",
+					beforeClose: function () {
+						return false;
+					},
+					buttons: {
+						Submit: function () {
+							const size = dialog.find("select").val();
+							d20.engine.unselect();
+							sel.forEach(it => {
+								const nxtSize = size * 70;
+								const sides = it.model.get("sides");
+								if (sides) {
+									const ueSides = unescape(sides);
+									const cur = it.model.get("currentSide");
+									const split = ueSides.split("|");
+									if (split[cur].includes("roll20_token_size")) {
+										split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
+									} else {
+										split[cur] += `?roll20_token_size=${size}`;
+									}
+									const toSaveSides = split.map(it => escape(it)).join("|");
+									const toSave = {
+										sides: toSaveSides,
+										width: nxtSize,
+										height: nxtSize
+									};
+									console.log(`Updating token:`, toSave);
+									it.model.save(toSave);
+								} else {
+									console.warn("Token had no side data!")
+								}
+							});
+							dialog.off();
+							dialog.dialog("destroy").remove();
+							d20.textchat.$textarea.focus();
+						},
+						Cancel: function () {
+							dialog.off();
+							dialog.dialog("destroy").remove();
+						}
+					}
+				});
+			}
+
 			d20.token_editor.showContextMenu = r;
 			d20.token_editor.closeContextMenu = i;
 			$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
@@ -3663,6 +3726,7 @@ var betteR20Base = function () {
             <ul class='submenu' data-menuname='multiside'>
               <li data-action-type='side_random'>Random Side</li>
               <li data-action-type='side_choose'>Choose Side</li>
+              <li data-action-type='rollertokenresize'>Set Side Size</li>
             </ul>
           </li>
           <$ } $>

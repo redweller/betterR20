@@ -524,6 +524,7 @@ const betteR205etools = function () {
 		} else {
 			d20plus.startPlayerConfigHandler();
 		}
+		d20plus.addSelectedTokenCommands();
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
 		d20plus.enhanceSnap();
@@ -5885,6 +5886,24 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						d20plus.importer.addListFilter($fltr, toShow, tokenList, d20plus.monsters._listIndexConverter);
 
 						$win.find(`button`).on("click", () => {
+							function getSizeInTiles (size) {
+								switch (size) {
+									case SZ_TINY:
+										return 0.5;
+									case SZ_SMALL:
+									case SZ_MEDIUM:
+										return 1;
+									case SZ_LARGE:
+										return 2;
+									case SZ_HUGE:
+										return 3;
+									case SZ_GARGANTUAN:
+										return 4;
+									case SZ_COLOSSAL:
+										return 5;
+								}
+							}
+
 							console.log("Assembling creature list");
 							if (tokenList) {
 								$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
@@ -5900,8 +5919,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								sel.forEach(m => {
 									const item = table.tableitems.create();
 									item.set("name", m.name);
-									const avatar = m.tokenURL || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png`;
+									// encode size info into the URL, which will get baked into the token
+									const avatar = m.tokenURL || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png?roll20_token_size=${getSizeInTiles(m.size)}`;
 									item.set("avatar", avatar);
+									item.set("token_size", getSizeInTiles(m.size));
 									item.save();
 								});
 								table.save();
