@@ -2341,7 +2341,7 @@ var betteR20Base = function () {
 			function resizeToken () {
 				const sel = d20.engine.selected();
 
-				const options = [["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5], ["Small", 1], ["Tiny", 0.5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
+				const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
 				const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
 				dialog.dialog({
 					title: "New Size",
