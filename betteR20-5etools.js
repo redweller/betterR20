@@ -5563,7 +5563,7 @@ To import from third-party sources, either individually select one available in 
 	d20plus.settingsHtmlPtClasses = `
 <div class="importer-section" data-import-group="class">
 <h4>Class Importing</h4>
-<p><a class="btn" href="#" id="button-classes-load-all" title="Standard sources only; no third-party or UA">Import Classes from 5etools</a></p>
+<p style="margin-top: 5px"><a class="btn" href="#" id="button-classes-load-all" title="Standard sources only; no third-party or UA">Import Classes from 5etools</a></p>
 <label for="import-classes-url">Class Data URL:</label>
 <select id="button-classes-select">
 <!-- populate with JS-->
@@ -5576,7 +5576,7 @@ To import from third-party sources, either individually select one available in 
 	d20plus.settingsHtmlPtClassesPlayer = `
 <div class="importer-section" data-import-group="class">
 <h4>Class Importing</h4>
-<p><a class="btn" href="#" id="button-classes-load-all-player">Import Classes from 5etools</a></p>
+<p style="margin-top: 5px"><a class="btn" href="#" id="button-classes-load-all-player">Import Classes from 5etools</a></p>
 <label for="import-classes-url-player">Class Data URL:</label>
 <select id="button-classes-select-player">
 <!-- populate with JS-->
