@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.7.10";
+const SCRIPT_VERSION = "1.7.11";
 
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
@@ -55,4 +55,4 @@ const full5etools = joinParts(HEADER_5ETOOLS, ptBaseHead, pt5etools, pt5etoolsEm
 fs.writeFileSync(`${buildDir}/betteR20-core.user.js`, fullBase);
 fs.writeFileSync(`${buildDir}/betteR20-5etools.user.js`, full5etools);
 
-console.log("Build complete.");
+console.log(`v${SCRIPT_VERSION}: Build complete.`);

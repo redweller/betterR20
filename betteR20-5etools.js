@@ -7,12 +7,12 @@ const betteR205etools = function () {
 	const SPELL_META_URL = `${SPELL_DATA_DIR}roll20.json`;
 	const MONSTER_DATA_DIR = `${DATA_URL}bestiary/`;
 	const ADVENTURE_DATA_DIR = `${DATA_URL}adventure/`;
+	const CLASS_DATA_DIR = `${DATA_URL}class/`;
 
 	const ITEM_DATA_URL = `${DATA_URL}items.json`;
 	const FEAT_DATA_URL = `${DATA_URL}feats.json`;
 	const PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
 	const OBJECT_DATA_URL = `${DATA_URL}objects.json`;
-	const CLASS_DATA_URL = `${DATA_URL}classes.json`;
 	const BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
 	const INVOCATION_DATA_URL = `${DATA_URL}invocations.json`;
 	const RACE_DATA_URL = `${DATA_URL}races.json`;
@@ -118,6 +118,7 @@ const betteR205etools = function () {
 	let monsterFluffDataUrls = {};
 	let monsterFluffData = {};
 	let adventureMetadata = {};
+	let classDataUrls = {};
 
 // build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
 	function SheetAttribute (name, ogl, shaped) {
@@ -392,6 +393,7 @@ const betteR205etools = function () {
 	d20plus.scripts.push({name: "5etoolsrender", url: `${JS_URL}entryrender.js`});
 
 	d20plus.json = [
+		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
 		{name: "spell index", url: `${SPELL_DATA_DIR}index.json`},
 		{name: "spell metadata", url: SPELL_META_URL},
 		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`},
@@ -404,7 +406,8 @@ const betteR205etools = function () {
 	d20plus.addJson = function (onLoadFunction) {
 		d20plus.log("Load JSON");
 		const onEachLoadFunction = function (name, url, data) {
-			if (name === "spell index") spellDataUrls = data;
+			if (name === "class index") classDataUrls = data;
+			else if (name === "spell index") spellDataUrls = data;
 			else if (name === "spell metadata") spellMetaData = data;
 			else if (name === "bestiary index") monsterDataUrls = data;
 			else if (name === "bestiary fluff index") monsterFluffDataUrls = data;
@@ -933,13 +936,13 @@ const betteR205etools = function () {
 
 	d20plus.addCustomHTML = function () {
 		function populateDropdown (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, homebrewDir) {
-			const defaultUrl = d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]);
+			const defaultUrl = defaultSel ? d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]) : "";
 			$(inputFieldId).val(defaultUrl);
 			const dropdown = $(dropdownId);
 			$.each(Object.keys(srcUrlObject), function (i, src) {
 				dropdown.append($('<option>', {
 					value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
-					text: Parser.sourceJsonToFullCompactPrefix(src)
+					text: homebrewDir === "class" ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src)
 				}));
 			});
 			dropdown.append($('<option>', {
@@ -1072,7 +1075,8 @@ const betteR205etools = function () {
 			$("a#import-items-load").on(window.mousedowntype, () => d20plus.items.button());
 			$("a#import-races-load").on(window.mousedowntype, () => d20plus.races.button());
 			$("a#import-feats-load").on(window.mousedowntype, () => d20plus.feats.button());
-			$("a#import-classes-load").on(window.mousedowntype, () => d20plus.classes.button());
+			$("a#button-classes-load").on(window.mousedowntype, () => d20plus.classes.button());
+			$("a#button-classes-load-all").on(window.mousedowntype, () => d20plus.classes.buttonAll());
 			$("a#import-subclasses-load").on(window.mousedowntype, () => d20plus.subclasses.button());
 			$("a#import-backgrounds-load").on(window.mousedowntype, () => d20plus.backgrounds.button());
 			$("a#import-invocations-load").on(window.mousedowntype, () => d20plus.invocations.button());
@@ -1121,7 +1125,8 @@ const betteR205etools = function () {
 		$("a#import-items-load-player").on(window.mousedowntype, () => d20plus.items.button(true));
 		$("a#import-races-load-player").on(window.mousedowntype, () => d20plus.races.button(true));
 		$("a#import-feats-load-player").on(window.mousedowntype, () => d20plus.feats.button(true));
-		$("a#import-classes-load-player").on(window.mousedowntype, () => d20plus.classes.button(true));
+		$("a#button-classes-load-player").on(window.mousedowntype, () => d20plus.classes.button(true));
+		$("a#button-classes-load-all-player").on(window.mousedowntype, () => d20plus.classes.buttonAll(true));
 		$("a#import-subclasses-load-player").on(window.mousedowntype, () => d20plus.subclasses.button(true));
 		$("a#import-backgrounds-load-player").on(window.mousedowntype, () => d20plus.backgrounds.button(true));
 		$("a#import-invocations-load-player").on(window.mousedowntype, () => d20plus.invocations.button(true));
@@ -1149,12 +1154,13 @@ const betteR205etools = function () {
 
 		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
 		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
+		populateDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_DIR, classDataUrls, "", "class");
+		populateDropdown("#button-classes-select-player", "#import-classes-url-player", CLASS_DATA_DIR, classDataUrls, "", "class");
 
 		populateBasicDropdown("#button-items-select", "#import-items-url", ITEM_DATA_URL, "item", true);
 		populateBasicDropdown("#button-psionics-select", "#import-psionics-url", PSIONIC_DATA_URL, "psionic", true);
 		populateBasicDropdown("#button-feats-select", "#import-feats-url", FEAT_DATA_URL, "feat", true);
 		populateBasicDropdown("#button-races-select", "#import-races-url", RACE_DATA_URL, "race", true);
-		populateBasicDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_URL, "class", true);
 		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", "subclass", true);
 		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, "background", true);
 		populateBasicDropdown("#button-invocations-select", "#import-invocations-url", INVOCATION_DATA_URL, "invocation", true);
@@ -3140,7 +3146,7 @@ const betteR205etools = function () {
 		}
 	};
 
-// Import All Spells button was clicked
+	// Import All Spells button was clicked
 	d20plus.spells.buttonAll = function (forcePlayer) {
 		const toLoad = Object.keys(spellDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
 
@@ -4089,14 +4095,14 @@ const betteR205etools = function () {
 		}
 	};
 
-// Import Classes button was clicked
+	// Import Classes button was clicked
 	d20plus.classes.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-classes-url-player").val() : $("#import-classes-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
-			DataUtil.loadJSON(url).then( (data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"class",
@@ -4108,6 +4114,22 @@ const betteR205etools = function () {
 				);
 			});
 		}
+	};
+
+	// Import All Classes button was clicked
+	d20plus.classes.buttonAll = function (forcePlayer) {
+		const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
+
+		DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
+			d20plus.importer.showImportList(
+				"class",
+				data.class,
+				handoutBuilder,
+				{
+					forcePlayer
+				}
+			);
+		});
 	};
 
 	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
@@ -5541,20 +5563,26 @@ To import from third-party sources, either individually select one available in 
 	d20plus.settingsHtmlPtClasses = `
 <div class="importer-section" data-import-group="class">
 <h4>Class Importing</h4>
+<p><a class="btn" href="#" id="button-classes-load-all" title="Standard sources only; no third-party or UA">Import Classes from 5etools</a></p>
 <label for="import-classes-url">Class Data URL:</label>
-<select id="button-classes-select"><!-- populate with JS--></select>
+<select id="button-classes-select">
+<!-- populate with JS-->
+</select>
 <input type="text" id="import-classes-url">
-<a class="btn" href="#" id="import-classes-load">Import Classes</a>
+<p><a class="btn" href="#" id="button-classes-load">Import Classes from URL</a><p/>
 </div>
 `;
 
 	d20plus.settingsHtmlPtClassesPlayer = `
 <div class="importer-section" data-import-group="class">
 <h4>Class Importing</h4>
+<p><a class="btn" href="#" id="button-classes-load-all-player">Import Classes from 5etools</a></p>
 <label for="import-classes-url-player">Class Data URL:</label>
-<select id="button-classes-select-player"><!-- populate with JS--></select>
+<select id="button-classes-select-player">
+<!-- populate with JS-->
+</select>
 <input type="text" id="import-classes-url-player">
-<a class="btn" href="#" id="import-classes-load-player">Import Classes</a>
+<p><a class="btn" href="#" id="button-classes-load-player">Import Classes from URL</a><p/>
 </div>
 `;
 
