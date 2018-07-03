@@ -705,7 +705,7 @@ const betteR205etools = function () {
 							var npc = char.attribs.find(function (a) {
 								return a.get("name").toLowerCase() === "npc";
 							});
-							if (npc && npc.get("current") === "1") {
+							if (npc && (npc.get("current") === 1 || npc.get("current") === "1")) { // just in casies
 								npcs.push(char);
 							} else {
 								var level = char.attribs.find(function (a) {
@@ -749,7 +749,7 @@ const betteR205etools = function () {
 					var cr = v.attribs.find(function (a) {
 						return a.get("name").toLowerCase() === "npc_challenge";
 					});
-					if (cr) xp += parseInt(Parser.crToXp(cr.get("current")));
+					if (cr) xp += parseInt(Parser.crToXpNumber(cr.get("current")));
 				});
 				// Encounter's adjusted xp
 				adjustedxp = xp * multiplier;
@@ -760,8 +760,7 @@ const betteR205etools = function () {
 				else if (adjustedxp < partyXPThreshold[1]) difficulty = "Easy";
 				else if (adjustedxp < partyXPThreshold[2]) difficulty = "Medium";
 				else if (adjustedxp < partyXPThreshold[3]) difficulty = "Hard";
-				else
-					difficulty = "Deadly";
+				else difficulty = "Deadly";
 			}
 		} catch (e) {
 			console.log("D20Plus getDifficulty Exception", e);
