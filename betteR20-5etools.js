@@ -2093,14 +2093,13 @@ const betteR205etools = function () {
 					}
 					if (cpy.entries) {
 						if (!fluff.entries) fluff.entries = cpy.entries;
-						else fluff.entries.entries = fluff.entries.entries.concat(cpy.entries.entries);
+						else fluff.entries = fluff.entries.concat(cpy.entries);
 					}
 					delete fluff._appendCopy;
 				}
 
 				if (fluff.entries) {
-					const depth = fluff.entries.type === "section" ? -1 : 2;
-					renderFluff = renderer.renderEntry(fluff.entries, depth);
+					renderFluff = renderer.renderEntry(fluff.entries);
 				}
 			}
 		}
