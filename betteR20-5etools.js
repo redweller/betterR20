@@ -1697,6 +1697,54 @@ const betteR205etools = function () {
 											noComponents(level, rowId, false);
 										}
 									} else {
+										if (data.data.Category === "Items") {
+											if (data.data._versatile) {
+												setTimeout(() => {
+													const rowId = d20plus.generateRowId();
+
+													function makeItemTrait (key, val) {
+														const toSave = character.model.attribs.create({
+															name: `repeating_attack_${rowId}_${key}`,
+															current: val
+														});
+														toSave.save();
+													}
+
+													// TODO should get the ability bonus, too
+													const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
+
+													// TODO this doesn't seem to work -- further testing required
+													let lastItemId = null;
+													try {
+														const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
+														const lastItem = items[items.length - 1];
+														lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
+													} catch (ex) {
+														console.error("Failed to get last item ID");
+														console.error(ex);
+													}
+
+													makeItemTrait("options-flag", "0");
+													if (lastItemId) {
+														makeItemTrait("itemid", lastItemId);
+													}
+													makeItemTrait("atkname", data.name);
+													makeItemTrait("dmgbase", data.data._versatile);
+													makeItemTrait("dmgtype", data.data["Damage Type"]);
+													const attr = (data.data["Item Type"] || "").includes("Melee") ? "@{strength_mod}" : "@{dexterity_mod}";
+													makeItemTrait("atkattr_base", attr);
+													makeItemTrait("dmgattr", attr);
+													makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+													makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+													if (proficiencyBonus) {
+														makeItemTrait("atkbonus", `+${proficiencyBonus.current}`);
+													}
+													makeItemTrait("atkdmgtype", `${data.data._versatile} ${data.data["Damage Type"]}`);
+													makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
+												}, 350); // defer this, so we can hopefully pull item ID
+											}
+										}
+
 										function doDefaultDrop (n, outerI) {
 											const e = character;
 											var i = $(outerI.helper[0]).attr("data-pagename");
@@ -3455,7 +3503,10 @@ const betteR205etools = function () {
 			for (var i = 0; i < propertieslist.length; i++) {
 				var a = d20plus.items.parseProperty(propertieslist[i]);
 				var b = propertieslist[i];
-				if (b === "V") a = a + " (" + cleanDmg2 + ")";
+				if (b === "V") {
+					a = a + " (" + cleanDmg2 + ")";
+					roll20Data.data._versatile = cleanDmg2;
+				}
 				if (b === "T" || b === "A") a = a + " (" + data.range + "ft.)";
 				if (b === "RLD") a = a + " (" + data.reload + " shots)";
 				if (i > 0) a = ", " + a;
