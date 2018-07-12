@@ -3415,6 +3415,10 @@ const betteR205etools = function () {
 	};
 
 	d20plus.items._getHandoutData = function (data) {
+		function removeDiceTags (str) {
+			return str ? str.replace(/{@dice /g, "").replace(/}/g, "") : str;
+		}
+
 		var notecontents = "";
 		roll20Data = {
 			name: data.name,
@@ -3437,7 +3441,9 @@ const betteR205etools = function () {
 		}
 		var typestring = typeArray.join(", ");
 		var damage = "";
-		if (data.dmg1 && data.dmgType) damage = data.dmg1 + " " + Parser.dmgTypeToFull(data.dmgType);
+		const cleanDmg1 = removeDiceTags(data.dmg1);
+		const cleanDmg2 = removeDiceTags(data.dmg2);
+		if (data.dmg1 && data.dmgType) damage = cleanDmg1 + " " + Parser.dmgTypeToFull(data.dmgType);
 		var armorclass = "";
 		if (type === "S") armorclass = "+" + data.ac;
 		if (type === "LA") armorclass = data.ac + " + Dex";
@@ -3449,7 +3455,7 @@ const betteR205etools = function () {
 			for (var i = 0; i < propertieslist.length; i++) {
 				var a = d20plus.items.parseProperty(propertieslist[i]);
 				var b = propertieslist[i];
-				if (b === "V") a = a + " (" + data.dmg2 + ")";
+				if (b === "V") a = a + " (" + cleanDmg2 + ")";
 				if (b === "T" || b === "A") a = a + " (" + data.range + "ft.)";
 				if (b === "RLD") a = a + " (" + data.reload + " shots)";
 				if (i > 0) a = ", " + a;
@@ -3503,7 +3509,7 @@ const betteR205etools = function () {
 			roll20Data.data.Range = data.range;
 		}
 		if (data.dmg1 && data.dmgType) {
-			roll20Data.data.Damage = data.dmg1;
+			roll20Data.data.Damage = cleanDmg1;
 			roll20Data.data["Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
 		}
 		if (textstring.trim()) {
