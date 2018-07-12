@@ -705,7 +705,7 @@ const betteR205etools = function () {
 							var npc = char.attribs.find(function (a) {
 								return a.get("name").toLowerCase() === "npc";
 							});
-							if (npc && npc.get("current") === "1") {
+							if (npc && (npc.get("current") === 1 || npc.get("current") === "1")) { // just in casies
 								npcs.push(char);
 							} else {
 								var level = char.attribs.find(function (a) {
@@ -749,7 +749,7 @@ const betteR205etools = function () {
 					var cr = v.attribs.find(function (a) {
 						return a.get("name").toLowerCase() === "npc_challenge";
 					});
-					if (cr) xp += parseInt(Parser.crToXp(cr.get("current")));
+					if (cr) xp += parseInt(Parser.crToXpNumber(cr.get("current")));
 				});
 				// Encounter's adjusted xp
 				adjustedxp = xp * multiplier;
@@ -760,8 +760,7 @@ const betteR205etools = function () {
 				else if (adjustedxp < partyXPThreshold[1]) difficulty = "Easy";
 				else if (adjustedxp < partyXPThreshold[2]) difficulty = "Medium";
 				else if (adjustedxp < partyXPThreshold[3]) difficulty = "Hard";
-				else
-					difficulty = "Deadly";
+				else difficulty = "Deadly";
 			}
 		} catch (e) {
 			console.log("D20Plus getDifficulty Exception", e);
@@ -1698,6 +1697,54 @@ const betteR205etools = function () {
 											noComponents(level, rowId, false);
 										}
 									} else {
+										if (data.data.Category === "Items") {
+											if (data.data._versatile) {
+												setTimeout(() => {
+													const rowId = d20plus.generateRowId();
+
+													function makeItemTrait (key, val) {
+														const toSave = character.model.attribs.create({
+															name: `repeating_attack_${rowId}_${key}`,
+															current: val
+														});
+														toSave.save();
+													}
+
+													// TODO should get the ability bonus, too
+													const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
+
+													// TODO this doesn't seem to work -- further testing required
+													let lastItemId = null;
+													try {
+														const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
+														const lastItem = items[items.length - 1];
+														lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
+													} catch (ex) {
+														console.error("Failed to get last item ID");
+														console.error(ex);
+													}
+
+													makeItemTrait("options-flag", "0");
+													if (lastItemId) {
+														makeItemTrait("itemid", lastItemId);
+													}
+													makeItemTrait("atkname", data.name);
+													makeItemTrait("dmgbase", data.data._versatile);
+													makeItemTrait("dmgtype", data.data["Damage Type"]);
+													const attr = (data.data["Item Type"] || "").includes("Melee") ? "@{strength_mod}" : "@{dexterity_mod}";
+													makeItemTrait("atkattr_base", attr);
+													makeItemTrait("dmgattr", attr);
+													makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+													makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+													if (proficiencyBonus) {
+														makeItemTrait("atkbonus", `+${proficiencyBonus.current}`);
+													}
+													makeItemTrait("atkdmgtype", `${data.data._versatile} ${data.data["Damage Type"]}`);
+													makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
+												}, 350); // defer this, so we can hopefully pull item ID
+											}
+										}
+
 										function doDefaultDrop (n, outerI) {
 											const e = character;
 											var i = $(outerI.helper[0]).attr("data-pagename");
@@ -2094,14 +2141,13 @@ const betteR205etools = function () {
 					}
 					if (cpy.entries) {
 						if (!fluff.entries) fluff.entries = cpy.entries;
-						else fluff.entries.entries = fluff.entries.entries.concat(cpy.entries.entries);
+						else fluff.entries = fluff.entries.concat(cpy.entries);
 					}
 					delete fluff._appendCopy;
 				}
 
 				if (fluff.entries) {
-					const depth = fluff.entries.type === "section" ? -1 : 2;
-					renderFluff = renderer.renderEntry(fluff.entries, depth);
+					renderFluff = renderer.renderEntry(fluff.entries);
 				}
 			}
 		}
@@ -3417,6 +3463,10 @@ const betteR205etools = function () {
 	};
 
 	d20plus.items._getHandoutData = function (data) {
+		function removeDiceTags (str) {
+			return str ? str.replace(/{@dice /g, "").replace(/}/g, "") : str;
+		}
+
 		var notecontents = "";
 		roll20Data = {
 			name: data.name,
@@ -3439,7 +3489,9 @@ const betteR205etools = function () {
 		}
 		var typestring = typeArray.join(", ");
 		var damage = "";
-		if (data.dmg1 && data.dmgType) damage = data.dmg1 + " " + Parser.dmgTypeToFull(data.dmgType);
+		const cleanDmg1 = removeDiceTags(data.dmg1);
+		const cleanDmg2 = removeDiceTags(data.dmg2);
+		if (data.dmg1 && data.dmgType) damage = cleanDmg1 + " " + Parser.dmgTypeToFull(data.dmgType);
 		var armorclass = "";
 		if (type === "S") armorclass = "+" + data.ac;
 		if (type === "LA") armorclass = data.ac + " + Dex";
@@ -3451,7 +3503,10 @@ const betteR205etools = function () {
 			for (var i = 0; i < propertieslist.length; i++) {
 				var a = d20plus.items.parseProperty(propertieslist[i]);
 				var b = propertieslist[i];
-				if (b === "V") a = a + " (" + data.dmg2 + ")";
+				if (b === "V") {
+					a = a + " (" + cleanDmg2 + ")";
+					roll20Data.data._versatile = cleanDmg2;
+				}
 				if (b === "T" || b === "A") a = a + " (" + data.range + "ft.)";
 				if (b === "RLD") a = a + " (" + data.reload + " shots)";
 				if (i > 0) a = ", " + a;
@@ -3505,7 +3560,7 @@ const betteR205etools = function () {
 			roll20Data.data.Range = data.range;
 		}
 		if (data.dmg1 && data.dmgType) {
-			roll20Data.data.Damage = data.dmg1;
+			roll20Data.data.Damage = cleanDmg1;
 			roll20Data.data["Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
 		}
 		if (textstring.trim()) {
