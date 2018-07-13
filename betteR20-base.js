@@ -2718,117 +2718,18 @@ var betteR20Base = function () {
 			}
 		},
 
-		_getHoverGmNoteStr: (str) => {
-			const $initial = $(`<div>${str}</div>`);
-
-			let stack = "";
-			function recurse ($ele, depth, listDepth, inTable, inTd) {
-				const nodes = $ele.contents().get();
-
-				nodes.forEach(n => {
-					if (n.nodeType === 3) { // text node
-						const pre = listDepth ? ` ${"-".repeat(listDepth)}` : "";
-						const doLineEnd = !inTd;
-						stack += `${pre}${n.data}${doLineEnd ? "\n" : ""}`;
-					} else {
-						const $n = $(n);
-
-						if ($n.is("br")) {
-							stack += "\n";
-							return;
-						}
-
-						let nxtInTable = inTable;
-						if ($n.is("table")) {
-							nxtInTable = true;
-						}
-
-						if ($n.is("tr")) {
-							stack += "----------\n"
-						}
-
-						let nxtInTd = inTd;
-						if ($n.is("td")) {
-							stack += "|";
-							nxtInTd = true;
-						}
-
-						let nxtListDepth = listDepth;
-						if ($n.is("ul") || $n.is("li")) {
-							nxtListDepth = listDepth ? listDepth + 1 : 1;
-						}
-
-						recurse($(n), depth + 1, nxtListDepth, nxtInTable, nxtInTd);
-
-						// end TRs with a newline
-						if ($n.is("tr")) {
-							stack += "\n";
-						}
-					}
-				})
-
-			}
-
-			recurse($initial, 0, 0, false, false);
-
-			return stack;
-		},
 		_tokenHover: null,
 		_drawTokenHover: () => {
+			$(`.Vetools-token-hover`).remove();
 			if (!d20plus._tokenHover || !d20plus._tokenHover.text) return;
 
 			const pt = d20plus._tokenHover.pt;
-			let txt;
-			try {
-				txt = d20plus._getHoverGmNoteStr(unescape(d20plus._tokenHover.text));
-			} catch (e) {
-				txt = "[Error - could not read GM notes - try re-save]"
-			}
-
-			function wrapText (context, text, x, y, maxWidth, lineHeight, doDraw) {
-				const words = text.replace(/\n/g, " \n ").split(/[ ]+/);
-				let line = '';
-
-				for(let n = 0; n < words.length; n++) {
-					if (words[n] === "\n") {
-						if (doDraw) context.fillText(line.trim(), x, y);
-						line = '';
-						y += lineHeight;
-					}
-					const testLine = line + words[n] + ' ';
-					const metrics = context.measureText(testLine);
-					const testWidth = metrics.width;
-					if (testWidth > maxWidth && n > 0) {
-						if (doDraw) context.fillText(line.trim(), x, y);
-						line = words[n] + ' ';
-						y += lineHeight;
-					}
-					else {
-						line = testLine;
-					}
-				}
-				if (doDraw) context.fillText(line.trim(), x, y);
-				return y;
-			}
-
-			const ctx = d20.engine.canvas.contextTop || d20.engine.canvas.contextContainer;
+			const txt = unescape(d20plus._tokenHover.text);
 
 			const scaleFact = (1 / d20.engine.canvasZoom);
 			const xOffset = pt.x > (d20.engine.canvasWidth / 2) ? -300 * scaleFact : 0;
-			const fontSize = scaleFact * 12;
-			const lineHeight = scaleFact * 18;
-			ctx.font = fontSize + "pt Arial Black";
 
-			const finalY = wrapText(ctx, txt, pt.x + xOffset, pt.y, 300 * scaleFact, lineHeight, false);
-
-			ctx.fillStyle = "rgba(255,255,255,0.75)";
-			ctx.beginPath();
-			ctx.rect(pt.x - (10 * scaleFact) + xOffset, pt.y - lineHeight, 320 * scaleFact, (finalY - pt.y) + (lineHeight + fontSize));
-			ctx.closePath();
-			ctx.fill();
-
-			ctx.fillStyle = "rgba(0,0,0,1)";
-			wrapText(ctx, txt, pt.x + xOffset, pt.y, 300 * scaleFact, lineHeight, true);
+			$(`body`).append(`<div class="Vetools-token-hover" style="top: ${pt.y}px; left: ${pt.x + xOffset}px">${txt}</div>`);
 		},
 		addTokenHover: () => {
 			// BEGIN ROLL20 CODE
@@ -2850,16 +2751,26 @@ var betteR20Base = function () {
 
 			// store data for the rendering function to access
 			d20.engine.canvas.on("mouse:move", (data, ...others) => {
-				if (data.target && data.target.model && data.e.shiftKey) {
+				// enable hover from GM layer -> token layer
+				let hoverTarget = data.target;
+				if (data.e && window.currentEditingLayer === "gmlayer") {
+					const cache = window.currentEditingLayer;
+					window.currentEditingLayer = "objects";
+					hoverTarget = d20.engine.canvas.findTarget(data.e, null, true);
+					window.currentEditingLayer = cache;
+				}
+
+				if (data.e.shiftKey && hoverTarget && hoverTarget.model) {
 					d20.engine.renderTop();
-					const gmNotes = data.target.model.get("gmnotes");
+					const gmNotes = hoverTarget.model.get("gmnotes");
 					const pt = d20.engine.canvas.getPointer(data.e);
 					pt.x -= d20.engine.currentCanvasOffset[0];
 					pt.y -= d20.engine.currentCanvasOffset[1];
 					d20plus._tokenHover = {
 						pt: pt,
-						text: gmNotes
-					}
+						text: gmNotes,
+						id: hoverTarget.model.id
+					};
 				} else {
 					if (d20plus._tokenHover) d20.engine.renderTop();
 					d20plus._tokenHover = null;
@@ -3148,8 +3059,13 @@ var betteR20Base = function () {
 			},
 			// warning overlay
 			{
-				s: "temp-warning",
+				s: ".temp-warning",
 				r: "position: fixed; top: 12px; left: calc(50vw - 200px); z-index: 10000; width: 320px; background: transparent; color: red; font-weight: bold; font-size: 150%; font-variant: small-caps; border: 1px solid red; padding: 4px; text-align: center; border-radius: 4px;"
+			},
+			// GM hover text
+			{
+				s: ".Vetools-token-hover",
+				r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;"
 			}
 		],
 
