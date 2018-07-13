@@ -1710,36 +1710,51 @@ const betteR205etools = function () {
 														toSave.save();
 													}
 
-													// TODO should get the ability bonus, too
-													const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
+													const attr = (data.data["Item Type"] || "").includes("Melee") ? "strength" : "dexterity";
+													const attrTag = `@{${attr}_mod}`;
 
-													// TODO this doesn't seem to work -- further testing required
+													const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
+													const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
+													const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
+
+													// This links the item to the attack, and vice-versa.
+													// Unfortunately, it doesn't work,
+													//   because Roll20 thinks items<->attacks is a 1-to-1 relationship.
+													/*
 													let lastItemId = null;
 													try {
 														const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
 														const lastItem = items[items.length - 1];
 														lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
+
+														// link the inventory item to this attack
+														const toSave = character.model.attribs.create({
+															name: `repeating_inventory_${lastItemId}_itemattackid`,
+															current: rowId
+														});
+														toSave.save();
 													} catch (ex) {
 														console.error("Failed to get last item ID");
 														console.error(ex);
 													}
 
-													makeItemTrait("options-flag", "0");
 													if (lastItemId) {
 														makeItemTrait("itemid", lastItemId);
 													}
+													*/
+
+													makeItemTrait("options-flag", "0");
 													makeItemTrait("atkname", data.name);
 													makeItemTrait("dmgbase", data.data._versatile);
 													makeItemTrait("dmgtype", data.data["Damage Type"]);
-													const attr = (data.data["Item Type"] || "").includes("Melee") ? "@{strength_mod}" : "@{dexterity_mod}";
-													makeItemTrait("atkattr_base", attr);
-													makeItemTrait("dmgattr", attr);
-													makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-													makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+													makeItemTrait("atkattr_base", attrTag);
+													makeItemTrait("dmgattr", attrTag);
+													makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+													makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
 													if (proficiencyBonus) {
-														makeItemTrait("atkbonus", `+${proficiencyBonus.current}`);
+														makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus}`);
 													}
-													makeItemTrait("atkdmgtype", `${data.data._versatile} ${data.data["Damage Type"]}`);
+													makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}`);
 													makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
 												}, 350); // defer this, so we can hopefully pull item ID
 											}
