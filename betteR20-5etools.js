@@ -1277,8 +1277,6 @@ const betteR205etools = function () {
 							var inputData;
 							const $hlpr = $(i.helper[0]);
 
-							let doSetDirty = true;
-
 							if ($hlpr.hasClass("handout")) {
 								console.log("Handout item dropped onto target!");
 								t.originalEvent.dropHandled = !0;
@@ -1314,22 +1312,22 @@ const betteR205etools = function () {
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_options-flag`,
 											"current": "0"
-										});
+										}).save();
 
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_name`,
 											"current": data.name
-										});
+										}).save();
 
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_description`,
 											"current": data.Vetoolscontent
-										});
+										}).save();
 
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_source`,
 											"current": "Feat"
-										});
+										}).save();
 
 										character.model.view._updateSheetValues();
 										const dirty = [];
@@ -1358,25 +1356,25 @@ const betteR205etools = function () {
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
 											current: bg.name
-										});
+										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source`,
 											current: "Background"
-										});
+										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source_type`,
 											current: bg.name
-										});
+										}).save();
 										if (renderStack.length) {
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_description`,
 												current: d20plus.importer.getCleanText(renderStack.join(""))
-											});
+											}).save();
 										}
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_options-flag`,
 											current: "0"
-										});
+										}).save();
 
 										if (bg.skillProficiencies) {
 											const skills = bg.skillProficiencies.split(",").map(s => s.toLowerCase().trim().replace(/ /g, "_"));
@@ -1388,6 +1386,7 @@ const betteR205etools = function () {
 										const race = data.Vetoolscontent;
 
 										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
+										d20plus.importer.addOrUpdateAttr(character.model, `race_display`, race.name);
 										d20plus.importer.addOrUpdateAttr(character.model, `speed`, Parser.getSpeedString(race));
 										race.entries.forEach(e => {
 											const renderer = new EntryRenderer();
@@ -1399,23 +1398,23 @@ const betteR205etools = function () {
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_name`,
 												current: e.name
-											});
+											}).save();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_source`,
 												current: "Race"
-											});
+											}).save();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_source_type`,
 												current: race.name
-											});
+											}).save();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_description`,
 												current: d20plus.importer.getCleanText(renderStack.join(""))
-											});
+											}).save();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_options-flag`,
 												current: "0"
-											});
+											}).save();
 										});
 									} else if (data.data.Category === "Invocations") { // TODO remove Invocation workaround when roll20 supports invocation drag-n-drop properly
 										const invo = data.Vetoolscontent;
@@ -1427,128 +1426,112 @@ const betteR205etools = function () {
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
 											current: invo.name
-										});
+										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source`,
 											current: "Invocation"
-										});
+										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source_type`,
 											current: invo.name
-										});
+										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_description`,
 											current: d20plus.importer.getCleanText(rendered)
-										});
+										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_options-flag`,
 											current: "0"
-										});
+										}).save();
 									} else if (data.data.Category === "Classes") {
-										let level = prompt("What level?", "1");
-										if (level && level.trim()) {
-											level = Number(level);
-											if (level) {
-												if (level < 0 || level > 20) {
-													alert("Please enter a number between one and 20!");
-													return;
-												}
+										let levels = d20plus.getNumberRange("What levels?", 1, 20);
+										if (levels) {
+											const maxLevel = Math.max(...levels);
 
-												const clss = data.Vetoolscontent;
+											const clss = data.Vetoolscontent;
 
-												// --- these don't work
-												// d20plus.importer.addOrUpdateAttr(character.model, "class", data.name);
-												// d20plus.importer.addOrUpdateAttr(character.model, "level", level);
-												// d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(level));
+											setTimeout(() => {
+												d20plus.importer.addOrUpdateAttr(character.model, "pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
+												d20plus.importer.addOrUpdateAttr(character.model, "class", data.name);
+												d20plus.importer.addOrUpdateAttr(character.model, "level", maxLevel);
+												d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(maxLevel));
+											}, 500);
 
-												// operation "kitchen sink"
-												setTimeout(() => {
-													d20plus.importer.addOrUpdateAttr(character.model, "pb", d20plus.getProfBonusFromLevel(Number(level)));
-													// try to set level -- none of these actually work lol
-													d20plus.importer.addOrUpdateAttr(character.model, "level", level);
-													d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(level));
-													character.$charsheet.find(`.sheet-pc .sheet-core input[name=attr_base_level]`)
-														.val(String(level))
-														.text(String(level))
-														.trigger("change");
-													// hack to set class
-													character.$charsheet.find(`.sheet-pc .sheet-core select[name=attr_class]`).val(data.name).trigger("change");
-													character.model.persisted = false;
-													extraDirty.add("level", "base_level", "pb");
-												}, 500);
+											const renderer = EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
+											for (let i = 0; i < maxLevel; i++) {
+												if (!levels.has(i + 1)) continue;
 
-												const renderer = new EntryRenderer();
-												renderer.setBaseUrl(BASE_SITE_URL);
-												for (let i = 0; i < level; i++) {
-													const lvlFeatureList = clss.classFeatures[i];
-													for (let j = 0; j < lvlFeatureList.length; j++) {
-														const feature = lvlFeatureList[j];
-														// don't add "you gain a subclass feature" or ASI's
-														if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
-															const renderStack = [];
-															renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+												const lvlFeatureList = clss.classFeatures[i];
+												for (let j = 0; j < lvlFeatureList.length; j++) {
+													const feature = lvlFeatureList[j];
+													// don't add "you gain a subclass feature" or ASI's
+													if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
+														const renderStack = [];
+														renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 
-															const fRowId = d20plus.generateRowId();
-															character.model.attribs.create({
-																name: `repeating_traits_${fRowId}_name`,
-																current: feature.name
-															});
-															character.model.attribs.create({
-																name: `repeating_traits_${fRowId}_source`,
-																current: "Class"
-															});
-															character.model.attribs.create({
-																name: `repeating_traits_${fRowId}_source_type`,
-																current: `${clss.name} ${i + 1}`
-															});
-															character.model.attribs.create({
-																name: `repeating_traits_${fRowId}_description`,
-																current: d20plus.importer.getCleanText(renderStack.join(""))
-															});
-															character.model.attribs.create({
-																name: `repeating_traits_${fRowId}_options-flag`,
-																current: "0"
-															});
-														}
+														const fRowId = d20plus.generateRowId();
+														character.model.attribs.create({
+															name: `repeating_traits_${fRowId}_name`,
+															current: feature.name
+														}).save();
+														character.model.attribs.create({
+															name: `repeating_traits_${fRowId}_source`,
+															current: "Class"
+														}).save();
+														character.model.attribs.create({
+															name: `repeating_traits_${fRowId}_source_type`,
+															current: `${clss.name} ${i + 1}`
+														}).save();
+														character.model.attribs.create({
+															name: `repeating_traits_${fRowId}_description`,
+															current: d20plus.importer.getCleanText(renderStack.join(""))
+														}).save();
+														character.model.attribs.create({
+															name: `repeating_traits_${fRowId}_options-flag`,
+															current: "0"
+														}).save();
 													}
 												}
 											}
 										}
 									} else if (data.data.Category === "Subclasses") {
 										const sc = data.Vetoolscontent;
-										let maxIndex = sc.subclassFeatures.length;
+
+										const desiredIxs = new Set(); // indexes into the subclass feature array
 										const gainLevels = [];
+
 										// _gainAtLevels should be a 20-length array of booleans
 										if (sc._gainAtLevels) {
-											maxIndex = 0;
-
-											let level = prompt("What level?", "1");
-											if (level && level.trim()) {
-												level = Number(level);
-												if (level) {
-													if (level < 0 || level > 20) {
-														alert("Please enter a number between one and 20!");
-														return;
-													}
-
-													for (let i = 0; i < level; i++) {
-														if (sc._gainAtLevels[i]) {
-															maxIndex++;
-															gainLevels.push(i + 1);
+											const levels = d20plus.getNumberRange("What levels?", 1, 20);
+											if (levels) {
+												let scFeatureIndex = 0;
+												for (let i = 0; i < 20; i++) {
+													if (sc._gainAtLevels[i]) {
+														if (levels.has(i + 1)) {
+															desiredIxs.add(scFeatureIndex);
 														}
+														scFeatureIndex++;
+														gainLevels.push(i + 1);
 													}
 												}
 											} else {
 												return;
 											}
+										} else {
+											throw new Error("No subclass._gainAtLevels supplied!");
 										}
 
-										if (maxIndex === 0) return;
+										if (!desiredIxs.size) {
+											alert("No subclass features were found within the range specified.");
+											return;
+										}
 
 										const renderer = new EntryRenderer();
 										renderer.setBaseUrl(BASE_SITE_URL);
 										let firstFeatures = true;
-										for (let i = 0; i < maxIndex; i++) {
+										for (let i = 0; i < sc.subclassFeatures.length; i++) {
+											if (!desiredIxs.has(i)) continue;
+
 											const lvlFeatureList = sc.subclassFeatures[i];
 											for (let j = 0; j < lvlFeatureList.length; j++) {
 												const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
@@ -1603,23 +1586,23 @@ const betteR205etools = function () {
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_name`,
 														current: feature.name
-													});
+													}).save();
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_source`,
 														current: "Class"
-													});
+													}).save();
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_source_type`,
 														current: `${sc.class} (${sc.name} ${gainLevels[i]})`
-													});
+													}).save();
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_description`,
 														current: d20plus.importer.getCleanText(renderStack.join(""))
-													});
+													}).save();
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_options-flag`,
 														current: "0"
-													});
+													}).save();
 												}
 
 												firstFeatures = false;
@@ -1630,7 +1613,7 @@ const betteR205etools = function () {
 											character.model.attribs.create({
 												"name": `repeating_spell-${level}_${rowId}_${propName}`,
 												"current": `${content}`
-											});
+											}).save();
 										}
 
 										// disable all components
@@ -1706,7 +1689,7 @@ const betteR205etools = function () {
 														const toSave = character.model.attribs.create({
 															name: `repeating_attack_${rowId}_${key}`,
 															current: val
-														});
+														}).save();
 														toSave.save();
 													}
 
@@ -1782,19 +1765,6 @@ const betteR205etools = function () {
 											// END ROLL20 CODE
 										}
 										doDefaultDrop(data, i);
-										doSetDirty = false;
-									}
-
-									if (doSetDirty) {
-										character.model.view._updateSheetValues();
-										const dirty = [];
-										extraDirty.forEach(ed => {
-											dirty.push(ed);
-										});
-										$.each(d20.journal.customSheets.attrDeps, function (i, v) {
-											dirty.push(i);
-										});
-										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 									}
 								}
 							} else {
@@ -2876,12 +2846,14 @@ const betteR205etools = function () {
 	d20plus.importer.addOrUpdateAttr = function (character, attrName, value) {
 		const id = d20plus.importer.findAttrId(character, attrName);
 		if (id) {
-			character.attribs.get(id).set("current", value);
+			const it = character.attribs.get(id).set("current", value);
+			it.save();
 		} else {
-			character.attribs.create({
+			const it = character.attribs.create({
 				"name": attrName,
 				"current": value
 			});
+			it.save();
 		}
 	};
 

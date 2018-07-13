@@ -220,6 +220,98 @@ var betteR20Base = function () {
 			return $ele.text().replace(/[ ]+/g, " ");
 		},
 
+		_lastInput: null,
+		getNumberRange (promptText, min, max) {
+			function alertInvalid () {
+				alert("Please enter a valid range.");
+			}
+
+			function isOutOfRange (num) {
+				return num < min || num > max;
+			}
+
+			function alertOutOfRange () {
+				alert(`Please enter numbers in the range ${min}-${max} (inclusive).`);
+			}
+
+			function addToRangeVal (range, num) {
+				out.add(num);
+			}
+
+			function addToRangeLoHi (range, lo, hi) {
+				for (let i = lo; i <= hi; ++i) {
+					range.add(i);
+				}
+			}
+
+			function alertOutOfRange () {
+				alert(`Please enter numbers in the range ${min}-${max} (inclusive).`);
+			}
+
+			while (true) {
+				const res =  prompt(promptText, d20plus._lastInput || "E.g. 1-5, 8, 11-13");
+				if (res && res.trim()) {
+					d20plus._lastInput = res;
+					const clean = res.replace(/\s*/g, "");
+					if (/^((\d+-\d+|\d+),)*(\d+-\d+|\d+)$/.exec(clean)) {
+						const parts = clean.split(",");
+						const out = new Set();
+						let failed = false;
+
+						for (const part of parts) {
+							if (part.includes("-")) {
+								const spl = part.split("-");
+								const numLo = Number(spl[0]);
+								const numHi = Number(spl[1]);
+
+								if (isNaN(numLo) || isNaN(numHi) || numLo === 0 || numHi === 0 || numLo > numHi) {
+									alertInvalid();
+									failed = true;
+									break;
+								}
+
+								if (isOutOfRange(numLo) || isOutOfRange(numHi)) {
+									alertOutOfRange();
+									failed = true;
+									break;
+								}
+
+								if (numLo === numHi) {
+									addToRangeVal(out, numLo);
+								} else {
+									addToRangeLoHi(out, numLo, numHi);
+								}
+							} else {
+								const num = Number(part);
+								if (isNaN(num) || num === 0) {
+									alertInvalid();
+									failed = true;
+									break;
+								} else {
+									if (isOutOfRange(num)) {
+										alertOutOfRange();
+										failed = true;
+										break;
+									}
+									addToRangeVal(out, num);
+								}
+							}
+						}
+
+						if (!failed) {
+							d20plus._lastInput = null;
+							return out;
+						}
+					} else {
+						alertInvalid();
+					}
+				} else {
+					d20plus._lastInput = null;
+					return null;
+				}
+			}
+		},
+
 		// CONFIG //////////////////////////////////////////////////////////////////////////////////////////////////////
 		config: {},
 
