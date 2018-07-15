@@ -235,7 +235,7 @@ var betteR20Base = function () {
 			}
 
 			function addToRangeVal (range, num) {
-				out.add(num);
+				range.add(num);
 			}
 
 			function addToRangeLoHi (range, lo, hi) {
