@@ -1748,20 +1748,19 @@ const betteR205etools = function () {
 											var i = $(outerI.helper[0]).attr("data-pagename");
 
 											// BEGIN ROLL20 CODE
-											var r = n.data;
-											r.Name = n.name,
-												r.uniqueName = i,
-												r.Content = n.content;
-											var o = $(t.target);
-											o.find("*[accept]").each(function() {
-												var t = $(this)
-													, n = t.attr("accept");
-												r[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-													var e = $(this);
-													(e.attr("value") === r[n] || e.text() === r[n]) && e.attr("selected", "selected")
-												}) : $(this).val(r[n]),
-													e.saveSheetValues(this))
-											})
+											var o = n.data;
+											o.Name = n.name,
+												o.uniqueName = i,
+												o.Content = n.content,
+												$(t.target).find("*[accept]").each(function() {
+													var t = $(this)
+														, n = t.attr("accept");
+													o[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+														var e = $(this);
+														e.val() !== o[n] && e.text() !== o[n] || e.prop("selected", !0)
+													}) : $(this).val(o[n]),
+														e.saveSheetValues(this))
+												})
 											// END ROLL20 CODE
 										}
 										doDefaultDrop(data, i);
