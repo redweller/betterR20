@@ -1304,7 +1304,6 @@ const betteR205etools = function () {
 								}
 
 								function handleData (data) {
-									const extraDirty = [];
 
 									// TODO remove Feat workaround when roll20 supports feat drag-n-drop properly
 									if (data.data.Category === "Feats") {
@@ -1330,11 +1329,6 @@ const betteR205etools = function () {
 										}).save();
 
 										character.model.view._updateSheetValues();
-										const dirty = [];
-										$.each(d20.journal.customSheets.attrDeps, function (i, v) {
-											dirty.push(i);
-										});
-										d20.journal.notifyWorkersOfAttrChanges(character.model.view.model.id, dirty, true);
 									} else if (data.data.Category === "Backgrounds") { // TODO remove Background workaround when roll20 supports background drag-n-drop properly
 										const bg = data.Vetoolscontent;
 
@@ -1946,7 +1940,7 @@ const betteR205etools = function () {
 				name: index + ": " + name,
 				istokenaction: true,
 				action: d20plus.actionMacroAction(index)
-			});
+			}).save();
 		}
 
 		var newRowId = d20plus.generateRowId();
@@ -2009,71 +2003,71 @@ const betteR205etools = function () {
 			}
 			var tohitrange = "+" + tohit + ", " + rangetype + " " + attackrange + ", " + attacktarget + ".";
 			var damageflags = `{{damage=1}} {{dmg1flag=1}}${damage2 ? ` {{dmg2flag=1}}` : ""}`
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_flag", current: "on"});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: "0"});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_flag", current: "on"}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: "0"}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_display_flag",
 				current: "{{attack=1}}"
-			});
+			}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_options",
 				current: "{{attack=1}}"
-			});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit", current: damage});
+			}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit", current: damage}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_damagetype",
 				current: damagetype
-			});
+			}).save();
 			if (damage2) {
 				character.attribs.create({
 					name: "repeating_npcaction_" + newRowId + "_attack_damage2",
 					current: damage2
-				});
+				}).save();
 				character.attribs.create({
 					name: "repeating_npcaction_" + newRowId + "_attack_crit2",
 					current: damage2
-				});
+				}).save();
 				character.attribs.create({
 					name: "repeating_npcaction_" + newRowId + "_attack_damagetype2",
 					current: damagetype2
-				});
+				}).save();
 			}
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type", current: attacktype});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type", current: attacktype}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_type_display",
 				current: attacktype + attacktype2
-			});
+			}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_tohitrange",
 				current: tohitrange
-			});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_range", current: attackrange});
+			}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_range", current: attackrange}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_target",
 				current: attacktarget
-			});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: damageflags});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: onhit});
+			}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: damageflags}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: onhit}).save();
 		} else {
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase});
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name});
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name}).save();
 		}
 		var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
 		character.attribs.create({
 			name: "repeating_npcaction_" + newRowId + "_description",
 			current: action_desc
-		});
+		}).save();
 		character.attribs.create({
 			name: "repeating_npcaction_" + newRowId + "_description_flag",
 			current: descriptionFlag
-		});
+		}).save();
 	};
 
 // Create monster character from js data object
@@ -2207,6 +2201,11 @@ const betteR205etools = function () {
 						name: "npc_hpformula",
 						current: hpformula != null ? hpformula || "" : ""
 					});
+
+					const hpModId = d20plus.generateRowId();
+					character.attribs.create({name: `repeating_hpmod_${hpModId}_source`, current: "CON"});
+					character.attribs.create({name: `repeating_hpmod_${hpModId}_mod`, current: Parser.getAbilityModNumber(data.con)});
+
 					const parsedSpeed = Parser.getSpeedString(data);
 					data.npc_speed = parsedSpeed;
 					if (d20plus.sheet === "shaped") {
@@ -2806,12 +2805,6 @@ const betteR205etools = function () {
 						}
 					}
 					character.view._updateSheetValues();
-					var dirty = [];
-					$.each(d20.journal.customSheets.attrDeps, function (i, v) {
-						dirty.push(i);
-					});
-					d20.journal.notifyWorkersOfAttrChanges(character.view.model.id, dirty, true);
-
 
 					if (renderFluff) {
 						setTimeout(() => {
@@ -3989,11 +3982,6 @@ const betteR205etools = function () {
 					}
 
 					character.view._updateSheetValues();
-					var dirty = [];
-					$.each(d20.journal.customSheets.attrDeps, function (i, v) {
-						dirty.push(i);
-					});
-					d20.journal.notifyWorkersOfAttrChanges(character.view.model.id, dirty, true);
 
 					if (data.entries) {
 						const bio = renderer.renderEntry({type: "entries", entries: data.entries});
