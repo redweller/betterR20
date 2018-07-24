@@ -2441,6 +2441,13 @@ const betteR205etools = function () {
 							d20plus.importer.addOrUpdateAttr(character, k, v);
 						}
 
+						function addInlineRollers (text) {
+							if (!text) return text;
+							return text.replace(RollerUtil.DICE_REGEX, (match) => {
+								return `[[${match}]]`;
+							});
+						}
+
 						// the basics
 						setAttrib("npcspellcastingflag", "1");
 						if (spellAbility != null) setAttrib("spellcasting_ability", `@{${spellAbility}_mod}+`); else console.warn("No spellAbility!");
@@ -2549,7 +2556,12 @@ const betteR205etools = function () {
 								});
 
 								function addSpell2 (data, VeSp, index, addMacroIndex) {
-									// sheet-licensecontainer sheet-compendium-drop-target sheet-monsters ui-droppable
+									data.content = addInlineRollers(data.content);
+									const DESC_KEY = "data-description";
+									data.data[DESC_KEY] = addInlineRollers(data.data[DESC_KEY]);
+									const HL_KEY = "Higher Spell Slot Desc";
+									if (data.data[HL_KEY]) data.data[HL_KEY] = addInlineRollers(data.data[HL_KEY]);
+
 									const dropTarget = character.view.$charsheet.find(`.sheet-compendium-drop-target`)[0];
 									const fakeEvent = {target: dropTarget};
 
