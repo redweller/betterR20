@@ -2131,7 +2131,7 @@ const betteR205etools = function () {
 				}
 
 				if (fluff.entries) {
-					renderFluff = renderer.renderEntry(fluff.entries);
+					renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries});
 				}
 			}
 		}
