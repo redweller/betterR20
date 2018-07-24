@@ -146,7 +146,7 @@ var betteR20Base = function () {
 				${message}
 				<br>
 				<br>
-				Need help? Join our <a style="color: white;" href="https://discord.gg/Zk34CUZ">Discord</a>.
+				Need help? Join our <a style="color: white;" href="https://discord.gg/AzyBjtQ">Discord</a>.
 				<br>
 				<br>
 				<span title="You'd think this would be obvious.">Please DO NOT post about this script or any related content in official channels, such as the Roll20 forums.</span>
@@ -3158,7 +3158,7 @@ var betteR20Base = function () {
 			<a class="btn player-hidden" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
 			</p>
 			<p>
-			For help, advice, and updates, <a href="https://discord.gg/Zk34CUZ" target="_blank" style="color: #08c;">join our Discord!</a>
+			For help, advice, and updates, <a href="https://discord.gg/AzyBjtQ" target="_blank" style="color: #08c;">join our Discord!</a>
 			</p>
 			<p>
 			<a class="btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px;">Open Tools List</a>
