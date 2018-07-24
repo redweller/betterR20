@@ -1758,6 +1758,8 @@ const betteR205etools = function () {
 											// END ROLL20 CODE
 										}
 										doDefaultDrop(data, i);
+
+										d20plus.importer.doFakeDrop(t, character, data, i);
 									}
 								}
 							} else {
@@ -1794,6 +1796,30 @@ const betteR205etools = function () {
 				});
 			};
 		});
+	};
+
+	d20plus.importer.doFakeDrop = function (event, characterView, fakeRoll20Json, outerI) {
+		const t = event; // needs a "target" property, which should be the `.sheet-compendium-drop-target` element on the sheet
+		const e = characterView; // AKA character.view
+		const n = fakeRoll20Json;
+		// var i = $(outerI.helper[0]).attr("data-pagename"); // always undefined, since we're not using a compendium drag-drop element
+		const i = d20plus.generateRowId();
+
+		// BEGIN ROLL20 CODE
+		var o = n.data;
+		o.Name = n.name,
+			o.uniqueName = i,
+			o.Content = n.content,
+			$(t.target).find("*[accept]").each(function() {
+				var t = $(this)
+					, n = t.attr("accept");
+				o[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+					var e = $(this);
+					e.val() !== o[n] && e.text() !== o[n] || e.prop("selected", !0)
+				}) : $(this).val(o[n]),
+					e.saveSheetValues(this))
+			})
+		// END ROLL20 CODE
 	};
 
 	d20plus.getProfBonusFromLevel = function (level) {
@@ -2387,74 +2413,71 @@ const betteR205etools = function () {
 							});
 						});
 					}
-					if (data.spellcasting) {
-						// make it a spellcaster
-						character.attribs.create({name: `npcspellcastingflag`, current: "1"});
+					if (data.spellcasting) { // Spellcasting import 2.0
+						const charInterval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+						const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
 
 						// figure out the casting ability or spell DC
-						let spellDc;
-						let spellAbility;
-						let casterLevel;
+						let spellDc = null;
+						let spellAbility = null;
+						let casterLevel = null;
+						let spellToHit = null;
 						for (const sc of data.spellcasting) {
-							const abils = [];
 							const toCheck = sc.headerEntries.join("");
 
 							// use the first ability/DC we find, since roll20 doesn't support multiple
 							const abM = /(strength|constitution|dexterity|intelligence|wisdom|charisma)/i.exec(toCheck);
 							const dcM = /DC (\d+)/i.exec(toCheck);
 							const lvlM = /(\d+)(st|nd|rd|th).level\s+spellcaster/i.exec(toCheck);
-							if (dcM) {
-								spellDc = dcM[1];
-							}
-							if (lvlM) {
-								casterLevel = lvlM[1];
-							}
-							if (abM) {
-								spellAbility = abM[1];
-							}
+							const spHit = /{@hit (.*?)} to hit with spell attacks/i.exec(toCheck);
+
+							if (spellDc == null && dcM) spellDc = dcM[1];
+							if (casterLevel == null && lvlM) casterLevel = lvlM[1];
+							if (spellAbility == null && abM) spellAbility = abM[1].toLowerCase();
+							if (spellToHit == null && spHit) spellToHit = spHit[1];
 						}
-						// delay these, does nothing otherwise (getting overwritten by turning on npc_spellcasting after, perhaps?)
-						// if (spellDc) character.attribs.create({name: `spell_save_dc`, current: spellDc});
-						// if (spellAbility) character.attribs.create({name: "spellcasting_ability", current: `@{${spellAbility.toLowerCase()}_mod}+`})
-						// if (casterLevel) character.attribs.create({name: "caster_level", current: casterLevel})
-						const charInterval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
-						const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
-						console.log(`Spellcasting import interval: ${spAbilsDelayMs} ms`);
+
+						function setAttrib (k, v) {
+							d20plus.importer.addOrUpdateAttr(character, k, v);
+						}
+
+						// the basics
+						setAttrib("npcspellcastingflag", "1");
+						if (spellAbility != null) setAttrib("spellcasting_ability", `@{${spellAbility}_mod}+`); else console.warn("No spellAbility!");
+						// spell_attack_mod -- never used?
 						setTimeout(() => {
-							if (spellDc) {
-								d20plus.importer.addOrUpdateAttr(character, "spell_save_dc", spellDc);
-							}
-							if (spellAbility) {
-								d20plus.importer.addOrUpdateAttr(character, "spellcasting_ability", `@{${spellAbility.toLowerCase()}_mod}+`);
-							}
-							if (casterLevel) {
-								d20plus.importer.addOrUpdateAttr(character, "caster_level", casterLevel);
-								d20plus.importer.addOrUpdateAttr(character, "level", Number(casterLevel));
-							}
+							if (spellToHit != null) setAttrib("spell_attack_bonus", Number(spellToHit)); else console.warn("No spellToHit!");
+							if (spellDc != null) setAttrib("spell_save_dc", Number(spellDc)); else console.warn("No spellDc!");
+							if (casterLevel != null) {
+								setAttrib("caster_level", casterLevel);
+								setAttrib("level", Number(casterLevel));
+							} else console.warn("No casterLevel!");
 						}, spAbilsDelayMs);
 
-						// set spellcaster class, since this seems to reliably set spellcasting ability
-						if (spellAbility == "Intelligence") d20plus.importer.addOrUpdateAttr(character, "class", `Wizard`);
-						if (spellAbility == "Wisdom") d20plus.importer.addOrUpdateAttr(character, "class", `Cleric`);
-						if (spellAbility == "Charisma") d20plus.importer.addOrUpdateAttr(character, "class", `Bard`);
+						// spell slots
+						for (let i = 1; i <= 9; ++i) {
+							const slots = data.spellcasting
+								.map(it => ((it.spells || {})[i] || {}).slots)
+								.filter(it => it)
+								.reduce((a, b) => Math.max(a, b), 0);
+
+							// delay this, otherwise they all come out as 0
+							setTimeout(() => {
+								setAttrib(`lvl${i}_slots_total`, slots);
+							}, spAbilsDelayMs);
+						}
 
 						// add the spellcasting text
 						const newRowId = d20plus.generateRowId();
 						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedTraits(data, renderer).map(it => it.rendered).filter(it => it).join("");
 						const cleanDescription = d20plus.importer.getCleanText(spellTrait);
-						character.attribs.create({
-							name: `repeating_npctrait_${newRowId}_name`,
-							current: "Spellcasting"
-						});
-						character.attribs.create({
-							name: `repeating_npctrait_${newRowId}_desc`,
-							current: cleanDescription
-						});
+						setAttrib(`repeating_npctrait_${newRowId}_name`, "Spellcasting");
+						setAttrib(`repeating_npctrait_${newRowId}_desc`, cleanDescription);
 
 						// begin building a spells macro
 						const tokenActionStack = [cleanDescription];
 
-						// add the spells
+						// collect all the spells
 						const allSpells = [];
 						data.spellcasting.forEach(sc => {
 							const toAdd = ["constant", "will", "rest", "daily", "weekly"];
@@ -2469,16 +2492,9 @@ const betteR205etools = function () {
 									});
 								}
 							});
+
 							if (sc.spells) {
 								Object.keys(sc.spells).forEach(lvl => {
-									// delayed creation of spell slots, once it's a spellcaster
-									setTimeout(() => {
-										if (sc.spells[lvl].slots) {
-											const slotName = `lvl${lvl}_slots_total`;
-											d20plus.importer.addOrUpdateAttr(character, slotName, String(sc.spells[lvl].slots));
-										}
-									}, spAbilsDelayMs);
-
 									if (sc.spells[lvl].spells) {
 										Array.prototype.push.apply(allSpells, sc.spells[lvl].spells);
 									}
@@ -2486,10 +2502,7 @@ const betteR205etools = function () {
 							}
 						});
 
-						// render sheet
-						character.view.render();
-
-						// add spells to sheet
+						// add spells to the sheet //////////////////
 						const toAdd = [];
 						allSpells.forEach(sp => {
 							const tagSplit = EntryRenderer.splitByTags(sp);
@@ -2504,107 +2517,71 @@ const betteR205etools = function () {
 							});
 						});
 
-						const addMacroIndex = toAdd.length - 1;
-						toAdd.forEach((text, i) => {
-							let [name, source] = text.split("|");
-							if (!source) source = "PHB";
-							const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
-							const url = d20plus.spells.formSpellUrl(rawUrl);
-							// the JSON gets cached by the script, so this is fine
-							DataUtil.loadJSON(url).then((data) => {
-								const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
+						// render sheet
+						character.view.render();
 
-								const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
+						let interval;
+						let loopCount = 0;
+						const checkLoop = () => {
+							if (loopCount > 10) {
+								clearInterval(interval);
+								console.warn(`Spellcaster sheet was never rendered!`);
+							} else if (character.view.$charsheet) {
+								clearInterval(interval);
 
-								addSpell(JSON.parse(gmnotes), spell, i, addMacroIndex);
-							});
-						});
+								const addMacroIndex = toAdd.length - 1;
+								toAdd.forEach((text, i) => {
+									let [name, source] = text.split("|");
+									if (!source) source = "PHB";
+									const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
+									const url = d20plus.spells.formSpellUrl(rawUrl);
+									// the JSON gets cached by the script, so this is fine
+									DataUtil.loadJSON(url).then((data) => {
+										const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
 
-						function addSpell (sp, VeSp, index, addMacroIndex) {
-							const rId = d20plus.generateRowId();
-							const lvl = sp.data.Level === "0" ? "cantrip" : sp.data.Level;
-							const base = `repeating_spell-${lvl}_${rId}_`;
+										const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
 
-							makeAttrib("spelllevel", lvl);
-							makeAttrib("spellname", sp.name);
-							makeAttrib("spellschool", sp.data.School);
-							makeAttrib("spellcastingtime", sp.data["Casting Time"]); // spaces in property names l m a o
-							makeAttrib("spellrange", sp.data.Range);
-							makeAttrib("spelltarget", sp.data.Target);
-							makeAttrib("spellcomp_v", Number(!!VeSp.components.v));
-							makeAttrib("spellcomp_s", Number(!!VeSp.components.s));
-							makeAttrib("spellcomp_materials", sp.data.Material);
-							if (!sp.data.Material && !VeSp.components.m) makeAttrib("spellcomp_m", "0");
-							makeAttrib("spellconcentration", sp.data.Concentration);
-							makeAttrib("spellduration", sp.data.Duration);
-							makeAttrib("spelldamage", sp.data.Damage);
-							makeAttrib("spelldamagetype", sp.data["Damage Type"]);
-							makeAttrib("spellsave", sp.data.Save);
-							makeAttrib("spellsavesuccess", sp.data["Save Success"]);
-							makeAttrib("spellhldie", sp.data["Higher Spell Slot Dice"]);
-							makeAttrib("spellhldietype", sp.data["Higher Spell Slot Die"]);
-							const [text, hlText] = sp.content.split("\n\nAt Higher Levels:");
-							makeAttrib("spelldescription", addInlineRollers(text));
-							makeAttrib("spellathigherlevels", addInlineRollers(hlText));
-							makeAttrib("options-flag", "0");
-							setTimeout(() => {
-								makeAttrib("spell_ability", `@{${spellAbility.toLowerCase()}_mod}+`);
-							}, spAbilsDelayMs);
-
-							// TODO reverse engineer/add the other ~20 attributes needed to make this work (see `enableSpellattackHack()`)
-							if (sp.content.toLowerCase().includes("ranged spell attack")) {
-								makeAttrib("spelloutput", "ATTACK");
-								makeAttrib("spellattack", "Ranged");
-							} else if (sp.content.toLowerCase().includes("melee spell attack")) {
-								makeAttrib("spelloutput", "ATTACK");
-								makeAttrib("spellattack", "Melee");
-							} else if (sp.data.Damage) {
-								makeAttrib("spelloutput", "ATTACK");
-								makeAttrib("spellattack", "None");
-							}
-
-							tokenActionStack.push(`[${sp.name}](~selected|${base}spell)`);
-
-							if (index === addMacroIndex) {
-								if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
-									character.abilities.create({
-										name: "Spells",
-										istokenaction: true,
-										action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
-									});
-								}
-								enableSpellattackHack();
-							}
-
-							function enableSpellattackHack () {
-								// temporary(?) hack to avoid creating all the properties manually
-								setTimeout(() => {
-									const $sel = character.view.$charsheet.find(`select[name=attr_spelloutput]`).filter((i, ele) => {
-										return $(ele).val() === "ATTACK";
-									});
-									setTimeout(() => {
-										$sel.val("SPELLCARD").trigger("change")
+										// do this as slowly as possible
 										setTimeout(() => {
-											$sel.val("ATTACK").trigger("change");
-										}, spAbilsDelayMs);
-									}, spAbilsDelayMs);
-								}, spAbilsDelayMs);
-							}
-
-							function makeAttrib (name, current) {
-								if (current !== undefined && current !== null) character.attribs.create({
-									name: `${base}${name}`,
-									current: current
+											addSpell2(JSON.parse(gmnotes), spell, i, addMacroIndex);
+										}, spAbilsDelayMs * 2.5 * (i + 1));
+									});
 								});
-							}
 
-							function addInlineRollers (text) {
-								if (!text) return text;
-								return text.replace(DICE_REGEX, (match) => {
-									return `[[${match}]]`;
-								});
+								function addSpell2 (data, VeSp, index, addMacroIndex) {
+									// sheet-licensecontainer sheet-compendium-drop-target sheet-monsters ui-droppable
+									const dropTarget = character.view.$charsheet.find(`.sheet-compendium-drop-target`)[0];
+									const fakeEvent = {target: dropTarget};
+
+									d20plus.importer.doFakeDrop(fakeEvent, character.view, data);
+
+									if (index === addMacroIndex) {
+										// collect name and identifier for all the character's spells
+										const macroSpells = character.attribs.toJSON()
+											.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
+											.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
+
+										// build tokenaction
+										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
+										if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
+											character.abilities.create({
+												name: "Spells",
+												istokenaction: true,
+												action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+											}).save();
+										}
+									}
+								}
+							} else {
+								loopCount++;
 							}
-						}
+						};
+
+						// wait for the character sheet to be rendered
+						interval = setInterval(() => {
+							checkLoop();
+						}, spAbilsDelayMs);
+						checkLoop();
 					}
 					if (data.trait) {
 						$.each(data.trait, function (i, v) {
@@ -3276,6 +3253,10 @@ const betteR205etools = function () {
 			}
 		);
 
+		if (data.range.type === "point" && (data.range.distance.type === UNT_FEET || data.range.distance.type === UNT_MILES)) {
+			r20Data["data-RangeNum"] = data.range.distance.amount + "";
+		}
+
 		var r20json = {
 			name: data.name,
 			content: "",
@@ -3304,6 +3285,7 @@ const betteR205etools = function () {
 		renderer.setBaseUrl(BASE_SITE_URL);
 		renderer.recursiveEntryRender(entryList, renderStack, 1);
 		r20json.content = d20plus.importer.getCleanText(renderStack.join(" "));
+		r20json.data["data-description"] = r20json.content;
 		notecontents += renderStack.join("");
 		if (data.entriesHigherLevel) {
 			const hLevelRenderStack = [];
@@ -5265,6 +5247,8 @@ const betteR205etools = function () {
 			return str;
 		}
 		const $ele = $(str);
+		$ele.find("td, th").append(" | ");
+		$ele.find("tr").append("\n");
 		$ele.find("p, li, br").append("\n\n");
 		return $ele.text().replace(/[ ]+/g, " ");
 
