@@ -6077,6 +6077,173 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					$iptFile.click();
 				});
 			}
+		},
+		{
+			name: "Wild Form Builder",
+			desc: "Build a character sheet to represent a character in Wild Form.",
+			html: `
+				<div id="d20plus-wildformbuild" title="Wild Form Character Builder">
+					<div id="wildformbuild-list">
+						<input type="search" class="search" placeholder="Search creatures...">
+						<input type="search" class="filter" placeholder="Filter...">
+						<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<input id="wildform-name" placeholder="Character name">
+				<button class="btn">Create Character Sheet</button>
+				</div>
+				`,
+			dialogFn: () => {
+				$("#d20plus-wildformbuild").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 800,
+					height: 650,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-wildformbuild");
+				$win.dialog("open");
+
+				const $fltr = $win.find(`.filter`);
+				$fltr.off("keydown").off("keyup");
+				$win.find(`button`).off("click");
+
+				const $lst = $win.find(`.list`);
+
+				let tokenList;
+				loadData();
+
+				function loadData() {
+					const toLoad = Object.keys(monsterDataUrls).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+					DataUtil.multiLoadJSON(
+						toLoad.map(url => ({url})),
+						() => {},
+						(dataStack) => {
+							$lst.empty();
+
+							let toShow = [];
+							dataStack.forEach(d => toShow = toShow.concat(d.monster));
+							toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+
+							let tmp = "";
+							toShow.forEach((m, i)  => {
+								m.__pType = Parser.monTypeToFullObj(m.type).asText;
+
+								tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+								<input type="radio" name="wildform-monster">
+								<span class="name col-4">${m.name}</span>
+								<span class="type col-4">TYP[${m.__pType.uppercaseFirst()}]</span>
+								<span class="cr col-2">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
+								<span title="${Parser.sourceJsonToFull(m.source)}" class="source">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
+								</label>
+								`;
+							});
+							$lst.html(tmp);
+							tmp = null;
+
+							tokenList = new List("wildformbuild-list", {
+								valueNames: ["name", "type", "cr", "source"]
+							});
+
+							d20plus.importer.addListFilter($fltr, toShow, tokenList, d20plus.monsters._listIndexConverter);
+
+							$win.find(`button`).on("click", () => {
+								let sel = toShow[$(tokenList.items.find(it => $(it.elm).find(`input`).prop("checked")).elm).attr("data-listid")];
+								sel = $.extend(true, {}, sel);
+
+								const character = $("#wildform-name").val();
+								const d20CharacterId = d20.Campaign.characters.toJSON().find(x => x.name === character).id;
+								const d20Character = d20.Campaign.characters.get(d20CharacterId);
+
+								if (tokenList && sel && d20Character) {
+									sel.wis = (d20Character.attribs.toJSON().find(x => x.name === "wisdom")|| {}).current || 10;
+									sel.int = (d20Character.attribs.toJSON().find(x => x.name === "intelligence")|| {}).current || 10;
+									sel.cha = (d20Character.attribs.toJSON().find(x => x.name === "charisma")|| {}).current || 10;
+
+									const attribsSkills = {
+										acrobatics_bonus: "acrobatics",
+										animal_handling_bonus: "animal_handling",
+										arcana_bonus: "arcana",
+										athletics_bonus: "athletics",
+										deception_bonus: "deception",
+										history_bonus: "history",
+										insight_bonus: "insight",
+										intimidation_bonus: "intimidation",
+										investigation_bonus: "investigation",
+										medicine_bonus: "medicine",
+										nature_bonus: "nature",
+										perception_bonus: "perception",
+										performance_bonus: "performance",
+										persuasion_bonus: "persuasion",
+										religion_bonus: "religion",
+										slight_of_hand_bonus: "slight_of_hand",
+										stealth_bonus: "stealth",
+									};
+									const attribsSaves = {
+										npc_int_save: "int",
+										npc_wis_save: "wis",
+										npc_cha_save: "cha"
+									};
+									sel.skill = sel.skill || {};
+									sel.save = sel.save || {};
+
+									for (const a in attribsSkills) {
+										const characterValue = d20Character.attribs.toJSON().find(x => x.name === a);
+										if (characterValue) {
+											sel.skill[attribsSkills[a]] = Math.max(sel.skill[attribsSkills[a]] || 0, characterValue.current);
+										}
+									}
+
+									for (const a in attribsSaves) {
+										const characterValue = d20Character.attribs.toJSON().find(x => x.name === a);
+										if (characterValue) {
+											sel.save[attribsSkills[a]] = Math.max(sel.save[attribsSkills[a]] || 0, characterValue.current);
+										}
+									}
+
+									d20plus.randomRoll(sel.hp.formula, result => {
+										const options = {
+											charFunction: (character) => {
+												character._getLatestBlob("defaulttoken", y => {
+													if (y) {
+														const token = JSON.parse(y);
+														token.name = `${sel.name} (${d20Character.attributes.name})`;
+														token.showplayers_aura1 = true;
+														token.showplayers_aura2 = true;
+														token.showplayers_bar1 = true;
+														token.showplayers_bar2 = true;
+														token.showplayers_bar3 = true;
+														token.showplayers_name = true;
+														token.bar3_max = result.total;
+														token.bar3_value = result.total;
+														character.updateBlobs({defaulttoken: JSON.stringify(token)});
+														character.save({defaulttoken: (new Date()).getTime()});
+													}
+												});
+
+												$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+												alert("Created character!");
+												$win.dialog("close");
+											},
+											charOptions: {
+												inplayerjournals: d20Character.attributes.inplayerjournals,
+												controlledby: d20Character.attributes.controlledby
+											}
+										};
+
+										d20plus.monsters.handoutBuilder(sel, true, options, `Wild Forms - ${d20Character.attributes.name}`);
+									});
+								}
+
+								console.log("Assembling creature list");
+							});
+						}
+					);
+				}
+			}
 		}
 	]);
 
