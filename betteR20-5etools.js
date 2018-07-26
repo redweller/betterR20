@@ -2097,7 +2097,16 @@ const betteR205etools = function () {
 	};
 
 // Create monster character from js data object
-	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.monsters.handoutBuilder = function (data, overwrite, options, folderName, saveIdsTo) {
+		if (!options) options = {};
+		if (typeof options === "string") {
+			options = {
+				charOptions: {
+					inplayerjournals: options
+				}
+			};
+		}
+
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
 		const path = ["Monsters", folderName, data.name];
@@ -2164,7 +2173,8 @@ const betteR205etools = function () {
 					...pType.tags,
 					`cr ${(data.cr ? (data.cr.cr || data.cr) : "").replace(/\//g, " over ")}` || "unknown cr",
 					Parser.sourceJsonToFull(data.source)
-				], "monsters")
+				], "monsters"),
+				...options.charOptions
 			},
 			{
 			success: function (character) {
@@ -2362,15 +2372,15 @@ const betteR205etools = function () {
 					}
 
 					if (data.save != null) {
-						character.attribs.create({name: "npc_saving_flag", current: 1});
+						character.attribs.create({name: "npc_saving_flag", current: "1337"}); // value doesn't matter
 						Object.keys(data.save).forEach(k => {
 							character.attribs.create({
-								name: "npc_" + k + "_save_base",
-								current: data.save[k]
+								name: "npc_" + k + "_save_flag",
+								current: Number(data.save[k])
 							});
 							character.attribs.create({
-								name: k + "_saving_throw_proficient",
-								current: data.save[k]
+								name: "npc_" + k + "_save",
+								current: Number(data.save[k])
 							});
 						});
 					}
@@ -2379,8 +2389,8 @@ const betteR205etools = function () {
 						const skillsString = Object.keys(skills).map(function (k) {
 							return k.uppercaseFirst() + ' ' + skills[k];
 						}).join(', ');
-						character.attribs.create({name: "npc_skills_flag", current: 1});
-						character.attribs.create({name: "npc_skills", current: skillsString});
+						character.attribs.create({name: "npc_skills_flag", current: "1337"}); // value doesn't matter
+						// character.attribs.create({name: "npc_skills", current: skillsString}); // no longer used
 
 						// Shaped Sheet currently doesn't correctly load NPC Skills
 						// This adds a visual representation as a Trait for reference
@@ -2397,20 +2407,21 @@ const betteR205etools = function () {
 						}
 
 						$.each(skills, function (k, v) {
-							const cleanSKill = $.trim(k).toLowerCase().replace(/ /g, "_");
-							const cleanBonus = parseInt($.trim(v)) || 0;
-							character.attribs.create({
-								name: "npc_" + cleanSKill + "_base",
-								current: parseInt($.trim(v)) || 0
-							});
-							character.attribs.create({
-								name: "npc_" + cleanSKill + "_base",
-								current: cleanBonus
-							});
-							character.attribs.create({
-								name: "npc_" + cleanSKill,
-								current: cleanBonus
-							});
+							if (k !== "other") {
+								const cleanSkill = $.trim(k).toLowerCase().replace(/ /g, "_");
+								character.attribs.create({
+									name: "npc_" + cleanSkill + "_base",
+									current: String(Number(v))
+								});
+								character.attribs.create({
+									name: "npc_" + cleanSkill,
+									current: Number(v)
+								});
+								character.attribs.create({
+									name: "npc_" + cleanSkill + "_flag",
+									current: Number(v)
+								});
+							}
 						});
 					}
 					if (data.spellcasting) { // Spellcasting import 2.0
@@ -2815,6 +2826,10 @@ const betteR205etools = function () {
 				}
 				/* end OGL Sheet */
 				d20.journal.addItemToFolderStructure(character.id, folder.id);
+
+				if (options.charFunction) {
+					options.charFunction(character);
+				}
 			}
 		});
 	};
@@ -4666,10 +4681,13 @@ const betteR205etools = function () {
 			$selGroupBy.append(`<option value="${g}">${g}</option>`);
 		});
 
+		const $cbShowPlayers = $("#import-showplayers");
+		$cbShowPlayers.prop("checked", dataType !== "monster");
+
 		$("#d20plus-importlist button#importstart").bind("click", function () {
 			$("#d20plus-importlist").dialog("close");
 			const overwrite = $("#import-overwrite").prop("checked");
-			const inJournals = $("#import-showplayers").prop("checked") ? "all" : "";
+			const inJournals = $cbShowPlayers.prop("checked") ? "all" : "";
 			const groupBy = $(`#organize-by`).val();
 
 			// build list of items to process
