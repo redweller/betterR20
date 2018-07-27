@@ -318,6 +318,37 @@ var betteR20Base = function () {
 			}
 		},
 
+		math: {
+			/**
+			 * Normalize a 2d vector.
+			 * @param out Result storage
+			 * @param a Vector to normalise
+			 */
+			normalize (out, a) {
+				const x = a[0],
+					y = a[1];
+				let len = x*x + y*y;
+				if (len > 0) {
+					len = 1 / Math.sqrt(len);
+					out[0] = a[0] * len;
+					out[1] = a[1] * len;
+				}
+				return out;
+			},
+
+			/**
+			 * Scale a 2d vector.
+			 * @param out Resulst storage
+			 * @param a Vector to scale
+			 * @param b Value to scale by
+			 */
+			scale (out, a, b) {
+				out[0] = a[0] * b;
+				out[1] = a[1] * b;
+				return out;
+			}
+		},
+
 		// CONFIG //////////////////////////////////////////////////////////////////////////////////////////////////////
 		config: {},
 
@@ -1570,7 +1601,9 @@ var betteR20Base = function () {
 					// BEGIN MOD
 					d20.engine.mode = e;
 				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
-				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e) {
+				// BEGIN MOD
+				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e || "measure" == e) {
+					// END MOD
 					$("#secondary-toolbar").show();
 					$("#secondary-toolbar .mode").hide();
 					$("#secondary-toolbar ." + e).show();
@@ -1639,10 +1672,87 @@ var betteR20Base = function () {
 			}
 		},
 
+		_stickyMeasure: null,
 		enhanceMeasureTool: () => {
 			d20plus.log("Enhance Measure tool");
+
+			// add extra toolbar
+			const $wrpBar = $(`#secondary-toolbar`);
+			const toAdd = `
+				<ul class="mode measure" style="display: none;">
+					<li>
+						<select id="measure_mode" style="width: 100px;">
+							<option value="1" selected>Ruler</option>
+							<option value="2">Radius</option>
+							<option value="3">Cone</option>
+							<option value="4">Box</option>
+							<option value="5">Line</option>
+						</select>
+					</li>
+					<li>
+						<label style="display: inline-flex">Sticky <input style="margin-left: 4px;" type="checkbox" id="measure_sticky"></label>
+					</li>
+					<li>
+						<button id="measure_sticky_clear">Clear</button>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_2" style="display: none;">
+						<select id="measure_mode_sel_2" style="width: 100px;">
+							<option value="1" selected>Burst</option>
+							<option value="2">Blast</option>
+						</select>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_3" style="display: none;">
+						<input type="number" min="0" id="measure_mode_ipt_3" style="width: 30px;" value="1">
+						<label style="display: inline-flex;" title="The PHB cone rules are the textbook definition of one radian.">rad.</label>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_4" style="display: none;">
+						<select id="measure_mode_sel_4" style="width: 100px;">
+							<option value="1" selected>Burst</option>
+							<option value="2">Blast</option>
+						</select>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_5" style="display: none;">
+						<select id="measure_mode_sel_5" style="width: 120px;">
+							<option value="1" selected>Total Width: </option>
+							<option value="2">Width To Edge: </option>
+						</select>
+						<input type="number" step="5" min="5" id="measure_mode_ipt_5" style="width: 30px;" value="5">
+						<label style="display: inline-flex;">ft.</label>
+					</li>
+				</ul>`;
+			$(`#measure`).click(() => {
+				d20plus.setMode("measure");
+			});
+			$wrpBar.append(toAdd);
+			const $selMeasure = $(`#measure_mode`);
+			$selMeasure.on("change", () => {
+				$(`.measure_mode_sub`).hide();
+				$(`.measure_mode_sub_${$selMeasure.val()}`).show();
+			});
+			const $cbSticky = $(`#measure_sticky`);
+			$(`#measure_sticky_clear`).click(() => {
+				d20plus._stickyMeasure = null;
+				d20.engine.renderTop();
+			});
+
 			// ROLL20 CODE
 			var T = function (e, t, n, i, r, o) {
+				// BEGIN MOD
+				if (!t.reRender) {
+					if ($cbSticky.prop("checked") && t.me) {
+						d20plus._stickyMeasure = {
+							x: t.x,
+							y: t.y,
+							to_x: t.to_x,
+							to_y: t.to_y,
+							color: t.color,
+							offset: [...d20.engine.currentCanvasOffset]
+						}
+					} else if (t.me) {
+						d20plus._stickyMeasure = null;
+					}
+				}
+				// END MOD
 				var a = d20.engine.getDistanceInScale({
 					x: t.x,
 					y: t.y
@@ -1666,10 +1776,192 @@ var betteR20Base = function () {
 					e.fill();
 					// END MOD
 				}
+
+				// BEGIN MOD
+				if (t.me) {
+					const RAD_90_DEG = 1.5708;
+
+					const euclid = (x1, y1, x2, y2) => {
+						const a = x1 - x2;
+						const b = y1 - y2;
+						return Math.sqrt(a * a + b * b)
+					};
+
+					const rotPoint = (angle, pX, pY) => {
+						const s = Math.sin(angle);
+						const c = Math.cos(angle);
+
+						pX -= t.x;
+						pY -= t.y;
+
+						const xNew = pX * c - pY * s;
+						const yNew = pX * s + pY * c;
+
+						pX = xNew + t.x;
+						pY = yNew + t.y;
+						return [pX, pY];
+					};
+
+					switch ($selMeasure.val()) {
+						case "1": // standard ruler
+							break;
+						case "2": { // radius
+							const drawCircle = (cx, cy, rad) => {
+								e.beginPath();
+								e.arc(cx, cy, rad, 0, 2*Math.PI);
+								e.stroke();
+								e.closePath();
+							};
+
+							switch ($(`#measure_mode_sel_2`).val()) {
+								case "1": // origin
+									drawCircle(t.x, t.y, euclid(t.x, t.y, t.to_x, t.to_y));
+									break;
+								case "2": { // halfway
+									const dx = t.to_x - t.x;
+									const dy = t.to_y - t.y;
+									const cX = t.x + (dx / 2);
+									const cY = t.y + (dy / 2);
+
+									drawCircle(cX, cY, euclid(cX, cY, t.to_x, t.to_y));
+									break;
+								}
+							}
+
+							break;
+						}
+						case "3": { // cone
+							const arcRadians = (Number($(`#measure_mode_ipt_3`).val()) || 1) / 2;
+
+							const r = euclid(t.x, t.y, t.to_x, t.to_y);
+							const dx = t.to_x - t.x;
+							const dy = t.to_y - t.y;
+							const startR = Math.atan2(dy, dx);
+
+							// arc 1
+							e.beginPath();
+							e.arc(t.x, t.y, r, startR, startR + arcRadians);
+							e.stroke();
+							e.closePath();
+							// arc 2
+							e.beginPath();
+							e.arc(t.x, t.y, r, startR, startR - arcRadians, true); // draw counter-clockwise
+							e.stroke();
+							e.closePath();
+
+							// border line 1
+							const s1 = Math.sin(arcRadians);
+							const c1 = Math.cos(arcRadians);
+							const xb1 = dx * c1 - dy * s1;
+							const yb1 = dx * s1 + dy * c1;
+							e.beginPath();
+							e.moveTo(t.x, t.y);
+							e.lineTo(t.x + xb1, t.y + yb1);
+							e.stroke();
+							e.closePath();
+
+							// border line 2
+							const s2 = Math.sin(-arcRadians);
+							const c2 = Math.cos(-arcRadians);
+							const xb2 = dx * c2 - dy * s2;
+							const yb2 = dx * s2 + dy * c2;
+							e.beginPath();
+							e.moveTo(t.x, t.y);
+							e.lineTo(t.x + xb2, t.y + yb2);
+							e.stroke();
+							e.closePath();
+							break;
+						}
+						case "4": { // box
+							const dxHalf = (t.to_x - t.x) / 2;
+							const dyHalf = (t.to_y - t.y) / 2;
+
+							e.beginPath();
+							switch ($(`#measure_mode_sel_4`).val()) {
+								case "1": // origin
+									const dx = t.to_x - t.x;
+									const dy = t.to_y - t.y;
+
+									const [x1, y1] = rotPoint(RAD_90_DEG, t.to_x, t.to_y);
+									const [x3, y3] = rotPoint(-RAD_90_DEG, t.to_x, t.to_y);
+
+									e.moveTo(x1, y1);
+									e.lineTo(x1 + dx, y1 + dy);
+									e.lineTo(x3 + dx, y3 + dy);
+									e.lineTo(x3 - dx, y3 - dy);
+									e.lineTo(x1 - dx, y1 - dy);
+									e.lineTo(x1 + dx, y1 + dy);
+
+									break;
+								case "2": { // halfway
+									const [x1, y1] = rotPoint(RAD_90_DEG, t.to_x - dxHalf, t.to_y - dyHalf);
+									const [x3, y3] = rotPoint(-RAD_90_DEG, t.to_x - dxHalf, t.to_y - dyHalf);
+
+									e.moveTo(t.x, t.y);
+									e.lineTo(x1, y1);
+									e.lineTo(x3, y3);
+
+									const dx3 = (x3 - t.x);
+									const dy3 = (y3 - t.y);
+									e.lineTo(t.to_x + dx3, t.to_y + dy3);
+
+									const dx1 = (x1 - t.x);
+									const dy1 = (y1 - t.y);
+									e.lineTo(t.to_x + dx1, t.to_y + dy1);
+
+									e.lineTo(x1, y1);
+
+									break;
+								}
+							}
+							e.stroke();
+							e.closePath();
+							break;
+						}
+						case "5": { // line
+							e.beginPath();
+
+							const div = $(`#measure_mode_sel_5`).val() === "2" ? 1 : 2;
+
+							const norm = [];
+							d20plus.math.normalize(norm, [t.to_x - t.x, t.to_y - t.y]);
+							const width = Number($(`#measure_mode_ipt_5`).val()) / div;
+							const scaledWidth = (width / d20.Campaign.activePage().get("scale_number")) * 70;
+							d20plus.math.scale(norm, norm, scaledWidth);
+
+							const xRot = t.x + norm[0];
+							const yRot = t.y + norm[1];
+
+							const [x1, y1] = rotPoint(RAD_90_DEG, xRot, yRot);
+							const [x3, y3] = rotPoint(-RAD_90_DEG, xRot, yRot);
+							console.log(t.x, t.y, norm, xRot, yRot);
+
+							e.moveTo(t.x, t.y);
+							e.lineTo(x1, y1);
+							e.lineTo(x3, y3);
+
+							const dx3 = (x3 - t.x);
+							const dy3 = (y3 - t.y);
+							e.lineTo(t.to_x + dx3, t.to_y + dy3);
+
+							const dx1 = (x1 - t.x);
+							const dy1 = (y1 - t.y);
+							e.lineTo(t.to_x + dx1, t.to_y + dy1);
+
+							e.lineTo(x1, y1);
+
+							e.stroke();
+							e.closePath();
+							break;
+						}
+					}
+				}
+				// END MOD
+
 				e.beginPath();
 				var u = 15
 					, d = Math.atan2(t.to_y - t.y, t.to_x - t.x);
-				return e.moveTo(t.x, t.y),
+				e.moveTo(t.x, t.y),
 					e.lineTo(t.to_x, t.to_y),
 				(i === !0 || "arrow" === i) && (e.lineTo(t.to_x - u * Math.cos(d - Math.PI / 6), t.to_y - u * Math.sin(d - Math.PI / 6)),
 					e.moveTo(t.to_x, t.to_y),
@@ -1683,7 +1975,7 @@ var betteR20Base = function () {
 					e.fill()),
 				n && (e.fillStyle = "rgba(0,0,0,1)",
 					e.fillText(l, t.to_x - 30, t.to_y - 20)),
-					a
+					a;
 			};
 			d20.engine.drawMeasurements = function (e) {
 				e.globalCompositeOperation = "source-over",
@@ -1698,9 +1990,35 @@ var betteR20Base = function () {
 								n.to_y = n.to_y - d20.engine.currentCanvasOffset[1],
 								n.x = n.x - d20.engine.currentCanvasOffset[0],
 								n.y = n.y - d20.engine.currentCanvasOffset[1],
+								// BEGIN MOD
+								n.me = window.currentPlayer.id === n.player,
+								// END MOD
 								T(e, n, !0, !0)
 						}
 					})
+				// BEGIN MOD
+				if (d20plus._stickyMeasure) {
+					const offset = (num, xy) => {
+						return (num + d20plus._stickyMeasure.offset[xy]) - d20.engine.currentCanvasOffset[xy];
+					};
+
+					const nuX = offset(d20plus._stickyMeasure.x, 0);
+					const nuY = offset(d20plus._stickyMeasure.y, 1);
+					const nuToX = offset(d20plus._stickyMeasure.to_x, 0);
+					const nuToY = offset(d20plus._stickyMeasure.to_y, 1);
+					const n = {
+						x: nuX,
+						y: nuY,
+						to_x: nuToX,
+						to_y: nuToY,
+						color: window.currentPlayer.get("color"),
+						me: true,
+						reRender: true
+					};
+					console.log("RE-RENDERING STICKY", [nuX, nuY], [nuToX, nuToY], "from points", [d20plus._stickyMeasure.x, d20plus._stickyMeasure.y], [d20plus._stickyMeasure.to_x, d20plus._stickyMeasure.to_y])
+					T(e, n, true, true);
+				}
+				// END MOD
 			}
 			// END ROLL20 CODE
 		},
