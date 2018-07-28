@@ -6073,7 +6073,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
 					</div>
 				<br>
-				<input id="wildform-name" placeholder="Character name">
+				<select id="wildform-character">
+					<option value="" disabled selected>Select Character</option>
+				</select>
 				<button class="btn">Create Character Sheet</button>
 				</div>
 				`,
@@ -6088,6 +6090,26 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			openFn: () => {
 				const $win = $("#d20plus-wildformbuild");
 				$win.dialog("open");
+
+				const $selChar = $(`#wildform-character`);
+				$selChar.empty();
+				$selChar.append(`<option value="" disabled>Select Character</option>`);
+				const allChars = d20.Campaign.characters.toJSON().map(it => {
+					const out = {id: it.id, name: it.name || ""};
+					const npc = d20.Campaign.characters.get(it.id).attribs.toJSON().find(it => it.name === "npc");
+					out.npc = !!(npc && npc.current && Number(npc.current));
+					return out;
+				});
+				let hasNpc = false;
+				allChars.sort((a, b) => a.npc - b.npc || SortUtil.ascSort(a.name.toLowerCase(), b.name.toLowerCase()))
+					.forEach(it => {
+						if (it.npc && !hasNpc) {
+							$selChar.append(`<option value="" disabled>--NPCs--</option>`);
+							hasNpc = true;
+						}
+						$selChar.append(`<option value="${it.id}">${it.name}</option>`)
+					});
+
 
 				const $fltr = $win.find(`.filter`);
 				$fltr.off("keydown").off("keyup");
@@ -6137,9 +6159,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								let sel = toShow[$(tokenList.items.find(it => $(it.elm).find(`input`).prop("checked")).elm).attr("data-listid")];
 								sel = $.extend(true, {}, sel);
 
-								const character = $("#wildform-name").val();
-								const d20CharacterId = d20.Campaign.characters.toJSON().find(x => x.name === character).id;
-								const d20Character = d20.Campaign.characters.get(d20CharacterId);
+								const character = $selChar.val();
+								if (!character) return;
+
+								const d20Character = d20.Campaign.characters.get(character);
 
 								if (tokenList && sel && d20Character) {
 									sel.wis = (d20Character.attribs.toJSON().find(x => x.name === "wisdom")|| {}).current || 10;
@@ -6209,7 +6232,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 												$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 												alert("Created character!");
-												$win.dialog("close");
 											},
 											charOptions: {
 												inplayerjournals: d20Character.attributes.inplayerjournals,
