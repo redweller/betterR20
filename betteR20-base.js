@@ -37,7 +37,10 @@ var betteR20Base = function () {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
 		scriptsLoaded: false,
 		scripts: [
-			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"}
+			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
+			{name: "VecMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/Vector%20Math/1.0/VecMath.js"},
+			{name: "MatrixMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/MatrixMath/1.0/matrixMath.js"},
+			{name: "PathMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/PathMath/1.5/PathMath.js"}
 		],
 
 		addScripts: (onLoadFunction) => {
@@ -48,6 +51,7 @@ var betteR20Base = function () {
 					d20plus.log(`JS [${name}] Loaded`);
 				} catch (e) {
 					d20plus.log(`Error loading ${name}`);
+					d20plus.log(e);
 				}
 			};
 			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
@@ -87,9 +91,68 @@ var betteR20Base = function () {
 			withRetries();
 		},
 
+		// MOCK API  ///////////////////////////////////////////////////////////////////////////////////////////////////
+		initMockApi: () => { // TODO check if this needs to be enabled for players too
+			if (!ACCOUNT_ORIGINAL_PERMS.xlfeats) {
+				window.log = (...args) => d20plus.logApi(...args);
+
+				const chatHandlers = [];
+				window.on = (evtType, fn, ...others) => {
+					switch (evtType) {
+						case "chat:message":
+							chatHandlers.push(fn);
+							break;
+						default:
+							console.error("Unhandled message type: ", evtType, "with args", fn, others)
+							break;
+					}
+				};
+
+				window.createObj = (objType, obj, ...others) => {
+					switch (objType) {
+						case "path": {
+							const page = d20.Campaign.pages._byId[obj._pageid];
+							obj.scaleX = obj.scaleX || 1;
+							obj.scaleY = obj.scaleY || 1;
+							obj.path = obj.path || obj._path
+							return page.thepaths.create(obj)
+							break;
+						}
+						default:
+							console.error("Unhandled object type: ", objType, "with args", obj, others)
+							break;
+					}
+				};
+
+				const seenMessages = new Set();
+				d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
+				const handleChat = (e) => {
+					if (!d20.textchat.chatstartingup) {
+						e.id = e.key();
+						if (!seenMessages.has(e.id)) {
+							seenMessages.add(e.id);
+
+							var t = e.val();
+							if (t) {
+								if (window.DEBUG) console.log("CHAT: ", t);
+
+								chatHandlers.forEach(fn => fn(t));
+							}
+						}
+					}
+				};
+				d20.textchat.chatref.on("child_added", handleChat);
+				d20.textchat.chatref.on("child_changed", handleChat);
+			}
+		},
+
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
-		log: (arg) => {
-			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", arg);
+		log: (...args) => {
+			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
+		},
+
+		logApi: (...args) => {
+			console.log("%cD20Plus > ", "color: #ff00ff; font-size: large", ...args);
 		},
 
 		ascSort: (a, b) => {
@@ -1576,11 +1639,15 @@ var betteR20Base = function () {
 					$("#" + e).addClass("activebutton"),
 				"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
 				"rect" == e && ($("#drawingtools").addClass("activebutton"),
-					$("#drawingtools").removeClass("text path polygon").addClass("rect")),
+					$("#drawingtools").removeClass("text path polygon line_splitter").addClass("rect")),
 				"text" == e && ($("#drawingtools").addClass("activebutton"),
-					$("#drawingtools").removeClass("rect path polygon").addClass("text")),
-				"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon").addClass("path"),
-					"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+					$("#drawingtools").removeClass("rect path polygon line_splitter").addClass("text")),
+				"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon line_splitter").addClass("path"),
+					"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path line_splitter").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+					// BEGIN MOD (also line_splitter added to above removeClass calls
+				"line_splitter" == e && ($("#drawingtools").addClass("activebutton"),
+					$("#drawingtools").removeClass("rect path polygon text").addClass("line_splitter")),
+					// END MOD
 				"pan" !== e && "select" !== e && d20.engine.unselect(),
 					"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
 						d20.token_editor.removeRadialMenu(),
@@ -1601,8 +1668,9 @@ var betteR20Base = function () {
 					// BEGIN MOD
 					d20.engine.mode = e;
 				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
-				// BEGIN MOD
-				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e || "measure" == e) {
+				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e
+					// BEGIN MOD
+					|| "measure" == e) {
 					// END MOD
 					$("#secondary-toolbar").show();
 					$("#secondary-toolbar .mode").hide();
@@ -1745,6 +1813,7 @@ var betteR20Base = function () {
 					var t = e.val();
 					if (t) {
 						const msg = JSON.parse(t);
+						if (window.DEBUG) console.log("SHOUT: ", msg);
 
 						if (Object.keys(d20plus._stickyMeasure).length) {
 							d20.Campaign.players.toJSON().filter(p => !p.online).forEach(p => delete d20plus._stickyMeasure[p.id]);
@@ -2015,15 +2084,15 @@ var betteR20Base = function () {
 						}
 					})
 				// BEGIN MOD
-				$.each(d20plus._stickyMeasure, (pId, n) => {
-					const offset = (num, xy) => {
-						return (num + n.offset[xy]) - d20.engine.currentCanvasOffset[xy];
-					};
+				const offset = (num, offset, xy) => {
+					return (num + offset[xy]) - d20.engine.currentCanvasOffset[xy];
+				};
 
-					const nuX = offset(n.x, 0);
-					const nuY = offset(n.y, 1);
-					const nuToX = offset(n.to_x, 0);
-					const nuToY = offset(n.to_y, 1);
+				$.each(d20plus._stickyMeasure, (pId, n) => {
+					const nuX = offset(n.x, n.offset, 0);
+					const nuY = offset(n.y, n.offset, 1);
+					const nuToX = offset(n.to_x, n.offset, 0);
+					const nuToY = offset(n.to_y, n.offset, 1);
 					const nuN = {
 						...n,
 						x: nuX,
@@ -2034,6 +2103,38 @@ var betteR20Base = function () {
 					};
 					T(e, nuN, true, true);
 				});
+
+				// unrelated code, but throw it in the render loop here
+				let doRender = false;
+				$.each(d20plus._tempTopRenderLines, (id, toDraw) => {
+					console.log("DRAWING", toDraw.ticks, toDraw.offset)
+					e.beginPath();
+					e.strokeStyle = window.currentPlayer.get("color");
+					e.lineWidth = 2;
+
+					const nuX = offset(toDraw.x - d20.engine.currentCanvasOffset[0], toDraw.offset, 0);
+					const nuY = offset(toDraw.y - d20.engine.currentCanvasOffset[1], toDraw.offset, 1);
+					const nuToX = offset(toDraw.to_x - d20.engine.currentCanvasOffset[0], toDraw.offset, 0);
+					const nuToY = offset(toDraw.to_y - d20.engine.currentCanvasOffset[1], toDraw.offset, 1);
+
+					e.moveTo(nuX, nuY);
+					e.lineTo(nuToX, nuToY);
+
+					e.moveTo(nuToX, nuY);
+					e.lineTo(nuX, nuToY);
+
+					e.stroke();
+					e.closePath();
+
+					toDraw.ticks--;
+					doRender = true;
+					if (toDraw.ticks <= 0) {
+						delete d20plus._tempTopRenderLines[id];
+					}
+				});
+				if (doRender) {
+					d20.engine.debounced_renderTop()
+				}
 				// END MOD
 			}
 			// END ROLL20 CODE
@@ -2825,7 +2926,9 @@ var betteR20Base = function () {
 			$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 		},
 
-		enhanceSnap: () => {
+		_tempTopRenderLines: {}, // format: {x: ..., y: ..., to_x: ..., to_y: ..., ticks: ..., offset: ...}
+		// previously "enhanceSnap"
+		enhanceMouseDown: () => {
 			/**
 			 * Dumb variable names copy-pasted from uglified code
 			 * @param c x co-ord
@@ -3006,6 +3109,121 @@ var betteR20Base = function () {
 						var m = d20.engine.canvas.findTarget(e, !0, !0);
 						return void (void 0 !== m && "image" === m.type && m.model && d20.engine.nextTargetCallback(m))
 					}
+					// BEGIN MOD
+					else if (d20.engine.leftMouseIsDown && "line_splitter" === d20.engine.mode) {
+						const lastPoint = {x: d20.engine.lastMousePos[0], y: d20.engine.lastMousePos[1]};
+						(d20.engine.canvas._objects || []).forEach(o => {
+							if (o.type === "path" && o.containsPoint(lastPoint)) {
+								const asObj = o.toObject();
+								const anyCurves = asObj.path.filter(it => it instanceof Array && it.length > 0  && it[0] === "C");
+								if (!anyCurves.length) {
+									// PathMath expects these
+									o.model.set("_pageid", d20.Campaign.activePage().get("id"));
+									o.model.set("_path", JSON.stringify(o.path));
+
+									console.log("SPLITTING PATH: ", o.model);
+									const mainPath = o.model;
+
+									// BEGIN PathSplitter CODE
+									let mainSegments = PathMath.toSegments(mainPath);
+									// BEGIN MOD
+									// fake a tiny diagonal line
+									const SLICE_LEN = 10;
+									const slicePoint1 = [lastPoint.x + (SLICE_LEN / 2), lastPoint.y + (SLICE_LEN / 2), 1];
+									const slicePoint2 = [lastPoint.x - (SLICE_LEN / 2), lastPoint.y - (SLICE_LEN / 2), 1];
+									const nuId = d20plus.generateRowId();
+									d20plus._tempTopRenderLines[nuId] = {
+										ticks: 2,
+										x: slicePoint1[0],
+										y: slicePoint1[1],
+										to_x: slicePoint2[0],
+										to_y: slicePoint2[1],
+										offset: [...d20.engine.currentCanvasOffset]
+									};
+									setTimeout(() => {
+										d20.engine.debounced_renderTop();
+									}, 1);
+									let splitSegments = [
+										[slicePoint1, slicePoint2]
+									];
+									// END MOD
+									let segmentPaths = _getSplitSegmentPaths(mainSegments, splitSegments);
+
+									// (function moved into this scope)
+									function _getSplitSegmentPaths(mainSegments, splitSegments) {
+										let resultSegPaths = [];
+										let curPathSegs = [];
+
+										_.each(mainSegments, seg1 => {
+
+											// Find the points of intersection and their parametric coefficients.
+											let intersections = [];
+											_.each(splitSegments, seg2 => {
+												let i = PathMath.segmentIntersection(seg1, seg2);
+												if(i) intersections.push(i);
+											});
+
+											if(intersections.length > 0) {
+												// Sort the intersections in the order that they appear along seg1.
+												intersections.sort((a, b) => {
+													return a[1] - b[1];
+												});
+
+												let lastPt = seg1[0];
+												_.each(intersections, i => {
+													// Complete the current segment path.
+													curPathSegs.push([lastPt, i[0]]);
+													resultSegPaths.push(curPathSegs);
+
+													// Start a new segment path.
+													curPathSegs = [];
+													lastPt = i[0];
+												});
+												curPathSegs.push([lastPt, seg1[1]]);
+											}
+											else {
+												curPathSegs.push(seg1);
+											}
+										});
+										resultSegPaths.push(curPathSegs);
+
+										return resultSegPaths;
+									};
+									// (end function moved into this scope)
+
+									// Convert the list of segment paths into paths.
+									let _pageid = mainPath.get('_pageid');
+									let controlledby = mainPath.get('controlledby');
+									let fill = mainPath.get('fill');
+									let layer = mainPath.get('layer');
+									let stroke = mainPath.get('stroke');
+									let stroke_width = mainPath.get('stroke_width');
+
+									let results = [];
+									_.each(segmentPaths, segments => {
+										let pathData = PathMath.segmentsToPath(segments);
+										_.extend(pathData, {
+											_pageid,
+											controlledby,
+											fill,
+											layer,
+											stroke,
+											stroke_width
+										});
+										let path = createObj('path', pathData);
+										results.push(path);
+									});
+
+									// Remove the original path and the splitPath.
+									// BEGIN MOD
+									mainPath.destroy();
+									// END MOD
+									// END PathSplitter CODE
+								}
+							}
+						});
+					}
+					// END MOD
 				} else
 					d20.engine.fog.down[0] = a,
 						d20.engine.fog.down[1] = l,
@@ -3062,7 +3280,8 @@ var betteR20Base = function () {
 
 		},
 
-		enhanceMouseMove: () => { // M
+		enhanceMouseMove: () => {
+			// M
 			// needs to be called after `enhanceMeasureTool()`
 			const $selMeasureMode = $(`#measure_mode`);
 			const $cbSticky = $(`#measure_sticky`);
@@ -3203,6 +3422,16 @@ var betteR20Base = function () {
 				d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
 				d20.engine.uppercanvas.addEventListener("mousemove", M);
 			}
+		},
+
+		addLineCutterTool: () => {
+			const $btnTextTool = $(`.choosetext`);
+
+			const $btnSplitTool = $(`<li class="choosesplitter">✂️ Line Splitter</li>`).click(() => {
+				d20plus.setMode("line_splitter");
+			});
+
+			$btnTextTool.after($btnSplitTool);
 		},
 
 		_tokenHover: null,
@@ -3553,6 +3782,11 @@ var betteR20Base = function () {
 			{
 				s: ".Vetools-token-hover",
 				r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;"
+			},
+			// drawing tools bar
+			{
+				s: "#drawingtools.line_splitter .currentselection:after",
+				r: "content: '✂️';"
 			}
 		],
 

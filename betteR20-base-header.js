@@ -22,9 +22,14 @@ addConfigOptions = function (category, options) {
 };
 
 OBJECT_DEFINE_PROPERTY = Object.defineProperty;
+ACCOUNT_ORIGINAL_PERMS = {
+	largefeats: false,
+	xlfeats: false
+};
 Object.defineProperty = function (obj, prop, vals) {
 	try {
 		if (prop === "largefeats" || prop === "xlfeats") {
+			ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
 			vals.value = true;
 		}
 		OBJECT_DEFINE_PROPERTY(obj, prop, vals);

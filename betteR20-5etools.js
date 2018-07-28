@@ -478,6 +478,7 @@ const betteR205etools = function () {
 		}
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
+		d20plus.initMockApi();
 		d20plus.addScripts(d20plus.onScriptLoad);
 	};
 
@@ -527,8 +528,9 @@ const betteR205etools = function () {
 		d20plus.addSelectedTokenCommands();
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
-		d20plus.enhanceSnap();
+		d20plus.enhanceMouseDown();
 		d20plus.enhanceMouseMove();
+		d20plus.addLineCutterTool();
 		d20plus.enhanceChat();
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);
