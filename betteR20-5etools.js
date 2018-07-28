@@ -6074,7 +6074,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					</div>
 				<br>
 				<select id="wildform-character">
-					<option value="" disabled>Select Character</option>
+					<option value="" disabled selected>Select Character</option>
 				</select>
 				<button class="btn">Create Character Sheet</button>
 				</div>
