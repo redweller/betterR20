@@ -1186,7 +1186,8 @@ const betteR20Emoji = function () {
 			emoji: {
 				name: "Add Emoji Replacement to Chat",
 				default: true,
-				_type: "boolean"
+				_type: "boolean",
+				_player: true
 			}
 		}
 	);

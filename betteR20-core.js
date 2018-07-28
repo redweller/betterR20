@@ -5,12 +5,13 @@ const betteR20Core = function () {
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 		d20plus.addAllCss();
 		if (window.is_gm) d20plus.enhancePageSelector();
+		d20plus.initMockApi();
 		d20plus.addScripts(d20plus.onScriptLoad);
 	};
 
 	d20plus.onScriptLoad = () => {
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
-		else d20plus.onConfigLoad();
+		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
 	};
 
 	// continue more init after config loaded
@@ -24,8 +25,10 @@ const betteR20Core = function () {
 		d20plus.enhanceMarkdown();
 		d20plus.addProFeatures();
 		d20plus.enhanceMeasureTool();
-		d20plus.enhanceSnap();
+		d20plus.enhanceMouseDown();
+		d20plus.enhanceMouseMove();
 		d20plus.enhanceStatusEffects();
+		d20plus.addLineCutterTool();
 		d20plus.addHtmlHeader();
 		d20plus.addHtmlFooter();
 		d20plus.initArtFromUrlButtons();

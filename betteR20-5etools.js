@@ -298,6 +298,7 @@ const betteR205etools = function () {
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
+		"_player": true,
 		"customTracker": {
 			"name": "Add Additional Info to Tracker",
 			"default": true,
@@ -331,7 +332,8 @@ const betteR205etools = function () {
 		"emoji": {
 			"name": "Add Emoji Replacement to Chat",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"showCustomArtPreview": {
 			"name": "Show Custom Art Previews",
@@ -423,9 +425,9 @@ const betteR205etools = function () {
 		d20plus.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
 	};
 
-	d20plus.handleConfigChange = function () {
+	d20plus.handleConfigChange = function (isSyncingPlayer) {
+		if (!isSyncingPlayer) d20plus.log("Applying config");
 		if (window.is_gm) {
-			d20plus.log("Applying config");
 			d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
 			d20plus.updateDifficulty();
@@ -478,6 +480,7 @@ const betteR205etools = function () {
 		}
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
+		d20plus.initMockApi();
 		d20plus.addScripts(d20plus.onScriptLoad);
 	};
 
@@ -495,7 +498,7 @@ const betteR205etools = function () {
 		};
 		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
-		else d20plus.onConfigLoad();
+		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
 	};
 
 // continue more init after config loaded
@@ -527,7 +530,9 @@ const betteR205etools = function () {
 		d20plus.addSelectedTokenCommands();
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
-		d20plus.enhanceSnap();
+		d20plus.enhanceMouseDown();
+		d20plus.enhanceMouseMove();
+		d20plus.addLineCutterTool();
 		d20plus.enhanceChat();
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);
@@ -1848,7 +1853,8 @@ const betteR205etools = function () {
 	};
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
-		function loadData (url) {
+		const url = $("#import-monster-url").val();
+		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
@@ -1864,67 +1870,31 @@ const betteR205etools = function () {
 				);
 			});
 		}
-
-		const url = $("#import-monster-url").val();
-		if (url && url.trim()) {
-			// ugly hack to pre-load fluff
-			const fileName = url.split("/").reverse()[0];
-			const src = Object.keys(monsterDataUrls).find(k => monsterDataUrls[k] === fileName);
-			if (src && monsterFluffDataUrls[src]) {
-				const fluffUrl = d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]);
-				DataUtil.loadJSON(fluffUrl).then((data) => {
-					monsterFluffData[src] = data;
-					loadData(url);
-				});
-			} else {
-				loadData(url);
-			}
-		}
 	};
 
 // Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
-		function loadData () {
-			const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
-			if (toLoad.length) {
-				DataUtil.multiLoadJSON(
-					toLoad.map(url => ({url})),
-					() => {},
-					(dataStack) => {
-						let toAdd = [];
-						dataStack.forEach(d => toAdd = toAdd.concat(d.monster));
-						d20plus.importer.showImportList(
-							"monster",
-							toAdd,
-							d20plus.monsters.handoutBuilder,
-							{
-								groupOptions: d20plus.monsters._groupOptions,
-								listItemBuilder: d20plus.monsters._listItemBuilder,
-								listIndex: d20plus.monsters._listCols,
-								listIndexConverter: d20plus.monsters._listIndexConverter
-							}
-						);
-					}
-				);
-			}
-		}
-
-		// preload fluff if available
-		const toLoadFluff = Object.keys(monsterFluffDataUrls)
-			.filter(src => !SourceUtil.isNonstandardSource(src))
-			.map(src => ({url: d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]), src}));
-		if (toLoadFluff.length) {
+		const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+		if (toLoad.length) {
 			DataUtil.multiLoadJSON(
-				toLoadFluff,
-				(tl, data) => {
-					monsterFluffData[tl.src] = data;
-				},
-				() => {
-					loadData();
+				toLoad.map(url => ({url})),
+				() => {},
+				(dataStack) => {
+					let toAdd = [];
+					dataStack.forEach(d => toAdd = toAdd.concat(d.monster));
+					d20plus.importer.showImportList(
+						"monster",
+						toAdd,
+						d20plus.monsters.handoutBuilder,
+						{
+							groupOptions: d20plus.monsters._groupOptions,
+							listItemBuilder: d20plus.monsters._listItemBuilder,
+							listIndex: d20plus.monsters._listCols,
+							listIndexConverter: d20plus.monsters._listIndexConverter
+						}
+					);
 				}
 			);
-		} else {
-			loadData();
 		}
 	};
 
@@ -2097,726 +2067,754 @@ const betteR205etools = function () {
 	};
 
 // Create monster character from js data object
-	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
-		// make dir
-		const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
-		const path = ["Monsters", folderName, data.name];
-
-		// handle duplicates/overwrites
-		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
-
-		const name = data.name;
-		const pType = Parser.monTypeToFullObj(data.type);
-
-		const renderer = new EntryRenderer();
-		renderer.setBaseUrl(BASE_SITE_URL);
-
-		// get fluff, if available
-		const includedFluff = data.fluff;
-		let renderFluff = null;
-		// prefer fluff directly attached to the creature
-		if (includedFluff) {
-			if (includedFluff.entries) {
-				const depth = includedFluff.entries.type === "section" ? -1 : 2;
-				renderFluff = renderer.renderEntry(includedFluff.entries, depth);
+	d20plus.monsters.handoutBuilder = function (data, overwrite, options, folderName, saveIdsTo) {
+		const doBuild = () => {
+			if (!options) options = {};
+			if (typeof options === "string") {
+				options = {
+					charOptions: {
+						inplayerjournals: options
+					}
+				};
 			}
-		} else {
-			const fluffData = monsterFluffData[data.source] ? monsterFluffData[data.source] : null;
-			const fluff = fluffData ? monsterFluffData[data.source].monster.find(it => it.name === data.name) : null;
-			if (fluff) {
-				if (fluff._copy) {
-					const cpy = fluffData.monster.find(it => fluff._copy.name === it.name);
-					// preserve these
-					const name = fluff.name;
-					const src = fluff.source;
-					const images = fluff.images;
-					Object.assign(fluff, cpy);
-					fluff.name = name;
-					fluff.source = src;
-					if (images) fluff.images = images;
-					delete fluff._copy;
-				}
 
-				if (fluff._appendCopy) {
-					const cpy = fluffData.monster.find(it => fluff._appendCopy.name === it.name);
-					if (cpy.images) {
-						if (!fluff.images) fluff.images = cpy.images;
-						else fluff.images = fluff.images.concat(cpy.images);
-					}
-					if (cpy.entries) {
-						if (!fluff.entries) fluff.entries = cpy.entries;
-						else fluff.entries = fluff.entries.concat(cpy.entries);
-					}
-					delete fluff._appendCopy;
-				}
+			// make dir
+			const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
+			const path = ["Monsters", folderName, data.name];
 
-				if (fluff.entries) {
-					renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries});
+			// handle duplicates/overwrites
+			if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
+
+			const name = data.name;
+			const pType = Parser.monTypeToFullObj(data.type);
+
+			const renderer = new EntryRenderer();
+			renderer.setBaseUrl(BASE_SITE_URL);
+
+			// get fluff, if available
+			const includedFluff = data.fluff;
+			let renderFluff = null;
+			// prefer fluff directly attached to the creature
+			if (includedFluff) {
+				if (includedFluff.entries) {
+					const depth = includedFluff.entries.type === "section" ? -1 : 2;
+					renderFluff = renderer.renderEntry(includedFluff.entries, depth);
+				}
+			} else {
+				const fluffData = monsterFluffData[data.source] ? monsterFluffData[data.source] : null;
+				const fluff = fluffData ? monsterFluffData[data.source].monster.find(it => it.name === data.name) : null;
+				if (fluff) {
+					if (fluff._copy) {
+						const cpy = fluffData.monster.find(it => fluff._copy.name === it.name);
+						// preserve these
+						const name = fluff.name;
+						const src = fluff.source;
+						const images = fluff.images;
+						Object.assign(fluff, cpy);
+						fluff.name = name;
+						fluff.source = src;
+						if (images) fluff.images = images;
+						delete fluff._copy;
+					}
+
+					if (fluff._appendCopy) {
+						const cpy = fluffData.monster.find(it => fluff._appendCopy.name === it.name);
+						if (cpy.images) {
+							if (!fluff.images) fluff.images = cpy.images;
+							else fluff.images = fluff.images.concat(cpy.images);
+						}
+						if (cpy.entries) {
+							if (!fluff.entries) fluff.entries = cpy.entries;
+							else fluff.entries = fluff.entries.concat(cpy.entries);
+						}
+						delete fluff._appendCopy;
+					}
+
+					if (fluff.entries) {
+						renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries});
+					}
 				}
 			}
-		}
 
-		d20.Campaign.characters.create(
-			{
-				name: name,
-				tags: d20plus.importer.getTagString([
-					pType.type,
-					...pType.tags,
-					`cr ${(data.cr ? (data.cr.cr || data.cr) : "").replace(/\//g, " over ")}` || "unknown cr",
-					Parser.sourceJsonToFull(data.source)
-				], "monsters")
-			},
-			{
-			success: function (character) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BESTIARY](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
-				/* OGL Sheet */
-				try {
-					const type = Parser.monTypeToFullObj(data.type).asText;
-					const source = Parser.sourceJsonToAbv(data.source);
-					const avatar = data.tokenURL || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
-					character.size = data.size;
-					character.name = name;
-					character.senses = data.senses;
-					character.hp = data.hp.average || 0;
-					$.ajax({
-						url: avatar,
-						type: 'HEAD',
-						error: function () {
-							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
-						},
-						success: function () {
-							d20plus.importer.getSetAvatarImage(character, avatar);
-						}
-					});
-					const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
-					var ac = parsedAc.match(/^\d+/);
-					var actype = /\(([^)]+)\)/.exec(parsedAc);
-					var hp = data.hp.average || 0;
-					var hpformula = data.hp.formula;
-					var passive = data.passive != null ? data.passive : "";
-					var passiveStr = passive !== "" ? "passive Perception " + passive : "";
-					var senses = data.senses || "";
-					var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
-					var size = d20plus.getSizeString(data.size || "");
-					var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
-					var cr = data.cr ? (data.cr.cr || data.cr) : "";
-					var xp = Parser.crToXp(cr);
-					character.attribs.create({name: "npc", current: 1});
-					character.attribs.create({name: "npc_toggle", current: 1});
-					character.attribs.create({name: "npc_options-flag", current: 0});
-					character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
-					character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
-					character.attribs.create({
-						name: "advantagetoggle",
-						current: d20plus.importer.getDesiredAdvantageToggle()
-					});
-					character.attribs.create({
-						name: "whispertoggle",
-						current: d20plus.importer.getDesiredWhisperToggle()
-					});
-					character.attribs.create({name: "dtype", current: d20plus.importer.getDesiredDamageType()});
-					character.attribs.create({name: "npc_name", current: name});
-					character.attribs.create({name: "npc_size", current: size});
-					character.attribs.create({name: "type", current: type});
-					character.attribs.create({name: "npc_type", current: size + " " + type + ", " + alignment});
-					character.attribs.create({name: "npc_alignment", current: alignment});
-					character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
-					character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
-					character.attribs.create({name: "npc_hpbase", current: hp != null ? hp : ""});
-					character.attribs.create({
-						name: "npc_hpformula",
-						current: hpformula != null ? hpformula || "" : ""
-					});
-
-					const hpModId = d20plus.generateRowId();
-					character.attribs.create({name: `repeating_hpmod_${hpModId}_source`, current: "CON"});
-					character.attribs.create({name: `repeating_hpmod_${hpModId}_mod`, current: Parser.getAbilityModNumber(data.con)});
-
-					const parsedSpeed = Parser.getSpeedString(data);
-					data.npc_speed = parsedSpeed;
-					if (d20plus.sheet === "shaped") {
-						data.npc_speed = data.npc_speed.toLowerCase();
-						var match = data.npc_speed.match(/^\s*(\d+)\s?(ft\.?|m\.?)/);
-						if (match && match[1]) {
-							data.speed = match[1] + ' ' + match[2];
-							character.attribs.create({name: "speed", current: match[1] + ' ' + match[2]});
-						}
-						data.npc_speed = parsedSpeed;
-						var regex = /(burrow|climb|fly|swim)\s+(\d+)\s?(ft\.?|m\.?)/g;
-						var speeds = void 0;
-						while ((speeds = regex.exec(data.npc_speed)) !== null) character.attribs.create({
-							name: "speed_" + speeds[1],
-							current: speeds[2] + ' ' + speeds[3]
-						});
-						if (data.npc_speed && data.npc_speed.includes('hover')) character.attribs.create({
-							name: "speed_fly_hover",
-							current: 1
-						});
-						data.npc_speed = '';
-					}
-
-					function calcMod (score) {
-						return Math.floor((Number(score) - 10) / 2);
-					}
-
-					character.attribs.create({name: "npc_speed", current: parsedSpeed != null ? parsedSpeed : ""});
-					character.attribs.create({name: "strength", current: data.str});
-					character.attribs.create({name: "strength_base", current: data.str});
-					character.attribs.create({name: "strength_mod", current: calcMod(data.str)});
-
-					character.attribs.create({name: "dexterity", current: data.dex});
-					character.attribs.create({name: "dexterity_base", current: data.dex});
-					character.attribs.create({name: "dexterity_mod", current: calcMod(data.dex)});
-
-					character.attribs.create({name: "constitution", current: data.con});
-					character.attribs.create({name: "constitution_base", current: data.con});
-					character.attribs.create({name: "constitution_mod", current: calcMod(data.con)});
-
-					character.attribs.create({name: "intelligence", current: data.int});
-					character.attribs.create({name: "intelligence_base", current: data.int});
-					character.attribs.create({name: "intelligence_mod", current: calcMod(data.int)});
-
-					character.attribs.create({name: "wisdom", current: data.wis});
-					character.attribs.create({name: "wisdom_base", current: data.wis});
-					character.attribs.create({name: "wisdom_mod", current: calcMod(data.wis)});
-
-					character.attribs.create({name: "charisma", current: data.cha});
-					character.attribs.create({name: "charisma_base", current: data.cha});
-					character.attribs.create({name: "charisma_mod", current: calcMod(data.cha)});
-
-					character.attribs.create({name: "passive", current: passive});
-					character.attribs.create({
-						name: "npc_languages",
-						current: data.languages != null ? data.languages : ""
-					});
-					character.attribs.create({name: "npc_challenge", current: cr.cr || cr});
-					character.attribs.create({name: "npc_xp", current: xp});
-					character.attribs.create({
-						name: "npc_vulnerabilities",
-						current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
-					});
-					character.attribs.create({
-						name: "damage_vulnerabilities",
-						current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
-					});
-					character.attribs.create({
-						name: "npc_resistances",
-						current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
-					});
-					character.attribs.create({
-						name: "damage_resistances",
-						current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
-					});
-					character.attribs.create({name: "npc_immunities", current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""});
-					character.attribs.create({
-						name: "damage_immunities",
-						current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""
-					});
-					character.attribs.create({
-						name: "npc_condition_immunities",
-						current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
-					});
-					character.attribs.create({
-						name: "damage_condition_immunities",
-						current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
-					});
-					character.attribs.create({name: "npc_senses", current: sensesStr});
-
-					// add Tokenaction Macros
-					if (d20plus.getCfgVal("token", "tokenactionsSkillsSaves")) {
-						character.abilities.create({
-							name: "Perception",
-							istokenaction: true,
-							action: d20plus.actionMacroPerception
-						});
-						character.abilities.create({
-							name: "Init",
-							istokenaction: true,
-							action: d20plus.actionMacroInit
-						});
-						character.abilities.create({
-							name: "DR/Immunities",
-							istokenaction: true,
-							action: d20plus.actionMacroDrImmunities
-						});
-						character.abilities.create({
-							name: "Stats",
-							istokenaction: true,
-							action: d20plus.actionMacroStats
-						});
-						character.abilities.create({
-							name: "Saves",
-							istokenaction: true,
-							action: d20plus.actionMacroSaves
-						});
-						character.abilities.create({
-							name: "Skill-Check",
-							istokenaction: true,
-							action: d20plus.actionMacroSkillCheck
-						});
-						character.abilities.create({
-							name: "Ability-Check",
-							istokenaction: true,
-							action: d20plus.actionMacroAbilityCheck
-						});
-					}
-
-					if (data.save != null) {
-						character.attribs.create({name: "npc_saving_flag", current: 1});
-						Object.keys(data.save).forEach(k => {
-							character.attribs.create({
-								name: "npc_" + k + "_save_base",
-								current: data.save[k]
-							});
-							character.attribs.create({
-								name: k + "_saving_throw_proficient",
-								current: data.save[k]
-							});
-						});
-					}
-					if (data.skill != null) {
-						const skills = data.skill;
-						const skillsString = Object.keys(skills).map(function (k) {
-							return k.uppercaseFirst() + ' ' + skills[k];
-						}).join(', ');
-						character.attribs.create({name: "npc_skills_flag", current: 1});
-						character.attribs.create({name: "npc_skills", current: skillsString});
-
-						// Shaped Sheet currently doesn't correctly load NPC Skills
-						// This adds a visual representation as a Trait for reference
-						if (d20plus.sheet === "shaped") {
-							var newRowId = d20plus.generateRowId();
-							character.attribs.create({
-								name: "repeating_npctrait_" + newRowId + "_name",
-								current: "NPC Skills"
-							});
-							character.attribs.create({
-								name: "repeating_npctrait_" + newRowId + "_desc",
-								current: skillsString
-							});
-						}
-
-						$.each(skills, function (k, v) {
-							const cleanSKill = $.trim(k).toLowerCase().replace(/ /g, "_");
-							const cleanBonus = parseInt($.trim(v)) || 0;
-							character.attribs.create({
-								name: "npc_" + cleanSKill + "_base",
-								current: parseInt($.trim(v)) || 0
-							});
-							character.attribs.create({
-								name: "npc_" + cleanSKill + "_base",
-								current: cleanBonus
-							});
-							character.attribs.create({
-								name: "npc_" + cleanSKill,
-								current: cleanBonus
-							});
-						});
-					}
-					if (data.spellcasting) { // Spellcasting import 2.0
-						const charInterval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
-						const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
-
-						// figure out the casting ability or spell DC
-						let spellDc = null;
-						let spellAbility = null;
-						let casterLevel = null;
-						let spellToHit = null;
-						for (const sc of data.spellcasting) {
-							const toCheck = sc.headerEntries.join("");
-
-							// use the first ability/DC we find, since roll20 doesn't support multiple
-							const abM = /(strength|constitution|dexterity|intelligence|wisdom|charisma)/i.exec(toCheck);
-							const dcM = /DC (\d+)/i.exec(toCheck);
-							const lvlM = /(\d+)(st|nd|rd|th).level\s+spellcaster/i.exec(toCheck);
-							const spHit = /{@hit (.*?)} to hit with spell attacks/i.exec(toCheck);
-
-							if (spellDc == null && dcM) spellDc = dcM[1];
-							if (casterLevel == null && lvlM) casterLevel = lvlM[1];
-							if (spellAbility == null && abM) spellAbility = abM[1].toLowerCase();
-							if (spellToHit == null && spHit) spellToHit = spHit[1];
-						}
-
-						function setAttrib (k, v) {
-							d20plus.importer.addOrUpdateAttr(character, k, v);
-						}
-
-						function addInlineRollers (text) {
-							if (!text) return text;
-							return text.replace(RollerUtil.DICE_REGEX, (match) => {
-								return `[[${match}]]`;
-							});
-						}
-
-						// the basics
-						setAttrib("npcspellcastingflag", "1");
-						if (spellAbility != null) setAttrib("spellcasting_ability", `@{${spellAbility}_mod}+`); else console.warn("No spellAbility!");
-						// spell_attack_mod -- never used?
-						setTimeout(() => {
-							if (spellToHit != null) setAttrib("spell_attack_bonus", Number(spellToHit)); else console.warn("No spellToHit!");
-							if (spellDc != null) setAttrib("spell_save_dc", Number(spellDc)); else console.warn("No spellDc!");
-							if (casterLevel != null) {
-								setAttrib("caster_level", casterLevel);
-								setAttrib("level", Number(casterLevel));
-							} else console.warn("No casterLevel!");
-						}, spAbilsDelayMs);
-
-						// spell slots
-						for (let i = 1; i <= 9; ++i) {
-							const slots = data.spellcasting
-								.map(it => ((it.spells || {})[i] || {}).slots)
-								.filter(it => it)
-								.reduce((a, b) => Math.max(a, b), 0);
-
-							// delay this, otherwise they all come out as 0
-							setTimeout(() => {
-								setAttrib(`lvl${i}_slots_total`, slots);
-							}, spAbilsDelayMs);
-						}
-
-						// add the spellcasting text
-						const newRowId = d20plus.generateRowId();
-						const spellTrait = EntryRenderer.monster.getSpellcastingRenderedTraits(data, renderer).map(it => it.rendered).filter(it => it).join("");
-						const cleanDescription = d20plus.importer.getCleanText(spellTrait);
-						setAttrib(`repeating_npctrait_${newRowId}_name`, "Spellcasting");
-						setAttrib(`repeating_npctrait_${newRowId}_desc`, cleanDescription);
-
-						// begin building a spells macro
-						const tokenActionStack = [cleanDescription];
-
-						// collect all the spells
-						const allSpells = [];
-						data.spellcasting.forEach(sc => {
-							const toAdd = ["constant", "will", "rest", "daily", "weekly"];
-							toAdd.forEach(k => {
-								if (sc[k]) {
-									Object.values(sc[k]).forEach(spOrSpArr => {
-										if (spOrSpArr instanceof Array) {
-											Array.prototype.push.apply(allSpells, spOrSpArr);
-										} else {
-											allSpells.push(spOrSpArr);
-										}
-									});
+			d20.Campaign.characters.create(
+				{
+					name: name,
+					tags: d20plus.importer.getTagString([
+						pType.type,
+						...pType.tags,
+						`cr ${(data.cr ? (data.cr.cr || data.cr) : "").replace(/\//g, " over ")}` || "unknown cr",
+						Parser.sourceJsonToFull(data.source)
+					], "monsters"),
+					...options.charOptions
+				},
+				{
+					success: function (character) {
+						if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BESTIARY](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
+						/* OGL Sheet */
+						try {
+							const type = Parser.monTypeToFullObj(data.type).asText;
+							const source = Parser.sourceJsonToAbv(data.source);
+							const avatar = data.tokenURL || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
+							character.size = data.size;
+							character.name = name;
+							character.senses = data.senses;
+							character.hp = data.hp.average || 0;
+							$.ajax({
+								url: avatar,
+								type: 'HEAD',
+								error: function () {
+									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+								},
+								success: function () {
+									d20plus.importer.getSetAvatarImage(character, avatar);
 								}
 							});
+							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
+							var ac = parsedAc.match(/^\d+/);
+							var actype = /\(([^)]+)\)/.exec(parsedAc);
+							var hp = data.hp.average || 0;
+							var hpformula = data.hp.formula;
+							var passive = data.passive != null ? data.passive : "";
+							var passiveStr = passive !== "" ? "passive Perception " + passive : "";
+							var senses = data.senses || "";
+							var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
+							var size = d20plus.getSizeString(data.size || "");
+							var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
+							var cr = data.cr ? (data.cr.cr || data.cr) : "";
+							var xp = Parser.crToXp(cr);
+							character.attribs.create({name: "npc", current: 1});
+							character.attribs.create({name: "npc_toggle", current: 1});
+							character.attribs.create({name: "npc_options-flag", current: 0});
+							character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
+							character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
+							character.attribs.create({
+								name: "advantagetoggle",
+								current: d20plus.importer.getDesiredAdvantageToggle()
+							});
+							character.attribs.create({
+								name: "whispertoggle",
+								current: d20plus.importer.getDesiredWhisperToggle()
+							});
+							character.attribs.create({name: "dtype", current: d20plus.importer.getDesiredDamageType()});
+							character.attribs.create({name: "npc_name", current: name});
+							character.attribs.create({name: "npc_size", current: size});
+							character.attribs.create({name: "type", current: type});
+							character.attribs.create({name: "npc_type", current: size + " " + type + ", " + alignment});
+							character.attribs.create({name: "npc_alignment", current: alignment});
+							character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
+							character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
+							character.attribs.create({name: "npc_hpbase", current: hp != null ? hp : ""});
+							character.attribs.create({
+								name: "npc_hpformula",
+								current: hpformula != null ? hpformula || "" : ""
+							});
 
-							if (sc.spells) {
-								Object.keys(sc.spells).forEach(lvl => {
-									if (sc.spells[lvl].spells) {
-										Array.prototype.push.apply(allSpells, sc.spells[lvl].spells);
-									}
+							const hpModId = d20plus.generateRowId();
+							character.attribs.create({name: `repeating_hpmod_${hpModId}_source`, current: "CON"});
+							character.attribs.create({name: `repeating_hpmod_${hpModId}_mod`, current: Parser.getAbilityModNumber(data.con)});
+
+							const parsedSpeed = Parser.getSpeedString(data);
+							data.npc_speed = parsedSpeed;
+							if (d20plus.sheet === "shaped") {
+								data.npc_speed = data.npc_speed.toLowerCase();
+								var match = data.npc_speed.match(/^\s*(\d+)\s?(ft\.?|m\.?)/);
+								if (match && match[1]) {
+									data.speed = match[1] + ' ' + match[2];
+									character.attribs.create({name: "speed", current: match[1] + ' ' + match[2]});
+								}
+								data.npc_speed = parsedSpeed;
+								var regex = /(burrow|climb|fly|swim)\s+(\d+)\s?(ft\.?|m\.?)/g;
+								var speeds = void 0;
+								while ((speeds = regex.exec(data.npc_speed)) !== null) character.attribs.create({
+									name: "speed_" + speeds[1],
+									current: speeds[2] + ' ' + speeds[3]
+								});
+								if (data.npc_speed && data.npc_speed.includes('hover')) character.attribs.create({
+									name: "speed_fly_hover",
+									current: 1
+								});
+								data.npc_speed = '';
+							}
+
+							function calcMod (score) {
+								return Math.floor((Number(score) - 10) / 2);
+							}
+
+							character.attribs.create({name: "npc_speed", current: parsedSpeed != null ? parsedSpeed : ""});
+							character.attribs.create({name: "strength", current: data.str});
+							character.attribs.create({name: "strength_base", current: data.str});
+							character.attribs.create({name: "strength_mod", current: calcMod(data.str)});
+
+							character.attribs.create({name: "dexterity", current: data.dex});
+							character.attribs.create({name: "dexterity_base", current: data.dex});
+							character.attribs.create({name: "dexterity_mod", current: calcMod(data.dex)});
+
+							character.attribs.create({name: "constitution", current: data.con});
+							character.attribs.create({name: "constitution_base", current: data.con});
+							character.attribs.create({name: "constitution_mod", current: calcMod(data.con)});
+
+							character.attribs.create({name: "intelligence", current: data.int});
+							character.attribs.create({name: "intelligence_base", current: data.int});
+							character.attribs.create({name: "intelligence_mod", current: calcMod(data.int)});
+
+							character.attribs.create({name: "wisdom", current: data.wis});
+							character.attribs.create({name: "wisdom_base", current: data.wis});
+							character.attribs.create({name: "wisdom_mod", current: calcMod(data.wis)});
+
+							character.attribs.create({name: "charisma", current: data.cha});
+							character.attribs.create({name: "charisma_base", current: data.cha});
+							character.attribs.create({name: "charisma_mod", current: calcMod(data.cha)});
+
+							character.attribs.create({name: "passive", current: passive});
+							character.attribs.create({
+								name: "npc_languages",
+								current: data.languages != null ? data.languages : ""
+							});
+							character.attribs.create({name: "npc_challenge", current: cr.cr || cr});
+							character.attribs.create({name: "npc_xp", current: xp});
+							character.attribs.create({
+								name: "npc_vulnerabilities",
+								current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
+							});
+							character.attribs.create({
+								name: "damage_vulnerabilities",
+								current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
+							});
+							character.attribs.create({
+								name: "npc_resistances",
+								current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
+							});
+							character.attribs.create({
+								name: "damage_resistances",
+								current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
+							});
+							character.attribs.create({name: "npc_immunities", current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""});
+							character.attribs.create({
+								name: "damage_immunities",
+								current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""
+							});
+							character.attribs.create({
+								name: "npc_condition_immunities",
+								current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
+							});
+							character.attribs.create({
+								name: "damage_condition_immunities",
+								current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
+							});
+							character.attribs.create({name: "npc_senses", current: sensesStr});
+
+							// add Tokenaction Macros
+							if (d20plus.getCfgVal("token", "tokenactionsSkillsSaves")) {
+								character.abilities.create({
+									name: "Perception",
+									istokenaction: true,
+									action: d20plus.actionMacroPerception
+								});
+								character.abilities.create({
+									name: "Init",
+									istokenaction: true,
+									action: d20plus.actionMacroInit
+								});
+								character.abilities.create({
+									name: "DR/Immunities",
+									istokenaction: true,
+									action: d20plus.actionMacroDrImmunities
+								});
+								character.abilities.create({
+									name: "Stats",
+									istokenaction: true,
+									action: d20plus.actionMacroStats
+								});
+								character.abilities.create({
+									name: "Saves",
+									istokenaction: true,
+									action: d20plus.actionMacroSaves
+								});
+								character.abilities.create({
+									name: "Skill-Check",
+									istokenaction: true,
+									action: d20plus.actionMacroSkillCheck
+								});
+								character.abilities.create({
+									name: "Ability-Check",
+									istokenaction: true,
+									action: d20plus.actionMacroAbilityCheck
 								});
 							}
-						});
 
-						// add spells to the sheet //////////////////
-						const toAdd = [];
-						allSpells.forEach(sp => {
-							const tagSplit = EntryRenderer.splitByTags(sp);
-							tagSplit.forEach(s => {
-								if (!s || !s.trim()) return;
-								if (s.charAt(0) === "@") {
-									const [tag, text] = EntryRenderer.splitFirstSpace(s);
-									if (tag === "@spell") {
-										toAdd.push(text);
-									}
-								}
-							});
-						});
-
-						// render sheet
-						character.view.render();
-
-						let interval;
-						let loopCount = 0;
-						const checkLoop = () => {
-							if (loopCount > 10) {
-								clearInterval(interval);
-								console.warn(`Spellcaster sheet was never rendered!`);
-							} else if (character.view.$charsheet) {
-								clearInterval(interval);
-
-								const addMacroIndex = toAdd.length - 1;
-								toAdd.forEach((text, i) => {
-									let [name, source] = text.split("|");
-									if (!source) source = "PHB";
-									const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
-									const url = d20plus.spells.formSpellUrl(rawUrl);
-									// the JSON gets cached by the script, so this is fine
-									DataUtil.loadJSON(url).then((data) => {
-										const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
-
-										const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
-
-										// do this as slowly as possible
-										setTimeout(() => {
-											addSpell2(JSON.parse(gmnotes), spell, i, addMacroIndex);
-										}, spAbilsDelayMs * 2.5 * (i + 1));
+							if (data.save != null) {
+								character.attribs.create({name: "npc_saving_flag", current: "1337"}); // value doesn't matter
+								Object.keys(data.save).forEach(k => {
+									character.attribs.create({
+										name: "npc_" + k + "_save_flag",
+										current: Number(data.save[k])
+									});
+									character.attribs.create({
+										name: "npc_" + k + "_save",
+										current: Number(data.save[k])
 									});
 								});
+							}
+							if (data.skill != null) {
+								const skills = data.skill;
+								const skillsString = Object.keys(skills).map(function (k) {
+									return k.uppercaseFirst() + ' ' + skills[k];
+								}).join(', ');
+								character.attribs.create({name: "npc_skills_flag", current: "1337"}); // value doesn't matter
+								// character.attribs.create({name: "npc_skills", current: skillsString}); // no longer used
 
-								function addSpell2 (data, VeSp, index, addMacroIndex) {
-									data.content = addInlineRollers(data.content);
-									const DESC_KEY = "data-description";
-									data.data[DESC_KEY] = addInlineRollers(data.data[DESC_KEY]);
-									const HL_KEY = "Higher Spell Slot Desc";
-									if (data.data[HL_KEY]) data.data[HL_KEY] = addInlineRollers(data.data[HL_KEY]);
+								// Shaped Sheet currently doesn't correctly load NPC Skills
+								// This adds a visual representation as a Trait for reference
+								if (d20plus.sheet === "shaped") {
+									var newRowId = d20plus.generateRowId();
+									character.attribs.create({
+										name: "repeating_npctrait_" + newRowId + "_name",
+										current: "NPC Skills"
+									});
+									character.attribs.create({
+										name: "repeating_npctrait_" + newRowId + "_desc",
+										current: skillsString
+									});
+								}
 
-									const dropTarget = character.view.$charsheet.find(`.sheet-compendium-drop-target`)[0];
-									const fakeEvent = {target: dropTarget};
-
-									d20plus.importer.doFakeDrop(fakeEvent, character.view, data);
-
-									if (index === addMacroIndex) {
-										// collect name and identifier for all the character's spells
-										const macroSpells = character.attribs.toJSON()
-											.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
-											.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
-
-										// build tokenaction
-										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
-										if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
-											character.abilities.create({
-												name: "Spells",
-												istokenaction: true,
-												action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
-											}).save();
-										}
+								$.each(skills, function (k, v) {
+									if (k !== "other") {
+										const cleanSkill = $.trim(k).toLowerCase().replace(/ /g, "_");
+										character.attribs.create({
+											name: "npc_" + cleanSkill + "_base",
+											current: String(Number(v))
+										});
+										character.attribs.create({
+											name: "npc_" + cleanSkill,
+											current: Number(v)
+										});
+										character.attribs.create({
+											name: "npc_" + cleanSkill + "_flag",
+											current: Number(v)
+										});
 									}
-								}
-							} else {
-								loopCount++;
-							}
-						};
-
-						// wait for the character sheet to be rendered
-						interval = setInterval(() => {
-							checkLoop();
-						}, spAbilsDelayMs);
-						checkLoop();
-					}
-					if (data.trait) {
-						$.each(data.trait, function (i, v) {
-							var newRowId = d20plus.generateRowId();
-							character.attribs.create({
-								name: "repeating_npctrait_" + newRowId + "_name",
-								current: v.name
-							});
-
-							if (d20plus.getCfgVal("token", "tokenactionsTraits")) {
-								const offsetIndex = data.spellcasting ? 1 + i : i;
-								character.abilities.create({
-									name: "Trait" + offsetIndex + ": " + v.name,
-									istokenaction: true,
-									action: d20plus.actionMacroTrait(offsetIndex)
 								});
 							}
+							if (data.spellcasting) { // Spellcasting import 2.0
+								const charInterval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+								const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
 
-							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
-							character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: text});
-						});
-					}
-					if (data.action) {
-						$.each(data.action, function (i, v) {
-							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
-							d20plus.importer.addAction(character, v.name, text, i);
-						});
-					}
-					if (data.reaction) {
-						character.attribs.create({name: "reaction_flag", current: 1});
-						character.attribs.create({name: "npcreactionsflag", current: 1});
-						$.each(data.reaction, function (i, v) {
-							var newRowId = d20plus.generateRowId();
-							var text = "";
-							character.attribs.create({
-								name: "repeating_npcreaction_" + newRowId + "_name",
-								current: v.name
-							});
+								// figure out the casting ability or spell DC
+								let spellDc = null;
+								let spellAbility = null;
+								let casterLevel = null;
+								let spellToHit = null;
+								for (const sc of data.spellcasting) {
+									const toCheck = sc.headerEntries.join("");
 
-							// roll20 only supports a single reaction, so only use the first
-							if (d20plus.getCfgVal("token", "tokenactions") && i === 0) {
-								character.abilities.create({
-									name: "Reaction: " + v.name,
-									istokenaction: true,
-									action: d20plus.actionMacroReaction
-								});
-							}
+									// use the first ability/DC we find, since roll20 doesn't support multiple
+									const abM = /(strength|constitution|dexterity|intelligence|wisdom|charisma)/i.exec(toCheck);
+									const dcM = /DC (\d+)/i.exec(toCheck);
+									const lvlM = /(\d+)(st|nd|rd|th).level\s+spellcaster/i.exec(toCheck);
+									const spHit = /{@hit (.*?)} to hit with spell attacks/i.exec(toCheck);
 
-							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
-							character.attribs.create({
-								name: "repeating_npcreaction_" + newRowId + "_desc",
-								current: text
-							});
-							character.attribs.create({
-								name: "repeating_npcreaction_" + newRowId + "_description",
-								current: text
-							});
-						});
-					}
-					if (data.legendary) {
-						character.attribs.create({name: "legendary_flag", current: "1"});
-						let legendaryActions = data.legendaryActions || 3;
-						character.attribs.create({name: "npc_legendary_actions", current: legendaryActions.toString()});
-						let tokenactiontext = "";
-						$.each(data.legendary, function (i, v) {
-							var newRowId = d20plus.generateRowId();
-
-							if (d20plus.getCfgVal("token", "tokenactions")) {
-								tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
-							}
-
-							var rollbase = d20plus.importer.rollbase;
-							if (v.attack != null) {
-								if (!(v.attack instanceof Array)) {
-									var tmp = v.attack;
-									v.attack = [];
-									v.attack.push(tmp);
+									if (spellDc == null && dcM) spellDc = dcM[1];
+									if (casterLevel == null && lvlM) casterLevel = lvlM[1];
+									if (spellAbility == null && abM) spellAbility = abM[1].toLowerCase();
+									if (spellToHit == null && spHit) spellToHit = spHit[1];
 								}
-								$.each(v.attack, function (z, x) {
-									if (!x) return;
-									var attack = x.split("|");
-									var name = "";
-									if (v.attack.length > 1)
-										name = (attack[0] == v.name) ? v.name : v.name + " - " + attack[0] + "";
-									else
-										name = v.name;
-									var onhit = "";
-									var damagetype = "";
-									if (attack.length == 2) {
-										damage = "" + attack[1];
-										tohit = "";
+
+								function setAttrib (k, v) {
+									d20plus.importer.addOrUpdateAttr(character, k, v);
+								}
+
+								function addInlineRollers (text) {
+									if (!text) return text;
+									return text.replace(RollerUtil.DICE_REGEX, (match) => {
+										return `[[${match}]]`;
+									});
+								}
+
+								// the basics
+								setAttrib("npcspellcastingflag", "1");
+								if (spellAbility != null) setAttrib("spellcasting_ability", `@{${spellAbility}_mod}+`); else console.warn("No spellAbility!");
+								// spell_attack_mod -- never used?
+								setTimeout(() => {
+									if (spellToHit != null) setAttrib("spell_attack_bonus", Number(spellToHit)); else console.warn("No spellToHit!");
+									if (spellDc != null) setAttrib("spell_save_dc", Number(spellDc)); else console.warn("No spellDc!");
+									if (casterLevel != null) {
+										setAttrib("caster_level", casterLevel);
+										setAttrib("level", Number(casterLevel));
+									} else console.warn("No casterLevel!");
+								}, spAbilsDelayMs);
+
+								// spell slots
+								for (let i = 1; i <= 9; ++i) {
+									const slots = data.spellcasting
+										.map(it => ((it.spells || {})[i] || {}).slots)
+										.filter(it => it)
+										.reduce((a, b) => Math.max(a, b), 0);
+
+									// delay this, otherwise they all come out as 0
+									setTimeout(() => {
+										setAttrib(`lvl${i}_slots_total`, slots);
+									}, spAbilsDelayMs);
+								}
+
+								// add the spellcasting text
+								const newRowId = d20plus.generateRowId();
+								const spellTrait = EntryRenderer.monster.getSpellcastingRenderedTraits(data, renderer).map(it => it.rendered).filter(it => it).join("");
+								const cleanDescription = d20plus.importer.getCleanText(spellTrait);
+								setAttrib(`repeating_npctrait_${newRowId}_name`, "Spellcasting");
+								setAttrib(`repeating_npctrait_${newRowId}_desc`, cleanDescription);
+
+								// begin building a spells macro
+								const tokenActionStack = [cleanDescription];
+
+								// collect all the spells
+								const allSpells = [];
+								data.spellcasting.forEach(sc => {
+									const toAdd = ["constant", "will", "rest", "daily", "weekly"];
+									toAdd.forEach(k => {
+										if (sc[k]) {
+											Object.values(sc[k]).forEach(spOrSpArr => {
+												if (spOrSpArr instanceof Array) {
+													Array.prototype.push.apply(allSpells, spOrSpArr);
+												} else {
+													allSpells.push(spOrSpArr);
+												}
+											});
+										}
+									});
+
+									if (sc.spells) {
+										Object.keys(sc.spells).forEach(lvl => {
+											if (sc.spells[lvl].spells) {
+												Array.prototype.push.apply(allSpells, sc.spells[lvl].spells);
+											}
+										});
+									}
+								});
+
+								// add spells to the sheet //////////////////
+								const toAdd = [];
+								allSpells.forEach(sp => {
+									const tagSplit = EntryRenderer.splitByTags(sp);
+									tagSplit.forEach(s => {
+										if (!s || !s.trim()) return;
+										if (s.charAt(0) === "@") {
+											const [tag, text] = EntryRenderer.splitFirstSpace(s);
+											if (tag === "@spell") {
+												toAdd.push(text);
+											}
+										}
+									});
+								});
+
+								// render sheet
+								character.view.render();
+
+								let interval;
+								let loopCount = 0;
+								const checkLoop = () => {
+									if (loopCount > 10) {
+										clearInterval(interval);
+										console.warn(`Spellcaster sheet was never rendered!`);
+									} else if (character.view.$charsheet) {
+										clearInterval(interval);
+
+										const addMacroIndex = toAdd.length - 1;
+										toAdd.forEach((text, i) => {
+											let [name, source] = text.split("|");
+											if (!source) source = "PHB";
+											const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
+											const url = d20plus.spells.formSpellUrl(rawUrl);
+											// the JSON gets cached by the script, so this is fine
+											DataUtil.loadJSON(url).then((data) => {
+												const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
+
+												const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
+
+												// do this as slowly as possible
+												setTimeout(() => {
+													addSpell2(JSON.parse(gmnotes), spell, i, addMacroIndex);
+												}, spAbilsDelayMs * 2.5 * (i + 1));
+											});
+										});
+
+										function addSpell2 (data, VeSp, index, addMacroIndex) {
+											data.content = addInlineRollers(data.content);
+											const DESC_KEY = "data-description";
+											data.data[DESC_KEY] = addInlineRollers(data.data[DESC_KEY]);
+											const HL_KEY = "Higher Spell Slot Desc";
+											if (data.data[HL_KEY]) data.data[HL_KEY] = addInlineRollers(data.data[HL_KEY]);
+
+											const dropTarget = character.view.$charsheet.find(`.sheet-compendium-drop-target`)[0];
+											const fakeEvent = {target: dropTarget};
+
+											d20plus.importer.doFakeDrop(fakeEvent, character.view, data);
+
+											if (index === addMacroIndex) {
+												// collect name and identifier for all the character's spells
+												const macroSpells = character.attribs.toJSON()
+													.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
+													.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
+
+												// build tokenaction
+												macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
+												if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
+													character.abilities.create({
+														name: "Spells",
+														istokenaction: true,
+														action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+													}).save();
+												}
+											}
+										}
 									} else {
-										damage = "" + attack[2];
-										tohit = attack[1] || 0;
+										loopCount++;
 									}
+								};
+
+								// wait for the character sheet to be rendered
+								interval = setInterval(() => {
+									checkLoop();
+								}, spAbilsDelayMs);
+								checkLoop();
+							}
+							if (data.trait) {
+								$.each(data.trait, function (i, v) {
+									var newRowId = d20plus.generateRowId();
 									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_name",
-										current: name
+										name: "repeating_npctrait_" + newRowId + "_name",
+										current: v.name
 									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_flag",
-										current: "on"
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_npc_options-flag",
-										current: 0
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_display_flag",
-										current: "{{attack=1}}"
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_options",
-										current: "{{attack=1}}"
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_tohit",
-										current: tohit
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_damage",
-										current: damage
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_name_display",
-										current: name
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_rollbase",
-										current: rollbase
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_type",
-										current: ""
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_tohitrange",
-										current: ""
-									});
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_damage_flag",
-										current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"
-									});
-									if (damage !== "") {
-										damage1 = damage.replace(/\s/g, "").split(/d|(?=\+|-)/g);
-										if (damage1[1])
-											damage1[1] = damage1[1].replace(/[^0-9-+]/g, "");
-										damage2 = isNaN(eval(damage1[1])) === false ? eval(damage1[1]) : 0;
-										if (damage1.length < 2) {
-											onhit = onhit + damage1[0] + " (" + damage + ")" + damagetype + " damage";
-										} else if (damage1.length < 3) {
-											onhit = onhit + Math.floor(damage1[0] * ((damage2 / 2) + 0.5)) + " (" + damage + ")" + damagetype + " damage";
-										} else {
-											onhit = onhit + (Math.floor(damage1[0] * ((damage2 / 2) + 0.5)) + parseInt(damage1[2], 10)) + " (" + damage + ")" + damagetype + " damage";
-										}
+
+									if (d20plus.getCfgVal("token", "tokenactionsTraits")) {
+										const offsetIndex = data.spellcasting ? 1 + i : i;
+										character.abilities.create({
+											name: "Trait" + offsetIndex + ": " + v.name,
+											istokenaction: true,
+											action: d20plus.actionMacroTrait(offsetIndex)
+										});
 									}
-									character.attribs.create({
-										name: "repeating_npcaction-l_" + newRowId + "_attack_onhit",
-										current: onhit
-									});
-								});
-							} else {
-								character.attribs.create({
-									name: "repeating_npcaction-l_" + newRowId + "_name",
-									current: v.name
-								});
-								character.attribs.create({
-									name: "repeating_npcaction-l_" + newRowId + "_npc_options-flag",
-									current: 0
-								});
-								character.attribs.create({
-									name: "repeating_npcaction-l_" + newRowId + "_rollbase",
-									current: rollbase
-								});
-								character.attribs.create({
-									name: "repeating_npcaction-l_" + newRowId + "_name_display",
-									current: v.name
+
+									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: text});
 								});
 							}
+							if (data.action) {
+								$.each(data.action, function (i, v) {
+									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									d20plus.importer.addAction(character, v.name, text, i);
+								});
+							}
+							if (data.reaction) {
+								character.attribs.create({name: "reaction_flag", current: 1});
+								character.attribs.create({name: "npcreactionsflag", current: 1});
+								$.each(data.reaction, function (i, v) {
+									var newRowId = d20plus.generateRowId();
+									var text = "";
+									character.attribs.create({
+										name: "repeating_npcreaction_" + newRowId + "_name",
+										current: v.name
+									});
 
-							var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
-							var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
-							character.attribs.create({
-								name: "repeating_npcaction-l_" + newRowId + "_description",
-								current: text
-							});
-							character.attribs.create({
-								name: "repeating_npcaction-l_" + newRowId + "_description_flag",
-								current: descriptionFlag
-							});
-						});
-						if (d20plus.getCfgVal("token", "tokenactions")) {
-							character.abilities.create({
-								name: "Legendary Actions",
-								istokenaction: true,
-								action: d20plus.actionMacroLegendary(tokenactiontext)
-							});
+									// roll20 only supports a single reaction, so only use the first
+									if (d20plus.getCfgVal("token", "tokenactions") && i === 0) {
+										character.abilities.create({
+											name: "Reaction: " + v.name,
+											istokenaction: true,
+											action: d20plus.actionMacroReaction
+										});
+									}
+
+									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									character.attribs.create({
+										name: "repeating_npcreaction_" + newRowId + "_desc",
+										current: text
+									});
+									character.attribs.create({
+										name: "repeating_npcreaction_" + newRowId + "_description",
+										current: text
+									});
+								});
+							}
+							if (data.legendary) {
+								character.attribs.create({name: "legendary_flag", current: "1"});
+								let legendaryActions = data.legendaryActions || 3;
+								character.attribs.create({name: "npc_legendary_actions", current: legendaryActions.toString()});
+								let tokenactiontext = "";
+								$.each(data.legendary, function (i, v) {
+									var newRowId = d20plus.generateRowId();
+
+									if (d20plus.getCfgVal("token", "tokenactions")) {
+										tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
+									}
+
+									var rollbase = d20plus.importer.rollbase;
+									if (v.attack != null) {
+										if (!(v.attack instanceof Array)) {
+											var tmp = v.attack;
+											v.attack = [];
+											v.attack.push(tmp);
+										}
+										$.each(v.attack, function (z, x) {
+											if (!x) return;
+											var attack = x.split("|");
+											var name = "";
+											if (v.attack.length > 1)
+												name = (attack[0] == v.name) ? v.name : v.name + " - " + attack[0] + "";
+											else
+												name = v.name;
+											var onhit = "";
+											var damagetype = "";
+											if (attack.length == 2) {
+												damage = "" + attack[1];
+												tohit = "";
+											} else {
+												damage = "" + attack[2];
+												tohit = attack[1] || 0;
+											}
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_name",
+												current: name
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_flag",
+												current: "on"
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_npc_options-flag",
+												current: 0
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_display_flag",
+												current: "{{attack=1}}"
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_options",
+												current: "{{attack=1}}"
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_tohit",
+												current: tohit
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_damage",
+												current: damage
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_name_display",
+												current: name
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_rollbase",
+												current: rollbase
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_type",
+												current: ""
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_tohitrange",
+												current: ""
+											});
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_damage_flag",
+												current: "{{damage=1}} {{dmg1flag=1}} {{dmg2flag=1}}"
+											});
+											if (damage !== "") {
+												damage1 = damage.replace(/\s/g, "").split(/d|(?=\+|-)/g);
+												if (damage1[1])
+													damage1[1] = damage1[1].replace(/[^0-9-+]/g, "");
+												damage2 = isNaN(eval(damage1[1])) === false ? eval(damage1[1]) : 0;
+												if (damage1.length < 2) {
+													onhit = onhit + damage1[0] + " (" + damage + ")" + damagetype + " damage";
+												} else if (damage1.length < 3) {
+													onhit = onhit + Math.floor(damage1[0] * ((damage2 / 2) + 0.5)) + " (" + damage + ")" + damagetype + " damage";
+												} else {
+													onhit = onhit + (Math.floor(damage1[0] * ((damage2 / 2) + 0.5)) + parseInt(damage1[2], 10)) + " (" + damage + ")" + damagetype + " damage";
+												}
+											}
+											character.attribs.create({
+												name: "repeating_npcaction-l_" + newRowId + "_attack_onhit",
+												current: onhit
+											});
+										});
+									} else {
+										character.attribs.create({
+											name: "repeating_npcaction-l_" + newRowId + "_name",
+											current: v.name
+										});
+										character.attribs.create({
+											name: "repeating_npcaction-l_" + newRowId + "_npc_options-flag",
+											current: 0
+										});
+										character.attribs.create({
+											name: "repeating_npcaction-l_" + newRowId + "_rollbase",
+											current: rollbase
+										});
+										character.attribs.create({
+											name: "repeating_npcaction-l_" + newRowId + "_name_display",
+											current: v.name
+										});
+									}
+
+									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
+									character.attribs.create({
+										name: "repeating_npcaction-l_" + newRowId + "_description",
+										current: text
+									});
+									character.attribs.create({
+										name: "repeating_npcaction-l_" + newRowId + "_description_flag",
+										current: descriptionFlag
+									});
+								});
+								if (d20plus.getCfgVal("token", "tokenactions")) {
+									character.abilities.create({
+										name: "Legendary Actions",
+										istokenaction: true,
+										action: d20plus.actionMacroLegendary(tokenactiontext)
+									});
+								}
+							}
+							character.view._updateSheetValues();
+
+							if (renderFluff) {
+								setTimeout(() => {
+									const fluffAs = d20plus.getCfgVal("import", "importFluffAs") || d20plus.getCfgDefaultVal("import", "importFluffAs");
+									let k = fluffAs === "Bio"? "bio" : "gmnotes";
+									character.updateBlobs({
+										[k]: Markdown.parse(renderFluff)
+									});
+									character.save({
+										[k]: (new Date).getTime()
+									});
+								}, 500);
+							}
+						} catch (e) {
+							d20plus.log("Error loading [" + name + "]");
+							d20plus.addImportError(name);
+							console.log(data);
+							console.log(e);
+						}
+						/* end OGL Sheet */
+						d20.journal.addItemToFolderStructure(character.id, folder.id);
+
+						if (options.charFunction) {
+							options.charFunction(character);
 						}
 					}
-					character.view._updateSheetValues();
+				});
+		};
 
-					if (renderFluff) {
-						setTimeout(() => {
-							const fluffAs = d20plus.getCfgVal("import", "importFluffAs") || d20plus.getCfgDefaultVal("import", "importFluffAs");
-							let k = fluffAs === "Bio"? "bio" : "gmnotes";
-							character.updateBlobs({
-								[k]: Markdown.parse(renderFluff)
-							});
-							character.save({
-								[k]: (new Date).getTime()
-							});
-						}, 500);
-					}
-				} catch (e) {
-					d20plus.log("Error loading [" + name + "]");
-					d20plus.addImportError(name);
-					console.log(data);
-					console.log(e);
-				}
-				/* end OGL Sheet */
-				d20.journal.addItemToFolderStructure(character.id, folder.id);
-			}
-		});
+		// pre-load fluff
+		const src = data.source;
+		if (src && monsterFluffDataUrls[src]) {
+			const fluffUrl = d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]);
+			DataUtil.loadJSON(fluffUrl).then((data) => {
+				monsterFluffData[src] = data;
+			}).then(doBuild);
+		} else {
+			doBuild();
+		}
 	};
 
 	d20plus.importer.findAttrId = function (character, attrName) {
@@ -4666,10 +4664,13 @@ const betteR205etools = function () {
 			$selGroupBy.append(`<option value="${g}">${g}</option>`);
 		});
 
+		const $cbShowPlayers = $("#import-showplayers");
+		$cbShowPlayers.prop("checked", dataType !== "monster");
+
 		$("#d20plus-importlist button#importstart").bind("click", function () {
 			$("#d20plus-importlist").dialog("close");
 			const overwrite = $("#import-overwrite").prop("checked");
-			const inJournals = $("#import-showplayers").prop("checked") ? "all" : "";
+			const inJournals = $cbShowPlayers.prop("checked") ? "all" : "";
 			const groupBy = $(`#organize-by`).val();
 
 			// build list of items to process
@@ -6058,6 +6059,173 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 					$iptFile.click();
 				});
+			}
+		},
+		{
+			name: "Wild Form Builder",
+			desc: "Build a character sheet to represent a character in Wild Form.",
+			html: `
+				<div id="d20plus-wildformbuild" title="Wild Form Character Builder">
+					<div id="wildformbuild-list">
+						<input type="search" class="search" placeholder="Search creatures...">
+						<input type="search" class="filter" placeholder="Filter...">
+						<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<input id="wildform-name" placeholder="Character name">
+				<button class="btn">Create Character Sheet</button>
+				</div>
+				`,
+			dialogFn: () => {
+				$("#d20plus-wildformbuild").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 800,
+					height: 650,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-wildformbuild");
+				$win.dialog("open");
+
+				const $fltr = $win.find(`.filter`);
+				$fltr.off("keydown").off("keyup");
+				$win.find(`button`).off("click");
+
+				const $lst = $win.find(`.list`);
+
+				let tokenList;
+				loadData();
+
+				function loadData() {
+					const toLoad = Object.keys(monsterDataUrls).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+					DataUtil.multiLoadJSON(
+						toLoad.map(url => ({url})),
+						() => {},
+						(dataStack) => {
+							$lst.empty();
+
+							let toShow = [];
+							dataStack.forEach(d => toShow = toShow.concat(d.monster));
+							toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+
+							let tmp = "";
+							toShow.forEach((m, i)  => {
+								m.__pType = Parser.monTypeToFullObj(m.type).asText;
+
+								tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+								<input type="radio" name="wildform-monster">
+								<span class="name col-4">${m.name}</span>
+								<span class="type col-4">TYP[${m.__pType.uppercaseFirst()}]</span>
+								<span class="cr col-2">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
+								<span title="${Parser.sourceJsonToFull(m.source)}" class="source">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
+								</label>
+								`;
+							});
+							$lst.html(tmp);
+							tmp = null;
+
+							tokenList = new List("wildformbuild-list", {
+								valueNames: ["name", "type", "cr", "source"]
+							});
+
+							d20plus.importer.addListFilter($fltr, toShow, tokenList, d20plus.monsters._listIndexConverter);
+
+							$win.find(`button`).on("click", () => {
+								let sel = toShow[$(tokenList.items.find(it => $(it.elm).find(`input`).prop("checked")).elm).attr("data-listid")];
+								sel = $.extend(true, {}, sel);
+
+								const character = $("#wildform-name").val();
+								const d20CharacterId = d20.Campaign.characters.toJSON().find(x => x.name === character).id;
+								const d20Character = d20.Campaign.characters.get(d20CharacterId);
+
+								if (tokenList && sel && d20Character) {
+									sel.wis = (d20Character.attribs.toJSON().find(x => x.name === "wisdom")|| {}).current || 10;
+									sel.int = (d20Character.attribs.toJSON().find(x => x.name === "intelligence")|| {}).current || 10;
+									sel.cha = (d20Character.attribs.toJSON().find(x => x.name === "charisma")|| {}).current || 10;
+
+									const attribsSkills = {
+										acrobatics_bonus: "acrobatics",
+										animal_handling_bonus: "animal_handling",
+										arcana_bonus: "arcana",
+										athletics_bonus: "athletics",
+										deception_bonus: "deception",
+										history_bonus: "history",
+										insight_bonus: "insight",
+										intimidation_bonus: "intimidation",
+										investigation_bonus: "investigation",
+										medicine_bonus: "medicine",
+										nature_bonus: "nature",
+										perception_bonus: "perception",
+										performance_bonus: "performance",
+										persuasion_bonus: "persuasion",
+										religion_bonus: "religion",
+										slight_of_hand_bonus: "slight_of_hand",
+										stealth_bonus: "stealth",
+									};
+									const attribsSaves = {
+										npc_int_save: "int",
+										npc_wis_save: "wis",
+										npc_cha_save: "cha"
+									};
+									sel.skill = sel.skill || {};
+									sel.save = sel.save || {};
+
+									for (const a in attribsSkills) {
+										const characterValue = d20Character.attribs.toJSON().find(x => x.name === a);
+										if (characterValue) {
+											sel.skill[attribsSkills[a]] = Math.max(sel.skill[attribsSkills[a]] || 0, characterValue.current);
+										}
+									}
+
+									for (const a in attribsSaves) {
+										const characterValue = d20Character.attribs.toJSON().find(x => x.name === a);
+										if (characterValue) {
+											sel.save[attribsSkills[a]] = Math.max(sel.save[attribsSkills[a]] || 0, characterValue.current);
+										}
+									}
+
+									d20plus.randomRoll(sel.hp.formula, result => {
+										const options = {
+											charFunction: (character) => {
+												character._getLatestBlob("defaulttoken", y => {
+													if (y) {
+														const token = JSON.parse(y);
+														token.name = `${sel.name} (${d20Character.attributes.name})`;
+														token.showplayers_aura1 = true;
+														token.showplayers_aura2 = true;
+														token.showplayers_bar1 = true;
+														token.showplayers_bar2 = true;
+														token.showplayers_bar3 = true;
+														token.showplayers_name = true;
+														token.bar3_max = result.total;
+														token.bar3_value = result.total;
+														character.updateBlobs({defaulttoken: JSON.stringify(token)});
+														character.save({defaulttoken: (new Date()).getTime()});
+													}
+												});
+
+												$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+												alert("Created character!");
+												$win.dialog("close");
+											},
+											charOptions: {
+												inplayerjournals: d20Character.attributes.inplayerjournals,
+												controlledby: d20Character.attributes.controlledby
+											}
+										};
+
+										d20plus.monsters.handoutBuilder(sel, true, options, `Wild Forms - ${d20Character.attributes.name}`);
+									});
+								}
+
+								console.log("Assembling creature list");
+							});
+						}
+					);
+				}
 			}
 		}
 	]);

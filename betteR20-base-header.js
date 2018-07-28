@@ -22,9 +22,14 @@ addConfigOptions = function (category, options) {
 };
 
 OBJECT_DEFINE_PROPERTY = Object.defineProperty;
+ACCOUNT_ORIGINAL_PERMS = {
+	largefeats: false,
+	xlfeats: false
+};
 Object.defineProperty = function (obj, prop, vals) {
 	try {
 		if (prop === "largefeats" || prop === "xlfeats") {
+			ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
 			vals.value = true;
 		}
 		OBJECT_DEFINE_PROPERTY(obj, prop, vals);
@@ -36,8 +41,10 @@ Object.defineProperty = function (obj, prop, vals) {
 };
 
 UPPER_CANVAS_MOUSEDOWN = null;
+UPPER_CANVAS_MOUSEMOVE = null;
 EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
 EventTarget.prototype.addEventListener = function(type, listener, options, ...others) {
 	if (type === "mousedown" && this === d20.engine.uppercanvas) UPPER_CANVAS_MOUSEDOWN = listener;
+	if (type === "mousemove" && this === d20.engine.uppercanvas) UPPER_CANVAS_MOUSEMOVE = listener;
 	this.addEventListenerBase(type, listener, options, ...others);
 };

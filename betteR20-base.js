@@ -20,15 +20,18 @@ var betteR20Base = function () {
 	);
 	addConfigOptions("canvas", {
 			"_name": "Canvas",
+			"_player": true,
 			"halfGridSnap": {
 				"name": "Snap to Half-Grid",
 				"default": false,
-				"_type": "boolean"
+				"_type": "boolean",
+				"_player": true
 			},
 			"scaleNamesStatuses": {
 				"name": "Scaled Names and Status Icons",
 				"default": true,
-				"_type": "boolean"
+				"_type": "boolean",
+				"_player": true
 			}
 		}
 	);
@@ -37,7 +40,10 @@ var betteR20Base = function () {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
 		scriptsLoaded: false,
 		scripts: [
-			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"}
+			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
+			{name: "VecMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/Vector%20Math/1.0/VecMath.js"},
+			{name: "MatrixMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/MatrixMath/1.0/matrixMath.js"},
+			{name: "PathMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/PathMath/1.5/PathMath.js"}
 		],
 
 		addScripts: (onLoadFunction) => {
@@ -48,6 +54,7 @@ var betteR20Base = function () {
 					d20plus.log(`JS [${name}] Loaded`);
 				} catch (e) {
 					d20plus.log(`Error loading ${name}`);
+					d20plus.log(e);
 				}
 			};
 			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
@@ -87,9 +94,68 @@ var betteR20Base = function () {
 			withRetries();
 		},
 
+		// MOCK API  ///////////////////////////////////////////////////////////////////////////////////////////////////
+		initMockApi: () => { // TODO check if this needs to be enabled for players too
+			if (!ACCOUNT_ORIGINAL_PERMS.xlfeats) {
+				window.log = (...args) => d20plus.logApi(...args);
+
+				const chatHandlers = [];
+				window.on = (evtType, fn, ...others) => {
+					switch (evtType) {
+						case "chat:message":
+							chatHandlers.push(fn);
+							break;
+						default:
+							console.error("Unhandled message type: ", evtType, "with args", fn, others)
+							break;
+					}
+				};
+
+				window.createObj = (objType, obj, ...others) => {
+					switch (objType) {
+						case "path": {
+							const page = d20.Campaign.pages._byId[obj._pageid];
+							obj.scaleX = obj.scaleX || 1;
+							obj.scaleY = obj.scaleY || 1;
+							obj.path = obj.path || obj._path
+							return page.thepaths.create(obj)
+							break;
+						}
+						default:
+							console.error("Unhandled object type: ", objType, "with args", obj, others)
+							break;
+					}
+				};
+
+				const seenMessages = new Set();
+				d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
+				const handleChat = (e) => {
+					if (!d20.textchat.chatstartingup) {
+						e.id = e.key();
+						if (!seenMessages.has(e.id)) {
+							seenMessages.add(e.id);
+
+							var t = e.val();
+							if (t) {
+								if (window.DEBUG) console.log("CHAT: ", t);
+
+								chatHandlers.forEach(fn => fn(t));
+							}
+						}
+					}
+				};
+				d20.textchat.chatref.on("child_added", handleChat);
+				d20.textchat.chatref.on("child_changed", handleChat);
+			}
+		},
+
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
-		log: (arg) => {
-			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", arg);
+		log: (...args) => {
+			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
+		},
+
+		logApi: (...args) => {
+			console.log("%cD20Plus > ", "color: #ff00ff; font-size: large", ...args);
 		},
 
 		ascSort: (a, b) => {
@@ -318,6 +384,37 @@ var betteR20Base = function () {
 			}
 		},
 
+		math: {
+			/**
+			 * Normalize a 2d vector.
+			 * @param out Result storage
+			 * @param a Vector to normalise
+			 */
+			normalize (out, a) {
+				const x = a[0],
+					y = a[1];
+				let len = x*x + y*y;
+				if (len > 0) {
+					len = 1 / Math.sqrt(len);
+					out[0] = a[0] * len;
+					out[1] = a[1] * len;
+				}
+				return out;
+			},
+
+			/**
+			 * Scale a 2d vector.
+			 * @param out Resulst storage
+			 * @param a Vector to scale
+			 * @param b Value to scale by
+			 */
+			scale (out, a, b) {
+				out[0] = a[0] * b;
+				out[1] = a[1] * b;
+				return out;
+			}
+		},
+
 		// CONFIG //////////////////////////////////////////////////////////////////////////////////////////////////////
 		config: {},
 
@@ -367,6 +464,20 @@ var betteR20Base = function () {
 					nextFn();
 				}
 			}
+		},
+
+		loadPlayerConfig: (nextFn) => {
+			d20plus.log("Reading player Config");
+			const loaded = StorageUtil.get(`Veconfig`);
+			if (!loaded) {
+				d20plus.log("No player config found! Initialising new config...");
+				const dfltConfig = d20plus.getDefaultConfig();
+				d20plus.config = Object.assign(d20plus.config, dfltConfig);
+				StorageUtil.set(`Veconfig`, d20plus.config);
+			}
+			d20plus.log("Player config Loaded:");
+			d20plus.log(d20plus.config);
+			nextFn();
 		},
 
 		makeDefaultConfig: (nextFn) => {
@@ -442,12 +553,14 @@ var betteR20Base = function () {
 		getDefaultConfig: () => {
 			const outCpy = {};
 			$.each(CONFIG_OPTIONS, (sectK, sect) => {
-				outCpy[sectK] = outCpy[sectK] || {};
-				$.each(sect, (k, data) => {
-					if (!k.startsWith("_")) {
-						outCpy[sectK][k] = data.default;
-					}
-				});
+				if (window.is_gm || sect._player) {
+					outCpy[sectK] = outCpy[sectK] || {};
+					$.each(sect, (k, data) => {
+						if (!k.startsWith("_") && (window.is_gm || data._player)) {
+							outCpy[sectK][k] = data.default;
+						}
+					});
+				}
 			});
 			return outCpy;
 		},
@@ -515,7 +628,9 @@ var betteR20Base = function () {
 
 				const configFields = {};
 
-				const sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => d20plus.ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
+				let sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => d20plus.ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
+				if (!window.is_gm) sortedKeys = sortedKeys.filter(k => CONFIG_OPTIONS[k]._player);
+
 				const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
 				const contentList = sortedKeys.map(k => makeTab(k));
 
@@ -524,16 +639,18 @@ var betteR20Base = function () {
 					configFields[cfgK] = {};
 
 					const content = $(`
-				<div class="config-table-wrapper">
-					<table class="config-table">
-						<thead><tr><th>Property</th><th>Value</th></tr></thead>
-						<tbody></tbody>
-					</table>
-				</div>
-			`);
+						<div class="config-table-wrapper">
+							<table class="config-table">
+								<thead><tr><th>Property</th><th>Value</th></tr></thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					`);
 					const tbody = content.find(`tbody`);
 
-					const sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_"));
+					let sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_"));
+					if (!window.is_gm) sortedTabKeys = sortedTabKeys.filter(k => cfgGroup[k]._player);
+
 					sortedTabKeys.forEach((grpK, idx) => {
 						const prop = cfgGroup[grpK];
 
@@ -697,26 +814,37 @@ var betteR20Base = function () {
 				const saveButton = $(`#configsave`);
 				saveButton.unbind("click");
 				saveButton.bind("click", () => {
-					let handout = d20plus.getConfigHandout();
-					if (!handout) {
-						d20plus.makeDefaultConfig(doSave);
-					} else {
-						doSave();
-					}
-
-					function doSave () {
+					function _updateLoadedConfig () {
 						$.each(configFields, (cfgK, grp) => {
 							$.each(grp, (grpK, grpVField) => {
 								d20plus.setCfgVal(cfgK, grpK, grpVField());
 							})
 						});
+					}
 
-						const gmnotes = JSON.stringify(d20plus.config).replace(/%/g, "%25");
-						handout.updateBlobs({gmnotes: gmnotes});
-						handout.save({notes: (new Date).getTime()});
+					if (window.is_gm) {
+						let handout = d20plus.getConfigHandout();
+						if (!handout) {
+							d20plus.makeDefaultConfig(doSave);
+						} else {
+							doSave();
+						}
 
-						d20plus.log("Saved config");
+						function doSave () {
+							_updateLoadedConfig();
 
+							const gmnotes = JSON.stringify(d20plus.config).replace(/%/g, "%25");
+							handout.updateBlobs({gmnotes: gmnotes});
+							handout.save({notes: (new Date).getTime()});
+
+							d20plus.log("Saved config");
+
+							d20plus.baseHandleConfigChange();
+							if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+						}
+					} else {
+						_updateLoadedConfig();
+						StorageUtil.set(`Veconfig`, d20plus.config);
 						d20plus.baseHandleConfigChange();
 						if (d20plus.handleConfigChange) d20plus.handleConfigChange();
 					}
@@ -769,7 +897,7 @@ var betteR20Base = function () {
 		startPlayerConfigHandler: () => {
 			function handlePlayerCfg () {
 				d20plus.baseHandleConfigChange();
-				if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+				if (d20plus.handleConfigChange) d20plus.handleConfigChange(true);
 			}
 
 			// every 5 seconds, poll and apply any config changes the GM might have made
@@ -1545,11 +1673,15 @@ var betteR20Base = function () {
 					$("#" + e).addClass("activebutton"),
 				"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
 				"rect" == e && ($("#drawingtools").addClass("activebutton"),
-					$("#drawingtools").removeClass("text path polygon").addClass("rect")),
+					$("#drawingtools").removeClass("text path polygon line_splitter").addClass("rect")),
 				"text" == e && ($("#drawingtools").addClass("activebutton"),
-					$("#drawingtools").removeClass("rect path polygon").addClass("text")),
-				"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon").addClass("path"),
-					"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+					$("#drawingtools").removeClass("rect path polygon line_splitter").addClass("text")),
+				"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon line_splitter").addClass("path"),
+					"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path line_splitter").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+					// BEGIN MOD (also line_splitter added to above removeClass calls
+				"line_splitter" == e && ($("#drawingtools").addClass("activebutton"),
+					$("#drawingtools").removeClass("rect path polygon text").addClass("line_splitter")),
+					// END MOD
 				"pan" !== e && "select" !== e && d20.engine.unselect(),
 					"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
 						d20.token_editor.removeRadialMenu(),
@@ -1570,7 +1702,10 @@ var betteR20Base = function () {
 					// BEGIN MOD
 					d20.engine.mode = e;
 				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
-				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e) {
+				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e
+					// BEGIN MOD
+					|| "measure" == e) {
+					// END MOD
 					$("#secondary-toolbar").show();
 					$("#secondary-toolbar .mode").hide();
 					$("#secondary-toolbar ." + e).show();
@@ -1639,10 +1774,121 @@ var betteR20Base = function () {
 			}
 		},
 
+		_stickyMeasure: {},
 		enhanceMeasureTool: () => {
 			d20plus.log("Enhance Measure tool");
+
+			// add extra toolbar
+			const $wrpBar = $(`#secondary-toolbar`);
+			const toAdd = `
+				<ul class="mode measure" style="display: none;">
+					<li>
+						<select id="measure_mode" style="width: 100px;">
+							<option value="1" selected>Ruler</option>
+							<option value="2">Radius</option>
+							<option value="3">Cone</option>
+							<option value="4">Box</option>
+							<option value="5">Line</option>
+						</select>
+					</li>
+					<li>
+						<label style="display: inline-flex">Sticky <input style="margin-left: 4px;" type="checkbox" id="measure_sticky"></label>
+					</li>
+					<li>
+						<button id="measure_sticky_clear">Clear</button>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_2" style="display: none;">
+						<select id="measure_mode_sel_2" style="width: 100px;">
+							<option value="1" selected>Burst</option>
+							<option value="2">Blast</option>
+						</select>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_3" style="display: none;">
+						<input type="number" min="0" id="measure_mode_ipt_3" style="width: 30px;" value="1">
+						<label style="display: inline-flex;" title="The PHB cone rules are the textbook definition of one radian.">rad.</label>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_4" style="display: none;">
+						<select id="measure_mode_sel_4" style="width: 100px;">
+							<option value="1" selected>Burst</option>
+							<option value="2">Blast</option>
+						</select>
+					</li>
+					<li class="measure_mode_sub measure_mode_sub_5" style="display: none;">
+						<select id="measure_mode_sel_5" style="width: 120px;">
+							<option value="1" selected>Total Width: </option>
+							<option value="2">Width To Edge: </option>
+						</select>
+						<input type="number" step="5" min="5" id="measure_mode_ipt_5" style="width: 30px;" value="5">
+						<label style="display: inline-flex;">ft.</label>
+					</li>
+				</ul>`;
+			$wrpBar.append(toAdd);
+
+			$(`#measure`).click(() => {
+				d20plus.setMode("measure");
+			});
+			const $cbSticky = $(`#measure_sticky`);
+			let tempShift = false;
+			$(document).on("mousemove", (evt) => {
+				if (evt.shiftKey && !tempShift && d20.engine.mode === "measure" && !$cbSticky.prop("checked")) {
+					tempShift = true;
+					$cbSticky.prop("checked", true);
+				} else if (!evt.shiftKey && tempShift && d20.engine.mode === "measure" && $cbSticky.prop("checked")) {
+					tempShift = false;
+					$cbSticky.prop("checked", false);
+				}
+			});
+			const $selMeasure = $(`#measure_mode`);
+			$selMeasure.on("change", () => {
+				$(`.measure_mode_sub`).hide();
+				$(`.measure_mode_sub_${$selMeasure.val()}`).show();
+			});
+			$(`#measure_sticky_clear`).click(() => {
+				delete d20plus._stickyMeasure[window.currentPlayer.id];
+				d20.engine.renderTop();
+				const event = {
+					type: "Ve_measure_clear_sticky",
+					player: window.currentPlayer.id,
+					time: (new Date).getTime()
+				};
+				d20.textchat.sendShout(event)
+			});
+
+			d20.textchat.shoutref.on("value", function(e) {
+				if (!d20.textchat.chatstartingup) {
+					var t = e.val();
+					if (t) {
+						const msg = JSON.parse(t);
+						if (window.DEBUG) console.log("SHOUT: ", msg);
+
+						if (Object.keys(d20plus._stickyMeasure).length) {
+							d20.Campaign.players.toJSON().filter(p => !p.online).forEach(p => delete d20plus._stickyMeasure[p.id]);
+						}
+
+						switch (msg.type) {
+							case "Ve_measure_clear_sticky": {
+								delete d20plus._stickyMeasure[msg.player];
+								d20.engine.renderTop();
+							}
+						}
+					}
+				}
+			});
+
 			// ROLL20 CODE
 			var T = function (e, t, n, i, r, o) {
+				// BEGIN MOD
+				if (!t.reRender) {
+					if (t.Ve.sticky) {
+						d20plus._stickyMeasure[t.player] = {
+							...t,
+							offset: [...d20.engine.currentCanvasOffset]
+						}
+					} else {
+						delete d20plus._stickyMeasure[t.player];
+					}
+				}
+				// END MOD
 				var a = d20.engine.getDistanceInScale({
 					x: t.x,
 					y: t.y
@@ -1666,10 +1912,192 @@ var betteR20Base = function () {
 					e.fill();
 					// END MOD
 				}
+
+				// BEGIN MOD
+				if (t.Ve) {
+					const RAD_90_DEG = 1.5708;
+
+					const euclid = (x1, y1, x2, y2) => {
+						const a = x1 - x2;
+						const b = y1 - y2;
+						return Math.sqrt(a * a + b * b)
+					};
+
+					const rotPoint = (angle, pX, pY) => {
+						const s = Math.sin(angle);
+						const c = Math.cos(angle);
+
+						pX -= t.x;
+						pY -= t.y;
+
+						const xNew = pX * c - pY * s;
+						const yNew = pX * s + pY * c;
+
+						pX = xNew + t.x;
+						pY = yNew + t.y;
+						return [pX, pY];
+					};
+
+					switch (t.Ve.mode) {
+						case "1": // standard ruler
+							break;
+						case "2": { // radius
+							const drawCircle = (cx, cy, rad) => {
+								e.beginPath();
+								e.arc(cx, cy, rad, 0, 2*Math.PI);
+								e.stroke();
+								e.closePath();
+							};
+
+							switch (t.Ve.radius.mode) {
+								case "1": // origin
+									drawCircle(t.x, t.y, euclid(t.x, t.y, t.to_x, t.to_y));
+									break;
+								case "2": { // halfway
+									const dx = t.to_x - t.x;
+									const dy = t.to_y - t.y;
+									const cX = t.x + (dx / 2);
+									const cY = t.y + (dy / 2);
+
+									drawCircle(cX, cY, euclid(cX, cY, t.to_x, t.to_y));
+									break;
+								}
+							}
+
+							break;
+						}
+						case "3": { // cone
+							const arcRadians = (Number(t.Ve.cone.arc) || 1) / 2;
+
+							const r = euclid(t.x, t.y, t.to_x, t.to_y);
+							const dx = t.to_x - t.x;
+							const dy = t.to_y - t.y;
+							const startR = Math.atan2(dy, dx);
+
+							// arc 1
+							e.beginPath();
+							e.arc(t.x, t.y, r, startR, startR + arcRadians);
+							e.stroke();
+							e.closePath();
+							// arc 2
+							e.beginPath();
+							e.arc(t.x, t.y, r, startR, startR - arcRadians, true); // draw counter-clockwise
+							e.stroke();
+							e.closePath();
+
+							// border line 1
+							const s1 = Math.sin(arcRadians);
+							const c1 = Math.cos(arcRadians);
+							const xb1 = dx * c1 - dy * s1;
+							const yb1 = dx * s1 + dy * c1;
+							e.beginPath();
+							e.moveTo(t.x, t.y);
+							e.lineTo(t.x + xb1, t.y + yb1);
+							e.stroke();
+							e.closePath();
+
+							// border line 2
+							const s2 = Math.sin(-arcRadians);
+							const c2 = Math.cos(-arcRadians);
+							const xb2 = dx * c2 - dy * s2;
+							const yb2 = dx * s2 + dy * c2;
+							e.beginPath();
+							e.moveTo(t.x, t.y);
+							e.lineTo(t.x + xb2, t.y + yb2);
+							e.stroke();
+							e.closePath();
+							break;
+						}
+						case "4": { // box
+							const dxHalf = (t.to_x - t.x) / 2;
+							const dyHalf = (t.to_y - t.y) / 2;
+
+							e.beginPath();
+							switch (t.Ve.box.mode) {
+								case "1": // origin
+									const dx = t.to_x - t.x;
+									const dy = t.to_y - t.y;
+
+									const [x1, y1] = rotPoint(RAD_90_DEG, t.to_x, t.to_y);
+									const [x3, y3] = rotPoint(-RAD_90_DEG, t.to_x, t.to_y);
+
+									e.moveTo(x1, y1);
+									e.lineTo(x1 + dx, y1 + dy);
+									e.lineTo(x3 + dx, y3 + dy);
+									e.lineTo(x3 - dx, y3 - dy);
+									e.lineTo(x1 - dx, y1 - dy);
+									e.lineTo(x1 + dx, y1 + dy);
+
+									break;
+								case "2": { // halfway
+									const [x1, y1] = rotPoint(RAD_90_DEG, t.to_x - dxHalf, t.to_y - dyHalf);
+									const [x3, y3] = rotPoint(-RAD_90_DEG, t.to_x - dxHalf, t.to_y - dyHalf);
+
+									e.moveTo(t.x, t.y);
+									e.lineTo(x1, y1);
+									e.lineTo(x3, y3);
+
+									const dx3 = (x3 - t.x);
+									const dy3 = (y3 - t.y);
+									e.lineTo(t.to_x + dx3, t.to_y + dy3);
+
+									const dx1 = (x1 - t.x);
+									const dy1 = (y1 - t.y);
+									e.lineTo(t.to_x + dx1, t.to_y + dy1);
+
+									e.lineTo(x1, y1);
+
+									break;
+								}
+							}
+							e.stroke();
+							e.closePath();
+							break;
+						}
+						case "5": { // line
+							e.beginPath();
+
+							const div = t.Ve.line.mode === "2" ? 1 : 2;
+
+							const norm = [];
+							d20plus.math.normalize(norm, [t.to_x - t.x, t.to_y - t.y]);
+							const width = Number(t.Ve.line.width) / div;
+							const scaledWidth = (width / d20.Campaign.activePage().get("scale_number")) * 70;
+							d20plus.math.scale(norm, norm, scaledWidth);
+
+							const xRot = t.x + norm[0];
+							const yRot = t.y + norm[1];
+
+							const [x1, y1] = rotPoint(RAD_90_DEG, xRot, yRot);
+							const [x3, y3] = rotPoint(-RAD_90_DEG, xRot, yRot);
+							console.log(t.x, t.y, norm, xRot, yRot);
+
+							e.moveTo(t.x, t.y);
+							e.lineTo(x1, y1);
+							e.lineTo(x3, y3);
+
+							const dx3 = (x3 - t.x);
+							const dy3 = (y3 - t.y);
+							e.lineTo(t.to_x + dx3, t.to_y + dy3);
+
+							const dx1 = (x1 - t.x);
+							const dy1 = (y1 - t.y);
+							e.lineTo(t.to_x + dx1, t.to_y + dy1);
+
+							e.lineTo(x1, y1);
+
+							e.stroke();
+							e.closePath();
+							break;
+						}
+					}
+				}
+				// END MOD
+
 				e.beginPath();
 				var u = 15
 					, d = Math.atan2(t.to_y - t.y, t.to_x - t.x);
-				return e.moveTo(t.x, t.y),
+				e.moveTo(t.x, t.y),
 					e.lineTo(t.to_x, t.to_y),
 				(i === !0 || "arrow" === i) && (e.lineTo(t.to_x - u * Math.cos(d - Math.PI / 6), t.to_y - u * Math.sin(d - Math.PI / 6)),
 					e.moveTo(t.to_x, t.to_y),
@@ -1683,7 +2111,7 @@ var betteR20Base = function () {
 					e.fill()),
 				n && (e.fillStyle = "rgba(0,0,0,1)",
 					e.fillText(l, t.to_x - 30, t.to_y - 20)),
-					a
+					a;
 			};
 			d20.engine.drawMeasurements = function (e) {
 				e.globalCompositeOperation = "source-over",
@@ -1701,6 +2129,59 @@ var betteR20Base = function () {
 								T(e, n, !0, !0)
 						}
 					})
+				// BEGIN MOD
+				const offset = (num, offset, xy) => {
+					return (num + offset[xy]) - d20.engine.currentCanvasOffset[xy];
+				};
+
+				$.each(d20plus._stickyMeasure, (pId, n) => {
+					const nuX = offset(n.x, n.offset, 0);
+					const nuY = offset(n.y, n.offset, 1);
+					const nuToX = offset(n.to_x, n.offset, 0);
+					const nuToY = offset(n.to_y, n.offset, 1);
+					const nuN = {
+						...n,
+						x: nuX,
+						y: nuY,
+						to_x: nuToX,
+						to_y: nuToY,
+						reRender: true
+					};
+					T(e, nuN, true, true);
+				});
+
+				// unrelated code, but throw it in the render loop here
+				let doRender = false;
+				$.each(d20plus._tempTopRenderLines, (id, toDraw) => {
+					console.log("DRAWING", toDraw.ticks, toDraw.offset)
+					e.beginPath();
+					e.strokeStyle = window.currentPlayer.get("color");
+					e.lineWidth = 2;
+
+					const nuX = offset(toDraw.x - d20.engine.currentCanvasOffset[0], toDraw.offset, 0);
+					const nuY = offset(toDraw.y - d20.engine.currentCanvasOffset[1], toDraw.offset, 1);
+					const nuToX = offset(toDraw.to_x - d20.engine.currentCanvasOffset[0], toDraw.offset, 0);
+					const nuToY = offset(toDraw.to_y - d20.engine.currentCanvasOffset[1], toDraw.offset, 1);
+
+					e.moveTo(nuX, nuY);
+					e.lineTo(nuToX, nuToY);
+
+					e.moveTo(nuToX, nuY);
+					e.lineTo(nuX, nuToY);
+
+					e.stroke();
+					e.closePath();
+
+					toDraw.ticks--;
+					doRender = true;
+					if (toDraw.ticks <= 0) {
+						delete d20plus._tempTopRenderLines[id];
+					}
+				});
+				if (doRender) {
+					d20.engine.debounced_renderTop()
+				}
+				// END MOD
 			}
 			// END ROLL20 CODE
 		},
@@ -2491,7 +2972,9 @@ var betteR20Base = function () {
 			$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 		},
 
-		enhanceSnap: () => {
+		_tempTopRenderLines: {}, // format: {x: ..., y: ..., to_x: ..., to_y: ..., ticks: ..., offset: ...}
+		// previously "enhanceSnap"
+		enhanceMouseDown: () => {
 			/**
 			 * Dumb variable names copy-pasted from uglified code
 			 * @param c x co-ord
@@ -2527,7 +3010,7 @@ var betteR20Base = function () {
 			}
 
 			// BEGIN ROLL20 CODE
-			const M = function(e) {
+			const M = function(e) { // seems to be "A" nowadays
 				//BEGIN MOD
 				var t = d20.engine.canvas;
 				var s = $("#editor-wrapper");
@@ -2672,6 +3155,121 @@ var betteR20Base = function () {
 						var m = d20.engine.canvas.findTarget(e, !0, !0);
 						return void (void 0 !== m && "image" === m.type && m.model && d20.engine.nextTargetCallback(m))
 					}
+					// BEGIN MOD
+					else if (d20.engine.leftMouseIsDown && "line_splitter" === d20.engine.mode) {
+						const lastPoint = {x: d20.engine.lastMousePos[0], y: d20.engine.lastMousePos[1]};
+						(d20.engine.canvas._objects || []).forEach(o => {
+							if (o.type === "path" && o.containsPoint(lastPoint)) {
+								const asObj = o.toObject();
+								const anyCurves = asObj.path.filter(it => it instanceof Array && it.length > 0  && it[0] === "C");
+								if (!anyCurves.length) {
+									// PathMath expects these
+									o.model.set("_pageid", d20.Campaign.activePage().get("id"));
+									o.model.set("_path", JSON.stringify(o.path));
+
+									console.log("SPLITTING PATH: ", o.model);
+									const mainPath = o.model;
+
+									// BEGIN PathSplitter CODE
+									let mainSegments = PathMath.toSegments(mainPath);
+									// BEGIN MOD
+									// fake a tiny diagonal line
+									const SLICE_LEN = 10;
+									const slicePoint1 = [lastPoint.x + (SLICE_LEN / 2), lastPoint.y + (SLICE_LEN / 2), 1];
+									const slicePoint2 = [lastPoint.x - (SLICE_LEN / 2), lastPoint.y - (SLICE_LEN / 2), 1];
+									const nuId = d20plus.generateRowId();
+									d20plus._tempTopRenderLines[nuId] = {
+										ticks: 2,
+										x: slicePoint1[0],
+										y: slicePoint1[1],
+										to_x: slicePoint2[0],
+										to_y: slicePoint2[1],
+										offset: [...d20.engine.currentCanvasOffset]
+									};
+									setTimeout(() => {
+										d20.engine.debounced_renderTop();
+									}, 1);
+									let splitSegments = [
+										[slicePoint1, slicePoint2]
+									];
+									// END MOD
+									let segmentPaths = _getSplitSegmentPaths(mainSegments, splitSegments);
+
+									// (function moved into this scope)
+									function _getSplitSegmentPaths(mainSegments, splitSegments) {
+										let resultSegPaths = [];
+										let curPathSegs = [];
+
+										_.each(mainSegments, seg1 => {
+
+											// Find the points of intersection and their parametric coefficients.
+											let intersections = [];
+											_.each(splitSegments, seg2 => {
+												let i = PathMath.segmentIntersection(seg1, seg2);
+												if(i) intersections.push(i);
+											});
+
+											if(intersections.length > 0) {
+												// Sort the intersections in the order that they appear along seg1.
+												intersections.sort((a, b) => {
+													return a[1] - b[1];
+												});
+
+												let lastPt = seg1[0];
+												_.each(intersections, i => {
+													// Complete the current segment path.
+													curPathSegs.push([lastPt, i[0]]);
+													resultSegPaths.push(curPathSegs);
+
+													// Start a new segment path.
+													curPathSegs = [];
+													lastPt = i[0];
+												});
+												curPathSegs.push([lastPt, seg1[1]]);
+											}
+											else {
+												curPathSegs.push(seg1);
+											}
+										});
+										resultSegPaths.push(curPathSegs);
+
+										return resultSegPaths;
+									};
+									// (end function moved into this scope)
+
+									// Convert the list of segment paths into paths.
+									let _pageid = mainPath.get('_pageid');
+									let controlledby = mainPath.get('controlledby');
+									let fill = mainPath.get('fill');
+									let layer = mainPath.get('layer');
+									let stroke = mainPath.get('stroke');
+									let stroke_width = mainPath.get('stroke_width');
+
+									let results = [];
+									_.each(segmentPaths, segments => {
+										let pathData = PathMath.segmentsToPath(segments);
+										_.extend(pathData, {
+											_pageid,
+											controlledby,
+											fill,
+											layer,
+											stroke,
+											stroke_width
+										});
+										let path = createObj('path', pathData);
+										results.push(path);
+									});
+
+									// Remove the original path and the splitPath.
+									// BEGIN MOD
+									mainPath.destroy();
+									// END MOD
+									// END PathSplitter CODE
+								}
+							}
+						});
+					}
+					// END MOD
 				} else
 					d20.engine.fog.down[0] = a,
 						d20.engine.fog.down[1] = l,
@@ -2722,6 +3320,164 @@ var betteR20Base = function () {
 				}
 				return t * Math.round(e / t);
 			}
+		},
+
+		enhanceMouseUp: () => { // P
+
+		},
+
+		enhanceMouseMove: () => {
+			// M
+			// needs to be called after `enhanceMeasureTool()`
+			const $selMeasureMode = $(`#measure_mode`);
+			const $cbSticky = $(`#measure_sticky`);
+			const $selRadMode = $(`#measure_mode_sel_2`);
+			const $iptConeWidth = $(`#measure_mode_ipt_3`);
+			const $selBoxMode = $(`#measure_mode_sel_4`);
+			const $selLineMode = $(`#measure_mode_sel_5`);
+			const $iptLineWidth = $(`#measure_mode_ipt_5`);
+
+			// BEGIN ROLL20 CODE
+			var x = function(e) {
+				e.type = "measuring",
+					e.time = (new Date).getTime(),
+					d20.textchat.sendShout(e)
+			}
+				, k = _.throttle(x, 200)
+				, E = function(e) {
+				k(e),
+				d20.tutorial && d20.tutorial.active && $(document.body).trigger("measure"),
+					d20.engine.receiveMeasureUpdate(e)
+			};
+			// END ROLL20 CODE
+
+			// add missing vars
+			var t = d20.engine.canvas;
+			var a = $("#editor-wrapper");
+
+			// BEGIN ROLL20 CODE
+			const M = function(e) {
+				var n, i;
+				if (e.changedTouches ? ((e.changedTouches.length > 1 || "pan" == d20.engine.mode) && (delete d20.engine.pings[window.currentPlayer.id],
+					d20.engine.pinging = !1),
+					e.preventDefault(),
+					n = e.changedTouches[0].pageX,
+					i = e.changedTouches[0].pageY) : (n = e.pageX,
+					i = e.pageY),
+				"select" != d20.engine.mode && "path" != d20.engine.mode && "targeting" != d20.engine.mode || t.__onMouseMove(e),
+				d20.engine.leftMouseIsDown || d20.engine.rightMouseIsDown) {
+					var o = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
+						, r = Math.floor(i / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
+					if (!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
+						if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode) {
+							if (d20.engine.measure.down[2] = o,
+								d20.engine.measure.down[3] = r,
+							0 != d20.engine.snapTo && !e.altKey)
+								if ("square" == d20.Campaign.activePage().get("grid_type"))
+									d20.engine.measure.down[2] = d20.engine.snapToIncrement(d20.engine.measure.down[2] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2),
+										d20.engine.measure.down[3] = d20.engine.snapToIncrement(d20.engine.measure.down[3] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2);
+								else {
+									var s = d20.canvas_overlay.activeHexGrid.GetHexAt({
+										X: d20.engine.measure.down[2],
+										Y: d20.engine.measure.down[3]
+									});
+									if (!s)
+										return;
+									d20.engine.measure.down[3] = s.MidPoint.Y,
+										d20.engine.measure.down[2] = s.MidPoint.X
+								}
+							var l = {
+								x: d20.engine.measure.down[0],
+								y: d20.engine.measure.down[1],
+								to_x: d20.engine.measure.down[2],
+								to_y: d20.engine.measure.down[3],
+								player: window.currentPlayer.id,
+								pageid: d20.Campaign.activePage().id,
+								currentLayer: window.currentEditingLayer
+								// BEGIN MOD
+								,
+								Ve: {
+									mode: $selMeasureMode.val(),
+									sticky: $cbSticky.prop("checked"),
+									radius: {
+										mode: $selRadMode.val()
+									},
+									cone: {
+										arc: $iptConeWidth.val()
+									},
+									box: {
+										mode: $selBoxMode.val(),
+									},
+									line: {
+										mode: $selLineMode.val(),
+										width: $iptLineWidth.val()
+									}
+								}
+								// END MOD
+							};
+							E(l)
+						} else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode) {
+							if (d20.engine.fx.current) {
+								var c = (new Date).getTime();
+								c - d20.engine.fx.lastMoveBroadcast > d20.engine.fx.MOVE_BROADCAST_FREQ ? (d20.fx.moveFx(d20.engine.fx.current, o, r),
+									d20.engine.fx.lastMoveBroadcast = c) : d20.fx.moveFx(d20.engine.fx.current, o, r, !0)
+							}
+						} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
+							var u = (n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
+								, d = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
+							0 != d20.engine.snapTo && e.shiftKey && (u = d20.engine.snapToIncrement(u, d20.engine.snapTo),
+								d = d20.engine.snapToIncrement(d, d20.engine.snapTo));
+							var h = d20.engine.drawshape.shape;
+							h.width = u,
+								h.height = d,
+								d20.engine.renderTop()
+						}
+					} else
+						d20.engine.fog.down[2] = o,
+							d20.engine.fog.down[3] = r,
+						0 != d20.engine.snapTo && "square" == d20.Campaign.activePage().get("grid_type") && ("gridalign" == d20.engine.mode ? e.shiftKey && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
+							d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo)) : (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled")) && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
+							d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo))),
+							d20.engine.drawOverlays();
+					if (d20.engine.pinging)
+						(u = Math.abs(d20.engine.pinging.downx - n)) + (d = Math.abs(d20.engine.pinging.downy - i)) > 10 && (delete d20.engine.pings[window.currentPlayer.id],
+							d20.engine.pinging = !1);
+					if (d20.engine.pan.panning) {
+						u = 2 * (n - d20.engine.pan.panXY[0]),
+							d = 2 * (i - d20.engine.pan.panXY[1]);
+						if (d20.engine.pan.lastPanDist += Math.abs(u) + Math.abs(d),
+						d20.engine.pan.lastPanDist < 10)
+							return;
+						var p = d20.engine.pan.beginPos[0] - u
+							, f = d20.engine.pan.beginPos[1] - d;
+						a.stop().animate({
+							scrollLeft: p,
+							scrollTop: f
+						}, {
+							duration: 1500,
+							easing: "easeOutExpo",
+							queue: !1
+						})
+					}
+				}
+			};
+			// END ROLL20 CODE
+
+			if (UPPER_CANVAS_MOUSEMOVE) {
+				d20plus.log("Enhancing mouse move");
+				d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
+				d20.engine.uppercanvas.addEventListener("mousemove", M);
+			}
+		},
+
+		addLineCutterTool: () => {
+			const $btnTextTool = $(`.choosetext`);
+
+			const $btnSplitTool = $(`<li class="choosesplitter">✂️ Line Splitter</li>`).click(() => {
+				d20plus.setMode("line_splitter");
+			});
+
+			$btnTextTool.after($btnSplitTool);
 		},
 
 		_tokenHover: null,
@@ -3072,6 +3828,11 @@ var betteR20Base = function () {
 			{
 				s: ".Vetools-token-hover",
 				r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;"
+			},
+			// drawing tools bar
+			{
+				s: "#drawingtools.line_splitter .currentselection:after",
+				r: "content: '✂️';"
 			}
 		],
 
@@ -3094,22 +3855,14 @@ var betteR20Base = function () {
 			$("#mysettings > .content").children("hr").first().before($wrpSettings);
 
 			$wrpSettings.append(d20plus.settingsHtmlHeader);
+			$body.append(d20plus.configEditorHTML);
 			if (window.is_gm) {
 				$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.artTabHtml);
 				$(`a#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
 
-				$body.append(d20plus.configEditorHTML);
 				$body.append(d20plus.addArtHTML);
 				$body.append(d20plus.addArtMassAdderHTML);
 				$body.append(d20plus.toolsListHtml);
-				const $cfgEditor = $("#d20plus-configeditor");
-				$cfgEditor.dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 800,
-					height: 650,
-				});
-				$cfgEditor.parent().append(d20plus.configEditorButtonBarHTML);
 				$("#d20plus-artfolder").dialog({
 					autoOpen: false,
 					resizable: true,
@@ -3123,6 +3876,14 @@ var betteR20Base = function () {
 					height: 400,
 				});
 			}
+			const $cfgEditor = $("#d20plus-configeditor");
+			$cfgEditor.dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 650,
+			});
+			$cfgEditor.parent().append(d20plus.configEditorButtonBarHTML);
 
 			// shared GM/player conent
 			// quick search box
@@ -3155,7 +3916,7 @@ var betteR20Base = function () {
 
 		settingsHtmlPtFooter:
 			`<p>
-			<a class="btn player-hidden" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
+			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
 			</p>
 			<p>
 			For help, advice, and updates, <a href="https://discord.gg/AzyBjtQ" target="_blank" style="color: #08c;">join our Discord!</a>
