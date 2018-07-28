@@ -897,7 +897,7 @@ var betteR20Base = function () {
 		startPlayerConfigHandler: () => {
 			function handlePlayerCfg () {
 				d20plus.baseHandleConfigChange();
-				if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+				if (d20plus.handleConfigChange) d20plus.handleConfigChange(true);
 			}
 
 			// every 5 seconds, poll and apply any config changes the GM might have made

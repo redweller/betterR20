@@ -425,8 +425,8 @@ const betteR205etools = function () {
 		d20plus.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
 	};
 
-	d20plus.handleConfigChange = function () {
-		d20plus.log("Applying config");
+	d20plus.handleConfigChange = function (isSyncingPlayer) {
+		if (!isSyncingPlayer) d20plus.log("Applying config");
 		if (window.is_gm) {
 			d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
