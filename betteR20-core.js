@@ -11,7 +11,7 @@ const betteR20Core = function () {
 
 	d20plus.onScriptLoad = () => {
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
-		else d20plus.onConfigLoad();
+		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
 	};
 
 	// continue more init after config loaded

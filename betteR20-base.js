@@ -20,15 +20,18 @@ var betteR20Base = function () {
 	);
 	addConfigOptions("canvas", {
 			"_name": "Canvas",
+			"_player": true,
 			"halfGridSnap": {
 				"name": "Snap to Half-Grid",
 				"default": false,
-				"_type": "boolean"
+				"_type": "boolean",
+				"_player": true
 			},
 			"scaleNamesStatuses": {
 				"name": "Scaled Names and Status Icons",
 				"default": true,
-				"_type": "boolean"
+				"_type": "boolean",
+				"_player": true
 			}
 		}
 	);
@@ -463,6 +466,20 @@ var betteR20Base = function () {
 			}
 		},
 
+		loadPlayerConfig: (nextFn) => {
+			d20plus.log("Reading player Config");
+			const loaded = StorageUtil.get(`Veconfig`);
+			if (!loaded) {
+				d20plus.log("No player config found! Initialising new config...");
+				const dfltConfig = d20plus.getDefaultConfig();
+				d20plus.config = Object.assign(d20plus.config, dfltConfig);
+				StorageUtil.set(`Veconfig`, d20plus.config);
+			}
+			d20plus.log("Player config Loaded:");
+			d20plus.log(d20plus.config);
+			nextFn();
+		},
+
 		makeDefaultConfig: (nextFn) => {
 			d20.Campaign.handouts.create({
 				name: CONFIG_HANDOUT
@@ -536,12 +553,14 @@ var betteR20Base = function () {
 		getDefaultConfig: () => {
 			const outCpy = {};
 			$.each(CONFIG_OPTIONS, (sectK, sect) => {
-				outCpy[sectK] = outCpy[sectK] || {};
-				$.each(sect, (k, data) => {
-					if (!k.startsWith("_")) {
-						outCpy[sectK][k] = data.default;
-					}
-				});
+				if (window.is_gm || sect._player) {
+					outCpy[sectK] = outCpy[sectK] || {};
+					$.each(sect, (k, data) => {
+						if (!k.startsWith("_") && (window.is_gm || data._player)) {
+							outCpy[sectK][k] = data.default;
+						}
+					});
+				}
 			});
 			return outCpy;
 		},
@@ -609,7 +628,9 @@ var betteR20Base = function () {
 
 				const configFields = {};
 
-				const sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => d20plus.ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
+				let sortedKeys = Object.keys(CONFIG_OPTIONS).sort((a, b) => d20plus.ascSort(CONFIG_OPTIONS[a]._name, CONFIG_OPTIONS[b]._name));
+				if (!window.is_gm) sortedKeys = sortedKeys.filter(k => CONFIG_OPTIONS[k]._player);
+
 				const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
 				const contentList = sortedKeys.map(k => makeTab(k));
 
@@ -618,16 +639,18 @@ var betteR20Base = function () {
 					configFields[cfgK] = {};
 
 					const content = $(`
-				<div class="config-table-wrapper">
-					<table class="config-table">
-						<thead><tr><th>Property</th><th>Value</th></tr></thead>
-						<tbody></tbody>
-					</table>
-				</div>
-			`);
+						<div class="config-table-wrapper">
+							<table class="config-table">
+								<thead><tr><th>Property</th><th>Value</th></tr></thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					`);
 					const tbody = content.find(`tbody`);
 
-					const sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_"));
+					let sortedTabKeys = Object.keys(cfgGroup).filter(k => !k.startsWith("_"));
+					if (!window.is_gm) sortedTabKeys = sortedTabKeys.filter(k => cfgGroup[k]._player);
+
 					sortedTabKeys.forEach((grpK, idx) => {
 						const prop = cfgGroup[grpK];
 
@@ -791,26 +814,37 @@ var betteR20Base = function () {
 				const saveButton = $(`#configsave`);
 				saveButton.unbind("click");
 				saveButton.bind("click", () => {
-					let handout = d20plus.getConfigHandout();
-					if (!handout) {
-						d20plus.makeDefaultConfig(doSave);
-					} else {
-						doSave();
-					}
-
-					function doSave () {
+					function _updateLoadedConfig () {
 						$.each(configFields, (cfgK, grp) => {
 							$.each(grp, (grpK, grpVField) => {
 								d20plus.setCfgVal(cfgK, grpK, grpVField());
 							})
 						});
+					}
 
-						const gmnotes = JSON.stringify(d20plus.config).replace(/%/g, "%25");
-						handout.updateBlobs({gmnotes: gmnotes});
-						handout.save({notes: (new Date).getTime()});
+					if (window.is_gm) {
+						let handout = d20plus.getConfigHandout();
+						if (!handout) {
+							d20plus.makeDefaultConfig(doSave);
+						} else {
+							doSave();
+						}
 
-						d20plus.log("Saved config");
+						function doSave () {
+							_updateLoadedConfig();
 
+							const gmnotes = JSON.stringify(d20plus.config).replace(/%/g, "%25");
+							handout.updateBlobs({gmnotes: gmnotes});
+							handout.save({notes: (new Date).getTime()});
+
+							d20plus.log("Saved config");
+
+							d20plus.baseHandleConfigChange();
+							if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+						}
+					} else {
+						_updateLoadedConfig();
+						StorageUtil.set(`Veconfig`, d20plus.config);
 						d20plus.baseHandleConfigChange();
 						if (d20plus.handleConfigChange) d20plus.handleConfigChange();
 					}
@@ -3809,22 +3843,14 @@ var betteR20Base = function () {
 			$("#mysettings > .content").children("hr").first().before($wrpSettings);
 
 			$wrpSettings.append(d20plus.settingsHtmlHeader);
+			$body.append(d20plus.configEditorHTML);
 			if (window.is_gm) {
 				$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.artTabHtml);
 				$(`a#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
 
-				$body.append(d20plus.configEditorHTML);
 				$body.append(d20plus.addArtHTML);
 				$body.append(d20plus.addArtMassAdderHTML);
 				$body.append(d20plus.toolsListHtml);
-				const $cfgEditor = $("#d20plus-configeditor");
-				$cfgEditor.dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 800,
-					height: 650,
-				});
-				$cfgEditor.parent().append(d20plus.configEditorButtonBarHTML);
 				$("#d20plus-artfolder").dialog({
 					autoOpen: false,
 					resizable: true,
@@ -3838,6 +3864,14 @@ var betteR20Base = function () {
 					height: 400,
 				});
 			}
+			const $cfgEditor = $("#d20plus-configeditor");
+			$cfgEditor.dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 650,
+			});
+			$cfgEditor.parent().append(d20plus.configEditorButtonBarHTML);
 
 			// shared GM/player conent
 			// quick search box
@@ -3870,7 +3904,7 @@ var betteR20Base = function () {
 
 		settingsHtmlPtFooter:
 			`<p>
-			<a class="btn player-hidden" href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
+			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
 			</p>
 			<p>
 			For help, advice, and updates, <a href="https://discord.gg/AzyBjtQ" target="_blank" style="color: #08c;">join our Discord!</a>

@@ -298,6 +298,7 @@ const betteR205etools = function () {
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
+		"_player": true,
 		"customTracker": {
 			"name": "Add Additional Info to Tracker",
 			"default": true,
@@ -331,7 +332,8 @@ const betteR205etools = function () {
 		"emoji": {
 			"name": "Add Emoji Replacement to Chat",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"showCustomArtPreview": {
 			"name": "Show Custom Art Previews",
@@ -424,8 +426,8 @@ const betteR205etools = function () {
 	};
 
 	d20plus.handleConfigChange = function () {
+		d20plus.log("Applying config");
 		if (window.is_gm) {
-			d20plus.log("Applying config");
 			d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
 			d20plus.updateDifficulty();
@@ -496,7 +498,7 @@ const betteR205etools = function () {
 		};
 		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
-		else d20plus.onConfigLoad();
+		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
 	};
 
 // continue more init after config loaded
