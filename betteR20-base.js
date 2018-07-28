@@ -1672,7 +1672,7 @@ var betteR20Base = function () {
 			}
 		},
 
-		_stickyMeasure: null,
+		_stickyMeasure: {},
 		enhanceMeasureTool: () => {
 			d20plus.log("Enhance Measure tool");
 
@@ -1729,27 +1729,44 @@ var betteR20Base = function () {
 				$(`.measure_mode_sub`).hide();
 				$(`.measure_mode_sub_${$selMeasure.val()}`).show();
 			});
-			const $cbSticky = $(`#measure_sticky`);
 			$(`#measure_sticky_clear`).click(() => {
-				d20plus._stickyMeasure = null;
+				delete d20plus._stickyMeasure[window.currentPlayer.id];
 				d20.engine.renderTop();
+				const event = {
+					type: "Ve_measure_clear_sticky",
+					player: window.currentPlayer.id,
+					time: (new Date).getTime()
+				};
+				d20.textchat.sendShout(event)
+			});
+
+			d20.textchat.shoutref.on("value", function(e) {
+				if (!d20.textchat.chatstartingup) {
+					var t = e.val();
+					if (t) {
+						const msg = JSON.parse(t);
+						switch (msg.type) {
+							case "Ve_measure_clear_sticky": {
+								delete d20plus._stickyMeasure[msg.player];
+								d20.engine.renderTop();
+							}
+						}
+					}
+				}
 			});
 
 			// ROLL20 CODE
 			var T = function (e, t, n, i, r, o) {
+				console.log(t);
 				// BEGIN MOD
 				if (!t.reRender) {
-					if ($cbSticky.prop("checked") && t.me) {
-						d20plus._stickyMeasure = {
-							x: t.x,
-							y: t.y,
-							to_x: t.to_x,
-							to_y: t.to_y,
-							color: t.color,
+					if (t.Ve.sticky) {
+						d20plus._stickyMeasure[t.player] = {
+							...t,
 							offset: [...d20.engine.currentCanvasOffset]
 						}
-					} else if (t.me) {
-						d20plus._stickyMeasure = null;
+					} else {
+						delete d20plus._stickyMeasure[t.player];
 					}
 				}
 				// END MOD
@@ -1778,7 +1795,7 @@ var betteR20Base = function () {
 				}
 
 				// BEGIN MOD
-				if (t.me) {
+				if (t.Ve) {
 					const RAD_90_DEG = 1.5708;
 
 					const euclid = (x1, y1, x2, y2) => {
@@ -1802,7 +1819,7 @@ var betteR20Base = function () {
 						return [pX, pY];
 					};
 
-					switch ($selMeasure.val()) {
+					switch (t.Ve.mode) {
 						case "1": // standard ruler
 							break;
 						case "2": { // radius
@@ -1813,7 +1830,7 @@ var betteR20Base = function () {
 								e.closePath();
 							};
 
-							switch ($(`#measure_mode_sel_2`).val()) {
+							switch (t.Ve.radius.mode) {
 								case "1": // origin
 									drawCircle(t.x, t.y, euclid(t.x, t.y, t.to_x, t.to_y));
 									break;
@@ -1831,7 +1848,7 @@ var betteR20Base = function () {
 							break;
 						}
 						case "3": { // cone
-							const arcRadians = (Number($(`#measure_mode_ipt_3`).val()) || 1) / 2;
+							const arcRadians = (Number(t.Ve.cone.arc) || 1) / 2;
 
 							const r = euclid(t.x, t.y, t.to_x, t.to_y);
 							const dx = t.to_x - t.x;
@@ -1877,7 +1894,7 @@ var betteR20Base = function () {
 							const dyHalf = (t.to_y - t.y) / 2;
 
 							e.beginPath();
-							switch ($(`#measure_mode_sel_4`).val()) {
+							switch (t.Ve.box.mode) {
 								case "1": // origin
 									const dx = t.to_x - t.x;
 									const dy = t.to_y - t.y;
@@ -1921,11 +1938,11 @@ var betteR20Base = function () {
 						case "5": { // line
 							e.beginPath();
 
-							const div = $(`#measure_mode_sel_5`).val() === "2" ? 1 : 2;
+							const div = t.Ve.line.mode === "2" ? 1 : 2;
 
 							const norm = [];
 							d20plus.math.normalize(norm, [t.to_x - t.x, t.to_y - t.y]);
-							const width = Number($(`#measure_mode_ipt_5`).val()) / div;
+							const width = Number(t.Ve.line.width) / div;
 							const scaledWidth = (width / d20.Campaign.activePage().get("scale_number")) * 70;
 							d20plus.math.scale(norm, norm, scaledWidth);
 
@@ -1990,34 +2007,29 @@ var betteR20Base = function () {
 								n.to_y = n.to_y - d20.engine.currentCanvasOffset[1],
 								n.x = n.x - d20.engine.currentCanvasOffset[0],
 								n.y = n.y - d20.engine.currentCanvasOffset[1],
-								// BEGIN MOD
-								n.me = window.currentPlayer.id === n.player,
-								// END MOD
 								T(e, n, !0, !0)
 						}
 					})
 				// BEGIN MOD
-				if (d20plus._stickyMeasure) {
+				$.each(d20plus._stickyMeasure, (pId, n) => {
 					const offset = (num, xy) => {
-						return (num + d20plus._stickyMeasure.offset[xy]) - d20.engine.currentCanvasOffset[xy];
+						return (num + n.offset[xy]) - d20.engine.currentCanvasOffset[xy];
 					};
 
-					const nuX = offset(d20plus._stickyMeasure.x, 0);
-					const nuY = offset(d20plus._stickyMeasure.y, 1);
-					const nuToX = offset(d20plus._stickyMeasure.to_x, 0);
-					const nuToY = offset(d20plus._stickyMeasure.to_y, 1);
-					const n = {
+					const nuX = offset(n.x, 0);
+					const nuY = offset(n.y, 1);
+					const nuToX = offset(n.to_x, 0);
+					const nuToY = offset(n.to_y, 1);
+					const nuN = {
+						...n,
 						x: nuX,
 						y: nuY,
 						to_x: nuToX,
 						to_y: nuToY,
-						color: window.currentPlayer.get("color"),
-						me: true,
 						reRender: true
 					};
-					console.log("RE-RENDERING STICKY", [nuX, nuY], [nuToX, nuToY], "from points", [d20plus._stickyMeasure.x, d20plus._stickyMeasure.y], [d20plus._stickyMeasure.to_x, d20plus._stickyMeasure.to_y])
-					T(e, n, true, true);
-				}
+					T(e, nuN, true, true);
+				});
 				// END MOD
 			}
 			// END ROLL20 CODE
@@ -2845,7 +2857,7 @@ var betteR20Base = function () {
 			}
 
 			// BEGIN ROLL20 CODE
-			const M = function(e) {
+			const M = function(e) { // seems to be "A" nowadays
 				//BEGIN MOD
 				var t = d20.engine.canvas;
 				var s = $("#editor-wrapper");
@@ -3039,6 +3051,153 @@ var betteR20Base = function () {
 					t = t / 2;
 				}
 				return t * Math.round(e / t);
+			}
+		},
+
+		enhanceMouseUp: () => { // P
+
+		},
+
+		enhanceMouseMove: () => { // M
+			// needs to be called after `enhanceMeasureTool()`
+			const $selMeasureMode = $(`#measure_mode`);
+			const $cbSticky = $(`#measure_sticky`);
+			const $selRadMode = $(`#measure_mode_sel_2`);
+			const $iptConeWidth = $(`#measure_mode_ipt_3`);
+			const $selBoxMode = $(`#measure_mode_sel_4`);
+			const $selLineMode = $(`#measure_mode_sel_5`);
+			const $iptLineWidth = $(`#measure_mode_ipt_5`);
+
+			// BEGIN ROLL20 CODE
+			var x = function(e) {
+				e.type = "measuring",
+					e.time = (new Date).getTime(),
+					d20.textchat.sendShout(e)
+			}
+				, k = _.throttle(x, 200)
+				, E = function(e) {
+				k(e),
+				d20.tutorial && d20.tutorial.active && $(document.body).trigger("measure"),
+					d20.engine.receiveMeasureUpdate(e)
+			};
+			// END ROLL20 CODE
+
+			// add missing vars
+			var t = d20.engine.canvas;
+			var a = $("#editor-wrapper");
+
+			// BEGIN ROLL20 CODE
+			const M = function(e) {
+				var n, i;
+				if (e.changedTouches ? ((e.changedTouches.length > 1 || "pan" == d20.engine.mode) && (delete d20.engine.pings[window.currentPlayer.id],
+					d20.engine.pinging = !1),
+					e.preventDefault(),
+					n = e.changedTouches[0].pageX,
+					i = e.changedTouches[0].pageY) : (n = e.pageX,
+					i = e.pageY),
+				"select" != d20.engine.mode && "path" != d20.engine.mode && "targeting" != d20.engine.mode || t.__onMouseMove(e),
+				d20.engine.leftMouseIsDown || d20.engine.rightMouseIsDown) {
+					var o = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
+						, r = Math.floor(i / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
+					if (!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
+						if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode) {
+							if (d20.engine.measure.down[2] = o,
+								d20.engine.measure.down[3] = r,
+							0 != d20.engine.snapTo && !e.altKey)
+								if ("square" == d20.Campaign.activePage().get("grid_type"))
+									d20.engine.measure.down[2] = d20.engine.snapToIncrement(d20.engine.measure.down[2] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2),
+										d20.engine.measure.down[3] = d20.engine.snapToIncrement(d20.engine.measure.down[3] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2);
+								else {
+									var s = d20.canvas_overlay.activeHexGrid.GetHexAt({
+										X: d20.engine.measure.down[2],
+										Y: d20.engine.measure.down[3]
+									});
+									if (!s)
+										return;
+									d20.engine.measure.down[3] = s.MidPoint.Y,
+										d20.engine.measure.down[2] = s.MidPoint.X
+								}
+							var l = {
+								x: d20.engine.measure.down[0],
+								y: d20.engine.measure.down[1],
+								to_x: d20.engine.measure.down[2],
+								to_y: d20.engine.measure.down[3],
+								player: window.currentPlayer.id,
+								pageid: d20.Campaign.activePage().id,
+								currentLayer: window.currentEditingLayer
+								// BEGIN MOD
+								,
+								Ve: {
+									mode: $selMeasureMode.val(),
+									sticky: $cbSticky.prop("checked"),
+									radius: {
+										mode: $selRadMode.val()
+									},
+									cone: {
+										arc: $iptConeWidth.val()
+									},
+									box: {
+										mode: $selBoxMode.val(),
+									},
+									line: {
+										mode: $selLineMode.val(),
+										width: $iptLineWidth.val()
+									}
+								}
+								// END MOD
+							};
+							E(l)
+						} else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode) {
+							if (d20.engine.fx.current) {
+								var c = (new Date).getTime();
+								c - d20.engine.fx.lastMoveBroadcast > d20.engine.fx.MOVE_BROADCAST_FREQ ? (d20.fx.moveFx(d20.engine.fx.current, o, r),
+									d20.engine.fx.lastMoveBroadcast = c) : d20.fx.moveFx(d20.engine.fx.current, o, r, !0)
+							}
+						} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
+							var u = (n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
+								, d = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
+							0 != d20.engine.snapTo && e.shiftKey && (u = d20.engine.snapToIncrement(u, d20.engine.snapTo),
+								d = d20.engine.snapToIncrement(d, d20.engine.snapTo));
+							var h = d20.engine.drawshape.shape;
+							h.width = u,
+								h.height = d,
+								d20.engine.renderTop()
+						}
+					} else
+						d20.engine.fog.down[2] = o,
+							d20.engine.fog.down[3] = r,
+						0 != d20.engine.snapTo && "square" == d20.Campaign.activePage().get("grid_type") && ("gridalign" == d20.engine.mode ? e.shiftKey && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
+							d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo)) : (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled")) && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
+							d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo))),
+							d20.engine.drawOverlays();
+					if (d20.engine.pinging)
+						(u = Math.abs(d20.engine.pinging.downx - n)) + (d = Math.abs(d20.engine.pinging.downy - i)) > 10 && (delete d20.engine.pings[window.currentPlayer.id],
+							d20.engine.pinging = !1);
+					if (d20.engine.pan.panning) {
+						u = 2 * (n - d20.engine.pan.panXY[0]),
+							d = 2 * (i - d20.engine.pan.panXY[1]);
+						if (d20.engine.pan.lastPanDist += Math.abs(u) + Math.abs(d),
+						d20.engine.pan.lastPanDist < 10)
+							return;
+						var p = d20.engine.pan.beginPos[0] - u
+							, f = d20.engine.pan.beginPos[1] - d;
+						a.stop().animate({
+							scrollLeft: p,
+							scrollTop: f
+						}, {
+							duration: 1500,
+							easing: "easeOutExpo",
+							queue: !1
+						})
+					}
+				}
+			};
+			// END ROLL20 CODE
+
+			if (UPPER_CANVAS_MOUSEMOVE) {
+				d20plus.log("Enhancing mouse move");
+				d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
+				d20.engine.uppercanvas.addEventListener("mousemove", M);
 			}
 		},
 

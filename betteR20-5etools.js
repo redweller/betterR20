@@ -528,6 +528,7 @@ const betteR205etools = function () {
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
 		d20plus.enhanceSnap();
+		d20plus.enhanceMouseMove();
 		d20plus.enhanceChat();
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);

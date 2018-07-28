@@ -36,8 +36,10 @@ Object.defineProperty = function (obj, prop, vals) {
 };
 
 UPPER_CANVAS_MOUSEDOWN = null;
+UPPER_CANVAS_MOUSEMOVE = null;
 EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
 EventTarget.prototype.addEventListener = function(type, listener, options, ...others) {
 	if (type === "mousedown" && this === d20.engine.uppercanvas) UPPER_CANVAS_MOUSEDOWN = listener;
+	if (type === "mousemove" && this === d20.engine.uppercanvas) UPPER_CANVAS_MOUSEMOVE = listener;
 	this.addEventListenerBase(type, listener, options, ...others);
 };

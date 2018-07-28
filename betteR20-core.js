@@ -25,6 +25,7 @@ const betteR20Core = function () {
 		d20plus.addProFeatures();
 		d20plus.enhanceMeasureTool();
 		d20plus.enhanceSnap();
+		d20plus.enhanceMouseMove();
 		d20plus.enhanceStatusEffects();
 		d20plus.addHtmlHeader();
 		d20plus.addHtmlFooter();
