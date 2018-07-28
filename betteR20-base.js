@@ -53,7 +53,7 @@ var betteR20Base = function () {
 					window.eval(js);
 					d20plus.log(`JS [${name}] Loaded`);
 				} catch (e) {
-					d20plus.log(`Error loading ${name}`);
+					d20plus.log(`Error loading [${name}]`);
 					d20plus.log(e);
 				}
 			};
@@ -96,57 +96,56 @@ var betteR20Base = function () {
 
 		// MOCK API  ///////////////////////////////////////////////////////////////////////////////////////////////////
 		initMockApi: () => { // TODO check if this needs to be enabled for players too
-			if (!ACCOUNT_ORIGINAL_PERMS.xlfeats) {
-				window.log = (...args) => d20plus.logApi(...args);
+			d20plus.log("Initialising mock API");
+			window.log = (...args) => d20plus.logApi(...args);
 
-				const chatHandlers = [];
-				window.on = (evtType, fn, ...others) => {
-					switch (evtType) {
-						case "chat:message":
-							chatHandlers.push(fn);
-							break;
-						default:
-							console.error("Unhandled message type: ", evtType, "with args", fn, others)
-							break;
+			const chatHandlers = [];
+			window.on = (evtType, fn, ...others) => {
+				switch (evtType) {
+					case "chat:message":
+						chatHandlers.push(fn);
+						break;
+					default:
+						console.error("Unhandled message type: ", evtType, "with args", fn, others)
+						break;
+				}
+			};
+
+			window.createObj = (objType, obj, ...others) => {
+				switch (objType) {
+					case "path": {
+						const page = d20.Campaign.pages._byId[obj._pageid];
+						obj.scaleX = obj.scaleX || 1;
+						obj.scaleY = obj.scaleY || 1;
+						obj.path = obj.path || obj._path
+						return page.thepaths.create(obj)
+						break;
 					}
-				};
+					default:
+						console.error("Unhandled object type: ", objType, "with args", obj, others)
+						break;
+				}
+			};
 
-				window.createObj = (objType, obj, ...others) => {
-					switch (objType) {
-						case "path": {
-							const page = d20.Campaign.pages._byId[obj._pageid];
-							obj.scaleX = obj.scaleX || 1;
-							obj.scaleY = obj.scaleY || 1;
-							obj.path = obj.path || obj._path
-							return page.thepaths.create(obj)
-							break;
+			const seenMessages = new Set();
+			d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
+			const handleChat = (e) => {
+				if (!d20.textchat.chatstartingup) {
+					e.id = e.key();
+					if (!seenMessages.has(e.id)) {
+						seenMessages.add(e.id);
+
+						var t = e.val();
+						if (t) {
+							if (window.DEBUG) console.log("CHAT: ", t);
+
+							chatHandlers.forEach(fn => fn(t));
 						}
-						default:
-							console.error("Unhandled object type: ", objType, "with args", obj, others)
-							break;
 					}
-				};
-
-				const seenMessages = new Set();
-				d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
-				const handleChat = (e) => {
-					if (!d20.textchat.chatstartingup) {
-						e.id = e.key();
-						if (!seenMessages.has(e.id)) {
-							seenMessages.add(e.id);
-
-							var t = e.val();
-							if (t) {
-								if (window.DEBUG) console.log("CHAT: ", t);
-
-								chatHandlers.forEach(fn => fn(t));
-							}
-						}
-					}
-				};
-				d20.textchat.chatref.on("child_added", handleChat);
-				d20.textchat.chatref.on("child_changed", handleChat);
-			}
+				}
+			};
+			d20.textchat.chatref.on("child_added", handleChat);
+			d20.textchat.chatref.on("child_changed", handleChat);
 		},
 
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
