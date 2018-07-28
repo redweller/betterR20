@@ -1822,10 +1822,22 @@ var betteR20Base = function () {
 						<label style="display: inline-flex;">ft.</label>
 					</li>
 				</ul>`;
+			$wrpBar.append(toAdd);
+
 			$(`#measure`).click(() => {
 				d20plus.setMode("measure");
 			});
-			$wrpBar.append(toAdd);
+			const $cbSticky = $(`#measure_sticky`);
+			let tempShift = false;
+			$(document).on("mousemove", (evt) => {
+				if (evt.shiftKey && !tempShift && d20.engine.mode === "measure" && !$cbSticky.prop("checked")) {
+					tempShift = true;
+					$cbSticky.prop("checked", true);
+				} else if (!evt.shiftKey && tempShift && d20.engine.mode === "measure" && $cbSticky.prop("checked")) {
+					tempShift = false;
+					$cbSticky.prop("checked", false);
+				}
+			});
 			const $selMeasure = $(`#measure_mode`);
 			$selMeasure.on("change", () => {
 				$(`.measure_mode_sub`).hide();
