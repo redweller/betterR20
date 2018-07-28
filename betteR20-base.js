@@ -1745,6 +1745,11 @@ var betteR20Base = function () {
 					var t = e.val();
 					if (t) {
 						const msg = JSON.parse(t);
+
+						if (Object.keys(d20plus._stickyMeasure).length) {
+							d20.Campaign.players.toJSON().filter(p => !p.online).forEach(p => delete d20plus._stickyMeasure[p.id]);
+						}
+
 						switch (msg.type) {
 							case "Ve_measure_clear_sticky": {
 								delete d20plus._stickyMeasure[msg.player];
@@ -1757,7 +1762,6 @@ var betteR20Base = function () {
 
 			// ROLL20 CODE
 			var T = function (e, t, n, i, r, o) {
-				console.log(t);
 				// BEGIN MOD
 				if (!t.reRender) {
 					if (t.Ve.sticky) {
