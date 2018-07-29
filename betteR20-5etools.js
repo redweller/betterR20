@@ -1810,6 +1810,10 @@ const betteR205etools = function () {
 		// var i = $(outerI.helper[0]).attr("data-pagename"); // always undefined, since we're not using a compendium drag-drop element
 		const i = d20plus.generateRowId();
 
+		$(t.target).find("*[accept]").each(function() {
+			$(this).val(undefined);
+		});
+
 		// BEGIN ROLL20 CODE
 		var o = n.data;
 		o.Name = n.name,
