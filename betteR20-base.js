@@ -1877,7 +1877,7 @@ var betteR20Base = function () {
 			// ROLL20 CODE
 			var T = function (e, t, n, i, r, o) {
 				// BEGIN MOD
-				if (!t.reRender) {
+				if (!t.reRender && t.Ve) {
 					if (t.Ve.sticky) {
 						d20plus._stickyMeasure[t.player] = {
 							...t,
