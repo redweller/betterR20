@@ -189,13 +189,7 @@ var betteR20Base = function () {
 						const cmp = cmpVersions(curr, avail);
 						if (cmp < 0) {
 							setTimeout(() => {
-								d20.textchat.incoming(false, ({
-									who: "system",
-									type: "system",
-									content: `<span style="margin-left: -45px; margin-right: -5px; margin-bottom: -7px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">
-										A newer version of the script is available. Get ${avail} <a style="color: white;" href="https://get.5e.tools/">here</a>.
-									</span>`
-								}));
+								d20plus.sendHackerChat(`A newer version of the script is available. Get ${avail} <a href="https://get.5e.tools/">here</a>.`);
 							}, 1000);
 						}
 					}
@@ -211,7 +205,7 @@ var betteR20Base = function () {
 				${message}
 				<br>
 				<br>
-				Need help? Join our <a style="color: white;" href="https://discord.gg/AzyBjtQ">Discord</a>.
+				Need help? Join our <a href="https://discord.gg/AzyBjtQ">Discord</a>.
 				<br>
 				<br>
 				<span title="You'd think this would be obvious.">Please DO NOT post about this script or any related content in official channels, such as the Roll20 forums.</span>
@@ -222,7 +216,7 @@ var betteR20Base = function () {
 			d20.textchat.incoming(false, ({
 				who: "system",
 				type: "system",
-				content: `<span style="margin-left: -45px; margin-right: -5px; margin-bottom: -7px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">
+				content: `<span class="hacker-chat">
 					${message}
 				</span>`
 			}));
@@ -3832,6 +3826,19 @@ var betteR20Base = function () {
 			{
 				s: "#drawingtools.line_splitter .currentselection:after",
 				r: "content: '✂️';"
+			},
+			// chat tag
+			{
+				s: ".userscript-hacker-chat",
+				r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;"
+			},
+			{
+				s: ".userscript-hacker-chat a",
+				r: "color: white;"
+			},
+			{
+				s: ".withoutavatars .userscript-hacker-chat",
+				r: "margin-left: -15px;"
 			}
 		],
 
