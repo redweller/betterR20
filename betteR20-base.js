@@ -36,15 +36,24 @@ var betteR20Base = function () {
 		}
 	);
 
-	const apiMock = {
+	const qpi = {
 		_: {
 			log: {
-				_: (...args) => d20plus.logApi(...args),
+				_ (...args) {
+					qpi._log(...args)
+				},
+				works: 1
+			},
+
+			Campaign: {
+				_ () {
+					return d20.Campaign;
+				},
 				works: 1
 			},
 
 			on: {
-				_preInit: () => {
+				_preInit () {
 					qpi._on_chatHandlers = [];
 					const seenMessages = new Set();
 					d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
@@ -66,7 +75,7 @@ var betteR20Base = function () {
 					d20.textchat.chatref.on("child_added", handleChat);
 					d20.textchat.chatref.on("child_changed", handleChat);
 				},
-				_: (evtType, fn, ...others) => {
+				_ (evtType, fn, ...others) {
 					switch (evtType) {
 						case "chat:message":
 							qpi._on_chatHandlers.push(fn);
@@ -83,7 +92,7 @@ var betteR20Base = function () {
 			},
 
 			createObj: {
-				_: (objType, obj, ...others) => {
+				_ (objType, obj, ...others) {
 					switch (objType) {
 						case "path": {
 							const page = d20.Campaign.pages._byId[obj._pageid];
@@ -102,39 +111,165 @@ var betteR20Base = function () {
 				notes: [
 					`Only supports "path" obects.`
 				]
+			},
+
+			sendChat: { // TODO lift code from doChatInput
+				_ (speakingAs, input, callback, options) {
+					const message = {
+						who: speakingAs,
+						type: "general",
+						content: input,
+						playerid: window.currentPlayer.id,
+						avatar: null,
+						inlinerolls: []
+					};
+
+					const key = d20.textchat.chatref.push().key();
+					d20.textchat.chatref.child(key).setWithPriority(message, Firebase.ServerValue.TIMESTAMP)
+				},
+				works: 0.01,
+				notes: [
+					`speakingAs: String only.`,
+					`input: String only.`,
+					`callback: Unimplemented.`,
+					`options: Unimplemented.`,
+					`Messages are always sent with the player ID of the QPI user.`
+				]
+			},
+
+			// findObjs({_type: 'character',name: 'zCalendar'})[0];
+			findObjs: {
+				_ (attrs) {
+					// TODO
+					// const getters = {
+					// 	attribute: () => {},
+					// 	character: () => {},
+					// 	handout: () => {}
+					// };
+					// const getAll = () => {
+					// 	const out = [];
+					// 	Object.values(getters).forEach(fn => out.push(...fn()));
+					// 	return out;
+					// };
+
+					// let out = attrs._type ? getters[attrs._type]() : getAll();
+
+					throw new Error("findObjs is unimplemented!");
+				},
+				works: 0.00,
+				notes: [
+					`Unimplemented.`
+				]
 			}
 		},
 
+		_loadedScripts: null,
 		_init () {
-			Object.keys(apiMock._).forEach(k => {
-				const it = apiMock._[k];
+			Object.keys(qpi._).forEach(k => {
+				const it = qpi._[k];
 				if (it._preInit) it._preInit();
 				window[k] = it._;
 			});
-			d20plus.logApi("Initialised!");
+
+			qpi._loadedScripts = StorageUtil.get("VeQpi") || {};
+
+			$(`body`).append(`
+				<div id="qpi-manager" title="QPI Script Manager - WIP">
+					<div class="qpi-table"></div>
+					<div>
+						<input placeholder="URL*" class="qpi-url">
+						<button class="btn qpi-add-url">Add URL</button>
+					</div>
+					<hr>
+					<div>
+						<input placeholder="Name*" class="qpi-name">
+						<button class="btn qpi-add-text">Load Script</button>
+						<br>
+						<textarea class="qpi-text" style="width: 100%; height: 300px; resize: vertical;"></textarea>
+					</div>
+				</div>	
+			`);
+			$(`#qpi-manager`).dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 600,
+			});
+
+			qpi._log("Initialised!");
 		},
 
 		man (name) {
 			if (!name) {
-				d20plus.logApi(`Showing all...\n==== Available API Mimics ====\n  - ${Object.keys(apiMock._).join("\n  - ")}`);
+				qpi._log(`Showing all...\n==== Available API Mimics ====\n  - ${Object.keys(qpi._).join("()\n  - ")}()`);
 				return;
 			}
 
-			const found = Object.keys(apiMock._).find(k => k === name);
-			if (!found) d20plus.logApi(`No mimic with ${name} found -- perhaps it's unimplemented?`);
+			const found = Object.keys(qpi._).find(k => k === name);
+			if (!found) qpi._log(`No mimic with ${name} found -- perhaps it's unimplemented?`);
 			else {
-				const it = apiMock._[found];
-				d20plus.logApi(`Showing "${name}"...\n==== ${name} :: ${it.works * 100}% functional ====\n${(it.notes || []).join("\n")}`);
+				const it = qpi._[found];
+				qpi._log(`Showing "${name}"...\n==== ${name} :: ${it.works * 100}% functional ====\n${(it.notes || []).join("\n")}`);
 			}
+		},
+
+		_openManager () {
+			const $win = $(`#qpi-manager`);
+
+			$win.find(`.qpi-add-url`).off("click").on("click", () => {
+				const url = $win.find(`.qpi-url`).val();
+				if (url && script.trim()) {
+					qpi._log(`Attempting to load: "${url}"`);
+					d20plus.loadWithRetries(
+						url,
+						url,
+						(data) => {
+							d20plus._addScript(url, data).then(() => {
+								alert("Loaded successfully!");
+								$win.find(`.qpi-url`).val("");
+							}).catch(() => {
+								alert("Failed to load script! See the console for more details (CTRL-SHIFT-J on Chrome)");
+							});
+						}
+					)
+				} else {
+					alert("Please enter a URL!");
+				}
+			});
+
+			$win.find(`.qpi-add-text`).off("click").on("click", () => {
+				const name = $win.find(`.qpi-name`).val();
+				const script = $win.find(`.qpi-text`).val();
+				if (name && script && name.trim() && script.trim()) {
+					qpi._log(`Attempting to eval user script: ${name}`);
+					d20plus._addScript(name, script).then(() => {
+						alert("Loaded successfully!");
+						$win.find(`.qpi-name`).val("");
+						$win.find(`.qpi-text`).val("");
+					}).catch(() => {
+						alert("Failed to load script! See the console for more details (CTRL-SHIFT-J on Chrome)");
+					});
+				} else {
+					alert("Please enter a name and some code!");
+				}
+			});
+
+			$win.dialog("open");
+		},
+
+		_log (...args) {
+			console.log("%cQPI > ", "color: #ff00ff; font-size: large", ...args);
 		}
 	};
-	window.qpi = apiMock;
+	window.qpi = qpi;
 
 	const d20plus = {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
 		scriptsLoaded: false,
 		scripts: [
-			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
+			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"}
+		],
+		apiScripts: [
 			{name: "VecMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/Vector%20Math/1.0/VecMath.js"},
 			{name: "MatrixMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/MatrixMath/1.0/matrixMath.js"},
 			{name: "PathMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/PathMath/1.5/PathMath.js"}
@@ -143,64 +278,90 @@ var betteR20Base = function () {
 		addScripts: (onLoadFunction) => {
 			d20plus.log("Add JS");
 			const onEachLoadFunction = function (name, url, js) {
+				d20plus._addScript(name, js);
+			};
+			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
+		},
+
+		addApiScripts: (onLoadFunction) => {
+			d20plus.log("Add Builtin API Scripts");
+			const onEachLoadFunction = function (name, url, js) {
+				d20plus._addScript(name, js);
+			};
+			d20plus.chainLoad(d20plus.apiScripts, 0, onEachLoadFunction, onLoadFunction);
+		},
+
+		_addScript (name, js) {
+			return new Promise((resolve, reject) => {
 				try {
 					window.eval(js);
 					d20plus.log(`JS [${name}] Loaded`);
+					resolve()
 				} catch (e) {
 					d20plus.log(`Error loading [${name}]`);
 					d20plus.log(e);
+					reject(e);
 				}
-			};
-			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
+			})
 		},
 
 		chainLoad: (toLoads, index, onEachLoadFunction, onFinalLoadFunction) => {
 			const toLoad = toLoads[index];
 			// on loading the last item, run onLoadFunction
+			d20plus.loadWithRetries(
+				toLoad.name,
+				toLoad.url,
+				(data) => {
+					if (index === toLoads.length - 1) {
+						onEachLoadFunction(toLoad.name, toLoad.url, data);
+						onFinalLoadFunction();
+					} else {
+						onEachLoadFunction(toLoad.name, toLoad.url, data);
+						d20plus.chainLoad(toLoads, index + 1, onEachLoadFunction, onFinalLoadFunction);
+					}
+				}
+			);
+		},
+
+		loadWithRetries (name, url, onSuccess) {
 			let retries = 3;
 			function withRetries () {
-				$.ajax({
-					type: "GET",
-					url: toLoad.url + d20plus.getAntiCacheSuffix() + retries,
-					success: function (data) {
-						if (index === toLoads.length - 1) {
-							onEachLoadFunction(toLoad.name, toLoad.url, data);
-							onFinalLoadFunction();
-						} else {
-							onEachLoadFunction(toLoad.name, toLoad.url, data);
-							d20plus.chainLoad(toLoads, index + 1, onEachLoadFunction, onFinalLoadFunction);
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						type: "GET",
+						url: `${url}${d20plus.getAntiCacheSuffix()}${retries}`,
+						success: function (data) {
+							resolve(data);
+						},
+						error: function (resp, qq, pp) {
+							if (resp && resp.status === 500 && retries-- > 0) {
+								console.error(resp, qq, pp);
+								d20plus.log(`Error loading ${name}; retrying`);
+								setTimeout(() => {
+									withRetries().then((data) => onSuccess(data));
+								}, 500);
+							} else {
+								console.error(resp, qq, pp);
+								d20plus.log(`Error loading ${name}`);
+								reject(resp, qq, pp);
+							}
 						}
-					},
-					error: function (resp, qq, pp) {
-						if (resp && resp.status === 500 && retries-- > 0) {
-							console.error(resp, qq, pp);
-							d20plus.log(`Error loading ${toLoad.name}; retrying`);
-							setTimeout(() => {
-								withRetries();
-							}, 500);
-						} else {
-							console.error(resp, qq, pp);
-							d20plus.log(`Error loading ${toLoad.name}`);
-						}
-					}
-				});
+					});
+				})
 			}
-			withRetries();
+
+			withRetries().then((data) => onSuccess(data));
 		},
 
 		// MOCK API  ///////////////////////////////////////////////////////////////////////////////////////////////////
 		initMockApi: () => { // TODO check if this needs to be enabled for players too
 			d20plus.log("Initialising mock API");
-			apiMock._init();
+			qpi._init();
 		},
 
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
 		log: (...args) => {
 			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
-		},
-
-		logApi: (...args) => {
-			console.log("%cQPI > ", "color: #ff00ff; font-size: large", ...args);
 		},
 
 		ascSort: (a, b) => {
@@ -3963,6 +4124,7 @@ var betteR20Base = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtFooter);
 
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
+			$("#button-manage-qpi").on(window.mousedowntype, qpi._openManager);
 			d20plus.addTools();
 		},
 
@@ -3974,7 +4136,8 @@ var betteR20Base = function () {
 			For help, advice, and updates, <a href="https://discord.gg/AzyBjtQ" target="_blank" style="color: #08c;">join our Discord!</a>
 			</p>
 			<p>
-			<a class="btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px;">Open Tools List</a>
+			<a class="btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; margin-right: 7px;">Open Tools List</a>
+			<a class="btn" href="#" id="button-manage-qpi" style="margin-top: 3px;" title="It's like the Roll20 API, but even less useful">Manage QPI Scripts</a>
 			</p>
 			<style id="dynamicStyle"></style>
 		`,

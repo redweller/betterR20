@@ -468,7 +468,7 @@ const betteR205etools = function () {
 		}
 	};
 
-// Page fully loaded and visible
+	// Page fully loaded and visible
 	d20plus.Init = function () {
 		d20plus.log("Init (v" + d20plus.version + ")");
 		d20plus.checkVersion();
@@ -480,16 +480,21 @@ const betteR205etools = function () {
 		}
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
-		d20plus.initMockApi();
 		d20plus.addScripts(d20plus.onScriptLoad);
 	};
 
-// continue init once JSON loads
+	// continue init once JSON loads
 	d20plus.onScriptLoad = function () {
+		d20plus.initMockApi();
+		d20plus.addApiScripts(d20plus.onApiScriptLoad);
+	};
+
+	// continue init once scripts load
+	d20plus.onApiScriptLoad = function () {
 		d20plus.addJson(d20plus.onJsonLoad);
 	};
 
-// continue init once scripts load
+	// continue init once API scripts load
 	d20plus.onJsonLoad = function () {
 		IS_ROLL20 = true; // global variable from 5etools' utils.js
 		BrewUtil._buildSourceCache = function () {
@@ -501,13 +506,13 @@ const betteR205etools = function () {
 		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
 	};
 
-// continue more init after config loaded
+	// continue more init after config loaded
 	d20plus.onConfigLoad = function () {
 		if (window.is_gm) d20plus.loadArt(d20plus.onArtLoad);
 		else d20plus.onArtLoad();
 	};
 
-// continue more init after art loaded
+	// continue more init after art loaded
 	d20plus.onArtLoad = function () {
 		d20plus.bindDropLocations();
 		d20plus.addHtmlHeader();
