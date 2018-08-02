@@ -1809,7 +1809,7 @@ var betteR20Base = function () {
 			$srchImages.on("keyup", () => {
 				$olArt.empty();
 				const searched = $srchImages.val().trim().toLowerCase();
-				if (searched.length === 0) {
+				if (searched.length < 2) {
 					$olNone.show();
 					$olHasResults.hide();
 					return;
@@ -4185,7 +4185,7 @@ var betteR20Base = function () {
 		<span style="display: inline-block; width: 40%; font-weight: bold;">Name</span>
 		<span style="display: inline-block; font-weight: bold;">URL</span>
 	</p>
-	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
+	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0; transform: translateZ(0);"></ul>
 	</div>
 	</div>`,
 
