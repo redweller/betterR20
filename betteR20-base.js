@@ -45,12 +45,12 @@ var betteR20Base = function () {
 				works: 1
 			},
 
-			Campaign: {
-				_ () {
-					return d20.Campaign;
-				},
-				works: 1
-			},
+			// Campaign: { // FIXME this overwrites the window's campaign, which breaks stuff
+			// 	_ () {
+			// 		return Campaign;
+			// 	},
+			// 	works: 0
+			// },
 
 			on: {
 				_preInit () {
@@ -362,6 +362,21 @@ var betteR20Base = function () {
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
 		log: (...args) => {
 			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
+		},
+
+		chatLog: (arg) => {
+			d20.textchat.incoming(
+				false,
+				{
+					who: "5e.tools",
+					type: "general",
+					content: (arg || "").toString(),
+					playerid: window.currentPlayer.id,
+					id: d20plus.generateRowId(),
+					target: window.currentPlayer.id,
+					avatar: "https://5e.tools/icon.png"
+				}
+			);
 		},
 
 		ascSort: (a, b) => {
@@ -3367,7 +3382,7 @@ var betteR20Base = function () {
 									o.model.set("_pageid", d20.Campaign.activePage().get("id"));
 									o.model.set("_path", JSON.stringify(o.path));
 
-									console.log("SPLITTING PATH: ", o.model);
+									console.log("SPLITTING PATH: ", o.model.toJSON());
 									const mainPath = o.model;
 
 									// BEGIN PathSplitter CODE
@@ -3447,6 +3462,13 @@ var betteR20Base = function () {
 
 									let results = [];
 									_.each(segmentPaths, segments => {
+										// BEGIN MOD
+										if (!segments) {
+											d20plus.chatLog(`A path had no segments! This is probably a bug. Please report it.`);
+											return;
+										}
+										// END MOD
+
 										let pathData = PathMath.segmentsToPath(segments);
 										_.extend(pathData, {
 											_pageid,
