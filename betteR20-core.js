@@ -44,6 +44,7 @@ const betteR20Core = function () {
 		} else {
 			d20plus.startPlayerConfigHandler();
 		}
+		d20plus.enhancePathWidths();
 		d20plus.disable3dDice();
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-core v${d20plus.version}`);

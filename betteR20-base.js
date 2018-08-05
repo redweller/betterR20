@@ -3816,6 +3816,37 @@ var betteR20Base = function () {
 			}, 2500);
 		},
 
+		enhancePathWidths () {
+			const $selThicc = $(`#path_width`).css("width", "150px");
+			$selThicc.append(`
+				<option value="5">Custom 1 (5)</option>
+				<option value="5">Custom 2 (5)</option>
+				<option value="5">Custom 3 (5)</option>
+			`);
+			const $iptThicc = $(`<input type="number" style="max-width: 50px;">`).hide();
+			$selThicc.after($iptThicc);
+
+			let $selOpt = null;
+			$selThicc.on("change", () => {
+				$selOpt = $selThicc.find(`option:selected`);
+				const txt = $selOpt.text();
+				if (txt.startsWith("Custom")) {
+					const thicc = /\((.*?)\)/.exec(txt)[1];
+					$iptThicc.show().val(Number(thicc));
+				} else {
+					$iptThicc.hide();
+				}
+			});
+
+			$iptThicc.on("keyup", () => {
+				if (!$selOpt) $selOpt = $selThicc.find(`option:selected`);
+				if ($selOpt) {
+					$selOpt.val($iptThicc.val());
+					$selOpt.text($selOpt.text().replace(/\(\d+\)/, `(${$iptThicc.val()})`));
+				}
+			});
+		},
+
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		lastClickedFolderId: null,
