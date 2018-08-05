@@ -2043,8 +2043,8 @@ var betteR20Base = function () {
 							<option value="1" selected>Total Width: </option>
 							<option value="2">Width To Edge: </option>
 						</select>
-						<input type="number" step="5" min="5" id="measure_mode_ipt_5" style="width: 30px;" value="5">
-						<label style="display: inline-flex;">ft.</label>
+						<input type="number" min="0" id="measure_mode_ipt_5" style="width: 40px;" value="5">
+						<label style="display: inline-flex;">units</label>
 					</li>
 				</ul>`;
 			$wrpBar.append(toAdd);
@@ -2192,7 +2192,7 @@ var betteR20Base = function () {
 							break;
 						}
 						case "3": { // cone
-							const arcRadians = (Number(t.Ve.cone.arc) || 1) / 2;
+							const arcRadians = (Number(t.Ve.cone.arc) || 0.017) / 2; // 1 degree minimum
 
 							const r = euclid(t.x, t.y, t.to_x, t.to_y);
 							const dx = t.to_x - t.x;
@@ -2286,7 +2286,7 @@ var betteR20Base = function () {
 
 							const norm = [];
 							d20plus.math.normalize(norm, [t.to_x - t.x, t.to_y - t.y]);
-							const width = Number(t.Ve.line.width) / div;
+							const width = (Number(t.Ve.line.width) || 0.1) / div;
 							const scaledWidth = (width / d20.Campaign.activePage().get("scale_number")) * 70;
 							d20plus.math.scale(norm, norm, scaledWidth);
 
