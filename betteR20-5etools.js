@@ -4198,18 +4198,7 @@ const betteR205etools = function () {
 		if (data.subclasses) {
 			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published only?`);
 
-			const gainFeatureArray = [];
-			outer: for (let i = 0; i < 20; i++) {
-				const lvlFeatureList = data.classFeatures[i];
-				for (let j = 0; j < lvlFeatureList.length; j++) {
-					const feature = lvlFeatureList[j];
-					if (feature.gainSubclassFeature) {
-						gainFeatureArray.push(true);
-						continue outer;
-					}
-				}
-				gainFeatureArray.push(false);
-			}
+			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
 
 			data.subclasses.forEach(sc => {
 				if (!allSubclasses && !SourceUtil.isNonstandardSource(sc.source)) return;
@@ -4226,6 +4215,22 @@ const betteR205etools = function () {
 				}
 			});
 		}
+	};
+
+	d20plus.classes._getGainAtLevelArr = function (clazz) {
+		const gainFeatureArray = [];
+		outer: for (let i = 0; i < 20; i++) {
+			const lvlFeatureList = clazz.classFeatures[i];
+			for (let j = 0; j < lvlFeatureList.length; j++) {
+				const feature = lvlFeatureList[j];
+				if (feature.gainSubclassFeature) {
+					gainFeatureArray.push(true);
+					continue outer;
+				}
+			}
+			gainFeatureArray.push(false);
+		}
+		return gainFeatureArray;
 	};
 
 	d20plus.classes.playerImportBuilder = function (data) {
@@ -4306,6 +4311,21 @@ const betteR205etools = function () {
 		}
 	};
 
+	d20plus.subclasses._preloadClass = function (subclass) {
+		if (!subclass.class) Promise.resolve();
+
+		d20plus.log("Preloading class...");
+		return DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
+			const clazz = data.class.find(it => it.name.toLowerCase() === subclass.class.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
+			if (!clazz) {
+				throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.class}::${subclass.classSource || SRC_PHB}`);
+			}
+
+			const gainAtLevelArr = d20plus.classes._getGainAtLevelArr(clazz);
+			subclass._gainAtLevels = gainAtLevelArr;
+		});
+	};
+
 	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Subclasses`, folderName);
@@ -4314,33 +4334,37 @@ const betteR205etools = function () {
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
-		const name = `${data.shortName} (${data.class})`;
-		d20.Campaign.handouts.create({
-			name: name,
-			tags: d20plus.importer.getTagString([
-				data.class,
-				Parser.sourceJsonToFull(data.source)
-			], "subclasses")
-		}, {
-			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+		d20plus.subclasses._preloadClass(data).then(() => {
+			const name = `${data.shortName} (${data.class})`;
+			d20.Campaign.handouts.create({
+				name: name,
+				tags: d20plus.importer.getTagString([
+					data.class,
+					Parser.sourceJsonToFull(data.source)
+				], "subclasses")
+			}, {
+				success: function (handout) {
+					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
 
-				const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
+					const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
 
-				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
-				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+					handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+					handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+					d20.journal.addItemToFolderStructure(handout.id, folder.id);
+				}
+			});
 		});
 	};
 
 	d20plus.subclasses.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
+		d20plus.subclasses._preloadClass(data).then(() => {
+			const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
-		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-		const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
-		d20plus.importer.makePlayerDraggable(importId, name);
+			const importId = d20plus.generateRowId();
+			d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
+			const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
+			d20plus.importer.makePlayerDraggable(importId, name);
+		});
 	};
 
 	d20plus.subclasses._getHandoutData = function (data) {
