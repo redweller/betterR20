@@ -2279,7 +2279,14 @@ const betteR205etools = function () {
 								name: "npc_languages",
 								current: data.languages != null ? data.languages : ""
 							});
-							character.attribs.create({name: "npc_challenge", current: cr.cr || cr});
+							const moCn = cr.cr || cr;
+							character.attribs.create({name: "npc_challenge", current: moCn});
+
+							// set a rough character level for spellcasting calculations
+							const pb = Parser.crToPb(moCn);
+							const charLevel = pb === 2 ? 1 : pb === 3 ? 5 : cr === 4 ? 11 : cr === 6 ? 17 : cr > 6 ? 20 : 1;
+							character.attribs.create({name: "level", current: charLevel}).save();
+
 							character.attribs.create({name: "npc_xp", current: xp});
 							character.attribs.create({
 								name: "npc_vulnerabilities",
