@@ -3819,21 +3819,24 @@ var betteR20Base = function () {
 		enhancePathWidths () {
 			const $selThicc = $(`#path_width`).css("width", "150px");
 			$selThicc.append(`
-				<option value="5">Custom 1 (5)</option>
-				<option value="5">Custom 2 (5)</option>
-				<option value="5">Custom 3 (5)</option>
+				<option value="5">Custom 1 (5 px.)</option>
+				<option value="5">Custom 2 (5 px.)</option>
+				<option value="5">Custom 3 (5 px.)</option>
 			`);
 			const $iptThicc = $(`<input type="number" style="max-width: 50px;">`).hide();
-			$selThicc.after($iptThicc);
+			const $lblPixels = $(`<label style="display: inline-flex;"> pixels</label>`).hide();
+			$selThicc.after($lblPixels).after($iptThicc);
 
 			let $selOpt = null;
 			$selThicc.on("change", () => {
 				$selOpt = $selThicc.find(`option:selected`);
 				const txt = $selOpt.text();
 				if (txt.startsWith("Custom")) {
-					const thicc = /\((.*?)\)/.exec(txt)[1];
+					const thicc = /\((.*?) px\.\)/.exec(txt)[1];
+					$lblPixels.show();
 					$iptThicc.show().val(Number(thicc));
 				} else {
+					$lblPixels.hide();
 					$iptThicc.hide();
 				}
 			});
@@ -3842,7 +3845,7 @@ var betteR20Base = function () {
 				if (!$selOpt) $selOpt = $selThicc.find(`option:selected`);
 				if ($selOpt) {
 					$selOpt.val($iptThicc.val());
-					$selOpt.text($selOpt.text().replace(/\(\d+\)/, `(${$iptThicc.val()})`));
+					$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${$iptThicc.val()} px.)`));
 				}
 			});
 		},
