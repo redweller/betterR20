@@ -1,6 +1,5 @@
 const betteR205etools = function () {
 	const DATA_URL = BASE_SITE_URL + "data/";
-	const JS_URL = BASE_SITE_URL + "js/";
 	const IMG_URL = BASE_SITE_URL + "img/";
 
 	const SPELL_DATA_DIR = `${DATA_URL}spells/`;
@@ -391,8 +390,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.scripts.push({name: "5etoolsutils", url: `${JS_URL}utils.js`});
-	d20plus.scripts.push({name: "5etoolsrender", url: `${JS_URL}entryrender.js`});
+	d20plus.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}entryrender.js`});
 
 	d20plus.json = [
 		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
@@ -539,6 +537,7 @@ const betteR205etools = function () {
 		d20plus.enhanceMouseMove();
 		d20plus.addLineCutterTool();
 		d20plus.enhanceChat();
+		d20plus.disable3dDice();
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};

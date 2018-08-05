@@ -267,7 +267,8 @@ var betteR20Base = function () {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
 		scriptsLoaded: false,
 		scripts: [
-			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"}
+			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
+			{name: "5etoolsUtils", url: `${SITE_JS_URL}utils.js`}
 		],
 		apiScripts: [
 			{name: "VecMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/Vector%20Math/1.0/VecMath.js"},
@@ -382,6 +383,15 @@ var betteR20Base = function () {
 		ascSort: (a, b) => {
 			if (b === a) return 0;
 			return b < a ? 1 : -1;
+		},
+
+		disable3dDice () {
+			d20plus.log("Disabling 3D dice");
+			const $cb3dDice = $(`#enable3ddice`);
+			$cb3dDice.prop("checked", false).attr("disabled", true)
+				.attr("title", "3D dice are incompatible with betteR20. We apologise for any inconvenience caused.");
+
+			d20.tddice.canRoll3D = () => false;
 		},
 
 		checkVersion () {
@@ -2060,7 +2070,7 @@ var betteR20Base = function () {
 			});
 			$(`#measure_sticky_clear`).click(() => {
 				delete d20plus._stickyMeasure[window.currentPlayer.id];
-				d20.engine.renderTop();
+				d20.engine.debounced_renderTop();
 				const event = {
 					type: "Ve_measure_clear_sticky",
 					player: window.currentPlayer.id,
@@ -2083,7 +2093,7 @@ var betteR20Base = function () {
 						switch (msg.type) {
 							case "Ve_measure_clear_sticky": {
 								delete d20plus._stickyMeasure[msg.player];
-								d20.engine.renderTop();
+								d20.engine.debounced_renderTop();
 							}
 						}
 					}
@@ -3745,7 +3755,7 @@ var betteR20Base = function () {
 				}
 
 				if (data.e.shiftKey && hoverTarget && hoverTarget.model) {
-					d20.engine.renderTop();
+					d20.engine.debounced_renderTop();
 					const gmNotes = hoverTarget.model.get("gmnotes");
 					const pt = d20.engine.canvas.getPointer(data.e);
 					pt.x -= d20.engine.currentCanvasOffset[0];
@@ -3756,7 +3766,7 @@ var betteR20Base = function () {
 						id: hoverTarget.model.id
 					};
 				} else {
-					if (d20plus._tokenHover) d20.engine.renderTop();
+					if (d20plus._tokenHover) d20.engine.debounced_renderTop();
 					d20plus._tokenHover = null;
 				}
 			})
