@@ -2029,8 +2029,12 @@ var betteR20Base = function () {
 						</select>
 					</li>
 					<li class="measure_mode_sub measure_mode_sub_3" style="display: none;">
-						<input type="number" min="0" id="measure_mode_ipt_3" style="width: 30px;" value="1">
+						<input type="number" min="0" id="measure_mode_ipt_3" style="width: 45px;" value="1">
 						<label style="display: inline-flex;" title="The PHB cone rules are the textbook definition of one radian.">rad.</label>
+						<select id="measure_mode_sel_3" style="width: 120px;">
+							<option value="1" selected>Edge: Flat</option>
+							<option value="2">Edge: Rounded</option>
+						</select>
 					</li>
 					<li class="measure_mode_sub measure_mode_sub_4" style="display: none;">
 						<select id="measure_mode_sel_4" style="width: 100px;">
@@ -2148,9 +2152,9 @@ var betteR20Base = function () {
 						return Math.sqrt(a * a + b * b)
 					};
 
-					const rotPoint = (angle, pX, pY) => {
-						const s = Math.sin(angle);
-						const c = Math.cos(angle);
+					const rotPoint = (angleRad, pX, pY) => {
+						const s = Math.sin(angleRad);
+						const c = Math.cos(angleRad);
 
 						pX -= t.x;
 						pY -= t.y;
@@ -2161,6 +2165,39 @@ var betteR20Base = function () {
 						pX = xNew + t.x;
 						pY = yNew + t.y;
 						return [pX, pY];
+					};
+
+					const getLineEquation = (x1, y1, x2, y2) => {
+						const getM = () => {
+							return (y2 - y1) / (x2 - x1)
+						};
+						const m = getM();
+
+						const getC = () => {
+							return y1 - (m * x1);
+						};
+
+						const c = getC();
+
+						return {
+							fn: (x) => (m * x) + c,
+							m, c
+						}
+					};
+
+					const getPerpLineEquation = (x, y, line) => {
+						const m2 = -1 / line.m
+						const c2 = y - (m2 * x);
+						return {
+							fn: (x) => (m2 * x) + c2,
+							m: m2, c: c2
+						}
+					};
+
+					const getIntersect = (line1, line2) => {
+						const x = (line2.c - line1.c) / (line1.m - line2.m);
+						const y = line1.fn(x);
+						return [x, y];
 					};
 
 					switch (t.Ve.mode) {
@@ -2199,38 +2236,79 @@ var betteR20Base = function () {
 							const dy = t.to_y - t.y;
 							const startR = Math.atan2(dy, dx);
 
-							// arc 1
-							e.beginPath();
-							e.arc(t.x, t.y, r, startR, startR + arcRadians);
-							e.stroke();
-							e.closePath();
-							// arc 2
-							e.beginPath();
-							e.arc(t.x, t.y, r, startR, startR - arcRadians, true); // draw counter-clockwise
-							e.stroke();
-							e.closePath();
+							if (t.Ve.cone.mode === "1") {
+								const line = getLineEquation(t.x, t.y, t.to_x, t.to_y);
+								const perpLine = getPerpLineEquation(t.to_x, t.to_y, line);
 
-							// border line 1
-							const s1 = Math.sin(arcRadians);
-							const c1 = Math.cos(arcRadians);
-							const xb1 = dx * c1 - dy * s1;
-							const yb1 = dx * s1 + dy * c1;
-							e.beginPath();
-							e.moveTo(t.x, t.y);
-							e.lineTo(t.x + xb1, t.y + yb1);
-							e.stroke();
-							e.closePath();
+								const pRot1 = rotPoint(arcRadians, t.to_x, t.to_y);
+								const lineRot1 = getLineEquation(t.x, t.y, pRot1[0], pRot1[1]);
+								const intsct1 = getIntersect(perpLine, lineRot1);
 
-							// border line 2
-							const s2 = Math.sin(-arcRadians);
-							const c2 = Math.cos(-arcRadians);
-							const xb2 = dx * c2 - dy * s2;
-							const yb2 = dx * s2 + dy * c2;
-							e.beginPath();
-							e.moveTo(t.x, t.y);
-							e.lineTo(t.x + xb2, t.y + yb2);
-							e.stroke();
-							e.closePath();
+								// border line 1
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(intsct1[0], intsct1[1]);
+								e.stroke();
+								e.closePath();
+
+								// perp line 1
+								e.beginPath();
+								e.moveTo(t.to_x, t.to_y);
+								e.lineTo(intsct1[0], intsct1[1]);
+								e.stroke();
+								e.closePath();
+
+								const pRot2 = rotPoint(-arcRadians, t.to_x, t.to_y);
+								const lineRot2 = getLineEquation(t.x, t.y, pRot2[0], pRot2[1]);
+								const intsct2 = getIntersect(perpLine, lineRot2);
+
+								// border line 2
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(intsct2[0], intsct2[1]);
+								e.stroke();
+								e.closePath();
+
+								// perp line 2
+								e.beginPath();
+								e.moveTo(t.to_x, t.to_y);
+								e.lineTo(intsct2[0], intsct2[1]);
+								e.stroke();
+								e.closePath();
+							} else {
+								// arc 1
+								e.beginPath();
+								e.arc(t.x, t.y, r, startR, startR + arcRadians);
+								e.stroke();
+								e.closePath();
+								// arc 2
+								e.beginPath();
+								e.arc(t.x, t.y, r, startR, startR - arcRadians, true); // draw counter-clockwise
+								e.stroke();
+								e.closePath();
+
+								// border line 1
+								const s1 = Math.sin(arcRadians);
+								const c1 = Math.cos(arcRadians);
+								const xb1 = dx * c1 - dy * s1;
+								const yb1 = dx * s1 + dy * c1;
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(t.x + xb1, t.y + yb1);
+								e.stroke();
+								e.closePath();
+
+								// border line 2
+								const s2 = Math.sin(-arcRadians);
+								const c2 = Math.cos(-arcRadians);
+								const xb2 = dx * c2 - dy * s2;
+								const yb2 = dx * s2 + dy * c2;
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(t.x + xb2, t.y + yb2);
+								e.stroke();
+								e.closePath();
+							}
 							break;
 						}
 						case "4": { // box
@@ -3565,6 +3643,7 @@ var betteR20Base = function () {
 			const $cbSticky = $(`#measure_sticky`);
 			const $selRadMode = $(`#measure_mode_sel_2`);
 			const $iptConeWidth = $(`#measure_mode_ipt_3`);
+			const $selConeMode = $(`#measure_mode_sel_3`);
 			const $selBoxMode = $(`#measure_mode_sel_4`);
 			const $selLineMode = $(`#measure_mode_sel_5`);
 			const $iptLineWidth = $(`#measure_mode_ipt_5`);
@@ -3635,7 +3714,8 @@ var betteR20Base = function () {
 										mode: $selRadMode.val()
 									},
 									cone: {
-										arc: $iptConeWidth.val()
+										arc: $iptConeWidth.val(),
+										mode: $selConeMode.val()
 									},
 									box: {
 										mode: $selBoxMode.val(),
