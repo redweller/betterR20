@@ -150,10 +150,12 @@ const betteR205etools = function () {
 
 	addConfigOptions("token", {
 		"_name": "Tokens",
+		"_player": true,
 		"bar1": {
 			"name": "Bar 1 (NPC)",
 			"default": "npc_hpbase",
-			"_type": "_SHEET_ATTRIBUTE"
+			"_type": "_SHEET_ATTRIBUTE",
+			"_player": true
 		},
 		"bar1_pc": {
 			"name": "Bar 1 (PC)",
@@ -163,17 +165,20 @@ const betteR205etools = function () {
 		"bar1_max": {
 			"name": "Set Bar 1 Max",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar1_reveal": {
 			"name": "Reveal Bar 1",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar2": {
 			"name": "Bar 2 (NPC)",
 			"default": "npc_ac",
-			"_type": "_SHEET_ATTRIBUTE"
+			"_type": "_SHEET_ATTRIBUTE",
+			"_player": true
 		},
 		"bar2_pc": {
 			"name": "Bar 2 (PC)",
@@ -183,17 +188,20 @@ const betteR205etools = function () {
 		"bar2_max": {
 			"name": "Set Bar 2 Max",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar2_reveal": {
 			"name": "Reveal Bar 2",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar3": {
 			"name": "Bar 3 (NPC)",
 			"default": "passive",
-			"_type": "_SHEET_ATTRIBUTE"
+			"_type": "_SHEET_ATTRIBUTE",
+			"_player": true
 		},
 		"bar3_pc": {
 			"name": "Bar 3 (PC)",
@@ -203,12 +211,14 @@ const betteR205etools = function () {
 		"bar3_max": {
 			"name": "Set Bar 3 Max",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar3_reveal": {
 			"name": "Reveal Bar 3",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"rollHP": {
 			"name": "Roll Token HP",
@@ -223,12 +233,14 @@ const betteR205etools = function () {
 		"name": {
 			"name": "Show Nameplate",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"name_reveal": {
 			"name": "Reveal Nameplate",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"tokenactions": {
 			"name": "Add TokenAction Macros on Import (Actions)",
@@ -522,14 +534,14 @@ const betteR205etools = function () {
 		if (window.is_gm) {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
-			d20.Campaign.pages.each(d20plus.bindGraphics);
-			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.addCustomArtSearch();
 			d20plus.handleConfigChange();
 			d20plus.addTokenHover();
 		} else {
 			d20plus.startPlayerConfigHandler();
 		}
+		d20.Campaign.pages.each(d20plus.bindGraphics);
+		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 		d20plus.addSelectedTokenCommands();
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
@@ -3584,6 +3596,7 @@ const betteR205etools = function () {
 
 		const gmnotes = JSON.stringify(roll20Data);
 
+		debugger
 		return [notecontents, gmnotes];
 	};
 
