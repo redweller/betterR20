@@ -1,6 +1,5 @@
 const betteR205etools = function () {
 	const DATA_URL = BASE_SITE_URL + "data/";
-	const JS_URL = BASE_SITE_URL + "js/";
 	const IMG_URL = BASE_SITE_URL + "img/";
 
 	const SPELL_DATA_DIR = `${DATA_URL}spells/`;
@@ -151,10 +150,12 @@ const betteR205etools = function () {
 
 	addConfigOptions("token", {
 		"_name": "Tokens",
+		"_player": true,
 		"bar1": {
 			"name": "Bar 1 (NPC)",
 			"default": "npc_hpbase",
-			"_type": "_SHEET_ATTRIBUTE"
+			"_type": "_SHEET_ATTRIBUTE",
+			"_player": true
 		},
 		"bar1_pc": {
 			"name": "Bar 1 (PC)",
@@ -164,17 +165,20 @@ const betteR205etools = function () {
 		"bar1_max": {
 			"name": "Set Bar 1 Max",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar1_reveal": {
 			"name": "Reveal Bar 1",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar2": {
 			"name": "Bar 2 (NPC)",
 			"default": "npc_ac",
-			"_type": "_SHEET_ATTRIBUTE"
+			"_type": "_SHEET_ATTRIBUTE",
+			"_player": true
 		},
 		"bar2_pc": {
 			"name": "Bar 2 (PC)",
@@ -184,17 +188,20 @@ const betteR205etools = function () {
 		"bar2_max": {
 			"name": "Set Bar 2 Max",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar2_reveal": {
 			"name": "Reveal Bar 2",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar3": {
 			"name": "Bar 3 (NPC)",
 			"default": "passive",
-			"_type": "_SHEET_ATTRIBUTE"
+			"_type": "_SHEET_ATTRIBUTE",
+			"_player": true
 		},
 		"bar3_pc": {
 			"name": "Bar 3 (PC)",
@@ -204,12 +211,14 @@ const betteR205etools = function () {
 		"bar3_max": {
 			"name": "Set Bar 3 Max",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"bar3_reveal": {
 			"name": "Reveal Bar 3",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"rollHP": {
 			"name": "Roll Token HP",
@@ -224,12 +233,14 @@ const betteR205etools = function () {
 		"name": {
 			"name": "Show Nameplate",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"name_reveal": {
 			"name": "Reveal Nameplate",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
+			"_player": true
 		},
 		"tokenactions": {
 			"name": "Add TokenAction Macros on Import (Actions)",
@@ -293,6 +304,11 @@ const betteR205etools = function () {
 		"skipSenses": {
 			"name": "Skip Importing Creature Senses",
 			"default": false,
+			"_type": "boolean"
+		},
+		"showNpcNames": {
+			"name": "Show NPC Names in Rolls",
+			"default": true,
 			"_type": "boolean"
 		},
 	});
@@ -391,8 +407,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.scripts.push({name: "5etoolsutils", url: `${JS_URL}utils.js`});
-	d20plus.scripts.push({name: "5etoolsrender", url: `${JS_URL}entryrender.js`});
+	d20plus.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}entryrender.js`});
 
 	d20plus.json = [
 		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
@@ -468,7 +483,7 @@ const betteR205etools = function () {
 		}
 	};
 
-// Page fully loaded and visible
+	// Page fully loaded and visible
 	d20plus.Init = function () {
 		d20plus.log("Init (v" + d20plus.version + ")");
 		d20plus.checkVersion();
@@ -480,16 +495,21 @@ const betteR205etools = function () {
 		}
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
-		d20plus.initMockApi();
 		d20plus.addScripts(d20plus.onScriptLoad);
 	};
 
-// continue init once JSON loads
+	// continue init once JSON loads
 	d20plus.onScriptLoad = function () {
+		d20plus.initMockApi();
+		d20plus.addApiScripts(d20plus.onApiScriptLoad);
+	};
+
+	// continue init once scripts load
+	d20plus.onApiScriptLoad = function () {
 		d20plus.addJson(d20plus.onJsonLoad);
 	};
 
-// continue init once scripts load
+	// continue init once API scripts load
 	d20plus.onJsonLoad = function () {
 		IS_ROLL20 = true; // global variable from 5etools' utils.js
 		BrewUtil._buildSourceCache = function () {
@@ -501,13 +521,13 @@ const betteR205etools = function () {
 		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
 	};
 
-// continue more init after config loaded
+	// continue more init after config loaded
 	d20plus.onConfigLoad = function () {
 		if (window.is_gm) d20plus.loadArt(d20plus.onArtLoad);
 		else d20plus.onArtLoad();
 	};
 
-// continue more init after art loaded
+	// continue more init after art loaded
 	d20plus.onArtLoad = function () {
 		d20plus.bindDropLocations();
 		d20plus.addHtmlHeader();
@@ -519,14 +539,14 @@ const betteR205etools = function () {
 		if (window.is_gm) {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
-			d20.Campaign.pages.each(d20plus.bindGraphics);
-			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 			d20plus.addCustomArtSearch();
 			d20plus.handleConfigChange();
 			d20plus.addTokenHover();
 		} else {
 			d20plus.startPlayerConfigHandler();
 		}
+		d20.Campaign.pages.each(d20plus.bindGraphics);
+		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
 		d20plus.addSelectedTokenCommands();
 		d20plus.enhanceStatusEffects();
 		d20plus.enhanceMeasureTool();
@@ -534,6 +554,8 @@ const betteR205etools = function () {
 		d20plus.enhanceMouseMove();
 		d20plus.addLineCutterTool();
 		d20plus.enhanceChat();
+		d20plus.enhancePathWidths();
+		d20plus.disable3dDice();
 		d20plus.log("All systems operational");
 		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};
@@ -1810,6 +1832,10 @@ const betteR205etools = function () {
 		// var i = $(outerI.helper[0]).attr("data-pagename"); // always undefined, since we're not using a compendium drag-drop element
 		const i = d20plus.generateRowId();
 
+		$(t.target).find("*[accept]").each(function() {
+			$(this).val(undefined);
+		});
+
 		// BEGIN ROLL20 CODE
 		var o = n.data;
 		o.Name = n.name,
@@ -2270,7 +2296,14 @@ const betteR205etools = function () {
 								name: "npc_languages",
 								current: data.languages != null ? data.languages : ""
 							});
-							character.attribs.create({name: "npc_challenge", current: cr.cr || cr});
+							const moCn = cr.cr || cr;
+							character.attribs.create({name: "npc_challenge", current: moCn});
+
+							// set a rough character level for spellcasting calculations
+							const pb = Parser.crToPb(moCn);
+							const charLevel = pb === 2 ? 1 : pb === 3 ? 5 : cr === 4 ? 11 : cr === 6 ? 17 : cr > 6 ? 20 : 1;
+							character.attribs.create({name: "level", current: charLevel}).save();
+
 							character.attribs.create({name: "npc_xp", current: xp});
 							character.attribs.create({
 								name: "npc_vulnerabilities",
@@ -2775,6 +2808,12 @@ const betteR205etools = function () {
 									});
 								}
 							}
+							
+							// set show/hide NPC names in rolls
+							if (d20plus.hasCfgVal("import", "showNpcNames") && !d20plus.getCfgVal("import", "showNpcNames")) {
+								character.attribs.create({name: "npc_name_flag", current: 0});
+							}
+
 							character.view._updateSheetValues();
 
 							if (renderFluff) {
@@ -3568,6 +3607,7 @@ const betteR205etools = function () {
 
 		const gmnotes = JSON.stringify(roll20Data);
 
+		debugger
 		return [notecontents, gmnotes];
 	};
 
@@ -4189,18 +4229,7 @@ const betteR205etools = function () {
 		if (data.subclasses) {
 			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published only?`);
 
-			const gainFeatureArray = [];
-			outer: for (let i = 0; i < 20; i++) {
-				const lvlFeatureList = data.classFeatures[i];
-				for (let j = 0; j < lvlFeatureList.length; j++) {
-					const feature = lvlFeatureList[j];
-					if (feature.gainSubclassFeature) {
-						gainFeatureArray.push(true);
-						continue outer;
-					}
-				}
-				gainFeatureArray.push(false);
-			}
+			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
 
 			data.subclasses.forEach(sc => {
 				if (!allSubclasses && !SourceUtil.isNonstandardSource(sc.source)) return;
@@ -4217,6 +4246,22 @@ const betteR205etools = function () {
 				}
 			});
 		}
+	};
+
+	d20plus.classes._getGainAtLevelArr = function (clazz) {
+		const gainFeatureArray = [];
+		outer: for (let i = 0; i < 20; i++) {
+			const lvlFeatureList = clazz.classFeatures[i];
+			for (let j = 0; j < lvlFeatureList.length; j++) {
+				const feature = lvlFeatureList[j];
+				if (feature.gainSubclassFeature) {
+					gainFeatureArray.push(true);
+					continue outer;
+				}
+			}
+			gainFeatureArray.push(false);
+		}
+		return gainFeatureArray;
 	};
 
 	d20plus.classes.playerImportBuilder = function (data) {
@@ -4297,6 +4342,21 @@ const betteR205etools = function () {
 		}
 	};
 
+	d20plus.subclasses._preloadClass = function (subclass) {
+		if (!subclass.class) Promise.resolve();
+
+		d20plus.log("Preloading class...");
+		return DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
+			const clazz = data.class.find(it => it.name.toLowerCase() === subclass.class.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
+			if (!clazz) {
+				throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.class}::${subclass.classSource || SRC_PHB}`);
+			}
+
+			const gainAtLevelArr = d20plus.classes._getGainAtLevelArr(clazz);
+			subclass._gainAtLevels = gainAtLevelArr;
+		});
+	};
+
 	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Subclasses`, folderName);
@@ -4305,33 +4365,37 @@ const betteR205etools = function () {
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
-		const name = `${data.shortName} (${data.class})`;
-		d20.Campaign.handouts.create({
-			name: name,
-			tags: d20plus.importer.getTagString([
-				data.class,
-				Parser.sourceJsonToFull(data.source)
-			], "subclasses")
-		}, {
-			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+		d20plus.subclasses._preloadClass(data).then(() => {
+			const name = `${data.shortName} (${data.class})`;
+			d20.Campaign.handouts.create({
+				name: name,
+				tags: d20plus.importer.getTagString([
+					data.class,
+					Parser.sourceJsonToFull(data.source)
+				], "subclasses")
+			}, {
+				success: function (handout) {
+					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
 
-				const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
+					const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
 
-				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
-				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+					handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+					handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+					d20.journal.addItemToFolderStructure(handout.id, folder.id);
+				}
+			});
 		});
 	};
 
 	d20plus.subclasses.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
+		d20plus.subclasses._preloadClass(data).then(() => {
+			const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
-		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-		const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
-		d20plus.importer.makePlayerDraggable(importId, name);
+			const importId = d20plus.generateRowId();
+			d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
+			const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
+			d20plus.importer.makePlayerDraggable(importId, name);
+		});
 	};
 
 	d20plus.subclasses._getHandoutData = function (data) {

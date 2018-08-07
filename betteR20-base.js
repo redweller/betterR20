@@ -1,4 +1,36 @@
 var betteR20Base = function () {
+	const modes = new Set([
+		"delete",
+		"drawselect",
+		"ellipse",
+		"fxtools",
+		"fog-hide",
+		"fog-polygonreveal",
+		"fog-reveal",
+		"gridalign",
+		"image",
+		"line",
+		"measure",
+		"pan",
+		"path",
+		"polygon",
+		"rect",
+		"select",
+		"selectp",
+		"targeting",
+		"text"
+	]);
+
+	CONSOLE_LOG = console.log;
+	console.log = (...args) => {
+		if (args.length === 1 && typeof args[0] === "string" && args[0].startsWith("Switch mode to ")) {
+			const mode = args[0].replace("Switch mode to ", "");
+			if (typeof d20plus !== "undefined" && d20plus.setMode) d20plus.setMode(mode);
+		}
+		CONSOLE_LOG(...args);
+	};
+
+
 	addConfigOptions("token", {
 			"_name": "Tokens",
 			"enhanceStatus": {
@@ -36,11 +68,272 @@ var betteR20Base = function () {
 		}
 	);
 
+	const qpi = {
+		_version: "0.01-pre-pre-alpha",
+		_: {
+			log: {
+				_ (...args) {
+					qpi._log(...args)
+				},
+				works: 1
+			},
+
+			// Campaign: { // FIXME this overwrites the window's campaign, which breaks stuff
+			// 	_ () {
+			// 		return Campaign;
+			// 	},
+			// 	works: 0
+			// },
+
+			on: {
+				_preInit () {
+					qpi._on_chatHandlers = [];
+					const seenMessages = new Set();
+					d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
+					const handleChat = (e) => {
+						if (!d20.textchat.chatstartingup) {
+							e.id = e.key();
+							if (!seenMessages.has(e.id)) {
+								seenMessages.add(e.id);
+
+								var t = e.val();
+								if (t) {
+									if (window.DEBUG) console.log("CHAT: ", t);
+
+									qpi._on_chatHandlers.forEach(fn => fn(t));
+								}
+							}
+						}
+					};
+					d20.textchat.chatref.on("child_added", handleChat);
+					d20.textchat.chatref.on("child_changed", handleChat);
+				},
+				_ (evtType, fn, ...others) {
+					switch (evtType) {
+						case "chat:message":
+							qpi._on_chatHandlers.push(fn);
+							break;
+						default:
+							console.error("Unhandled message type: ", evtType, "with args", fn, others)
+							break;
+					}
+				},
+				works: 0.01,
+				notes: [
+					`"chat:message" is the only available event.`
+				]
+			},
+
+			createObj: {
+				_ (objType, obj, ...others) {
+					switch (objType) {
+						case "path": {
+							const page = d20.Campaign.pages._byId[obj._pageid];
+							obj.scaleX = obj.scaleX || 1;
+							obj.scaleY = obj.scaleY || 1;
+							obj.path = obj.path || obj._path
+							return page.thepaths.create(obj)
+							break;
+						}
+						default:
+							console.error("Unhandled object type: ", objType, "with args", obj, others)
+							break;
+					}
+				},
+				works: 0.01,
+				notes: [
+					`Only supports "path" obects.`
+				]
+			},
+
+			sendChat: { // TODO lift code from doChatInput
+				_ (speakingAs, input, callback, options) {
+					const message = {
+						who: speakingAs,
+						type: "general",
+						content: input,
+						playerid: window.currentPlayer.id,
+						avatar: null,
+						inlinerolls: []
+					};
+
+					const key = d20.textchat.chatref.push().key();
+					d20.textchat.chatref.child(key).setWithPriority(message, Firebase.ServerValue.TIMESTAMP)
+				},
+				works: 0.01,
+				notes: [
+					`speakingAs: String only.`,
+					`input: String only.`,
+					`callback: Unimplemented.`,
+					`options: Unimplemented.`,
+					`Messages are always sent with the player ID of the QPI user.`
+				]
+			},
+
+			// findObjs: {
+			// 	_ (attrs) {
+			// 		// TODO
+			// 		// const getters = {
+			// 		// 	attribute: () => {},
+			// 		// 	character: () => {},
+			// 		// 	handout: () => {}
+			// 		// };
+			// 		// const getAll = () => {
+			// 		// 	const out = [];
+			// 		// 	Object.values(getters).forEach(fn => out.push(...fn()));
+			// 		// 	return out;
+			// 		// };
+			//
+			// 		// let out = attrs._type ? getters[attrs._type]() : getAll();
+			//
+			// 		throw new Error("findObjs is unimplemented!");
+			// 	},
+			// 	works: 0.00,
+			// 	notes: [
+			// 		`Unimplemented.`
+			// 	]
+			// }
+		},
+
+		_loadedScripts: null,
+		_init () {
+			Object.keys(qpi._).forEach(k => {
+				const it = qpi._[k];
+				if (it._preInit) it._preInit();
+				window[k] = it._;
+			});
+
+			qpi._loadedScripts = StorageUtil.get("VeQpi") || {};
+
+			$(`body`).append(`
+				<div id="qpi-manager" title="QPI Script Manager - v${qpi._version}">
+					<div class="qpi-table"></div>
+					<div>
+						<input placeholder="URL*" class="qpi-url">
+						<button class="btn qpi-add-url">Add URL</button>
+					</div>
+					<hr>
+					<div>
+						<input placeholder="Name*" class="qpi-name">
+						<button class="btn qpi-add-text">Load Script</button>
+						<br>
+						<textarea class="qpi-text" style="width: 100%; height: 300px; resize: vertical;"></textarea>
+					</div>
+					<hr>
+					<button class="btn qpi-help">Help/README</button> <i>Note that this tool is a for-testing faceplate over some internal code. It is intended for internal use only.</i>
+				</div>	
+			`);
+			$(`#qpi-manager`).dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 600,
+			});
+
+			$(`body`).append(`
+				<div id="qpi-manager-readme" title="QPI README - v${qpi._version}">
+					<div class="qpi-readme"></div>
+				</div>	
+			`);
+			$(`#qpi-manager-readme`).dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 600,
+			});
+
+			qpi._log("Initialised!");
+		},
+
+		man (name) {
+			if (!name) {
+				qpi._log(`Showing all...\n==== Available API Mimics ====\n  - ${Object.keys(qpi._).join("()\n  - ")}()`);
+				return;
+			}
+
+			const found = Object.keys(qpi._).find(k => k === name);
+			if (!found) qpi._log(`No mimic with ${name} found -- perhaps it's unimplemented?`);
+			else {
+				const it = qpi._[found];
+				qpi._log(`Showing "${name}"...\n==== ${name} :: ${it.works * 100}% functional ====\n${(it.notes || []).join("\n")}`);
+			}
+		},
+
+		_manHtml () {
+			let stack = "";
+			Object.keys(qpi._).forEach(k => {
+				stack += `<h5>${k}</h5>`;
+				const it = qpi._[k];
+				stack += `<p><i>Estimated ${it.works * 100}% functional</i><br>${(it.notes || []).join("<br>")}</p>`;
+			});
+			return stack;
+		},
+
+		_openManager () {
+			const $win = $(`#qpi-manager`);
+
+			$win.find(`.qpi-help`).off("click").on("click", () => {
+				const $winReadme = $(`#qpi-manager-readme`);
+				$winReadme.dialog("open");
+
+				$winReadme.find(`.qpi-readme`).html(qpi._manHtml());
+			});
+
+			$win.find(`.qpi-add-url`).off("click").on("click", () => {
+				const url = $win.find(`.qpi-url`).val();
+				if (url && script.trim()) {
+					qpi._log(`Attempting to load: "${url}"`);
+					d20plus.loadWithRetries(
+						url,
+						url,
+						(data) => {
+							d20plus._addScript(url, data).then(() => {
+								alert("Loaded successfully!");
+								$win.find(`.qpi-url`).val("");
+							}).catch(() => {
+								alert("Failed to load script! See the console for more details (CTRL-SHIFT-J on Chrome)");
+							});
+						}
+					)
+				} else {
+					alert("Please enter a URL!");
+				}
+			});
+
+			$win.find(`.qpi-add-text`).off("click").on("click", () => {
+				const name = $win.find(`.qpi-name`).val();
+				const script = $win.find(`.qpi-text`).val();
+				if (name && script && name.trim() && script.trim()) {
+					qpi._log(`Attempting to eval user script: ${name}`);
+					d20plus._addScript(name, script).then(() => {
+						alert("Loaded successfully!");
+						$win.find(`.qpi-name`).val("");
+						$win.find(`.qpi-text`).val("");
+					}).catch(() => {
+						alert("Failed to load script! See the console for more details (CTRL-SHIFT-J on Chrome)");
+					});
+				} else {
+					alert("Please enter a name and some code!");
+				}
+			});
+
+			$win.dialog("open");
+		},
+
+		_log (...args) {
+			console.log("%cQPI > ", "color: #ff00ff; font-size: large", ...args);
+		}
+	};
+	window.qpi = qpi;
+
 	const d20plus = {
 		// EXTERNAL SCRIPTS ////////////////////////////////////////////////////////////////////////////////////////////
 		scriptsLoaded: false,
 		scripts: [
 			{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
+			{name: "5etoolsUtils", url: `${SITE_JS_URL}utils.js`}
+		],
+		apiScripts: [
 			{name: "VecMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/Vector%20Math/1.0/VecMath.js"},
 			{name: "MatrixMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/MatrixMath/1.0/matrixMath.js"},
 			{name: "PathMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/PathMath/1.5/PathMath.js"}
@@ -49,103 +342,85 @@ var betteR20Base = function () {
 		addScripts: (onLoadFunction) => {
 			d20plus.log("Add JS");
 			const onEachLoadFunction = function (name, url, js) {
+				d20plus._addScript(name, js);
+			};
+			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
+		},
+
+		addApiScripts: (onLoadFunction) => {
+			d20plus.log("Add Builtin API Scripts");
+			const onEachLoadFunction = function (name, url, js) {
+				d20plus._addScript(name, js);
+			};
+			d20plus.chainLoad(d20plus.apiScripts, 0, onEachLoadFunction, onLoadFunction);
+		},
+
+		_addScript (name, js) {
+			return new Promise((resolve, reject) => {
 				try {
 					window.eval(js);
 					d20plus.log(`JS [${name}] Loaded`);
+					resolve()
 				} catch (e) {
 					d20plus.log(`Error loading [${name}]`);
 					d20plus.log(e);
+					reject(e);
 				}
-			};
-			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
+			})
 		},
 
 		chainLoad: (toLoads, index, onEachLoadFunction, onFinalLoadFunction) => {
 			const toLoad = toLoads[index];
 			// on loading the last item, run onLoadFunction
+			d20plus.loadWithRetries(
+				toLoad.name,
+				toLoad.url,
+				(data) => {
+					if (index === toLoads.length - 1) {
+						onEachLoadFunction(toLoad.name, toLoad.url, data);
+						onFinalLoadFunction();
+					} else {
+						onEachLoadFunction(toLoad.name, toLoad.url, data);
+						d20plus.chainLoad(toLoads, index + 1, onEachLoadFunction, onFinalLoadFunction);
+					}
+				}
+			);
+		},
+
+		loadWithRetries (name, url, onSuccess) {
 			let retries = 3;
 			function withRetries () {
-				$.ajax({
-					type: "GET",
-					url: toLoad.url + d20plus.getAntiCacheSuffix() + retries,
-					success: function (data) {
-						if (index === toLoads.length - 1) {
-							onEachLoadFunction(toLoad.name, toLoad.url, data);
-							onFinalLoadFunction();
-						} else {
-							onEachLoadFunction(toLoad.name, toLoad.url, data);
-							d20plus.chainLoad(toLoads, index + 1, onEachLoadFunction, onFinalLoadFunction);
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						type: "GET",
+						url: `${url}${d20plus.getAntiCacheSuffix()}${retries}`,
+						success: function (data) {
+							resolve(data);
+						},
+						error: function (resp, qq, pp) {
+							if (resp && resp.status === 500 && retries-- > 0) {
+								console.error(resp, qq, pp);
+								d20plus.log(`Error loading ${name}; retrying`);
+								setTimeout(() => {
+									withRetries().then((data) => onSuccess(data));
+								}, 500);
+							} else {
+								console.error(resp, qq, pp);
+								d20plus.log(`Error loading ${name}`);
+								reject(resp, qq, pp);
+							}
 						}
-					},
-					error: function (resp, qq, pp) {
-						if (resp && resp.status === 500 && retries-- > 0) {
-							console.error(resp, qq, pp);
-							d20plus.log(`Error loading ${toLoad.name}; retrying`);
-							setTimeout(() => {
-								withRetries();
-							}, 500);
-						} else {
-							console.error(resp, qq, pp);
-							d20plus.log(`Error loading ${toLoad.name}`);
-						}
-					}
-				});
+					});
+				})
 			}
-			withRetries();
+
+			withRetries().then((data) => onSuccess(data));
 		},
 
 		// MOCK API  ///////////////////////////////////////////////////////////////////////////////////////////////////
 		initMockApi: () => { // TODO check if this needs to be enabled for players too
 			d20plus.log("Initialising mock API");
-			window.log = (...args) => d20plus.logApi(...args);
-
-			const chatHandlers = [];
-			window.on = (evtType, fn, ...others) => {
-				switch (evtType) {
-					case "chat:message":
-						chatHandlers.push(fn);
-						break;
-					default:
-						console.error("Unhandled message type: ", evtType, "with args", fn, others)
-						break;
-				}
-			};
-
-			window.createObj = (objType, obj, ...others) => {
-				switch (objType) {
-					case "path": {
-						const page = d20.Campaign.pages._byId[obj._pageid];
-						obj.scaleX = obj.scaleX || 1;
-						obj.scaleY = obj.scaleY || 1;
-						obj.path = obj.path || obj._path
-						return page.thepaths.create(obj)
-						break;
-					}
-					default:
-						console.error("Unhandled object type: ", objType, "with args", obj, others)
-						break;
-				}
-			};
-
-			const seenMessages = new Set();
-			d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
-			const handleChat = (e) => {
-				if (!d20.textchat.chatstartingup) {
-					e.id = e.key();
-					if (!seenMessages.has(e.id)) {
-						seenMessages.add(e.id);
-
-						var t = e.val();
-						if (t) {
-							if (window.DEBUG) console.log("CHAT: ", t);
-
-							chatHandlers.forEach(fn => fn(t));
-						}
-					}
-				}
-			};
-			d20.textchat.chatref.on("child_added", handleChat);
-			d20.textchat.chatref.on("child_changed", handleChat);
+			qpi._init();
 		},
 
 		// UTILITIES ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,13 +428,33 @@ var betteR20Base = function () {
 			console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
 		},
 
-		logApi: (...args) => {
-			console.log("%cD20Plus > ", "color: #ff00ff; font-size: large", ...args);
+		chatLog: (arg) => {
+			d20.textchat.incoming(
+				false,
+				{
+					who: "5e.tools",
+					type: "general",
+					content: (arg || "").toString(),
+					playerid: window.currentPlayer.id,
+					id: d20plus.generateRowId(),
+					target: window.currentPlayer.id,
+					avatar: "https://5e.tools/icon.png"
+				}
+			);
 		},
 
 		ascSort: (a, b) => {
 			if (b === a) return 0;
 			return b < a ? 1 : -1;
+		},
+
+		disable3dDice () {
+			d20plus.log("Disabling 3D dice");
+			const $cb3dDice = $(`#enable3ddice`);
+			$cb3dDice.prop("checked", false).attr("disabled", true)
+				.attr("title", "3D dice are incompatible with betteR20. We apologise for any inconvenience caused.");
+
+			d20.tddice.canRoll3D = () => false;
 		},
 
 		checkVersion () {
@@ -189,13 +484,7 @@ var betteR20Base = function () {
 						const cmp = cmpVersions(curr, avail);
 						if (cmp < 0) {
 							setTimeout(() => {
-								d20.textchat.incoming(false, ({
-									who: "system",
-									type: "system",
-									content: `<span style="margin-left: -45px; margin-right: -5px; margin-bottom: -7px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">
-										A newer version of the script is available. Get ${avail} <a style="color: white;" href="https://get.5e.tools/">here</a>.
-									</span>`
-								}));
+								d20plus.sendHackerChat(`A newer version of the script is available. Get ${avail} <a href="https://get.5e.tools/">here</a>.`);
 							}, 1000);
 						}
 					}
@@ -211,7 +500,7 @@ var betteR20Base = function () {
 				${message}
 				<br>
 				<br>
-				Need help? Join our <a style="color: white;" href="https://discord.gg/AzyBjtQ">Discord</a>.
+				Need help? Join our <a href="https://discord.gg/AzyBjtQ">Discord</a>.
 				<br>
 				<br>
 				<span title="You'd think this would be obvious.">Please DO NOT post about this script or any related content in official channels, such as the Roll20 forums.</span>
@@ -222,7 +511,7 @@ var betteR20Base = function () {
 			d20.textchat.incoming(false, ({
 				who: "system",
 				type: "system",
-				content: `<span style="margin-left: -45px; margin-right: -5px; margin-bottom: -7px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;">
+				content: `<span class="hacker-chat">
 					${message}
 				</span>`
 			}));
@@ -1593,7 +1882,7 @@ var betteR20Base = function () {
 			$srchImages.on("keyup", () => {
 				$olArt.empty();
 				const searched = $srchImages.val().trim().toLowerCase();
-				if (searched.length === 0) {
+				if (searched.length < 2) {
 					$olNone.show();
 					$olHasResults.hide();
 					return;
@@ -1697,8 +1986,8 @@ var betteR20Base = function () {
 						d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
 					}),
 						d20.engine.canvas.hoverCursor = "move"),
-					console.log("Switch mode to " + e),
 					// BEGIN MOD
+					// console.log("Switch mode to " + e),
 					d20.engine.mode = e;
 				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
 				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e
@@ -1724,6 +2013,7 @@ var betteR20Base = function () {
 			}
 
 			d20plus.setMode = setMode;
+			window.setMode = setMode;
 
 			// rebind buttons with new setMode
 			const $drawTools = $("#drawingtools");
@@ -1755,6 +2045,37 @@ var betteR20Base = function () {
 				});
 				$(`#drawingtools`).after($fxMode);
 			}
+
+			// bind new hotkeys
+			Mousetrap.bind("q q", function () { // default ruler on q-q
+				setMode("measure");
+				$(`#measure_mode`).val("1").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q s", function () { // radius
+				setMode("measure");
+				$(`#measure_mode`).val("2").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q a", function () { // cone
+				setMode("measure");
+				$(`#measure_mode`).val("3").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q e", function () { // box
+				setMode("measure");
+				$(`#measure_mode`).val("4").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q w", function () { // line
+				setMode("measure");
+				$(`#measure_mode`).val("5").trigger("change");
+				return false;
+			})
 
 			if (window.is_gm) {
 				// add lighting layer tool
@@ -1803,8 +2124,12 @@ var betteR20Base = function () {
 						</select>
 					</li>
 					<li class="measure_mode_sub measure_mode_sub_3" style="display: none;">
-						<input type="number" min="0" id="measure_mode_ipt_3" style="width: 30px;" value="1">
+						<input type="number" min="0" id="measure_mode_ipt_3" style="width: 45px;" value="1">
 						<label style="display: inline-flex;" title="The PHB cone rules are the textbook definition of one radian.">rad.</label>
+						<select id="measure_mode_sel_3" style="width: 120px;">
+							<option value="1" selected>Edge: Flat</option>
+							<option value="2">Edge: Rounded</option>
+						</select>
 					</li>
 					<li class="measure_mode_sub measure_mode_sub_4" style="display: none;">
 						<select id="measure_mode_sel_4" style="width: 100px;">
@@ -1817,8 +2142,8 @@ var betteR20Base = function () {
 							<option value="1" selected>Total Width: </option>
 							<option value="2">Width To Edge: </option>
 						</select>
-						<input type="number" step="5" min="5" id="measure_mode_ipt_5" style="width: 30px;" value="5">
-						<label style="display: inline-flex;">ft.</label>
+						<input type="number" min="0" id="measure_mode_ipt_5" style="width: 40px;" value="5">
+						<label style="display: inline-flex;">units</label>
 					</li>
 				</ul>`;
 			$wrpBar.append(toAdd);
@@ -1844,7 +2169,7 @@ var betteR20Base = function () {
 			});
 			$(`#measure_sticky_clear`).click(() => {
 				delete d20plus._stickyMeasure[window.currentPlayer.id];
-				d20.engine.renderTop();
+				d20.engine.debounced_renderTop();
 				const event = {
 					type: "Ve_measure_clear_sticky",
 					player: window.currentPlayer.id,
@@ -1867,7 +2192,7 @@ var betteR20Base = function () {
 						switch (msg.type) {
 							case "Ve_measure_clear_sticky": {
 								delete d20plus._stickyMeasure[msg.player];
-								d20.engine.renderTop();
+								d20.engine.debounced_renderTop();
 							}
 						}
 					}
@@ -1922,9 +2247,9 @@ var betteR20Base = function () {
 						return Math.sqrt(a * a + b * b)
 					};
 
-					const rotPoint = (angle, pX, pY) => {
-						const s = Math.sin(angle);
-						const c = Math.cos(angle);
+					const rotPoint = (angleRad, pX, pY) => {
+						const s = Math.sin(angleRad);
+						const c = Math.cos(angleRad);
 
 						pX -= t.x;
 						pY -= t.y;
@@ -1935,6 +2260,39 @@ var betteR20Base = function () {
 						pX = xNew + t.x;
 						pY = yNew + t.y;
 						return [pX, pY];
+					};
+
+					const getLineEquation = (x1, y1, x2, y2) => {
+						const getM = () => {
+							return (y2 - y1) / (x2 - x1)
+						};
+						const m = getM();
+
+						const getC = () => {
+							return y1 - (m * x1);
+						};
+
+						const c = getC();
+
+						return {
+							fn: (x) => (m * x) + c,
+							m, c
+						}
+					};
+
+					const getPerpLineEquation = (x, y, line) => {
+						const m2 = -1 / line.m
+						const c2 = y - (m2 * x);
+						return {
+							fn: (x) => (m2 * x) + c2,
+							m: m2, c: c2
+						}
+					};
+
+					const getIntersect = (line1, line2) => {
+						const x = (line2.c - line1.c) / (line1.m - line2.m);
+						const y = line1.fn(x);
+						return [x, y];
 					};
 
 					switch (t.Ve.mode) {
@@ -1966,45 +2324,86 @@ var betteR20Base = function () {
 							break;
 						}
 						case "3": { // cone
-							const arcRadians = (Number(t.Ve.cone.arc) || 1) / 2;
+							const arcRadians = (Number(t.Ve.cone.arc) || 0.017) / 2; // 1 degree minimum
 
 							const r = euclid(t.x, t.y, t.to_x, t.to_y);
 							const dx = t.to_x - t.x;
 							const dy = t.to_y - t.y;
 							const startR = Math.atan2(dy, dx);
 
-							// arc 1
-							e.beginPath();
-							e.arc(t.x, t.y, r, startR, startR + arcRadians);
-							e.stroke();
-							e.closePath();
-							// arc 2
-							e.beginPath();
-							e.arc(t.x, t.y, r, startR, startR - arcRadians, true); // draw counter-clockwise
-							e.stroke();
-							e.closePath();
+							if (t.Ve.cone.mode === "1") {
+								const line = getLineEquation(t.x, t.y, t.to_x, t.to_y);
+								const perpLine = getPerpLineEquation(t.to_x, t.to_y, line);
 
-							// border line 1
-							const s1 = Math.sin(arcRadians);
-							const c1 = Math.cos(arcRadians);
-							const xb1 = dx * c1 - dy * s1;
-							const yb1 = dx * s1 + dy * c1;
-							e.beginPath();
-							e.moveTo(t.x, t.y);
-							e.lineTo(t.x + xb1, t.y + yb1);
-							e.stroke();
-							e.closePath();
+								const pRot1 = rotPoint(arcRadians, t.to_x, t.to_y);
+								const lineRot1 = getLineEquation(t.x, t.y, pRot1[0], pRot1[1]);
+								const intsct1 = getIntersect(perpLine, lineRot1);
 
-							// border line 2
-							const s2 = Math.sin(-arcRadians);
-							const c2 = Math.cos(-arcRadians);
-							const xb2 = dx * c2 - dy * s2;
-							const yb2 = dx * s2 + dy * c2;
-							e.beginPath();
-							e.moveTo(t.x, t.y);
-							e.lineTo(t.x + xb2, t.y + yb2);
-							e.stroke();
-							e.closePath();
+								// border line 1
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(intsct1[0], intsct1[1]);
+								e.stroke();
+								e.closePath();
+
+								// perp line 1
+								e.beginPath();
+								e.moveTo(t.to_x, t.to_y);
+								e.lineTo(intsct1[0], intsct1[1]);
+								e.stroke();
+								e.closePath();
+
+								const pRot2 = rotPoint(-arcRadians, t.to_x, t.to_y);
+								const lineRot2 = getLineEquation(t.x, t.y, pRot2[0], pRot2[1]);
+								const intsct2 = getIntersect(perpLine, lineRot2);
+
+								// border line 2
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(intsct2[0], intsct2[1]);
+								e.stroke();
+								e.closePath();
+
+								// perp line 2
+								e.beginPath();
+								e.moveTo(t.to_x, t.to_y);
+								e.lineTo(intsct2[0], intsct2[1]);
+								e.stroke();
+								e.closePath();
+							} else {
+								// arc 1
+								e.beginPath();
+								e.arc(t.x, t.y, r, startR, startR + arcRadians);
+								e.stroke();
+								e.closePath();
+								// arc 2
+								e.beginPath();
+								e.arc(t.x, t.y, r, startR, startR - arcRadians, true); // draw counter-clockwise
+								e.stroke();
+								e.closePath();
+
+								// border line 1
+								const s1 = Math.sin(arcRadians);
+								const c1 = Math.cos(arcRadians);
+								const xb1 = dx * c1 - dy * s1;
+								const yb1 = dx * s1 + dy * c1;
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(t.x + xb1, t.y + yb1);
+								e.stroke();
+								e.closePath();
+
+								// border line 2
+								const s2 = Math.sin(-arcRadians);
+								const c2 = Math.cos(-arcRadians);
+								const xb2 = dx * c2 - dy * s2;
+								const yb2 = dx * s2 + dy * c2;
+								e.beginPath();
+								e.moveTo(t.x, t.y);
+								e.lineTo(t.x + xb2, t.y + yb2);
+								e.stroke();
+								e.closePath();
+							}
 							break;
 						}
 						case "4": { // box
@@ -2060,7 +2459,7 @@ var betteR20Base = function () {
 
 							const norm = [];
 							d20plus.math.normalize(norm, [t.to_x - t.x, t.to_y - t.y]);
-							const width = Number(t.Ve.line.width) / div;
+							const width = (Number(t.Ve.line.width) || 0.1) / div;
 							const scaledWidth = (width / d20.Campaign.activePage().get("scale_number")) * 70;
 							d20plus.math.scale(norm, norm, scaledWidth);
 
@@ -3166,7 +3565,7 @@ var betteR20Base = function () {
 									o.model.set("_pageid", d20.Campaign.activePage().get("id"));
 									o.model.set("_path", JSON.stringify(o.path));
 
-									console.log("SPLITTING PATH: ", o.model);
+									console.log("SPLITTING PATH: ", o.model.toJSON());
 									const mainPath = o.model;
 
 									// BEGIN PathSplitter CODE
@@ -3246,6 +3645,13 @@ var betteR20Base = function () {
 
 									let results = [];
 									_.each(segmentPaths, segments => {
+										// BEGIN MOD
+										if (!segments) {
+											d20plus.chatLog(`A path had no segments! This is probably a bug. Please report it.`);
+											return;
+										}
+										// END MOD
+
 										let pathData = PathMath.segmentsToPath(segments);
 										_.extend(pathData, {
 											_pageid,
@@ -3332,6 +3738,7 @@ var betteR20Base = function () {
 			const $cbSticky = $(`#measure_sticky`);
 			const $selRadMode = $(`#measure_mode_sel_2`);
 			const $iptConeWidth = $(`#measure_mode_ipt_3`);
+			const $selConeMode = $(`#measure_mode_sel_3`);
 			const $selBoxMode = $(`#measure_mode_sel_4`);
 			const $selLineMode = $(`#measure_mode_sel_5`);
 			const $iptLineWidth = $(`#measure_mode_ipt_5`);
@@ -3402,7 +3809,8 @@ var betteR20Base = function () {
 										mode: $selRadMode.val()
 									},
 									cone: {
-										arc: $iptConeWidth.val()
+										arc: $iptConeWidth.val(),
+										mode: $selConeMode.val()
 									},
 									box: {
 										mode: $selBoxMode.val(),
@@ -3522,7 +3930,7 @@ var betteR20Base = function () {
 				}
 
 				if (data.e.shiftKey && hoverTarget && hoverTarget.model) {
-					d20.engine.renderTop();
+					d20.engine.debounced_renderTop();
 					const gmNotes = hoverTarget.model.get("gmnotes");
 					const pt = d20.engine.canvas.getPointer(data.e);
 					pt.x -= d20.engine.currentCanvasOffset[0];
@@ -3533,7 +3941,7 @@ var betteR20Base = function () {
 						id: hoverTarget.model.id
 					};
 				} else {
-					if (d20plus._tokenHover) d20.engine.renderTop();
+					if (d20plus._tokenHover) d20.engine.debounced_renderTop();
 					d20plus._tokenHover = null;
 				}
 			})
@@ -3581,6 +3989,40 @@ var betteR20Base = function () {
 					$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
 				})
 			}, 2500);
+		},
+
+		enhancePathWidths () {
+			const $selThicc = $(`#path_width`).css("width", "150px");
+			$selThicc.append(`
+				<option value="5">Custom 1 (5 px.)</option>
+				<option value="5">Custom 2 (5 px.)</option>
+				<option value="5">Custom 3 (5 px.)</option>
+			`);
+			const $iptThicc = $(`<input type="number" style="max-width: 50px;">`).hide();
+			const $lblPixels = $(`<label style="display: inline-flex;"> pixels</label>`).hide();
+			$selThicc.after($lblPixels).after($iptThicc);
+
+			let $selOpt = null;
+			$selThicc.on("change", () => {
+				$selOpt = $selThicc.find(`option:selected`);
+				const txt = $selOpt.text();
+				if (txt.startsWith("Custom")) {
+					const thicc = /\((.*?) px\.\)/.exec(txt)[1];
+					$lblPixels.show();
+					$iptThicc.show().val(Number(thicc));
+				} else {
+					$lblPixels.hide();
+					$iptThicc.hide();
+				}
+			});
+
+			$iptThicc.on("keyup", () => {
+				if (!$selOpt) $selOpt = $selThicc.find(`option:selected`);
+				if ($selOpt) {
+					$selOpt.val($iptThicc.val());
+					$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${$iptThicc.val()} px.)`));
+				}
+			});
 		},
 
 		// JOURNAL UI //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3832,6 +4274,19 @@ var betteR20Base = function () {
 			{
 				s: "#drawingtools.line_splitter .currentselection:after",
 				r: "content: '✂️';"
+			},
+			// chat tag
+			{
+				s: ".userscript-hacker-chat",
+				r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;"
+			},
+			{
+				s: ".userscript-hacker-chat a",
+				r: "color: white;"
+			},
+			{
+				s: ".withoutavatars .userscript-hacker-chat",
+				r: "margin-left: -15px;"
 			}
 		],
 
@@ -3910,6 +4365,7 @@ var betteR20Base = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtFooter);
 
 			$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.openConfigEditor);
+			$("#button-manage-qpi").on(window.mousedowntype, qpi._openManager);
 			d20plus.addTools();
 		},
 
@@ -3921,7 +4377,8 @@ var betteR20Base = function () {
 			For help, advice, and updates, <a href="https://discord.gg/AzyBjtQ" target="_blank" style="color: #08c;">join our Discord!</a>
 			</p>
 			<p>
-			<a class="btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px;">Open Tools List</a>
+			<a class="btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; margin-right: 7px;">Open Tools List</a>
+			<a class="btn" href="#" id="button-manage-qpi" style="margin-top: 3px;" title="It's like the Roll20 API, but even less useful">Manage QPI Scripts</a>
 			</p>
 			<style id="dynamicStyle"></style>
 		`,
@@ -3947,7 +4404,7 @@ var betteR20Base = function () {
 		<span style="display: inline-block; width: 40%; font-weight: bold;">Name</span>
 		<span style="display: inline-block; font-weight: bold;">URL</span>
 	</p>
-	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
+	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0; transform: translateZ(0);"></ul>
 	</div>
 	</div>`,
 
@@ -4816,7 +5273,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 // if we are the topmost frame, inject
 if (window.top === window.self) {
 	function strip (str) {
-		return str.substring(str.indexOf("\n") + 1, str.lastIndexOf("\n")) + "\n";
+		return str.replace(/use strict/, "").substring(str.indexOf("\n") + 1, str.lastIndexOf("\n")) + "\n";
 	}
 
 	let stack = "function (version) {\n";
