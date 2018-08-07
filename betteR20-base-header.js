@@ -49,11 +49,3 @@ EventTarget.prototype.addEventListener = function(type, listener, options, ...ot
 	if (type === "mousemove" && this === d20.engine.uppercanvas) UPPER_CANVAS_MOUSEMOVE = listener;
 	this.addEventListenerBase(type, listener, options, ...others);
 };
-
-// CONSOLE_LOG = console.log;
-// console.log = (...args) => {
-// 	if (args.length === 1 && args[0] === "select") {
-//
-// 	}
-// 	CONSOLE_LOG(args);
-// };

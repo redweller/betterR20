@@ -1,4 +1,36 @@
 var betteR20Base = function () {
+	const modes = new Set([
+		"delete",
+		"drawselect",
+		"ellipse",
+		"fxtools",
+		"fog-hide",
+		"fog-polygonreveal",
+		"fog-reveal",
+		"gridalign",
+		"image",
+		"line",
+		"measure",
+		"pan",
+		"path",
+		"polygon",
+		"rect",
+		"select",
+		"selectp",
+		"targeting",
+		"text"
+	]);
+
+	CONSOLE_LOG = console.log;
+	console.log = (...args) => {
+		if (args.length === 1 && typeof args[0] === "string" && args[0].startsWith("Switch mode to ")) {
+			const mode = args[0].replace("Switch mode to ", "");
+			if (typeof d20plus !== "undefined" && d20plus.setMode) d20plus.setMode(mode);
+		}
+		CONSOLE_LOG(...args);
+	};
+
+
 	addConfigOptions("token", {
 			"_name": "Tokens",
 			"enhanceStatus": {
@@ -1923,8 +1955,8 @@ var betteR20Base = function () {
 						d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
 					}),
 						d20.engine.canvas.hoverCursor = "move"),
-					console.log("Switch mode to " + e),
 					// BEGIN MOD
+					// console.log("Switch mode to " + e),
 					d20.engine.mode = e;
 				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
 				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e
@@ -1983,6 +2015,7 @@ var betteR20Base = function () {
 				$(`#drawingtools`).after($fxMode);
 			}
 
+			// bind new hotkeys
 			Mousetrap.bind("q q", function () { // default ruler on q-q
 				setMode("measure");
 				$(`#measure_mode`).val("1").trigger("change");
@@ -5209,7 +5242,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 // if we are the topmost frame, inject
 if (window.top === window.self) {
 	function strip (str) {
-		return str.substring(str.indexOf("\n") + 1, str.lastIndexOf("\n")) + "\n";
+		return str.replace(/use strict/, "").substring(str.indexOf("\n") + 1, str.lastIndexOf("\n")) + "\n";
 	}
 
 	let stack = "function (version) {\n";
