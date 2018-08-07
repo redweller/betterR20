@@ -1950,6 +1950,7 @@ var betteR20Base = function () {
 			}
 
 			d20plus.setMode = setMode;
+			window.setMode = setMode;
 
 			// rebind buttons with new setMode
 			const $drawTools = $("#drawingtools");
@@ -1981,6 +1982,36 @@ var betteR20Base = function () {
 				});
 				$(`#drawingtools`).after($fxMode);
 			}
+
+			Mousetrap.bind("q q", function () { // default ruler on q-q
+				setMode("measure");
+				$(`#measure_mode`).val("1").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q s", function () { // radius
+				setMode("measure");
+				$(`#measure_mode`).val("2").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q a", function () { // cone
+				setMode("measure");
+				$(`#measure_mode`).val("3").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q e", function () { // box
+				setMode("measure");
+				$(`#measure_mode`).val("4").trigger("change");
+				return false;
+			})
+
+			Mousetrap.bind("q w", function () { // line
+				setMode("measure");
+				$(`#measure_mode`).val("5").trigger("change");
+				return false;
+			})
 
 			if (window.is_gm) {
 				// add lighting layer tool
