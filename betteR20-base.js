@@ -69,6 +69,7 @@ var betteR20Base = function () {
 	);
 
 	const qpi = {
+		_version: "0.01-pre-pre-alpha",
 		_: {
 			log: {
 				_ (...args) {
@@ -169,30 +170,29 @@ var betteR20Base = function () {
 				]
 			},
 
-			// findObjs({_type: 'character',name: 'zCalendar'})[0];
-			findObjs: {
-				_ (attrs) {
-					// TODO
-					// const getters = {
-					// 	attribute: () => {},
-					// 	character: () => {},
-					// 	handout: () => {}
-					// };
-					// const getAll = () => {
-					// 	const out = [];
-					// 	Object.values(getters).forEach(fn => out.push(...fn()));
-					// 	return out;
-					// };
-
-					// let out = attrs._type ? getters[attrs._type]() : getAll();
-
-					throw new Error("findObjs is unimplemented!");
-				},
-				works: 0.00,
-				notes: [
-					`Unimplemented.`
-				]
-			}
+			// findObjs: {
+			// 	_ (attrs) {
+			// 		// TODO
+			// 		// const getters = {
+			// 		// 	attribute: () => {},
+			// 		// 	character: () => {},
+			// 		// 	handout: () => {}
+			// 		// };
+			// 		// const getAll = () => {
+			// 		// 	const out = [];
+			// 		// 	Object.values(getters).forEach(fn => out.push(...fn()));
+			// 		// 	return out;
+			// 		// };
+			//
+			// 		// let out = attrs._type ? getters[attrs._type]() : getAll();
+			//
+			// 		throw new Error("findObjs is unimplemented!");
+			// 	},
+			// 	works: 0.00,
+			// 	notes: [
+			// 		`Unimplemented.`
+			// 	]
+			// }
 		},
 
 		_loadedScripts: null,
@@ -206,7 +206,7 @@ var betteR20Base = function () {
 			qpi._loadedScripts = StorageUtil.get("VeQpi") || {};
 
 			$(`body`).append(`
-				<div id="qpi-manager" title="QPI Script Manager - WIP">
+				<div id="qpi-manager" title="QPI Script Manager - v${qpi._version}">
 					<div class="qpi-table"></div>
 					<div>
 						<input placeholder="URL*" class="qpi-url">
@@ -220,7 +220,7 @@ var betteR20Base = function () {
 						<textarea class="qpi-text" style="width: 100%; height: 300px; resize: vertical;"></textarea>
 					</div>
 					<hr>
-					<button class="btn qpi-help">Help/README</button>
+					<button class="btn qpi-help">Help/README</button> <i>Note that this tool is a for-testing faceplate over some internal code. It is intended for internal use only.</i>
 				</div>	
 			`);
 			$(`#qpi-manager`).dialog({
@@ -230,9 +230,8 @@ var betteR20Base = function () {
 				height: 600,
 			});
 
-
 			$(`body`).append(`
-				<div id="qpi-manager-readme" title="QPI README - WIP">
+				<div id="qpi-manager-readme" title="QPI README - v${qpi._version}">
 					<div class="qpi-readme"></div>
 				</div>	
 			`);
