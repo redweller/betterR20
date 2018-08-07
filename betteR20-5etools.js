@@ -306,6 +306,11 @@ const betteR205etools = function () {
 			"default": false,
 			"_type": "boolean"
 		},
+		"showNpcNames": {
+			"name": "Show NPC Names in Rolls",
+			"default": true,
+			"_type": "boolean"
+		},
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
@@ -2803,6 +2808,12 @@ const betteR205etools = function () {
 									});
 								}
 							}
+							
+							// set show/hide NPC names in rolls
+							if (d20plus.hasCfgVal("import", "showNpcNames") && !d20plus.getCfgVal("import", "showNpcNames")) {
+								character.attribs.create({name: "npc_name_flag", current: 0});
+							}
+
 							character.view._updateSheetValues();
 
 							if (renderFluff) {
