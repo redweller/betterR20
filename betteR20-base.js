@@ -219,9 +219,24 @@ var betteR20Base = function () {
 						<br>
 						<textarea class="qpi-text" style="width: 100%; height: 300px; resize: vertical;"></textarea>
 					</div>
+					<hr>
+					<button class="btn qpi-help">Help/README</button>
 				</div>	
 			`);
 			$(`#qpi-manager`).dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 600,
+			});
+
+
+			$(`body`).append(`
+				<div id="qpi-manager-readme" title="QPI README - WIP">
+					<div class="qpi-readme"></div>
+				</div>	
+			`);
+			$(`#qpi-manager-readme`).dialog({
 				autoOpen: false,
 				resizable: true,
 				width: 800,
@@ -245,8 +260,25 @@ var betteR20Base = function () {
 			}
 		},
 
+		_manHtml () {
+			let stack = "";
+			Object.keys(qpi._).forEach(k => {
+				stack += `<h5>${k}</h5>`;
+				const it = qpi._[k];
+				stack += `<p><i>Estimated ${it.works * 100}% functional</i><br>${(it.notes || []).join("<br>")}</p>`;
+			});
+			return stack;
+		},
+
 		_openManager () {
 			const $win = $(`#qpi-manager`);
+
+			$win.find(`.qpi-help`).off("click").on("click", () => {
+				const $winReadme = $(`#qpi-manager-readme`);
+				$winReadme.dialog("open");
+
+				$winReadme.find(`.qpi-readme`).html(qpi._manHtml());
+			});
 
 			$win.find(`.qpi-add-url`).off("click").on("click", () => {
 				const url = $win.find(`.qpi-url`).val();
