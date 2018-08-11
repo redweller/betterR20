@@ -4024,8 +4024,9 @@ var betteR20Base = function () {
 			$iptThicc.on("keyup", () => {
 				if (!$selOpt) $selOpt = $selThicc.find(`option:selected`);
 				if ($selOpt) {
-					$selOpt.val($iptThicc.val());
-					$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${$iptThicc.val()} px.)`));
+					const clean = Math.round(Math.max(1, Number($iptThicc.val())));
+					$selOpt.val(`${clean}`);
+					$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${clean} px.)`));
 				}
 			});
 		},
