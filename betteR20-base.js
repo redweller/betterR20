@@ -2289,10 +2289,15 @@ var betteR20Base = function () {
 						}
 					};
 
-					const getIntersect = (line1, line2) => {
-						const x = (line2.c - line1.c) / (line1.m - line2.m);
-						const y = line1.fn(x);
-						return [x, y];
+					const getIntersect = (pointPerp, line1, line2) => {
+						if (Math.abs(line1.m) === Infinity) {
+							// intersecting with the y-axis...
+							return [pointPerp[0], line2.fn(pointPerp[0])];
+						} else {
+							const x = (line2.c - line1.c) / (line1.m - line2.m);
+							const y = line1.fn(x);
+							return [x, y];
+						}
 					};
 
 					switch (t.Ve.mode) {
@@ -2337,7 +2342,7 @@ var betteR20Base = function () {
 
 								const pRot1 = rotPoint(arcRadians, t.to_x, t.to_y);
 								const lineRot1 = getLineEquation(t.x, t.y, pRot1[0], pRot1[1]);
-								const intsct1 = getIntersect(perpLine, lineRot1);
+								const intsct1 = getIntersect([t.to_x, t.to_y], perpLine, lineRot1);
 
 								// border line 1
 								e.beginPath();
@@ -2355,7 +2360,7 @@ var betteR20Base = function () {
 
 								const pRot2 = rotPoint(-arcRadians, t.to_x, t.to_y);
 								const lineRot2 = getLineEquation(t.x, t.y, pRot2[0], pRot2[1]);
-								const intsct2 = getIntersect(perpLine, lineRot2);
+								const intsct2 = getIntersect([t.to_x, t.to_y], perpLine, lineRot2);
 
 								// border line 2
 								e.beginPath();
