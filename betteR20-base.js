@@ -2319,8 +2319,7 @@ var betteR20Base = function () {
 				}
 
 				// BEGIN MOD
-				d20plus.log(t)
-				if (t.Ve) { // CHANCES LOW
+				if (t.Ve) {
 					const RAD_90_DEG = 1.5708;
 
 					const euclid = (x1, y1, x2, y2) => {
