@@ -4131,6 +4131,7 @@ var betteR20Base = function () {
 					const clean = Math.round(Math.max(1, Number($iptThicc.val())));
 					$selOpt.val(`${clean}`);
 					$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${clean} px.)`));
+					d20.engine.canvas.freeDrawingBrush.width = clean;
 				}
 			});
 		},
