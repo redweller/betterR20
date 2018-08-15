@@ -1988,7 +1988,11 @@ var betteR20Base = function () {
 						d20.engine.canvas.hoverCursor = "move"),
 					// BEGIN MOD
 					// console.log("Switch mode to " + e),
-					d20.engine.mode = e;
+					d20.engine.mode = e,
+				"measure" !== e && window.currentPlayer && d20.engine.measurements[window.currentPlayer.id] && !d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.announceEndMeasure({
+					player: window.currentPlayer.id
+				}),
+					d20.engine.endMeasure()),
 				d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
 				if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e
 					// BEGIN MOD
@@ -2053,13 +2057,13 @@ var betteR20Base = function () {
 				return false;
 			})
 
-			Mousetrap.bind("q s", function () { // radius
+			Mousetrap.bind("q r", function () { // radius
 				setMode("measure");
 				$(`#measure_mode`).val("2").trigger("change");
 				return false;
 			})
 
-			Mousetrap.bind("q a", function () { // cone
+			Mousetrap.bind("q c", function () { // cone
 				setMode("measure");
 				$(`#measure_mode`).val("3").trigger("change");
 				return false;
@@ -2094,7 +2098,6 @@ var betteR20Base = function () {
 			}
 		},
 
-		_stickyMeasure: {},
 		enhanceMeasureTool: () => {
 			d20plus.log("Enhance Measure tool");
 
@@ -2110,12 +2113,6 @@ var betteR20Base = function () {
 							<option value="4">Box</option>
 							<option value="5">Line</option>
 						</select>
-					</li>
-					<li>
-						<label style="display: inline-flex">Sticky <input style="margin-left: 4px;" type="checkbox" id="measure_sticky"></label>
-					</li>
-					<li>
-						<button id="measure_sticky_clear">Clear</button>
 					</li>
 					<li class="measure_mode_sub measure_mode_sub_2" style="display: none;">
 						<select id="measure_mode_sel_2" style="width: 100px;">
@@ -2151,32 +2148,18 @@ var betteR20Base = function () {
 			$(`#measure`).click(() => {
 				d20plus.setMode("measure");
 			});
-			const $cbSticky = $(`#measure_sticky`);
-			let tempShift = false;
-			$(document).on("mousemove", (evt) => {
-				if (evt.shiftKey && !tempShift && d20.engine.mode === "measure" && !$cbSticky.prop("checked")) {
-					tempShift = true;
-					$cbSticky.prop("checked", true);
-				} else if (!evt.shiftKey && tempShift && d20.engine.mode === "measure" && $cbSticky.prop("checked")) {
-					tempShift = false;
-					$cbSticky.prop("checked", false);
-				}
-			});
 			const $selMeasure = $(`#measure_mode`);
 			$selMeasure.on("change", () => {
 				$(`.measure_mode_sub`).hide();
 				$(`.measure_mode_sub_${$selMeasure.val()}`).show();
 			});
-			$(`#measure_sticky_clear`).click(() => {
-				delete d20plus._stickyMeasure[window.currentPlayer.id];
-				d20.engine.debounced_renderTop();
-				const event = {
-					type: "Ve_measure_clear_sticky",
-					player: window.currentPlayer.id,
-					time: (new Date).getTime()
-				};
-				d20.textchat.sendShout(event)
-			});
+
+			// 	const event = {
+			// 		type: "Ve_measure_clear_sticky",
+			// 		player: window.currentPlayer.id,
+			// 		time: (new Date).getTime()
+			// 	};
+			// 	d20.textchat.sendShout(event)
 
 			d20.textchat.shoutref.on("value", function(e) {
 				if (!d20.textchat.chatstartingup) {
@@ -2185,56 +2168,154 @@ var betteR20Base = function () {
 						const msg = JSON.parse(t);
 						if (window.DEBUG) console.log("SHOUT: ", msg);
 
-						if (Object.keys(d20plus._stickyMeasure).length) {
-							d20.Campaign.players.toJSON().filter(p => !p.online).forEach(p => delete d20plus._stickyMeasure[p.id]);
-						}
-
 						switch (msg.type) {
-							case "Ve_measure_clear_sticky": {
-								delete d20plus._stickyMeasure[msg.player];
-								d20.engine.debounced_renderTop();
-							}
+							// case "Ve_measure_clear_sticky": {
+							// 	delete d20plus._stickyMeasure[msg.player];
+							// 	d20.engine.debounced_renderTop();
+							// }
 						}
 					}
 				}
 			});
 
 			// ROLL20 CODE
-			var T = function (e, t, n, i, r, o) {
-				// BEGIN MOD
-				if (!t.reRender && t.Ve) {
-					if (t.Ve.sticky) {
-						d20plus._stickyMeasure[t.player] = {
-							...t,
-							offset: [...d20.engine.currentCanvasOffset]
-						}
-					} else {
-						delete d20plus._stickyMeasure[t.player];
-					}
+			var E = function(e, t) {
+				let n = {
+					scale: 0,
+					grid: 0
 				}
-				// END MOD
-				var a = d20.engine.getDistanceInScale({
+					, i = 0
+					, o = -1;
+				_.each(t.waypoints, r=>{
+						let a = {
+							to_x: r[0],
+							to_y: r[1],
+							color: t.color,
+							flags: t.flags,
+							hide: t.hide
+						};
+						o > -1 ? (a.x = t.waypoints[o][0],
+							a.y = t.waypoints[o][1]) : (a.x = t.x,
+							a.y = t.y);
+						let s = S(e, a, !0, "nub", n, i);
+						n.scale += s.scale_distance,
+							n.grid += s.grid_distance,
+							i = s.diagonals % 2,
+							++o
+					}
+				);
+				let r = {
+					to_x: t.to_x,
+					to_y: t.to_y,
+					color: t.color,
+					flags: t.flags,
+					hide: t.hide,
+					Ve: t.Ve
+				};
+				-1 === o ? (r.x = t.x,
+					r.y = t.y) : (r.x = t.waypoints[o][0],
+					r.y = t.waypoints[o][1]),
+					S(e, r, !0, "arrow", n, i)
+			}
+
+			var S = function(e, t, n, i, o, r) {
+				let a = e=>e / d20.engine.canvasZoom
+					, s = d20.engine.getDistanceInScale({
 					x: t.x,
 					y: t.y
 				}, {
 					x: t.to_x,
 					y: t.to_y
-				}, o)
-					, s = a[0];
-				void 0 !== r && (s = Math.round(10 * (s + r)) / 10);
-				var l = s + "" + d20.Campaign.activePage().get("scale_units");
-				if (e.strokeStyle = t.color,
-						n) {
-					// BEGIN MOD
-					var fontSize = (1 / d20.engine.canvasZoom) * 12;
-					e.font = fontSize + "pt Arial Black";
-					var c = e.measureText(l);
-					e.fillStyle = "rgba(255,255,255,0.75)";
-					e.beginPath();
-					e.rect(t.to_x - 35, t.to_y - (23 + fontSize), c.width + 10, (10 + fontSize));
-					e.closePath();
-					e.fill();
-					// END MOD
+				}, r, 15 & t.flags);
+				e.globalCompositeOperation = "source-over",
+					e.strokeStyle = t.color,
+					e.fillStyle = e.strokeStyle,
+					e.lineWidth = a(3);
+				let l = {
+					line: [t.to_x - t.x, t.to_y - t.y],
+					arrow: [[-10.16, -24.53], [0, -20.33], [10.16, -24.53]],
+					x: [1, 0],
+					y: [0, 1]
+				};
+				if (e.beginPath(),
+					e.moveTo(t.x, t.y),
+					e.lineTo(t.to_x, t.to_y),
+				!0 === i || "arrow" === i) {
+					let n = Math.atan2(l.line[1], l.line[0]);
+					l.forward = [Math.cos(n), Math.sin(n)],
+						l.right = [Math.cos(n + Math.PI / 2), Math.sin(n + Math.PI / 2)],
+						l.arrow = _.map(l.arrow, e=>[d20.math.dot(e, l.right), d20.math.dot(e, l.forward)]),
+						l.arrow = _.map(l.arrow, e=>[d20.math.dot(e, l.x), d20.math.dot(e, l.y)]),
+						e.moveTo(t.to_x, t.to_y),
+						_.each(l.arrow, n=>e.lineTo(t.to_x + a(n[0]), t.to_y + a(n[1]))),
+						e.closePath(),
+						e.fill()
+				}
+				if (e.closePath(),
+					e.stroke(),
+				"nub" === i && (e.beginPath(),
+					e.arc(t.to_x, t.to_y, a(7), 0, 2 * Math.PI, !0),
+					e.closePath(),
+					e.fill()),
+					n) {
+					let n = Math.round(a(16))
+						, i = Math.round(a(14));
+					e.font = `${n}px Arial Black`,
+						e.textBaseline = "alphabetic",
+						e.textAlign = "center";
+					let r = {
+						distance: Math.round(10 * (s.scale_distance + (o ? o.scale : 0))) / 10,
+						units: d20.Campaign.activePage().get("scale_units")
+					};
+					r.text = `${r.distance} ${r.units}`,
+						r.text_metrics = e.measureText(r.text);
+					let l = {
+						active: d20.Campaign.activePage().get("showgrid") && d20.engine.snapTo > 0 && "sq" !== r.units && "hex" !== r.units,
+						text: ""
+					};
+					if (l.active) {
+						let t = d20.Campaign.activePage().get("grid_type")
+							, n = "hex" === t || "hexr" === t ? "hex" : "sq";
+						e.font = `${i}px Arial`,
+							l.distance = Math.round(10 * (s.grid_distance + (o ? o.grid : 0))) / 10,
+							l.text = `${l.distance} ${n}`,
+							l.text_metrics = e.measureText(l.text)
+					}
+					let c = n - Math.round(a(4))
+						, u = i - Math.round(a(3.5))
+						, d = {
+						x: t.to_x - Math.round(a(35)),
+						y: t.to_y - Math.round(a(35)),
+						width: Math.max(r.text_metrics.width, l.active ? l.text_metrics.width : 0),
+						height: c,
+						padding: Math.round(a(5)),
+						scale_baseline_offset: 0,
+						cell_baseline_offset: 0,
+						text_horizontal_offset: 0,
+						line_spacing: Math.ceil(a(4)),
+						image_width: a(20),
+						image_height: a(20),
+						image_padding_left: a(5)
+					};
+					d.height += 2 * d.padding,
+						d.width += 2 * d.padding,
+						d.text_horizontal_offset = .5 * d.width,
+						d.scale_baseline_offset = d.height - d.padding,
+					l.active && (d.height += u + d.line_spacing,
+						d.cell_baseline_offset = d.height - d.padding),
+					t.hide && (d.width += d.image_width + d.image_padding_left,
+						d.height = Math.max(d.height, d.image_height + 2 * d.padding),
+						d.text_width = Math.max(r.text_metrics.width, l.active ? l.text_metrics.width : 0)),
+						e.fillStyle = "rgba(255,255,255,0.75)",
+						e.fillRect(d.x, d.y, d.width, d.height),
+						e.fillStyle = "rgba(0,0,0,1)",
+						e.font = `${n}px Arial Black`,
+						e.fillText(r.text, d.x + d.text_horizontal_offset, d.y + d.scale_baseline_offset),
+						e.font = `${i}px Arial`,
+						e.fillText(l.text, d.x + d.text_horizontal_offset, d.y + d.cell_baseline_offset),
+					t.hide && (d.image_vertical_offset = .5 * d.height - .5 * d.image_height,
+						d.image_horizontal_offset = d.padding + d.text_width + d.image_padding_left,
+						e.drawImage($("#measure li.rulervisibility[mode='hide'] > img")[0], d.x + d.image_horizontal_offset, d.y + d.image_vertical_offset, d.image_width, d.image_height))
 				}
 
 				// BEGIN MOD
@@ -2289,10 +2370,15 @@ var betteR20Base = function () {
 						}
 					};
 
-					const getIntersect = (line1, line2) => {
-						const x = (line2.c - line1.c) / (line1.m - line2.m);
-						const y = line1.fn(x);
-						return [x, y];
+					const getIntersect = (pointPerp, line1, line2) => {
+						if (Math.abs(line1.m) === Infinity) {
+							// intersecting with the y-axis...
+							return [pointPerp[0], line2.fn(pointPerp[0])];
+						} else {
+							const x = (line2.c - line1.c) / (line1.m - line2.m);
+							const y = line1.fn(x);
+							return [x, y];
+						}
 					};
 
 					switch (t.Ve.mode) {
@@ -2337,7 +2423,7 @@ var betteR20Base = function () {
 
 								const pRot1 = rotPoint(arcRadians, t.to_x, t.to_y);
 								const lineRot1 = getLineEquation(t.x, t.y, pRot1[0], pRot1[1]);
-								const intsct1 = getIntersect(perpLine, lineRot1);
+								const intsct1 = getIntersect([t.to_x, t.to_y], perpLine, lineRot1);
 
 								// border line 1
 								e.beginPath();
@@ -2355,7 +2441,7 @@ var betteR20Base = function () {
 
 								const pRot2 = rotPoint(-arcRadians, t.to_x, t.to_y);
 								const lineRot2 = getLineEquation(t.x, t.y, pRot2[0], pRot2[1]);
-								const intsct2 = getIntersect(perpLine, lineRot2);
+								const intsct2 = getIntersect([t.to_x, t.to_y], perpLine, lineRot2);
 
 								// border line 2
 								e.beginPath();
@@ -2492,61 +2578,35 @@ var betteR20Base = function () {
 				}
 				// END MOD
 
-				e.beginPath();
-				var u = 15
-					, d = Math.atan2(t.to_y - t.y, t.to_x - t.x);
-				e.moveTo(t.x, t.y),
-					e.lineTo(t.to_x, t.to_y),
-				(i === !0 || "arrow" === i) && (e.lineTo(t.to_x - u * Math.cos(d - Math.PI / 6), t.to_y - u * Math.sin(d - Math.PI / 6)),
-					e.moveTo(t.to_x, t.to_y),
-					e.lineTo(t.to_x - u * Math.cos(d + Math.PI / 6), t.to_y - u * Math.sin(d + Math.PI / 6))),
-					e.closePath(),
-					e.stroke(),
-				"nub" === i && (e.beginPath(),
-					e.arc(t.to_x, t.to_y, 7, 0, 2 * Math.PI, !0),
-					e.closePath(),
-					e.fillStyle = e.strokeStyle,
-					e.fill()),
-				n && (e.fillStyle = "rgba(0,0,0,1)",
-					e.fillText(l, t.to_x - 30, t.to_y - 20)),
-					a;
+				return s
 			};
 			d20.engine.drawMeasurements = function (e) {
 				e.globalCompositeOperation = "source-over",
-					e.lineWidth = 3,
 					e.globalAlpha = 1,
-					_.each(d20.engine.measurements, function (t) {
-						if (t.pageid === d20.Campaign.activePage().id) {
-							var n = _.clone(t)
-								, i = d20.Campaign.players.get(n.player);
-							n.color = i.get("color"),
-								n.to_x = n.to_x - d20.engine.currentCanvasOffset[0],
-								n.to_y = n.to_y - d20.engine.currentCanvasOffset[1],
-								n.x = n.x - d20.engine.currentCanvasOffset[0],
-								n.y = n.y - d20.engine.currentCanvasOffset[1],
-								T(e, n, !0, !0)
-						}
+					_.each(d20.engine.measurements, function(t) {
+						if (t.pageid !== d20.Campaign.activePage().id)
+							return;
+						let n = {
+							color: d20.Campaign.players.get(t.player).get("color"),
+							to_x: t.to_x - d20.engine.currentCanvasOffset[0],
+							to_y: t.to_y - d20.engine.currentCanvasOffset[1],
+							x: t.x - d20.engine.currentCanvasOffset[0],
+							y: t.y - d20.engine.currentCanvasOffset[1],
+							flags: t.flags,
+							hide: t.hide,
+							waypoints: _.map(t.waypoints, e=>[e[0] - d20.engine.currentCanvasOffset[0], e[1] - d20.engine.currentCanvasOffset[1]])
+							// BEGIN MOD
+							,
+							Ve: t.Ve ? JSON.parse(JSON.stringify(t.Ve)) : undefined
+							// END MOD
+						};
+						E(e, n)
 					})
+
 				// BEGIN MOD
 				const offset = (num, offset, xy) => {
 					return (num + offset[xy]) - d20.engine.currentCanvasOffset[xy];
 				};
-
-				$.each(d20plus._stickyMeasure, (pId, n) => {
-					const nuX = offset(n.x, n.offset, 0);
-					const nuY = offset(n.y, n.offset, 1);
-					const nuToX = offset(n.to_x, n.offset, 0);
-					const nuToY = offset(n.to_y, n.offset, 1);
-					const nuN = {
-						...n,
-						x: nuX,
-						y: nuY,
-						to_x: nuToX,
-						to_y: nuToY,
-						reRender: true
-					};
-					T(e, nuN, true, true);
-				});
 
 				// unrelated code, but throw it in the render loop here
 				let doRender = false;
@@ -3408,39 +3468,43 @@ var betteR20Base = function () {
 			}
 
 			// BEGIN ROLL20 CODE
-			const M = function(e) { // seems to be "A" nowadays
+			const R = function(e) {
 				//BEGIN MOD
 				var t = d20.engine.canvas;
-				var s = $("#editor-wrapper");
+				var a = $("#editor-wrapper");
 				// END MOD
-				var n, r;
+				var n, o;
 				if (d20.tddice && d20.tddice.handleInteraction && d20.tddice.handleInteraction(),
-						e.touches) {
+					e.touches) {
 					if ("pan" == d20.engine.mode)
 						return;
-					e.touches.length > 1 && (R = d20.engine.mode,
+					e.touches.length > 1 && (C = d20.engine.mode,
 						d20.engine.mode = "pan",
 						d20.engine.leftMouseIsDown = !0),
 						d20.engine.lastTouchStarted = (new Date).getTime(),
 						n = e.touches[0].pageX,
-						r = e.touches[0].pageY,
+						o = e.touches[0].pageY,
 						e.preventDefault()
 				} else
 					n = e.pageX,
-						r = e.pageY;
-				for (var o = d20.engine.showLastPaths.length; o--; )
-					"selected" == d20.engine.showLastPaths[o].type && d20.engine.showLastPaths.splice(o, 1);
+						o = e.pageY;
+				for (var r = d20.engine.showLastPaths.length; r--;)
+					"selected" == d20.engine.showLastPaths[r].type && d20.engine.showLastPaths.splice(r, 1);
 				d20.engine.handleMetaKeys(e),
-				("select" == d20.engine.mode || "path" == d20.engine.mode) && t.__onMouseDown(e),
-				(1 == e.which || e.touches && 1 == e.touches.length) && (d20.engine.leftMouseIsDown = !0);
-				var a = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
-					, l = Math.floor(r / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
-				if (d20.engine.lastMousePos = [a, l],
-					!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
+				"select" != d20.engine.mode && "path" != d20.engine.mode || t.__onMouseDown(e),
+				(0 === e.button || e.touches && 1 == e.touches.length) && (d20.engine.leftMouseIsDown = !0),
+				2 === e.button && (d20.engine.rightMouseIsDown = !0);
+				var s = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
+					,
+					l = Math.floor(o / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
+				if (d20.engine.lastMousePos = [s, l],
+					d20.engine.mousePos = [s, l],
+				!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
 					if (d20.engine.leftMouseIsDown && "fog-polygonreveal" == d20.engine.mode) {
 						// BEGIN MOD
-						var c = a;
+						var c = s;
 						var u = l;
+
 						if (0 != d20.engine.snapTo && (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled"))) {
 							if ("square" == d20.Campaign.activePage().get("grid_type")) {
 								c = d20.engine.snapToIncrement(c, d20.engine.snapTo);
@@ -3451,6 +3515,7 @@ var betteR20Base = function () {
 								u = minPoint[1];
 							}
 						}
+
 						if (d20.engine.fog.points.length > 0 && Math.abs(d20.engine.fog.points[0][0] - c) + Math.abs(d20.engine.fog.points[0][1] - u) < 15) {
 							d20.engine.fog.points.push([d20.engine.fog.points[0][0], d20.engine.fog.points[0][1]]);
 							d20.engine.finishPolygonReveal();
@@ -3459,75 +3524,97 @@ var betteR20Base = function () {
 						}
 						d20.engine.drawOverlays();
 						// END MOD
-					} else if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode) {
-						if (d20.engine.measure.down[0] = a,
+					} else if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode)
+						if (2 === e.button)
+							d20.engine.addWaypoint(e);
+						else {
+							d20.engine.measure.sticky && d20.engine.endMeasure(),
+								d20.engine.measure.down[0] = s,
 								d20.engine.measure.down[1] = l,
-							0 != d20.engine.snapTo && !e.altKey)
-							if ("square" == d20.Campaign.activePage().get("grid_type"))
-								d20.engine.measure.down[1] = d20.engine.snapToIncrement(d20.engine.measure.down[1] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2),
-									d20.engine.measure.down[0] = d20.engine.snapToIncrement(d20.engine.measure.down[0] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2);
+								d20.engine.measure.sticky = e.shiftKey;
+							let t = d20.Campaign.activePage().get("grid_type")
+								, n = "snap_center" === d20.engine.ruler_snapping && !e.altKey;
+							if (n |= "no_snap" === d20.engine.ruler_snapping && e.altKey,
+								n &= 0 !== d20.engine.snapTo)
+								if ("square" === t)
+									d20.engine.measure.down[1] = d20.engine.snapToIncrement(d20.engine.measure.down[1] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2),
+										d20.engine.measure.down[0] = d20.engine.snapToIncrement(d20.engine.measure.down[0] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2);
+								else {
+									var d = d20.canvas_overlay.activeHexGrid.GetHexAt({
+										X: d20.engine.measure.down[0],
+										Y: d20.engine.measure.down[1]
+									});
+									d20.engine.measure.down[1] = d.MidPoint.Y,
+										d20.engine.measure.down[0] = d.MidPoint.X
+								}
+							else if (0 === d20.engine.snapTo || "snap_corner" !== d20.engine.ruler_snapping || e.altKey)
+								d20.engine.measure.flags |= 1;
 							else {
-								var d = d20.canvas_overlay.activeHexGrid.GetHexAt({
-									X: d20.engine.measure.down[0],
-									Y: d20.engine.measure.down[1]
-								});
-								d20.engine.measure.down[1] = d.MidPoint.Y,
-									d20.engine.measure.down[0] = d.MidPoint.X
+								if ("square" === t)
+									d20.engine.measure.down[0] = d20.engine.snapToIncrement(d20.engine.measure.down[0], d20.engine.snapTo),
+										d20.engine.measure.down[1] = d20.engine.snapToIncrement(d20.engine.measure.down[1], d20.engine.snapTo);
+								else {
+									let e = d20.engine.snapToHexCorner([d20.engine.measure.down[0], d20.engine.measure.down[1]]);
+									e && (d20.engine.measure.down[0] = e[0],
+										d20.engine.measure.down[1] = e[1])
+								}
+								d20.engine.measure.flags |= 1
 							}
-					} else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode)
-						d20.engine.fx.current || (d20.engine.fx.current = d20.fx.handleClick(a, l));
+						}
+					else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode)
+						d20.engine.fx.current || (d20.engine.fx.current = d20.fx.handleClick(s, l));
 					else if (d20.engine.leftMouseIsDown && "text" == d20.engine.mode) {
 						var h = {
 							fontFamily: $("#font-family").val(),
 							fontSize: $("#font-size").val(),
 							fill: $("#font-color").val(),
 							text: "",
-							left: a,
+							left: s,
 							top: l
 						}
 							, p = d20.Campaign.activePage().addText(h);
-						_.defer(function() {
+						_.defer(function () {
 							d20.engine.editText(p.view.graphic, h.top, h.left),
-								setTimeout(function() {
+								setTimeout(function () {
 									$(".texteditor").focus()
 								}, 300)
 						})
 					} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
-						var g = parseInt($("#path_width").val(), 10)
-							, f = d20.engine.drawshape.shape = {
-							strokewidth: g,
+						var f = parseInt($("#path_width").val(), 10)
+							, g = d20.engine.drawshape.shape = {
+							strokewidth: f,
 							x: 0,
 							y: 0,
 							width: 10,
 							height: 10,
 							type: e.altKey ? "circle" : "rect"
-						}
-							, c = a
-							, u = l;
+						};
+						c = s,
+							u = l;
 						0 != d20.engine.snapTo && e.shiftKey && (c = d20.engine.snapToIncrement(c, d20.engine.snapTo),
 							u = d20.engine.snapToIncrement(u, d20.engine.snapTo)),
-							f.x = c,
-							f.y = u,
-							f.fill = $("#path_fillcolor").val(),
-							f.stroke = $("#path_strokecolor").val(),
-							d20.engine.drawshape.start = [n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], r + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
+							g.x = c,
+							g.y = u,
+							g.fill = $("#path_fillcolor").val(),
+							g.stroke = $("#path_strokecolor").val(),
+							d20.engine.drawshape.start = [n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], o + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
 							d20.engine.renderTop()
 					} else if (d20.engine.leftMouseIsDown && "polygon" == d20.engine.mode) {
 						if (d20.engine.drawshape.shape)
-							var f = d20.engine.drawshape.shape;
+							g = d20.engine.drawshape.shape;
 						else {
-							var g = parseInt($("#path_width").val(), 10)
-								, f = d20.engine.drawshape.shape = {
-								strokewidth: g,
+							f = parseInt($("#path_width").val(), 10);
+							(g = d20.engine.drawshape.shape = {
+								strokewidth: f,
 								points: [],
 								type: "polygon"
-							};
-							f.fill = $("#path_fillcolor").val(),
-								f.stroke = $("#path_strokecolor").val()
+							}).fill = $("#path_fillcolor").val(),
+								g.stroke = $("#path_strokecolor").val()
 						}
 						// BEGIN MOD
-						var c = a;
+						var c = s;
 						var u = l;
+
 						if (0 != d20.engine.snapTo && e.shiftKey) {
 							if ("square" == d20.Campaign.activePage().get("grid_type")) {
 								c = d20.engine.snapToIncrement(c, d20.engine.snapTo);
@@ -3538,20 +3625,22 @@ var betteR20Base = function () {
 								u = minPoint[1];
 							}
 						}
-						if (f.points.length > 0 && Math.abs(f.points[0][0] - c) + Math.abs(f.points[0][1] - u) < 15) {
-							f.points.push([f.points[0][0], f.points[0][1]]);
-							if (f.points.length > 2) {
-								f.points.push([f.points[1][0], f.points[1][1]]);
+
+						if (g.points.length > 0 && Math.abs(g.points[0][0] - c) + Math.abs(g.points[0][1] - u) < 15) {
+							g.points.push([g.points[0][0], g.points[0][1]]);
+							if (g.points.length > 2) {
+								g.points.push([g.points[1][0], g.points[1][1]]);
 							}
 							d20.engine.finishCurrentPolygon();
 						} else {
-							f.points.push([c, u]);
+							g.points.push([c, u]);
 						}
+
 						d20.engine.debounced_renderTop();
 						// END MOD
 					} else if (d20.engine.leftMouseIsDown && "targeting" === d20.engine.mode) {
 						var m = d20.engine.canvas.findTarget(e, !0, !0);
-						return void (void 0 !== m && "image" === m.type && m.model && d20.engine.nextTargetCallback(m))
+						return void (m !== undefined && "image" === m.type && m.model && d20.engine.nextTargetCallback(m))
 					}
 					// BEGIN MOD
 					else if (d20.engine.leftMouseIsDown && "line_splitter" === d20.engine.mode) {
@@ -3676,36 +3765,38 @@ var betteR20Base = function () {
 					}
 					// END MOD
 				} else
-					d20.engine.fog.down[0] = a,
+					d20.engine.fog.down[0] = s,
 						d20.engine.fog.down[1] = l,
 					0 != d20.engine.snapTo && "square" == d20.Campaign.activePage().get("grid_type") && ("gridalign" == d20.engine.mode ? e.shiftKey && (d20.engine.fog.down[0] = d20.engine.snapToIncrement(d20.engine.fog.down[0], d20.engine.snapTo),
 						d20.engine.fog.down[1] = d20.engine.snapToIncrement(d20.engine.fog.down[1], d20.engine.snapTo)) : (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled")) && (d20.engine.fog.down[0] = d20.engine.snapToIncrement(d20.engine.fog.down[0], d20.engine.snapTo),
 						d20.engine.fog.down[1] = d20.engine.snapToIncrement(d20.engine.fog.down[1], d20.engine.snapTo)));
 				if (window.currentPlayer && d20.engine.leftMouseIsDown && "select" == d20.engine.mode) {
-					if (d20.engine.pings[window.currentPlayer.id] && d20.engine.pings[window.currentPlayer.id].radius > 20)
+					if (2 === e.button && d20.engine.addWaypoint(e),
+					d20.engine.pings[window.currentPlayer.id] && d20.engine.pings[window.currentPlayer.id].radius > 20)
 						return;
-					var y = a
-						, v = l
-						, b = {
-						left: y,
-						top: v,
+					var y = {
+						left: s,
+						top: l,
 						radius: -5,
 						player: window.currentPlayer.id,
 						pageid: d20.Campaign.activePage().id,
 						currentLayer: window.currentEditingLayer
 					};
-					window.is_gm && e.shiftKey && (b.scrollto = !0),
-						d20.engine.pings[window.currentPlayer.id] = b,
+					window.is_gm && e.shiftKey && (y.scrollto = !0),
+						d20.engine.pings[window.currentPlayer.id] = y,
 						d20.engine.pinging = {
 							downx: n,
-							downy: r
+							downy: o
 						},
 						d20.engine.renderTop()
 				}
-				3 == e.which && (d20.engine.rightMouseIsDown = !0),
-					d20.engine.rightMouseIsDown && ("select" == d20.engine.mode || "path" == d20.engine.mode || "text" == d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" == d20.engine.mode ? (d20.engine.pan.beginPos = [s.scrollLeft(), s.scrollTop()],
-						d20.engine.pan.panXY = [n, r],
-						d20.engine.pan.panning = !0) : d20.engine.pan.panning = !1,
+				d20.engine.rightMouseIsDown && ("select" == d20.engine.mode || "path" == d20.engine.mode || "text" == d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" == d20.engine.mode ? (d20.engine.pan.beginPos = [a.scrollLeft(), a.scrollTop()],
+					d20.engine.pan.panXY = [n, o],
+					d20.engine.pan.panning = !0) : d20.engine.pan.panning = !1,
+				2 === e.button && !d20.engine.leftMouseIsDown && d20.engine.measurements[window.currentPlayer.id] && d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.endMeasure(),
+					d20.engine.announceEndMeasure({
+						player: window.currentPlayer.id
+					})),
 					// BEGIN MOD
 				$(`#upperCanvas`).hasClass("hasfocus") || $(`#upperCanvas`).focus()
 				// END MOD
@@ -3715,7 +3806,7 @@ var betteR20Base = function () {
 			if (UPPER_CANVAS_MOUSEDOWN) {
 				d20plus.log("Enhancing hex snap");
 				d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
-				d20.engine.uppercanvas.addEventListener("mousedown", M);
+				d20.engine.uppercanvas.addEventListener("mousedown", R);
 			}
 
 			// add half-grid snap
@@ -3732,10 +3823,8 @@ var betteR20Base = function () {
 		},
 
 		enhanceMouseMove: () => {
-			// M
 			// needs to be called after `enhanceMeasureTool()`
 			const $selMeasureMode = $(`#measure_mode`);
-			const $cbSticky = $(`#measure_sticky`);
 			const $selRadMode = $(`#measure_mode_sel_2`);
 			const $iptConeWidth = $(`#measure_mode_ipt_3`);
 			const $selConeMode = $(`#measure_mode_sel_3`);
@@ -3762,7 +3851,7 @@ var betteR20Base = function () {
 			var a = $("#editor-wrapper");
 
 			// BEGIN ROLL20 CODE
-			const M = function(e) {
+			const A = function(e) {
 				var n, i;
 				if (e.changedTouches ? ((e.changedTouches.length > 1 || "pan" == d20.engine.mode) && (delete d20.engine.pings[window.currentPlayer.id],
 					d20.engine.pinging = !1),
@@ -3774,37 +3863,57 @@ var betteR20Base = function () {
 				d20.engine.leftMouseIsDown || d20.engine.rightMouseIsDown) {
 					var o = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
 						, r = Math.floor(i / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
-					if (!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
-						if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode) {
-							if (d20.engine.measure.down[2] = o,
+					if (d20.engine.mousePos = [o, r],
+					!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
+						if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode && d20.engine.measure.down[0] !== undefined && d20.engine.measure.down[1] !== undefined) {
+							d20.engine.measure.down[2] = o,
 								d20.engine.measure.down[3] = r,
-							0 != d20.engine.snapTo && !e.altKey)
-								if ("square" == d20.Campaign.activePage().get("grid_type"))
+								d20.engine.measure.sticky |= e.shiftKey;
+							let t = d20.Campaign.activePage().get("grid_type")
+								, n = "snap_corner" === d20.engine.ruler_snapping && !e.altKey && 0 !== d20.engine.snapTo
+								, i = "snap_center" === d20.engine.ruler_snapping && !e.altKey;
+							if (i |= "no_snap" === d20.engine.ruler_snapping && e.altKey,
+								i &= 0 !== d20.engine.snapTo) {
+								if ("square" === t)
 									d20.engine.measure.down[2] = d20.engine.snapToIncrement(d20.engine.measure.down[2] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2),
 										d20.engine.measure.down[3] = d20.engine.snapToIncrement(d20.engine.measure.down[3] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2);
 								else {
-									var s = d20.canvas_overlay.activeHexGrid.GetHexAt({
+									let e = d20.canvas_overlay.activeHexGrid.GetHexAt({
 										X: d20.engine.measure.down[2],
 										Y: d20.engine.measure.down[3]
 									});
-									if (!s)
-										return;
-									d20.engine.measure.down[3] = s.MidPoint.Y,
-										d20.engine.measure.down[2] = s.MidPoint.X
+									e && (d20.engine.measure.down[3] = e.MidPoint.Y,
+										d20.engine.measure.down[2] = e.MidPoint.X)
 								}
-							var l = {
+								d20.engine.measure.flags &= -3
+							} else if (n) {
+								if ("square" === t)
+									d20.engine.measure.down[2] = d20.engine.snapToIncrement(d20.engine.measure.down[2], d20.engine.snapTo),
+										d20.engine.measure.down[3] = d20.engine.snapToIncrement(d20.engine.measure.down[3], d20.engine.snapTo);
+								else {
+									let e = d20.engine.snapToHexCorner([d20.engine.measure.down[2], d20.engine.measure.down[3]]);
+									e && (d20.engine.measure.down[2] = e[0],
+										d20.engine.measure.down[3] = e[1])
+								}
+								d20.engine.measure.flags |= 2
+							} else
+								d20.engine.measure.flags |= 2;
+							var s = {
 								x: d20.engine.measure.down[0],
 								y: d20.engine.measure.down[1],
 								to_x: d20.engine.measure.down[2],
 								to_y: d20.engine.measure.down[3],
 								player: window.currentPlayer.id,
 								pageid: d20.Campaign.activePage().id,
-								currentLayer: window.currentEditingLayer
+								currentLayer: window.currentEditingLayer,
+								waypoints: d20.engine.measure.waypoints,
+								sticky: d20.engine.measure.sticky,
+								flags: d20.engine.measure.flags,
+								hide: d20.engine.measure.hide
 								// BEGIN MOD
 								,
 								Ve: {
 									mode: $selMeasureMode.val(),
-									sticky: $cbSticky.prop("checked"),
 									radius: {
 										mode: $selRadMode.val()
 									},
@@ -3822,21 +3931,21 @@ var betteR20Base = function () {
 								}
 								// END MOD
 							};
-							E(l)
+							d20.engine.announceMeasure(s)
 						} else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode) {
 							if (d20.engine.fx.current) {
-								var c = (new Date).getTime();
-								c - d20.engine.fx.lastMoveBroadcast > d20.engine.fx.MOVE_BROADCAST_FREQ ? (d20.fx.moveFx(d20.engine.fx.current, o, r),
-									d20.engine.fx.lastMoveBroadcast = c) : d20.fx.moveFx(d20.engine.fx.current, o, r, !0)
+								var l = (new Date).getTime();
+								l - d20.engine.fx.lastMoveBroadcast > d20.engine.fx.MOVE_BROADCAST_FREQ ? (d20.fx.moveFx(d20.engine.fx.current, o, r),
+									d20.engine.fx.lastMoveBroadcast = l) : d20.fx.moveFx(d20.engine.fx.current, o, r, !0)
 							}
 						} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
-							var u = (n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
-								, d = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
-							0 != d20.engine.snapTo && e.shiftKey && (u = d20.engine.snapToIncrement(u, d20.engine.snapTo),
-								d = d20.engine.snapToIncrement(d, d20.engine.snapTo));
-							var h = d20.engine.drawshape.shape;
-							h.width = u,
-								h.height = d,
+							var c = (n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
+								, u = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
+							0 != d20.engine.snapTo && e.shiftKey && (c = d20.engine.snapToIncrement(c, d20.engine.snapTo),
+								u = d20.engine.snapToIncrement(u, d20.engine.snapTo));
+							var d = d20.engine.drawshape.shape;
+							d.width = c,
+								d.height = u,
 								d20.engine.renderTop()
 						}
 					} else
@@ -3847,19 +3956,19 @@ var betteR20Base = function () {
 							d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo))),
 							d20.engine.drawOverlays();
 					if (d20.engine.pinging)
-						(u = Math.abs(d20.engine.pinging.downx - n)) + (d = Math.abs(d20.engine.pinging.downy - i)) > 10 && (delete d20.engine.pings[window.currentPlayer.id],
+						(c = Math.abs(d20.engine.pinging.downx - n)) + (u = Math.abs(d20.engine.pinging.downy - i)) > 10 && (delete d20.engine.pings[window.currentPlayer.id],
 							d20.engine.pinging = !1);
 					if (d20.engine.pan.panning) {
-						u = 2 * (n - d20.engine.pan.panXY[0]),
-							d = 2 * (i - d20.engine.pan.panXY[1]);
-						if (d20.engine.pan.lastPanDist += Math.abs(u) + Math.abs(d),
+						c = 2 * (n - d20.engine.pan.panXY[0]),
+							u = 2 * (i - d20.engine.pan.panXY[1]);
+						if (d20.engine.pan.lastPanDist += Math.abs(c) + Math.abs(u),
 						d20.engine.pan.lastPanDist < 10)
 							return;
-						var p = d20.engine.pan.beginPos[0] - u
-							, f = d20.engine.pan.beginPos[1] - d;
+						var h = d20.engine.pan.beginPos[0] - c
+							, p = d20.engine.pan.beginPos[1] - u;
 						a.stop().animate({
-							scrollLeft: p,
-							scrollTop: f
+							scrollLeft: h,
+							scrollTop: p
 						}, {
 							duration: 1500,
 							easing: "easeOutExpo",
@@ -3873,7 +3982,7 @@ var betteR20Base = function () {
 			if (UPPER_CANVAS_MOUSEMOVE) {
 				d20plus.log("Enhancing mouse move");
 				d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
-				d20.engine.uppercanvas.addEventListener("mousemove", M);
+				d20.engine.uppercanvas.addEventListener("mousemove", A);
 			}
 		},
 
@@ -4019,8 +4128,9 @@ var betteR20Base = function () {
 			$iptThicc.on("keyup", () => {
 				if (!$selOpt) $selOpt = $selThicc.find(`option:selected`);
 				if ($selOpt) {
-					$selOpt.val($iptThicc.val());
-					$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${$iptThicc.val()} px.)`));
+					const clean = Math.round(Math.max(1, Number($iptThicc.val())));
+					$selOpt.val(`${clean}`);
+					$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${clean} px.)`));
 				}
 			});
 		},

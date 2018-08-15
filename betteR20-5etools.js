@@ -2207,7 +2207,7 @@ const betteR205etools = function () {
 							var size = d20plus.getSizeString(data.size || "");
 							var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
 							var cr = data.cr ? (data.cr.cr || data.cr) : "";
-							var xp = Parser.crToXp(cr);
+							var xp = Parser.crToXpNumber(cr);
 							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc_toggle", current: 1});
 							character.attribs.create({name: "npc_options-flag", current: 0});
