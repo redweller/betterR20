@@ -2996,6 +2996,18 @@ var betteR20Base = function () {
 			d20plus.log("Add token rightclick commands");
 			$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
 
+			Mousetrap.bind("B B", function () { // back on layer
+				const n = d20plus._getSelectedToMove();
+				d20plus.backwardOneLayer(n);
+				return false;
+			});
+
+			Mousetrap.bind("B F", function () { // forward one layer
+				const n = d20plus._getSelectedToMove();
+				d20plus.forwardOneLayer(n);
+				return false;
+			});
+
 			// BEGIN ROLL20 CODE
 			var e, t = !1, n = [];
 			var i = function() {
@@ -3428,6 +3440,12 @@ var betteR20Base = function () {
 									},
 									options
 								);
+							} else if ("forward-one" === e) {
+								d20plus.forwardOneLayer(n);
+								i();
+							} else if ("back-one" === e) {
+								d20plus.backwardOneLayer(n);
+								i();
 							} else if ("rollertokenresize" === e) {
 								resizeToken();
 								i();
@@ -3506,6 +3524,28 @@ var betteR20Base = function () {
 			d20.token_editor.showContextMenu = r;
 			d20.token_editor.closeContextMenu = i;
 			$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		},
+
+		_getSelectedToMove () {
+			const n = [];
+			for (var l = d20.engine.selected(), c = 0; c < l.length; c++)
+				n.push(l[c]);
+		},
+
+		forwardOneLayer (n) {
+			d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+				_.each(n, function (e) {
+					d20.engine.canvas.bringForward(e)
+				}),
+				d20.Campaign.activePage().debounced_recordZIndexes()
+		},
+
+		backwardOneLayer (n) {
+			d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+				_.each(n, function (e) {
+					d20.engine.canvas.sendBackwards(e)
+				}),
+				d20.Campaign.activePage().debounced_recordZIndexes()
 		},
 
 		_tempTopRenderLines: {}, // format: {x: ..., y: ..., to_x: ..., to_y: ..., ticks: ..., offset: ...}
@@ -5124,6 +5164,10 @@ var betteR20Base = function () {
           <li data-action-type='undo'>Undo</li>
           <$ if(this.view) { $>
           <li data-action-type='tofront'>To Front</li>
+          <!-- BEGIN MOD -->
+          <li data-action-type='forward-one'>Forward One (B-F)</li>
+          <li data-action-type='back-one'>Back One (B-B)</li>
+          <!-- END MOD -->
           <li data-action-type='toback'>To Back</li>
           <li class='head hasSub' data-menuname='advanced'>
             Advanced &raquo;
