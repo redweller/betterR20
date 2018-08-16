@@ -2172,8 +2172,10 @@ const betteR205etools = function () {
 						pType.type,
 						...pType.tags,
 						`cr ${(data.cr ? (data.cr.cr || data.cr) : "").replace(/\//g, " over ")}` || "unknown cr",
-						Parser.sourceJsonToFull(data.source)
-					], "monsters"),
+						Parser.sourceJsonToFull(data.source),
+						Parser.sizeAbvToFull(data.size),
+						...(data.environment || [])
+					], "creature"),
 					...options.charOptions
 				},
 				{
