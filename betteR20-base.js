@@ -1342,6 +1342,7 @@ var betteR20Base = function () {
 				<div>
 					<button class="btn toggle-dc">Show Disconnected Players</button>
 					<button class="btn send-all">Send All Messages</button>
+					<button class="btn clear-all">Clear All Messages</button>
 				</div>
 				<hr>
 				<div class="messages" style="max-height: 600px; overflow-y: auto; overflow-x: hidden; transform: translateZ(0)">
@@ -1365,11 +1366,12 @@ var betteR20Base = function () {
 
 					const $btnToggleDc = $win.find(`.toggle-dc`).off("click").text("Show Disconnected Players");
 					const $btnSendAll = $win.find(`.send-all`).off("click");
+					const $btnClearAll = $win.find(`.clear-all`).off("click");
 
 					const $pnlMessages = $win.find(`.messages`).empty();
 					const players = d20.Campaign.players.toJSON();
 					players.forEach((p, i) => {
-						const $btnSend = $(`<button class="btn send">Send</button>`).on("click", function () {
+						const $btnSend = $(`<button class="btn send" style="margin-right: 5px;">Send</button>`).on("click", function () {
 							const $btn = $(this);
 							const $wrp = $btn.closest(`.wrp-message`);
 							const toMsg = $wrp.find(`input[data-player-id]:checked`).filter(":visible").map((ii, e) => $(e).attr("data-player-id")).get();
@@ -1394,6 +1396,10 @@ var betteR20Base = function () {
 							})
 						});
 
+						const $btnClear =  $(`<button class="btn msg-clear">Clear</button>`).on("click", function () {
+							$(this).closest(`.wrp-message`).find(`.message`).val("");
+						});
+
 						$pnlMessages.append($(`
 							<div ${p.online || `style="display: none;"`} data-online="${p.online}" class="wrp-message">
 								<div>
@@ -1401,7 +1407,7 @@ var betteR20Base = function () {
 								</div>
 								<textarea style="display: block; width: 95%;" placeholder="Enter whisper" class="message"></textarea>
 							</div>						
-						`).append($btnSend).append(`<hr>`));
+						`).append($btnSend).append($btnClear).append(`<hr>`));
 					});
 
 					$btnToggleDc.on("click", () => {
@@ -1412,6 +1418,8 @@ var betteR20Base = function () {
 					$btnSendAll.on("click", () => {
 						$pnlMessages.find(`button.send`).click();
 					});
+
+					$btnClearAll.on("click", () => $pnlMessages.find(`button.msg-clear`).click());
 				}
 			},
 			{
