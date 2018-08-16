@@ -4721,7 +4721,7 @@ var betteR20Base = function () {
               GM Notes
               <span style='font-weight: regular; font-size: 0.9em;'>(Only visible to GMs)</span>
             </h4>
-            <textarea class='gmnotes'></textarea>
+            <textarea class='gmnotes summernote'></textarea>
             <div class='clear'></div>
             <label>&nbsp;</label>
           </div>
@@ -5085,12 +5085,7 @@ var betteR20Base = function () {
 
 		template_charactereditor: `
  <script id='tmpl_charactereditor' type='text/html'>
-      <div class='dialog largedialog charactereditor' style='display: block;'>
-        <!-- %ul.nav.nav-tabs -->
-        <!-- %li.active -->
-        <!-- %a(href="javascript:void(0);" data-tab="bioinfo") Bio & Info -->
-        <!-- %li -->
-        <!-- %a(href="javascript:void(0);" data-tab="attributesabilities") Attributes & Abilities -->
+     <div class='dialog largedialog charactereditor' style='display: block;'>
         <div class='tab-content'>
           <div class='bioinfo tab-pane'>
             <div class='row-fluid'>
