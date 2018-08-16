@@ -3452,7 +3452,7 @@ const betteR205etools = function () {
 				`rarity ${data.rarity}`,
 				...data.procType,
 				Parser.sourceJsonToFull(data.source)
-			], "items")
+			], "item")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3696,7 +3696,7 @@ const betteR205etools = function () {
 				Parser.psiTypeToFull(data.type),
 				data.order || "orderless",
 				Parser.sourceJsonToFull(data.source)
-				], "psionics")
+				], "psionic")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_PSIONICS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3778,7 +3778,7 @@ const betteR205etools = function () {
 			tags: d20plus.importer.getTagString([
 				Parser.sizeAbvToFull(data.size),
 				Parser.sourceJsonToFull(data.source)
-			], "races")
+			], "race")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RACES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3865,7 +3865,7 @@ const betteR205etools = function () {
 			name: name,
 			tags: d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "feats")
+			], "feat")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_FEATS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3944,7 +3944,7 @@ const betteR205etools = function () {
 				tags: d20plus.importer.getTagString([
 					Parser.sizeAbvToFull(data.size),
 					Parser.sourceJsonToFull(data.source)
-				], "objects")
+				], "object")
 			},
 			{
 			success: function (character) {
@@ -4212,7 +4212,7 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "classes")
+			], "class")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -4377,7 +4377,7 @@ const betteR205etools = function () {
 				tags: d20plus.importer.getTagString([
 					data.class,
 					Parser.sourceJsonToFull(data.source)
-				], "subclasses")
+				], "subclass")
 			}, {
 				success: function (handout) {
 					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -4463,7 +4463,7 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "backgrounds")
+			], "background")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BACKGROUNDS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -4541,7 +4541,7 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "invocations")
+			], "invocation")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_INVOCATIONS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
