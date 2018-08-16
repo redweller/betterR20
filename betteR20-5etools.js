@@ -1971,7 +1971,7 @@ const betteR205etools = function () {
 		var newRowId = d20plus.generateRowId();
 		var actiontext = text;
 		var action_desc = actiontext; // required for later reduction of information dump.
-		var rollbase = d20plus.importer.rollbase;
+		var rollbase = d20plus.importer.rollbase();
 		// attack parsing
 		if (actiontext.indexOf(" Attack:") > -1) {
 			var attacktype = "";
@@ -2685,7 +2685,7 @@ const betteR205etools = function () {
 										tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
 									}
 
-									var rollbase = d20plus.importer.rollbase;
+									var rollbase = d20plus.importer.rollbase();
 									if (v.attack != null) {
 										if (!(v.attack instanceof Array)) {
 											var tmp = v.attack;
@@ -4047,8 +4047,17 @@ const betteR205etools = function () {
 
 // version from previous scripts. Might be useless now?
 	d20plus.importer.rollbaseOld = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
-// from OGL sheet, Jan 2018
-	d20plus.importer.rollbase = "@{wtype}&{template:npcaction} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=@{name}}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{show_desc}}} @{charname_output}";
+
+	// from OGL sheet, Aug 2018
+	d20plus.importer.rollbase = () => {
+		const dtype = d20plus.importer.getDesiredDamageType();
+		if (dtype === "full") {
+			return `@{wtype}&{template:npcaction} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=@{name}}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{show_desc}}} @{charname_output}`;
+		} else {
+			return `@{wtype}&{template:npcatk} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=[@{name}](~repeating_npcaction_npc_dmg)}} {{rnamec=[@{name}](~repeating_npcaction_npc_crit)}} {{type=[Attack](~repeating_npcaction_npc_dmg)}} {{typec=[Attack](~repeating_npcaction_npc_crit)}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{description=@{show_desc}}} @{charname_output}`;
+		}
+
+	};
 
 	d20plus.importer.getDesiredRollType = function () {
 		// rtype
