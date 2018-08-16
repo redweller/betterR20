@@ -1769,8 +1769,9 @@ const betteR205etools = function () {
 											var i = $(outerI.helper[0]).attr("data-pagename");
 
 											// BEGIN ROLL20 CODE
-											var o = n.data;
+											var o = _.clone(n.data);
 											o.Name = n.name,
+												o.data = JSON.stringify(n.data),
 												o.uniqueName = i,
 												o.Content = n.content,
 												$(t.target).find("*[accept]").each(function() {
@@ -1794,29 +1795,30 @@ const betteR205etools = function () {
 								const e = character;
 								const n = i;
 
-								// original roll20 code
-								console.log("Compendium item dropped onto target!");
-								t.originalEvent.dropHandled = !0;
-								window.wantsToReceiveDrop(this, t, function () {
-									var i = $(n.helper[0]).attr("data-pagename");
-									console.log(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true"),
-										$.get(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true", function (n) {
-											var r = n.data;
-											r.Name = n.name,
-												r.uniqueName = i,
-												r.Content = n.content;
-											var o = $(t.target);
-											o.find("*[accept]").each(function () {
-												var t = $(this)
-													, n = t.attr("accept");
-												r[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function () {
-													var e = $(this);
-													(e.attr("value") === r[n] || e.text() === r[n]) && e.attr("selected", "selected")
-												}) : $(this).val(r[n]),
-													e.saveSheetValues(this))
+								// BEGIN ROLL20 CODE
+								console.log("Compendium item dropped onto target!"),
+									t.originalEvent.dropHandled = !0,
+									window.wantsToReceiveDrop(this, t, function() {
+										var i = $(n.helper[0]).attr("data-pagename");
+										console.log(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true"),
+											$.get(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true", function(n) {
+												var o = _.clone(n.data);
+												o.Name = n.name,
+													o.data = JSON.stringify(n.data),
+													o.uniqueName = i,
+													o.Content = n.content,
+													$(t.target).find("*[accept]").each(function() {
+														var t = $(this)
+															, n = t.attr("accept");
+														o[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+															var e = $(this);
+															e.val() !== o[n] && e.text() !== o[n] || e.prop("selected", !0)
+														}) : $(this).val(o[n]),
+															e.saveSheetValues(this))
+													})
 											})
-										})
-								});
+									});
+								// END ROLL20 CODE
 							}
 						}
 					});
@@ -1837,8 +1839,9 @@ const betteR205etools = function () {
 		});
 
 		// BEGIN ROLL20 CODE
-		var o = n.data;
+		var o = _.clone(n.data);
 		o.Name = n.name,
+			o.data = JSON.stringify(n.data),
 			o.uniqueName = i,
 			o.Content = n.content,
 			$(t.target).find("*[accept]").each(function() {
