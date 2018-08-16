@@ -1342,6 +1342,7 @@ var betteR20Base = function () {
 				<div>
 					<button class="btn toggle-dc">Show Disconnected Players</button>
 					<button class="btn send-all">Send All Messages</button>
+					<button class="btn clear-all">Clear All Messages</button>
 				</div>
 				<hr>
 				<div class="messages" style="max-height: 600px; overflow-y: auto; overflow-x: hidden; transform: translateZ(0)">
@@ -1365,11 +1366,12 @@ var betteR20Base = function () {
 
 					const $btnToggleDc = $win.find(`.toggle-dc`).off("click").text("Show Disconnected Players");
 					const $btnSendAll = $win.find(`.send-all`).off("click");
+					const $btnClearAll = $win.find(`.clear-all`).off("click");
 
 					const $pnlMessages = $win.find(`.messages`).empty();
 					const players = d20.Campaign.players.toJSON();
 					players.forEach((p, i) => {
-						const $btnSend = $(`<button class="btn send">Send</button>`).on("click", function () {
+						const $btnSend = $(`<button class="btn send" style="margin-right: 5px;">Send</button>`).on("click", function () {
 							const $btn = $(this);
 							const $wrp = $btn.closest(`.wrp-message`);
 							const toMsg = $wrp.find(`input[data-player-id]:checked`).filter(":visible").map((ii, e) => $(e).attr("data-player-id")).get();
@@ -1394,6 +1396,10 @@ var betteR20Base = function () {
 							})
 						});
 
+						const $btnClear =  $(`<button class="btn msg-clear">Clear</button>`).on("click", function () {
+							$(this).closest(`.wrp-message`).find(`.message`).val("");
+						});
+
 						$pnlMessages.append($(`
 							<div ${p.online || `style="display: none;"`} data-online="${p.online}" class="wrp-message">
 								<div>
@@ -1401,7 +1407,7 @@ var betteR20Base = function () {
 								</div>
 								<textarea style="display: block; width: 95%;" placeholder="Enter whisper" class="message"></textarea>
 							</div>						
-						`).append($btnSend).append(`<hr>`));
+						`).append($btnSend).append($btnClear).append(`<hr>`));
 					});
 
 					$btnToggleDc.on("click", () => {
@@ -1412,6 +1418,8 @@ var betteR20Base = function () {
 					$btnSendAll.on("click", () => {
 						$pnlMessages.find(`button.send`).click();
 					});
+
+					$btnClearAll.on("click", () => $pnlMessages.find(`button.msg-clear`).click());
 				}
 			},
 			{
@@ -2988,6 +2996,18 @@ var betteR20Base = function () {
 			d20plus.log("Add token rightclick commands");
 			$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
 
+			Mousetrap.bind("B B", function () { // back on layer
+				const n = d20plus._getSelectedToMove();
+				d20plus.backwardOneLayer(n);
+				return false;
+			});
+
+			Mousetrap.bind("B F", function () { // forward one layer
+				const n = d20plus._getSelectedToMove();
+				d20plus.forwardOneLayer(n);
+				return false;
+			});
+
 			// BEGIN ROLL20 CODE
 			var e, t = !1, n = [];
 			var i = function() {
@@ -3306,11 +3326,13 @@ var betteR20Base = function () {
 									i()
 							}
 							// BEGIN MOD
-							if ("rollsaves" === e) {
+							const showRollOptions = (formula, options) => {
 								const sel = d20.engine.selected();
 
-								const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => `<option value='${it}'>${Parser.attAbvToFull(it)}</option>`);
+								options = options.map(it => `<option>${it}</option>`);
+
 								const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags("Select Save") + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
+
 								dialog.dialog({
 									title: "Input Value",
 									beforeClose: function() {
@@ -3318,12 +3340,12 @@ var betteR20Base = function () {
 									},
 									buttons: {
 										Submit: function() {
-											const val = Parser.attAbvToFull(dialog.find("select").val());
+											const val = dialog.find("select").val();
 											console.log(val);
 											d20.engine.unselect();
 											sel.forEach(it => {
 												d20.engine.select(it);
-												const toRoll = `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`;
+												const toRoll = formula(it, val);
 												d20.textchat.doChatInput(toRoll);
 												d20.engine.unselect();
 											});
@@ -3340,6 +3362,14 @@ var betteR20Base = function () {
 								});
 
 								i();
+							};
+
+							if ("rollsaves" === e) {
+								const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
+								showRollOptions(
+									(token, val) => `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`,
+									options
+								);
 							} else if ("rollinit" === e) {
 								const sel = d20.engine.selected();
 								d20.engine.unselect();
@@ -3349,6 +3379,72 @@ var betteR20Base = function () {
 									d20.textchat.doChatInput(toRoll);
 									d20.engine.unselect();
 								});
+								i();
+							} else if ("rollskills" === e) {
+								const options = [
+									"Athletics",
+									"Acrobatics",
+									"Sleight of Hand",
+									"Stealth",
+									"Arcana",
+									"History",
+									"Investigation",
+									"Nature",
+									"Religion",
+									"Animal Handling",
+									"Insight",
+									"Medicine",
+									"Perception",
+									"Survival",
+									"Deception",
+									"Intimidation",
+									"Performance",
+									"Persuasion"
+								].sort();
+
+								showRollOptions(
+									(token, val) => {
+										const clean = val.toLowerCase().replace(/ /g, "_");
+										const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
+
+										const doRoll = (atb = abil) => {
+											return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+										}
+
+										try {
+											if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
+												const charIdMaybe = token.model.toJSON().represents;
+												if (!charIdMaybe) return doRoll();
+												const charMaybe = d20.Campaign.characters.get(charIdMaybe);
+												if (charMaybe) {
+													const atbs = charMaybe.attribs.toJSON();
+													const npcAtbMaybe = atbs.find(it => it.name === "npc");
+
+													if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+														const npcClean = `npc_${clean}`;
+														const bonusMaybe = atbs.find(it => it.name === npcClean);
+														if (bonusMaybe) return doRoll(npcClean);
+														else return doRoll();
+													} else {
+														const pcClean = `${clean}_bonus`;
+														const bonusMaybe = atbs.find(it => it.name === pcClean);
+														if (bonusMaybe) return doRoll(pcClean);
+														else return doRoll();
+													}
+												} else return doRoll();
+											} else return doRoll();
+										} catch (x) {
+											console.error(x);
+											return doRoll();
+										}
+									},
+									options
+								);
+							} else if ("forward-one" === e) {
+								d20plus.forwardOneLayer(n);
+								i();
+							} else if ("back-one" === e) {
+								d20plus.backwardOneLayer(n);
 								i();
 							} else if ("rollertokenresize" === e) {
 								resizeToken();
@@ -3428,6 +3524,28 @@ var betteR20Base = function () {
 			d20.token_editor.showContextMenu = r;
 			d20.token_editor.closeContextMenu = i;
 			$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		},
+
+		_getSelectedToMove () {
+			const n = [];
+			for (var l = d20.engine.selected(), c = 0; c < l.length; c++)
+				n.push(l[c]);
+		},
+
+		forwardOneLayer (n) {
+			d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+				_.each(n, function (e) {
+					d20.engine.canvas.bringForward(e)
+				}),
+				d20.Campaign.activePage().debounced_recordZIndexes()
+		},
+
+		backwardOneLayer (n) {
+			d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+				_.each(n, function (e) {
+					d20.engine.canvas.sendBackwards(e)
+				}),
+				d20.Campaign.activePage().debounced_recordZIndexes()
 		},
 
 		_tempTopRenderLines: {}, // format: {x: ..., y: ..., to_x: ..., to_y: ..., ticks: ..., offset: ...}
@@ -4721,7 +4839,7 @@ var betteR20Base = function () {
               GM Notes
               <span style='font-weight: regular; font-size: 0.9em;'>(Only visible to GMs)</span>
             </h4>
-            <textarea class='gmnotes'></textarea>
+            <textarea class='gmnotes summernote'></textarea>
             <div class='clear'></div>
             <label>&nbsp;</label>
           </div>
@@ -4884,7 +5002,7 @@ var betteR20Base = function () {
 		  <div class='clear' style='height: 15px;'></div>
 		  <label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
 		  <input type="number" class="scale_number" style="width: 35px;" value="<$!this.model.get("scale_number")$>" />
-		  <select class='scale_units' style='width: 50px; position: relative; top: 2px;'>
+		  <select class='scale_units' style='width: 65px; position: relative;'>
 			<option value='ft'>ft.</option>
 			<option value='m'>m.</option>
 			<option value='km'>km.</option>
@@ -4893,8 +5011,13 @@ var betteR20Base = function () {
 			<option value='cm'>cm.</option>
 			<option value='un'>un.</option>
 			<option value='hex'>hex</option>
-			<option value='sq.'>sq.</option>
+			<option value='sq'>sq.</option>
+			<option value='custom'>Custom...</option>
 		  </select>
+		  <div class='hidden' id='custom_scale_units'>
+			<label style='margin-left: 55px; position: relative; top: 6px;'><strong>Custom Unit</strong></label>
+			<input style='width: 60px;' type='text'>
+		  </div>
 		  <div class='clear' style='height: 15px;'></div>
 		  <label>
 			<strong>Background</strong>
@@ -4910,27 +5033,28 @@ var betteR20Base = function () {
 		  </label>
 		  <input type="number" class="snappingincrement" style="width: 35px;" value="<$!this.model.get("snapping_increment")$>" /> units
 		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>
-			<a class='showtip pictos' title='Type of formula to use for calculating distances when using the measurement tool. Note: does not apply to Hex grids.'>?</a>
-			Diagonals
-		  </label>
-		  <select class='diagonaltype' style='width: 100px;'>
-			<option value="foure" <$ if(this.model.get("diagonaltype") == "foure") { $>selected<$ } $> >D&D 4E Compatible (Default)</option>
-			<option value="threefive" <$ if(this.model.get("diagonaltype") == "threefive") { $>selected<$ } $> >Pathfinder/3.5E Compatible</option>
-			<option value="pythagorean" <$ if(this.model.get("diagonaltype") == "pythagorean") { $>selected<$ } $> >Euclidean</option>
-			<option value="manhattan" <$ if(this.model.get("diagonaltype") == "manhattan") { $>selected<$ } $> >Manhattan</option>
+		  <label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
+		  <select id='gridtype' style='width: 100px;'>
+			<option selected value='square'>Square</option>
+			<option value='hex'>Hex (V)</option>
+			<option value='hexr'>Hex (H)</option>
 		  </select>
 		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
-		  <select class='gridtype' style='width: 100px;'>
-			<option value="square" <$ if(this.model.get("grid_type") == "square") { $>selected<$ } $> >Square</option>
-			<option value="hex" <$ if(this.model.get("grid_type") == "hex") { $>selected<$ } $> >Hex (V)</option>
-			<option value="hexr" <$ if(this.model.get("grid_type") == "hexr") { $>selected<$ } $> >Hex (H)</option>
-		  </select>
-		  <div class='clear' style='height: 2px;'></div>
-		  <label class='checkbox' style='margin-left: 130px;'>
-			<input class='gridlabels' type='checkbox' value='1'>&nbsp; Show Labels (Hex Only)</input>
+		  <label class='checkbox' id='hexlabels' style='margin-left: 130px;'>
+			<input class='gridlabels' type='checkbox' value='1'>&nbsp; Show Labels</input>
 		  </label>
+		  <div class='clear' style='height: 2px;'></div>
+		  <label style='margin-left: 55px; position: relative; top: 4px;'>
+			<a class='showtip pictos' href='https://wiki.roll20.net/Ruler' target='_blank'>?</a>
+			Measurement
+		  </label>
+		  <select id='diagonaltype' style='width: 100px;'>
+			<option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
+			<option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
+			<option class='squareonly' value='manhattan'>Manhattan</option>
+			<option class='hexonly' value='hex'>Hex Path</option>
+			<option value='pythagorean'>Euclidean</option>
+		  </select>
 		  <div class='clear' style='height: 10px;'></div>
 		  <label style='margin-left: 55px;'>Color</label>
 		  <input class='gridcolor' type='text'>
@@ -5020,8 +5144,14 @@ var betteR20Base = function () {
           <$ if(window.is_gm) { $>
           <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
           <!-- BEGIN MOD -->
-          <li class='head hasSub' data-action-type='rollinit'>Roll Initiative</li>
-          <li class='head hasSub' data-action-type='rollsaves'>Roll Save</li>
+          <li class='head hasSub' data-menuname='massroll'>
+            Mass Roll &raquo;
+            <ul class='submenu' data-menuname='massroll'>
+              <li class='head hasSub' data-action-type='rollinit'>Initiative</li>
+         	  <li class='head hasSub' data-action-type='rollsaves'>Save</li>
+         	  <li class='head hasSub' data-action-type='rollskills'>Skill</li>
+            </ul>
+          </li>
           <!-- END MOD -->
           <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
           <$ } $>
@@ -5034,6 +5164,10 @@ var betteR20Base = function () {
           <li data-action-type='undo'>Undo</li>
           <$ if(this.view) { $>
           <li data-action-type='tofront'>To Front</li>
+          <!-- BEGIN MOD -->
+          <li data-action-type='forward-one'>Forward One (B-F)</li>
+          <li data-action-type='back-one'>Back One (B-B)</li>
+          <!-- END MOD -->
           <li data-action-type='toback'>To Back</li>
           <li class='head hasSub' data-menuname='advanced'>
             Advanced &raquo;
@@ -5079,12 +5213,7 @@ var betteR20Base = function () {
 
 		template_charactereditor: `
  <script id='tmpl_charactereditor' type='text/html'>
-      <div class='dialog largedialog charactereditor' style='display: block;'>
-        <!-- %ul.nav.nav-tabs -->
-        <!-- %li.active -->
-        <!-- %a(href="javascript:void(0);" data-tab="bioinfo") Bio & Info -->
-        <!-- %li -->
-        <!-- %a(href="javascript:void(0);" data-tab="attributesabilities") Attributes & Abilities -->
+     <div class='dialog largedialog charactereditor' style='display: block;'>
         <div class='tab-content'>
           <div class='bioinfo tab-pane'>
             <div class='row-fluid'>

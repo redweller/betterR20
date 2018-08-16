@@ -1769,8 +1769,9 @@ const betteR205etools = function () {
 											var i = $(outerI.helper[0]).attr("data-pagename");
 
 											// BEGIN ROLL20 CODE
-											var o = n.data;
+											var o = _.clone(n.data);
 											o.Name = n.name,
+												o.data = JSON.stringify(n.data),
 												o.uniqueName = i,
 												o.Content = n.content,
 												$(t.target).find("*[accept]").each(function() {
@@ -1794,29 +1795,30 @@ const betteR205etools = function () {
 								const e = character;
 								const n = i;
 
-								// original roll20 code
-								console.log("Compendium item dropped onto target!");
-								t.originalEvent.dropHandled = !0;
-								window.wantsToReceiveDrop(this, t, function () {
-									var i = $(n.helper[0]).attr("data-pagename");
-									console.log(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true"),
-										$.get(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true", function (n) {
-											var r = n.data;
-											r.Name = n.name,
-												r.uniqueName = i,
-												r.Content = n.content;
-											var o = $(t.target);
-											o.find("*[accept]").each(function () {
-												var t = $(this)
-													, n = t.attr("accept");
-												r[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.attr("value") == r[n] ? t.attr("checked", "checked") : t.removeAttr("checked") : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function () {
-													var e = $(this);
-													(e.attr("value") === r[n] || e.text() === r[n]) && e.attr("selected", "selected")
-												}) : $(this).val(r[n]),
-													e.saveSheetValues(this))
+								// BEGIN ROLL20 CODE
+								console.log("Compendium item dropped onto target!"),
+									t.originalEvent.dropHandled = !0,
+									window.wantsToReceiveDrop(this, t, function() {
+										var i = $(n.helper[0]).attr("data-pagename");
+										console.log(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true"),
+											$.get(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true", function(n) {
+												var o = _.clone(n.data);
+												o.Name = n.name,
+													o.data = JSON.stringify(n.data),
+													o.uniqueName = i,
+													o.Content = n.content,
+													$(t.target).find("*[accept]").each(function() {
+														var t = $(this)
+															, n = t.attr("accept");
+														o[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+															var e = $(this);
+															e.val() !== o[n] && e.text() !== o[n] || e.prop("selected", !0)
+														}) : $(this).val(o[n]),
+															e.saveSheetValues(this))
+													})
 											})
-										})
-								});
+									});
+								// END ROLL20 CODE
 							}
 						}
 					});
@@ -1837,8 +1839,9 @@ const betteR205etools = function () {
 		});
 
 		// BEGIN ROLL20 CODE
-		var o = n.data;
+		var o = _.clone(n.data);
 		o.Name = n.name,
+			o.data = JSON.stringify(n.data),
 			o.uniqueName = i,
 			o.Content = n.content,
 			$(t.target).find("*[accept]").each(function() {
@@ -1968,7 +1971,7 @@ const betteR205etools = function () {
 		var newRowId = d20plus.generateRowId();
 		var actiontext = text;
 		var action_desc = actiontext; // required for later reduction of information dump.
-		var rollbase = d20plus.importer.rollbase;
+		var rollbase = d20plus.importer.rollbase();
 		// attack parsing
 		if (actiontext.indexOf(" Attack:") > -1) {
 			var attacktype = "";
@@ -2169,8 +2172,10 @@ const betteR205etools = function () {
 						pType.type,
 						...pType.tags,
 						`cr ${(data.cr ? (data.cr.cr || data.cr) : "").replace(/\//g, " over ")}` || "unknown cr",
-						Parser.sourceJsonToFull(data.source)
-					], "monsters"),
+						Parser.sourceJsonToFull(data.source),
+						Parser.sizeAbvToFull(data.size),
+						...(data.environment || [])
+					], "creature"),
 					...options.charOptions
 				},
 				{
@@ -2680,7 +2685,7 @@ const betteR205etools = function () {
 										tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
 									}
 
-									var rollbase = d20plus.importer.rollbase;
+									var rollbase = d20plus.importer.rollbase();
 									if (v.attack != null) {
 										if (!(v.attack instanceof Array)) {
 											var tmp = v.attack;
@@ -3447,7 +3452,7 @@ const betteR205etools = function () {
 				`rarity ${data.rarity}`,
 				...data.procType,
 				Parser.sourceJsonToFull(data.source)
-			], "items")
+			], "item")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3691,7 +3696,7 @@ const betteR205etools = function () {
 				Parser.psiTypeToFull(data.type),
 				data.order || "orderless",
 				Parser.sourceJsonToFull(data.source)
-				], "psionics")
+				], "psionic")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_PSIONICS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3773,7 +3778,7 @@ const betteR205etools = function () {
 			tags: d20plus.importer.getTagString([
 				Parser.sizeAbvToFull(data.size),
 				Parser.sourceJsonToFull(data.source)
-			], "races")
+			], "race")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RACES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3860,7 +3865,7 @@ const betteR205etools = function () {
 			name: name,
 			tags: d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "feats")
+			], "feat")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_FEATS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3939,7 +3944,7 @@ const betteR205etools = function () {
 				tags: d20plus.importer.getTagString([
 					Parser.sizeAbvToFull(data.size),
 					Parser.sourceJsonToFull(data.source)
-				], "objects")
+				], "object")
 			},
 			{
 			success: function (character) {
@@ -4042,8 +4047,17 @@ const betteR205etools = function () {
 
 // version from previous scripts. Might be useless now?
 	d20plus.importer.rollbaseOld = "@{wtype}&{template:npcaction} @{attack_display_flag} @{damage_flag} {{name=@{npc_name}}} {{rname=@{name}}} {{r1=[[1d20+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{description}}} @{charname_output}";
-// from OGL sheet, Jan 2018
-	d20plus.importer.rollbase = "@{wtype}&{template:npcaction} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=@{name}}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{show_desc}}} @{charname_output}";
+
+	// from OGL sheet, Aug 2018
+	d20plus.importer.rollbase = () => {
+		const dtype = d20plus.importer.getDesiredDamageType();
+		if (dtype === "full") {
+			return `@{wtype}&{template:npcaction} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=@{name}}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{show_desc}}} @{charname_output}`;
+		} else {
+			return `@{wtype}&{template:npcatk} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=[@{name}](~repeating_npcaction_npc_dmg)}} {{rnamec=[@{name}](~repeating_npcaction_npc_crit)}} {{type=[Attack](~repeating_npcaction_npc_dmg)}} {{typec=[Attack](~repeating_npcaction_npc_crit)}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{description=@{show_desc}}} @{charname_output}`;
+		}
+
+	};
 
 	d20plus.importer.getDesiredRollType = function () {
 		// rtype
@@ -4207,7 +4221,7 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "classes")
+			], "class")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -4372,7 +4386,7 @@ const betteR205etools = function () {
 				tags: d20plus.importer.getTagString([
 					data.class,
 					Parser.sourceJsonToFull(data.source)
-				], "subclasses")
+				], "subclass")
 			}, {
 				success: function (handout) {
 					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -4458,7 +4472,7 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "backgrounds")
+			], "background")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BACKGROUNDS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -4536,7 +4550,7 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "invocations")
+			], "invocation")
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_INVOCATIONS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
