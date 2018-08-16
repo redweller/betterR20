@@ -3314,11 +3314,13 @@ var betteR20Base = function () {
 									i()
 							}
 							// BEGIN MOD
-							if ("rollsaves" === e) {
+							const showRollOptions = (formula, options) => {
 								const sel = d20.engine.selected();
 
-								const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => `<option value='${it}'>${Parser.attAbvToFull(it)}</option>`);
+								options = options.map(it => `<option>${it}</option>`);
+
 								const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags("Select Save") + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
+
 								dialog.dialog({
 									title: "Input Value",
 									beforeClose: function() {
@@ -3326,12 +3328,12 @@ var betteR20Base = function () {
 									},
 									buttons: {
 										Submit: function() {
-											const val = Parser.attAbvToFull(dialog.find("select").val());
+											const val = dialog.find("select").val();
 											console.log(val);
 											d20.engine.unselect();
 											sel.forEach(it => {
 												d20.engine.select(it);
-												const toRoll = `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`;
+												const toRoll = formula(it, val);
 												d20.textchat.doChatInput(toRoll);
 												d20.engine.unselect();
 											});
@@ -3348,6 +3350,14 @@ var betteR20Base = function () {
 								});
 
 								i();
+							};
+
+							if ("rollsaves" === e) {
+								const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
+								showRollOptions(
+									(token, val) => `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`,
+									options
+								);
 							} else if ("rollinit" === e) {
 								const sel = d20.engine.selected();
 								d20.engine.unselect();
@@ -3358,6 +3368,66 @@ var betteR20Base = function () {
 									d20.engine.unselect();
 								});
 								i();
+							} else if ("rollskills" === e) {
+								const options = [
+									"Athletics",
+									"Acrobatics",
+									"Sleight of Hand",
+									"Stealth",
+									"Arcana",
+									"History",
+									"Investigation",
+									"Nature",
+									"Religion",
+									"Animal Handling",
+									"Insight",
+									"Medicine",
+									"Perception",
+									"Survival",
+									"Deception",
+									"Intimidation",
+									"Performance",
+									"Persuasion"
+								].sort();
+
+								showRollOptions(
+									(token, val) => {
+										const clean = val.toLowerCase().replace(/ /g, "_");
+										const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
+
+										const doRoll = (atb = abil) => {
+											return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+										}
+
+										try {
+											if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
+												const charIdMaybe = token.model.toJSON().represents;
+												if (!charIdMaybe) return doRoll();
+												const charMaybe = d20.Campaign.characters.get(charIdMaybe);
+												if (charMaybe) {
+													const atbs = charMaybe.attribs.toJSON();
+													const npcAtbMaybe = atbs.find(it => it.name === "npc");
+
+													if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+														const npcClean = `npc_${clean}`;
+														const bonusMaybe = atbs.find(it => it.name === npcClean);
+														if (bonusMaybe) return doRoll(npcClean);
+														else return doRoll();
+													} else {
+														const pcClean = `${clean}_bonus`;
+														const bonusMaybe = atbs.find(it => it.name === pcClean);
+														if (bonusMaybe) return doRoll(pcClean);
+														else return doRoll();
+													}
+												} else return doRoll();
+											} else return doRoll();
+										} catch (x) {
+											console.error(x);
+											return doRoll();
+										}
+									},
+									options
+								);
 							} else if ("rollertokenresize" === e) {
 								resizeToken();
 								i();
@@ -5034,8 +5104,14 @@ var betteR20Base = function () {
           <$ if(window.is_gm) { $>
           <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
           <!-- BEGIN MOD -->
-          <li class='head hasSub' data-action-type='rollinit'>Roll Initiative</li>
-          <li class='head hasSub' data-action-type='rollsaves'>Roll Save</li>
+          <li class='head hasSub' data-menuname='massroll'>
+            Mass Roll &raquo;
+            <ul class='submenu' data-menuname='massroll'>
+              <li class='head hasSub' data-action-type='rollinit'>Initiative</li>
+         	  <li class='head hasSub' data-action-type='rollsaves'>Save</li>
+         	  <li class='head hasSub' data-action-type='rollskills'>Skill</li>
+            </ul>
+          </li>
           <!-- END MOD -->
           <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
           <$ } $>
