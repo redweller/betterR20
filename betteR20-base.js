@@ -4884,7 +4884,7 @@ var betteR20Base = function () {
 		  <div class='clear' style='height: 15px;'></div>
 		  <label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
 		  <input type="number" class="scale_number" style="width: 35px;" value="<$!this.model.get("scale_number")$>" />
-		  <select class='scale_units' style='width: 50px; position: relative; top: 2px;'>
+		  <select class='scale_units' style='width: 65px; position: relative;'>
 			<option value='ft'>ft.</option>
 			<option value='m'>m.</option>
 			<option value='km'>km.</option>
@@ -4893,8 +4893,13 @@ var betteR20Base = function () {
 			<option value='cm'>cm.</option>
 			<option value='un'>un.</option>
 			<option value='hex'>hex</option>
-			<option value='sq.'>sq.</option>
+			<option value='sq'>sq.</option>
+			<option value='custom'>Custom...</option>
 		  </select>
+		  <div class='hidden' id='custom_scale_units'>
+			<label style='margin-left: 55px; position: relative; top: 6px;'><strong>Custom Unit</strong></label>
+			<input style='width: 60px;' type='text'>
+		  </div>
 		  <div class='clear' style='height: 15px;'></div>
 		  <label>
 			<strong>Background</strong>
@@ -4910,27 +4915,28 @@ var betteR20Base = function () {
 		  </label>
 		  <input type="number" class="snappingincrement" style="width: 35px;" value="<$!this.model.get("snapping_increment")$>" /> units
 		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>
-			<a class='showtip pictos' title='Type of formula to use for calculating distances when using the measurement tool. Note: does not apply to Hex grids.'>?</a>
-			Diagonals
-		  </label>
-		  <select class='diagonaltype' style='width: 100px;'>
-			<option value="foure" <$ if(this.model.get("diagonaltype") == "foure") { $>selected<$ } $> >D&D 4E Compatible (Default)</option>
-			<option value="threefive" <$ if(this.model.get("diagonaltype") == "threefive") { $>selected<$ } $> >Pathfinder/3.5E Compatible</option>
-			<option value="pythagorean" <$ if(this.model.get("diagonaltype") == "pythagorean") { $>selected<$ } $> >Euclidean</option>
-			<option value="manhattan" <$ if(this.model.get("diagonaltype") == "manhattan") { $>selected<$ } $> >Manhattan</option>
+		  <label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
+		  <select id='gridtype' style='width: 100px;'>
+			<option selected value='square'>Square</option>
+			<option value='hex'>Hex (V)</option>
+			<option value='hexr'>Hex (H)</option>
 		  </select>
 		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
-		  <select class='gridtype' style='width: 100px;'>
-			<option value="square" <$ if(this.model.get("grid_type") == "square") { $>selected<$ } $> >Square</option>
-			<option value="hex" <$ if(this.model.get("grid_type") == "hex") { $>selected<$ } $> >Hex (V)</option>
-			<option value="hexr" <$ if(this.model.get("grid_type") == "hexr") { $>selected<$ } $> >Hex (H)</option>
-		  </select>
-		  <div class='clear' style='height: 2px;'></div>
-		  <label class='checkbox' style='margin-left: 130px;'>
-			<input class='gridlabels' type='checkbox' value='1'>&nbsp; Show Labels (Hex Only)</input>
+		  <label class='checkbox' id='hexlabels' style='margin-left: 130px;'>
+			<input class='gridlabels' type='checkbox' value='1'>&nbsp; Show Labels</input>
 		  </label>
+		  <div class='clear' style='height: 2px;'></div>
+		  <label style='margin-left: 55px; position: relative; top: 4px;'>
+			<a class='showtip pictos' href='https://wiki.roll20.net/Ruler' target='_blank'>?</a>
+			Measurement
+		  </label>
+		  <select id='diagonaltype' style='width: 100px;'>
+			<option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
+			<option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
+			<option class='squareonly' value='manhattan'>Manhattan</option>
+			<option class='hexonly' value='hex'>Hex Path</option>
+			<option value='pythagorean'>Euclidean</option>
+		  </select>
 		  <div class='clear' style='height: 10px;'></div>
 		  <label style='margin-left: 55px;'>Color</label>
 		  <input class='gridcolor' type='text'>
