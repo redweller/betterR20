@@ -3232,7 +3232,7 @@ const betteR205etools = function () {
 	};
 
 	d20plus.importer.getTagString = function (data, prefix) {
-		return JSON.stringify(data.map(d => `${prefix}-${Parser.stringToSlug(d.toString())}`).concat([prefix]));
+		return JSON.stringify(data.filter(it => it).map(d => `${prefix}-${Parser.stringToSlug(d.toString())}`).concat([prefix]));
 	};
 
 	// Create spell handout from js data object
