@@ -2175,7 +2175,7 @@ const betteR205etools = function () {
 						Parser.sourceJsonToFull(data.source),
 						Parser.sizeAbvToFull(data.size),
 						...(data.environment || []),
-						data.isNpc ? "npc" : undefined
+						data.isNPC ? "npc" : undefined
 					], "creature"),
 					...options.charOptions
 				},
