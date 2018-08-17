@@ -503,7 +503,12 @@ var betteR20Base = function () {
 				Need help? Join our <a href="https://discord.gg/AzyBjtQ">Discord</a>.
 				<br>
 				<br>
-				<span title="You'd think this would be obvious.">Please DO NOT post about this script or any related content in official channels, such as the Roll20 forums.</span>
+				<span title="You'd think this would be obvious.">
+				Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
+				<br>
+				<br>
+				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists. 
+				</span>
 			`);
 		},
 
