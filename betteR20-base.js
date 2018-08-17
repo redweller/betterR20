@@ -2996,13 +2996,13 @@ var betteR20Base = function () {
 			d20plus.log("Add token rightclick commands");
 			$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
 
-			Mousetrap.bind("B B", function () { // back on layer
+			Mousetrap.bind("b b", function () { // back on layer
 				const n = d20plus._getSelectedToMove();
 				d20plus.backwardOneLayer(n);
 				return false;
 			});
 
-			Mousetrap.bind("B F", function () { // forward one layer
+			Mousetrap.bind("b f", function () { // forward one layer
 				const n = d20plus._getSelectedToMove();
 				d20plus.forwardOneLayer(n);
 				return false;
@@ -5165,8 +5165,8 @@ var betteR20Base = function () {
           <$ if(this.view) { $>
           <li data-action-type='tofront'>To Front</li>
           <!-- BEGIN MOD -->
-          <li data-action-type='forward-one'>Forward One (B-F)</li>
-          <li data-action-type='back-one'>Back One (B-B)</li>
+          <li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
+          <li data-action-type='back-one'>Back One<!-- (B-B)--></li>
           <!-- END MOD -->
           <li data-action-type='toback'>To Back</li>
           <li class='head hasSub' data-menuname='advanced'>
