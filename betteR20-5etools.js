@@ -2621,7 +2621,7 @@ const betteR205etools = function () {
 									var newRowId = d20plus.generateRowId();
 									character.attribs.create({
 										name: "repeating_npctrait_" + newRowId + "_name",
-										current: v.name
+										current: d20plus.importer.getCleanText(renderer.renderEntry(v.name))
 									});
 
 									if (d20plus.getCfgVal("token", "tokenactionsTraits")) {
@@ -2640,7 +2640,7 @@ const betteR205etools = function () {
 							if (data.action) {
 								$.each(data.action, function (i, v) {
 									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
-									d20plus.importer.addAction(character, v.name, text, i);
+									d20plus.importer.addAction(character, d20plus.importer.getCleanText(renderer.renderEntry(v.name)), text, i);
 								});
 							}
 							if (data.reaction) {
@@ -2651,7 +2651,7 @@ const betteR205etools = function () {
 									var text = "";
 									character.attribs.create({
 										name: "repeating_npcreaction_" + newRowId + "_name",
-										current: v.name
+										current: d20plus.importer.getCleanText(renderer.renderEntry(v.name))
 									});
 
 									// roll20 only supports a single reaction, so only use the first
@@ -2712,7 +2712,7 @@ const betteR205etools = function () {
 											}
 											character.attribs.create({
 												name: "repeating_npcaction-l_" + newRowId + "_name",
-												current: name
+												current: d20plus.importer.getCleanText(renderer.renderEntry(name))
 											});
 											character.attribs.create({
 												name: "repeating_npcaction-l_" + newRowId + "_attack_flag",
@@ -4015,7 +4015,7 @@ const betteR205etools = function () {
 							const renderStack = [];
 							renderer.recursiveEntryRender({entries: e.entries}, renderStack, 2);
 							const actionText = d20plus.importer.getCleanText(renderStack.join(""));
-							d20plus.importer.addAction(character, e.name, actionText, i);
+							d20plus.importer.addAction(character, d20plus.importer.getCleanText(renderer.renderEntry(e.name)), actionText, i);
 						});
 					}
 
