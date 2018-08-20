@@ -1516,6 +1516,7 @@ var betteR20Base = function () {
 							let tbl = null;
 
 							paste.split("\n").forEach(line => parseLine(line.trim()));
+							parseLine(""); // ensure trailing newline
 							return tables;
 
 							function parseLine (line) {
