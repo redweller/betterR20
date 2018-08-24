@@ -776,7 +776,7 @@ const betteR205etools = function () {
 					var cr = v.attribs.find(function (a) {
 						return a.get("name").toLowerCase() === "npc_challenge";
 					});
-					if (cr) xp += parseInt(Parser.crToXpNumber(cr.get("current")));
+					if (cr && cr.get("current")) xp += parseInt(Parser.crToXpNumber(cr.get("current")));
 				});
 				// Encounter's adjusted xp
 				adjustedxp = xp * multiplier;
@@ -3613,7 +3613,6 @@ const betteR205etools = function () {
 
 		const gmnotes = JSON.stringify(roll20Data);
 
-		debugger
 		return [notecontents, gmnotes];
 	};
 
