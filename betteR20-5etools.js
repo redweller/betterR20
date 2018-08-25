@@ -13,7 +13,7 @@ const betteR205etools = function () {
 	const PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
 	const OBJECT_DATA_URL = `${DATA_URL}objects.json`;
 	const BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
-	const INVOCATION_DATA_URL = `${DATA_URL}invocations.json`;
+	const OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
 	const RACE_DATA_URL = `${DATA_URL}races.json`;
 
 	const HOMEBREW_REPO_URL = `https://api.github.com/repos/TheGiddyLimit/homebrew/`;
@@ -104,7 +104,7 @@ const betteR205etools = function () {
 			"name",
 			"source"
 		],
-		"invocation": [
+		"optionalfeature": [
 			"name",
 			"source",
 			"entries"
@@ -373,7 +373,7 @@ const betteR205etools = function () {
 	d20plus.subclasses = {};
 	d20plus.backgrounds = {};
 	d20plus.adventures = {};
-	d20plus.invocations = {};
+	d20plus.optionalfeatures = {};
 
 	d20plus.advantageModes = ["Toggle (Default Advantage)", "Toggle", "Toggle (Default Disadvantage)", "Always", "Query", "Never"];
 	d20plus.whisperModes = ["Toggle (Default GM)", "Toggle (Default Public)", "Always", "Query", "Never"];
@@ -1106,7 +1106,7 @@ const betteR205etools = function () {
 			$("a#button-classes-load-all").on(window.mousedowntype, () => d20plus.classes.buttonAll());
 			$("a#import-subclasses-load").on(window.mousedowntype, () => d20plus.subclasses.button());
 			$("a#import-backgrounds-load").on(window.mousedowntype, () => d20plus.backgrounds.button());
-			$("a#import-invocations-load").on(window.mousedowntype, () => d20plus.invocations.button());
+			$("a#import-optionalfeatures-load").on(window.mousedowntype, () => d20plus.optionalfeatures.button());
 			$("select#import-mode-select").on("change", () => d20plus.importer.importModeSwitch());
 		} else {
 			// player-only HTML if required
@@ -1156,7 +1156,7 @@ const betteR205etools = function () {
 		$("a#button-classes-load-all-player").on(window.mousedowntype, () => d20plus.classes.buttonAll(true));
 		$("a#import-subclasses-load-player").on(window.mousedowntype, () => d20plus.subclasses.button(true));
 		$("a#import-backgrounds-load-player").on(window.mousedowntype, () => d20plus.backgrounds.button(true));
-		$("a#import-invocations-load-player").on(window.mousedowntype, () => d20plus.invocations.button(true));
+		$("a#import-optionalfeatures-load-player").on(window.mousedowntype, () => d20plus.optionalfeatures.button(true));
 		$("select#import-mode-select-player").on("change", () => d20plus.importer.importModeSwitch());
 
 		$body.append(d20plus.importDialogHtml);
@@ -1190,7 +1190,7 @@ const betteR205etools = function () {
 		populateBasicDropdown("#button-races-select", "#import-races-url", RACE_DATA_URL, "race", true);
 		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", "subclass", true);
 		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, "background", true);
-		populateBasicDropdown("#button-invocations-select", "#import-invocations-url", INVOCATION_DATA_URL, "invocation", true);
+		populateBasicDropdown("#button-optionalfeatures-select", "#import-optionalfeatures-url", OPT_FEATURE_DATA_URL, "optionalfeature", true);
 
 		// bind tokens button
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
@@ -1250,7 +1250,7 @@ const betteR205etools = function () {
 				d20.journal.addFolderToFolderStructure("Subclasses");
 				d20.journal.addFolderToFolderStructure("Backgrounds");
 				d20.journal.addFolderToFolderStructure("Races");
-				d20.journal.addFolderToFolderStructure("Invocations");
+				d20.journal.addFolderToFolderStructure("Optional Features");
 				d20.journal.refreshJournalList();
 				journalFolder = d20.Campaign.get("journalfolder");
 			}
@@ -1268,7 +1268,7 @@ const betteR205etools = function () {
 		addClasses("Subclasses");
 		addClasses("Backgrounds");
 		addClasses("Races");
-		addClasses("Invocations");
+		addClasses("Optional Features");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -1437,24 +1437,24 @@ const betteR205etools = function () {
 												current: "0"
 											}).save();
 										});
-									} else if (data.data.Category === "Invocations") { // TODO remove Invocation workaround when roll20 supports invocation drag-n-drop properly
-										const invo = data.Vetoolscontent;
+									} else if (data.data.Category === "OptionalFeature") { // TODO remove Invocation/Optional Feature workaround when roll20 supports invocation drag-n-drop properly
+										const optionalFeature = data.Vetoolscontent;
 										const renderer = new EntryRenderer();
 										renderer.setBaseUrl(BASE_SITE_URL);
-										const rendered = renderer.renderEntry({entries: invo.entries});
+										const rendered = renderer.renderEntry({entries: optionalFeature.entries});
 
 										const fRowId = d20plus.generateRowId();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
-											current: invo.name
+											current: optionalFeature.name
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source`,
-											current: "Invocation"
+											current: Parser.optFeatureTypeToFull(optionalFeature.featureType)
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source_type`,
-											current: invo.name
+											current: optionalFeature.name
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_description`,
@@ -4517,17 +4517,17 @@ const betteR205etools = function () {
 		return [noteContents, gmNotes];
 	};
 
-	d20plus.invocations.button = function (forcePlayer) {
+	d20plus.optionalfeatures.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-invocations-url-player").val() : $("#import-invocations-url").val();
+		const url = playerMode ? $("#import-optionalfeatures-url-player").val() : $("#import-optionalfeatures-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.invocations.playerImportBuilder : d20plus.invocations.handoutBuilder;
+			const handoutBuilder = playerMode ? d20plus.optionalfeatures.playerImportBuilder : d20plus.optionalfeatures.handoutBuilder;
 
 			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
-					"invocation",
-					data.invocation,
+					"optionalfeature",
+					data.optionalfeature,
 					handoutBuilder,
 					{
 						forcePlayer
@@ -4537,10 +4537,10 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.invocations.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Invocations`, folderName);
-		const path = ["Invocations", folderName, data.name];
+		const folder = d20plus.importer.makeDirTree(`Optional Features`, folderName);
+		const path = ["Optional Features", folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -4550,12 +4550,12 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "invocation")
+			], "optionalfeature")
 		}, {
 			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_INVOCATIONS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OPT_FEATURES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
 
-				const [noteContents, gmNotes] = d20plus.invocations._getHandoutData(data);
+				const [noteContents, gmNotes] = d20plus.optionalfeatures._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
 				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
@@ -4564,15 +4564,15 @@ const betteR205etools = function () {
 		});
 	};
 
-	d20plus.invocations.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.invocations._getHandoutData(data);
+	d20plus.optionalfeatures.playerImportBuilder = function (data) {
+		const [notecontents, gmnotes] = d20plus.optionalfeatures._getHandoutData(data);
 
 		const importId = d20plus.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
 
-	d20plus.invocations._getHandoutData = function (data) {
+	d20plus.optionalfeatures._getHandoutData = function (data) {
 		const renderer = new EntryRenderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
@@ -4581,13 +4581,13 @@ const betteR205etools = function () {
 		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
 
 		const rendered = renderStack.join("");
-		const prereqs = EntryRenderer.invocation.getPrerequisiteText(data.prerequisites);
+		const prereqs = EntryRenderer.optionalfeature.getPrerequisiteText(data.prerequisites);
 
 		const r20json = {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Invocations"
+				"Category": "Optional Features"
 			}
 		};
 		const gmNotes = JSON.stringify(r20json);
@@ -5019,7 +5019,7 @@ const betteR205etools = function () {
 				}
 				return folderName;
 			}
-			case "invocation": {
+			case "optionalfeature": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":
@@ -5505,7 +5505,7 @@ Errors: <span id="import-errors">0</span>
 <option value="class">Classes</option>
 <option value="subclass">Subclasses</option>
 <option value="background">Backgrounds</option>
-<option value="invocation">Invocations</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 <option value="adventure">Adventures</option>
 </select>
 `;
@@ -5520,7 +5520,7 @@ Errors: <span id="import-errors">0</span>
 <option value="class">Classes</option>
 <option value="subclass">Subclasses</option>
 <option value="background">Backgrounds</option>
-<option value="invocation">Invocations</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 </select>
 `;
 	d20plus.settingsHtmlPtMonsters = `
@@ -5739,22 +5739,22 @@ To import from third-party sources, either individually select one available in 
 
 
 	d20plus.settingsHtmlPtInvocations = `
-<div class="importer-section" data-import-group="invocation">
-<h4>Invocation Importing</h4>
-<label for="import-invocations-url">Invocation Data URL:</label>
-<select id="button-invocations-select"><!-- populate with JS--></select>
-<input type="text" id="import-invocations-url">
-<a class="btn" href="#" id="import-invocations-load">Import Invocations</a>
+<div class="importer-section" data-import-group="optionalfeature">
+<h4>Optional Feature (Invocations, etc.) Importing</h4>
+<label for="import-optionalfeatures-url">Optional Feature Data URL:</label>
+<select id="button-optionalfeatures-select"><!-- populate with JS--></select>
+<input type="text" id="import-optionalfeatures-url">
+<a class="btn" href="#" id="import-optionalfeatures-load">Import Optional Features</a>
 </div>
 `;
 
 	d20plus.settingsHtmlPtInvocationsPlayer = `
-<div class="importer-section" data-import-group="invocation">
-<h4>Invocation Importing</h4>
-<label for="import-invocation-url-player">Invocation Data URL:</label>
-<select id="button-invocation-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-invocations-url-player">
-<a class="btn" href="#" id="import-invocations-load-player">Import Invocations</a>
+<div class="importer-section" data-import-group="optionalfeature">
+<h4>Optional Feature (Invocations, etc.) Importing</h4>
+<label for="import-optionalfeatures-url-player">Optional Feature Data URL:</label>
+<select id="button-optionalfeatures-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-optionalfeatures-url-player">
+<a class="btn" href="#" id="import-optionalfeatures-load-player">Import Optional Features</a>
 </div>
 `;
 
