@@ -2749,7 +2749,7 @@ const betteR205etools = function () {
 								character.attribs.create({name: "npcreactionsflag", current: 1});
 								$.each(data.reaction, function (i, v) {
 									var newRowId = d20plus.generateRowId();
-									var text = "";
+									let text = "";
 									character.attribs.create({
 										name: "repeating_npcreaction_" + newRowId + "_name",
 										current: d20plus.importer.getCleanText(renderer.renderEntry(v.name))
@@ -2764,7 +2764,7 @@ const betteR205etools = function () {
 										});
 									}
 
-									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
 									character.attribs.create({
 										name: "repeating_npcreaction_" + newRowId + "_desc",
 										current: text
