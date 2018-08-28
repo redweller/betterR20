@@ -1438,7 +1438,7 @@ const betteR205etools = function () {
 												current: "0"
 											}).save();
 										});
-									} else if (data.data.Category === "OptionalFeature") { // TODO remove Invocation/Optional Feature workaround when roll20 supports invocation drag-n-drop properly
+									} else if (data.data.Category === "Optional Features") { // TODO remove Invocation/Optional Feature workaround when roll20 supports invocation drag-n-drop properly
 										const optionalFeature = data.Vetoolscontent;
 										const renderer = new EntryRenderer();
 										renderer.setBaseUrl(BASE_SITE_URL);
