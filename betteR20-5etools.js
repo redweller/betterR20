@@ -13,7 +13,7 @@ const betteR205etools = function () {
 	const PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
 	const OBJECT_DATA_URL = `${DATA_URL}objects.json`;
 	const BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
-	const INVOCATION_DATA_URL = `${DATA_URL}invocations.json`;
+	const OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
 	const RACE_DATA_URL = `${DATA_URL}races.json`;
 
 	const HOMEBREW_REPO_URL = `https://api.github.com/repos/TheGiddyLimit/homebrew/`;
@@ -104,7 +104,7 @@ const betteR205etools = function () {
 			"name",
 			"source"
 		],
-		"invocation": [
+		"optionalfeature": [
 			"name",
 			"source",
 			"entries"
@@ -373,7 +373,7 @@ const betteR205etools = function () {
 	d20plus.subclasses = {};
 	d20plus.backgrounds = {};
 	d20plus.adventures = {};
-	d20plus.invocations = {};
+	d20plus.optionalfeatures = {};
 
 	d20plus.advantageModes = ["Toggle (Default Advantage)", "Toggle", "Toggle (Default Disadvantage)", "Always", "Query", "Never"];
 	d20plus.whisperModes = ["Toggle (Default GM)", "Toggle (Default Public)", "Always", "Query", "Never"];
@@ -408,6 +408,7 @@ const betteR205etools = function () {
 	};
 
 	d20plus.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}entryrender.js`});
+	d20plus.scripts.push({name: "5etoolsscalecreature", url: `${SITE_JS_URL}scalecreature.js`});
 
 	d20plus.json = [
 		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
@@ -776,7 +777,7 @@ const betteR205etools = function () {
 					var cr = v.attribs.find(function (a) {
 						return a.get("name").toLowerCase() === "npc_challenge";
 					});
-					if (cr) xp += parseInt(Parser.crToXpNumber(cr.get("current")));
+					if (cr && cr.get("current")) xp += parseInt(Parser.crToXpNumber(cr.get("current")));
 				});
 				// Encounter's adjusted xp
 				adjustedxp = xp * multiplier;
@@ -1046,7 +1047,7 @@ const betteR205etools = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtClasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtSubclasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtBackgrounds);
-			$wrpSettings.append(d20plus.settingsHtmlPtInvocations);
+			$wrpSettings.append(d20plus.settingsHtmlPtOptfeatures);
 			$wrpSettings.append(d20plus.settingsHtmlPtAdventures);
 			$wrpSettings.append(d20plus.settingsHtmlPtImportFooter);
 
@@ -1106,7 +1107,7 @@ const betteR205etools = function () {
 			$("a#button-classes-load-all").on(window.mousedowntype, () => d20plus.classes.buttonAll());
 			$("a#import-subclasses-load").on(window.mousedowntype, () => d20plus.subclasses.button());
 			$("a#import-backgrounds-load").on(window.mousedowntype, () => d20plus.backgrounds.button());
-			$("a#import-invocations-load").on(window.mousedowntype, () => d20plus.invocations.button());
+			$("a#import-optionalfeatures-load").on(window.mousedowntype, () => d20plus.optionalfeatures.button());
 			$("select#import-mode-select").on("change", () => d20plus.importer.importModeSwitch());
 		} else {
 			// player-only HTML if required
@@ -1124,7 +1125,7 @@ const betteR205etools = function () {
 		$appTo.append(d20plus.settingsHtmlPtClassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtSubclassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
-		$appTo.append(d20plus.settingsHtmlPtInvocationsPlayer);
+		$appTo.append(d20plus.settingsHtmlPtOptfeaturesPlayer);
 
 		$winPlayer.dialog({
 			autoOpen: false,
@@ -1156,7 +1157,7 @@ const betteR205etools = function () {
 		$("a#button-classes-load-all-player").on(window.mousedowntype, () => d20plus.classes.buttonAll(true));
 		$("a#import-subclasses-load-player").on(window.mousedowntype, () => d20plus.subclasses.button(true));
 		$("a#import-backgrounds-load-player").on(window.mousedowntype, () => d20plus.backgrounds.button(true));
-		$("a#import-invocations-load-player").on(window.mousedowntype, () => d20plus.invocations.button(true));
+		$("a#import-optionalfeatures-load-player").on(window.mousedowntype, () => d20plus.optionalfeatures.button(true));
 		$("select#import-mode-select-player").on("change", () => d20plus.importer.importModeSwitch());
 
 		$body.append(d20plus.importDialogHtml);
@@ -1190,7 +1191,7 @@ const betteR205etools = function () {
 		populateBasicDropdown("#button-races-select", "#import-races-url", RACE_DATA_URL, "race", true);
 		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", "subclass", true);
 		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, "background", true);
-		populateBasicDropdown("#button-invocations-select", "#import-invocations-url", INVOCATION_DATA_URL, "invocation", true);
+		populateBasicDropdown("#button-optionalfeatures-select", "#import-optionalfeatures-url", OPT_FEATURE_DATA_URL, "optionalfeature", true);
 
 		// bind tokens button
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
@@ -1250,7 +1251,7 @@ const betteR205etools = function () {
 				d20.journal.addFolderToFolderStructure("Subclasses");
 				d20.journal.addFolderToFolderStructure("Backgrounds");
 				d20.journal.addFolderToFolderStructure("Races");
-				d20.journal.addFolderToFolderStructure("Invocations");
+				d20.journal.addFolderToFolderStructure("Optional Features");
 				d20.journal.refreshJournalList();
 				journalFolder = d20.Campaign.get("journalfolder");
 			}
@@ -1268,7 +1269,7 @@ const betteR205etools = function () {
 		addClasses("Subclasses");
 		addClasses("Backgrounds");
 		addClasses("Races");
-		addClasses("Invocations");
+		addClasses("Optional Features");
 
 		// if player, force-enable dragging
 		if (!window.is_gm) {
@@ -1437,24 +1438,24 @@ const betteR205etools = function () {
 												current: "0"
 											}).save();
 										});
-									} else if (data.data.Category === "Invocations") { // TODO remove Invocation workaround when roll20 supports invocation drag-n-drop properly
-										const invo = data.Vetoolscontent;
+									} else if (data.data.Category === "Optional Features") { // TODO remove Invocation/Optional Feature workaround when roll20 supports invocation drag-n-drop properly
+										const optionalFeature = data.Vetoolscontent;
 										const renderer = new EntryRenderer();
 										renderer.setBaseUrl(BASE_SITE_URL);
-										const rendered = renderer.renderEntry({entries: invo.entries});
+										const rendered = renderer.renderEntry({entries: optionalFeature.entries});
 
 										const fRowId = d20plus.generateRowId();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
-											current: invo.name
+											current: optionalFeature.name
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source`,
-											current: "Invocation"
+											current: Parser.optFeatureTypeToFull(optionalFeature.featureType)
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_source_type`,
-											current: invo.name
+											current: optionalFeature.name
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_description`,
@@ -1880,6 +1881,104 @@ const betteR205etools = function () {
 			source: Parser.sourceJsonToAbv(m.source).toLowerCase()
 		};
 	};
+	d20plus.monsters._doScale = (doImport, origImportQueue) => {
+		const _template = `
+			<div id="d20plus-monster-import-cr-scale" title="Scale CRs">
+				<div id="monster-import-cr-scale-list">
+					<input type="search" class="search" placeholder="Search creatures...">
+					<input type="search" class="filter" placeholder="Filter...">
+					<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
+				
+					<div style="margin-top: 10px;">
+						<span class="col-4 ib"><b>Name</b></span>				
+						<span class="col-2 ib"><b>Source</b></span>				
+						<span class="col-2 ib"><b>CR</b></span>				
+						<span class="col-3 ib"><b>Scale CR</b></span>				
+					</div>
+					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+				</div>
+			<br>
+			<button class="btn">Import</button>
+			</div>
+		`;
+		if (!$(`#d20plus-monster-import-cr-scale`).length) {
+			$(`body`).append(_template);
+			$("#d20plus-monster-import-cr-scale").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 650,
+			});
+		}
+		const $win = $("#d20plus-monster-import-cr-scale");
+		$win.dialog("open");
+
+		const $fltr = $win.find(`.filter`);
+		$fltr.off("keydown").off("keyup");
+		$win.find(`button`).off("click");
+
+		const $lst = $win.find(`.list`);
+		$lst.empty();
+
+		let temp = "";
+		origImportQueue.forEach((m, i) => {
+			temp += `
+				<div>
+					<span class="name col-4 ib">${m.name}</span>
+					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-2 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
+					<span class="cr col-2 ib">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
+					<span class="col-3 ib"><input class="target-cr" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
+					<span class="index" style="display: none;">${i}</span>
+				</div>
+			`;
+		});
+		$lst.append(temp);
+
+		list = new List("monster-import-cr-scale-list", {
+			valueNames: ["name", "src"]
+		});
+
+		d20plus.importer.addListFilter($fltr, origImportQueue, list, d20plus.monsters._listIndexConverter);
+
+		const $btn = $win.find(`.btn`);
+		$btn.click(() => {
+			const queueCopy = JSON.parse(JSON.stringify(origImportQueue));
+
+			let failed = false;
+			for (const it of list.items) {
+				const $ele = $(it.elm);
+				const ix = Number($ele.find(`.index`).text());
+				const m = origImportQueue[ix];
+				const origCr = m.cr.cr || m.cr;
+				const $iptCr = $ele.find(`.target-cr`);
+				const crValRaw = $iptCr.val();
+				let crVal = crValRaw;
+				if (crVal && crVal.trim()) {
+					crVal = crVal.replace(/\s+/g, "").toLowerCase();
+					const mt = /(1\/[248]|\d+)/.exec(crVal);
+					if (mt) {
+						const asNum = Parser.crToNumber(mt[0]);
+						if (asNum < 0 || asNum > 30) {
+							alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} (should be between 0 and 30)`);
+							failed = true;
+							break;
+						} else if (asNum !== Parser.crToNumber(origCr)) {
+							queueCopy[ix] = ScaleCreature.scale(m, asNum);
+						} else {
+							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
+						}
+					} else {
+						alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)}`)
+						failed = true;
+						break;
+					}
+				}
+			}
+			if (!failed) {
+				doImport(queueCopy)
+			}
+		});
+	};
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
 		const url = $("#import-monster-url").val();
@@ -1894,14 +1993,15 @@ const betteR205etools = function () {
 						groupOptions: d20plus.monsters._groupOptions,
 						listItemBuilder: d20plus.monsters._listItemBuilder,
 						listIndex: d20plus.monsters._listCols,
-						listIndexConverter: d20plus.monsters._listIndexConverter
+						listIndexConverter: d20plus.monsters._listIndexConverter,
+						nextStep: d20plus.monsters._doScale
 					}
 				);
 			});
 		}
 	};
 
-// Import All Monsters button was clicked
+	// Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
 		const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
 		if (toLoad.length) {
@@ -1919,7 +2019,8 @@ const betteR205etools = function () {
 							groupOptions: d20plus.monsters._groupOptions,
 							listItemBuilder: d20plus.monsters._listItemBuilder,
 							listIndex: d20plus.monsters._listCols,
-							listIndexConverter: d20plus.monsters._listIndexConverter
+							listIndexConverter: d20plus.monsters._listIndexConverter,
+							nextStep: d20plus.monsters._doScale
 						}
 					);
 				}
@@ -2109,7 +2210,7 @@ const betteR205etools = function () {
 
 			// make dir
 			const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
-			const path = ["Monsters", folderName, data.name];
+			const path = ["Monsters", folderName, data._displayName || data.name];
 
 			// handle duplicates/overwrites
 			if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -2167,7 +2268,7 @@ const betteR205etools = function () {
 
 			d20.Campaign.characters.create(
 				{
-					name: name,
+					name: data._displayName || data.name,
 					tags: d20plus.importer.getTagString([
 						pType.type,
 						...pType.tags,
@@ -3613,7 +3714,6 @@ const betteR205etools = function () {
 
 		const gmnotes = JSON.stringify(roll20Data);
 
-		debugger
 		return [notecontents, gmnotes];
 	};
 
@@ -4518,17 +4618,17 @@ const betteR205etools = function () {
 		return [noteContents, gmNotes];
 	};
 
-	d20plus.invocations.button = function (forcePlayer) {
+	d20plus.optionalfeatures.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-invocations-url-player").val() : $("#import-invocations-url").val();
+		const url = playerMode ? $("#import-optionalfeatures-url-player").val() : $("#import-optionalfeatures-url").val();
 		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.invocations.playerImportBuilder : d20plus.invocations.handoutBuilder;
+			const handoutBuilder = playerMode ? d20plus.optionalfeatures.playerImportBuilder : d20plus.optionalfeatures.handoutBuilder;
 
 			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
-					"invocation",
-					data.invocation,
+					"optionalfeature",
+					data.optionalfeature,
 					handoutBuilder,
 					{
 						forcePlayer
@@ -4538,10 +4638,10 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.invocations.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Invocations`, folderName);
-		const path = ["Invocations", folderName, data.name];
+		const folder = d20plus.importer.makeDirTree(`Optional Features`, folderName);
+		const path = ["Optional Features", folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -4551,12 +4651,12 @@ const betteR205etools = function () {
 			name: name,
 			tags:  d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
-			], "invocation")
+			], "optionalfeature")
 		}, {
 			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_INVOCATIONS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OPT_FEATURES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
 
-				const [noteContents, gmNotes] = d20plus.invocations._getHandoutData(data);
+				const [noteContents, gmNotes] = d20plus.optionalfeatures._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
 				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
@@ -4565,15 +4665,15 @@ const betteR205etools = function () {
 		});
 	};
 
-	d20plus.invocations.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.invocations._getHandoutData(data);
+	d20plus.optionalfeatures.playerImportBuilder = function (data) {
+		const [notecontents, gmnotes] = d20plus.optionalfeatures._getHandoutData(data);
 
 		const importId = d20plus.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
 
-	d20plus.invocations._getHandoutData = function (data) {
+	d20plus.optionalfeatures._getHandoutData = function (data) {
 		const renderer = new EntryRenderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
@@ -4582,13 +4682,13 @@ const betteR205etools = function () {
 		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
 
 		const rendered = renderStack.join("");
-		const prereqs = EntryRenderer.invocation.getPrerequisiteText(data.prerequisites);
+		const prereqs = EntryRenderer.optionalfeature.getPrerequisiteText(data.prerequisites);
 
 		const r20json = {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Invocations"
+				"Category": "Optional Features"
 			}
 		};
 		const gmNotes = JSON.stringify(r20json);
@@ -4628,7 +4728,11 @@ const betteR205etools = function () {
 			listIndexConverter: (mon) => {
 				name: mon.name.toLowerCase(),
 				source: Parser.sourceJsonToAbv(m.source).toLowerCase() // everything is assumed to be lowercase
-			};
+			},
+			nextStep: (doImport, originalImportQueue) {
+				const modifiedImportQueue = originalImportQueue.map(it => JSON.stringify(JSON.parse(it));
+				doImport(modifiedImportQueue);
+			}
 		}
 		 */
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
@@ -4746,7 +4850,9 @@ const betteR205etools = function () {
 		const $cbShowPlayers = $("#import-showplayers");
 		$cbShowPlayers.prop("checked", dataType !== "monster");
 
-		$("#d20plus-importlist button#importstart").bind("click", function () {
+		const $btnImport = $("#d20plus-importlist button#importstart");
+		$btnImport.text(options.nextStep ? "Next" : "Import");
+		$btnImport.bind("click", function () {
 			$("#d20plus-importlist").dialog("close");
 			const overwrite = $("#import-overwrite").prop("checked");
 			const inJournals = $cbShowPlayers.prop("checked") ? "all" : "";
@@ -4762,83 +4868,93 @@ const betteR205etools = function () {
 				}
 			});
 
-			const $stsName = $("#import-name");
-			const $stsRemain = $("#import-remaining");
-			let remaining = importQueue.length;
-			let interval;
-			if (dataType === "monster" || dataType === "object") {
-				interval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
-			} else {
-				interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
-			}
+			if (!importQueue.length) return;
 
-			let cancelWorker = false;
-			const $btnCancel = $(`#importcancel`);
-			$btnCancel.off("click");
-			$btnCancel.on("click", () => {
-				handleWorkerComplete();
-				cancelWorker = true;
-			});
+			const doImport = (importQueue) => {
+				const $stsName = $("#import-name");
+				const $stsRemain = $("#import-remaining");
+				let remaining = importQueue.length;
+				let interval;
+				if (dataType === "monster" || dataType === "object") {
+					interval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+				} else {
+					interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
+				}
 
-			// start worker to process list
-			$("#d20plus-import").dialog("open");
-
-			// run one immediately
-			let worker;
-			workerFn();
-			worker = setInterval(() => {
-				workerFn();
-			}, interval);
-
-			function workerFn () {
-				if (!importQueue.length) {
+				let cancelWorker = false;
+				const $btnCancel = $(`#importcancel`);
+				$btnCancel.off("click");
+				$btnCancel.on("click", () => {
 					handleWorkerComplete();
-					return;
-				}
-				if (cancelWorker) {
-					return;
+					cancelWorker = true;
+				});
+
+				// start worker to process list
+				$("#d20plus-import").dialog("open");
+
+				// run one immediately
+				let worker;
+				workerFn();
+				worker = setInterval(() => {
+					workerFn();
+				}, interval);
+
+				function workerFn () {
+					if (!importQueue.length) {
+						handleWorkerComplete();
+						return;
+					}
+					if (cancelWorker) {
+						return;
+					}
+
+					// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
+					let it = importQueue.pop();
+					it.name = it.name || "(Unknown)";
+
+					$stsName.text(it.name);
+					$stsRemain.text(remaining--);
+
+					if (excludedProps.size) {
+						it = JSON.parse(JSON.stringify(it));
+						[...excludedProps].forEach(k => delete it[k]);
+					}
+
+					if (!window.is_gm || options.forcePlayer) {
+						handoutBuilder(it);
+					} else {
+						const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
+						const builderOptions = {};
+						if (dataType === "spell" && groupBy === "Spell Points") builderOptions.isSpellPoints = true;
+						handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo, builderOptions);
+					}
 				}
 
-				// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
-				let it = importQueue.pop();
-				it.name = it.name || "(Unknown)";
-
-				$stsName.text(it.name);
-				$stsRemain.text(remaining--);
-
-				if (excludedProps.size) {
-					it = JSON.parse(JSON.stringify(it));
-					[...excludedProps].forEach(k => delete it[k]);
+				function handleWorkerComplete () {
+					if (worker) clearInterval(worker);
+					if (cancelWorker) {
+						$stsName.text("Import cancelled");
+						if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
+						d20plus.log(`Import cancelled`);
+						setTimeout(() => {
+							d20plus.bindDropLocations();
+						}, 250);
+					} else {
+						$stsName.text("Import complete");
+						$stsRemain.text("0");
+						d20plus.log(`Import complete`);
+						setTimeout(() => {
+							d20plus.bindDropLocations();
+						}, 250);
+						if (options.callback) options.callback();
+					}
 				}
+			};
 
-				if (!window.is_gm || options.forcePlayer) {
-					handoutBuilder(it);
-				} else {
-					const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
-					const builderOptions = {};
-					if (dataType === "spell" && groupBy === "Spell Points") builderOptions.isSpellPoints = true;
-					handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo, builderOptions);
-				}
-			}
-
-			function handleWorkerComplete () {
-				if (worker) clearInterval(worker);
-				if (cancelWorker) {
-					$stsName.text("Import cancelled");
-					if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
-					d20plus.log(`Import cancelled`);
-					setTimeout(() => {
-						d20plus.bindDropLocations();
-					}, 250);
-				} else {
-					$stsName.text("Import complete");
-					$stsRemain.text("0");
-					d20plus.log(`Import complete`);
-					setTimeout(() => {
-						d20plus.bindDropLocations();
-					}, 250);
-					if (options.callback) options.callback();
-				}
+			if (options.nextStep) {
+				options.nextStep(doImport, importQueue)
+			} else {
+				doImport(importQueue);
 			}
 		});
 	};
@@ -5020,7 +5136,7 @@ const betteR205etools = function () {
 				}
 				return folderName;
 			}
-			case "invocation": {
+			case "optionalfeature": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":
@@ -5506,7 +5622,7 @@ Errors: <span id="import-errors">0</span>
 <option value="class">Classes</option>
 <option value="subclass">Subclasses</option>
 <option value="background">Backgrounds</option>
-<option value="invocation">Invocations</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 <option value="adventure">Adventures</option>
 </select>
 `;
@@ -5521,7 +5637,7 @@ Errors: <span id="import-errors">0</span>
 <option value="class">Classes</option>
 <option value="subclass">Subclasses</option>
 <option value="background">Backgrounds</option>
-<option value="invocation">Invocations</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 </select>
 `;
 	d20plus.settingsHtmlPtMonsters = `
@@ -5739,23 +5855,23 @@ To import from third-party sources, either individually select one available in 
 `;
 
 
-	d20plus.settingsHtmlPtInvocations = `
-<div class="importer-section" data-import-group="invocation">
-<h4>Invocation Importing</h4>
-<label for="import-invocations-url">Invocation Data URL:</label>
-<select id="button-invocations-select"><!-- populate with JS--></select>
-<input type="text" id="import-invocations-url">
-<a class="btn" href="#" id="import-invocations-load">Import Invocations</a>
+	d20plus.settingsHtmlPtOptfeatures = `
+<div class="importer-section" data-import-group="optionalfeature">
+<h4>Optional Feature (Invocations, etc.) Importing</h4>
+<label for="import-optionalfeatures-url">Optional Feature Data URL:</label>
+<select id="button-optionalfeatures-select"><!-- populate with JS--></select>
+<input type="text" id="import-optionalfeatures-url">
+<a class="btn" href="#" id="import-optionalfeatures-load">Import Optional Features</a>
 </div>
 `;
 
-	d20plus.settingsHtmlPtInvocationsPlayer = `
-<div class="importer-section" data-import-group="invocation">
-<h4>Invocation Importing</h4>
-<label for="import-invocation-url-player">Invocation Data URL:</label>
-<select id="button-invocation-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-invocations-url-player">
-<a class="btn" href="#" id="import-invocations-load-player">Import Invocations</a>
+	d20plus.settingsHtmlPtOptfeaturesPlayer = `
+<div class="importer-section" data-import-group="optionalfeature">
+<h4>Optional Feature (Invocations, etc.) Importing</h4>
+<label for="import-optionalfeatures-url-player">Optional Feature Data URL:</label>
+<select id="button-optionalfeatures-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-optionalfeatures-url-player">
+<a class="btn" href="#" id="import-optionalfeatures-load-player">Import Optional Features</a>
 </div>
 `;
 
@@ -5916,6 +6032,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".col-12",
 			r: "width: 100%;"
+		},
+		{
+			s: ".ib",
+			r: "display: inline-block;"
 		},
 	]);
 
