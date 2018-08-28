@@ -408,6 +408,7 @@ const betteR205etools = function () {
 	};
 
 	d20plus.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}entryrender.js`});
+	d20plus.scripts.push({name: "5etoolsscalecreature", url: `${SITE_JS_URL}scalecreature.js`});
 
 	d20plus.json = [
 		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
@@ -1046,7 +1047,7 @@ const betteR205etools = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtClasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtSubclasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtBackgrounds);
-			$wrpSettings.append(d20plus.settingsHtmlPtInvocations);
+			$wrpSettings.append(d20plus.settingsHtmlPtOptfeatures);
 			$wrpSettings.append(d20plus.settingsHtmlPtAdventures);
 			$wrpSettings.append(d20plus.settingsHtmlPtImportFooter);
 
@@ -1124,7 +1125,7 @@ const betteR205etools = function () {
 		$appTo.append(d20plus.settingsHtmlPtClassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtSubclassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
-		$appTo.append(d20plus.settingsHtmlPtInvocationsPlayer);
+		$appTo.append(d20plus.settingsHtmlPtOptfeaturesPlayer);
 
 		$winPlayer.dialog({
 			autoOpen: false,
@@ -1880,6 +1881,104 @@ const betteR205etools = function () {
 			source: Parser.sourceJsonToAbv(m.source).toLowerCase()
 		};
 	};
+	d20plus.monsters._doScale = (doImport, origImportQueue) => {
+		const _template = `
+			<div id="d20plus-monster-import-cr-scale" title="Scale CRs">
+				<div id="monster-import-cr-scale-list">
+					<input type="search" class="search" placeholder="Search creatures...">
+					<input type="search" class="filter" placeholder="Filter...">
+					<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
+				
+					<div style="margin-top: 10px;">
+						<span class="col-4 ib"><b>Name</b></span>				
+						<span class="col-2 ib"><b>Source</b></span>				
+						<span class="col-2 ib"><b>CR</b></span>				
+						<span class="col-3 ib"><b>Scale CR</b></span>				
+					</div>
+					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+				</div>
+			<br>
+			<button class="btn">Import</button>
+			</div>
+		`;
+		if (!$(`#d20plus-monster-import-cr-scale`).length) {
+			$(`body`).append(_template);
+			$("#d20plus-monster-import-cr-scale").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 650,
+			});
+		}
+		const $win = $("#d20plus-monster-import-cr-scale");
+		$win.dialog("open");
+
+		const $fltr = $win.find(`.filter`);
+		$fltr.off("keydown").off("keyup");
+		$win.find(`button`).off("click");
+
+		const $lst = $win.find(`.list`);
+		$lst.empty();
+
+		let temp = "";
+		origImportQueue.forEach((m, i) => {
+			temp += `
+				<div>
+					<span class="name col-4 ib">${m.name}</span>
+					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-2 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
+					<span class="cr col-2 ib">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
+					<span class="col-3 ib"><input class="target-cr" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
+					<span class="index" style="display: none;">${i}</span>
+				</div>
+			`;
+		});
+		$lst.append(temp);
+
+		list = new List("monster-import-cr-scale-list", {
+			valueNames: ["name", "src"]
+		});
+
+		d20plus.importer.addListFilter($fltr, origImportQueue, list, d20plus.monsters._listIndexConverter);
+
+		const $btn = $win.find(`.btn`);
+		$btn.click(() => {
+			const queueCopy = JSON.parse(JSON.stringify(origImportQueue));
+
+			let failed = false;
+			for (const it of list.items) {
+				const $ele = $(it.elm);
+				const ix = Number($ele.find(`.index`).text());
+				const m = origImportQueue[ix];
+				const origCr = m.cr.cr || m.cr;
+				const $iptCr = $ele.find(`.target-cr`);
+				const crValRaw = $iptCr.val();
+				let crVal = crValRaw;
+				if (crVal && crVal.trim()) {
+					crVal = crVal.replace(/\s+/g, "").toLowerCase();
+					const mt = /(1\/[248]|\d+)/.exec(crVal);
+					if (mt) {
+						const asNum = Parser.crToNumber(mt[0]);
+						if (asNum < 0 || asNum > 30) {
+							alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} (should be between 0 and 30)`);
+							failed = true;
+							break;
+						} else if (asNum !== Parser.crToNumber(origCr)) {
+							queueCopy[ix] = ScaleCreature.scale(m, asNum);
+						} else {
+							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
+						}
+					} else {
+						alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)}`)
+						failed = true;
+						break;
+					}
+				}
+			}
+			if (!failed) {
+				doImport(queueCopy)
+			}
+		});
+	};
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
 		const url = $("#import-monster-url").val();
@@ -1894,14 +1993,15 @@ const betteR205etools = function () {
 						groupOptions: d20plus.monsters._groupOptions,
 						listItemBuilder: d20plus.monsters._listItemBuilder,
 						listIndex: d20plus.monsters._listCols,
-						listIndexConverter: d20plus.monsters._listIndexConverter
+						listIndexConverter: d20plus.monsters._listIndexConverter,
+						nextStep: d20plus.monsters._doScale
 					}
 				);
 			});
 		}
 	};
 
-// Import All Monsters button was clicked
+	// Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
 		const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
 		if (toLoad.length) {
@@ -1919,7 +2019,8 @@ const betteR205etools = function () {
 							groupOptions: d20plus.monsters._groupOptions,
 							listItemBuilder: d20plus.monsters._listItemBuilder,
 							listIndex: d20plus.monsters._listCols,
-							listIndexConverter: d20plus.monsters._listIndexConverter
+							listIndexConverter: d20plus.monsters._listIndexConverter,
+							nextStep: d20plus.monsters._doScale
 						}
 					);
 				}
@@ -2109,7 +2210,7 @@ const betteR205etools = function () {
 
 			// make dir
 			const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
-			const path = ["Monsters", folderName, data.name];
+			const path = ["Monsters", folderName, data._displayName || data.name];
 
 			// handle duplicates/overwrites
 			if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -2167,7 +2268,7 @@ const betteR205etools = function () {
 
 			d20.Campaign.characters.create(
 				{
-					name: name,
+					name: data._displayName || data.name,
 					tags: d20plus.importer.getTagString([
 						pType.type,
 						...pType.tags,
@@ -4627,7 +4728,11 @@ const betteR205etools = function () {
 			listIndexConverter: (mon) => {
 				name: mon.name.toLowerCase(),
 				source: Parser.sourceJsonToAbv(m.source).toLowerCase() // everything is assumed to be lowercase
-			};
+			},
+			nextStep: (doImport, originalImportQueue) {
+				const modifiedImportQueue = originalImportQueue.map(it => JSON.stringify(JSON.parse(it));
+				doImport(modifiedImportQueue);
+			}
 		}
 		 */
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
@@ -4745,7 +4850,9 @@ const betteR205etools = function () {
 		const $cbShowPlayers = $("#import-showplayers");
 		$cbShowPlayers.prop("checked", dataType !== "monster");
 
-		$("#d20plus-importlist button#importstart").bind("click", function () {
+		const $btnImport = $("#d20plus-importlist button#importstart");
+		$btnImport.text(options.nextStep ? "Next" : "Import");
+		$btnImport.bind("click", function () {
 			$("#d20plus-importlist").dialog("close");
 			const overwrite = $("#import-overwrite").prop("checked");
 			const inJournals = $cbShowPlayers.prop("checked") ? "all" : "";
@@ -4761,83 +4868,93 @@ const betteR205etools = function () {
 				}
 			});
 
-			const $stsName = $("#import-name");
-			const $stsRemain = $("#import-remaining");
-			let remaining = importQueue.length;
-			let interval;
-			if (dataType === "monster" || dataType === "object") {
-				interval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
-			} else {
-				interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
-			}
+			if (!importQueue.length) return;
 
-			let cancelWorker = false;
-			const $btnCancel = $(`#importcancel`);
-			$btnCancel.off("click");
-			$btnCancel.on("click", () => {
-				handleWorkerComplete();
-				cancelWorker = true;
-			});
+			const doImport = (importQueue) => {
+				const $stsName = $("#import-name");
+				const $stsRemain = $("#import-remaining");
+				let remaining = importQueue.length;
+				let interval;
+				if (dataType === "monster" || dataType === "object") {
+					interval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+				} else {
+					interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
+				}
 
-			// start worker to process list
-			$("#d20plus-import").dialog("open");
-
-			// run one immediately
-			let worker;
-			workerFn();
-			worker = setInterval(() => {
-				workerFn();
-			}, interval);
-
-			function workerFn () {
-				if (!importQueue.length) {
+				let cancelWorker = false;
+				const $btnCancel = $(`#importcancel`);
+				$btnCancel.off("click");
+				$btnCancel.on("click", () => {
 					handleWorkerComplete();
-					return;
-				}
-				if (cancelWorker) {
-					return;
+					cancelWorker = true;
+				});
+
+				// start worker to process list
+				$("#d20plus-import").dialog("open");
+
+				// run one immediately
+				let worker;
+				workerFn();
+				worker = setInterval(() => {
+					workerFn();
+				}, interval);
+
+				function workerFn () {
+					if (!importQueue.length) {
+						handleWorkerComplete();
+						return;
+					}
+					if (cancelWorker) {
+						return;
+					}
+
+					// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
+					let it = importQueue.pop();
+					it.name = it.name || "(Unknown)";
+
+					$stsName.text(it.name);
+					$stsRemain.text(remaining--);
+
+					if (excludedProps.size) {
+						it = JSON.parse(JSON.stringify(it));
+						[...excludedProps].forEach(k => delete it[k]);
+					}
+
+					if (!window.is_gm || options.forcePlayer) {
+						handoutBuilder(it);
+					} else {
+						const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
+						const builderOptions = {};
+						if (dataType === "spell" && groupBy === "Spell Points") builderOptions.isSpellPoints = true;
+						handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo, builderOptions);
+					}
 				}
 
-				// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
-				let it = importQueue.pop();
-				it.name = it.name || "(Unknown)";
-
-				$stsName.text(it.name);
-				$stsRemain.text(remaining--);
-
-				if (excludedProps.size) {
-					it = JSON.parse(JSON.stringify(it));
-					[...excludedProps].forEach(k => delete it[k]);
+				function handleWorkerComplete () {
+					if (worker) clearInterval(worker);
+					if (cancelWorker) {
+						$stsName.text("Import cancelled");
+						if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
+						d20plus.log(`Import cancelled`);
+						setTimeout(() => {
+							d20plus.bindDropLocations();
+						}, 250);
+					} else {
+						$stsName.text("Import complete");
+						$stsRemain.text("0");
+						d20plus.log(`Import complete`);
+						setTimeout(() => {
+							d20plus.bindDropLocations();
+						}, 250);
+						if (options.callback) options.callback();
+					}
 				}
+			};
 
-				if (!window.is_gm || options.forcePlayer) {
-					handoutBuilder(it);
-				} else {
-					const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
-					const builderOptions = {};
-					if (dataType === "spell" && groupBy === "Spell Points") builderOptions.isSpellPoints = true;
-					handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo, builderOptions);
-				}
-			}
-
-			function handleWorkerComplete () {
-				if (worker) clearInterval(worker);
-				if (cancelWorker) {
-					$stsName.text("Import cancelled");
-					if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
-					d20plus.log(`Import cancelled`);
-					setTimeout(() => {
-						d20plus.bindDropLocations();
-					}, 250);
-				} else {
-					$stsName.text("Import complete");
-					$stsRemain.text("0");
-					d20plus.log(`Import complete`);
-					setTimeout(() => {
-						d20plus.bindDropLocations();
-					}, 250);
-					if (options.callback) options.callback();
-				}
+			if (options.nextStep) {
+				options.nextStep(doImport, importQueue)
+			} else {
+				doImport(importQueue);
 			}
 		});
 	};
@@ -5738,7 +5855,7 @@ To import from third-party sources, either individually select one available in 
 `;
 
 
-	d20plus.settingsHtmlPtInvocations = `
+	d20plus.settingsHtmlPtOptfeatures = `
 <div class="importer-section" data-import-group="optionalfeature">
 <h4>Optional Feature (Invocations, etc.) Importing</h4>
 <label for="import-optionalfeatures-url">Optional Feature Data URL:</label>
@@ -5748,7 +5865,7 @@ To import from third-party sources, either individually select one available in 
 </div>
 `;
 
-	d20plus.settingsHtmlPtInvocationsPlayer = `
+	d20plus.settingsHtmlPtOptfeaturesPlayer = `
 <div class="importer-section" data-import-group="optionalfeature">
 <h4>Optional Feature (Invocations, etc.) Importing</h4>
 <label for="import-optionalfeatures-url-player">Optional Feature Data URL:</label>
@@ -5915,6 +6032,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".col-12",
 			r: "width: 100%;"
+		},
+		{
+			s: ".ib",
+			r: "display: inline-block;"
 		},
 	]);
 
