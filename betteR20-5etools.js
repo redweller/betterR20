@@ -541,6 +541,7 @@ const betteR205etools = function () {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
 			d20plus.addCustomArtSearch();
+			d20plus.baseHandleConfigChange();
 			d20plus.handleConfigChange();
 			d20plus.addTokenHover();
 		} else {

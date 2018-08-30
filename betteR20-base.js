@@ -994,6 +994,7 @@ var betteR20Base = function () {
 								toAdd.append(td);
 								break;
 							}
+							case "float":
 							case "integer": {
 								const def = d20plus.getCfgDefaultVal(cfgK, grpK);
 								const field = $(`<input id="conf_field_${idx}" type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" ${def != null ? `placeholder="Default: ${def}"` : ""}>`);
@@ -1185,6 +1186,10 @@ var betteR20Base = function () {
 
 		baseHandleConfigChange: () => {
 			d20plus._handleStatusTokenConfigChange();
+			if (d20plus.hasCfgVal("interface", "toolbarOpacity")) {
+				const v = Math.max(Math.min(Number(d20plus.getCfgVal("interface", "toolbarOpacity")), 1), 0);
+				$(`#secondary-toolbar`).css({opacity: v});
+			}
 		},
 
 		startPlayerConfigHandler: () => {
