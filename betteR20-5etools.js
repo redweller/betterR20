@@ -4965,7 +4965,9 @@ const betteR205etools = function () {
 			};
 
 			if (options.nextStep) {
-				options.nextStep(doImport, importQueue)
+				if (importQueue.length) {
+					options.nextStep(doImport, importQueue)
+				}
 			} else {
 				doImport(importQueue);
 			}
