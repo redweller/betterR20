@@ -4847,6 +4847,18 @@ const betteR205etools = function () {
 		options.groupOptions.forEach(g => {
 			$selGroupBy.append(`<option value="${g}">${g}</option>`);
 		});
+		const storageKeyGroupBy = `Veconfig-importer-groupby-${dataType}`;
+		$selGroupBy.on("change", () => {
+			StorageUtil.set(storageKeyGroupBy, $selGroupBy.val())
+		})
+		try {
+			const savedSelection = StorageUtil.get(storageKeyGroupBy);
+			if (savedSelection) {
+				$selGroupBy.val(savedSelection);
+			}
+		} catch (e) {
+			console.error("Failed to set group from saved!");
+		}
 
 		const $cbShowPlayers = $("#import-showplayers");
 		$cbShowPlayers.prop("checked", dataType !== "monster");
