@@ -398,7 +398,7 @@ var betteR20Base = function () {
 							resolve(data);
 						},
 						error: function (resp, qq, pp) {
-							if (resp && resp.status === 500 && retries-- > 0) {
+							if (resp && resp.status >= 400 && retries-- > 0) {
 								console.error(resp, qq, pp);
 								d20plus.log(`Error loading ${name}; retrying`);
 								setTimeout(() => {
