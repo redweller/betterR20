@@ -4343,7 +4343,7 @@ const betteR205etools = function () {
 		const playerMode = forcePlayer || !window.is_gm;
 		// import subclasses
 		if (data.subclasses) {
-			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published only?`);
+			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published/official only?`);
 
 			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
 
@@ -4351,6 +4351,7 @@ const betteR205etools = function () {
 				if (!allSubclasses && !SourceUtil.isNonstandardSource(sc.source)) return;
 
 				sc.class = data.name;
+				sc.classSource = sc.classSource || data.source;
 				sc._gainAtLevels = gainFeatureArray;
 				if (playerMode) {
 					d20plus.subclasses.playerImportBuilder(sc);
