@@ -6435,7 +6435,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										}
 									}
 
-									d20plus.randomRoll(sel.hp.formula, result => {
+									const doBuild = (result) => {
 										const options = {
 											charFunction: (character) => {
 												character._getLatestBlob("defaulttoken", y => {
@@ -6465,7 +6465,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										};
 
 										d20plus.monsters.handoutBuilder(sel, true, options, `Wild Forms - ${d20Character.attributes.name}`);
-									});
+									};
+
+									if (sel.hp.formula) d20plus.randomRoll(sel.hp.formula, result => doBuild(result))
+									else doBuild({total: 0});
 								}
 
 								console.log("Assembling creature list");
