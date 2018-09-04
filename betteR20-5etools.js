@@ -1946,6 +1946,7 @@ const betteR205etools = function () {
 			const queueCopy = JSON.parse(JSON.stringify(origImportQueue));
 
 			let failed = false;
+			const promises = [];
 			for (const it of list.items) {
 				const $ele = $(it.elm);
 				const ix = Number($ele.find(`.index`).text());
@@ -1964,7 +1965,10 @@ const betteR205etools = function () {
 							failed = true;
 							break;
 						} else if (asNum !== Parser.crToNumber(origCr)) {
-							queueCopy[ix] = ScaleCreature.scale(m, asNum);
+							promises.push(ScaleCreature.scale(m, asNum).then(scaled => {
+								queueCopy[ix] = scaled;
+								return Promise.resolve();
+							}));
 						} else {
 							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
 						}
@@ -1975,8 +1979,12 @@ const betteR205etools = function () {
 					}
 				}
 			}
+
 			if (!failed) {
-				doImport(queueCopy)
+				const pVals = Object.values(promises);
+				Promises.all(promises).then(results => {
+					doImport(queueCopy);
+				});
 			}
 		});
 	};
@@ -2789,6 +2797,8 @@ const betteR205etools = function () {
 									}
 
 									var rollbase = d20plus.importer.rollbase();
+
+									// FIXME v.attack has been removed from the data; create a parser equivalent
 									if (v.attack != null) {
 										if (!(v.attack instanceof Array)) {
 											var tmp = v.attack;
