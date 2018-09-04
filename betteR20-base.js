@@ -344,7 +344,17 @@ var betteR20Base = function () {
 			const onEachLoadFunction = function (name, url, js) {
 				d20plus._addScript(name, js);
 			};
-			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
+			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, (...args) => {
+				onLoadFunction(...args);
+
+				const cached = DataUtil.loadJSON;
+				DataUtil.loadJSON = (...args) => {
+					if (args.length > 0 && typeof args[0] === "string" && args[0].startsWith("data/")) {
+						args[0] = BASE_SITE_URL + args[0];
+					}
+					return cached.bind(DataUtil)(...args);
+				};
+			});
 		},
 
 		addApiScripts: (onLoadFunction) => {

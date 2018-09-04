@@ -1982,7 +1982,7 @@ const betteR205etools = function () {
 
 			if (!failed) {
 				const pVals = Object.values(promises);
-				Promises.all(promises).then(results => {
+				Promise.all(promises).then(results => {
 					doImport(queueCopy);
 				});
 			}
