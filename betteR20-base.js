@@ -605,10 +605,6 @@ var betteR20Base = function () {
 				return num < min || num > max;
 			}
 
-			function alertOutOfRange () {
-				alert(`Please enter numbers in the range ${min}-${max} (inclusive).`);
-			}
-
 			function addToRangeVal (range, num) {
 				range.add(num);
 			}
