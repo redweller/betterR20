@@ -344,7 +344,17 @@ var betteR20Base = function () {
 			const onEachLoadFunction = function (name, url, js) {
 				d20plus._addScript(name, js);
 			};
-			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, onLoadFunction);
+			d20plus.chainLoad(d20plus.scripts, 0, onEachLoadFunction, (...args) => {
+				onLoadFunction(...args);
+
+				const cached = DataUtil.loadJSON;
+				DataUtil.loadJSON = (...args) => {
+					if (args.length > 0 && typeof args[0] === "string" && args[0].startsWith("data/")) {
+						args[0] = BASE_SITE_URL + args[0];
+					}
+					return cached.bind(DataUtil)(...args);
+				};
+			});
 		},
 
 		addApiScripts: (onLoadFunction) => {
@@ -398,7 +408,7 @@ var betteR20Base = function () {
 							resolve(data);
 						},
 						error: function (resp, qq, pp) {
-							if (resp && resp.status === 500 && retries-- > 0) {
+							if (resp && resp.status >= 400 && retries-- > 0) {
 								console.error(resp, qq, pp);
 								d20plus.log(`Error loading ${name}; retrying`);
 								setTimeout(() => {
@@ -994,6 +1004,7 @@ var betteR20Base = function () {
 								toAdd.append(td);
 								break;
 							}
+							case "float":
 							case "integer": {
 								const def = d20plus.getCfgDefaultVal(cfgK, grpK);
 								const field = $(`<input id="conf_field_${idx}" type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" ${def != null ? `placeholder="Default: ${def}"` : ""}>`);
@@ -1185,6 +1196,10 @@ var betteR20Base = function () {
 
 		baseHandleConfigChange: () => {
 			d20plus._handleStatusTokenConfigChange();
+			if (d20plus.hasCfgVal("interface", "toolbarOpacity")) {
+				const v = Math.max(Math.min(Number(d20plus.getCfgVal("interface", "toolbarOpacity")), 1), 0);
+				$(`#secondary-toolbar`).css({opacity: v});
+			}
 		},
 
 		startPlayerConfigHandler: () => {

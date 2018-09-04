@@ -541,6 +541,7 @@ const betteR205etools = function () {
 			d20plus.addJournalCommands();
 			d20plus.addSelectedTokenCommands();
 			d20plus.addCustomArtSearch();
+			d20plus.baseHandleConfigChange();
 			d20plus.handleConfigChange();
 			d20plus.addTokenHover();
 		} else {
@@ -1945,6 +1946,7 @@ const betteR205etools = function () {
 			const queueCopy = JSON.parse(JSON.stringify(origImportQueue));
 
 			let failed = false;
+			const promises = [];
 			for (const it of list.items) {
 				const $ele = $(it.elm);
 				const ix = Number($ele.find(`.index`).text());
@@ -1963,7 +1965,10 @@ const betteR205etools = function () {
 							failed = true;
 							break;
 						} else if (asNum !== Parser.crToNumber(origCr)) {
-							queueCopy[ix] = ScaleCreature.scale(m, asNum);
+							promises.push(ScaleCreature.scale(m, asNum).then(scaled => {
+								queueCopy[ix] = scaled;
+								return Promise.resolve();
+							}));
 						} else {
 							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
 						}
@@ -1974,8 +1979,12 @@ const betteR205etools = function () {
 					}
 				}
 			}
+
 			if (!failed) {
-				doImport(queueCopy)
+				const pVals = Object.values(promises);
+				Promise.all(promises).then(results => {
+					doImport(queueCopy);
+				});
 			}
 		});
 	};
@@ -2788,6 +2797,8 @@ const betteR205etools = function () {
 									}
 
 									var rollbase = d20plus.importer.rollbase();
+
+									// FIXME v.attack has been removed from the data; create a parser equivalent
 									if (v.attack != null) {
 										if (!(v.attack instanceof Array)) {
 											var tmp = v.attack;
@@ -4342,7 +4353,7 @@ const betteR205etools = function () {
 		const playerMode = forcePlayer || !window.is_gm;
 		// import subclasses
 		if (data.subclasses) {
-			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published only?`);
+			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published/official only?`);
 
 			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
 
@@ -4350,6 +4361,7 @@ const betteR205etools = function () {
 				if (!allSubclasses && !SourceUtil.isNonstandardSource(sc.source)) return;
 
 				sc.class = data.name;
+				sc.classSource = sc.classSource || data.source;
 				sc._gainAtLevels = gainFeatureArray;
 				if (playerMode) {
 					d20plus.subclasses.playerImportBuilder(sc);
@@ -4846,6 +4858,18 @@ const betteR205etools = function () {
 		options.groupOptions.forEach(g => {
 			$selGroupBy.append(`<option value="${g}">${g}</option>`);
 		});
+		const storageKeyGroupBy = `Veconfig-importer-groupby-${dataType}`;
+		$selGroupBy.on("change", () => {
+			StorageUtil.set(storageKeyGroupBy, $selGroupBy.val())
+		})
+		try {
+			const savedSelection = StorageUtil.get(storageKeyGroupBy);
+			if (savedSelection) {
+				$selGroupBy.val(savedSelection);
+			}
+		} catch (e) {
+			console.error("Failed to set group from saved!");
+		}
 
 		const $cbShowPlayers = $("#import-showplayers");
 		$cbShowPlayers.prop("checked", dataType !== "monster");
@@ -4952,7 +4976,9 @@ const betteR205etools = function () {
 			};
 
 			if (options.nextStep) {
-				options.nextStep(doImport, importQueue)
+				if (importQueue.length) {
+					options.nextStep(doImport, importQueue)
+				}
 			} else {
 				doImport(importQueue);
 			}
@@ -6409,7 +6435,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										}
 									}
 
-									d20plus.randomRoll(sel.hp.formula, result => {
+									const doBuild = (result) => {
 										const options = {
 											charFunction: (character) => {
 												character._getLatestBlob("defaulttoken", y => {
@@ -6439,7 +6465,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										};
 
 										d20plus.monsters.handoutBuilder(sel, true, options, `Wild Forms - ${d20Character.attributes.name}`);
-									});
+									};
+
+									if (sel.hp.formula) d20plus.randomRoll(sel.hp.formula, result => doBuild(result))
+									else doBuild({total: 0});
 								}
 
 								console.log("Assembling creature list");
