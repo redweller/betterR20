@@ -517,6 +517,10 @@ const betteR205etools = function () {
 			// no-op when building source cache; we'll handle this elsewhere
 			BrewUtil._sourceCache = BrewUtil._sourceCache || {};
 		};
+		// dummy values
+		BrewUtil.homebrew = {};
+		BrewUtil.homebrewMeta = {};
+
 		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
 		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
@@ -2423,32 +2427,32 @@ const betteR205etools = function () {
 							character.attribs.create({name: "npc_xp", current: xp});
 							character.attribs.create({
 								name: "npc_vulnerabilities",
-								current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.vulnerable)) : ""
 							});
 							character.attribs.create({
 								name: "damage_vulnerabilities",
-								current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.vulnerable)) : ""
 							});
 							character.attribs.create({
 								name: "npc_resistances",
-								current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.resist)) : ""
 							});
 							character.attribs.create({
 								name: "damage_resistances",
-								current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.resist)) : ""
 							});
-							character.attribs.create({name: "npc_immunities", current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""});
+							character.attribs.create({name: "npc_immunities", current: data.immune != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.immune)) : ""});
 							character.attribs.create({
 								name: "damage_immunities",
-								current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""
+								current: data.immune != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.immune)) : ""
 							});
 							character.attribs.create({
 								name: "npc_condition_immunities",
-								current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
 							});
 							character.attribs.create({
 								name: "damage_condition_immunities",
-								current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
 							});
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 
