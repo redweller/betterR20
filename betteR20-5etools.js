@@ -3556,7 +3556,7 @@ const betteR205etools = function () {
 										out.push({
 											type: "misc",
 											data: {
-												name: line,
+												name: line.toTitleCase(),
 												data: {
 													Category: "Items",
 													"Item Type": "Adventuring Gear"
