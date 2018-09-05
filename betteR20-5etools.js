@@ -517,6 +517,10 @@ const betteR205etools = function () {
 			// no-op when building source cache; we'll handle this elsewhere
 			BrewUtil._sourceCache = BrewUtil._sourceCache || {};
 		};
+		// dummy values
+		BrewUtil.homebrew = {};
+		BrewUtil.homebrewMeta = {};
+
 		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
 		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
 		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
@@ -1702,93 +1706,104 @@ const betteR205etools = function () {
 											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${d20plus.importer.getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
 											noComponents(level, rowId, false);
 										}
-									} else {
-										if (data.data.Category === "Items") {
-											if (data.data._versatile) {
-												setTimeout(() => {
+									} else if (data.data.Category === "Items") {
+										if (data.data._versatile) {
+											setTimeout(() => {
+												const rowId = d20plus.generateRowId();
+
+												function makeItemTrait (key, val) {
+													const toSave = character.model.attribs.create({
+														name: `repeating_attack_${rowId}_${key}`,
+														current: val
+													}).save();
+													toSave.save();
+												}
+
+												const attr = (data.data["Item Type"] || "").includes("Melee") ? "strength" : "dexterity";
+												const attrTag = `@{${attr}_mod}`;
+
+												const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
+												const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
+												const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
+
+												// This links the item to the attack, and vice-versa.
+												// Unfortunately, it doesn't work,
+												//   because Roll20 thinks items<->attacks is a 1-to-1 relationship.
+												/*
+												let lastItemId = null;
+												try {
+													const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
+													const lastItem = items[items.length - 1];
+													lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
+
+													// link the inventory item to this attack
+													const toSave = character.model.attribs.create({
+														name: `repeating_inventory_${lastItemId}_itemattackid`,
+														current: rowId
+													});
+													toSave.save();
+												} catch (ex) {
+													console.error("Failed to get last item ID");
+													console.error(ex);
+												}
+
+												if (lastItemId) {
+													makeItemTrait("itemid", lastItemId);
+												}
+												*/
+
+												makeItemTrait("options-flag", "0");
+												makeItemTrait("atkname", data.name);
+												makeItemTrait("dmgbase", data.data._versatile);
+												makeItemTrait("dmgtype", data.data["Damage Type"]);
+												makeItemTrait("atkattr_base", attrTag);
+												makeItemTrait("dmgattr", attrTag);
+												makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+												makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+												if (proficiencyBonus) {
+													makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus}`);
+												}
+												makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}`);
+												makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
+											}, 350); // defer this, so we can hopefully pull item ID
+										}
+
+										// for packs, etc
+										if (data._subItems) {
+											const queue = [];
+											data._subItems.forEach(si => {
+												function makeProp (rowId, propName, content) {
+													character.model.attribs.create({
+														"name": `repeating_inventory_${rowId}_${propName}`,
+														"current": content
+													}).save();
+												}
+
+												if (si.count) {
 													const rowId = d20plus.generateRowId();
+													const siD = typeof si.subItem === "string" ? JSON.parse(si.subItem) : si.subItem;
 
-													function makeItemTrait (key, val) {
-														const toSave = character.model.attribs.create({
-															name: `repeating_attack_${rowId}_${key}`,
-															current: val
-														}).save();
-														toSave.save();
-													}
+													makeProp(rowId, "itemname", siD.name);
+													const w = (siD.data || {}).Weight;
+													if (w) makeProp(rowId, "itemweight", w);
+													makeProp(rowId, "itemcontent", Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
+													makeProp(rowId, "itemcount", String(si.count));
 
-													const attr = (data.data["Item Type"] || "").includes("Melee") ? "strength" : "dexterity";
-													const attrTag = `@{${attr}_mod}`;
+												} else {
+													queue.push(si.subItem);
+												}
+											});
 
-													const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
-													const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
-													const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
-
-													// This links the item to the attack, and vice-versa.
-													// Unfortunately, it doesn't work,
-													//   because Roll20 thinks items<->attacks is a 1-to-1 relationship.
-													/*
-													let lastItemId = null;
-													try {
-														const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
-														const lastItem = items[items.length - 1];
-														lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
-
-														// link the inventory item to this attack
-														const toSave = character.model.attribs.create({
-															name: `repeating_inventory_${lastItemId}_itemattackid`,
-															current: rowId
-														});
-														toSave.save();
-													} catch (ex) {
-														console.error("Failed to get last item ID");
-														console.error(ex);
-													}
-
-													if (lastItemId) {
-														makeItemTrait("itemid", lastItemId);
-													}
-													*/
-
-													makeItemTrait("options-flag", "0");
-													makeItemTrait("atkname", data.name);
-													makeItemTrait("dmgbase", data.data._versatile);
-													makeItemTrait("dmgtype", data.data["Damage Type"]);
-													makeItemTrait("atkattr_base", attrTag);
-													makeItemTrait("dmgattr", attrTag);
-													makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-													makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-													if (proficiencyBonus) {
-														makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus}`);
-													}
-													makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}`);
-													makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
-												}, 350); // defer this, so we can hopefully pull item ID
-											}
+											const interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
+											queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
+												setTimeout(() => {
+													d20plus.importer.doFakeDrop(t, character, item, i);
+												}, (ix + 1) * interval);
+											});
+										} else {
+											d20plus.importer.doFakeDrop(t, character, data, i);
 										}
-
-										function doDefaultDrop (n, outerI) {
-											const e = character;
-											var i = $(outerI.helper[0]).attr("data-pagename");
-
-											// BEGIN ROLL20 CODE
-											var o = _.clone(n.data);
-											o.Name = n.name,
-												o.data = JSON.stringify(n.data),
-												o.uniqueName = i,
-												o.Content = n.content,
-												$(t.target).find("*[accept]").each(function() {
-													var t = $(this)
-														, n = t.attr("accept");
-													o[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-														var e = $(this);
-														e.val() !== o[n] && e.text() !== o[n] || e.prop("selected", !0)
-													}) : $(this).val(o[n]),
-														e.saveSheetValues(this))
-												})
-											// END ROLL20 CODE
-										}
-										doDefaultDrop(data, i);
-
+									} else {
 										d20plus.importer.doFakeDrop(t, character, data, i);
 									}
 								}
@@ -2423,32 +2438,32 @@ const betteR205etools = function () {
 							character.attribs.create({name: "npc_xp", current: xp});
 							character.attribs.create({
 								name: "npc_vulnerabilities",
-								current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.vulnerable)) : ""
 							});
 							character.attribs.create({
 								name: "damage_vulnerabilities",
-								current: data.vulnerable != null ? Parser.monImmResToFull(data.vulnerable) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.vulnerable)) : ""
 							});
 							character.attribs.create({
 								name: "npc_resistances",
-								current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.resist)) : ""
 							});
 							character.attribs.create({
 								name: "damage_resistances",
-								current: data.resist != null ? Parser.monImmResToFull(data.resist) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.resist)) : ""
 							});
-							character.attribs.create({name: "npc_immunities", current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""});
+							character.attribs.create({name: "npc_immunities", current: data.immune != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.immune)) : ""});
 							character.attribs.create({
 								name: "damage_immunities",
-								current: data.immune != null ? Parser.monImmResToFull(data.immune) : ""
+								current: data.immune != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.immune)) : ""
 							});
 							character.attribs.create({
 								name: "npc_condition_immunities",
-								current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
 							});
 							character.attribs.create({
 								name: "damage_condition_immunities",
-								current: data.conditionImmune != null ? Parser.monCondImmToFull(data.conditionImmune) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
 							});
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 
@@ -3506,6 +3521,55 @@ const betteR205etools = function () {
 
 			if (url.trim() === `${DATA_URL}items.json`) {
 				EntryRenderer.item.buildList((itemList) => {
+						const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
+
+						const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
+						packs.forEach(p => {
+							if (!p._r20SubItemData) {
+								const contents = p.entries.find(it => it.type === "list").items;
+
+								const out = [];
+								contents.forEach(line => {
+									if (line.includes("@item")) {
+										const [pre, tag, item] = line.split(/({@item)/g);
+										const tagItem = `${tag}${item}`;
+
+										let [n, src] = item.split("}")[0].trim().split("|");
+										if (!src) src = "dmg";
+
+										n = n.toLowerCase();
+										src = src.toLowerCase();
+
+
+
+										const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
+
+										let count = 1;
+										pre.replace(/\d+/g, (m) => count = Number(m));
+
+										out.push({
+											type: "item",
+											count,
+											data: subItem
+										})
+									} else {
+										out.push({
+											type: "misc",
+											data: {
+												name: line,
+												data: {
+													Category: "Items",
+													"Item Type": "Adventuring Gear"
+												}
+											}
+										})
+									}
+								});
+
+								p._r20SubItemData = out;
+							}
+						})
+
 						d20plus.importer.showImportList(
 							"item",
 							itemList,
@@ -3523,7 +3587,8 @@ const betteR205etools = function () {
 						items: `${DATA_URL}items.json`,
 						basicitems: `${DATA_URL}basicitems.json`,
 						magicvariants: `${DATA_URL}magicvariants.json`
-					});
+					},
+					true);
 			} else {
 				// for non-standard URLs, do a generic import
 				DataUtil.loadJSON(url).then((data) => {
@@ -3545,7 +3610,7 @@ const betteR205etools = function () {
 		}
 	};
 
-// Import individual items
+	// Import individual items
 	d20plus.items.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Items`, folderName);
@@ -3596,7 +3661,7 @@ const betteR205etools = function () {
 		}
 
 		var notecontents = "";
-		roll20Data = {
+		const roll20Data = {
 			name: data.name,
 			data: {
 				Category: "Items"
@@ -3721,6 +3786,17 @@ const betteR205etools = function () {
 		if (data.modifier) {
 			const allModifiers = data.modifier.filter(m => m.__text).map(m => m.__text.split(" ").map(s => s.uppercaseFirst()).join(" ")).join(", ");
 			roll20Data.data.Modifiers = allModifiers;
+		}
+
+		if (data._r20SubItemData) {
+			roll20Data._subItems = data._r20SubItemData.map(subItem => {
+				if (subItem.type === "item") {
+					const [subNote, subGm] = d20plus.items._getHandoutData(subItem.data);
+					return {subItem: subGm, count: subItem.count};
+				} else {
+					return {subItem: subItem.data};
+				}
+			});
 		}
 
 		const gmnotes = JSON.stringify(roll20Data);
