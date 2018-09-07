@@ -5514,7 +5514,7 @@ const D20plus = function (version) {
 			// r20es will expose the d20 variable if we wait
 			// this should always trigger after window.onload has fired, but track init state just in case
 			(function waitForD20 () {
-				if (typeof window.d20 != null && !$("#loading-overlay").is(":visible") && !hasRunInit) {
+				if (typeof(window.d20) !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 					hasRunInit = true;
 					window.unwatch("d20ext");
 					d20plus.log("Setting production (alt)...");
