@@ -544,8 +544,10 @@ var betteR20Base = function () {
 
 		addAllCss: () => {
 			d20plus.log("Add CSS");
-			const mainSheets =  [...window.document.styleSheets].filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")));
-			const targetSheet = mainSheets[mainSheets.length - 1];
+            const targetSheet =  [...window.document.styleSheets]
+                .filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
+                .find(it => it.href.includes("app.css"));
+
 			_.each(d20plus.baseCssRules, function (r) {
 				d20plus.addCSS(targetSheet, r.s, r.r);
 			});
