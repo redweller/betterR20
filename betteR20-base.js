@@ -508,6 +508,7 @@ var betteR20Base = function () {
 		chatTag: (message) => {
 			d20plus.sendHackerChat(`
 				${message}
+				${window.enhancementSuiteEnabled ? `<br><br>Roll20 Enhancement Suite detected.` : ""}
 				<br>
 				<br>
 				Need help? Join our <a href="https://discord.gg/AzyBjtQ">Discord</a>.
@@ -543,7 +544,10 @@ var betteR20Base = function () {
 
 		addAllCss: () => {
 			d20plus.log("Add CSS");
-			const targetSheet = window.document.styleSheets[window.document.styleSheets.length - 1];
+			const targetSheet =  [...window.document.styleSheets]
+				.filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
+				.find(it => it.href.includes("app.css"));
+
 			_.each(d20plus.baseCssRules, function (r) {
 				d20plus.addCSS(targetSheet, r.s, r.r);
 			});
@@ -5447,17 +5451,6 @@ var betteR20Base = function () {
 const D20plus = function (version) {
 	d20plus.version = version;
 
-	// Window loaded
-	window.onload = function () {
-		window.unwatch("d20");
-		const checkLoaded = setInterval(function () {
-			if (!$("#loading-overlay").is(":visible")) {
-				clearInterval(checkLoaded);
-				d20plus.Init();
-			}
-		}, 1000);
-	};
-
 	/* object.watch polyfill by Eli Grey, http://eligrey.com */
 	if (!Object.prototype.watch) {
 		Object.defineProperty(Object.prototype, "watch", {
@@ -5500,32 +5493,76 @@ const D20plus = function (version) {
 	}
 	/* end object.watch polyfill */
 
+	// Window loaded
+	function doBootstrap () {
+		d20plus.log("Bootstrapping...");
+
+		let hasRunInit = false;
+		function defaultOnload () {
+			if (hasRunInit) return;
+			hasRunInit = true;
+			window.unwatch("d20");
+			const checkLoaded = setInterval(function () {
+				if (!$("#loading-overlay").is(":visible")) {
+					clearInterval(checkLoaded);
+					d20plus.Init();
+				}
+			}, 1000);
+		};
+
+		window.onload = defaultOnload;
+
+		if (window.enhancementSuiteEnabled) {
+			// r20es will expose the d20 variable if we wait
+			// this should always trigger after window.onload has fired, but track init state just in case
+			(function waitForD20 () {
+				if (typeof(window.d20) !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
+					hasRunInit = true;
+					window.unwatch("d20ext");
+					d20plus.log("Setting production (alt)...");
+					window.d20ext.environment = "production";
+					d20.environment = "production";
+					d20plus.Init();
+				} else {
+					setTimeout(waitForD20, 50);
+				}
+			})();
+		} else {
+			window.d20 = {};
+			window.watch("d20", function (id, oldValue, newValue) {
+				d20plus.log("Obtained d20 variable");
+				window.unwatch("d20ext");
+				d20plus.log("Setting production...");
+				window.d20ext.environment = "production";
+				newValue.environment = "production";
+				return newValue;
+			});
+		}
+
+		window.d20plus = d20plus;
+		d20plus.log("Injected");
+	}
+
 	window.d20ext = {};
 	window.watch("d20ext", function (id, oldValue, newValue) {
-		d20plus.log("Set Development");
-		newValue.environment = "development";
-		Object.defineProperty(newValue, 'seenad', {
-			value: true
-		});
+		if (!window.enhancementSuiteEnabled && newValue.environment !== "development") {
+			d20plus.log("Set Development");
+			newValue.environment = "development";
+			Object.defineProperty(newValue, 'seenad', {
+				value: true
+			});
+		}
 		return newValue;
 	});
-	window.d20 = {};
-	window.watch("d20", function (id, oldValue, newValue) {
-		d20plus.log("Obtained d20 variable");
-		window.unwatch("d20ext");
-		window.d20ext.environment = "production";
-		newValue.environment = "production";
-		return newValue;
-	});
-	window.d20plus = d20plus;
-	d20plus.log("Injected");
-};
 
-document.addEventListener("DOMContentLoaded", function(event) {
-	// do some template injection
-	$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
-	$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
-});
+	(function doCheckDepsLoaded () {
+		if (typeof $ !== "undefined") {
+			doBootstrap();
+		} else {
+			setTimeout(doCheckDepsLoaded, 50);
+		}
+	})();
+};
 
 // if we are the topmost frame, inject
 if (window.top === window.self) {

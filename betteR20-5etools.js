@@ -489,6 +489,11 @@ const betteR205etools = function () {
 		d20plus.log("Init (v" + d20plus.version + ")");
 		d20plus.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
+        
+		d20plus.log("Modifying character & handout editor templates");
+		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
+		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
+
 		d20plus.addAllCss();
 		if (window.is_gm) {
 			d20plus.log("Is GM");
