@@ -5562,16 +5562,6 @@ const D20plus = function (version) {
 	})();
 };
 
-// this event can be fired prematurely if some other tools (r20es, for instance) are manipulating script loading
-// Roll20 Enhancement Suite is kind enough to fire a second event, which we'll then use to trigger template injects
-document.addEventListener("DOMContentLoaded", function(event) {
-	// do some template injection
-	if (typeof(window.$) !== "undefined") {
-		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
-		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
-	}
-});
-
 // if we are the topmost frame, inject
 if (window.top === window.self) {
 	function strip (str) {
