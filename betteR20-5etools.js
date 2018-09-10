@@ -5655,7 +5655,7 @@ const betteR205etools = function () {
 		<!-- populate with js -->		
 	</div>
 	<p><i>Player-imported items are temporary, as players can't make handouts. GMs may also use this functionality to avoid cluttering the journal. Once imported, items can be drag-dropped to character sheets.</i></p>
-</div>`;
+	</div>`;
 
 	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import..." style="width: 1000px;">
 <p style="display: flex">
