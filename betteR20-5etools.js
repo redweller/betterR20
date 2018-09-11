@@ -502,8 +502,8 @@ const betteR205etools = function () {
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
         d20plus.addScripts(d20plus.onScriptLoad);
-        
-        d20plus.sendHackerChat("betteR20 is loading...");
+
+		d20plus.showLoadingMessage(`betteR20-5etools v${d20plus.version}`);
 	};
 
 	// continue init once JSON loads

@@ -507,7 +507,7 @@ var betteR20Base = function () {
 
 		chatTag: (message) => {
 			d20plus.sendHackerChat(`
-				${message}
+				${message} initialised.
 				${window.enhancementSuiteEnabled ? `<br><br>Roll20 Enhancement Suite detected.` : ""}
 				<br>
 				<br>
@@ -520,6 +520,12 @@ var betteR20Base = function () {
 				<br>
 				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists. 
 				</span>
+			`);
+		},
+
+		showLoadingMessage: (message) => {
+			d20plus.sendHackerChat(`
+				${message} initialising, please wait... 
 			`);
 		},
 

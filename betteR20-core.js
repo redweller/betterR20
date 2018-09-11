@@ -7,7 +7,7 @@ const betteR20Core = function () {
 		if (window.is_gm) d20plus.enhancePageSelector();
         d20plus.addScripts(d20plus.onScriptLoad);
         
-        d20plus.sendHackerChat("betteR20 is loading...");
+        d20plus.showLoadingMessage(`betteR20-core v${d20plus.version}`);
 	};
 
 	d20plus.onScriptLoad = () => {
