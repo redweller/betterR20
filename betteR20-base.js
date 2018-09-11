@@ -1237,7 +1237,7 @@ var betteR20Base = function () {
 					<br><br>
 					<ul class="list deletelist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
 				</div>
-				</div>;
+				</div>
 				`,
 				dialogFn: () => {
 					$("#d20plus-quickdelete").dialog({
