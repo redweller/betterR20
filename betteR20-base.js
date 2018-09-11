@@ -1801,6 +1801,7 @@ var betteR20Base = function () {
 						});
 
 						$btnImport.prop("disabled", false).off("click").click(() => {
+							$cbAll.prop("checked", false);
 							const sel = mapList.items
 								.filter(it => $(it.elm).find(`input`).prop("checked"))
 								.map(it => maps[$(it.elm).attr("data-listid")]);
@@ -1949,6 +1950,7 @@ var betteR20Base = function () {
 					</div>
 					<hr>
 					<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> | <button class="btn btn-danger deleter">Delete</button></p>
+					<p><i>This tool will delete neither your active page, nor a page active for players.</i></p>
 				</div>
 				`,
 				dialogFn: () => {
@@ -2025,6 +2027,7 @@ var betteR20Base = function () {
 								deletePage(m, pageList);
 							}
 						});
+						$cbAll.prop("checked", false);
 					});
 				}
 			},
