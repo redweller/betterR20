@@ -67,6 +67,14 @@ var betteR20Base = function () {
 			}
 		}
 	);
+	addConfigOptions("import", {
+		"_name": "Import",
+		"importIntervalMap": {
+			"name": "Rest Time between Each Map (msec)",
+			"default": 2500,
+			"_type": "integer"
+		},
+	});
 
 	const qpi = {
 		_version: "0.01-pre-pre-alpha",
@@ -507,7 +515,7 @@ var betteR20Base = function () {
 
 		chatTag: (message) => {
 			d20plus.sendHackerChat(`
-				${message}
+				${message} initialised.
 				${window.enhancementSuiteEnabled ? `<br><br>Roll20 Enhancement Suite detected.` : ""}
 				<br>
 				<br>
@@ -520,6 +528,12 @@ var betteR20Base = function () {
 				<br>
 				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists. 
 				</span>
+			`);
+		},
+
+		showLoadingMessage: (message) => {
+			d20plus.sendHackerChat(`
+				${message} initialising, please wait...<br><br>
 			`);
 		},
 
@@ -716,6 +730,16 @@ var betteR20Base = function () {
 				out[1] = a[1] * b;
 				return out;
 			}
+		},
+
+		_BYTE_UNITS: [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'],
+		getReadableFileSizeString: (fileSizeInBytes) => {
+			let i = -1;
+			do {
+				fileSizeInBytes = fileSizeInBytes / 1024;
+				i++;
+			} while (fileSizeInBytes > 1024);
+			return Math.max(fileSizeInBytes, 0.1).toFixed(1) + d20plus._BYTE_UNITS[i];
 		},
 
 		// CONFIG //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1231,7 +1255,7 @@ var betteR20Base = function () {
 					<br><br>
 					<ul class="list deletelist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
 				</div>
-				</div>;
+				</div>
 				`,
 				dialogFn: () => {
 					$("#d20plus-quickdelete").dialog({
@@ -1573,8 +1597,9 @@ var betteR20Base = function () {
 							tmp += `
 								<label class="import-cb-label" data-listid="${i}">
 									<input type="checkbox">
-									<span class="name col-10">${t.name}</span>
+									<span class="name col-6">${t.name}</span>
 									<span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
+									<span class="name col-4">${d20plus.getReadableFileSizeString(t.size)}</span>
 								</label>
 							`;
 						});
@@ -1669,7 +1694,343 @@ var betteR20Base = function () {
 						window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
 					});
 				}
-			}
+			},
+			{
+				name: "Map Importer/Exporter",
+				desc: "Import and export maps (pages), including those from published adventures.",
+				html: `
+				<div id="d20plus-map-importer" title="Map Importer/Exporter">
+				<p>
+					<button class="btn" name="load-file">Import Maps from File</button> <button class="btn" name="export">Export Maps to File</button> | <button class="btn" name="load-Vetools">Import Maps from 5etools</button>
+				</p>
+				<div id="map-importer-list">
+					<input type="search" class="search" placeholder="Search maps...">
+					<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: scroll; overflow-x: hidden; margin-bottom: 10px;">
+					<i>Load a file to view the contents here</i>
+					</div>
+				</div>
+				<hr>
+				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" name="import">Import Selected</button></p>
+				</div>
+				
+				<div id="d20plus-map-importer-progress" title="Import Progress">					
+					<h3 class="name"></h3>
+					<span class="remaining"></span> 
+					<p>Errors: <span class="errors">0</span><span class="error-names"></span></p>
+					<p><button class="btn cancel">Cancel</button></p>
+				</div>
+				
+				<div id="d20plus-map-importer-5etools" title="Select Map File">
+					<div id="map-importer-list-5etools">
+						<input type="search" class="search" placeholder="Search files...">
+						<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: scroll; overflow-x: hidden; margin-bottom: 10px;">
+						<i>Loading...</i>
+						</div>
+					</div>
+					<p><button class="btn load">Load Map Data</button></p>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-map-importer").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 600,
+						height: 800,
+					});
+					$(`#d20plus-map-importer-progress`).dialog({
+						autoOpen: false,
+						resizable: false
+					});
+					$("#d20plus-map-importer-5etools").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 600,
+						height: 400,
+					});
+				},
+				openFn: () => {
+					const $win = $("#d20plus-map-importer");
+					$win.dialog("open");
+
+					const $winProgress = $(`#d20plus-map-importer-progress`);
+					const $btnCancel = $winProgress.find(".cancel").off("click");
+
+					const $win5etools = $(`#d20plus-map-importer-5etools`);
+
+					const $wrpLst = $win.find(`#map-importer-list`);
+					const $lst = $win.find(`.list`).empty();
+
+					const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
+					const $cbAll = $win.find(`.select-all`).off("click").prop("disabled", true);
+
+					function handleLoadedData (data) {
+						// validate
+						if (!data.maps) {
+							alert("File did not contain map data!");
+							return;
+						}
+						for (const mapData of data.maps) {
+							if (!mapData.attributes) return alert("File did not contain map attribute data!");
+							if (!mapData.graphics) return alert("File did not contain map graphics data!");
+							if (!mapData.paths) return alert("File did not contain map paths data!");
+							if (!mapData.text) return alert("File did not contain map text data!");
+						}
+
+						const maps = data.maps;
+						data.maps.sort((a, b) => SortUtil.ascSortLower(a.attributes.name || "", b.attributes.name || ""));
+
+						$lst.empty();
+						maps.forEach((m, i) => {
+							$lst.append(`
+									<label class="import-cb-label import-cb-label--img" data-listid="${i}">
+										<input type="checkbox">
+										<img class="import-label__img" src="${m.attributes.thumbnail}">
+										<span class="name col-9">${m.attributes.name}</span>
+									</label>
+								`);
+						});
+
+						const mapList = new List("map-importer-list", {
+							valueNames: ["name"]
+						});
+
+						$cbAll.prop("disabled", false).off("click").click(() => {
+							mapList.items.forEach(it => {
+								$(it.elm).find(`input[type="checkbox"]`).prop("checked", $cbAll.prop("checked"));
+							});
+						});
+
+						$btnImport.prop("disabled", false).off("click").click(() => {
+							$cbAll.prop("checked", false);
+							const sel = mapList.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => maps[$(it.elm).attr("data-listid")]);
+
+							if (!sel.length) return alert("No maps selected!");
+
+							const $name = $winProgress.find(`.name`);
+							const $remain = $winProgress.find(`.remaining`).text(`${sel.length} remaining...`);
+							const $errCount = $winProgress.find(`.errors`);
+							const $errReasons = $winProgress.find(`.error-names`);
+							let errCount = 0;
+
+							$winProgress.dialog("open");
+
+							const queue = sel;
+							let isCancelled = false;
+							let lastTimeout = null;
+							$btnCancel.off("click").click(() => {
+								isCancelled = true;
+								if (lastTimeout != null) {
+									clearTimeout(lastTimeout);
+									doImport();
+								}
+							});
+							const timeout = d20plus.getCfgVal("import", "importIntervalMap") || d20plus.getCfgDefaultVal("import", "importIntervalMap");
+
+							const doImport = () => {
+								if (isCancelled) {
+									$name.text("Import cancelled.");
+									$remain.text(`Cancelled with ${sel.length} remaining.`);
+								} else if (queue.length && !isCancelled) {
+									const mapData = queue.shift();
+									const name = mapData.attributes.name;
+									try {
+										$name.text(`Importing ${name}`);
+
+										const map = d20.Campaign.pages.create(mapData.attributes);
+										mapData.graphics.forEach(it => map.thegraphics.create(it));
+										mapData.paths.forEach(it => map.thepaths.create(it));
+										mapData.text.forEach(it => map.thetexts.create(it));
+										map.save();
+									} catch (e) {
+										console.error(e);
+
+										errCount++;
+										$errCount.text(errCount);
+										const prevReasons = $errReasons.text().trim();
+										$errReasons.append(`${prevReasons.length ? ", " : ""}${name}: "${e.message}"`)
+									}
+									$remain.text(`${sel.length} remaining...`);
+
+									// queue up the next import
+									lastTimeout = setTimeout(doImport, timeout);
+								} else {
+									$name.text("Import complete!");
+									$name.text(`${sel.length} remaining.`);
+								}
+							};
+
+							doImport();
+						});
+					}
+
+					const $btnLoadVetools = $win.find(`[name="load-Vetools"]`);
+					$btnLoadVetools.off("click").click(() => {
+						$win5etools.dialog("open");
+						const $btnLoad = $win5etools.find(`.load`).off("click");
+
+						DataUtil.loadJSON(`${DATA_URL}adventure/roll20-map-index.json`).then(data => {
+							const $lst = $win5etools.find(`.list`);
+							const maps = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
+							let tmp = "";
+							maps.forEach((t, i) => {
+								tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="radio" name="map-5etools">
+									<span class="name col-10">${t.name}</span>
+									<span title="${Parser.sourceJsonToFull(t.id)}" class="source">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
+								</label>
+							`;
+							});
+							$lst.html(tmp);
+							tmp = null;
+
+							const list5etools = new List("map-importer-list-5etools", {
+								valueNames: ["name"]
+							});
+
+							$btnLoad.on("click", () => {
+								const sel = list5etools.items
+									.filter(it => $(it.elm).find(`input`).prop("checked"))
+									.map(it => maps[$(it.elm).attr("data-listid")])[0];
+
+								$win5etools.dialog("close");
+								$win.dialog("open");
+								$lst.empty().append(`<i>Loading...</i>`);
+								DataUtil.loadJSON(`${DATA_URL}adventure/roll20-map-${sel.id.toLowerCase()}.json`).then(mapFile => {
+									handleLoadedData(mapFile);
+								}).catch(e => {
+									console.error(e);
+									alert(`Failed to load map data! See the console for more information.`);
+								});
+							});
+						}).catch(e => {
+							console.error(e);
+							alert(`Failed to load map data! See the console for more information.`);
+						});
+					});
+
+					const $btnLoadFile = $win.find(`[name="load-file"]`);
+					$btnLoadFile.off("click").click(() => {
+						DataUtil.userUpload((data) => handleLoadedData(data));
+					});
+
+					// shoutouts to Stormy for the following magic
+					const $btnExport = $win.find(`[name="export"]`);
+					$btnExport.off("click").click(() => {
+						const maps = d20.Campaign.pages.models.map(map => ({
+							attributes: map.attributes,
+							graphics: map.thegraphics.map(g => g.attributes),
+							text: map.thetexts.map(t => t.attributes),
+							paths: map.thepaths.map(p => p.attributes)
+						}));
+
+						// version number from r20es
+						const payload = {
+							schema_version: 1,
+							maps
+						};
+
+						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^\w\-]/g, "_");
+						const data = JSON.stringify(payload, null, "\t");
+
+						const blob = new Blob([data], {type: "application/json"})
+						d20plus.saveAs(blob, `${filename}.json`);
+					});
+				}
+			},
+			{
+				name: "Mass-Delete Pages",
+				desc: "Quickly delte multiple pages.",
+				html: `
+				<div id="d20plus-mass-page-delete" title="Mass-Delete Pages">
+					<div id="del-pages-list">
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden; margin-bottom: 10px;"><i>Loading...</i></div>
+					</div>
+					<hr>
+					<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> | <button class="btn btn-danger deleter">Delete</button></p>
+					<p><i>This tool will delete neither your active page, nor a page active for players.</i></p>
+				</div>
+				`,
+				dialogFn: () => {
+					$("#d20plus-mass-page-delete").dialog({
+						autoOpen: false,
+						resizable: true,
+						width: 600,
+						height: 800,
+					});
+				},
+				openFn: () => {
+					function deletePage (model, pageList) {
+						if ($("#page-toolbar .availablepage[data-pageid=" + model.id + "]").remove()) {
+							var n = d20.Campaign.getPageIndex(model.id);
+							model.thegraphics.massdelete = true;
+							model.thetexts.massdelete = true;
+							model.thepaths.massdelete = true;
+							model.thegraphics.backboneFirebase.reference.set(null);
+							model.thetexts.backboneFirebase.reference.set(null);
+							model.thepaths.backboneFirebase.reference.set(null);
+							let i = d20.Campaign.get("playerspecificpages");
+							let o = false;
+							_.each(i, function(e, n) {
+								if (e === model.id) {
+									delete i[n];
+									o = true;
+								}
+							});
+							o && d20.Campaign.save({
+								playerspecificpages: i
+							});
+							model.destroy();
+							d20.Campaign.activePageIndex > n && (d20.Campaign.activePageIndex -= 1);
+
+							pageList.remove("page-id", model.id);
+						}
+					}
+
+					const $win = $("#d20plus-mass-page-delete");
+					$win.dialog("open");
+
+					const $lst = $win.find(`.list`).empty();
+
+					d20.Campaign.pages.models.forEach(m => {
+						$lst.append(`
+							<label class="import-cb-label import-cb-label--img" data-listid="${m.id}">
+								<input type="checkbox">
+								<img class="import-label__img" src="${m.attributes.thumbnail}">
+								<span class="name col-9">${m.attributes.name}</span>
+								<span style="display: none;" class="page-id">${m.id}</span>
+							</label>
+						`);
+					});
+
+					const pageList = new List("del-pages-list", {
+						valueNames: ["name", "page-id"]
+					});
+
+					const $cbAll = $win.find(`.select-all`).off("click").click(() => {
+						pageList.items.forEach(it => {
+							$(it.elm).find(`input[type="checkbox"]`).prop("checked", $cbAll.prop("checked"));
+						});
+					});
+
+					const $btnDel = $win.find(`.deleter`).off("click").click(() => {
+						const sel = pageList.items
+							.filter(it => $(it.elm).find(`input`).prop("checked"))
+							.map(it => $(it.elm).attr("data-listid"))
+							.map(pId => d20.Campaign.pages.models.find(it => it.id === pId))
+							.filter(it => it);
+
+						sel.forEach(m => {
+							if (m.id !== d20.Campaign.get("playerpageid") && m.id !== d20.Campaign.activePage().id) {
+								deletePage(m, pageList);
+							}
+						});
+						$cbAll.prop("checked", false);
+					});
+				}
+			},
 		],
 
 		addTools: () => {
@@ -1684,7 +2045,7 @@ var betteR20Base = function () {
 				$wrp.append(`<p style="width: 20%;">${t.name}</p>`);
 				$wrp.append(`<p style="width: 60%;">${t.desc}</p>`);
 				$(`<a style="width: 15%;" class="btn" href="#">Open</a>`).on(mousedowntype, () => {
-					t.openFn();
+					t.openFn.bind(t)();
 					$tools.dialog("close");
 				}).appendTo($wrp);
 				$toolsList.append($wrp);
@@ -4439,6 +4800,160 @@ var betteR20Base = function () {
 			});
 		},
 
+		// FILESAVER ///////////////////////////////////////////////////////////////////////////////////////////////////
+		/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js */
+		saveAs: function() {
+			const view = window;
+			var
+				doc = view.document
+				// only get URL when necessary in case Blob.js hasn't overridden it yet
+				, get_URL = function() {
+					return view.URL || view.webkitURL || view;
+				}
+				, save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a")
+				, can_use_save_link = "download" in save_link
+				, click = function(node) {
+					var event = new MouseEvent("click");
+					node.dispatchEvent(event);
+				}
+				, is_safari = /constructor/i.test(view.HTMLElement) || view.safari
+				, is_chrome_ios =/CriOS\/[\d]+/.test(navigator.userAgent)
+				, setImmediate = view.setImmediate || view.setTimeout
+				, throw_outside = function(ex) {
+					setImmediate(function() {
+						throw ex;
+					}, 0);
+				}
+				, force_saveable_type = "application/octet-stream"
+				// the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
+				, arbitrary_revoke_timeout = 1000 * 40 // in ms
+				, revoke = function(file) {
+					var revoker = function() {
+						if (typeof file === "string") { // file is an object URL
+							get_URL().revokeObjectURL(file);
+						} else { // file is a File
+							file.remove();
+						}
+					};
+					setTimeout(revoker, arbitrary_revoke_timeout);
+				}
+				, dispatch = function(filesaver, event_types, event) {
+					event_types = [].concat(event_types);
+					var i = event_types.length;
+					while (i--) {
+						var listener = filesaver["on" + event_types[i]];
+						if (typeof listener === "function") {
+							try {
+								listener.call(filesaver, event || filesaver);
+							} catch (ex) {
+								throw_outside(ex);
+							}
+						}
+					}
+				}
+				, auto_bom = function(blob) {
+					// prepend BOM for UTF-8 XML and text/* types (including HTML)
+					// note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
+					if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
+						return new Blob([String.fromCharCode(0xFEFF), blob], {type: blob.type});
+					}
+					return blob;
+				}
+				, FileSaver = function(blob, name, no_auto_bom) {
+					if (!no_auto_bom) {
+						blob = auto_bom(blob);
+					}
+					// First try a.download, then web filesystem, then object URLs
+					var
+						filesaver = this
+						, type = blob.type
+						, force = type === force_saveable_type
+						, object_url
+						, dispatch_all = function() {
+							dispatch(filesaver, "writestart progress write writeend".split(" "));
+						}
+						// on any filesys errors revert to saving with object URLs
+						, fs_error = function() {
+							if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
+								// Safari doesn't allow downloading of blob urls
+								var reader = new FileReader();
+								reader.onloadend = function() {
+									var url = is_chrome_ios ? reader.result : reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;');
+									var popup = view.open(url, '_blank');
+									if(!popup) view.location.href = url;
+									url=undefined; // release reference before dispatching
+									filesaver.readyState = filesaver.DONE;
+									dispatch_all();
+								};
+								reader.readAsDataURL(blob);
+								filesaver.readyState = filesaver.INIT;
+								return;
+							}
+							// don't create more object URLs than needed
+							if (!object_url) {
+								object_url = get_URL().createObjectURL(blob);
+							}
+							if (force) {
+								view.location.href = object_url;
+							} else {
+								var opened = view.open(object_url, "_blank");
+								if (!opened) {
+									// Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
+									view.location.href = object_url;
+								}
+							}
+							filesaver.readyState = filesaver.DONE;
+							dispatch_all();
+							revoke(object_url);
+						};
+					filesaver.readyState = filesaver.INIT;
+
+					if (can_use_save_link) {
+						object_url = get_URL().createObjectURL(blob);
+						setImmediate(function() {
+							save_link.href = object_url;
+							save_link.download = name;
+							click(save_link);
+							dispatch_all();
+							revoke(object_url);
+							filesaver.readyState = filesaver.DONE;
+						}, 0);
+						return;
+					}
+
+					fs_error();
+				}
+				, FS_proto = FileSaver.prototype
+				, saveAs = function(blob, name, no_auto_bom) {
+					return new FileSaver(blob, name || blob.name || "download", no_auto_bom);
+				};
+			// IE 10+ (native saveAs)
+			if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) {
+				return function(blob, name, no_auto_bom) {
+					name = name || blob.name || "download";
+
+					if (!no_auto_bom) {
+						blob = auto_bom(blob);
+					}
+					return navigator.msSaveOrOpenBlob(blob, name);
+				};
+			}
+			FS_proto.abort = function(){};
+			FS_proto.readyState = FS_proto.INIT = 0;
+			FS_proto.WRITING = 1;
+			FS_proto.DONE = 2;
+			FS_proto.error =
+				FS_proto.onwritestart =
+					FS_proto.onprogress =
+						FS_proto.onwrite =
+							FS_proto.onabort =
+								FS_proto.onerror =
+									FS_proto.onwriteend =
+										null;
+
+			return saveAs;
+		}(),
+
 		// CSS /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		baseCssRules: [
 			// generic
@@ -4446,6 +4961,11 @@ var betteR20Base = function () {
 				s: ".display-inline-block",
 				r: "display: inline-block;"
 			},
+			// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
+			// {
+			// 	s: ".note-editable p",
+			// 	r: "margin-bottom: 0;"
+			// },
 			// page view enhancement
 			{
 				s: "#page-toolbar",
@@ -4537,7 +5057,69 @@ var betteR20Base = function () {
 			{
 				s: ".withoutavatars .userscript-hacker-chat",
 				r: "margin-left: -15px;"
-			}
+			},
+			// Bootstrap-alikes
+			{
+				s: ".col-1",
+				r: "width: 8.333%;"
+			},
+			{
+				s: ".col-2",
+				r: "width: 16.666%;"
+			},
+			{
+				s: ".col-3",
+				r: "width: 25%;"
+			},
+			{
+				s: ".col-4",
+				r: "width: 33.333%;"
+			},
+			{
+				s: ".col-5",
+				r: "width: 41.667%;"
+			},
+			{
+				s: ".col-6",
+				r: "width: 50%;"
+			},
+			{
+				s: ".col-7",
+				r: "width: 58.333%;"
+			},
+			{
+				s: ".col-8",
+				r: "width: 66.667%;"
+			},
+			{
+				s: ".col-9",
+				r: "width: 75%;"
+			},
+			{
+				s: ".col-10",
+				r: "width: 83.333%;"
+			},
+			{
+				s: ".col-11",
+				r: "width: 91.667%;"
+			},
+			{
+				s: ".col-12",
+				r: "width: 100%;"
+			},
+			{
+				s: ".ib",
+				r: "display: inline-block;"
+			},
+			// image rows
+			{
+				s: ".import-cb-label--img",
+				r: "display: flex; height: 64px; align-items: center; padding: 4px;"
+			},
+			{
+				s: ".import-label__img",
+				r: "display: inline-block; width: 60px; height: 60px; padding: 0 5px;"
+			},
 		],
 
 		baseCssRulesPlayer: [

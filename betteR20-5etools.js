@@ -1,5 +1,4 @@
 const betteR205etools = function () {
-	const DATA_URL = BASE_SITE_URL + "data/";
 	const IMG_URL = BASE_SITE_URL + "img/";
 
 	const SPELL_DATA_DIR = `${DATA_URL}spells/`;
@@ -501,7 +500,9 @@ const betteR205etools = function () {
 		}
 		else d20plus.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
-		d20plus.addScripts(d20plus.onScriptLoad);
+        d20plus.addScripts(d20plus.onScriptLoad);
+
+		d20plus.showLoadingMessage(`betteR20-5etools v${d20plus.version}`);
 	};
 
 	// continue init once JSON loads
@@ -5719,32 +5720,32 @@ Errors: <span id="import-errors">0</span>
 	d20plus.settingsHtmlSelector = `
 <select id="import-mode-select">
 <option value="none" disabled selected>Select category...</option>
-<option value="monster">Monsters</option>
-<option value="spell">Spells</option>
+<option value="adventure">Adventures</option>
+<option value="background">Backgrounds</option>
+<option value="class">Classes</option>
+<option value="feat">Feats</option>
 <option value="item">Items</option>
+<option value="monster">Monsters</option>
+<option value="object">Objects</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 <option value="psionic">Psionics</option>
 <option value="race">Races</option>
-<option value="feat">Feats</option>
-<option value="object">Objects</option>
-<option value="class">Classes</option>
+<option value="spell">Spells</option>
 <option value="subclass">Subclasses</option>
-<option value="background">Backgrounds</option>
-<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
-<option value="adventure">Adventures</option>
 </select>
 `;
 	d20plus.settingsHtmlSelectorPlayer = `
 <select id="import-mode-select-player">
 <option value="none" disabled selected>Select category...</option>
-<option value="spell">Spells</option>
+<option value="background">Backgrounds</option>
+<option value="class">Classes</option>
+<option value="feat">Feats</option>
 <option value="item">Items</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 <option value="psionic">Psionics</option>
 <option value="race">Races</option>
-<option value="feat">Feats</option>
-<option value="class">Classes</option>
+<option value="spell">Spells</option>
 <option value="subclass">Subclasses</option>
-<option value="background">Backgrounds</option>
-<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 </select>
 `;
 	d20plus.settingsHtmlPtMonsters = `
@@ -5991,6 +5992,9 @@ To import from third-party sources, either individually select one available in 
 </select>
 <input type="text" id="import-adventures-url">
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
+<p>
+<b>Maps (pages) from official adventures can be found in the Tools List, in the "Map Importer/Exporter" tool.</b>
+</p>
 </div>
 `;
 
@@ -6090,59 +6094,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".userscript-statsBlockInsetReadaloud",
 			r: "background: #cbd6c688 !important"
-		},
-		// some generic width stuff
-		{
-			s: ".col-1",
-			r: "width: 8.333%;"
-		},
-		{
-			s: ".col-2",
-			r: "width: 16.666%;"
-		},
-		{
-			s: ".col-3",
-			r: "width: 25%;"
-		},
-		{
-			s: ".col-4",
-			r: "width: 33.333%;"
-		},
-		{
-			s: ".col-5",
-			r: "width: 41.667%;"
-		},
-		{
-			s: ".col-6",
-			r: "width: 50%;"
-		},
-		{
-			s: ".col-7",
-			r: "width: 58.333%;"
-		},
-		{
-			s: ".col-8",
-			r: "width: 66.667%;"
-		},
-		{
-			s: ".col-9",
-			r: "width: 75%;"
-		},
-		{
-			s: ".col-10",
-			r: "width: 83.333%;"
-		},
-		{
-			s: ".col-11",
-			r: "width: 91.667%;"
-		},
-		{
-			s: ".col-12",
-			r: "width: 100%;"
-		},
-		{
-			s: ".ib",
-			r: "display: inline-block;"
 		},
 	]);
 

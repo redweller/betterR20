@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.10.0";
+const SCRIPT_VERSION = "1.11.0";
 
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
@@ -25,7 +25,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @updateURL    https://get.5etools.com/script/betteR20-5etools.user.js
 // @downloadURL  https://get.5etools.com/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy
 // @match        https://app.roll20.net/editor/
 // @grant        unsafeWindow
 // @run-at       document-start
