@@ -5720,32 +5720,32 @@ Errors: <span id="import-errors">0</span>
 	d20plus.settingsHtmlSelector = `
 <select id="import-mode-select">
 <option value="none" disabled selected>Select category...</option>
-<option value="monster">Monsters</option>
-<option value="spell">Spells</option>
+<option value="adventure">Adventures</option>
+<option value="background">Backgrounds</option>
+<option value="class">Classes</option>
+<option value="feat">Feats</option>
 <option value="item">Items</option>
+<option value="monster">Monsters</option>
+<option value="object">Objects</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 <option value="psionic">Psionics</option>
 <option value="race">Races</option>
-<option value="feat">Feats</option>
-<option value="object">Objects</option>
-<option value="class">Classes</option>
+<option value="spell">Spells</option>
 <option value="subclass">Subclasses</option>
-<option value="background">Backgrounds</option>
-<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
-<option value="adventure">Adventures</option>
 </select>
 `;
 	d20plus.settingsHtmlSelectorPlayer = `
 <select id="import-mode-select-player">
 <option value="none" disabled selected>Select category...</option>
-<option value="spell">Spells</option>
+<option value="background">Backgrounds</option>
+<option value="class">Classes</option>
+<option value="feat">Feats</option>
 <option value="item">Items</option>
+<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 <option value="psionic">Psionics</option>
 <option value="race">Races</option>
-<option value="feat">Feats</option>
-<option value="class">Classes</option>
+<option value="spell">Spells</option>
 <option value="subclass">Subclasses</option>
-<option value="background">Backgrounds</option>
-<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
 </select>
 `;
 	d20plus.settingsHtmlPtMonsters = `
@@ -5992,6 +5992,9 @@ To import from third-party sources, either individually select one available in 
 </select>
 <input type="text" id="import-adventures-url">
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
+<p>
+<b>Maps (pages) from official adventures can be found in the Tools List, in the "Map Importer/Exporter" tool.</b>
+</p>
 </div>
 `;
 
