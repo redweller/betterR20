@@ -1,5 +1,4 @@
 const betteR205etools = function () {
-	const DATA_URL = BASE_SITE_URL + "data/";
 	const IMG_URL = BASE_SITE_URL + "img/";
 
 	const SPELL_DATA_DIR = `${DATA_URL}spells/`;
@@ -6092,59 +6091,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".userscript-statsBlockInsetReadaloud",
 			r: "background: #cbd6c688 !important"
-		},
-		// some generic width stuff
-		{
-			s: ".col-1",
-			r: "width: 8.333%;"
-		},
-		{
-			s: ".col-2",
-			r: "width: 16.666%;"
-		},
-		{
-			s: ".col-3",
-			r: "width: 25%;"
-		},
-		{
-			s: ".col-4",
-			r: "width: 33.333%;"
-		},
-		{
-			s: ".col-5",
-			r: "width: 41.667%;"
-		},
-		{
-			s: ".col-6",
-			r: "width: 50%;"
-		},
-		{
-			s: ".col-7",
-			r: "width: 58.333%;"
-		},
-		{
-			s: ".col-8",
-			r: "width: 66.667%;"
-		},
-		{
-			s: ".col-9",
-			r: "width: 75%;"
-		},
-		{
-			s: ".col-10",
-			r: "width: 83.333%;"
-		},
-		{
-			s: ".col-11",
-			r: "width: 91.667%;"
-		},
-		{
-			s: ".col-12",
-			r: "width: 100%;"
-		},
-		{
-			s: ".ib",
-			r: "display: inline-block;"
 		},
 	]);
 
