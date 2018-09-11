@@ -4446,6 +4446,11 @@ var betteR20Base = function () {
 				s: ".display-inline-block",
 				r: "display: inline-block;"
 			},
+			// fix Roll20's <p> margins in the text editor
+			{
+				s: ".note-editable p",
+				r: "margin-bottom: 0;"
+			},
 			// page view enhancement
 			{
 				s: "#page-toolbar",
