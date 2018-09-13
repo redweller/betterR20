@@ -1942,7 +1942,7 @@ var betteR20Base = function () {
 			},
 			{
 				name: "Mass-Delete Pages",
-				desc: "Quickly delte multiple pages.",
+				desc: "Quickly delete multiple pages.",
 				html: `
 				<div id="d20plus-mass-page-delete" title="Mass-Delete Pages">
 					<div id="del-pages-list">
