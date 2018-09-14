@@ -2696,76 +2696,318 @@ const betteR205etools = function () {
 									});
 								});
 
-								// render sheet
-								character.view.render();
+								const addMacroIndex = toAdd.length - 1;
+								// wait a bit, then start adding spells
+								setTimeout(() => {
+									toAdd.forEach((text, i) => {
+										let [name, source] = text.split("|");
+										if (!source) source = "PHB";
+										const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
+										const url = d20plus.spells.formSpellUrl(rawUrl);
+										// the JSON gets cached by the script, so this is fine
+										DataUtil.loadJSON(url).then((data) => {
+											const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
 
-								let interval;
-								let loopCount = 0;
-								const checkLoop = () => {
-									if (loopCount > 10) {
-										clearInterval(interval);
-										console.warn(`Spellcaster sheet was never rendered!`);
-									} else if (character.view.$charsheet) {
-										clearInterval(interval);
+											const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
 
-										const addMacroIndex = toAdd.length - 1;
-										toAdd.forEach((text, i) => {
-											let [name, source] = text.split("|");
-											if (!source) source = "PHB";
-											const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
-											const url = d20plus.spells.formSpellUrl(rawUrl);
-											// the JSON gets cached by the script, so this is fine
-											DataUtil.loadJSON(url).then((data) => {
-												const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
-
-												const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
-
-												// do this as slowly as possible
-												setTimeout(() => {
-													addSpell2(JSON.parse(gmnotes), spell, i, addMacroIndex);
-												}, spAbilsDelayMs * 2.5 * (i + 1));
-											});
+											addSpell3(JSON.parse(gmnotes), spell, i, addMacroIndex);
 										});
+									});
+								}, spAbilsDelayMs);
 
-										function addSpell2 (data, VeSp, index, addMacroIndex) {
-											data.content = addInlineRollers(data.content);
-											const DESC_KEY = "data-description";
-											data.data[DESC_KEY] = addInlineRollers(data.data[DESC_KEY]);
-											const HL_KEY = "Higher Spell Slot Desc";
-											if (data.data[HL_KEY]) data.data[HL_KEY] = addInlineRollers(data.data[HL_KEY]);
+								function addSpell3 (data, VeSp, index, addMacroIndex) {
+									console.log("Adding spell: ", data.name)
+									// prepare data
+									data.content = addInlineRollers(data.content);
+									const DESC_KEY = "data-description";
+									data.data[DESC_KEY] = addInlineRollers(data.data[DESC_KEY]);
+									const HL_KEY = "Higher Spell Slot Desc";
+									if (data.data[HL_KEY]) data.data[HL_KEY] = addInlineRollers(data.data[HL_KEY]);
 
-											const dropTarget = character.view.$charsheet.find(`.sheet-compendium-drop-target`)[0];
-											const fakeEvent = {target: dropTarget};
+									// populate spell data
+									// source: https://github.com/Roll20/roll20-character-sheets/blob/master/5th%20Edition%20OGL%20by%20Roll20/5th%20Edition%20OGL%20by%20Roll20.html
 
-											d20plus.importer.doFakeDrop(fakeEvent, character.view, data);
+									// custom code
+									function setAttrs (attrs, callbacks) {
+										Object.entries(attrs).forEach(([a, v]) => {
+											character.attribs.create({name: a, current: v}).save();
+										});
+										if (callbacks) callbacks.forEach(cb => cb());
+									}
 
-											if (index === addMacroIndex) {
-												// collect name and identifier for all the character's spells
-												const macroSpells = character.attribs.toJSON()
-													.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
-													.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
+									// custom code
+									function getAttrs (attrs) {
+										const all = character.attribs.toJSON();
+										const out = {};
+										attrs.forEach(k => {
+											const found = all.find(it => it.name === k)
+											if (found) out[k] = found.current;
+										})
+										return out;
+									}
 
-												// build tokenaction
-												macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
-												if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
-													character.abilities.create({
-														name: "Spells",
-														istokenaction: true,
-														action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
-													}).save();
-												}
+									// largely stolen from `update_attack_from_spell`
+									function update_attack_from_spell (lvl, spellid, attackid, newattack) {
+										const v = getAttrs(["repeating_spell-" + lvl + "_" + spellid + "_spellname",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellrange",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelltarget",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellattack",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage2",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhealing",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellsave",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhldie",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhldietype",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelllevel",
+											"repeating_spell-" + lvl + "_" + spellid + "_includedesc",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldescription",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels",
+											"repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression",
+											"repeating_spell-" + lvl + "_" + spellid + "_innate",
+											"repeating_spell-" + lvl + "_" + spellid + "_spell_ability",
+											"spellcasting_ability"]);
+
+										var update = {};
+										var description = "";
+										var spellAbility = v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"] != "spell" ? v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"].slice(0, -1) : "spell";
+										update["repeating_attack_" + attackid + "_atkattr_base"] = spellAbility;
+
+										if(newattack) {
+											update["repeating_attack_" + attackid + "_options-flag"] = "0";
+											update["repeating_attack_" + attackid + "_spellid"] = spellid;
+											update["repeating_attack_" + attackid + "_spelllevel"] = lvl;
+										}
+
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"] == "spell") {
+											update["repeating_attack_" + attackid + "_savedc"] = "(@{spell_save_dc})";
+										} else if (v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"]) {
+											update["repeating_attack_" + attackid + "_savedc"] = "(" + spellAbility + "+8+@{spell_dc_mod}+@{pb})";
+										}
+
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellname"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellname"] != "") {
+											update["repeating_attack_" + attackid + "_atkname"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellname"];
+										}
+										if(!v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] || v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] === "None") {
+											update["repeating_attack_" + attackid + "_atkflag"] = "0";
+										}
+										else {
+											update["repeating_attack_" + attackid + "_atkflag"] = "{{attack=1}}";
+											description = description + v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] + " Spell Attack. ";
+										}
+
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] && v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] != "") {
+											update["repeating_attack_" + attackid + "_dmgflag"] = "{{damage=1}} {{dmg1flag=1}}";
+											if(v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] && v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] === "Cantrip Dice") {
+												update["repeating_attack_" + attackid + "_dmgbase"] = "[[round((@{level} + 1) / 6 + 0.5)]]" + v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"].substring(1);
+											}
+											else {
+												update["repeating_attack_" + attackid + "_dmgbase"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"];
 											}
 										}
-									} else {
-										loopCount++;
-									}
-								};
+										else {
+											update["repeating_attack_" + attackid + "_dmgflag"] = "0"
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod"] && v["repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod"] === "Yes") {
+											update["repeating_attack_" + attackid + "_dmgattr"] = spellAbility;
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmgattr"] = "0";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype"]) {
+											update["repeating_attack_" + attackid + "_dmgtype"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmgtype"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"]) {
+											update["repeating_attack_" + attackid + "_dmg2base"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"];
+											update["repeating_attack_" + attackid + "_dmg2attr"] = 0;
+											update["repeating_attack_" + attackid + "_dmg2flag"] = "{{damage=1}} {{dmg2flag=1}}";
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmg2base"] = "";
+											update["repeating_attack_" + attackid + "_dmg2attr"] = 0;
+											update["repeating_attack_" + attackid + "_dmg2flag"] = "0";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2"]) {
+											update["repeating_attack_" + attackid + "_dmg2type"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmg2type"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"]) {
+											update["repeating_attack_" + attackid + "_atkrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_atkrange"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"]) {
+											update["repeating_attack_" + attackid + "_atkrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_atkrange"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellsave"]) {
+											update["repeating_attack_" + attackid + "_saveflag"] = "{{save=1}} {{saveattr=@{saveattr}}} {{savedesc=@{saveeffect}}} {{savedc=[[[[@{savedc}]][SAVE]]]}}";
+											update["repeating_attack_" + attackid + "_saveattr"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellsave"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_saveflag"] = "0";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess"]) {
+											update["repeating_attack_" + attackid + "_saveeffect"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_saveeffect"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] != "" && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] != "") {
+											var bonus = "";
+											var spelllevel = v["repeating_spell-" + lvl + "_" + spellid + "_spelllevel"];
+											var query = "?{Cast at what level?";
+											for(i = 0; i < 10-spelllevel; i++) {
+												query = query + "|Level " + (parseInt(i, 10) + parseInt(spelllevel, 10)) + "," + i;
+											}
+											query = query + "}";
+											if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] != "") {
+												bonus = "+(" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] + "*" + query + ")";
+											}
+											update["repeating_attack_" + attackid + "_hldmg"] = "{{hldmg=[[(" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] + "*" + query + ")" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] + bonus + "]]}}";
+										}
+										else {
+											update["repeating_attack_" + attackid + "_hldmg"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"] != "") {
+											if(!v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] || v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] === "") {
+												update["repeating_attack_" + attackid + "_dmgbase"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"];
+												update["repeating_attack_" + attackid + "_dmgflag"] = "{{damage=1}} {{dmg1flag=1}}";
+												update["repeating_attack_" + attackid + "_dmgtype"] = "Healing";
+											}
+											else if(!v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"] || v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"] === "") {
+												update["repeating_attack_" + attackid + "_dmg2base"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"];
+												update["repeating_attack_" + attackid + "_dmg2flag"] = "{{damage=1}} {{dmg2flag=1}}";
+												update["repeating_attack_" + attackid + "_dmg2type"] = "Healing";
+											}
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_innate"]) {
+											update["repeating_attack_" + attackid + "_spell_innate"] = v["repeating_spell-" + lvl + "_" + spellid + "_innate"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_spell_innate"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelltarget"]) {
+											description = description + v["repeating_spell-" + lvl + "_" + spellid + "_spelltarget"] + ". ";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] && v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] === "on") {
+											description = v["repeating_spell-" + lvl + "_" + spellid + "_spelldescription"];
+											if(v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"] != "") {
+												description = description + "\n\nAt Higher Levels: " + v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"];
+											}
+										}
+										else if(v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] && v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] === "off") {
+											description = "";
+										};
+										update["repeating_attack_" + attackid + "_atk_desc"] = description;
 
-								// wait for the character sheet to be rendered
-								interval = setInterval(() => {
-									checkLoop();
-								}, spAbilsDelayMs);
-								checkLoop();
+										// TODO are these necessary?
+										// var callback = function() {update_attacks(attackid, "spell")};
+										// setAttrs(update, {silent: true}, callback);
+										setAttrs(update);
+									}
+
+									// largely stolen from `create_attack_from_spell`
+									function create_attack_from_spell (lvl, spellid, character_id) {
+										var update = {};
+										var newrowid = d20plus.generateRowId();
+										update["repeating_spell-" + lvl + "_" + spellid + "_spellattackid"] = newrowid;
+										update["repeating_spell-" + lvl + "_" + spellid + "_rollcontent"] = "%{" + character_id + "|repeating_attack_" + newrowid + "_attack}";
+										setAttrs(update, update_attack_from_spell(lvl, spellid, newrowid, true));
+									}
+
+									// largely stolen from `processDrop`
+									function processDrop (page) {
+										const update = {};
+										const callbacks = [];
+										const id = d20plus.generateRowId();
+
+										var lvl = page.data["Level"] && page.data["Level"] > 0 ? page.data["Level"] : "cantrip";
+										update["repeating_spell-" + lvl + "_" + id + "_spelllevel"] = lvl;
+										if(page.data["spellcasting_ability"]) {
+											update["repeating_spell-" + lvl + "_" + id + "_spell_ability"] = page.data["spellcasting_ability"];
+										} else {
+											update["repeating_spell-" + lvl + "_" + id + "_spell_ability"] = "spell";
+										}
+										if(page.name) {update["repeating_spell-" + lvl + "_" + id + "_spellname"] = page.name};
+										if(page.data["Ritual"]) {update["repeating_spell-" + lvl + "_" + id + "_spellritual"] = "{{ritual=1}}"};
+										if(page.data["School"]) {update["repeating_spell-" + lvl + "_" + id + "_spellschool"] = page.data["School"].toLowerCase()};
+										if(page.data["Casting Time"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcastingtime"] = page.data["Casting Time"]};
+										if(page.data["Range"]) {update["repeating_spell-" + lvl + "_" + id + "_spellrange"] = page.data["Range"]};
+										if(page.data["Target"]) {update["repeating_spell-" + lvl + "_" + id + "_spelltarget"] = page.data["Target"]};
+										if(page.data["Components"]) {
+											if(page.data["Components"].toLowerCase().indexOf("v") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_v"] = "0"};
+											if(page.data["Components"].toLowerCase().indexOf("s") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_s"] = "0"};
+											if(page.data["Components"].toLowerCase().indexOf("m") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_m"] = "0"};
+										};
+										if(page.data["Material"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_materials"] = page.data["Material"]};
+										if(page.data["Concentration"]) {update["repeating_spell-" + lvl + "_" + id + "_spellconcentration"] = "{{concentration=1}}"};
+										if(page.data["Duration"]) {update["repeating_spell-" + lvl + "_" + id + "_spellduration"] = page.data["Duration"]};
+										if(page.data["Damage"] || page.data["Healing"]) {
+											update["repeating_spell-" + lvl + "_" + id + "_spelloutput"] = "ATTACK";
+											callbacks.push( function() {create_attack_from_spell(lvl, id, character.id);} );
+										}
+										else if(page.data["Higher Spell Slot Desc"] && page.data["Higher Spell Slot Desc"] != "") {
+											var spelllevel = "?{Cast at what level?";
+											for(i = 0; i < 10-lvl; i++) {
+												spelllevel = spelllevel + "|Level " + (parseInt(i, 10) + parseInt(lvl, 10)) + "," + (parseInt(i, 10) + parseInt(lvl, 10));
+											}
+											spelllevel = spelllevel + "}";
+											update["repeating_spell-" + lvl + "_" + id + "_rollcontent"] = "@{wtype}&{template:spell} {{level=@{spellschool} " + spelllevel + "}} {{name=@{spellname}}} {{castingtime=@{spellcastingtime}}} {{range=@{spellrange}}} {{target=@{spelltarget}}} @{spellcomp_v} @{spellcomp_s} @{spellcomp_m} {{material=@{spellcomp_materials}}} {{duration=@{spellduration}}} {{description=@{spelldescription}}} {{athigherlevels=@{spellathigherlevels}}} @{spellritual} {{innate=@{innate}}} @{spellconcentration} @{charname_output}";
+										};
+										if(page.data["Spell Attack"]) {update["repeating_spell-" + lvl + "_" + id + "_spellattack"] = page.data["Spell Attack"]};
+										if(page.data["Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage"] = page.data["Damage"]};
+										if(page.data["Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype"] = page.data["Damage Type"]};
+										if(page.data["Secondary Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage2"] = page.data["Secondary Damage"]};
+										if(page.data["Secondary Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype2"] = page.data["Secondary Damage Type"]};
+										if(page.data["Healing"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhealing"] = page.data["Healing"];};
+										if(page.data["Add Casting Modifier"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldmgmod"] = page.data["Add Casting Modifier"]};
+										if(page.data["Save"]) {update["repeating_spell-" + lvl + "_" + id + "_spellsave"] = page.data["Save"]};
+										if(page.data["Save Success"]) {update["repeating_spell-" + lvl + "_" + id + "_spellsavesuccess"] = page.data["Save Success"]};
+										if(page.data["Higher Spell Slot Dice"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhldie"] = page.data["Higher Spell Slot Dice"]};
+										if(page.data["Higher Spell Slot Die"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhldietype"] = page.data["Higher Spell Slot Die"]};
+										if(page.data["Higher Spell Slot Bonus"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhlbonus"] = page.data["Higher Spell Slot Bonus"]};
+										if(page.data["Higher Spell Slot Desc"]) {update["repeating_spell-" + lvl + "_" + id + "_spellathigherlevels"] = page.data["Higher Spell Slot Desc"]};
+										if(page.data["data-Cantrip Scaling"] && lvl == "cantrip") {update["repeating_spell-" + lvl + "_" + id + "_spell_damage_progression"] = "Cantrip " + page.data["data-Cantrip Scaling"].charAt(0).toUpperCase() + page.data["data-Cantrip Scaling"].slice(1);};
+										if(page.data["data-description"]) { update["repeating_spell-" + lvl + "_" + id + "_spelldescription"] = page.data["data-description"]};
+										update["repeating_spell-" + lvl + "_" + id + "_options-flag"] = "0";
+
+										// custom writing:
+										setAttrs(update, callbacks);
+									}
+
+									processDrop(data);
+
+									// on final item, add macro
+									if (index === addMacroIndex) {
+										// collect name and identifier for all the character's spells
+										const macroSpells = character.attribs.toJSON()
+											.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
+											.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
+
+										// build tokenaction
+										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
+										if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
+											character.abilities.create({
+												name: "Spells",
+												istokenaction: true,
+												action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+											}).save();
+										}
+									}
+								}
 							}
 							if (data.trait) {
 								$.each(data.trait, function (i, v) {
