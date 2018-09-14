@@ -580,7 +580,7 @@ const betteR205etools = function () {
 		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};
 
-// Bind Graphics Add on page
+	// Bind Graphics Add on page
 	d20plus.bindGraphics = function (page) {
 		d20plus.log("Bind Graphics");
 		try {
@@ -6900,8 +6900,8 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				$("#d20plus-module-importer-5etools").dialog({
 					autoOpen: false,
 					resizable: true,
-					width: 600,
-					height: 400,
+					width: 800,
+					height: 600,
 				});
 				$("#d20plus-module-importer-help").dialog({
 					autoOpen: false,
@@ -7172,8 +7172,8 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								<label class="import-cb-label" data-listid="${i}">
 									<input type="radio" name="map-5etools">
 									<span class="name col-7 readable">${t.name}</span>
-									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
-									<span class="name col-3 readable">${d20plus.getReadableFileSizeString(t.size)}</span>
+									<span class="name col-3 readable" style="text-align: right;">${d20plus.getReadableFileSizeString(t.size)}</span>
+									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
 								</label>
 							`;
 						});
