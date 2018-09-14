@@ -334,6 +334,11 @@ const betteR205etools = function () {
 			"default": "PP",
 			"_type": "_FORMULA"
 		},
+		"trackerSheetButton": {
+			"name": "Add Sheet Button To Tracker",
+			"default": false,
+			"_type": "boolean"
+		},
 		"minifyTracker": {
 			"name": "Shrink Initiative Tracker Text",
 			"default": false,
@@ -379,14 +384,15 @@ const betteR205etools = function () {
 	d20plus.damageModes = ["Auto Roll", "Don't Auto Roll"];
 
 	d20plus.formulas = {
-		_options: ["--Empty--", "AC", "HP", "PP"],
+		_options: ["--Empty--", "AC", "HP", "Passive Perception", "Spell DC"],
 		"ogl": {
 			"cr": "@{npc_challenge}",
 			"ac": "@{ac}",
 			"npcac": "@{npc_ac}",
 			"hp": "@{hp}",
 			"pp": "@{passive_wisdom}",
-			"macro": ""
+			"macro": "",
+			"spellDc": "@{spell_save_dc}"
 		},
 		"community": {
 			"cr": "@{npc_challenge}",
@@ -394,7 +400,8 @@ const betteR205etools = function () {
 			"npcac": "@{AC}",
 			"hp": "@{HP}",
 			"pp": "10 + @{perception}",
-			"macro": ""
+			"macro": "",
+			"spellDc": "@{spell_save_dc}"
 		},
 		"shaped": {
 			"cr": "@{challenge}",
@@ -402,7 +409,8 @@ const betteR205etools = function () {
 			"npcac": "@{AC}",
 			"hp": "@{HP}",
 			"pp": "@{repeating_skill_$11_passive}",
-			"macro": "shaped_statblock"
+			"macro": "shaped_statblock",
+			"spellDc": "@{spell_save_dc}"
 		}
 	};
 
@@ -3398,7 +3406,7 @@ const betteR205etools = function () {
 		d20plus.log("Switched Character Sheet Template to " + d20plus.sheet);
 	};
 
-// Return Initiative Tracker template with formulas
+	// Return Initiative Tracker template with formulas
 	d20plus.initErrorHandler = null;
 	d20plus.setTurnOrderTemplate = function () {
 		if (!d20plus.turnOrderCachedFunction) {
@@ -3431,40 +3439,48 @@ const betteR205etools = function () {
 					case "HP": {
 						const hpBar = d20plus.getCfgHpBarNumber();
 						replaceStack.push(`
-						<span class='hp editable tracker-col' alt='HP' title='HP'>
-							<$ if(npc && npc.get("current") == "1") { $>
-								${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
-							<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
-								<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
-							<$ } else { $>
-								<$!"\u2014"$>
-							<$ } $>
-						</span>
-					`);
+							<span class='hp editable tracker-col' alt='HP' title='HP'>
+								<$ if(npc && npc.get("current") == "1") { $>
+									${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
+								<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
+								<$ } else { $>
+									<$!"\u2014"$>
+								<$ } $>
+							</span>
+						`);
 						headerStack.push(`<span class='tracker-col'>HP</span>`);
 						break;
 					}
 					case "AC": {
 						replaceStack.push(`
-						<span class='ac tracker-col' alt='AC' title='AC'>
-							<$ if(npc && npc.get("current") == "1" && typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
-								<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
-							<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
-								<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
-							<$ } else { $>
-								<$!"\u2014"$>
-							<$ } $>
-						</span>
-					`);
+							<span class='ac tracker-col' alt='AC' title='AC'>
+								<$ if(npc && npc.get("current") == "1" && typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
+								<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
+								<$ } else { $>
+									<$!"\u2014"$>
+								<$ } $>
+							</span>
+						`);
 						headerStack.push(`<span class='tracker-col'>AC</span>`);
 						break;
 					}
-					case "PP": {
+					case "Passive Perception": {
 						replaceStack.push(`
-						<$ var passive = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
-						<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
-					`);
+							<$ var passive = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
+							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
+						`);
 						headerStack.push(`<span class='tracker-col'>PP</span>`);
+						break;
+					}
+					case "Spell DC": {
+						replaceStack.push(`
+							<$ var dc = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].spellDc}')) : "\u2014"; $>
+							<span class='dc tracker-col' alt='Spell DC' title='Spell DC'><$!dc$></span>
+						`);
+						headerStack.push(`<span class='tracker-col'>DC</span>`);
 						break;
 					}
 					default: {
@@ -3476,10 +3492,21 @@ const betteR205etools = function () {
 
 			console.log("use custom tracker val was ", d20plus.getCfgVal("interface", "customTracker"))
 			if (d20plus.getCfgVal("interface", "customTracker")) {
+				$(`.init-header`).show();
+				if (d20plus.getCfgVal("interface", "trackerSheetButton")) {
+					$(`.init-sheet-header`).show();
+				} else {
+					$(`.init-sheet-header`).hide();
+				}
+				$(`.init-init-header`).show();
 				const $header = $(".tracker-header-extra-columns");
 				// prepend/reverse used since tracker gets populated in right-to-left order
 				headerStack.forEach(h => $header.prepend(h))
 				html = html.replace(`<!--5ETOOLS_REPLACE_TARGET-->`, replaceStack.reverse().join(" \n"));
+			} else {
+				$(`.init-header`).hide();
+				$(`.init-sheet-header`).hide();
+				$(`.init-init-header`).hide();
 			}
 
 			$("#tmpl_initiativecharacter").replaceWith(html);
@@ -3522,6 +3549,20 @@ const betteR205etools = function () {
 			window.addEventListener("error", d20plus.initErrorHandler);
 			return results;
 		};
+
+		const getTargetWidth = () => d20plus.getCfgVal("interface", "minifyTracker") ? 250 : 350;
+		// wider tracker
+		const cachedDialog = d20.Campaign.initiativewindow.$el.dialog;
+		d20.Campaign.initiativewindow.$el.dialog = (...args) => {
+			const widen = d20plus.getCfgVal("interface", "customTracker");
+			if (widen && args[0] && args[0].width) {
+				args[0].width = getTargetWidth();
+			}
+			cachedDialog.bind(d20.Campaign.initiativewindow.$el)(...args);
+		};
+
+		// if the tracker is already open, widen it
+		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) d20.Campaign.initiativewindow.$el.dialog("option", "width", getTargetWidth());
 	};
 
 	d20plus.importer.makePlayerDraggable = function (importId, name) {
@@ -7304,9 +7345,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		});
 	};
 
-	d20plus.initiativeHeaders = `<div class="header">
-<span class="ui-button-text initmacro">Sheet</span>
-<span class="initiative" alt="Initiative" title="Initiative">Init</span>
+	d20plus.initiativeHeaders = `<div class="header init-header">
+<span class="ui-button-text initmacro init-sheet-header"></span>
+<span class="initiative init-init-header" alt="Initiative" title="Initiative">Init</span>
 <span class="cr" alt="CR" title="CR">CR</span>
 <div class="tracker-header-extra-columns"></div>
 </div>`;
@@ -7316,11 +7357,13 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 	<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
 		<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
 		<$ var char = (token) ? token.character : null; $>
-		<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
-			<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
-			<span class='ui-button-text'>N</span>
-			</button>
-		</span>
+		<$ if (d20plus.getCfgVal("interface", "customTracker") && d20plus.getCfgVal("interface", "trackerSheetButton")) { $>
+			<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
+				<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
+				<span class='ui-button-text'>N</span>
+				</button>
+			</span>		
+		<$ } $>
 		<span alt='Initiative' title='Initiative' class='initiative <$ if (this.iseditable) { $>editable<$ } $>'>
 			<$!this.pr$>
 		</span>
