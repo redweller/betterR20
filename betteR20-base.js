@@ -5601,10 +5601,8 @@ var betteR20Base = function () {
 		  <label style='padding-top: 4px;'>
 			<strong>Page Size</strong>
 		  </label>
-		  <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" />
-		  un. by
-		  <input type="number" class="height" style="width: 50px; margin-left: 5px;" value="<$!this.model.get("height")$>" />
-		  un.
+		  X: <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" /> un. (<$!this.model.get("width") * 70$> px)
+		  <div style="margin-left: 110px; margin-top: 2px;">Y: <input type="number" class="height" style="width: 50px;" value="<$!this.model.get("height")$>" /> un. (<$!this.model.get("height") * 70$> px)</div>
 		  <small style='display: block; font-size: 0.9em; margin-left: 110px;'>width by height, 1 unit = 70 pixels</small>
 		  <div class='clear' style='height: 15px;'></div>
 		  <label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
