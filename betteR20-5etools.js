@@ -6263,9 +6263,22 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					const rawChar = d20.Campaign.characters.get(id);
 					const char = rawChar.toJSON();
 					char.attribs = rawChar.attribs.toJSON();
-					DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify({
-						char
-					}, null, "\t"));
+					const out = {
+						char,
+						blobs: {}
+					};
+					blobCount = 3;
+					const onBlobsReady = () => DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify(out, null, "\t"));
+
+					const handleBlob = (asKey, data) => {
+						out.blobs[asKey] = data;
+						blobCount--;
+						if (blobCount === 0) onBlobsReady();
+					};
+
+					rawChar._getLatestBlob("bio", (data) => handleBlob("bio", data));
+					rawChar._getLatestBlob("gmnotes", (data) => handleBlob("gmnotes", data));
+					rawChar._getLatestBlob("defaulttoken", (data) => handleBlob("defaulttoken", data));
 				});
 
 				const $btnUl = $win.find(`.upload`);
@@ -6306,6 +6319,15 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 											}
 											const toSave = char.attribs.map(a => character.attribs.push(a));
 											toSave.forEach(s => s.syncedSave());
+
+											const blobs = json.blobs;
+											if (blobs) {
+												character.updateBlobs({
+													bio: blobs.bio || "",
+													gmnotes: blobs.gmnotes || "",
+													defaulttoken: blobs.defaulttoken || ""
+												});
+											}
 										} catch (e) {
 											window.alert("Failed to import character! See the log for details.");
 											console.error(e);
