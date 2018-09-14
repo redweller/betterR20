@@ -1690,6 +1690,9 @@ var betteR20Base = function () {
 					});
 				},
 				openFn: () => {
+					// FIXME this doesn't work, because it saves a nonsensical blob (imgsrc) instead of defaulttoken
+					// see the working code in `initArtFromUrlButtons` for how this _should_ be done
+
 					function replaceAll (str, search, replacement) {
 						return str.split(search).join(replacement);
 					}
@@ -2325,6 +2328,19 @@ var betteR20Base = function () {
 				const url = window.prompt("Enter a URL", "https://example.com/pic.png");
 				if (url) {
 					d20.Campaign.handouts.get(hId).set("avatar", url);
+				}
+			});
+
+			$(`.token-image-by-url`).live("click", function () {
+				const cId = $(this).closest(`[data-characterid]`).attr(`data-characterid`);
+				const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+				if (url) {
+					const char = d20.Campaign.characters.get(cId);
+					char._getLatestBlob("defaulttoken", (blob) => {
+						blob = blob && blob.trim() ? JSON.parse(blob) : {};
+						blob.imgsrc = url;
+						char.updateBlobs({defaulttoken: JSON.stringify(blob)});
+					});
 				}
 			});
 		},
@@ -5879,6 +5895,11 @@ var betteR20Base = function () {
                 <small>Select a token on the tabletop to use as the Default Token</small>
                 <$ } $>
                 </div>
+                <!-- BEGIN MOD -->
+                <button class="btn token-image-by-url">Set Token Image from URL</button>
+                <small style="text-align: left;">(Update will only be visible upon re-opening the sheet)</small>
+                <div class='clear'></div>
+                <!-- END MOD -->
                 <$ } $>
               </div>
               <div class='span7'>
