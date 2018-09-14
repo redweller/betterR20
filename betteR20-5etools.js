@@ -6080,18 +6080,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			r: "display: none;"
 		},
 		{
-			s: ".import-cb-label",
-			r: "display: block; margin-right: -13px !important;"
-		},
-		{
-			s: ".import-cb-label span",
-			r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;"
-		},
-		{
-			s: ".import-cb-label .source",
-			r: "width: calc(16.667% - 28px);'"
-		},
-		{
 			s: ".importer-section",
 			r: "display: none;"
 		},
@@ -6690,7 +6678,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									<label class="import-cb-label ${img ? `import-cb-label--img` : ""}" data-listid="${i}">
 										<input type="checkbox">
 										${img && img.trim() ? `<img class="import-label__img" src="${img}">` : ""}
-										<span class="name col-9">${m.attributes.name}</span>
+										<span class="name col-9 readable">${m.attributes.name}</span>
 									</label>
 								`);
 					});
@@ -6878,9 +6866,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 							tmp += `
 								<label class="import-cb-label" data-listid="${i}">
 									<input type="radio" name="map-5etools">
-									<span class="name col-7">${t.name}</span>
-									<span title="${Parser.sourceJsonToFull(t.id)}" class="source">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
-									<span class="name col-3">${d20plus.getReadableFileSizeString(t.size)}</span>
+									<span class="name col-7 readable">${t.name}</span>
+									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
+									<span class="name col-3 readable">${d20plus.getReadableFileSizeString(t.size)}</span>
 								</label>
 							`;
 						});

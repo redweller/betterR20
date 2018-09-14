@@ -1245,15 +1245,17 @@ var betteR20Base = function () {
 		tools: [
 			{
 				name: "Journal Cleaner",
-				desc: "Quickly select and delete journal items from the root folder, useful for cleaning up loose items after deleting a folder.",
+				desc: "Quickly select and delete journal items, especially useful for cleaning up loose items after deleting a folder.",
 				html: `
 				<div id="d20plus-quickdelete" title="Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
+				<label style="font-weight: bold">Root Only <input type="checkbox" class="cb-deep" checked></label>
+				<hr>
 				<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
 				<div id="delete-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<br><br>
-					<ul class="list deletelist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
+					<ul class="list deletelist" style="max-height: 420px; overflow-y: scroll; display: block; margin: 0;"></ul>
 				</div>
 				</div>
 				`,
@@ -1262,65 +1264,103 @@ var betteR20Base = function () {
 						autoOpen: false,
 						resizable: true,
 						width: 800,
-						height: 650,
+						height: 700,
 					});
 				},
 				openFn: () => {
 					const $win = $("#d20plus-quickdelete");
 					$win.dialog("open");
+					const $cbDeep = $win.find(`.cb-deep`);
 
-					const journal = d20plus.getJournalFolderObj();
-					const rootItems = [];
-					journal.forEach(it => {
-						if (it.i) return; // skip folders
-						const handout = d20.Campaign.handouts.get(it);
-						if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return; // skip 5etools handouts
-						const character = d20.Campaign.characters.get(it);
-						if (handout) rootItems.push({type: "handouts", id: it, name: handout.get("name")});
-						if (character) rootItems.push({type: "characters", id: it, name: character.get("name")});
-					});
+					const $cbAll = $("#deletelist-selectall").unbind("click");
 
-					const $delList = $win.find(`.list`);
-					$delList.empty();
+					const $btnDel = $(`#quickdelete-btn-submit`).off("click");
 
-					rootItems.forEach((it, i) => {
-						$delList.append(`
-							<label class="import-cb-label">
-								<input type="checkbox" data-listid="${i}">
-								<span class="name">${it.name}</span>
+					$cbDeep.off("change").on("change", () => populateList());
+
+					populateList();
+
+					function populateList () {
+						// collect a list of all journal items
+						function getAllJournalItems () {
+							const out = [];
+
+							function recurse (entry, pos, isRoot) {
+								if (entry.i) {
+									if (!isRoot) pos.push(entry.n);
+									entry.i.forEach(nxt => recurse(nxt, pos));
+									pos.pop();
+								} else out.push({id: entry, path: MiscUtil.copy(pos)});
+							}
+
+							const root = {i: d20plus.getJournalFolderObj()};
+							recurse(root, [], true);
+							return out.map(it => getItemFromId(it.id, it.path.join(" / ")));
+						}
+
+						function getRootJournalItems () {
+							const rootItems = [];
+							const journal = d20plus.getJournalFolderObj();
+							journal.forEach(it => {
+								if (it.i) return; // skip folders
+								rootItems.push(getItemFromId(it));
+							});
+							return rootItems;
+						}
+
+						function getItemFromId (itId, path = "") {
+							const handout = d20.Campaign.handouts.get(itId);
+							if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return null; // skip 5etools handouts
+							const character = d20.Campaign.characters.get(itId);
+							if (handout) return {type: "handouts", id: itId, name: handout.get("name"), path: path};
+							if (character) return {type: "characters", id: itId, name: character.get("name"), path: path};
+						}
+
+						function getJournalItems () {
+							if ($cbDeep.prop("checked")) return getRootJournalItems().filter(it => it);
+							else return getAllJournalItems().filter(it => it);
+						}
+
+						const journalItems = getJournalItems();
+
+						const $delList = $win.find(`.list`);
+						$delList.empty();
+
+						journalItems.forEach((it, i) => {
+							$delList.append(`
+							<label class="import-cb-label" data-listid="${i}">
+								<input type="checkbox">
+								<span class="name readable">${it.path ? `${it.path} / ` : ""}${it.name}</span>
 							</label>
 						`);
-					});
+						});
 
-					// init list library
-					const delList = new List("delete-list-container", {
-						valueNames: ["name"],
-						listClass: "deletelist"
-					});
+						// init list library
+						const delList = new List("delete-list-container", {
+							valueNames: ["name"],
+							listClass: "deletelist"
+						});
 
-					const $cbAll = $("#deletelist-selectall");
-					$cbAll.unbind("click");
-					$cbAll.prop("checked", false);
-					$cbAll.bind("click", function () {
-						d20plus.importer._importToggleSelectAll(delList, $cbAll);
-					});
+						$cbAll.prop("checked", false);
+						$cbAll.off("click").click(() => d20plus.importer._importToggleSelectAll(delList, $cbAll));
 
-					const $btnDel = $(`#quickdelete-btn-submit`);
-					$btnDel.off("click");
-					$btnDel.on("click", () => {
-						if (confirm("Delete selected?")) {
-							delList.items.forEach(it => Array.prototype.forEach.call(it.elm.children, (e) => {
-								const $e = $(e);
-								if ($e.is("input") && $e.prop("checked")) {
-									const dataIndex = parseInt($e.data("listid"));
-									const toDel = rootItems[dataIndex];
+						$btnDel.off("click").on("click", () => {
+							const sel = delList.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => journalItems[$(it.elm).attr("data-listid")]);
+
+							if (!sel.length) {
+								alert("No items selected!");
+							} else if (confirm(`Are you sure you want to delete the ${sel.length} selected item${sel.length > 1 ? "s" : ""}?`)) {
+								$win.dialog("close");
+								$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+								sel.forEach(toDel => {
 									d20.Campaign[toDel.type].get(toDel.id).destroy();
-								}
-							}));
-							$win.dialog("close");
-							$("#journalfolderroot").trigger("change");
-						}
-					});
+								});
+								$("#journalfolderroot").trigger("change");
+							}
+						});
+					}
 				}
 			},
 			{
@@ -1984,7 +2024,7 @@ var betteR20Base = function () {
 			const $body = $(`body`);
 			const $tools = $(`#d20-tools-list`);
 			const $toolsList = $tools.find(`.tools-list`);
-			d20plus.tools.forEach(t => {
+			d20plus.tools.sort((a, b) => SortUtil.ascSortLower(a.name || "", b.name || "")).forEach(t => {
 				$body.append(t.html); // add HTML
 				t.dialogFn(); // init window
 				// add tool row
@@ -5066,6 +5106,23 @@ var betteR20Base = function () {
 			{
 				s: ".import-label__img",
 				r: "display: inline-block; width: 60px; height: 60px; padding: 0 5px;"
+			},
+			// importer
+			{
+				s: ".import-cb-label",
+				r: "display: block; margin-right: -13px !important;"
+			},
+			{
+				s: ".import-cb-label span",
+				r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;"
+			},
+			{
+				s: ".import-cb-label span.readable",
+				r: "letter-spacing: initial"
+			},
+			{
+				s: ".import-cb-label .source",
+				r: "width: calc(16.667% - 28px);'"
 			},
 		],
 
