@@ -75,6 +75,14 @@ var betteR20Base = function () {
 			"_type": "integer"
 		},
 	});
+	addConfigOptions("interface", {
+		"_name": "Interface",
+		"toolbarOpacity": {
+			"name": "Horizontal Toolbar Opacity (0.00-1.00)",
+			"default": 0.75,
+			"_type": "float"
+		},
+	});
 
 	const qpi = {
 		_version: "0.01-pre-pre-alpha",
@@ -5124,6 +5132,11 @@ var betteR20Base = function () {
 				s: ".import-cb-label .source",
 				r: "width: calc(16.667% - 28px);'"
 			},
+			// horizontal toolbar
+			{
+				s: "#secondary-toolbar:hover",
+				r: "opacity: 1 !important;"
+			},
 		],
 
 		baseCssRulesPlayer: [
@@ -5207,7 +5220,7 @@ var betteR20Base = function () {
 
 		settingsHtmlPtFooter:
 			`<p>
-			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
+			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
 			<p>
 			For help, advice, and updates, <a href="https://discord.gg/AzyBjtQ" target="_blank" style="color: #08c;">join our Discord!</a>
