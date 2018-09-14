@@ -75,6 +75,14 @@ var betteR20Base = function () {
 			"_type": "integer"
 		},
 	});
+	addConfigOptions("interface", {
+		"_name": "Interface",
+		"toolbarOpacity": {
+			"name": "Horizontal Toolbar Opacity (0.00-1.00)",
+			"default": 0.75,
+			"_type": "float"
+		},
+	});
 
 	const qpi = {
 		_version: "0.01-pre-pre-alpha",
@@ -1245,15 +1253,17 @@ var betteR20Base = function () {
 		tools: [
 			{
 				name: "Journal Cleaner",
-				desc: "Quickly select and delete journal items from the root folder, useful for cleaning up loose items after deleting a folder.",
+				desc: "Quickly select and delete journal items, especially useful for cleaning up loose items after deleting a folder.",
 				html: `
 				<div id="d20plus-quickdelete" title="Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
+				<label style="font-weight: bold">Root Only <input type="checkbox" class="cb-deep" checked></label>
+				<hr>
 				<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
 				<div id="delete-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<br><br>
-					<ul class="list deletelist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0;"></ul>
+					<ul class="list deletelist" style="max-height: 420px; overflow-y: scroll; display: block; margin: 0;"></ul>
 				</div>
 				</div>
 				`,
@@ -1262,65 +1272,103 @@ var betteR20Base = function () {
 						autoOpen: false,
 						resizable: true,
 						width: 800,
-						height: 650,
+						height: 700,
 					});
 				},
 				openFn: () => {
 					const $win = $("#d20plus-quickdelete");
 					$win.dialog("open");
+					const $cbDeep = $win.find(`.cb-deep`);
 
-					const journal = d20plus.getJournalFolderObj();
-					const rootItems = [];
-					journal.forEach(it => {
-						if (it.i) return; // skip folders
-						const handout = d20.Campaign.handouts.get(it);
-						if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return; // skip 5etools handouts
-						const character = d20.Campaign.characters.get(it);
-						if (handout) rootItems.push({type: "handouts", id: it, name: handout.get("name")});
-						if (character) rootItems.push({type: "characters", id: it, name: character.get("name")});
-					});
+					const $cbAll = $("#deletelist-selectall").unbind("click");
 
-					const $delList = $win.find(`.list`);
-					$delList.empty();
+					const $btnDel = $(`#quickdelete-btn-submit`).off("click");
 
-					rootItems.forEach((it, i) => {
-						$delList.append(`
-							<label class="import-cb-label">
-								<input type="checkbox" data-listid="${i}">
-								<span class="name">${it.name}</span>
+					$cbDeep.off("change").on("change", () => populateList());
+
+					populateList();
+
+					function populateList () {
+						// collect a list of all journal items
+						function getAllJournalItems () {
+							const out = [];
+
+							function recurse (entry, pos, isRoot) {
+								if (entry.i) {
+									if (!isRoot) pos.push(entry.n);
+									entry.i.forEach(nxt => recurse(nxt, pos));
+									pos.pop();
+								} else out.push({id: entry, path: MiscUtil.copy(pos)});
+							}
+
+							const root = {i: d20plus.getJournalFolderObj()};
+							recurse(root, [], true);
+							return out.map(it => getItemFromId(it.id, it.path.join(" / ")));
+						}
+
+						function getRootJournalItems () {
+							const rootItems = [];
+							const journal = d20plus.getJournalFolderObj();
+							journal.forEach(it => {
+								if (it.i) return; // skip folders
+								rootItems.push(getItemFromId(it));
+							});
+							return rootItems;
+						}
+
+						function getItemFromId (itId, path = "") {
+							const handout = d20.Campaign.handouts.get(itId);
+							if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return null; // skip 5etools handouts
+							const character = d20.Campaign.characters.get(itId);
+							if (handout) return {type: "handouts", id: itId, name: handout.get("name"), path: path};
+							if (character) return {type: "characters", id: itId, name: character.get("name"), path: path};
+						}
+
+						function getJournalItems () {
+							if ($cbDeep.prop("checked")) return getRootJournalItems().filter(it => it);
+							else return getAllJournalItems().filter(it => it);
+						}
+
+						const journalItems = getJournalItems();
+
+						const $delList = $win.find(`.list`);
+						$delList.empty();
+
+						journalItems.forEach((it, i) => {
+							$delList.append(`
+							<label class="import-cb-label" data-listid="${i}">
+								<input type="checkbox">
+								<span class="name readable">${it.path ? `${it.path} / ` : ""}${it.name}</span>
 							</label>
 						`);
-					});
+						});
 
-					// init list library
-					const delList = new List("delete-list-container", {
-						valueNames: ["name"],
-						listClass: "deletelist"
-					});
+						// init list library
+						const delList = new List("delete-list-container", {
+							valueNames: ["name"],
+							listClass: "deletelist"
+						});
 
-					const $cbAll = $("#deletelist-selectall");
-					$cbAll.unbind("click");
-					$cbAll.prop("checked", false);
-					$cbAll.bind("click", function () {
-						d20plus.importer._importToggleSelectAll(delList, $cbAll);
-					});
+						$cbAll.prop("checked", false);
+						$cbAll.off("click").click(() => d20plus.importer._importToggleSelectAll(delList, $cbAll));
 
-					const $btnDel = $(`#quickdelete-btn-submit`);
-					$btnDel.off("click");
-					$btnDel.on("click", () => {
-						if (confirm("Delete selected?")) {
-							delList.items.forEach(it => Array.prototype.forEach.call(it.elm.children, (e) => {
-								const $e = $(e);
-								if ($e.is("input") && $e.prop("checked")) {
-									const dataIndex = parseInt($e.data("listid"));
-									const toDel = rootItems[dataIndex];
+						$btnDel.off("click").on("click", () => {
+							const sel = delList.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => journalItems[$(it.elm).attr("data-listid")]);
+
+							if (!sel.length) {
+								alert("No items selected!");
+							} else if (confirm(`Are you sure you want to delete the ${sel.length} selected item${sel.length > 1 ? "s" : ""}?`)) {
+								$win.dialog("close");
+								$("a.ui-tabs-anchor[href='#journal']").trigger("click");
+								sel.forEach(toDel => {
 									d20.Campaign[toDel.type].get(toDel.id).destroy();
-								}
-							}));
-							$win.dialog("close");
-							$("#journalfolderroot").trigger("change");
-						}
-					});
+								});
+								$("#journalfolderroot").trigger("change");
+							}
+						});
+					}
 				}
 			},
 			{
@@ -1489,8 +1537,8 @@ var betteR20Base = function () {
 					$("#d20plus-tables").dialog({
 						autoOpen: false,
 						resizable: true,
-						width: 800,
-						height: 690,
+						width: 650,
+						height: 720,
 					});
 					$(`#d20plus-tables-clipboard`).dialog({
 						autoOpen: false,
@@ -1642,6 +1690,9 @@ var betteR20Base = function () {
 					});
 				},
 				openFn: () => {
+					// FIXME this doesn't work, because it saves a nonsensical blob (imgsrc) instead of defaulttoken
+					// see the working code in `initArtFromUrlButtons` for how this _should_ be done
+
 					function replaceAll (str, search, replacement) {
 						return str.split(search).join(replacement);
 					}
@@ -1700,9 +1751,7 @@ var betteR20Base = function () {
 				desc: "Import and export maps (pages), including those from published adventures.",
 				html: `
 				<div id="d20plus-map-importer" title="Map Importer/Exporter">
-				<p>
-					<button class="btn" name="load-file">Import Maps from File</button> <button class="btn" name="export">Export Maps to File</button> | <button class="btn" name="load-Vetools">Import Maps from 5etools</button>
-				</p>
+				<p><button class="btn" name="load-file">Import Maps from File</button> <button class="btn" name="export">Export Maps to File</button></p>
 				<div id="map-importer-list">
 					<input type="search" class="search" placeholder="Search maps...">
 					<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: scroll; overflow-x: hidden; margin-bottom: 10px;">
@@ -1710,7 +1759,7 @@ var betteR20Base = function () {
 					</div>
 				</div>
 				<hr>
-				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" name="import">Import Selected</button></p>
+				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" style="float: right;" name="import">Import Selected</button></p>
 				</div>
 				
 				<div id="d20plus-map-importer-progress" title="Import Progress">					
@@ -1755,8 +1804,6 @@ var betteR20Base = function () {
 					const $winProgress = $(`#d20plus-map-importer-progress`);
 					const $btnCancel = $winProgress.find(".cancel").off("click");
 
-					const $win5etools = $(`#d20plus-map-importer-5etools`);
-
 					const $wrpLst = $win.find(`#map-importer-list`);
 					const $lst = $win.find(`.list`).empty();
 
@@ -1765,10 +1812,7 @@ var betteR20Base = function () {
 
 					function handleLoadedData (data) {
 						// validate
-						if (!data.maps) {
-							alert("File did not contain map data!");
-							return;
-						}
+						if (!data.maps) return alert("File did not contain map data!");
 						for (const mapData of data.maps) {
 							if (!mapData.attributes) return alert("File did not contain map attribute data!");
 							if (!mapData.graphics) return alert("File did not contain map graphics data!");
@@ -1865,52 +1909,6 @@ var betteR20Base = function () {
 						});
 					}
 
-					const $btnLoadVetools = $win.find(`[name="load-Vetools"]`);
-					$btnLoadVetools.off("click").click(() => {
-						$win5etools.dialog("open");
-						const $btnLoad = $win5etools.find(`.load`).off("click");
-
-						DataUtil.loadJSON(`${DATA_URL}adventure/roll20-map-index.json`).then(data => {
-							const $lst = $win5etools.find(`.list`);
-							const maps = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
-							let tmp = "";
-							maps.forEach((t, i) => {
-								tmp += `
-								<label class="import-cb-label" data-listid="${i}">
-									<input type="radio" name="map-5etools">
-									<span class="name col-10">${t.name}</span>
-									<span title="${Parser.sourceJsonToFull(t.id)}" class="source">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
-								</label>
-							`;
-							});
-							$lst.html(tmp);
-							tmp = null;
-
-							const list5etools = new List("map-importer-list-5etools", {
-								valueNames: ["name"]
-							});
-
-							$btnLoad.on("click", () => {
-								const sel = list5etools.items
-									.filter(it => $(it.elm).find(`input`).prop("checked"))
-									.map(it => maps[$(it.elm).attr("data-listid")])[0];
-
-								$win5etools.dialog("close");
-								$win.dialog("open");
-								$lst.empty().append(`<i>Loading...</i>`);
-								DataUtil.loadJSON(`${DATA_URL}adventure/roll20-map-${sel.id.toLowerCase()}.json`).then(mapFile => {
-									handleLoadedData(mapFile);
-								}).catch(e => {
-									console.error(e);
-									alert(`Failed to load map data! See the console for more information.`);
-								});
-							});
-						}).catch(e => {
-							console.error(e);
-							alert(`Failed to load map data! See the console for more information.`);
-						});
-					});
-
 					const $btnLoadFile = $win.find(`[name="load-file"]`);
 					$btnLoadFile.off("click").click(() => {
 						DataUtil.userUpload((data) => handleLoadedData(data));
@@ -1942,7 +1940,7 @@ var betteR20Base = function () {
 			},
 			{
 				name: "Mass-Delete Pages",
-				desc: "Quickly delte multiple pages.",
+				desc: "Quickly delete multiple pages.",
 				html: `
 				<div id="d20plus-mass-page-delete" title="Mass-Delete Pages">
 					<div id="del-pages-list">
@@ -2037,13 +2035,13 @@ var betteR20Base = function () {
 			const $body = $(`body`);
 			const $tools = $(`#d20-tools-list`);
 			const $toolsList = $tools.find(`.tools-list`);
-			d20plus.tools.forEach(t => {
+			d20plus.tools.sort((a, b) => SortUtil.ascSortLower(a.name || "", b.name || "")).forEach(t => {
 				$body.append(t.html); // add HTML
 				t.dialogFn(); // init window
 				// add tool row
 				const $wrp = $(`<div class="tool-row"/>`);
-				$wrp.append(`<p style="width: 20%;">${t.name}</p>`);
-				$wrp.append(`<p style="width: 60%;">${t.desc}</p>`);
+				$wrp.append(`<span style="width: 20%; padding: 4px;">${t.name}</span>`);
+				$wrp.append(`<span style="width: calc(60% - 8px); padding: 4px;">${t.desc}</span>`);
 				$(`<a style="width: 15%;" class="btn" href="#">Open</a>`).on(mousedowntype, () => {
 					t.openFn.bind(t)();
 					$tools.dialog("close");
@@ -2330,6 +2328,19 @@ var betteR20Base = function () {
 				const url = window.prompt("Enter a URL", "https://example.com/pic.png");
 				if (url) {
 					d20.Campaign.handouts.get(hId).set("avatar", url);
+				}
+			});
+
+			$(`.token-image-by-url`).live("click", function () {
+				const cId = $(this).closest(`[data-characterid]`).attr(`data-characterid`);
+				const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+				if (url) {
+					const char = d20.Campaign.characters.get(cId);
+					char._getLatestBlob("defaulttoken", (blob) => {
+						blob = blob && blob.trim() ? JSON.parse(blob) : {};
+						blob.imgsrc = url;
+						char.updateBlobs({defaulttoken: JSON.stringify(blob)});
+					});
 				}
 			});
 		},
@@ -5120,6 +5131,28 @@ var betteR20Base = function () {
 				s: ".import-label__img",
 				r: "display: inline-block; width: 60px; height: 60px; padding: 0 5px;"
 			},
+			// importer
+			{
+				s: ".import-cb-label",
+				r: "display: block; margin-right: -13px !important;"
+			},
+			{
+				s: ".import-cb-label span",
+				r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;"
+			},
+			{
+				s: ".import-cb-label span.readable",
+				r: "letter-spacing: initial"
+			},
+			{
+				s: ".import-cb-label .source",
+				r: "width: calc(16.667% - 28px);'"
+			},
+			// horizontal toolbar
+			{
+				s: "#secondary-toolbar:hover",
+				r: "opacity: 1 !important;"
+			},
 		],
 
 		baseCssRulesPlayer: [
@@ -5203,7 +5236,7 @@ var betteR20Base = function () {
 
 		settingsHtmlPtFooter:
 			`<p>
-			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px;">Edit Config</a>
+			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
 			<p>
 			For help, advice, and updates, <a href="https://discord.gg/AzyBjtQ" target="_blank" style="color: #08c;">join our Discord!</a>
@@ -5597,10 +5630,8 @@ var betteR20Base = function () {
 		  <label style='padding-top: 4px;'>
 			<strong>Page Size</strong>
 		  </label>
-		  <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" />
-		  un. by
-		  <input type="number" class="height" style="width: 50px; margin-left: 5px;" value="<$!this.model.get("height")$>" />
-		  un.
+		  X: <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" /> un. (<$!this.model.get("width") * 70$> px)
+		  <div style="margin-left: 110px; margin-top: 2px;">Y: <input type="number" class="height" style="width: 50px;" value="<$!this.model.get("height")$>" /> un. (<$!this.model.get("height") * 70$> px)</div>
 		  <small style='display: block; font-size: 0.9em; margin-left: 110px;'>width by height, 1 unit = 70 pixels</small>
 		  <div class='clear' style='height: 15px;'></div>
 		  <label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
@@ -5864,6 +5895,11 @@ var betteR20Base = function () {
                 <small>Select a token on the tabletop to use as the Default Token</small>
                 <$ } $>
                 </div>
+                <!-- BEGIN MOD -->
+                <button class="btn token-image-by-url">Set Token Image from URL</button>
+                <small style="text-align: left;">(Update will only be visible upon re-opening the sheet)</small>
+                <div class='clear'></div>
+                <!-- END MOD -->
                 <$ } $>
               </div>
               <div class='span7'>

@@ -334,6 +334,11 @@ const betteR205etools = function () {
 			"default": "PP",
 			"_type": "_FORMULA"
 		},
+		"trackerSheetButton": {
+			"name": "Add Sheet Button To Tracker",
+			"default": false,
+			"_type": "boolean"
+		},
 		"minifyTracker": {
 			"name": "Shrink Initiative Tracker Text",
 			"default": false,
@@ -379,14 +384,15 @@ const betteR205etools = function () {
 	d20plus.damageModes = ["Auto Roll", "Don't Auto Roll"];
 
 	d20plus.formulas = {
-		_options: ["--Empty--", "AC", "HP", "PP"],
+		_options: ["--Empty--", "AC", "HP", "Passive Perception", "Spell DC"],
 		"ogl": {
 			"cr": "@{npc_challenge}",
 			"ac": "@{ac}",
 			"npcac": "@{npc_ac}",
 			"hp": "@{hp}",
 			"pp": "@{passive_wisdom}",
-			"macro": ""
+			"macro": "",
+			"spellDc": "@{spell_save_dc}"
 		},
 		"community": {
 			"cr": "@{npc_challenge}",
@@ -394,7 +400,8 @@ const betteR205etools = function () {
 			"npcac": "@{AC}",
 			"hp": "@{HP}",
 			"pp": "10 + @{perception}",
-			"macro": ""
+			"macro": "",
+			"spellDc": "@{spell_save_dc}"
 		},
 		"shaped": {
 			"cr": "@{challenge}",
@@ -402,7 +409,8 @@ const betteR205etools = function () {
 			"npcac": "@{AC}",
 			"hp": "@{HP}",
 			"pp": "@{repeating_skill_$11_passive}",
-			"macro": "shaped_statblock"
+			"macro": "shaped_statblock",
+			"spellDc": "@{spell_save_dc}"
 		}
 	};
 
@@ -917,6 +925,26 @@ const betteR205etools = function () {
 				return true;
 			}
 		}
+	};
+
+	d20plus.importer.getExportableJournal = () => {
+		// build a list of (id, path) pairs
+		const out = [];
+
+		function recurse (entry, pos) {
+			if (entry.i) {
+				// pos.push({name: entry.n, id: entry.id}); // if IDs are required, use this instead?
+				pos.push(entry.n);
+				entry.i.forEach(nxt => recurse(nxt, pos));
+				pos.pop();
+			} else {
+				out.push({id: entry, path: MiscUtil.copy(pos)});
+			}
+		}
+
+		const root = {i: d20plus.getJournalFolderObj(), n: "Root", id: "root"};
+		recurse(root, []);
+		return out;
 	};
 
 	d20plus.importer.removeFileByPath = function (...path) {
@@ -1917,7 +1945,7 @@ const betteR205etools = function () {
 						<span class="col-2 ib"><b>CR</b></span>				
 						<span class="col-3 ib"><b>Scale CR</b></span>				
 					</div>
-					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 				</div>
 			<br>
 			<button class="btn">Import</button>
@@ -2329,7 +2357,7 @@ const betteR205etools = function () {
 									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
 								},
 								success: function () {
-									d20plus.importer.getSetAvatarImage(character, avatar);
+									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.getAntiCacheSuffix()}`);
 								}
 							});
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
@@ -2676,76 +2704,318 @@ const betteR205etools = function () {
 									});
 								});
 
-								// render sheet
-								character.view.render();
+								const addMacroIndex = toAdd.length - 1;
+								// wait a bit, then start adding spells
+								setTimeout(() => {
+									toAdd.forEach((text, i) => {
+										let [name, source] = text.split("|");
+										if (!source) source = "PHB";
+										const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
+										const url = d20plus.spells.formSpellUrl(rawUrl);
+										// the JSON gets cached by the script, so this is fine
+										DataUtil.loadJSON(url).then((data) => {
+											const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
 
-								let interval;
-								let loopCount = 0;
-								const checkLoop = () => {
-									if (loopCount > 10) {
-										clearInterval(interval);
-										console.warn(`Spellcaster sheet was never rendered!`);
-									} else if (character.view.$charsheet) {
-										clearInterval(interval);
+											const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
 
-										const addMacroIndex = toAdd.length - 1;
-										toAdd.forEach((text, i) => {
-											let [name, source] = text.split("|");
-											if (!source) source = "PHB";
-											const rawUrl = spellDataUrls[Object.keys(spellDataUrls).find(src => source.toLowerCase() === src.toLowerCase())];
-											const url = d20plus.spells.formSpellUrl(rawUrl);
-											// the JSON gets cached by the script, so this is fine
-											DataUtil.loadJSON(url).then((data) => {
-												const spell = data.spell.find(spell => spell.name.toLowerCase() === name.toLowerCase());
-
-												const [notecontents, gmnotes] = d20plus.spells._getHandoutData(spell);
-
-												// do this as slowly as possible
-												setTimeout(() => {
-													addSpell2(JSON.parse(gmnotes), spell, i, addMacroIndex);
-												}, spAbilsDelayMs * 2.5 * (i + 1));
-											});
+											addSpell3(JSON.parse(gmnotes), spell, i, addMacroIndex);
 										});
+									});
+								}, spAbilsDelayMs);
 
-										function addSpell2 (data, VeSp, index, addMacroIndex) {
-											data.content = addInlineRollers(data.content);
-											const DESC_KEY = "data-description";
-											data.data[DESC_KEY] = addInlineRollers(data.data[DESC_KEY]);
-											const HL_KEY = "Higher Spell Slot Desc";
-											if (data.data[HL_KEY]) data.data[HL_KEY] = addInlineRollers(data.data[HL_KEY]);
+								function addSpell3 (data, VeSp, index, addMacroIndex) {
+									console.log("Adding spell: ", data.name)
+									// prepare data
+									data.content = addInlineRollers(data.content);
+									const DESC_KEY = "data-description";
+									data.data[DESC_KEY] = addInlineRollers(data.data[DESC_KEY]);
+									const HL_KEY = "Higher Spell Slot Desc";
+									if (data.data[HL_KEY]) data.data[HL_KEY] = addInlineRollers(data.data[HL_KEY]);
 
-											const dropTarget = character.view.$charsheet.find(`.sheet-compendium-drop-target`)[0];
-											const fakeEvent = {target: dropTarget};
+									// populate spell data
+									// source: https://github.com/Roll20/roll20-character-sheets/blob/master/5th%20Edition%20OGL%20by%20Roll20/5th%20Edition%20OGL%20by%20Roll20.html
 
-											d20plus.importer.doFakeDrop(fakeEvent, character.view, data);
+									// custom code
+									function setAttrs (attrs, callbacks) {
+										Object.entries(attrs).forEach(([a, v]) => {
+											character.attribs.create({name: a, current: v}).save();
+										});
+										if (callbacks) callbacks.forEach(cb => cb());
+									}
 
-											if (index === addMacroIndex) {
-												// collect name and identifier for all the character's spells
-												const macroSpells = character.attribs.toJSON()
-													.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
-													.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
+									// custom code
+									function getAttrs (attrs) {
+										const all = character.attribs.toJSON();
+										const out = {};
+										attrs.forEach(k => {
+											const found = all.find(it => it.name === k)
+											if (found) out[k] = found.current;
+										})
+										return out;
+									}
 
-												// build tokenaction
-												macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
-												if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
-													character.abilities.create({
-														name: "Spells",
-														istokenaction: true,
-														action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
-													}).save();
-												}
+									// largely stolen from `update_attack_from_spell`
+									function update_attack_from_spell (lvl, spellid, attackid, newattack) {
+										const v = getAttrs(["repeating_spell-" + lvl + "_" + spellid + "_spellname",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellrange",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelltarget",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellattack",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage2",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhealing",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellsave",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhldie",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhldietype",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelllevel",
+											"repeating_spell-" + lvl + "_" + spellid + "_includedesc",
+											"repeating_spell-" + lvl + "_" + spellid + "_spelldescription",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels",
+											"repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression",
+											"repeating_spell-" + lvl + "_" + spellid + "_innate",
+											"repeating_spell-" + lvl + "_" + spellid + "_spell_ability",
+											"spellcasting_ability"]);
+
+										var update = {};
+										var description = "";
+										var spellAbility = v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"] != "spell" ? v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"].slice(0, -1) : "spell";
+										update["repeating_attack_" + attackid + "_atkattr_base"] = spellAbility;
+
+										if(newattack) {
+											update["repeating_attack_" + attackid + "_options-flag"] = "0";
+											update["repeating_attack_" + attackid + "_spellid"] = spellid;
+											update["repeating_attack_" + attackid + "_spelllevel"] = lvl;
+										}
+
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"] == "spell") {
+											update["repeating_attack_" + attackid + "_savedc"] = "(@{spell_save_dc})";
+										} else if (v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"]) {
+											update["repeating_attack_" + attackid + "_savedc"] = "(" + spellAbility + "+8+@{spell_dc_mod}+@{pb})";
+										}
+
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellname"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellname"] != "") {
+											update["repeating_attack_" + attackid + "_atkname"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellname"];
+										}
+										if(!v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] || v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] === "None") {
+											update["repeating_attack_" + attackid + "_atkflag"] = "0";
+										}
+										else {
+											update["repeating_attack_" + attackid + "_atkflag"] = "{{attack=1}}";
+											description = description + v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] + " Spell Attack. ";
+										}
+
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] && v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] != "") {
+											update["repeating_attack_" + attackid + "_dmgflag"] = "{{damage=1}} {{dmg1flag=1}}";
+											if(v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] && v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] === "Cantrip Dice") {
+												update["repeating_attack_" + attackid + "_dmgbase"] = "[[round((@{level} + 1) / 6 + 0.5)]]" + v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"].substring(1);
+											}
+											else {
+												update["repeating_attack_" + attackid + "_dmgbase"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"];
 											}
 										}
-									} else {
-										loopCount++;
-									}
-								};
+										else {
+											update["repeating_attack_" + attackid + "_dmgflag"] = "0"
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod"] && v["repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod"] === "Yes") {
+											update["repeating_attack_" + attackid + "_dmgattr"] = spellAbility;
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmgattr"] = "0";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype"]) {
+											update["repeating_attack_" + attackid + "_dmgtype"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmgtype"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"]) {
+											update["repeating_attack_" + attackid + "_dmg2base"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"];
+											update["repeating_attack_" + attackid + "_dmg2attr"] = 0;
+											update["repeating_attack_" + attackid + "_dmg2flag"] = "{{damage=1}} {{dmg2flag=1}}";
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmg2base"] = "";
+											update["repeating_attack_" + attackid + "_dmg2attr"] = 0;
+											update["repeating_attack_" + attackid + "_dmg2flag"] = "0";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2"]) {
+											update["repeating_attack_" + attackid + "_dmg2type"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_dmg2type"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"]) {
+											update["repeating_attack_" + attackid + "_atkrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_atkrange"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"]) {
+											update["repeating_attack_" + attackid + "_atkrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_atkrange"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellsave"]) {
+											update["repeating_attack_" + attackid + "_saveflag"] = "{{save=1}} {{saveattr=@{saveattr}}} {{savedesc=@{saveeffect}}} {{savedc=[[[[@{savedc}]][SAVE]]]}}";
+											update["repeating_attack_" + attackid + "_saveattr"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellsave"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_saveflag"] = "0";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess"]) {
+											update["repeating_attack_" + attackid + "_saveeffect"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_saveeffect"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] != "" && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] != "") {
+											var bonus = "";
+											var spelllevel = v["repeating_spell-" + lvl + "_" + spellid + "_spelllevel"];
+											var query = "?{Cast at what level?";
+											for(i = 0; i < 10-spelllevel; i++) {
+												query = query + "|Level " + (parseInt(i, 10) + parseInt(spelllevel, 10)) + "," + i;
+											}
+											query = query + "}";
+											if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] != "") {
+												bonus = "+(" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] + "*" + query + ")";
+											}
+											update["repeating_attack_" + attackid + "_hldmg"] = "{{hldmg=[[(" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] + "*" + query + ")" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] + bonus + "]]}}";
+										}
+										else {
+											update["repeating_attack_" + attackid + "_hldmg"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"] != "") {
+											if(!v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] || v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] === "") {
+												update["repeating_attack_" + attackid + "_dmgbase"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"];
+												update["repeating_attack_" + attackid + "_dmgflag"] = "{{damage=1}} {{dmg1flag=1}}";
+												update["repeating_attack_" + attackid + "_dmgtype"] = "Healing";
+											}
+											else if(!v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"] || v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"] === "") {
+												update["repeating_attack_" + attackid + "_dmg2base"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"];
+												update["repeating_attack_" + attackid + "_dmg2flag"] = "{{damage=1}} {{dmg2flag=1}}";
+												update["repeating_attack_" + attackid + "_dmg2type"] = "Healing";
+											}
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_innate"]) {
+											update["repeating_attack_" + attackid + "_spell_innate"] = v["repeating_spell-" + lvl + "_" + spellid + "_innate"];
+										}
+										else {
+											update["repeating_attack_" + attackid + "_spell_innate"] = "";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelltarget"]) {
+											description = description + v["repeating_spell-" + lvl + "_" + spellid + "_spelltarget"] + ". ";
+										}
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] && v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] === "on") {
+											description = v["repeating_spell-" + lvl + "_" + spellid + "_spelldescription"];
+											if(v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"] != "") {
+												description = description + "\n\nAt Higher Levels: " + v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"];
+											}
+										}
+										else if(v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] && v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] === "off") {
+											description = "";
+										};
+										update["repeating_attack_" + attackid + "_atk_desc"] = description;
 
-								// wait for the character sheet to be rendered
-								interval = setInterval(() => {
-									checkLoop();
-								}, spAbilsDelayMs);
-								checkLoop();
+										// TODO are these necessary?
+										// var callback = function() {update_attacks(attackid, "spell")};
+										// setAttrs(update, {silent: true}, callback);
+										setAttrs(update);
+									}
+
+									// largely stolen from `create_attack_from_spell`
+									function create_attack_from_spell (lvl, spellid, character_id) {
+										var update = {};
+										var newrowid = d20plus.generateRowId();
+										update["repeating_spell-" + lvl + "_" + spellid + "_spellattackid"] = newrowid;
+										update["repeating_spell-" + lvl + "_" + spellid + "_rollcontent"] = "%{" + character_id + "|repeating_attack_" + newrowid + "_attack}";
+										setAttrs(update, update_attack_from_spell(lvl, spellid, newrowid, true));
+									}
+
+									// largely stolen from `processDrop`
+									function processDrop (page) {
+										const update = {};
+										const callbacks = [];
+										const id = d20plus.generateRowId();
+
+										var lvl = page.data["Level"] && page.data["Level"] > 0 ? page.data["Level"] : "cantrip";
+										update["repeating_spell-" + lvl + "_" + id + "_spelllevel"] = lvl;
+										if(page.data["spellcasting_ability"]) {
+											update["repeating_spell-" + lvl + "_" + id + "_spell_ability"] = page.data["spellcasting_ability"];
+										} else {
+											update["repeating_spell-" + lvl + "_" + id + "_spell_ability"] = "spell";
+										}
+										if(page.name) {update["repeating_spell-" + lvl + "_" + id + "_spellname"] = page.name};
+										if(page.data["Ritual"]) {update["repeating_spell-" + lvl + "_" + id + "_spellritual"] = "{{ritual=1}}"};
+										if(page.data["School"]) {update["repeating_spell-" + lvl + "_" + id + "_spellschool"] = page.data["School"].toLowerCase()};
+										if(page.data["Casting Time"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcastingtime"] = page.data["Casting Time"]};
+										if(page.data["Range"]) {update["repeating_spell-" + lvl + "_" + id + "_spellrange"] = page.data["Range"]};
+										if(page.data["Target"]) {update["repeating_spell-" + lvl + "_" + id + "_spelltarget"] = page.data["Target"]};
+										if(page.data["Components"]) {
+											if(page.data["Components"].toLowerCase().indexOf("v") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_v"] = "0"};
+											if(page.data["Components"].toLowerCase().indexOf("s") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_s"] = "0"};
+											if(page.data["Components"].toLowerCase().indexOf("m") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_m"] = "0"};
+										};
+										if(page.data["Material"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_materials"] = page.data["Material"]};
+										if(page.data["Concentration"]) {update["repeating_spell-" + lvl + "_" + id + "_spellconcentration"] = "{{concentration=1}}"};
+										if(page.data["Duration"]) {update["repeating_spell-" + lvl + "_" + id + "_spellduration"] = page.data["Duration"]};
+										if(page.data["Damage"] || page.data["Healing"]) {
+											update["repeating_spell-" + lvl + "_" + id + "_spelloutput"] = "ATTACK";
+											callbacks.push( function() {create_attack_from_spell(lvl, id, character.id);} );
+										}
+										else if(page.data["Higher Spell Slot Desc"] && page.data["Higher Spell Slot Desc"] != "") {
+											var spelllevel = "?{Cast at what level?";
+											for(i = 0; i < 10-lvl; i++) {
+												spelllevel = spelllevel + "|Level " + (parseInt(i, 10) + parseInt(lvl, 10)) + "," + (parseInt(i, 10) + parseInt(lvl, 10));
+											}
+											spelllevel = spelllevel + "}";
+											update["repeating_spell-" + lvl + "_" + id + "_rollcontent"] = "@{wtype}&{template:spell} {{level=@{spellschool} " + spelllevel + "}} {{name=@{spellname}}} {{castingtime=@{spellcastingtime}}} {{range=@{spellrange}}} {{target=@{spelltarget}}} @{spellcomp_v} @{spellcomp_s} @{spellcomp_m} {{material=@{spellcomp_materials}}} {{duration=@{spellduration}}} {{description=@{spelldescription}}} {{athigherlevels=@{spellathigherlevels}}} @{spellritual} {{innate=@{innate}}} @{spellconcentration} @{charname_output}";
+										};
+										if(page.data["Spell Attack"]) {update["repeating_spell-" + lvl + "_" + id + "_spellattack"] = page.data["Spell Attack"]};
+										if(page.data["Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage"] = page.data["Damage"]};
+										if(page.data["Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype"] = page.data["Damage Type"]};
+										if(page.data["Secondary Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage2"] = page.data["Secondary Damage"]};
+										if(page.data["Secondary Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype2"] = page.data["Secondary Damage Type"]};
+										if(page.data["Healing"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhealing"] = page.data["Healing"];};
+										if(page.data["Add Casting Modifier"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldmgmod"] = page.data["Add Casting Modifier"]};
+										if(page.data["Save"]) {update["repeating_spell-" + lvl + "_" + id + "_spellsave"] = page.data["Save"]};
+										if(page.data["Save Success"]) {update["repeating_spell-" + lvl + "_" + id + "_spellsavesuccess"] = page.data["Save Success"]};
+										if(page.data["Higher Spell Slot Dice"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhldie"] = page.data["Higher Spell Slot Dice"]};
+										if(page.data["Higher Spell Slot Die"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhldietype"] = page.data["Higher Spell Slot Die"]};
+										if(page.data["Higher Spell Slot Bonus"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhlbonus"] = page.data["Higher Spell Slot Bonus"]};
+										if(page.data["Higher Spell Slot Desc"]) {update["repeating_spell-" + lvl + "_" + id + "_spellathigherlevels"] = page.data["Higher Spell Slot Desc"]};
+										if(page.data["data-Cantrip Scaling"] && lvl == "cantrip") {update["repeating_spell-" + lvl + "_" + id + "_spell_damage_progression"] = "Cantrip " + page.data["data-Cantrip Scaling"].charAt(0).toUpperCase() + page.data["data-Cantrip Scaling"].slice(1);};
+										if(page.data["data-description"]) { update["repeating_spell-" + lvl + "_" + id + "_spelldescription"] = page.data["data-description"]};
+										update["repeating_spell-" + lvl + "_" + id + "_options-flag"] = "0";
+
+										// custom writing:
+										setAttrs(update, callbacks);
+									}
+
+									processDrop(data);
+
+									// on final item, add macro
+									if (index === addMacroIndex) {
+										// collect name and identifier for all the character's spells
+										const macroSpells = character.attribs.toJSON()
+											.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
+											.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
+
+										// build tokenaction
+										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
+										if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
+											character.abilities.create({
+												name: "Spells",
+												istokenaction: true,
+												action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+											}).save();
+										}
+									}
+								}
 							}
 							if (data.trait) {
 								$.each(data.trait, function (i, v) {
@@ -3136,7 +3406,7 @@ const betteR205etools = function () {
 		d20plus.log("Switched Character Sheet Template to " + d20plus.sheet);
 	};
 
-// Return Initiative Tracker template with formulas
+	// Return Initiative Tracker template with formulas
 	d20plus.initErrorHandler = null;
 	d20plus.setTurnOrderTemplate = function () {
 		if (!d20plus.turnOrderCachedFunction) {
@@ -3169,40 +3439,48 @@ const betteR205etools = function () {
 					case "HP": {
 						const hpBar = d20plus.getCfgHpBarNumber();
 						replaceStack.push(`
-						<span class='hp editable tracker-col' alt='HP' title='HP'>
-							<$ if(npc && npc.get("current") == "1") { $>
-								${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
-							<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
-								<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
-							<$ } else { $>
-								<$!"\u2014"$>
-							<$ } $>
-						</span>
-					`);
+							<span class='hp editable tracker-col' alt='HP' title='HP'>
+								<$ if(npc && npc.get("current") == "1") { $>
+									${hpBar ? `<$!token.attributes.bar${hpBar}_value$>` : ""}
+								<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].hp}')$>
+								<$ } else { $>
+									<$!"\u2014"$>
+								<$ } $>
+							</span>
+						`);
 						headerStack.push(`<span class='tracker-col'>HP</span>`);
 						break;
 					}
 					case "AC": {
 						replaceStack.push(`
-						<span class='ac tracker-col' alt='AC' title='AC'>
-							<$ if(npc && npc.get("current") == "1" && typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
-								<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
-							<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
-								<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
-							<$ } else { $>
-								<$!"\u2014"$>
-							<$ } $>
-						</span>
-					`);
+							<span class='ac tracker-col' alt='AC' title='AC'>
+								<$ if(npc && npc.get("current") == "1" && typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].npcac}')$>
+								<$ } else if (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") { $>
+									<$!char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].ac}')$>
+								<$ } else { $>
+									<$!"\u2014"$>
+								<$ } $>
+							</span>
+						`);
 						headerStack.push(`<span class='tracker-col'>AC</span>`);
 						break;
 					}
-					case "PP": {
+					case "Passive Perception": {
 						replaceStack.push(`
-						<$ var passive = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
-						<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
-					`);
+							<$ var passive = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
+							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
+						`);
 						headerStack.push(`<span class='tracker-col'>PP</span>`);
+						break;
+					}
+					case "Spell DC": {
+						replaceStack.push(`
+							<$ var dc = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].spellDc}')) : "\u2014"; $>
+							<span class='dc tracker-col' alt='Spell DC' title='Spell DC'><$!dc$></span>
+						`);
+						headerStack.push(`<span class='tracker-col'>DC</span>`);
 						break;
 					}
 					default: {
@@ -3214,10 +3492,21 @@ const betteR205etools = function () {
 
 			console.log("use custom tracker val was ", d20plus.getCfgVal("interface", "customTracker"))
 			if (d20plus.getCfgVal("interface", "customTracker")) {
+				$(`.init-header`).show();
+				if (d20plus.getCfgVal("interface", "trackerSheetButton")) {
+					$(`.init-sheet-header`).show();
+				} else {
+					$(`.init-sheet-header`).hide();
+				}
+				$(`.init-init-header`).show();
 				const $header = $(".tracker-header-extra-columns");
 				// prepend/reverse used since tracker gets populated in right-to-left order
 				headerStack.forEach(h => $header.prepend(h))
 				html = html.replace(`<!--5ETOOLS_REPLACE_TARGET-->`, replaceStack.reverse().join(" \n"));
+			} else {
+				$(`.init-header`).hide();
+				$(`.init-sheet-header`).hide();
+				$(`.init-init-header`).hide();
 			}
 
 			$("#tmpl_initiativecharacter").replaceWith(html);
@@ -3260,6 +3549,20 @@ const betteR205etools = function () {
 			window.addEventListener("error", d20plus.initErrorHandler);
 			return results;
 		};
+
+		const getTargetWidth = () => d20plus.getCfgVal("interface", "minifyTracker") ? 250 : 350;
+		// wider tracker
+		const cachedDialog = d20.Campaign.initiativewindow.$el.dialog;
+		d20.Campaign.initiativewindow.$el.dialog = (...args) => {
+			const widen = d20plus.getCfgVal("interface", "customTracker");
+			if (widen && args[0] && args[0].width) {
+				args[0].width = getTargetWidth();
+			}
+			cachedDialog.bind(d20.Campaign.initiativewindow.$el)(...args);
+		};
+
+		// if the tracker is already open, widen it
+		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) d20.Campaign.initiativewindow.$el.dialog("option", "width", getTargetWidth());
 	};
 
 	d20plus.importer.makePlayerDraggable = function (importId, name) {
@@ -5673,7 +5976,7 @@ const betteR205etools = function () {
 	<input type="search" id="import-list-filter" class="filter" placeholder="Filter...">
 	<span id ="import-list-filter-help" title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM' -- hover over the columns to see the filterable name." style="cursor: help;">[?]</span>
 	<br>
-	<span class="list" style="max-height: 400px; overflow-y: scroll; overflow-x: hidden; display: block; margin-top: 1em; transform: translateZ(0);"></span>
+	<span class="list" style="max-height: 400px; overflow-y: auto; overflow-x: hidden; display: block; margin-top: 1em; transform: translateZ(0);"></span>
 </span>
 </p>
 <p id="import-options">
@@ -5688,7 +5991,7 @@ const betteR205etools = function () {
 </div>`;
 
 	d20plus.importListPropsHTML = `<div id="d20plus-import-props" title="Choose Properties to Import">
-	<div class="select-props" style="max-height: 400px; overflow-y: scroll; transform: translateZ(0)">
+	<div class="select-props" style="max-height: 400px; overflow-y: auto; transform: translateZ(0)">
 		<!-- populate with JS -->		
 	</div>
 	<p>
@@ -6060,18 +6363,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			r: "display: none;"
 		},
 		{
-			s: ".import-cb-label",
-			r: "display: block; margin-right: -13px !important;"
-		},
-		{
-			s: ".import-cb-label span",
-			r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;"
-		},
-		{
-			s: ".import-cb-label .source",
-			r: "width: calc(16.667% - 28px);'"
-		},
-		{
 			s: ".importer-section",
 			r: "display: none;"
 		},
@@ -6107,7 +6398,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
 						<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
-						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 					</div>
 				<br>
 				<input id="shapeshift-name" placeholder="Table name">
@@ -6255,9 +6546,22 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					const rawChar = d20.Campaign.characters.get(id);
 					const char = rawChar.toJSON();
 					char.attribs = rawChar.attribs.toJSON();
-					DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify({
-						char
-					}, null, "\t"));
+					const out = {
+						char,
+						blobs: {}
+					};
+					blobCount = 3;
+					const onBlobsReady = () => DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify(out, null, "\t"));
+
+					const handleBlob = (asKey, data) => {
+						out.blobs[asKey] = data;
+						blobCount--;
+						if (blobCount === 0) onBlobsReady();
+					};
+
+					rawChar._getLatestBlob("bio", (data) => handleBlob("bio", data));
+					rawChar._getLatestBlob("gmnotes", (data) => handleBlob("gmnotes", data));
+					rawChar._getLatestBlob("defaulttoken", (data) => handleBlob("defaulttoken", data));
 				});
 
 				const $btnUl = $win.find(`.upload`);
@@ -6298,6 +6602,15 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 											}
 											const toSave = char.attribs.map(a => character.attribs.push(a));
 											toSave.forEach(s => s.syncedSave());
+
+											const blobs = json.blobs;
+											if (blobs) {
+												character.updateBlobs({
+													bio: blobs.bio || "",
+													gmnotes: blobs.gmnotes || "",
+													defaulttoken: blobs.defaulttoken || ""
+												});
+											}
 										} catch (e) {
 											window.alert("Failed to import character! See the log for details.");
 											console.error(e);
@@ -6327,7 +6640,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
 						<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
-						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 					</div>
 				<br>
 				<select id="wildform-character">
@@ -6509,6 +6822,484 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					);
 				}
 			}
+		},
+		{
+			name: "Module Importer/Exporter",
+			desc: "Import Full Games (Modules), or Import/Export Custom Games",
+			html: `
+				<div id="d20plus-module-importer" title="Module Importer/Exporter">
+				<p style="margin-bottom: 4px;"><b style="font-size: 110%;">Exporter: </b> <button class="btn" name="export">Export Game to File</button> <i>The exported file can later be used with the "Upload File" option, below.</i></p>
+				<hr style="margin: 4px;">
+				<p style="margin-bottom: 4px;">
+					<b style="font-size: 110%;">Importer:</b>
+					<button class="btn readme" style="float: right;">Help/README</button>
+					<div style="clear: both;"></div>
+				</p>
+				<div style="border-bottom: 1px solid #ccc; margin-bottom: 3px; padding-bottom: 3px;">
+					<div style="float: left;">
+						<button class="btn" name="load-Vetools">Load from 5etools</button>
+						<button class="btn" name="load-file">Upload File</button>
+					</div>
+					<div style="float: right;">
+						Import category: 
+						<select name="data-type" disabled style="margin-bottom: 0;">
+							<option value="characters">Characters</option>
+							<option value="decks">Decks</option>
+							<option value="handouts">Handouts</option>
+							<option value="maps">Maps</option>
+							<option value="rolltables">Rollable Tables</option>
+						</select>						
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div id="module-importer-list">
+					<input type="search" class="search" placeholder="Search..." disabled>
+					<div class="list" style="transform: translateZ(0); max-height: 440px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
+					<i>Load a file to view the contents here</i>
+					</div>
+				</div>
+				<hr>
+				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" style="float: right;" name="import">Import Selected</button></p>
+				</div>
+				
+				<div id="d20plus-module-importer-progress" title="Import Progress">					
+					<h3 class="name"></h3>
+					<span class="remaining"></span> 
+					<p>Errors: <span class="errors">0</span> <span class="error-names"></span></p>
+					<p><button class="btn cancel">Cancel</button></p>
+				</div>
+				
+				<div id="d20plus-module-importer-help" title="Readme">
+					<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import; a list of available entries will appear. Select entries from the list as required, and hit "Import Selected."</p>
+					<p>You can import the categories in any order. If you import maps, we recommend importing characters also, as this allows the tokens to correctly link to the character sheets.</p>
+					<p><b>Note:</b> The script-wide configurable "rest time" options affect how quickly each category of entries is imported (tables and decks use the "Handout" rest time).</p>
+					<p><b>Note:</b> Configuration options (aside from "rest time" as detailed above) <i>do not</i> affect the module importer. It effectively "clones" the content as-exported from the original module, including any whisper/advantage/etc settings.</p>
+				</div>
+				
+				<div id="d20plus-module-importer-5etools" title="Select Module">
+					<div id="module-importer-list-5etools">
+						<input type="search" class="search" placeholder="Search modules...">
+						<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
+						<i>Loading...</i>
+						</div>
+					</div>
+					<p><button class="btn load">Load Module Data</button></p>
+				</div>
+				`,
+			dialogFn: () => {
+				$("#d20plus-module-importer").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 885,
+					height: 830,
+				});
+				$(`#d20plus-module-importer-progress`).dialog({
+					autoOpen: false,
+					resizable: false
+				});
+				$("#d20plus-module-importer-5etools").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 600,
+					height: 400,
+				});
+				$("#d20plus-module-importer-help").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 600,
+					height: 400,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-module-importer");
+				$win.dialog("open");
+
+				const $winProgress = $(`#d20plus-module-importer-progress`);
+				const $btnCancel = $winProgress.find(".cancel").off("click");
+
+				const $win5etools = $(`#d20plus-module-importer-5etools`);
+
+				const $winHelp = $(`#d20plus-module-importer-help`);
+				const $btnHelp = $win.find(`.readme`).off("click").click(() => $winHelp.dialog("open"));
+
+				const $wrpLst = $win.find(`#module-importer-list`);
+				const $lst = $win.find(`.list`).empty();
+
+				const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
+				const $cbAll = $win.find(`.select-all`).off("click").prop("disabled", true);
+				const $iptSearch = $win.find(`.search`).prop("disabled", true);
+
+				const $selDataType = $win.find(`[name="data-type"]`).prop("disabled", true);
+				let lastDataType = $selDataType.val();
+				let genericFolder;
+				let lastLoadedData = null;
+
+				function handleLoadedData (data) {
+					if (!lastDataType) throw new Error(`Module data type was not set!`);
+					lastLoadedData = data;
+					$selDataType.prop("disabled", false);
+					$iptSearch.prop("disabled", false);
+
+					let prop = "";
+					switch (lastDataType) {
+						case "maps": {
+							prop = "maps";
+							break;
+						}
+						case "rolltables": {
+							$("a.ui-tabs-anchor[href='#deckstables']").click();
+							prop = "rolltables";
+							break;
+						}
+						case "decks": {
+							$("a.ui-tabs-anchor[href='#deckstables']").click();
+							prop = "decks";
+							break;
+						}
+						case "handouts": {
+							prop = "handouts";
+							$("a.ui-tabs-anchor[href='#journal']").click();
+							genericFolder = d20plus.importer.makeDirTree(`Handouts`);
+							break;
+						}
+						case "characters": {
+							prop = "characters";
+							$("a.ui-tabs-anchor[href='#journal']").click();
+							genericFolder = d20plus.importer.makeDirTree(`Characters`);
+							break;
+						}
+						default: throw new Error(`Unhandled data type: ${lastDataType}`);
+					}
+
+					const moduleData = data[prop];
+					data[prop].sort((a, b) => SortUtil.ascSortLower(a.attributes.name || "", b.attributes.name || ""));
+
+					$lst.empty();
+					moduleData.forEach((m, i) => {
+						const img = lastDataType === "maps" ? m.attributes.thumbnail :
+							(lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
+
+						$lst.append(`
+									<label class="import-cb-label ${img ? `import-cb-label--img` : ""}" data-listid="${i}">
+										<input type="checkbox">
+										${img && img.trim() ? `<img class="import-label__img" src="${img}">` : ""}
+										<span class="name col-9 readable">${m.attributes.name}</span>
+									</label>
+								`);
+					});
+
+					const mapList = new List("module-importer-list", {
+						valueNames: ["name"]
+					});
+
+					$cbAll.prop("disabled", false).off("click").click(() => {
+						mapList.items.forEach(it => {
+							$(it.elm).find(`input[type="checkbox"]`).prop("checked", $cbAll.prop("checked"));
+						});
+					});
+
+					$btnImport.prop("disabled", false).off("click").click(() => {
+						$cbAll.prop("checked", false);
+						const sel = mapList.items
+							.filter(it => $(it.elm).find(`input`).prop("checked"))
+							.map(it => moduleData[$(it.elm).attr("data-listid")]);
+
+						if (!sel.length) return alert("No entries selected!");
+
+						const $name = $winProgress.find(`.name`);
+						const $remain = $winProgress.find(`.remaining`).text(`${sel.length} remaining...`);
+						const $errCount = $winProgress.find(`.errors`);
+						const $errReasons = $winProgress.find(`.error-names`);
+						let errCount = 0;
+
+						$winProgress.dialog("open");
+
+						const journal = data.journal ? MiscUtil.copy(data.journal).reverse() : null;
+						const dataType = lastDataType;
+
+						let queue = sel;
+						// if importing journal items, make sure they get put back in the right order
+						if (journal && (dataType === "characters" || dataType === "handouts")) {
+							const nuQueue = [];
+
+							journal.forEach(jIt => {
+								const qIx = queue.findIndex(qIt => qIt.attributes.id === jIt.id);
+								if (~qIx) nuQueue.push(queue.splice(qIx, 1)[0]);
+							});
+							queue.forEach(qIt => nuQueue.push(qIt)); // add anything that wasn't in the journal to the end of the queue
+							queue = nuQueue;
+						}
+
+						let isCancelled = false;
+						let lastTimeout = null;
+						$btnCancel.off("click").click(() => {
+							isCancelled = true;
+							if (lastTimeout != null) {
+								clearTimeout(lastTimeout);
+								doImport();
+							}
+						});
+						const timeout = dataType === "maps" ? (d20plus.getCfgVal("import", "importIntervalMap") || d20plus.getCfgDefaultVal("import", "importIntervalMap")) :
+							dataType === "characters" ? (d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter")) :
+								(dataType === "handouts" || dataType === "rolltables") ? (d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout")) : 5000; // default to 5 secs
+
+						const addToJournal = (originalId, itId) => {
+							let handled = false;
+							if (journal) {
+								const found = journal.find(it => it.id === originalId);
+								if (found) {
+									const rawPath = found.path;
+									const cleanPath = rawPath.slice(1); // paths start with "Root"
+									const folder = d20plus.importer.makeDirTree(...cleanPath);
+									d20.journal.addItemToFolderStructure(itId, folder.id);
+									handled = true;
+								}
+							}
+
+							if (!handled) d20.journal.addItemToFolderStructure(itId, genericFolder.id);
+						};
+
+						const doImport = () => {
+							if (isCancelled) {
+								$name.text("Import cancelled.");
+								$remain.text(`Cancelled with ${queue.length} remaining.`);
+							} else if (queue.length && !isCancelled) {
+								$remain.text(`${queue.length} remaining...`);
+								const data = queue.shift();
+								const name = data.attributes.name;
+								try {
+									$name.text(`Importing ${name}`);
+
+									switch (dataType) {
+										case "maps": {
+											const map = d20.Campaign.pages.create(data.attributes);
+											data.graphics.forEach(it => map.thegraphics.create(it));
+											data.paths.forEach(it => map.thepaths.create(it));
+											data.text.forEach(it => map.thetexts.create(it));
+											map.save();
+											break;
+										}
+										case "rolltables": {
+											const table = d20.Campaign.rollabletables.create(data.attributes);
+											table.tableitems.reset();
+											const toSave = data.tableitems.map(it => table.tableitems.push(it));
+											toSave.forEach(s => s.save());
+											table.save();
+											break;
+										}
+										case "decks": {
+											const deck = d20.Campaign.decks.create(data.attributes);
+											deck.cards.reset();
+											const toSave = data.cards.map(it => deck.cards.push(it));
+											toSave.forEach(s => s.save());
+											deck.save();
+											break;
+										}
+										case "handouts": {
+											d20.Campaign.handouts.create(data.attributes,
+												{
+													success: function (handout) {
+														handout.updateBlobs({
+															bio: data.blobBio,
+															gmnotes: data.blobGmNotes
+														});
+
+														addToJournal(data.attributes.id, handout.id);
+													}
+												}
+											)
+											break;
+										}
+										case "characters": {
+											d20.Campaign.characters.create(data.attributes,
+												{
+													success: function (character) {
+														character.attribs.reset();
+														const toSave = data.attribs.map(a => character.attribs.push(a));
+														toSave.forEach(s => s.syncedSave());
+
+														character.updateBlobs({
+															bio: data.blobBio,
+															gmnotes: data.blobGmNotes,
+															defaulttoken: data.blobDefaultToken
+														});
+
+														addToJournal(data.attributes.id, character.id);
+													}
+												}
+											);
+											break;
+										}
+										default: throw new Error(`Unhandled data type: ${dataType}`);
+									}
+								} catch (e) {
+									console.error(e);
+
+									errCount++;
+									$errCount.text(errCount);
+									const prevReasons = $errReasons.text().trim();
+									$errReasons.append(`${prevReasons.length ? ", " : ""}${name}: "${e.message}"`)
+								}
+
+								// queue up the next import
+								lastTimeout = setTimeout(doImport, timeout);
+							} else {
+								$name.text("Import complete!");
+								$name.text(`${queue.length} remaining.`);
+							}
+						};
+
+						doImport();
+					});
+				}
+
+				$selDataType.off("change").on("change", () => {
+					lastDataType = $selDataType.val();
+					if (lastLoadedData) handleLoadedData(lastLoadedData)
+				});
+
+				const $btnLoadVetools = $win.find(`[name="load-Vetools"]`);
+				$btnLoadVetools.off("click").click(() => {
+					$win5etools.dialog("open");
+					const $btnLoad = $win5etools.find(`.load`).off("click");
+
+					DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-index.json`).then(data => {
+						const $lst = $win5etools.find(`.list`);
+						const modules = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
+						let tmp = "";
+						modules.forEach((t, i) => {
+							tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="radio" name="map-5etools">
+									<span class="name col-7 readable">${t.name}</span>
+									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
+									<span class="name col-3 readable">${d20plus.getReadableFileSizeString(t.size)}</span>
+								</label>
+							`;
+						});
+						$lst.html(tmp);
+						tmp = null;
+
+						const list5etools = new List("module-importer-list-5etools", {
+							valueNames: ["name"]
+						});
+
+						$btnLoad.on("click", () => {
+							const sel = list5etools.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => modules[$(it.elm).attr("data-listid")])[0];
+
+							$win5etools.dialog("close");
+							$win.dialog("open");
+							$lst.empty().append(`<i>Loading...</i>`);
+							DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-${sel.id.toLowerCase()}.json`)
+								.then(moduleFile => handleLoadedData(moduleFile))
+								.catch(e => {
+									console.error(e);
+									alert(`Failed to load data! See the console for more information.`);
+								});
+						});
+					}).catch(e => {
+						console.error(e);
+						alert(`Failed to load data! See the console for more information.`);
+					});
+				});
+
+				const $btnLoadFile = $win.find(`[name="load-file"]`);
+				$btnLoadFile.off("click").click(() => {
+					DataUtil.userUpload((data) => handleLoadedData(data));
+				});
+
+				const $btnExport = $win.find(`[name="export"]`);
+				$btnExport.off("click").click(() => {
+					console.log("Exporting journal...");
+					const journal = d20plus.importer.getExportableJournal();
+
+					console.log("Exporting maps...");
+					const maps = d20.Campaign.pages.models.map(map => ({ // shoutouts to Stormy
+						attributes: map.attributes,
+						graphics: map.thegraphics.map(g => g.attributes),
+						text: map.thetexts.map(t => t.attributes),
+						paths: map.thepaths.map(p => p.attributes)
+					}));
+
+					console.log("Exporting tables...");
+					const rolltables = d20.Campaign.rollabletables.models.map(rolltable => ({
+						attributes: rolltable.attributes,
+						tableitems: rolltable.tableitems.models.map(tableitem => tableitem.attributes)
+					}));
+
+					console.log("Exporting decks...");
+					const decks = d20.Campaign.decks.models.map(deck => {
+						if (deck.name && deck.name.toLowerCase() === "playing cards") return;
+						return {
+							attributes: deck.attributes,
+							cards: deck.cards.models.map(card => card.attributes)
+						};
+					}).filter(it => it);
+
+					let blobCount = 0;
+					let onBlobsReady = null;
+
+					const handleBlob = (addTo, asKey, data) => {
+						addTo[asKey] = data;
+						blobCount--;
+						if (onBlobsReady && blobCount === 0) onBlobsReady();
+					};
+
+					console.log("Exporting characters...");
+					const characters = d20.Campaign.characters.models.map(character => {
+						const out = {
+							attributes: character.attributes,
+							attribs: character.attribs
+						};
+						blobCount += 3;
+						character._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
+						character._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
+						character._getLatestBlob("defaulttoken", (data) => handleBlob(out, "blobDefaultToken", data));
+						return out;
+					});
+
+					console.log("Exporting handouts...");
+					const handouts = d20.Campaign.handouts.models.map(handout => {
+						if (handout.attributes.name === ART_HANDOUT || handout.attributes.name === CONFIG_HANDOUT) return;
+
+						const out = {
+							attributes: handout.attributes
+						};
+						blobCount += 2;
+						handout._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
+						handout._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
+						return out;
+					}).filter(it => it);
+
+					console.log("Waiting for blobs...");
+					onBlobsReady = () => {
+						console.log("Blobs are ready!");
+						const payload = {
+							schema_version: 1, // version number from r20es
+							maps,
+							rolltables,
+							decks,
+							journal,
+							handouts,
+							characters
+						};
+
+						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^\w\-]/g, "_");
+						const data = JSON.stringify(payload, null, "\t");
+
+						const blob = new Blob([data], {type: "application/json"})
+						d20plus.saveAs(blob, `${filename}.json`);
+					};
+
+					// TODO
+					/*
+					macro
+					jukebox track
+					 */
+				});
+			}
 		}
 	]);
 
@@ -6554,9 +7345,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		});
 	};
 
-	d20plus.initiativeHeaders = `<div class="header">
-<span class="ui-button-text initmacro">Sheet</span>
-<span class="initiative" alt="Initiative" title="Initiative">Init</span>
+	d20plus.initiativeHeaders = `<div class="header init-header">
+<span class="ui-button-text initmacro init-sheet-header"></span>
+<span class="initiative init-init-header" alt="Initiative" title="Initiative">Init</span>
 <span class="cr" alt="CR" title="CR">CR</span>
 <div class="tracker-header-extra-columns"></div>
 </div>`;
@@ -6566,11 +7357,13 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 	<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
 		<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
 		<$ var char = (token) ? token.character : null; $>
-		<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
-			<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
-			<span class='ui-button-text'>N</span>
-			</button>
-		</span>
+		<$ if (d20plus.getCfgVal("interface", "customTracker") && d20plus.getCfgVal("interface", "trackerSheetButton")) { $>
+			<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
+				<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
+				<span class='ui-button-text'>N</span>
+				</button>
+			</span>		
+		<$ } $>
 		<span alt='Initiative' title='Initiative' class='initiative <$ if (this.iseditable) { $>editable<$ } $>'>
 			<$!this.pr$>
 		</span>

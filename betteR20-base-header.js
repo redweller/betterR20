@@ -14,11 +14,6 @@ CONFIG_OPTIONS = {
 			name: "Show Custom Art Previews",
 			default: true,
 			_type: "boolean"
-		},
-		toolbarOpacity: {
-			name: "Horizontal Toolbar Opacity (0.00-1.00)",
-			default: 0.75,
-			_type: "float"
 		}
 	}
 };
