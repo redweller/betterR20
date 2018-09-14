@@ -7100,7 +7100,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 												{
 													success: function (handout) {
 														handout.updateBlobs({
-															bio: data.blobBio,
+															notes: data.blobNotes,
 															gmnotes: data.blobGmNotes
 														});
 
@@ -7145,7 +7145,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								lastTimeout = setTimeout(doImport, timeout);
 							} else {
 								$name.text("Import complete!");
-								$name.text(`${queue.length} remaining.`);
+								$remain.text(`${queue.length} remaining.`);
 							}
 						};
 
@@ -7268,7 +7268,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 							attributes: handout.attributes
 						};
 						blobCount += 2;
-						handout._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
+						handout._getLatestBlob("notes", (data) => handleBlob(out, "blobNotes", data));
 						handout._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
 						return out;
 					}).filter(it => it);
