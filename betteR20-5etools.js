@@ -2349,7 +2349,7 @@ const betteR205etools = function () {
 									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
 								},
 								success: function () {
-									d20plus.importer.getSetAvatarImage(character, avatar);
+									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.getAntiCacheSuffix()}`);
 								}
 							});
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
