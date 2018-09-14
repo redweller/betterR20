@@ -1489,8 +1489,8 @@ var betteR20Base = function () {
 					$("#d20plus-tables").dialog({
 						autoOpen: false,
 						resizable: true,
-						width: 800,
-						height: 690,
+						width: 650,
+						height: 720,
 					});
 					$(`#d20plus-tables-clipboard`).dialog({
 						autoOpen: false,
@@ -1700,9 +1700,7 @@ var betteR20Base = function () {
 				desc: "Import and export maps (pages), including those from published adventures.",
 				html: `
 				<div id="d20plus-map-importer" title="Map Importer/Exporter">
-				<p>
-					<button class="btn" name="load-file">Import Maps from File</button> <button class="btn" name="export">Export Maps to File</button> | <button class="btn" name="load-Vetools">Import Maps from 5etools</button>
-				</p>
+				<p><button class="btn" name="load-file">Import Maps from File</button> <button class="btn" name="export">Export Maps to File</button></p>
 				<div id="map-importer-list">
 					<input type="search" class="search" placeholder="Search maps...">
 					<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: scroll; overflow-x: hidden; margin-bottom: 10px;">
@@ -1710,7 +1708,7 @@ var betteR20Base = function () {
 					</div>
 				</div>
 				<hr>
-				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" name="import">Import Selected</button></p>
+				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" style="float: right;" name="import">Import Selected</button></p>
 				</div>
 				
 				<div id="d20plus-map-importer-progress" title="Import Progress">					
@@ -1755,8 +1753,6 @@ var betteR20Base = function () {
 					const $winProgress = $(`#d20plus-map-importer-progress`);
 					const $btnCancel = $winProgress.find(".cancel").off("click");
 
-					const $win5etools = $(`#d20plus-map-importer-5etools`);
-
 					const $wrpLst = $win.find(`#map-importer-list`);
 					const $lst = $win.find(`.list`).empty();
 
@@ -1765,10 +1761,7 @@ var betteR20Base = function () {
 
 					function handleLoadedData (data) {
 						// validate
-						if (!data.maps) {
-							alert("File did not contain map data!");
-							return;
-						}
+						if (!data.maps) return alert("File did not contain map data!");
 						for (const mapData of data.maps) {
 							if (!mapData.attributes) return alert("File did not contain map attribute data!");
 							if (!mapData.graphics) return alert("File did not contain map graphics data!");
@@ -1864,52 +1857,6 @@ var betteR20Base = function () {
 							doImport();
 						});
 					}
-
-					const $btnLoadVetools = $win.find(`[name="load-Vetools"]`);
-					$btnLoadVetools.off("click").click(() => {
-						$win5etools.dialog("open");
-						const $btnLoad = $win5etools.find(`.load`).off("click");
-
-						DataUtil.loadJSON(`${DATA_URL}adventure/roll20-map-index.json`).then(data => {
-							const $lst = $win5etools.find(`.list`);
-							const maps = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
-							let tmp = "";
-							maps.forEach((t, i) => {
-								tmp += `
-								<label class="import-cb-label" data-listid="${i}">
-									<input type="radio" name="map-5etools">
-									<span class="name col-10">${t.name}</span>
-									<span title="${Parser.sourceJsonToFull(t.id)}" class="source">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
-								</label>
-							`;
-							});
-							$lst.html(tmp);
-							tmp = null;
-
-							const list5etools = new List("map-importer-list-5etools", {
-								valueNames: ["name"]
-							});
-
-							$btnLoad.on("click", () => {
-								const sel = list5etools.items
-									.filter(it => $(it.elm).find(`input`).prop("checked"))
-									.map(it => maps[$(it.elm).attr("data-listid")])[0];
-
-								$win5etools.dialog("close");
-								$win.dialog("open");
-								$lst.empty().append(`<i>Loading...</i>`);
-								DataUtil.loadJSON(`${DATA_URL}adventure/roll20-map-${sel.id.toLowerCase()}.json`).then(mapFile => {
-									handleLoadedData(mapFile);
-								}).catch(e => {
-									console.error(e);
-									alert(`Failed to load map data! See the console for more information.`);
-								});
-							});
-						}).catch(e => {
-							console.error(e);
-							alert(`Failed to load map data! See the console for more information.`);
-						});
-					});
 
 					const $btnLoadFile = $win.find(`[name="load-file"]`);
 					$btnLoadFile.off("click").click(() => {
@@ -2042,8 +1989,8 @@ var betteR20Base = function () {
 				t.dialogFn(); // init window
 				// add tool row
 				const $wrp = $(`<div class="tool-row"/>`);
-				$wrp.append(`<p style="width: 20%;">${t.name}</p>`);
-				$wrp.append(`<p style="width: 60%;">${t.desc}</p>`);
+				$wrp.append(`<span style="width: 20%; padding: 4px;">${t.name}</span>`);
+				$wrp.append(`<span style="width: calc(60% - 8px); padding: 4px;">${t.desc}</span>`);
 				$(`<a style="width: 15%;" class="btn" href="#">Open</a>`).on(mousedowntype, () => {
 					t.openFn.bind(t)();
 					$tools.dialog("close");

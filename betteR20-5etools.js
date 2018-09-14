@@ -919,6 +919,26 @@ const betteR205etools = function () {
 		}
 	};
 
+	d20plus.importer.getExportableJournal = () => {
+		// build a list of (id, path) pairs
+		const out = [];
+
+		function recurse (entry, pos) {
+			if (entry.i) {
+				// pos.push({name: entry.n, id: entry.id}); // if IDs are required, use this instead?
+				pos.push(entry.n);
+				entry.i.forEach(nxt => recurse(nxt, pos));
+				pos.pop();
+			} else {
+				out.push({id: entry, path: MiscUtil.copy(pos)});
+			}
+		}
+
+		const root = {i: d20plus.getJournalFolderObj(), n: "Root", id: "root"};
+		recurse(root, []);
+		return out;
+	};
+
 	d20plus.importer.removeFileByPath = function (...path) {
 		path = d20plus.importer.getCleanPath(path);
 		return d20plus.importer._checkOrRemoveFileByPath(true, path);
@@ -1917,7 +1937,7 @@ const betteR205etools = function () {
 						<span class="col-2 ib"><b>CR</b></span>				
 						<span class="col-3 ib"><b>Scale CR</b></span>				
 					</div>
-					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 				</div>
 			<br>
 			<button class="btn">Import</button>
@@ -5673,7 +5693,7 @@ const betteR205etools = function () {
 	<input type="search" id="import-list-filter" class="filter" placeholder="Filter...">
 	<span id ="import-list-filter-help" title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM' -- hover over the columns to see the filterable name." style="cursor: help;">[?]</span>
 	<br>
-	<span class="list" style="max-height: 400px; overflow-y: scroll; overflow-x: hidden; display: block; margin-top: 1em; transform: translateZ(0);"></span>
+	<span class="list" style="max-height: 400px; overflow-y: auto; overflow-x: hidden; display: block; margin-top: 1em; transform: translateZ(0);"></span>
 </span>
 </p>
 <p id="import-options">
@@ -5688,7 +5708,7 @@ const betteR205etools = function () {
 </div>`;
 
 	d20plus.importListPropsHTML = `<div id="d20plus-import-props" title="Choose Properties to Import">
-	<div class="select-props" style="max-height: 400px; overflow-y: scroll; transform: translateZ(0)">
+	<div class="select-props" style="max-height: 400px; overflow-y: auto; transform: translateZ(0)">
 		<!-- populate with JS -->		
 	</div>
 	<p>
@@ -6107,7 +6127,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
 						<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
-						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 					</div>
 				<br>
 				<input id="shapeshift-name" placeholder="Table name">
@@ -6327,7 +6347,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
 						<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
-						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 					</div>
 				<br>
 				<select id="wildform-character">
@@ -6508,6 +6528,484 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						}
 					);
 				}
+			}
+		},
+		{
+			name: "Module Importer/Exporter",
+			desc: "Import Full Games (Modules), or Import/Export Custom Games",
+			html: `
+				<div id="d20plus-module-importer" title="Module Importer/Exporter">
+				<p style="margin-bottom: 4px;"><b style="font-size: 110%;">Exporter: </b> <button class="btn" name="export">Export Game to File</button> <i>The exported file can later be used with the "Upload File" option, below.</i></p>
+				<hr style="margin: 4px;">
+				<p style="margin-bottom: 4px;">
+					<b style="font-size: 110%;">Importer:</b>
+					<button class="btn readme" style="float: right;">Help/README</button>
+					<div style="clear: both;"></div>
+				</p>
+				<div style="border-bottom: 1px solid #ccc; margin-bottom: 3px; padding-bottom: 3px;">
+					<div style="float: left;">
+						<button class="btn" name="load-Vetools">Load from 5etools</button>
+						<button class="btn" name="load-file">Upload File</button>
+					</div>
+					<div style="float: right;">
+						Import category: 
+						<select name="data-type" disabled style="margin-bottom: 0;">
+							<option value="characters">Characters</option>
+							<option value="decks">Decks</option>
+							<option value="handouts">Handouts</option>
+							<option value="maps">Maps</option>
+							<option value="rolltables">Rollable Tables</option>
+						</select>						
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div id="module-importer-list">
+					<input type="search" class="search" placeholder="Search..." disabled>
+					<div class="list" style="transform: translateZ(0); max-height: 440px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
+					<i>Load a file to view the contents here</i>
+					</div>
+				</div>
+				<hr>
+				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" style="float: right;" name="import">Import Selected</button></p>
+				</div>
+				
+				<div id="d20plus-module-importer-progress" title="Import Progress">					
+					<h3 class="name"></h3>
+					<span class="remaining"></span> 
+					<p>Errors: <span class="errors">0</span> <span class="error-names"></span></p>
+					<p><button class="btn cancel">Cancel</button></p>
+				</div>
+				
+				<div id="d20plus-module-importer-help" title="Readme">
+					<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import; a list of available entries will appear. Select entries from the list as required, and hit "Import Selected."</p>
+					<p>You can import the categories in any order. If you import maps, we recommend importing characters also, as this allows the tokens to correctly link to the character sheets.</p>
+					<p><b>Note:</b> The script-wide configurable "rest time" options affect how quickly each category of entries is imported (tables and decks use the "Handout" rest time).</p>
+					<p><b>Note:</b> Configuration options (aside from "rest time" as detailed above) <i>do not</i> affect the module importer. It effectively "clones" the content as-exported from the original module, including any whisper/advantage/etc settings.</p>
+				</div>
+				
+				<div id="d20plus-module-importer-5etools" title="Select Module">
+					<div id="module-importer-list-5etools">
+						<input type="search" class="search" placeholder="Search modules...">
+						<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
+						<i>Loading...</i>
+						</div>
+					</div>
+					<p><button class="btn load">Load Module Data</button></p>
+				</div>
+				`,
+			dialogFn: () => {
+				$("#d20plus-module-importer").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 885,
+					height: 830,
+				});
+				$(`#d20plus-module-importer-progress`).dialog({
+					autoOpen: false,
+					resizable: false
+				});
+				$("#d20plus-module-importer-5etools").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 600,
+					height: 400,
+				});
+				$("#d20plus-module-importer-help").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 600,
+					height: 400,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-module-importer");
+				$win.dialog("open");
+
+				const $winProgress = $(`#d20plus-module-importer-progress`);
+				const $btnCancel = $winProgress.find(".cancel").off("click");
+
+				const $win5etools = $(`#d20plus-module-importer-5etools`);
+
+				const $winHelp = $(`#d20plus-module-importer-help`);
+				const $btnHelp = $win.find(`.readme`).off("click").click(() => $winHelp.dialog("open"));
+
+				const $wrpLst = $win.find(`#module-importer-list`);
+				const $lst = $win.find(`.list`).empty();
+
+				const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
+				const $cbAll = $win.find(`.select-all`).off("click").prop("disabled", true);
+				const $iptSearch = $win.find(`.search`).prop("disabled", true);
+
+				const $selDataType = $win.find(`[name="data-type"]`).prop("disabled", true);
+				let lastDataType = $selDataType.val();
+				let genericFolder;
+				let lastLoadedData = null;
+
+				function handleLoadedData (data) {
+					if (!lastDataType) throw new Error(`Module data type was not set!`);
+					lastLoadedData = data;
+					$selDataType.prop("disabled", false);
+					$iptSearch.prop("disabled", false);
+
+					let prop = "";
+					switch (lastDataType) {
+						case "maps": {
+							prop = "maps";
+							break;
+						}
+						case "rolltables": {
+							$("a.ui-tabs-anchor[href='#deckstables']").click();
+							prop = "rolltables";
+							break;
+						}
+						case "decks": {
+							$("a.ui-tabs-anchor[href='#deckstables']").click();
+							prop = "decks";
+							break;
+						}
+						case "handouts": {
+							prop = "handouts";
+							$("a.ui-tabs-anchor[href='#journal']").click();
+							genericFolder = d20plus.importer.makeDirTree(`Handouts`);
+							break;
+						}
+						case "characters": {
+							prop = "characters";
+							$("a.ui-tabs-anchor[href='#journal']").click();
+							genericFolder = d20plus.importer.makeDirTree(`Characters`);
+							break;
+						}
+						default: throw new Error(`Unhandled data type: ${lastDataType}`);
+					}
+
+					const moduleData = data[prop];
+					data[prop].sort((a, b) => SortUtil.ascSortLower(a.attributes.name || "", b.attributes.name || ""));
+
+					$lst.empty();
+					moduleData.forEach((m, i) => {
+						const img = lastDataType === "maps" ? m.attributes.thumbnail :
+							(lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
+
+						$lst.append(`
+									<label class="import-cb-label ${img ? `import-cb-label--img` : ""}" data-listid="${i}">
+										<input type="checkbox">
+										${img && img.trim() ? `<img class="import-label__img" src="${img}">` : ""}
+										<span class="name col-9">${m.attributes.name}</span>
+									</label>
+								`);
+					});
+
+					const mapList = new List("module-importer-list", {
+						valueNames: ["name"]
+					});
+
+					$cbAll.prop("disabled", false).off("click").click(() => {
+						mapList.items.forEach(it => {
+							$(it.elm).find(`input[type="checkbox"]`).prop("checked", $cbAll.prop("checked"));
+						});
+					});
+
+					$btnImport.prop("disabled", false).off("click").click(() => {
+						$cbAll.prop("checked", false);
+						const sel = mapList.items
+							.filter(it => $(it.elm).find(`input`).prop("checked"))
+							.map(it => moduleData[$(it.elm).attr("data-listid")]);
+
+						if (!sel.length) return alert("No entries selected!");
+
+						const $name = $winProgress.find(`.name`);
+						const $remain = $winProgress.find(`.remaining`).text(`${sel.length} remaining...`);
+						const $errCount = $winProgress.find(`.errors`);
+						const $errReasons = $winProgress.find(`.error-names`);
+						let errCount = 0;
+
+						$winProgress.dialog("open");
+
+						const journal = data.journal ? MiscUtil.copy(data.journal).reverse() : null;
+						const dataType = lastDataType;
+
+						let queue = sel;
+						// if importing journal items, make sure they get put back in the right order
+						if (journal && (dataType === "characters" || dataType === "handouts")) {
+							const nuQueue = [];
+
+							journal.forEach(jIt => {
+								const qIx = queue.findIndex(qIt => qIt.attributes.id === jIt.id);
+								if (~qIx) nuQueue.push(queue.splice(qIx, 1)[0]);
+							});
+							queue.forEach(qIt => nuQueue.push(qIt)); // add anything that wasn't in the journal to the end of the queue
+							queue = nuQueue;
+						}
+
+						let isCancelled = false;
+						let lastTimeout = null;
+						$btnCancel.off("click").click(() => {
+							isCancelled = true;
+							if (lastTimeout != null) {
+								clearTimeout(lastTimeout);
+								doImport();
+							}
+						});
+						const timeout = dataType === "maps" ? (d20plus.getCfgVal("import", "importIntervalMap") || d20plus.getCfgDefaultVal("import", "importIntervalMap")) :
+							dataType === "characters" ? (d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter")) :
+								(dataType === "handouts" || dataType === "rolltables") ? (d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout")) : 5000; // default to 5 secs
+
+						const addToJournal = (originalId, itId) => {
+							let handled = false;
+							if (journal) {
+								const found = journal.find(it => it.id === originalId);
+								if (found) {
+									const rawPath = found.path;
+									const cleanPath = rawPath.slice(1); // paths start with "Root"
+									const folder = d20plus.importer.makeDirTree(...cleanPath);
+									d20.journal.addItemToFolderStructure(itId, folder.id);
+									handled = true;
+								}
+							}
+
+							if (!handled) d20.journal.addItemToFolderStructure(itId, genericFolder.id);
+						};
+
+						const doImport = () => {
+							if (isCancelled) {
+								$name.text("Import cancelled.");
+								$remain.text(`Cancelled with ${queue.length} remaining.`);
+							} else if (queue.length && !isCancelled) {
+								$remain.text(`${queue.length} remaining...`);
+								const data = queue.shift();
+								const name = data.attributes.name;
+								try {
+									$name.text(`Importing ${name}`);
+
+									switch (dataType) {
+										case "maps": {
+											const map = d20.Campaign.pages.create(data.attributes);
+											data.graphics.forEach(it => map.thegraphics.create(it));
+											data.paths.forEach(it => map.thepaths.create(it));
+											data.text.forEach(it => map.thetexts.create(it));
+											map.save();
+											break;
+										}
+										case "rolltables": {
+											const table = d20.Campaign.rollabletables.create(data.attributes);
+											table.tableitems.reset();
+											const toSave = data.tableitems.map(it => table.tableitems.push(it));
+											toSave.forEach(s => s.save());
+											table.save();
+											break;
+										}
+										case "decks": {
+											const deck = d20.Campaign.decks.create(data.attributes);
+											deck.cards.reset();
+											const toSave = data.cards.map(it => deck.cards.push(it));
+											toSave.forEach(s => s.save());
+											deck.save();
+											break;
+										}
+										case "handouts": {
+											d20.Campaign.handouts.create(data.attributes,
+												{
+													success: function (handout) {
+														handout.updateBlobs({
+															bio: data.blobBio,
+															gmnotes: data.blobGmNotes
+														});
+
+														addToJournal(data.attributes.id, handout.id);
+													}
+												}
+											)
+											break;
+										}
+										case "characters": {
+											d20.Campaign.characters.create(data.attributes,
+												{
+													success: function (character) {
+														character.attribs.reset();
+														const toSave = data.attribs.map(a => character.attribs.push(a));
+														toSave.forEach(s => s.syncedSave());
+
+														character.updateBlobs({
+															bio: data.blobBio,
+															gmnotes: data.blobGmNotes,
+															defaulttoken: data.blobDefaultToken
+														});
+
+														addToJournal(data.attributes.id, character.id);
+													}
+												}
+											);
+											break;
+										}
+										default: throw new Error(`Unhandled data type: ${dataType}`);
+									}
+								} catch (e) {
+									console.error(e);
+
+									errCount++;
+									$errCount.text(errCount);
+									const prevReasons = $errReasons.text().trim();
+									$errReasons.append(`${prevReasons.length ? ", " : ""}${name}: "${e.message}"`)
+								}
+
+								// queue up the next import
+								lastTimeout = setTimeout(doImport, timeout);
+							} else {
+								$name.text("Import complete!");
+								$name.text(`${queue.length} remaining.`);
+							}
+						};
+
+						doImport();
+					});
+				}
+
+				$selDataType.off("change").on("change", () => {
+					lastDataType = $selDataType.val();
+					if (lastLoadedData) handleLoadedData(lastLoadedData)
+				});
+
+				const $btnLoadVetools = $win.find(`[name="load-Vetools"]`);
+				$btnLoadVetools.off("click").click(() => {
+					$win5etools.dialog("open");
+					const $btnLoad = $win5etools.find(`.load`).off("click");
+
+					DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-index.json`).then(data => {
+						const $lst = $win5etools.find(`.list`);
+						const modules = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
+						let tmp = "";
+						modules.forEach((t, i) => {
+							tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="radio" name="map-5etools">
+									<span class="name col-7">${t.name}</span>
+									<span title="${Parser.sourceJsonToFull(t.id)}" class="source">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
+									<span class="name col-3">${d20plus.getReadableFileSizeString(t.size)}</span>
+								</label>
+							`;
+						});
+						$lst.html(tmp);
+						tmp = null;
+
+						const list5etools = new List("module-importer-list-5etools", {
+							valueNames: ["name"]
+						});
+
+						$btnLoad.on("click", () => {
+							const sel = list5etools.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => modules[$(it.elm).attr("data-listid")])[0];
+
+							$win5etools.dialog("close");
+							$win.dialog("open");
+							$lst.empty().append(`<i>Loading...</i>`);
+							DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-${sel.id.toLowerCase()}.json`)
+								.then(moduleFile => handleLoadedData(moduleFile))
+								.catch(e => {
+									console.error(e);
+									alert(`Failed to load data! See the console for more information.`);
+								});
+						});
+					}).catch(e => {
+						console.error(e);
+						alert(`Failed to load data! See the console for more information.`);
+					});
+				});
+
+				const $btnLoadFile = $win.find(`[name="load-file"]`);
+				$btnLoadFile.off("click").click(() => {
+					DataUtil.userUpload((data) => handleLoadedData(data));
+				});
+
+				const $btnExport = $win.find(`[name="export"]`);
+				$btnExport.off("click").click(() => {
+					console.log("Exporting journal...");
+					const journal = d20plus.importer.getExportableJournal();
+
+					console.log("Exporting maps...");
+					const maps = d20.Campaign.pages.models.map(map => ({ // shoutouts to Stormy
+						attributes: map.attributes,
+						graphics: map.thegraphics.map(g => g.attributes),
+						text: map.thetexts.map(t => t.attributes),
+						paths: map.thepaths.map(p => p.attributes)
+					}));
+
+					console.log("Exporting tables...");
+					const rolltables = d20.Campaign.rollabletables.models.map(rolltable => ({
+						attributes: rolltable.attributes,
+						tableitems: rolltable.tableitems.models.map(tableitem => tableitem.attributes)
+					}));
+
+					console.log("Exporting decks...");
+					const decks = d20.Campaign.decks.models.map(deck => {
+						if (deck.name && deck.name.toLowerCase() === "playing cards") return;
+						return {
+							attributes: deck.attributes,
+							cards: deck.cards.models.map(card => card.attributes)
+						};
+					}).filter(it => it);
+
+					let blobCount = 0;
+					let onBlobsReady = null;
+
+					const handleBlob = (addTo, asKey, data) => {
+						addTo[asKey] = data;
+						blobCount--;
+						if (onBlobsReady && blobCount === 0) onBlobsReady();
+					};
+
+					console.log("Exporting characters...");
+					const characters = d20.Campaign.characters.models.map(character => {
+						const out = {
+							attributes: character.attributes,
+							attribs: character.attribs
+						};
+						blobCount += 3;
+						character._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
+						character._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
+						character._getLatestBlob("defaulttoken", (data) => handleBlob(out, "blobDefaultToken", data));
+						return out;
+					});
+
+					console.log("Exporting handouts...");
+					const handouts = d20.Campaign.handouts.models.map(handout => {
+						if (handout.attributes.name === ART_HANDOUT || handout.attributes.name === CONFIG_HANDOUT) return;
+
+						const out = {
+							attributes: handout.attributes
+						};
+						blobCount += 2;
+						handout._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
+						handout._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
+						return out;
+					}).filter(it => it);
+
+					console.log("Waiting for blobs...");
+					onBlobsReady = () => {
+						console.log("Blobs are ready!");
+						const payload = {
+							schema_version: 1, // version number from r20es
+							maps,
+							rolltables,
+							decks,
+							journal,
+							handouts,
+							characters
+						};
+
+						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^\w\-]/g, "_");
+						const data = JSON.stringify(payload, null, "\t");
+
+						const blob = new Blob([data], {type: "application/json"})
+						d20plus.saveAs(blob, `${filename}.json`);
+					};
+
+					// TODO
+					/*
+					macro
+					jukebox track
+					 */
+				});
 			}
 		}
 	]);
