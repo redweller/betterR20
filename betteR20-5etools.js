@@ -641,9 +641,9 @@ const betteR205etools = function () {
 									return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
 								});
 								var barName = d20plus.getCfgKey("token", "npc_hpbase");
-								var hpformula = hpf.get("current");
 
-								if (hpformula && hpf) {
+								if (hpf && hpf.get("current")) {
+									var hpformula = hpf.get("current");
 									if (d20plus.getCfgVal("token", "maximiseHp")) {
 										const maxSum = hpformula.replace("d", "*");
 										try {
@@ -3429,10 +3429,13 @@ const betteR205etools = function () {
 			const replaceStack = [
 				// this is hidden by CSS
 				`<span class='cr' alt='CR' title='CR'>
-				<$ if(npc && npc.get("current") == "1") { $>
-					<$!char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }).get("current")$>
-				<$ } $>
-			</span>`
+					<$ if(npc && npc.get("current") == "1") { $>
+						<$ var crAttr = char.attribs.find(function(e) { return e.get("name").toLowerCase() === "npc_challenge" }); $>
+						<$ if(crAttr) { $>
+							<$!crAttr.get("current")$>
+						<$ } $>
+					<$ } $>
+				</span>`
 			];
 			cols.forEach((c, i) => {
 				switch (c) {
