@@ -1039,7 +1039,8 @@ var betteR20Base = function () {
 							case "float":
 							case "integer": {
 								const def = d20plus.getCfgDefaultVal(cfgK, grpK);
-								const field = $(`<input id="conf_field_${idx}" type="number" value="${d20plus.getCfgVal(cfgK, grpK)}" ${def != null ? `placeholder="Default: ${def}"` : ""}>`);
+								const curr = d20plus.getCfgVal(cfgK, grpK);
+								const field = $(`<input id="conf_field_${idx}" type="number" ${curr != null ? `value="${curr}"` : ""} ${def != null ? `placeholder="Default: ${def}"` : ""} step="any">`);
 
 								configFields[cfgK][grpK] = () => {
 									return Number(field.val());
@@ -1591,8 +1592,10 @@ var betteR20Base = function () {
 								if (!error) window.alert("Looking good!");
 							}).appendTo($wrpClip);
 							const $btnImport = $(`<button class="btn">Import</button>`).on("click", () => {
+								$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
 								const ts = getFromPaste($iptClip.val());
 								ts.forEach(t => createTable(t));
+								window.alert("Import complete");
 							}).appendTo($wrpClip);
 
 							$wrpClip.dialog("open");
@@ -1611,10 +1614,11 @@ var betteR20Base = function () {
 									if (!tbl) {
 										throw new Error("No !import-table statement found");
 									}
-									const [junk, tblName, row, weight] = line.split("--").map(it => it.trim());
+									const [junk, tblName, row, weight, avatar] = line.split("--").map(it => it.trim());
 									tbl.items.push({
 										row,
-										weight
+										weight,
+										avatar
 									})
 								} else if (line.startsWith("!import-table")) {
 									if (tbl) {
@@ -1645,9 +1649,8 @@ var betteR20Base = function () {
 							tmp += `
 								<label class="import-cb-label" data-listid="${i}">
 									<input type="checkbox">
-									<span class="name col-6">${t.name}</span>
+									<span class="name col-10">${t.name}</span>
 									<span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
-									<span class="name col-4">${d20plus.getReadableFileSizeString(t.size)}</span>
 								</label>
 							`;
 						});
