@@ -1,6 +1,7 @@
 const betteR20Emoji = function () {
 	d20plus.chat = {};
 
+	// to dump the keys as one-per-line colon-fotmatted: `JSON.stringify(Object.keys(d20plus.chat.emojiIndex).sort(SortUtil.ascSortLower), null, 1).replace(/",/g, ":").replace(/"/g, ":").replace(/[ \[\]]/g, "").trim()`
 	d20plus.chat.emojiIndex = {
 		joy: !0,
 		heart: !0,

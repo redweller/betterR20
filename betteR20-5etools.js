@@ -2096,7 +2096,7 @@ const betteR205etools = function () {
 		if (character.size === "L") tokensize = 2;
 		if (character.size === "H") tokensize = 3;
 		if (character.size === "G") tokensize = 4;
-		var lightradius = 5;
+		var lightradius = null;
 		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
 		var lightmin = 0;
 		if (character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
@@ -2110,8 +2110,10 @@ const betteR205etools = function () {
 		};
 		if (!d20plus.getCfgVal("import", "skipSenses")) {
 			defaulttoken.light_hassight = true;
-			defaulttoken.light_radius = lightradius;
-			defaulttoken.light_dimradius = lightmin;
+			if (lightradius != null) {
+				defaulttoken.light_radius = lightradius;
+				defaulttoken.light_dimradius = lightmin;
+			}
 		}
 
 		character.updateBlobs({avatar: avatar, defaulttoken: JSON.stringify(defaulttoken)});
