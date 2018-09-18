@@ -5001,6 +5001,10 @@ var betteR20Base = function () {
 				s: "#page-toolbar .pages .availablepage span",
 				r: "bottom: 1px;"
 			},
+			{
+				s: "#page-toolbar",
+				r: "background: #a8aaad80;"
+			},
 			// search
 			{
 				s: ".Vetoolsresult",
