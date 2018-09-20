@@ -48,8 +48,20 @@ const SCRIPTS = {
 		header: HEADER_CORE,
 		scripts: [
 			"header",
-			"core-main",
+			"base-jsload",
+			"base-qpi",
+			"base-util",
+			"base-config",
+			"base-tool",
+			"base-art",
+			"base-engine",
+			"base-journal",
+			"base-css",
+			"base-ui",
+
+			"base-mod",
 			"base-template",
+			"core-main",
 			"base"
 		]
 	},
@@ -57,9 +69,21 @@ const SCRIPTS = {
 		header: HEADER_5ETOOLS,
 		scripts: [
 			"header",
+			"base-jsload",
+			"base-qpi",
+			"base-util",
+			"base-config",
+			"base-tool",
+			"base-art",
+			"base-engine",
+			"base-journal",
+			"base-css",
+			"base-ui",
+
+			"base-mod",
+			"base-template",
 			"5etools-main",
 			"5etools-emoji",
-			"base-template",
 			"base"
 		]
 	}

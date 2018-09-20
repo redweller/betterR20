@@ -1,7 +1,5 @@
 const baseTemplate = function () {
-	Object.assign(d20plus, {
-		settingsHtmlPtFooter:
-				`<p>
+	d20plus.settingsHtmlPtFooter = `<p>
 			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
 			<p>
@@ -12,13 +10,13 @@ const baseTemplate = function () {
 			<a class="btn" href="#" id="button-manage-qpi" style="margin-top: 3px;" title="It's like the Roll20 API, but even less useful">Manage QPI Scripts</a>
 			</p>
 			<style id="dynamicStyle"></style>
-		`,
+		`;
 
-		artTabHtml: `
+	d20plus.artTabHtml = `
 	<p><a class="btn" href="#" id="button-add-external-art">Manage External Art</a></p>
-	`,
+	`;
 
-		addArtHTML: `
+	d20plus.addArtHTML = `
 	<div id="d20plus-artfolder" title="External Art" style="position: relative">
 	<p>Add external images by URL. Any direct link to an image should work.</p>
 	<p>
@@ -37,15 +35,15 @@ const baseTemplate = function () {
 	</p>
 	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0; transform: translateZ(0);"></ul>
 	</div>
-	</div>`,
+	</div>`;
 
-		addArtMassAdderHTML: `
+	d20plus.addArtMassAdderHTML = `
 	<div id="d20plus-artmassadd" title="Mass Add Art URLs">
 	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
 	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://pics.me/img1.png"></textarea></p>
-	</div>`,
+	</div>`;
 
-		artListHTML: `
+	d20plus.artListHTML = `
 	<div id="Vetoolsresults">
 	<ol class="dd-list" id="image-search-none"><div class="alert white">No results found in 5etools for those keywords.</div></ol>
 	
@@ -58,14 +56,14 @@ const baseTemplate = function () {
 			<ol class="dd-list Vetoolsresultfolder" id="custom-art-results"></ol>
 		</li>
 	</ol>
-	</div>`,
+	</div>`;
 
-		configEditorHTML: `
+	d20plus.configEditorHTML = `
 	<div id="d20plus-configeditor" title="Config Editor" style="position: relative">
 	<!-- populate with js -->
-	</div>`,
+	</div>`;
 
-		configEditorButtonBarHTML: `
+	d20plus.configEditorButtonBarHTML = `
 	<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 	<div class="ui-dialog-buttonset">
 		<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
@@ -73,17 +71,17 @@ const baseTemplate = function () {
 		</button>
 	</div>
 	</div>
-	`,
+	`;
 
-		toolsListHtml: `
+	d20plus.tool.toolsListHtml = `
 		<div id="d20-tools-list" title="Tools List" style="position: relative">
 		<div class="tools-list">
 		<!-- populate with js -->
 		</div>
 		</div>
-		`,
+		`;
 
-		template_TokenEditor: `
+	d20plus.template_TokenEditor = `
 	 <script id='tmpl_tokeneditor' type='text/html'>
       <div class='dialog largedialog tokeneditor' style='display: block;'>
         <ul class='nav nav-tabs'>
@@ -389,9 +387,9 @@ const baseTemplate = function () {
         </div>
       </div>
 	</script>
-	`,
+	`;
 
-		template_pageSettings: `
+	d20plus.template_pageSettings = `
 	<script id="tmpl_pagesettings" type="text/html">
 		  <label style='padding-top: 4px;'>
 			<strong>Page Size</strong>
@@ -531,9 +529,9 @@ const baseTemplate = function () {
 		  </button>
 		  <div class='clear'></div>
 	</script>
-	`,
+	`;
 
-		template_actionsMenu: `
+	d20plus.template_actionsMenu = `
 	 <script id='tmpl_actions_menu' type='text/html'>
       <div class='actions_menu d20contextmenu'>
         <ul>
@@ -609,9 +607,9 @@ const baseTemplate = function () {
         </ul>
       </div>
     </script>
-		`,
+		`;
 
-		template_charactereditor: `
+	d20plus.template_charactereditor = `
  <script id='tmpl_charactereditor' type='text/html'>
      <div class='dialog largedialog charactereditor' style='display: block;'>
         <div class='tab-content'>
@@ -736,9 +734,9 @@ const baseTemplate = function () {
         </div>
       </div>
     </script>		
-		`,
+		`;
 
-		template_handouteditor: `
+	d20plus.template_handouteditor = `
 			<script id='tmpl_handouteditor' type='text/html'>
       <div class='dialog largedialog handouteditor' style='display: block;'>
         <div class='row-fluid'>
@@ -828,8 +826,7 @@ const baseTemplate = function () {
         </div>
       </div>
     </script>
-		`
-	});
+		`;
 };
 
 SCRIPT_EXTENSIONS.push(baseTemplate);
