@@ -1676,7 +1676,7 @@ var betteR20Base = function () {
 				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
 				<p><b>Warning:</b> this thing doesn't really work.</p>
 				<p>Current URLs (view only): <select class="view-only"></select></p>
-				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
+				<p><label>Replace:<br><input name="search" value="https://5e.tools/"></label></p>
 				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
 				<p><button class="btn">Go!</button></p>
 				</div>

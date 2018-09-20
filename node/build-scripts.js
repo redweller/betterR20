@@ -7,8 +7,8 @@ const HEADER_CORE = `// ==UserScript==
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5etools.com/script/betteR20-core.user.js
-// @downloadURL  https://get.5etools.com/script/betteR20-core.user.js
+// @updateURL    https://get.5e.tools/script/betteR20-core.user.js
+// @downloadURL  https://get.5e.tools/script/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 // @match        https://app.roll20.net/editor/
@@ -22,8 +22,8 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @namespace    https://rem.uz/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5etools.com/script/betteR20-5etools.user.js
-// @downloadURL  https://get.5etools.com/script/betteR20-5etools.user.js
+// @updateURL    https://get.5e.tools/script/betteR20-5etools.user.js
+// @downloadURL  https://get.5e.tools/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy
 // @match        https://app.roll20.net/editor/
