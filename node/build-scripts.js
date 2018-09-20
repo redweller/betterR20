@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.12.3";
+const SCRIPT_VERSION = "1.12.4";
 
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
@@ -32,27 +32,43 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // ==/UserScript==
 `;
 
+const JS_DIR = "./js/";
+const BUILD_DIR = "./dist";
+
 function joinParts (...parts) {
 	return parts.join("\n\n");
 }
 
-const buildDir = "./dist";
-if (!fs.existsSync(buildDir)){
-	fs.mkdirSync(buildDir);
+if (!fs.existsSync(BUILD_DIR)){
+	fs.mkdirSync(BUILD_DIR);
 }
 
-const ptBase = fs.readFileSync("betteR20-base.js").toString();
-const ptBaseHead = fs.readFileSync("betteR20-base-header.js").toString();
+const SCRIPTS = {
+	core: {
+		header: HEADER_CORE,
+		scripts: [
+			"header",
+			"core-main",
+			"base-template",
+			"base"
+		]
+	},
+	"5etools": {
+		header: HEADER_5ETOOLS,
+		scripts: [
+			"header",
+			"5etools-main",
+			"5etools-emoji",
+			"base-template",
+			"base"
+		]
+	}
+};
 
-const ptCore = fs.readFileSync("betteR20-core.js").toString();
-
-const pt5etools = fs.readFileSync("betteR20-5etools.js").toString();
-const pt5etoolsEmoji = fs.readFileSync("betteR20-5etools-emoji.js").toString();
-
-const fullBase = joinParts(HEADER_CORE, ptBaseHead, ptCore, ptBase);
-const full5etools = joinParts(HEADER_5ETOOLS, ptBaseHead, pt5etools, pt5etoolsEmoji, ptBase);
-
-fs.writeFileSync(`${buildDir}/betteR20-core.user.js`, fullBase);
-fs.writeFileSync(`${buildDir}/betteR20-5etools.user.js`, full5etools);
+Object.entries(SCRIPTS).forEach(([k, v]) => {
+	const filename = `${BUILD_DIR}/betteR20-${k}.user.js`;
+	const fullScript = joinParts(v.header, ...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`).toString()));
+	fs.writeFileSync(filename, fullScript);
+});
 
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);
