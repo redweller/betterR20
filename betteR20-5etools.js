@@ -4023,12 +4023,12 @@ const betteR205etools = function () {
 		var reqAttune = data.reqAttune;
 		var attunementstring = "";
 		if (reqAttune) {
-			if (reqAttune === "YES") {
+			if (reqAttune === "(Requires Attunement)") {
 				attunementstring = " (Requires Attunement)";
 			} else if (reqAttune === "OPTIONAL") {
 				attunementstring = " (Attunement Optional)";
 			} else {
-				reqAttune = " (Requires Attunement " + reqAttune + ")";
+				attunementstring = " (Requires Attunement " + reqAttune + ")";
 			}
 		}
 		notecontents += `<p><h3>${data.name}</h3></p><em>${typestring}`;
@@ -6876,7 +6876,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				
 				<div id="d20plus-module-importer-help" title="Readme">
 					<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import; a list of available entries will appear. Select entries from the list as required, and hit "Import Selected."</p>
-					<p>You can import the categories in any order. If you import maps, we recommend importing characters also, as this allows the tokens to correctly link to the character sheets.</p>
+					<p>You can import the categories in any order, but if you wish to import maps and characters, <b>the recommended order is maps first, then characters</b>. This allows the tokens to correctly link to the character sheets, and sets the bars on tokens to sensible defaults.</p>
 					<p><b>Note:</b> The script-wide configurable "rest time" options affect how quickly each category of entries is imported (tables and decks use the "Handout" rest time).</p>
 					<p><b>Note:</b> Configuration options (aside from "rest time" as detailed above) <i>do not</i> affect the module importer. It effectively "clones" the content as-exported from the original module, including any whisper/advantage/etc settings.</p>
 				</div>
