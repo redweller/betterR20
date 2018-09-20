@@ -1,7 +1,7 @@
 ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
-BASE_SITE_URL = "https://5etools.com/"; // TODO automate to use mirror if main site is unavailable
+BASE_SITE_URL = "https://5e.tools/"; // TODO automate to use mirror if main site is unavailable
 SITE_JS_URL = BASE_SITE_URL + "js/";
 DATA_URL = BASE_SITE_URL + "data/";
 
