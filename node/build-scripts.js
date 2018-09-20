@@ -43,18 +43,32 @@ if (!fs.existsSync(BUILD_DIR)){
 	fs.mkdirSync(BUILD_DIR);
 }
 
-const ptBase = fs.readFileSync(`${JS_DIR}betteR20-base.js`).toString();
-const ptBaseHead = fs.readFileSync(`${JS_DIR}betteR20-base-header.js`).toString();
+const SCRIPTS = {
+	core: {
+		header: HEADER_CORE,
+		scripts: [
+			"header",
+			"core-main",
+			"base-template",
+			"base"
+		]
+	},
+	"5etools": {
+		header: HEADER_5ETOOLS,
+		scripts: [
+			"header",
+			"5etools-main",
+			"5etools-emoji",
+			"base-template",
+			"base"
+		]
+	}
+};
 
-const ptCore = fs.readFileSync(`${JS_DIR}betteR20-core.js`).toString();
-
-const pt5etools = fs.readFileSync(`${JS_DIR}betteR20-5etools.js`).toString();
-const pt5etoolsEmoji = fs.readFileSync(`${JS_DIR}betteR20-5etools-emoji.js`).toString();
-
-const fullBase = joinParts(HEADER_CORE, ptBaseHead, ptCore, ptBase);
-const full5etools = joinParts(HEADER_5ETOOLS, ptBaseHead, pt5etools, pt5etoolsEmoji, ptBase);
-
-fs.writeFileSync(`${BUILD_DIR}/betteR20-core.user.js`, fullBase);
-fs.writeFileSync(`${BUILD_DIR}/betteR20-5etools.user.js`, full5etools);
+Object.entries(SCRIPTS).forEach(([k, v]) => {
+	const filename = `${BUILD_DIR}/betteR20-${k}.user.js`;
+	const fullScript = joinParts(v.header, ...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`).toString()));
+	fs.writeFileSync(filename, fullScript);
+});
 
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);
