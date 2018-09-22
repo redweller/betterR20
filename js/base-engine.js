@@ -790,63 +790,6 @@ function d20plusUi () {
 								console.error(...err);
 							};
 							img.src = url;
-
-							const ass = {
-								"isdrawing": false,
-								"locked": false,
-								"cardid": "",
-								"flipv": false,
-								"fliph": false,
-								"name": "",
-								"gmnotes": "",
-								"controlledby": "",
-								"represents": "",
-								"bar1_value": "",
-								"bar1_max": "",
-								"bar1_link": "",
-								"bar2_value": "",
-								"bar2_max": "",
-								"bar2_link": "",
-								"bar3_value": "",
-								"bar3_max": "",
-								"bar3_link": "",
-								"aura1_radius": "",
-								"aura1_color": "#FFFF99",
-								"aura1_square": false,
-								"aura2_radius": "",
-								"aura2_color": "#59E594",
-								"aura2_square": false,
-								"tint_color": "transparent",
-								"status_dead": false,
-								"statusmarkers": "",
-								"showname": false,
-								"showplayers_name": false,
-								"showplayers_bar1": false,
-								"showplayers_bar2": false,
-								"showplayers_bar3": false,
-								"showplayers_aura1": false,
-								"showplayers_aura2": false,
-								"playersedit_name": true,
-								"playersedit_bar1": true,
-								"playersedit_bar2": true,
-								"playersedit_bar3": true,
-								"playersedit_aura1": true,
-								"playersedit_aura2": true,
-								"light_radius": "60",
-								"light_dimradius": "30",
-								"light_otherplayers": false,
-								"light_hassight": true,
-								"light_angle": "",
-								"light_losangle": "",
-								"light_multiplier": 1,
-								"adv_fow_view_distance": "",
-								"groupwith": "",
-								"sides": "",
-								"currentSide": 0,
-								"lastmove": "",
-								"moduleizedimage": "true"
-							}
-
 							i();
 						}
 						// END MOD
