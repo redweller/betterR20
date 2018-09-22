@@ -7112,7 +7112,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 														addToJournal(data.attributes.id, handout.id);
 													}
 												}
-											)
+											);
 											break;
 										}
 										case "characters": {

@@ -1,4 +1,6 @@
 const baseTemplate = function () {
+	d20plus.template = {};
+
 	d20plus.settingsHtmlPtFooter = `<p>
 			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
@@ -535,6 +537,9 @@ const baseTemplate = function () {
 	 <script id='tmpl_actions_menu' type='text/html'>
       <div class='actions_menu d20contextmenu'>
         <ul>
+          <$ if (Object.keys(this).length === 0) { $>
+          <li data-action-type='paste-image'>Paste Image from URL</li>
+          <$ } $>
           <$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
           <li class='head hasSub' data-action-type='takecard'>Take Card</li>
           <li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
@@ -553,7 +558,9 @@ const baseTemplate = function () {
           <!-- END MOD -->
           <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
           <$ } $>
-          <li class='head'>Edit</li>
+          <!-- BEGIN MOD -->
+          <!-- <li class='head'>Edit</li> -->
+          <!-- END MOD -->
           <$ if(this.view) { $>
           <li data-action-type='delete'>Delete</li>
           <li data-action-type='copy'>Copy</li>

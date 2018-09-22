@@ -760,6 +760,94 @@ function d20plusUi () {
 						} else if ("rollertokenresize" === e) {
 							resizeToken();
 							i();
+						} else if ("paste-image" === e) {
+							const mousePos = [...d20.engine.mousePos];
+							const pageId = d20.Campaign.activePage().id;
+							const layer = window.currentEditingLayer;
+
+							const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+							const img = new Image();
+							img.onload = () => {
+								const toCreate = {
+									left: mousePos[0],
+									top: mousePos[1],
+									width: img.width,
+									height: img.height,
+									z_index: 0,
+									imgsrc: url,
+									rotation: 0,
+									type: "image",
+									page_id: pageId,
+									layer,
+									id: d20plus.ut.generateRowId()
+								};
+
+								const created = d20.Campaign.activePage().thegraphics.create(toCreate);
+								created.save();
+							};
+							img.onerror = (...err) => {
+								alert("Could not load image! See the console for more information.");
+								console.error(...err);
+							};
+							img.src = url;
+
+							const ass = {
+								"isdrawing": false,
+								"locked": false,
+								"cardid": "",
+								"flipv": false,
+								"fliph": false,
+								"name": "",
+								"gmnotes": "",
+								"controlledby": "",
+								"represents": "",
+								"bar1_value": "",
+								"bar1_max": "",
+								"bar1_link": "",
+								"bar2_value": "",
+								"bar2_max": "",
+								"bar2_link": "",
+								"bar3_value": "",
+								"bar3_max": "",
+								"bar3_link": "",
+								"aura1_radius": "",
+								"aura1_color": "#FFFF99",
+								"aura1_square": false,
+								"aura2_radius": "",
+								"aura2_color": "#59E594",
+								"aura2_square": false,
+								"tint_color": "transparent",
+								"status_dead": false,
+								"statusmarkers": "",
+								"showname": false,
+								"showplayers_name": false,
+								"showplayers_bar1": false,
+								"showplayers_bar2": false,
+								"showplayers_bar3": false,
+								"showplayers_aura1": false,
+								"showplayers_aura2": false,
+								"playersedit_name": true,
+								"playersedit_bar1": true,
+								"playersedit_bar2": true,
+								"playersedit_bar3": true,
+								"playersedit_aura1": true,
+								"playersedit_aura2": true,
+								"light_radius": "60",
+								"light_dimradius": "30",
+								"light_otherplayers": false,
+								"light_hassight": true,
+								"light_angle": "",
+								"light_losangle": "",
+								"light_multiplier": 1,
+								"adv_fow_view_distance": "",
+								"groupwith": "",
+								"sides": "",
+								"currentSide": 0,
+								"lastmove": "",
+								"moduleizedimage": "true"
+							}
+
+							i();
 						}
 						// END MOD
 						return !1
