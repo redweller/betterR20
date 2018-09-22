@@ -562,6 +562,7 @@ const betteR205etools = function () {
 			d20plus.cfg.baseHandleConfigChange();
 			d20plus.handleConfigChange();
 			d20plus.engine.addTokenHover();
+			d20plus.engine.enhanceTransmogrifier();
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}
