@@ -1267,6 +1267,10 @@ function d20plusUi () {
 		};
 		// END ROLL20 CODE
 
+		if (UPPER_CANVAS_MOUSEDOWN_LIST.length) {
+			UPPER_CANVAS_MOUSEDOWN = (UPPER_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		}
+
 		if (UPPER_CANVAS_MOUSEDOWN) {
 			d20plus.ut.log("Enhancing hex snap");
 			d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
@@ -1442,6 +1446,10 @@ function d20plusUi () {
 			}
 		};
 		// END ROLL20 CODE
+
+		if (UPPER_CANVAS_MOUSEMOVE_LIST.length) {
+			UPPER_CANVAS_MOUSEMOVE = (UPPER_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		}
 
 		if (UPPER_CANVAS_MOUSEMOVE) {
 			d20plus.ut.log("Enhancing mouse move");

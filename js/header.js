@@ -42,6 +42,8 @@ Object.defineProperty = function (obj, prop, vals) {
 	}
 };
 
+UPPER_CANVAS_MOUSEDOWN_LIST = [];
+UPPER_CANVAS_MOUSEMOVE_LIST = [];
 UPPER_CANVAS_MOUSEDOWN = null;
 UPPER_CANVAS_MOUSEMOVE = null;
 EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
@@ -49,6 +51,9 @@ EventTarget.prototype.addEventListener = function(type, listener, options, ...ot
 	if (typeof d20 !== "undefined") {
 		if (type === "mousedown" && this === d20.engine.uppercanvas) UPPER_CANVAS_MOUSEDOWN = listener;
 		if (type === "mousemove" && this === d20.engine.uppercanvas) UPPER_CANVAS_MOUSEMOVE = listener;
+	} else {
+		if (type === "mousedown") UPPER_CANVAS_MOUSEDOWN_LIST.push({listener, on: this});
+		if (type === "mousemove") UPPER_CANVAS_MOUSEMOVE_LIST.push({listener, on: this});
 	}
 	this.addEventListenerBase(type, listener, options, ...others);
 };
