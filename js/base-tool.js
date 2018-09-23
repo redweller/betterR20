@@ -782,6 +782,142 @@ function baseTool() {
 				});
 			}
 		},
+		{
+			name: "Quantum Token Entangler",
+			desc: "Connect tokens between pages, linking their positions.",
+			html: `
+				<div id="d20plus-token-entangle" title="Quantum Token Entangler">
+					<p><i>Please note that this feature is highly experimental.
+					<br>
+					You can learn Token IDs by rightclicking a token -> "Advanced" -> "View Token ID."</i></p>
+					<hr>
+					<input id="token-entangle-id-1" placeholder="Master Token ID">
+					<input id="token-entangle-id-2" placeholder="Slave Token ID">
+					<br>
+					<button class="btn btn-default" id="token-entangle-go">Entangle</button>
+					<hr>
+					<input id="token-clear-entangles" placeholder="Token ID to Clear">
+					<button class="btn btn-default" id="token-entangle-clear">Clear Entangles</button>
+				</div>
+				`,
+			dialogFn: () => {
+				const $win = $("#d20plus-token-entangle");
+
+				const entangleTracker = {};
+				const SYNCABLE_ATTRS = [
+					"rotation",
+					"width",
+					"height",
+					"top",
+					"left",
+					"scaleX",
+					"scaleY",
+					"fliph",
+					"flipv"
+				];
+
+				$win.data("VE_DO_ENTANGLE", (master) => {
+					// prevent double-binding
+					if (entangleTracker[master.id]) return;
+
+					master.on("change", (it) => {
+						if (master.attributes.entangled && master.attributes.entangled.length) {
+							if (SYNCABLE_ATTRS.filter(attr => it.changed !== undefined).length) {
+								let anyUpdates = false;
+
+								master.attributes.entangled = master.attributes.entangled.filter(id => {
+									const slave = d20plus.ut.getTokenFromId(id);
+									if (slave) {
+										SYNCABLE_ATTRS.forEach(attr => slave.attributes[attr] = master.attributes[attr]);
+										slave.save();
+										return true;
+									} else {
+										console.warn(`Cound not find entangled token with ID "${id}", removing...`);
+										anyUpdates = true;
+									}
+								});
+
+								if (anyUpdates) master.save();
+							}
+						}
+					})
+				});
+
+				// do initial entangles
+				console.log("Initial existing entangles...")
+				d20.Campaign.pages.models.forEach(model => model.thegraphics.models.filter(it => it.attributes.entangled && it.attributes.entangled.length).forEach(it => {
+					$win.data("VE_DO_ENTANGLE")(it);
+				}));
+
+				$win.dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 300,
+					height: 400,
+				});
+			},
+			openFn: () => {
+				const notFound = (id) => alert(`Token with ID ${id} didn't exist!`);
+
+				const $win = $("#d20plus-token-entangle");
+				$win.dialog("open");
+
+				const $ipt1 = $(`#token-entangle-id-1`);
+				const $ipt2 = $(`#token-entangle-id-2`);
+
+				const $btnGo = $(`#token-entangle-go`)
+					.off("click")
+					.click(() => {
+						const tkId1 = $ipt1.val();
+						const tkId2 = $ipt2.val();
+						const checkExisting = (a, b) => {
+							if (a.attributes.entangled && a.attributes.entangled.includes(b.id)) return `"${a.id}" is already entangled to "${b.id}"!`;
+							else if (b.attributes.entangled && b.attributes.entangled.includes(a.id)) return `"${b.id}" is already entangled to "${a.id}"!`;
+							else return false;
+						};
+
+						const token1 = d20plus.ut.getTokenFromId(tkId1);
+						const token2 = d20plus.ut.getTokenFromId(tkId2);
+
+						if (!token1) return notFound(tkId1);
+						if (!token2) return notFound(tkId2);
+
+						const existing = checkExisting(token1, token2);
+						if (existing) return alert(existing);
+
+						(token1.attributes.entangled = token1.attributes.entangled || []).push(tkId2);
+						token1.save();
+						(token2.attributes.entangled = token2.attributes.entangled || []).push(tkId1);
+						token2.save();
+
+						$win.data("VE_DO_ENTANGLE")(token1);
+						$win.data("VE_DO_ENTANGLE")(token2);
+						alert("Tokens entangled!");
+					});
+
+				const $iptClear = $(`#token-clear-entangles`);
+
+				const $btnClear = $(`#token-entangle-clear`)
+					.off("click")
+					.click(() => {
+						const tkId = $iptClear.val();
+						const token = d20plus.ut.getTokenFromId(tkId);
+						if (!token) return notFound(tkId);
+
+						const count = token.attributes.entangled ? token.attributes.entangled.length : 0;
+						(token.attributes.entangled || []).forEach(eId => {
+							const ent = d20plus.ut.getTokenFromId(eId);
+							if (ent && ent.attributes.entangled && ent.attributes.entangled.includes(tkId)) {
+								ent.attributes.entangled.splice(ent.attributes.entangled.indexOf(tkId), 1);
+								ent.save();
+							}
+						});
+						token.attributes.entangled = [];
+						token.save();
+						alert(`${count} entangle${count === 1 ? "" : "s"} cleared.`);
+					});
+			}
+		},
 	];
 
 	d20plus.tool.addTools = () => {

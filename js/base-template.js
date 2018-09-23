@@ -587,6 +587,7 @@ const baseTemplate = function () {
               <$ if(window.currentEditingLayer == "map") { $>
               <li data-action-type='aligntogrid'>Align to Grid</li>
               <$ } $>
+              <li data-action-type='copy-tokenid'>View Token ID</li>
               <$ } $>
             </ul>
           </li>

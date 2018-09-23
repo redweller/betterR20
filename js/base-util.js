@@ -245,6 +245,14 @@ function baseUtil () {
 		}
 	};
 
+	d20plus.ut.getTokenFromId = (tokenId) => {
+		const foundTokenArr = d20.Campaign.pages.models.map(model => model.thegraphics.models.find(it => it.id === tokenId)).filter(it => it);
+		if (foundTokenArr.length) {
+			return foundTokenArr[0];
+		}
+		return null;
+	};
+
 	d20plus.math = {
 		/**
 		 * Normalize a 2d vector.

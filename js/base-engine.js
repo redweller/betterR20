@@ -791,6 +791,10 @@ function d20plusUi () {
 							};
 							img.src = url;
 							i();
+						} else if ("copy-tokenid" === e) {
+							const sel = d20.engine.selected();
+							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
+							i();
 						}
 						// END MOD
 						return !1
