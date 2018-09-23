@@ -3046,9 +3046,48 @@ const betteR205etools = function () {
 								});
 							}
 							if (data.action) {
+								let offset = 0;
 								$.each(data.action, function (i, v) {
+									const name = d20plus.importer.getCleanText(renderer.renderEntry(v.name));
 									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
-									d20plus.importer.addAction(character, d20plus.importer.getCleanText(renderer.renderEntry(v.name)), text, i);
+									if (name === "Hellfire Weapons") {
+										const baseActionEnts = v.entries.filter(it => typeof it === "string");
+										baseActionEnts[0] = "The hellfire engine uses one of the options listed below.";
+										const baseAction = renderer.renderEntry({entries: baseActionEnts}, 1);
+										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
+										offset++;
+
+										v.entries.find(it => it.type === "list").items.forEach(item => {
+											const itemName = d20plus.importer.getCleanText(renderer.renderEntry(item.name));
+											d20plus.importer.addAction(character, itemName, d20plus.importer.getCleanText(renderer.renderEntry({entries: [item.entry]})), i + offset);
+											offset++;
+										});
+
+										offset++;
+									} else if (name === "Eye Rays") {
+										const [base, ...others] = v.entries;
+
+										const baseAction = renderer.renderEntry({entries: [base]}, 1);
+										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
+										offset++;
+
+										const packedOthers = [];
+										others.forEach(it => {
+											const m = /^(\d+\.\s*[^.]+\s*)\.(.*)$/.exec(it);
+											if (m) {
+												const partName = m[1].trim();
+												const text = m[2].trim();
+												packedOthers.push({name: partName, text: text});
+											} else packedOthers[packedOthers.length - 1].text += ` ${it}`;
+										});
+
+										packedOthers.forEach(it => {
+											d20plus.importer.addAction(character, it.name, d20plus.importer.getCleanText(renderer.renderEntry(it.text)), i + offset);
+											offset++;
+										});
+									} else {
+										d20plus.importer.addAction(character, name, text, i + offset);
+									}
 								});
 							}
 							if (data.reaction) {
