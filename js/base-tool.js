@@ -795,7 +795,7 @@ function baseTool() {
 					<p><button class="btn load">Load Module Data</button></p>
 				</div>
 				
-				<div id="d20plus-module-importer-select-exports-p1">
+				<div id="d20plus-module-importer-select-exports-p1" title="Select Categories to Export">
 					<div>
 						<label>Characters <input type="checkbox" class="float-right" name="cb-characters"></label>
 						<label>Decks <input type="checkbox" class="float-right" name="cb-decks"></label>
@@ -803,7 +803,8 @@ function baseTool() {
 						<label>Maps <input type="checkbox" class="float-right" name="cb-maps"></label>
 						<label>Rollable Tables <input type="checkbox" class="float-right" name="cb-rolltables"></label>
 					</div>
-					<div class="clear"></div>
+					<div class="clear" style="width: 100%; border-bottom: #ccc solid 1px;"></div>
+					<p style="margin-top: 5px;"><label>Select All <input type="checkbox" class="float-right" name="cb-all"></label></p>
 					<p><button class="btn">Export</button></p>
 				</div>
 				`,
@@ -811,8 +812,8 @@ function baseTool() {
 				$("#d20plus-module-importer").dialog({
 					autoOpen: false,
 					resizable: true,
-					width: 885,
-					height: 830,
+					width: 750,
+					height: 360,
 				});
 				$(`#d20plus-module-importer-progress`).dialog({
 					autoOpen: false,
@@ -833,8 +834,8 @@ function baseTool() {
 				$("#d20plus-module-importer-select-exports-p1").dialog({
 					autoOpen: false,
 					resizable: true,
-					width: 300,
-					height: 400,
+					width: 400,
+					height: 260,
 				});
 				$("#d20plus-module-importer-list").dialog({
 					autoOpen: false,
@@ -1203,23 +1204,28 @@ function baseTool() {
 				});
 
 				const $winExportP1 = $("#d20plus-module-importer-select-exports-p1");
+				const $cbAllExport = $winExportP1.find(`[name="cb-all"]`);
 
 				const $btnExport = $win.find(`[name="export"]`);
 				$btnExport.off("click").click(() => {
+					const CATS = [
+						"characters",
+						"decks",
+						"handouts",
+						"maps",
+						"rolltables",
+					];
+
 					$winExportP1.dialog("open");
 
-					$winExportP1.find("button").off("click").click(() => {
-						const isCatSelected = (name) => {
-							return $winExportP1.find(`input[name="cb-${name}"]`).prop("checked");
-						};
+					$cbAllExport.off("change").on("change", () => {
+						CATS.forEach(cat => $winExportP1.find(`input[name="cb-${cat}"]`).prop("checked", $cbAllExport.prop("checked")))
+					});
 
-						const catsToExport = new Set([
-							"characters",
-							"decks",
-							"handouts",
-							"maps",
-							"rolltables",
-						].filter(it => isCatSelected(it)));
+					$winExportP1.find("button").off("click").click(() => {
+						const isCatSelected = (name) => $winExportP1.find(`input[name="cb-${name}"]`).prop("checked");
+
+						const catsToExport = new Set(CATS.filter(it => isCatSelected(it)));
 
 						console.log("Exporting journal...");
 						const journal = d20plus.importer.getExportableJournal();
