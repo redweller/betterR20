@@ -1101,8 +1101,13 @@ function baseTool() {
 												{
 													success: function (character) {
 														character.attribs.reset();
-														const toSave = entry.attribs.map(a => character.attribs.push(a));
+														let toSave = entry.attribs.map(a => character.attribs.push(a));
 														toSave.forEach(s => s.syncedSave());
+														character.abilities.reset();
+														if (entry.abilities) {
+															let toSave = entry.abilities.map(a => character.abilities.push(a));
+															toSave.forEach(s => s.syncedSave());
+														}
 
 														character.updateBlobs({
 															bio: entry.blobBio,
@@ -1270,7 +1275,8 @@ function baseTool() {
 							characters = d20.Campaign.characters.models.map(character => {
 								const out = {
 									attributes: character.attributes,
-									attribs: character.attribs
+									attribs: character.attribs,
+									abilities: (character.abilities || {models: []}).models.map(ability => ability.attributes)
 								};
 								blobCount += 3;
 								character._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
