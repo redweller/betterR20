@@ -59,7 +59,7 @@ const betteR20Base = function () {
 		"_name": "Interface",
 		"toolbarOpacity": {
 			"name": "Horizontal Toolbar Opacity (0.00-1.00)",
-			"default": 0.75,
+			"default": 1,
 			"_type": "float"
 		},
 	});
