@@ -1,6 +1,7 @@
 const betteR20Emoji = function () {
 	d20plus.chat = {};
 
+	// to dump the keys as one-per-line colon-fotmatted: `JSON.stringify(Object.keys(d20plus.chat.emojiIndex).sort(SortUtil.ascSortLower), null, 1).replace(/",/g, ":").replace(/"/g, ":").replace(/[ \[\]]/g, "").trim()`
 	d20plus.chat.emojiIndex = {
 		joy: !0,
 		heart: !0,
@@ -1192,12 +1193,12 @@ const betteR20Emoji = function () {
 		}
 	);
 
-	d20plus.enhanceChat = () => {
-		d20plus.log("Enhancing chat");
+	d20plus.chat.enhanceChat = () => {
+		d20plus.ut.log("Enhancing chat");
 		const tc = d20.textchat.$textarea;
 		$("#textchat-input").off("click", "button")
 		$("#textchat-input").on("click", "button", function () {
-			if (!window.is_gm || d20plus.getCfgVal("interface", "emoji")) {
+			if (!window.is_gm || d20plus.cfg.getCfgVal("interface", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					const clean = m1.replace(/:/g, "");
 					return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;

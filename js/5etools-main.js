@@ -414,8 +414,8 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}entryrender.js`});
-	d20plus.scripts.push({name: "5etoolsscalecreature", url: `${SITE_JS_URL}scalecreature.js`});
+	d20plus.js.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}entryrender.js`});
+	d20plus.js.scripts.push({name: "5etoolsscalecreature", url: `${SITE_JS_URL}scalecreature.js`});
 
 	d20plus.json = [
 		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
@@ -429,7 +429,7 @@ const betteR205etools = function () {
 
 	// add JSON index/metadata
 	d20plus.addJson = function (onLoadFunction) {
-		d20plus.log("Load JSON");
+		d20plus.ut.log("Load JSON");
 		const onEachLoadFunction = function (name, url, data) {
 			if (name === "class index") classDataUrls = data;
 			else if (name === "spell index") spellDataUrls = data;
@@ -443,15 +443,15 @@ const betteR205etools = function () {
 			}
 			else throw new Error(`Unhandled data from JSON ${name} (${url})`);
 
-			d20plus.log(`JSON [${name}] Loaded`);
+			d20plus.ut.log(`JSON [${name}] Loaded`);
 		};
-		d20plus.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
+		d20plus.js.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
 	};
 
 	d20plus.handleConfigChange = function (isSyncingPlayer) {
-		if (!isSyncingPlayer) d20plus.log("Applying config");
+		if (!isSyncingPlayer) d20plus.ut.log("Applying config");
 		if (window.is_gm) {
-			d20plus.setInitiativeShrink(d20plus.getCfgVal("interface", "minifyTracker"));
+			d20plus.setInitiativeShrink(d20plus.cfg.getCfgVal("interface", "minifyTracker"));
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
 			d20plus.updateDifficulty();
 			if (d20plus.art.refreshList) d20plus.art.refreshList();
@@ -461,9 +461,9 @@ const betteR205etools = function () {
 // get the user config'd token HP bar
 	d20plus.getCfgHpBarNumber = function () {
 		const bars = [
-			d20plus.getCfgVal("token", "bar1"),
-			d20plus.getCfgVal("token", "bar2"),
-			d20plus.getCfgVal("token", "bar3")
+			d20plus.cfg.getCfgVal("token", "bar1"),
+			d20plus.cfg.getCfgVal("token", "bar2"),
+			d20plus.cfg.getCfgVal("token", "bar3")
 		];
 		return bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
 	};
@@ -493,30 +493,30 @@ const betteR205etools = function () {
 
 	// Page fully loaded and visible
 	d20plus.Init = function () {
-		d20plus.log("Init (v" + d20plus.version + ")");
-		d20plus.checkVersion();
+		d20plus.ut.log("Init (v" + d20plus.version + ")");
+		d20plus.ut.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
         
-		d20plus.log("Modifying character & handout editor templates");
+		d20plus.ut.log("Modifying character & handout editor templates");
 		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
 		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
 
-		d20plus.addAllCss();
+		d20plus.ut.addAllCss();
 		if (window.is_gm) {
-			d20plus.log("Is GM");
-			d20plus.enhancePageSelector();
+			d20plus.ut.log("Is GM");
+			d20plus.engine.enhancePageSelector();
 		}
-		else d20plus.log("Not GM. Some functionality will be unavailable.");
+		else d20plus.ut.log("Not GM. Some functionality will be unavailable.");
 		d20plus.setSheet();
-        d20plus.addScripts(d20plus.onScriptLoad);
+        d20plus.js.addScripts(d20plus.onScriptLoad);
 
-		d20plus.showLoadingMessage(`betteR20-5etools v${d20plus.version}`);
+		d20plus.ut.showLoadingMessage(`betteR20-5etools v${d20plus.version}`);
 	};
 
 	// continue init once JSON loads
 	d20plus.onScriptLoad = function () {
-		d20plus.initMockApi();
-		d20plus.addApiScripts(d20plus.onApiScriptLoad);
+		d20plus.qpi.initMockApi();
+		d20plus.js.addApiScripts(d20plus.onApiScriptLoad);
 	};
 
 	// continue init once scripts load
@@ -536,53 +536,55 @@ const betteR205etools = function () {
 		BrewUtil.homebrewMeta = {};
 
 		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
-		if (window.is_gm) d20plus.loadConfig(d20plus.onConfigLoad);
-		else d20plus.loadPlayerConfig(d20plus.onConfigLoad);
+		if (window.is_gm) d20plus.cfg.loadConfig(d20plus.onConfigLoad);
+		else d20plus.cfg.loadPlayerConfig(d20plus.onConfigLoad);
 	};
 
 	// continue more init after config loaded
 	d20plus.onConfigLoad = function () {
-		if (window.is_gm) d20plus.loadArt(d20plus.onArtLoad);
+		if (window.is_gm) d20plus.art.loadArt(d20plus.onArtLoad);
 		else d20plus.onArtLoad();
 	};
 
 	// continue more init after art loaded
 	d20plus.onArtLoad = function () {
 		d20plus.bindDropLocations();
-		d20plus.addHtmlHeader();
+		d20plus.ui.addHtmlHeader();
 		d20plus.addCustomHTML();
-		d20plus.addHtmlFooter();
-		d20plus.enhanceMarkdown();
-		d20plus.addProFeatures();
-		d20plus.initArtFromUrlButtons();
+		d20plus.ui.addHtmlFooter();
+		d20plus.engine.enhanceMarkdown();
+		d20plus.engine.addProFeatures();
+		d20plus.art.initArtFromUrlButtons();
 		if (window.is_gm) {
-			d20plus.addJournalCommands();
-			d20plus.addSelectedTokenCommands();
-			d20plus.addCustomArtSearch();
-			d20plus.baseHandleConfigChange();
+			d20plus.journal.addJournalCommands();
+			d20plus.engine.addSelectedTokenCommands();
+			d20plus.art.addCustomArtSearch();
+			d20plus.cfg.baseHandleConfigChange();
 			d20plus.handleConfigChange();
-			d20plus.addTokenHover();
+			d20plus.engine.addTokenHover();
+			d20plus.engine.enhanceTransmogrifier();
+			d20plus.engine.removeLinkConfirmation();
 		} else {
-			d20plus.startPlayerConfigHandler();
+			d20plus.cfg.startPlayerConfigHandler();
 		}
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-		d20plus.addSelectedTokenCommands();
-		d20plus.enhanceStatusEffects();
-		d20plus.enhanceMeasureTool();
-		d20plus.enhanceMouseDown();
-		d20plus.enhanceMouseMove();
-		d20plus.addLineCutterTool();
-		d20plus.enhanceChat();
-		d20plus.enhancePathWidths();
-		d20plus.disable3dDice();
-		d20plus.log("All systems operational");
-		d20plus.chatTag(`betteR20-5etools v${d20plus.version}`);
+		d20plus.engine.addSelectedTokenCommands();
+		d20plus.engine.enhanceStatusEffects();
+		d20plus.engine.enhanceMeasureTool();
+		d20plus.engine.enhanceMouseDown();
+		d20plus.engine.enhanceMouseMove();
+		d20plus.engine.addLineCutterTool();
+		d20plus.chat.enhanceChat();
+		d20plus.engine.enhancePathWidths();
+		d20plus.ut.disable3dDice();
+		d20plus.ut.log("All systems operational");
+		d20plus.ut.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};
 
 	// Bind Graphics Add on page
 	d20plus.bindGraphics = function (page) {
-		d20plus.log("Bind Graphics");
+		d20plus.ut.log("Bind Graphics");
 		try {
 			if (page.get("archived") === false) {
 				page.thegraphics.on("add", function (e) {
@@ -596,29 +598,29 @@ const betteR205etools = function () {
 						var barsList = ["bar1", "bar2", "bar3"];
 						$.each(barsList, (i, barName) => {
 							// PC config keys are suffixed "_pc"
-							const confVal = d20plus.getCfgVal("token", `${barName}${isNPC ? "" : "_pc"}`);
+							const confVal = d20plus.cfg.getCfgVal("token", `${barName}${isNPC ? "" : "_pc"}`);
 							if (confVal) {
 								const charAttr = character.attribs.find(a => a.get("name").toLowerCase() == confVal);
 								if (charAttr) {
 									e.attributes[barName + "_value"] = charAttr.get("current");
-									if (d20plus.hasCfgVal("token", barName + "_max")) {
-										if (d20plus.getCfgVal("token", barName + "_max") && !isNPC && confVal === "hp") { // player HP is current; need to set max to max
+									if (d20plus.cfg.hasCfgVal("token", barName + "_max")) {
+										if (d20plus.cfg.getCfgVal("token", barName + "_max") && !isNPC && confVal === "hp") { // player HP is current; need to set max to max
 											e.attributes[barName + "_max"] = charAttr.get("max");
 										} else {
 											if (isNPC) {
 												// TODO: Setting a value to empty/null does not overwrite existing values on the token.
 												// setting a specific value does. Must figure this out.
-												e.attributes[barName + "_max"] = d20plus.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
+												e.attributes[barName + "_max"] = d20plus.cfg.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
 											} else {
 												// preserve default token for player tokens
-												if (d20plus.getCfgVal("token", barName + "_max")) {
+												if (d20plus.cfg.getCfgVal("token", barName + "_max")) {
 													e.attributes[barName + "_max"] = charAttr.get("current");
 												}
 											}
 										}
 									}
-									if (d20plus.hasCfgVal("token", barName + "_reveal")) {
-										e.attributes["showplayers_" + barName] = d20plus.getCfgVal("token", barName + "_reveal");
+									if (d20plus.cfg.hasCfgVal("token", barName + "_reveal")) {
+										e.attributes["showplayers_" + barName] = d20plus.cfg.getCfgVal("token", barName + "_reveal");
 									}
 								}
 							}
@@ -627,24 +629,24 @@ const betteR205etools = function () {
 						// NPC-only settings
 						if (isNPC) {
 							// Set Nametag
-							if (d20plus.hasCfgVal("token", "name")) {
-								e.attributes["showname"] = d20plus.getCfgVal("token", "name");
-								if (d20plus.hasCfgVal("token", "name_reveal")) {
-									e.attributes["showplayers_name"] = d20plus.getCfgVal("token", "name_reveal");
+							if (d20plus.cfg.hasCfgVal("token", "name")) {
+								e.attributes["showname"] = d20plus.cfg.getCfgVal("token", "name");
+								if (d20plus.cfg.hasCfgVal("token", "name_reveal")) {
+									e.attributes["showplayers_name"] = d20plus.cfg.getCfgVal("token", "name_reveal");
 								}
 							}
 
 							// Roll HP
 							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
-							if ((d20plus.getCfgVal("token", "rollHP") || d20plus.getCfgVal("token", "maximiseHp")) && d20plus.getCfgKey("token", "npc_hpbase")) {
+							if ((d20plus.cfg.getCfgVal("token", "rollHP") || d20plus.cfg.getCfgVal("token", "maximiseHp")) && d20plus.cfg.getCfgKey("token", "npc_hpbase")) {
 								var hpf = character.attribs.find(function (a) {
 									return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
 								});
-								var barName = d20plus.getCfgKey("token", "npc_hpbase");
+								var barName = d20plus.cfg.getCfgKey("token", "npc_hpbase");
 
 								if (hpf && hpf.get("current")) {
 									var hpformula = hpf.get("current");
-									if (d20plus.getCfgVal("token", "maximiseHp")) {
+									if (d20plus.cfg.getCfgVal("token", "maximiseHp")) {
 										const maxSum = hpformula.replace("d", "*");
 										try {
 											const max = eval(maxSum);
@@ -653,16 +655,16 @@ const betteR205etools = function () {
 												e.attributes[barName + "_max"] = max;
 											}
 										} catch (error) {
-											d20plus.log("Error Maximising HP");
+											d20plus.ut.log("Error Maximising HP");
 											console.log(error);
 										}
 									} else {
-										d20plus.randomRoll(hpformula, function (result) {
+										d20plus.ut.randomRoll(hpformula, function (result) {
 											e.attributes[barName + "_value"] = result.total;
 											e.attributes[barName + "_max"] = result.total;
-											d20plus.log("Rolled HP for [" + character.get("name") + "]");
+											d20plus.ut.log("Rolled HP for [" + character.get("name") + "]");
 										}, function (error) {
-											d20plus.log("Error Rolling HP Dice");
+											d20plus.ut.log("Error Rolling HP Dice");
 											console.log(error);
 										});
 									}
@@ -844,7 +846,7 @@ const betteR205etools = function () {
 
 		const madeSoFar = [];
 
-		const root = {i: d20plus.getJournalFolderObj()};
+		const root = {i: d20plus.ut.getJournalFolderObj()};
 
 		// roll20 folder management is dumb, so just pick the first folder with the right name if there's multiple
 		let curDir = root;
@@ -879,7 +881,7 @@ const betteR205etools = function () {
 		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
 			const folder = $(`[data-globalfolderid='${folderId}']`);
 			if (folder.length) {
-				d20plus.log("Nuking folder...");
+				d20plus.ut.log("Nuking folder...");
 				const childItems = folder.find("[data-itemid]").each((i, e) => {
 					const $e = $(e);
 					const itemId = $e.attr("data-itemid");
@@ -907,7 +909,7 @@ const betteR205etools = function () {
 	d20plus.importer._checkOrRemoveDirByPath = function (doDelete, path) {
 		const parts = d20plus.importer.getCleanPath(path);
 
-		const root = {i: d20plus.getJournalFolderObj()};
+		const root = {i: d20plus.ut.getJournalFolderObj()};
 
 		let curDir = root;
 		for (let i = 0; i < parts.length; ++i) {
@@ -942,7 +944,7 @@ const betteR205etools = function () {
 			}
 		}
 
-		const root = {i: d20plus.getJournalFolderObj(), n: "Root", id: "root"};
+		const root = {i: d20plus.ut.getJournalFolderObj(), n: "Root", id: "root"};
 		recurse(root, []);
 		return out;
 	};
@@ -960,7 +962,7 @@ const betteR205etools = function () {
 	d20plus.importer._checkOrRemoveFileByPath = function (doDelete, path) {
 		const parts = d20plus.importer.getCleanPath(path);
 
-		const root = {i: d20plus.getJournalFolderObj()};
+		const root = {i: d20plus.ut.getJournalFolderObj()};
 
 		let curDir = root;
 		for (let i = 0; i < parts.length; ++i) {
@@ -1017,12 +1019,12 @@ const betteR205etools = function () {
 				text: "Custom"
 			}));
 
-			const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
+			const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.ut.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
 			DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
 				if (data.message) console.error(debugUrl, data.message);
 				data.forEach(it => {
 					dropdown.append($('<option>', {
-						value: `${it.download_url}${d20plus.getAntiCacheSuffix()}`,
+						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
 						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
 					}));
 				});
@@ -1049,12 +1051,12 @@ const betteR205etools = function () {
 					text: "Custom"
 				}));
 
-				const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
+				const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.ut.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
 				DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
 					if (data.message) console.error(debugUrl, data.message);
 					data.forEach(it => {
 						$sel.append($('<option>', {
-							value: `${it.download_url}${d20plus.getAntiCacheSuffix()}`,
+							value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
 							text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
 						}));
 					});
@@ -1087,7 +1089,9 @@ const betteR205etools = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtSubclasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtBackgrounds);
 			$wrpSettings.append(d20plus.settingsHtmlPtOptfeatures);
-			$wrpSettings.append(d20plus.settingsHtmlPtAdventures);
+			const $ptAdventures = $(d20plus.settingsHtmlPtAdventures);
+			$wrpSettings.append($ptAdventures);
+			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get('MODULES').openFn());
 			$wrpSettings.append(d20plus.settingsHtmlPtImportFooter);
 
 			$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
@@ -1258,7 +1262,7 @@ const betteR205etools = function () {
 				$btnpane.prepend(d20plus.difficultyHtml);
 				$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
 			}
-			if (d20plus.getCfgVal("interface", "showDifficulty")) {
+			if (d20plus.cfg.getCfgVal("interface", "showDifficulty")) {
 				$span.text("Difficulty: " + d20plus.getDifficulty());
 				$span.show();
 			} else {
@@ -1374,7 +1378,7 @@ const betteR205etools = function () {
 
 									// TODO remove Feat workaround when roll20 supports feat drag-n-drop properly
 									if (data.data.Category === "Feats") {
-										const rowId = d20plus.generateRowId();
+										const rowId = d20plus.ut.generateRowId();
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_options-flag`,
 											"current": "0"
@@ -1413,7 +1417,7 @@ const betteR205etools = function () {
 
 										d20plus.importer.addOrUpdateAttr(character.model, "background", bg.name);
 
-										const fRowId = d20plus.generateRowId();
+										const fRowId = d20plus.ut.generateRowId();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
 											current: bg.name
@@ -1455,7 +1459,7 @@ const betteR205etools = function () {
 											const renderStack = [];
 											renderer.recursiveEntryRender({entries: e.entries}, renderStack);
 
-											const fRowId = d20plus.generateRowId();
+											const fRowId = d20plus.ut.generateRowId();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_name`,
 												current: e.name
@@ -1483,7 +1487,7 @@ const betteR205etools = function () {
 										renderer.setBaseUrl(BASE_SITE_URL);
 										const rendered = renderer.renderEntry({entries: optionalFeature.entries});
 
-										const fRowId = d20plus.generateRowId();
+										const fRowId = d20plus.ut.generateRowId();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
 											current: optionalFeature.name
@@ -1505,7 +1509,7 @@ const betteR205etools = function () {
 											current: "0"
 										}).save();
 									} else if (data.data.Category === "Classes") {
-										let levels = d20plus.getNumberRange("What levels?", 1, 20);
+										let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
 										if (levels) {
 											const maxLevel = Math.max(...levels);
 
@@ -1530,7 +1534,7 @@ const betteR205etools = function () {
 														const renderStack = [];
 														renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 
-														const fRowId = d20plus.generateRowId();
+														const fRowId = d20plus.ut.generateRowId();
 														character.model.attribs.create({
 															name: `repeating_traits_${fRowId}_name`,
 															current: feature.name
@@ -1563,7 +1567,7 @@ const betteR205etools = function () {
 
 										// _gainAtLevels should be a 20-length array of booleans
 										if (sc._gainAtLevels) {
-											const levels = d20plus.getNumberRange("What levels?", 1, 20);
+											const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
 											if (levels) {
 												let scFeatureIndex = 0;
 												for (let i = 0; i < 20; i++) {
@@ -1643,7 +1647,7 @@ const betteR205etools = function () {
 													const renderStack = [];
 													renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 
-													const fRowId = d20plus.generateRowId();
+													const fRowId = d20plus.ut.generateRowId();
 													character.model.attribs.create({
 														name: `repeating_traits_${fRowId}_name`,
 														current: feature.name
@@ -1691,7 +1695,7 @@ const betteR205etools = function () {
 										renderer.setBaseUrl(BASE_SITE_URL);
 
 										if (data.type === "D") {
-											const rowId = d20plus.generateRowId();
+											const rowId = d20plus.ut.generateRowId();
 
 											// make focus
 											const focusLevel = "cantrip";
@@ -1704,7 +1708,7 @@ const betteR205etools = function () {
 											data.modes.forEach(m => {
 												if (m.submodes) {
 													m.submodes.forEach(sm => {
-														const rowId = d20plus.generateRowId();
+														const rowId = d20plus.ut.generateRowId();
 														const smLevel = sm.cost.min;
 														makeSpellTrait(smLevel, rowId, "spelllevel", smLevel);
 														makeSpellTrait(smLevel, rowId, "spellname", `${m.name} (${sm.name})`);
@@ -1716,7 +1720,7 @@ const betteR205etools = function () {
 														noComponents(smLevel, rowId, true);
 													});
 												} else {
-													const rowId = d20plus.generateRowId();
+													const rowId = d20plus.ut.generateRowId();
 													const mLevel = m.cost.min;
 													makeSpellTrait(mLevel, rowId, "spelllevel", mLevel);
 													makeSpellTrait(mLevel, rowId, "spellname", `${m.name}`);
@@ -1733,7 +1737,7 @@ const betteR205etools = function () {
 												}
 											});
 										} else {
-											const rowId = d20plus.generateRowId();
+											const rowId = d20plus.ut.generateRowId();
 											const level = "cantrip";
 											makeSpellTrait(level, rowId, "spelllevel", "cantrip");
 											makeSpellTrait(level, rowId, "spellname", data.name);
@@ -1743,7 +1747,7 @@ const betteR205etools = function () {
 									} else if (data.data.Category === "Items") {
 										if (data.data._versatile) {
 											setTimeout(() => {
-												const rowId = d20plus.generateRowId();
+												const rowId = d20plus.ut.generateRowId();
 
 												function makeItemTrait (key, val) {
 													const toSave = character.model.attribs.create({
@@ -1814,7 +1818,7 @@ const betteR205etools = function () {
 												}
 
 												if (si.count) {
-													const rowId = d20plus.generateRowId();
+													const rowId = d20plus.ut.generateRowId();
 													const siD = typeof si.subItem === "string" ? JSON.parse(si.subItem) : si.subItem;
 
 													makeProp(rowId, "itemname", siD.name);
@@ -1828,7 +1832,7 @@ const betteR205etools = function () {
 												}
 											});
 
-											const interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
+											const interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
 											queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
 												setTimeout(() => {
 													d20plus.importer.doFakeDrop(t, character, item, i);
@@ -1883,7 +1887,7 @@ const betteR205etools = function () {
 		const e = characterView; // AKA character.view
 		const n = fakeRoll20Json;
 		// var i = $(outerI.helper[0]).attr("data-pagename"); // always undefined, since we're not using a compendium drag-drop element
-		const i = d20plus.generateRowId();
+		const i = d20plus.ut.generateRowId();
 
 		$(t.target).find("*[accept]").each(function() {
 			$(this).val(undefined);
@@ -2081,7 +2085,8 @@ const betteR205etools = function () {
 							nextStep: d20plus.monsters._doScale
 						}
 					);
-				}
+				},
+				(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
 			);
 		}
 	};
@@ -2096,11 +2101,11 @@ const betteR205etools = function () {
 		if (character.size === "L") tokensize = 2;
 		if (character.size === "H") tokensize = 3;
 		if (character.size === "G") tokensize = 4;
-		var lightradius = 5;
+		var lightradius = null;
 		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
 		var lightmin = 0;
 		if (character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
-		const nameSuffix = d20plus.getCfgVal("token", "namesuffix");
+		const nameSuffix = d20plus.cfg.getCfgVal("token", "namesuffix");
 		var defaulttoken = {
 			represents: character.id,
 			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
@@ -2108,10 +2113,12 @@ const betteR205etools = function () {
 			width: 70 * tokensize,
 			height: 70 * tokensize
 		};
-		if (!d20plus.getCfgVal("import", "skipSenses")) {
+		if (!d20plus.cfg.getCfgVal("import", "skipSenses")) {
 			defaulttoken.light_hassight = true;
-			defaulttoken.light_radius = lightradius;
-			defaulttoken.light_dimradius = lightmin;
+			if (lightradius != null) {
+				defaulttoken.light_radius = lightradius;
+				defaulttoken.light_dimradius = lightmin;
+			}
 		}
 
 		character.updateBlobs({avatar: avatar, defaulttoken: JSON.stringify(defaulttoken)});
@@ -2119,7 +2126,7 @@ const betteR205etools = function () {
 	};
 
 	d20plus.importer.addAction = function (character, name, text, index) {
-		if (d20plus.getCfgVal("token", "tokenactions")) {
+		if (d20plus.cfg.getCfgVal("token", "tokenactions")) {
 			character.abilities.create({
 				name: index + ": " + name,
 				istokenaction: true,
@@ -2127,7 +2134,7 @@ const betteR205etools = function () {
 			}).save();
 		}
 
-		var newRowId = d20plus.generateRowId();
+		var newRowId = d20plus.ut.generateRowId();
 		var actiontext = text;
 		var action_desc = actiontext; // required for later reduction of information dump.
 		var rollbase = d20plus.importer.rollbase();
@@ -2357,7 +2364,7 @@ const betteR205etools = function () {
 									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
 								},
 								success: function () {
-									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.getAntiCacheSuffix()}`);
+									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.ut.getAntiCacheSuffix()}`);
 								}
 							});
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
@@ -2400,7 +2407,7 @@ const betteR205etools = function () {
 								current: hpformula != null ? hpformula || "" : ""
 							});
 
-							const hpModId = d20plus.generateRowId();
+							const hpModId = d20plus.ut.generateRowId();
 							character.attribs.create({name: `repeating_hpmod_${hpModId}_source`, current: "CON"});
 							character.attribs.create({name: `repeating_hpmod_${hpModId}_mod`, current: Parser.getAbilityModNumber(data.con)});
 
@@ -2502,7 +2509,7 @@ const betteR205etools = function () {
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 
 							// add Tokenaction Macros
-							if (d20plus.getCfgVal("token", "tokenactionsSkillsSaves")) {
+							if (d20plus.cfg.getCfgVal("token", "tokenactionsSkillsSaves")) {
 								character.abilities.create({
 									name: "Perception",
 									istokenaction: true,
@@ -2564,7 +2571,7 @@ const betteR205etools = function () {
 								// Shaped Sheet currently doesn't correctly load NPC Skills
 								// This adds a visual representation as a Trait for reference
 								if (d20plus.sheet === "shaped") {
-									var newRowId = d20plus.generateRowId();
+									var newRowId = d20plus.ut.generateRowId();
 									character.attribs.create({
 										name: "repeating_npctrait_" + newRowId + "_name",
 										current: "NPC Skills"
@@ -2594,7 +2601,7 @@ const betteR205etools = function () {
 								});
 							}
 							if (data.spellcasting) { // Spellcasting import 2.0
-								const charInterval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+								const charInterval = d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter");
 								const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
 
 								// figure out the casting ability or spell DC
@@ -2655,7 +2662,7 @@ const betteR205etools = function () {
 								}
 
 								// add the spellcasting text
-								const newRowId = d20plus.generateRowId();
+								const newRowId = d20plus.ut.generateRowId();
 								const spellTrait = EntryRenderer.monster.getSpellcastingRenderedTraits(data, renderer).map(it => it.rendered).filter(it => it).join("");
 								const cleanDescription = d20plus.importer.getCleanText(spellTrait);
 								setAttrib(`repeating_npctrait_${newRowId}_name`, "Spellcasting");
@@ -2930,7 +2937,7 @@ const betteR205etools = function () {
 									// largely stolen from `create_attack_from_spell`
 									function create_attack_from_spell (lvl, spellid, character_id) {
 										var update = {};
-										var newrowid = d20plus.generateRowId();
+										var newrowid = d20plus.ut.generateRowId();
 										update["repeating_spell-" + lvl + "_" + spellid + "_spellattackid"] = newrowid;
 										update["repeating_spell-" + lvl + "_" + spellid + "_rollcontent"] = "%{" + character_id + "|repeating_attack_" + newrowid + "_attack}";
 										setAttrs(update, update_attack_from_spell(lvl, spellid, newrowid, true));
@@ -2940,7 +2947,7 @@ const betteR205etools = function () {
 									function processDrop (page) {
 										const update = {};
 										const callbacks = [];
-										const id = d20plus.generateRowId();
+										const id = d20plus.ut.generateRowId();
 
 										var lvl = page.data["Level"] && page.data["Level"] > 0 ? page.data["Level"] : "cantrip";
 										update["repeating_spell-" + lvl + "_" + id + "_spelllevel"] = lvl;
@@ -3007,7 +3014,7 @@ const betteR205etools = function () {
 
 										// build tokenaction
 										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
-										if (d20plus.getCfgVal("token", "tokenactionsSpells")) {
+										if (d20plus.cfg.getCfgVal("token", "tokenactionsSpells")) {
 											character.abilities.create({
 												name: "Spells",
 												istokenaction: true,
@@ -3019,13 +3026,13 @@ const betteR205etools = function () {
 							}
 							if (data.trait) {
 								$.each(data.trait, function (i, v) {
-									var newRowId = d20plus.generateRowId();
+									var newRowId = d20plus.ut.generateRowId();
 									character.attribs.create({
 										name: "repeating_npctrait_" + newRowId + "_name",
 										current: d20plus.importer.getCleanText(renderer.renderEntry(v.name))
 									});
 
-									if (d20plus.getCfgVal("token", "tokenactionsTraits")) {
+									if (d20plus.cfg.getCfgVal("token", "tokenactionsTraits")) {
 										const offsetIndex = data.spellcasting ? 1 + i : i;
 										character.abilities.create({
 											name: "Trait" + offsetIndex + ": " + v.name,
@@ -3039,16 +3046,55 @@ const betteR205etools = function () {
 								});
 							}
 							if (data.action) {
+								let offset = 0;
 								$.each(data.action, function (i, v) {
+									const name = d20plus.importer.getCleanText(renderer.renderEntry(v.name));
 									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
-									d20plus.importer.addAction(character, d20plus.importer.getCleanText(renderer.renderEntry(v.name)), text, i);
+									if (name === "Hellfire Weapons") {
+										const baseActionEnts = v.entries.filter(it => typeof it === "string");
+										baseActionEnts[0] = "The hellfire engine uses one of the options listed below.";
+										const baseAction = renderer.renderEntry({entries: baseActionEnts}, 1);
+										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
+										offset++;
+
+										v.entries.find(it => it.type === "list").items.forEach(item => {
+											const itemName = d20plus.importer.getCleanText(renderer.renderEntry(item.name));
+											d20plus.importer.addAction(character, itemName, d20plus.importer.getCleanText(renderer.renderEntry({entries: [item.entry]})), i + offset);
+											offset++;
+										});
+
+										offset++;
+									} else if (name === "Eye Rays") {
+										const [base, ...others] = v.entries;
+
+										const baseAction = renderer.renderEntry({entries: [base]}, 1);
+										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
+										offset++;
+
+										const packedOthers = [];
+										others.forEach(it => {
+											const m = /^(\d+\.\s*[^.]+\s*)\.(.*)$/.exec(it);
+											if (m) {
+												const partName = m[1].trim();
+												const text = m[2].trim();
+												packedOthers.push({name: partName, text: text});
+											} else packedOthers[packedOthers.length - 1].text += ` ${it}`;
+										});
+
+										packedOthers.forEach(it => {
+											d20plus.importer.addAction(character, it.name, d20plus.importer.getCleanText(renderer.renderEntry(it.text)), i + offset);
+											offset++;
+										});
+									} else {
+										d20plus.importer.addAction(character, name, text, i + offset);
+									}
 								});
 							}
 							if (data.reaction) {
 								character.attribs.create({name: "reaction_flag", current: 1});
 								character.attribs.create({name: "npcreactionsflag", current: 1});
 								$.each(data.reaction, function (i, v) {
-									var newRowId = d20plus.generateRowId();
+									var newRowId = d20plus.ut.generateRowId();
 									let text = "";
 									character.attribs.create({
 										name: "repeating_npcreaction_" + newRowId + "_name",
@@ -3056,7 +3102,7 @@ const betteR205etools = function () {
 									});
 
 									// roll20 only supports a single reaction, so only use the first
-									if (d20plus.getCfgVal("token", "tokenactions") && i === 0) {
+									if (d20plus.cfg.getCfgVal("token", "tokenactions") && i === 0) {
 										character.abilities.create({
 											name: "Reaction: " + v.name,
 											istokenaction: true,
@@ -3081,9 +3127,9 @@ const betteR205etools = function () {
 								character.attribs.create({name: "npc_legendary_actions", current: legendaryActions.toString()});
 								let tokenactiontext = "";
 								$.each(data.legendary, function (i, v) {
-									var newRowId = d20plus.generateRowId();
+									var newRowId = d20plus.ut.generateRowId();
 
-									if (d20plus.getCfgVal("token", "tokenactions")) {
+									if (d20plus.cfg.getCfgVal("token", "tokenactions")) {
 										tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
 									}
 
@@ -3209,7 +3255,7 @@ const betteR205etools = function () {
 										current: descriptionFlag
 									});
 								});
-								if (d20plus.getCfgVal("token", "tokenactions")) {
+								if (d20plus.cfg.getCfgVal("token", "tokenactions")) {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
@@ -3219,7 +3265,7 @@ const betteR205etools = function () {
 							}
 							
 							// set show/hide NPC names in rolls
-							if (d20plus.hasCfgVal("import", "showNpcNames") && !d20plus.getCfgVal("import", "showNpcNames")) {
+							if (d20plus.cfg.hasCfgVal("import", "showNpcNames") && !d20plus.cfg.getCfgVal("import", "showNpcNames")) {
 								character.attribs.create({name: "npc_name_flag", current: 0});
 							}
 
@@ -3227,7 +3273,7 @@ const betteR205etools = function () {
 
 							if (renderFluff) {
 								setTimeout(() => {
-									const fluffAs = d20plus.getCfgVal("import", "importFluffAs") || d20plus.getCfgDefaultVal("import", "importFluffAs");
+									const fluffAs = d20plus.cfg.getCfgVal("import", "importFluffAs") || d20plus.cfg.getCfgDefaultVal("import", "importFluffAs");
 									let k = fluffAs === "Bio"? "bio" : "gmnotes";
 									character.updateBlobs({
 										[k]: Markdown.parse(renderFluff)
@@ -3238,7 +3284,7 @@ const betteR205etools = function () {
 								}, 500);
 							}
 						} catch (e) {
-							d20plus.log("Error loading [" + name + "]");
+							d20plus.ut.log("Error loading [" + name + "]");
 							d20plus.addImportError(name);
 							console.log(data);
 							console.log(e);
@@ -3403,7 +3449,7 @@ const betteR205etools = function () {
 		}
 		if (d20.journal.customSheets.layouthtml.indexOf("shaped_d20") > 0) d20plus.sheet = "shaped";
 		if (d20.journal.customSheets.layouthtml.indexOf("DnD5e_Character_Sheet") > 0) d20plus.sheet = "community";
-		d20plus.log("Switched Character Sheet Template to " + d20plus.sheet);
+		d20plus.ut.log("Switched Character Sheet Template to " + d20plus.sheet);
 	};
 
 	// Return Initiative Tracker template with formulas
@@ -3420,9 +3466,9 @@ const betteR205etools = function () {
 			$(".tracker-header-extra-columns").empty();
 
 			const cols = [
-				d20plus.getCfgVal("interface", "trackerCol1"),
-				d20plus.getCfgVal("interface", "trackerCol2"),
-				d20plus.getCfgVal("interface", "trackerCol3")
+				d20plus.cfg.getCfgVal("interface", "trackerCol1"),
+				d20plus.cfg.getCfgVal("interface", "trackerCol2"),
+				d20plus.cfg.getCfgVal("interface", "trackerCol3")
 			];
 
 			const headerStack = [];
@@ -3493,10 +3539,10 @@ const betteR205etools = function () {
 				}
 			});
 
-			console.log("use custom tracker val was ", d20plus.getCfgVal("interface", "customTracker"))
-			if (d20plus.getCfgVal("interface", "customTracker")) {
+			console.log("use custom tracker val was ", d20plus.cfg.getCfgVal("interface", "customTracker"))
+			if (d20plus.cfg.getCfgVal("interface", "customTracker")) {
 				$(`.init-header`).show();
-				if (d20plus.getCfgVal("interface", "trackerSheetButton")) {
+				if (d20plus.cfg.getCfgVal("interface", "trackerSheetButton")) {
 					$(`.init-sheet-header`).show();
 				} else {
 					$(`.init-sheet-header`).hide();
@@ -3543,7 +3589,7 @@ const betteR205etools = function () {
 			d20plus.initErrorHandler = function (event) {
 				// if we see an error within 250 msec of trying to override the initiative window...
 				if (((new Date).getTime() - startTime) < 250) {
-					d20plus.log("ERROR: failed to populate custom initiative tracker, restoring default...");
+					d20plus.ut.log("ERROR: failed to populate custom initiative tracker, restoring default...");
 					// restore the default functionality
 					$("#tmpl_initiativecharacter").replaceWith(d20plus.turnOrderCachedTemplate);
 					return d20plus.turnOrderCachedFunction();
@@ -3553,11 +3599,11 @@ const betteR205etools = function () {
 			return results;
 		};
 
-		const getTargetWidth = () => d20plus.getCfgVal("interface", "minifyTracker") ? 250 : 350;
+		const getTargetWidth = () => d20plus.cfg.getCfgVal("interface", "minifyTracker") ? 250 : 350;
 		// wider tracker
 		const cachedDialog = d20.Campaign.initiativewindow.$el.dialog;
 		d20.Campaign.initiativewindow.$el.dialog = (...args) => {
-			const widen = d20plus.getCfgVal("interface", "customTracker");
+			const widen = d20plus.cfg.getCfgVal("interface", "customTracker");
 			if (widen && args[0] && args[0].width) {
 				args[0].width = getTargetWidth();
 			}
@@ -3710,7 +3756,7 @@ const betteR205etools = function () {
 	d20plus.spells.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
@@ -3962,7 +4008,7 @@ const betteR205etools = function () {
 	d20plus.items.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.items._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
@@ -4021,12 +4067,12 @@ const betteR205etools = function () {
 		var reqAttune = data.reqAttune;
 		var attunementstring = "";
 		if (reqAttune) {
-			if (reqAttune === "YES") {
+			if (reqAttune === "(Requires Attunement)") {
 				attunementstring = " (Requires Attunement)";
 			} else if (reqAttune === "OPTIONAL") {
 				attunementstring = " (Attunement Optional)";
 			} else {
-				reqAttune = " (Requires Attunement " + reqAttune + ")";
+				attunementstring = " (Requires Attunement " + reqAttune + ")";
 			}
 		}
 		notecontents += `<p><h3>${data.name}</h3></p><em>${typestring}`;
@@ -4213,7 +4259,7 @@ const betteR205etools = function () {
 	d20plus.psionics.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.psionics._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
@@ -4295,7 +4341,7 @@ const betteR205etools = function () {
 	d20plus.races.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.races._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
@@ -4382,7 +4428,7 @@ const betteR205etools = function () {
 	d20plus.feats.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.feats._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
@@ -4498,7 +4544,7 @@ const betteR205etools = function () {
 					if (data.entries != null) {
 						character.attribs.create({name: "repeating_npctrait_0_name", current: name});
 						character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
-						if (d20plus.getCfgVal("token", "tokenactionsTraits")) {
+						if (d20plus.cfg.getCfgVal("token", "tokenactionsTraits")) {
 							character.abilities.create({
 								name: "Information: " + name,
 								istokenaction: true,
@@ -4524,7 +4570,7 @@ const betteR205etools = function () {
 						const bio = renderer.renderEntry({type: "entries", entries: data.entries});
 
 						setTimeout(() => {
-							const fluffAs = d20plus.getCfgVal("import", "importFluffAs") || d20plus.getCfgDefaultVal("import", "importFluffAs");
+							const fluffAs = d20plus.cfg.getCfgVal("import", "importFluffAs") || d20plus.cfg.getCfgDefaultVal("import", "importFluffAs");
 							let k = fluffAs === "Bio"? "bio" : "gmnotes";
 							character.updateBlobs({
 								[k]: Markdown.parse(bio)
@@ -4535,7 +4581,7 @@ const betteR205etools = function () {
 						}, 500);
 					}
 				} catch (e) {
-					d20plus.log(`Error loading [${name}]`);
+					d20plus.ut.log(`Error loading [${name}]`);
 					d20plus.addImportError(name);
 					console.log(data);
 					console.log(e);
@@ -4565,7 +4611,7 @@ const betteR205etools = function () {
 		const never = "{{normal=1}} {{r2=[[0d20";
 		const always = "{{always=1}} {{r2=[[@{d20}";
 		const query = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[@{d20}|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[@{d20}}";
-		const desired = d20plus.getCfgVal("import", "advantagemode");
+		const desired = d20plus.cfg.getCfgVal("import", "advantagemode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default Advantage)":
@@ -4588,7 +4634,7 @@ const betteR205etools = function () {
 		// advantagetoggle
 		const advantage = "{{query=1}} {{advantage=1}} {{r2=[[@{d20}";
 		const disadvantage = "{{query=1}} {{disadvantage=1}} {{r2=[[@{d20}";
-		const desired = d20plus.getCfgVal("import", "advantagemode");
+		const desired = d20plus.cfg.getCfgVal("import", "advantagemode");
 		const neither = "";
 		if (desired) {
 			switch (desired) {
@@ -4613,7 +4659,7 @@ const betteR205etools = function () {
 		const never = " ";
 		const always = "/w gm ";
 		const query = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-		const desired = d20plus.getCfgVal("import", "whispermode");
+		const desired = d20plus.cfg.getCfgVal("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -4635,7 +4681,7 @@ const betteR205etools = function () {
 		// whispertoggle
 		const gm = "/w gm ";
 		const pblic = " ";
-		const desired = d20plus.getCfgVal("import", "whispermode");
+		const desired = d20plus.cfg.getCfgVal("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -4658,7 +4704,7 @@ const betteR205etools = function () {
 		// dtype
 		const on = "full";
 		const off = "pick";
-		const desired = d20plus.getCfgVal("import", "damagemode");
+		const desired = d20plus.cfg.getCfgVal("import", "damagemode");
 		if (desired) {
 			switch (desired) {
 				case "Auto Roll":
@@ -4782,7 +4828,7 @@ const betteR205etools = function () {
 	d20plus.classes.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.classes._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 
@@ -4860,7 +4906,7 @@ const betteR205etools = function () {
 	d20plus.subclasses._preloadClass = function (subclass) {
 		if (!subclass.class) Promise.resolve();
 
-		d20plus.log("Preloading class...");
+		d20plus.ut.log("Preloading class...");
 		return DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
 			const clazz = data.class.find(it => it.name.toLowerCase() === subclass.class.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
 			if (!clazz) {
@@ -4906,7 +4952,7 @@ const betteR205etools = function () {
 		d20plus.subclasses._preloadClass(data).then(() => {
 			const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
 
-			const importId = d20plus.generateRowId();
+			const importId = d20plus.ut.generateRowId();
 			d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 			const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
 			d20plus.importer.makePlayerDraggable(importId, name);
@@ -4990,7 +5036,7 @@ const betteR205etools = function () {
 	d20plus.backgrounds.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.backgrounds._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
@@ -5068,7 +5114,7 @@ const betteR205etools = function () {
 	d20plus.optionalfeatures.playerImportBuilder = function (data) {
 		const [notecontents, gmnotes] = d20plus.optionalfeatures._getHandoutData(data);
 
-		const importId = d20plus.generateRowId();
+		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 	};
@@ -5288,9 +5334,9 @@ const betteR205etools = function () {
 				let remaining = importQueue.length;
 				let interval;
 				if (dataType === "monster" || dataType === "object") {
-					interval = d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter");
+					interval = d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter");
 				} else {
-					interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
+					interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
 				}
 
 				let cancelWorker = false;
@@ -5347,14 +5393,14 @@ const betteR205etools = function () {
 					if (cancelWorker) {
 						$stsName.text("Import cancelled");
 						if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
-						d20plus.log(`Import cancelled`);
+						d20plus.ut.log(`Import cancelled`);
 						setTimeout(() => {
 							d20plus.bindDropLocations();
 						}, 250);
 					} else {
 						$stsName.text("Import complete");
 						$stsRemain.text("0");
-						d20plus.log(`Import complete`);
+						d20plus.ut.log(`Import complete`);
 						setTimeout(() => {
 							d20plus.bindDropLocations();
 						}, 250);
@@ -5719,7 +5765,7 @@ const betteR205etools = function () {
 
 				const $stsName = $("#import-name");
 				const $stsRemain = $("#import-remaining");
-				const interval = d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout");
+				const interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
 
 				////////////////////////////////////////////////////////////////////////////////////////////////////////
 				EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
@@ -5741,7 +5787,7 @@ const betteR205etools = function () {
 				else doItemImport();
 
 				function showMonsterImport (toImport) {
-					d20plus.log(`Displaying monster import list for [${adMeta.name}]`);
+					d20plus.ut.log(`Displaying monster import list for [${adMeta.name}]`);
 					d20plus.importer.showImportList(
 						"monster",
 						toImport.filter(it => it),
@@ -5767,7 +5813,7 @@ const betteR205etools = function () {
 				}
 
 				function showItemImport (toImport) {
-					d20plus.log(`Displaying item import list for [${adMeta.name}]`);
+					d20plus.ut.log(`Displaying item import list for [${adMeta.name}]`);
 					d20plus.importer.showImportList(
 						"item",
 						toImport.filter(it => it),
@@ -5819,7 +5865,7 @@ const betteR205etools = function () {
 
 					let remaining = addQueue.length;
 
-					d20plus.log(`Running import of [${adMeta.name}] with ${interval} ms delay between each handout create`);
+					d20plus.ut.log(`Running import of [${adMeta.name}] with ${interval} ms delay between each handout create`);
 					let lastId = null;
 					let lastName = null;
 
@@ -5828,7 +5874,7 @@ const betteR205etools = function () {
 							clearInterval(worker);
 							$stsName.text("DONE!");
 							$stsRemain.text("0");
-							d20plus.log(`Finished import of [${adMeta.name}]`);
+							d20plus.ut.log(`Finished import of [${adMeta.name}]`);
 							renderer.resetRoll20Ids();
 							return;
 						}
@@ -6291,6 +6337,7 @@ To import from third-party sources, either individually select one available in 
 
 	d20plus.settingsHtmlPtAdventures = `
 <div class="importer-section" data-import-group="adventure">
+<b style="color: red">Please note that this importer has been superceded by the Module Importer tool, found in the Tools List, or <a href="#" class="Vetools-module-tool-open" style="color: darkred; font-style: italic">by clicking here</a>.</b>
 <h4>Adventure Importing</h4>
 <label for="import-adventures-url">Adventure Data URL:</label>
 <select id="button-adventures-select">
@@ -6299,7 +6346,6 @@ To import from third-party sources, either individually select one available in 
 <input type="text" id="import-adventures-url">
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 <p>
-<b>Maps (pages) from official adventures can be found in the Tools List, in the "Map Importer/Exporter" tool.</b>
 </p>
 </div>
 `;
@@ -6316,7 +6362,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 </p>
 `;
 
-	d20plus.cssRules = d20plus.cssRules.concat([
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
 			s: ".no-shrink",
 			r: "flex-shrink: 0;"
@@ -6391,7 +6437,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		},
 	]);
 
-	d20plus.tools = d20plus.tools.concat([
+	d20plus.tool.tools = d20plus.tool.tools.concat([
 		{
 			name: "Shapeshifter Token Builder",
 			desc: "Build a rollable table and related token to represent a shapeshifting creature.",
@@ -6589,7 +6635,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 							}
 							const char = json.char;
 
-							const newId = d20plus.generateRowId();
+							const newId = d20plus.ut.generateRowId();
 							d20.Campaign.characters.create(
 								{
 									...char,
@@ -6815,7 +6861,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										d20plus.monsters.handoutBuilder(sel, true, options, `Wild Forms - ${d20Character.attributes.name}`);
 									};
 
-									if (sel.hp.formula) d20plus.randomRoll(sel.hp.formula, result => doBuild(result))
+									if (sel.hp.formula) d20plus.ut.randomRoll(sel.hp.formula, result => doBuild(result))
 									else doBuild({total: 0});
 								}
 
@@ -6824,484 +6870,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						}
 					);
 				}
-			}
-		},
-		{
-			name: "Module Importer/Exporter",
-			desc: "Import Full Games (Modules), or Import/Export Custom Games",
-			html: `
-				<div id="d20plus-module-importer" title="Module Importer/Exporter">
-				<p style="margin-bottom: 4px;"><b style="font-size: 110%;">Exporter: </b> <button class="btn" name="export">Export Game to File</button> <i>The exported file can later be used with the "Upload File" option, below.</i></p>
-				<hr style="margin: 4px;">
-				<p style="margin-bottom: 4px;">
-					<b style="font-size: 110%;">Importer:</b>
-					<button class="btn readme" style="float: right;">Help/README</button>
-					<div style="clear: both;"></div>
-				</p>
-				<div style="border-bottom: 1px solid #ccc; margin-bottom: 3px; padding-bottom: 3px;">
-					<div style="float: left;">
-						<button class="btn" name="load-Vetools">Load from 5etools</button>
-						<button class="btn" name="load-file">Upload File</button>
-					</div>
-					<div style="float: right;">
-						Import category: 
-						<select name="data-type" disabled style="margin-bottom: 0;">
-							<option value="characters">Characters</option>
-							<option value="decks">Decks</option>
-							<option value="handouts">Handouts</option>
-							<option value="maps">Maps</option>
-							<option value="rolltables">Rollable Tables</option>
-						</select>						
-					</div>
-					<div style="clear: both;"></div>
-				</div>
-				<div id="module-importer-list">
-					<input type="search" class="search" placeholder="Search..." disabled>
-					<div class="list" style="transform: translateZ(0); max-height: 440px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
-					<i>Load a file to view the contents here</i>
-					</div>
-				</div>
-				<hr>
-				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" style="float: right;" name="import">Import Selected</button></p>
-				</div>
-				
-				<div id="d20plus-module-importer-progress" title="Import Progress">					
-					<h3 class="name"></h3>
-					<span class="remaining"></span> 
-					<p>Errors: <span class="errors">0</span> <span class="error-names"></span></p>
-					<p><button class="btn cancel">Cancel</button></p>
-				</div>
-				
-				<div id="d20plus-module-importer-help" title="Readme">
-					<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import; a list of available entries will appear. Select entries from the list as required, and hit "Import Selected."</p>
-					<p>You can import the categories in any order. If you import maps, we recommend importing characters also, as this allows the tokens to correctly link to the character sheets.</p>
-					<p><b>Note:</b> The script-wide configurable "rest time" options affect how quickly each category of entries is imported (tables and decks use the "Handout" rest time).</p>
-					<p><b>Note:</b> Configuration options (aside from "rest time" as detailed above) <i>do not</i> affect the module importer. It effectively "clones" the content as-exported from the original module, including any whisper/advantage/etc settings.</p>
-				</div>
-				
-				<div id="d20plus-module-importer-5etools" title="Select Module">
-					<div id="module-importer-list-5etools">
-						<input type="search" class="search" placeholder="Search modules...">
-						<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
-						<i>Loading...</i>
-						</div>
-					</div>
-					<p><button class="btn load">Load Module Data</button></p>
-				</div>
-				`,
-			dialogFn: () => {
-				$("#d20plus-module-importer").dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 885,
-					height: 830,
-				});
-				$(`#d20plus-module-importer-progress`).dialog({
-					autoOpen: false,
-					resizable: false
-				});
-				$("#d20plus-module-importer-5etools").dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 800,
-					height: 600,
-				});
-				$("#d20plus-module-importer-help").dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 600,
-					height: 400,
-				});
-			},
-			openFn: () => {
-				const $win = $("#d20plus-module-importer");
-				$win.dialog("open");
-
-				const $winProgress = $(`#d20plus-module-importer-progress`);
-				const $btnCancel = $winProgress.find(".cancel").off("click");
-
-				const $win5etools = $(`#d20plus-module-importer-5etools`);
-
-				const $winHelp = $(`#d20plus-module-importer-help`);
-				const $btnHelp = $win.find(`.readme`).off("click").click(() => $winHelp.dialog("open"));
-
-				const $wrpLst = $win.find(`#module-importer-list`);
-				const $lst = $win.find(`.list`).empty();
-
-				const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
-				const $cbAll = $win.find(`.select-all`).off("click").prop("disabled", true);
-				const $iptSearch = $win.find(`.search`).prop("disabled", true);
-
-				const $selDataType = $win.find(`[name="data-type"]`).prop("disabled", true);
-				let lastDataType = $selDataType.val();
-				let genericFolder;
-				let lastLoadedData = null;
-
-				function handleLoadedData (data) {
-					if (!lastDataType) throw new Error(`Module data type was not set!`);
-					lastLoadedData = data;
-					$selDataType.prop("disabled", false);
-					$iptSearch.prop("disabled", false);
-
-					let prop = "";
-					switch (lastDataType) {
-						case "maps": {
-							prop = "maps";
-							break;
-						}
-						case "rolltables": {
-							$("a.ui-tabs-anchor[href='#deckstables']").click();
-							prop = "rolltables";
-							break;
-						}
-						case "decks": {
-							$("a.ui-tabs-anchor[href='#deckstables']").click();
-							prop = "decks";
-							break;
-						}
-						case "handouts": {
-							prop = "handouts";
-							$("a.ui-tabs-anchor[href='#journal']").click();
-							genericFolder = d20plus.importer.makeDirTree(`Handouts`);
-							break;
-						}
-						case "characters": {
-							prop = "characters";
-							$("a.ui-tabs-anchor[href='#journal']").click();
-							genericFolder = d20plus.importer.makeDirTree(`Characters`);
-							break;
-						}
-						default: throw new Error(`Unhandled data type: ${lastDataType}`);
-					}
-
-					const moduleData = data[prop];
-					data[prop].sort((a, b) => SortUtil.ascSortLower(a.attributes.name || "", b.attributes.name || ""));
-
-					$lst.empty();
-					moduleData.forEach((m, i) => {
-						const img = lastDataType === "maps" ? m.attributes.thumbnail :
-							(lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
-
-						$lst.append(`
-									<label class="import-cb-label ${img ? `import-cb-label--img` : ""}" data-listid="${i}">
-										<input type="checkbox">
-										${img && img.trim() ? `<img class="import-label__img" src="${img}">` : ""}
-										<span class="name col-9 readable">${m.attributes.name}</span>
-									</label>
-								`);
-					});
-
-					const mapList = new List("module-importer-list", {
-						valueNames: ["name"]
-					});
-
-					$cbAll.prop("disabled", false).off("click").click(() => {
-						mapList.items.forEach(it => {
-							$(it.elm).find(`input[type="checkbox"]`).prop("checked", $cbAll.prop("checked"));
-						});
-					});
-
-					$btnImport.prop("disabled", false).off("click").click(() => {
-						$cbAll.prop("checked", false);
-						const sel = mapList.items
-							.filter(it => $(it.elm).find(`input`).prop("checked"))
-							.map(it => moduleData[$(it.elm).attr("data-listid")]);
-
-						if (!sel.length) return alert("No entries selected!");
-
-						const $name = $winProgress.find(`.name`);
-						const $remain = $winProgress.find(`.remaining`).text(`${sel.length} remaining...`);
-						const $errCount = $winProgress.find(`.errors`);
-						const $errReasons = $winProgress.find(`.error-names`);
-						let errCount = 0;
-
-						$winProgress.dialog("open");
-
-						const journal = data.journal ? MiscUtil.copy(data.journal).reverse() : null;
-						const dataType = lastDataType;
-
-						let queue = sel;
-						// if importing journal items, make sure they get put back in the right order
-						if (journal && (dataType === "characters" || dataType === "handouts")) {
-							const nuQueue = [];
-
-							journal.forEach(jIt => {
-								const qIx = queue.findIndex(qIt => qIt.attributes.id === jIt.id);
-								if (~qIx) nuQueue.push(queue.splice(qIx, 1)[0]);
-							});
-							queue.forEach(qIt => nuQueue.push(qIt)); // add anything that wasn't in the journal to the end of the queue
-							queue = nuQueue;
-						}
-
-						let isCancelled = false;
-						let lastTimeout = null;
-						$btnCancel.off("click").click(() => {
-							isCancelled = true;
-							if (lastTimeout != null) {
-								clearTimeout(lastTimeout);
-								doImport();
-							}
-						});
-						const timeout = dataType === "maps" ? (d20plus.getCfgVal("import", "importIntervalMap") || d20plus.getCfgDefaultVal("import", "importIntervalMap")) :
-							dataType === "characters" ? (d20plus.getCfgVal("import", "importIntervalCharacter") || d20plus.getCfgDefaultVal("import", "importIntervalCharacter")) :
-								(dataType === "handouts" || dataType === "rolltables") ? (d20plus.getCfgVal("import", "importIntervalHandout") || d20plus.getCfgDefaultVal("import", "importIntervalHandout")) : 5000; // default to 5 secs
-
-						const addToJournal = (originalId, itId) => {
-							let handled = false;
-							if (journal) {
-								const found = journal.find(it => it.id === originalId);
-								if (found) {
-									const rawPath = found.path;
-									const cleanPath = rawPath.slice(1); // paths start with "Root"
-									const folder = d20plus.importer.makeDirTree(...cleanPath);
-									d20.journal.addItemToFolderStructure(itId, folder.id);
-									handled = true;
-								}
-							}
-
-							if (!handled) d20.journal.addItemToFolderStructure(itId, genericFolder.id);
-						};
-
-						const doImport = () => {
-							if (isCancelled) {
-								$name.text("Import cancelled.");
-								$remain.text(`Cancelled with ${queue.length} remaining.`);
-							} else if (queue.length && !isCancelled) {
-								$remain.text(`${queue.length} remaining...`);
-								const data = queue.shift();
-								const name = data.attributes.name;
-								try {
-									$name.text(`Importing ${name}`);
-
-									switch (dataType) {
-										case "maps": {
-											const map = d20.Campaign.pages.create(data.attributes);
-											data.graphics.forEach(it => map.thegraphics.create(it));
-											data.paths.forEach(it => map.thepaths.create(it));
-											data.text.forEach(it => map.thetexts.create(it));
-											map.save();
-											break;
-										}
-										case "rolltables": {
-											const table = d20.Campaign.rollabletables.create(data.attributes);
-											table.tableitems.reset();
-											const toSave = data.tableitems.map(it => table.tableitems.push(it));
-											toSave.forEach(s => s.save());
-											table.save();
-											break;
-										}
-										case "decks": {
-											const deck = d20.Campaign.decks.create(data.attributes);
-											deck.cards.reset();
-											const toSave = data.cards.map(it => deck.cards.push(it));
-											toSave.forEach(s => s.save());
-											deck.save();
-											break;
-										}
-										case "handouts": {
-											d20.Campaign.handouts.create(data.attributes,
-												{
-													success: function (handout) {
-														handout.updateBlobs({
-															notes: data.blobNotes,
-															gmnotes: data.blobGmNotes
-														});
-
-														addToJournal(data.attributes.id, handout.id);
-													}
-												}
-											)
-											break;
-										}
-										case "characters": {
-											d20.Campaign.characters.create(data.attributes,
-												{
-													success: function (character) {
-														character.attribs.reset();
-														const toSave = data.attribs.map(a => character.attribs.push(a));
-														toSave.forEach(s => s.syncedSave());
-
-														character.updateBlobs({
-															bio: data.blobBio,
-															gmnotes: data.blobGmNotes,
-															defaulttoken: data.blobDefaultToken
-														});
-
-														addToJournal(data.attributes.id, character.id);
-													}
-												}
-											);
-											break;
-										}
-										default: throw new Error(`Unhandled data type: ${dataType}`);
-									}
-								} catch (e) {
-									console.error(e);
-
-									errCount++;
-									$errCount.text(errCount);
-									const prevReasons = $errReasons.text().trim();
-									$errReasons.append(`${prevReasons.length ? ", " : ""}${name}: "${e.message}"`)
-								}
-
-								// queue up the next import
-								lastTimeout = setTimeout(doImport, timeout);
-							} else {
-								$name.text("Import complete!");
-								$remain.text(`${queue.length} remaining.`);
-							}
-						};
-
-						doImport();
-					});
-				}
-
-				$selDataType.off("change").on("change", () => {
-					lastDataType = $selDataType.val();
-					if (lastLoadedData) handleLoadedData(lastLoadedData)
-				});
-
-				const $btnLoadVetools = $win.find(`[name="load-Vetools"]`);
-				$btnLoadVetools.off("click").click(() => {
-					$win5etools.dialog("open");
-					const $btnLoad = $win5etools.find(`.load`).off("click");
-
-					DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-index.json`).then(data => {
-						const $lst = $win5etools.find(`.list`);
-						const modules = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
-						let tmp = "";
-						modules.forEach((t, i) => {
-							tmp += `
-								<label class="import-cb-label" data-listid="${i}">
-									<input type="radio" name="map-5etools">
-									<span class="name col-7 readable">${t.name}</span>
-									<span class="name col-3 readable" style="text-align: right;">${d20plus.getReadableFileSizeString(t.size)}</span>
-									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
-								</label>
-							`;
-						});
-						$lst.html(tmp);
-						tmp = null;
-
-						const list5etools = new List("module-importer-list-5etools", {
-							valueNames: ["name"]
-						});
-
-						$btnLoad.on("click", () => {
-							const sel = list5etools.items
-								.filter(it => $(it.elm).find(`input`).prop("checked"))
-								.map(it => modules[$(it.elm).attr("data-listid")])[0];
-
-							$win5etools.dialog("close");
-							$win.dialog("open");
-							$lst.empty().append(`<i>Loading...</i>`);
-							DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-${sel.id.toLowerCase()}.json`)
-								.then(moduleFile => handleLoadedData(moduleFile))
-								.catch(e => {
-									console.error(e);
-									alert(`Failed to load data! See the console for more information.`);
-								});
-						});
-					}).catch(e => {
-						console.error(e);
-						alert(`Failed to load data! See the console for more information.`);
-					});
-				});
-
-				const $btnLoadFile = $win.find(`[name="load-file"]`);
-				$btnLoadFile.off("click").click(() => {
-					DataUtil.userUpload((data) => handleLoadedData(data));
-				});
-
-				const $btnExport = $win.find(`[name="export"]`);
-				$btnExport.off("click").click(() => {
-					console.log("Exporting journal...");
-					const journal = d20plus.importer.getExportableJournal();
-
-					console.log("Exporting maps...");
-					const maps = d20.Campaign.pages.models.map(map => ({ // shoutouts to Stormy
-						attributes: map.attributes,
-						graphics: map.thegraphics.map(g => g.attributes),
-						text: map.thetexts.map(t => t.attributes),
-						paths: map.thepaths.map(p => p.attributes)
-					}));
-
-					console.log("Exporting tables...");
-					const rolltables = d20.Campaign.rollabletables.models.map(rolltable => ({
-						attributes: rolltable.attributes,
-						tableitems: rolltable.tableitems.models.map(tableitem => tableitem.attributes)
-					}));
-
-					console.log("Exporting decks...");
-					const decks = d20.Campaign.decks.models.map(deck => {
-						if (deck.name && deck.name.toLowerCase() === "playing cards") return;
-						return {
-							attributes: deck.attributes,
-							cards: deck.cards.models.map(card => card.attributes)
-						};
-					}).filter(it => it);
-
-					let blobCount = 0;
-					let onBlobsReady = null;
-
-					const handleBlob = (addTo, asKey, data) => {
-						addTo[asKey] = data;
-						blobCount--;
-						if (onBlobsReady && blobCount === 0) onBlobsReady();
-					};
-
-					console.log("Exporting characters...");
-					const characters = d20.Campaign.characters.models.map(character => {
-						const out = {
-							attributes: character.attributes,
-							attribs: character.attribs
-						};
-						blobCount += 3;
-						character._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
-						character._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
-						character._getLatestBlob("defaulttoken", (data) => handleBlob(out, "blobDefaultToken", data));
-						return out;
-					});
-
-					console.log("Exporting handouts...");
-					const handouts = d20.Campaign.handouts.models.map(handout => {
-						if (handout.attributes.name === ART_HANDOUT || handout.attributes.name === CONFIG_HANDOUT) return;
-
-						const out = {
-							attributes: handout.attributes
-						};
-						blobCount += 2;
-						handout._getLatestBlob("notes", (data) => handleBlob(out, "blobNotes", data));
-						handout._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
-						return out;
-					}).filter(it => it);
-
-					console.log("Waiting for blobs...");
-					onBlobsReady = () => {
-						console.log("Blobs are ready!");
-						const payload = {
-							schema_version: 1, // version number from r20es
-							maps,
-							rolltables,
-							decks,
-							journal,
-							handouts,
-							characters
-						};
-
-						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^\w\-]/g, "_");
-						const data = JSON.stringify(payload, null, "\t");
-
-						const blob = new Blob([data], {type: "application/json"})
-						d20plus.saveAs(blob, `${filename}.json`);
-					};
-
-					// TODO
-					/*
-					macro
-					jukebox track
-					 */
-				});
 			}
 		}
 	]);
@@ -7360,7 +6928,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 	<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
 		<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
 		<$ var char = (token) ? token.character : null; $>
-		<$ if (d20plus.getCfgVal("interface", "customTracker") && d20plus.getCfgVal("interface", "trackerSheetButton")) { $>
+		<$ if (d20plus.cfg.getCfgVal("interface", "customTracker") && d20plus.cfg.getCfgVal("interface", "trackerSheetButton")) { $>
 			<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
 				<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
 				<span class='ui-button-text'>N</span>
