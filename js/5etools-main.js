@@ -2082,7 +2082,8 @@ const betteR205etools = function () {
 							nextStep: d20plus.monsters._doScale
 						}
 					);
-				}
+				},
+				(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
 			);
 		}
 	};
