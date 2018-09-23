@@ -161,6 +161,10 @@ function baseCss () {
 			s: ".ib",
 			r: "display: inline-block;"
 		},
+		{
+			s: ".float-right",
+			r: "float: right;"
+		},
 		// image rows
 		{
 			s: ".import-cb-label--img",
