@@ -1101,13 +1101,11 @@ function baseTool() {
 												{
 													success: function (character) {
 														character.attribs.reset();
-														let toSave = entry.attribs.map(a => character.attribs.push(a));
+														const toSave = entry.attribs.map(a => character.attribs.push(a));
 														toSave.forEach(s => s.syncedSave());
+
 														character.abilities.reset();
-														if (entry.abilities) {
-															let toSave = entry.abilities.map(a => character.abilities.push(a));
-															toSave.forEach(s => s.syncedSave());
-														}
+														if (entry.abilities) entry.abilities.map(a => character.abilities.push(a)).forEach(s => s.save());
 
 														character.updateBlobs({
 															bio: entry.blobBio,
