@@ -740,30 +740,36 @@ function baseTool() {
 					<div style="clear: both;"></div>
 				</p>
 				<div style="border-bottom: 1px solid #ccc; margin-bottom: 3px; padding-bottom: 3px;">
-					<div style="float: left;">
-						<button class="btn" name="load-Vetools">Load from 5etools</button>
-						<button class="btn" name="load-file">Upload File</button>
-					</div>
-					<div style="float: right;">
-						Import category: 
-						<select name="data-type" disabled style="margin-bottom: 0;">
-							<option value="characters">Characters</option>
-							<option value="decks">Decks</option>
-							<option value="handouts">Handouts</option>
-							<option value="maps">Maps</option>
-							<option value="rolltables">Rollable Tables</option>
-						</select>						
-					</div>
-					<div style="clear: both;"></div>
+					<button class="btn" name="load-Vetools">Load from 5etools</button>
+					<button class="btn" name="load-file">Upload File</button>
 				</div>
-				<div id="module-importer-list">
-					<input type="search" class="search" placeholder="Search..." disabled>
-					<div class="list" style="transform: translateZ(0); max-height: 440px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
-					<i>Load a file to view the contents here</i>
-					</div>
+				<div>
+					<div name="data-loading-message"></div>
+					<select name="data-type" disabled style="margin-bottom: 0;">
+						<option value="characters">Characters</option>
+						<option value="decks">Decks</option>
+						<option value="handouts">Handouts</option>
+						<option value="maps">Maps</option>
+						<option value="rolltables">Rollable Tables</option>
+					</select>
+					<button class="btn" name="view-select-entrues">View/Select Entries</button>
+					<div name="selection-summary" style="margin-top: 5px;"></div>
 				</div>
 				<hr>
-				<p><label class="ib"><input type="checkbox" class="select-all"> Select All</label> <button class="btn" style="float: right;" name="import">Import Selected</button></p>
+				<p><button class="btn" style="float: right;" name="import">Import Selected</button></p>
+				</div>
+				
+				<div id="d20plus-module-importer-list" title="Select Entries">					
+					<div id="module-importer-list">
+						<input type="search" class="search" placeholder="Search..." disabled>
+						<div class="list" style="transform: translateZ(0); max-height: 650px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
+						<i>Load a file to view the contents here</i>
+						</div>
+					</div>
+					<div>
+						<label class="ib"><input type="checkbox" class="select-all"> Select All</label>
+						<button class="btn" style="float: right;" name="confirm-selection">Confirm Selection</button>
+					</div>
 				</div>
 				
 				<div id="d20plus-module-importer-progress" title="Import Progress">					
@@ -774,8 +780,7 @@ function baseTool() {
 				</div>
 				
 				<div id="d20plus-module-importer-help" title="Readme">
-					<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import; a list of available entries will appear. Select entries from the list as required, and hit "Import Selected."</p>
-					<p>You can import the categories in any order, but if you wish to import maps and characters, <b>the recommended order is maps first, then characters</b>. This allows the tokens to correctly link to the character sheets, and sets the bars on tokens to sensible defaults.</p>
+					<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import, and "View/Select Entries." Once you've selected everything you wish to import from the module, hit "Import Selected." This ensures entries are imported in the correct order.</p>
 					<p><b>Note:</b> The script-wide configurable "rest time" options affect how quickly each category of entries is imported (tables and decks use the "Handout" rest time).</p>
 					<p><b>Note:</b> Configuration options (aside from "rest time" as detailed above) <i>do not</i> affect the module importer. It effectively "clones" the content as-exported from the original module, including any whisper/advantage/etc settings.</p>
 				</div>
@@ -831,8 +836,22 @@ function baseTool() {
 					width: 300,
 					height: 400,
 				});
+				$("#d20plus-module-importer-list").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 600,
+					height: 800,
+				});
 			},
 			openFn: () => {
+				const DISPLAY_NAMES = {
+					maps: "Maps",
+					rolltables: "Rollable Tables",
+					decks: "Decks",
+					handouts: "Handouts",
+					characters: "Characters",
+				}
+
 				const $win = $("#d20plus-module-importer");
 				$win.dialog("open");
 
@@ -844,92 +863,118 @@ function baseTool() {
 				const $winHelp = $(`#d20plus-module-importer-help`);
 				const $btnHelp = $win.find(`.readme`).off("click").click(() => $winHelp.dialog("open"));
 
-				const $wrpLst = $win.find(`#module-importer-list`);
-				const $lst = $win.find(`.list`).empty();
+				const $winList = $(`#d20plus-module-importer-list`);
+				const $wrpLst = $(`#module-importer-list`);
+				const $lst = $winList.find(`.list`).empty();
+				const $cbAll = $winList.find(`.select-all`).off("click").prop("disabled", true);
+				const $iptSearch = $winList.find(`.search`).prop("disabled", true);
+				const $btnConfirmSel = $winList.find(`[name="confirm-selection"]`).off("click");
+
+				const $wrpSummary = $win.find(`[name="selection-summary"]`);
+				const $wrpDataLoadingMessage = $win.find(`[name="data-loading-message"]`);
 
 				const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
-				const $cbAll = $win.find(`.select-all`).off("click").prop("disabled", true);
-				const $iptSearch = $win.find(`.search`).prop("disabled", true);
+				const $btnViewCat = $win.find(`[name="view-select-entrues"]`).off("click").prop("disabled", true);
 
 				const $selDataType = $win.find(`[name="data-type"]`).prop("disabled", true);
 				let lastDataType = $selDataType.val();
 				let genericFolder;
 				let lastLoadedData = null;
 
+				const getFreshSelected = () => ({
+					characters: [],
+					decks: [],
+					handouts: [],
+					maps: [],
+					rolltables: []
+				})
+
+				let selected = getFreshSelected();
+
 				function handleLoadedData (data) {
-					if (!lastDataType) throw new Error(`Module data type was not set!`);
 					lastLoadedData = data;
+					selected = getFreshSelected();
 					$selDataType.prop("disabled", false);
-					$iptSearch.prop("disabled", false);
 
-					let prop = "";
-					switch (lastDataType) {
-						case "maps": {
-							prop = "maps";
-							break;
-						}
-						case "rolltables": {
-							$("a.ui-tabs-anchor[href='#deckstables']").click();
-							prop = "rolltables";
-							break;
-						}
-						case "decks": {
-							$("a.ui-tabs-anchor[href='#deckstables']").click();
-							prop = "decks";
-							break;
-						}
-						case "handouts": {
-							prop = "handouts";
-							$("a.ui-tabs-anchor[href='#journal']").click();
-							genericFolder = d20plus.importer.makeDirTree(`Handouts`);
-							break;
-						}
-						case "characters": {
-							prop = "characters";
-							$("a.ui-tabs-anchor[href='#journal']").click();
-							genericFolder = d20plus.importer.makeDirTree(`Characters`);
-							break;
-						}
-						default: throw new Error(`Unhandled data type: ${lastDataType}`);
-					}
+					$btnViewCat.prop("disabled", false);
+					$btnViewCat.off("click").click(() => {
+						$winList.dialog("open");
+						$iptSearch.prop("disabled", false);
 
-					const moduleData = data[prop];
-					data[prop].sort((a, b) => SortUtil.ascSortLower(a.attributes.name || "", b.attributes.name || ""));
+						let prop = "";
+						switch (lastDataType) {
+							case "maps": {
+								prop = "maps";
+								break;
+							}
+							case "rolltables": {
+								prop = "rolltables";
+								break;
+							}
+							case "decks": {
+								prop = "decks";
+								break;
+							}
+							case "handouts": {
+								prop = "handouts";
+								genericFolder = d20plus.importer.makeDirTree(`Handouts`);
+								break;
+							}
+							case "characters": {
+								prop = "characters";
+								genericFolder = d20plus.importer.makeDirTree(`Characters`);
+								break;
+							}
+							default: throw new Error(`Unhandled data type: ${lastDataType}`);
+						}
 
-					$lst.empty();
-					moduleData.forEach((m, i) => {
-						const img = lastDataType === "maps" ? m.attributes.thumbnail :
-							(lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
+						const moduleData = data[prop];
+						data[prop].sort((a, b) => SortUtil.ascSortLower(a.attributes.name || "", b.attributes.name || ""));
 
-						$lst.append(`
+						$lst.empty();
+						moduleData.forEach((m, i) => {
+							const img = lastDataType === "maps" ? m.attributes.thumbnail :
+								(lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
+
+							$lst.append(`
 									<label class="import-cb-label ${img ? `import-cb-label--img` : ""}" data-listid="${i}">
 										<input type="checkbox">
 										${img && img.trim() ? `<img class="import-label__img" src="${img}">` : ""}
 										<span class="name col-9 readable">${m.attributes.name}</span>
 									</label>
 								`);
-					});
+						});
 
-					const mapList = new List("module-importer-list", {
-						valueNames: ["name"]
-					});
+						const entryList = new List("module-importer-list", {
+							valueNames: ["name"]
+						});
 
-					$cbAll.prop("disabled", false).off("click").click(() => {
-						mapList.items.forEach(it => {
-							$(it.elm).find(`input[type="checkbox"]`).prop("checked", $cbAll.prop("checked"));
+						$cbAll.prop("disabled", false).off("click").click(() => {
+							entryList.items.forEach(it => {
+								$(it.elm).find(`input[type="checkbox"]`).prop("checked", $cbAll.prop("checked"));
+							});
+						});
+
+						$btnConfirmSel.off("click").click(() => {
+							const sel = entryList.items
+								.filter(it => $(it.elm).find(`input`).prop("checked"))
+								.map(it => moduleData[$(it.elm).attr("data-listid")]);
+
+							if (!sel.length) return alert("No entries selected!");
+
+							$cbAll.prop("checked", false);
+							$winList.dialog("close");
+							selected[prop] = sel;
+							$wrpSummary.text(Object.entries(selected).filter(([prop, ents]) => ents.length).map(([prop, ents]) => `${DISPLAY_NAMES[prop]}: ${ents.length} selected`).join("; "));
 						});
 					});
 
 					$btnImport.prop("disabled", false).off("click").click(() => {
-						$cbAll.prop("checked", false);
-						const sel = mapList.items
-							.filter(it => $(it.elm).find(`input`).prop("checked"))
-							.map(it => moduleData[$(it.elm).attr("data-listid")]);
-
-						if (!sel.length) return alert("No entries selected!");
+						const totalSelected = Object.values(selected).map(it => it.length).reduce((a, b) => a + b, 0);
+						if (!totalSelected) return alert("No entries selected!");
 
 						const $name = $winProgress.find(`.name`);
-						const $remain = $winProgress.find(`.remaining`).text(`${sel.length} remaining...`);
+						const $remain = $winProgress.find(`.remaining`).text(`${totalSelected} remaining...`);
 						const $errCount = $winProgress.find(`.errors`);
 						const $errReasons = $winProgress.find(`.error-names`);
 						let errCount = 0;
@@ -937,20 +982,31 @@ function baseTool() {
 						$winProgress.dialog("open");
 
 						const journal = data.journal ? MiscUtil.copy(data.journal).reverse() : null;
-						const dataType = lastDataType;
 
-						let queue = sel;
-						// if importing journal items, make sure they get put back in the right order
-						if (journal && (dataType === "characters" || dataType === "handouts")) {
-							const nuQueue = [];
+						let queue = [];
+						Object.entries(selected).filter(([k, v]) => v.length).forEach(([prop, ents]) => {
+							ents = MiscUtil.copy(ents);
 
-							journal.forEach(jIt => {
-								const qIx = queue.findIndex(qIt => qIt.attributes.id === jIt.id);
-								if (~qIx) nuQueue.push(queue.splice(qIx, 1)[0]);
-							});
-							queue.forEach(qIt => nuQueue.push(qIt)); // add anything that wasn't in the journal to the end of the queue
-							queue = nuQueue;
-						}
+							// if importing journal items, make sure they get put back in the right order
+							if (journal && (prop === "characters" || prop === "handouts")) {
+								const nuQueue = [];
+
+								journal.forEach(jIt => {
+									const qIx = ents.findIndex(qIt => qIt.attributes.id === jIt.id);
+									if (~qIx) nuQueue.push(ents.splice(qIx, 1)[0]);
+								});
+								ents.forEach(qIt => nuQueue.push(qIt)); // add anything that wasn't in the journal to the end of the queue
+								ents = nuQueue;
+							}
+
+							const toAdd = ents.map(entry => ({entry, prop}));
+							// do maps first
+							if (prop === "maps") queue = toAdd.concat(queue);
+							else queue = queue.concat(toAdd);
+						});
+
+						selected = getFreshSelected();
+						$wrpSummary.text("");
 
 						let isCancelled = false;
 						let lastTimeout = null;
@@ -961,9 +1017,16 @@ function baseTool() {
 								doImport();
 							}
 						});
-						const timeout = dataType === "maps" ? (d20plus.cfg.getCfgVal("import", "importIntervalMap") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalMap")) :
-							dataType === "characters" ? (d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter")) :
-								(dataType === "handouts" || dataType === "rolltables") ? (d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout")) : 5000; // default to 5 secs
+						const mapTimeout = d20plus.cfg.getCfgVal("import", "importIntervalMap") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalMap");
+						const charTimeout = d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter");
+						const handoutTimeout = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
+						const timeouts = {
+							characters: charTimeout,
+							decks: handoutTimeout,
+							handouts: handoutTimeout,
+							maps: mapTimeout,
+							rolltables: handoutTimeout
+						}
 
 						const addToJournal = (originalId, itId) => {
 							let handled = false;
@@ -987,72 +1050,73 @@ function baseTool() {
 								$remain.text(`Cancelled with ${queue.length} remaining.`);
 							} else if (queue.length && !isCancelled) {
 								$remain.text(`${queue.length} remaining...`);
-								const data = queue.shift();
-								const name = data.attributes.name;
+								const {entry, prop} = queue.shift();
+								const timeout = timeouts[prop];
+								const name = entry.attributes.name;
 								try {
 									$name.text(`Importing ${name}`);
 
-									switch (dataType) {
+									switch (prop) {
 										case "maps": {
-											const map = d20.Campaign.pages.create(data.attributes);
-											data.graphics.forEach(it => map.thegraphics.create(it));
-											data.paths.forEach(it => map.thepaths.create(it));
-											data.text.forEach(it => map.thetexts.create(it));
+											const map = d20.Campaign.pages.create(entry.attributes);
+											entry.graphics.forEach(it => map.thegraphics.create(it));
+											entry.paths.forEach(it => map.thepaths.create(it));
+											entry.text.forEach(it => map.thetexts.create(it));
 											map.save();
 											break;
 										}
 										case "rolltables": {
-											const table = d20.Campaign.rollabletables.create(data.attributes);
+											const table = d20.Campaign.rollabletables.create(entry.attributes);
 											table.tableitems.reset();
-											const toSave = data.tableitems.map(it => table.tableitems.push(it));
+											const toSave = entry.tableitems.map(it => table.tableitems.push(it));
 											toSave.forEach(s => s.save());
 											table.save();
 											break;
 										}
 										case "decks": {
-											const deck = d20.Campaign.decks.create(data.attributes);
+											const deck = d20.Campaign.decks.create(entry.attributes);
 											deck.cards.reset();
-											const toSave = data.cards.map(it => deck.cards.push(it));
+											const toSave = entry.cards.map(it => deck.cards.push(it));
 											toSave.forEach(s => s.save());
 											deck.save();
 											break;
 										}
 										case "handouts": {
-											d20.Campaign.handouts.create(data.attributes,
+											d20.Campaign.handouts.create(entry.attributes,
 												{
 													success: function (handout) {
 														handout.updateBlobs({
-															notes: data.blobNotes,
-															gmnotes: data.blobGmNotes
+															notes: entry.blobNotes,
+															gmnotes: entry.blobGmNotes
 														});
 
-														addToJournal(data.attributes.id, handout.id);
+														addToJournal(entry.attributes.id, handout.id);
 													}
 												}
 											);
 											break;
 										}
 										case "characters": {
-											d20.Campaign.characters.create(data.attributes,
+											d20.Campaign.characters.create(entry.attributes,
 												{
 													success: function (character) {
 														character.attribs.reset();
-														const toSave = data.attribs.map(a => character.attribs.push(a));
+														const toSave = entry.attribs.map(a => character.attribs.push(a));
 														toSave.forEach(s => s.syncedSave());
 
 														character.updateBlobs({
-															bio: data.blobBio,
-															gmnotes: data.blobGmNotes,
-															defaulttoken: data.blobDefaultToken
+															bio: entry.blobBio,
+															gmnotes: entry.blobGmNotes,
+															defaulttoken: entry.blobDefaultToken
 														});
 
-														addToJournal(data.attributes.id, character.id);
+														addToJournal(entry.attributes.id, character.id);
 													}
 												}
 											);
 											break;
 										}
-										default: throw new Error(`Unhandled data type: ${dataType}`);
+										default: throw new Error(`Unhandled data type: ${prop}`);
 									}
 								} catch (e) {
 									console.error(e);
@@ -1077,7 +1141,6 @@ function baseTool() {
 
 				$selDataType.off("change").on("change", () => {
 					lastDataType = $selDataType.val();
-					if (lastLoadedData) handleLoadedData(lastLoadedData)
 				});
 
 				const $btnLoadVetools = $win.find(`[name="load-Vetools"]`);
@@ -1113,10 +1176,14 @@ function baseTool() {
 
 							$win5etools.dialog("close");
 							$win.dialog("open");
-							$lst.empty().append(`<i>Loading...</i>`);
+							$wrpDataLoadingMessage.html("<i>Loading...</i>");
 							DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-${sel.id.toLowerCase()}.json`)
-								.then(moduleFile => handleLoadedData(moduleFile))
+								.then(moduleFile => {
+									$wrpDataLoadingMessage.html("");
+									return handleLoadedData(moduleFile);
+								})
 								.catch(e => {
+									$wrpDataLoadingMessage.html("");
 									console.error(e);
 									alert(`Failed to load data! See the console for more information.`);
 								});
