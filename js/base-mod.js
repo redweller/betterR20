@@ -748,6 +748,54 @@ function d20plusMod() {
 				}
 			})
 	};
-}
+
+	d20plus.engine.removeLinkConfirmation = function () {
+		d20.utils.handleURL = d20plus.mod.handleURL;
+		$(document).off("click", "a").on("click", "a", d20.utils.handleURL);
+	};
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.handleURL = function(e) {
+		if (!($(this).hasClass("lightly") || $(this).parents(".note-editable").length > 0)) {
+			var t = $(this).attr("href");
+			if (t !== undefined) {
+				if (-1 !== t.indexOf("journal.roll20.net") || -1 !== t.indexOf("wiki.roll20.net")) {
+					var n = t.split("/")[3]
+						, i = t.split("/")[4]
+						, o = d20.Campaign[n + "s"].get(i);
+					if (o) {
+						var r = o.get("inplayerjournals").split(",");
+						(window.is_gm || -1 !== _.indexOf(r, "all") || window.currentPlayer && -1 !== _.indexOf(r, window.currentPlayer.id)) && o.view.showDialog()
+					}
+					return $("#existing" + n + "s").find("tr[data-" + n + "id=" + i + "]").trigger("click"),
+						!1
+				}
+				var a = /(?:(?:http(?:s?):\/\/(?:app\.)?roll20\.(?:net|local:5000)\/|^\/?)compendium\/)([^\/]+)\/([^\/#?]+)/i
+					, s = t.match(a);
+				if (s)
+					return d20.utils.openCompendiumPage(s[1], s[2]),
+						e.stopPropagation(),
+						void e.preventDefault();
+				if (-1 !== t.indexOf("javascript:"))
+					return !1;
+				if ("!" === t.substring(0, 1))
+					return d20.textchat.doChatInput(t),
+						!1;
+				if ("~" === t.substring(0, 1))
+					return d20.textchat.doChatInput("%{" + t.substring(1, t.length) + "}"),
+						!1;
+
+				if (t !== undefined && ("external" === $(this).attr("rel") || -1 === t.indexOf("javascript:") && -1 !== t.indexOf("://"))) {
+					// BEGIN MOD
+					e.stopPropagation();
+					e.preventDefault();
+					window.open(t);
+					// END MOD
+				}
+			}
+		}
+	}
+	// END ROLL20 CODE
+};
 
 SCRIPT_EXTENSIONS.push(d20plusMod);

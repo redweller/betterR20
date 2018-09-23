@@ -44,6 +44,7 @@ const betteR20Core = function () {
 			d20plus.art.addCustomArtSearch();
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
+			d20plus.engine.removeLinkConfirmation();
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}
