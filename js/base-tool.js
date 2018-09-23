@@ -1237,7 +1237,7 @@ function baseTool() {
 
 						let rolltables;
 						if (catsToExport.has("rolltables")) {
-							console.log("Exporting tables...");
+							console.log("Exporting rolltables...");
 							rolltables = d20.Campaign.rollabletables.models.map(rolltable => ({
 								attributes: rolltable.attributes,
 								tableitems: rolltable.tableitems.models.map(tableitem => tableitem.attributes)
@@ -1274,8 +1274,9 @@ function baseTool() {
 								const out = {
 									attributes: character.attributes,
 									attribs: character.attribs,
-									abilities: (character.abilities || {models: []}).models.map(ability => ability.attributes)
 								};
+								const abilities = (character.abilities || {models: []}).models.map(ability => ability.attributes);
+								if (abilities && abilities.length) out.abilities = abilities;
 								blobCount += 3;
 								character._getLatestBlob("bio", (data) => handleBlob(out, "blobBio", data));
 								character._getLatestBlob("gmnotes", (data) => handleBlob(out, "blobGmNotes", data));
