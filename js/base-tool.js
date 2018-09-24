@@ -652,10 +652,23 @@ function baseTool() {
 				});
 
 				// do initial entangles
-				console.log("Initial existing entangles...")
-				d20.Campaign.pages.models.forEach(model => model.thegraphics.models.filter(it => it.attributes.entangled && it.attributes.entangled.length).forEach(it => {
-					$win.data("VE_DO_ENTANGLE")(it);
-				}));
+				const runInitial = () => {
+					const pages = d20.Campaign.pages;
+					if (pages && pages.models) {
+						console.log("Initial existing entangles...");
+						d20.Campaign.pages.models
+							.filter(model => model.thegraphics && model.thegraphics.models)
+							.forEach(model => model.thegraphics.models.filter(it => it.attributes.entangled && it.attributes.entangled.length)
+							.forEach(it => {
+								$win.data("VE_DO_ENTANGLE")(it);
+							}));
+					} else {
+						console.log("Pages uninitialised, waiting...");
+						setTimeout(runInitial, 1000);
+					}
+				};
+
+				runInitial();
 
 				$win.dialog({
 					autoOpen: false,
@@ -1355,16 +1368,23 @@ function baseTool() {
 		const $toolsList = $tools.find(`.tools-list`);
 		d20plus.tool.tools.sort((a, b) => SortUtil.ascSortLower(a.name || "", b.name || "")).forEach(t => {
 			$body.append(t.html); // add HTML
-			t.dialogFn(); // init window
-			// add tool row
-			const $wrp = $(`<div class="tool-row"/>`);
-			$wrp.append(`<span style="width: 20%; padding: 4px;">${t.name}</span>`);
-			$wrp.append(`<span style="width: calc(60% - 8px); padding: 4px;">${t.desc}</span>`);
-			$(`<a style="width: 15%;" class="btn" href="#">Open</a>`).on(mousedowntype, () => {
-				t.openFn.bind(t)();
-				$tools.dialog("close");
-			}).appendTo($wrp);
-			$toolsList.append($wrp);
+			try {
+				t.dialogFn(); // init window
+				// add tool row
+				const $wrp = $(`<div class="tool-row"/>`);
+				$wrp.append(`<span style="width: 20%; padding: 4px;">${t.name}</span>`);
+				$wrp.append(`<span style="width: calc(60% - 8px); padding: 4px;">${t.desc}</span>`);
+				$(`<a style="width: 15%;" class="btn" href="#">Open</a>`).on(mousedowntype, () => {
+					t.openFn.bind(t)();
+					$tools.dialog("close");
+				}).appendTo($wrp);
+				$toolsList.append($wrp);
+			} catch (e) {
+				console.error(`Failed to initialise tool "${t.name}"`);
+				setTimeout(() => {
+					throw e;
+				}, 1);
+			}
 		});
 
 		$tools.dialog({
