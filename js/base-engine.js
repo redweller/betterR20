@@ -766,6 +766,13 @@ function d20plusUi () {
 							const layer = window.currentEditingLayer;
 
 							const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+
+							if(!url) {
+								i();
+								return;
+							}
+
+
 							const img = new Image();
 							img.onload = () => {
 								const toCreate = {
