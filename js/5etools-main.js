@@ -496,7 +496,7 @@ const betteR205etools = function () {
 		d20plus.ut.log("Init (v" + d20plus.version + ")");
 		d20plus.ut.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
-        
+
 		d20plus.ut.log("Modifying character & handout editor templates");
 		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
 		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
@@ -2102,7 +2102,7 @@ const betteR205etools = function () {
 		if (character.size === "H") tokensize = 3;
 		if (character.size === "G") tokensize = 4;
 		var lightradius = null;
-		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max.apply(Math, character.senses.match(/\d+/g));
+		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max(...character.senses.match(/\d+/g));
 		var lightmin = 0;
 		if (character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
 		const nameSuffix = d20plus.cfg.getCfgVal("token", "namesuffix");
@@ -2925,7 +2925,7 @@ const betteR205etools = function () {
 										}
 										else if(v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] && v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] === "off") {
 											description = "";
-										};
+										}
 										update["repeating_attack_" + attackid + "_atk_desc"] = description;
 
 										// TODO are these necessary?
@@ -2949,6 +2949,7 @@ const betteR205etools = function () {
 										const callbacks = [];
 										const id = d20plus.ut.generateRowId();
 
+										/* eslint-disable block-spacing, no-extra-semi */
 										var lvl = page.data["Level"] && page.data["Level"] > 0 ? page.data["Level"] : "cantrip";
 										update["repeating_spell-" + lvl + "_" + id + "_spelllevel"] = lvl;
 										if(page.data["spellcasting_ability"]) {
@@ -3001,6 +3002,7 @@ const betteR205etools = function () {
 
 										// custom writing:
 										setAttrs(update, callbacks);
+										/* eslint-enable block-spacing, no-extra-semi */
 									}
 
 									processDrop(data);
@@ -3263,7 +3265,7 @@ const betteR205etools = function () {
 									});
 								}
 							}
-							
+
 							// set show/hide NPC names in rolls
 							if (d20plus.cfg.hasCfgVal("import", "showNpcNames") && !d20plus.cfg.getCfgVal("import", "showNpcNames")) {
 								character.attribs.create({name: "npc_name_flag", current: 0});
@@ -3897,7 +3899,6 @@ const betteR205etools = function () {
 
 										n = n.toLowerCase();
 										src = src.toLowerCase();
-
 
 
 										const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
@@ -4765,7 +4766,7 @@ const betteR205etools = function () {
 		const name = data.name;
 		d20.Campaign.handouts.create({
 			name: name,
-			tags:  d20plus.importer.getTagString([
+			tags: d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
 			], "class")
 		}, {
@@ -5017,7 +5018,7 @@ const betteR205etools = function () {
 		const name = data.name;
 		d20.Campaign.handouts.create({
 			name: name,
-			tags:  d20plus.importer.getTagString([
+			tags: d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
 			], "background")
 		}, {
@@ -5095,7 +5096,7 @@ const betteR205etools = function () {
 		const name = data.name;
 		d20.Campaign.handouts.create({
 			name: name,
-			tags:  d20plus.importer.getTagString([
+			tags: d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source)
 			], "optionalfeature")
 		}, {
@@ -6600,7 +6601,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						blobs: {}
 					};
 					blobCount = 3;
-					const onBlobsReady = () => DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()\[\]{}]/, "_"), JSON.stringify(out, null, "\t"));
+					const onBlobsReady = () => DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()[\]{}]/, "_"), JSON.stringify(out, null, "\t"));
 
 					const handleBlob = (asKey, data) => {
 						out.blobs[asKey] = data;
