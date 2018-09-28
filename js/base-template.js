@@ -834,7 +834,7 @@ const baseTemplate = function () {
         </div>
       </div>
     </script>
-		`;
+`	;
 };
 
 SCRIPT_EXTENSIONS.push(baseTemplate);
