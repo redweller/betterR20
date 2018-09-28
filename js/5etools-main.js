@@ -1374,10 +1374,8 @@ const betteR205etools = function () {
 									}
 								}
 
-								function handleData (data) {
-
-									// TODO remove Feat workaround when roll20 supports feat drag-n-drop properly
-									if (data.data.Category === "Feats") {
+								function importFeat (character, data) {
+									if (d20plus.sheet == "ogl") {
 										const rowId = d20plus.ut.generateRowId();
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_options-flag`,
@@ -1400,7 +1398,13 @@ const betteR205etools = function () {
 										}).save();
 
 										character.model.view._updateSheetValues();
-									} else if (data.data.Category === "Backgrounds") { // TODO remove Background workaround when roll20 supports background drag-n-drop properly
+									} else {
+										console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
+									}
+								}
+
+								function importBackground (character, data) {
+									if (d20plus.sheet == "ogl") {
 										const bg = data.Vetoolscontent;
 
 										const renderer = new EntryRenderer();
@@ -1447,7 +1451,13 @@ const betteR205etools = function () {
 												d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
 											});
 										}
-									} else if (data.data.Category === "Races") { // TODO remove Race workaround when roll20 supports race drag-n-drop properly
+									} else {
+										console.warn(`Background import is not supported for ${d20plus.sheet} character sheet`);
+									}
+								}
+
+								function importRace (character, data) {
+									if (d20plus.sheet == "ogl") {
 										const race = data.Vetoolscontent;
 
 										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
@@ -1481,7 +1491,13 @@ const betteR205etools = function () {
 												current: "0"
 											}).save();
 										});
-									} else if (data.data.Category === "Optional Features") { // TODO remove Invocation/Optional Feature workaround when roll20 supports invocation drag-n-drop properly
+									} else {
+										console.warn(`Race import is not supported for ${d20plus.sheet} character sheet`);
+									}
+								}
+
+								function importOptionalFeature (character, data) {
+									if (d20plus.sheet == "ogl") {
 										const optionalFeature = data.Vetoolscontent;
 										const renderer = new EntryRenderer();
 										renderer.setBaseUrl(BASE_SITE_URL);
@@ -1508,7 +1524,13 @@ const betteR205etools = function () {
 											name: `repeating_traits_${fRowId}_options-flag`,
 											current: "0"
 										}).save();
-									} else if (data.data.Category === "Classes") {
+									} else {
+										console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
+									}
+								}
+
+								function importClass (character, data) {
+									if (d20plus.sheet == "ogl") {
 										let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
 										if (levels) {
 											const maxLevel = Math.max(...levels);
@@ -1559,7 +1581,13 @@ const betteR205etools = function () {
 												}
 											}
 										}
-									} else if (data.data.Category === "Subclasses") {
+									} else {
+										console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
+									}
+								}
+
+								function importSubclass (character, data) {
+									if (d20plus.sheet == "ogl") {
 										const sc = data.Vetoolscontent;
 
 										const desiredIxs = new Set(); // indexes into the subclass feature array
@@ -1673,7 +1701,13 @@ const betteR205etools = function () {
 												firstFeatures = false;
 											}
 										}
-									} else if (data.data.Category === "Psionics") {
+									} else {
+										console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
+									}
+								}
+
+								function importPsionicAbility (character, data) {
+									if (d20plus.sheet == "ogl") {
 										function makeSpellTrait (level, rowId, propName, content) {
 											character.model.attribs.create({
 												"name": `repeating_spell-${level}_${rowId}_${propName}`,
@@ -1744,7 +1778,13 @@ const betteR205etools = function () {
 											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${d20plus.importer.getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
 											noComponents(level, rowId, false);
 										}
-									} else if (data.data.Category === "Items") {
+									} else {
+										console.warn(`Psionic ability import is not supported for ${d20plus.sheet} character sheet`);
+									}
+								}
+
+								function importItem (character, data) {
+									if (d20plus.sheet == "ogl") {
 										if (data.data._versatile) {
 											setTimeout(() => {
 												const rowId = d20plus.ut.generateRowId();
@@ -1838,9 +1878,33 @@ const betteR205etools = function () {
 													d20plus.importer.doFakeDrop(t, character, item, i);
 												}, (ix + 1) * interval);
 											});
-										} else {
-											d20plus.importer.doFakeDrop(t, character, data, i);
+
+											return;
 										}
+									}
+
+									// Fallback to native drag-n-drop
+									d20plus.importer.doFakeDrop(t, character, data, i);
+								}
+
+								function handleData (data) {
+									// TODO remove feature import workarounds below when roll20 and sheets supports their drag-n-drop properly
+									if (data.data.Category === "Feats") {
+										importFeat(character, data);
+									} else if (data.data.Category === "Backgrounds") {
+										importBackground(character, data);
+									} else if (data.data.Category === "Races") {
+										importRace(character, data);
+									} else if (data.data.Category === "Optional Features") {
+										importOptionalFeature(character, data);
+									} else if (data.data.Category === "Classes") {
+										importClass(character, data);
+									} else if (data.data.Category === "Subclasses") {
+										importSubclass(character, data);
+									} else if (data.data.Category === "Psionics") {
+										importPsionicAbility(character, data);
+									} else if (data.data.Category === "Items") {
+										importItem(character, data);
 									} else {
 										d20plus.importer.doFakeDrop(t, character, data, i);
 									}
