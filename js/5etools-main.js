@@ -496,7 +496,7 @@ const betteR205etools = function () {
 		d20plus.ut.log("Init (v" + d20plus.version + ")");
 		d20plus.ut.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
-        
+
 		d20plus.ut.log("Modifying character & handout editor templates");
 		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
 		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
@@ -3263,7 +3263,7 @@ const betteR205etools = function () {
 									});
 								}
 							}
-							
+
 							// set show/hide NPC names in rolls
 							if (d20plus.cfg.hasCfgVal("import", "showNpcNames") && !d20plus.cfg.getCfgVal("import", "showNpcNames")) {
 								character.attribs.create({name: "npc_name_flag", current: 0});
@@ -3305,6 +3305,9 @@ const betteR205etools = function () {
 			const fluffUrl = d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]);
 			DataUtil.loadJSON(fluffUrl).then((data) => {
 				monsterFluffData[src] = data;
+			}).catch(e => {
+				console.error(e);
+				monsterFluffData[src] = {monster: []};
 			}).then(doBuild);
 		} else {
 			doBuild();

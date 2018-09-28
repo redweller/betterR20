@@ -1248,9 +1248,9 @@ function baseTool() {
 							console.log("Exporting maps...");
 							maps = d20.Campaign.pages.models.map(map => ({ // shoutouts to Stormy
 								attributes: map.attributes,
-								graphics: map.thegraphics.map(g => g.attributes),
-								text: map.thetexts.map(t => t.attributes),
-								paths: map.thepaths.map(p => p.attributes)
+								graphics: (map.thegraphics || []).map(g => g.attributes),
+								text: (map.thetexts || []).map(t => t.attributes),
+								paths: (map.thepaths || []).map(p => p.attributes)
 							}));
 						}
 
@@ -1259,7 +1259,7 @@ function baseTool() {
 							console.log("Exporting rolltables...");
 							rolltables = d20.Campaign.rollabletables.models.map(rolltable => ({
 								attributes: rolltable.attributes,
-								tableitems: rolltable.tableitems.models.map(tableitem => tableitem.attributes)
+								tableitems: (rolltable.tableitems.models || []).map(tableitem => tableitem.attributes)
 							}));
 						}
 
@@ -1270,7 +1270,7 @@ function baseTool() {
 								if (deck.name && deck.name.toLowerCase() === "playing cards") return;
 								return {
 									attributes: deck.attributes,
-									cards: deck.cards.models.map(card => card.attributes)
+									cards: (deck.cards.models || []).map(card => card.attributes)
 								};
 							}).filter(it => it);
 						}
