@@ -1381,6 +1381,874 @@ const betteR205etools = function () {
 			}
 		}
 
+		function importFeat (character, data) {
+			const featName = data.name;
+			const featText = data.Vetoolscontent;
+			const attrs = new CharacterAttributesProxy(character);
+			const rowId = d20plus.ut.generateRowId();
+
+			if (d20plus.sheet == "ogl") {
+				attrs.add(`repeating_traits_${rowId}_options-flag`, "0");
+				attrs.add(`repeating_traits_${rowId}_name`, featName);
+				attrs.add(`repeating_traits_${rowId}_description`, featText);
+				attrs.add(`repeating_traits_${rowId}_source`, "Feat");
+			} else if (d20plus.sheet == "shaped") {
+				attrs.add(`repeating_feat_${rowId}_name`, featName);
+				attrs.add(`repeating_feat_${rowId}_content`, featText);
+				attrs.add(`repeating_feat_${rowId}_content_toggle`, "1");
+			} else {
+				console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
+			}
+
+			attrs.notifySheetWorkers();
+		}
+
+		function importBackground (character, data) {
+			const bg = data.Vetoolscontent;
+
+			const renderer = new EntryRenderer();
+			renderer.setBaseUrl(BASE_SITE_URL);
+			const renderStack = [];
+			let feature;
+			bg.entries.forEach(e => {
+				if (e.name && e.name.includes("Feature:")) {
+					feature = JSON.parse(JSON.stringify(e));
+					feature.name = feature.name.replace("Feature:", "").trim();
+				}
+			});
+			if (feature)
+				renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
+
+			const skills = bg.skillProficiencies ? bg.skillProficiencies.split(",").map(s => s.trim()) : [];
+
+			const attrs = new CharacterAttributesProxy(character);
+			const fRowId = d20plus.ut.generateRowId();
+
+			if (d20plus.sheet == "ogl") {
+				attrs.addOrUpdate("background", bg.name);
+
+				attrs.add(`repeating_traits_${fRowId}_name`, bg.name);
+				attrs.add(`repeating_traits_${fRowId}_source`, "Background");
+				attrs.add(`repeating_traits_${fRowId}_source_type`, bg.name);
+				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+				if (feature.text) {
+					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
+				}
+
+				skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
+					attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
+				});
+			} else if (d20plus.sheet == "shaped") {
+				attrs.addOrUpdate("background", bg.name);
+				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
+				if (feature.text) {
+					attrs.add(`repeating_trait_${fRowId}_content`, feature.text);
+					attrs.add(`repeating_trait_${fRowId}_content_toggle`, "1");
+				}
+
+				skills.map(s => s.toUpperCase().replace(/ /g, "")).forEach(s => {
+					const rowId = attrs.findOrGenerateRepeatingRowId("repeating_skill_$0_storage_name", s);
+					attrs.addOrUpdate(`repeating_skill_${rowId}_proficiency`, "proficient");
+				});
+			} else {
+				console.warn(`Background import is not supported for ${d20plus.sheet} character sheet`);
+			}
+
+			attrs.notifySheetWorkers();
+		}
+
+		function importRace (character, data) {
+			const race = data.Vetoolscontent;
+
+			race.entries.forEach(e => {
+				const renderer = new EntryRenderer();
+				renderer.setBaseUrl(BASE_SITE_URL);
+				const renderStack = [];
+				renderer.recursiveEntryRender({entries: e.entries}, renderStack);
+				e.text = d20plus.importer.getCleanText(renderStack.join(""));
+			});
+
+			const attrs = new CharacterAttributesProxy(character);
+
+			if (d20plus.sheet == "ogl") {
+				attrs.addOrUpdate(`race`, race.name);
+				attrs.addOrUpdate(`race_display`, race.name);
+				attrs.addOrUpdate(`speed`, Parser.getSpeedString(race));
+
+				race.entries.forEach(e => {
+					const fRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_traits_${fRowId}_name`, e.name);
+					attrs.add(`repeating_traits_${fRowId}_source`, "Race");
+					attrs.add(`repeating_traits_${fRowId}_source_type`, race.name);
+					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
+					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+				});
+			} else if (d20plus.sheet == "shaped") {
+				attrs.addOrUpdate("race", race.name);
+				attrs.addOrUpdate("size", Parser.sizeAbvToFull(race.size).toUpperCase());
+				attrs.addOrUpdate("speed_string", Parser.getSpeedString(race));
+
+				if (race.speed instanceof Object) {
+					for (locomotion of ["walk", "burrow", "climb", "fly", "swim"]) {
+						if (race.speed[locomotion]) {
+							const attrName = locomotion == "walk" ? "speed" : `speed_${locomotion}`;
+							if (locomotion != "walk") {
+								attrs.addOrUpdate("other_speeds", "1");
+							}
+							// note: this doesn't cover hover
+							attrs.addOrUpdate(attrName, race.speed[locomotion]);
+						}
+					}
+				} else {
+					attrs.addOrUpdate("speed", race.speed);
+				}
+
+				// really there seems to be only darkvision for PCs
+				for (vision of ["darkvision", "blindsight", "tremorsense", "truesight"]) {
+					if (race[vision]) {
+						attrs.addOrUpdate(vision, race[vision]);
+					}
+				}
+
+				race.entries.forEach(e => {
+					const fRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_racialtrait_${fRowId}_name`, e.name);
+					attrs.add(`repeating_racialtrait_${fRowId}_content`, e.text);
+					attrs.add(`repeating_racialtrait_${fRowId}_content_toggle`, "1");
+				});
+
+				const fRowId = d20plus.ut.generateRowId();
+				attrs.add(`repeating_modifier_${fRowId}_name`, race.name);
+				attrs.add(`repeating_modifier_${fRowId}_ability_score_toggle`, "1");
+				Object.keys(race.ability).forEach(abilityAbv => {
+					const value = race.ability[abilityAbv];
+					const ability = Parser.attAbvToFull(abilityAbv).toLowerCase();
+					attrs.add(`repeating_modifier_${fRowId}_${ability}_score_modifier`, value);
+				});
+			} else {
+				console.warn(`Race import is not supported for ${d20plus.sheet} character sheet`);
+			}
+
+			attrs.notifySheetWorkers();
+		}
+
+		function importOptionalFeature (character, data) {
+			const optionalFeature = data.Vetoolscontent;
+			const renderer = new EntryRenderer();
+			renderer.setBaseUrl(BASE_SITE_URL);
+			const rendered = renderer.renderEntry({entries: optionalFeature.entries});
+			const optionalFeatureText = d20plus.importer.getCleanText(rendered);
+
+			const attrs = new CharacterAttributesProxy(character);
+			const fRowId = d20plus.ut.generateRowId();
+
+			if (d20plus.sheet == "ogl") {
+				attrs.add(`repeating_traits_${fRowId}_name`, optionalFeature.name);
+				attrs.add(`repeating_traits_${fRowId}_source`, Parser.optFeatureTypeToFull(optionalFeature.featureType));
+				attrs.add(`repeating_traits_${fRowId}_source_type`, optionalFeature.name);
+				attrs.add(`repeating_traits_${fRowId}_description`, optionalFeatureText);
+				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+			} else if (d20plus.sheet == "shaped") {
+				attrs.add(`repeating_classfeature_${fRowId}_name`, optionalFeature.name);
+				attrs.add(`repeating_classfeature_${fRowId}_content`, optionalFeatureText);
+				attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+			} else {
+				console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
+			}
+
+			attrs.notifySheetWorkers();
+		}
+
+		function importClass (character, data) {
+			let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+			if (!levels)
+				return;
+
+			const maxLevel = Math.max(...levels);
+
+			const clss = data.Vetoolscontent;
+			const renderer = EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
+			const shapedSheetPreFilledFeaturesByClass = {
+				"Artificer": [
+					"Magic Item Analysis",
+					"Tool Expertise",
+					"Wondrous Invention",
+					"Infuse Magic",
+					"Superior Attunement",
+					"Mechanical Servant",
+					"Soul of Artifice",
+				],
+				"Barbarian": [
+					"Rage",
+					"Unarmored Defense",
+					"Reckless Attack",
+					"Danger Sense",
+					"Extra Attack",
+					"Fast Movement",
+					"Feral Instinct",
+					"Brutal Critical",
+					"Relentless Rage",
+					"Persistent Rage",
+					"Indomitable Might",
+					"Primal Champion",
+				],
+				"Bard": [
+					"Bardic Inspiration",
+					"Jack of All Trades",
+					"Song of Rest",
+					"Expertise",
+					"Countercharm",
+					"Magical Secrets",
+					"Superior Inspiration",
+				],
+				"Cleric": [
+					"Channel Divinity",
+					"Turn Undead",
+					"Divine Intervention",
+				],
+				"Druid": [
+					"Druidic",
+					"Wild Shape",
+					"Timeless Body",
+					"Beast Spells",
+					"Archdruid",
+				],
+				"Fighter": [
+					"Fighting Style",
+					"Second Wind",
+					"Action Surge",
+					"Extra Attack",
+					"Indomitable",
+				],
+				"Monk": [
+					"Unarmored Defense",
+					"Martial Arts",
+					"Ki",
+					"Flurry of Blows",
+					"Patient Defense",
+					"Step of the Wind",
+					"Unarmored Movement",
+					"Deflect Missiles",
+					"Slow Fall",
+					"Extra Attack",
+					"Stunning Strike",
+					"Ki-Empowered Strikes",
+					"Evasion",
+					"Stillness of Mind",
+					"Purity of Body",
+					"Tongue of the Sun and Moon",
+					"Diamond Soul",
+					"Timeless Body",
+					"Empty Body",
+					"Perfect Soul",
+				],
+				"Paladin": [
+					"Divine Sense",
+					"Lay on Hands",
+					"Fighting Style",
+					"Divine Smite",
+					"Divine Health",
+					"Channel Divinity",
+					"Extra Attack",
+					"Aura of Protection",
+					"Aura of Courage",
+					"Improved Divine Smite",
+					"Cleansing Touch",
+				],
+				"Ranger": [
+					"Favored Enemy",
+					"Natural Explorer",
+					"Fighting Style",
+					"Primeval Awareness",
+					"Land’s Stride",
+					"Hide in Plain Sight",
+					"Vanish",
+					"Feral Senses",
+					"Foe Slayer",
+				],
+				"Ranger (Revised)": [ // "Ranger UA (2016)"
+					"Favored Enemy",
+					"Natural Explorer",
+					"Fighting Style",
+					"Primeval Awareness",
+					"Greater Favored Enemy",
+					"Fleet of Foot",
+					"Hide in Plain Sight",
+					"Vanish",
+					"Feral Senses",
+					"Foe Slayer",
+				],
+				"Rogue": [
+					"Expertise",
+					"Sneak Attack",
+					"Thieves' Cant",
+					"Cunning Action",
+					"Uncanny Dodge",
+					"Evasion",
+					"Reliable Talent",
+					"Blindsense",
+					"Slippery Mind",
+					"Elusive",
+					"Stroke of Luck",
+				],
+				"Sorcerer": [
+					"Sorcery Points",
+					"Flexible Casting",
+					"Metamagic",
+					"Sorcerous Restoration",
+				],
+				"Warlock": [
+					"Eldritch Invocations",
+					"Pact Boon",
+					"Mystic Arcanum",
+					"Eldritch Master",
+				],
+				"Wizard": [
+					"Arcane Recovery",
+					"Spell Mastery",
+					"Signature Spells",
+				],
+			};
+			const shapedSheetPreFilledFeatures = shapedSheetPreFilledFeaturesByClass[clss.name] || [];
+
+			const attrs = new CharacterAttributesProxy(character);
+
+			importClassGeneral(attrs, clss, maxLevel);
+
+			for (let i = 0; i < maxLevel; i++) {
+				const level = i + 1;
+				if (!levels.has(level)) continue;
+
+				const lvlFeatureList = clss.classFeatures[i];
+				for (let j = 0; j < lvlFeatureList.length; j++) {
+					const feature = lvlFeatureList[j];
+					// don't add "you gain a subclass feature" or ASI's
+					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
+						const renderStack = [];
+						renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+						feature.text = d20plus.importer.getCleanText(renderStack.join(""));
+						importClassFeature(attrs, clss, level, feature);
+					}
+				}
+			}
+
+			function importClassGeneral (attrs, clss, maxLevel) {
+				if (d20plus.sheet == "ogl") {
+					setTimeout(() => {
+						attrs.addOrUpdate("pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
+						attrs.addOrUpdate("class", clss.name);
+						attrs.addOrUpdate("level", maxLevel);
+						attrs.addOrUpdate("base_level", String(maxLevel));
+					}, 500);
+				} else if (d20plus.sheet == "shaped") {
+					const isSupportedClass = clss.source == "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
+					let className = "CUSTOM";
+					if (isSupportedClass) {
+						className = clss.name.toUpperCase();
+						if (clss.name == "Ranger (Revised)")
+							className = "RANGERUA";
+					}
+
+					const fRowId = attrs.findOrGenerateRepeatingRowId("repeating_class_$0_name", className);
+					attrs.addOrUpdate(`repeating_class_${fRowId}_name`, className);
+					attrs.addOrUpdate(`repeating_class_${fRowId}_level`, maxLevel);
+					if (!isSupportedClass) {
+						attrs.addOrUpdate(`repeating_class_${fRowId}_hd`, `d${clss.hd.faces}`);
+						attrs.addOrUpdate(`repeating_class_${fRowId}_custom_class_toggle`, "1");
+						attrs.addOrUpdate(`repeating_class_${fRowId}_custom_name`, clss.name);
+					}
+
+					if (!isSupportedClass && clss.name == "Mystic") {
+						const classResourcesForLevel = clss.classTableGroups[0].rows[maxLevel - 1];
+						const [talentsKnown, disciplinesKnown, psiPoints, psiLimit] = classResourcesForLevel;
+
+						attrs.addOrUpdate("spell_points_name", "PSI");
+						attrs.addOrUpdate("show_spells", "1");
+						attrs.addOrUpdate("spell_points_toggle", "1");
+						attrs.addOrUpdate("spell_ability", "INTELLIGENCE");
+						attrs.addOrUpdate("spell_points_limit", psiLimit);
+						attrs.addOrUpdate("spell_points", psiPoints, psiPoints);
+						talentsKnown, disciplinesKnown;	// unused
+
+						for (let i = 1; i <= 7; i++) {
+							attrs.addOrUpdate(`spell_level_${i}_cost`, i);
+						}
+						for (let i = 0; i <= psiLimit; i++) {
+							attrs.addOrUpdate(`spell_level_filter_${i}`, "1");
+						}
+					}
+
+					attrs.notifySheetWorkers();
+				} else {
+					console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
+				}
+			}
+
+			function importClassFeature (attrs, clss, level, feature) {
+				if (d20plus.sheet == "ogl") {
+					const fRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
+					attrs.add(`repeating_traits_${fRowId}_source`, "Class");
+					attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
+					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
+					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+				} else if (d20plus.sheet == "shaped") {
+					if (shapedSheetPreFilledFeatures.includes(feature.name))
+						return;
+
+					const fRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${clss.name} ${level})`);
+					attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
+					attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+				}
+
+				attrs.notifySheetWorkers();
+			}
+		}
+
+		function importSubclass (character, data) {
+			if (d20plus.sheet != "ogl" && d20plus.sheet != "shaped") {
+				console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
+				return;
+			}
+
+			const attrs = new CharacterAttributesProxy(character);
+			const sc = data.Vetoolscontent;
+
+			const desiredIxs = new Set(); // indexes into the subclass feature array
+			const gainLevels = [];
+
+			// _gainAtLevels should be a 20-length array of booleans
+			if (sc._gainAtLevels) {
+				const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+				if (levels) {
+					let scFeatureIndex = 0;
+					for (let i = 0; i < 20; i++) {
+						if (sc._gainAtLevels[i]) {
+							if (levels.has(i + 1)) {
+								desiredIxs.add(scFeatureIndex);
+							}
+							scFeatureIndex++;
+							gainLevels.push(i + 1);
+						}
+					}
+				} else {
+					return;
+				}
+			} else {
+				throw new Error("No subclass._gainAtLevels supplied!");
+			}
+
+			if (!desiredIxs.size) {
+				alert("No subclass features were found within the range specified.");
+				return;
+			}
+
+			const renderer = new EntryRenderer();
+			renderer.setBaseUrl(BASE_SITE_URL);
+			let firstFeatures = true;
+			for (let i = 0; i < sc.subclassFeatures.length; i++) {
+				if (!desiredIxs.has(i)) continue;
+
+				const lvlFeatureList = sc.subclassFeatures[i];
+				for (let j = 0; j < lvlFeatureList.length; j++) {
+					const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
+					let feature = lvlFeatureList[j];
+
+					try {
+						while (!feature.name || (feature[0] && !feature[0].name)) {
+							if (feature.entries && feature.entries.name) {
+								feature = feature.entries;
+								continue;
+							} else if (feature.entries[0] && feature.entries[0].name) {
+								feature = feature.entries[0];
+								continue;
+							} else {
+								feature = feature.entries;
+							}
+
+							if (!feature) {
+								// in case something goes wrong, reset break the loop
+								feature = featureCpy;
+								break;
+							}
+						}
+					} catch (e) {
+						console.error("Failed to find feature");
+						// in case something goes _really_ wrong, reset
+						feature = featureCpy;
+					}
+
+					// for the first batch of subclass features, try to split them up
+					if (firstFeatures && feature.name && feature.entries) {
+						const subFeatures = [];
+						const baseFeatures = feature.entries.filter(f => {
+							if (f.name && f.type === "entries") {
+								subFeatures.push(f);
+								return false;
+							} else return true;
+						});
+						importSubclassFeature(attrs, sc, gainLevels[i],
+								{name: feature.name, type: feature.type, entries: baseFeatures});
+						subFeatures.forEach(sf => {
+							importSubclassFeature(attrs, sc, gainLevels[i], sf);
+						})
+					} else {
+						importSubclassFeature(attrs, sc, gainLevels[i], feature);
+					}
+
+					firstFeatures = false;
+				}
+			}
+
+			function importSubclassFeature (attrs, sc, level, feature) {
+				const renderStack = [];
+				renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+				feature.text = d20plus.importer.getCleanText(renderStack.join(""));
+
+				const fRowId = d20plus.ut.generateRowId();
+
+				if (d20plus.sheet == "ogl") {
+					attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
+					attrs.add(`repeating_traits_${fRowId}_source`, "Class");
+					attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.class} (${sc.name} ${level})`);
+					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
+					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+				} else if (d20plus.sheet == "shaped") {
+					attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${sc.name} ${level})`);
+					attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
+					attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+				}
+
+				attrs.notifySheetWorkers();
+			}
+		}
+
+		function importPsionicAbility (character, data) {
+			const renderer = new EntryRenderer();
+			renderer.setBaseUrl(BASE_SITE_URL);
+
+			const attrs = new CharacterAttributesProxy(character);
+			data = data.Vetoolscontent;
+			if (!data) {
+				alert("Missing data. Please re-import Psionics.");
+				return;
+			}
+
+			function getCostStr (cost) {
+				return cost.min === cost.max ? cost.min : `${cost.min}-${cost.max}`;
+			}
+
+			function getCleanText (entries) {
+				if (typeof entries == "string") {
+					return d20plus.importer.getCleanText(renderer.renderEntry(entries));
+				} else {
+					const renderStack = [];
+					renderer.recursiveEntryRender({entries: entries}, renderStack, 3);
+					return d20plus.importer.getCleanText(renderStack.join(""));
+				}
+			}
+
+			if (d20plus.sheet == "ogl") {
+				const makeSpellTrait = function (level, rowId, propName, content) {
+					const attrName = `repeating_spell-${level}_${rowId}_${propName}`;
+					attrs.add(attrName, content);
+				}
+
+				// disable all components
+				const noComponents = function (level, rowId, hasM) {
+					makeSpellTrait(level, rowId, "spellcomp_v", 0);
+					makeSpellTrait(level, rowId, "spellcomp_s", 0);
+					if (!hasM) {
+						makeSpellTrait(level, rowId, "spellcomp_m", 0);
+					}
+					makeSpellTrait(level, rowId, "options-flag", 0);
+				}
+
+				if (data.type === "D") {
+					const rowId = d20plus.ut.generateRowId();
+
+					// make focus
+					const focusLevel = "cantrip";
+					makeSpellTrait(focusLevel, rowId, "spelllevel", "cantrip");
+					makeSpellTrait(focusLevel, rowId, "spellname", `${data.name} Focus`);
+					makeSpellTrait(focusLevel, rowId, "spelldescription", getCleanText(data.focus));
+					makeSpellTrait(focusLevel, rowId, "spellcastingtime", "1 bonus action");
+					noComponents(focusLevel, rowId);
+
+					data.modes.forEach(m => {
+						if (m.submodes) {
+							m.submodes.forEach(sm => {
+								const rowId = d20plus.ut.generateRowId();
+								const smLevel = sm.cost.min;
+								makeSpellTrait(smLevel, rowId, "spelllevel", smLevel);
+								makeSpellTrait(smLevel, rowId, "spellname", `${m.name} (${sm.name})`);
+								makeSpellTrait(smLevel, rowId, "spelldescription", getCleanText(sm.entries));
+								makeSpellTrait(smLevel, rowId, "spellcomp_materials", `${getCostStr(sm.cost)} psi points`);
+								noComponents(smLevel, rowId, true);
+							});
+						} else {
+							const rowId = d20plus.ut.generateRowId();
+							const mLevel = m.cost.min;
+							makeSpellTrait(mLevel, rowId, "spelllevel", mLevel);
+							makeSpellTrait(mLevel, rowId, "spellname", `${m.name}`);
+							makeSpellTrait(mLevel, rowId, "spelldescription", `Psionic Discipline mode\n\n${getCleanText(m.entries)}`);
+							makeSpellTrait(mLevel, rowId, "spellcomp_materials", `${getCostStr(m.cost)} psi points`);
+							if (m.concentration) {
+								makeSpellTrait(mLevel, rowId, "spellduration", `${m.concentration.duration} ${m.concentration.unit}`);
+								makeSpellTrait(mLevel, rowId, "spellconcentration", "Yes");
+							}
+							noComponents(mLevel, rowId, true);
+						}
+					});
+				} else {
+					const rowId = d20plus.ut.generateRowId();
+					const level = "cantrip";
+					makeSpellTrait(level, rowId, "spelllevel", "cantrip");
+					makeSpellTrait(level, rowId, "spellname", data.name);
+					makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
+					noComponents(level, rowId, false);
+				}
+			} else if (d20plus.sheet == "shaped") {
+				const makeSpellTrait = function (level, rowId, propName, content) {
+					const attrName = `repeating_spell${level}_${rowId}_${propName}`;
+					attrs.add(attrName, content);
+				}
+
+				const shapedSpellLevel = function (level) {
+					return level ? `${Parser.levelToFull(String(level))}_LEVEL`.toUpperCase() : "CANTRIP";
+				}
+
+				const shapedConcentration = function (conc) {
+					const CONC_ABV_TO_FULL = {
+						rnd: "round",
+						min: "minute",
+						hr: "hour",
+					};
+					return `CONCENTRATION_UP_TO_${conc.duration}_${CONC_ABV_TO_FULL[conc.unit]}${conc.duration > 1 ? "S" : ""}`.toUpperCase();
+				}
+
+				const inferCastingTime = function (content) {
+					if (content.search(/\b(as an action)\b/i) >= 0) {
+						return "1_ACTION";
+					} else if (content.search(/\b(as a bonus action)\b/i) >= 0) {
+						return "1_BONUS_ACTION";
+					} else if (content.search(/\b(as a reaction)\b/i) >= 0) {
+						return "1_REACTION";
+					}
+					return "1_ACTION";
+				}
+
+				const inferDuration = function (content) {
+					let duration, unit, match;
+					if ((match = content.match(/\b(?:for the next|for 1) (round|minute|hour)\b/i))) {
+						[duration, unit] = [1, match[1]];
+					} else if ((match = content.match(/\b(?:for|for the next) (\d+) (minutes|hours|days)\b/i))) {
+						[duration, unit] = [match[1], match[2]];
+					}
+
+					return (duration && unit) ? `${duration}_${unit}`.toUpperCase() : `INSTANTANEOUS`;
+				}
+
+				if (data.type === "D") {
+					const typeStr = `**Psionic Discipline:** ${data.name}\n**Psionic Order:** ${data.order}\n`;
+					const rowId = d20plus.ut.generateRowId();
+
+					// make focus
+					const focusLevel = 0;
+					makeSpellTrait(focusLevel, rowId, "spell_level", shapedSpellLevel(focusLevel));
+					makeSpellTrait(focusLevel, rowId, "name", `${data.name} Focus`);
+					makeSpellTrait(focusLevel, rowId, "content", `${typeStr}\n${getCleanText(data.focus)}`);
+					makeSpellTrait(focusLevel, rowId, "content_toggle", "1");
+					makeSpellTrait(focusLevel, rowId, "casting_time", "1_BONUS_ACTION");
+					makeSpellTrait(focusLevel, rowId, "components", "COMPONENTS_M");
+					makeSpellTrait(focusLevel, rowId, "duration", "SPECIAL");
+
+					data.modes.forEach(m => {
+						const modeContent = `${typeStr}\n${getCleanText(m.entries)}`;
+
+						if (m.submodes) {
+							m.submodes.forEach(sm => {
+								const rowId = d20plus.ut.generateRowId();
+								const smLevel = sm.cost.min;
+								const costStr = getCostStr(sm.cost);
+								const content = `${modeContent}\n${getCleanText(sm.entries)}`;
+								makeSpellTrait(smLevel, rowId, "spell_level", shapedSpellLevel(smLevel));
+								makeSpellTrait(smLevel, rowId, "name", `${m.name} (${sm.name})` + (sm.cost.min < sm.cost.max ? ` (${costStr} psi)` : ""));
+								makeSpellTrait(smLevel, rowId, "content", content);
+								makeSpellTrait(smLevel, rowId, "content_toggle", "1");
+								makeSpellTrait(smLevel, rowId, "casting_time", inferCastingTime(content));
+								makeSpellTrait(smLevel, rowId, "materials", `${costStr} psi points`);
+								makeSpellTrait(smLevel, rowId, "components", "COMPONENTS_M");
+								makeSpellTrait(smLevel, rowId, "duration", inferDuration(content));
+							});
+						} else {
+							const rowId = d20plus.ut.generateRowId();
+							const mLevel = m.cost.min;
+							const costStr = getCostStr(m.cost);
+							makeSpellTrait(mLevel, rowId, "spell_level", shapedSpellLevel(mLevel));
+							makeSpellTrait(mLevel, rowId, "name", m.name + (m.cost.min < m.cost.max ? ` (${costStr} psi)` : ""));
+							makeSpellTrait(mLevel, rowId, "content", modeContent);
+							makeSpellTrait(mLevel, rowId, "content_toggle", "1");
+							makeSpellTrait(mLevel, rowId, "casting_time", inferCastingTime(modeContent));
+							makeSpellTrait(mLevel, rowId, "materials", `${costStr} psi points`);
+							makeSpellTrait(mLevel, rowId, "components", "COMPONENTS_M");
+							if (m.concentration) {
+								makeSpellTrait(mLevel, rowId, "duration", shapedConcentration(m.concentration));
+								makeSpellTrait(mLevel, rowId, "concentration", "Yes");
+							} else {
+								makeSpellTrait(mLevel, rowId, "duration", inferDuration(modeContent));
+							}
+						}
+					});
+				} else {
+					const typeStr = `**Psionic Talent**\n`;
+					const talentContent = `${typeStr}\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`;
+					const rowId = d20plus.ut.generateRowId();
+					const level = 0;
+					makeSpellTrait(level, rowId, "spell_level", shapedSpellLevel(level));
+					makeSpellTrait(level, rowId, "name", data.name);
+					makeSpellTrait(level, rowId, "content", talentContent);
+					makeSpellTrait(level, rowId, "content_toggle", "1");
+					makeSpellTrait(level, rowId, "casting_time", inferCastingTime(talentContent));
+					makeSpellTrait(level, rowId, "components", "COMPONENTS_M");
+					makeSpellTrait(level, rowId, "duration", inferDuration(talentContent));
+				}
+			} else {
+				console.warn(`Psionic ability import is not supported for ${d20plus.sheet} character sheet`);
+			}
+
+			attrs.notifySheetWorkers();
+		}
+
+		function importItem (character, data, event) {
+			if (d20plus.sheet == "ogl") {
+				if (data.data._versatile) {
+					setTimeout(() => {
+						const rowId = d20plus.ut.generateRowId();
+
+						function makeItemTrait (key, val) {
+							const toSave = character.model.attribs.create({
+								name: `repeating_attack_${rowId}_${key}`,
+								current: val
+							}).save();
+							toSave.save();
+						}
+
+						const attr = (data.data["Item Type"] || "").includes("Melee") ? "strength" : "dexterity";
+						const attrTag = `@{${attr}_mod}`;
+
+						const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
+						const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
+						const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
+
+						// This links the item to the attack, and vice-versa.
+						// Unfortunately, it doesn't work,
+						//   because Roll20 thinks items<->attacks is a 1-to-1 relationship.
+						/*
+						let lastItemId = null;
+						try {
+							const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
+							const lastItem = items[items.length - 1];
+							lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
+
+							// link the inventory item to this attack
+							const toSave = character.model.attribs.create({
+								name: `repeating_inventory_${lastItemId}_itemattackid`,
+								current: rowId
+							});
+							toSave.save();
+						} catch (ex) {
+							console.error("Failed to get last item ID");
+							console.error(ex);
+						}
+
+						if (lastItemId) {
+							makeItemTrait("itemid", lastItemId);
+						}
+						*/
+
+						makeItemTrait("options-flag", "0");
+						makeItemTrait("atkname", data.name);
+						makeItemTrait("dmgbase", data.data._versatile);
+						makeItemTrait("dmgtype", data.data["Damage Type"]);
+						makeItemTrait("atkattr_base", attrTag);
+						makeItemTrait("dmgattr", attrTag);
+						makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+						makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+						if (proficiencyBonus) {
+							makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus}`);
+						}
+						makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}`);
+						makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
+					}, 350); // defer this, so we can hopefully pull item ID
+				}
+
+				// for packs, etc
+				if (data._subItems) {
+					const queue = [];
+					data._subItems.forEach(si => {
+						function makeProp (rowId, propName, content) {
+							character.model.attribs.create({
+								"name": `repeating_inventory_${rowId}_${propName}`,
+								"current": content
+							}).save();
+						}
+
+						if (si.count) {
+							const rowId = d20plus.ut.generateRowId();
+							const siD = typeof si.subItem === "string" ? JSON.parse(si.subItem) : si.subItem;
+
+							makeProp(rowId, "itemname", siD.name);
+							const w = (siD.data || {}).Weight;
+							if (w) makeProp(rowId, "itemweight", w);
+							makeProp(rowId, "itemcontent", Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
+							makeProp(rowId, "itemcount", String(si.count));
+
+						} else {
+							queue.push(si.subItem);
+						}
+					});
+
+					const interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
+					queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
+						setTimeout(() => {
+							d20plus.importer.doFakeDrop(event, character, item, null);
+						}, (ix + 1) * interval);
+					});
+
+					return;
+				}
+			}
+
+			// Fallback to native drag-n-drop
+			d20plus.importer.doFakeDrop(event, character, data, null);
+		}
+
+		function importData (character, data, event) {
+			// TODO remove feature import workarounds below when roll20 and sheets supports their drag-n-drop properly
+			if (data.data.Category === "Feats") {
+				importFeat(character, data);
+			} else if (data.data.Category === "Backgrounds") {
+				importBackground(character, data);
+			} else if (data.data.Category === "Races") {
+				importRace(character, data);
+			} else if (data.data.Category === "Optional Features") {
+				importOptionalFeature(character, data);
+			} else if (data.data.Category === "Classes") {
+				importClass(character, data);
+			} else if (data.data.Category === "Subclasses") {
+				importSubclass(character, data);
+			} else if (data.data.Category === "Psionics") {
+				importPsionicAbility(character, data);
+			} else if (data.data.Category === "Items") {
+				importItem(character, data, event);
+			} else {
+				d20plus.importer.doFakeDrop(event, character, data, null);
+			}
+		}
+
 		d20.Campaign.characters.models.each(function (v, i) {
 			v.view.rebindCompendiumDropTargets = function () {
 				// ready character sheet for draggable
@@ -1402,7 +2270,7 @@ const betteR205etools = function () {
 
 								if ($hlpr.hasClass(`player-imported`)) {
 									const data = d20plus.importer.retreivePlayerImport($hlpr.attr("data-playerimportid"));
-									handleData(data);
+									importData(character, data, t);
 								} else {
 									var id = $hlpr.attr("data-itemid");
 									var handout = d20.Campaign.handouts.get(id);
@@ -1412,881 +2280,13 @@ const betteR205etools = function () {
 										handout._getLatestBlob("gmnotes", function (gmnotes) {
 											data = gmnotes;
 											handout.updateBlobs({gmnotes: gmnotes});
-											handleData(JSON.parse(data));
+											importData(character, JSON.parse(data), t);
 										});
 									} else {
 										handout._getLatestBlob("notes", function (notes) {
 											data = $(notes).filter("del").html();
-											handleData(JSON.parse(data));
+											importData(character, JSON.parse(data), t);
 										});
-									}
-								}
-
-								function importFeat (character, data) {
-									const featName = data.name;
-									const featText = data.Vetoolscontent;
-									const attrs = new CharacterAttributesProxy(character);
-									const rowId = d20plus.ut.generateRowId();
-
-									if (d20plus.sheet == "ogl") {
-										attrs.add(`repeating_traits_${rowId}_options-flag`, "0");
-										attrs.add(`repeating_traits_${rowId}_name`, featName);
-										attrs.add(`repeating_traits_${rowId}_description`, featText);
-										attrs.add(`repeating_traits_${rowId}_source`, "Feat");
-									} else if (d20plus.sheet == "shaped") {
-										attrs.add(`repeating_feat_${rowId}_name`, featName);
-										attrs.add(`repeating_feat_${rowId}_content`, featText);
-										attrs.add(`repeating_feat_${rowId}_content_toggle`, "1");
-									} else {
-										console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
-									}
-
-									attrs.notifySheetWorkers();
-								}
-
-								function importBackground (character, data) {
-									const bg = data.Vetoolscontent;
-
-									const renderer = new EntryRenderer();
-									renderer.setBaseUrl(BASE_SITE_URL);
-									const renderStack = [];
-									let feature;
-									bg.entries.forEach(e => {
-										if (e.name && e.name.includes("Feature:")) {
-											feature = JSON.parse(JSON.stringify(e));
-											feature.name = feature.name.replace("Feature:", "").trim();
-										}
-									});
-									if (feature)
-										renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
-									feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
-
-									const skills = bg.skillProficiencies ? bg.skillProficiencies.split(",").map(s => s.trim()) : [];
-
-									const attrs = new CharacterAttributesProxy(character);
-									const fRowId = d20plus.ut.generateRowId();
-
-									if (d20plus.sheet == "ogl") {
-										attrs.addOrUpdate("background", bg.name);
-
-										attrs.add(`repeating_traits_${fRowId}_name`, bg.name);
-										attrs.add(`repeating_traits_${fRowId}_source`, "Background");
-										attrs.add(`repeating_traits_${fRowId}_source_type`, bg.name);
-										attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-										if (feature.text) {
-											attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
-										}
-
-										skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
-											attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
-										});
-									} else if (d20plus.sheet == "shaped") {
-										attrs.addOrUpdate("background", bg.name);
-										attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
-										if (feature.text) {
-											attrs.add(`repeating_trait_${fRowId}_content`, feature.text);
-											attrs.add(`repeating_trait_${fRowId}_content_toggle`, "1");
-										}
-
-										skills.map(s => s.toUpperCase().replace(/ /g, "")).forEach(s => {
-											const rowId = attrs.findOrGenerateRepeatingRowId("repeating_skill_$0_storage_name", s);
-											attrs.addOrUpdate(`repeating_skill_${rowId}_proficiency`, "proficient");
-										});
-									} else {
-										console.warn(`Background import is not supported for ${d20plus.sheet} character sheet`);
-									}
-
-									attrs.notifySheetWorkers();
-								}
-
-								function importRace (character, data) {
-									const race = data.Vetoolscontent;
-
-									race.entries.forEach(e => {
-										const renderer = new EntryRenderer();
-										renderer.setBaseUrl(BASE_SITE_URL);
-										const renderStack = [];
-										renderer.recursiveEntryRender({entries: e.entries}, renderStack);
-										e.text = d20plus.importer.getCleanText(renderStack.join(""));
-									});
-
-									const attrs = new CharacterAttributesProxy(character);
-
-									if (d20plus.sheet == "ogl") {
-										attrs.addOrUpdate(`race`, race.name);
-										attrs.addOrUpdate(`race_display`, race.name);
-										attrs.addOrUpdate(`speed`, Parser.getSpeedString(race));
-
-										race.entries.forEach(e => {
-											const fRowId = d20plus.ut.generateRowId();
-											attrs.add(`repeating_traits_${fRowId}_name`, e.name);
-											attrs.add(`repeating_traits_${fRowId}_source`, "Race");
-											attrs.add(`repeating_traits_${fRowId}_source_type`, race.name);
-											attrs.add(`repeating_traits_${fRowId}_description`, e.text);
-											attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-										});
-									} else if (d20plus.sheet == "shaped") {
-										attrs.addOrUpdate("race", race.name);
-										attrs.addOrUpdate("size", Parser.sizeAbvToFull(race.size).toUpperCase());
-										attrs.addOrUpdate("speed_string", Parser.getSpeedString(race));
-
-										if (race.speed instanceof Object) {
-											for (locomotion of ["walk", "burrow", "climb", "fly", "swim"]) {
-												if (race.speed[locomotion]) {
-													const attrName = locomotion == "walk" ? "speed" : `speed_${locomotion}`;
-													if (locomotion != "walk") {
-														attrs.addOrUpdate("other_speeds", "1");
-													}
-													// note: this doesn't cover hover
-													attrs.addOrUpdate(attrName, race.speed[locomotion]);
-												}
-											}
-										} else {
-											attrs.addOrUpdate("speed", race.speed);
-										}
-
-										// really there seems to be only darkvision for PCs
-										for (vision of ["darkvision", "blindsight", "tremorsense", "truesight"]) {
-											if (race[vision]) {
-												attrs.addOrUpdate(vision, race[vision]);
-											}
-										}
-
-										race.entries.forEach(e => {
-											const fRowId = d20plus.ut.generateRowId();
-											attrs.add(`repeating_racialtrait_${fRowId}_name`, e.name);
-											attrs.add(`repeating_racialtrait_${fRowId}_content`, e.text);
-											attrs.add(`repeating_racialtrait_${fRowId}_content_toggle`, "1");
-										});
-
-										const fRowId = d20plus.ut.generateRowId();
-										attrs.add(`repeating_modifier_${fRowId}_name`, race.name);
-										attrs.add(`repeating_modifier_${fRowId}_ability_score_toggle`, "1");
-										Object.keys(race.ability).forEach(abilityAbv => {
-											const value = race.ability[abilityAbv];
-											const ability = Parser.attAbvToFull(abilityAbv).toLowerCase();
-											attrs.add(`repeating_modifier_${fRowId}_${ability}_score_modifier`, value);
-										});
-									} else {
-										console.warn(`Race import is not supported for ${d20plus.sheet} character sheet`);
-									}
-
-									attrs.notifySheetWorkers();
-								}
-
-								function importOptionalFeature (character, data) {
-									const optionalFeature = data.Vetoolscontent;
-									const renderer = new EntryRenderer();
-									renderer.setBaseUrl(BASE_SITE_URL);
-									const rendered = renderer.renderEntry({entries: optionalFeature.entries});
-									const optionalFeatureText = d20plus.importer.getCleanText(rendered);
-
-									const attrs = new CharacterAttributesProxy(character);
-									const fRowId = d20plus.ut.generateRowId();
-
-									if (d20plus.sheet == "ogl") {
-										attrs.add(`repeating_traits_${fRowId}_name`, optionalFeature.name);
-										attrs.add(`repeating_traits_${fRowId}_source`, Parser.optFeatureTypeToFull(optionalFeature.featureType));
-										attrs.add(`repeating_traits_${fRowId}_source_type`, optionalFeature.name);
-										attrs.add(`repeating_traits_${fRowId}_description`, optionalFeatureText);
-										attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-									} else if (d20plus.sheet == "shaped") {
-										attrs.add(`repeating_classfeature_${fRowId}_name`, optionalFeature.name);
-										attrs.add(`repeating_classfeature_${fRowId}_content`, optionalFeatureText);
-										attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-									} else {
-										console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
-									}
-
-									attrs.notifySheetWorkers();
-								}
-
-								function importClass (character, data) {
-									let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-									if (!levels)
-										return;
-
-									const maxLevel = Math.max(...levels);
-
-									const clss = data.Vetoolscontent;
-									const renderer = EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
-									const shapedSheetPreFilledFeaturesByClass = {
-										"Artificer": [
-											"Magic Item Analysis",
-											"Tool Expertise",
-											"Wondrous Invention",
-											"Infuse Magic",
-											"Superior Attunement",
-											"Mechanical Servant",
-											"Soul of Artifice",
-										],
-										"Barbarian": [
-											"Rage",
-											"Unarmored Defense",
-											"Reckless Attack",
-											"Danger Sense",
-											"Extra Attack",
-											"Fast Movement",
-											"Feral Instinct",
-											"Brutal Critical",
-											"Relentless Rage",
-											"Persistent Rage",
-											"Indomitable Might",
-											"Primal Champion",
-										],
-										"Bard": [
-											"Bardic Inspiration",
-											"Jack of All Trades",
-											"Song of Rest",
-											"Expertise",
-											"Countercharm",
-											"Magical Secrets",
-											"Superior Inspiration",
-										],
-										"Cleric": [
-											"Channel Divinity",
-											"Turn Undead",
-											"Divine Intervention",
-										],
-										"Druid": [
-											"Druidic",
-											"Wild Shape",
-											"Timeless Body",
-											"Beast Spells",
-											"Archdruid",
-										],
-										"Fighter": [
-											"Fighting Style",
-											"Second Wind",
-											"Action Surge",
-											"Extra Attack",
-											"Indomitable",
-										],
-										"Monk": [
-											"Unarmored Defense",
-											"Martial Arts",
-											"Ki",
-											"Flurry of Blows",
-											"Patient Defense",
-											"Step of the Wind",
-											"Unarmored Movement",
-											"Deflect Missiles",
-											"Slow Fall",
-											"Extra Attack",
-											"Stunning Strike",
-											"Ki-Empowered Strikes",
-											"Evasion",
-											"Stillness of Mind",
-											"Purity of Body",
-											"Tongue of the Sun and Moon",
-											"Diamond Soul",
-											"Timeless Body",
-											"Empty Body",
-											"Perfect Soul",
-										],
-										"Paladin": [
-											"Divine Sense",
-											"Lay on Hands",
-											"Fighting Style",
-											"Divine Smite",
-											"Divine Health",
-											"Channel Divinity",
-											"Extra Attack",
-											"Aura of Protection",
-											"Aura of Courage",
-											"Improved Divine Smite",
-											"Cleansing Touch",
-										],
-										"Ranger": [
-											"Favored Enemy",
-											"Natural Explorer",
-											"Fighting Style",
-											"Primeval Awareness",
-											"Land’s Stride",
-											"Hide in Plain Sight",
-											"Vanish",
-											"Feral Senses",
-											"Foe Slayer",
-										],
-										"Ranger (Revised)": [ // "Ranger UA (2016)"
-											"Favored Enemy",
-											"Natural Explorer",
-											"Fighting Style",
-											"Primeval Awareness",
-											"Greater Favored Enemy",
-											"Fleet of Foot",
-											"Hide in Plain Sight",
-											"Vanish",
-											"Feral Senses",
-											"Foe Slayer",
-										],
-										"Rogue": [
-											"Expertise",
-											"Sneak Attack",
-											"Thieves' Cant",
-											"Cunning Action",
-											"Uncanny Dodge",
-											"Evasion",
-											"Reliable Talent",
-											"Blindsense",
-											"Slippery Mind",
-											"Elusive",
-											"Stroke of Luck",
-										],
-										"Sorcerer": [
-											"Sorcery Points",
-											"Flexible Casting",
-											"Metamagic",
-											"Sorcerous Restoration",
-										],
-										"Warlock": [
-											"Eldritch Invocations",
-											"Pact Boon",
-											"Mystic Arcanum",
-											"Eldritch Master",
-										],
-										"Wizard": [
-											"Arcane Recovery",
-											"Spell Mastery",
-											"Signature Spells",
-										],
-									};
-									const shapedSheetPreFilledFeatures = shapedSheetPreFilledFeaturesByClass[clss.name] || [];
-
-									const attrs = new CharacterAttributesProxy(character);
-
-									importClassGeneral(attrs, clss, maxLevel);
-
-									for (let i = 0; i < maxLevel; i++) {
-										const level = i + 1;
-										if (!levels.has(level)) continue;
-
-										const lvlFeatureList = clss.classFeatures[i];
-										for (let j = 0; j < lvlFeatureList.length; j++) {
-											const feature = lvlFeatureList[j];
-											// don't add "you gain a subclass feature" or ASI's
-											if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
-												const renderStack = [];
-												renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
-												feature.text = d20plus.importer.getCleanText(renderStack.join(""));
-												importClassFeature(attrs, clss, level, feature);
-											}
-										}
-									}
-
-									function importClassGeneral (attrs, clss, maxLevel) {
-										if (d20plus.sheet == "ogl") {
-											setTimeout(() => {
-												attrs.addOrUpdate("pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
-												attrs.addOrUpdate("class", clss.name);
-												attrs.addOrUpdate("level", maxLevel);
-												attrs.addOrUpdate("base_level", String(maxLevel));
-											}, 500);
-										} else if (d20plus.sheet == "shaped") {
-											const isSupportedClass = clss.source == "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
-											let className = "CUSTOM";
-											if (isSupportedClass) {
-												className = clss.name.toUpperCase();
-												if (clss.name == "Ranger (Revised)")
-													className = "RANGERUA";
-											}
-
-											const fRowId = attrs.findOrGenerateRepeatingRowId("repeating_class_$0_name", className);
-											attrs.addOrUpdate(`repeating_class_${fRowId}_name`, className);
-											attrs.addOrUpdate(`repeating_class_${fRowId}_level`, maxLevel);
-											if (!isSupportedClass) {
-												attrs.addOrUpdate(`repeating_class_${fRowId}_hd`, `d${clss.hd.faces}`);
-												attrs.addOrUpdate(`repeating_class_${fRowId}_custom_class_toggle`, "1");
-												attrs.addOrUpdate(`repeating_class_${fRowId}_custom_name`, clss.name);
-											}
-
-											if (!isSupportedClass && clss.name == "Mystic") {
-												const classResourcesForLevel = clss.classTableGroups[0].rows[maxLevel - 1];
-												const [talentsKnown, disciplinesKnown, psiPoints, psiLimit] = classResourcesForLevel;
-
-												attrs.addOrUpdate("spell_points_name", "PSI");
-												attrs.addOrUpdate("show_spells", "1");
-												attrs.addOrUpdate("spell_points_toggle", "1");
-												attrs.addOrUpdate("spell_ability", "INTELLIGENCE");
-												attrs.addOrUpdate("spell_points_limit", psiLimit);
-												attrs.addOrUpdate("spell_points", psiPoints, psiPoints);
-												talentsKnown, disciplinesKnown;	// unused
-
-												for (let i = 1; i <= 7; i++) {
-													attrs.addOrUpdate(`spell_level_${i}_cost`, i);
-												}
-												for (let i = 0; i <= psiLimit; i++) {
-													attrs.addOrUpdate(`spell_level_filter_${i}`, "1");
-												}
-											}
-
-											attrs.notifySheetWorkers();
-										} else {
-											console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
-										}
-									}
-
-									function importClassFeature (attrs, clss, level, feature) {
-										if (d20plus.sheet == "ogl") {
-											const fRowId = d20plus.ut.generateRowId();
-											attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
-											attrs.add(`repeating_traits_${fRowId}_source`, "Class");
-											attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
-											attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
-											attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-										} else if (d20plus.sheet == "shaped") {
-											if (shapedSheetPreFilledFeatures.includes(feature.name))
-												return;
-
-											const fRowId = d20plus.ut.generateRowId();
-											attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${clss.name} ${level})`);
-											attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
-											attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-										}
-
-										attrs.notifySheetWorkers();
-									}
-								}
-
-								function importSubclass (character, data) {
-									if (d20plus.sheet != "ogl" && d20plus.sheet != "shaped") {
-										console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
-										return;
-									}
-
-									const attrs = new CharacterAttributesProxy(character);
-									const sc = data.Vetoolscontent;
-
-									const desiredIxs = new Set(); // indexes into the subclass feature array
-									const gainLevels = [];
-
-									// _gainAtLevels should be a 20-length array of booleans
-									if (sc._gainAtLevels) {
-										const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-										if (levels) {
-											let scFeatureIndex = 0;
-											for (let i = 0; i < 20; i++) {
-												if (sc._gainAtLevels[i]) {
-													if (levels.has(i + 1)) {
-														desiredIxs.add(scFeatureIndex);
-													}
-													scFeatureIndex++;
-													gainLevels.push(i + 1);
-												}
-											}
-										} else {
-											return;
-										}
-									} else {
-										throw new Error("No subclass._gainAtLevels supplied!");
-									}
-
-									if (!desiredIxs.size) {
-										alert("No subclass features were found within the range specified.");
-										return;
-									}
-
-									const renderer = new EntryRenderer();
-									renderer.setBaseUrl(BASE_SITE_URL);
-									let firstFeatures = true;
-									for (let i = 0; i < sc.subclassFeatures.length; i++) {
-										if (!desiredIxs.has(i)) continue;
-
-										const lvlFeatureList = sc.subclassFeatures[i];
-										for (let j = 0; j < lvlFeatureList.length; j++) {
-											const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
-											let feature = lvlFeatureList[j];
-
-											try {
-												while (!feature.name || (feature[0] && !feature[0].name)) {
-													if (feature.entries && feature.entries.name) {
-														feature = feature.entries;
-														continue;
-													} else if (feature.entries[0] && feature.entries[0].name) {
-														feature = feature.entries[0];
-														continue;
-													} else {
-														feature = feature.entries;
-													}
-
-													if (!feature) {
-														// in case something goes wrong, reset break the loop
-														feature = featureCpy;
-														break;
-													}
-												}
-											} catch (e) {
-												console.error("Failed to find feature");
-												// in case something goes _really_ wrong, reset
-												feature = featureCpy;
-											}
-
-											// for the first batch of subclass features, try to split them up
-											if (firstFeatures && feature.name && feature.entries) {
-												const subFeatures = [];
-												const baseFeatures = feature.entries.filter(f => {
-													if (f.name && f.type === "entries") {
-														subFeatures.push(f);
-														return false;
-													} else return true;
-												});
-												importSubclassFeature(attrs, sc, gainLevels[i],
-														{name: feature.name, type: feature.type, entries: baseFeatures});
-												subFeatures.forEach(sf => {
-													importSubclassFeature(attrs, sc, gainLevels[i], sf);
-												})
-											} else {
-												importSubclassFeature(attrs, sc, gainLevels[i], feature);
-											}
-
-											firstFeatures = false;
-										}
-									}
-
-									function importSubclassFeature (attrs, sc, level, feature) {
-										const renderStack = [];
-										renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
-										feature.text = d20plus.importer.getCleanText(renderStack.join(""));
-
-										const fRowId = d20plus.ut.generateRowId();
-
-										if (d20plus.sheet == "ogl") {
-											attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
-											attrs.add(`repeating_traits_${fRowId}_source`, "Class");
-											attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.class} (${sc.name} ${level})`);
-											attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
-											attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-										} else if (d20plus.sheet == "shaped") {
-											attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${sc.name} ${level})`);
-											attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
-											attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-										}
-
-										attrs.notifySheetWorkers();
-									}
-								}
-
-								function importPsionicAbility (character, data) {
-									const renderer = new EntryRenderer();
-									renderer.setBaseUrl(BASE_SITE_URL);
-
-									const attrs = new CharacterAttributesProxy(character);
-									data = data.Vetoolscontent;
-									if (!data) {
-										alert("Missing data. Please re-import Psionics.");
-										return;
-									}
-
-									function getCostStr (cost) {
-										return cost.min === cost.max ? cost.min : `${cost.min}-${cost.max}`;
-									}
-
-									function getCleanText (entries) {
-										if (typeof entries == "string") {
-											return d20plus.importer.getCleanText(renderer.renderEntry(entries));
-										} else {
-											const renderStack = [];
-											renderer.recursiveEntryRender({entries: entries}, renderStack, 3);
-											return d20plus.importer.getCleanText(renderStack.join(""));
-										}
-									}
-
-									if (d20plus.sheet == "ogl") {
-										const makeSpellTrait = function (level, rowId, propName, content) {
-											const attrName = `repeating_spell-${level}_${rowId}_${propName}`;
-											attrs.add(attrName, content);
-										}
-
-										// disable all components
-										const noComponents = function (level, rowId, hasM) {
-											makeSpellTrait(level, rowId, "spellcomp_v", 0);
-											makeSpellTrait(level, rowId, "spellcomp_s", 0);
-											if (!hasM) {
-												makeSpellTrait(level, rowId, "spellcomp_m", 0);
-											}
-											makeSpellTrait(level, rowId, "options-flag", 0);
-										}
-
-										if (data.type === "D") {
-											const rowId = d20plus.ut.generateRowId();
-
-											// make focus
-											const focusLevel = "cantrip";
-											makeSpellTrait(focusLevel, rowId, "spelllevel", "cantrip");
-											makeSpellTrait(focusLevel, rowId, "spellname", `${data.name} Focus`);
-											makeSpellTrait(focusLevel, rowId, "spelldescription", getCleanText(data.focus));
-											makeSpellTrait(focusLevel, rowId, "spellcastingtime", "1 bonus action");
-											noComponents(focusLevel, rowId);
-
-											data.modes.forEach(m => {
-												if (m.submodes) {
-													m.submodes.forEach(sm => {
-														const rowId = d20plus.ut.generateRowId();
-														const smLevel = sm.cost.min;
-														makeSpellTrait(smLevel, rowId, "spelllevel", smLevel);
-														makeSpellTrait(smLevel, rowId, "spellname", `${m.name} (${sm.name})`);
-														makeSpellTrait(smLevel, rowId, "spelldescription", getCleanText(sm.entries));
-														makeSpellTrait(smLevel, rowId, "spellcomp_materials", `${getCostStr(sm.cost)} psi points`);
-														noComponents(smLevel, rowId, true);
-													});
-												} else {
-													const rowId = d20plus.ut.generateRowId();
-													const mLevel = m.cost.min;
-													makeSpellTrait(mLevel, rowId, "spelllevel", mLevel);
-													makeSpellTrait(mLevel, rowId, "spellname", `${m.name}`);
-													makeSpellTrait(mLevel, rowId, "spelldescription", `Psionic Discipline mode\n\n${getCleanText(m.entries)}`);
-													makeSpellTrait(mLevel, rowId, "spellcomp_materials", `${getCostStr(m.cost)} psi points`);
-													if (m.concentration) {
-														makeSpellTrait(mLevel, rowId, "spellduration", `${m.concentration.duration} ${m.concentration.unit}`);
-														makeSpellTrait(mLevel, rowId, "spellconcentration", "Yes");
-													}
-													noComponents(mLevel, rowId, true);
-												}
-											});
-										} else {
-											const rowId = d20plus.ut.generateRowId();
-											const level = "cantrip";
-											makeSpellTrait(level, rowId, "spelllevel", "cantrip");
-											makeSpellTrait(level, rowId, "spellname", data.name);
-											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
-											noComponents(level, rowId, false);
-										}
-									} else if (d20plus.sheet == "shaped") {
-										const makeSpellTrait = function (level, rowId, propName, content) {
-											const attrName = `repeating_spell${level}_${rowId}_${propName}`;
-											attrs.add(attrName, content);
-										}
-
-										const shapedSpellLevel = function (level) {
-											return level ? `${Parser.levelToFull(String(level))}_LEVEL`.toUpperCase() : "CANTRIP";
-										}
-
-										const shapedConcentration = function (conc) {
-											const CONC_ABV_TO_FULL = {
-												rnd: "round",
-												min: "minute",
-												hr: "hour",
-											};
-											return `CONCENTRATION_UP_TO_${conc.duration}_${CONC_ABV_TO_FULL[conc.unit]}${conc.duration > 1 ? "S" : ""}`.toUpperCase();
-										}
-
-										const inferCastingTime = function (content) {
-											if (content.search(/\b(as an action)\b/i) >= 0) {
-												return "1_ACTION";
-											} else if (content.search(/\b(as a bonus action)\b/i) >= 0) {
-												return "1_BONUS_ACTION";
-											} else if (content.search(/\b(as a reaction)\b/i) >= 0) {
-												return "1_REACTION";
-											}
-											return "1_ACTION";
-										}
-
-										const inferDuration = function (content) {
-											let duration, unit, match;
-											if ((match = content.match(/\b(?:for the next|for 1) (round|minute|hour)\b/i))) {
-												[duration, unit] = [1, match[1]];
-											} else if ((match = content.match(/\b(?:for|for the next) (\d+) (minutes|hours|days)\b/i))) {
-												[duration, unit] = [match[1], match[2]];
-											}
-
-											return (duration && unit) ? `${duration}_${unit}`.toUpperCase() : `INSTANTANEOUS`;
-										}
-
-										if (data.type === "D") {
-											const typeStr = `**Psionic Discipline:** ${data.name}\n**Psionic Order:** ${data.order}\n`;
-											const rowId = d20plus.ut.generateRowId();
-
-											// make focus
-											const focusLevel = 0;
-											makeSpellTrait(focusLevel, rowId, "spell_level", shapedSpellLevel(focusLevel));
-											makeSpellTrait(focusLevel, rowId, "name", `${data.name} Focus`);
-											makeSpellTrait(focusLevel, rowId, "content", `${typeStr}\n${getCleanText(data.focus)}`);
-											makeSpellTrait(focusLevel, rowId, "content_toggle", "1");
-											makeSpellTrait(focusLevel, rowId, "casting_time", "1_BONUS_ACTION");
-											makeSpellTrait(focusLevel, rowId, "components", "COMPONENTS_M");
-											makeSpellTrait(focusLevel, rowId, "duration", "SPECIAL");
-
-											data.modes.forEach(m => {
-												const modeContent = `${typeStr}\n${getCleanText(m.entries)}`;
-
-												if (m.submodes) {
-													m.submodes.forEach(sm => {
-														const rowId = d20plus.ut.generateRowId();
-														const smLevel = sm.cost.min;
-														const costStr = getCostStr(sm.cost);
-														const content = `${modeContent}\n${getCleanText(sm.entries)}`;
-														makeSpellTrait(smLevel, rowId, "spell_level", shapedSpellLevel(smLevel));
-														makeSpellTrait(smLevel, rowId, "name", `${m.name} (${sm.name})` + (sm.cost.min < sm.cost.max ? ` (${costStr} psi)` : ""));
-														makeSpellTrait(smLevel, rowId, "content", content);
-														makeSpellTrait(smLevel, rowId, "content_toggle", "1");
-														makeSpellTrait(smLevel, rowId, "casting_time", inferCastingTime(content));
-														makeSpellTrait(smLevel, rowId, "materials", `${costStr} psi points`);
-														makeSpellTrait(smLevel, rowId, "components", "COMPONENTS_M");
-														makeSpellTrait(smLevel, rowId, "duration", inferDuration(content));
-													});
-												} else {
-													const rowId = d20plus.ut.generateRowId();
-													const mLevel = m.cost.min;
-													const costStr = getCostStr(m.cost);
-													makeSpellTrait(mLevel, rowId, "spell_level", shapedSpellLevel(mLevel));
-													makeSpellTrait(mLevel, rowId, "name", m.name + (m.cost.min < m.cost.max ? ` (${costStr} psi)` : ""));
-													makeSpellTrait(mLevel, rowId, "content", modeContent);
-													makeSpellTrait(mLevel, rowId, "content_toggle", "1");
-													makeSpellTrait(mLevel, rowId, "casting_time", inferCastingTime(modeContent));
-													makeSpellTrait(mLevel, rowId, "materials", `${costStr} psi points`);
-													makeSpellTrait(mLevel, rowId, "components", "COMPONENTS_M");
-													if (m.concentration) {
-														makeSpellTrait(mLevel, rowId, "duration", shapedConcentration(m.concentration));
-														makeSpellTrait(mLevel, rowId, "concentration", "Yes");
-													} else {
-														makeSpellTrait(mLevel, rowId, "duration", inferDuration(modeContent));
-													}
-												}
-											});
-										} else {
-											const typeStr = `**Psionic Talent**\n`;
-											const talentContent = `${typeStr}\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`;
-											const rowId = d20plus.ut.generateRowId();
-											const level = 0;
-											makeSpellTrait(level, rowId, "spell_level", shapedSpellLevel(level));
-											makeSpellTrait(level, rowId, "name", data.name);
-											makeSpellTrait(level, rowId, "content", talentContent);
-											makeSpellTrait(level, rowId, "content_toggle", "1");
-											makeSpellTrait(level, rowId, "casting_time", inferCastingTime(talentContent));
-											makeSpellTrait(level, rowId, "components", "COMPONENTS_M");
-											makeSpellTrait(level, rowId, "duration", inferDuration(talentContent));
-										}
-									} else {
-										console.warn(`Psionic ability import is not supported for ${d20plus.sheet} character sheet`);
-									}
-
-									attrs.notifySheetWorkers();
-								}
-
-								function importItem (character, data) {
-									if (d20plus.sheet == "ogl") {
-										if (data.data._versatile) {
-											setTimeout(() => {
-												const rowId = d20plus.ut.generateRowId();
-
-												function makeItemTrait (key, val) {
-													const toSave = character.model.attribs.create({
-														name: `repeating_attack_${rowId}_${key}`,
-														current: val
-													}).save();
-													toSave.save();
-												}
-
-												const attr = (data.data["Item Type"] || "").includes("Melee") ? "strength" : "dexterity";
-												const attrTag = `@{${attr}_mod}`;
-
-												const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
-												const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
-												const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
-
-												// This links the item to the attack, and vice-versa.
-												// Unfortunately, it doesn't work,
-												//   because Roll20 thinks items<->attacks is a 1-to-1 relationship.
-												/*
-												let lastItemId = null;
-												try {
-													const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
-													const lastItem = items[items.length - 1];
-													lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
-
-													// link the inventory item to this attack
-													const toSave = character.model.attribs.create({
-														name: `repeating_inventory_${lastItemId}_itemattackid`,
-														current: rowId
-													});
-													toSave.save();
-												} catch (ex) {
-													console.error("Failed to get last item ID");
-													console.error(ex);
-												}
-
-												if (lastItemId) {
-													makeItemTrait("itemid", lastItemId);
-												}
-												*/
-
-												makeItemTrait("options-flag", "0");
-												makeItemTrait("atkname", data.name);
-												makeItemTrait("dmgbase", data.data._versatile);
-												makeItemTrait("dmgtype", data.data["Damage Type"]);
-												makeItemTrait("atkattr_base", attrTag);
-												makeItemTrait("dmgattr", attrTag);
-												makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-												makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-												if (proficiencyBonus) {
-													makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus}`);
-												}
-												makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}`);
-												makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
-											}, 350); // defer this, so we can hopefully pull item ID
-										}
-
-										// for packs, etc
-										if (data._subItems) {
-											const queue = [];
-											data._subItems.forEach(si => {
-												function makeProp (rowId, propName, content) {
-													character.model.attribs.create({
-														"name": `repeating_inventory_${rowId}_${propName}`,
-														"current": content
-													}).save();
-												}
-
-												if (si.count) {
-													const rowId = d20plus.ut.generateRowId();
-													const siD = typeof si.subItem === "string" ? JSON.parse(si.subItem) : si.subItem;
-
-													makeProp(rowId, "itemname", siD.name);
-													const w = (siD.data || {}).Weight;
-													if (w) makeProp(rowId, "itemweight", w);
-													makeProp(rowId, "itemcontent", Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
-													makeProp(rowId, "itemcount", String(si.count));
-
-												} else {
-													queue.push(si.subItem);
-												}
-											});
-
-											const interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
-											queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
-												setTimeout(() => {
-													d20plus.importer.doFakeDrop(t, character, item, i);
-												}, (ix + 1) * interval);
-											});
-
-											return;
-										}
-									}
-
-									// Fallback to native drag-n-drop
-									d20plus.importer.doFakeDrop(t, character, data, i);
-								}
-
-								function handleData (data) {
-									// TODO remove feature import workarounds below when roll20 and sheets supports their drag-n-drop properly
-									if (data.data.Category === "Feats") {
-										importFeat(character, data);
-									} else if (data.data.Category === "Backgrounds") {
-										importBackground(character, data);
-									} else if (data.data.Category === "Races") {
-										importRace(character, data);
-									} else if (data.data.Category === "Optional Features") {
-										importOptionalFeature(character, data);
-									} else if (data.data.Category === "Classes") {
-										importClass(character, data);
-									} else if (data.data.Category === "Subclasses") {
-										importSubclass(character, data);
-									} else if (data.data.Category === "Psionics") {
-										importPsionicAbility(character, data);
-									} else if (data.data.Category === "Items") {
-										importItem(character, data);
-									} else {
-										d20plus.importer.doFakeDrop(t, character, data, i);
 									}
 								}
 							} else {
