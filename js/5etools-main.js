@@ -1618,13 +1618,16 @@ const betteR205etools = function () {
 								}
 
 								function importOptionalFeature (character, data) {
-									if (d20plus.sheet == "ogl") {
-										const optionalFeature = data.Vetoolscontent;
-										const renderer = new EntryRenderer();
-										renderer.setBaseUrl(BASE_SITE_URL);
-										const rendered = renderer.renderEntry({entries: optionalFeature.entries});
+									const optionalFeature = data.Vetoolscontent;
+									const renderer = new EntryRenderer();
+									renderer.setBaseUrl(BASE_SITE_URL);
+									const rendered = renderer.renderEntry({entries: optionalFeature.entries});
+									const optionalFeatureText = d20plus.importer.getCleanText(rendered);
 
-										const fRowId = d20plus.ut.generateRowId();
+									const attrs = new CharacterAttributesProxy(character);
+									const fRowId = d20plus.ut.generateRowId();
+
+									if (d20plus.sheet == "ogl") {
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
 											current: optionalFeature.name
@@ -1639,12 +1642,17 @@ const betteR205etools = function () {
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_description`,
-											current: d20plus.importer.getCleanText(rendered)
+											current: optionalFeatureText
 										}).save();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_options-flag`,
 											current: "0"
 										}).save();
+									} else if (d20plus.sheet == "shaped") {
+										attrs.add(`repeating_classfeature_${fRowId}_name`, optionalFeature.name);
+										attrs.add(`repeating_classfeature_${fRowId}_content`, optionalFeatureText);
+										attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
 									}
