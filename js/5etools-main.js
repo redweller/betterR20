@@ -1333,6 +1333,54 @@ const betteR205etools = function () {
 			});
 		}
 
+		class CharacterAttributesProxy {
+			constructor (character) {
+				this.character = character;
+				this._changedAttrs = [];
+			}
+
+			findByName (attrName) {
+				return this.character.model.attribs.toJSON()
+					.find(a => a.name === attrName) || {};
+			}
+
+			findOrGenerateRepeatingRowId (namePattern, current) {
+				const [namePrefix, nameSuffix] = namePattern.split(/\$\d?/);
+				const attr = this.character.model.attribs.toJSON()
+					.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current == current);
+				return attr ?
+					attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1") :
+					d20plus.ut.generateRowId();
+			}
+
+			add (name, current, max) {
+				this.character.model.attribs.create({
+					name: name,
+					current: current,
+					...(max == undefined ? {} : {max: max})
+				}).save();
+				this._changedAttrs.push(name);
+			}
+
+			addOrUpdate (name, current, max) {
+				const id = this.findByName(name).id;
+				if (id) {
+					this.character.model.attribs.get(id).set({
+						current: current,
+						...(max == undefined ? {} : {max: max})
+					}).save();
+					this._changedAttrs.push(name);
+				} else {
+					this.add(name, current, max);
+				}
+			}
+
+			notifySheetWorkers () {
+				d20.journal.notifyWorkersOfAttrChanges(this.character.model.id, this._changedAttrs);
+				this._changedAttrs = [];
+			}
+		}
+
 		d20.Campaign.characters.models.each(function (v, i) {
 			v.view.rebindCompendiumDropTargets = function () {
 				// ready character sheet for draggable
@@ -1375,8 +1423,12 @@ const betteR205etools = function () {
 								}
 
 								function importFeat (character, data) {
+									const featName = data.name;
+									const featText = data.Vetoolscontent;
+									const attrs = new CharacterAttributesProxy(character);
+									const rowId = d20plus.ut.generateRowId();
+
 									if (d20plus.sheet == "ogl") {
-										const rowId = d20plus.ut.generateRowId();
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_options-flag`,
 											"current": "0"
@@ -1384,20 +1436,23 @@ const betteR205etools = function () {
 
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_name`,
-											"current": data.name
+											"current": featName
 										}).save();
 
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_description`,
-											"current": data.Vetoolscontent
+											"current": featText
 										}).save();
 
 										character.model.attribs.create({
 											"name": `repeating_traits_${rowId}_source`,
 											"current": "Feat"
 										}).save();
-
-										character.model.view._updateSheetValues();
+									} else if (d20plus.sheet == "shaped") {
+										attrs.add(`repeating_feat_${rowId}_name`, featName);
+										attrs.add(`repeating_feat_${rowId}_content`, featText);
+										attrs.add(`repeating_feat_${rowId}_content_toggle`, "1");
+										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
 									}
