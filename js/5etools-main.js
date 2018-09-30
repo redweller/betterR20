@@ -1659,59 +1659,263 @@ const betteR205etools = function () {
 								}
 
 								function importClass (character, data) {
-									if (d20plus.sheet == "ogl") {
-										let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-										if (levels) {
-											const maxLevel = Math.max(...levels);
+									let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+									if (!levels)
+										return;
 
-											const clss = data.Vetoolscontent;
+									const maxLevel = Math.max(...levels);
 
+									const clss = data.Vetoolscontent;
+									const renderer = EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
+									const shapedSheetPreFilledFeaturesByClass = {
+										"Artificer": [
+											"Magic Item Analysis",
+											"Tool Expertise",
+											"Wondrous Invention",
+											"Infuse Magic",
+											"Superior Attunement",
+											"Mechanical Servant",
+											"Soul of Artifice",
+										],
+										"Barbarian": [
+											"Rage",
+											"Unarmored Defense",
+											"Reckless Attack",
+											"Danger Sense",
+											"Extra Attack",
+											"Fast Movement",
+											"Feral Instinct",
+											"Brutal Critical",
+											"Relentless Rage",
+											"Persistent Rage",
+											"Indomitable Might",
+											"Primal Champion",
+										],
+										"Bard": [
+											"Bardic Inspiration",
+											"Jack of All Trades",
+											"Song of Rest",
+											"Expertise",
+											"Countercharm",
+											"Magical Secrets",
+											"Superior Inspiration",
+										],
+										"Cleric": [
+											"Channel Divinity",
+											"Turn Undead",
+											"Divine Intervention",
+										],
+										"Druid": [
+											"Druidic",
+											"Wild Shape",
+											"Timeless Body",
+											"Beast Spells",
+											"Archdruid",
+										],
+										"Fighter": [
+											"Fighting Style",
+											"Second Wind",
+											"Action Surge",
+											"Extra Attack",
+											"Indomitable",
+										],
+										"Monk": [
+											"Unarmored Defense",
+											"Martial Arts",
+											"Ki",
+											"Flurry of Blows",
+											"Patient Defense",
+											"Step of the Wind",
+											"Unarmored Movement",
+											"Deflect Missiles",
+											"Slow Fall",
+											"Extra Attack",
+											"Stunning Strike",
+											"Ki-Empowered Strikes",
+											"Evasion",
+											"Stillness of Mind",
+											"Purity of Body",
+											"Tongue of the Sun and Moon",
+											"Diamond Soul",
+											"Timeless Body",
+											"Empty Body",
+											"Perfect Soul",
+										],
+										"Paladin": [
+											"Divine Sense",
+											"Lay on Hands",
+											"Fighting Style",
+											"Divine Smite",
+											"Divine Health",
+											"Channel Divinity",
+											"Extra Attack",
+											"Aura of Protection",
+											"Aura of Courage",
+											"Improved Divine Smite",
+											"Cleansing Touch",
+										],
+										"Ranger": [
+											"Favored Enemy",
+											"Natural Explorer",
+											"Fighting Style",
+											"Primeval Awareness",
+											"Land’s Stride",
+											"Hide in Plain Sight",
+											"Vanish",
+											"Feral Senses",
+											"Foe Slayer",
+										],
+										"Ranger (Revised)": [ // "Ranger UA (2016)"
+											"Favored Enemy",
+											"Natural Explorer",
+											"Fighting Style",
+											"Primeval Awareness",
+											"Greater Favored Enemy",
+											"Fleet of Foot",
+											"Hide in Plain Sight",
+											"Vanish",
+											"Feral Senses",
+											"Foe Slayer",
+										],
+										"Rogue": [
+											"Expertise",
+											"Sneak Attack",
+											"Thieves' Cant",
+											"Cunning Action",
+											"Uncanny Dodge",
+											"Evasion",
+											"Reliable Talent",
+											"Blindsense",
+											"Slippery Mind",
+											"Elusive",
+											"Stroke of Luck",
+										],
+										"Sorcerer": [
+											"Sorcery Points",
+											"Flexible Casting",
+											"Metamagic",
+											"Sorcerous Restoration",
+										],
+										"Warlock": [
+											"Eldritch Invocations",
+											"Pact Boon",
+											"Mystic Arcanum",
+											"Eldritch Master",
+										],
+										"Wizard": [
+											"Arcane Recovery",
+											"Spell Mastery",
+											"Signature Spells",
+										],
+									};
+									const shapedSheetPreFilledFeatures = shapedSheetPreFilledFeaturesByClass[clss.name] || [];
+
+									const attrs = new CharacterAttributesProxy(character);
+
+									importClassGeneral(attrs, clss, maxLevel);
+
+									for (let i = 0; i < maxLevel; i++) {
+										const level = i + 1;
+										if (!levels.has(level)) continue;
+
+										const lvlFeatureList = clss.classFeatures[i];
+										for (let j = 0; j < lvlFeatureList.length; j++) {
+											const feature = lvlFeatureList[j];
+											// don't add "you gain a subclass feature" or ASI's
+											if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
+												const renderStack = [];
+												renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+												feature.text = d20plus.importer.getCleanText(renderStack.join(""));
+												importClassFeature(attrs, clss, level, feature);
+											}
+										}
+									}
+
+									function importClassGeneral (attrs, clss, maxLevel) {
+										if (d20plus.sheet == "ogl") {
 											setTimeout(() => {
 												d20plus.importer.addOrUpdateAttr(character.model, "pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
-												d20plus.importer.addOrUpdateAttr(character.model, "class", data.name);
+												d20plus.importer.addOrUpdateAttr(character.model, "class", clss.name);
 												d20plus.importer.addOrUpdateAttr(character.model, "level", maxLevel);
 												d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(maxLevel));
 											}, 500);
+										} else if (d20plus.sheet == "shaped") {
+											const isSupportedClass = clss.source == "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
+											let className = "CUSTOM";
+											if (isSupportedClass) {
+												className = clss.name.toUpperCase();
+												if (clss.name == "Ranger (Revised)")
+													className = "RANGERUA";
+											}
 
-											const renderer = EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
-											for (let i = 0; i < maxLevel; i++) {
-												if (!levels.has(i + 1)) continue;
+											const fRowId = attrs.findOrGenerateRepeatingRowId("repeating_class_$0_name", className);
+											attrs.addOrUpdate(`repeating_class_${fRowId}_name`, className);
+											attrs.addOrUpdate(`repeating_class_${fRowId}_level`, maxLevel);
+											if (!isSupportedClass) {
+												attrs.addOrUpdate(`repeating_class_${fRowId}_hd`, `d${clss.hd.faces}`);
+												attrs.addOrUpdate(`repeating_class_${fRowId}_custom_class_toggle`, "1");
+												attrs.addOrUpdate(`repeating_class_${fRowId}_custom_name`, clss.name);
+											}
 
-												const lvlFeatureList = clss.classFeatures[i];
-												for (let j = 0; j < lvlFeatureList.length; j++) {
-													const feature = lvlFeatureList[j];
-													// don't add "you gain a subclass feature" or ASI's
-													if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
-														const renderStack = [];
-														renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+											if (!isSupportedClass && clss.name == "Mystic") {
+												const classResourcesForLevel = clss.classTableGroups[0].rows[maxLevel - 1];
+												const [talentsKnown, disciplinesKnown, psiPoints, psiLimit] = classResourcesForLevel;
 
-														const fRowId = d20plus.ut.generateRowId();
-														character.model.attribs.create({
-															name: `repeating_traits_${fRowId}_name`,
-															current: feature.name
-														}).save();
-														character.model.attribs.create({
-															name: `repeating_traits_${fRowId}_source`,
-															current: "Class"
-														}).save();
-														character.model.attribs.create({
-															name: `repeating_traits_${fRowId}_source_type`,
-															current: `${clss.name} ${i + 1}`
-														}).save();
-														character.model.attribs.create({
-															name: `repeating_traits_${fRowId}_description`,
-															current: d20plus.importer.getCleanText(renderStack.join(""))
-														}).save();
-														character.model.attribs.create({
-															name: `repeating_traits_${fRowId}_options-flag`,
-															current: "0"
-														}).save();
-													}
+												attrs.addOrUpdate("spell_points_name", "PSI");
+												attrs.addOrUpdate("show_spells", "1");
+												attrs.addOrUpdate("spell_points_toggle", "1");
+												attrs.addOrUpdate("spell_ability", "INTELLIGENCE");
+												attrs.addOrUpdate("spell_points_limit", psiLimit);
+												attrs.addOrUpdate("spell_points", psiPoints, psiPoints);
+												talentsKnown, disciplinesKnown;	// unused
+
+												for (let i = 1; i <= 7; i++) {
+													attrs.addOrUpdate(`spell_level_${i}_cost`, i);
+												}
+												for (let i = 0; i <= psiLimit; i++) {
+													attrs.addOrUpdate(`spell_level_filter_${i}`, "1");
 												}
 											}
+
+											attrs.notifySheetWorkers();
+										} else {
+											console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
 										}
-									} else {
-										console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
+									}
+
+									function importClassFeature (attrs, clss, level, feature) {
+										if (d20plus.sheet == "ogl") {
+											const fRowId = d20plus.ut.generateRowId();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_name`,
+												current: feature.name
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_source`,
+												current: "Class"
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_source_type`,
+												current: `${clss.name} ${level}`
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_description`,
+												current: feature.text
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_options-flag`,
+												current: "0"
+											}).save();
+										} else if (d20plus.sheet == "shaped") {
+											if (shapedSheetPreFilledFeatures.includes(feature.name))
+												return;
+
+											const fRowId = d20plus.ut.generateRowId();
+											attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${clss.name} ${level})`);
+											attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
+											attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+											attrs.notifySheetWorkers();
+										}
 									}
 								}
 
