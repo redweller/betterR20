@@ -1459,24 +1459,30 @@ const betteR205etools = function () {
 								}
 
 								function importBackground (character, data) {
+									const bg = data.Vetoolscontent;
+
+									const renderer = new EntryRenderer();
+									renderer.setBaseUrl(BASE_SITE_URL);
+									const renderStack = [];
+									let feature;
+									bg.entries.forEach(e => {
+										if (e.name && e.name.includes("Feature:")) {
+											feature = JSON.parse(JSON.stringify(e));
+											feature.name = feature.name.replace("Feature:", "").trim();
+										}
+									});
+									if (feature)
+										renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+									feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
+
+									const skills = bg.skillProficiencies ? bg.skillProficiencies.split(",").map(s => s.trim()) : [];
+
+									const attrs = new CharacterAttributesProxy(character);
+									const fRowId = d20plus.ut.generateRowId();
+
 									if (d20plus.sheet == "ogl") {
-										const bg = data.Vetoolscontent;
-
-										const renderer = new EntryRenderer();
-										renderer.setBaseUrl(BASE_SITE_URL);
-										const renderStack = [];
-										let feature;
-										bg.entries.forEach(e => {
-											if (e.name && e.name.includes("Feature:")) {
-												feature = JSON.parse(JSON.stringify(e));
-												feature.name = feature.name.replace("Feature:", "").trim();
-											}
-										});
-										if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
-
 										d20plus.importer.addOrUpdateAttr(character.model, "background", bg.name);
 
-										const fRowId = d20plus.ut.generateRowId();
 										character.model.attribs.create({
 											name: `repeating_traits_${fRowId}_name`,
 											current: bg.name
@@ -1489,10 +1495,10 @@ const betteR205etools = function () {
 											name: `repeating_traits_${fRowId}_source_type`,
 											current: bg.name
 										}).save();
-										if (renderStack.length) {
+										if (feature.text) {
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_description`,
-												current: d20plus.importer.getCleanText(renderStack.join(""))
+												current: feature.text
 											}).save();
 										}
 										character.model.attribs.create({
@@ -1500,12 +1506,23 @@ const betteR205etools = function () {
 											current: "0"
 										}).save();
 
-										if (bg.skillProficiencies) {
-											const skills = bg.skillProficiencies.split(",").map(s => s.toLowerCase().trim().replace(/ /g, "_"));
-											skills.forEach(s => {
-												d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
-											});
+										skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
+											d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
+										});
+									} else if (d20plus.sheet == "shaped") {
+										attrs.addOrUpdate("background", bg.name);
+										attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
+										if (feature.text) {
+											attrs.add(`repeating_trait_${fRowId}_content`, feature.text);
+											attrs.add(`repeating_trait_${fRowId}_content_toggle`, "1");
 										}
+
+										skills.map(s => s.toUpperCase().replace(/ /g, "")).forEach(s => {
+											const rowId = attrs.findOrGenerateRepeatingRowId("repeating_skill_$0_storage_name", s);
+											attrs.addOrUpdate(`repeating_skill_${rowId}_proficiency`, "proficient");
+										});
+
+										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Background import is not supported for ${d20plus.sheet} character sheet`);
 									}
