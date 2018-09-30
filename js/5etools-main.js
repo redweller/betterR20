@@ -2052,8 +2052,32 @@ const betteR205etools = function () {
 								}
 
 								function importPsionicAbility (character, data) {
+									const renderer = new EntryRenderer();
+									renderer.setBaseUrl(BASE_SITE_URL);
+
+									const attrs = new CharacterAttributesProxy(character);
+									data = data.Vetoolscontent;
+									if (!data) {
+										alert("Missing data. Please re-import Psionics.");
+										return;
+									}
+
+									function getCostStr (cost) {
+										return cost.min === cost.max ? cost.min : `${cost.min}-${cost.max}`;
+									}
+
+									function getCleanText (entries) {
+										if (typeof entries == "string") {
+											return d20plus.importer.getCleanText(renderer.renderEntry(entries));
+										} else {
+											const renderStack = [];
+											renderer.recursiveEntryRender({entries: entries}, renderStack, 3);
+											return d20plus.importer.getCleanText(renderStack.join(""));
+										}
+									}
+
 									if (d20plus.sheet == "ogl") {
-										function makeSpellTrait (level, rowId, propName, content) {
+										const makeSpellTrait = function (level, rowId, propName, content) {
 											character.model.attribs.create({
 												"name": `repeating_spell-${level}_${rowId}_${propName}`,
 												"current": `${content}`
@@ -2061,7 +2085,7 @@ const betteR205etools = function () {
 										}
 
 										// disable all components
-										function noComponents (level, rowId, hasM) {
+										const noComponents = function (level, rowId, hasM) {
 											makeSpellTrait(level, rowId, "spellcomp_v", 0);
 											makeSpellTrait(level, rowId, "spellcomp_s", 0);
 											if (!hasM) {
@@ -2070,9 +2094,6 @@ const betteR205etools = function () {
 											makeSpellTrait(level, rowId, "options-flag", 0);
 										}
 
-										const renderer = new EntryRenderer();
-										renderer.setBaseUrl(BASE_SITE_URL);
-
 										if (data.type === "D") {
 											const rowId = d20plus.ut.generateRowId();
 
@@ -2080,7 +2101,7 @@ const betteR205etools = function () {
 											const focusLevel = "cantrip";
 											makeSpellTrait(focusLevel, rowId, "spelllevel", "cantrip");
 											makeSpellTrait(focusLevel, rowId, "spellname", `${data.name} Focus`);
-											makeSpellTrait(focusLevel, rowId, "spelldescription", data.focus);
+											makeSpellTrait(focusLevel, rowId, "spelldescription", getCleanText(data.focus));
 											makeSpellTrait(focusLevel, rowId, "spellcastingtime", "1 bonus action");
 											noComponents(focusLevel, rowId);
 
@@ -2091,11 +2112,8 @@ const betteR205etools = function () {
 														const smLevel = sm.cost.min;
 														makeSpellTrait(smLevel, rowId, "spelllevel", smLevel);
 														makeSpellTrait(smLevel, rowId, "spellname", `${m.name} (${sm.name})`);
-														const renderStack = [];
-														renderer.recursiveEntryRender({entries: sm.entries}, renderStack, 3);
-														makeSpellTrait(smLevel, rowId, "spelldescription", d20plus.importer.getCleanText(renderStack.join("")));
-														const costStr = sm.cost.min === sm.cost.max ? sm.cost.min : `${sm.cost.min}-${sm.cost.max}`;
-														makeSpellTrait(smLevel, rowId, "spellcomp_materials", `${costStr} psi points`);
+														makeSpellTrait(smLevel, rowId, "spelldescription", getCleanText(sm.entries));
+														makeSpellTrait(smLevel, rowId, "spellcomp_materials", `${getCostStr(sm.cost)} psi points`);
 														noComponents(smLevel, rowId, true);
 													});
 												} else {
@@ -2103,11 +2121,8 @@ const betteR205etools = function () {
 													const mLevel = m.cost.min;
 													makeSpellTrait(mLevel, rowId, "spelllevel", mLevel);
 													makeSpellTrait(mLevel, rowId, "spellname", `${m.name}`);
-													const renderStack = [];
-													renderer.recursiveEntryRender({entries: m.entries}, renderStack, 3);
-													makeSpellTrait(mLevel, rowId, "spelldescription", `Psionic Discipline mode\n\n${d20plus.importer.getCleanText(renderStack.join(""))}`);
-													const costStr = m.cost.min === m.cost.max ? m.cost.min : `${m.cost.min}-${m.cost.max}`;
-													makeSpellTrait(mLevel, rowId, "spellcomp_materials", `${costStr} psi points`);
+													makeSpellTrait(mLevel, rowId, "spelldescription", `Psionic Discipline mode\n\n${getCleanText(m.entries)}`);
+													makeSpellTrait(mLevel, rowId, "spellcomp_materials", `${getCostStr(m.cost)} psi points`);
 													if (m.concentration) {
 														makeSpellTrait(mLevel, rowId, "spellduration", `${m.concentration.duration} ${m.concentration.unit}`);
 														makeSpellTrait(mLevel, rowId, "spellconcentration", "Yes");
@@ -2120,9 +2135,116 @@ const betteR205etools = function () {
 											const level = "cantrip";
 											makeSpellTrait(level, rowId, "spelllevel", "cantrip");
 											makeSpellTrait(level, rowId, "spellname", data.name);
-											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${d20plus.importer.getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
+											makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
 											noComponents(level, rowId, false);
 										}
+									} else if (d20plus.sheet == "shaped") {
+										const makeSpellTrait = function (level, rowId, propName, content) {
+											const attrName = `repeating_spell${level}_${rowId}_${propName}`;
+											attrs.add(attrName, content);
+										}
+
+										const shapedSpellLevel = function (level) {
+											return level ? `${Parser.levelToFull(String(level))}_LEVEL`.toUpperCase() : "CANTRIP";
+										}
+
+										const shapedConcentration = function (conc) {
+											const CONC_ABV_TO_FULL = {
+												rnd: "round",
+												min: "minute",
+												hr: "hour",
+											};
+											return `CONCENTRATION_UP_TO_${conc.duration}_${CONC_ABV_TO_FULL[conc.unit]}${conc.duration > 1 ? "S" : ""}`.toUpperCase();
+										}
+
+										const inferCastingTime = function (content) {
+											if (content.search(/\b(as an action)\b/i) >= 0) {
+												return "1_ACTION";
+											} else if (content.search(/\b(as a bonus action)\b/i) >= 0) {
+												return "1_BONUS_ACTION";
+											} else if (content.search(/\b(as a reaction)\b/i) >= 0) {
+												return "1_REACTION";
+											}
+											return "1_ACTION";
+										}
+
+										const inferDuration = function (content) {
+											let duration, unit, match;
+											if ((match = content.match(/\b(?:for the next|for 1) (round|minute|hour)\b/i))) {
+												[duration, unit] = [1, match[1]];
+											} else if ((match = content.match(/\b(?:for|for the next) (\d+) (minutes|hours|days)\b/i))) {
+												[duration, unit] = [match[1], match[2]];
+											}
+
+											return (duration && unit) ? `${duration}_${unit}`.toUpperCase() : `INSTANTANEOUS`;
+										}
+
+										if (data.type === "D") {
+											const typeStr = `**Psionic Discipline:** ${data.name}\n**Psionic Order:** ${data.order}\n`;
+											const rowId = d20plus.ut.generateRowId();
+
+											// make focus
+											const focusLevel = 0;
+											makeSpellTrait(focusLevel, rowId, "spell_level", shapedSpellLevel(focusLevel));
+											makeSpellTrait(focusLevel, rowId, "name", `${data.name} Focus`);
+											makeSpellTrait(focusLevel, rowId, "content", `${typeStr}\n${getCleanText(data.focus)}`);
+											makeSpellTrait(focusLevel, rowId, "content_toggle", "1");
+											makeSpellTrait(focusLevel, rowId, "casting_time", "1_BONUS_ACTION");
+											makeSpellTrait(focusLevel, rowId, "components", "COMPONENTS_M");
+											makeSpellTrait(focusLevel, rowId, "duration", "SPECIAL");
+
+											data.modes.forEach(m => {
+												const modeContent = `${typeStr}\n${getCleanText(m.entries)}`;
+
+												if (m.submodes) {
+													m.submodes.forEach(sm => {
+														const rowId = d20plus.ut.generateRowId();
+														const smLevel = sm.cost.min;
+														const costStr = getCostStr(sm.cost);
+														const content = `${modeContent}\n${getCleanText(sm.entries)}`;
+														makeSpellTrait(smLevel, rowId, "spell_level", shapedSpellLevel(smLevel));
+														makeSpellTrait(smLevel, rowId, "name", `${m.name} (${sm.name})` + (sm.cost.min < sm.cost.max ? ` (${costStr} psi)` : ""));
+														makeSpellTrait(smLevel, rowId, "content", content);
+														makeSpellTrait(smLevel, rowId, "content_toggle", "1");
+														makeSpellTrait(smLevel, rowId, "casting_time", inferCastingTime(content));
+														makeSpellTrait(smLevel, rowId, "materials", `${costStr} psi points`);
+														makeSpellTrait(smLevel, rowId, "components", "COMPONENTS_M");
+														makeSpellTrait(smLevel, rowId, "duration", inferDuration(content));
+													});
+												} else {
+													const rowId = d20plus.ut.generateRowId();
+													const mLevel = m.cost.min;
+													const costStr = getCostStr(m.cost);
+													makeSpellTrait(mLevel, rowId, "spell_level", shapedSpellLevel(mLevel));
+													makeSpellTrait(mLevel, rowId, "name", m.name + (m.cost.min < m.cost.max ? ` (${costStr} psi)` : ""));
+													makeSpellTrait(mLevel, rowId, "content", modeContent);
+													makeSpellTrait(mLevel, rowId, "content_toggle", "1");
+													makeSpellTrait(mLevel, rowId, "casting_time", inferCastingTime(modeContent));
+													makeSpellTrait(mLevel, rowId, "materials", `${costStr} psi points`);
+													makeSpellTrait(mLevel, rowId, "components", "COMPONENTS_M");
+													if (m.concentration) {
+														makeSpellTrait(mLevel, rowId, "duration", shapedConcentration(m.concentration));
+														makeSpellTrait(mLevel, rowId, "concentration", "Yes");
+													} else {
+														makeSpellTrait(mLevel, rowId, "duration", inferDuration(modeContent));
+													}
+												}
+											});
+										} else {
+											const typeStr = `**Psionic Talent**\n`;
+											const talentContent = `${typeStr}\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`;
+											const rowId = d20plus.ut.generateRowId();
+											const level = 0;
+											makeSpellTrait(level, rowId, "spell_level", shapedSpellLevel(level));
+											makeSpellTrait(level, rowId, "name", data.name);
+											makeSpellTrait(level, rowId, "content", talentContent);
+											makeSpellTrait(level, rowId, "content_toggle", "1");
+											makeSpellTrait(level, rowId, "casting_time", inferCastingTime(talentContent));
+											makeSpellTrait(level, rowId, "components", "COMPONENTS_M");
+											makeSpellTrait(level, rowId, "duration", inferDuration(talentContent));
+										}
+
+										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Psionic ability import is not supported for ${d20plus.sheet} character sheet`);
 									}
@@ -4683,10 +4805,14 @@ const betteR205etools = function () {
 
 		const renderer = new EntryRenderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
-		data.data = {
-			Category: "Psionics"
+		const r20json = {
+			"name": data.name,
+			"Vetoolscontent": data,
+			"data": {
+				"Category": "Psionics"
+			}
 		};
-		const gmNotes = JSON.stringify(data);
+		const gmNotes = JSON.stringify(r20json);
 
 		const baseNoteContents = `
 			<h3>${data.name}</h3>
