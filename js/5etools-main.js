@@ -1529,18 +1529,23 @@ const betteR205etools = function () {
 								}
 
 								function importRace (character, data) {
-									if (d20plus.sheet == "ogl") {
-										const race = data.Vetoolscontent;
+									const race = data.Vetoolscontent;
 
+									race.entries.forEach(e => {
+										const renderer = new EntryRenderer();
+										renderer.setBaseUrl(BASE_SITE_URL);
+										const renderStack = [];
+										renderer.recursiveEntryRender({entries: e.entries}, renderStack);
+										e.text = d20plus.importer.getCleanText(renderStack.join(""));
+									});
+
+									const attrs = new CharacterAttributesProxy(character);
+
+									if (d20plus.sheet == "ogl") {
 										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
 										d20plus.importer.addOrUpdateAttr(character.model, `race_display`, race.name);
 										d20plus.importer.addOrUpdateAttr(character.model, `speed`, Parser.getSpeedString(race));
 										race.entries.forEach(e => {
-											const renderer = new EntryRenderer();
-											renderer.setBaseUrl(BASE_SITE_URL);
-											const renderStack = [];
-											renderer.recursiveEntryRender({entries: e.entries}, renderStack);
-
 											const fRowId = d20plus.ut.generateRowId();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_name`,
@@ -1556,13 +1561,57 @@ const betteR205etools = function () {
 											}).save();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_description`,
-												current: d20plus.importer.getCleanText(renderStack.join(""))
+												current: e.text
 											}).save();
 											character.model.attribs.create({
 												name: `repeating_traits_${fRowId}_options-flag`,
 												current: "0"
 											}).save();
 										});
+									} else if (d20plus.sheet == "shaped") {
+										attrs.addOrUpdate("race", race.name);
+										attrs.addOrUpdate("size", Parser.sizeAbvToFull(race.size).toUpperCase());
+										attrs.addOrUpdate("speed_string", Parser.getSpeedString(race));
+
+										if (race.speed instanceof Object) {
+											for (locomotion of ["walk", "burrow", "climb", "fly", "swim"]) {
+												if (race.speed[locomotion]) {
+													const attrName = locomotion == "walk" ? "speed" : `speed_${locomotion}`;
+													if (locomotion != "walk") {
+														attrs.addOrUpdate("other_speeds", "1");
+													}
+													// note: this doesn't cover hover
+													attrs.addOrUpdate(attrName, race.speed[locomotion]);
+												}
+											}
+										} else {
+											attrs.addOrUpdate("speed", race.speed);
+										}
+
+										// really there seems to be only darkvision for PCs
+										for (vision of ["darkvision", "blindsight", "tremorsense", "truesight"]) {
+											if (race[vision]) {
+												attrs.addOrUpdate(vision, race[vision]);
+											}
+										}
+
+										race.entries.forEach(e => {
+											const fRowId = d20plus.ut.generateRowId();
+											attrs.add(`repeating_racialtrait_${fRowId}_name`, e.name);
+											attrs.add(`repeating_racialtrait_${fRowId}_content`, e.text);
+											attrs.add(`repeating_racialtrait_${fRowId}_content_toggle`, "1");
+										});
+
+										const fRowId = d20plus.ut.generateRowId();
+										attrs.add(`repeating_modifier_${fRowId}_name`, race.name);
+										attrs.add(`repeating_modifier_${fRowId}_ability_score_toggle`, "1");
+										Object.keys(race.ability).forEach(abilityAbv => {
+											const value = race.ability[abilityAbv];
+											const ability = Parser.attAbvToFull(abilityAbv).toLowerCase();
+											attrs.add(`repeating_modifier_${fRowId}_${ability}_score_modifier`, value);
+										});
+
+										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Race import is not supported for ${d20plus.sheet} character sheet`);
 									}
