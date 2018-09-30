@@ -1920,122 +1920,134 @@ const betteR205etools = function () {
 								}
 
 								function importSubclass (character, data) {
-									if (d20plus.sheet == "ogl") {
-										const sc = data.Vetoolscontent;
+									if (d20plus.sheet != "ogl" && d20plus.sheet != "shaped") {
+										console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
+										return;
+									}
 
-										const desiredIxs = new Set(); // indexes into the subclass feature array
-										const gainLevels = [];
+									const attrs = new CharacterAttributesProxy(character);
+									const sc = data.Vetoolscontent;
 
-										// _gainAtLevels should be a 20-length array of booleans
-										if (sc._gainAtLevels) {
-											const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-											if (levels) {
-												let scFeatureIndex = 0;
-												for (let i = 0; i < 20; i++) {
-													if (sc._gainAtLevels[i]) {
-														if (levels.has(i + 1)) {
-															desiredIxs.add(scFeatureIndex);
-														}
-														scFeatureIndex++;
-														gainLevels.push(i + 1);
+									const desiredIxs = new Set(); // indexes into the subclass feature array
+									const gainLevels = [];
+
+									// _gainAtLevels should be a 20-length array of booleans
+									if (sc._gainAtLevels) {
+										const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+										if (levels) {
+											let scFeatureIndex = 0;
+											for (let i = 0; i < 20; i++) {
+												if (sc._gainAtLevels[i]) {
+													if (levels.has(i + 1)) {
+														desiredIxs.add(scFeatureIndex);
 													}
+													scFeatureIndex++;
+													gainLevels.push(i + 1);
 												}
-											} else {
-												return;
 											}
 										} else {
-											throw new Error("No subclass._gainAtLevels supplied!");
-										}
-
-										if (!desiredIxs.size) {
-											alert("No subclass features were found within the range specified.");
 											return;
 										}
-
-										const renderer = new EntryRenderer();
-										renderer.setBaseUrl(BASE_SITE_URL);
-										let firstFeatures = true;
-										for (let i = 0; i < sc.subclassFeatures.length; i++) {
-											if (!desiredIxs.has(i)) continue;
-
-											const lvlFeatureList = sc.subclassFeatures[i];
-											for (let j = 0; j < lvlFeatureList.length; j++) {
-												const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
-												let feature = lvlFeatureList[j];
-
-												try {
-													while (!feature.name || (feature[0] && !feature[0].name)) {
-														if (feature.entries && feature.entries.name) {
-															feature = feature.entries;
-															continue;
-														} else if (feature.entries[0] && feature.entries[0].name) {
-															feature = feature.entries[0];
-															continue;
-														} else {
-															feature = feature.entries;
-														}
-
-														if (!feature) {
-															// in case something goes wrong, reset break the loop
-															feature = featureCpy;
-															break;
-														}
-													}
-												} catch (e) {
-													console.error("Failed to find feature");
-													// in case something goes _really_ wrong, reset
-													feature = featureCpy;
-												}
-
-												// for the first batch of subclass features, try to split them up
-												if (firstFeatures && feature.name && feature.entries) {
-													const subFeatures = [];
-													const baseFeatures = feature.entries.filter(f => {
-														if (f.name && f.type === "entries") {
-															subFeatures.push(f);
-															return false;
-														} else return true;
-													});
-													addFeatureToSheet({name: feature.name, type: feature.type, entries: baseFeatures});
-													subFeatures.forEach(sf => {
-														addFeatureToSheet(sf);
-													})
-												} else {
-													addFeatureToSheet(feature);
-												}
-
-												function addFeatureToSheet (feature) {
-													const renderStack = [];
-													renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
-
-													const fRowId = d20plus.ut.generateRowId();
-													character.model.attribs.create({
-														name: `repeating_traits_${fRowId}_name`,
-														current: feature.name
-													}).save();
-													character.model.attribs.create({
-														name: `repeating_traits_${fRowId}_source`,
-														current: "Class"
-													}).save();
-													character.model.attribs.create({
-														name: `repeating_traits_${fRowId}_source_type`,
-														current: `${sc.class} (${sc.name} ${gainLevels[i]})`
-													}).save();
-													character.model.attribs.create({
-														name: `repeating_traits_${fRowId}_description`,
-														current: d20plus.importer.getCleanText(renderStack.join(""))
-													}).save();
-													character.model.attribs.create({
-														name: `repeating_traits_${fRowId}_options-flag`,
-														current: "0"
-													}).save();
-												}
-
-												firstFeatures = false;
-											}
-										}
 									} else {
-										console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
+										throw new Error("No subclass._gainAtLevels supplied!");
+									}
+
+									if (!desiredIxs.size) {
+										alert("No subclass features were found within the range specified.");
+										return;
+									}
+
+									const renderer = new EntryRenderer();
+									renderer.setBaseUrl(BASE_SITE_URL);
+									let firstFeatures = true;
+									for (let i = 0; i < sc.subclassFeatures.length; i++) {
+										if (!desiredIxs.has(i)) continue;
+
+										const lvlFeatureList = sc.subclassFeatures[i];
+										for (let j = 0; j < lvlFeatureList.length; j++) {
+											const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
+											let feature = lvlFeatureList[j];
+
+											try {
+												while (!feature.name || (feature[0] && !feature[0].name)) {
+													if (feature.entries && feature.entries.name) {
+														feature = feature.entries;
+														continue;
+													} else if (feature.entries[0] && feature.entries[0].name) {
+														feature = feature.entries[0];
+														continue;
+													} else {
+														feature = feature.entries;
+													}
+
+													if (!feature) {
+														// in case something goes wrong, reset break the loop
+														feature = featureCpy;
+														break;
+													}
+												}
+											} catch (e) {
+												console.error("Failed to find feature");
+												// in case something goes _really_ wrong, reset
+												feature = featureCpy;
+											}
+
+											// for the first batch of subclass features, try to split them up
+											if (firstFeatures && feature.name && feature.entries) {
+												const subFeatures = [];
+												const baseFeatures = feature.entries.filter(f => {
+													if (f.name && f.type === "entries") {
+														subFeatures.push(f);
+														return false;
+													} else return true;
+												});
+												importSubclassFeature(attrs, sc, gainLevels[i],
+														{name: feature.name, type: feature.type, entries: baseFeatures});
+												subFeatures.forEach(sf => {
+													importSubclassFeature(attrs, sc, gainLevels[i], sf);
+												})
+											} else {
+												importSubclassFeature(attrs, sc, gainLevels[i], feature);
+											}
+
+											firstFeatures = false;
+										}
+									}
+
+									function importSubclassFeature (attrs, sc, level, feature) {
+										const renderStack = [];
+										renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+										feature.text = d20plus.importer.getCleanText(renderStack.join(""));
+
+										const fRowId = d20plus.ut.generateRowId();
+
+										if (d20plus.sheet == "ogl") {
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_name`,
+												current: feature.name
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_source`,
+												current: "Class"
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_source_type`,
+												current: `${sc.class} (${sc.name} ${level})`
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_description`,
+												current: feature.text
+											}).save();
+											character.model.attribs.create({
+												name: `repeating_traits_${fRowId}_options-flag`,
+												current: "0"
+											}).save();
+										} else if (d20plus.sheet == "shaped") {
+											attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${sc.name} ${level})`);
+											attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
+											attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+											attrs.notifySheetWorkers();
+										}
 									}
 								}
 
