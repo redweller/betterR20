@@ -1429,33 +1429,19 @@ const betteR205etools = function () {
 									const rowId = d20plus.ut.generateRowId();
 
 									if (d20plus.sheet == "ogl") {
-										character.model.attribs.create({
-											"name": `repeating_traits_${rowId}_options-flag`,
-											"current": "0"
-										}).save();
-
-										character.model.attribs.create({
-											"name": `repeating_traits_${rowId}_name`,
-											"current": featName
-										}).save();
-
-										character.model.attribs.create({
-											"name": `repeating_traits_${rowId}_description`,
-											"current": featText
-										}).save();
-
-										character.model.attribs.create({
-											"name": `repeating_traits_${rowId}_source`,
-											"current": "Feat"
-										}).save();
+										attrs.add(`repeating_traits_${rowId}_options-flag`, "0");
+										attrs.add(`repeating_traits_${rowId}_name`, featName);
+										attrs.add(`repeating_traits_${rowId}_description`, featText);
+										attrs.add(`repeating_traits_${rowId}_source`, "Feat");
 									} else if (d20plus.sheet == "shaped") {
 										attrs.add(`repeating_feat_${rowId}_name`, featName);
 										attrs.add(`repeating_feat_${rowId}_content`, featText);
 										attrs.add(`repeating_feat_${rowId}_content_toggle`, "1");
-										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
 									}
+
+									attrs.notifySheetWorkers();
 								}
 
 								function importBackground (character, data) {
@@ -1481,33 +1467,18 @@ const betteR205etools = function () {
 									const fRowId = d20plus.ut.generateRowId();
 
 									if (d20plus.sheet == "ogl") {
-										d20plus.importer.addOrUpdateAttr(character.model, "background", bg.name);
+										attrs.addOrUpdate("background", bg.name);
 
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_name`,
-											current: bg.name
-										}).save();
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_source`,
-											current: "Background"
-										}).save();
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_source_type`,
-											current: bg.name
-										}).save();
+										attrs.add(`repeating_traits_${fRowId}_name`, bg.name);
+										attrs.add(`repeating_traits_${fRowId}_source`, "Background");
+										attrs.add(`repeating_traits_${fRowId}_source_type`, bg.name);
+										attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 										if (feature.text) {
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_description`,
-												current: feature.text
-											}).save();
+											attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
 										}
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_options-flag`,
-											current: "0"
-										}).save();
 
 										skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
-											d20plus.importer.addOrUpdateAttr(character.model, `${s}_prof`, `(@{pb}*@{${s}_type})`);
+											attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
 										});
 									} else if (d20plus.sheet == "shaped") {
 										attrs.addOrUpdate("background", bg.name);
@@ -1521,11 +1492,11 @@ const betteR205etools = function () {
 											const rowId = attrs.findOrGenerateRepeatingRowId("repeating_skill_$0_storage_name", s);
 											attrs.addOrUpdate(`repeating_skill_${rowId}_proficiency`, "proficient");
 										});
-
-										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Background import is not supported for ${d20plus.sheet} character sheet`);
 									}
+
+									attrs.notifySheetWorkers();
 								}
 
 								function importRace (character, data) {
@@ -1542,31 +1513,17 @@ const betteR205etools = function () {
 									const attrs = new CharacterAttributesProxy(character);
 
 									if (d20plus.sheet == "ogl") {
-										d20plus.importer.addOrUpdateAttr(character.model, `race`, race.name);
-										d20plus.importer.addOrUpdateAttr(character.model, `race_display`, race.name);
-										d20plus.importer.addOrUpdateAttr(character.model, `speed`, Parser.getSpeedString(race));
+										attrs.addOrUpdate(`race`, race.name);
+										attrs.addOrUpdate(`race_display`, race.name);
+										attrs.addOrUpdate(`speed`, Parser.getSpeedString(race));
+
 										race.entries.forEach(e => {
 											const fRowId = d20plus.ut.generateRowId();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_name`,
-												current: e.name
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_source`,
-												current: "Race"
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_source_type`,
-												current: race.name
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_description`,
-												current: e.text
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_options-flag`,
-												current: "0"
-											}).save();
+											attrs.add(`repeating_traits_${fRowId}_name`, e.name);
+											attrs.add(`repeating_traits_${fRowId}_source`, "Race");
+											attrs.add(`repeating_traits_${fRowId}_source_type`, race.name);
+											attrs.add(`repeating_traits_${fRowId}_description`, e.text);
+											attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 										});
 									} else if (d20plus.sheet == "shaped") {
 										attrs.addOrUpdate("race", race.name);
@@ -1610,11 +1567,11 @@ const betteR205etools = function () {
 											const ability = Parser.attAbvToFull(abilityAbv).toLowerCase();
 											attrs.add(`repeating_modifier_${fRowId}_${ability}_score_modifier`, value);
 										});
-
-										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Race import is not supported for ${d20plus.sheet} character sheet`);
 									}
+
+									attrs.notifySheetWorkers();
 								}
 
 								function importOptionalFeature (character, data) {
@@ -1628,34 +1585,20 @@ const betteR205etools = function () {
 									const fRowId = d20plus.ut.generateRowId();
 
 									if (d20plus.sheet == "ogl") {
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_name`,
-											current: optionalFeature.name
-										}).save();
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_source`,
-											current: Parser.optFeatureTypeToFull(optionalFeature.featureType)
-										}).save();
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_source_type`,
-											current: optionalFeature.name
-										}).save();
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_description`,
-											current: optionalFeatureText
-										}).save();
-										character.model.attribs.create({
-											name: `repeating_traits_${fRowId}_options-flag`,
-											current: "0"
-										}).save();
+										attrs.add(`repeating_traits_${fRowId}_name`, optionalFeature.name);
+										attrs.add(`repeating_traits_${fRowId}_source`, Parser.optFeatureTypeToFull(optionalFeature.featureType));
+										attrs.add(`repeating_traits_${fRowId}_source_type`, optionalFeature.name);
+										attrs.add(`repeating_traits_${fRowId}_description`, optionalFeatureText);
+										attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 									} else if (d20plus.sheet == "shaped") {
 										attrs.add(`repeating_classfeature_${fRowId}_name`, optionalFeature.name);
 										attrs.add(`repeating_classfeature_${fRowId}_content`, optionalFeatureText);
 										attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
 									}
+
+									attrs.notifySheetWorkers();
 								}
 
 								function importClass (character, data) {
@@ -1834,10 +1777,10 @@ const betteR205etools = function () {
 									function importClassGeneral (attrs, clss, maxLevel) {
 										if (d20plus.sheet == "ogl") {
 											setTimeout(() => {
-												d20plus.importer.addOrUpdateAttr(character.model, "pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
-												d20plus.importer.addOrUpdateAttr(character.model, "class", clss.name);
-												d20plus.importer.addOrUpdateAttr(character.model, "level", maxLevel);
-												d20plus.importer.addOrUpdateAttr(character.model, "base_level", String(maxLevel));
+												attrs.addOrUpdate("pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
+												attrs.addOrUpdate("class", clss.name);
+												attrs.addOrUpdate("level", maxLevel);
+												attrs.addOrUpdate("base_level", String(maxLevel));
 											}, 500);
 										} else if (d20plus.sheet == "shaped") {
 											const isSupportedClass = clss.source == "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
@@ -1886,26 +1829,11 @@ const betteR205etools = function () {
 									function importClassFeature (attrs, clss, level, feature) {
 										if (d20plus.sheet == "ogl") {
 											const fRowId = d20plus.ut.generateRowId();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_name`,
-												current: feature.name
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_source`,
-												current: "Class"
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_source_type`,
-												current: `${clss.name} ${level}`
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_description`,
-												current: feature.text
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_options-flag`,
-												current: "0"
-											}).save();
+											attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
+											attrs.add(`repeating_traits_${fRowId}_source`, "Class");
+											attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
+											attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
+											attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 										} else if (d20plus.sheet == "shaped") {
 											if (shapedSheetPreFilledFeatures.includes(feature.name))
 												return;
@@ -1914,8 +1842,9 @@ const betteR205etools = function () {
 											attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${clss.name} ${level})`);
 											attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
 											attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-											attrs.notifySheetWorkers();
 										}
+
+										attrs.notifySheetWorkers();
 									}
 								}
 
@@ -2022,32 +1951,18 @@ const betteR205etools = function () {
 										const fRowId = d20plus.ut.generateRowId();
 
 										if (d20plus.sheet == "ogl") {
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_name`,
-												current: feature.name
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_source`,
-												current: "Class"
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_source_type`,
-												current: `${sc.class} (${sc.name} ${level})`
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_description`,
-												current: feature.text
-											}).save();
-											character.model.attribs.create({
-												name: `repeating_traits_${fRowId}_options-flag`,
-												current: "0"
-											}).save();
+											attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
+											attrs.add(`repeating_traits_${fRowId}_source`, "Class");
+											attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.class} (${sc.name} ${level})`);
+											attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
+											attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 										} else if (d20plus.sheet == "shaped") {
 											attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${sc.name} ${level})`);
 											attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
 											attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-											attrs.notifySheetWorkers();
 										}
+
+										attrs.notifySheetWorkers();
 									}
 								}
 
@@ -2078,10 +1993,8 @@ const betteR205etools = function () {
 
 									if (d20plus.sheet == "ogl") {
 										const makeSpellTrait = function (level, rowId, propName, content) {
-											character.model.attribs.create({
-												"name": `repeating_spell-${level}_${rowId}_${propName}`,
-												"current": `${content}`
-											}).save();
+											const attrName = `repeating_spell-${level}_${rowId}_${propName}`;
+											attrs.add(attrName, content);
 										}
 
 										// disable all components
@@ -2243,11 +2156,11 @@ const betteR205etools = function () {
 											makeSpellTrait(level, rowId, "components", "COMPONENTS_M");
 											makeSpellTrait(level, rowId, "duration", inferDuration(talentContent));
 										}
-
-										attrs.notifySheetWorkers();
 									} else {
 										console.warn(`Psionic ability import is not supported for ${d20plus.sheet} character sheet`);
 									}
+
+									attrs.notifySheetWorkers();
 								}
 
 								function importItem (character, data) {
