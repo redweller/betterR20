@@ -6,7 +6,7 @@ const betteR20Core = function () {
 		d20plus.ut.addAllCss();
 		if (window.is_gm) d20plus.engine.enhancePageSelector();
         d20plus.js.addScripts(d20plus.onScriptLoad);
-        
+
         d20plus.ut.showLoadingMessage(`betteR20-core v${d20plus.version}`);
 	};
 
