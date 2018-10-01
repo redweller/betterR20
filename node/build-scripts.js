@@ -58,10 +58,11 @@ const SCRIPTS = {
 			"base-journal",
 			"base-css",
 			"base-ui",
-
 			"base-mod",
 			"base-template",
+
 			"core-main",
+
 			"base"
 		]
 	},
@@ -79,11 +80,13 @@ const SCRIPTS = {
 			"base-journal",
 			"base-css",
 			"base-ui",
-
 			"base-mod",
 			"base-template",
+
 			"5etools-main",
+			"5etools-importer",
 			"5etools-emoji",
+
 			"base"
 		]
 	}
