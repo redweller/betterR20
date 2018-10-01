@@ -835,7 +835,11 @@ function d20plusImporter () {
 			const doImport = (importQueue) => {
 				const $stsName = $("#import-name");
 				const $stsRemain = $("#import-remaining");
-				let remaining = importQueue.length;
+				const $title = $stsName.parent().parent().find("span.ui-dialog-title");
+				$title.text("Importing");
+
+                let remaining = importQueue.length;
+
 				let interval;
 				if (dataType === "monster" || dataType === "object") {
 					interval = d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter");
@@ -845,11 +849,18 @@ function d20plusImporter () {
 
 				let cancelWorker = false;
 				const $btnCancel = $(`#importcancel`);
-				$btnCancel.off("click");
+
+				$btnCancel.off();
 				$btnCancel.on("click", () => {
+                    cancelWorker = true;
 					handleWorkerComplete();
-					cancelWorker = true;
 				});
+
+                const $remainingText= $("#import-remaining-text");
+                $btnCancel.removeClass("btn-success");
+                $btnCancel.text("Cancel");
+
+                $remainingText.text("remaining");
 
 				// start worker to process list
 				$("#d20plus-import").dialog("open");
@@ -894,15 +905,21 @@ function d20plusImporter () {
 
 				function handleWorkerComplete () {
 					if (worker) clearInterval(worker);
+
 					if (cancelWorker) {
-						$stsName.text("Import cancelled");
+						$title.text("Import cancelled");
+						$stsName.text("");
 						if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
 						d20plus.ut.log(`Import cancelled`);
 						setTimeout(() => {
 							d20plus.bindDropLocations();
 						}, 250);
 					} else {
-						$stsName.text("Import complete");
+                        $title.text("Import complete");
+						$stsName.text("");
+                        $btnCancel.addClass("btn-success");
+                        $btnCancel.prop("title", "");
+
 						$stsRemain.text("0");
 						d20plus.ut.log(`Import complete`);
 						setTimeout(() => {
@@ -910,6 +927,13 @@ function d20plusImporter () {
 						}, 250);
 						if (options.callback) options.callback();
 					}
+
+					$btnCancel.off();
+					$btnCancel.on("click", () => $btnCancel.closest('.ui-dialog-content').dialog('close'));
+
+                    $btnCancel.first().text("OK");
+                    $remainingText.empty();
+                    $stsRemain.empty();
 				}
 			};
 
