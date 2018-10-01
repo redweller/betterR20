@@ -4,6 +4,7 @@ const SCRIPT_VERSION = "1.13.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
+// @match        https://app.roll20.net/editor#*
 // @match        https://app.roll20.net/editor?*
 // @match        https://app.roll20.net/editor/
 // @match        https://app.roll20.net/editor/#*
