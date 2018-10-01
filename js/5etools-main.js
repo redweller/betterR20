@@ -363,7 +363,6 @@ const betteR205etools = function () {
 	});
 
 	d20plus.sheet = "ogl";
-	d20plus.remaining = 0;
 	d20plus.initiative = {};
 	d20plus.importer = {};
 	d20plus.monsters = {};
