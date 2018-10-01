@@ -85,6 +85,7 @@ const SCRIPTS = {
 
 			"5etools-main",
 			"5etools-importer",
+			"5etools-monsters",
 			"5etools-emoji",
 
 			"base"
