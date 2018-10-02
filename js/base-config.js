@@ -130,7 +130,18 @@ function baseConfig() {
 	d20plus.cfg.getCfgEnumVals = (group, key) => {
 		if (CONFIG_OPTIONS[group] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
-		return CONFIG_OPTIONS[group][key]._values
+		return CONFIG_OPTIONS[group][key].__values
+	};
+
+	d20plus.cfg.getCfgSliderVals = (group, key) => {
+		if (CONFIG_OPTIONS[group] === undefined) return undefined;
+		if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
+		const it = CONFIG_OPTIONS[group][key];
+		return {
+			min: it.__sliderMin,
+			max: it.__sliderMax,
+			step: it.__sliderStep
+		}
 	};
 
 	d20plus.cfg.getDefaultConfig = () => {
@@ -383,6 +394,21 @@ function baseConfig() {
 							toAdd.append(td);
 							break;
 						}
+						case "_slider": {
+							const def = d20plus.cfg.getCfgDefaultVal(cfgK, grpK);
+							const curr = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const sliderMeta = d20plus.cfg.getCfgSliderVals(cfgK, grpK);
+
+							const field = $(`<input style="max-width: calc(100% - 40px);" type="range" min="${sliderMeta.min || 0}" max="${sliderMeta.max || 0}" step="${sliderMeta.step || 1}" value="${curr == null ? def : curr}">`);
+
+							configFields[cfgK][grpK] = () => {
+								return Number(field.val());
+							};
+
+							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
 					}
 					tbody.append(toAdd);
 				});
@@ -475,8 +501,30 @@ function baseConfig() {
 		}
 	};
 
+	d20plus.cfg._handleWeatherConfigChange = () => {
+		function handleProp (prop) {
+			const campaignKey = `bR20cfg_${prop}`;
+			if (d20plus.cfg.hasCfgVal("weather", prop)) {
+				Campaign && Campaign.save({[campaignKey]: d20plus.cfg.getCfgVal("weather", prop)});
+			} else {
+				if (Campaign) {
+					delete Campaign[campaignKey];
+					Campaign.save();
+				}
+			}
+		}
+		if (window.is_gm) {
+			handleProp("weatherType1");
+			handleProp("weatherSpeed1");
+			handleProp("weatherDir1");
+			handleProp("weatherIntensity1");
+			handleProp("weatherTint1");
+		}
+	};
+
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg._handleStatusTokenConfigChange();
+		d20plus.cfg._handleWeatherConfigChange();
 		if (d20plus.cfg.hasCfgVal("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.getCfgVal("interface", "toolbarOpacity")), 1), 0);
 			$(`#secondary-toolbar`).css({opacity: v});

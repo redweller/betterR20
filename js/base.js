@@ -63,6 +63,41 @@ const betteR20Base = function () {
 			"_type": "float"
 		},
 	});
+	addConfigOptions("weather", {
+		"_name": "Weather",
+		"weatherType1": {
+			"name": "Type",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["None", "Rain", "Snow", "Fog"]
+		},
+		"weatherSpeed1": {
+			"name": "Weather Speed",
+			"default": 0.1,
+			"_type": "_slider",
+			"__sliderMin": 0.01,
+			"__sliderMax": 1,
+			"__sliderStep": 0.01
+		},
+		"weatherDir1": {
+			"name": "Direction",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["Northerly", "North-Easterly", "Easterly", "South-Easterly", "Southerly", "South-Westerly", "Westerly", "North-Westerly"]
+		},
+		"weatherIntensity1": {
+			"name": "Intensity",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["Normal", "Heavy"]
+		},
+		"weatherTint1": {
+			"name": "Tint",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["None", "Night"]
+		},
+	});
 };
 
 const D20plus = function (version) {

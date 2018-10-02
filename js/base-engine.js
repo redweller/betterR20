@@ -1,4 +1,4 @@
-function d20plusUi () {
+function d20plusEngine () {
 	d20plus.engine = {};
 
 	d20plus.engine.addProFeatures = () => {
@@ -1631,6 +1631,168 @@ function d20plusUi () {
 			}, 5);
 		})
 	};
+
+	d20plus.engine.addWeather = () => {
+		window.force = false; // missing variable in Roll20's code(?); define it here
+		const MAX_ZOOM = 2.5; // max canvas zoom
+		// cache images
+		const IMAGES = {
+			"Rain": new Image,
+			"Snow": new Image,
+			"Fog": new Image
+		};
+		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
+		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
+		IMAGES.Fog.src = "https://i.imgur.com/SRsUpHW.png";
+		const $wrpEditor = $("#editor-wrapper");
+
+		// add custom canvas
+		const $wrpCanvas = $wrpEditor.find(".canvas-container");
+		const $canvasWeather = $("<canvas id='Vet-canvas-weather' style='position: absolute; z-index: 6; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
+		const cv = $canvasWeather[0];
+		d20.engine.weathercanvas = cv;
+
+		// add our canvas to those adjusted when canvas size changes
+		const cachedSetCanvasSize = d20.engine.setCanvasSize;
+		d20.engine.setCanvasSize = function (e, n) {
+			cv.width = e;
+			cv.height = n;
+			cachedSetCanvasSize(e, n);
+		};
+
+		d20.engine.setCanvasSize($wrpEditor[0].clientWidth, $wrpEditor[0].clientHeight);
+
+		// const page = d20.Campaign.activePage();
+		const ctx = cv.getContext("2d");
+
+		function ofX (x) {
+			return x - d20.engine.currentCanvasOffset[0];
+		}
+
+		function ofY (y) {
+			return y - d20.engine.currentCanvasOffset[1];
+		}
+
+		function getDirectionRotation () {
+			const dir = Campaign.attributes.bR20cfg_weatherDir1;
+			switch (dir) {
+				case "Northerly": return 0.25 * Math.PI;
+				case "North-Easterly": return 0.5 * Math.PI;
+				case "Easterly": return 0.75 * Math.PI;
+				case "South-Easterly": return Math.PI;
+				case "Southerly": return 1.25 * Math.PI;
+				case "South-Westerly": return 1.5 * Math.PI;
+				case "Westerly": return 1.75 * Math.PI;
+				case "North-Westerly": return 0;
+				default: return 0;
+			}
+		}
+
+		function getIntensity () {
+			const tint = Campaign.attributes.bR20cfg_weatherIntensity1;
+			switch (tint) {
+				case "Heavy": return 1;
+				default: return 0;
+			}
+		}
+
+		function getTintColor () {
+			const tint = Campaign.attributes.bR20cfg_weatherTint1;
+			switch (tint) {
+				case "Night": return "#4c566d80";
+				default: return null;
+			}
+		}
+
+		let accum = 0;
+		let then = 0;
+		let image;
+		function drawFrame (now) {
+			const deltaTime = now - then;
+			then = now;
+
+			if (Campaign && Campaign.attributes && Campaign.attributes.bR20cfg_weatherType1 !== "None") {
+				image = IMAGES[Campaign.attributes.bR20cfg_weatherType1];
+
+				ctx.clearRect(0, 0, cv.width, cv.height);
+				const hasImage = image && image.complete;
+				const tint = getTintColor();
+				if (hasImage || tint) {
+					// draw weather
+					if (hasImage) {
+						const scaledW = Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM);
+						const scaledH = Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM);
+
+						if (!(scaledW <= 0 || scaledH <= 0)) {
+							const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
+
+							const speedFactor = speed * d20.engine.canvasZoom;
+							accum += deltaTime;
+							const maxAccum = Math.floor(scaledW / speedFactor);
+							if (accum >= maxAccum) accum -= maxAccum;
+							const intensity = getIntensity() * speedFactor;
+
+							// draw weather
+							const timeOffsetX = Math.ceil(speedFactor * accum);
+							const timeOffsetY = Math.ceil(speedFactor * accum);
+
+							const basePosX = ofX(Math.round((-scaledW / 2) + timeOffsetX));
+							const basePosY = ofY(Math.round((-scaledH / 2) + timeOffsetY));
+
+							const tileOffsetX = scaledW / speedFactor;
+							const tileOffsetY = scaledH / speedFactor;
+							const offsetRotX = scaledW / 2;
+							const offsetRotY = scaledH / 2;
+							const rot = getDirectionRotation();
+
+							// DEBUG TEXT
+							ctx.font = "30px Arial";
+							ctx.fillStyle = "#ff00ff";
+							ctx.fillText(`FPS: ${(1 / (deltaTime / 1000)).toFixed(2)}`, 100, 50);
+							ctx.fillText(`Accumulated time: ${accum.toFixed(2)}`, 100, 100);
+							ctx.fillText(`Sin: ${Math.sin(accum).toFixed(4)}`, 100, 150);
+							ctx.fillText(`Cos: ${Math.cos(accum).toFixed(4)}`, 100, 200);
+
+							// tile to fill the render area // TODO cull off-screen stuff? This is extremely slow. Also, NE ~75% speed has holes
+							for (let posX = basePosX - tileOffsetX; posX < cv.width + tileOffsetX; posX += scaledW) {
+								for (let posY = basePosY - tileOffsetY; posY < cv.height + tileOffsetY; posY += scaledH) {
+									ctx.translate(offsetRotX, offsetRotY);
+									ctx.rotate(rot);
+
+									ctx.drawImage(image, posX - offsetRotX, posY - offsetRotY, scaledW, scaledH);
+
+									if (intensity) {
+										for (let i = 0; i < intensity; ++i) {
+											ctx.drawImage(
+												image,
+												(posX - offsetRotX) + (i * 50 / speedFactor), // TODO make these vary with time? Sin/Cos?
+												(posY - offsetRotY) + (i * 50 / speedFactor),
+												scaledW,
+												scaledH
+											);
+										}
+									}
+
+									ctx.rotate(-rot);
+									ctx.translate(-offsetRotX, -offsetRotY);
+								}
+							}
+						}
+					}
+
+					// draw tint
+					if (tint) {
+						ctx.fillStyle = tint;
+						ctx.fillRect(0, 0, cv.width, cv.height);
+					}
+				}
+			} else ctx.clearRect(0, 0, cv.width, cv.height);
+
+			requestAnimationFrame(drawFrame);
+		}
+
+		requestAnimationFrame(drawFrame);
+	};
 }
 
-SCRIPT_EXTENSIONS.push(d20plusUi);
+SCRIPT_EXTENSIONS.push(d20plusEngine);

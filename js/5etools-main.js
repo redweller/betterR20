@@ -283,7 +283,7 @@ const betteR205etools = function () {
 			"name": "Import Creature Fluff As...",
 			"default": "Bio",
 			"_type": "_enum",
-			"_values": ["Bio", "GM Notes"]
+			"__values": ["Bio", "GM Notes"]
 		},
 		"whispermode": {
 			"name": "Sheet Whisper Mode on Import",
@@ -551,6 +551,7 @@ const betteR205etools = function () {
 		d20plus.chat.enhanceChat();
 		d20plus.engine.enhancePathWidths();
 		d20plus.ut.disable3dDice();
+		d20plus.engine.addWeather();
 		d20plus.ut.log("All systems operational");
 		d20plus.ut.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};
