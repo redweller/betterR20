@@ -838,7 +838,7 @@ function d20plusImporter () {
 				const $title = $stsName.parent().parent().find("span.ui-dialog-title");
 				$title.text("Importing");
 
-                let remaining = importQueue.length;
+				let remaining = importQueue.length;
 
 				let interval;
 				if (dataType === "monster" || dataType === "object") {
@@ -852,15 +852,15 @@ function d20plusImporter () {
 
 				$btnCancel.off();
 				$btnCancel.on("click", () => {
-                    cancelWorker = true;
+					cancelWorker = true;
 					handleWorkerComplete();
 				});
 
-                const $remainingText= $("#import-remaining-text");
-                $btnCancel.removeClass("btn-success");
-                $btnCancel.text("Cancel");
+				const $remainingText = $("#import-remaining-text");
+				$btnCancel.removeClass("btn-success");
+				$btnCancel.text("Cancel");
 
-                $remainingText.text("remaining");
+				$remainingText.text("remaining");
 
 				// start worker to process list
 				$("#d20plus-import").dialog("open");
@@ -872,7 +872,7 @@ function d20plusImporter () {
 					workerFn();
 				}, interval);
 
-				function workerFn () {
+				function workerFn() {
 					if (!importQueue.length) {
 						handleWorkerComplete();
 						return;
@@ -903,7 +903,7 @@ function d20plusImporter () {
 					}
 				}
 
-				function handleWorkerComplete () {
+				function handleWorkerComplete() {
 					if (worker) clearInterval(worker);
 
 					if (cancelWorker) {
@@ -915,10 +915,10 @@ function d20plusImporter () {
 							d20plus.bindDropLocations();
 						}, 250);
 					} else {
-                        $title.text("Import complete");
+						$title.text("Import complete");
 						$stsName.text("");
-                        $btnCancel.addClass("btn-success");
-                        $btnCancel.prop("title", "");
+						$btnCancel.addClass("btn-success");
+						$btnCancel.prop("title", "");
 
 						$stsRemain.text("0");
 						d20plus.ut.log(`Import complete`);
@@ -931,9 +931,9 @@ function d20plusImporter () {
 					$btnCancel.off();
 					$btnCancel.on("click", () => $btnCancel.closest('.ui-dialog-content').dialog('close'));
 
-                    $btnCancel.first().text("OK");
-                    $remainingText.empty();
-                    $stsRemain.empty();
+					$btnCancel.first().text("OK");
+					$remainingText.empty();
+					$stsRemain.empty();
 				}
 			};
 
