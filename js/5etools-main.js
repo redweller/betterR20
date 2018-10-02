@@ -4138,16 +4138,16 @@ const betteR205etools = function () {
 	</p>
 	</div>`;
 
-	d20plus.importDialogHtml = `<div id="d20plus-import" title="Importing...">
+	d20plus.importDialogHtml = `<div id="d20plus-import" title="Importing">
 <p>
 <h3 id="import-name"></h3>
 </p>
-<span id="import-remaining"></span> remaining
+<b id="import-remaining"></b> <span id="import-remaining-text">remaining</span>
 <p>
-Errors: <span id="import-errors">0</span>
+Errors: <b id="import-errors">0</b>
 </p>
 <p>
-<button type="button" id="importcancel" alt="Cancel" title="Cancel Import" class="btn" role="button" aria-disabled="false">
+<button style="width: 90%" type="button" id="importcancel" alt="Cancel" title="Cancel Import" class="btn btn-danger" role="button" aria-disabled="false">
 	<span>Cancel</span>
 </button>
 </p>
