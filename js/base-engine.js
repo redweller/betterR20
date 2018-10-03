@@ -765,13 +765,14 @@ function d20plusEngine () {
 							const pageId = d20.Campaign.activePage().id;
 							const layer = window.currentEditingLayer;
 
-							const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+							const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
 
 							if(!url) {
 								i();
 								return;
 							}
 
+							d20plus.art.setLastImageUrl(url);
 
 							const img = new Image();
 							img.onload = () => {

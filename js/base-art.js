@@ -255,24 +255,27 @@ function d20plusArt () {
 
 		$(`.character-image-by-url`).live("click", function () {
 			const cId = $(this).closest(`[data-characterid]`).attr(`data-characterid`);
-			const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+			const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
 			if (url) {
+				d20plus.art.setLastImageUrl(url);
 				d20.Campaign.characters.get(cId).set("avatar", url);
 			}
 		});
 
 		$(`.handout-image-by-url`).live("click", function () {
 			const hId = $(this).closest(`[data-handoutid]`).attr(`data-handoutid`);
-			const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+			const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
 			if (url) {
+				d20plus.art.setLastImageUrl(url);
 				d20.Campaign.handouts.get(hId).set("avatar", url);
 			}
 		});
 
 		$(`.token-image-by-url`).live("click", function () {
 			const cId = $(this).closest(`[data-characterid]`).attr(`data-characterid`);
-			const url = window.prompt("Enter a URL", "https://example.com/pic.png");
+			const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
 			if (url) {
+				d20plus.art.setLastImageUrl(url);
 				const char = d20.Campaign.characters.get(cId);
 				char._getLatestBlob("defaulttoken", (blob) => {
 					blob = blob && blob.trim() ? JSON.parse(blob) : {};
@@ -281,6 +284,14 @@ function d20plusArt () {
 				});
 			}
 		});
+	};
+
+	d20plus.art._lastImageUrl = "https://example.com/pic.png";
+	d20plus.art.getLastImageUrl = () => {
+		return d20plus.art._lastImageUrl;
+	};
+	d20plus.art.setLastImageUrl = (url) => {
+		d20plus.art._lastImageUrl = url || d20plus.art._lastImageUrl;
 	};
 }
 
