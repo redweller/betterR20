@@ -73,9 +73,11 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = (message) => {
+		const isStreamer = !!d20plus.getCfgVal("interface", "streamerChatTag");
 		d20plus.ut.sendHackerChat(`
-				${message} initialised.
+				${isStreamer ? "Script" : message} initialised.
 				${window.enhancementSuiteEnabled ? `<br><br>Roll20 Enhancement Suite detected.` : ""}
+				${isStreamer ? "" : `
 				<br>
 				<br>
 				Need help? Join our <a href="https://discord.gg/AzyBjtQ">Discord</a>.
@@ -85,15 +87,17 @@ function baseUtil () {
 				Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
 				<br>
 				<br>
-				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists. 
+				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.				
+				`} 
 				</span>
 			`);
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {
+		const isStreamer = !!d20plus.getCfgVal("interface", "streamerChatTag");
 		d20plus.ut.sendHackerChat(`
-				${message} initialising, please wait...<br><br>
-			`);
+			${isStreamer ? "Script" : message} initialising, please wait...<br><br>
+		`);
 	};
 
 	d20plus.ut.sendHackerChat = (message) => {
@@ -101,8 +105,8 @@ function baseUtil () {
 			who: "system",
 			type: "system",
 			content: `<span class="hacker-chat">
-					${message}
-				</span>`
+				${message}
+			</span>`
 		}));
 	};
 

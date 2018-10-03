@@ -62,6 +62,11 @@ const betteR20Base = function () {
 			"default": 1,
 			"_type": "float"
 		},
+		"streamerChatTag": {
+			"name": "Streamer-Friendly Chat Tags",
+			"default": false,
+			"_type": "boolean"
+		},
 	});
 	addConfigOptions("weather", {
 		"_name": "Weather",
