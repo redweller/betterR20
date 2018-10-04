@@ -73,7 +73,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = (message) => {
-		const isStreamer = !!d20plus.getCfgVal("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.getCfgVal("interface", "streamerChatTag");
 		d20plus.ut.sendHackerChat(`
 				${isStreamer ? "Script" : message} initialised.
 				${window.enhancementSuiteEnabled ? `<br><br>Roll20 Enhancement Suite detected.` : ""}
@@ -94,7 +94,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.getCfgVal("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.getCfgVal("interface", "streamerChatTag");
 		d20plus.ut.sendHackerChat(`
 			${isStreamer ? "Script" : message} initialising, please wait...<br><br>
 		`);
