@@ -4955,7 +4955,8 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 								console.log("Assembling creature list");
 							});
-						}
+						},
+						(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
 					);
 				}
 			}
