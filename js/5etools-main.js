@@ -1201,15 +1201,14 @@ const betteR205etools = function () {
 			const renderer = new EntryRenderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 			const renderStack = [];
-			let feature;
+			let feature = {};
 			bg.entries.forEach(e => {
 				if (e.name && e.name.includes("Feature:")) {
 					feature = JSON.parse(JSON.stringify(e));
 					feature.name = feature.name.replace("Feature:", "").trim();
 				}
 			});
-			if (feature)
-				renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+			if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
 			const skills = bg.skillProficiencies ? bg.skillProficiencies.split(",").map(s => s.trim()) : [];
@@ -1217,10 +1216,10 @@ const betteR205etools = function () {
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
 
-			if (d20plus.sheet == "ogl") {
+			if (d20plus.sheet === "ogl") {
 				attrs.addOrUpdate("background", bg.name);
 
-				attrs.add(`repeating_traits_${fRowId}_name`, bg.name);
+				attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
 				attrs.add(`repeating_traits_${fRowId}_source`, "Background");
 				attrs.add(`repeating_traits_${fRowId}_source_type`, bg.name);
 				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
@@ -1231,7 +1230,7 @@ const betteR205etools = function () {
 				skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
 					attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
 				});
-			} else if (d20plus.sheet == "shaped") {
+			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
 				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
 				if (feature.text) {
@@ -1263,7 +1262,7 @@ const betteR205etools = function () {
 
 			const attrs = new CharacterAttributesProxy(character);
 
-			if (d20plus.sheet == "ogl") {
+			if (d20plus.sheet === "ogl") {
 				attrs.addOrUpdate(`race`, race.name);
 				attrs.addOrUpdate(`race_display`, race.name);
 				attrs.addOrUpdate(`speed`, Parser.getSpeedString(race));
@@ -1276,16 +1275,16 @@ const betteR205etools = function () {
 					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 				});
-			} else if (d20plus.sheet == "shaped") {
+			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("race", race.name);
 				attrs.addOrUpdate("size", Parser.sizeAbvToFull(race.size).toUpperCase());
 				attrs.addOrUpdate("speed_string", Parser.getSpeedString(race));
 
 				if (race.speed instanceof Object) {
-					for (locomotion of ["walk", "burrow", "climb", "fly", "swim"]) {
+					for (const locomotion of ["walk", "burrow", "climb", "fly", "swim"]) {
 						if (race.speed[locomotion]) {
-							const attrName = locomotion == "walk" ? "speed" : `speed_${locomotion}`;
-							if (locomotion != "walk") {
+							const attrName = locomotion === "walk" ? "speed" : `speed_${locomotion}`;
+							if (locomotion !== "walk") {
 								attrs.addOrUpdate("other_speeds", "1");
 							}
 							// note: this doesn't cover hover
@@ -1297,7 +1296,7 @@ const betteR205etools = function () {
 				}
 
 				// really there seems to be only darkvision for PCs
-				for (vision of ["darkvision", "blindsight", "tremorsense", "truesight"]) {
+				for (const vision of ["darkvision", "blindsight", "tremorsense", "truesight"]) {
 					if (race[vision]) {
 						attrs.addOrUpdate(vision, race[vision]);
 					}
