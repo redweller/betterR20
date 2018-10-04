@@ -62,6 +62,11 @@ const betteR20Base = function () {
 			"default": 1,
 			"_type": "float"
 		},
+		"quickLayerButtons": {
+			"name": "Add Quick Layer Buttons",
+			"default": true,
+			"_type": "boolean"
+		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
 			"default": false,

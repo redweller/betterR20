@@ -529,6 +529,7 @@ function baseConfig() {
 			const v = Math.max(Math.min(Number(d20plus.cfg.getCfgVal("interface", "toolbarOpacity")), 1), 0);
 			$(`#secondary-toolbar`).css({opacity: v});
 		}
+		$(`#floatinglayerbar`).toggle(d20plus.cfg.getCfgVal("interface", "quickLayerButtons"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {

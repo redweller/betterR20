@@ -196,6 +196,23 @@ function baseCss () {
 			s: "#secondary-toolbar:hover",
 			r: "opacity: 1 !important;"
 		},
+		// addon layer bar
+		{
+			s: "#floatinglayerbar ul",
+			r: "margin: 0; padding: 0;"
+		},
+		{
+			s: "#floatinglayerbar li:hover, #floatinglayerbar li.activebutton",
+			r: "color: #333; background-color: #54C3E8; cursor: pointer;"
+		},
+		{
+			s: "#floatinglayerbar li",
+			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;"
+		},
+		{
+			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls",
+			r: "background-color: #54C3E8; color: #333;"
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
