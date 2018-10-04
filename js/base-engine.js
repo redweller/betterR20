@@ -1787,9 +1787,15 @@ function d20plusEngine () {
 						ctx.fillRect(0, 0, cv.width, cv.height);
 					}
 				}
-			} else ctx.clearRect(0, 0, cv.width, cv.height);
 
-			requestAnimationFrame(drawFrame);
+				requestAnimationFrame(drawFrame);
+			} else {
+				// if weather is disabled, maintain a background tick
+				ctx.clearRect(0, 0, cv.width, cv.height);
+				setTimeout(() => {
+					drawFrame(0);
+				}, 1000);
+			}
 		}
 
 		requestAnimationFrame(drawFrame);
