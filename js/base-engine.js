@@ -170,7 +170,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine._addStatusEffectEntries = () => {
-		const sheetUrl = window.is_gm ? d20plus.cfg.getCfgVal("token", "statusSheetUrl") || d20plus.cfg.getCfgDefaultVal("token", "statusSheetUrl"): window.Campaign.attributes.bR20cfg_statussheet;
+		const sheetUrl = window.is_gm ? d20plus.cfg.get("token", "statusSheetUrl") || d20plus.cfg.getDefault("token", "statusSheetUrl"): window.Campaign.attributes.bR20cfg_statussheet;
 
 		const temp = new Image();
 		temp.onload = () => {
@@ -1287,7 +1287,7 @@ function d20plusEngine () {
 
 		// add half-grid snap
 		d20.engine.snapToIncrement = function(e, t) {
-			if (d20plus.cfg.getCfgVal("canvas", "halfGridSnap")) {
+			if (d20plus.cfg.get("canvas", "halfGridSnap")) {
 				t = t / 2;
 			}
 			return t * Math.round(e / t);

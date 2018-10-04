@@ -550,7 +550,7 @@ function d20plusMod() {
 			it.model.view.updateBackdrops = function (e) {
 				if (!this.nohud && ("objects" == this.model.get("layer") || "gmlayer" == this.model.get("layer")) && "image" == this.model.get("type") && this.model && this.model.collection && this.graphic) {
 					// BEGIN MOD
-					const scaleFact = (d20plus.cfg.getCfgVal("canvas", "scaleNamesStatuses") && d20.Campaign.activePage().get("snapping_increment"))
+					const scaleFact = (d20plus.cfg.get("canvas", "scaleNamesStatuses") && d20.Campaign.activePage().get("snapping_increment"))
 						? d20.Campaign.activePage().get("snapping_increment")
 						: 1;
 					// END MOD

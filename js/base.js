@@ -67,6 +67,11 @@ const betteR20Base = function () {
 			"default": true,
 			"_type": "boolean"
 		},
+		"quickInitButtons": {
+			"name": "Add Quick Initiative Sort Button",
+			"default": true,
+			"_type": "boolean"
+		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
 			"default": false,

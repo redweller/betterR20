@@ -84,7 +84,7 @@ function d20plusArt () {
 			d20plus.art.refreshList = refreshCustomArtList;
 
 			function getArtLi (name, url) {
-				const showImage = d20plus.cfg.getCfgVal("interface", "showCustomArtPreview");
+				const showImage = d20plus.cfg.get("interface", "showCustomArtPreview");
 				const $liArt = $(`
 						<li class="dd-item library-item draggableresult Vetools-draggable-art ui-draggable" data-fullsizeurl="${url}">
 							${showImage ? `<img src="${url}" style="width: 30px; max-height: 30px; display: inline-block" draggable="false">` : ""}

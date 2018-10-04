@@ -69,7 +69,8 @@ function baseUi () {
 		d20plus.tool.addTools();
 	};
 
-	d20plus.ui.addQuickLayerBar = () => {
+	d20plus.ui.addQuickUI = () => {
+		// add quick layer selection panel
 		const $ulBtns = $(`<div id="floatinglayerbar"><ul/></div>`)
 			.css({
 				width: 30,
@@ -98,7 +99,14 @@ function baseUi () {
 			setTimeout(() => {
 				$("#floatinglayerbar").addClass(window.currentEditingLayer)
 			}, 1);
-		})
+		});
+
+		// add "desc sort" button to init tracker
+		const $initTracker = $(`#initiativewindow`);
+		$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;">🠋</div>`).click(() => {
+			// this will throw a benign error if the settings dialog has never been opened
+			$("#initiativewindow_settings .sortlist_numericdesc").click();
+		}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`));
 	};
 }
 

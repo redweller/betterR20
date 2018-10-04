@@ -107,7 +107,7 @@ function baseConfig() {
 		return d20plus.cfg.current[group][key];
 	};
 
-	d20plus.cfg.getCfgVal = (group, key) => {
+	d20plus.cfg.get = (group, key) => {
 		if (d20plus.cfg.current[group] === undefined) return undefined;
 		if (d20plus.cfg.current[group][key] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key]._type === "_SHEET_ATTRIBUTE") {
@@ -121,10 +121,15 @@ function baseConfig() {
 		return d20plus.cfg.current[group][key];
 	};
 
-	d20plus.cfg.getCfgDefaultVal = (group, key) => {
+	d20plus.cfg.getDefault = (group, key) => {
 		if (CONFIG_OPTIONS[group] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
 		return CONFIG_OPTIONS[group][key].default
+	};
+
+	d20plus.cfg.getOrDefault = (group, key) => {
+		if (d20plus.cfg.has(group, key)) return d20plus.cfg.get(group, key);
+		return d20plus.cfg.getDefault(group, key);
 	};
 
 	d20plus.cfg.getCfgEnumVals = (group, key) => {
@@ -160,8 +165,8 @@ function baseConfig() {
 	};
 
 	// Helpful for checking if a boolean option is set even if false
-	d20plus.cfg.hasCfgVal = (group, key) => {
-		if (d20plus.cfg.current[group] === undefined) return undefined;
+	d20plus.cfg.has = (group, key) => {
+		if (d20plus.cfg.current[group] === undefined) return false;
 		return d20plus.cfg.current[group][key] !== undefined;
 	};
 
@@ -254,7 +259,7 @@ function baseConfig() {
 					// Each config `_type` should have a case here. Each case should add a function to the map [configFields:[cfgK:grpK]]. These functions should return the value of the input.
 					switch (prop._type) {
 						case "boolean": {
-							const field = $(`<input type="checkbox" id="conf_field_${idx}" ${d20plus.cfg.getCfgVal(cfgK, grpK) ? `checked` : ""}>`);
+							const field = $(`<input type="checkbox" id="conf_field_${idx}" ${d20plus.cfg.getOrDefault(cfgK, grpK) ? `checked` : ""}>`);
 
 							configFields[cfgK][grpK] = () => {
 								return field.prop("checked")
@@ -265,8 +270,8 @@ function baseConfig() {
 							break;
 						}
 						case "String": {
-							const curr = d20plus.cfg.getCfgVal(cfgK, grpK) || "";
-							const def = d20plus.cfg.getCfgDefaultVal(cfgK, grpK) || "";
+							const curr = d20plus.cfg.get(cfgK, grpK) || "";
+							const def = d20plus.cfg.getDefault(cfgK, grpK) || "";
 							const field = $(`<input id="conf_field_${idx}" value="${curr}" ${def ? `placeholder="Default: ${def}"` : ""}>`);
 
 							configFields[cfgK][grpK] = () => {
@@ -282,7 +287,7 @@ function baseConfig() {
 							const DICT = prop._type === "_SHEET_ATTRIBUTE" ? NPC_SHEET_ATTRIBUTES : PC_SHEET_ATTRIBUTES;
 							const sortedNpcsAttKeys = Object.keys(DICT).sort((at1, at2) => d20plus.ut.ascSort(DICT[at1].name, DICT[at2].name));
 							const field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${sortedNpcsAttKeys.map(npcK => `<option value="${npcK}">${DICT[npcK].name}</option>`)}</select>`);
-							const cur = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {
 								field.val(cur);
 							}
@@ -297,8 +302,8 @@ function baseConfig() {
 						}
 						case "float":
 						case "integer": {
-							const def = d20plus.cfg.getCfgDefaultVal(cfgK, grpK);
-							const curr = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const def = d20plus.cfg.getDefault(cfgK, grpK);
+							const curr = d20plus.cfg.get(cfgK, grpK);
 							const field = $(`<input id="conf_field_${idx}" type="number" ${curr != null ? `value="${curr}"` : ""} ${def != null ? `placeholder="Default: ${def}"` : ""} step="any">`);
 
 							configFields[cfgK][grpK] = () => {
@@ -312,7 +317,7 @@ function baseConfig() {
 						case "_FORMULA": {
 							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.formulas._options.sort().map(opt => `<option value="${opt}">${opt}</option>`)}</select>`);
 
-							const cur = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {
 								$field.val(cur);
 							}
@@ -328,7 +333,7 @@ function baseConfig() {
 						case "_WHISPERMODE": {
 							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.whisperModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
 
-							const cur = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {
 								$field.val(cur);
 							}
@@ -344,7 +349,7 @@ function baseConfig() {
 						case "_ADVANTAGEMODE": {
 							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.advantageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
 
-							const cur = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {
 								$field.val(cur);
 							}
@@ -360,7 +365,7 @@ function baseConfig() {
 						case "_DAMAGEMODE": {
 							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.damageModes.map(mode => `<option value="${mode}">${mode}</option>`)}</select>`);
 
-							const cur = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {
 								$field.val(cur);
 							}
@@ -376,11 +381,11 @@ function baseConfig() {
 						case "_enum": { // for generic String enums not covered above
 							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.cfg.getCfgEnumVals(cfgK, grpK).map(it => `<option value="${it}">${it}</option>`)}</select>`);
 
-							const cur = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {
 								$field.val(cur);
 							} else {
-								const def = d20plus.cfg.getCfgDefaultVal(cfgK, grpK);
+								const def = d20plus.cfg.getDefault(cfgK, grpK);
 								if (def !== undefined) {
 									$field.val(def);
 								}
@@ -395,8 +400,8 @@ function baseConfig() {
 							break;
 						}
 						case "_slider": {
-							const def = d20plus.cfg.getCfgDefaultVal(cfgK, grpK);
-							const curr = d20plus.cfg.getCfgVal(cfgK, grpK);
+							const def = d20plus.cfg.getDefault(cfgK, grpK);
+							const curr = d20plus.cfg.get(cfgK, grpK);
 							const sliderMeta = d20plus.cfg.getCfgSliderVals(cfgK, grpK);
 
 							const field = $(`<input style="max-width: calc(100% - 40px);" type="range" min="${sliderMeta.min || 0}" max="${sliderMeta.max || 0}" step="${sliderMeta.step || 1}" value="${curr == null ? def : curr}">`);
@@ -465,9 +470,9 @@ function baseConfig() {
 
 	d20plus.cfg._handleStatusTokenConfigChange = () => {
 		if (window.is_gm) {
-			if (d20plus.cfg.getCfgVal("token", "enhanceStatus")) {
-				const sheetUrl = d20plus.cfg.getCfgVal("token", "statusSheetUrl") || d20plus.cfg.getCfgDefaultVal("token", "statusSheetUrl");
-				const sheetSmallUrl = d20plus.cfg.getCfgVal("token", "statusSheetSmallUrl") || d20plus.cfg.getCfgDefaultVal("token", "statusSheetSmallUrl");
+			if (d20plus.cfg.get("token", "enhanceStatus")) {
+				const sheetUrl = d20plus.cfg.get("token", "statusSheetUrl") || d20plus.cfg.getDefault("token", "statusSheetUrl");
+				const sheetSmallUrl = d20plus.cfg.get("token", "statusSheetSmallUrl") || d20plus.cfg.getDefault("token", "statusSheetSmallUrl");
 
 				window.Campaign && window.Campaign.save({
 					"bR20cfg_statussheet": sheetUrl,
@@ -504,8 +509,8 @@ function baseConfig() {
 	d20plus.cfg._handleWeatherConfigChange = () => {
 		function handleProp (prop) {
 			const campaignKey = `bR20cfg_${prop}`;
-			if (d20plus.cfg.hasCfgVal("weather", prop)) {
-				Campaign && Campaign.save({[campaignKey]: d20plus.cfg.getCfgVal("weather", prop)});
+			if (d20plus.cfg.has("weather", prop)) {
+				Campaign && Campaign.save({[campaignKey]: d20plus.cfg.get("weather", prop)});
 			} else {
 				if (Campaign) {
 					delete Campaign[campaignKey];
@@ -525,11 +530,13 @@ function baseConfig() {
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg._handleStatusTokenConfigChange();
 		d20plus.cfg._handleWeatherConfigChange();
-		if (d20plus.cfg.hasCfgVal("interface", "toolbarOpacity")) {
-			const v = Math.max(Math.min(Number(d20plus.cfg.getCfgVal("interface", "toolbarOpacity")), 1), 0);
+		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
+			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 1), 0);
 			$(`#secondary-toolbar`).css({opacity: v});
 		}
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getCfgVal("interface", "quickLayerButtons"));
+
+		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
+		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {

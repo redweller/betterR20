@@ -1031,9 +1031,9 @@ function baseTool() {
 								doImport();
 							}
 						});
-						const mapTimeout = d20plus.cfg.getCfgVal("import", "importIntervalMap") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalMap");
-						const charTimeout = d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter");
-						const handoutTimeout = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
+						const mapTimeout = d20plus.cfg.get("import", "importIntervalMap") || d20plus.cfg.getDefault("import", "importIntervalMap");
+						const charTimeout = d20plus.cfg.get("import", "importIntervalCharacter") || d20plus.cfg.getDefault("import", "importIntervalCharacter");
+						const handoutTimeout = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 						const timeouts = {
 							characters: charTimeout,
 							decks: handoutTimeout,
