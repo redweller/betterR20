@@ -103,10 +103,22 @@ function baseUi () {
 
 		// add "desc sort" button to init tracker
 		const $initTracker = $(`#initiativewindow`);
-		$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;">🠋</div>`).click(() => {
-			// this will throw a benign error if the settings dialog has never been opened
-			$("#initiativewindow_settings .sortlist_numericdesc").click();
-		}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`));
+		const addInitSortBtn = () => {
+			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;">🠋</div>`).click(() => {
+				// this will throw a benign error if the settings dialog has never been opened
+				$("#initiativewindow_settings .sortlist_numericdesc").click();
+			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`));
+		};
+		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) {
+			addInitSortBtn();
+		} else {
+			d20.Campaign.initiativewindow.model.on("change", (e) => {
+				if (d20.Campaign.initiativewindow.model.attributes.initiativepage && $(`#init-quick-sort-desc`).length === 0) {
+					addInitSortBtn();
+					d20plus.cfg.baseHandleConfigChange();
+				}
+			})
+		}
 	};
 }
 

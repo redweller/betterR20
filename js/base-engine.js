@@ -1634,6 +1634,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.addWeather = () => {
+		d20plus.ut.log("Adding weather");
 		window.force = false; // missing variable in Roll20's code(?); define it here
 		const MAX_ZOOM = 2.5; // max canvas zoom
 		const tmp = []; // temp vector
