@@ -1736,13 +1736,9 @@ function d20plusEngine () {
 						!(scaledW <= 0 || scaledH <= 0) // sanity check
 					) {
 						const rot = getDirectionRotation();
-						const w = image.width;
-						const h = image.height;
-						const MIN_X = 0;
-						const MIN_Y = 0;
-						const MAX_X = cv.width;
-						const MAX_Y = cv.height;
-						const boundingBox = [[0, 0], [0, (MAX_Y - MIN_Y)], [(MAX_X - MIN_X), (MAX_Y - MIN_Y)], [(MAX_X - MIN_X), 0]];
+						const w = scaledW;
+						const h = scaledH;
+						const boundingBox = [[-w, -h], [-w, cv.height + h], [cv.width + w, cv.height + h], [cv.width + w, -h]];
 						const BASE_OFFSET_X = -w / 2;
 						const BASE_OFFSET_Y = -h / 2;
 
@@ -1767,12 +1763,7 @@ function d20plusEngine () {
 						const speedFactor = speed * d20.engine.canvasZoom;
 						accum += deltaTime;
 						const maxAccum = Math.floor(scaledW / speedFactor);
-						if (accum >= maxAccum) {
-							console.log("accum resetting", accum)
-							console.log("offset X was", Math.ceil(speedFactor * accum))
-							console.log("offset Y was", Math.ceil(speedFactor * accum))
-							accum -= maxAccum;
-						}
+						if (accum >= maxAccum) accum -= maxAccum;
 						const intensity = getIntensity() * speedFactor;
 						const timeOffsetX = Math.ceil(speedFactor * accum);
 						const timeOffsetY = Math.ceil(speedFactor * accum);
@@ -1785,8 +1776,7 @@ function d20plusEngine () {
 						ctx.fillText(`Sin: ${Math.sin(accum).toFixed(4)}`, 100, 150);
 						ctx.fillText(`Cos: ${Math.cos(accum).toFixed(4)}`, 100, 200);
 
-						//// switch coord space and rotate
-						ctx.translate(MIN_X, MIN_Y);
+						//// rotate coord space
 						ctx.rotate(rot);
 
 						// draw base image
@@ -1797,8 +1787,8 @@ function d20plusEngine () {
 								image,
 								BASE_OFFSET_X + timeOffsetX + offsetX,
 								BASE_OFFSET_Y + timeOffsetY + offsetY,
-								// scaledW,
-								// scaledH
+								scaledW,
+								scaledH
 							);
 						}
 
@@ -1856,7 +1846,7 @@ function d20plusEngine () {
 								while(subMoves <= maxMoves[1]) {
 									subNxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 									subMoves++;
-									if (inBounds(subNxtPts)) doDraw(BASE_OFFSET_X + timeOffsetX + (xDir * moves * w), BASE_OFFSET_Y + timeOffsetY + (dir * (subMoves * h)));
+									if (inBounds(subNxtPts)) doDraw(xDir * moves * w, dir * (subMoves * h));
 								}
 							};
 
@@ -1872,7 +1862,7 @@ function d20plusEngine () {
 								while(subMoves <= maxMoves[1]) {
 									subNxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 									subMoves++;
-									if (lineIntersectsBounds(subNxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX + (dir * (subMoves * w)), BASE_OFFSET_Y + timeOffsetY + (yDir * moves * h));
+									if (lineIntersectsBounds(subNxtPts, boundingBox)) doDraw(dir * (subMoves * w), yDir * moves * h);
 								}
 							};
 
@@ -1888,7 +1878,7 @@ function d20plusEngine () {
 								while(lineIntersectsBounds(nxtPts, boundingBox)) {
 									nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 									moves++;
-									if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX + (dir * (moves * w)), BASE_OFFSET_Y + timeOffsetY);
+									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
 								}
 							};
 
@@ -1904,7 +1894,7 @@ function d20plusEngine () {
 								while(lineIntersectsBounds(nxtPts, boundingBox)) {
 									nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 									moves++;
-									if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX, BASE_OFFSET_Y + timeOffsetY + (dir * (moves * h)));
+									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
 								}
 							};
 
@@ -1924,7 +1914,7 @@ function d20plusEngine () {
 									while(moves < maxMoves[1]) {
 										nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 										moves++;
-										if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX + (dir * (moves * w)), BASE_OFFSET_Y + timeOffsetY);
+										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
 										handleXAxisYIncrease(nxtPts, maxMoves, moves, dir);
 									}
 								};
@@ -1940,7 +1930,7 @@ function d20plusEngine () {
 									while(moves < maxMoves[1]) {
 										nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 										moves++;
-										if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX, BASE_OFFSET_Y + timeOffsetY + (dir * (moves * h)));
+										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
 										handleYAxisXIncrease(nxtPts, maxMoves, moves, dir);
 									}
 								};
@@ -1951,9 +1941,8 @@ function d20plusEngine () {
 							}
 						})();
 
-						//// revert switched rotation and coordinate space
+						//// revert coord space rotation
 						ctx.rotate(-rot);
-						ctx.translate(-MIN_X, -MIN_Y);
 					}
 
 					if ((hasImage && Math.round(3.1) !== 3)
