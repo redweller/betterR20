@@ -1739,7 +1739,12 @@ function d20plusEngine () {
 						const rot = getDirectionRotation();
 						const w = scaledW;
 						const h = scaledH;
-						const boundingBox = [[-w, -h], [-w, cv.height + h], [cv.width + w, cv.height + h], [cv.width + w, -h]];
+						const boundingBox = [
+							[-w, -h],
+							[-w, cv.height + h + d20.engine.currentCanvasOffset[1]],
+							[cv.width + w + d20.engine.currentCanvasOffset[0], cv.height + h + d20.engine.currentCanvasOffset[1]],
+							[cv.width + w + d20.engine.currentCanvasOffset[0], -h]
+						];
 						const BASE_OFFSET_X = -w / 2;
 						const BASE_OFFSET_Y = -h / 2;
 
@@ -1774,8 +1779,6 @@ function d20plusEngine () {
 						ctx.fillStyle = "#ff00ff";
 						ctx.fillText(`FPS: ${(1 / (deltaTime / 1000)).toFixed(2)}`, 100, 50);
 						ctx.fillText(`Accumulated time: ${accum.toFixed(2)}`, 100, 100);
-						ctx.fillText(`Sin: ${Math.sin(accum).toFixed(4)}`, 100, 150);
-						ctx.fillText(`Cos: ${Math.cos(accum).toFixed(4)}`, 100, 200);
 
 						//// rotate coord space
 						ctx.rotate(rot);
@@ -1784,13 +1787,26 @@ function d20plusEngine () {
 						doDraw(0, 0);
 
 						function doDraw (offsetX, offsetY) {
+							const xPos = BASE_OFFSET_X + timeOffsetX + offsetX + d20.engine.currentCanvasOffset[0];
+							const yPos = BASE_OFFSET_Y + timeOffsetY + offsetY + d20.engine.currentCanvasOffset[1];
 							ctx.drawImage(
 								image,
-								BASE_OFFSET_X + timeOffsetX + offsetX,
-								BASE_OFFSET_Y + timeOffsetY + offsetY,
+								xPos,
+								yPos,
 								scaledW,
 								scaledH
 							);
+
+							if (intensity) {
+								const offsetIntensity = -Math.floor(scaledW / 4);
+								ctx.drawImage(
+									image,
+									xPos + offsetIntensity,
+									yPos + offsetIntensity,
+									scaledW,
+									scaledH
+								);
+							}
 						}
 
 						function inBounds (nextPts) {
