@@ -438,10 +438,10 @@ function d20plusMod() {
 						const div = t.Ve.line.mode === "2" ? 1 : 2;
 
 						const norm = [];
-						d20plus.math.normalize(norm, [t.to_x - t.x, t.to_y - t.y]);
+						d20plus.math.vec2.normalize(norm, [t.to_x - t.x, t.to_y - t.y]);
 						const width = (Number(t.Ve.line.width) || 0.1) / div;
 						const scaledWidth = (width / d20.Campaign.activePage().get("scale_number")) * 70;
-						d20plus.math.scale(norm, norm, scaledWidth);
+						d20plus.math.vec2.scale(norm, norm, scaledWidth);
 
 						const xRot = t.x + norm[0];
 						const yRot = t.y + norm[1];

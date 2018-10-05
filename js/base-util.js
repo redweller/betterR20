@@ -257,37 +257,6 @@ function baseUtil () {
 		return null;
 	};
 
-	d20plus.math = {
-		/**
-		 * Normalize a 2d vector.
-		 * @param out Result storage
-		 * @param a Vector to normalise
-		 */
-		normalize (out, a) {
-			const x = a[0],
-				y = a[1];
-			let len = x*x + y*y;
-			if (len > 0) {
-				len = 1 / Math.sqrt(len);
-				out[0] = a[0] * len;
-				out[1] = a[1] * len;
-			}
-			return out;
-		},
-
-		/**
-		 * Scale a 2d vector.
-		 * @param out Resulst storage
-		 * @param a Vector to scale
-		 * @param b Value to scale by
-		 */
-		scale (out, a, b) {
-			out[0] = a[0] * b;
-			out[1] = a[1] * b;
-			return out;
-		}
-	};
-
 	d20plus.ut._BYTE_UNITS = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {
 		let i = -1;
