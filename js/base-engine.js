@@ -1636,6 +1636,7 @@ function d20plusEngine () {
 	d20plus.engine.addWeather = () => {
 		window.force = false; // missing variable in Roll20's code(?); define it here
 		const MAX_ZOOM = 2.5; // max canvas zoom
+		const tmp = []; // temp vector
 		// cache images
 		const IMAGES = {
 			"Rain": new Image,
@@ -1672,6 +1673,14 @@ function d20plusEngine () {
 
 		function ofY (y) {
 			return y - d20.engine.currentCanvasOffset[1];
+		}
+
+		function lineIntersectsBounds (points, bounds) {
+			return d20plus.math.doPolygonsIntersect([points[0], points[2], points[3], points[1]], bounds);
+		}
+
+		function copyPoints (toCopy) {
+			return [...toCopy.map(pt => [...pt])];
 		}
 
 		function getDirectionRotation () {
@@ -1718,67 +1727,291 @@ function d20plusEngine () {
 				ctx.clearRect(0, 0, cv.width, cv.height);
 				const hasImage = image && image.complete;
 				const tint = getTintColor();
+				const scaledW = Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM);
+				const scaledH = Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM);
 				if (hasImage || tint) {
 					// draw weather
-					if (hasImage) {
-						const scaledW = Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM);
-						const scaledH = Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM);
+					if (
+						hasImage &&
+						!(scaledW <= 0 || scaledH <= 0) // sanity check
+					) {
+						const rot = getDirectionRotation();
+						const w = image.width;
+						const h = image.height;
+						const MIN_X = 0;
+						const MIN_Y = 0;
+						const MAX_X = cv.width;
+						const MAX_Y = cv.height;
+						const boundingBox = [[0, 0], [0, (MAX_Y - MIN_Y)], [(MAX_X - MIN_X), (MAX_Y - MIN_Y)], [(MAX_X - MIN_X), 0]];
+						const BASE_OFFSET_X = -w / 2;
+						const BASE_OFFSET_Y = -h / 2;
 
-						if (!(scaledW <= 0 || scaledH <= 0)) {
-							const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
+						// calculate resultant points of a rotated shape
+						const pt00 = [0, 0];
+						const pt01 = [0, 1];
+						const pt10 = [1, 0];
+						const pt11 = [1, 1];
+						const basePts = [
+							pt00,
+							pt01,
+							pt10,
+							pt11
+						].map(pt => [
+							(pt[0] * w) + BASE_OFFSET_X,
+							(pt[1] * h) + BASE_OFFSET_Y
+						]);
+						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
 
-							const speedFactor = speed * d20.engine.canvasZoom;
-							accum += deltaTime;
-							const maxAccum = Math.floor(scaledW / speedFactor);
-							if (accum >= maxAccum) accum -= maxAccum;
-							const intensity = getIntensity() * speedFactor;
+						// calculate animation values
+						const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
+						const speedFactor = speed * d20.engine.canvasZoom;
+						accum += deltaTime;
+						const maxAccum = Math.floor(scaledW / speedFactor);
+						if (accum >= maxAccum) {
+							console.log("accum resetting", accum)
+							console.log("offset X was", Math.ceil(speedFactor * accum))
+							console.log("offset Y was", Math.ceil(speedFactor * accum))
+							accum -= maxAccum;
+						}
+						const intensity = getIntensity() * speedFactor;
+						const timeOffsetX = Math.ceil(speedFactor * accum);
+						const timeOffsetY = Math.ceil(speedFactor * accum);
 
-							// draw weather
-							const timeOffsetX = Math.ceil(speedFactor * accum);
-							const timeOffsetY = Math.ceil(speedFactor * accum);
+						// DEBUG TEXT
+						ctx.font = "30px Arial";
+						ctx.fillStyle = "#ff00ff";
+						ctx.fillText(`FPS: ${(1 / (deltaTime / 1000)).toFixed(2)}`, 100, 50);
+						ctx.fillText(`Accumulated time: ${accum.toFixed(2)}`, 100, 100);
+						ctx.fillText(`Sin: ${Math.sin(accum).toFixed(4)}`, 100, 150);
+						ctx.fillText(`Cos: ${Math.cos(accum).toFixed(4)}`, 100, 200);
 
-							const basePosX = ofX(Math.round((-scaledW / 2) + timeOffsetX));
-							const basePosY = ofY(Math.round((-scaledH / 2) + timeOffsetY));
+						//// switch coord space and rotate
+						ctx.translate(MIN_X, MIN_Y);
+						ctx.rotate(rot);
 
-							const tileOffsetX = scaledW / speedFactor;
-							const tileOffsetY = scaledH / speedFactor;
-							const offsetRotX = scaledW / 2;
-							const offsetRotY = scaledH / 2;
-							const rot = getDirectionRotation();
+						// draw base image
+						doDraw(0, 0);
 
-							// DEBUG TEXT
-							ctx.font = "30px Arial";
-							ctx.fillStyle = "#ff00ff";
-							ctx.fillText(`FPS: ${(1 / (deltaTime / 1000)).toFixed(2)}`, 100, 50);
-							ctx.fillText(`Accumulated time: ${accum.toFixed(2)}`, 100, 100);
-							ctx.fillText(`Sin: ${Math.sin(accum).toFixed(4)}`, 100, 150);
-							ctx.fillText(`Cos: ${Math.cos(accum).toFixed(4)}`, 100, 200);
+						function doDraw (offsetX, offsetY) {
+							ctx.drawImage(
+								image,
+								BASE_OFFSET_X + timeOffsetX + offsetX,
+								BASE_OFFSET_Y + timeOffsetY + offsetY,
+								// scaledW,
+								// scaledH
+							);
+						}
 
-							// tile to fill the render area // TODO cull off-screen stuff? This is extremely slow. Also, NE ~75% speed has holes
-							for (let posX = basePosX - tileOffsetX; posX < cv.width + tileOffsetX; posX += scaledW) {
-								for (let posY = basePosY - tileOffsetY; posY < cv.height + tileOffsetY; posY += scaledH) {
-									ctx.translate(offsetRotX, offsetRotY);
-									ctx.rotate(rot);
+						function inBounds (nextPts) {
+							return lineIntersectsBounds(nextPts, boundingBox);
+						}
 
-									ctx.drawImage(image, posX - offsetRotX, posY - offsetRotY, scaledW, scaledH);
+						function moveXDir (pt, i, isAdd) {
+							if (i % 2) d20plus.math.vec2.sub(tmp, basePts[3], basePts[1]);
+							else d20plus.math.vec2.sub(tmp, basePts[2], basePts[0]);
 
-									if (intensity) {
-										for (let i = 0; i < intensity; ++i) {
-											ctx.drawImage(
-												image,
-												(posX - offsetRotX) + (i * 50 / speedFactor), // TODO make these vary with time? Sin/Cos?
-												(posY - offsetRotY) + (i * 50 / speedFactor),
-												scaledW,
-												scaledH
-											);
-										}
-									}
+							if (isAdd) d20plus.math.vec2.add(pt, pt, tmp);
+							else d20plus.math.vec2.sub(pt, pt, tmp);
+						}
 
-									ctx.rotate(-rot);
-									ctx.translate(-offsetRotX, -offsetRotY);
+						function moveYDir (pt, i, isAdd) {
+							if (i > 1) d20plus.math.vec2.sub(tmp, basePts[3], basePts[2]);
+							else d20plus.math.vec2.sub(tmp, basePts[1], basePts[0]);
+
+							if (isAdd) d20plus.math.vec2.add(pt, pt, tmp);
+							else d20plus.math.vec2.sub(pt, pt, tmp);
+						}
+
+						const getMaxMoves = () => {
+							let maxMovesX, maxMovesY, nxtPtsInc, nxtPtsDec;
+
+							// calculate max steps
+							// x direction
+							nxtPtsInc = copyPoints(basePts);
+							nxtPtsDec = copyPoints(basePts);
+							maxMovesX = 0;
+							while(lineIntersectsBounds(nxtPtsInc, boundingBox) || lineIntersectsBounds(nxtPtsDec, boundingBox)) {
+								nxtPtsInc.forEach((pt, i) => moveXDir(pt, i, true));
+								nxtPtsDec.forEach((pt, i) => moveXDir(pt, i, false));
+								maxMovesX++;
+							}
+
+							nxtPtsInc = copyPoints(basePts);
+							nxtPtsDec = copyPoints(basePts);
+							maxMovesY = 0;
+							while(lineIntersectsBounds(nxtPtsInc, boundingBox) || lineIntersectsBounds(nxtPtsDec, boundingBox)) {
+								nxtPtsInc.forEach((pt, i) => moveYDir(pt, i, true));
+								nxtPtsDec.forEach((pt, i) => moveYDir(pt, i, false));
+								maxMovesY++;
+							}
+
+							return [maxMovesX > maxMovesY ? "x" : "y", Math.max(maxMovesX, maxMovesY)];
+						};
+
+						const handleXAxisYIncrease = (nxtPts, maxMoves, moves, xDir) => {
+							const handleY = (dir) => {
+								let subNxtPts, subMoves;
+								subNxtPts = copyPoints(nxtPts);
+								subMoves = 0;
+								while(subMoves <= maxMoves[1]) {
+									subNxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
+									subMoves++;
+									if (inBounds(subNxtPts)) doDraw(BASE_OFFSET_X + timeOffsetX + (xDir * moves * w), BASE_OFFSET_Y + timeOffsetY + (dir * (subMoves * h)));
 								}
+							};
+
+							handleY(1); // y axis increasing
+							handleY(-1); // y axis decreasing
+						};
+
+						const handleYAxisXIncrease = (nxtPts, maxMoves, moves, yDir) => {
+							const handleX = (dir) => {
+								let subNxtPts, subMoves;
+								subNxtPts = copyPoints(nxtPts);
+								subMoves = 0;
+								while(subMoves <= maxMoves[1]) {
+									subNxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
+									subMoves++;
+									if (lineIntersectsBounds(subNxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX + (dir * (subMoves * w)), BASE_OFFSET_Y + timeOffsetY + (yDir * moves * h));
+								}
+							};
+
+							handleX(1); // x axis increasing
+							handleX(-1); // x axis decreasing
+						};
+
+						const handleBasicX = () => {
+							const handleX = (dir) => {
+								let nxtPts, moves;
+								nxtPts = copyPoints(basePts);
+								moves = 0;
+								while(lineIntersectsBounds(nxtPts, boundingBox)) {
+									nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
+									moves++;
+									if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX + (dir * (moves * w)), BASE_OFFSET_Y + timeOffsetY);
+								}
+							};
+
+							handleX(1); // x axis increasing
+							handleX(-1); // x axis decreasing
+						};
+
+						const handleBasicY = () => {
+							const handleY = (dir) => {
+								let nxtPts, moves;
+								nxtPts = copyPoints(basePts);
+								moves = 0;
+								while(lineIntersectsBounds(nxtPts, boundingBox)) {
+									nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
+									moves++;
+									if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX, BASE_OFFSET_Y + timeOffsetY + (dir * (moves * h)));
+								}
+							};
+
+							handleY(1); // y axis increasing
+							handleY(-1); // y axis decreasing
+						};
+
+						(() => {
+							// choose largest axis
+							const maxMoves = getMaxMoves();
+
+							if (maxMoves[0] === "x") {
+								const handleX = (dir) => {
+									let nxtPts, moves;
+									nxtPts = copyPoints(basePts);
+									moves = 0;
+									while(moves < maxMoves[1]) {
+										nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
+										moves++;
+										if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX + (dir * (moves * w)), BASE_OFFSET_Y + timeOffsetY);
+										handleXAxisYIncrease(nxtPts, maxMoves, moves, dir);
+									}
+								};
+
+								handleBasicY();
+								handleX(1); // x axis increasing
+								handleX(-1); // x axis decreasing
+							} else {
+								const handleY = (dir) => {
+									let nxtPts, moves;
+									nxtPts = copyPoints(basePts);
+									moves = 0;
+									while(moves < maxMoves[1]) {
+										nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
+										moves++;
+										if (lineIntersectsBounds(nxtPts, boundingBox)) ctx.drawImage(image, BASE_OFFSET_X + timeOffsetX, BASE_OFFSET_Y + timeOffsetY + (dir * (moves * h)));
+										handleYAxisXIncrease(nxtPts, maxMoves, moves, dir);
+									}
+								};
+
+								handleBasicX();
+								handleY(1); // y axis increasing
+								handleY(-1); // y axis decreasing
+							}
+						})();
+
+						//// revert switched rotation and coordinate space
+						ctx.rotate(-rot);
+						ctx.translate(-MIN_X, -MIN_Y);
+					}
+
+					if ((hasImage && Math.round(3.1) !== 3)
+						&& !(scaledW <= 0 || scaledH <= 0)) {
+
+						const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
+						const speedFactor = speed * d20.engine.canvasZoom;
+						accum += deltaTime;
+						const maxAccum = Math.floor(scaledW / speedFactor);
+						if (accum >= maxAccum) accum -= maxAccum;
+						const intensity = getIntensity() * speedFactor;
+
+						// draw weather
+						const timeOffsetX = Math.ceil(speedFactor * accum);
+						const timeOffsetY = Math.ceil(speedFactor * accum);
+
+						const basePosX = ofX(Math.round((-scaledW / 2) + timeOffsetX));
+						const basePosY = ofY(Math.round((-scaledH / 2) + timeOffsetY));
+
+						const tileOffsetX = scaledW / speedFactor;
+						const tileOffsetY = scaledH / speedFactor;
+						const offsetRotX = scaledW / 2;
+						const offsetRotY = scaledH / 2;
+						const rot = getDirectionRotation();
+
+						// DEBUG TEXT
+						ctx.font = "30px Arial";
+						ctx.fillStyle = "#ff00ff";
+						ctx.fillText(`FPS: ${(1 / (deltaTime / 1000)).toFixed(2)}`, 100, 50);
+						ctx.fillText(`Accumulated time: ${accum.toFixed(2)}`, 100, 100);
+						ctx.fillText(`Sin: ${Math.sin(accum).toFixed(4)}`, 100, 150);
+						ctx.fillText(`Cos: ${Math.cos(accum).toFixed(4)}`, 100, 200);
+
+						// tile to fill the render area // TODO cull off-screen stuff? This is extremely slow. Also, NE ~75% speed has holes
+						for (let posX = basePosX - tileOffsetX; posX < cv.width + tileOffsetX; posX += scaledW) {
+							for (let posY = basePosY - tileOffsetY; posY < cv.height + tileOffsetY; posY += scaledH) {
+								ctx.translate(offsetRotX, offsetRotY);
+								ctx.rotate(rot);
+
+								ctx.drawImage(image, posX - offsetRotX, posY - offsetRotY, scaledW, scaledH);
+
+								if (intensity) {
+									for (let i = 0; i < intensity; ++i) {
+										ctx.drawImage(
+											image,
+											(posX - offsetRotX) + (i * 50 / speedFactor), // TODO make these vary with time? Sin/Cos?
+											(posY - offsetRotY) + (i * 50 / speedFactor),
+											scaledW,
+											scaledH
+										);
+									}
+								}
+
+								ctx.rotate(-rot);
+								ctx.translate(-offsetRotX, -offsetRotY);
 							}
 						}
+
 					}
 
 					// draw tint
