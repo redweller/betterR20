@@ -414,6 +414,19 @@ function baseConfig() {
 							toAdd.append(td);
 							break;
 						}
+						case "_color": {
+							const value = d20plus.cfg.getOrDefault(cfgK, grpK);
+
+							const field = $(`<input type="color" value="${value == null ? value : ""}">`);
+
+							configFields[cfgK][grpK] = () => {
+								return field.val();
+							};
+
+							const td = $(`<td/>`).append(field);
+							toAdd.append(td);
+							break;
+						}
 					}
 					tbody.append(toAdd);
 				});
@@ -524,6 +537,7 @@ function baseConfig() {
 			handleProp("weatherDir1");
 			handleProp("weatherIntensity1");
 			handleProp("weatherTint1");
+			handleProp("weatherTintColor1");
 		}
 	};
 

@@ -108,9 +108,13 @@ const betteR20Base = function () {
 		},
 		"weatherTint1": {
 			"name": "Tint",
-			"default": "None",
-			"_type": "_enum",
-			"__values": ["None", "Night"]
+			"default": false,
+			"_type": "boolean"
+		},
+		"weatherTintColor1": {
+			"name": "Tint Color",
+			"default": "#4c566d",
+			"_type": "_color"
 		},
 	});
 };

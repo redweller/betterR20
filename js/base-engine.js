@@ -1708,11 +1708,10 @@ function d20plusEngine () {
 		}
 
 		function getTintColor () {
-			const tint = Campaign.attributes.bR20cfg_weatherTint1;
-			switch (tint) {
-				case "Night": return "#4c566d80";
-				default: return null;
-			}
+			const tintEnabled = Campaign.attributes.bR20cfg_weatherTint1;
+			if (tintEnabled) {
+				return `${(Campaign.attributes.bR20cfg_weatherTintColor1 || "#4c566d")}80`;
+			} else return null;
 		}
 
 		let accum = 0;
@@ -1722,14 +1721,14 @@ function d20plusEngine () {
 			const deltaTime = now - then;
 			then = now;
 
-			if (Campaign && Campaign.attributes && Campaign.attributes.bR20cfg_weatherType1 !== "None") {
-				image = IMAGES[Campaign.attributes.bR20cfg_weatherType1];
+			if (Campaign && Campaign.attributes) {
+				image = Campaign.attributes.bR20cfg_weatherType1 ? IMAGES[Campaign.attributes.bR20cfg_weatherType1] : null;
 
 				ctx.clearRect(0, 0, cv.width, cv.height);
 				const hasImage = image && image.complete;
 				const tint = getTintColor();
-				const scaledW = Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM);
-				const scaledH = Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM);
+				const scaledW = hasImage ? Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
+				const scaledH = hasImage ? Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
 				if (hasImage || tint) {
 					// draw weather
 					if (
