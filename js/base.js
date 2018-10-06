@@ -116,6 +116,12 @@ const betteR20Base = function () {
 			"default": "#4c566d",
 			"_type": "_color"
 		},
+		"weatherEffect1": {
+			"name": "Special Effects",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["None", "Lightning"]
+		},
 	});
 };
 

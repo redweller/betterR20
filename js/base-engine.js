@@ -1647,6 +1647,14 @@ function d20plusEngine () {
 		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
 		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
 		IMAGES.Fog.src = "https://i.imgur.com/SRsUpHW.png";
+		const SFX = {
+			lightning: []
+		};
+
+		function SfxLightning () {
+			this.brightness = 255;
+		}
+
 		const $wrpEditor = $("#editor-wrapper");
 
 		// add custom canvas
@@ -1668,13 +1676,6 @@ function d20plusEngine () {
 		// const page = d20.Campaign.activePage();
 		const ctx = cv.getContext("2d");
 
-		function ofX (x) {
-			return x - d20.engine.currentCanvasOffset[0];
-		}
-
-		function ofY (y) {
-			return y - d20.engine.currentCanvasOffset[1];
-		}
 
 		function lineIntersectsBounds (points, bounds) {
 			return d20plus.math.doPolygonsIntersect([points[0], points[2], points[3], points[1]], bounds);
@@ -1714,35 +1715,56 @@ function d20plusEngine () {
 			} else return null;
 		}
 
+		function getEffect () {
+			const effect = Campaign.attributes.bR20cfg_weatherEffect1;
+			switch (effect) {
+				case "Lightning": return "lightning";
+				default: return null;
+			}
+		}
+
 		let accum = 0;
 		let then = 0;
 		let image;
+		let currentSfx;
 		function drawFrame (now) {
 			const deltaTime = now - then;
 			then = now;
 
 			if (Campaign && Campaign.attributes) {
 				image = Campaign.attributes.bR20cfg_weatherType1 ? IMAGES[Campaign.attributes.bR20cfg_weatherType1] : null;
+				currentSfx = getEffect();
+
+				// generate SFX
+				if (currentSfx) {
+					if (currentSfx === "lightning" && Math.random() > 0.999) SFX.lightning.push(new SfxLightning());
+				} else {
+					SFX.lightning = [];
+				}
 
 				ctx.clearRect(0, 0, cv.width, cv.height);
 				const hasImage = image && image.complete;
 				const tint = getTintColor();
 				const scaledW = hasImage ? Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
 				const scaledH = hasImage ? Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
-				if (hasImage || tint) {
+				const hasSfx = SFX.lightning.length;
+				if (hasImage || tint || hasSfx) {
 					// draw weather
 					if (
 						hasImage &&
 						!(scaledW <= 0 || scaledH <= 0) // sanity check
 					) {
+						const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
+						const speedFactor = speed * d20.engine.canvasZoom;
+						const maxAccum = Math.floor(scaledW / speedFactor);
 						const rot = getDirectionRotation();
 						const w = scaledW;
 						const h = scaledH;
 						const boundingBox = [
-							[-w, -h],
-							[-w, cv.height + h + d20.engine.currentCanvasOffset[1]],
-							[cv.width + w + d20.engine.currentCanvasOffset[0], cv.height + h + d20.engine.currentCanvasOffset[1]],
-							[cv.width + w + d20.engine.currentCanvasOffset[0], -h]
+							[-1.5 * w, -1.5 * h],
+							[-1.5 * w, cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]],
+							[cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0], cv.height + (1.5 * h)+ d20.engine.currentCanvasOffset[1]],
+							[cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0], -1.5 * h]
 						];
 						const BASE_OFFSET_X = -w / 2;
 						const BASE_OFFSET_Y = -h / 2;
@@ -1764,10 +1786,7 @@ function d20plusEngine () {
 						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
 
 						// calculate animation values
-						const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
-						const speedFactor = speed * d20.engine.canvasZoom;
 						accum += deltaTime;
-						const maxAccum = Math.floor(scaledW / speedFactor);
 						if (accum >= maxAccum) accum -= maxAccum;
 						const intensity = getIntensity() * speedFactor;
 						const timeOffsetX = Math.ceil(speedFactor * accum);
@@ -1959,6 +1978,20 @@ function d20plusEngine () {
 
 						//// revert coord space rotation
 						ctx.rotate(-rot);
+					}
+
+					// draw sfx
+					if (hasSfx) {
+						for (let i = SFX.lightning.length - 1; i >= 0; --i) {
+							const l = SFX.lightning[i];
+							if (l.brightness <= 5) {
+								SFX.lightning.splice(i, 1);
+							} else {
+								ctx.fillStyle = `#effbff${l.brightness.toString(16).padStart(2, "0")}`;
+								ctx.fillRect(0, 0, cv.width, cv.height);
+								l.brightness -= Math.floor(deltaTime);
+							}
+						}
 					}
 
 					// draw tint

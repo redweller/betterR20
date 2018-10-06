@@ -417,7 +417,7 @@ function baseConfig() {
 						case "_color": {
 							const value = d20plus.cfg.getOrDefault(cfgK, grpK);
 
-							const field = $(`<input type="color" value="${value == null ? value : ""}">`);
+							const field = $(`<input type="color" value="${value == null ? "" : value}">`);
 
 							configFields[cfgK][grpK] = () => {
 								return field.val();
@@ -538,6 +538,7 @@ function baseConfig() {
 			handleProp("weatherIntensity1");
 			handleProp("weatherTint1");
 			handleProp("weatherTintColor1");
+			handleProp("weatherEffect1");
 		}
 	};
 
