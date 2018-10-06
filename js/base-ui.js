@@ -90,12 +90,14 @@ function baseUi () {
 		$(`<li class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
 		$(`<li class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
 		$(`<li class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
+		$(`<li class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
 
 		$("#editinglayer").on(clicktype, "li", function () {
 			$("#floatinglayerbar").removeClass("map")
 				.removeClass("objects")
 				.removeClass("gmlayer")
-				.removeClass("walls");
+				.removeClass("walls")
+				.removeClass("weather");
 			setTimeout(() => {
 				$("#floatinglayerbar").addClass(window.currentEditingLayer)
 			}, 1);

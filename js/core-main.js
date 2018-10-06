@@ -50,6 +50,7 @@ const betteR20Core = function () {
 		}
 		d20plus.engine.enhancePathWidths();
 		d20plus.ut.disable3dDice();
+		d20plus.engine.addLayers();
 		d20plus.engine.addWeather();
 		d20plus.ui.addQuickUI();
 		d20plus.ut.log("All systems operational");

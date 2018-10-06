@@ -939,6 +939,7 @@ function d20plusEngine () {
 			return minPoint;
 		}
 
+		// original roll20 mousedown code, minified as "R" (as of 2018-10-6)
 		// BEGIN ROLL20 CODE
 		const R = function(e) {
 			//BEGIN MOD
@@ -1633,9 +1634,25 @@ function d20plusEngine () {
 		})
 	};
 
+	d20plus.engine.addLayers = () => {
+		d20plus.ut.log("Adding layers");
+
+		d20plus.mod.editingLayerOnclick();
+		$(`#floatingtoolbar .choosewalls`).after(`
+			<li class="chooseweather">
+                <span class="pictos">C</span>
+                Weather Exclusions
+			</li>
+		`);
+
+		d20.engine.canvasOrigRenderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
+	};
+
 	d20plus.engine.addWeather = () => {
-		d20plus.ut.log("Adding weather");
 		window.force = false; // missing variable in Roll20's code(?); define it here
+
+		d20plus.ut.log("Adding weather");
+
 		const MAX_ZOOM = 2.5; // max canvas zoom
 		const tmp = []; // temp vector
 		// cache images
@@ -1650,6 +1667,9 @@ function d20plusEngine () {
 		const SFX = {
 			lightning: []
 		};
+
+		// FIXME find a better way of handling this; `clip` is super-slow
+		const clipMode = "EXCLUDE";
 
 		function SfxLightning () {
 			this.brightness = 255;
@@ -1676,6 +1696,17 @@ function d20plusEngine () {
 		// const page = d20.Campaign.activePage();
 		const ctx = cv.getContext("2d");
 
+		const CTX = {
+			_hasWarned: new Set()
+		};
+
+		function ofX (x) { // offset X
+			return x - d20.engine.currentCanvasOffset[0];
+		}
+
+		function ofY (y) { // offset Y
+			return y - d20.engine.currentCanvasOffset[1];
+		}
 
 		function lineIntersectsBounds (points, bounds) {
 			return d20plus.math.doPolygonsIntersect([points[0], points[2], points[3], points[1]], bounds);
@@ -1754,6 +1785,67 @@ function d20plusEngine () {
 						hasImage &&
 						!(scaledW <= 0 || scaledH <= 0) // sanity check
 					) {
+						// mask weather
+						const doMaskStep = (isClip) => {
+							if (!isClip) {
+								//// change drawing mode
+								ctx.globalCompositeOperation = "destination-out";
+								ctx.fillStyle = "#ffffffff";
+							}
+
+							const objectLen = d20.engine.canvas._objects.length;
+							for (let i = 0; i < objectLen; ++i) {
+								const obj = d20.engine.canvas._objects[i];
+								if (obj.type === "path" && obj.model && obj.model.get("layer") === "weather") {
+									// obj.top is X pos of center of object
+									// obj.left is Y pos of center of object
+									const xBase = (obj.left - (obj.width * obj.scaleX / 2));
+									const yBase = (obj.top - (obj.height * obj.scaleY / 2));
+									const angle = (obj.angle > 360 ? obj.angle - 360 : obj.angle) / 180 * Math.PI;
+									const center = [ofX(obj.left), ofY(obj.top)];
+									d20plus.math.vec2.scale(center, center, d20.engine.canvasZoom);
+
+									ctx.beginPath();
+									obj.path.forEach(opp => {
+										const [op, x, y] = opp;
+										switch (op) {
+											case "M": {
+												const vec = [ofX(x * obj.scaleX) + xBase, ofY(y * obj.scaleY) + yBase];
+												d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
+												if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
+
+												ctx.moveTo(vec[0], vec[1]);
+												break;
+											}
+											case "L": {
+												const vec = [ofX(x * obj.scaleX) + xBase, ofY(y * obj.scaleY) + yBase];
+												d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
+												if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
+
+												ctx.lineTo(vec[0], vec[1]);
+												break;
+											}
+											default:
+												if (!CTX._hasWarned.has(op)) {
+													CTX._hasWarned.add(op);
+													console.error(`UNHANDLED OP!: ${op}`);
+												}
+										}
+									});
+									if (!isClip) ctx.fill();
+									ctx.closePath();
+								}
+							}
+
+							if (isClip) ctx.clip();
+							else {
+								//// reset drawing mode
+								ctx.globalCompositeOperation = "source-over";
+							}
+						};
+
+						if (clipMode === "INCLUDE") doMaskStep(true);
+
 						const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
 						const speedFactor = speed * d20.engine.canvasZoom;
 						const maxAccum = Math.floor(scaledW / speedFactor);
@@ -1805,8 +1897,8 @@ function d20plusEngine () {
 						doDraw(0, 0);
 
 						function doDraw (offsetX, offsetY) {
-							const xPos = BASE_OFFSET_X + timeOffsetX + offsetX + d20.engine.currentCanvasOffset[0];
-							const yPos = BASE_OFFSET_Y + timeOffsetY + offsetY + d20.engine.currentCanvasOffset[1];
+							const xPos = BASE_OFFSET_X + timeOffsetX + offsetX - d20.engine.currentCanvasOffset[0];
+							const yPos = BASE_OFFSET_Y + timeOffsetY + offsetY - d20.engine.currentCanvasOffset[1];
 							ctx.drawImage(
 								image,
 								xPos,
@@ -1978,6 +2070,8 @@ function d20plusEngine () {
 
 						//// revert coord space rotation
 						ctx.rotate(-rot);
+
+						if (clipMode === "EXCLUDE") doMaskStep(false);
 					}
 
 					// draw sfx
@@ -2013,6 +2107,15 @@ function d20plusEngine () {
 
 		requestAnimationFrame(drawFrame);
 	};
+
+	d20plus.engine.removeLinkConfirmation = function () {
+		d20.utils.handleURL = d20plus.mod.handleURL;
+		$(document).off("click", "a").on("click", "a", d20.utils.handleURL);
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusEngine);
+
+const dicks = () => {
+	window.currentEditingLayer = "weather";
+}

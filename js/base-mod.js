@@ -749,11 +749,6 @@ function d20plusMod() {
 			})
 	};
 
-	d20plus.engine.removeLinkConfirmation = function () {
-		d20.utils.handleURL = d20plus.mod.handleURL;
-		$(document).off("click", "a").on("click", "a", d20.utils.handleURL);
-	};
-
 	// BEGIN ROLL20 CODE
 	d20plus.mod.handleURL = function(e) {
 		if (!($(this).hasClass("lightly") || $(this).parents(".note-editable").length > 0)) {
@@ -794,8 +789,102 @@ function d20plusMod() {
 				}
 			}
 		}
-	}
+	};
 	// END ROLL20 CODE
-};
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.renderAll = function(e) {
+		var t = this[!0 === e && this.interactive ? "contextTop" : "contextContainer"];
+		this.contextTop && this.selection && !this._groupSelector && this.clearContext(this.contextTop),
+		e || this.clearContext(t),
+		d20.engine && d20.engine.preProcessing && d20.engine.preProcessing(t, !1);
+		var n = this._objects.length
+			, i = this.getActiveGroup();
+		this.getActiveObject(),
+			new Date;
+		if (i && !window.is_gm && (i.hideResizers = !0),
+			this.fire("before:render"),
+		this.clipTo && fabric.util.clipContext(this, t),
+			t.fillStyle = d20.engine.backgroundColor,
+			t.fillRect(0, 0, Math.ceil(this.width / d20.engine.canvasZoom), Math.ceil(this.height / d20.engine.canvasZoom)),
+		"object" == typeof this.backgroundImage && this._drawBackroundImage(t),
+		n !== undefined) {
+			for (var o = [d20.engine.currentCanvasOffset[0], d20.engine.currentCanvasOffset[1]], r = [d20.engine.canvasWidth / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0], d20.engine.canvasHeight / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1]], a = {
+				map: [],
+				walls: [],
+				grid: [],
+				objects: [],
+				gmlayer: [],
+				// BEGIN MOD
+				weather: []
+				// END MOD
+			}, s = 0; s < n; ++s)
+				if (this._objects[s].model) {
+					if (!a[this._objects[s].model.get("layer")])
+						continue;
+					a[this._objects[s].model.get("layer")].push(this._objects[s])
+				} else
+					a[window.currentEditingLayer].push(this._objects[s]);
+			for (var l in a)
+				// BEGIN MOD
+				if (!("weather" == l && "weather" !== window.currentEditingLayer || "weather" == l && !window.is_gm ||
+					"gmlayer" == l && !window.is_gm || "walls" == l && "walls" !== window.currentEditingLayer || "walls" == l && !window.is_gm))
+					// END MOD
+					if ("grid" != l) {
+						n = a[l].length,
+							"gmlayer" == l ? t.globalAlpha = .55 : "objects" != l || "map" != window.currentEditingLayer && "walls" != window.currentEditingLayer ? t.globalAlpha = 1 : t.globalAlpha = .45;
+						for (s = 0; s < n; ++s) {
+							var c = a[l][s];
+							i && c && i.contains(c) ? (c.renderingInGroup = i,
+								c.hasControls = !1) : (c.hasControls = !0,
+								"text" != c.type && window.is_gm ? c.hideResizers = !1 : c.hideResizers = !0),
+							c.needsRender(o, r) && (c.renderThisPass = !0,
+							c.renderPre && c.renderPre(t))
+						}
+						for (s = 0; s < n; ++s) {
+							(c = a[l][s]).renderThisPass && (this._draw(t, c),
+								delete c.renderingInGroup,
+								delete c.renderThisPass)
+						}
+					} else
+						d20.engine && d20.engine.drawGrid && d20.engine.drawGrid(t, !1);
+			t.globalAlpha = 1
+		}
+		return i && i.setCoords(),
+		d20.engine && d20.engine.postProcessing && d20.engine.postProcessing(t, !1),
+			this.renderTop(),
+		this.clipTo && t.restore(),
+		this.overlayImage && t.drawImage(this.overlayImage, this.overlayImageLeft, this.overlayImageTop),
+		this.controlsAboveOverlay && this.interactive && this.drawControls(t),
+			this.fire("after:render"),
+			this
+	};
+	// END ROLL20 CODE
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.editingLayerOnclick = () => {
+		$("#editinglayer").off(clicktype).on(clicktype, "li", function() {
+			var e = $(this);
+			$("#editinglayer").removeClass(window.currentEditingLayer);
+			$("#drawingtools .choosepath").show();
+			"polygon" !== d20.engine.mode && $("#drawingtools").hasClass("polygon") && $("#drawingtools").removeClass("polygon").addClass("path");
+
+			// BEGIN MOD
+			if (e.hasClass("chooseweather")) {
+				window.currentEditingLayer = "weather";
+				$("#drawingtools .choosepath").hide();
+				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
+			} else {
+				e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+					$("#drawingtools .choosepath").hide(),
+				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
+			}
+			// END MOD
+			$("#editinglayer").addClass(window.currentEditingLayer);
+			$(document).trigger("d20:editingLayerChanged");
+		});
+	};
+	// END ROLL20 CODE
+}
 
 SCRIPT_EXTENSIONS.push(d20plusMod);
