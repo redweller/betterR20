@@ -2013,12 +2013,12 @@ function d20plusEngine () {
 							handleX(-1); // x axis decreasing
 						};
 
-						const handleBasicX = () => {
+						const handleBasicX = (maxMoves) => {
 							const handleX = (dir) => {
 								let nxtPts, moves;
 								nxtPts = copyPoints(basePts);
 								moves = 0;
-								while(lineIntersectsBounds(nxtPts, boundingBox)) {
+								while(moves < maxMoves) {
 									nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 									moves++;
 									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
@@ -2029,12 +2029,12 @@ function d20plusEngine () {
 							handleX(-1); // x axis decreasing
 						};
 
-						const handleBasicY = () => {
+						const handleBasicY = (maxMoves) => {
 							const handleY = (dir) => {
 								let nxtPts, moves;
 								nxtPts = copyPoints(basePts);
 								moves = 0;
-								while(lineIntersectsBounds(nxtPts, boundingBox)) {
+								while(moves < maxMoves) {
 									nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 									moves++;
 									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
@@ -2062,7 +2062,7 @@ function d20plusEngine () {
 									}
 								};
 
-								handleBasicY();
+								handleBasicY(maxMoves[1]);
 								handleX(1); // x axis increasing
 								handleX(-1); // x axis decreasing
 							} else {
@@ -2078,7 +2078,7 @@ function d20plusEngine () {
 									}
 								};
 
-								handleBasicX();
+								handleBasicX(maxMoves[1]);
 								handleY(1); // y axis increasing
 								handleY(-1); // y axis decreasing
 							}
