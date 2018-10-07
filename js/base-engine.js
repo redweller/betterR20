@@ -1884,12 +1884,6 @@ function d20plusEngine () {
 						const timeOffsetX = Math.ceil(speedFactor * accum);
 						const timeOffsetY = Math.ceil(speedFactor * accum);
 
-						// DEBUG TEXT
-						ctx.font = "30px Arial";
-						ctx.fillStyle = "#ff00ff";
-						ctx.fillText(`FPS: ${(1 / (deltaTime / 1000)).toFixed(2)}`, 100, 50);
-						ctx.fillText(`Accumulated time: ${accum.toFixed(2)}`, 100, 100);
-
 						//// rotate coord space
 						ctx.rotate(rot);
 
