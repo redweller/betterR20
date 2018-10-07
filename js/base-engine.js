@@ -1853,10 +1853,22 @@ function d20plusEngine () {
 						const w = scaledW;
 						const h = scaledH;
 						const boundingBox = [
-							[-1.5 * w, -1.5 * h],
-							[-1.5 * w, cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]],
-							[cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0], cv.height + (1.5 * h)+ d20.engine.currentCanvasOffset[1]],
-							[cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0], -1.5 * h]
+							[
+								-1.5 * w,
+								-1.5 * h
+							],
+							[
+								-1.5 * w,
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]
+							],
+							[
+								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]
+							],
+							[
+								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
+								-1.5 * h
+							]
 						];
 						const BASE_OFFSET_X = -w / 2;
 						const BASE_OFFSET_Y = -h / 2;
@@ -1872,8 +1884,8 @@ function d20plusEngine () {
 							pt10,
 							pt11
 						].map(pt => [
-							(pt[0] * w) + BASE_OFFSET_X,
-							(pt[1] * h) + BASE_OFFSET_Y
+							(pt[0] * w) + BASE_OFFSET_X - d20.engine.currentCanvasOffset[0],
+							(pt[1] * h) + BASE_OFFSET_Y - d20.engine.currentCanvasOffset[1]
 						]);
 						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
 
@@ -1897,18 +1909,18 @@ function d20plusEngine () {
 								image,
 								xPos,
 								yPos,
-								scaledW,
-								scaledH
+								w,
+								h
 							);
 
 							if (intensity) {
-								const offsetIntensity = -Math.floor(scaledW / 4);
+								const offsetIntensity = -Math.floor(w / 4);
 								ctx.drawImage(
 									image,
 									xPos + offsetIntensity,
 									yPos + offsetIntensity,
-									scaledW,
-									scaledH
+									w,
+									h
 								);
 							}
 						}
@@ -1934,29 +1946,12 @@ function d20plusEngine () {
 						}
 
 						const getMaxMoves = () => {
-							let maxMovesX, maxMovesY, nxtPtsInc, nxtPtsDec;
+							const hyp = [];
+							d20plus.math.vec2.sub(hyp, boundingBox[2], boundingBox[0]);
 
-							// calculate max steps
-							// x direction
-							nxtPtsInc = copyPoints(basePts);
-							nxtPtsDec = copyPoints(basePts);
-							maxMovesX = 0;
-							while(lineIntersectsBounds(nxtPtsInc, boundingBox) || lineIntersectsBounds(nxtPtsDec, boundingBox)) {
-								nxtPtsInc.forEach((pt, i) => moveXDir(pt, i, true));
-								nxtPtsDec.forEach((pt, i) => moveXDir(pt, i, false));
-								maxMovesX++;
-							}
-
-							nxtPtsInc = copyPoints(basePts);
-							nxtPtsDec = copyPoints(basePts);
-							maxMovesY = 0;
-							while(lineIntersectsBounds(nxtPtsInc, boundingBox) || lineIntersectsBounds(nxtPtsDec, boundingBox)) {
-								nxtPtsInc.forEach((pt, i) => moveYDir(pt, i, true));
-								nxtPtsDec.forEach((pt, i) => moveYDir(pt, i, false));
-								maxMovesY++;
-							}
-
-							return [maxMovesX > maxMovesY ? "x" : "y", Math.max(maxMovesX, maxMovesY)];
+							const dist = d20plus.math.vec2.len(hyp);
+							const maxMoves = dist / Math.min(w, h);
+							return [Math.abs(hyp[0]) > Math.abs(hyp[1]) ? "x" : "y", maxMoves];
 						};
 
 						const handleXAxisYIncrease = (nxtPts, maxMoves, moves, xDir) => {
