@@ -107,6 +107,17 @@ function baseMath () {
 				out[0] = a[0] * b[0];
 				out[1] = a[1] * b[1];
 				return out;
+			},
+
+			/**
+			 * Calculates the length of a vec2
+			 *
+			 * @param {vec2} a vector to calculate length of
+			 * @returns {Number} length of a
+			 */
+			len (a) {
+				const x = a[0], y = a[1];
+				return Math.sqrt(x * x + y * y);
 			}
 		},
 
