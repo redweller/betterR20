@@ -533,6 +533,7 @@ function baseConfig() {
 		}
 		if (window.is_gm) {
 			handleProp("weatherType1");
+			handleProp("weatherTypeCustom1");
 			handleProp("weatherSpeed1");
 			handleProp("weatherDir1");
 			handleProp("weatherIntensity1");

@@ -1659,11 +1659,13 @@ function d20plusEngine () {
 		const IMAGES = {
 			"Rain": new Image,
 			"Snow": new Image,
-			"Fog": new Image
+			"Fog": new Image,
+			"Waves": new Image
 		};
 		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
 		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
 		IMAGES.Fog.src = "https://i.imgur.com/SRsUpHW.png";
+		IMAGES.Waves.src = "https://i.imgur.com/iYEzmvB.png";
 		const SFX = {
 			lightning: []
 		};
@@ -1716,6 +1718,31 @@ function d20plusEngine () {
 			return [...toCopy.map(pt => [...pt])];
 		}
 
+		function getImage () {
+			const imageName = Campaign.attributes.bR20cfg_weatherType1;
+			switch (imageName) {
+				case "Rain":
+				case "Snow":
+				case "Fog":
+				case "Waves":
+					IMAGES["Custom"] = null;
+					return IMAGES[imageName];
+				case "Custom (see below)":
+					if (!IMAGES["Custom"] || (IMAGES["Custom"].src !== Campaign.attributes.bR20cfg_weatherTypeCustom1)) {
+						IMAGES["Custom"] = new Image;
+						IMAGES["Custom"].onerror = () => {
+							alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
+							IMAGES["Custom"].src = IMAGES["Rain"].src;
+						}
+						IMAGES["Custom"].src = Campaign.attributes.bR20cfg_weatherTypeCustom1;
+					}
+					return IMAGES["Custom"];
+				default:
+					IMAGES["Custom"] = null;
+					return null;
+			}
+		}
+
 		function getDirectionRotation () {
 			const dir = Campaign.attributes.bR20cfg_weatherDir1;
 			switch (dir) {
@@ -1763,7 +1790,7 @@ function d20plusEngine () {
 			then = now;
 
 			if (Campaign && Campaign.attributes) {
-				image = Campaign.attributes.bR20cfg_weatherType1 ? IMAGES[Campaign.attributes.bR20cfg_weatherType1] : null;
+				image = getImage();
 				currentSfx = getEffect();
 
 				// generate SFX

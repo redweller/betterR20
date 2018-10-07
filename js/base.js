@@ -84,7 +84,11 @@ const betteR20Base = function () {
 			"name": "Type",
 			"default": "None",
 			"_type": "_enum",
-			"__values": ["None", "Rain", "Snow", "Fog"]
+			"__values": ["None", "Fog", "Rain", "Snow", "Waves", "Custom (see below)"]
+		},
+		"weatherTypeCustom1": {
+			"name": "Custom Image",
+			"_type": "String"
 		},
 		"weatherSpeed1": {
 			"name": "Weather Speed",
