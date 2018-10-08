@@ -524,12 +524,18 @@ function baseTool() {
 				function deletePage (model, pageList) {
 					if ($("#page-toolbar .availablepage[data-pageid=" + model.id + "]").remove()) {
 						var n = d20.Campaign.getPageIndex(model.id);
-						model.thegraphics.massdelete = true;
-						model.thetexts.massdelete = true;
-						model.thepaths.massdelete = true;
-						model.thegraphics.backboneFirebase.reference.set(null);
-						model.thetexts.backboneFirebase.reference.set(null);
-						model.thepaths.backboneFirebase.reference.set(null);
+						if (model.thegraphics) {
+							model.thegraphics.massdelete = true;
+							model.thegraphics.backboneFirebase.reference.set(null);
+						}
+						if (model.thetexts) {
+							model.thetexts.massdelete = true;
+							model.thetexts.backboneFirebase.reference.set(null);
+						}
+						if (model.thepaths) {
+							model.thepaths.backboneFirebase.reference.set(null);
+							model.thepaths.massdelete = true;
+						}
 						let i = d20.Campaign.get("playerspecificpages");
 						let o = false;
 						_.each(i, function(e, n) {
