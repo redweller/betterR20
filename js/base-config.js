@@ -122,9 +122,17 @@ function baseConfig() {
 	};
 
 	d20plus.cfg.getDefault = (group, key) => {
+		return d20plus.cfg._getProp("default", group, key);
+	};
+
+	d20plus.cfg.getPlaceholder = (group, key) => {
+		return d20plus.cfg._getProp("_placeholder", group, key);
+	};
+
+	d20plus.cfg._getProp = (prop, group, key) => {
 		if (CONFIG_OPTIONS[group] === undefined) return undefined;
 		if (CONFIG_OPTIONS[group][key] === undefined) return undefined;
-		return CONFIG_OPTIONS[group][key].default
+		return CONFIG_OPTIONS[group][key][prop];
 	};
 
 	d20plus.cfg.getOrDefault = (group, key) => {
@@ -271,8 +279,9 @@ function baseConfig() {
 						}
 						case "String": {
 							const curr = d20plus.cfg.get(cfgK, grpK) || "";
+							const placeholder = d20plus.cfg.getPlaceholder(cfgK, grpK);
 							const def = d20plus.cfg.getDefault(cfgK, grpK) || "";
-							const field = $(`<input id="conf_field_${idx}" value="${curr}" ${def ? `placeholder="Default: ${def}"` : ""}>`);
+							const field = $(`<input id="conf_field_${idx}" value="${curr}" ${placeholder ? `placeholder="${placeholder}"` : def ? `placeholder="Default: ${def}"` : ""}>`);
 
 							configFields[cfgK][grpK] = () => {
 								return field.val() ? field.val().trim() : "";

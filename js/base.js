@@ -88,7 +88,8 @@ const betteR20Base = function () {
 		},
 		"weatherTypeCustom1": {
 			"name": "Custom Image",
-			"_type": "String"
+			"_type": "String",
+			"_placeholder": "https://example.com/pic.png"
 		},
 		"weatherSpeed1": {
 			"name": "Weather Speed",

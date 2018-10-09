@@ -226,15 +226,15 @@ function d20plusArt () {
 
 				toShow.forEach(a => {
 					$olArt.append(`
-				<li class="dd-item library-item draggableresult Vetoolsresult ui-draggable" data-fullsizeurl="${a.url}">
-					<div class="dd-content">
-						<div class="token"><img src="${a.url}" draggable="false"></div>
-						<div class="name">
-							<div class="namecontainer"><a href="${a.url}" rel="external">${a.name}</a></div>
-						</div>
-					</div>
-				</li>
-			`);
+						<li class="dd-item library-item draggableresult Vetoolsresult ui-draggable" data-fullsizeurl="${a.url}">
+							<div class="dd-content">
+								<div class="token"><img src="${a.url}" draggable="false"></div>
+								<div class="name">
+									<div class="namecontainer"><a href="${a.url}" rel="external">${a.name}</a></div>
+								</div>
+							</div>
+						</li>
+					`);
 				});
 			}
 
@@ -292,6 +292,247 @@ function d20plusArt () {
 	};
 	d20plus.art.setLastImageUrl = (url) => {
 		d20plus.art._lastImageUrl = url || d20plus.art._lastImageUrl;
+	};
+
+	// ART IMPORTER 2.0
+	d20plus.art.initRepoBrowser = () => {
+		const TIME = (new Date()).getTime();
+
+		function pGetJson (url) { // avoid using the main site method's caching
+			return new Promise(resolve => {
+				$.getJSON(url, data => resolve(data));
+			});
+		}
+
+		function pFetchFiles () {
+			return pGetJson(`https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/ExternalArt/dist?client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}&t=${TIME}`);
+		}
+
+		const $win = $(`<div title="Art Repository" class="artr__win"/>`)
+			.appendTo($(`body`)).dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 1,
+				height: 1
+			});
+
+		function doInit () {
+			const $sidebar = $(`<div class="artr__side"/>`).appendTo($win);
+			const $mainPane = $(`<div class="artr__main"/>`).appendTo($win);
+			const $loadings = [$(`<div class="artr__side__loading">Loading...</div>`).appendTo($sidebar), $(`<div class="artr__main__loading">Loading...</div>`).appendTo($mainPane)];
+
+			const pContent = (d) => {
+				return new Promise(resolve => {
+					pGetJson(`${d.download_url}?t=${TIME}`).then(json => {
+						d._contents = json;
+						resolve();
+					});
+				})
+			};
+
+			pFetchFiles().then(data => {
+				let totalSize = 0;
+				// remove unused data
+				data.forEach(d => {
+					delete d.sha;
+					totalSize += d.size;
+					delete d.size;
+					delete d.html_url;
+					delete d.git_url;
+					delete d.api_url;
+					delete d._links;
+				});
+				const start = (new Date()).getTime();
+
+				const metaEnum = data.find(d => d.name === "_meta_enums.json");
+				const metaIndex = data.find(d => d.name === "_meta_index.json");
+				Promise.all([pContent(metaEnum), pContent(metaIndex)]).then(() => {
+					const enums = metaEnum._contents;
+					const index = metaIndex._contents;
+					index.forEach((it, i) => it._file = `${i}.json`);
+					d20plus.ut.log(`Finished loading in ${((new Date()).getTime() - start) / 1000} secs.`);
+
+					let filters = {};
+					let search = "";
+					let currentItemIndex = null;
+					let currentItem = null;
+
+					function _searchFeatures (item, doLowercase) {
+						// features are lowercase in index
+						return !!(item.features || []).find(x => (doLowercase ? x.toLowerCase() : x).includes(search));
+					}
+
+					function _filterProps (item) {
+						if (Object.keys(filters).length) {
+							const missing = Object.keys(filters).find(prop => {
+								if (!item[prop]) return true;
+								const requiredVals = Object.keys(filters[prop]).filter(k => filters[prop][k]);
+								const missingEnum = requiredVals.find(x => !item[prop].includes(x));
+								return !!missingEnum;
+							});
+							if (missing) return false;
+						}
+						return true;
+					}
+
+					function applyFilterAndSearchToIndex () {
+						search = search.toLowerCase();
+						return index.filter(it => {
+							if (search) {
+								const searchVisible = it._set.toLowerCase().includes(search)
+									|| it._artist.toLowerCase().includes(search)
+									|| _searchFeatures(it);
+								if (!searchVisible) return false;
+							}
+							return _filterProps(it);
+						});
+					};
+
+					function applyFilterAndSearchToItem () {
+						const cpy = MiscUtil.copy(currentItem);
+						cpy.data = cpy.data.filter(it => {
+							if (search) if (!_searchFeatures(it, true)) return false;
+							return _filterProps(it);
+						});
+						return cpy;
+					}
+
+					$loadings.forEach($l => $l.remove());
+
+					// SIDEBAR /////////////////////////////////////////////////////////////////////////////////////////
+					const $sideHead = $(`<div class="split split--center p-2 artr__side__head"><div class="artr__side__head__title">Filters</div></div>`).appendTo($sidebar);
+					// This functionality is contained in the filter buttons, but might need to be done here to improve performance in the future
+					// $(`<button class="btn">Apply</button>`).click(() => {
+					// 	if (currentItem) doRenderItem(applyFilterAndSearchToItem());
+					// 	else doRenderIndex(applyFilterAndSearchToIndex())
+					// }).appendTo($sideHead);
+
+					const $sideBody = $(`<div class="artr__side__body"/>`).appendTo($sidebar);
+					const $sideBodyInner = $(`<div class="artr__side__body_inner"/>`).appendTo($sideBody);
+					const addSidebarSection = prop => {
+						const fullName = (() => {
+							switch (prop) {
+								case "imageType": return "Image Type";
+								case "grid": return "Grid Type";
+								case "monster": return "Monster Type";
+								case "audience": return "Intended Audience";
+								case "quality":
+								case "view":
+								case "style":
+								case "terrain":
+								case "setting":
+									return prop.uppercaseFirst();
+							}
+						})();
+						const $tagHead = $(`<div class="artr__side__tag_header"><div>${fullName}</div><div>[\u2013]</div></div>`).appendTo($sideBody).click(() => {
+							$tagGrid.toggle();
+							$tagHead.html($tagHead.html().replace(/\[.]/, (...m) => m[0] === "[+]" ? "[\u2013]" : "[+]"));
+						});
+						const $tagGrid = $(`<div class="artr__side__tag_grid"/>`).appendTo($sideBody);
+						enums[prop].forEach(enm => {
+							const $btn = $(`<button class="btn artr__side__tag" data-state="0">${enm.v} (${enm.c})</button>`).click(() => {
+								const nxtState = $btn.attr("data-state") === "0" ? "1" : "0";
+								$btn.attr("data-state", nxtState);
+
+								if (nxtState === "0") {
+									delete filters[prop][enm.v];
+									if (!Object.keys(filters[prop]).length) delete filters[prop];
+								} else (filters[prop] = filters[prop] || {})[enm.v] = true;
+
+								if (currentItem) doRenderItem(applyFilterAndSearchToItem());
+								else doRenderIndex(applyFilterAndSearchToIndex())
+							}).appendTo($tagGrid);
+						});
+					};
+					Object.keys(enums).forEach(k => addSidebarSection(k));
+
+					// MAIN PAGE ///////////////////////////////////////////////////////////////////////////////////////
+					const $mainHead = $(`<div class="split split--center p-2 artr__search"/>`).appendTo($mainPane);
+					const $iptSearch = $(`<input placeholder="Search..." class="artr__search__field">`).on("keydown", (e) => {
+						if (e.which === 13) {
+							search = ($iptSearch.val() || "").trim();
+							if (currentItem) doRenderItem(applyFilterAndSearchToItem());
+							else doRenderIndex(applyFilterAndSearchToIndex())
+						}
+					}).appendTo($mainHead);
+
+					const $mainBody = $(`<div class="artr__view"/>`).appendTo($mainPane);
+					const $mainBodyInner = $(`<div class="artr__view_inner"/>`).appendTo($mainBody);
+
+					function doRenderIndex (indexSlice) {
+						currentItem = false;
+						$mainBodyInner.empty();
+						indexSlice.forEach(it => {
+							const $item = $(`<div class="artr__item"/>`).appendTo($mainBodyInner).click(() => doLoadAndRenderItem(it));
+							const $itemTop = $(`<div class="artr__item__top"><img class="artr__item__thumbnail" src="${it._sample}"></div>`).appendTo($item);
+							const $itemBottom = $(`
+								<div class="artr__item__bottom">
+									<div class="artr__item__bottom__row" style="padding-bottom: 2px;" title="${it._set}">${it._set}</div>
+									<div class="artr__item__bottom__row" style="padding-top: 2px;" title="${it._artist}"><i>By</i> ${it._artist}</div>
+								</div>
+							`).appendTo($item);
+						});
+					}
+
+					function doLoadAndRenderItem (indexItem) {
+						pGetJson(`https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/ExternalArt/dist/${indexItem._file}`).then(file => {
+							currentItem = file;
+							doRenderItem(applyFilterAndSearchToItem())
+						});
+					}
+
+					function doRenderItem (file) {
+						$mainBodyInner.empty().append(`<div class="artr__main__loading"/>`);
+						$mainBodyInner.empty();
+						const $itmUp = $(`<div class="artr__item artr__item--back"><div class="pictos">[</div></div>`)
+							.click(() => doRenderIndex(applyFilterAndSearchToIndex()))
+							.appendTo($mainBodyInner);
+						file.data.forEach(it => {
+							// "library-item" and "draggableresult" classes required for drag/drop
+							const $item = $(`<div class="artr__item library-item draggableresult" data-fullsizeurl="${it.uri}"/>`)
+								.appendTo($mainBodyInner)
+								.click(() => {
+									const $wrpBigImg = $(`<div class="artr__wrp_big_img"><img class="artr__big_img" src="${it.uri}"></div>`)
+										.click(() => $wrpBigImg.remove()).appendTo($(`body`));
+								});
+							const $wrpImg = $(`<div class="artr__item__full"/>`).appendTo($item);
+							const $img = $(`<img class="artr__item__thumbnail" src="${it.uri}">`).appendTo($wrpImg);
+
+							$item.draggable({
+								handle: ".artr__item",
+								revert: true,
+								revertDuration: 0,
+								helper: "clone",
+								appendTo: "body"
+							});
+						});
+					}
+
+					doRenderIndex(index);
+				});
+			});
+		}
+
+		let firstClick = true;
+		const $btnBrowse = $(`#button-browse-external-art`).click(() => {
+			$win.dialog(
+				"option",
+				{
+					width: Math.max(Math.floor(d20.engine.canvasWidth * 0.66), 1150),
+					height: d20.engine.canvasHeight - 100,
+					position: {
+						my: "left top",
+						at: "left+75 top+15",
+						collision: "none"
+					}
+				}
+			).dialog("open");
+
+			if (firstClick) {
+				doInit();
+				firstClick = false;
+			}
+		});
 	};
 }
 

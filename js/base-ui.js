@@ -12,7 +12,7 @@ function baseUi () {
 		$body.append(d20plus.configEditorHTML);
 		if (window.is_gm) {
 			$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.artTabHtml);
-			$(`a#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
+			$(`#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
 
 			$body.append(d20plus.addArtHTML);
 			$body.append(d20plus.addArtMassAdderHTML);

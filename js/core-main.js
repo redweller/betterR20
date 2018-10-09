@@ -45,6 +45,7 @@ const betteR20Core = function () {
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
+			d20plus.art.initRepoBrowser();
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}

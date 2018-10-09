@@ -165,6 +165,22 @@ function baseCss () {
 			s: ".float-right",
 			r: "float: right;"
 		},
+		{
+			s: ".p-2",
+			r: "padding: 0.5rem !important;"
+		},
+		{
+			s: ".p-3",
+			r: "padding: 1rem !important;"
+		},
+		{
+			s: ".split",
+			r: "display: flex; justify-content: space-between;"
+		},
+		{
+			s: ".split--center",
+			r: "align-items: center;"
+		},
 		// image rows
 		{
 			s: ".import-cb-label--img",
@@ -232,6 +248,145 @@ function baseCss () {
 	];
 
 	d20plus.css.cssRules = []; // other scripts should populate this
+
+	// Art repo browser CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// full-width images search header
+		{
+			s: "#imagedialog .searchbox",
+			r: "width: calc(100% - 10px)"
+		},
+		///////////////
+		{
+			s: ".artr__win",
+			r: "display: flex; align-items: stretch; width: 100%; height: 100%; padding: 0 !important;"
+		},
+		// fix box sizing
+		{
+			s: ".artr__win *",
+			r: "box-sizing: border-box;"
+		},
+		// custom scrollbars
+		{
+			s: ".artr__win *::-webkit-scrollbar",
+			r: "width: 9px; height: 9px;"
+		},
+		{
+			s: ".artr__win *::-webkit-scrollbar-track",
+			r: "background: transparent;"
+		},
+		{
+			s: ".artr__win *::-webkit-scrollbar-thumb",
+			r: "background: #cbcbcb;"
+		},
+		///////////////
+		{
+			s: ".artr__side",
+			r: "width: 300px; height: 100%; border-right: 1px solid #ccc; background: #f8f8f8; position: relative; flex-shrink: 0;"
+		},
+		{
+			s: ".artr__side__head",
+			r: "border-bottom: 1px solid #ccc; font-weight: bold;"
+		},
+		{
+			s: ".artr__side__head__title",
+			r: "font-size: 16px; font-weight: bold;"
+		},
+		{
+			s: ".artr__side__body",
+			r: "position: absolute; top: 40px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0);"
+		},
+		{
+			s: ".artr__side__body_inner",
+			r: "display: flex; flex-direction: column;"
+		},
+		{
+			s: ".artr__side__body_inner > *",
+			r: "flex-shrink: 0;"
+		},
+		{
+			s: ".artr__side__tag_header",
+			r: "width: 100%; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; padding: 0 6px; cursor: pointer; margin-bottom: 10px;"
+		},
+		{
+			s: ".artr__side__tag_grid",
+			r: "display: flex; width: 100%; flex-wrap: wrap; padding: 0 0 15px;"
+		},
+		{
+			s: ".artr__side__tag",
+			r: "padding: 2px 4px; margin: 2px 4px; font-size: 11px;"
+		},
+		{
+			s: `.artr__side__tag[data-state="1"]`,
+			r: "background-image: linear-gradient(#fff, rgb(51, 202, 14));"
+		},
+		{
+			s: `.artr__side__tag[data-state="1"]:hover`,
+			r: "background-image: linear-gradient(rgb(51, 202, 14), rgb(51, 202, 14)); background-position: 0; transition: none;"
+		},
+		{
+			s: ".artr__main",
+			r: "width: 100%; height: 100%; display: flex; overflow-y: auto; flex-direction: column; position: relative;"
+		},
+		{
+			s: ".artr__side__loading, .artr__main__loading",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"
+		},
+		{
+			s: ".artr__search",
+			r: "flex-shrink: 0; width: 100%; border-bottom: 1px solid #ccc;"
+		},
+		{
+			s: ".artr__search__field",
+			r: "width: 100%; height: 26px;"
+		},
+		{
+			s: ".artr__view",
+			r: "position: absolute; top: 38px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0);"
+		},
+		{
+			s: ".artr__view_inner",
+			r: "display: flex; width: 100%; height: 100%; flex-wrap: wrap; align-content: flex-start;"
+		},
+		{
+			s: ".artr__item",
+			r: "width: 180px; height: 180px; margin: 5px; box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.75); display: block; background: white;"
+			// Using flex makes scrolling extremely sluggish
+			// display: flex; flex-direction: column; cursor: pointer; float: left;
+		},
+		{
+			s: ".artr__item--back",
+			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; font-color: #888;"
+		},
+		{
+			s: ".artr__item__top",
+			r: "width: 100%; height: 140px; flex-shrink: 0; margin: 0 auto; display: flex; align-items: center;"
+		},
+		{
+			s: ".artr__item__bottom",
+			r: "width: 100%; height: 40px; flex-shrink: 0;  border-top: 1px solid #ccc; background: #f8f8f8; display: flex; flex-direction: column; font-size: 12px;"
+		},
+		{
+			s: ".artr__item__bottom__row",
+			r: "width: 100% height: 20px; flex-shrink: 0; padding: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+		},
+		{
+			s: ".artr__item__thumbnail",
+			r: "max-width: 100%; max-height: 100%; display: block; margin: 0 auto;"
+		},
+		{
+			s: ".artr__item__full",
+			r: "width: 100%; height: 180px; margin: 0 auto; display: flex; align-items: center; padding: 3px;"
+		},
+		{
+			s: ".artr__wrp_big_img",
+			r: "position: fixed; top: 0; bottom: 0; right: 0; left: 0; background: #30303080; padding: 30px; display: flex; justify-content: center; align-items: center; z-index: 99999;"
+		},
+		{
+			s: ".artr__big_img",
+			r: "display: block; max-width: 100%; max-height: 100%;"
+		},
+	]);
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);

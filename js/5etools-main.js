@@ -537,6 +537,7 @@ const betteR205etools = function () {
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
+			d20plus.art.initRepoBrowser();
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}
@@ -2691,7 +2692,7 @@ const betteR205etools = function () {
 
 								p._r20SubItemData = out;
 							}
-						})
+						});
 
 						d20plus.importer.showImportList(
 							"item",
