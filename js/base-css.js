@@ -318,11 +318,11 @@ function baseCss () {
 		},
 		{
 			s: `.artr__side__tag[data-state="1"]`,
-			r: "background-image: linear-gradient(#fff, rgb(51, 202, 14));"
+			r: "background-image: linear-gradient(#fff, #337ab7);"
 		},
 		{
 			s: `.artr__side__tag[data-state="1"]:hover`,
-			r: "background-image: linear-gradient(rgb(51, 202, 14), rgb(51, 202, 14)); background-position: 0; transition: none;"
+			r: "background-image: linear-gradient(rgb(#337ab7), rgb(#337ab7)); background-position: 0; transition: none;"
 		},
 		{
 			s: ".artr__main",
@@ -330,7 +330,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;"
 		},
 		{
 			s: ".artr__search",

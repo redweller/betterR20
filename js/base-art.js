@@ -319,7 +319,10 @@ function d20plusArt () {
 		function doInit () {
 			const $sidebar = $(`<div class="artr__side"/>`).appendTo($win);
 			const $mainPane = $(`<div class="artr__main"/>`).appendTo($win);
-			const $loadings = [$(`<div class="artr__side__loading">Loading...</div>`).appendTo($sidebar), $(`<div class="artr__main__loading">Loading...</div>`).appendTo($mainPane)];
+			const $loadings = [
+				$(`<div class="artr__side__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($sidebar),
+				$(`<div class="artr__main__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($mainPane)
+			];
 
 			const pContent = (d) => {
 				return new Promise(resolve => {
