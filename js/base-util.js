@@ -112,10 +112,15 @@ function baseUtil () {
 
 	d20plus.ut.addCSS = (sheet, selector, rules) => {
 		const index = sheet.cssRules.length;
-		if ("insertRule" in sheet) {
-			sheet.insertRule(selector + "{" + rules + "}", index);
-		} else if ("addRule" in sheet) {
-			sheet.addRule(selector, rules, index);
+		try {
+			if ("insertRule" in sheet) {
+				sheet.insertRule(selector + "{" + rules + "}", index);
+			} else if ("addRule" in sheet) {
+				sheet.addRule(selector, rules, index);
+			}
+		} catch (e) {
+			console.error(e);
+			console.error(`Selector was "${selector}"; rules were "${rules}"`)
 		}
 	};
 
