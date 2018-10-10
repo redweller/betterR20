@@ -297,6 +297,7 @@ function d20plusArt () {
 	// ART IMPORTER 2.0
 	d20plus.art.initRepoBrowser = () => {
 		const TIME = (new Date()).getTime();
+		const STATES = ["0", "1", "2"]; // off, blue, red
 
 		function pGetJson (url) { // avoid using the main site method's caching
 			return new Promise(resolve => {
@@ -357,7 +358,6 @@ function d20plusArt () {
 
 					let filters = {};
 					let search = "";
-					let currentItemIndex = null;
 					let currentItem = null;
 
 					function _searchFeatures (item, doLowercase) {
@@ -367,13 +367,15 @@ function d20plusArt () {
 
 					function _filterProps (item) {
 						if (Object.keys(filters).length) {
-							const missing = Object.keys(filters).find(prop => {
+							const missingOrUnwanted = Object.keys(filters).find(prop => {
 								if (!item[prop]) return true;
 								const requiredVals = Object.keys(filters[prop]).filter(k => filters[prop][k]);
-								const missingEnum = requiredVals.find(x => !item[prop].includes(x));
-								return !!missingEnum;
+								const missingEnum = !!requiredVals.find(x => !item[prop].includes(x));
+								const excludedVals = Object.keys(filters[prop]).filter(k => !filters[prop][k]);
+								const unwantedEnum = !!excludedVals.find(x => item[prop].includes(x));
+								return missingEnum || unwantedEnum;
 							});
-							if (missing) return false;
+							if (missingOrUnwanted) return false;
 						}
 						return true;
 					}
@@ -431,19 +433,35 @@ function d20plusArt () {
 							$tagHead.html($tagHead.html().replace(/\[.]/, (...m) => m[0] === "[+]" ? "[\u2013]" : "[+]"));
 						});
 						const $tagGrid = $(`<div class="artr__side__tag_grid"/>`).appendTo($sideBody);
+						const getNextState = (state, dir) => {
+							const ix = STATES.indexOf(state) + dir;
+							if (ix > STATES.length - 1) return STATES[0];
+							if (ix < 0) return STATES.last();
+							return STATES[ix];
+						};
 						enums[prop].forEach(enm => {
-							const $btn = $(`<button class="btn artr__side__tag" data-state="0">${enm.v} (${enm.c})</button>`).click(() => {
-								const nxtState = $btn.attr("data-state") === "0" ? "1" : "0";
+							const cycleState = dir => {
+								const nxtState = getNextState($btn.attr("data-state"), dir);
 								$btn.attr("data-state", nxtState);
 
 								if (nxtState === "0") {
 									delete filters[prop][enm.v];
 									if (!Object.keys(filters[prop]).length) delete filters[prop];
-								} else (filters[prop] = filters[prop] || {})[enm.v] = true;
+								} else (filters[prop] = filters[prop] || {})[enm.v] = nxtState === "1";
 
 								if (currentItem) doRenderItem(applyFilterAndSearchToItem());
 								else doRenderIndex(applyFilterAndSearchToIndex())
-							}).appendTo($tagGrid);
+							};
+
+							const $btn = $(`<button class="btn artr__side__tag" data-state="0">${enm.v} (${enm.c})</button>`)
+								.click(() => cycleState(1))
+								.contextmenu((evt) => {
+									if (!evt.ctrlKey) {
+										evt.preventDefault();
+										cycleState(-1);
+									}
+								})
+								.appendTo($tagGrid);
 						});
 					};
 					Object.keys(enums).forEach(k => addSidebarSection(k));
@@ -518,7 +536,7 @@ function d20plusArt () {
 		let firstClick = true;
 		const calcWidth = () => {
 			const base = d20.engine.canvasWidth * 0.66;
-			return (Math.ceil((base - 300) / 190) * 190) + 300;
+			return (Math.ceil((base - 300) / 190) * 190) + 320;
 		};
 		const $btnBrowse = $(`#button-browse-external-art`).click(() => {
 			$win.dialog(

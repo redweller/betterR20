@@ -317,6 +317,14 @@ function baseCss () {
 			r: "background-image: linear-gradient(rgb(#337ab7), rgb(#337ab7)); background-position: 0; transition: none;"
 		},
 		{
+			s: `.artr__side__tag[data-state="2"]`,
+			r: "background-image: linear-gradient(#fff, #8a1a1b);"
+		},
+		{
+			s: `.artr__side__tag[data-state="2"]:hover`,
+			r: "background-image: linear-gradient(rgb(#8a1a1b), rgb(#8a1a1b)); background-position: 0; transition: none;"
+		},
+		{
 			s: ".artr__main",
 			r: "width: 100%; height: 100%; display: flex; overflow-y: auto; flex-direction: column; position: relative;"
 		},
