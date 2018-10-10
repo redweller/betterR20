@@ -297,14 +297,6 @@ function baseCss () {
 			r: "position: absolute; top: 40px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0);"
 		},
 		{
-			s: ".artr__side__body_inner",
-			r: "display: flex; flex-direction: column;"
-		},
-		{
-			s: ".artr__side__body_inner > *",
-			r: "flex-shrink: 0;"
-		},
-		{
 			s: ".artr__side__tag_header",
 			r: "width: 100%; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; padding: 0 6px; cursor: pointer; margin-bottom: 10px;"
 		},

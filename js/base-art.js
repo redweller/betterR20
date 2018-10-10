@@ -389,7 +389,7 @@ function d20plusArt () {
 							}
 							return _filterProps(it);
 						});
-					};
+					}
 
 					function applyFilterAndSearchToItem () {
 						const cpy = MiscUtil.copy(currentItem);
@@ -411,7 +411,6 @@ function d20plusArt () {
 					// }).appendTo($sideHead);
 
 					const $sideBody = $(`<div class="artr__side__body"/>`).appendTo($sidebar);
-					const $sideBodyInner = $(`<div class="artr__side__body_inner"/>`).appendTo($sideBody);
 					const addSidebarSection = prop => {
 						const fullName = (() => {
 							switch (prop) {
@@ -517,11 +516,15 @@ function d20plusArt () {
 		}
 
 		let firstClick = true;
+		const calcWidth = () => {
+			const base = d20.engine.canvasWidth * 0.66;
+			return (Math.ceil((base - 300) / 190) * 190) + 300;
+		};
 		const $btnBrowse = $(`#button-browse-external-art`).click(() => {
 			$win.dialog(
 				"option",
 				{
-					width: Math.max(Math.floor(d20.engine.canvasWidth * 0.66), 1150),
+					width: calcWidth(),
 					height: d20.engine.canvasHeight - 100,
 					position: {
 						my: "left top",
