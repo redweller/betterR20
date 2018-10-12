@@ -238,6 +238,15 @@ function baseCss () {
 			s: "#editinglayer.weather .currentselection:after",
 			r: "content: \"C\";"
 		},
+		// adjust the "Talking to Yourself" box
+		{
+			s: "#textchat-notifier",
+			r: "top: -5px; background-color: red; opacity: 0.5; color: white;"
+		},
+		{
+			s: "#textchat-notifier:after",
+			r: "content: '!'"
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
