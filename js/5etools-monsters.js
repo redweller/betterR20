@@ -26,10 +26,11 @@ function d20plusMonsters () {
 					<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
 				
 					<div style="margin-top: 10px;">
-						<span class="col-4 ib"><b>Name</b></span>				
-						<span class="col-2 ib"><b>Source</b></span>				
+						<span class="col-3 ib"><b>Name</b></span>				
+						<span class="col-1 ib"><b>Source</b></span>				
 						<span class="col-2 ib"><b>CR</b></span>				
-						<span class="col-3 ib"><b>Scale CR</b></span>				
+						<span class="col-2 ib"><b>Rename To</b></span>
+						<span class="col-3 ib"><b>Scale CR</b></span>								
 					</div>
 					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 				</div>
@@ -60,10 +61,11 @@ function d20plusMonsters () {
 		origImportQueue.forEach((m, i) => {
 			temp += `
 				<div>
-					<span class="name col-4 ib">${m.name}</span>
-					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-2 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
+					<span class="name col-3 ib">${m.name}</span>
+					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-1 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
 					<span class="cr col-2 ib">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
-					<span class="col-3 ib"><input class="target-cr" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
+					<span class="col-2 ib"><input class="target-rename" style="max-width: calc(100% - 18px);" placeholder="Rename To..."></span>
+					<span class="col-2 ib"><input class="target-cr" style="max-width: calc(100% - 18spx);" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
 					<span class="index" style="display: none;">${i}</span>
 				</div>
 			`;
@@ -88,6 +90,7 @@ function d20plusMonsters () {
 				const m = origImportQueue[ix];
 				const origCr = m.cr.cr || m.cr;
 				const $iptCr = $ele.find(`.target-cr`);
+				const rename = ($ele.find(`.target-rename`).val() || "").trim();
 				const crValRaw = $iptCr.val();
 				let crVal = crValRaw;
 				if (crVal && crVal.trim()) {
@@ -102,16 +105,20 @@ function d20plusMonsters () {
 						} else if (asNum !== Parser.crToNumber(origCr)) {
 							promises.push(ScaleCreature.scale(m, asNum).then(scaled => {
 								queueCopy[ix] = scaled;
+								if (rename) queueCopy[ix]._displayName = rename;
 								return Promise.resolve();
 							}));
 						} else {
+							if (rename) queueCopy[ix]._displayName = rename;
 							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
 						}
 					} else {
-						alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)}`)
+						alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)}`);
 						failed = true;
 						break;
 					}
+				} else {
+					if (rename) queueCopy[ix]._displayName = rename;
 				}
 			}
 
