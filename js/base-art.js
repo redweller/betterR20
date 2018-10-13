@@ -250,8 +250,7 @@ function d20plusArt () {
 
 	d20plus.art.initArtFromUrlButtons = () => {
 		d20plus.ut.log("Add direct URL art buttons");
-		$("#tmpl_charactereditor").replaceWith(d20plus.template_charactereditor);
-		$("#tmpl_handouteditor").replaceWith(d20plus.template_handouteditor);
+		// requires templates to be swapped, which happens ASAP during Init
 
 		$(`.character-image-by-url`).live("click", function () {
 			const cId = $(this).closest(`[data-characterid]`).attr(`data-characterid`);

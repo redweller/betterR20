@@ -661,7 +661,7 @@ function baseTool() {
 				const runInitial = () => {
 					const pages = d20.Campaign.pages;
 					if (pages && pages.models) {
-						console.log("Initial existing entangles...");
+						d20plus.ut.log("Initialisng existing entangles...");
 						d20.Campaign.pages.models
 							.filter(model => model.thegraphics && model.thegraphics.models)
 							.forEach(model => model.thegraphics.models.filter(it => it.attributes.entangled && it.attributes.entangled.length)
