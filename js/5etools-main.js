@@ -2781,7 +2781,7 @@ const betteR205etools = function () {
 
 	d20plus.items._getHandoutData = function (data) {
 		function removeDiceTags (str) {
-			return str ? str.replace(/{@dice /g, "").replace(/}/g, "") : str;
+			return str ? str.replace(/{@(?:dice|damage) ([^}]+)}/g, "$1") : str;
 		}
 
 		var notecontents = "";
