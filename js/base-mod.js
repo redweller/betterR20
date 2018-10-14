@@ -814,6 +814,9 @@ function d20plusMod() {
 				walls: [],
 				grid: [],
 				objects: [],
+				// BEGIN MOD
+				foreground: [],
+				// END MOD
 				gmlayer: [],
 				// BEGIN MOD
 				weather: []
@@ -875,7 +878,7 @@ function d20plusMod() {
 				$("#drawingtools .choosepath").hide();
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
 			} else {
-				e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+				e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
 					$("#drawingtools .choosepath").hide(),
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
 			}

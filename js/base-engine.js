@@ -1638,6 +1638,12 @@ function d20plusEngine () {
 		d20plus.ut.log("Adding layers");
 
 		d20plus.mod.editingLayerOnclick();
+		$(`#floatingtoolbar .chooseobjects`).after(`
+			<li class="chooseforeground">
+                <span class="pictos">B</span>
+                Foreground
+			</li>
+		`);
 		$(`#floatingtoolbar .choosewalls`).after(`
 			<li class="chooseweather">
                 <span class="pictos">C</span>
