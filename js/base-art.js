@@ -467,11 +467,20 @@ function d20plusArt () {
 
 					// MAIN PAGE ///////////////////////////////////////////////////////////////////////////////////////
 					const $mainHead = $(`<div class="split split--center p-2 artr__search"/>`).appendTo($mainPane);
+					let searchTimeout;
+					const doSearch = () => {
+						search = ($iptSearch.val() || "").trim();
+						if (currentItem) doRenderItem(applyFilterAndSearchToItem());
+						else doRenderIndex(applyFilterAndSearchToIndex())
+					};
 					const $iptSearch = $(`<input placeholder="Search..." class="artr__search__field">`).on("keydown", (e) => {
+						clearTimeout(searchTimeout);
 						if (e.which === 13) {
-							search = ($iptSearch.val() || "").trim();
-							if (currentItem) doRenderItem(applyFilterAndSearchToItem());
-							else doRenderIndex(applyFilterAndSearchToIndex())
+							doSearch();
+						} else {
+							searchTimeout = setTimeout(() => {
+								doSearch();
+							}, 100);
 						}
 					}).appendTo($mainHead);
 
