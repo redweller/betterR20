@@ -1218,7 +1218,8 @@ const betteR205etools = function () {
 			if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
-			const skills = bg.skillProficiencies ? bg.skillProficiencies.split(",").map(s => s.trim()) : [];
+			const skills = [];
+			EntryRenderer.background.getSkillSummary(bg.skillProficiencies, true, bg._fSkills = skills);
 
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
