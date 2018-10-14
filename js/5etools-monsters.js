@@ -135,19 +135,37 @@ function d20plusMonsters () {
 		const url = $("#import-monster-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
-				d20plus.importer.showImportList(
-					"monster",
-					data.monster,
-					d20plus.monsters.handoutBuilder,
-					{
-						groupOptions: d20plus.monsters._groupOptions,
-						listItemBuilder: d20plus.monsters._listItemBuilder,
-						listIndex: d20plus.monsters._listCols,
-						listIndexConverter: d20plus.monsters._listIndexConverter,
-						nextStep: d20plus.monsters._doScale
-					}
-				);
+
+				const doShowList = () => {
+					d20plus.importer.addMeta(data._meta);
+					d20plus.importer.showImportList(
+						"monster",
+						data.monster,
+						d20plus.monsters.handoutBuilder,
+						{
+							groupOptions: d20plus.monsters._groupOptions,
+							listItemBuilder: d20plus.monsters._listItemBuilder,
+							listIndex: d20plus.monsters._listCols,
+							listIndexConverter: d20plus.monsters._listIndexConverter,
+							nextStep: d20plus.monsters._doScale
+						}
+					);
+				};
+
+				const dependencies = MiscUtil.getProperty(data, "_meta", "dependencies");
+				if (dependencies && dependencies.length) {
+					const dependencyUrls = dependencies.map(d => d20plus.monsters.formMonsterUrl(monsterDataUrls[d]));
+
+					Promise.all(dependencyUrls.map(url => DataUtil.loadJSON(url))).then(depDatas => {
+
+						const depList = depDatas.reduce((a, b) => ({monster: a.monster.concat(b.monster)}), ({monster: []})).monster;
+
+						const mergeFn = DataUtil.dependencyMergers[UrlUtil.PG_BESTIARY];
+						data.monster.forEach(it => mergeFn(depList, it));
+
+						doShowList();
+					});
+				} else doShowList();
 			});
 		}
 	};
