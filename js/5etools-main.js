@@ -1258,11 +1258,12 @@ const betteR205etools = function () {
 		}
 
 		function importRace (character, data) {
+			const renderer = new EntryRenderer();
+			renderer.setBaseUrl(BASE_SITE_URL);
+
 			const race = data.Vetoolscontent;
 
-			race.entries.forEach(e => {
-				const renderer = new EntryRenderer();
-				renderer.setBaseUrl(BASE_SITE_URL);
+			race.entries.filter(it => typeof it !== "string").forEach(e => {
 				const renderStack = [];
 				renderer.recursiveEntryRender({entries: e.entries}, renderStack);
 				e.text = d20plus.importer.getCleanText(renderStack.join(""));
@@ -1275,7 +1276,7 @@ const betteR205etools = function () {
 				attrs.addOrUpdate(`race_display`, race.name);
 				attrs.addOrUpdate(`speed`, Parser.getSpeedString(race));
 
-				race.entries.forEach(e => {
+				race.entries.filter(it => it.text).forEach(e => {
 					const fRowId = d20plus.ut.generateRowId();
 					attrs.add(`repeating_traits_${fRowId}_name`, e.name);
 					attrs.add(`repeating_traits_${fRowId}_source`, "Race");
@@ -1310,7 +1311,7 @@ const betteR205etools = function () {
 					}
 				}
 
-				race.entries.forEach(e => {
+				race.entries.filter(it => it.text).forEach(e => {
 					const fRowId = d20plus.ut.generateRowId();
 					attrs.add(`repeating_racialtrait_${fRowId}_name`, e.name);
 					attrs.add(`repeating_racialtrait_${fRowId}_content`, e.text);
