@@ -1735,13 +1735,13 @@ function d20plusEngine () {
 					return IMAGES[imageName];
 				case "Custom (see below)":
 					if (!IMAGES["Custom"] || (
-						(IMAGES["Custom"].src !== Campaign.attributes.bR20cfg_weatherTypeCustom1 && !IMAGES["Custom"]._errorSrc) ||
-						(IMAGES["Custom"]._errorSrc && IMAGES["Custom"]._errorSrc !== Campaign.attributes.bR20cfg_weatherTypeCustom1))
+						(IMAGES["Custom"].src !== Campaign.attributes.bR20cfg_weatherTypeCustom1 && IMAGES["Custom"]._errorSrc == null) ||
+						(IMAGES["Custom"]._errorSrc != null && IMAGES["Custom"]._errorSrc !== Campaign.attributes.bR20cfg_weatherTypeCustom1))
 					) {
 						IMAGES["Custom"] = new Image;
 						IMAGES["Custom"]._errorSrc = null;
 						IMAGES["Custom"].onerror = () => {
-							if (!IMAGES["Custom"]._errorSrc) {
+							if (IMAGES["Custom"]._errorSrc == null) {
 								IMAGES["Custom"]._errorSrc = Campaign.attributes.bR20cfg_weatherTypeCustom1;
 								alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
 							}
@@ -1767,6 +1767,8 @@ function d20plusEngine () {
 				case "South-Westerly": return 1.5 * Math.PI;
 				case "Westerly": return 1.75 * Math.PI;
 				case "North-Westerly": return 0;
+				case "Custom (see below)":
+					return Number(Campaign.attributes.bR20cfg_weatherDirCustom1 || 0) * Math.PI / 180;
 				default: return 0;
 			}
 		}

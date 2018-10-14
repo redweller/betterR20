@@ -103,7 +103,15 @@ const betteR20Base = function () {
 			"name": "Direction",
 			"default": "None",
 			"_type": "_enum",
-			"__values": ["Northerly", "North-Easterly", "Easterly", "South-Easterly", "Southerly", "South-Westerly", "Westerly", "North-Westerly"]
+			"__values": ["Northerly", "North-Easterly", "Easterly", "South-Easterly", "Southerly", "South-Westerly", "Westerly", "North-Westerly", "Custom (see below)"]
+		},
+		"weatherDirCustom1": {
+			"name": "Custom Direction",
+			"default": 0,
+			"_type": "_slider",
+			"__sliderMin": 0,
+			"__sliderMax": 360,
+			"__sliderStep": 1
 		},
 		"weatherIntensity1": {
 			"name": "Intensity",
