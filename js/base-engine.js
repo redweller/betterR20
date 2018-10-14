@@ -1638,6 +1638,12 @@ function d20plusEngine () {
 		d20plus.ut.log("Adding layers");
 
 		d20plus.mod.editingLayerOnclick();
+		$(`#floatingtoolbar .chooseobjects`).after(`
+			<li class="chooseforeground">
+                <span class="pictos">B</span>
+                Foreground
+			</li>
+		`);
 		$(`#floatingtoolbar .choosewalls`).after(`
 			<li class="chooseweather">
                 <span class="pictos">C</span>
@@ -1728,10 +1734,17 @@ function d20plusEngine () {
 					IMAGES["Custom"] = null;
 					return IMAGES[imageName];
 				case "Custom (see below)":
-					if (!IMAGES["Custom"] || (IMAGES["Custom"].src !== Campaign.attributes.bR20cfg_weatherTypeCustom1)) {
+					if (!IMAGES["Custom"] || (
+						(IMAGES["Custom"].src !== Campaign.attributes.bR20cfg_weatherTypeCustom1 && !IMAGES["Custom"]._errorSrc) ||
+						(IMAGES["Custom"]._errorSrc && IMAGES["Custom"]._errorSrc !== Campaign.attributes.bR20cfg_weatherTypeCustom1))
+					) {
 						IMAGES["Custom"] = new Image;
+						IMAGES["Custom"]._errorSrc = null;
 						IMAGES["Custom"].onerror = () => {
-							alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
+							if (!IMAGES["Custom"]._errorSrc) {
+								IMAGES["Custom"]._errorSrc = Campaign.attributes.bR20cfg_weatherTypeCustom1;
+								alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
+							}
 							IMAGES["Custom"].src = IMAGES["Rain"].src;
 						}
 						IMAGES["Custom"].src = Campaign.attributes.bR20cfg_weatherTypeCustom1;

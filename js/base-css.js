@@ -226,7 +226,7 @@ function baseCss () {
 			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;"
 		},
 		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather",
+			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground",
 			r: "background-color: #54C3E8; color: #333;"
 		},
 		// extra layer buttons
@@ -237,6 +237,14 @@ function baseCss () {
 		{
 			s: "#editinglayer.weather .currentselection:after",
 			r: "content: \"C\";"
+		},
+		{
+			s: "#editinglayer.foreground div.submenu li.chooseforeground",
+			r: "background-color: #54C3E8; color: #333;"
+		},
+		{
+			s: "#editinglayer.foreground .currentselection:after",
+			r: "content: \"B\";"
 		},
 		// adjust the "Talking to Yourself" box
 		{
