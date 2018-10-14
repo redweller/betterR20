@@ -3,6 +3,11 @@ const betteR20Core = function () {
 		d20plus.ut.log("Init (v" + d20plus.version + ")");
 		d20plus.ut.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
+
+		d20plus.ut.log("Modifying character & handout editor templates");
+		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
+		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
+
 		d20plus.ut.addAllCss();
 		if (window.is_gm) d20plus.engine.enhancePageSelector();
         d20plus.js.addScripts(d20plus.onScriptLoad);
@@ -45,11 +50,15 @@ const betteR20Core = function () {
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
+			d20plus.art.initRepoBrowser();
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}
 		d20plus.engine.enhancePathWidths();
 		d20plus.ut.disable3dDice();
+		d20plus.engine.addLayers();
+		d20plus.engine.addWeather();
+		d20plus.ui.addQuickUI();
 		d20plus.ut.log("All systems operational");
 		d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
 	};

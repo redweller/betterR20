@@ -320,7 +320,7 @@ function d20plusImporter () {
 		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max(...character.senses.match(/\d+/g));
 		var lightmin = 0;
 		if (character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
-		const nameSuffix = d20plus.cfg.getCfgVal("token", "namesuffix");
+		const nameSuffix = d20plus.cfg.get("token", "namesuffix");
 		var defaulttoken = {
 			represents: character.id,
 			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
@@ -328,7 +328,7 @@ function d20plusImporter () {
 			width: 70 * tokensize,
 			height: 70 * tokensize
 		};
-		if (!d20plus.cfg.getCfgVal("import", "skipSenses")) {
+		if (!d20plus.cfg.get("import", "skipSenses")) {
 			defaulttoken.light_hassight = true;
 			if (lightradius != null) {
 				defaulttoken.light_radius = lightradius;
@@ -341,7 +341,7 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.addAction = function (character, name, text, index) {
-		if (d20plus.cfg.getCfgVal("token", "tokenactions")) {
+		if (d20plus.cfg.get("token", "tokenactions")) {
 			character.abilities.create({
 				name: index + ": " + name,
 				istokenaction: true,
@@ -547,7 +547,7 @@ function d20plusImporter () {
 		const never = "{{normal=1}} {{r2=[[0d20";
 		const always = "{{always=1}} {{r2=[[@{d20}";
 		const query = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[@{d20}|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[@{d20}}";
-		const desired = d20plus.cfg.getCfgVal("import", "advantagemode");
+		const desired = d20plus.cfg.get("import", "advantagemode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default Advantage)":
@@ -570,7 +570,7 @@ function d20plusImporter () {
 		// advantagetoggle
 		const advantage = "{{query=1}} {{advantage=1}} {{r2=[[@{d20}";
 		const disadvantage = "{{query=1}} {{disadvantage=1}} {{r2=[[@{d20}";
-		const desired = d20plus.cfg.getCfgVal("import", "advantagemode");
+		const desired = d20plus.cfg.get("import", "advantagemode");
 		const neither = "";
 		if (desired) {
 			switch (desired) {
@@ -595,7 +595,7 @@ function d20plusImporter () {
 		const never = " ";
 		const always = "/w gm ";
 		const query = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-		const desired = d20plus.cfg.getCfgVal("import", "whispermode");
+		const desired = d20plus.cfg.get("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -617,7 +617,7 @@ function d20plusImporter () {
 		// whispertoggle
 		const gm = "/w gm ";
 		const pblic = " ";
-		const desired = d20plus.cfg.getCfgVal("import", "whispermode");
+		const desired = d20plus.cfg.get("import", "whispermode");
 		if (desired) {
 			switch (desired) {
 				case "Toggle (Default GM)":
@@ -640,7 +640,7 @@ function d20plusImporter () {
 		// dtype
 		const on = "full";
 		const off = "pick";
-		const desired = d20plus.cfg.getCfgVal("import", "damagemode");
+		const desired = d20plus.cfg.get("import", "damagemode");
 		if (desired) {
 			switch (desired) {
 				case "Auto Roll":
@@ -835,21 +835,32 @@ function d20plusImporter () {
 			const doImport = (importQueue) => {
 				const $stsName = $("#import-name");
 				const $stsRemain = $("#import-remaining");
+				const $title = $stsName.parent().parent().find("span.ui-dialog-title");
+				$title.text("Importing");
+
 				let remaining = importQueue.length;
+
 				let interval;
 				if (dataType === "monster" || dataType === "object") {
-					interval = d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter");
+					interval = d20plus.cfg.get("import", "importIntervalCharacter") || d20plus.cfg.getDefault("import", "importIntervalCharacter");
 				} else {
-					interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
+					interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 				}
 
 				let cancelWorker = false;
 				const $btnCancel = $(`#importcancel`);
-				$btnCancel.off("click");
+
+				$btnCancel.off();
 				$btnCancel.on("click", () => {
-					handleWorkerComplete();
 					cancelWorker = true;
+					handleWorkerComplete();
 				});
+
+				const $remainingText = $("#import-remaining-text");
+				$btnCancel.removeClass("btn-success");
+				$btnCancel.text("Cancel");
+
+				$remainingText.text("remaining");
 
 				// start worker to process list
 				$("#d20plus-import").dialog("open");
@@ -861,7 +872,7 @@ function d20plusImporter () {
 					workerFn();
 				}, interval);
 
-				function workerFn () {
+				function workerFn() {
 					if (!importQueue.length) {
 						handleWorkerComplete();
 						return;
@@ -892,17 +903,23 @@ function d20plusImporter () {
 					}
 				}
 
-				function handleWorkerComplete () {
+				function handleWorkerComplete() {
 					if (worker) clearInterval(worker);
+
 					if (cancelWorker) {
-						$stsName.text("Import cancelled");
+						$title.text("Import cancelled");
+						$stsName.text("");
 						if (~$stsRemain.text().indexOf("(cancelled)")) $stsRemain.text(`${$stsRemain.text()} (cancelled)`);
 						d20plus.ut.log(`Import cancelled`);
 						setTimeout(() => {
 							d20plus.bindDropLocations();
 						}, 250);
 					} else {
-						$stsName.text("Import complete");
+						$title.text("Import complete");
+						$stsName.text("");
+						$btnCancel.addClass("btn-success");
+						$btnCancel.prop("title", "");
+
 						$stsRemain.text("0");
 						d20plus.ut.log(`Import complete`);
 						setTimeout(() => {
@@ -910,6 +927,13 @@ function d20plusImporter () {
 						}, 250);
 						if (options.callback) options.callback();
 					}
+
+					$btnCancel.off();
+					$btnCancel.on("click", () => $btnCancel.closest('.ui-dialog-content').dialog('close'));
+
+					$btnCancel.first().text("OK");
+					$remainingText.empty();
+					$stsRemain.empty();
 				}
 			};
 

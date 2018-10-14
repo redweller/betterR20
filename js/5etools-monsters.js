@@ -26,10 +26,11 @@ function d20plusMonsters () {
 					<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
 				
 					<div style="margin-top: 10px;">
-						<span class="col-4 ib"><b>Name</b></span>				
-						<span class="col-2 ib"><b>Source</b></span>				
+						<span class="col-3 ib"><b>Name</b></span>				
+						<span class="col-1 ib"><b>Source</b></span>				
 						<span class="col-2 ib"><b>CR</b></span>				
-						<span class="col-3 ib"><b>Scale CR</b></span>				
+						<span class="col-2 ib"><b>Rename To</b></span>
+						<span class="col-3 ib"><b>Scale CR</b></span>								
 					</div>
 					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 				</div>
@@ -60,10 +61,11 @@ function d20plusMonsters () {
 		origImportQueue.forEach((m, i) => {
 			temp += `
 				<div>
-					<span class="name col-4 ib">${m.name}</span>
-					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-2 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
+					<span class="name col-3 ib">${m.name}</span>
+					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-1 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
 					<span class="cr col-2 ib">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
-					<span class="col-3 ib"><input class="target-cr" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
+					<span class="col-2 ib"><input class="target-rename" style="max-width: calc(100% - 18px);" placeholder="Rename To..."></span>
+					<span class="col-2 ib"><input class="target-cr" style="max-width: calc(100% - 18spx);" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
 					<span class="index" style="display: none;">${i}</span>
 				</div>
 			`;
@@ -88,6 +90,7 @@ function d20plusMonsters () {
 				const m = origImportQueue[ix];
 				const origCr = m.cr.cr || m.cr;
 				const $iptCr = $ele.find(`.target-cr`);
+				const rename = ($ele.find(`.target-rename`).val() || "").trim();
 				const crValRaw = $iptCr.val();
 				let crVal = crValRaw;
 				if (crVal && crVal.trim()) {
@@ -102,16 +105,20 @@ function d20plusMonsters () {
 						} else if (asNum !== Parser.crToNumber(origCr)) {
 							promises.push(ScaleCreature.scale(m, asNum).then(scaled => {
 								queueCopy[ix] = scaled;
+								if (rename) queueCopy[ix]._displayName = rename;
 								return Promise.resolve();
 							}));
 						} else {
+							if (rename) queueCopy[ix]._displayName = rename;
 							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
 						}
 					} else {
-						alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)}`)
+						alert(`Invalid CR: ${crValRaw} for creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)}`);
 						failed = true;
 						break;
 					}
+				} else {
+					if (rename) queueCopy[ix]._displayName = rename;
 				}
 			}
 
@@ -128,19 +135,37 @@ function d20plusMonsters () {
 		const url = $("#import-monster-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
-				d20plus.importer.showImportList(
-					"monster",
-					data.monster,
-					d20plus.monsters.handoutBuilder,
-					{
-						groupOptions: d20plus.monsters._groupOptions,
-						listItemBuilder: d20plus.monsters._listItemBuilder,
-						listIndex: d20plus.monsters._listCols,
-						listIndexConverter: d20plus.monsters._listIndexConverter,
-						nextStep: d20plus.monsters._doScale
-					}
-				);
+
+				const doShowList = () => {
+					d20plus.importer.addMeta(data._meta);
+					d20plus.importer.showImportList(
+						"monster",
+						data.monster,
+						d20plus.monsters.handoutBuilder,
+						{
+							groupOptions: d20plus.monsters._groupOptions,
+							listItemBuilder: d20plus.monsters._listItemBuilder,
+							listIndex: d20plus.monsters._listCols,
+							listIndexConverter: d20plus.monsters._listIndexConverter,
+							nextStep: d20plus.monsters._doScale
+						}
+					);
+				};
+
+				const dependencies = MiscUtil.getProperty(data, "_meta", "dependencies");
+				if (dependencies && dependencies.length) {
+					const dependencyUrls = dependencies.map(d => d20plus.monsters.formMonsterUrl(monsterDataUrls[d]));
+
+					Promise.all(dependencyUrls.map(url => DataUtil.loadJSON(url))).then(depDatas => {
+
+						const depList = depDatas.reduce((a, b) => ({monster: a.monster.concat(b.monster)}), ({monster: []})).monster;
+
+						const mergeFn = DataUtil.dependencyMergers[UrlUtil.PG_BESTIARY];
+						data.monster.forEach(it => mergeFn(depList, it));
+
+						doShowList();
+					});
+				} else doShowList();
 			});
 		}
 	};
@@ -425,7 +450,7 @@ function d20plusMonsters () {
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 
 							// add Tokenaction Macros
-							if (d20plus.cfg.getCfgVal("token", "tokenactionsSkillsSaves")) {
+							if (d20plus.cfg.get("token", "tokenactionsSkillsSaves")) {
 								character.abilities.create({
 									name: "Perception",
 									istokenaction: true,
@@ -517,7 +542,7 @@ function d20plusMonsters () {
 								});
 							}
 							if (data.spellcasting) { // Spellcasting import 2.0
-								const charInterval = d20plus.cfg.getCfgVal("import", "importIntervalCharacter") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalCharacter");
+								const charInterval = d20plus.cfg.get("import", "importIntervalCharacter") || d20plus.cfg.getDefault("import", "importIntervalCharacter");
 								const spAbilsDelayMs = Math.max(350, Math.floor(charInterval / 5));
 
 								// figure out the casting ability or spell DC
@@ -932,7 +957,7 @@ function d20plusMonsters () {
 
 										// build tokenaction
 										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
-										if (d20plus.cfg.getCfgVal("token", "tokenactionsSpells")) {
+										if (d20plus.cfg.get("token", "tokenactionsSpells")) {
 											character.abilities.create({
 												name: "Spells",
 												istokenaction: true,
@@ -950,7 +975,7 @@ function d20plusMonsters () {
 										current: d20plus.importer.getCleanText(renderer.renderEntry(v.name))
 									});
 
-									if (d20plus.cfg.getCfgVal("token", "tokenactionsTraits")) {
+									if (d20plus.cfg.get("token", "tokenactionsTraits")) {
 										const offsetIndex = data.spellcasting ? 1 + i : i;
 										character.abilities.create({
 											name: "Trait" + offsetIndex + ": " + v.name,
@@ -991,7 +1016,7 @@ function d20plusMonsters () {
 
 										const packedOthers = [];
 										others.forEach(it => {
-											const m = /^(\d+\.\s*[^.]+\s*)\.(.*)$/.exec(it);
+											const m = /^(\d+\.\s*[^.]+\s*)[.:](.*)$/.exec(it);
 											if (m) {
 												const partName = m[1].trim();
 												const text = m[2].trim();
@@ -1020,7 +1045,7 @@ function d20plusMonsters () {
 									});
 
 									// roll20 only supports a single reaction, so only use the first
-									if (d20plus.cfg.getCfgVal("token", "tokenactions") && i === 0) {
+									if (d20plus.cfg.get("token", "tokenactions") && i === 0) {
 										character.abilities.create({
 											name: "Reaction: " + v.name,
 											istokenaction: true,
@@ -1047,7 +1072,7 @@ function d20plusMonsters () {
 								$.each(data.legendary, function (i, v) {
 									var newRowId = d20plus.ut.generateRowId();
 
-									if (d20plus.cfg.getCfgVal("token", "tokenactions")) {
+									if (d20plus.cfg.get("token", "tokenactions")) {
 										tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
 									}
 
@@ -1173,7 +1198,7 @@ function d20plusMonsters () {
 										current: descriptionFlag
 									});
 								});
-								if (d20plus.cfg.getCfgVal("token", "tokenactions")) {
+								if (d20plus.cfg.get("token", "tokenactions")) {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
@@ -1183,7 +1208,7 @@ function d20plusMonsters () {
 							}
 
 							// set show/hide NPC names in rolls
-							if (d20plus.cfg.hasCfgVal("import", "showNpcNames") && !d20plus.cfg.getCfgVal("import", "showNpcNames")) {
+							if (d20plus.cfg.has("import", "showNpcNames") && !d20plus.cfg.get("import", "showNpcNames")) {
 								character.attribs.create({name: "npc_name_flag", current: 0});
 							}
 
@@ -1191,7 +1216,7 @@ function d20plusMonsters () {
 
 							if (renderFluff) {
 								setTimeout(() => {
-									const fluffAs = d20plus.cfg.getCfgVal("import", "importFluffAs") || d20plus.cfg.getCfgDefaultVal("import", "importFluffAs");
+									const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
 									let k = fluffAs === "Bio"? "bio" : "gmnotes";
 									character.updateBlobs({
 										[k]: Markdown.parse(renderFluff)

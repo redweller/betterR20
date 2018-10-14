@@ -1,6 +1,15 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.13.0";
+const SCRIPT_VERSION = "1.14.0";
+
+const matchString = `
+// @match        https://app.roll20.net/editor
+// @match        https://app.roll20.net/editor#*
+// @match        https://app.roll20.net/editor?*
+// @match        https://app.roll20.net/editor/
+// @match        https://app.roll20.net/editor/#*
+// @match        https://app.roll20.net/editor/?*
+`;
 
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
@@ -11,7 +20,7 @@ const HEADER_CORE = `// ==UserScript==
 // @downloadURL  https://get.5etools.com/script/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
-// @match        https://app.roll20.net/editor/
+${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start
 // ==/UserScript==
@@ -26,7 +35,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @downloadURL  https://get.5etools.com/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne
-// @match        https://app.roll20.net/editor/
+${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start
 // ==/UserScript==
@@ -51,8 +60,11 @@ const SCRIPTS = {
 			"base-jsload",
 			"base-qpi",
 			"base-util",
+			"base-jukebox",
+			"base-math",
 			"base-config",
 			"base-tool",
+			"base-tool-module",
 			"base-art",
 			"base-engine",
 			"base-journal",
@@ -73,8 +85,11 @@ const SCRIPTS = {
 			"base-jsload",
 			"base-qpi",
 			"base-util",
+			"base-jukebox",
+			"base-math",
 			"base-config",
 			"base-tool",
+			"base-tool-module",
 			"base-art",
 			"base-engine",
 			"base-journal",

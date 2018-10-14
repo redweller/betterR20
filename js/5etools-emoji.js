@@ -1198,12 +1198,16 @@ const betteR20Emoji = function () {
 		const tc = d20.textchat.$textarea;
 		$("#textchat-input").off("click", "button")
 		$("#textchat-input").on("click", "button", function () {
-			if (!window.is_gm || d20plus.cfg.getCfgVal("interface", "emoji")) {
+			if (d20plus.cfg.get("interface", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					const clean = m1.replace(/:/g, "");
 					return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
 				}));
 			}
+
+			// add custom commands
+			tc.val(tc.val().replace(/^\/ttms( |$)/, "/talktomyself$1"));
+
 			const toSend = $.trim(tc.val());
 			d20.textchat.doChatInput(toSend);
 			tc.val("").focus();

@@ -73,9 +73,11 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = (message) => {
+		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
 		d20plus.ut.sendHackerChat(`
-				${message} initialised.
+				${isStreamer ? "Script" : message} initialised.
 				${window.enhancementSuiteEnabled ? `<br><br>Roll20 Enhancement Suite detected.` : ""}
+				${isStreamer ? "" : `
 				<br>
 				<br>
 				Need help? Join our <a href="https://discord.gg/AzyBjtQ">Discord</a>.
@@ -85,15 +87,17 @@ function baseUtil () {
 				Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
 				<br>
 				<br>
-				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists. 
+				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.				
+				`} 
 				</span>
 			`);
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {
+		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
 		d20plus.ut.sendHackerChat(`
-				${message} initialising, please wait...<br><br>
-			`);
+			${isStreamer ? "Script" : message} initialising, please wait...<br><br>
+		`);
 	};
 
 	d20plus.ut.sendHackerChat = (message) => {
@@ -101,17 +105,22 @@ function baseUtil () {
 			who: "system",
 			type: "system",
 			content: `<span class="hacker-chat">
-					${message}
-				</span>`
+				${message}
+			</span>`
 		}));
 	};
 
 	d20plus.ut.addCSS = (sheet, selector, rules) => {
 		const index = sheet.cssRules.length;
-		if ("insertRule" in sheet) {
-			sheet.insertRule(selector + "{" + rules + "}", index);
-		} else if ("addRule" in sheet) {
-			sheet.addRule(selector, rules, index);
+		try {
+			if ("insertRule" in sheet) {
+				sheet.insertRule(selector + "{" + rules + "}", index);
+			} else if ("addRule" in sheet) {
+				sheet.addRule(selector, rules, index);
+			}
+		} catch (e) {
+			console.error(e);
+			console.error(`Selector was "${selector}"; rules were "${rules}"`)
 		}
 	};
 
@@ -251,37 +260,6 @@ function baseUtil () {
 			return foundTokenArr[0];
 		}
 		return null;
-	};
-
-	d20plus.math = {
-		/**
-		 * Normalize a 2d vector.
-		 * @param out Result storage
-		 * @param a Vector to normalise
-		 */
-		normalize (out, a) {
-			const x = a[0],
-				y = a[1];
-			let len = x*x + y*y;
-			if (len > 0) {
-				len = 1 / Math.sqrt(len);
-				out[0] = a[0] * len;
-				out[1] = a[1] * len;
-			}
-			return out;
-		},
-
-		/**
-		 * Scale a 2d vector.
-		 * @param out Resulst storage
-		 * @param a Vector to scale
-		 * @param b Value to scale by
-		 */
-		scale (out, a, b) {
-			out[0] = a[0] * b;
-			out[1] = a[1] * b;
-			return out;
-		}
 	};
 
 	d20plus.ut._BYTE_UNITS = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];

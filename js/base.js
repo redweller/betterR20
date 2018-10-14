@@ -62,6 +62,71 @@ const betteR20Base = function () {
 			"default": 1,
 			"_type": "float"
 		},
+		"quickLayerButtons": {
+			"name": "Add Quick Layer Buttons",
+			"default": true,
+			"_type": "boolean"
+		},
+		"quickInitButtons": {
+			"name": "Add Quick Initiative Sort Button",
+			"default": true,
+			"_type": "boolean"
+		},
+		"streamerChatTag": {
+			"name": "Streamer-Friendly Chat Tags",
+			"default": false,
+			"_type": "boolean"
+		},
+	});
+	addConfigOptions("weather", {
+		"_name": "Weather",
+		"weatherType1": {
+			"name": "Type",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["None", "Fog", "Rain", "Snow", "Waves", "Custom (see below)"]
+		},
+		"weatherTypeCustom1": {
+			"name": "Custom Image",
+			"_type": "String",
+			"_placeholder": "https://example.com/pic.png"
+		},
+		"weatherSpeed1": {
+			"name": "Weather Speed",
+			"default": 0.1,
+			"_type": "_slider",
+			"__sliderMin": 0.01,
+			"__sliderMax": 1,
+			"__sliderStep": 0.01
+		},
+		"weatherDir1": {
+			"name": "Direction",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["Northerly", "North-Easterly", "Easterly", "South-Easterly", "Southerly", "South-Westerly", "Westerly", "North-Westerly"]
+		},
+		"weatherIntensity1": {
+			"name": "Intensity",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["Normal", "Heavy"]
+		},
+		"weatherTint1": {
+			"name": "Tint",
+			"default": false,
+			"_type": "boolean"
+		},
+		"weatherTintColor1": {
+			"name": "Tint Color",
+			"default": "#4c566d",
+			"_type": "_color"
+		},
+		"weatherEffect1": {
+			"name": "Special Effects",
+			"default": "None",
+			"_type": "_enum",
+			"__values": ["None", "Lightning"]
+		},
 	});
 };
 

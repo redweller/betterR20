@@ -12,7 +12,7 @@ function baseUi () {
 		$body.append(d20plus.configEditorHTML);
 		if (window.is_gm) {
 			$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.artTabHtml);
-			$(`a#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
+			$(`#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
 
 			$body.append(d20plus.addArtHTML);
 			$body.append(d20plus.addArtMassAdderHTML);
@@ -67,6 +67,60 @@ function baseUi () {
 		$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
 		$("#button-manage-qpi").on(window.mousedowntype, qpi._openManager);
 		d20plus.tool.addTools();
+	};
+
+	d20plus.ui.addQuickUI = () => {
+		// add quick layer selection panel
+		const $ulBtns = $(`<div id="floatinglayerbar"><ul/></div>`)
+			.css({
+				width: 30,
+				position: "absolute",
+				left: 20,
+				top: 330,
+				border: "1px solid #666",
+				boxShadow: "1px 1px 3px #666",
+				zIndex: 10600,
+				backgroundColor: "rgba(255,255,255,0.80)"
+			})
+			.appendTo($(`body`)).find(`ul`);
+
+		const $wrpBtnsMain = $(`#floatingtoolbar`);
+		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
+		$(`<li class="choosemap"><span class="pictos" style="padding: 0 3px;">@</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
+		$(`<li class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
+		$(`<li class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
+		$(`<li class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
+		$(`<li class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
+
+		$("#editinglayer").on(clicktype, "li", function () {
+			$("#floatinglayerbar").removeClass("map")
+				.removeClass("objects")
+				.removeClass("gmlayer")
+				.removeClass("walls")
+				.removeClass("weather");
+			setTimeout(() => {
+				$("#floatinglayerbar").addClass(window.currentEditingLayer)
+			}, 1);
+		});
+
+		// add "desc sort" button to init tracker
+		const $initTracker = $(`#initiativewindow`);
+		const addInitSortBtn = () => {
+			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;">🠋</div>`).click(() => {
+				// this will throw a benign error if the settings dialog has never been opened
+				$("#initiativewindow_settings .sortlist_numericdesc").click();
+			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`));
+		};
+		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) {
+			addInitSortBtn();
+		} else {
+			d20.Campaign.initiativewindow.model.on("change", (e) => {
+				if (d20.Campaign.initiativewindow.model.attributes.initiativepage && $(`#init-quick-sort-desc`).length === 0) {
+					addInitSortBtn();
+					d20plus.cfg.baseHandleConfigChange();
+				}
+			})
+		}
 	};
 }
 

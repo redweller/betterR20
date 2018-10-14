@@ -283,7 +283,7 @@ const betteR205etools = function () {
 			"name": "Import Creature Fluff As...",
 			"default": "Bio",
 			"_type": "_enum",
-			"_values": ["Bio", "GM Notes"]
+			"__values": ["Bio", "GM Notes"]
 		},
 		"whispermode": {
 			"name": "Sheet Whisper Mode on Import",
@@ -447,7 +447,7 @@ const betteR205etools = function () {
 	d20plus.handleConfigChange = function (isSyncingPlayer) {
 		if (!isSyncingPlayer) d20plus.ut.log("Applying config");
 		if (window.is_gm) {
-			d20plus.setInitiativeShrink(d20plus.cfg.getCfgVal("interface", "minifyTracker"));
+			d20plus.setInitiativeShrink(d20plus.cfg.get("interface", "minifyTracker"));
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
 			d20plus.updateDifficulty();
 			if (d20plus.art.refreshList) d20plus.art.refreshList();
@@ -457,9 +457,9 @@ const betteR205etools = function () {
 // get the user config'd token HP bar
 	d20plus.getCfgHpBarNumber = function () {
 		const bars = [
-			d20plus.cfg.getCfgVal("token", "bar1"),
-			d20plus.cfg.getCfgVal("token", "bar2"),
-			d20plus.cfg.getCfgVal("token", "bar3")
+			d20plus.cfg.get("token", "bar1"),
+			d20plus.cfg.get("token", "bar2"),
+			d20plus.cfg.get("token", "bar3")
 		];
 		return bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
 	};
@@ -537,6 +537,7 @@ const betteR205etools = function () {
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
+			d20plus.art.initRepoBrowser();
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}
@@ -551,6 +552,9 @@ const betteR205etools = function () {
 		d20plus.chat.enhanceChat();
 		d20plus.engine.enhancePathWidths();
 		d20plus.ut.disable3dDice();
+		d20plus.engine.addLayers();
+		d20plus.engine.addWeather();
+		d20plus.ui.addQuickUI();
 		d20plus.ut.log("All systems operational");
 		d20plus.ut.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};
@@ -571,29 +575,29 @@ const betteR205etools = function () {
 						var barsList = ["bar1", "bar2", "bar3"];
 						$.each(barsList, (i, barName) => {
 							// PC config keys are suffixed "_pc"
-							const confVal = d20plus.cfg.getCfgVal("token", `${barName}${isNPC ? "" : "_pc"}`);
+							const confVal = d20plus.cfg.get("token", `${barName}${isNPC ? "" : "_pc"}`);
 							if (confVal) {
 								const charAttr = character.attribs.find(a => a.get("name").toLowerCase() == confVal);
 								if (charAttr) {
 									e.attributes[barName + "_value"] = charAttr.get("current");
-									if (d20plus.cfg.hasCfgVal("token", barName + "_max")) {
-										if (d20plus.cfg.getCfgVal("token", barName + "_max") && !isNPC && confVal === "hp") { // player HP is current; need to set max to max
+									if (d20plus.cfg.has("token", barName + "_max")) {
+										if (d20plus.cfg.get("token", barName + "_max") && !isNPC && confVal === "hp") { // player HP is current; need to set max to max
 											e.attributes[barName + "_max"] = charAttr.get("max");
 										} else {
 											if (isNPC) {
 												// TODO: Setting a value to empty/null does not overwrite existing values on the token.
 												// setting a specific value does. Must figure this out.
-												e.attributes[barName + "_max"] = d20plus.cfg.getCfgVal("token", barName + "_max") ? charAttr.get("current") : "";
+												e.attributes[barName + "_max"] = d20plus.cfg.get("token", barName + "_max") ? charAttr.get("current") : "";
 											} else {
 												// preserve default token for player tokens
-												if (d20plus.cfg.getCfgVal("token", barName + "_max")) {
+												if (d20plus.cfg.get("token", barName + "_max")) {
 													e.attributes[barName + "_max"] = charAttr.get("current");
 												}
 											}
 										}
 									}
-									if (d20plus.cfg.hasCfgVal("token", barName + "_reveal")) {
-										e.attributes["showplayers_" + barName] = d20plus.cfg.getCfgVal("token", barName + "_reveal");
+									if (d20plus.cfg.has("token", barName + "_reveal")) {
+										e.attributes["showplayers_" + barName] = d20plus.cfg.get("token", barName + "_reveal");
 									}
 								}
 							}
@@ -602,16 +606,16 @@ const betteR205etools = function () {
 						// NPC-only settings
 						if (isNPC) {
 							// Set Nametag
-							if (d20plus.cfg.hasCfgVal("token", "name")) {
-								e.attributes["showname"] = d20plus.cfg.getCfgVal("token", "name");
-								if (d20plus.cfg.hasCfgVal("token", "name_reveal")) {
-									e.attributes["showplayers_name"] = d20plus.cfg.getCfgVal("token", "name_reveal");
+							if (d20plus.cfg.has("token", "name")) {
+								e.attributes["showname"] = d20plus.cfg.get("token", "name");
+								if (d20plus.cfg.has("token", "name_reveal")) {
+									e.attributes["showplayers_name"] = d20plus.cfg.get("token", "name_reveal");
 								}
 							}
 
 							// Roll HP
 							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
-							if ((d20plus.cfg.getCfgVal("token", "rollHP") || d20plus.cfg.getCfgVal("token", "maximiseHp")) && d20plus.cfg.getCfgKey("token", "npc_hpbase")) {
+							if ((d20plus.cfg.get("token", "rollHP") || d20plus.cfg.get("token", "maximiseHp")) && d20plus.cfg.getCfgKey("token", "npc_hpbase")) {
 								var hpf = character.attribs.find(function (a) {
 									return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
 								});
@@ -619,7 +623,7 @@ const betteR205etools = function () {
 
 								if (hpf && hpf.get("current")) {
 									var hpformula = hpf.get("current");
-									if (d20plus.cfg.getCfgVal("token", "maximiseHp")) {
+									if (d20plus.cfg.get("token", "maximiseHp")) {
 										const maxSum = hpformula.replace("d", "*");
 										try {
 											const max = eval(maxSum);
@@ -1046,14 +1050,18 @@ const betteR205etools = function () {
 	};
 
 	d20plus.updateDifficulty = function () {
-		if (!$("div#initiativewindow").parent().is("body")) {
-			var $span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
-			var $btnpane = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane");
+		const $initWindow = $("div#initiativewindow");
+		if (!$initWindow.parent().is("body")) {
+			const $btnPane = $initWindow.parent().find(".ui-dialog-buttonpane");
+
+			let $span = $btnPane.find("span.difficulty");
+
 			if (!$span.length) {
-				$btnpane.prepend(d20plus.difficultyHtml);
-				$span = $("div#initiativewindow").parent().find(".ui-dialog-buttonpane > span.difficulty");
+				$btnPane.prepend(d20plus.difficultyHtml);
+				$span = $btnPane.find("span.difficulty");
 			}
-			if (d20plus.cfg.getCfgVal("interface", "showDifficulty")) {
+
+			if (d20plus.cfg.get("interface", "showDifficulty")) {
 				$span.text("Difficulty: " + d20plus.getDifficulty());
 				$span.show();
 			} else {
@@ -1200,26 +1208,26 @@ const betteR205etools = function () {
 			const renderer = new EntryRenderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 			const renderStack = [];
-			let feature;
+			let feature = {};
 			bg.entries.forEach(e => {
 				if (e.name && e.name.includes("Feature:")) {
 					feature = JSON.parse(JSON.stringify(e));
 					feature.name = feature.name.replace("Feature:", "").trim();
 				}
 			});
-			if (feature)
-				renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+			if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
-			const skills = bg.skillProficiencies ? bg.skillProficiencies.split(",").map(s => s.trim()) : [];
+			const skills = [];
+			EntryRenderer.background.getSkillSummary(bg.skillProficiencies, true, bg._fSkills = skills);
 
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
 
-			if (d20plus.sheet == "ogl") {
+			if (d20plus.sheet === "ogl") {
 				attrs.addOrUpdate("background", bg.name);
 
-				attrs.add(`repeating_traits_${fRowId}_name`, bg.name);
+				attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
 				attrs.add(`repeating_traits_${fRowId}_source`, "Background");
 				attrs.add(`repeating_traits_${fRowId}_source_type`, bg.name);
 				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
@@ -1230,7 +1238,7 @@ const betteR205etools = function () {
 				skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
 					attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
 				});
-			} else if (d20plus.sheet == "shaped") {
+			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
 				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
 				if (feature.text) {
@@ -1250,11 +1258,12 @@ const betteR205etools = function () {
 		}
 
 		function importRace (character, data) {
+			const renderer = new EntryRenderer();
+			renderer.setBaseUrl(BASE_SITE_URL);
+
 			const race = data.Vetoolscontent;
 
-			race.entries.forEach(e => {
-				const renderer = new EntryRenderer();
-				renderer.setBaseUrl(BASE_SITE_URL);
+			race.entries.filter(it => typeof it !== "string").forEach(e => {
 				const renderStack = [];
 				renderer.recursiveEntryRender({entries: e.entries}, renderStack);
 				e.text = d20plus.importer.getCleanText(renderStack.join(""));
@@ -1262,12 +1271,12 @@ const betteR205etools = function () {
 
 			const attrs = new CharacterAttributesProxy(character);
 
-			if (d20plus.sheet == "ogl") {
+			if (d20plus.sheet === "ogl") {
 				attrs.addOrUpdate(`race`, race.name);
 				attrs.addOrUpdate(`race_display`, race.name);
 				attrs.addOrUpdate(`speed`, Parser.getSpeedString(race));
 
-				race.entries.forEach(e => {
+				race.entries.filter(it => it.text).forEach(e => {
 					const fRowId = d20plus.ut.generateRowId();
 					attrs.add(`repeating_traits_${fRowId}_name`, e.name);
 					attrs.add(`repeating_traits_${fRowId}_source`, "Race");
@@ -1275,16 +1284,16 @@ const betteR205etools = function () {
 					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 				});
-			} else if (d20plus.sheet == "shaped") {
+			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("race", race.name);
 				attrs.addOrUpdate("size", Parser.sizeAbvToFull(race.size).toUpperCase());
 				attrs.addOrUpdate("speed_string", Parser.getSpeedString(race));
 
 				if (race.speed instanceof Object) {
-					for (locomotion of ["walk", "burrow", "climb", "fly", "swim"]) {
+					for (const locomotion of ["walk", "burrow", "climb", "fly", "swim"]) {
 						if (race.speed[locomotion]) {
-							const attrName = locomotion == "walk" ? "speed" : `speed_${locomotion}`;
-							if (locomotion != "walk") {
+							const attrName = locomotion === "walk" ? "speed" : `speed_${locomotion}`;
+							if (locomotion !== "walk") {
 								attrs.addOrUpdate("other_speeds", "1");
 							}
 							// note: this doesn't cover hover
@@ -1296,13 +1305,13 @@ const betteR205etools = function () {
 				}
 
 				// really there seems to be only darkvision for PCs
-				for (vision of ["darkvision", "blindsight", "tremorsense", "truesight"]) {
+				for (const vision of ["darkvision", "blindsight", "tremorsense", "truesight"]) {
 					if (race[vision]) {
 						attrs.addOrUpdate(vision, race[vision]);
 					}
 				}
 
-				race.entries.forEach(e => {
+				race.entries.filter(it => it.text).forEach(e => {
 					const fRowId = d20plus.ut.generateRowId();
 					attrs.add(`repeating_racialtrait_${fRowId}_name`, e.name);
 					attrs.add(`repeating_racialtrait_${fRowId}_content`, e.text);
@@ -2002,7 +2011,7 @@ const betteR205etools = function () {
 						}
 					});
 
-					const interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
+					const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 					queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
 						setTimeout(() => {
 							d20plus.importer.doFakeDrop(event, character, item, null);
@@ -2261,9 +2270,9 @@ const betteR205etools = function () {
 			$(".tracker-header-extra-columns").empty();
 
 			const cols = [
-				d20plus.cfg.getCfgVal("interface", "trackerCol1"),
-				d20plus.cfg.getCfgVal("interface", "trackerCol2"),
-				d20plus.cfg.getCfgVal("interface", "trackerCol3")
+				d20plus.cfg.get("interface", "trackerCol1"),
+				d20plus.cfg.get("interface", "trackerCol2"),
+				d20plus.cfg.get("interface", "trackerCol3")
 			];
 
 			const headerStack = [];
@@ -2334,10 +2343,10 @@ const betteR205etools = function () {
 				}
 			});
 
-			console.log("use custom tracker val was ", d20plus.cfg.getCfgVal("interface", "customTracker"))
-			if (d20plus.cfg.getCfgVal("interface", "customTracker")) {
+			console.log("use custom tracker val was ", d20plus.cfg.get("interface", "customTracker"))
+			if (d20plus.cfg.get("interface", "customTracker")) {
 				$(`.init-header`).show();
-				if (d20plus.cfg.getCfgVal("interface", "trackerSheetButton")) {
+				if (d20plus.cfg.get("interface", "trackerSheetButton")) {
 					$(`.init-sheet-header`).show();
 				} else {
 					$(`.init-sheet-header`).hide();
@@ -2394,11 +2403,11 @@ const betteR205etools = function () {
 			return results;
 		};
 
-		const getTargetWidth = () => d20plus.cfg.getCfgVal("interface", "minifyTracker") ? 250 : 350;
+		const getTargetWidth = () => d20plus.cfg.get("interface", "minifyTracker") ? 250 : 350;
 		// wider tracker
 		const cachedDialog = d20.Campaign.initiativewindow.$el.dialog;
 		d20.Campaign.initiativewindow.$el.dialog = (...args) => {
-			const widen = d20plus.cfg.getCfgVal("interface", "customTracker");
+			const widen = d20plus.cfg.get("interface", "customTracker");
 			if (widen && args[0] && args[0].width) {
 				args[0].width = getTargetWidth();
 			}
@@ -2563,7 +2572,7 @@ const betteR205etools = function () {
 			htmlcontent: "",
 			data: r20Data
 		};
-		if (data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
+		if (data.components && data.components.m && data.components.m.text) r20json.data["Material"] = data.components.m.text;
 		if (data.meta) {
 			if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
 		}
@@ -2604,9 +2613,9 @@ const betteR205etools = function () {
 // parse spell components
 	function parseComponents (components) {
 		const out = [];
-		if (components.v) out.push("V");
-		if (components.s) out.push("S");
-		if (components.m) out.push("M");
+		if (components && components.v) out.push("V");
+		if (components && components.s) out.push("S");
+		if (components && components.m) out.push("M");
 		return out.join(" ");
 	}
 
@@ -2685,7 +2694,7 @@ const betteR205etools = function () {
 
 								p._r20SubItemData = out;
 							}
-						})
+						});
 
 						d20plus.importer.showImportList(
 							"item",
@@ -2774,7 +2783,7 @@ const betteR205etools = function () {
 
 	d20plus.items._getHandoutData = function (data) {
 		function removeDiceTags (str) {
-			return str ? str.replace(/{@dice /g, "").replace(/}/g, "") : str;
+			return str ? str.replace(/{@(?:dice|damage) ([^}]+)}/g, "$1") : str;
 		}
 
 		var notecontents = "";
@@ -3307,7 +3316,7 @@ const betteR205etools = function () {
 					if (data.entries != null) {
 						character.attribs.create({name: "repeating_npctrait_0_name", current: name});
 						character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
-						if (d20plus.cfg.getCfgVal("token", "tokenactionsTraits")) {
+						if (d20plus.cfg.get("token", "tokenactionsTraits")) {
 							character.abilities.create({
 								name: "Information: " + name,
 								istokenaction: true,
@@ -3333,7 +3342,7 @@ const betteR205etools = function () {
 						const bio = renderer.renderEntry({type: "entries", entries: data.entries});
 
 						setTimeout(() => {
-							const fluffAs = d20plus.cfg.getCfgVal("import", "importFluffAs") || d20plus.cfg.getCfgDefaultVal("import", "importFluffAs");
+							const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
 							let k = fluffAs === "Bio"? "bio" : "gmnotes";
 							character.updateBlobs({
 								[k]: Markdown.parse(bio)
@@ -3883,7 +3892,7 @@ const betteR205etools = function () {
 
 				const $stsName = $("#import-name");
 				const $stsRemain = $("#import-remaining");
-				const interval = d20plus.cfg.getCfgVal("import", "importIntervalHandout") || d20plus.cfg.getCfgDefaultVal("import", "importIntervalHandout");
+				const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 
 				////////////////////////////////////////////////////////////////////////////////////////////////////////
 				EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
@@ -4137,16 +4146,16 @@ const betteR205etools = function () {
 	</p>
 	</div>`;
 
-	d20plus.importDialogHtml = `<div id="d20plus-import" title="Importing...">
+	d20plus.importDialogHtml = `<div id="d20plus-import" title="Importing">
 <p>
 <h3 id="import-name"></h3>
 </p>
-<span id="import-remaining"></span> remaining
+<b id="import-remaining"></b> <span id="import-remaining-text">remaining</span>
 <p>
-Errors: <span id="import-errors">0</span>
+Errors: <b id="import-errors">0</b>
 </p>
 <p>
-<button type="button" id="importcancel" alt="Cancel" title="Cancel Import" class="btn" role="button" aria-disabled="false">
+<button style="width: 90%" type="button" id="importcancel" alt="Cancel" title="Cancel Import" class="btn btn-danger" role="button" aria-disabled="false">
 	<span>Cancel</span>
 </button>
 </p>
@@ -4954,7 +4963,8 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 								console.log("Assembling creature list");
 							});
-						}
+						},
+						(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
 					);
 				}
 			}
@@ -4973,7 +4983,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 	<li class='token <$ if (this.layer === "gmlayer") { $>gmlayer<$ } $>' data-tokenid='<$!this.id$>' data-currentindex='<$!this.idx$>'>
 		<$ var token = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.get(this.id); $>
 		<$ var char = (token) ? token.character : null; $>
-		<$ if (d20plus.cfg.getCfgVal("interface", "customTracker") && d20plus.cfg.getCfgVal("interface", "trackerSheetButton")) { $>
+		<$ if (d20plus.cfg.get("interface", "customTracker") && d20plus.cfg.get("interface", "trackerSheetButton")) { $>
 			<span alt='Sheet Macro' title='Sheet Macro' class='initmacro'>
 				<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
 				<span class='ui-button-text'>N</span>
