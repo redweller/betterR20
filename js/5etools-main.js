@@ -2570,7 +2570,7 @@ const betteR205etools = function () {
 			htmlcontent: "",
 			data: r20Data
 		};
-		if (data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
+		if (data.components && data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
 		if (data.meta) {
 			if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
 		}
@@ -2611,9 +2611,9 @@ const betteR205etools = function () {
 // parse spell components
 	function parseComponents (components) {
 		const out = [];
-		if (components.v) out.push("V");
-		if (components.s) out.push("S");
-		if (components.m) out.push("M");
+		if (components && components.v) out.push("V");
+		if (components && components.s) out.push("S");
+		if (components && components.m) out.push("M");
 		return out.join(" ");
 	}
 
