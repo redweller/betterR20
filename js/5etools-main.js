@@ -2572,7 +2572,7 @@ const betteR205etools = function () {
 			htmlcontent: "",
 			data: r20Data
 		};
-		if (data.components && data.components.m && data.components.m.length) r20json.data["Material"] = data.components.m;
+		if (data.components && data.components.m && data.components.m.text) r20json.data["Material"] = data.components.m.text;
 		if (data.meta) {
 			if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
 		}
