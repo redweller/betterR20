@@ -545,6 +545,7 @@ function baseConfig() {
 			handleProp("weatherTypeCustom1");
 			handleProp("weatherSpeed1");
 			handleProp("weatherDir1");
+			handleProp("weatherDirCustom1");
 			handleProp("weatherIntensity1");
 			handleProp("weatherTint1");
 			handleProp("weatherTintColor1");

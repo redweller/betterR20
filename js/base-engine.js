@@ -1767,6 +1767,8 @@ function d20plusEngine () {
 				case "South-Westerly": return 1.5 * Math.PI;
 				case "Westerly": return 1.75 * Math.PI;
 				case "North-Westerly": return 0;
+				case "Custom (see below)":
+					return Number(Campaign.attributes.bR20cfg_weatherDirCustom1 || 0) * Math.PI / 180;
 				default: return 0;
 			}
 		}
