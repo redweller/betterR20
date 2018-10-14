@@ -1728,10 +1728,17 @@ function d20plusEngine () {
 					IMAGES["Custom"] = null;
 					return IMAGES[imageName];
 				case "Custom (see below)":
-					if (!IMAGES["Custom"] || (IMAGES["Custom"].src !== Campaign.attributes.bR20cfg_weatherTypeCustom1)) {
+					if (!IMAGES["Custom"] || (
+						(IMAGES["Custom"].src !== Campaign.attributes.bR20cfg_weatherTypeCustom1 && !IMAGES["Custom"]._errorSrc) ||
+						(IMAGES["Custom"]._errorSrc && IMAGES["Custom"]._errorSrc !== Campaign.attributes.bR20cfg_weatherTypeCustom1))
+					) {
 						IMAGES["Custom"] = new Image;
+						IMAGES["Custom"]._errorSrc = null;
 						IMAGES["Custom"].onerror = () => {
-							alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
+							if (!IMAGES["Custom"]._errorSrc) {
+								IMAGES["Custom"]._errorSrc = Campaign.attributes.bR20cfg_weatherTypeCustom1;
+								alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
+							}
 							IMAGES["Custom"].src = IMAGES["Rain"].src;
 						}
 						IMAGES["Custom"].src = Campaign.attributes.bR20cfg_weatherTypeCustom1;
