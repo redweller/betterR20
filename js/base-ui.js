@@ -108,7 +108,7 @@ function baseUi () {
 		// add "desc sort" button to init tracker
 		const $initTracker = $(`#initiativewindow`);
 		const addInitSortBtn = () => {
-			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;">🠋</div>`).click(() => {
+			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;"><span class="pictos">}</span></div>`).click(() => {
 				// this will throw a benign error if the settings dialog has never been opened
 				$("#initiativewindow_settings .sortlist_numericdesc").click();
 			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`));
