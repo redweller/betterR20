@@ -1684,10 +1684,21 @@ function d20plusEngine () {
 		}
 
 		const $wrpEditor = $("#editor-wrapper");
+		// cache lighting canvas
+		const $canLighting = $(`#lightingcanvas`);
+		const cvLight = $canLighting[0];
+		const ctxLight = cvLight.getContext("2d");
 
 		// add custom canvas
 		const $wrpCanvas = $wrpEditor.find(".canvas-container");
-		const $canvasWeather = $("<canvas id='Vet-canvas-weather' style='position: absolute; z-index: 6; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
+
+		// make buffer canvas
+		const $canBuf = $("<canvas style='position: absolute; z-index: -100; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
+		const cvBuf = $canBuf[0];
+		const ctxBuf = cvBuf.getContext("2d");
+
+		// make weather canvas
+		const $canvasWeather = $("<canvas id='Vet-canvas-weather' style='position: absolute; z-index: 2; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
 		const cv = $canvasWeather[0];
 		d20.engine.weathercanvas = cv;
 
@@ -1696,6 +1707,10 @@ function d20plusEngine () {
 		d20.engine.setCanvasSize = function (e, n) {
 			cv.width = e;
 			cv.height = n;
+
+			cvBuf.width = e;
+			cvBuf.height = n;
+
 			cachedSetCanvasSize(e, n);
 		};
 
@@ -1828,12 +1843,10 @@ function d20plusEngine () {
 						!(scaledW <= 0 || scaledH <= 0) // sanity check
 					) {
 						// mask weather
-						const doMaskStep = (isClip) => {
-							if (!isClip) {
-								//// change drawing mode
-								ctx.globalCompositeOperation = "destination-out";
-								ctx.fillStyle = "#ffffffff";
-							}
+						const doMaskStep = () => {
+							ctxBuf.clearRect(0, 0, cvBuf.width, cvBuf.height);
+
+							ctxBuf.fillStyle = "#ffffffff";
 
 							const objectLen = d20.engine.canvas._objects.length;
 							for (let i = 0; i < objectLen; ++i) {
@@ -1847,7 +1860,7 @@ function d20plusEngine () {
 									const center = [ofX(obj.left), ofY(obj.top)];
 									d20plus.math.vec2.scale(center, center, d20.engine.canvasZoom);
 
-									ctx.beginPath();
+									ctxBuf.beginPath();
 									obj.path.forEach(opp => {
 										const [op, x, y] = opp;
 										switch (op) {
@@ -1856,7 +1869,7 @@ function d20plusEngine () {
 												d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
 												if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
 
-												ctx.moveTo(vec[0], vec[1]);
+												ctxBuf.moveTo(vec[0], vec[1]);
 												break;
 											}
 											case "L": {
@@ -1864,7 +1877,7 @@ function d20plusEngine () {
 												d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
 												if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
 
-												ctx.lineTo(vec[0], vec[1]);
+												ctxBuf.lineTo(vec[0], vec[1]);
 												break;
 											}
 											default:
@@ -1874,19 +1887,20 @@ function d20plusEngine () {
 												}
 										}
 									});
-									if (!isClip) ctx.fill();
-									ctx.closePath();
+									ctxBuf.fill();
+									ctxBuf.closePath();
 								}
 							}
 
-							if (isClip) ctx.clip();
-							else {
-								//// reset drawing mode
-								ctx.globalCompositeOperation = "source-over";
-							}
+							// draw final weather mask
+							//// change drawing mode
+							ctx.globalCompositeOperation = "destination-out";
+							ctx.drawImage(cvBuf, 0, 0);
+							//// reset drawing mode
+							ctx.globalCompositeOperation = "source-over";
 						};
 
-						if (clipMode === "INCLUDE") doMaskStep(true);
+						// if (clipMode === "INCLUDE") doMaskStep(true);
 
 						const speed = Campaign.attributes.bR20cfg_weatherSpeed1 || 0.1;
 						const speedFactor = speed * d20.engine.canvasZoom;
