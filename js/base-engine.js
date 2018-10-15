@@ -1666,12 +1666,14 @@ function d20plusEngine () {
 			"Rain": new Image,
 			"Snow": new Image,
 			"Fog": new Image,
-			"Waves": new Image
+			"Waves": new Image,
+			"Ripples": new Image
 		};
 		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
 		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
 		IMAGES.Fog.src = "https://i.imgur.com/SRsUpHW.png";
 		IMAGES.Waves.src = "https://i.imgur.com/iYEzmvB.png";
+		IMAGES.Ripples.src = "https://i.imgur.com/fFCr0yx.png";
 		const SFX = {
 			lightning: []
 		};
@@ -1746,6 +1748,7 @@ function d20plusEngine () {
 				case "Snow":
 				case "Fog":
 				case "Waves":
+				case "Ripples":
 					IMAGES["Custom"] = null;
 					return IMAGES[imageName];
 				case "Custom (see below)":
