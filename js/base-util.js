@@ -119,8 +119,10 @@ function baseUtil () {
 				sheet.addRule(selector, rules, index);
 			}
 		} catch (e) {
-			console.error(e);
-			console.error(`Selector was "${selector}"; rules were "${rules}"`)
+			if ((!selector && selector.startsWith("-webkit-"))) {
+				console.error(e);
+				console.error(`Selector was "${selector}"; rules were "${rules}"`);
+			}
 		}
 	};
 
