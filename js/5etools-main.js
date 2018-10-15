@@ -4792,7 +4792,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				<select id="wildform-character">
 					<option value="" disabled selected>Select Character</option>
 				</select>
-				<button class="btn">Create Character Sheet</button>
+				<button class="btn">Create Character Sheets</button>
 				</div>
 				`,
 			dialogFn: () => {
@@ -4854,7 +4854,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 								tmp += `
 								<label class="import-cb-label" data-listid="${i}">
-								<input type="radio" name="wildform-monster">
+								<input type="checkbox">
 								<span class="name col-4">${m.name}</span>
 								<span class="type col-4">TYP[${m.__pType.uppercaseFirst()}]</span>
 								<span class="cr col-2">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
@@ -4872,15 +4872,21 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 							d20plus.importer.addListFilter($fltr, toShow, tokenList, d20plus.monsters._listIndexConverter);
 
 							$win.find(`button`).on("click", () => {
-								let sel = toShow[$(tokenList.items.find(it => $(it.elm).find(`input`).prop("checked")).elm).attr("data-listid")];
-								sel = $.extend(true, {}, sel);
+								const allSel = tokenList.items
+									.filter(it => $(it.elm).find(`input`).prop("checked"))
+									.map(it => toShow[$(it.elm).attr("data-listid")]);
 
 								const character = $selChar.val();
-								if (!character) return;
+								if (!character) return alert("No character selected!");
 
 								const d20Character = d20.Campaign.characters.get(character);
+								if (!d20Character) return alert("Failed to get character data!");
 
-								if (tokenList && sel && d20Character) {
+								const getAttrib = (name) => d20Character.attribs.toJSON().find(x => x.name === name);
+
+								allSel.filter(it => it).forEach(sel => {
+									sel = $.extend(true, {}, sel);
+
 									sel.wis = (d20Character.attribs.toJSON().find(x => x.name === "wisdom")|| {}).current || 10;
 									sel.int = (d20Character.attribs.toJSON().find(x => x.name === "intelligence")|| {}).current || 10;
 									sel.cha = (d20Character.attribs.toJSON().find(x => x.name === "charisma")|| {}).current || 10;
@@ -4913,18 +4919,27 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									sel.save = sel.save || {};
 
 									for (const a in attribsSkills) {
-										const characterValue = d20Character.attribs.toJSON().find(x => x.name === a);
+										const characterValue = getAttrib(a);
 										if (characterValue) {
 											sel.skill[attribsSkills[a]] = Math.max(sel.skill[attribsSkills[a]] || 0, characterValue.current);
 										}
 									}
 
 									for (const a in attribsSaves) {
-										const characterValue = d20Character.attribs.toJSON().find(x => x.name === a);
+										const characterValue = getAttrib(a);
 										if (characterValue) {
 											sel.save[attribsSkills[a]] = Math.max(sel.save[attribsSkills[a]] || 0, characterValue.current);
 										}
 									}
+
+									(() => {
+										const attr = d20plus.sheet === "ogl" ? "passive_wisdom" : d20plus.sheet === "shaped" ? "perception" : "";
+										if (!attr) return;
+										const charAttr = getAttrib(attr);
+										if (!charAttr) return;
+										const passivePer = Number(charAttr.current || 0) + (d20plus.sheet === "shaped" ? 10 : 0);
+										sel.passive = passivePer;
+									})();
 
 									const doBuild = (result) => {
 										const options = {
@@ -4947,7 +4962,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 												});
 
 												$("a.ui-tabs-anchor[href='#journal']").trigger("click");
-												alert("Created character!");
 											},
 											charOptions: {
 												inplayerjournals: d20Character.attributes.inplayerjournals,
@@ -4958,11 +4972,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										d20plus.monsters.handoutBuilder(sel, true, options, `Wild Forms - ${d20Character.attributes.name}`);
 									};
 
-									if (sel.hp.formula) d20plus.ut.randomRoll(sel.hp.formula, result => doBuild(result))
+									if (sel.hp.formula) d20plus.ut.randomRoll(sel.hp.formula, result => doBuild(result));
 									else doBuild({total: 0});
-								}
-
-								console.log("Assembling creature list");
+								});
 							});
 						},
 						(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
