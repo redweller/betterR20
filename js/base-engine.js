@@ -1791,6 +1791,17 @@ function d20plusEngine () {
 			}
 		}
 
+		let oscillateMode = null;
+		function isOscillating () {
+			const val = Campaign.attributes.bR20cfg_weatherOscillate1;
+			return !!val;
+		}
+
+		function getOscillationThresholdFactor () {
+			const val = Campaign.attributes.bR20cfg_weatherOscillateThreshold1 || 1;
+			return val;
+		}
+
 		function getIntensity () {
 			const tint = Campaign.attributes.bR20cfg_weatherIntensity1;
 			switch (tint) {
@@ -1949,8 +1960,36 @@ function d20plusEngine () {
 						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
 
 						// calculate animation values
-						accum += deltaTime;
-						if (accum >= maxAccum) accum -= maxAccum;
+						(() => {
+							if (isOscillating()) {
+								const oscThreshFactor = getOscillationThresholdFactor();
+
+								if (oscillateMode == null) {
+									oscillateMode = 1;
+									accum += deltaTime;
+									if (accum >= maxAccum * oscThreshFactor) accum -= maxAccum;
+								} else {
+									if (oscillateMode === 1) {
+										accum += deltaTime;
+										if (accum >= maxAccum * oscThreshFactor) {
+											accum -= 2 * deltaTime;
+											oscillateMode = -1;
+										}
+									} else {
+										accum -= deltaTime;
+										if (accum <= 0) {
+											oscillateMode = 1;
+											accum += 2 * deltaTime;
+										}
+									}
+								}
+							} else {
+								oscillateMode = null;
+								accum += deltaTime;
+								if (accum >= maxAccum) accum -= maxAccum;
+							}
+						})();
+
 						const intensity = getIntensity() * speedFactor;
 						const timeOffsetX = Math.ceil(speedFactor * accum);
 						const timeOffsetY = Math.ceil(speedFactor * accum);

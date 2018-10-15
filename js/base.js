@@ -113,6 +113,19 @@ const betteR20Base = function () {
 			"__sliderMax": 360,
 			"__sliderStep": 1
 		},
+		"weatherOscillate1": {
+			"name": "Oscillate",
+			"default": false,
+			"_type": "boolean"
+		},
+		"weatherOscillateThreshold1": {
+			"name": "Oscillation Threshold",
+			"default": 1,
+			"_type": "_slider",
+			"__sliderMin": 0.05,
+			"__sliderMax": 1,
+			"__sliderStep": 0.01
+		},
 		"weatherIntensity1": {
 			"name": "Intensity",
 			"default": "None",
