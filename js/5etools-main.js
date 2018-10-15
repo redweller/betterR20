@@ -4649,7 +4649,8 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								alert("Created table!")
 							}
 						});
-					}
+					},
+					(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
 				);
 			}
 		},
