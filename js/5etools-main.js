@@ -4938,7 +4938,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 										const charAttr = getAttrib(attr);
 										if (!charAttr) return;
 										const passivePer = Number(charAttr.current || 0) + (d20plus.sheet === "shaped" ? 10 : 0);
-										sel.passive = passivePer;
+										sel.passive = Math.max(passivePer, sel.passive);
 									})();
 
 									const doBuild = (result) => {
