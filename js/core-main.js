@@ -51,6 +51,7 @@ const betteR20Core = function () {
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
 			d20plus.art.initRepoBrowser();
+			d20plus.ui.addQuickUiGm();
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}
@@ -58,7 +59,6 @@ const betteR20Core = function () {
 		d20plus.ut.disable3dDice();
 		d20plus.engine.addLayers();
 		d20plus.engine.addWeather();
-		d20plus.ui.addQuickUI();
 		d20plus.ut.log("All systems operational");
 		d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
 	};
