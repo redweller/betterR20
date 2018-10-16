@@ -76,7 +76,7 @@ function baseUi () {
 				width: 30,
 				position: "absolute",
 				left: 20,
-				top: 330,
+				top: 345,
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
 				zIndex: 10600,
