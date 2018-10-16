@@ -69,7 +69,7 @@ function baseUi () {
 		d20plus.tool.addTools();
 	};
 
-	d20plus.ui.addQuickUI = () => {
+	d20plus.ui.addQuickUiGm = () => {
 		// add quick layer selection panel
 		const $ulBtns = $(`<div id="floatinglayerbar"><ul/></div>`)
 			.css({

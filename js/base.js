@@ -84,7 +84,7 @@ const betteR20Base = function () {
 			"name": "Type",
 			"default": "None",
 			"_type": "_enum",
-			"__values": ["None", "Fog", "Rain", "Snow", "Waves", "Custom (see below)"]
+			"__values": ["None", "Fog", "Rain", "Ripples", "Snow", "Waves", "Custom (see below)"]
 		},
 		"weatherTypeCustom1": {
 			"name": "Custom Image",
@@ -112,6 +112,19 @@ const betteR20Base = function () {
 			"__sliderMin": 0,
 			"__sliderMax": 360,
 			"__sliderStep": 1
+		},
+		"weatherOscillate1": {
+			"name": "Oscillate",
+			"default": false,
+			"_type": "boolean"
+		},
+		"weatherOscillateThreshold1": {
+			"name": "Oscillation Threshold",
+			"default": 1,
+			"_type": "_slider",
+			"__sliderMin": 0.05,
+			"__sliderMax": 1,
+			"__sliderStep": 0.01
 		},
 		"weatherIntensity1": {
 			"name": "Intensity",
