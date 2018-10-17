@@ -93,7 +93,7 @@ function baseUi () {
 		$(`<li title="Dynamic Lighting" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
 		$(`<li title="Weather Exclusions" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
 
-		$("#editinglayer").on(clicktype, "li", function () {
+		$("body").on("click", "#editinglayer li", function () {
 			$("#floatinglayerbar").removeClass("map")
 				.removeClass("objects")
 				.removeClass("foreground")
