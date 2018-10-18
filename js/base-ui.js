@@ -70,13 +70,15 @@ function baseUi () {
 	};
 
 	d20plus.ui.addQuickUiGm = () => {
+		const $wrpBtnsMain = $(`#floatingtoolbar`);
+
 		// add quick layer selection panel
 		const $ulBtns = $(`<div id="floatinglayerbar"><ul/></div>`)
 			.css({
 				width: 30,
 				position: "absolute",
 				left: 20,
-				top: 345,
+				top: $wrpBtnsMain.height() + 45,
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
 				zIndex: 10600,
@@ -84,7 +86,6 @@ function baseUi () {
 			})
 			.appendTo($(`body`)).find(`ul`);
 
-		const $wrpBtnsMain = $(`#floatingtoolbar`);
 		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
 		$(`<li title="Map & Background" class="choosemap"><span class="pictos" style="padding: 0 3px;">@</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
 		$(`<li title="Objects & Tokens" class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
