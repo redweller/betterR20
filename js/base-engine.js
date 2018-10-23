@@ -1688,10 +1688,6 @@ function d20plusEngine () {
 		}
 
 		const $wrpEditor = $("#editor-wrapper");
-		// cache lighting canvas
-		const $canLighting = $(`#lightingcanvas`);
-		const cvLight = $canLighting[0];
-		const ctxLight = cvLight.getContext("2d");
 
 		// add custom canvas
 		const $wrpCanvas = $wrpEditor.find(".canvas-container");
