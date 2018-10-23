@@ -77,6 +77,11 @@ const betteR20Base = function () {
 			"default": false,
 			"_type": "boolean"
 		},
+		"hideDefaultJournalSearch": {
+			"name": "Hide Default Journal Search Bar",
+			"default": false,
+			"_type": "boolean"
+		},
 	});
 	addConfigOptions("weather", {
 		"_name": "Weather",

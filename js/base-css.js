@@ -255,6 +255,15 @@ function baseCss () {
 			s: "#textchat-notifier:after",
 			r: "content: '!'"
 		},
+		// fix the shitty undersized "fire" icon
+		{
+			s: ".choosewalls > .pictostwo",
+			r: "width: 15px; height: 17px; display: inline-block; text-align: center;"
+		},
+		{
+			s: "#editinglayer.walls > .pictos",
+			r: "width: 20px; height: 22px; display: inline-block; text-align: center; font-size: 0.9em;"
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [

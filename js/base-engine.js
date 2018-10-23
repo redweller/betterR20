@@ -1688,10 +1688,6 @@ function d20plusEngine () {
 		}
 
 		const $wrpEditor = $("#editor-wrapper");
-		// cache lighting canvas
-		const $canLighting = $(`#lightingcanvas`);
-		const cvLight = $canLighting[0];
-		const ctxLight = cvLight.getContext("2d");
 
 		// add custom canvas
 		const $wrpCanvas = $wrpEditor.find(".canvas-container");
@@ -1766,7 +1762,7 @@ function d20plusEngine () {
 								alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
 							}
 							IMAGES["Custom"].src = IMAGES["Rain"].src;
-						}
+						};
 						IMAGES["Custom"].src = Campaign.attributes.bR20cfg_weatherTypeCustom1;
 					}
 					return IMAGES["Custom"];
@@ -1831,11 +1827,12 @@ function d20plusEngine () {
 		let then = 0;
 		let image;
 		let currentSfx;
+		let hasWeather = false;
 		function drawFrame (now) {
 			const deltaTime = now - then;
 			then = now;
 
-			if (Campaign && Campaign.attributes) {
+			if (Campaign && Campaign.attributes && Campaign.attributes.bR20cfg_weatherType1 !== "None") {
 				image = getImage();
 				currentSfx = getEffect();
 
@@ -1846,13 +1843,15 @@ function d20plusEngine () {
 					SFX.lightning = [];
 				}
 
-				ctx.clearRect(0, 0, cv.width, cv.height);
+				if (hasWeather) ctx.clearRect(0, 0, cv.width, cv.height);
 				const hasImage = image && image.complete;
 				const tint = getTintColor();
 				const scaledW = hasImage ? Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
 				const scaledH = hasImage ? Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
 				const hasSfx = SFX.lightning.length;
 				if (hasImage || tint || hasSfx) {
+					hasWeather = true;
+
 					// draw weather
 					if (
 						hasImage &&
@@ -2187,7 +2186,10 @@ function d20plusEngine () {
 				requestAnimationFrame(drawFrame);
 			} else {
 				// if weather is disabled, maintain a background tick
-				ctx.clearRect(0, 0, cv.width, cv.height);
+				if (hasWeather) {
+					ctx.clearRect(0, 0, cv.width, cv.height);
+					hasWeather = false;
+				}
 				setTimeout(() => {
 					drawFrame(0);
 				}, 1000);
