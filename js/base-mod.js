@@ -701,16 +701,25 @@ function d20plusMod() {
 					if ("" != m && 1 == this.model.get("showname") && (window.is_gm || this.model.get("showplayers_name") || this.model.currentPlayerControls() && this.model.get("playersedit_name"))) {
 						n.textAlign = "center";
 						// BEGIN MOD
-						var y = 14 * scaleFact;
+						const fontSize = 14;
+						var scaledFontSize = fontSize * scaleFact;
 						const scaledY = 22 * scaleFact;
 						const scaled6 = 6 * scaleFact;
 						const scaled8 = 8 * scaleFact;
-						n.font = "bold " + y + "px Arial";
+						n.font = "bold " + scaledFontSize + "px Arial";
 						var v = n.measureText(m).width;
-						n.fillStyle = "rgba(255,255,255,0.50)";
-						n.fillRect(-1 * Math.floor((v + scaled6) / 2), o + scaled8, v + scaled6, y + scaled6);
-						n.fillStyle = "rgb(0,0,0)";
-						n.fillText(m + "", 0, o + scaledY, v);
+
+						/*
+							Note(stormy): compatibility with R20ES's ScaleTokenNamesBySize module.
+						 */
+						if(window.r20es && window.r20es.drawNameplate) {
+							window.r20es.drawNameplate(this.model, n, v, o, fontSize, m);
+						} else {
+							n.fillStyle = "rgba(255,255,255,0.50)";
+							n.fillRect(-1 * Math.floor((v + scaled6) / 2), o + scaled8, v + scaled6, scaledFontSize + scaled6);
+							n.fillStyle = "rgb(0,0,0)";
+							n.fillText(m + "", 0, o + scaledY, v);
+						}
 						// END MOD
 					}
 					n.restore()
