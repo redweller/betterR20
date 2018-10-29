@@ -843,6 +843,7 @@ function d20plusMod() {
 					"gmlayer" == l && !window.is_gm || "walls" == l && "walls" !== window.currentEditingLayer || "walls" == l && !window.is_gm))
 					// END MOD
 					if ("grid" != l) {
+						// TODO ADD COOL CONFIG PROPERTIES FOR CHANGING TRANSPARENCY OF THESE LAYERS
 						n = a[l].length,
 							"gmlayer" == l ? t.globalAlpha = .55 : "objects" != l || "map" != window.currentEditingLayer && "walls" != window.currentEditingLayer ? t.globalAlpha = 1 : t.globalAlpha = .45;
 						for (s = 0; s < n; ++s) {
