@@ -2600,8 +2600,11 @@ const betteR205etools = function () {
 			const hLevelRenderStack = [];
 			const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
 			renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
-			r20json.content += "\n\nAt Higher Levels: " + d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
+			const higherLevels = d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
+			r20json.content += "\n\n\"At Higher Levels: " + higherLevels;
+			r20json.htmlcontent += "<br><br>\"At Higher Levels: " + higherLevels;
 			notecontents += hLevelRenderStack.join("");
+			r20Data["Higher Spell Slot Desc"] = higherLevels;
 		}
 		notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
 		gmnotes = JSON.stringify(r20json);
