@@ -676,22 +676,38 @@ function d20plusEngine () {
 						};
 
 						if ("rollsaves" === e) {
+							// Mass roll: Saves
 							const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
-							showRollOptions(
-								(token, val) => `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`,
-								options
-							);
+							if (d20plus.sheet === "ogl") {
+								showRollOptions(
+									(token, val) => `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`,
+									options
+								);
+							}
+							else if (d20plus.sheet === "shaped") {
+								showRollOptions(
+									(token, val) => `@{selected|output_option}} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_mod}}} {{roll1=[[1d20+@{selected|${val.toLowerCase()}_mod}]]}} {{roll2=[[1d20+@{selected|${val.toLowerCase()}_mod}]]}}`,
+									options
+								);
+							}
 						} else if ("rollinit" === e) {
+							// Mass roll: Initiative
 							const sel = d20.engine.selected();
 							d20.engine.unselect();
 							sel.forEach(it => {
 								d20.engine.select(it);
-								const toRoll = `@{selected|wtype} &{template:simple} {{rname=Initiative}} {{charname=@{selected|token_name}}} {{mod=[[@{selected|initiative_bonus}]]}} {{r1=[[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]}}{{normal=1}}`;
+								let toRoll = ``;
+								if (d20plus.sheet === "ogl") {
+									toRoll = `@{selected|wtype} &{template:simple} {{rname=Initiative}} {{charname=@{selected|token_name}}} {{mod=[[@{selected|initiative_bonus}]]}} {{r1=[[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]}}{{normal=1}}`;
+								} else if (d20plus.sheet === "shaped") {
+									toRoll = `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{title=INITIATIVE}} {{roll1=[[@{selected|initiative_formula}]]}}`;
+								}
 								d20.textchat.doChatInput(toRoll);
 								d20.engine.unselect();
 							});
 							i();
 						} else if ("rollskills" === e) {
+							// Mass roll: Skills
 							const options = [
 								"Athletics",
 								"Acrobatics",
@@ -718,8 +734,15 @@ function d20plusEngine () {
 									const clean = val.toLowerCase().replace(/ /g, "_");
 									const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
 
-									const doRoll = (atb = abil) => {
-										return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+									let doRoll = '';
+									if (d20plus.sheet === "ogl") {
+										doRoll = (atb = abil) => {
+											return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+										}
+									} else if (d20plus.sheet === "shaped"){
+										doRoll = (atb = abil) => {
+											return `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val}}} {{mod=@{selected|${atb}}}} {{roll1=[[1d20+@{selected|${atb}}]]}} {{roll2=[[1d20+@{selected|${atb}}]]}}`;
+										}
 									}
 
 									try {

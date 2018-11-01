@@ -449,7 +449,7 @@ function d20plusArt () {
 								} else (filters[prop] = filters[prop] || {})[enm.v] = nxtState === "1";
 
 								if (currentItem) doRenderItem(applyFilterAndSearchToItem());
-								else doRenderIndex(applyFilterAndSearchToIndex())
+								else doRenderIndex(applyFilterAndSearchToIndex());
 							};
 
 							const $btn = $(`<button class="btn artr__side__tag" data-state="0">${enm.v} (${enm.c})</button>`)
@@ -487,8 +487,13 @@ function d20plusArt () {
 					const $mainBody = $(`<div class="artr__view"/>`).appendTo($mainPane);
 					const $mainBodyInner = $(`<div class="artr__view_inner"/>`).appendTo($mainBody);
 
+					const $itemBody = $(`<div class="artr__view"/>`).hide().appendTo($mainPane);
+					const $itemBodyInner = $(`<div class="artr__view_inner"/>`).appendTo($itemBody);
+
 					function doRenderIndex (indexSlice) {
 						currentItem = false;
+						$mainBody.show();
+						$itemBody.hide();
 						$mainBodyInner.empty();
 						indexSlice.forEach(it => {
 							const $item = $(`<div class="artr__item"/>`).appendTo($mainBodyInner).click(() => doLoadAndRenderItem(it));
@@ -505,20 +510,22 @@ function d20plusArt () {
 					function doLoadAndRenderItem (indexItem) {
 						pGetJson(`https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/ExternalArt/dist/${indexItem._file}`).then(file => {
 							currentItem = file;
-							doRenderItem(applyFilterAndSearchToItem())
+							doRenderItem(applyFilterAndSearchToItem(), true);
 						});
 					}
 
-					function doRenderItem (file) {
-						$mainBodyInner.empty().append(`<div class="artr__main__loading"/>`);
-						$mainBodyInner.empty();
+					function doRenderItem (file, resetScroll) {
+						$mainBody.hide();
+						$itemBody.show();
+						$itemBodyInner.empty();
+						if (resetScroll) $itemBodyInner.scrollTop(0);
 						const $itmUp = $(`<div class="artr__item artr__item--back"><div class="pictos">[</div></div>`)
 							.click(() => doRenderIndex(applyFilterAndSearchToIndex()))
-							.appendTo($mainBodyInner);
+							.appendTo($itemBodyInner);
 						file.data.forEach(it => {
 							// "library-item" and "draggableresult" classes required for drag/drop
 							const $item = $(`<div class="artr__item library-item draggableresult" data-fullsizeurl="${it.uri}"/>`)
-								.appendTo($mainBodyInner)
+								.appendTo($itemBodyInner)
 								.click(() => {
 									const $wrpBigImg = $(`<div class="artr__wrp_big_img"><img class="artr__big_img" src="${it.uri}"></div>`)
 										.click(() => $wrpBigImg.remove()).appendTo($(`body`));
