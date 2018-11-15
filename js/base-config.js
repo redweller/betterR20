@@ -49,14 +49,14 @@ function baseConfig() {
 		}
 	};
 
-	d20plus.cfg.loadPlayerConfig = (nextFn) => {
+	d20plus.cfg.loadPlayerConfig = async (nextFn) => {
 		d20plus.ut.log("Reading player Config");
-		const loaded = StorageUtil.get(`Veconfig`);
+		const loaded = await StorageUtil.pGet(`Veconfig`);
 		if (!loaded) {
 			d20plus.ut.log("No player config found! Initialising new config...");
 			const dfltConfig = d20plus.cfg.getDefaultConfig();
 			d20plus.cfg.current = Object.assign(d20plus.cfg.current, dfltConfig);
-			StorageUtil.set(`Veconfig`, d20plus.cfg.current);
+			await StorageUtil.pSet(`Veconfig`, d20plus.cfg.current);
 		}
 		d20plus.ut.log("Player config Loaded:");
 		d20plus.ut.log(d20plus.cfg.current);
@@ -482,7 +482,7 @@ function baseConfig() {
 					}
 				} else {
 					_updateLoadedConfig();
-					StorageUtil.set(`Veconfig`, d20plus.cfg.current);
+					StorageUtil.pSet(`Veconfig`, d20plus.cfg.current);
 					d20plus.cfg.baseHandleConfigChange();
 					if (d20plus.handleConfigChange) d20plus.handleConfigChange();
 				}

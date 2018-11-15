@@ -127,14 +127,14 @@ function baseQpi () {
 		},
 
 		_loadedScripts: null,
-		_init () {
+		async _init () {
 			Object.keys(qpi._).forEach(k => {
 				const it = qpi._[k];
 				if (it._preInit) it._preInit();
 				window[k] = it._;
 			});
 
-			qpi._loadedScripts = StorageUtil.get("VeQpi") || {};
+			qpi._loadedScripts = await StorageUtil.pGet("VeQpi") || {};
 
 			$(`body`).append(`
 				<div id="qpi-manager" title="QPI Script Manager - v${qpi._version}">
@@ -258,9 +258,9 @@ function baseQpi () {
 	window.qpi = qpi;
 
 	d20plus.qpi = {};
-	d20plus.qpi.initMockApi = () => { // TODO check if this needs to be enabled for players too
+	d20plus.qpi.initMockApi = async () => { // TODO check if this needs to be enabled for players too
 		d20plus.ut.log("Initialising mock API");
-		qpi._init();
+		await qpi._init();
 	};
 }
 

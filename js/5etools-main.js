@@ -487,8 +487,8 @@ const betteR205etools = function () {
 	};
 
 	// continue init once JSON loads
-	d20plus.onScriptLoad = function () {
-		d20plus.qpi.initMockApi();
+	d20plus.onScriptLoad = async function () {
+		await d20plus.qpi.initMockApi();
 		d20plus.js.addApiScripts(d20plus.onApiScriptLoad);
 	};
 
