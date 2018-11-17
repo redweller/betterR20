@@ -57,6 +57,8 @@ function baseConfig() {
 			const dfltConfig = d20plus.cfg.getDefaultConfig();
 			d20plus.cfg.current = Object.assign(d20plus.cfg.current, dfltConfig);
 			await StorageUtil.pSet(`Veconfig`, d20plus.cfg.current);
+		} else {
+			d20plus.cfg.current = loaded;
 		}
 		d20plus.ut.log("Player config Loaded:");
 		d20plus.ut.log(d20plus.cfg.current);
