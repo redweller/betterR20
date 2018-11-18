@@ -15,8 +15,8 @@ const betteR20Core = function () {
         d20plus.ut.showLoadingMessage(`betteR20-core v${d20plus.version}`);
 	};
 
-	d20plus.onScriptLoad = () => {
-		d20plus.qpi.initMockApi();
+	d20plus.onScriptLoad = async () => {
+		await d20plus.qpi.initMockApi();
 		d20plus.js.addApiScripts(d20plus.onApiScriptLoad);
 	};
 

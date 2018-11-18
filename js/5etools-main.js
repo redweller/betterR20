@@ -15,7 +15,6 @@ const betteR205etools = function () {
 	const OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
 	const RACE_DATA_URL = `${DATA_URL}races.json`;
 
-	const HOMEBREW_REPO_URL = `https://api.github.com/repos/TheGiddyLimit/homebrew/`;
 	// the GitHub API has a 60 requests/hour limit per IP which we quickly hit if the user refreshes their Roll20 a couple of times
 	// embed shitty OAth2 details here to enable 5k/hour requests per IP (sending them with requests to the API relaxes the limit)
 	// naturally these are client-visible and should not be used to secure anything
@@ -487,8 +486,8 @@ const betteR205etools = function () {
 	};
 
 	// continue init once JSON loads
-	d20plus.onScriptLoad = function () {
-		d20plus.qpi.initMockApi();
+	d20plus.onScriptLoad = async function () {
+		await d20plus.qpi.initMockApi();
 		d20plus.js.addApiScripts(d20plus.onApiScriptLoad);
 	};
 
@@ -814,7 +813,7 @@ const betteR205etools = function () {
 				text: "Custom"
 			}));
 
-			const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.ut.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
+			const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
 			DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
 				if (data.message) console.error(debugUrl, data.message);
 				data.forEach(it => {
@@ -846,7 +845,7 @@ const betteR205etools = function () {
 					text: "Custom"
 				}));
 
-				const brewUrl = `${HOMEBREW_REPO_URL}contents/${homebrewDir}${d20plus.ut.getAntiCacheSuffix()}&client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}`;
+				const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
 				DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
 					if (data.message) console.error(debugUrl, data.message);
 					data.forEach(it => {

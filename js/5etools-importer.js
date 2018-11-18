@@ -664,7 +664,7 @@ function d20plusImporter () {
 		$(`#d20plus-playerimport`).find(`.importer-section[data-import-group="${toShowPlayer}"]`).show();
 	};
 
-	d20plus.importer.showImportList = function (dataType, dataArray, handoutBuilder, options) {
+	d20plus.importer.showImportList = async function (dataType, dataArray, handoutBuilder, options) {
 		if (!options) options = {};
 		/*
 		options = {
@@ -798,10 +798,10 @@ function d20plusImporter () {
 		});
 		const storageKeyGroupBy = `Veconfig-importer-groupby-${dataType}`;
 		$selGroupBy.on("change", () => {
-			StorageUtil.set(storageKeyGroupBy, $selGroupBy.val())
+			StorageUtil.pSet(storageKeyGroupBy, $selGroupBy.val())
 		})
 		try {
-			const savedSelection = StorageUtil.get(storageKeyGroupBy);
+			const savedSelection = await StorageUtil.pGet(storageKeyGroupBy);
 			if (savedSelection) {
 				$selGroupBy.val(savedSelection);
 			}
