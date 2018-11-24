@@ -156,7 +156,10 @@ function d20plusSpells () {
 			htmlcontent: "",
 			data: r20Data
 		};
-		if (data.components && data.components.m && data.components.m.text) r20json.data["Material"] = data.components.m.text;
+		if (data.components && data.components.m) {
+			if (data.components.m.text) r20json.data["Material"] = data.components.m.text;
+			else if (typeof data.components.m === "string") r20json.data["Material"] = data.components.m;
+		}
 		if (data.meta) {
 			if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
 		}
