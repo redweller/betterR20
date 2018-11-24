@@ -67,7 +67,8 @@ function baseConfig() {
 
 	d20plus.cfg.makeDefaultConfig = (nextFn) => {
 		d20.Campaign.handouts.create({
-			name: CONFIG_HANDOUT
+			name: CONFIG_HANDOUT,
+			archived: true
 		}, {
 			success: function (handout) {
 				notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel.";
