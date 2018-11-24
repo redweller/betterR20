@@ -12,7 +12,7 @@ function d20plusEngine () {
 		const $rect = $drawTools.find(".chooserect");
 		const $path = $drawTools.find(".choosepath");
 		const $poly = $drawTools.find(".choosepolygon");
-		$drawTools.unbind(clicktype).bind(clicktype, () => {
+		$drawTools.unbind(clicktype).bind(clicktype, function () {
 			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
 		});
 		$rect.unbind(clicktype).bind(clicktype, () => {
@@ -1309,11 +1309,9 @@ function d20plusEngine () {
 			d20.engine.uppercanvas.addEventListener("mousedown", R);
 		}
 
-		// add half-grid snap
+		// add sub-grid snap
 		d20.engine.snapToIncrement = function(e, t) {
-			if (d20plus.cfg.get("canvas", "halfGridSnap")) {
-				t = t / 2;
-			}
+			t *= Number(d20plus.cfg.getOrDefault("canvas", "gridSnap"));
 			return t * Math.round(e / t);
 		}
 	};
@@ -2229,7 +2227,3 @@ function d20plusEngine () {
 }
 
 SCRIPT_EXTENSIONS.push(d20plusEngine);
-
-const dicks = () => {
-	window.currentEditingLayer = "weather";
-}

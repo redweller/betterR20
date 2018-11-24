@@ -33,10 +33,11 @@ const betteR20Base = function () {
 	addConfigOptions("canvas", {
 			"_name": "Canvas",
 			"_player": true,
-			"halfGridSnap": {
-				"name": "Snap to Half-Grid",
-				"default": false,
-				"_type": "boolean",
+			"gridSnap": {
+				"name": "Grid Snap",
+				"default": "1",
+				"_type": "_enum",
+				"__values": ["0.25", "0.5", "1"],
 				"_player": true
 			},
 			"scaleNamesStatuses": {
