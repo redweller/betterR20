@@ -172,10 +172,16 @@ function d20plusMonsters () {
 
 	// Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
-		const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+		const filterUnofficial = !d20plus.cfg.getOrDefault("import", "allSourcesIncludeUnofficial");
+
+		const toLoad = Object.keys(monsterDataUrls)
+			.filter(src => !(SourceUtil.isNonstandardSource(src) && filterUnofficial))
+			.map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+
 		if (d20plus.cfg.getOrDefault("import", "allSourcesIncludeHomebrew")) {
 			monsterBrewDataUrls.forEach(it => toLoad.push(it.url));
 		}
+
 		if (toLoad.length) {
 			DataUtil.multiLoadJSON(
 				toLoad.map(url => ({url})),

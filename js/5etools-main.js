@@ -270,6 +270,11 @@ const betteR205etools = function () {
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
+		"allSourcesIncludeUnofficial": {
+			"name": `Include Unofficial (UA/etc) Content in "Import Monsters From All Sources" List`,
+			"default": false,
+			"_type": "boolean"
+		},
 		"allSourcesIncludeHomebrew": {
 			"name": `Include Homebrew in "Import Monsters From All Sources" List (Warning: Slow)`,
 			"default": false,
