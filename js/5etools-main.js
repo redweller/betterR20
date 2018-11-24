@@ -117,6 +117,8 @@ const betteR205etools = function () {
 	let adventureMetadata = {};
 	let classDataUrls = {};
 
+	let monsterBrewDataUrls = [];
+
 // build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
 	function SheetAttribute (name, ogl, shaped) {
 		this.name = name;
@@ -268,6 +270,11 @@ const betteR205etools = function () {
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
+		"allSourcesIncludeHomebrew": {
+			"name": `Include Homebrew in "Import Monsters From All Sources" List (Warning: Slow)`,
+			"default": false,
+			"_type": "boolean"
+		},
 		"importIntervalHandout": {
 			"name": "Rest Time between Each Handout (msec)",
 			"default": 100,
@@ -492,7 +499,18 @@ const betteR205etools = function () {
 	};
 
 	// continue init once scripts load
-	d20plus.onApiScriptLoad = function () {
+	d20plus.onApiScriptLoad = async function () {
+		const brewUrl = DataUtil.brew.getDirUrl("creature");
+		try {
+			const brewMeta = await DataUtil.loadJSON(brewUrl);
+			brewMeta.forEach(it => {
+				const url = `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`;
+				const name = `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`;
+				monsterBrewDataUrls.push({url, name});
+			});
+		} catch (e) {
+			d20plus.ut.error(`Failed to load bestiary homebrew metadata!`);
+		}
 		d20plus.addJson(d20plus.onJsonLoad);
 	};
 
@@ -2427,7 +2445,7 @@ const betteR205etools = function () {
 		<span class="name col-4" title="name">${it.name}</span>
 		<span class="class col-3" title="class">${it.classes.fromClassList.map(c => `CLS[${c.name}]`).join(", ")}</span>
 		<span class="level col-3" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
-		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.spells._listIndexConverter = (sp) => {
 		return {
 			name: sp.name.toLowerCase(),
@@ -2630,7 +2648,7 @@ const betteR205etools = function () {
 		<span class="name col-3" title="name">${it.name}</span>
 		<span class="type col-5" title="type">${it.typeText.split(",").map(t => `TYP[${t.trim()}]`).join(", ")}</span>
 		<span class="rarity col-2" title="rarity">RAR[${it.rarity}]</span>
-		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	};
 	d20plus.items._listIndexConverter = (it) => {
 		if (!it._isEnhanced) EntryRenderer.item.enhanceItem(it);

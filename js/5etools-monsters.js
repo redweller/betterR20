@@ -7,7 +7,7 @@ function d20plusMonsters () {
 		<span class="name col-4" title="name">${it.name}</span>
 		<span class="type col-4" title="type">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
 		<span class="cr col-2" title="cr">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
-		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.monsters._listIndexConverter = (m) => {
 		m.__pType = m.__pType || Parser.monTypeToFullObj(m.type).type; // only filter using primary type
 		return {
@@ -173,6 +173,9 @@ function d20plusMonsters () {
 	// Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
 		const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+		if (d20plus.cfg.getOrDefault("import", "allSourcesIncludeHomebrew")) {
+			monsterBrewDataUrls.forEach(it => toLoad.push(it.url));
+		}
 		if (toLoad.length) {
 			DataUtil.multiLoadJSON(
 				toLoad.map(url => ({url})),

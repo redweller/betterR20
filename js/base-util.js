@@ -5,6 +5,10 @@ function baseUtil () {
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
 	};
 
+	d20plus.ut.error = (...args) => {
+		console.error("%cD20Plus > ", "color: #b93032; font-size: large", ...args);
+	};
+
 	d20plus.ut.chatLog = (arg) => {
 		d20.textchat.incoming(
 			false,
