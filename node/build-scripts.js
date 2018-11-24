@@ -105,6 +105,7 @@ const SCRIPTS = {
 			"5etools-monsters",
 			"5etools-spells",
 			"5etools-backgrounds",
+			"5etools-classes",
 
 			"base"
 		]
