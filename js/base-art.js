@@ -143,7 +143,8 @@ function d20plusArt () {
 				const handout = d20plus.art.getArtHandout();
 				if (!handout) {
 					d20.Campaign.handouts.create({
-						name: ART_HANDOUT
+						name: ART_HANDOUT,
+						archived: true
 					}, {
 						success: function (handout) {
 							notecontents = "This handout is used to store custom art URLs."
