@@ -72,6 +72,7 @@ const SCRIPTS = {
 			"base-ui",
 			"base-mod",
 			"base-template",
+			"base-emoji",
 
 			"core-main",
 
@@ -97,11 +98,11 @@ const SCRIPTS = {
 			"base-ui",
 			"base-mod",
 			"base-template",
+			"base-emoji",
 
 			"5etools-main",
 			"5etools-importer",
 			"5etools-monsters",
-			"5etools-emoji",
 
 			"base"
 		]

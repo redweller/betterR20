@@ -55,6 +55,7 @@ const betteR20Core = function () {
 		} else {
 			d20plus.cfg.startPlayerConfigHandler();
 		}
+		d20plus.chat.enhanceChat();
 		d20plus.engine.enhancePathWidths();
 		d20plus.ut.disable3dDice();
 		d20plus.engine.addLayers();
