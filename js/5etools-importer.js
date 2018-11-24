@@ -217,7 +217,7 @@ function d20plusImporter () {
 		$ele.find("td, th").append(" | ");
 		$ele.find("tr").append("\n");
 		$ele.find("p, li, br").append("\n\n");
-		return $ele.text().replace(/[ ]+/g, " ");
+		return $ele.text().replace(/[ ]+/g, " ").trim();
 
 		/* version which preserves images, and converts dice
 	const IMG_TAG = "R20IMGTAG";

@@ -1016,7 +1016,7 @@ function d20plusMonsters () {
 
 										const packedOthers = [];
 										others.forEach(it => {
-											const m = /^(\d+\.\s*[^.]+\s*)[.:](.*)$/.exec(it);
+											const m = /^(\d+\.\s*[^.]+?\s*)[.:](.*)$/.exec(it);
 											if (m) {
 												const partName = m[1].trim();
 												const text = m[2].trim();
