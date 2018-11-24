@@ -1227,7 +1227,7 @@ const betteR205etools = function () {
 			attrs.notifySheetWorkers();
 		}
 
-		function importBackground (character, data) {
+		async function importBackground (character, data) {
 			const bg = data.Vetoolscontent;
 
 			const renderer = new EntryRenderer();
@@ -1243,8 +1243,121 @@ const betteR205etools = function () {
 			if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
+			async function chooseSkills (from, count) {
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose Skills">
+							<div name="remain" style="font-weight: bold">Remaining: ${count}</div>
+							<div>
+								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-skill="${it}" type="checkbox"></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $remain = $dialog.find(`[name="remain"]`);
+					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
+
+					$cbSkill.on("change", function () {
+						const $e = $(this);
+						let selectedCount = getSelected().length;
+						if (selectedCount > count) {
+							$e.prop("checked", false);
+							selectedCount--;
+						}
+						$remain.text(`Remaining: ${count - selectedCount}`);
+					});
+
+					function getSelected () {
+						return $cbSkill.map((i, e) => ({skill: $(e).data("skill"), selected: $(e).prop("checked")})).get()
+							.filter(it => it.selected).map(it => it.skill);
+					}
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = getSelected();
+									if (selected.length === count) {
+										$(this).dialog("close");
+										resolve(selected);
+									} else {
+										alert(`Please select ${count} skill${count === 1 ? "" : "s"}`);
+									}
+								}
+							}
+						]
+					})
+				});
+			}
+
+			async function chooseSkillsGroup (options) {
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose Skills">
+							<div>
+								${options.map((it, i) => `<label class="split"><input name="skill-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${it}</span></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $rdOpt = $dialog.find(`input[type="radio"]`);
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = $rdOpt.filter((i, e) => $(e).prop("checked"))
+										.map((i, e) => $(e).data("ix")).get()[0];
+									$(this).dialog("close");
+									resolve(selected);
+								}
+							}
+						]
+					})
+				});
+			}
+
 			const skills = [];
-			EntryRenderer.background.getSkillSummary(bg.skillProficiencies, true, bg._fSkills = skills);
+
+			async function handleSkillsItem (item) {
+				Object.keys(item).forEach(k => {
+					if (k !== "choose") skills.push(k);
+				});
+
+				if (item.choose) {
+					const choose = item.choose;
+					const sansExisting = choose.from.filter(it => !skills.includes(it));
+					const count = choose.count || 1;
+					const chosenSkills = await chooseSkills(sansExisting, count);
+					chosenSkills.forEach(it => skills.push(it));
+				}
+			}
+
+			if (bg.skillProficiencies && bg.skillProficiencies.length) {
+				if (bg.skillProficiencies.length > 1) {
+					const options = bg.skillProficiencies.map(item => EntryRenderer.background.getSkillSummary([item], true, []))
+					const chosenIndex = await chooseSkillsGroup(options);
+					await handleSkillsItem(bg.skillProficiencies[chosenIndex]);
+				} else {
+					await handleSkillsItem(bg.skillProficiencies[0]);
+				}
+			}
 
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
