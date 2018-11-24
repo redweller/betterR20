@@ -553,15 +553,11 @@ const betteR205etools = function () {
 			d20plus.journal.addJournalCommands();
 			d20plus.engine.addSelectedTokenCommands();
 			d20plus.art.addCustomArtSearch();
-			d20plus.cfg.baseHandleConfigChange();
-			d20plus.handleConfigChange();
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
 			d20plus.art.initRepoBrowser();
 			d20plus.ui.addQuickUiGm();
-		} else {
-			d20plus.cfg.startPlayerConfigHandler();
 		}
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
@@ -576,6 +572,15 @@ const betteR205etools = function () {
 		d20plus.ut.disable3dDice();
 		d20plus.engine.addLayers();
 		d20plus.engine.addWeather();
+
+		// apply config
+		if (window.is_gm) {
+			d20plus.cfg.baseHandleConfigChange();
+			d20plus.handleConfigChange();
+		} else {
+			d20plus.cfg.startPlayerConfigHandler();
+		}
+
 		d20plus.ut.log("All systems operational");
 		d20plus.ut.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};
