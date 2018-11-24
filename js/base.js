@@ -160,109 +160,29 @@ const betteR20Base = function () {
 const D20plus = function (version) {
 	d20plus.version = version;
 
-	/* object.watch polyfill by Eli Grey, http://eligrey.com */
-	if (!Object.prototype.watch) {
-		Object.defineProperty(Object.prototype, "watch", {
-			enumerable: false,
-			configurable: true,
-			writable: false,
-			value: function (prop, handler) {
-				var
-					oldval = this[prop],
-					newval = oldval,
-					getter = function () {
-						return newval;
-					},
-					setter = function (val) {
-						oldval = newval;
-						return (newval = handler.call(this, prop, oldval, val));
-					};
-				if (delete this[prop]) {
-					Object.defineProperty(this, prop, {
-						get: getter,
-						set: setter,
-						enumerable: true,
-						configurable: true
-					});
-				}
-			}
-		});
-	}
-	if (!Object.prototype.unwatch) {
-		Object.defineProperty(Object.prototype, "unwatch", {
-			enumerable: false,
-			configurable: true,
-			writable: false,
-			value: function (prop) {
-				var val = this[prop];
-				delete this[prop];
-				this[prop] = val;
-			}
-		});
-	}
-	/* end object.watch polyfill */
-
 	// Window loaded
 	function doBootstrap () {
 		d20plus.ut.log("Bootstrapping...");
 
 		let hasRunInit = false;
-		function defaultOnload () {
-			if (hasRunInit) return;
-			hasRunInit = true;
-			window.unwatch("d20");
-			const checkLoaded = setInterval(function () {
-				if (!$("#loading-overlay").is(":visible")) {
-					clearInterval(checkLoaded);
-					d20plus.Init();
-				}
-			}, 1000);
-		}
-
-		window.onload = defaultOnload;
-
 		if (window.enhancementSuiteEnabled) {
 			// r20es will expose the d20 variable if we wait
 			// this should always trigger after window.onload has fired, but track init state just in case
 			(function waitForD20 () {
 				if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 					hasRunInit = true;
-					window.unwatch("d20ext");
-					d20plus.ut.log("Setting production (alt)...");
-					window.d20ext.environment = "production";
-					d20.environment = "production";
 					d20plus.Init();
 				} else {
 					setTimeout(waitForD20, 50);
 				}
 			})();
+
+			window.d20plus = d20plus;
+			d20plus.ut.log("Injected");
 		} else {
-			window.d20 = {};
-			window.watch("d20", function (id, oldValue, newValue) {
-				d20plus.ut.log("Obtained d20 variable");
-				window.unwatch("d20ext");
-				d20plus.ut.log("Setting production...");
-				window.d20ext.environment = "production";
-				newValue.environment = "production";
-				return newValue;
-			});
+			alert(`The R20ES extension is required! Please install it from https://ssstormy.github.io/roll20-enhancement-suite/`);
 		}
-
-		window.d20plus = d20plus;
-		d20plus.ut.log("Injected");
 	}
-
-	window.d20ext = {};
-	window.watch("d20ext", function (id, oldValue, newValue) {
-		if (!window.enhancementSuiteEnabled && newValue.environment !== "development") {
-			d20plus.ut.log("Set Development");
-			newValue.environment = "development";
-			Object.defineProperty(newValue, 'seenad', {
-				value: true
-			});
-		}
-		return newValue;
-	});
 
 	(function doCheckDepsLoaded () {
 		if (typeof $ !== "undefined") {

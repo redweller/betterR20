@@ -22,7 +22,7 @@ const HEADER_CORE = `// ==UserScript==
 // @author       TheGiddyLimit
 ${matchString}
 // @grant        unsafeWindow
-// @run-at       document-start
+// @run-at       document-idle
 // ==/UserScript==
 `;
 
@@ -37,7 +37,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne
 ${matchString}
 // @grant        unsafeWindow
-// @run-at       document-start
+// @run-at       document-idle
 // ==/UserScript==
 `;
 
