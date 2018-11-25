@@ -857,6 +857,7 @@ const betteR205etools = function () {
 		function populateBasicDropdown (dropdownId, inputFieldId, defaultSel, homebrewDir, addForPlayers) {
 			function doPopulate (dropdownId, inputFieldId) {
 				const $sel = $(dropdownId);
+				const existingItems = !!$sel.find(`option`).length;
 				if (defaultSel) {
 					$(inputFieldId).val(defaultSel);
 					$sel.append($('<option>', {
@@ -864,10 +865,12 @@ const betteR205etools = function () {
 						text: "Official Sources"
 					}));
 				}
-				$sel.append($('<option>', {
-					value: "",
-					text: "Custom"
-				}));
+				if (!existingItems) {
+					$sel.append($('<option>', {
+						value: "",
+						text: "Custom"
+					}));
+				}
 
 				const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
 				DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
@@ -1045,6 +1048,10 @@ const betteR205etools = function () {
 		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
 		populateDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_DIR, classDataUrls, "", "class");
 		populateDropdown("#button-classes-select-player", "#import-classes-url-player", CLASS_DATA_DIR, classDataUrls, "", "class");
+
+		// add class subclasses to the subclasses dropdown(s)
+		populateDropdown("#button-subclasses-select", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", "class");
+		populateDropdown("#button-subclasses-select-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", "class");
 
 		populateBasicDropdown("#button-items-select", "#import-items-url", ITEM_DATA_URL, "item", true);
 		populateBasicDropdown("#button-psionics-select", "#import-psionics-url", PSIONIC_DATA_URL, "psionic", true);

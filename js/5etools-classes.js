@@ -226,9 +226,22 @@ function d20plusClass () {
 
 			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
+
+				// merge in any subclasses contained in class data
+				const allData = MiscUtil.copy(data.subclass || []);
+				(data.class || []).map(c => {
+					if (c.subclasses) {
+						c.subclasses.forEach(sc => {
+							sc.class = c.name;
+							sc.source = sc.source || c.source;
+						});
+						return c.subclasses;
+					} else return false;
+				}).filter(Boolean).forEach(sc => allData.push(sc));
+
 				d20plus.importer.showImportList(
 					"subclass",
-					data.subclass,
+					allData.flat(),
 					handoutBuilder,
 					{
 						groupOptions: d20plus.subclasses._groupOptions,
