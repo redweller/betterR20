@@ -1844,6 +1844,16 @@ function d20plusEngine () {
 			}
 		}
 
+		function handleSvgCoord (coords, obj, basesXY, center, angle) {
+			const vec = [
+				ofX(coords[0] * obj.scaleX) + basesXY[0],
+				ofY(coords[1] * obj.scaleY) + basesXY[1]
+			];
+			d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
+			if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
+			return vec;
+		}
+
 		let accum = 0;
 		let then = 0;
 		let image;
@@ -1892,28 +1902,30 @@ function d20plusEngine () {
 									// obj.left is Y pos of center of object
 									const xBase = (obj.left - (obj.width * obj.scaleX / 2));
 									const yBase = (obj.top - (obj.height * obj.scaleY / 2));
+									const basesXY = [xBase, yBase];
 									const angle = (obj.angle > 360 ? obj.angle - 360 : obj.angle) / 180 * Math.PI;
 									const center = [ofX(obj.left), ofY(obj.top)];
 									d20plus.math.vec2.scale(center, center, d20.engine.canvasZoom);
 
 									ctxBuf.beginPath();
 									obj.path.forEach(opp => {
-										const [op, x, y] = opp;
+										const [op, x, y, ...others] = opp;
 										switch (op) {
 											case "M": {
-												const vec = [ofX(x * obj.scaleX) + xBase, ofY(y * obj.scaleY) + yBase];
-												d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
-												if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
-
+												const vec = handleSvgCoord([x, y], obj, basesXY, center, angle);
 												ctxBuf.moveTo(vec[0], vec[1]);
 												break;
 											}
 											case "L": {
-												const vec = [ofX(x * obj.scaleX) + xBase, ofY(y * obj.scaleY) + yBase];
-												d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
-												if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
-
+												const vec = handleSvgCoord([x, y], obj, basesXY, center, angle);
 												ctxBuf.lineTo(vec[0], vec[1]);
+												break;
+											}
+											case "C": {
+												const control1 = handleSvgCoord([x, y], obj, basesXY, center, angle);
+												const control2 = handleSvgCoord([others[0], others[1]], obj, basesXY, center, angle);
+												const end = handleSvgCoord([others[2], others[3]], obj, basesXY, center, angle);
+												ctxBuf.bezierCurveTo(...control1, ...control2, ...end);
 												break;
 											}
 											default:
