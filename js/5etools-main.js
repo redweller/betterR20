@@ -3940,9 +3940,6 @@ To import from third-party sources, either individually select one available in 
 <select id="button-subclasses-select"><!-- populate with JS--></select>
 <input type="text" id="import-subclasses-url">
 <a class="btn" href="#" id="import-subclasses-load">Import Subclasses</a>
-<p>
-<b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
-</p>
 </div>
 `;
 
@@ -3953,9 +3950,6 @@ To import from third-party sources, either individually select one available in 
 <select id="button-subclasses-select-player"><!-- populate with JS--></select>
 <input type="text" id="import-subclasses-url-player">
 <a class="btn" href="#" id="import-subclasses-load-player">Import Subclasses</a>
-<p>
-<b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
-</p>
 </div>
 `;
 
