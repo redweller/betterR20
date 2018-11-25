@@ -826,6 +826,53 @@ function d20plusEngine () {
 							const sel = d20.engine.selected();
 							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
 							i();
+						} else if ("token-fly" === e) {
+							const sel = d20.engine.selected().filter(it => it && it.type === "image");
+							new Promise((resolve, reject) => {
+								const $dialog = $(`
+									<div title="Height">
+										<input type="number" placeholder="Flight height" name="flight">
+									</div>
+								`).appendTo($("body"));
+								const $iptHeight = $dialog.find(`input[name="flight"]`).on("keypress", evt => {
+									if (evt.which === 13) { // return
+										doHandleOk();
+									}
+								});
+
+								const doHandleOk = () => {
+									const selected = Number($iptHeight.val());
+									$dialog.dialog("close");
+									if (isNaN(selected)) reject(`Value "${$iptHeight.val()}" was not a number!`);
+									else resolve(selected);
+								};
+
+								$dialog.dialog({
+									dialogClass: "no-close",
+									buttons: [
+										{
+											text: "Cancel",
+											click: function () {
+												$(this).dialog("close");
+												reject(`User cancelled the prompt`);
+											}
+										},
+										{
+											text: "OK",
+											click: function () {
+												doHandleOk();
+											}
+										}
+									]
+								});
+							}).then(num => {
+								const statusString = `${num}`.split("").reverse().map(it => `fluffy-wing@${it}`).join(",");
+								sel.forEach(s => {
+									s.model.set("statusmarkers", statusString);
+									s.model.save();
+								});
+							});
+							i();
 						}
 						// END MOD
 						return !1
