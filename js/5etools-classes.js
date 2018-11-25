@@ -9,6 +9,8 @@ function d20plusClass () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
+			const officialClassUrls = Object.values(classDataUrls).map(v => d20plus.formSrcUrl(CLASS_DATA_DIR, v));
+
 			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
@@ -16,7 +18,10 @@ function d20plusClass () {
 					data.class,
 					handoutBuilder,
 					{
-						forcePlayer
+						forcePlayer,
+						builderOptions: {
+							isHomebrew: !officialClassUrls.includes(url)
+						}
 					}
 				);
 			});
@@ -33,13 +38,18 @@ function d20plusClass () {
 				data.class,
 				handoutBuilder,
 				{
-					forcePlayer
+					forcePlayer,
+					builderOptions: {
+						isHomebrew: false
+					}
 				}
 			);
 		});
 	};
 
-	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
+		options = options || {};
+
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Classes`, folderName);
 		const path = ["Classes", folderName, data.name];
@@ -65,30 +75,70 @@ function d20plusClass () {
 			}
 		});
 
-		d20plus.classes._handleSubclasses(data, overwrite, inJournals, folderName);
+		d20plus.classes._handleSubclasses(data, overwrite, inJournals, folderName, false, options);
 	};
 
-	d20plus.classes._handleSubclasses = async function (data, overwrite, inJournals, outerFolderName, forcePlayer) {
+	d20plus.classes._handleSubclasses = async function (data, overwrite, inJournals, outerFolderName, forcePlayer, options) {
+		async function chooseSubclassImportStrategy (isUnofficialBaseClass) {
+			return new Promise((resolve, reject) => {
+				const $dialog = $(`
+						<div title="Subclass Import">
+							<label class="flex">
+								<span>Import ${data.name} ${data.source ? `(${Parser.sourceJsonToAbv(data.source)}) ` : ""}subclasses?</span>
+								 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
+								 	${isUnofficialBaseClass ? "" : `<option value="1">Official/Published (excludes UA/etc)</option>`}
+								 	<option value="2">All</option>
+								 	<option value="3">None</option>
+ 								</select>
+							</label>
+						</div>
+					`).appendTo($("body"));
+				const $selStrat = $dialog.find(`select`);
+
+				$dialog.dialog({
+					dialogClass: "no-close",
+					buttons: [
+						{
+							text: "Cancel",
+							click: function () {
+								$(this).dialog("close");
+								reject(`User cancelled the prompt`);
+							}
+						},
+						{
+							text: "OK",
+							click: function () {
+								const selected = Number($selStrat.val());
+								$(this).dialog("close");
+								resolve(selected);
+							}
+						}
+					]
+				})
+			});
+		}
+
 		const playerMode = forcePlayer || !window.is_gm;
 		// import subclasses
 		if (data.subclasses) {
-			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published/official only?`);
+			const importStrategy = await chooseSubclassImportStrategy(options.isHomebrew || (data.source && SourceUtil.isNonstandardSource(data.source)));
+			if (importStrategy === 3) return;
 
 			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
 
 			data.subclasses.forEach(sc => {
-				if (!allSubclasses && !SourceUtil.isNonstandardSource(sc.source)) return;
+				if (importStrategy === 1 && SourceUtil.isNonstandardSource(sc.source)) return;
 
 				sc.class = data.name;
 				sc.classSource = sc.classSource || data.source;
 				sc._gainAtLevels = gainFeatureArray;
 				if (playerMode) {
-					d20plus.subclasses.playerImportBuilder(sc);
+					d20plus.subclasses.playerImportBuilder(sc, data);
 				} else {
 					const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
 					const path = [folderName];
 					if (outerFolderName) path.push(sc.source || data.source); // if it wasn't None, group by source
-					d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path);
+					d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path, {}, data);
 				}
 			});
 		}
@@ -110,14 +160,16 @@ function d20plusClass () {
 		return gainFeatureArray;
 	};
 
-	d20plus.classes.playerImportBuilder = function (data) {
+	d20plus.classes.playerImportBuilder = function (data, _1, _2, _3, _4, options) {
+		options = options || {};
+
 		const [notecontents, gmnotes] = d20plus.classes._getHandoutData(data);
 
 		const importId = d20plus.ut.generateRowId();
 		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
 		d20plus.importer.makePlayerDraggable(importId, data.name);
 
-		d20plus.classes._handleSubclasses(data, false, false, null, true);
+		d20plus.classes._handleSubclasses(data, false, false, null, true, options);
 	};
 
 	d20plus.classes._getHandoutData = function (data) {
@@ -190,22 +242,38 @@ function d20plusClass () {
 		}
 	};
 
-	d20plus.subclasses._preloadClass = function (subclass) {
+	/**
+	 * @param subclass
+	 * @param baseClass Will be defined if importing as part of a class, undefined otherwise.
+	 */
+	d20plus.subclasses._preloadClass = function (subclass, baseClass) {
 		if (!subclass.class) Promise.resolve();
 
-		d20plus.ut.log("Preloading class...");
-		return DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
-			const clazz = data.class.find(it => it.name.toLowerCase() === subclass.class.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
-			if (!clazz) {
-				throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.class}::${subclass.classSource || SRC_PHB}`);
-			}
+		if (baseClass) {
+			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(baseClass);
+			return Promise.resolve();
+		} else {
+			d20plus.ut.log("Preloading class...");
+			return DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
+				const clazz = data.class.find(it => it.name.toLowerCase() === subclass.class.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
+				if (!clazz) {
+					throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.class}::${subclass.classSource || SRC_PHB}`);
+				}
 
-			const gainAtLevelArr = d20plus.classes._getGainAtLevelArr(clazz);
-			subclass._gainAtLevels = gainAtLevelArr;
-		});
+				subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(clazz);
+			});
+		}
 	};
 
-	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	/**
+	 * @param data
+	 * @param overwrite
+	 * @param inJournals
+	 * @param folderName
+	 * @param saveIdsTo
+	 * @param baseClass Will be defined if importing as part of a class, undefined otherwise.
+	 */
+	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, baseClass) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Subclasses`, folderName);
 		const path = ["Sublasses", folderName, data.name];
@@ -213,7 +281,7 @@ function d20plusClass () {
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
-		d20plus.subclasses._preloadClass(data).then(() => {
+		d20plus.subclasses._preloadClass(data, baseClass).then(() => {
 			const name = `${data.shortName} (${data.class})`;
 			d20.Campaign.handouts.create({
 				name: name,
@@ -235,8 +303,12 @@ function d20plusClass () {
 		});
 	};
 
-	d20plus.subclasses.playerImportBuilder = function (data) {
-		d20plus.subclasses._preloadClass(data).then(() => {
+	/**
+	 * @param data
+	 * @param baseClass Will be defined if importing as part of a class, undefined otherwise.
+	 */
+	d20plus.subclasses.playerImportBuilder = function (data, baseClass) {
+		d20plus.subclasses._preloadClass(data, baseClass).then(() => {
 			const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
 
 			const importId = d20plus.ut.generateRowId();

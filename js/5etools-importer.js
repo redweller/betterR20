@@ -682,6 +682,9 @@ function d20plusImporter () {
 			nextStep: (doImport, originalImportQueue) {
 				const modifiedImportQueue = originalImportQueue.map(it => JSON.stringify(JSON.parse(it));
 				doImport(modifiedImportQueue);
+			},
+			builderOptions: {
+				(...passed to handoutBuilder depending on requirements...)
 			}
 		}
 		 */
@@ -894,10 +897,10 @@ function d20plusImporter () {
 					}
 
 					if (!window.is_gm || options.forcePlayer) {
-						handoutBuilder(it);
+						handoutBuilder(it, undefined, undefined, undefined, undefined, options.builderOptions);
 					} else {
 						const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
-						const builderOptions = {};
+						const builderOptions = Object.assign({}, options.builderOptions || {});
 						if (dataType === "spell" && groupBy === "Spell Points") builderOptions.isSpellPoints = true;
 						handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo, builderOptions);
 					}
