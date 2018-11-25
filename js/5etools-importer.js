@@ -331,8 +331,8 @@ function d20plusImporter () {
 		if (!d20plus.cfg.get("import", "skipSenses")) {
 			defaulttoken.light_hassight = true;
 			if (lightradius != null) {
-				defaulttoken.light_radius = lightradius;
-				defaulttoken.light_dimradius = lightmin;
+				defaulttoken.light_radius = `${lightradius}`;
+				defaulttoken.light_dimradius = `${lightmin}`;
 			}
 		}
 

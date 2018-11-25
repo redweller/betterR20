@@ -1283,6 +1283,7 @@ const betteR205etools = function () {
 								text: "Cancel",
 								click: function () {
 									$(this).dialog("close");
+									$dialog.remove();
 									reject(`User cancelled the prompt`);
 								}
 							},
@@ -1292,6 +1293,7 @@ const betteR205etools = function () {
 									const selected = getSelected();
 									if (selected.length === count) {
 										$(this).dialog("close");
+										$dialog.remove();
 										resolve(selected);
 									} else {
 										alert(`Please select ${count} skill${count === 1 ? "" : "s"}`);
@@ -1321,6 +1323,7 @@ const betteR205etools = function () {
 								text: "Cancel",
 								click: function () {
 									$(this).dialog("close");
+									$dialog.remove();
 									reject(`User cancelled the prompt`);
 								}
 							},
@@ -1330,6 +1333,7 @@ const betteR205etools = function () {
 									const selected = $rdOpt.filter((i, e) => $(e).prop("checked"))
 										.map((i, e) => $(e).data("ix")).get()[0];
 									$(this).dialog("close");
+									$dialog.remove();
 									resolve(selected);
 								}
 							}

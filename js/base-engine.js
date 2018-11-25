@@ -830,7 +830,7 @@ function d20plusEngine () {
 							const sel = d20.engine.selected().filter(it => it && it.type === "image");
 							new Promise((resolve, reject) => {
 								const $dialog = $(`
-									<div title="Height">
+									<div title="Flight Height">
 										<input type="number" placeholder="Flight height" name="flight">
 									</div>
 								`).appendTo($("body"));
@@ -854,6 +854,7 @@ function d20plusEngine () {
 											text: "Cancel",
 											click: function () {
 												$(this).dialog("close");
+												$dialog.remove();
 												reject(`User cancelled the prompt`);
 											}
 										},
@@ -869,6 +870,102 @@ function d20plusEngine () {
 								const statusString = `${num}`.split("").reverse().map(it => `fluffy-wing@${it}`).join(",");
 								sel.forEach(s => {
 									s.model.set("statusmarkers", statusString);
+									s.model.save();
+								});
+							});
+							i();
+						} else if ("token-light" === e) {
+							const SOURCES = {
+								"Torch/Light (Spell)": {
+									bright: 20,
+									dim: 20
+								},
+								"Lamp": {
+									bright: 15,
+									dim: 30
+								},
+								"Lantern, Bullseye": {
+									bright: 60,
+									dim: 60,
+									angle: 30
+								},
+								"Lantern, Hooded": {
+									bright: 30,
+									dim: 30
+								},
+								"Lantern, Hooded (Dimmed)": {
+									bright: 0,
+									dim: 5
+								},
+								"Candle": {
+									bright: 5,
+									dim: 5
+								},
+								"Darkvision": {
+									bright: 0,
+									dim: 60,
+									hidden: true
+								},
+								"Superior Darkvision": {
+									bright: 0,
+									dim: 120,
+									hidden: true
+								}
+							};
+
+							const sel = d20.engine.selected().filter(it => it && it.type === "image");
+							new Promise((resolve, reject) => {
+								const $dialog = $(`
+									<div title="Light">
+										<label class="flex">
+											<span>Set Light Style</span>
+											 <select style="width: 250px;">
+												${Object.keys(SOURCES).map(it => `<option>${it}</option>`).join("")}
+											</select>
+										</label>
+									</div>
+								`).appendTo($("body"));
+								const $selLight = $dialog.find(`select`);
+
+								$dialog.dialog({
+									dialogClass: "no-close",
+									buttons: [
+										{
+											text: "Cancel",
+											click: function () {
+												$(this).dialog("close");
+												$dialog.remove();
+												reject(`User cancelled the prompt`);
+											}
+										},
+										{
+											text: "OK",
+											click: function () {
+												const selected = $selLight.val();
+												$dialog.dialog("close");
+												if (!selected) reject(`No value selected!`);
+												else resolve(selected);
+											}
+										}
+									]
+								});
+							}).then(key => {
+								const light = SOURCES[key];
+
+								const light_otherplayers = !light.hidden;
+								// these are all stored as strings
+								const dimRad = (light.dim || 0);
+								const brightRad = (light.bright || 0);
+								const totalRad = dimRad + brightRad;
+								const light_angle = `${light.angle}` || "";
+								const light_dimradius = `${totalRad - dimRad}`;
+								const light_radius = `${totalRad}`;
+
+								sel.forEach(s => {
+									s.model.set("light_angle", light_angle);
+									s.model.set("light_dimradius", light_dimradius);
+									s.model.set("light_otherplayers", light_otherplayers);
+									s.model.set("light_radius", light_radius);
 									s.model.save();
 								});
 							});

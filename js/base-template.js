@@ -537,113 +537,116 @@ const baseTemplate = function () {
 	`;
 
 	d20plus.template_actionsMenu = `
-	 <script id='tmpl_actions_menu' type='text/html'>
-      <div class='actions_menu d20contextmenu'>
-        <ul>
-          <$ if (Object.keys(this).length === 0) { $>
-          <li data-action-type='paste-image'>Paste Image from URL</li>
-          <$ } $>
-          <$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
-          <li class='head hasSub' data-action-type='takecard'>Take Card</li>
-          <li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
-          <$ } $>
-          <$ if(window.is_gm) { $>
-			  <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
-			  <!-- BEGIN MOD -->
-			  <li class='head hasSub' data-menuname='massroll'>
-				Mass Roll &raquo;
-				<ul class='submenu' data-menuname='massroll'>
-				  <li class='head hasSub' data-action-type='rollinit'>Initiative</li>
-				  <li class='head hasSub' data-action-type='rollsaves'>Save</li>
-				  <li class='head hasSub' data-action-type='rollskills'>Skill</li>
+		<script id='tmpl_actions_menu' type='text/html'>
+			<div class='actions_menu d20contextmenu'>
+				<ul>
+					<$ if (Object.keys(this).length === 0) { $>
+						<li data-action-type='paste-image'>Paste Image from URL</li>
+					<$ } $>
+					<$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
+						<li class='head hasSub' data-action-type='takecard'>Take Card</li>
+						<li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
+					<$ } $>
+					<$ if(window.is_gm) { $>
+						<$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
+							<!-- BEGIN MOD -->
+							<li class='head hasSub' data-menuname='massroll'>
+								Mass Roll &raquo;
+								<ul class='submenu' data-menuname='massroll'>
+									<li class='head hasSub' data-action-type='rollinit'>Initiative</li>
+									<li class='head hasSub' data-action-type='rollsaves'>Save</li>
+									<li class='head hasSub' data-action-type='rollskills'>Skill</li>
+								</ul>
+							</li>
+							<!-- END MOD -->
+							<li class='head hasSub' data-action-type='addturn'>Add Turn</li>
+						<$ } $>
+						<!-- BEGIN MOD -->
+						<!-- <li class='head'>Edit</li> -->
+						<!-- END MOD -->
+						<$ if(this.view) { $>
+							<li data-action-type='delete'>Delete</li>
+							<li data-action-type='copy'>Copy</li>
+						<$ } $>
+						<li data-action-type='paste'>Paste</li>
+						<!-- BEGIN MOD -->
+						<$ if(!this.view) { $>
+							<li data-action-type='undo'>Undo</li>
+						<$ } $>
+						<!-- END MOD -->
+						
+						<!-- BEGIN MOD -->          
+						<$ if(this.view) { $>
+							<li class='head hasSub' data-menuname='move'>
+							Move &raquo;
+								<ul class='submenu' data-menuname='move'>
+									<li data-action-type='tofront'>To Front</li>
+									<li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
+									<li data-action-type='back-one'>Back One<!-- (B-B)--></li>
+									<li data-action-type='toback'>To Back</li>    
+								</ul>
+							</li>
+						<$ } $>
+						
+						<$ if(this.get("type") == "image") { $>
+							<li class='head hasSub' data-menuname='VeUtil'>
+								Utilities &raquo;
+								<ul class='submenu' data-menuname='VeUtil'>
+									<li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>        
+									<li data-action-type='token-light'>Set&nbsp;Light</li>
+								</ul>
+							</li>        
+						<$ } $>      
+						<!-- END MOD -->
+						
+						<li class='head hasSub' data-menuname='advanced'>
+							Advanced &raquo;
+							<ul class='submenu' data-menuname='advanced'>
+								<li data-action-type='group'>Group</li>
+								<li data-action-type='ungroup'>Ungroup</li>
+								<$ if(this.get("type") == "image") { $>
+									<li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
+									<li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
+									<li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
+									<li data-action-type='setdimensions'>Set Dimensions</li>
+									<$ if(window.currentEditingLayer == "map") { $>
+										<li data-action-type='aligntogrid'>Align to Grid</li>
+									<$ } $>
+									<li data-action-type='copy-tokenid'>View Token ID</li>
+								<$ } $>
+							</ul>
+						</li>
+
+						<li class='head hasSub' data-menuname='positioning'>
+							Layer &raquo;
+							<ul class='submenu' data-menuname='positioning'>
+								<li data-action-type="tolayer_map" class='<$ if(this && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
+								<li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
+								<!-- BEGIN MOD -->
+								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
+								<!-- END MOD -->
+								<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
+								<li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer</li>
+								<!-- BEGIN MOD -->
+								<li data-action-type="tolayer_weather" class='<$ if(this && this.get("layer") == "weather") { $>active<$ } $>'>Weather Layer</li>
+								<!-- END MOD -->
+							</ul>
+						</li>
+					<$ } $>
+
+					<$ if(this.view && this.get("sides") !== "" && this.get("cardid") === "") { $>
+						<li class='head hasSub' data-menuname='mutliside'>
+							Multi-Sided &raquo;
+							<ul class='submenu' data-menuname='multiside'>
+								<li data-action-type='side_random'>Random Side</li>
+								<li data-action-type='side_choose'>Choose Side</li>
+								<li data-action-type='rollertokenresize'>Set Side Size</li>
+							</ul>
+						</li>
+					<$ } $>
 				</ul>
-			  </li>
-			  <!-- END MOD -->
-			  <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
-			  <$ } $>
-			  <!-- BEGIN MOD -->
-			  <!-- <li class='head'>Edit</li> -->
-			  <!-- END MOD -->
-			  <$ if(this.view) { $>
-			  <li data-action-type='delete'>Delete</li>
-			  <li data-action-type='copy'>Copy</li>
-			  <$ } $>
-			  <li data-action-type='paste'>Paste</li>
-			  <!-- BEGIN MOD -->
-			  <$ if(!this.view) { $>
-			  <li data-action-type='undo'>Undo</li>
-			  <$ } $>
-          	<!-- END MOD -->
-          
-			  <!-- BEGIN MOD -->          
-			   <li class='head hasSub' data-menuname='move'>
-				Move &raquo;
-				<ul class='submenu' data-menuname='move'>
-				  <$ if(this.view) { $>
-				  <li data-action-type='tofront'>To Front</li>
-				  <li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
-				  <li data-action-type='back-one'>Back One<!-- (B-B)--></li>
-				  <li data-action-type='toback'>To Back</li>
-				  <$ } $>              
-				</ul>
-			  </li>
-          
-			   <li class='head hasSub' data-menuname='VeUtil'>
-				Utilities &raquo;
-				<ul class='submenu' data-menuname='VeUtil'>
-				  <$ if(this.get("type") == "image") { $>
-				  <li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>        
-				  <$ } $>      
-				</ul>
-			  </li>
-			  <!-- END MOD -->
-	          
-			  <li class='head hasSub' data-menuname='advanced'>
-				Advanced &raquo;
-				<ul class='submenu' data-menuname='advanced'>
-				  <li data-action-type='group'>Group</li>
-				  <li data-action-type='ungroup'>Ungroup</li>
-				  <$ if(this.get("type") == "image") { $>
-				  <li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
-				  <li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
-				  <li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
-				  <li data-action-type='setdimensions'>Set Dimensions</li>
-				  <$ if(window.currentEditingLayer == "map") { $>
-				  <li data-action-type='aligntogrid'>Align to Grid</li>
-				  <$ } $>
-				  <li data-action-type='copy-tokenid'>View Token ID</li>
-				  <$ } $>
-				</ul>
-			  </li>
-			  <li class='head hasSub' data-menuname='positioning'>
-				Layer &raquo;
-				<ul class='submenu' data-menuname='positioning'>
-				  <li data-action-type="tolayer_map" class='<$ if(this && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
-				  <li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
-				  <!-- BEGIN MOD -->
-				  <li data-action-type="tolayer_foreground" class='<$ if(this && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
-				  <!-- END MOD -->
-				  <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
-				  <li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer</li>
-				  <!-- BEGIN MOD -->
-				  <li data-action-type="tolayer_weather" class='<$ if(this && this.get("layer") == "weather") { $>active<$ } $>'>Weather Layer</li>
-				  <!-- END MOD -->
-				</ul>
-			  </li>
-          <$ } $>
-          <$ if(this.view && this.get("sides") !== "" && this.get("cardid") === "") { $>
-          <li class='head hasSub' data-menuname='mutliside'>
-            Multi-Sided &raquo;
-            <ul class='submenu' data-menuname='multiside'>
-              <li data-action-type='side_random'>Random Side</li>
-              <li data-action-type='side_choose'>Choose Side</li>
-              <li data-action-type='rollertokenresize'>Set Side Size</li>
-            </ul>
-          </li>
-          <$ } $>
-        </ul>
-      </div>
-    </script>
+			</div>
+		</script>
 		`;
 
 	d20plus.template_charactereditor = `

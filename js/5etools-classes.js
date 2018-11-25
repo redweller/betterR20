@@ -102,6 +102,7 @@ function d20plusClass () {
 							text: "Cancel",
 							click: function () {
 								$(this).dialog("close");
+								$dialog.remove();
 								reject(`User cancelled the prompt`);
 							}
 						},
@@ -110,6 +111,8 @@ function d20plusClass () {
 							click: function () {
 								const selected = Number($selStrat.val());
 								$(this).dialog("close");
+								$dialog.remove();
+								if (isNaN(selected)) reject(`Value was not a number!`);
 								resolve(selected);
 							}
 						}
