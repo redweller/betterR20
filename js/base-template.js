@@ -601,7 +601,8 @@ const baseTemplate = function () {
               <li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
               <li data-action-type="tolayer_foreground" class='<$ if(this && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
               <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
-              <li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer (will not block LoS)</li>
+              <li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer</li>
+              <li data-action-type="tolayer_weather" class='<$ if(this && this.get("layer") == "weather") { $>active<$ } $>'>Weather Layer</li>
             </ul>
           </li>
           <$ } $>
