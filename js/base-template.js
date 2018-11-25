@@ -569,14 +569,25 @@ const baseTemplate = function () {
           <li data-action-type='copy'>Copy</li>
           <$ } $>
           <li data-action-type='paste'>Paste</li>
-          <li data-action-type='undo'>Undo</li>
-          <$ if(this.view) { $>
-          <li data-action-type='tofront'>To Front</li>
           <!-- BEGIN MOD -->
-          <li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
-          <li data-action-type='back-one'>Back One<!-- (B-B)--></li>
+          <$ if(!this.view) { $>
+          <li data-action-type='undo'>Undo</li>
+          <$ } $>
           <!-- END MOD -->
-          <li data-action-type='toback'>To Back</li>
+          
+          <!-- BEGIN MOD -->
+           <li class='head hasSub' data-menuname='move'>
+            Move &raquo;
+            <ul class='submenu' data-menuname='move'>
+			  <$ if(this.view) { $>
+			  <li data-action-type='tofront'>To Front</li>
+			  <li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
+			  <li data-action-type='back-one'>Back One<!-- (B-B)--></li>
+			  <li data-action-type='toback'>To Back</li>              
+            </ul>
+          </li>
+          <!-- END MOD -->
+          
           <li class='head hasSub' data-menuname='advanced'>
             Advanced &raquo;
             <ul class='submenu' data-menuname='advanced'>
@@ -599,10 +610,14 @@ const baseTemplate = function () {
             <ul class='submenu' data-menuname='positioning'>
               <li data-action-type="tolayer_map" class='<$ if(this && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
               <li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
+              <!-- BEGIN MOD -->
               <li data-action-type="tolayer_foreground" class='<$ if(this && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
+              <!-- END MOD -->
               <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
               <li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer</li>
+              <!-- BEGIN MOD -->
               <li data-action-type="tolayer_weather" class='<$ if(this && this.get("layer") == "weather") { $>active<$ } $>'>Weather Layer</li>
+              <!-- END MOD -->
             </ul>
           </li>
           <$ } $>
