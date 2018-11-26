@@ -542,6 +542,7 @@ const baseTemplate = function () {
 				<ul>
 					<$ if (Object.keys(this).length === 0) { $>
 						<li data-action-type='paste-image'>Paste Image from URL</li>
+						<li data-action-type='unlock-tokens'>Unlock...</li>
 					<$ } $>
 					<$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
 						<li class='head hasSub' data-action-type='takecard'>Take Card</li>
@@ -612,6 +613,13 @@ const baseTemplate = function () {
 									<$ if(window.currentEditingLayer == "map") { $>
 										<li data-action-type='aligntogrid'>Align to Grid</li>
 									<$ } $>
+								<$ } $>
+								
+								<$ if(this.view) { $>
+									<li data-action-type='lock-token'>Lock Position</li>
+								<$ } $>
+								
+								<$ if(this.get && this.get("type") == "image") { $>
 									<li data-action-type='copy-tokenid'>View Token ID</li>
 								<$ } $>
 							</ul>
@@ -620,15 +628,15 @@ const baseTemplate = function () {
 						<li class='head hasSub' data-menuname='positioning'>
 							Layer &raquo;
 							<ul class='submenu' data-menuname='positioning'>
-								<li data-action-type="tolayer_map" class='<$ if(this && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
-								<li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
+								<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
+								<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
 								<!-- BEGIN MOD -->
-								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
+								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
 								<!-- END MOD -->
-								<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
-								<li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer</li>
+								<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
+								<li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer</li>
 								<!-- BEGIN MOD -->
-								<li data-action-type="tolayer_weather" class='<$ if(this && this.get("layer") == "weather") { $>active<$ } $>'>Weather Layer</li>
+								<li data-action-type="tolayer_weather" class='<$ if(this && this.get && this.get("layer") == "weather") { $>active<$ } $>'>Weather Layer</li>
 								<!-- END MOD -->
 							</ul>
 						</li>

@@ -260,12 +260,17 @@ function d20plusEngine () {
 		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
 
 		const originalFn = d20.pagetoolbar.refreshPageListing;
+		// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+		const debouncedOverwrite = _.debounce(() => {
+			overwriteDraggables();
+			// fire an event for other parts of the script to listen for
+			const pageChangeEvt = new Event(`VePageChange`);
+			d20plus.ut.log("Firing page-change event");
+			document.dispatchEvent(pageChangeEvt);
+		}, 110);
 		d20.pagetoolbar.refreshPageListing = () => {
 			originalFn();
-			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-			_.debounce(() => {
-				overwriteDraggables();
-			}, 110)();
+			debouncedOverwrite();
 		}
 	};
 
@@ -968,6 +973,24 @@ function d20plusEngine () {
 									s.model.set("light_radius", light_radius);
 									s.model.save();
 								});
+							});
+							i();
+						} else if ("unlock-tokens" === e) {
+							d20plus.tool.get("UNLOCKER").openFn();
+							i();
+						} else if ("lock-token" === e) {
+							d20.engine.selected().forEach(it => {
+								if (it.model) {
+									it.lockMovementX = true;
+									it.lockMovementY = true;
+									it.lockScalingX = true;
+									it.lockScalingY = true;
+									it.lockRotation = true;
+									it.saveState();
+
+									it.model.set("VeLocked", true);
+									it.model.save();
+								}
 							});
 							i();
 						}
