@@ -588,7 +588,7 @@ const baseTemplate = function () {
 							</li>
 						<$ } $>
 						
-						<$ if(this.get("type") == "image") { $>
+						<$ if(this.get && this.get("type") == "image") { $>
 							<li class='head hasSub' data-menuname='VeUtil'>
 								Utilities &raquo;
 								<ul class='submenu' data-menuname='VeUtil'>
@@ -604,7 +604,7 @@ const baseTemplate = function () {
 							<ul class='submenu' data-menuname='advanced'>
 								<li data-action-type='group'>Group</li>
 								<li data-action-type='ungroup'>Ungroup</li>
-								<$ if(this.get("type") == "image") { $>
+								<$ if(this.get && this.get("type") == "image") { $>
 									<li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
 									<li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
 									<li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
@@ -634,7 +634,7 @@ const baseTemplate = function () {
 						</li>
 					<$ } $>
 
-					<$ if(this.view && this.get("sides") !== "" && this.get("cardid") === "") { $>
+					<$ if(this.view && this.get && this.get("sides") !== "" && this.get("cardid") === "") { $>
 						<li class='head hasSub' data-menuname='mutliside'>
 							Multi-Sided &raquo;
 							<ul class='submenu' data-menuname='multiside'>
