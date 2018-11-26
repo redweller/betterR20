@@ -89,7 +89,7 @@ function d20plusImporter () {
 		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
 			const folder = $(`[data-globalfolderid='${folderId}']`);
 			if (folder.length) {
-				d20plus.ut.log("Nuking folder...");
+				d20plus.ut.log("Nuking directory...");
 				const childItems = folder.find("[data-itemid]").each((i, e) => {
 					const $e = $(e);
 					const itemId = $e.attr("data-itemid");
@@ -100,6 +100,25 @@ function d20plusImporter () {
 				const childFolders = folder.find(`[data-globalfolderid]`).remove();
 				folder.remove();
 				$("#journalfolderroot").trigger("change");
+			}
+		}
+	};
+
+	d20plus.importer.recursiveArchiveDirById = function (folderId, withConfirmation) {
+		if (!withConfirmation || confirm("Are you sure you want to archive this folder, and everything in it? This cannot be undone.")) {
+			const folder = $(`[data-globalfolderid='${folderId}']`);
+			if (folder.length) {
+				d20plus.ut.log("Archiving directory...");
+				folder.find("[data-itemid]").each((i, e) => {
+					const $e = $(e);
+					const itemId = $e.attr("data-itemid");
+					let toArchive = d20.Campaign.handouts.get(itemId);
+					toArchive || (toArchive = d20.Campaign.characters.get(itemId));
+					if (toArchive && toArchive.attributes) {
+						toArchive.attributes.archived = true;
+						toArchive.save()
+					}
+				});
 			}
 		}
 	};

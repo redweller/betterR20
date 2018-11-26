@@ -154,11 +154,20 @@ function d20plusJournal () {
 		});
 
 		// New command on FOLDERS
-		var last = $("#journalmenu ul li").last();
+		const last = $("#journalmenu ul li").last();
 		last.after("<li style=\"background-color: #FA5050; color: white;\" data-action-type=\"fulldelete\">Delete Folder + Contents</li>");
-		$("#journalmenu ul").on(window.mousedowntype, "li[data-action-type=fulldelete]", function () {
+		last.after("<li data-action-type=\"archiveall\">Archive All Contents</li>");
+
+		const $journalUl = $("#journalmenu ul");
+
+		$journalUl.on(window.mousedowntype, "li[data-action-type=fulldelete]", function () {
 			d20plus.importer.recursiveRemoveDirById(d20plus.journal.lastClickedFolderId, true);
 			d20plus.journal.lastClickedFolderId = null;
+			$("#journalmenu").hide();
+		});
+
+		$journalUl.on(window.mousedowntype, "li[data-action-type=archiveall]", function () {
+			d20plus.importer.recursiveArchiveDirById(d20plus.journal.lastClickedFolderId, true);
 			$("#journalmenu").hide();
 		});
 	};
