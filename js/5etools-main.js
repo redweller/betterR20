@@ -116,6 +116,7 @@ const betteR205etools = function () {
 	let monsterFluffData = {};
 	let adventureMetadata = {};
 	let classDataUrls = {};
+	let brewCollectionIndex = {};
 
 	let monsterBrewDataUrls = [];
 
@@ -512,6 +513,11 @@ const betteR205etools = function () {
 		} catch (e) {
 			d20plus.ut.error(`Failed to load bestiary homebrew metadata!`);
 		}
+		try {
+			brewCollectionIndex =  await DataUtil.brew.pLoadCollectionIndex();
+		} catch (e) {
+			d20plus.ut.error("Failed to pre-load homebrew collection index");
+		}
 		d20plus.addJson(d20plus.onJsonLoad);
 	};
 
@@ -838,9 +844,17 @@ const betteR205etools = function () {
 			}));
 
 			const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
-			DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
+			DataUtil.loadJSON(brewUrl).then(async (data, debugUrl) => {
 				if (data.message) console.error(debugUrl, data.message);
-				data.forEach(it => {
+
+				const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(homebrewDir));
+				if (collectionItems.length) {
+					data = MiscUtil.copy(data);
+					const collectionIndex = await DataUtil.loadJSON(DataUtil.brew.getDirUrl("collection"));
+					collectionIndex.filter(it => collectionItems.includes(it.name)).forEach(it => data.push(it));
+				}
+
+				data.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
 					dropdown.append($('<option>', {
 						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
 						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
@@ -873,8 +887,16 @@ const betteR205etools = function () {
 				}
 
 				const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
-				DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
+				DataUtil.loadJSON(brewUrl).then(async (data, debugUrl) => {
 					if (data.message) console.error(debugUrl, data.message);
+
+					const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(homebrewDir));
+					if (collectionItems.length) {
+						data = MiscUtil.copy(data);
+						const collectionIndex = await DataUtil.loadJSON(DataUtil.brew.getDirUrl("collection"));
+						collectionIndex.filter(it => collectionItems.includes(it.name)).forEach(it => data.push(it));
+					}
+
 					data.forEach(it => {
 						$sel.append($('<option>', {
 							value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,

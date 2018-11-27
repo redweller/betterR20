@@ -13,7 +13,7 @@ const matchString = `
 
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
-// @namespace    https://rem.uz/
+// @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
 // @updateURL    https://get.5e.tools/script/betteR20-core.user.js
@@ -28,7 +28,7 @@ ${matchString}
 
 const HEADER_5ETOOLS = `// ==UserScript==
 // @name         betteR20-5etools
-// @namespace    https://rem.uz/
+// @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
 // @updateURL    https://get.5e.tools/script/betteR20-5etools.user.js
