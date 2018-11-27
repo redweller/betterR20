@@ -1,4 +1,4 @@
-function baseToolGridlock () {
+function baseToolUnlock () {
 	d20plus.tool.tools.push({
 		toolId: "UNLOCKER",
 		name: "Token Unlocker",
@@ -117,4 +117,4 @@ function baseToolGridlock () {
 	})
 }
 
-SCRIPT_EXTENSIONS.push(baseToolGridlock);
+SCRIPT_EXTENSIONS.push(baseToolUnlock);
