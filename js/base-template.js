@@ -396,16 +396,16 @@ const baseTemplate = function () {
 
 	d20plus.template_pageSettings = `
 	<script id="tmpl_pagesettings" type="text/html">
-		  <label style='padding-top: 4px;'>
+		<label style='padding-top: 4px;'>
 			<strong>Page Size</strong>
-		  </label>
-		  X: <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" /> un. (<$!this.model.get("width") * 70$> px)
-		  <div style="margin-left: 110px; margin-top: 2px;">Y: <input type="number" class="height" style="width: 50px;" value="<$!this.model.get("height")$>" /> un. (<$!this.model.get("height") * 70$> px)</div>
-		  <small style='display: block; font-size: 0.9em; margin-left: 110px;'>width by height, 1 unit = 70 pixels</small>
-		  <div class='clear' style='height: 15px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
-		  <input type="number" class="scale_number" style="width: 35px;" value="<$!this.model.get("scale_number")$>" />
-		  <select class='scale_units' style='width: 65px; position: relative;'>
+		</label>
+		X: <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" /> un. (<$!this.model.get("width") * 70$> px)
+		<div style="margin-left: 110px; margin-top: 2px;">Y: <input type="number" class="height" style="width: 50px;" value="<$!this.model.get("height")$>" /> un. (<$!this.model.get("height") * 70$> px)</div>
+		<small style='display: block; font-size: 0.9em; margin-left: 110px;'>width by height, 1 unit = 70 pixels</small>
+		<div class='clear' style='height: 15px;'></div>
+		<label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
+		<input type="number" class="scale_number" style="width: 35px;" value="<$!this.model.get("scale_number")$>" />
+		<select class='scale_units' style='width: 65px; position: relative;'>
 			<option value='ft'>ft.</option>
 			<option value='m'>m.</option>
 			<option value='km'>km.</option>
@@ -416,123 +416,142 @@ const baseTemplate = function () {
 			<option value='hex'>hex</option>
 			<option value='sq'>sq.</option>
 			<option value='custom'>Custom...</option>
-		  </select>
-		  <div class='hidden' id='custom_scale_units'>
+		</select>
+		<div class='hidden' id='custom_scale_units'>
 			<label style='margin-left: 55px; position: relative; top: 6px;'><strong>Custom Unit</strong></label>
 			<input style='width: 60px;' type='text'>
-		  </div>
-		  <div class='clear' style='height: 15px;'></div>
-		  <label>
+		</div>
+		<div class='clear' style='height: 15px;'></div>
+		<label>
 			<strong>Background</strong>
-		  </label>
-		  <input class='pagebackground' type='text'>
-		  <hr>
-		  <label style='position: relative; top: 8px;'>
+		</label>
+		<input class='pagebackground' type='text'>
+		
+		<hr>
+		
+		<label style='position: relative; top: 8px;'>
 			<strong>Grid</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='gridenabled' type='checkbox' value='1'>
 			Enabled, Size:
-		  </label>
-		  <input type="number" class="snappingincrement" style="width: 35px;" value="<$!this.model.get("snapping_increment")$>" /> units
-		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
-		  <select id='gridtype' style='width: 100px;'>
+		</label>
+		<input type="number" class="snappingincrement" style="width: 35px;" value="<$!this.model.get("snapping_increment")$>" /> units
+		<div class='clear' style='height: 7px;'></div>
+		<label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
+		<select id='gridtype' style='width: 100px;'>
 			<option selected value='square'>Square</option>
 			<option value='hex'>Hex (V)</option>
 			<option value='hexr'>Hex (H)</option>
-		  </select>
-		  <div class='clear' style='height: 7px;'></div>
-		  <label class='checkbox' id='hexlabels' style='margin-left: 130px;'>
+		</select>
+		<div class='clear' style='height: 7px;'></div>
+		<label class='checkbox' id='hexlabels' style='margin-left: 130px;'>
 			<input class='gridlabels' type='checkbox' value='1'>&nbsp; Show Labels</input>
-		  </label>
-		  <div class='clear' style='height: 2px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>
+		</label>
+		<div class='clear' style='height: 2px;'></div>
+		<label style='margin-left: 55px; position: relative; top: 4px;'>
 			<a class='showtip pictos' href='https://wiki.roll20.net/Ruler' target='_blank'>?</a>
 			Measurement
-		  </label>
-		  <select id='diagonaltype' style='width: 100px;'>
+		</label>
+		<select id='diagonaltype' style='width: 100px;'>
 			<option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
 			<option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
 			<option class='squareonly' value='manhattan'>Manhattan</option>
 			<option class='hexonly' value='hex'>Hex Path</option>
 			<option value='pythagorean'>Euclidean</option>
-		  </select>
-		  <div class='clear' style='height: 10px;'></div>
-		  <label style='margin-left: 55px;'>Color</label>
-		  <input class='gridcolor' type='text'>
-		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px;'>Opacity</label>
-		  <div class='gridopacity'></div>
-		  <div class='clear' style='height: 10px'></div>
-		  <hr>
-		  <label style='position: relative; top: -2px;'>
+		</select>
+		<div class='clear' style='height: 10px;'></div>
+		<label style='margin-left: 55px;'>Color</label>
+		<input class='gridcolor' type='text'>
+		<div class='clear' style='height: 7px;'></div>
+		<label style='margin-left: 55px;'>Opacity</label>
+		<div class='gridopacity'></div>
+		<div class='clear' style='height: 10px'></div>
+		
+		<hr>
+		
+		<label style='position: relative; top: -2px;'>
 			<strong>Fog of War</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='darknessenabled' type='checkbox' value='1'>&nbsp; Enabled</input>
-		  </label>
-		  <hr>
-		  <strong style="display: block;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
-		  <label style='position: relative; top: 3px; width: 85px; padding-left: 15px;'>
+		</label>
+		
+		<hr>
+		
+		<label style='position: relative; top: -2px;'>
+			<strong>Weather</strong>
+		</label>
+		<button class='btn Ve-btn-weather'>
+			Configure
+		</button>
+		
+		<hr>
+		
+		<strong style="display: block;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+		<label style='position: relative; top: 3px; width: 85px; padding-left: 15px;'>
 			<strong>Advanced Fog of War</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='advancedfowenabled showtip' style='margin-top: 8px; margin-bottom: 8px;' type='checkbox' value='1'>&nbsp; Enabled</input>
-		  </label>
-		  <span class='no_grid' style='display: none;'>
+		</label>
+		<span class='no_grid' style='display: none;'>
 			, Size:
 			<input type="number" class="advancedfowgridsize" style="width: 30px;" value="<$!this.model.get("adv_fow_grid_size")$>" /> units
-		  </span>
-		  <br>
-		  <label class='checkbox'>
+		</span>
+		<br>
+		<label class='checkbox'>
 			<input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>&nbsp; Show Grid</input>
-		  </label>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>&nbsp; Dim Light Reveals</input>
-		  </label>
-		  <br>
-		  <br>
-		  <label style='position: relative; top: -2px;'>
+		</label>
+		<br>
+		<br>
+		<label style='position: relative; top: -2px;'>
 			<strong>Dynamic Lighting</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='lightingenabled showtip' type='checkbox' value='1'>&nbsp; Enabled</input>
-		  </label>
-		  <br>
-		  <label class='checkbox'>
+		</label>
+		<br>
+		<label class='checkbox'>
 			<input class='lightenforcelos showtip' title="Player's line of sight set by what tokens they can control." type='checkbox' value='1'>&nbsp; Enforce Line of Sight</input>
-		  </label>
-		  <br>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='lightingupdate' type='checkbox' value='1'>&nbsp; Only Update on Drop</input>
-		  </label>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='lightrestrictmove' title="Don't allow player tokens to move through Dynamic Lighting walls. Can be enabled even if lighting is not used." type='checkbox' value='1'>&nbsp; Restrict Movement</input>
-		  </label>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='lightglobalillum' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>&nbsp; Global Illumination</input>
-		  </label>
-		  <hr>
-		  <label style='font-weight: bold;'>GM Opacity</label>
-		  <div class='fogopacity'></div>
-		  <div class='clear'></div>
-		  <hr>
-		  <label style='font-weight: bold;'>Play on Load</label>
-		  <select class='pagejukeboxtrigger' style='width: 180px;'></select>
-		  <div class='clear'></div>
-		  <hr>
-		  <button class='delete btn btn-danger' style='float: right;'>
+		</label>
+		<hr>
+		<label style='font-weight: bold;'>GM Opacity</label>
+		<div class='fogopacity'></div>
+		<div class='clear'></div>
+		
+		<hr>
+		
+		<label style='font-weight: bold;'>Play on Load</label>
+		<select class='pagejukeboxtrigger' style='width: 180px;'></select>
+		<div class='clear'></div>
+		
+		<hr>
+		
+		<button class='delete btn btn-danger' style='float: right;'>
 			Delete Page
-		  </button>
-		  <button class='archive btn'>
+		</button>
+		<button class='archive btn'>
 			Archive Page
-		  </button>
-		  <div class='clear'></div>
+		</button>
+		<div class='clear'></div>
 	</script>
 	`;
 

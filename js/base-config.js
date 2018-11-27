@@ -531,6 +531,8 @@ function baseConfig() {
 		}
 	};
 
+	/*
+	// Left here for future use, in case anything similar is required
 	d20plus.cfg._handleWeatherConfigChange = () => {
 		function handleProp (prop) {
 			const campaignKey = `bR20cfg_${prop}`;
@@ -557,10 +559,11 @@ function baseConfig() {
 			handleProp("weatherEffect1");
 		}
 	};
+	*/
 
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg._handleStatusTokenConfigChange();
-		d20plus.cfg._handleWeatherConfigChange();
+		// d20plus.cfg._handleWeatherConfigChange();
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 1), 0);
 			$(`#secondary-toolbar`).css({opacity: v});
