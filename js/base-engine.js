@@ -788,45 +788,6 @@ function d20plusEngine () {
 						} else if ("rollertokenresize" === e) {
 							resizeToken();
 							i();
-						} else if ("paste-image" === e) {
-							const mousePos = [...d20.engine.mousePos];
-							const pageId = d20.Campaign.activePage().id;
-							const layer = window.currentEditingLayer;
-
-							const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
-
-							if(!url) {
-								i();
-								return;
-							}
-
-							d20plus.art.setLastImageUrl(url);
-
-							const img = new Image();
-							img.onload = () => {
-								const toCreate = {
-									left: mousePos[0],
-									top: mousePos[1],
-									width: img.width,
-									height: img.height,
-									z_index: 0,
-									imgsrc: url,
-									rotation: 0,
-									type: "image",
-									page_id: pageId,
-									layer,
-									id: d20plus.ut.generateRowId()
-								};
-
-								const created = d20.Campaign.activePage().thegraphics.create(toCreate);
-								created.save();
-							};
-							img.onerror = (...err) => {
-								alert("Could not load image! See the console for more information.");
-								console.error(...err);
-							};
-							img.src = url;
-							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
 							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);

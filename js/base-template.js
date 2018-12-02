@@ -560,7 +560,6 @@ const baseTemplate = function () {
 			<div class='actions_menu d20contextmenu'>
 				<ul>
 					<$ if (Object.keys(this).length === 0) { $>
-						<li data-action-type='paste-image'>Paste Image from URL</li>
 						<li data-action-type='unlock-tokens'>Unlock...</li>
 					<$ } $>
 					<$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
