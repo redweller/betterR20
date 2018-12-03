@@ -833,9 +833,15 @@ function d20plusEngine () {
 									]
 								});
 							}).then(num => {
-								const statusString = `${num}`.split("").reverse().map(it => `fluffy-wing@${it}`).join(",");
+								const STATUS_PREFIX = `fluffy-wing@`;
+								const statusString = `${num}`.split("").reverse().map(it => `${STATUS_PREFIX}${it}`).join(",");
 								sel.forEach(s => {
-									s.model.set("statusmarkers", statusString);
+									const existing = s.model.get("statusmarkers");
+									if (existing && existing.trim()) {
+										s.model.set("statusmarkers", [statusString, ...existing.split(",").filter(it => it && it && !it.startsWith(STATUS_PREFIX))].join(","));
+									} else {
+										s.model.set("statusmarkers", statusString);
+									}
 									s.model.save();
 								});
 							});
