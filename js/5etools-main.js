@@ -1453,6 +1453,12 @@ const betteR205etools = function () {
 					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 				});
+
+				if (race.languageTags) {
+					const lRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_proficiencies_${lRowId}_name`, race.languageTags.join(", "));
+					attrs.add(`repeating_proficiencies_${lRowId}_options-flag`, "0");
+				}
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("race", race.name);
 				attrs.addOrUpdate("size", Parser.sizeAbvToFull(race.size).toUpperCase());
