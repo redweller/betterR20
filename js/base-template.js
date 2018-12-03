@@ -1,6 +1,14 @@
 const baseTemplate = function () {
 	d20plus.template = {};
 
+	d20plus.template.swapTemplates = () => {
+		d20plus.ut.log("Swapping templates...");
+		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
+		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
+		$("#tmpl_deckeditor").html($(d20plus.template.deckeditor).html());
+		$("#tmpl_cardeditor").html($(d20plus.template.cardeditor).html());
+	};
+
 	d20plus.settingsHtmlPtFooter = `<p>
 			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
@@ -893,6 +901,196 @@ const baseTemplate = function () {
       </div>
     </script>
 	`;
+
+	d20plus.template.deckeditor = `
+	<script id='tmpl_deckeditor' type='text/html'>
+      <div class='dialog largedialog deckeditor' style='display: block;'>
+        <label>Name</label>
+        <input class='name' type='text'>
+        <div class='clear' style='height: 14px;'></div>
+        <label>
+          <input class='showplayers' type='checkbox'>
+          Show deck to players?
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          <input class='playerscandraw' type='checkbox'>
+          Players can draw cards?
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          <input class='infinitecards' type='checkbox'>
+          Cards in deck are infinite?
+        </label>
+        <p class='infinitecardstype'>
+          <label>
+            <input name='infinitecardstype' type='radio' value='random'>
+            Always a random card
+          </label>
+          <label>
+            <input name='infinitecardstype' type='radio' value='cycle'>
+            Draw through deck, shuffle, repeat
+          </label>
+        </p>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          Allow choosing specific cards from deck:
+          <select class='deckpilemode'>
+            <option value='none'>Disabled</option>
+            <option value='choosebacks_gm'>GM Choose: Show Backs</option>
+            <option value='choosefronts_gm'>GM Choose: Show Fronts</option>
+            <option value='choosebacks'>GM + Players Choose: Show Backs</option>
+            <option value='choosefronts'>GM + Players Choose: Show Fronts</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          Discard Pile:
+          <select class='discardpilemode'>
+            <option value='none'>No discard pile</option>
+            <option value='choosebacks'>Choose: Show Backs</option>
+            <option value='choosefronts'>Choose: Show Fronts</option>
+            <option value='drawtop'>Draw most recent/top card</option>
+            <option value='drawbottom'>Draw oldest/bottom card</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <hr>
+        <strong>When played to the tabletop...</strong>
+        <div class='clear' style='height: 5px;'></div>
+        <label>
+          Played Facing:
+          <select class='cardsplayed' style='display: inline-block; width: auto; position: relative; top: 3px;'>
+            <option value='facedown'>Face Down</option>
+            <option value='faceup'>Face Up</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          Considered:
+          <select class='treatasdrawing' style='display: inline-block; width: auto; position: relative; top: 3px;'>
+            <option value='true'>Drawings (No Bubbles/Stats)</option>
+            <option value='false'>Tokens (Including Bubbles and Stats)</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <div class='inlineinputs'>
+          Card Size:
+          <input class='defaultwidth' type='text'>
+          x
+          <input class='defaultheight' type='text'>
+          px
+        </div>
+        <small style='text-align: left; padding-left: 135px; width: auto;'>Leave blank for default auto-sizing</small>
+        <div class='clear' style='height: 7px;'></div>
+        <!-- %label -->
+        <!-- %input.showalldrawn(type="checkbox") -->
+        <!-- Everyone sees what card is drawn onto top of deck? -->
+        <!-- .clear(style="height: 7px;") -->
+        <hr>
+        <strong>In other's hands...</strong>
+        <div class='clear' style='height: 5px;'></div>
+        <div class='inlineinputs'>
+          <label style='width: 75px;'>Players see:</label>
+          <label>
+            <input class='players_seenumcards' type='checkbox'>
+            Number of Cards
+          </label>
+          <label>
+            <input class='players_seefrontofcards' type='checkbox'>
+            Front of Cards
+          </label>
+        </div>
+        <div class='clear' style='height: 5px;'></div>
+        <div class='inlineinputs'>
+          <label style='width: 75px;'>GM sees:</label>
+          <label>
+            <input class='gm_seenumcards' type='checkbox'>
+            Number of Cards
+          </label>
+          <label>
+            <input class='gm_seefrontofcards' type='checkbox'>
+            Front of Cards
+          </label>
+        </div>
+        <div class='clear' style='height: 5px;'></div>
+        <hr>
+        <button class='addcard btn' style='float: right;'>
+          <span class='pictos'>&</span>
+          Add Card
+        </button>
+        <h3>Cards</h3>
+        <div class='clear' style='height: 7px;'></div>
+        <table class='table table-striped'>
+          <tbody></tbody>
+        </table>
+        <div class='clear' style='height: 15px;'></div>
+        <label>
+          <strong>Card Backing (Required)</strong>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <!-- BEGIN MOD -->
+        <button class='btn deck-image-by-url' style="margin-bottom: 10px" data-deck-id="<$!this.id$>">Set image from URL...</button>
+        <!-- END MOD -->
+        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+        <div class='status'></div>
+        <div class='inner'></div>
+        <$ if(this.get("avatar") == "") { $>
+        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
+        <br>or</br>
+        <button class='btn'>Choose a file...</button>
+        <input class='manual' type='file'>
+        <$ } else { $>
+        <img src="<$!this.get("avatar")$>" />
+        <div class='remove'>
+          <a href='javascript:void(0);'>Remove</a>
+        </div>
+        <$ } $>
+        </div>
+        </div>
+        <div class='clear' style='height: 20px;'></div>
+        <p style='float: left;'>
+          <button class='btn dupedeck'>Duplicate Deck</button>
+        </p>
+        <$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
+        <p style='text-align: right;'>
+          <button class='btn btn-danger deletedeck'>Delete Deck</button>
+        </p>
+        <$ } $>
+      </div>
+    </script>
+	`;
+	d20plus.template.cardeditor = `
+    <script id='tmpl_cardeditor' type='text/html'>
+      <div class='dialog largedialog cardeditor' style='display: block;'>
+        <label>Name</label>
+        <input class='name' type='text'>
+        <div class='clear'></div>
+        <!-- BEGIN MOD -->
+        <button class='btn card-image-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
+        <!-- END MOD -->
+        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+        <div class="status"></div>
+        <div class="inner">
+        <$ if(this.get("avatar") == "") { $>
+        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
+        <br>or</br>
+        <button class='btn'>Choose a file...</button>
+        <input class='manual' type='file'>
+        <$ } else { $>
+        <img src="<$!this.get("avatar")$>" />
+        <div class='remove'>
+          <a href='javascript:void(0);'>Remove</a>
+        </div>
+        <$ } $>
+        </div>
+        </div>
+        <div class='clear'></div>
+        <label>&nbsp;</label>
+        <button class='deletecard btn btn-danger'>Delete Card</button>
+      </div>
+    </script>
+	`
 };
 
 SCRIPT_EXTENSIONS.push(baseTemplate);

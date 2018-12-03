@@ -284,6 +284,25 @@ function d20plusArt () {
 				});
 			}
 		});
+
+		$(`.deck-image-by-url`).live("click", function () {
+			const dId = $(this).attr("data-deck-id");
+			const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+			if (url) {
+				d20plus.art.setLastImageUrl(url);
+				d20.Campaign.decks.get(dId).set("avatar", url)
+			}
+		});
+
+		$(`.card-image-by-url`).live("click", function () {
+			const cId = $(this).attr("data-card-id");
+			const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+			if (url) {
+				d20plus.art.setLastImageUrl(url);
+				const card = d20.Campaign.decks.find(it => it.cards.find(c => c.id === cId)).cards.find(c => c.id === cId);
+				card.set("avatar", url);
+			}
+		});
 	};
 
 	d20plus.art._lastImageUrl = "https://example.com/pic.png";
