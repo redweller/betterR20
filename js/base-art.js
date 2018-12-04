@@ -303,6 +303,42 @@ function d20plusArt () {
 				card.set("avatar", url);
 			}
 		});
+
+		$(`.deck-mass-cards-by-url`).live("click", function () {
+			const dId = $(this).attr("data-deck-id");
+
+			const deck = d20.Campaign.decks.get(dId);
+
+			const cleanTemplate = d20plus.addArtMassAdderHTML.replace(/id="[^"]+"/gi, "");
+			const $dialog = $(cleanTemplate).appendTo($("body"));
+			const $iptTxt = $dialog.find(`textarea`);
+			const $btnAdd = $dialog.find(`button`).click(() => {
+				const lines = ($iptTxt.val() || "").split("\n");
+				const toSaveAll = [];
+				lines.filter(it => it && it.trim()).forEach(l => {
+					const split = l.split("---").map(it => it.trim()).filter(Boolean);
+					if (split.length >= 2) {
+						const [name, url] = split;
+						const toSave = deck.cards.push({
+							avatar: url,
+							id: d20plus.ut.generateRowId(),
+							name,
+							placement: 99
+						});
+						toSaveAll.push(toSave);
+					}
+				});
+				$dialog.dialog("close");
+
+				toSaveAll.forEach(s => s.save());
+				deck.save();
+			});
+
+			$dialog.dialog({
+				width: 800,
+				height: 650
+			});
+		});
 	};
 
 	d20plus.art._lastImageUrl = "https://example.com/pic.png";

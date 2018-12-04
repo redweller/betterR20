@@ -52,8 +52,8 @@ const baseTemplate = function () {
 
 	d20plus.addArtMassAdderHTML = `
 	<div id="d20plus-artmassadd" title="Mass Add Art URLs">
-	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
-	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://pics.me/img1.png"></textarea></p>
+	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
+	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
 	</div>`;
 
 	d20plus.artListHTML = `
@@ -1015,6 +1015,11 @@ const baseTemplate = function () {
         </div>
         <div class='clear' style='height: 5px;'></div>
         <hr>
+        <!-- BEGIN MOD -->
+        <button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px;' data-deck-id="<$!this.id$>">
+          Add Cards from URLs
+        </button>
+        <!-- END MOD -->
         <button class='addcard btn' style='float: right;'>
           <span class='pictos'>&</span>
           Add Card

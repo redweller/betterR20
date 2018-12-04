@@ -27,7 +27,7 @@ function baseUi () {
 				autoOpen: false,
 				resizable: true,
 				width: 800,
-				height: 400,
+				height: 650,
 			});
 		}
 		const $cfgEditor = $("#d20plus-configeditor");
