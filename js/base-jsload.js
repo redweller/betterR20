@@ -3,7 +3,7 @@ function baseJsLoad () {
 
 	d20plus.js.scripts = [
 		{name: "listjs", url: "https://raw.githubusercontent.com/javve/list.js/v1.5.0/dist/list.min.js"},
-		{name: "localforace", url: "https://raw.githubusercontent.com/localForage/localForage/1.7.3/dist/localforage.min.js"},
+		{name: "localforage", url: "https://raw.githubusercontent.com/localForage/localForage/1.7.3/dist/localforage.min.js"},
 		{name: "5etoolsUtils", url: `${SITE_JS_URL}utils.js`}
 	];
 	d20plus.js.apiScripts = [
