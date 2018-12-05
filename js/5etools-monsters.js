@@ -236,49 +236,12 @@ function d20plusMonsters () {
 			const renderer = new EntryRenderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
-			// get fluff, if available
-			const includedFluff = data.fluff;
+			const fluff = EntryRenderer.monster.getFluff(data, monsterMetadata, monsterFluffData[data.source] || []);
 			let renderFluff = null;
-			// prefer fluff directly attached to the creature
-			if (includedFluff) {
-				if (includedFluff.entries) {
-					const depth = includedFluff.entries.type === "section" ? -1 : 2;
-					renderFluff = renderer.renderEntry(includedFluff.entries, depth);
-				}
-			} else {
-				const fluffData = monsterFluffData[data.source] ? monsterFluffData[data.source] : null;
-				const fluff = fluffData ? monsterFluffData[data.source].monster.find(it => it.name === data.name) : null;
-				if (fluff) {
-					if (fluff._copy) {
-						const cpy = fluffData.monster.find(it => fluff._copy.name === it.name);
-						// preserve these
-						const name = fluff.name;
-						const src = fluff.source;
-						const images = fluff.images;
-						Object.assign(fluff, cpy);
-						fluff.name = name;
-						fluff.source = src;
-						if (images) fluff.images = images;
-						delete fluff._copy;
-					}
-
-					if (fluff._appendCopy) {
-						const cpy = fluffData.monster.find(it => fluff._appendCopy.name === it.name);
-						if (cpy.images) {
-							if (!fluff.images) fluff.images = cpy.images;
-							else fluff.images = fluff.images.concat(cpy.images);
-						}
-						if (cpy.entries) {
-							if (!fluff.entries) fluff.entries = cpy.entries;
-							else fluff.entries = fluff.entries.concat(cpy.entries);
-						}
-						delete fluff._appendCopy;
-					}
-
-					if (fluff.entries) {
-						renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries});
-					}
-				}
+			if (fluff) {
+				const depth = fluff.type === "section" ? -1 : 2;
+				if (fluff.type !== "section") renderer.setFirstSection(false);
+				renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries}, depth);
 			}
 
 			d20.Campaign.characters.create(
@@ -307,14 +270,18 @@ function d20plusMonsters () {
 							character.name = name;
 							character.senses = data.senses;
 							character.hp = data.hp.average || 0;
+							const firstFluffImage = fluff && fluff.images ? (() => {
+								const firstImage = fluff.images[0] || {};
+								return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
+							})() : null;
 							$.ajax({
 								url: avatar,
 								type: 'HEAD',
 								error: function () {
-									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`, firstFluffImage);
 								},
 								success: function () {
-									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.ut.getAntiCacheSuffix()}`);
+									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.ut.getAntiCacheSuffix()}`, firstFluffImage);
 								}
 							});
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();

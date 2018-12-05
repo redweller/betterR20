@@ -114,6 +114,7 @@ const betteR205etools = function () {
 	let monsterDataUrls = {};
 	let monsterFluffDataUrls = {};
 	let monsterFluffData = {};
+	let monsterMetadata = {};
 	let adventureMetadata = {};
 	let classDataUrls = {};
 	let brewCollectionIndex = {};
@@ -427,6 +428,7 @@ const betteR205etools = function () {
 		{name: "spell metadata", url: SPELL_META_URL},
 		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`},
 		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`},
+		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}meta.json`},
 		{name: "adventures index", url: `${DATA_URL}adventures.json`},
 		{name: "basic items", url: `${DATA_URL}basicitems.json`}
 	];
@@ -440,6 +442,7 @@ const betteR205etools = function () {
 			else if (name === "spell metadata") spellMetaData = data;
 			else if (name === "bestiary index") monsterDataUrls = data;
 			else if (name === "bestiary fluff index") monsterFluffDataUrls = data;
+			else if (name === "bestiary metadata") monsterMetadata = data;
 			else if (name === "adventures index") adventureMetadata = data;
 			else if (name === "basic items") {
 				data.itemProperty.forEach(p => EntryRenderer.item._addProperty(p));

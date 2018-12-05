@@ -329,8 +329,7 @@ function d20plusImporter () {
 		});
 	};
 
-	d20plus.importer.getSetAvatarImage = function (character, avatar) {
-		character.attributes.avatar = avatar;
+	d20plus.importer.getSetAvatarImage = async function (character, avatar, portraitUrl) {
 		var tokensize = 1;
 		if (character.size === "L") tokensize = 2;
 		if (character.size === "H") tokensize = 3;
@@ -355,7 +354,25 @@ function d20plusImporter () {
 			}
 		}
 
-		character.updateBlobs({avatar: avatar, defaulttoken: JSON.stringify(defaulttoken)});
+		// ensure any portrait URL exists
+		let outPortraitUrl = portraitUrl || avatar;
+		if (portraitUrl) {
+			await new Promise(resolve => {
+				$.ajax({
+					url: portraitUrl,
+					type: 'HEAD',
+					error: function () {
+						d20plus.ut.error(`Could not access portrait URL "${portraitUrl}"`);
+						outPortraitUrl = avatar;
+						resolve()
+					},
+					success: () => resolve()
+				});
+			});
+		}
+
+		character.attributes.avatar = outPortraitUrl;
+		character.updateBlobs({avatar: outPortraitUrl, defaulttoken: JSON.stringify(defaulttoken)});
 		character.save({defaulttoken: (new Date()).getTime()});
 	};
 
