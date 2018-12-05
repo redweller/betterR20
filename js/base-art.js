@@ -355,13 +355,7 @@ function d20plusArt () {
 		const STATES = ["0", "1", "2"]; // off, blue, red
 
 		function pGetJson (url) { // avoid using the main site method's caching
-			return new Promise(resolve => {
-				$.getJSON(url, data => resolve(data));
-			});
-		}
-
-		function pFetchFiles () {
-			return pGetJson(`https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/ExternalArt/dist?client_id=${HOMEBREW_CLIENT_ID}&client_secret=${HOMEBREW_CLIENT_SECRET}&t=${TIME}`);
+			return new Promise(resolve => $.getJSON(url, data => resolve(data)));
 		}
 
 		const $win = $(`<div title="Art Repository" class="artr__win"/>`)
@@ -372,7 +366,7 @@ function d20plusArt () {
 				height: 1
 			});
 
-		function doInit () {
+		async function doInit () {
 			const $sidebar = $(`<div class="artr__side"/>`).appendTo($win);
 			const $mainPane = $(`<div class="artr__main"/>`).appendTo($win);
 			const $loadings = [
@@ -380,228 +374,205 @@ function d20plusArt () {
 				$(`<div class="artr__main__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($mainPane)
 			];
 
-			const pContent = (d) => {
-				return new Promise(resolve => {
-					pGetJson(`${d.download_url}?t=${TIME}`).then(json => {
-						d._contents = json;
-						resolve();
+			const start = (new Date()).getTime();
+			const GH_PATH = `https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/develop/ExternalArt/dist/`;
+			const [enums, index] = await Promise.all([pGetJson(`${GH_PATH}_meta_enums.json`), pGetJson(`${GH_PATH}_meta_index.json`)]);
+			d20plus.ut.log(`Loaded metadata in ${((new Date()).getTime() - start) / 1000} secs.`);
+
+			Object.keys(index).forEach(k => index[k]._key = k);
+
+			let filters = {};
+			let search = "";
+			let currentItem = null;
+			let currentIndexKey = null;
+
+			function _searchFeatures (item, doLowercase) {
+				// features are lowercase in index
+				return !!(item.features || []).find(x => (doLowercase ? x.toLowerCase() : x).includes(search));
+			}
+
+			function _filterProps (item) {
+				if (Object.keys(filters).length) {
+					const missingOrUnwanted = Object.keys(filters).find(prop => {
+						if (!item[prop]) return true;
+						const requiredVals = Object.keys(filters[prop]).filter(k => filters[prop][k]);
+						const missingEnum = !!requiredVals.find(x => !item[prop].includes(x));
+						const excludedVals = Object.keys(filters[prop]).filter(k => !filters[prop][k]);
+						const unwantedEnum = !!excludedVals.find(x => item[prop].includes(x));
+						return missingEnum || unwantedEnum;
 					});
-				})
-			};
+					if (missingOrUnwanted) return false;
+				}
+				return true;
+			}
 
-			pFetchFiles().then(data => {
-				let totalSize = 0;
-				// remove unused data
-				data.forEach(d => {
-					delete d.sha;
-					totalSize += d.size;
-					delete d.size;
-					delete d.html_url;
-					delete d.git_url;
-					delete d.api_url;
-					delete d._links;
+			function applyFilterAndSearchToIndex () {
+				search = search.toLowerCase();
+				return Object.values(index).filter(it => {
+					if (search) {
+						const searchVisible = it._set.toLowerCase().includes(search)
+							|| it._artist.toLowerCase().includes(search)
+							|| _searchFeatures(it);
+						if (!searchVisible) return false;
+					}
+					return _filterProps(it);
 				});
-				const start = (new Date()).getTime();
+			}
 
-				const metaEnum = data.find(d => d.name === "_meta_enums.json");
-				const metaIndex = data.find(d => d.name === "_meta_index.json");
-				Promise.all([pContent(metaEnum), pContent(metaIndex)]).then(() => {
-					const enums = metaEnum._contents;
-					const index = metaIndex._contents;
-					index.forEach((it, i) => it._file = `${i}.json`);
-					d20plus.ut.log(`Finished loading in ${((new Date()).getTime() - start) / 1000} secs.`);
+			function applyFilterAndSearchToItem () {
+				const cpy = MiscUtil.copy(currentItem);
+				cpy.data = cpy.data.filter(it => {
+					if (search) if (!_searchFeatures(it, true)) return false;
+					return _filterProps(it);
+				});
+				return cpy;
+			}
 
-					let filters = {};
-					let search = "";
-					let currentItem = null;
+			$loadings.forEach($l => $l.remove());
 
-					function _searchFeatures (item, doLowercase) {
-						// features are lowercase in index
-						return !!(item.features || []).find(x => (doLowercase ? x.toLowerCase() : x).includes(search));
+			// SIDEBAR /////////////////////////////////////////////////////////////////////////////////////////
+			const $sideHead = $(`<div class="split split--center p-2 artr__side__head"><div class="artr__side__head__title">Filters</div></div>`).appendTo($sidebar);
+			// This functionality is contained in the filter buttons, but might need to be done here to improve performance in the future
+			// $(`<button class="btn">Apply</button>`).click(() => {
+			// 	if (currentItem) doRenderItem(applyFilterAndSearchToItem());
+			// 	else doRenderIndex(applyFilterAndSearchToIndex())
+			// }).appendTo($sideHead);
+
+			const $sideBody = $(`<div class="artr__side__body"/>`).appendTo($sidebar);
+			const addSidebarSection = prop => {
+				const fullName = (() => {
+					switch (prop) {
+						case "imageType": return "Image Type";
+						case "grid": return "Grid Type";
+						case "monster": return "Monster Type";
+						case "audience": return "Intended Audience";
+						case "quality":
+						case "view":
+						case "style":
+						case "terrain":
+						case "setting":
+							return prop.uppercaseFirst();
 					}
+				})();
+				const $tagHead = $(`<div class="artr__side__tag_header"><div>${fullName}</div><div>[\u2013]</div></div>`).appendTo($sideBody).click(() => {
+					$tagGrid.toggle();
+					$tagHead.html($tagHead.html().replace(/\[.]/, (...m) => m[0] === "[+]" ? "[\u2013]" : "[+]"));
+				});
+				const $tagGrid = $(`<div class="artr__side__tag_grid"/>`).appendTo($sideBody);
+				const getNextState = (state, dir) => {
+					const ix = STATES.indexOf(state) + dir;
+					if (ix > STATES.length - 1) return STATES[0];
+					if (ix < 0) return STATES.last();
+					return STATES[ix];
+				};
+				enums[prop].forEach(enm => {
+					const cycleState = dir => {
+						const nxtState = getNextState($btn.attr("data-state"), dir);
+						$btn.attr("data-state", nxtState);
 
-					function _filterProps (item) {
-						if (Object.keys(filters).length) {
-							const missingOrUnwanted = Object.keys(filters).find(prop => {
-								if (!item[prop]) return true;
-								const requiredVals = Object.keys(filters[prop]).filter(k => filters[prop][k]);
-								const missingEnum = !!requiredVals.find(x => !item[prop].includes(x));
-								const excludedVals = Object.keys(filters[prop]).filter(k => !filters[prop][k]);
-								const unwantedEnum = !!excludedVals.find(x => item[prop].includes(x));
-								return missingEnum || unwantedEnum;
-							});
-							if (missingOrUnwanted) return false;
-						}
-						return true;
-					}
+						if (nxtState === "0") {
+							delete filters[prop][enm.v];
+							if (!Object.keys(filters[prop]).length) delete filters[prop];
+						} else (filters[prop] = filters[prop] || {})[enm.v] = nxtState === "1";
 
-					function applyFilterAndSearchToIndex () {
-						search = search.toLowerCase();
-						return index.filter(it => {
-							if (search) {
-								const searchVisible = it._set.toLowerCase().includes(search)
-									|| it._artist.toLowerCase().includes(search)
-									|| _searchFeatures(it);
-								if (!searchVisible) return false;
-							}
-							return _filterProps(it);
-						});
-					}
-
-					function applyFilterAndSearchToItem () {
-						const cpy = MiscUtil.copy(currentItem);
-						cpy.data = cpy.data.filter(it => {
-							if (search) if (!_searchFeatures(it, true)) return false;
-							return _filterProps(it);
-						});
-						return cpy;
-					}
-
-					$loadings.forEach($l => $l.remove());
-
-					// SIDEBAR /////////////////////////////////////////////////////////////////////////////////////////
-					const $sideHead = $(`<div class="split split--center p-2 artr__side__head"><div class="artr__side__head__title">Filters</div></div>`).appendTo($sidebar);
-					// This functionality is contained in the filter buttons, but might need to be done here to improve performance in the future
-					// $(`<button class="btn">Apply</button>`).click(() => {
-					// 	if (currentItem) doRenderItem(applyFilterAndSearchToItem());
-					// 	else doRenderIndex(applyFilterAndSearchToIndex())
-					// }).appendTo($sideHead);
-
-					const $sideBody = $(`<div class="artr__side__body"/>`).appendTo($sidebar);
-					const addSidebarSection = prop => {
-						const fullName = (() => {
-							switch (prop) {
-								case "imageType": return "Image Type";
-								case "grid": return "Grid Type";
-								case "monster": return "Monster Type";
-								case "audience": return "Intended Audience";
-								case "quality":
-								case "view":
-								case "style":
-								case "terrain":
-								case "setting":
-									return prop.uppercaseFirst();
-							}
-						})();
-						const $tagHead = $(`<div class="artr__side__tag_header"><div>${fullName}</div><div>[\u2013]</div></div>`).appendTo($sideBody).click(() => {
-							$tagGrid.toggle();
-							$tagHead.html($tagHead.html().replace(/\[.]/, (...m) => m[0] === "[+]" ? "[\u2013]" : "[+]"));
-						});
-						const $tagGrid = $(`<div class="artr__side__tag_grid"/>`).appendTo($sideBody);
-						const getNextState = (state, dir) => {
-							const ix = STATES.indexOf(state) + dir;
-							if (ix > STATES.length - 1) return STATES[0];
-							if (ix < 0) return STATES.last();
-							return STATES[ix];
-						};
-						enums[prop].forEach(enm => {
-							const cycleState = dir => {
-								const nxtState = getNextState($btn.attr("data-state"), dir);
-								$btn.attr("data-state", nxtState);
-
-								if (nxtState === "0") {
-									delete filters[prop][enm.v];
-									if (!Object.keys(filters[prop]).length) delete filters[prop];
-								} else (filters[prop] = filters[prop] || {})[enm.v] = nxtState === "1";
-
-								if (currentItem) doRenderItem(applyFilterAndSearchToItem());
-								else doRenderIndex(applyFilterAndSearchToIndex());
-							};
-
-							const $btn = $(`<button class="btn artr__side__tag" data-state="0">${enm.v} (${enm.c})</button>`)
-								.click(() => cycleState(1))
-								.contextmenu((evt) => {
-									if (!evt.ctrlKey) {
-										evt.preventDefault();
-										cycleState(-1);
-									}
-								})
-								.appendTo($tagGrid);
-						});
-					};
-					Object.keys(enums).forEach(k => addSidebarSection(k));
-
-					// MAIN PAGE ///////////////////////////////////////////////////////////////////////////////////////
-					const $mainHead = $(`<div class="split split--center p-2 artr__search"/>`).appendTo($mainPane);
-					let searchTimeout;
-					const doSearch = () => {
-						search = ($iptSearch.val() || "").trim();
 						if (currentItem) doRenderItem(applyFilterAndSearchToItem());
-						else doRenderIndex(applyFilterAndSearchToIndex())
+						else doRenderIndex(applyFilterAndSearchToIndex());
 					};
-					const $iptSearch = $(`<input placeholder="Search..." class="artr__search__field">`).on("keydown", (e) => {
-						clearTimeout(searchTimeout);
-						if (e.which === 13) {
-							doSearch();
-						} else {
-							searchTimeout = setTimeout(() => {
-								doSearch();
-							}, 100);
-						}
-					}).appendTo($mainHead);
 
-					const $mainBody = $(`<div class="artr__view"/>`).appendTo($mainPane);
-					const $mainBodyInner = $(`<div class="artr__view_inner"/>`).appendTo($mainBody);
-
-					const $itemBody = $(`<div class="artr__view"/>`).hide().appendTo($mainPane);
-					const $itemBodyInner = $(`<div class="artr__view_inner"/>`).appendTo($itemBody);
-
-					function doRenderIndex (indexSlice) {
-						currentItem = false;
-						$mainBody.show();
-						$itemBody.hide();
-						$mainBodyInner.empty();
-						indexSlice.forEach(it => {
-							const $item = $(`<div class="artr__item"/>`).appendTo($mainBodyInner).click(() => doLoadAndRenderItem(it));
-							const $itemTop = $(`<div class="artr__item__top"><img class="artr__item__thumbnail" src="${it._sample}"></div>`).appendTo($item);
-							const $itemBottom = $(`
-								<div class="artr__item__bottom">
-									<div class="artr__item__bottom__row" style="padding-bottom: 2px;" title="${it._set}">${it._set}</div>
-									<div class="artr__item__bottom__row" style="padding-top: 2px;" title="${it._artist}"><i>By</i> ${it._artist}</div>
-								</div>
-							`).appendTo($item);
-						});
-					}
-
-					function doLoadAndRenderItem (indexItem) {
-						pGetJson(`https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/ExternalArt/dist/${indexItem._file}`).then(file => {
-							currentItem = file;
-							doRenderItem(applyFilterAndSearchToItem(), true);
-						});
-					}
-
-					function doRenderItem (file, resetScroll) {
-						$mainBody.hide();
-						$itemBody.show();
-						$itemBodyInner.empty();
-						if (resetScroll) $itemBodyInner.scrollTop(0);
-						const $itmUp = $(`<div class="artr__item artr__item--back"><div class="pictos">[</div></div>`)
-							.click(() => doRenderIndex(applyFilterAndSearchToIndex()))
-							.appendTo($itemBodyInner);
-						file.data.forEach(it => {
-							// "library-item" and "draggableresult" classes required for drag/drop
-							const $item = $(`<div class="artr__item library-item draggableresult" data-fullsizeurl="${it.uri}"/>`)
-								.appendTo($itemBodyInner)
-								.click(() => {
-									const $wrpBigImg = $(`<div class="artr__wrp_big_img"><img class="artr__big_img" src="${it.uri}"></div>`)
-										.click(() => $wrpBigImg.remove()).appendTo($(`body`));
-								});
-							const $wrpImg = $(`<div class="artr__item__full"/>`).appendTo($item);
-							const $img = $(`<img class="artr__item__thumbnail" src="${it.uri}">`).appendTo($wrpImg);
-
-							$item.draggable({
-								handle: ".artr__item",
-								revert: true,
-								revertDuration: 0,
-								helper: "clone",
-								appendTo: "body"
-							});
-						});
-					}
-
-					doRenderIndex(index);
+					const $btn = $(`<button class="btn artr__side__tag" data-state="0">${enm.v} (${enm.c})</button>`)
+						.click(() => cycleState(1))
+						.contextmenu((evt) => {
+							if (!evt.ctrlKey) {
+								evt.preventDefault();
+								cycleState(-1);
+							}
+						})
+						.appendTo($tagGrid);
 				});
-			});
+			};
+			Object.keys(enums).forEach(k => addSidebarSection(k));
+
+			// MAIN PAGE ///////////////////////////////////////////////////////////////////////////////////////
+			const $mainHead = $(`<div class="split split--center p-2 artr__search"/>`).appendTo($mainPane);
+			let searchTimeout;
+			const doSearch = () => {
+				search = ($iptSearch.val() || "").trim();
+				if (currentItem) doRenderItem(applyFilterAndSearchToItem());
+				else doRenderIndex(applyFilterAndSearchToIndex())
+			};
+			const $iptSearch = $(`<input placeholder="Search..." class="artr__search__field">`).on("keydown", (e) => {
+				clearTimeout(searchTimeout);
+				if (e.which === 13) {
+					doSearch();
+				} else {
+					searchTimeout = setTimeout(() => {
+						doSearch();
+					}, 100);
+				}
+			}).appendTo($mainHead);
+
+			const $mainBody = $(`<div class="artr__view"/>`).appendTo($mainPane);
+			const $mainBodyInner = $(`<div class="artr__view_inner"/>`).appendTo($mainBody);
+
+			const $itemBody = $(`<div class="artr__view"/>`).hide().appendTo($mainPane);
+			const $itemBodyInner = $(`<div class="artr__view_inner"/>`).appendTo($itemBody);
+
+			function doRenderIndex (indexSlice) {
+				currentItem = false;
+				currentIndexKey = false;
+				$mainBody.show();
+				$itemBody.hide();
+				$mainBodyInner.empty();
+				indexSlice.forEach(it => {
+					const $item = $(`<div class="artr__item"/>`).appendTo($mainBodyInner).click(() => doLoadAndRenderItem(it));
+					const $itemTop = $(`<div class="artr__item__top"><img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample}.jpg"></div>`).appendTo($item);
+					const $itemBottom = $(`
+						<div class="artr__item__bottom">
+							<div class="artr__item__bottom__row" style="padding-bottom: 2px;" title="${it._set}">${it._set}</div>
+							<div class="artr__item__bottom__row" style="padding-top: 2px;" title="${it._artist}"><i>By</i> ${it._artist}</div>
+						</div>
+					`).appendTo($item);
+				});
+			}
+
+			function doLoadAndRenderItem (indexItem) {
+				pGetJson(`${GH_PATH}${indexItem._key}.json`).then(file => {
+					currentItem = file;
+					currentIndexKey = indexItem._key;
+					doRenderItem(applyFilterAndSearchToItem(), true);
+				});
+			}
+
+			function doRenderItem (file, resetScroll) {
+				$mainBody.hide();
+				$itemBody.show();
+				$itemBodyInner.empty();
+				if (resetScroll) $itemBodyInner.scrollTop(0);
+				const $itmUp = $(`<div class="artr__item artr__item--back"><div class="pictos">[</div></div>`)
+					.click(() => doRenderIndex(applyFilterAndSearchToIndex()))
+					.appendTo($itemBodyInner);
+				file.data.sort((a, b) => SortUtil.ascSort(a.hash, b.hash)).forEach(it => {
+					// "library-item" and "draggableresult" classes required for drag/drop
+					const $item = $(`<div class="artr__item library-item draggableresult" data-fullsizeurl="${it.uri}"/>`)
+						.appendTo($itemBodyInner)
+						.click(() => {
+							const $wrpBigImg = $(`<div class="artr__wrp_big_img"><img class="artr__big_img" src="${it.uri}"></div>`)
+								.click(() => $wrpBigImg.remove()).appendTo($(`body`));
+						});
+					const $wrpImg = $(`<div class="artr__item__full"/>`).appendTo($item);
+					const $img = $(`<img class="artr__item__thumbnail" src="${GH_PATH}${currentIndexKey}--thumb-${it.hash}.jpg">`).appendTo($wrpImg);
+
+					$item.draggable({
+						handle: ".artr__item",
+						revert: true,
+						revertDuration: 0,
+						helper: "clone",
+						appendTo: "body"
+					});
+				});
+			}
+
+			doRenderIndex(Object.values(index));
 		}
 
 		let firstClick = true;
