@@ -12,6 +12,11 @@ function baseCss () {
 		// 	s: ".note-editable p",
 		// 	r: "margin-bottom: 0;"
 		// },
+		// ensure rightclick menu width doesn't break layout // FIXME might be fixing the symptoms and not the cause
+		{
+			s: ".actions_menu.d20contextmenu > ul > li",
+			r: "max-width: 100px;"
+		},
 		// page view enhancement
 		{
 			s: "#page-toolbar",
