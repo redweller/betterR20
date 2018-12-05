@@ -48,7 +48,7 @@ const betteR20Core = function () {
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
-			d20plus.art.initRepoBrowser();
+			d20plus.artBrowse.initRepoBrowser();
 			d20plus.ui.addQuickUiGm();
 		}
 		d20plus.chat.enhanceChat();

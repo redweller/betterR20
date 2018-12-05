@@ -560,7 +560,7 @@ const betteR205etools = function () {
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
-			d20plus.art.initRepoBrowser();
+			d20plus.artBrowse.initRepoBrowser();
 			d20plus.ui.addQuickUiGm();
 		}
 		d20.Campaign.pages.each(d20plus.bindGraphics);
