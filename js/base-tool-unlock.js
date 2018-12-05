@@ -5,6 +5,9 @@ function baseToolUnlock () {
 		desc: "Unlock Previously-Locked Tokens",
 		html: `
 			<div id="d20plus-token-unlocker" title="Token Unlocker">
+				<p>
+					<button class="btn" name="btn-refresh">Refresh</button>
+				</p>
 				<p class="split">
 					<label><input type="checkbox" title="Select all" name="cb-all"> Select All</label> 
 					<button class="btn" name="btn-unlock">Unlock Selected</button>
@@ -58,6 +61,7 @@ function baseToolUnlock () {
 			const $wrpCbs = $(`#token-unlocker-list-container`).find(`.unlock-list`);
 			const $cbAll = $win.find(`[name="cb-all"]`);
 			const $btnUnlock = $win.find(`[name="btn-unlock"]`);
+			const $btnRefresh = $win.find(`[name="btn-refresh"]`).click(() => populateList());
 
 			function populateList () {
 				const objects = d20.engine.canvas._objects.filter(it => it.model && it.model.get("VeLocked"));
