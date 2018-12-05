@@ -63,6 +63,14 @@ function baseToolModule () {
 				<div id="d20plus-module-importer-5etools" title="Select Module">
 					<div id="module-importer-list-5etools">
 						<input type="search" class="search" placeholder="Search modules...">
+						<div>
+							<div style="display: inline-block; width: 13px; height: 1px;"></div>
+							<div class="col-5 col">Name</div>
+							<div class="col-1 col" style="text-align: center;">Version</div>
+							<div class="col-2 col" style="text-align: center;">Last Modified</div>
+							<div class="col-1 col" style="text-align: center;">Size</div>
+							<div class="col-2 col" style="text-align: center;">Source</div>
+						</div>
 						<div class="list" style="transform: translateZ(0); max-height: 480px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
 						<i>Loading...</i>
 						</div>
@@ -448,8 +456,10 @@ function baseToolModule () {
 						tmp += `
 								<label class="import-cb-label" data-listid="${i}">
 									<input type="radio" name="map-5etools">
-									<span class="name col-7 readable">${t.name}</span>
-									<span class="name col-3 readable" style="text-align: right;">${d20plus.ut.getReadableFileSizeString(t.size)}</span>
+									<span class="name col-5 readable">${t.name}</span>
+									<span class="version col-1 readable" style="text-align: center;">${t.version || ""}</span>
+									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? MiscUtil.dateToStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
+									<span class="size col-1 readable" style="text-align: right;">${d20plus.ut.getReadableFileSizeString(t.size)}</span>
 									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
 								</label>
 							`;

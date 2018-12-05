@@ -110,6 +110,10 @@ function baseCss () {
 		},
 		// Bootstrap-alikes
 		{
+			s: ".col",
+			r: "display: inline-block;"
+		},
+		{
 			s: ".col-1",
 			r: "width: 8.333%;"
 		},
