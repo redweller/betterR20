@@ -9,8 +9,8 @@ clone:
 pipeline:
   Deploy:
     image: appleboy/drone-ssh
-    host: ianthe.rem.uz
-    port: 22
+    host: 159.69.76.172
+    port: 2272
     user: root
     secrets: [ ssh_key ]
     script:
@@ -18,12 +18,3 @@ pipeline:
     when:
       branch: master
       event: push
-
-  Notify:
-      image: appleboy/drone-discord
-      pull: true
-      secrets: [ discord_webhook_id, discord_webhook_token ]
-      message: Script build {{ build.number }} to {{ build.branch }} by {{ build.author }} finished with {{ build.status }}. ({{build.link }})
-      when:
-        status: [ success, failure ]
-        branch: master
