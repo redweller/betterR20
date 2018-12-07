@@ -18,10 +18,10 @@ steps:
     key:
       from_secret: ssh_key
   commands:
-  - bash /scripts/script-deploy.sh
+  - cd /scripts
+  - bash script-deploy.sh
     when:
       branch:
       - master
       event:
       - push
-(edited)
