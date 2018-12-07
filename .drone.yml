@@ -8,13 +8,15 @@ clone:
   image: plugins/git:1
   depth: 50
 
+steps:
 - name: deploy
   image: appleboy/drone-ssh
   host: 159.69.76.172
   port: 2272
   environment:
     username: root
-  secrets: [ ssh_key ]
+    key:
+      from_secret: ssh_key
   commands:
     - bash /scripts/script-deploy.sh
     when:
@@ -22,3 +24,4 @@ clone:
       - master
       event:
       - push
+(edited)
