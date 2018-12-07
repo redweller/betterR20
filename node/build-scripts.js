@@ -95,6 +95,7 @@ const SCRIPTS = {
 			"base-tool",
 			"base-tool-module",
 			"base-tool-unlock",
+			"base-art",
 			"base-art-browse",
 			"base-engine",
 			"base-weather",

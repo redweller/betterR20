@@ -7,6 +7,14 @@ function baseCss () {
 			s: ".display-inline-block",
 			r: "display: inline-block;"
 		},
+		{
+			s: ".bold",
+			r: "font-weight: bold;"
+		},
+		{
+			s: ".text-center",
+			r: "text-align: center;"
+		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
 		// {
 		// 	s: ".note-editable p",
@@ -317,11 +325,11 @@ function baseCss () {
 		///////////////
 		{
 			s: ".artr__side",
-			r: "width: 300px; height: 100%; border-right: 1px solid #ccc; background: #f8f8f8; position: relative; flex-shrink: 0;"
+			r: "width: 300px; height: 100%; border-right: 1px solid #ccc; background: #f8f8f8; position: relative; flex-shrink: 0; display: flex; flex-direction: column;"
 		},
 		{
 			s: ".artr__side__head",
-			r: "border-bottom: 1px solid #ccc; font-weight: bold;"
+			r: "flex-shrink: 0; font-weight: bold; margin-bottom: 7px; margin-bottom: 7px; border-bottom: 3px solid #ccc; background: white;"
 		},
 		{
 			s: ".artr__side__head__title",
@@ -329,7 +337,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__body",
-			r: "position: absolute; top: 40px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0);"
+			r: "flex-shrink: 0; overflow-y: auto; transform: translateZ(0);"
 		},
 		{
 			s: ".artr__side__tag_header",
@@ -337,7 +345,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__tag_grid",
-			r: "display: flex; width: 100%; flex-wrap: wrap; padding: 0 0 15px;"
+			r: "display: flex; width: 100%; flex-wrap: wrap; margin-bottom: 15px; background: #f0f0f0; border-radius: 5px;"
 		},
 		{
 			s: ".artr__side__tag",
@@ -368,8 +376,20 @@ function baseCss () {
 			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;"
 		},
 		{
+			s: ".artr__bread",
+			r: "width: 100%; margin-bottom: 2px;"
+		},
+		{
+			s: ".artr__crumb",
+			r: "border: 1px solid #ccc; border-radius: 5px; padding: 0 5px; display: inline-block; cursor: pointer; user-select: none;"
+		},
+		{
+			s: ".artr__crumb--sep",
+			r: "border: 0; cursor: default;"
+		},
+		{
 			s: ".artr__search",
-			r: "flex-shrink: 0; width: 100%; border-bottom: 1px solid #ccc;"
+			r: "flex-shrink: 0; width: 100%; border-bottom: 1px solid #ccc; display: flex; flex-direction: column;"
 		},
 		{
 			s: ".artr__search__field",
@@ -377,17 +397,37 @@ function baseCss () {
 		},
 		{
 			s: ".artr__view",
-			r: "position: absolute; top: 38px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0); background-color: whitesmoke;"
+			r: "position: absolute; top: 64px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0); background-color: whitesmoke;"
 		},
 		{
 			s: ".artr__view_inner",
 			r: "display: flex; width: 100%; height: 100%; flex-wrap: wrap; align-content: flex-start;"
 		},
 		{
+			s: ".artr__no_results_wrp",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center;"
+		},
+		{
+			s: ".artr__no_results",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"
+		},
+		{
+			s: ".artr__no_results_headline",
+			r: "font-size: 125%; font-weight: bold;"
+		},
+		{
 			s: ".artr__item",
-			r: "width: 180px; height: 240px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white;"
+			r: "width: 180px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white;"
 			// Using flex makes scrolling extremely sluggish
 			// display: flex; flex-direction: column; cursor: pointer; float: left;
+		},
+		{
+			s: "artr__item--index",
+			r: "height: 240px;"
+		},
+		{
+			s: ".artr__item--item",
+			r: "height: 180px;"
 		},
 		{
 			s: ".artr__item:hover",
@@ -402,6 +442,10 @@ function baseCss () {
 			r: "width: 100%; height: 180px; flex-shrink: 0; margin: 0 auto; display: flex; align-items: center;"
 		},
 		{
+			s: ".artr__item__top--quart",
+			r: "display: flex; flex-wrap: wrap;"
+		},
+		{
 			s: ".artr__item__bottom",
 			r: "width: 100%; height: 60px; flex-shrink: 0;  border-top: 1px solid #ccc; background: #f8f8f8; display: flex; flex-direction: column; font-size: 12px; justify-content: space-evenly;"
 		},
@@ -412,6 +456,14 @@ function baseCss () {
 		{
 			s: ".artr__item__thumbnail",
 			r: "max-width: 100%; max-height: 100%; display: block; margin: 0 auto;"
+		},
+		{
+			s: ".atr__item__quart",
+			r: "width: 50%; height: 50%; display: block; margin: 0;"
+		},
+		{
+			s: ".atr__item__quart--more",
+			r: "display: flex; justify-content: center; align-items: center;"
 		},
 		{
 			s: ".artr__item__full",

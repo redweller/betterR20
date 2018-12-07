@@ -60,6 +60,10 @@ function d20plusArtBrowser () {
 
 			function applyFilterAndSearchToIndex () {
 				search = search.toLowerCase();
+
+				// require the user to search or apply a filter before displaying any results
+				if (Object.keys(filters).length === 0 && search.length < 2) return [];
+
 				return Object.values(index).filter(it => {
 					if (search) {
 						const searchVisible = it._set.toLowerCase().includes(search)
@@ -67,15 +71,17 @@ function d20plusArtBrowser () {
 							|| _searchFeatures(it);
 						if (!searchVisible) return false;
 					}
-					return _filterProps(it);
+					return _filterProps(it, 1);
 				});
 			}
 
 			function applyFilterAndSearchToItem () {
 				const cpy = MiscUtil.copy(currentItem);
+				const filterItem = $cbMirrorFilters.prop("checked");
 				cpy.data = cpy.data.filter(it => {
 					if (search) if (!_searchFeatures(it, true)) return false;
-					return _filterProps(it);
+					if (filterItem) return _filterProps(it);
+					return true;
 				});
 				return cpy;
 			}
@@ -83,33 +89,37 @@ function d20plusArtBrowser () {
 			$loadings.forEach($l => $l.remove());
 
 			// SIDEBAR /////////////////////////////////////////////////////////////////////////////////////////
-			const $sideHead = $(`<div class="split split--center p-2 artr__side__head"><div class="artr__side__head__title">Filters</div></div>`).appendTo($sidebar);
+			const $sideHead = $(`<div class="p-2 artr__side__head"><div class="artr__side__head__title">Filters</div></div>`).appendTo($sidebar);
 			// This functionality is contained in the filter buttons, but might need to be done here to improve performance in the future
 			// $(`<button class="btn">Apply</button>`).click(() => {
 			// 	if (currentItem) doRenderItem(applyFilterAndSearchToItem());
 			// 	else doRenderIndex(applyFilterAndSearchToIndex())
 			// }).appendTo($sideHead);
+			const $lbMirrorFilters = $(`<label class="split" title="Apply filters to results inside folders (as well as the index)"><span>Filter within folders</span></label>`).appendTo($sideHead);
+			const $cbMirrorFilters = $(`<input type="checkbox" checked>`).appendTo($lbMirrorFilters).change(() => {
+				if (currentItem) {
+					doRenderItem(applyFilterAndSearchToItem());
+				}
+			});
 
 			const $sideBody = $(`<div class="artr__side__body"/>`).appendTo($sidebar);
-			const addSidebarSection = prop => {
+			const addSidebarSection = (prop, ix) => {
 				const fullName = (() => {
 					switch (prop) {
 						case "imageType": return "Image Type";
 						case "grid": return "Grid Type";
 						case "monster": return "Monster Type";
 						case "audience": return "Intended Audience";
-						case "quality":
-						case "view":
-						case "style":
-						case "terrain":
-						case "setting":
+						default:
 							return prop.uppercaseFirst();
 					}
 				})();
+
 				const $tagHead = $(`<div class="artr__side__tag_header"><div>${fullName}</div><div>[\u2013]</div></div>`).appendTo($sideBody).click(() => {
 					$tagGrid.toggle();
 					$tagHead.html($tagHead.html().replace(/\[.]/, (...m) => m[0] === "[+]" ? "[\u2013]" : "[+]"));
 				});
+
 				const $tagGrid = $(`<div class="artr__side__tag_grid"/>`).appendTo($sideBody);
 				const getNextState = (state, dir) => {
 					const ix = STATES.indexOf(state) + dir;
@@ -117,7 +127,10 @@ function d20plusArtBrowser () {
 					if (ix < 0) return STATES.last();
 					return STATES[ix];
 				};
-				enums[prop].forEach(enm => {
+
+				if (ix) $tagHead.click(); // hide by default
+
+				enums[prop].sort((a, b) => SortUtil.ascSort(b.c, a.c)).forEach(enm => {
 					const cycleState = dir => {
 						const nxtState = getNextState($btn.attr("data-state"), dir);
 						$btn.attr("data-state", nxtState);
@@ -142,10 +155,31 @@ function d20plusArtBrowser () {
 						.appendTo($tagGrid);
 				});
 			};
-			Object.keys(enums).forEach(k => addSidebarSection(k));
+			Object.keys(enums).forEach((k, i) => addSidebarSection(k, i));
 
 			// MAIN PAGE ///////////////////////////////////////////////////////////////////////////////////////
-			const $mainHead = $(`<div class="split split--center p-2 artr__search"/>`).appendTo($mainPane);
+			const $mainHead = $(`<div class="p-2 artr__search"/>`).appendTo($mainPane);
+
+			const $wrpBread = $(`<div class="artr__bread"/>`).appendTo($mainHead);
+			const updateCrumbs = () => {
+				$wrpBread.empty();
+				const $txtIndex = $(`<span class="artr__crumb">Index</span>`)
+					.appendTo($wrpBread)
+					.click(() => doRenderIndex(applyFilterAndSearchToIndex()));
+
+				if (currentItem) {
+					const $txtSlash = $(`<span class="artr__crumb artr__crumb--sep">/</span>`).appendTo($wrpBread);
+					const $txtItem = $(`<span class="artr__crumb">${currentItem.set} | ${currentItem.artist}</span>`)
+						.appendTo($wrpBread)
+						.click(() => {
+							$iptSearch.val("");
+							search = "";
+							doRenderItem(applyFilterAndSearchToItem(), true);
+						});
+				}
+			};
+			updateCrumbs();
+
 			let searchTimeout;
 			const doSearch = () => {
 				search = ($iptSearch.val() || "").trim();
@@ -175,16 +209,26 @@ function d20plusArtBrowser () {
 				$mainBody.show();
 				$itemBody.hide();
 				$mainBodyInner.empty();
-				indexSlice.forEach(it => {
-					const $item = $(`<div class="artr__item"/>`).appendTo($mainBodyInner).click(() => doLoadAndRenderItem(it));
-					const $itemTop = $(`<div class="artr__item__top"><img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample}.jpg"></div>`).appendTo($item);
-					const $itemBottom = $(`
-						<div class="artr__item__bottom">
-							<div class="artr__item__bottom__row" style="padding-bottom: 2px;" title="${it._set}">${it._set}</div>
-							<div class="artr__item__bottom__row" style="padding-top: 2px;" title="${it._artist}"><i>By</i> ${it._artist}</div>
-						</div>
-					`).appendTo($item);
-				});
+				updateCrumbs();
+
+				if (!indexSlice.length) {
+					$(`<div class="artr__no_results_wrp"><div class="artr__no_results"><div class="text-center"><span class="artr__no_results_headline">No results found</span><br>Please adjust the filters (on the left) or refine your search (above).</div></div></div>`).appendTo($mainBodyInner)
+				} else {
+					indexSlice.forEach(it => {
+						const $item = $(`<div class="artr__item artr__item--index"/>`).appendTo($mainBodyInner).click(() => doLoadAndRenderItem(it));
+						const $itemTop = $(`
+							<div class="artr__item__top artr__item__top--quart">
+								${[...new Array(4)].map((_, i) => `<div class="atr__item__quart">${it._sample[i] ? `<img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample[i]}.jpg">` : ""}</div>`).join("")}								
+							</div>
+						`).appendTo($item);
+						const $itemBottom = $(`
+							<div class="artr__item__bottom">
+								<div class="artr__item__bottom__row" style="padding-bottom: 2px;" title="${it._set}">${it._set}</div>
+								<div class="artr__item__bottom__row" style="padding-top: 2px;" title="${it._artist}"><i>By</i> ${it._artist}</div>
+							</div>
+						`).appendTo($item);
+					});
+				}
 			}
 
 			function doLoadAndRenderItem (indexItem) {
@@ -199,13 +243,14 @@ function d20plusArtBrowser () {
 				$mainBody.hide();
 				$itemBody.show();
 				$itemBodyInner.empty();
+				updateCrumbs();
 				if (resetScroll) $itemBodyInner.scrollTop(0);
-				const $itmUp = $(`<div class="artr__item artr__item--back"><div class="pictos">[</div></div>`)
+				const $itmUp = $(`<div class="artr__item artr__item--item artr__item--back"><div class="pictos">[</div></div>`)
 					.click(() => doRenderIndex(applyFilterAndSearchToIndex()))
 					.appendTo($itemBodyInner);
 				file.data.sort((a, b) => SortUtil.ascSort(a.hash, b.hash)).forEach(it => {
 					// "library-item" and "draggableresult" classes required for drag/drop
-					const $item = $(`<div class="artr__item library-item draggableresult" data-fullsizeurl="${it.uri}"/>`)
+					const $item = $(`<div class="artr__item artr__item--item library-item draggableresult" data-fullsizeurl="${it.uri}"/>`)
 						.appendTo($itemBodyInner)
 						.click(() => {
 							const $wrpBigImg = $(`<div class="artr__wrp_big_img"><img class="artr__big_img" src="${it.uri}"></div>`)
@@ -224,7 +269,7 @@ function d20plusArtBrowser () {
 				});
 			}
 
-			doRenderIndex(Object.values(index));
+			doRenderIndex(applyFilterAndSearchToIndex());
 		}
 
 		let firstClick = true;
