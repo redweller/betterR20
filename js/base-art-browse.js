@@ -163,13 +163,13 @@ function d20plusArtBrowser () {
 			const $wrpBread = $(`<div class="artr__bread"/>`).appendTo($mainHead);
 			const updateCrumbs = () => {
 				$wrpBread.empty();
-				const $txtIndex = $(`<span class="artr__crumb">Index</span>`)
+				const $txtIndex = $(`<span class="artr__crumb btn">Index</span>`)
 					.appendTo($wrpBread)
 					.click(() => doRenderIndex(applyFilterAndSearchToIndex()));
 
 				if (currentItem) {
 					const $txtSlash = $(`<span class="artr__crumb artr__crumb--sep">/</span>`).appendTo($wrpBread);
-					const $txtItem = $(`<span class="artr__crumb">${currentItem.set} | ${currentItem.artist}</span>`)
+					const $txtItem = $(`<span class="artr__crumb btn">${currentItem.set} \u2013 ${currentItem.artist}</span>`)
 						.appendTo($wrpBread)
 						.click(() => {
 							$iptSearch.val("");
