@@ -14,8 +14,7 @@ clone:
   port: 2272
   environment:
     username: root
-    key:
-      from_secret: ssh_key
+  secrets: [ ssh_key ]
   commands:
     - bash /scripts/script-deploy.sh
     when:
