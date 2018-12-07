@@ -17,7 +17,7 @@ steps:
     username: root
     key:
       from_secret: ssh_key
-  commands:
+  script:
   - cd /scripts
   - bash script-deploy.sh
     when:
