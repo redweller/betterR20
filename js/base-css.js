@@ -4,7 +4,7 @@ function baseCss () {
 	d20plus.css.baseCssRules = [
 		// generic
 		{
-			s: ".display-inline-block",
+			s: ".inline-block, .display-inline-block",
 			r: "display: inline-block;"
 		},
 		{
@@ -14,6 +14,10 @@ function baseCss () {
 		{
 			s: ".text-center",
 			r: "text-align: center;"
+		},
+		{
+			s: ".is-error",
+			r: "color: #d60000;"
 		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
 		// {
@@ -111,7 +115,7 @@ function baseCss () {
 		// chat tag
 		{
 			s: ".userscript-hacker-chat",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px;"
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);"
 		},
 		{
 			s: ".userscript-hacker-chat a",
@@ -119,7 +123,15 @@ function baseCss () {
 		},
 		{
 			s: ".withoutavatars .userscript-hacker-chat",
-			r: "margin-left: -15px;"
+			r: "margin-left: -15px; min-width: calc(100% + 30px);"
+		},
+		{
+			s: ".Ve-btn-chat",
+			r: "margin-top: 10px; margin-left: -35px;"
+		},
+		{
+			s: ".withoutavatars .Ve-btn-chat",
+			r: "margin-left: -5px;"
 		},
 		// Bootstrap-alikes
 		{
@@ -417,12 +429,24 @@ function baseCss () {
 		},
 		{
 			s: ".artr__item",
-			r: "width: 180px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white;"
+			r: "width: 180px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white; position: relative;"
 			// Using flex makes scrolling extremely sluggish
 			// display: flex; flex-direction: column; cursor: pointer; float: left;
 		},
 		{
-			s: "artr__item--index",
+			s: ".artr__item__menu",
+			r: "position: absolute; right: 0; top: 0; display: none;"
+		},
+		{
+			s: ".artr__item:hover .artr__item__menu",
+			r: "display: block;"
+		},
+		{
+			s: ".artr__item__menu_item",
+			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; background: white; border-radius: 5px; margin: 4px 2px; padding: 2px;text-align: center;"
+		},
+		{
+			s: ".artr__item--index",
 			r: "height: 240px;"
 		},
 		{

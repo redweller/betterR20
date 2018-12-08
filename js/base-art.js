@@ -56,12 +56,12 @@ function d20plusArt () {
 						const toAdd = [];
 						for (const s of spl) {
 							if (!s.includes(delim)) {
-								alert(`Badly formatted line: ${s}`)
+								alert(`Badly formatted line: ${s}`);
 								return;
 							} else {
 								const parts = s.split(delim);
 								if (parts.length !== 2) {
-									alert(`Badly formatted line: ${s}`)
+									alert(`Badly formatted line: ${s}`);
 									return;
 								} else {
 									toAdd.push({
@@ -78,6 +78,12 @@ function d20plusArt () {
 						$("#d20plus-artmassadd").dialog("close");
 					}
 				});
+			});
+
+			const $btnDelAll = $(`#art-list-delete-all-btn`);
+			$btnDelAll.off("click").on("click", () => {
+				$artList.empty();
+				refreshCustomArtList();
 			});
 
 			makeDraggables();
@@ -126,7 +132,7 @@ function d20plusArt () {
 				});
 				d20plus.art.custom = custom;
 				makeDraggables();
-				saveToHandout();
+				d20plus.art.saveToHandout();
 			}
 
 			function makeDraggables () {
@@ -138,28 +144,39 @@ function d20plusArt () {
 					appendTo: "body"
 				})
 			}
+		},
 
-			function saveToHandout () {
-				const handout = d20plus.art.getArtHandout();
-				if (!handout) {
-					d20.Campaign.handouts.create({
-						name: ART_HANDOUT,
-						archived: true
-					}, {
-						success: function (handout) {
-							notecontents = "This handout is used to store custom art URLs."
+		saveToHandout () {
+			const handout = d20plus.art.getArtHandout();
+			if (!handout) {
+				d20.Campaign.handouts.create({
+					name: ART_HANDOUT,
+					archived: true
+				}, {
+					success: function (handout) {
+						notecontents = "This handout is used to store custom art URLs.";
 
-							const gmnotes = JSON.stringify(d20plus.art.custom);
-							handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-							handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
-						}
-					});
-				} else {
-					const gmnotes = JSON.stringify(d20plus.art.custom);
-					handout.updateBlobs({gmnotes: gmnotes});
-					handout.save({notes: (new Date).getTime()});
-				}
+						const gmnotes = JSON.stringify(d20plus.art.custom);
+						handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
+						handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+					}
+				});
+			} else {
+				const gmnotes = JSON.stringify(d20plus.art.custom);
+				handout.updateBlobs({gmnotes: gmnotes});
+				handout.save({notes: (new Date).getTime()});
 			}
+		},
+
+		/**
+		 * @param items Array of Objects with "name" and "url" properties.
+		 * @private
+		 */
+		addToHandout (items) {
+			const invalid = items.find(it => !it.name || !it.url);
+			if (invalid) throw new Error(`Invalid item ${JSON.stringify(invalid)} did not contain required name and URL properties!`);
+			d20plus.art.custom = d20plus.art.custom.concat(items);
+			d20plus.art.saveToHandout();
 		},
 
 		// TODO load a decent default art library from somewhere

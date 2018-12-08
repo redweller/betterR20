@@ -216,11 +216,37 @@ function d20plusArtBrowser () {
 				} else {
 					indexSlice.forEach(it => {
 						const $item = $(`<div class="artr__item artr__item--index"/>`).appendTo($mainBodyInner).click(() => doLoadAndRenderItem(it));
+
 						const $itemTop = $(`
 							<div class="artr__item__top artr__item__top--quart">
 								${[...new Array(4)].map((_, i) => `<div class="atr__item__quart">${it._sample[i] ? `<img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample[i]}.jpg">` : ""}</div>`).join("")}								
 							</div>
 						`).appendTo($item);
+						const $itemMenu = $(`<div class="artr__item__menu"/>`).appendTo($itemTop);
+						const $btnExternalArt = $(`<div class="artr__item__menu_item pictos" title="Add to External Art list (${it._size} image${it._size === 1 ? "" : "s"})">P</div>`)
+							.appendTo($itemMenu)
+							.click(async (evt) => {
+								evt.stopPropagation();
+								const file = await pGetJson(`${GH_PATH}${it._key}.json`);
+								const toAdd = file.data.map((it, i) => ({
+									name: `${file.set}\u2014${file.artist}${i}`,
+									url: it.uri
+								}));
+								d20plus.art.addToHandout(toAdd);
+								alert(`Added ${file.data.length} image${file.data.length === 1 ? "" : "s"} to the External Art list.`);
+							});
+						const $btnDownload = $(`<div class="artr__item__menu_item pictos" title="Download ZIP (${it._size} image${it._size === 1 ? "" : "s"}) (SHIFT to download a text file of URLs)">}</div>`)
+							.appendTo($itemMenu)
+							.click(async (evt) => {
+								evt.stopPropagation();
+								const file = await pGetJson(`${GH_PATH}${it._key}.json`);
+								if (evt.shiftKey) {
+									d20plus.artBrowse._downloadUrls(file);
+								} else {
+									d20plus.artBrowse._downloadZip(file);
+								}
+							});
+
 						const $itemBottom = $(`
 							<div class="artr__item__bottom">
 								<div class="artr__item__bottom__row" style="padding-bottom: 2px;" title="${it._set}">${it._set}</div>
@@ -296,6 +322,128 @@ function d20plusArtBrowser () {
 				firstClick = false;
 			}
 		});
+	};
+
+	d20plus.artBrowse._downloadZip = async item => {
+		function doCreateIdChat (str, isError) {
+			const uid = d20plus.ut.generateRowId();
+			d20.textchat.incoming(false, ({
+				who: "system",
+				type: "system",
+				content: `<span id="${uid}" class="hacker-chat inline-block ${isError ? "is-error" : ""}">${str}</span>`
+			}));
+			return uid;
+		}
+
+		function doUpdateIdChat (id, str, isError = false) {
+			$(`#userscript-${id}`).toggleClass("is-error", isError).html(str);
+		}
+
+		let isHandled = false;
+		function handleCancel (id) {
+			if (isHandled) return;
+			isHandled = true;
+			doUpdateIdChat(id, "Download cancelled.");
+		}
+
+		function pAjaxLoad (url) {
+			const oReq = new XMLHttpRequest();
+			const p = new Promise((resolve, reject) => {
+				// FIXME cors-anywhere has a usage limit, which is pretty easy to hit when downloading many files
+				oReq.open("GET", `${"https://cors-anywhere.herokuapp.com/"}${url}`, true);
+				oReq.responseType = "arraybuffer";
+				let lastContentType = null;
+				oReq.onreadystatechange = () => {
+					const h = oReq.getResponseHeader("content-type");
+					if (h) {
+						lastContentType = h;
+					}
+				};
+				oReq.onload = function() {
+					const arrayBuffer = oReq.response;
+					resolve({buff: arrayBuffer, contentType: lastContentType});
+				};
+				oReq.onerror = (e) => reject(new Error(`Error during request: ${e}`));
+				oReq.send();
+			});
+			p.abort = () => oReq.abort();
+			return p;
+		}
+
+		$(`#rightsidebar a[href="#textchat"]`).click();
+		const chatId = doCreateIdChat(`Download starting...`);
+		let isCancelled = false;
+		let downloadTasks = [];
+		const $btnStop = $(`<button class="btn btn-danger Ve-btn-chat" id="button-${chatId}">Stop</button>`)
+			.insertAfter($(`#userscript-${chatId}`))
+			.click(() => {
+				isCancelled = true;
+				downloadTasks.forEach(p => p.abort());
+				handleCancel(chatId);
+				$btnStop.remove();
+			});
+		try { $btnStop[0].scrollIntoView() }
+		catch (e) { console.error(e) }
+
+		if (isCancelled) return handleCancel(chatId);
+
+		try {
+			const toSave = [];
+			let downloaded = 0;
+			let errorCount = 0;
+
+			const getWrappedPromise = dataItem => {
+				const pAjax = pAjaxLoad(dataItem.uri);
+				const p = new Promise(async resolve => {
+					try {
+						const data = await pAjax;
+						toSave.push(data);
+					} catch (e) {
+						d20plus.ut.error(`Error downloading "${dataItem.uri}":`, e);
+						++errorCount;
+					}
+					++downloaded;
+					doUpdateIdChat(chatId, `Downloading ${downloaded}/${item.data.length}... (${Math.floor(100 * downloaded / item.data.length)}%)${errorCount ? ` (${errorCount} error${errorCount === 1 ? "" : "s"})` : ""}`);
+					resolve();
+				});
+				p.abort = () => pAjax.abort();
+				return p;
+			};
+
+			downloadTasks = item.data.map(dataItem => getWrappedPromise(dataItem));
+			await Promise.all(downloadTasks);
+
+			if (isCancelled) return handleCancel(chatId);
+
+			doUpdateIdChat(chatId, `Building ZIP...`);
+
+			const zip = new JSZip();
+			toSave.forEach((data, i) => {
+				const extension = (data.contentType || "unknown").split("/").last();
+				zip.file(`${`${i}`.padStart(3, "0")}.${extension}`, data.buff, {binary: true});
+			});
+
+			if (isCancelled) return handleCancel(chatId);
+
+			zip.generateAsync({type:"blob"})
+				.then((content) => {
+					if (isCancelled) return handleCancel(chatId);
+
+					doUpdateIdChat(chatId, `Downloading ZIP...`);
+					d20plus.ut.saveAs(content, d20plus.ut.sanitizeFilename(`${item.set}__${item.artist}`));
+					doUpdateIdChat(chatId, `Download complete.`);
+					$btnStop.remove();
+				});
+		} catch (e) {
+			doUpdateIdChat(chatId, `Download failed! Error was: ${e.message}<br>Check the log for more information.`, true);
+			console.error(e);
+		}
+	};
+
+	d20plus.artBrowse._downloadUrls = async item => {
+		const contents = item.data.map(it => it.uri).join("\n");
+		const blob = new Blob([contents], {type: "text/plain"});
+		d20plus.ut.saveAs(blob, d20plus.ut.sanitizeFilename(`${item.set}__${item.artist}`));
 	};
 }
 

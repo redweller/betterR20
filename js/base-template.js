@@ -37,6 +37,7 @@ const baseTemplate = function () {
 	<input placeholder="URL*" id="art-list-add-url">
 	<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
 	<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
+	<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
 	<p/>
 	<hr>
 	<div id="art-list-container">
