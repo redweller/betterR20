@@ -948,14 +948,24 @@ function d20plusEngine () {
 						} else if ("lock-token" === e) {
 							d20.engine.selected().forEach(it => {
 								if (it.model) {
-									it.lockMovementX = true;
-									it.lockMovementY = true;
-									it.lockScalingX = true;
-									it.lockScalingY = true;
-									it.lockRotation = true;
-									it.saveState();
+									if (it.model.get("VeLocked")) {
+										it.lockMovementX = false;
+										it.lockMovementY = false;
+										it.lockScalingX = false;
+										it.lockScalingY = false;
+										it.lockRotation = false;
 
-									it.model.set("VeLocked", true);
+										it.model.set("VeLocked", false);
+									} else {
+										it.lockMovementX = true;
+										it.lockMovementY = true;
+										it.lockScalingX = true;
+										it.lockScalingY = true;
+										it.lockRotation = true;
+
+										it.model.set("VeLocked", true);
+									}
+									it.saveState();
 									it.model.save();
 								}
 							});
