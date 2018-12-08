@@ -643,7 +643,7 @@ const baseTemplate = function () {
 								<$ } $>
 								
 								<$ if(this.view) { $>
-									<li data-action-type='lock-token'>Lock Position</li>
+									<li data-action-type='lock-token'>Lock/Unlock Position</li>
 								<$ } $>
 								
 								<$ if(this.get && this.get("type") == "image") { $>
