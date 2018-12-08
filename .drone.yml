@@ -18,9 +18,9 @@ steps:
       from_secret: port
     user:
       from_secret: user
-    password:
+    key:
       from_secret: ssh_key
-    script:
+  script:
     - cd /scripts
     - bash script-deploy.sh
 
