@@ -1,22 +1,27 @@
 kind: pipeline
 name: default
 
+workspace:
+  base: /srv/app
+
 clone:
-  depth: 1
+  image: plugins/git:1
+  depth: 50
 
 steps:
-  - name: Deploy
-    image: appleboy/drone-ssh
-    settings:
-      host: ianthe.rem.uz
-      port: 22
-      user: root
-      SSH_KEY:
-        from_secret: ssh_key
-    commands:
-      - bash /scripts/script-deploy.sh
-    trigger:
-      branch:
-        - master
-      event:
-        - push
+- name: deploy
+  image: appleboy/drone-ssh
+  host: 159.69.76.172
+  port: 2272
+  environment:
+    username: root
+    key:
+      from_secret: ssh_key
+  script:
+    - cd /scripts
+    - bash script-deploy.sh
+  when:
+    branch:
+      - master
+    event:
+      - push
