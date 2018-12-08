@@ -19,6 +19,8 @@ steps:
     script:
       - cd /scripts
       - bash script-deploy.sh
+  commands:
+    - git config --global --list
   trigger:
     branch:
       - master
