@@ -16,7 +16,9 @@ steps:
     username:
       from_secret: username
     key:
-      from_secret: [ ssh_key ]
+      from_secret: ssh_key
+  key:
+      from_secret: ssh_key
   script:
     - cd /scripts
     - bash script-deploy.sh
