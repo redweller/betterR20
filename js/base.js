@@ -33,10 +33,11 @@ const betteR20Base = function () {
 	addConfigOptions("canvas", {
 			"_name": "Canvas",
 			"_player": true,
-			"halfGridSnap": {
-				"name": "Snap to Half-Grid",
-				"default": false,
-				"_type": "boolean",
+			"gridSnap": {
+				"name": "Grid Snap",
+				"default": "1",
+				"_type": "_enum",
+				"__values": ["0.25", "0.5", "1"],
 				"_player": true
 			},
 			"scaleNamesStatuses": {
@@ -83,185 +84,34 @@ const betteR20Base = function () {
 			"_type": "boolean"
 		},
 	});
-	addConfigOptions("weather", {
-		"_name": "Weather",
-		"weatherType1": {
-			"name": "Type",
-			"default": "None",
-			"_type": "_enum",
-			"__values": ["None", "Fog", "Rain", "Ripples", "Snow", "Waves", "Custom (see below)"]
-		},
-		"weatherTypeCustom1": {
-			"name": "Custom Image",
-			"_type": "String",
-			"_placeholder": "https://example.com/pic.png"
-		},
-		"weatherSpeed1": {
-			"name": "Weather Speed",
-			"default": 0.1,
-			"_type": "_slider",
-			"__sliderMin": 0.01,
-			"__sliderMax": 1,
-			"__sliderStep": 0.01
-		},
-		"weatherDir1": {
-			"name": "Direction",
-			"default": "None",
-			"_type": "_enum",
-			"__values": ["Northerly", "North-Easterly", "Easterly", "South-Easterly", "Southerly", "South-Westerly", "Westerly", "North-Westerly", "Custom (see below)"]
-		},
-		"weatherDirCustom1": {
-			"name": "Custom Direction",
-			"default": 0,
-			"_type": "_slider",
-			"__sliderMin": 0,
-			"__sliderMax": 360,
-			"__sliderStep": 1
-		},
-		"weatherOscillate1": {
-			"name": "Oscillate",
-			"default": false,
-			"_type": "boolean"
-		},
-		"weatherOscillateThreshold1": {
-			"name": "Oscillation Threshold",
-			"default": 1,
-			"_type": "_slider",
-			"__sliderMin": 0.05,
-			"__sliderMax": 1,
-			"__sliderStep": 0.01
-		},
-		"weatherIntensity1": {
-			"name": "Intensity",
-			"default": "None",
-			"_type": "_enum",
-			"__values": ["Normal", "Heavy"]
-		},
-		"weatherTint1": {
-			"name": "Tint",
-			"default": false,
-			"_type": "boolean"
-		},
-		"weatherTintColor1": {
-			"name": "Tint Color",
-			"default": "#4c566d",
-			"_type": "_color"
-		},
-		"weatherEffect1": {
-			"name": "Special Effects",
-			"default": "None",
-			"_type": "_enum",
-			"__values": ["None", "Lightning"]
-		},
-	});
 };
 
 const D20plus = function (version) {
 	d20plus.version = version;
-
-	/* object.watch polyfill by Eli Grey, http://eligrey.com */
-	if (!Object.prototype.watch) {
-		Object.defineProperty(Object.prototype, "watch", {
-			enumerable: false,
-			configurable: true,
-			writable: false,
-			value: function (prop, handler) {
-				var
-					oldval = this[prop],
-					newval = oldval,
-					getter = function () {
-						return newval;
-					},
-					setter = function (val) {
-						oldval = newval;
-						return (newval = handler.call(this, prop, oldval, val));
-					};
-				if (delete this[prop]) {
-					Object.defineProperty(this, prop, {
-						get: getter,
-						set: setter,
-						enumerable: true,
-						configurable: true
-					});
-				}
-			}
-		});
-	}
-	if (!Object.prototype.unwatch) {
-		Object.defineProperty(Object.prototype, "unwatch", {
-			enumerable: false,
-			configurable: true,
-			writable: false,
-			value: function (prop) {
-				var val = this[prop];
-				delete this[prop];
-				this[prop] = val;
-			}
-		});
-	}
-	/* end object.watch polyfill */
 
 	// Window loaded
 	function doBootstrap () {
 		d20plus.ut.log("Bootstrapping...");
 
 		let hasRunInit = false;
-		function defaultOnload () {
-			if (hasRunInit) return;
-			hasRunInit = true;
-			window.unwatch("d20");
-			const checkLoaded = setInterval(function () {
-				if (!$("#loading-overlay").is(":visible")) {
-					clearInterval(checkLoaded);
-					d20plus.Init();
-				}
-			}, 1000);
-		}
-
-		window.onload = defaultOnload;
-
 		if (window.enhancementSuiteEnabled) {
 			// r20es will expose the d20 variable if we wait
 			// this should always trigger after window.onload has fired, but track init state just in case
 			(function waitForD20 () {
 				if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 					hasRunInit = true;
-					window.unwatch("d20ext");
-					d20plus.ut.log("Setting production (alt)...");
-					window.d20ext.environment = "production";
-					d20.environment = "production";
 					d20plus.Init();
 				} else {
 					setTimeout(waitForD20, 50);
 				}
 			})();
+
+			window.d20plus = d20plus;
+			d20plus.ut.log("Injected");
 		} else {
-			window.d20 = {};
-			window.watch("d20", function (id, oldValue, newValue) {
-				d20plus.ut.log("Obtained d20 variable");
-				window.unwatch("d20ext");
-				d20plus.ut.log("Setting production...");
-				window.d20ext.environment = "production";
-				newValue.environment = "production";
-				return newValue;
-			});
+			alert(`The R20ES extension is required! Please install it from https://ssstormy.github.io/roll20-enhancement-suite/`);
 		}
-
-		window.d20plus = d20plus;
-		d20plus.ut.log("Injected");
 	}
-
-	window.d20ext = {};
-	window.watch("d20ext", function (id, oldValue, newValue) {
-		if (!window.enhancementSuiteEnabled && newValue.environment !== "development") {
-			d20plus.ut.log("Set Development");
-			newValue.environment = "development";
-			Object.defineProperty(newValue, 'seenad', {
-				value: true
-			});
-		}
-		return newValue;
-	});
 
 	(function doCheckDepsLoaded () {
 		if (typeof $ !== "undefined") {

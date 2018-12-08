@@ -114,8 +114,12 @@ const betteR205etools = function () {
 	let monsterDataUrls = {};
 	let monsterFluffDataUrls = {};
 	let monsterFluffData = {};
+	let monsterMetadata = {};
 	let adventureMetadata = {};
 	let classDataUrls = {};
+	let brewCollectionIndex = {};
+
+	let monsterBrewDataUrls = [];
 
 // build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
 	function SheetAttribute (name, ogl, shaped) {
@@ -268,6 +272,16 @@ const betteR205etools = function () {
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
+		"allSourcesIncludeUnofficial": {
+			"name": `Include Unofficial (UA/etc) Content in "Import Monsters From All Sources" List`,
+			"default": false,
+			"_type": "boolean"
+		},
+		"allSourcesIncludeHomebrew": {
+			"name": `Include Homebrew in "Import Monsters From All Sources" List (Warning: Slow)`,
+			"default": false,
+			"_type": "boolean"
+		},
 		"importIntervalHandout": {
 			"name": "Rest Time between Each Handout (msec)",
 			"default": 100,
@@ -362,15 +376,11 @@ const betteR205etools = function () {
 	});
 
 	d20plus.sheet = "ogl";
-	d20plus.spells = {};
 	d20plus.psionics = {};
 	d20plus.items = {};
 	d20plus.feats = {};
 	d20plus.races = {};
 	d20plus.objects = {};
-	d20plus.classes = {};
-	d20plus.subclasses = {};
-	d20plus.backgrounds = {};
 	d20plus.adventures = {};
 	d20plus.optionalfeatures = {};
 
@@ -418,6 +428,7 @@ const betteR205etools = function () {
 		{name: "spell metadata", url: SPELL_META_URL},
 		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`},
 		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`},
+		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}meta.json`},
 		{name: "adventures index", url: `${DATA_URL}adventures.json`},
 		{name: "basic items", url: `${DATA_URL}basicitems.json`}
 	];
@@ -431,6 +442,7 @@ const betteR205etools = function () {
 			else if (name === "spell metadata") spellMetaData = data;
 			else if (name === "bestiary index") monsterDataUrls = data;
 			else if (name === "bestiary fluff index") monsterFluffDataUrls = data;
+			else if (name === "bestiary metadata") monsterMetadata = data;
 			else if (name === "adventures index") adventureMetadata = data;
 			else if (name === "basic items") {
 				data.itemProperty.forEach(p => EntryRenderer.item._addProperty(p));
@@ -469,9 +481,7 @@ const betteR205etools = function () {
 		d20plus.ut.checkVersion();
 		d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 
-		d20plus.ut.log("Modifying character & handout editor templates");
-		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
-		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
+		d20plus.template.swapTemplates();
 
 		d20plus.ut.addAllCss();
 		if (window.is_gm) {
@@ -492,7 +502,23 @@ const betteR205etools = function () {
 	};
 
 	// continue init once scripts load
-	d20plus.onApiScriptLoad = function () {
+	d20plus.onApiScriptLoad = async function () {
+		const brewUrl = DataUtil.brew.getDirUrl("creature");
+		try {
+			const brewMeta = await DataUtil.loadJSON(brewUrl);
+			brewMeta.forEach(it => {
+				const url = `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`;
+				const name = `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`;
+				monsterBrewDataUrls.push({url, name});
+			});
+		} catch (e) {
+			d20plus.ut.error(`Failed to load bestiary homebrew metadata!`);
+		}
+		try {
+			brewCollectionIndex =  await DataUtil.brew.pLoadCollectionIndex();
+		} catch (e) {
+			d20plus.ut.error("Failed to pre-load homebrew collection index");
+		}
 		d20plus.addJson(d20plus.onJsonLoad);
 	};
 
@@ -531,15 +557,11 @@ const betteR205etools = function () {
 			d20plus.journal.addJournalCommands();
 			d20plus.engine.addSelectedTokenCommands();
 			d20plus.art.addCustomArtSearch();
-			d20plus.cfg.baseHandleConfigChange();
-			d20plus.handleConfigChange();
 			d20plus.engine.addTokenHover();
 			d20plus.engine.enhanceTransmogrifier();
 			d20plus.engine.removeLinkConfirmation();
-			d20plus.art.initRepoBrowser();
+			d20plus.artBrowse.initRepoBrowser();
 			d20plus.ui.addQuickUiGm();
-		} else {
-			d20plus.cfg.startPlayerConfigHandler();
 		}
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
@@ -553,7 +575,16 @@ const betteR205etools = function () {
 		d20plus.engine.enhancePathWidths();
 		d20plus.ut.disable3dDice();
 		d20plus.engine.addLayers();
-		d20plus.engine.addWeather();
+		d20plus.weather.addWeather();
+
+		// apply config
+		if (window.is_gm) {
+			d20plus.cfg.baseHandleConfigChange();
+			d20plus.handleConfigChange();
+		} else {
+			d20plus.cfg.startPlayerConfigHandler();
+		}
+
 		d20plus.ut.log("All systems operational");
 		d20plus.ut.chatTag(`betteR20-5etools v${d20plus.version}`);
 	};
@@ -814,9 +845,17 @@ const betteR205etools = function () {
 			}));
 
 			const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
-			DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
+			DataUtil.loadJSON(brewUrl).then(async (data, debugUrl) => {
 				if (data.message) console.error(debugUrl, data.message);
-				data.forEach(it => {
+
+				const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(BrewUtil._dirToCat(homebrewDir)));
+				if (collectionItems.length) {
+					data = MiscUtil.copy(data);
+					const collectionIndex = await DataUtil.loadJSON(DataUtil.brew.getDirUrl("collection"));
+					collectionIndex.filter(it => collectionItems.includes(it.name)).forEach(it => data.push(it));
+				}
+
+				data.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
 					dropdown.append($('<option>', {
 						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
 						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
@@ -833,6 +872,7 @@ const betteR205etools = function () {
 		function populateBasicDropdown (dropdownId, inputFieldId, defaultSel, homebrewDir, addForPlayers) {
 			function doPopulate (dropdownId, inputFieldId) {
 				const $sel = $(dropdownId);
+				const existingItems = !!$sel.find(`option`).length;
 				if (defaultSel) {
 					$(inputFieldId).val(defaultSel);
 					$sel.append($('<option>', {
@@ -840,14 +880,24 @@ const betteR205etools = function () {
 						text: "Official Sources"
 					}));
 				}
-				$sel.append($('<option>', {
-					value: "",
-					text: "Custom"
-				}));
+				if (!existingItems) {
+					$sel.append($('<option>', {
+						value: "",
+						text: "Custom"
+					}));
+				}
 
 				const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
-				DataUtil.loadJSON(brewUrl).then((data, debugUrl) => {
+				DataUtil.loadJSON(brewUrl).then(async (data, debugUrl) => {
 					if (data.message) console.error(debugUrl, data.message);
+
+					const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(homebrewDir));
+					if (collectionItems.length) {
+						data = MiscUtil.copy(data);
+						const collectionIndex = await DataUtil.loadJSON(DataUtil.brew.getDirUrl("collection"));
+						collectionIndex.filter(it => collectionItems.includes(it.name)).forEach(it => data.push(it));
+					}
+
 					data.forEach(it => {
 						$sel.append($('<option>', {
 							value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
@@ -1022,6 +1072,10 @@ const betteR205etools = function () {
 		populateDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_DIR, classDataUrls, "", "class");
 		populateDropdown("#button-classes-select-player", "#import-classes-url-player", CLASS_DATA_DIR, classDataUrls, "", "class");
 
+		// add class subclasses to the subclasses dropdown(s)
+		populateDropdown("#button-subclasses-select", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", "class");
+		populateDropdown("#button-subclasses-select-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", "class");
+
 		populateBasicDropdown("#button-items-select", "#import-items-url", ITEM_DATA_URL, "item", true);
 		populateBasicDropdown("#button-psionics-select", "#import-psionics-url", PSIONIC_DATA_URL, "psionic", true);
 		populateBasicDropdown("#button-feats-select", "#import-feats-url", FEAT_DATA_URL, "feat", true);
@@ -1031,7 +1085,7 @@ const betteR205etools = function () {
 		populateBasicDropdown("#button-optionalfeatures-select", "#import-optionalfeatures-url", OPT_FEATURE_DATA_URL, "optionalfeature", true);
 
 		// bind tokens button
-		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" href="#" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
+		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
 		altBindButton.on("click", function () {
 			d20plus.bindDropLocations();
 		});
@@ -1201,7 +1255,7 @@ const betteR205etools = function () {
 			attrs.notifySheetWorkers();
 		}
 
-		function importBackground (character, data) {
+		async function importBackground (character, data) {
 			const bg = data.Vetoolscontent;
 
 			const renderer = new EntryRenderer();
@@ -1217,8 +1271,125 @@ const betteR205etools = function () {
 			if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
+			async function chooseSkills (from, count) {
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose Skills">
+							<div name="remain" style="font-weight: bold">Remaining: ${count}</div>
+							<div>
+								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-skill="${it}" type="checkbox"></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $remain = $dialog.find(`[name="remain"]`);
+					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
+
+					$cbSkill.on("change", function () {
+						const $e = $(this);
+						let selectedCount = getSelected().length;
+						if (selectedCount > count) {
+							$e.prop("checked", false);
+							selectedCount--;
+						}
+						$remain.text(`Remaining: ${count - selectedCount}`);
+					});
+
+					function getSelected () {
+						return $cbSkill.map((i, e) => ({skill: $(e).data("skill"), selected: $(e).prop("checked")})).get()
+							.filter(it => it.selected).map(it => it.skill);
+					}
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = getSelected();
+									if (selected.length === count) {
+										$(this).dialog("close");
+										$dialog.remove();
+										resolve(selected);
+									} else {
+										alert(`Please select ${count} skill${count === 1 ? "" : "s"}`);
+									}
+								}
+							}
+						]
+					})
+				});
+			}
+
+			async function chooseSkillsGroup (options) {
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose Skills">
+							<div>
+								${options.map((it, i) => `<label class="split"><input name="skill-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${it}</span></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $rdOpt = $dialog.find(`input[type="radio"]`);
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = $rdOpt.filter((i, e) => $(e).prop("checked"))
+										.map((i, e) => $(e).data("ix")).get()[0];
+									$(this).dialog("close");
+									$dialog.remove();
+									resolve(selected);
+								}
+							}
+						]
+					})
+				});
+			}
+
 			const skills = [];
-			EntryRenderer.background.getSkillSummary(bg.skillProficiencies, true, bg._fSkills = skills);
+
+			async function handleSkillsItem (item) {
+				Object.keys(item).forEach(k => {
+					if (k !== "choose") skills.push(k);
+				});
+
+				if (item.choose) {
+					const choose = item.choose;
+					const sansExisting = choose.from.filter(it => !skills.includes(it));
+					const count = choose.count || 1;
+					const chosenSkills = await chooseSkills(sansExisting, count);
+					chosenSkills.forEach(it => skills.push(it));
+				}
+			}
+
+			if (bg.skillProficiencies && bg.skillProficiencies.length) {
+				if (bg.skillProficiencies.length > 1) {
+					const options = bg.skillProficiencies.map(item => EntryRenderer.background.getSkillSummary([item], true, []))
+					const chosenIndex = await chooseSkillsGroup(options);
+					await handleSkillsItem(bg.skillProficiencies[chosenIndex]);
+				} else {
+					await handleSkillsItem(bg.skillProficiencies[0]);
+				}
+			}
 
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
@@ -1283,6 +1454,12 @@ const betteR205etools = function () {
 					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 				});
+
+				if (race.languageTags) {
+					const lRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_proficiencies_${lRowId}_name`, race.languageTags.join(", "));
+					attrs.add(`repeating_proficiencies_${lRowId}_options-flag`, "0");
+				}
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("race", race.name);
 				attrs.addOrUpdate("size", Parser.sizeAbvToFull(race.size).toUpperCase());
@@ -1361,8 +1538,7 @@ const betteR205etools = function () {
 
 		function importClass (character, data) {
 			let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-			if (!levels)
-				return;
+			if (!levels) return;
 
 			const maxLevel = Math.max(...levels);
 
@@ -1533,19 +1709,19 @@ const betteR205etools = function () {
 			}
 
 			function importClassGeneral (attrs, clss, maxLevel) {
-				if (d20plus.sheet == "ogl") {
+				if (d20plus.sheet === "ogl") {
 					setTimeout(() => {
 						attrs.addOrUpdate("pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
 						attrs.addOrUpdate("class", clss.name);
 						attrs.addOrUpdate("level", maxLevel);
 						attrs.addOrUpdate("base_level", String(maxLevel));
 					}, 500);
-				} else if (d20plus.sheet == "shaped") {
-					const isSupportedClass = clss.source == "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
+				} else if (d20plus.sheet === "shaped") {
+					const isSupportedClass = clss.source === "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
 					let className = "CUSTOM";
 					if (isSupportedClass) {
 						className = clss.name.toUpperCase();
-						if (clss.name == "Ranger (Revised)")
+						if (clss.name === "Ranger (Revised)")
 							className = "RANGERUA";
 					}
 
@@ -1558,7 +1734,7 @@ const betteR205etools = function () {
 						attrs.addOrUpdate(`repeating_class_${fRowId}_custom_name`, clss.name);
 					}
 
-					if (!isSupportedClass && clss.name == "Mystic") {
+					if (!isSupportedClass && clss.name === "Mystic") {
 						const classResourcesForLevel = clss.classTableGroups[0].rows[maxLevel - 1];
 						const [talentsKnown, disciplinesKnown, psiPoints, psiLimit] = classResourcesForLevel;
 
@@ -1568,7 +1744,7 @@ const betteR205etools = function () {
 						attrs.addOrUpdate("spell_ability", "INTELLIGENCE");
 						attrs.addOrUpdate("spell_points_limit", psiLimit);
 						attrs.addOrUpdate("spell_points", psiPoints, psiPoints);
-						talentsKnown, disciplinesKnown;	// unused
+						// talentsKnown, disciplinesKnown;	// unused
 
 						for (let i = 1; i <= 7; i++) {
 							attrs.addOrUpdate(`spell_level_${i}_cost`, i);
@@ -2417,210 +2593,6 @@ const betteR205etools = function () {
 		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) d20.Campaign.initiativewindow.$el.dialog("option", "width", getTargetWidth());
 	};
 
-	d20plus.spells.formSpellUrl = function (fileName) {
-		return d20plus.formSrcUrl(SPELL_DATA_DIR, fileName);
-	};
-
-	d20plus.spells._groupOptions = ["Level", "Spell Points", "Alphabetical", "Source"];
-	d20plus.spells._listCols = ["name", "class", "level", "source"];
-	d20plus.spells._listItemBuilder = (it) => `
-		<span class="name col-4" title="name">${it.name}</span>
-		<span class="class col-3" title="class">${it.classes.fromClassList.map(c => `CLS[${c.name}]`).join(", ")}</span>
-		<span class="level col-3" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
-		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
-	d20plus.spells._listIndexConverter = (sp) => {
-		return {
-			name: sp.name.toLowerCase(),
-			class: sp.classes.fromClassList.map(c => c.name.toLowerCase()),
-			level: Parser.spLevelToFull(sp.level).toLowerCase(),
-			source: Parser.sourceJsonToAbv(sp.source).toLowerCase()
-		};
-	};
-	// Import Spells button was clicked
-	d20plus.spells.button = function (forcePlayer) {
-		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-spell-url-player").val() : $("#import-spell-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
-
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
-				d20plus.importer.showImportList(
-					"spell",
-					data.spell,
-					handoutBuilder,
-					{
-						groupOptions: d20plus.spells._groupOptions,
-						forcePlayer,
-						listItemBuilder: d20plus.spells._listItemBuilder,
-						listIndex: d20plus.spells._listCols,
-						listIndexConverter: d20plus.spells._listIndexConverter
-					}
-				);
-			});
-		}
-	};
-
-	// Import All Spells button was clicked
-	d20plus.spells.buttonAll = function (forcePlayer) {
-		const toLoad = Object.keys(spellDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
-
-		if (toLoad.length) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
-
-			DataUtil.multiLoadJSON(toLoad.map(url => ({url: url})), () => {
-			}, (dataStack) => {
-				let toAdd = [];
-				dataStack.forEach(d => toAdd = toAdd.concat(d.spell));
-				d20plus.importer.showImportList(
-					"spell",
-					toAdd,
-					handoutBuilder,
-					{
-						groupOptions: d20plus.spells._groupOptions,
-						forcePlayer,
-						listItemBuilder: d20plus.spells._listItemBuilder,
-						listIndex: d20plus.spells._listCols,
-						listIndexConverter: d20plus.spells._listIndexConverter
-					}
-				);
-			});
-		}
-	};
-
-	// Create spell handout from js data object
-	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, builderOptions) {
-		// make dir
-		const folder = d20plus.importer.makeDirTree(`Spells`, folderName);
-		const path = ["Spells", folderName, data.name];
-
-		// handle duplicates/overwrites
-		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
-
-		const name = data.name;
-		// build spell handout
-		d20.Campaign.handouts.create({
-			name: name,
-			tags: d20plus.importer.getTagString([
-				Parser.spSchoolAbvToFull(data.school),
-				Parser.spLevelToFull(data.level),
-				...data.classes.fromClassList.map(c => c.name),
-				Parser.sourceJsonToFull(data.source)
-			], "spell")
-		}, {
-			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_SPELLS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
-
-				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data, builderOptions);
-
-				console.log(notecontents);
-				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
-				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
-		});
-	};
-
-	d20plus.spells.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data);
-
-		const importId = d20plus.ut.generateRowId();
-		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-		d20plus.importer.makePlayerDraggable(importId, data.name);
-	};
-
-	d20plus.spells._getHandoutData = function (data, builderOptions) {
-		builderOptions = builderOptions || {};
-		// merge in roll20 metadata, if available
-		const spellMeta = spellMetaData.spell.find(sp => sp.name.toLowerCase() === data.name.toLowerCase() && sp.source.toLowerCase() === data.source.toLowerCase());
-		if (spellMeta) {
-			data.roll20 = spellMeta.data;
-		}
-
-		if (!data.school) data.school = "A";
-		if (!data.range) data.range = "Self";
-		if (!data.duration) data.duration = "Instantaneous";
-		if (!data.components) data.components = "";
-		if (!data.time) data.components = "1 action";
-
-		const r20Data = {};
-		if (data.roll20) Object.assign(r20Data, data.roll20);
-		Object.assign(
-			r20Data,
-			{
-				"Level": builderOptions.isSpellPoints ? String(Math.min(9, d20plus.spells.spLevelToSpellPoints(data.level))) : String(data.level),
-				"Range": Parser.spRangeToFull(data.range),
-				"School": Parser.spSchoolAbvToFull(data.school),
-				"Source": "5etoolsR20",
-				"Classes": d20plus.importer.getCleanText(Parser.spClassesToFull(data.classes)),
-				"Category": "Spells",
-				"Duration": Parser.spDurationToFull(data.duration),
-				"Material": "",
-				"Components": parseComponents(data.components),
-				"Casting Time": Parser.spTimeListToFull(data.time)
-			}
-		);
-
-		if (data.range.type === "point" && (data.range.distance.type === UNT_FEET || data.range.distance.type === UNT_MILES)) {
-			r20Data["data-RangeNum"] = data.range.distance.amount + "";
-		}
-
-		var r20json = {
-			name: data.name,
-			content: "",
-			htmlcontent: "",
-			data: r20Data
-		};
-		if (data.components && data.components.m && data.components.m.text) r20json.data["Material"] = data.components.m.text;
-		if (data.meta) {
-			if (data.meta.ritual) r20json.data["Ritual"] = "Yes";
-		}
-		if (data.duration.filter(d => d.concentration).length > 0) {
-			r20json.data["Concentration"] = "Yes";
-		}
-		var notecontents = "";
-		var gmnotes = "";
-		notecontents += `<p><h3>${data.name}</h3>
-<em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}${builderOptions.isSpellPoints && data.level ? ` (${d20plus.spells.spLevelToSpellPoints(data.level)} spell points)` : ""}</em></p><p>
-<strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
-<strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
-<strong>Components:</strong> ${Parser.spComponentsToFull(data.components)}<br>
-<strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>
-</p>`;
-		const renderer = new EntryRenderer();
-		const renderStack = [];
-		const entryList = {type: "entries", entries: data.entries};
-		renderer.setBaseUrl(BASE_SITE_URL);
-		renderer.recursiveEntryRender(entryList, renderStack, 1);
-		r20json.content = d20plus.importer.getCleanText(renderStack.join(" "));
-		r20json.data["data-description"] = r20json.content;
-		notecontents += renderStack.join("");
-		if (data.entriesHigherLevel) {
-			const hLevelRenderStack = [];
-			const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
-			renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
-			const higherLevels = d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
-			r20json.content += "\n\n\"At Higher Levels: " + higherLevels;
-			r20json.htmlcontent += "<br><br>\"At Higher Levels: " + higherLevels;
-			notecontents += hLevelRenderStack.join("");
-			r20Data["Higher Spell Slot Desc"] = higherLevels;
-		}
-		notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
-		gmnotes = JSON.stringify(r20json);
-		notecontents += `<del class="hidden">${gmnotes}</del>`;
-
-		return [notecontents, gmnotes];
-	};
-
-// parse spell components
-	function parseComponents (components) {
-		const out = [];
-		if (components && components.v) out.push("V");
-		if (components && components.s) out.push("S");
-		if (components && components.m) out.push("M");
-		return out.join(" ");
-	}
-
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
 	d20plus.items._listCols = ["name", "type", "rarity", "source"];
 	d20plus.items._listItemBuilder = (it) => {
@@ -2630,7 +2602,7 @@ const betteR205etools = function () {
 		<span class="name col-3" title="name">${it.name}</span>
 		<span class="type col-5" title="type">${it.typeText.split(",").map(t => `TYP[${t.trim()}]`).join(", ")}</span>
 		<span class="rarity col-2" title="rarity">RAR[${it.rarity}]</span>
-		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	};
 	d20plus.items._listIndexConverter = (it) => {
 		if (!it._isEnhanced) EntryRenderer.item.enhanceItem(it);
@@ -3365,353 +3337,6 @@ const betteR205etools = function () {
 		});
 	};
 
-	// Import Classes button was clicked
-	d20plus.classes.button = function (forcePlayer) {
-		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-classes-url-player").val() : $("#import-classes-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
-
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
-				d20plus.importer.showImportList(
-					"class",
-					data.class,
-					handoutBuilder,
-					{
-						forcePlayer
-					}
-				);
-			});
-		}
-	};
-
-	// Import All Classes button was clicked
-	d20plus.classes.buttonAll = function (forcePlayer) {
-		const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
-
-		DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
-			d20plus.importer.showImportList(
-				"class",
-				data.class,
-				handoutBuilder,
-				{
-					forcePlayer
-				}
-			);
-		});
-	};
-
-	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
-		// make dir
-		const folder = d20plus.importer.makeDirTree(`Classes`, folderName);
-		const path = ["Classes", folderName, data.name];
-
-		// handle duplicates/overwrites
-		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
-
-		const name = data.name;
-		d20.Campaign.handouts.create({
-			name: name,
-			tags: d20plus.importer.getTagString([
-				Parser.sourceJsonToFull(data.source)
-			], "class")
-		}, {
-			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
-
-				const [noteContents, gmNotes] = d20plus.classes._getHandoutData(data);
-
-				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
-				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
-		});
-
-		d20plus.classes._handleSubclasses(data, overwrite, inJournals, folderName);
-	};
-
-	d20plus.classes._handleSubclasses = function (data, overwrite, inJournals, outerFolderName, forcePlayer) {
-		const playerMode = forcePlayer || !window.is_gm;
-		// import subclasses
-		if (data.subclasses) {
-			const allSubclasses = (data.source && !SourceUtil.isNonstandardSource(data.source)) || !window.confirm(`${data.name} subclasses: import published/official only?`);
-
-			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
-
-			data.subclasses.forEach(sc => {
-				if (!allSubclasses && !SourceUtil.isNonstandardSource(sc.source)) return;
-
-				sc.class = data.name;
-				sc.classSource = sc.classSource || data.source;
-				sc._gainAtLevels = gainFeatureArray;
-				if (playerMode) {
-					d20plus.subclasses.playerImportBuilder(sc);
-				} else {
-					const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
-					const path = [folderName];
-					if (outerFolderName) path.push(sc.source || data.source); // if it wasn't None, group by source
-					d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path);
-				}
-			});
-		}
-	};
-
-	d20plus.classes._getGainAtLevelArr = function (clazz) {
-		const gainFeatureArray = [];
-		outer: for (let i = 0; i < 20; i++) {
-			const lvlFeatureList = clazz.classFeatures[i];
-			for (let j = 0; j < lvlFeatureList.length; j++) {
-				const feature = lvlFeatureList[j];
-				if (feature.gainSubclassFeature) {
-					gainFeatureArray.push(true);
-					continue outer;
-				}
-			}
-			gainFeatureArray.push(false);
-		}
-		return gainFeatureArray;
-	};
-
-	d20plus.classes.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.classes._getHandoutData(data);
-
-		const importId = d20plus.ut.generateRowId();
-		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-		d20plus.importer.makePlayerDraggable(importId, data.name);
-
-		d20plus.classes._handleSubclasses(data, false, false, null, true);
-	};
-
-	d20plus.classes._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
-		renderer.setBaseUrl(BASE_SITE_URL);
-
-		const renderStack = [];
-		// make a copy of the data to modify
-		const curClass = JSON.parse(JSON.stringify(data));
-		// render the class text
-		for (let i = 0; i < 20; i++) {
-			const lvlFeatureList = curClass.classFeatures[i];
-			for (let j = 0; j < lvlFeatureList.length; j++) {
-				const feature = lvlFeatureList[j];
-				renderer.recursiveEntryRender(feature, renderStack);
-			}
-		}
-		const rendered = renderStack.join("");
-
-		const r20json = {
-			"name": data.name,
-			"Vetoolscontent": data,
-			"data": {
-				"Category": "Classes"
-			}
-		};
-		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
-
-		return [noteContents, gmNotes];
-	};
-
-	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
-	d20plus.subclasses._listCols = ["name", "class", "source"];
-	d20plus.subclasses._listItemBuilder = (it) => `
-		<span class="name col-6">${it.name}</span>
-		<span class="class col-4">CLS[${it.class}]</span>
-		<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
-	d20plus.subclasses._listIndexConverter = (sc) => {
-		return {
-			name: sc.name.toLowerCase(),
-			class: sc.class.toLowerCase(),
-			source: Parser.sourceJsonToAbv(sc.source).toLowerCase()
-		};
-	};
-// Import Subclasses button was clicked
-	d20plus.subclasses.button = function (forcePlayer) {
-		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-subclasses-url-player").val() : $("#import-subclasses-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
-
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
-				d20plus.importer.showImportList(
-					"subclass",
-					data.subclass,
-					handoutBuilder,
-					{
-						groupOptions: d20plus.subclasses._groupOptions,
-						forcePlayer,
-						listItemBuilder: d20plus.subclasses._listItemBuilder,
-						listIndex: d20plus.subclasses._listCols,
-						listIndexConverter: d20plus.subclasses._listIndexConverter
-					}
-				);
-			});
-		}
-	};
-
-	d20plus.subclasses._preloadClass = function (subclass) {
-		if (!subclass.class) Promise.resolve();
-
-		d20plus.ut.log("Preloading class...");
-		return DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
-			const clazz = data.class.find(it => it.name.toLowerCase() === subclass.class.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
-			if (!clazz) {
-				throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.class}::${subclass.classSource || SRC_PHB}`);
-			}
-
-			const gainAtLevelArr = d20plus.classes._getGainAtLevelArr(clazz);
-			subclass._gainAtLevels = gainAtLevelArr;
-		});
-	};
-
-	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
-		// make dir
-		const folder = d20plus.importer.makeDirTree(`Subclasses`, folderName);
-		const path = ["Sublasses", folderName, data.name];
-
-		// handle duplicates/overwrites
-		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
-
-		d20plus.subclasses._preloadClass(data).then(() => {
-			const name = `${data.shortName} (${data.class})`;
-			d20.Campaign.handouts.create({
-				name: name,
-				tags: d20plus.importer.getTagString([
-					data.class,
-					Parser.sourceJsonToFull(data.source)
-				], "subclass")
-			}, {
-				success: function (handout) {
-					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
-
-					const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
-
-					handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-					handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
-					d20.journal.addItemToFolderStructure(handout.id, folder.id);
-				}
-			});
-		});
-	};
-
-	d20plus.subclasses.playerImportBuilder = function (data) {
-		d20plus.subclasses._preloadClass(data).then(() => {
-			const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
-
-			const importId = d20plus.ut.generateRowId();
-			d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-			const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
-			d20plus.importer.makePlayerDraggable(importId, name);
-		});
-	};
-
-	d20plus.subclasses._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
-		renderer.setBaseUrl(BASE_SITE_URL);
-
-		const renderStack = [];
-
-		data.subclassFeatures.forEach(lvl => {
-			lvl.forEach(f => {
-				renderer.recursiveEntryRender(f, renderStack);
-			});
-		});
-
-		const rendered = renderStack.join("");
-
-		const r20json = {
-			"name": data.name,
-			"Vetoolscontent": data,
-			"data": {
-				"Category": "Subclasses"
-			}
-		};
-		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
-
-		return [noteContents, gmNotes];
-	};
-
-	d20plus.backgrounds.button = function (forcePlayer) {
-		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-backgrounds-url-player").val() : $("#import-backgrounds-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.backgrounds.playerImportBuilder : d20plus.backgrounds.handoutBuilder;
-
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
-				d20plus.importer.showImportList(
-					"background",
-					data.background,
-					handoutBuilder,
-					{
-						forcePlayer
-					}
-				);
-			});
-		}
-	};
-
-	d20plus.backgrounds.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
-		// make dir
-		const folder = d20plus.importer.makeDirTree(`Backgrounds`, folderName);
-		const path = ["Backgrounds", folderName, data.name];
-
-		// handle duplicates/overwrites
-		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
-
-		const name = data.name;
-		d20.Campaign.handouts.create({
-			name: name,
-			tags: d20plus.importer.getTagString([
-				Parser.sourceJsonToFull(data.source)
-			], "background")
-		}, {
-			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BACKGROUNDS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
-
-				const [noteContents, gmNotes] = d20plus.backgrounds._getHandoutData(data);
-
-				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
-				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
-		});
-	};
-
-	d20plus.backgrounds.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.backgrounds._getHandoutData(data);
-
-		const importId = d20plus.ut.generateRowId();
-		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-		d20plus.importer.makePlayerDraggable(importId, data.name);
-	};
-
-	d20plus.backgrounds._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
-		renderer.setBaseUrl(BASE_SITE_URL);
-
-		const renderStack = [];
-
-		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
-
-		const rendered = renderStack.join("");
-
-		const r20json = {
-			"name": data.name,
-			"Vetoolscontent": data,
-			"data": {
-				"Category": "Backgrounds"
-			}
-		};
-		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
-
-		return [noteContents, gmNotes];
-	};
-
 	d20plus.optionalfeatures.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-optionalfeatures-url-player").val() : $("#import-optionalfeatures-url").val();
@@ -3795,32 +3420,6 @@ const betteR205etools = function () {
 	d20plus.adventures.button = function () {
 		const url = $("#import-adventures-url").val();
 		if (url !== null) d20plus.adventures.load(url);
-	};
-
-	d20plus.spells.spLevelToSpellPoints = function (level) {
-		switch (level) {
-			case 1:
-				return 2;
-			case 2:
-				return 3;
-			case 3:
-				return 5;
-			case 4:
-				return 6;
-			case 5:
-				return 7;
-			case 6:
-				return 8;
-			case 7:
-				return 10;
-			case 8:
-				return 11;
-			case 9:
-				return 13;
-			case 0:
-			default:
-				return 0;
-		}
 	};
 
 	// Fetch adventure data from file
@@ -4373,9 +3972,6 @@ To import from third-party sources, either individually select one available in 
 <select id="button-subclasses-select"><!-- populate with JS--></select>
 <input type="text" id="import-subclasses-url">
 <a class="btn" href="#" id="import-subclasses-load">Import Subclasses</a>
-<p>
-<b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
-</p>
 </div>
 `;
 
@@ -4386,9 +3982,6 @@ To import from third-party sources, either individually select one available in 
 <select id="button-subclasses-select-player"><!-- populate with JS--></select>
 <input type="text" id="import-subclasses-url-player">
 <a class="btn" href="#" id="import-subclasses-load-player">Import Subclasses</a>
-<p>
-<b>Default subclasses are imported as part of Classes import. This can be used to load homebrew classes.</b>
-</p>
 </div>
 `;
 

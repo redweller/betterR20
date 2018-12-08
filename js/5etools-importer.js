@@ -89,7 +89,7 @@ function d20plusImporter () {
 		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
 			const folder = $(`[data-globalfolderid='${folderId}']`);
 			if (folder.length) {
-				d20plus.ut.log("Nuking folder...");
+				d20plus.ut.log("Nuking directory...");
 				const childItems = folder.find("[data-itemid]").each((i, e) => {
 					const $e = $(e);
 					const itemId = $e.attr("data-itemid");
@@ -100,6 +100,25 @@ function d20plusImporter () {
 				const childFolders = folder.find(`[data-globalfolderid]`).remove();
 				folder.remove();
 				$("#journalfolderroot").trigger("change");
+			}
+		}
+	};
+
+	d20plus.importer.recursiveArchiveDirById = function (folderId, withConfirmation) {
+		if (!withConfirmation || confirm("Are you sure you want to archive this folder, and everything in it? This cannot be undone.")) {
+			const folder = $(`[data-globalfolderid='${folderId}']`);
+			if (folder.length) {
+				d20plus.ut.log("Archiving directory...");
+				folder.find("[data-itemid]").each((i, e) => {
+					const $e = $(e);
+					const itemId = $e.attr("data-itemid");
+					let toArchive = d20.Campaign.handouts.get(itemId);
+					toArchive || (toArchive = d20.Campaign.characters.get(itemId));
+					if (toArchive && toArchive.attributes) {
+						toArchive.attributes.archived = true;
+						toArchive.save()
+					}
+				});
 			}
 		}
 	};
@@ -217,7 +236,14 @@ function d20plusImporter () {
 		$ele.find("td, th").append(" | ");
 		$ele.find("tr").append("\n");
 		$ele.find("p, li, br").append("\n\n");
-		return $ele.text().replace(/[ ]+/g, " ");
+
+		return $ele.text()
+			.trim()
+			.replace(/\n/g, "<<N>>")
+			.replace(/\s+/g, " ")
+			.replace(/<<N>>(<<N>>)+/g, "\n\n")
+			.replace(/<<N>>/g, "\n")
+			.replace(/\n +/g, "\n");
 
 		/* version which preserves images, and converts dice
 	const IMG_TAG = "R20IMGTAG";
@@ -310,8 +336,7 @@ function d20plusImporter () {
 		});
 	};
 
-	d20plus.importer.getSetAvatarImage = function (character, avatar) {
-		character.attributes.avatar = avatar;
+	d20plus.importer.getSetAvatarImage = async function (character, avatar, portraitUrl) {
 		var tokensize = 1;
 		if (character.size === "L") tokensize = 2;
 		if (character.size === "H") tokensize = 3;
@@ -331,12 +356,30 @@ function d20plusImporter () {
 		if (!d20plus.cfg.get("import", "skipSenses")) {
 			defaulttoken.light_hassight = true;
 			if (lightradius != null) {
-				defaulttoken.light_radius = lightradius;
-				defaulttoken.light_dimradius = lightmin;
+				defaulttoken.light_radius = `${lightradius}`;
+				defaulttoken.light_dimradius = `${lightmin}`;
 			}
 		}
 
-		character.updateBlobs({avatar: avatar, defaulttoken: JSON.stringify(defaulttoken)});
+		// ensure any portrait URL exists
+		let outPortraitUrl = portraitUrl || avatar;
+		if (portraitUrl) {
+			await new Promise(resolve => {
+				$.ajax({
+					url: portraitUrl,
+					type: 'HEAD',
+					error: function () {
+						d20plus.ut.error(`Could not access portrait URL "${portraitUrl}"`);
+						outPortraitUrl = avatar;
+						resolve()
+					},
+					success: () => resolve()
+				});
+			});
+		}
+
+		character.attributes.avatar = outPortraitUrl;
+		character.updateBlobs({avatar: outPortraitUrl, defaulttoken: JSON.stringify(defaulttoken)});
 		character.save({defaulttoken: (new Date()).getTime()});
 	};
 
@@ -682,6 +725,9 @@ function d20plusImporter () {
 			nextStep: (doImport, originalImportQueue) {
 				const modifiedImportQueue = originalImportQueue.map(it => JSON.stringify(JSON.parse(it));
 				doImport(modifiedImportQueue);
+			},
+			builderOptions: {
+				(...passed to handoutBuilder depending on requirements...)
 			}
 		}
 		 */
@@ -894,10 +940,10 @@ function d20plusImporter () {
 					}
 
 					if (!window.is_gm || options.forcePlayer) {
-						handoutBuilder(it);
+						handoutBuilder(it, undefined, undefined, undefined, undefined, options.builderOptions);
 					} else {
 						const folderName = groupBy === "None" ? "" : d20plus.importer._getHandoutPath(dataType, it, groupBy);
-						const builderOptions = {};
+						const builderOptions = Object.assign({}, options.builderOptions || {});
 						if (dataType === "spell" && groupBy === "Spell Points") builderOptions.isSpellPoints = true;
 						handoutBuilder(it, overwrite, inJournals, folderName, options.saveIdsTo, builderOptions);
 					}

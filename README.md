@@ -4,17 +4,21 @@
 For help, advice, and updates; or to suggest improvements and changes, please [join our Discord](https://discord.gg/AzyBjtQ)!
 
 ## How to Import 5etools Data (Monsters, Spells, Items, ...)
-1. Install the Tampermonkey browser extension ([Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)/[Firefox](https://addons.mozilla.org/en-GB/firefox/addon/tampermonkey/)).
+1. Install the Roll20 Enhancement Suite browser extension ([Chrome](https://chrome.google.com/webstore/detail/vtt-enhancement-suite/fadcomaehamhdhekodcpiglabcjkepff)/[Firefox](https://addons.mozilla.org/en-US/firefox/addon/roll20-enhancement-suite/)/)
 
-2. Click [here](https://get.5e.tools/script/betteR20-5etools.user.js) and install the script.
+   - (This adds many other features, view a sample of them [here](https://ssstormy.github.io/roll20-enhancement-suite/features.html).)
 
-3. Open the Roll20 game where you want the stuff imported.
+2. Install the Tampermonkey browser extension ([Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en)/[Firefox](https://addons.mozilla.org/en-GB/firefox/addon/tampermonkey/)).
 
-4. Go to the gear icon and select the category you want to import from the dropdown. Use the Importer to pick things you want to import.
+3. Click [here](https://get.5e.tools/script/betteR20-5etools.user.js) and install the script.
 
-5. Hit import, and let it run. The journal will start fill up with the stuff you selected. It's not too laggy but can take a long time depending on the amount of stuff you selected. **Adding hundreds of character sheets will slow down your game, including loading times, significantly.** We recommend importing creatures only as you need them, but other categories can be fully imported without noticeable impact on performance. 
+4. Open the Roll20 game where you want the stuff imported.
 
-6. Done. If you are using the Shaped sheet, be sure to open up the NPC sheets and let them convert before using it.
+5. Go to the gear icon and select the category you want to import from the dropdown. Use the Importer to pick things you want to import.
+
+6. Hit import, and let it run. The journal will start fill up with the stuff you selected. It's not too laggy but can take a long time depending on the amount of stuff you selected. **Adding hundreds of character sheets will slow down your game, including loading times, significantly.** We recommend importing creatures only as you need them, but other categories can be fully imported without noticeable impact on performance. 
+
+7. Done. If you are using the Shaped sheet, be sure to open up the NPC sheets and let them convert before using it.
 
 ## Other Features
 There are a variety of other features added by the script. Some highlights include:

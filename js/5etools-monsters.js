@@ -7,7 +7,7 @@ function d20plusMonsters () {
 		<span class="name col-4" title="name">${it.name}</span>
 		<span class="type col-4" title="type">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
 		<span class="cr col-2" title="cr">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
-		<span title="source (Full: ${Parser.sourceJsonToFull(it.source)})" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.monsters._listIndexConverter = (m) => {
 		m.__pType = m.__pType || Parser.monTypeToFullObj(m.type).type; // only filter using primary type
 		return {
@@ -172,7 +172,16 @@ function d20plusMonsters () {
 
 	// Import All Monsters button was clicked
 	d20plus.monsters.buttonAll = function () {
-		const toLoad = Object.keys(monsterDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+		const filterUnofficial = !d20plus.cfg.getOrDefault("import", "allSourcesIncludeUnofficial");
+
+		const toLoad = Object.keys(monsterDataUrls)
+			.filter(src => !(SourceUtil.isNonstandardSource(src) && filterUnofficial))
+			.map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+
+		if (d20plus.cfg.getOrDefault("import", "allSourcesIncludeHomebrew")) {
+			monsterBrewDataUrls.forEach(it => toLoad.push(it.url));
+		}
+
 		if (toLoad.length) {
 			DataUtil.multiLoadJSON(
 				toLoad.map(url => ({url})),
@@ -227,49 +236,12 @@ function d20plusMonsters () {
 			const renderer = new EntryRenderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
-			// get fluff, if available
-			const includedFluff = data.fluff;
+			const fluff = EntryRenderer.monster.getFluff(data, monsterMetadata, monsterFluffData[data.source]);
 			let renderFluff = null;
-			// prefer fluff directly attached to the creature
-			if (includedFluff) {
-				if (includedFluff.entries) {
-					const depth = includedFluff.entries.type === "section" ? -1 : 2;
-					renderFluff = renderer.renderEntry(includedFluff.entries, depth);
-				}
-			} else {
-				const fluffData = monsterFluffData[data.source] ? monsterFluffData[data.source] : null;
-				const fluff = fluffData ? monsterFluffData[data.source].monster.find(it => it.name === data.name) : null;
-				if (fluff) {
-					if (fluff._copy) {
-						const cpy = fluffData.monster.find(it => fluff._copy.name === it.name);
-						// preserve these
-						const name = fluff.name;
-						const src = fluff.source;
-						const images = fluff.images;
-						Object.assign(fluff, cpy);
-						fluff.name = name;
-						fluff.source = src;
-						if (images) fluff.images = images;
-						delete fluff._copy;
-					}
-
-					if (fluff._appendCopy) {
-						const cpy = fluffData.monster.find(it => fluff._appendCopy.name === it.name);
-						if (cpy.images) {
-							if (!fluff.images) fluff.images = cpy.images;
-							else fluff.images = fluff.images.concat(cpy.images);
-						}
-						if (cpy.entries) {
-							if (!fluff.entries) fluff.entries = cpy.entries;
-							else fluff.entries = fluff.entries.concat(cpy.entries);
-						}
-						delete fluff._appendCopy;
-					}
-
-					if (fluff.entries) {
-						renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries});
-					}
-				}
+			if (fluff) {
+				const depth = fluff.type === "section" ? -1 : 2;
+				if (fluff.type !== "section") renderer.setFirstSection(false);
+				renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries}, depth);
 			}
 
 			d20.Campaign.characters.create(
@@ -298,14 +270,18 @@ function d20plusMonsters () {
 							character.name = name;
 							character.senses = data.senses;
 							character.hp = data.hp.average || 0;
+							const firstFluffImage = fluff && fluff.images ? (() => {
+								const firstImage = fluff.images[0] || {};
+								return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
+							})() : null;
 							$.ajax({
 								url: avatar,
 								type: 'HEAD',
 								error: function () {
-									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`, firstFluffImage);
 								},
 								success: function () {
-									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.ut.getAntiCacheSuffix()}`);
+									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.ut.getAntiCacheSuffix()}`, firstFluffImage);
 								}
 							});
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
@@ -451,41 +427,59 @@ function d20plusMonsters () {
 
 							// add Tokenaction Macros
 							if (d20plus.cfg.get("token", "tokenactionsSkillsSaves")) {
-								character.abilities.create({
-									name: "Perception",
-									istokenaction: true,
-									action: d20plus.actionMacroPerception
-								});
-								character.abilities.create({
-									name: "Init",
-									istokenaction: true,
-									action: d20plus.actionMacroInit
-								});
-								character.abilities.create({
-									name: "DR/Immunities",
-									istokenaction: true,
-									action: d20plus.actionMacroDrImmunities
-								});
-								character.abilities.create({
-									name: "Stats",
-									istokenaction: true,
-									action: d20plus.actionMacroStats
-								});
-								character.abilities.create({
-									name: "Saves",
-									istokenaction: true,
-									action: d20plus.actionMacroSaves
-								});
-								character.abilities.create({
-									name: "Skill-Check",
-									istokenaction: true,
-									action: d20plus.actionMacroSkillCheck
-								});
-								character.abilities.create({
-									name: "Ability-Check",
-									istokenaction: true,
-									action: d20plus.actionMacroAbilityCheck
-								});
+								if (d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Init",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_initiative}`
+									});
+									character.abilities.create({
+										name: "Saving Throws",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_saving_throw_query}`
+									});
+									character.abilities.create({
+										name: "Ability Checks",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_ability_checks_query}`
+									});
+								} else {
+									character.abilities.create({
+										name: "Perception",
+										istokenaction: true,
+										action: d20plus.actionMacroPerception
+									});
+									character.abilities.create({
+										name: "Init",
+										istokenaction: true,
+										action: d20plus.actionMacroInit
+									});
+									character.abilities.create({
+										name: "DR/Immunities",
+										istokenaction: true,
+										action: d20plus.actionMacroDrImmunities
+									});
+									character.abilities.create({
+										name: "Stats",
+										istokenaction: true,
+										action: d20plus.actionMacroStats
+									});
+									character.abilities.create({
+										name: "Saves",
+										istokenaction: true,
+										action: d20plus.actionMacroSaves
+									});
+									character.abilities.create({
+										name: "Skill-Check",
+										istokenaction: true,
+										action: d20plus.actionMacroSkillCheck
+									});
+									character.abilities.create({
+										name: "Ability-Check",
+										istokenaction: true,
+										action: d20plus.actionMacroAbilityCheck
+									});
+								}
 							}
 
 							if (data.save != null) {
@@ -958,11 +952,19 @@ function d20plusMonsters () {
 										// build tokenaction
 										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
 										if (d20plus.cfg.get("token", "tokenactionsSpells")) {
-											character.abilities.create({
-												name: "Spells",
-												istokenaction: true,
-												action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
-											}).save();
+											if (d20plus.sheet === "shaped") {
+												character.abilities.create({
+													name: "Spells",
+													istokenaction: true,
+													action: `%{${character.id}|shaped_spells}`
+												}).save();
+											} else {
+												character.abilities.create({
+													name: "Spells",
+													istokenaction: true,
+													action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+												}).save();
+											}
 										}
 									}
 								}
@@ -1016,7 +1018,7 @@ function d20plusMonsters () {
 
 										const packedOthers = [];
 										others.forEach(it => {
-											const m = /^(\d+\.\s*[^.]+\s*)[.:](.*)$/.exec(it);
+											const m = /^(\d+\.\s*[^.]+?\s*)[.:](.*)$/.exec(it);
 											if (m) {
 												const partName = m[1].trim();
 												const text = m[2].trim();
@@ -1036,6 +1038,15 @@ function d20plusMonsters () {
 							if (data.reaction) {
 								character.attribs.create({name: "reaction_flag", current: 1});
 								character.attribs.create({name: "npcreactionsflag", current: 1});
+
+								if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Reactions",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_reactions}`
+									});
+								}
+
 								$.each(data.reaction, function (i, v) {
 									var newRowId = d20plus.ut.generateRowId();
 									let text = "";
@@ -1045,7 +1056,7 @@ function d20plusMonsters () {
 									});
 
 									// roll20 only supports a single reaction, so only use the first
-									if (d20plus.cfg.get("token", "tokenactions") && i === 0) {
+									if (d20plus.cfg.get("token", "tokenactions") && i === 0 && d20plus.sheet !== "shaped") {
 										character.abilities.create({
 											name: "Reaction: " + v.name,
 											istokenaction: true,
@@ -1068,11 +1079,20 @@ function d20plusMonsters () {
 								character.attribs.create({name: "legendary_flag", current: "1"});
 								let legendaryActions = data.legendaryActions || 3;
 								character.attribs.create({name: "npc_legendary_actions", current: legendaryActions.toString()});
+
+								if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Legendary Actions",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_legendaryactions}`
+									});
+								}
+
 								let tokenactiontext = "";
 								$.each(data.legendary, function (i, v) {
 									var newRowId = d20plus.ut.generateRowId();
 
-									if (d20plus.cfg.get("token", "tokenactions")) {
+									if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet !== "shaped") {
 										tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
 									}
 
@@ -1198,7 +1218,8 @@ function d20plusMonsters () {
 										current: descriptionFlag
 									});
 								});
-								if (d20plus.cfg.get("token", "tokenactions")) {
+
+								if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet !== "shaped") {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
@@ -1210,6 +1231,23 @@ function d20plusMonsters () {
 							// set show/hide NPC names in rolls
 							if (d20plus.cfg.has("import", "showNpcNames") && !d20plus.cfg.get("import", "showNpcNames")) {
 								character.attribs.create({name: "npc_name_flag", current: 0});
+							}
+
+							if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet === "shaped") {
+								character.abilities.create({
+									name: "Actions",
+									istokenaction: true,
+									action: `%{${character.id}|shaped_actions}`
+								});
+
+								// TODO lair action creation is unimplemented
+								/*
+								character.abilities.create({
+									name: "Lair Actions",
+									istokenaction: true,
+									action: `%{${character.id}|shaped_lairactions}`
+								});
+								*/
 							}
 
 							character.view._updateSheetValues();

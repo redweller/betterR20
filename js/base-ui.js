@@ -20,14 +20,14 @@ function baseUi () {
 			$("#d20plus-artfolder").dialog({
 				autoOpen: false,
 				resizable: true,
-				width: 800,
-				height: 400,
+				width: 1000,
+				height: 800,
 			});
 			$("#d20plus-artmassadd").dialog({
 				autoOpen: false,
 				resizable: true,
 				width: 800,
-				height: 400,
+				height: 650,
 			});
 		}
 		const $cfgEditor = $("#d20plus-configeditor");

@@ -1,6 +1,14 @@
 const baseTemplate = function () {
 	d20plus.template = {};
 
+	d20plus.template.swapTemplates = () => {
+		d20plus.ut.log("Swapping templates...");
+		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
+		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
+		$("#tmpl_deckeditor").html($(d20plus.template.deckeditor).html());
+		$("#tmpl_cardeditor").html($(d20plus.template.cardeditor).html());
+	};
+
 	d20plus.settingsHtmlPtFooter = `<p>
 			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
@@ -16,8 +24,8 @@ const baseTemplate = function () {
 
 	d20plus.artTabHtml = `
 	<p style="display: flex; width: 100%; justify-content: space-between;">
-		<button class="btn" id="button-add-external-art" style="margin-right: 5px;">Manage External Art</button>
-		<button class="btn" id="button-browse-external-art" title="Warning: phat data">Browse Repo</button>
+		<button class="btn" id="button-add-external-art" style="margin-right: 5px; width: 100%;">Manage External Art</button>
+		<button class="btn" id="button-browse-external-art" style="width: 100%;">Browse Repo</button>
 	</p>
 	`;
 
@@ -29,6 +37,7 @@ const baseTemplate = function () {
 	<input placeholder="URL*" id="art-list-add-url">
 	<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
 	<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
+	<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
 	<p/>
 	<hr>
 	<div id="art-list-container">
@@ -44,8 +53,8 @@ const baseTemplate = function () {
 
 	d20plus.addArtMassAdderHTML = `
 	<div id="d20plus-artmassadd" title="Mass Add Art URLs">
-	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <a class="btn" href="#" id="art-list-multi-add-btn-submit">Add URLs</a></p>
-	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://pics.me/img1.png"></textarea></p>
+	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
+	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
 	</div>`;
 
 	d20plus.artListHTML = `
@@ -396,16 +405,16 @@ const baseTemplate = function () {
 
 	d20plus.template_pageSettings = `
 	<script id="tmpl_pagesettings" type="text/html">
-		  <label style='padding-top: 4px;'>
+		<label style='padding-top: 4px;'>
 			<strong>Page Size</strong>
-		  </label>
-		  X: <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" /> un. (<$!this.model.get("width") * 70$> px)
-		  <div style="margin-left: 110px; margin-top: 2px;">Y: <input type="number" class="height" style="width: 50px;" value="<$!this.model.get("height")$>" /> un. (<$!this.model.get("height") * 70$> px)</div>
-		  <small style='display: block; font-size: 0.9em; margin-left: 110px;'>width by height, 1 unit = 70 pixels</small>
-		  <div class='clear' style='height: 15px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
-		  <input type="number" class="scale_number" style="width: 35px;" value="<$!this.model.get("scale_number")$>" />
-		  <select class='scale_units' style='width: 65px; position: relative;'>
+		</label>
+		X: <input type="number" class="width" style="width: 50px;" value="<$!this.model.get("width")$>" /> un. (<$!this.model.get("width") * 70$> px)
+		<div style="margin-left: 110px; margin-top: 2px;">Y: <input type="number" class="height" style="width: 50px;" value="<$!this.model.get("height")$>" /> un. (<$!this.model.get("height") * 70$> px)</div>
+		<small style='display: block; font-size: 0.9em; margin-left: 110px;'>width by height, 1 unit = 70 pixels</small>
+		<div class='clear' style='height: 15px;'></div>
+		<label style='margin-left: 55px; position: relative; top: 6px;'><strong>Scale:</strong> 1 unit =</label>
+		<input type="number" class="scale_number" style="width: 35px;" value="<$!this.model.get("scale_number")$>" />
+		<select class='scale_units' style='width: 65px; position: relative;'>
 			<option value='ft'>ft.</option>
 			<option value='m'>m.</option>
 			<option value='km'>km.</option>
@@ -416,209 +425,263 @@ const baseTemplate = function () {
 			<option value='hex'>hex</option>
 			<option value='sq'>sq.</option>
 			<option value='custom'>Custom...</option>
-		  </select>
-		  <div class='hidden' id='custom_scale_units'>
+		</select>
+		<div class='hidden' id='custom_scale_units'>
 			<label style='margin-left: 55px; position: relative; top: 6px;'><strong>Custom Unit</strong></label>
 			<input style='width: 60px;' type='text'>
-		  </div>
-		  <div class='clear' style='height: 15px;'></div>
-		  <label>
+		</div>
+		<div class='clear' style='height: 15px;'></div>
+		<label>
 			<strong>Background</strong>
-		  </label>
-		  <input class='pagebackground' type='text'>
-		  <hr>
-		  <label style='position: relative; top: 8px;'>
+		</label>
+		<input class='pagebackground' type='text'>
+		
+		<hr>
+		
+		<label style='position: relative; top: 8px;'>
 			<strong>Grid</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='gridenabled' type='checkbox' value='1'>
 			Enabled, Size:
-		  </label>
-		  <input type="number" class="snappingincrement" style="width: 35px;" value="<$!this.model.get("snapping_increment")$>" /> units
-		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
-		  <select id='gridtype' style='width: 100px;'>
+		</label>
+		<input type="number" class="snappingincrement" style="width: 35px;" value="<$!this.model.get("snapping_increment")$>" /> units
+		<div class='clear' style='height: 7px;'></div>
+		<label style='margin-left: 55px; position: relative; top: 4px;'>Type</label>
+		<select id='gridtype' style='width: 100px;'>
 			<option selected value='square'>Square</option>
 			<option value='hex'>Hex (V)</option>
 			<option value='hexr'>Hex (H)</option>
-		  </select>
-		  <div class='clear' style='height: 7px;'></div>
-		  <label class='checkbox' id='hexlabels' style='margin-left: 130px;'>
+		</select>
+		<div class='clear' style='height: 7px;'></div>
+		<label class='checkbox' id='hexlabels' style='margin-left: 130px;'>
 			<input class='gridlabels' type='checkbox' value='1'>&nbsp; Show Labels</input>
-		  </label>
-		  <div class='clear' style='height: 2px;'></div>
-		  <label style='margin-left: 55px; position: relative; top: 4px;'>
+		</label>
+		<div class='clear' style='height: 2px;'></div>
+		<label style='margin-left: 55px; position: relative; top: 4px;'>
 			<a class='showtip pictos' href='https://wiki.roll20.net/Ruler' target='_blank'>?</a>
 			Measurement
-		  </label>
-		  <select id='diagonaltype' style='width: 100px;'>
+		</label>
+		<select id='diagonaltype' style='width: 100px;'>
 			<option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
 			<option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
 			<option class='squareonly' value='manhattan'>Manhattan</option>
 			<option class='hexonly' value='hex'>Hex Path</option>
 			<option value='pythagorean'>Euclidean</option>
-		  </select>
-		  <div class='clear' style='height: 10px;'></div>
-		  <label style='margin-left: 55px;'>Color</label>
-		  <input class='gridcolor' type='text'>
-		  <div class='clear' style='height: 7px;'></div>
-		  <label style='margin-left: 55px;'>Opacity</label>
-		  <div class='gridopacity'></div>
-		  <div class='clear' style='height: 10px'></div>
-		  <hr>
-		  <label style='position: relative; top: -2px;'>
+		</select>
+		<div class='clear' style='height: 10px;'></div>
+		<label style='margin-left: 55px;'>Color</label>
+		<input class='gridcolor' type='text'>
+		<div class='clear' style='height: 7px;'></div>
+		<label style='margin-left: 55px;'>Opacity</label>
+		<div class='gridopacity'></div>
+		<div class='clear' style='height: 10px'></div>
+		
+		<hr>
+		
+		<label style='position: relative; top: -2px;'>
 			<strong>Fog of War</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='darknessenabled' type='checkbox' value='1'>&nbsp; Enabled</input>
-		  </label>
-		  <hr>
-		  <strong style="display: block;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
-		  <label style='position: relative; top: 3px; width: 85px; padding-left: 15px;'>
+		</label>
+		
+		<hr>
+		
+		<label style='position: relative; top: -2px;'>
+			<strong>Weather</strong>
+		</label>
+		<button class='btn Ve-btn-weather'>
+			Configure
+		</button>
+		
+		<hr>
+		
+		<strong style="display: block;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+		<label style='position: relative; top: 3px; width: 85px; padding-left: 15px;'>
 			<strong>Advanced Fog of War</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='advancedfowenabled showtip' style='margin-top: 8px; margin-bottom: 8px;' type='checkbox' value='1'>&nbsp; Enabled</input>
-		  </label>
-		  <span class='no_grid' style='display: none;'>
+		</label>
+		<span class='no_grid' style='display: none;'>
 			, Size:
 			<input type="number" class="advancedfowgridsize" style="width: 30px;" value="<$!this.model.get("adv_fow_grid_size")$>" /> units
-		  </span>
-		  <br>
-		  <label class='checkbox'>
+		</span>
+		<br>
+		<label class='checkbox'>
 			<input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>&nbsp; Show Grid</input>
-		  </label>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>&nbsp; Dim Light Reveals</input>
-		  </label>
-		  <br>
-		  <br>
-		  <label style='position: relative; top: -2px;'>
+		</label>
+		<br>
+		<br>
+		<label style='position: relative; top: -2px;'>
 			<strong>Dynamic Lighting</strong>
-		  </label>
-		  <label class='checkbox'>
+		</label>
+		<label class='checkbox'>
 			<input class='lightingenabled showtip' type='checkbox' value='1'>&nbsp; Enabled</input>
-		  </label>
-		  <br>
-		  <label class='checkbox'>
+		</label>
+		<br>
+		<label class='checkbox'>
 			<input class='lightenforcelos showtip' title="Player's line of sight set by what tokens they can control." type='checkbox' value='1'>&nbsp; Enforce Line of Sight</input>
-		  </label>
-		  <br>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='lightingupdate' type='checkbox' value='1'>&nbsp; Only Update on Drop</input>
-		  </label>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='lightrestrictmove' title="Don't allow player tokens to move through Dynamic Lighting walls. Can be enabled even if lighting is not used." type='checkbox' value='1'>&nbsp; Restrict Movement</input>
-		  </label>
-		  <br>
-		  <label class='checkbox' style='margin-left: 110px;'>
+		</label>
+		<br>
+		<label class='checkbox' style='margin-left: 110px;'>
 			<input class='lightglobalillum' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>&nbsp; Global Illumination</input>
-		  </label>
-		  <hr>
-		  <label style='font-weight: bold;'>GM Opacity</label>
-		  <div class='fogopacity'></div>
-		  <div class='clear'></div>
-		  <hr>
-		  <label style='font-weight: bold;'>Play on Load</label>
-		  <select class='pagejukeboxtrigger' style='width: 180px;'></select>
-		  <div class='clear'></div>
-		  <hr>
-		  <button class='delete btn btn-danger' style='float: right;'>
+		</label>
+		<hr>
+		<label style='font-weight: bold;'>GM Opacity</label>
+		<div class='fogopacity'></div>
+		<div class='clear'></div>
+		
+		<hr>
+		
+		<label style='font-weight: bold;'>Play on Load</label>
+		<select class='pagejukeboxtrigger' style='width: 180px;'></select>
+		<div class='clear'></div>
+		
+		<hr>
+		
+		<button class='delete btn btn-danger' style='float: right;'>
 			Delete Page
-		  </button>
-		  <button class='archive btn'>
+		</button>
+		<button class='archive btn'>
 			Archive Page
-		  </button>
-		  <div class='clear'></div>
+		</button>
+		<div class='clear'></div>
 	</script>
 	`;
 
 	d20plus.template_actionsMenu = `
-	 <script id='tmpl_actions_menu' type='text/html'>
-      <div class='actions_menu d20contextmenu'>
-        <ul>
-          <$ if (Object.keys(this).length === 0) { $>
-          <li data-action-type='paste-image'>Paste Image from URL</li>
-          <$ } $>
-          <$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
-          <li class='head hasSub' data-action-type='takecard'>Take Card</li>
-          <li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
-          <$ } $>
-          <$ if(window.is_gm) { $>
-          <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
-          <!-- BEGIN MOD -->
-          <li class='head hasSub' data-menuname='massroll'>
-            Mass Roll &raquo;
-            <ul class='submenu' data-menuname='massroll'>
-              <li class='head hasSub' data-action-type='rollinit'>Initiative</li>
-         	  <li class='head hasSub' data-action-type='rollsaves'>Save</li>
-         	  <li class='head hasSub' data-action-type='rollskills'>Skill</li>
-            </ul>
-          </li>
-          <!-- END MOD -->
-          <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
-          <$ } $>
-          <!-- BEGIN MOD -->
-          <!-- <li class='head'>Edit</li> -->
-          <!-- END MOD -->
-          <$ if(this.view) { $>
-          <li data-action-type='delete'>Delete</li>
-          <li data-action-type='copy'>Copy</li>
-          <$ } $>
-          <li data-action-type='paste'>Paste</li>
-          <li data-action-type='undo'>Undo</li>
-          <$ if(this.view) { $>
-          <li data-action-type='tofront'>To Front</li>
-          <!-- BEGIN MOD -->
-          <li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
-          <li data-action-type='back-one'>Back One<!-- (B-B)--></li>
-          <!-- END MOD -->
-          <li data-action-type='toback'>To Back</li>
-          <li class='head hasSub' data-menuname='advanced'>
-            Advanced &raquo;
-            <ul class='submenu' data-menuname='advanced'>
-              <li data-action-type='group'>Group</li>
-              <li data-action-type='ungroup'>Ungroup</li>
-              <$ if(this.get("type") == "image") { $>
-              <li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
-              <li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
-              <li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
-              <li data-action-type='setdimensions'>Set Dimensions</li>
-              <$ if(window.currentEditingLayer == "map") { $>
-              <li data-action-type='aligntogrid'>Align to Grid</li>
-              <$ } $>
-              <li data-action-type='copy-tokenid'>View Token ID</li>
-              <$ } $>
-            </ul>
-          </li>
-          <li class='head hasSub' data-menuname='positioning'>
-            Layer &raquo;
-            <ul class='submenu' data-menuname='positioning'>
-              <li data-action-type="tolayer_map" class='<$ if(this && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
-              <li data-action-type="tolayer_objects" class='<$ if(this && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
-              <li data-action-type="tolayer_foreground" class='<$ if(this && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
-              <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
-              <li data-action-type="tolayer_walls" class='<$ if(this && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer (will not block LoS)</li>
-            </ul>
-          </li>
-          <$ } $>
-          <$ } $>
-          <$ if(this.view && this.get("sides") !== "" && this.get("cardid") === "") { $>
-          <li class='head hasSub' data-menuname='mutliside'>
-            Multi-Sided &raquo;
-            <ul class='submenu' data-menuname='multiside'>
-              <li data-action-type='side_random'>Random Side</li>
-              <li data-action-type='side_choose'>Choose Side</li>
-              <li data-action-type='rollertokenresize'>Set Side Size</li>
-            </ul>
-          </li>
-          <$ } $>
-        </ul>
-      </div>
-    </script>
+		<script id='tmpl_actions_menu' type='text/html'>
+			<div class='actions_menu d20contextmenu'>
+				<ul>
+					<$ if (Object.keys(this).length === 0) { $>
+						<li data-action-type='unlock-tokens'>Unlock...</li>
+					<$ } $>
+					<$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
+						<li class='head hasSub' data-action-type='takecard'>Take Card</li>
+						<li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
+					<$ } $>
+					<$ if(window.is_gm) { $>
+						<$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
+							<!-- BEGIN MOD -->
+							<li class='head hasSub' data-menuname='massroll'>
+								Mass Roll &raquo;
+								<ul class='submenu' data-menuname='massroll'>
+									<li class='head hasSub' data-action-type='rollinit'>Initiative</li>
+									<li class='head hasSub' data-action-type='rollsaves'>Save</li>
+									<li class='head hasSub' data-action-type='rollskills'>Skill</li>
+								</ul>
+							</li>
+							<!-- END MOD -->
+							<li class='head hasSub' data-action-type='addturn'>Add Turn</li>
+						<$ } $>
+						<!-- BEGIN MOD -->
+						<!-- <li class='head'>Edit</li> -->
+						<!-- END MOD -->
+						<$ if(this.view) { $>
+							<li data-action-type='delete'>Delete</li>
+							<li data-action-type='copy'>Copy</li>
+						<$ } $>
+						<li data-action-type='paste'>Paste</li>
+						<!-- BEGIN MOD -->
+						<$ if(!this.view) { $>
+							<li data-action-type='undo'>Undo</li>
+						<$ } $>
+						<!-- END MOD -->
+						
+						<!-- BEGIN MOD -->          
+						<$ if(this.view) { $>
+							<li class='head hasSub' data-menuname='move'>
+							Move &raquo;
+								<ul class='submenu' data-menuname='move'>
+									<li data-action-type='tofront'>To Front</li>
+									<li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
+									<li data-action-type='back-one'>Back One<!-- (B-B)--></li>
+									<li data-action-type='toback'>To Back</li>    
+								</ul>
+							</li>
+						<$ } $>
+						
+						<$ if(this.get && this.get("type") == "image") { $>
+							<li class='head hasSub' data-menuname='VeUtil'>
+								Utilities &raquo;
+								<ul class='submenu' data-menuname='VeUtil'>
+									<li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>        
+									<li data-action-type='token-light'>Set&nbsp;Light</li>
+								</ul>
+							</li>        
+						<$ } $>      
+						<!-- END MOD -->
+						
+						<li class='head hasSub' data-menuname='advanced'>
+							Advanced &raquo;
+							<ul class='submenu' data-menuname='advanced'>
+								<li data-action-type='group'>Group</li>
+								<li data-action-type='ungroup'>Ungroup</li>
+								<$ if(this.get && this.get("type") == "image") { $>
+									<li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
+									<li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
+									<li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
+									<li data-action-type='setdimensions'>Set Dimensions</li>
+									<$ if(window.currentEditingLayer == "map") { $>
+										<li data-action-type='aligntogrid'>Align to Grid</li>
+									<$ } $>
+								<$ } $>
+								
+								<$ if(this.view) { $>
+									<li data-action-type='lock-token'>Lock Position</li>
+								<$ } $>
+								
+								<$ if(this.get && this.get("type") == "image") { $>
+									<li data-action-type='copy-tokenid'>View Token ID</li>
+								<$ } $>
+							</ul>
+						</li>
+
+						<li class='head hasSub' data-menuname='positioning'>
+							Layer &raquo;
+							<ul class='submenu' data-menuname='positioning'>
+								<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
+								<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
+								<!-- BEGIN MOD -->
+								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>
+								<!-- END MOD -->
+								<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'>GM Layer</li>
+								<li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'>Lighting Layer</li>
+								<!-- BEGIN MOD -->
+								<li data-action-type="tolayer_weather" class='<$ if(this && this.get && this.get("layer") == "weather") { $>active<$ } $>'>Weather Layer</li>
+								<!-- END MOD -->
+							</ul>
+						</li>
+					<$ } $>
+
+					<$ if(this.view && this.get && this.get("sides") !== "" && this.get("cardid") === "") { $>
+						<li class='head hasSub' data-menuname='mutliside'>
+							Multi-Sided &raquo;
+							<ul class='submenu' data-menuname='multiside'>
+								<li data-action-type='side_random'>Random Side</li>
+								<li data-action-type='side_choose'>Choose Side</li>
+								<li data-action-type='rollertokenresize'>Set Side Size</li>
+							</ul>
+						</li>
+					<$ } $>
+				</ul>
+			</div>
+		</script>
 		`;
 
 	d20plus.template_charactereditor = `
@@ -839,6 +902,201 @@ const baseTemplate = function () {
       </div>
     </script>
 	`;
+
+	d20plus.template.deckeditor = `
+	<script id='tmpl_deckeditor' type='text/html'>
+      <div class='dialog largedialog deckeditor' style='display: block;'>
+        <label>Name</label>
+        <input class='name' type='text'>
+        <div class='clear' style='height: 14px;'></div>
+        <label>
+          <input class='showplayers' type='checkbox'>
+          Show deck to players?
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          <input class='playerscandraw' type='checkbox'>
+          Players can draw cards?
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          <input class='infinitecards' type='checkbox'>
+          Cards in deck are infinite?
+        </label>
+        <p class='infinitecardstype'>
+          <label>
+            <input name='infinitecardstype' type='radio' value='random'>
+            Always a random card
+          </label>
+          <label>
+            <input name='infinitecardstype' type='radio' value='cycle'>
+            Draw through deck, shuffle, repeat
+          </label>
+        </p>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          Allow choosing specific cards from deck:
+          <select class='deckpilemode'>
+            <option value='none'>Disabled</option>
+            <option value='choosebacks_gm'>GM Choose: Show Backs</option>
+            <option value='choosefronts_gm'>GM Choose: Show Fronts</option>
+            <option value='choosebacks'>GM + Players Choose: Show Backs</option>
+            <option value='choosefronts'>GM + Players Choose: Show Fronts</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          Discard Pile:
+          <select class='discardpilemode'>
+            <option value='none'>No discard pile</option>
+            <option value='choosebacks'>Choose: Show Backs</option>
+            <option value='choosefronts'>Choose: Show Fronts</option>
+            <option value='drawtop'>Draw most recent/top card</option>
+            <option value='drawbottom'>Draw oldest/bottom card</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <hr>
+        <strong>When played to the tabletop...</strong>
+        <div class='clear' style='height: 5px;'></div>
+        <label>
+          Played Facing:
+          <select class='cardsplayed' style='display: inline-block; width: auto; position: relative; top: 3px;'>
+            <option value='facedown'>Face Down</option>
+            <option value='faceup'>Face Up</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <label>
+          Considered:
+          <select class='treatasdrawing' style='display: inline-block; width: auto; position: relative; top: 3px;'>
+            <option value='true'>Drawings (No Bubbles/Stats)</option>
+            <option value='false'>Tokens (Including Bubbles and Stats)</option>
+          </select>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <div class='inlineinputs'>
+          Card Size:
+          <input class='defaultwidth' type='text'>
+          x
+          <input class='defaultheight' type='text'>
+          px
+        </div>
+        <small style='text-align: left; padding-left: 135px; width: auto;'>Leave blank for default auto-sizing</small>
+        <div class='clear' style='height: 7px;'></div>
+        <!-- %label -->
+        <!-- %input.showalldrawn(type="checkbox") -->
+        <!-- Everyone sees what card is drawn onto top of deck? -->
+        <!-- .clear(style="height: 7px;") -->
+        <hr>
+        <strong>In other's hands...</strong>
+        <div class='clear' style='height: 5px;'></div>
+        <div class='inlineinputs'>
+          <label style='width: 75px;'>Players see:</label>
+          <label>
+            <input class='players_seenumcards' type='checkbox'>
+            Number of Cards
+          </label>
+          <label>
+            <input class='players_seefrontofcards' type='checkbox'>
+            Front of Cards
+          </label>
+        </div>
+        <div class='clear' style='height: 5px;'></div>
+        <div class='inlineinputs'>
+          <label style='width: 75px;'>GM sees:</label>
+          <label>
+            <input class='gm_seenumcards' type='checkbox'>
+            Number of Cards
+          </label>
+          <label>
+            <input class='gm_seefrontofcards' type='checkbox'>
+            Front of Cards
+          </label>
+        </div>
+        <div class='clear' style='height: 5px;'></div>
+        <hr>
+        <!-- BEGIN MOD -->
+        <button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px;' data-deck-id="<$!this.id$>">
+          Add Cards from URLs
+        </button>
+        <!-- END MOD -->
+        <button class='addcard btn' style='float: right;'>
+          <span class='pictos'>&</span>
+          Add Card
+        </button>
+        <h3>Cards</h3>
+        <div class='clear' style='height: 7px;'></div>
+        <table class='table table-striped'>
+          <tbody></tbody>
+        </table>
+        <div class='clear' style='height: 15px;'></div>
+        <label>
+          <strong>Card Backing (Required)</strong>
+        </label>
+        <div class='clear' style='height: 7px;'></div>
+        <!-- BEGIN MOD -->
+        <button class='btn deck-image-by-url' style="margin-bottom: 10px" data-deck-id="<$!this.id$>">Set image from URL...</button>
+        <!-- END MOD -->
+        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+        <div class='status'></div>
+        <div class='inner'></div>
+        <$ if(this.get("avatar") == "") { $>
+        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
+        <br>or</br>
+        <button class='btn'>Choose a file...</button>
+        <input class='manual' type='file'>
+        <$ } else { $>
+        <img src="<$!this.get("avatar")$>" />
+        <div class='remove'>
+          <a href='javascript:void(0);'>Remove</a>
+        </div>
+        <$ } $>
+        </div>
+        </div>
+        <div class='clear' style='height: 20px;'></div>
+        <p style='float: left;'>
+          <button class='btn dupedeck'>Duplicate Deck</button>
+        </p>
+        <$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
+        <p style='text-align: right;'>
+          <button class='btn btn-danger deletedeck'>Delete Deck</button>
+        </p>
+        <$ } $>
+      </div>
+    </script>
+	`;
+	d20plus.template.cardeditor = `
+    <script id='tmpl_cardeditor' type='text/html'>
+      <div class='dialog largedialog cardeditor' style='display: block;'>
+        <label>Name</label>
+        <input class='name' type='text'>
+        <div class='clear'></div>
+        <!-- BEGIN MOD -->
+        <button class='btn card-image-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
+        <!-- END MOD -->
+        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+        <div class="status"></div>
+        <div class="inner">
+        <$ if(this.get("avatar") == "") { $>
+        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
+        <br>or</br>
+        <button class='btn'>Choose a file...</button>
+        <input class='manual' type='file'>
+        <$ } else { $>
+        <img src="<$!this.get("avatar")$>" />
+        <div class='remove'>
+          <a href='javascript:void(0);'>Remove</a>
+        </div>
+        <$ } $>
+        </div>
+        </div>
+        <div class='clear'></div>
+        <label>&nbsp;</label>
+        <button class='deletecard btn btn-danger'>Delete Card</button>
+      </div>
+    </script>
+	`
 };
 
 SCRIPT_EXTENSIONS.push(baseTemplate);

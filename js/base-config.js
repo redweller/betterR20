@@ -67,7 +67,8 @@ function baseConfig() {
 
 	d20plus.cfg.makeDefaultConfig = (nextFn) => {
 		d20.Campaign.handouts.create({
-			name: CONFIG_HANDOUT
+			name: CONFIG_HANDOUT,
+			archived: true
 		}, {
 			success: function (handout) {
 				notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel.";
@@ -530,6 +531,8 @@ function baseConfig() {
 		}
 	};
 
+	/*
+	// Left here for future use, in case anything similar is required
 	d20plus.cfg._handleWeatherConfigChange = () => {
 		function handleProp (prop) {
 			const campaignKey = `bR20cfg_${prop}`;
@@ -556,10 +559,11 @@ function baseConfig() {
 			handleProp("weatherEffect1");
 		}
 	};
+	*/
 
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg._handleStatusTokenConfigChange();
-		d20plus.cfg._handleWeatherConfigChange();
+		// d20plus.cfg._handleWeatherConfigChange();
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 1), 0);
 			$(`#secondary-toolbar`).css({opacity: v});

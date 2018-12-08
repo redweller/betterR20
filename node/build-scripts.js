@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.14.7";
+const SCRIPT_VERSION = "1.14.8";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -13,7 +13,7 @@ const matchString = `
 
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
-// @namespace    https://rem.uz/
+// @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
 // @updateURL    https://get.5e.tools/script/betteR20-core.user.js
@@ -22,13 +22,13 @@ const HEADER_CORE = `// ==UserScript==
 // @author       TheGiddyLimit
 ${matchString}
 // @grant        unsafeWindow
-// @run-at       document-start
+// @run-at       document-idle
 // ==/UserScript==
 `;
 
 const HEADER_5ETOOLS = `// ==UserScript==
 // @name         betteR20-5etools
-// @namespace    https://rem.uz/
+// @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
 // @updateURL    https://get.5e.tools/script/betteR20-5etools.user.js
@@ -37,7 +37,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne
 ${matchString}
 // @grant        unsafeWindow
-// @run-at       document-start
+// @run-at       document-idle
 // ==/UserScript==
 `;
 
@@ -65,13 +65,17 @@ const SCRIPTS = {
 			"base-config",
 			"base-tool",
 			"base-tool-module",
+			"base-tool-unlock",
 			"base-art",
+			"base-art-browse",
 			"base-engine",
+			"base-weather",
 			"base-journal",
 			"base-css",
 			"base-ui",
 			"base-mod",
 			"base-template",
+			"base-emoji",
 
 			"core-main",
 
@@ -90,18 +94,24 @@ const SCRIPTS = {
 			"base-config",
 			"base-tool",
 			"base-tool-module",
+			"base-tool-unlock",
 			"base-art",
+			"base-art-browse",
 			"base-engine",
+			"base-weather",
 			"base-journal",
 			"base-css",
 			"base-ui",
 			"base-mod",
 			"base-template",
+			"base-emoji",
 
 			"5etools-main",
 			"5etools-importer",
 			"5etools-monsters",
-			"5etools-emoji",
+			"5etools-spells",
+			"5etools-backgrounds",
+			"5etools-classes",
 
 			"base"
 		]
