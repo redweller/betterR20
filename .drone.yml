@@ -10,10 +10,13 @@ clone:
 steps:
 - name: deploy
   image: appleboy/drone-ssh
+  environment:
+    USERNAME: root
   settings:
     host: 159.69.76.172
     port: 2272
     username: root
+    envs: [ USERNAME ]
     ssh_key:
       from_secret: ssh_key
     script:
