@@ -16,6 +16,13 @@ steps:
     username: root
     key:
       from_secret: ssh_key
+    ssh_key:
+      from_secret: ssh_key
+    environment:
+      username: root
+      key:
+        from_secret: ssh_key
+    envs: [ ssh_key ]
     script:
       - cd /scripts
       - bash script-deploy.sh
