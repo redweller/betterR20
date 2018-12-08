@@ -19,8 +19,9 @@ steps:
     script:
       - cd /scripts
       - bash script-deploy.sh
-  trigger:
-    branch:
-      - master
-    event:
-      - push
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
