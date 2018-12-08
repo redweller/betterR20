@@ -234,20 +234,24 @@ function d20plusArtBrowser () {
 								${[...new Array(4)].map((_, i) => `<div class="atr__item__quart">${it._sample[i] ? `<img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample[i]}.jpg">` : ""}</div>`).join("")}								
 							</div>
 						`).appendTo($item);
+
+						const $itemStats = $(`<div class="artr__item__stats"/>`).appendTo($itemTop);
+						const $statsImages = $(`<div class="artr__item__stats_item help--subtle" title="Number of images">×${it._size.toLocaleString()}</div>`).appendTo($itemStats);
+
 						const $itemMenu = $(`<div class="artr__item__menu"/>`).appendTo($itemTop);
-						const $btnExternalArt = $(`<div class="artr__item__menu_item pictos" title="Add to External Art list (${it._size} image${it._size === 1 ? "" : "s"})">P</div>`)
+						const $btnExternalArt = $(`<div class="artr__item__menu_item pictos btn" title="Add to External Art list (${it._size} image${it._size === 1 ? "" : "s"})">P</div>`)
 							.appendTo($itemMenu)
 							.click(async (evt) => {
 								evt.stopPropagation();
 								const file = await pGetJson(`${GH_PATH}${it._key}.json`);
 								const toAdd = file.data.map((it, i) => ({
-									name: `${file.set}\u2014${file.artist}${i}`,
+									name: `${file.set} \u2014 ${file.artist} (${i})`,
 									url: it.uri
 								}));
 								d20plus.art.addToHandout(toAdd);
 								alert(`Added ${file.data.length} image${file.data.length === 1 ? "" : "s"} to the External Art list.`);
 							});
-						const $btnDownload = $(`<div class="artr__item__menu_item pictos" title="Download ZIP (${it._size} image${it._size === 1 ? "" : "s"}) (SHIFT to download a text file of URLs)">}</div>`)
+						const $btnDownload = $(`<div class="artr__item__menu_item pictos btn" title="Download ZIP (SHIFT to download a text file of URLs)">}</div>`)
 							.appendTo($itemMenu)
 							.click(async (evt) => {
 								evt.stopPropagation();
@@ -286,7 +290,8 @@ function d20plusArtBrowser () {
 				const $itmUp = $(`<div class="artr__item artr__item--item artr__item--back"><div class="pictos">[</div></div>`)
 					.click(() => doRenderIndex(applyFilterAndSearchToIndex()))
 					.appendTo($itemBodyInner);
-				file.data.sort((a, b) => SortUtil.ascSort(a.hash, b.hash)).forEach(it => {
+
+				file.data.sort((a, b) => SortUtil.ascSort(a.hash, b.hash)).forEach((it, i) => {
 					// "library-item" and "draggableresult" classes required for drag/drop
 					const $item = $(`<div class="artr__item artr__item--item library-item draggableresult" data-fullsizeurl="${it.uri}"/>`)
 						.appendTo($itemBodyInner)
@@ -296,6 +301,45 @@ function d20plusArtBrowser () {
 						});
 					const $wrpImg = $(`<div class="artr__item__full"/>`).appendTo($item);
 					const $img = $(`<img class="artr__item__thumbnail" src="${GH_PATH}${currentIndexKey}--thumb-${it.hash}.jpg">`).appendTo($wrpImg);
+
+					const $itemMenu = $(`<div class="artr__item__menu"/>`).appendTo($item);
+					const $btnExternalArt = $(`<div class="artr__item__menu_item pictos" title="Add to External Art list">P</div>`)
+						.appendTo($itemMenu)
+						.click((evt) => {
+							evt.stopPropagation();
+							d20plus.art.addToHandout([{name: `${file.set} \u2014 ${file.artist} (${i})`, url: it.uri}]);
+							alert(`Added image to the External Art list.`);
+						});
+					const $btnDownload = $(`<div class="artr__item__menu_item pictos" title="Download">}</div>`)
+						.appendTo($itemMenu)
+						.click((evt) => {
+							evt.stopPropagation();
+							const fileName = it.uri.split("/").filter(it => it).last();
+							const $a = $(`<a href="${it.uri}" download="${fileName}" target="_blank" style="position: fixed; top: -500px; left: -500px;">dl</a>`).appendTo($(`body`))
+								.click(() => {
+									setTimeout(() => $a.remove(), 1);
+								});
+							$a.click();
+						});
+					const $btnCopyUrl = $(`<div class="artr__item__menu_item pictos" title="Copy URL">A</div>`)
+						.appendTo($itemMenu)
+						.click((evt) => {
+							evt.stopPropagation();
+							copyText(it.uri);
+							JqueryUtil.showCopiedEffect($btnDownload, "Copied URL!");
+						});
+					if (it.support) {
+						const $btnSupport = $(`<div class="artr__item__menu_item pictos" title="Support Artist">$</div>`)
+							.appendTo($itemMenu)
+							.click((evt) => {
+								evt.stopPropagation();
+								const $a = $(`<a href="${it.support}" target="_blank" style="position: fixed; top: -500px; left: -500px;">dl</a>`).appendTo($(`body`))
+									.click(() => {
+										setTimeout(() => $a.remove(), 1);
+									});
+								$a.click();
+							});
+					}
 
 					$item.draggable({
 						handle: ".artr__item",

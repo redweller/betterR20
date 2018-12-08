@@ -304,6 +304,22 @@ function baseCss () {
 
 	d20plus.css.cssRules = []; // other scripts should populate this
 
+	// Mirrors of 5etools CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".copied-tip",
+			r: "pointer-events: none; position: fixed; background: transparent; user-select: none; z-index: 100000; width: 80px; height: 24px; line-height: 24px;"
+		},
+		{
+			s: ".copied-tip > span",
+			r: "display: inline-block; width: 100%; text-align: center;"
+		},
+		{
+			s: ".help--subtle",
+			r: "cursor: help;"
+		}
+	]);
+
 	// Art repo browser CSS
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		// full-width images search header
@@ -434,6 +450,18 @@ function baseCss () {
 			// display: flex; flex-direction: column; cursor: pointer; float: left;
 		},
 		{
+			s: ".artr__item__stats",
+			r: "position: absolute; left: 0; top: 0; display: none;"
+		},
+		{
+			s: ".artr__item:hover .artr__item__stats",
+			r: "display: block;"
+		},
+		{
+			s: ".artr__item__stats_item",
+			r: "color: grey; background: white; border-radius: 5px; margin: 4px 2px; padding: 0 2px; text-align: center; border: 1px solid #e0e0e0"
+		},
+		{
 			s: ".artr__item__menu",
 			r: "position: absolute; right: 0; top: 0; display: none;"
 		},
@@ -443,7 +471,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__item__menu_item",
-			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; background: white; border-radius: 5px; margin: 4px 2px; padding: 2px;text-align: center;"
+			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; border-radius: 5px; margin: 4px 2px; padding: 2px; text-align: center; display: block;"
 		},
 		{
 			s: ".artr__item--index",

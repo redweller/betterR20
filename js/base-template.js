@@ -24,8 +24,8 @@ const baseTemplate = function () {
 
 	d20plus.artTabHtml = `
 	<p style="display: flex; width: 100%; justify-content: space-between;">
-		<button class="btn" id="button-add-external-art" style="margin-right: 5px;">Manage External Art</button>
-		<button class="btn" id="button-browse-external-art" title="Warning: phat data">Browse Repo</button>
+		<button class="btn" id="button-add-external-art" style="margin-right: 5px; width: 100%;">Manage External Art</button>
+		<button class="btn" id="button-browse-external-art" style="width: 100%;">Browse Repo</button>
 	</p>
 	`;
 
