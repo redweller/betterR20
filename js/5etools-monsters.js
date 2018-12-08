@@ -236,7 +236,7 @@ function d20plusMonsters () {
 			const renderer = new EntryRenderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
-			const fluff = EntryRenderer.monster.getFluff(data, monsterMetadata, monsterFluffData[data.source] || []);
+			const fluff = EntryRenderer.monster.getFluff(data, monsterMetadata, monsterFluffData[data.source]);
 			let renderFluff = null;
 			if (fluff) {
 				const depth = fluff.type === "section" ? -1 : 2;

@@ -236,7 +236,14 @@ function d20plusImporter () {
 		$ele.find("td, th").append(" | ");
 		$ele.find("tr").append("\n");
 		$ele.find("p, li, br").append("\n\n");
-		return $ele.text().replace(/[ ]+/g, " ").trim();
+
+		return $ele.text()
+			.trim()
+			.replace(/\n/g, "<<N>>")
+			.replace(/\s+/g, " ")
+			.replace(/<<N>>(<<N>>)+/g, "\n\n")
+			.replace(/<<N>>/g, "\n")
+			.replace(/\n +/g, "\n");
 
 		/* version which preserves images, and converts dice
 	const IMG_TAG = "R20IMGTAG";
