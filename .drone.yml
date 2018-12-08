@@ -14,9 +14,8 @@ steps:
     username: root
     key:
       from_secret: ssh_key
-  settings:
-    host: 159.69.76.172
-    port: 2272
+  host: 159.69.76.172
+  port: 2272
   script:
     - cd /scripts
     - bash script-deploy.sh
