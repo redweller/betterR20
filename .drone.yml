@@ -6,21 +6,21 @@ workspace:
 
 clone:
   image: plugins/git:1
-  depth: 50
+  depth: 1
 
 steps:
 - name: deploy
   image: appleboy/drone-ssh
-  host: 159.69.76.172
-  port: 2272
-  environment:
-    username: root
-    key:
+  settings:
+    host: 159.69.76.172
+    port: 2272
+    user: root
+    SSH_KEY:
       from_secret: ssh_key
-  script:
+  commands:
     - cd /scripts
     - bash script-deploy.sh
-  when:
+  trigger:
     branch:
       - master
     event:
