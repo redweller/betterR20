@@ -15,7 +15,7 @@ steps:
     port: 2272
     username:
       from_secret: username
-    password:
+    key:
       from_secret: ssh_key
   script:
     - cd /scripts
