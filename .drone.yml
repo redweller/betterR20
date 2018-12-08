@@ -13,7 +13,6 @@ steps:
   settings:
     host: 159.69.76.172
     port: 2272
-    user: root
     key:
       from_secret: ssh_key
     script:
