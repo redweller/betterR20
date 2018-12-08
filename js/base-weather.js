@@ -4,15 +4,19 @@ function baseWeather () {
 	d20plus.weather._lastSettingsPageId = null;
 	d20plus.weather._initSettingsButton = () => {
 		$(`body`).on("click", ".Ve-btn-weather", function () {
+			// close the parent page settings + hide the page overlay
+			const $this = $(this);
+			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("OK")`).click();
+			const $barPage = $(`#page-toolbar`);
+			if (!$barPage.hasClass("closed")) {
+				$barPage.find(`.handle`).click()
+			}
+
 			function doShowDialog (page) {
-				// TODO name settings with names that match the old global settings
-				// TODO populate a dialog with settings from the page's model
-				// TODO have this dialog save to the page's model
-				// TODO have the weather pull from the current page's model, instead of the campaign
 				const $dialog = $(`
 					<div title="Weather Configuration">
-						<label class="flex">
-							<span>Type</span>
+						<label class="split wth__row">
+							<span>Weather Type</span>
 							<select name="weatherType1">
 								<option>None</option>
 								<option>Fog</option>
@@ -23,16 +27,16 @@ function baseWeather () {
 								<option>Custom (see below)</option>
 							</select>
 						</label>
-						<label class="flex">
-							<span>Custom Image</span>
+						<label class="split wth__row">
+							<span  class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Image</span>
 							<input name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
 						</label>
-						<label class="flex">
+						<label class="flex wth__row">
 							<span>Weather Speed</span>
 							<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
 						</label>
-						<label class="flex">
-							<span>Direction</span>
+						<label class="split wth__row">
+							<span>Weather Direction</span>
 							<select name="weatherDir1">
 								<option>Northerly</option>
 								<option>North-Easterly</option>
@@ -45,34 +49,38 @@ function baseWeather () {
 								<option>Custom (see below)</option>
 							</select>
 						</label>
-						<label class="flex">
-							<span>Custom Direction</span>
+						<label class="flex wth__row">
+							<span class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Direction</span>
 							<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
 						</label>
-						<label class="split">
+						<label class="flex wth__row">
+							<span>Weather Opacity</span>
+							<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01">
+						</label>
+						<label class="split wth__row">
 							<span>Oscillate</span>
 							<input type="checkbox" name="weatherOscillate1">
 						</label>
-						<label class="flex">
+						<label class="flex wth__row">
 							<span>Oscillation Threshold</span>
 							<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01">
 						</label>
-						<label class="flex">
+						<label class="split wth__row">
 							<span>Intensity</span>
 							<select name="weatherIntensity1">
 								<option>Normal</option>
 								<option>Heavy</option>
 							</select>
 						</label>
-						<label class="split">
+						<label class="split wth__row">
 							<span>Tint</span>
 							<input type="checkbox" name="weatherTint1">
 						</label>
-						<label class="flex">
+						<label class="split wth__row">
 							<span>Tint Color</span>
 							<input type="color" name="weatherTintColor1" value="#4c566d">
 						</label>
-						<label class="flex">
+						<label class="split wth__row">
 							<span>Special Effects</span>
 							<select name="weatherEffect1">
 								<option>None</option>
@@ -96,6 +104,7 @@ function baseWeather () {
 					"weatherSpeed1",
 					"weatherDir1",
 					"weatherDirCustom1",
+					"weatherOpacity1",
 					"weatherOscillate1",
 					"weatherOscillateThreshold1",
 					"weatherIntensity1",
@@ -105,25 +114,36 @@ function baseWeather () {
 				];
 				props.forEach(handleProp);
 
+				function doSaveValues () {
+					props.forEach(propName => {
+						page.set(`bR20cfg_${propName}`, (() => {
+							const $e = $dialog.find(`[name="${propName}"]`);
+							if ($e.is(":checkbox")) {
+								return !!$e.prop("checked");
+							} else {
+								return $e.val();
+							}
+						})())
+					});
+					page.save();
+				}
+
 				$dialog.dialog({
+					width: 500,
 					dialogClass: "no-close",
 					buttons: [
 						{
-							text: "Save",
+							text: "OK",
 							click: function () {
 								$(this).dialog("close");
 								$dialog.remove();
-								props.forEach(propName => {
-									page.set(`bR20cfg_${propName}`, (() => {
-										const $e = $dialog.find(`[name="${propName}"]`);
-										if ($e.is(":checkbox")) {
-											return !!$e.prop("checked");
-										} else {
-											return $e.val();
-										}
-									})())
-								});
-								page.save();
+								doSaveValues();
+							}
+						},
+						{
+							text: "Apply",
+							click: function () {
+								doSaveValues();
 							}
 						},
 						{
@@ -283,10 +303,13 @@ function baseWeather () {
 			}
 		}
 
+		function getOpacity (page) {
+			return page.get("bR20cfg_weatherOpacity1") || 1;
+		}
+
 		let oscillateMode = null;
 		function isOscillating (page) {
-			const val = page.get("bR20cfg_weatherOscillate1");
-			return !!val;
+			return !!page.get("bR20cfg_weatherOscillate1");
 		}
 
 		function getOscillationThresholdFactor (page) {
@@ -417,6 +440,16 @@ function baseWeather () {
 							//// change drawing mode
 							ctx.globalCompositeOperation = "destination-out";
 							ctx.drawImage(cvBuf, 0, 0);
+
+							// handle opacity
+							const opacity = Number(getOpacity(page));
+							if (opacity !== 1) {
+								ctxBuf.clearRect(0, 0, cvBuf.width, cvBuf.height);
+								ctxBuf.fillStyle = `#ffffff${Math.round((1 - opacity) * 255).toString(16)}`;
+								ctxBuf.fillRect(0, 0, cvBuf.width, cvBuf.height);
+								ctx.drawImage(cvBuf, 0, 0);
+							}
+
 							//// reset drawing mode
 							ctx.globalCompositeOperation = "source-over";
 						};

@@ -293,6 +293,19 @@ function baseCss () {
 			s: "#editinglayer.walls > .pictos",
 			r: "width: 20px; height: 22px; display: inline-block; text-align: center; font-size: 0.9em;"
 		},
+		// weather config window
+		{
+			s: ".ui-dialog .wth__row",
+			r: "margin-bottom: 10px; align-items: center; padding: 0 0 5px; border-bottom: 1px solid #eee;"
+		},
+		{
+			s: ".wth__row select",
+			r: "margin-bottom: 0"
+		},
+		{
+			s: `.wth__row input[type="range"]`,
+			r: "width: calc(100% - 8px);"
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
@@ -313,6 +326,10 @@ function baseCss () {
 		{
 			s: ".copied-tip > span",
 			r: "display: inline-block; width: 100%; text-align: center;"
+		},
+		{
+			s: ".help",
+			r: "cursor: help; text-decoration: underline; text-decoration-style: dotted;"
 		},
 		{
 			s: ".help--subtle",
