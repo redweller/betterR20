@@ -5,7 +5,6 @@ workspace:
   base: /srv/app
 
 clone:
-  image: plugins/git:1
   depth: 1
 
 steps:
