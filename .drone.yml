@@ -1,11 +1,11 @@
-kind: pipeline
-name: default
-
 workspace:
   base: /srv/app
 
 clone:
   depth: 1
+
+kind: pipeline
+name: default
 
 steps:
 - name: deploy
@@ -21,11 +21,9 @@ steps:
     key:
       from_secret: ssh_key
   script:
-    - cd /scripts
-    - bash script-deploy.sh
-
-#trigger:
-#  branch:
-#    - master
-#  event:
-#    - push
+  - bash /scripts/script-deploy.sh
+  when:
+    branch:
+    - master
+    event: 
+    - push
