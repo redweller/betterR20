@@ -13,12 +13,12 @@ steps:
   settings:
     host: 159.69.76.172
     port: 2272
-    user: root
-    SSH_KEY:
+    username: root
+    ssh_key:
       from_secret: ssh_key
-  commands:
-    - cd /scripts
-    - bash script-deploy.sh
+    script:
+      - cd /scripts
+      - bash script-deploy.sh
   trigger:
     branch:
       - master
