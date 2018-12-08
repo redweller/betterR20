@@ -1538,8 +1538,7 @@ const betteR205etools = function () {
 
 		function importClass (character, data) {
 			let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-			if (!levels)
-				return;
+			if (!levels) return;
 
 			const maxLevel = Math.max(...levels);
 
@@ -1710,19 +1709,19 @@ const betteR205etools = function () {
 			}
 
 			function importClassGeneral (attrs, clss, maxLevel) {
-				if (d20plus.sheet == "ogl") {
+				if (d20plus.sheet === "ogl") {
 					setTimeout(() => {
 						attrs.addOrUpdate("pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
 						attrs.addOrUpdate("class", clss.name);
 						attrs.addOrUpdate("level", maxLevel);
 						attrs.addOrUpdate("base_level", String(maxLevel));
 					}, 500);
-				} else if (d20plus.sheet == "shaped") {
-					const isSupportedClass = clss.source == "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
+				} else if (d20plus.sheet === "shaped") {
+					const isSupportedClass = clss.source === "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
 					let className = "CUSTOM";
 					if (isSupportedClass) {
 						className = clss.name.toUpperCase();
-						if (clss.name == "Ranger (Revised)")
+						if (clss.name === "Ranger (Revised)")
 							className = "RANGERUA";
 					}
 
@@ -1735,7 +1734,7 @@ const betteR205etools = function () {
 						attrs.addOrUpdate(`repeating_class_${fRowId}_custom_name`, clss.name);
 					}
 
-					if (!isSupportedClass && clss.name == "Mystic") {
+					if (!isSupportedClass && clss.name === "Mystic") {
 						const classResourcesForLevel = clss.classTableGroups[0].rows[maxLevel - 1];
 						const [talentsKnown, disciplinesKnown, psiPoints, psiLimit] = classResourcesForLevel;
 
@@ -1745,7 +1744,7 @@ const betteR205etools = function () {
 						attrs.addOrUpdate("spell_ability", "INTELLIGENCE");
 						attrs.addOrUpdate("spell_points_limit", psiLimit);
 						attrs.addOrUpdate("spell_points", psiPoints, psiPoints);
-						talentsKnown, disciplinesKnown;	// unused
+						// talentsKnown, disciplinesKnown;	// unused
 
 						for (let i = 1; i <= 7; i++) {
 							attrs.addOrUpdate(`spell_level_${i}_cost`, i);
