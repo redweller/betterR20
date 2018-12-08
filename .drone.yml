@@ -10,7 +10,6 @@ clone:
 steps:
 - name: deploy
   image: appleboy/drone-ssh
-  privileged: true
   settings:
     host: 159.69.76.172
     port: 2272
