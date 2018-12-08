@@ -11,11 +11,23 @@ function d20plusArtBrowser () {
 		}
 
 		const $win = $(`<div title="Art Repository" class="artr__win"/>`)
-			.appendTo($(`body`)).dialog({
+			.appendTo($(`body`))
+			.dialog({
 				autoOpen: false,
 				resizable: true,
 				width: 1,
 				height: 1
+			})
+			// bind droppable, so that elements dropped back onto the browser don't get caught by the canvas behind
+			.droppable({
+				accept: ".draggableresult",
+				tolerance: "pointer",
+				drop: (event, ui) => {
+					event.preventDefault();
+					event.stopPropagation();
+					event.originalEvent.dropHandled = true;
+					d20plus.ut.log(`Dropped back onto art browser!`);
+				}
 			});
 
 		async function doInit () {
