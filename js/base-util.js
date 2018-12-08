@@ -32,8 +32,10 @@ function baseUtil () {
 	d20plus.ut.disable3dDice = () => {
 		d20plus.ut.log("Disabling 3D dice");
 		const $cb3dDice = $(`#enable3ddice`);
-		$cb3dDice.prop("checked", false).attr("disabled", true)
-			.attr("title", "3D dice are incompatible with betteR20. We apologise for any inconvenience caused.");
+		$cb3dDice.prop("checked", false).attr("disabled", true);
+		$cb3dDice.closest("p").after(`<p><i>3D dice are incompatible with betteR20. We apologise for any inconvenience caused.</i></p>`);
+
+		$(`#autoroll`).prop("checked", false).attr("disabled", true);;
 
 		d20.tddice.canRoll3D = () => false;
 	};
@@ -278,6 +280,9 @@ function baseUtil () {
 		return Math.max(fileSizeInBytes, 0.1).toFixed(1) + d20plus.ut._BYTE_UNITS[i];
 	};
 
+	d20plus.ut.sanitizeFilename = function (str) {
+		return str.trim().replace(/[^\w\-]/g, "_");
+	};
 
 	// based on:
 	/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js */
