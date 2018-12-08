@@ -17,7 +17,8 @@ steps:
       from_secret: username
     key:
       from_secret: ssh_key
-  key:
+  password:
+    key:
       from_secret: ssh_key
   script:
     - cd /scripts
