@@ -10,19 +10,16 @@ clone:
 steps:
 - name: deploy
   image: appleboy/drone-ssh
-  settings:
-    host: 
-      from_secret: host
-    port: 
-      from_secret: port
-    username:
-      from_secret: username
-    key:
-      from_secret: ssh_key
+  host:
+    from_secret: host
+  port:
+    from_secret: port
+  username:
+    from_secret: username
+  key:
+    from_secret: ssh_key
   script:
-    - cd /scripts
-    - bash script-deploy.sh
-
+    - bash /scripts/script-deploy.sh
 #trigger:
 #  branch:
 #    - master
