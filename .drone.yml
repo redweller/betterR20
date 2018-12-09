@@ -21,9 +21,10 @@ steps:
     key:
       from_secret: ssh_key
     script:
+      - echo hello
       - bash /scripts/script-deploy.sh
   when:
     branch:
-      - master
+      - development
     event:
       - push
