@@ -21,7 +21,7 @@ steps:
     key:
       from_secret: ssh_key
   commands:
-    - sh /scripts/script-deploy.sh
+    - ./scripts/script-deploy.sh
 
 trigger:
   branch:
