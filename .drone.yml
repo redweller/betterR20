@@ -21,7 +21,6 @@ steps:
     key:
       from_secret: ssh_key
     script:
-      - echo omglul
       - bash /scripts/script-deploy.sh
   when:
     branch:
