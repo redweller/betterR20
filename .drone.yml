@@ -20,11 +20,10 @@ steps:
       from_secret: user
     key:
       from_secret: ssh_key
-  commands:
-    - ./scripts/script-deploy.sh
-
-trigger:
-  branch:
-    - master
-  event:
-    - push
+  script:
+    - bash /scripts/script-deploy.sh
+  when:
+    branch:
+      - master
+    event:
+      - push
