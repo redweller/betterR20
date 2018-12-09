@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.14.9";
+const SCRIPT_VERSION = "1.14.10";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -22,7 +22,7 @@ const HEADER_CORE = `// ==UserScript==
 // @author       TheGiddyLimit
 ${matchString}
 // @grant        unsafeWindow
-// @run-at       document-idle
+// @run-at       document-start
 // ==/UserScript==
 `;
 
@@ -37,7 +37,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne
 ${matchString}
 // @grant        unsafeWindow
-// @run-at       document-idle
+// @run-at       document-start
 // ==/UserScript==
 `;
 
