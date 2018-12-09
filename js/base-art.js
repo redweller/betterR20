@@ -175,7 +175,7 @@ function d20plusArt () {
 		addToHandout (items) {
 			const invalid = items.find(it => !it.name || !it.url);
 			if (invalid) throw new Error(`Invalid item ${JSON.stringify(invalid)} did not contain required name and URL properties!`);
-			d20plus.art.custom = d20plus.art.custom.concat(items);
+			d20plus.art.custom = (d20plus.art.custom || []).concat(items);
 			d20plus.art.saveToHandout();
 		},
 
