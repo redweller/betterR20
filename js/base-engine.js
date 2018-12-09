@@ -848,6 +848,10 @@ function d20plusEngine () {
 							i();
 						} else if ("token-light" === e) {
 							const SOURCES = {
+								"None (Blind)": {
+									bright: 0,
+									dim: 0
+								},
 								"Torch/Light (Spell)": {
 									bright: 20,
 									dim: 20
