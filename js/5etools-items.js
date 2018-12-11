@@ -100,6 +100,8 @@ function d20plusItems () {
 			} else {
 				// for non-standard URLs, do a generic import
 				DataUtil.loadJSON(url).then((data) => {
+					(data.itemProperty || []).forEach(p => EntryRenderer.item._addProperty(p));
+					(data.itemType || []).forEach(t => EntryRenderer.item._addType(t));
 					d20plus.importer.addMeta(data._meta);
 					d20plus.importer.showImportList(
 						"item",

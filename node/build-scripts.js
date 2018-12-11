@@ -112,6 +112,7 @@ const SCRIPTS = {
 			"5etools-spells",
 			"5etools-backgrounds",
 			"5etools-classes",
+			"5etools-items",
 
 			"base"
 		]
