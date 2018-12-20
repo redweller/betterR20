@@ -2711,7 +2711,7 @@ const betteR205etools = function () {
 	};
 
 	// Import individual items
-	d20plus.items.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.items.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Items`, folderName);
 		const path = ["Items", folderName, data.name];
@@ -2969,7 +2969,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Psionics`, folderName);
 		const path = ["Psionics", folderName, data.name];
@@ -3056,7 +3056,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Races`, folderName);
 		const path = ["Races", folderName, data.name];
@@ -3144,7 +3144,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Feats`, folderName);
 		const path = ["Feats", folderName, data.name];
@@ -3221,7 +3221,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Objects`, folderName);
 		const path = ["Objects", folderName, data.name];
@@ -3357,7 +3357,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Optional Features`, folderName);
 		const path = ["Optional Features", folderName, data.name];
