@@ -133,7 +133,7 @@ const betteR205etools = function () {
 	NPC_SHEET_ATTRIBUTES["empty"] = new SheetAttribute("--Empty--", "", "");
 // TODO: implement custom entry (enable textarea)
 //NPC_SHEET_ATTRIBUTES["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
-	NPC_SHEET_ATTRIBUTES["npc_hpbase"] = new SheetAttribute("Avg HP", "npc_hpbase", "npc_hpbase");
+	NPC_SHEET_ATTRIBUTES["npc_hpbase"] = new SheetAttribute("HP", "npc_hpbase", "npc_hpbase");
 	NPC_SHEET_ATTRIBUTES["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
 	NPC_SHEET_ATTRIBUTES["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
 	NPC_SHEET_ATTRIBUTES["npc_hpformula"] = new SheetAttribute("HP Formula", "npc_hpformula", "npc_hpformula");
@@ -2630,7 +2630,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Psionics`, folderName);
 		const path = ["Psionics", folderName, data.name];
@@ -2717,7 +2717,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Races`, folderName);
 		const path = ["Races", folderName, data.name];
@@ -2805,7 +2805,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Feats`, folderName);
 		const path = ["Feats", folderName, data.name];
@@ -2882,7 +2882,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Objects`, folderName);
 		const path = ["Objects", folderName, data.name];
@@ -3018,7 +3018,7 @@ const betteR205etools = function () {
 		}
 	};
 
-	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Optional Features`, folderName);
 		const path = ["Optional Features", folderName, data.name];

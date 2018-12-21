@@ -21,7 +21,7 @@ function d20plusBackgrounds () {
 		}
 	};
 
-	d20plus.backgrounds.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo) {
+	d20plus.backgrounds.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.importer.makeDirTree(`Backgrounds`, folderName);
 		const path = ["Backgrounds", folderName, data.name];

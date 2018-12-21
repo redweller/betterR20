@@ -212,7 +212,7 @@ function d20plusMonsters () {
 	};
 
 	// Create monster character from js data object
-	d20plus.monsters.handoutBuilder = function (data, overwrite, options, folderName, saveIdsTo) {
+	d20plus.monsters.handoutBuilder = function (data, overwrite, options, folderName, saveIdsTo, options) {
 		const doBuild = () => {
 			if (!options) options = {};
 			if (typeof options === "string") {
