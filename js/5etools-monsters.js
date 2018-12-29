@@ -224,7 +224,7 @@ function d20plusMonsters () {
 			}
 
 			// make dir
-			const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
+			const folder = d20plus.journal.makeDirTree(`Monsters`, folderName);
 			const path = ["Monsters", folderName, data._displayName || data.name];
 
 			// handle duplicates/overwrites

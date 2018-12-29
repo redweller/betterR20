@@ -203,12 +203,12 @@ function baseToolModule () {
 						}
 						case "handouts": {
 							prop = "handouts";
-							genericFolder = d20plus.importer.makeDirTree(`Handouts`);
+							genericFolder = d20plus.journal.makeDirTree(`Handouts`);
 							break;
 						}
 						case "characters": {
 							prop = "characters";
-							genericFolder = d20plus.importer.makeDirTree(`Characters`);
+							genericFolder = d20plus.journal.makeDirTree(`Characters`);
 							break;
 						}
 						default: throw new Error(`Unhandled data type: ${lastDataType}`);
@@ -331,7 +331,7 @@ function baseToolModule () {
 							if (found) {
 								const rawPath = found.path;
 								const cleanPath = rawPath.slice(1); // paths start with "Root"
-								const folder = d20plus.importer.makeDirTree(...cleanPath);
+								const folder = d20plus.journal.makeDirTree(...cleanPath);
 								d20.journal.addItemToFolderStructure(itId, folder.id);
 								handled = true;
 							}
@@ -528,7 +528,7 @@ function baseToolModule () {
 					const catsToExport = new Set(CATS.filter(it => isCatSelected(it)));
 
 					console.log("Exporting journal...");
-					const journal = d20plus.importer.getExportableJournal();
+					const journal = d20plus.journal.getExportableJournal();
 
 					let maps;
 					if (catsToExport.has("maps")) {
@@ -645,7 +645,7 @@ function baseToolModule () {
 						const blob = new Blob([data], {type: "application/json"});
 						d20plus.ut.saveAs(blob, `${filename}.json`);
 					};
-					if (!anyBlobs) onBlobsReady();
+					if (!anyBlobs || blobCount === 0) onBlobsReady();
 				});
 
 

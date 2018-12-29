@@ -2243,7 +2243,7 @@ const betteR205etools = function () {
 								t.originalEvent.dropHandled = !0;
 
 								if ($hlpr.hasClass(`player-imported`)) {
-									const data = d20plus.importer.retreivePlayerImport($hlpr.attr("data-playerimportid"));
+									const data = d20plus.importer.retrievePlayerImport($hlpr.attr("data-playerimportid"));
 									importData(character, data, t);
 								} else {
 									var id = $hlpr.attr("data-itemid");
@@ -2632,7 +2632,7 @@ const betteR205etools = function () {
 
 	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Psionics`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Psionics`, folderName);
 		const path = ["Psionics", folderName, data.name];
 
 		// handle duplicates/overwrites
@@ -2719,7 +2719,7 @@ const betteR205etools = function () {
 
 	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Races`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Races`, folderName);
 		const path = ["Races", folderName, data.name];
 
 		// handle duplicates/overwrites
@@ -2807,7 +2807,7 @@ const betteR205etools = function () {
 
 	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Feats`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Feats`, folderName);
 		const path = ["Feats", folderName, data.name];
 
 		// handle duplicates/overwrites
@@ -2884,7 +2884,7 @@ const betteR205etools = function () {
 
 	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Objects`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Objects`, folderName);
 		const path = ["Objects", folderName, data.name];
 
 		// handle duplicates/overwrites
@@ -3020,7 +3020,7 @@ const betteR205etools = function () {
 
 	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Optional Features`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Optional Features`, folderName);
 		const path = ["Optional Features", folderName, data.name];
 
 		// handle duplicates/overwrites
@@ -3274,7 +3274,7 @@ const betteR205etools = function () {
 						entry.name = d20plus.importer.getCleanText(renderer.renderEntry(entry.name));
 						$stsName.text(entry.name);
 						$stsRemain.text(remaining--);
-						const folder = d20plus.importer.makeDirTree(entry.dir);
+						const folder = d20plus.journal.makeDirTree(entry.dir);
 
 						d20.Campaign.handouts.create({
 							name: entry.name

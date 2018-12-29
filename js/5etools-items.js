@@ -123,7 +123,7 @@ function d20plusItems () {
 	// Import individual items
 	d20plus.items.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Items`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Items`, folderName);
 		const path = ["Items", folderName, data.name];
 
 		// handle duplicates/overwrites
