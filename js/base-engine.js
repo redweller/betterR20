@@ -1866,6 +1866,10 @@ function d20plusEngine () {
 		d20.utils.handleURL = d20plus.mod.handleURL;
 		$(document).off("click", "a").on("click", "a", d20.utils.handleURL);
 	};
+
+	d20plus.engine.repairHexMethods = function () {
+		d20plus.mod.fixHexMethods();
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusEngine);
