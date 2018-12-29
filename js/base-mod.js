@@ -900,6 +900,39 @@ function d20plusMod() {
 		});
 	};
 	// END ROLL20 CODE
+
+	// prevent prototype methods from breaking some poorly-written property loops
+	d20plus.mod.fixHexMethods = () => {
+		try {
+			// BEGIN ROLL20 CODE
+			HT.Grid.prototype.GetHexAt = function(e) {
+				// BEGIN MOD
+				for (const t of this.Hexes)
+					if (t.Contains(e))
+						return t;
+				// END MOD
+				return null
+			};
+			// END ROLL20 CODE
+		} catch (ignored) {
+			console.error(ignored)
+		}
+
+		try {
+			// BEGIN ROLL20 CODE
+			HT.Grid.prototype.GetHexById = function(e) {
+				// BEGIN MOD
+				for (const t of this.Hexes)
+					if (t.Id == e)
+						return t;
+				// END MOD
+				return null
+			};
+			// END ROLL20 CODE
+		} catch (ignored) {
+			console.error(ignored)
+		}
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusMod);

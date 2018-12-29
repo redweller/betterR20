@@ -575,6 +575,7 @@ const betteR205etools = function () {
 		d20plus.ut.disable3dDice();
 		d20plus.engine.addLayers();
 		d20plus.weather.addWeather();
+		d20plus.engine.repairHexMethods();
 
 		// apply config
 		if (window.is_gm) {
