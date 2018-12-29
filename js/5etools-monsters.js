@@ -212,7 +212,7 @@ function d20plusMonsters () {
 	};
 
 	// Create monster character from js data object
-	d20plus.monsters.handoutBuilder = function (data, overwrite, options, folderName, saveIdsTo) {
+	d20plus.monsters.handoutBuilder = function (data, overwrite, options, folderName, saveIdsTo, options) {
 		const doBuild = () => {
 			if (!options) options = {};
 			if (typeof options === "string") {
@@ -224,7 +224,7 @@ function d20plusMonsters () {
 			}
 
 			// make dir
-			const folder = d20plus.importer.makeDirTree(`Monsters`, folderName);
+			const folder = d20plus.journal.makeDirTree(`Monsters`, folderName);
 			const path = ["Monsters", folderName, data._displayName || data.name];
 
 			// handle duplicates/overwrites

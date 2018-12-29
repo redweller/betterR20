@@ -51,7 +51,7 @@ function d20plusClass () {
 		options = options || {};
 
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Classes`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Classes`, folderName);
 		const path = ["Classes", folderName, data.name];
 
 		// handle duplicates/overwrites
@@ -141,7 +141,7 @@ function d20plusClass () {
 					const folderName = d20plus.importer._getHandoutPath("subclass", sc, "Class");
 					const path = [folderName];
 					if (outerFolderName) path.push(sc.source || data.source); // if it wasn't None, group by source
-					d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path, {}, data);
+					d20plus.subclasses.handoutBuilder(sc, overwrite, inJournals, path, {}, {}, data);
 				}
 			});
 		}
@@ -287,11 +287,12 @@ function d20plusClass () {
 	 * @param inJournals
 	 * @param folderName
 	 * @param saveIdsTo
+	 * @param options
 	 * @param baseClass Will be defined if importing as part of a class, undefined otherwise.
 	 */
-	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, baseClass) {
+	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options, baseClass) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Subclasses`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Subclasses`, folderName);
 		const path = ["Sublasses", folderName, data.name];
 
 		// handle duplicates/overwrites

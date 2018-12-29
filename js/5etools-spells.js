@@ -74,9 +74,9 @@ function d20plusSpells () {
 	};
 
 	// Create spell handout from js data object
-	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, builderOptions) {
+	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
-		const folder = d20plus.importer.makeDirTree(`Spells`, folderName);
+		const folder = d20plus.journal.makeDirTree(`Spells`, folderName);
 		const path = ["Spells", folderName, data.name];
 
 		// handle duplicates/overwrites
@@ -96,7 +96,7 @@ function d20plusSpells () {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_SPELLS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
 
-				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data, builderOptions);
+				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data, options);
 
 				console.log(notecontents);
 				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});

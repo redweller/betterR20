@@ -6,7 +6,7 @@ function d20plusImporter () {
 		d20plus.importer._playerImports[id] = data;
 	};
 
-	d20plus.importer.retreivePlayerImport = function (id) {
+	d20plus.importer.retrievePlayerImport = function (id) {
 		return d20plus.importer._playerImports[id];
 	};
 
@@ -23,209 +23,6 @@ function d20plusImporter () {
 			})
 		}
 	};
-
-	// TODO BEGIN JOURNAL MANAGEMENT -- REFACTOR OUT
-	/**
-	 * Takes a path made up of strings and arrays of strings, and turns it into one flat array of strings
-	 */
-	d20plus.importer.getCleanPath = function (...path) {
-		const clean = [];
-		getStrings(clean, path);
-		return clean.map(s => s.trim()).filter(s => s);
-
-		function getStrings (stack, toProc) {
-			toProc.forEach(tp => {
-				if (typeof tp === "string") {
-					stack.push(tp);
-				} else if (tp instanceof Array) {
-					getStrings(stack, tp);
-				} else {
-					throw new Error("Object in path was not a string or an array")
-				}
-			});
-		}
-	};
-
-	d20plus.importer.makeDirTree = function (...path) {
-		const parts = d20plus.importer.getCleanPath(path);
-		// path e.g. d20plus.importer.makeDirTree("Spells", "Cantrips", "1")
-		// roll20 allows a max directory depth of 4 :joy: (5, but the 5th level is unusable)
-		if (parts.length > 4) throw new Error("Max directory depth exceeded! The maximum is 4.")
-
-		const madeSoFar = [];
-
-		const root = {i: d20plus.ut.getJournalFolderObj()};
-
-		// roll20 folder management is dumb, so just pick the first folder with the right name if there's multiple
-		let curDir = root;
-		parts.forEach(toMake => {
-			const existing = curDir.i.find((it) => {
-				// n is folder name (only folders have the n property)
-				return it.n && it.n === toMake && it.i;
-			});
-			if (!existing) {
-				if (curDir.id) {
-					d20.journal.addFolderToFolderStructure(toMake, curDir.id);
-				} else {
-					// root has no id
-					d20.journal.addFolderToFolderStructure(toMake);
-				}
-			}
-			d20.journal.refreshJournalList();
-			madeSoFar.push(toMake);
-
-			// we have to save -> reread the entire directory JSON -> walk back to where we were
-			let nextDir = {i: JSON.parse(d20.Campaign.get("journalfolder"))};
-			madeSoFar.forEach(f => {
-				nextDir = nextDir.i.find(dir => dir.n && (dir.n.toLowerCase() === f.toLowerCase()));
-			});
-
-			curDir = nextDir;
-		});
-		return curDir;
-	};
-
-	d20plus.importer.recursiveRemoveDirById = function (folderId, withConfirmation) {
-		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
-			const folder = $(`[data-globalfolderid='${folderId}']`);
-			if (folder.length) {
-				d20plus.ut.log("Nuking directory...");
-				const childItems = folder.find("[data-itemid]").each((i, e) => {
-					const $e = $(e);
-					const itemId = $e.attr("data-itemid");
-					let toDel = d20.Campaign.handouts.get(itemId);
-					toDel || (toDel = d20.Campaign.characters.get(itemId));
-					if (toDel) toDel.destroy();
-				});
-				const childFolders = folder.find(`[data-globalfolderid]`).remove();
-				folder.remove();
-				$("#journalfolderroot").trigger("change");
-			}
-		}
-	};
-
-	d20plus.importer.recursiveArchiveDirById = function (folderId, withConfirmation) {
-		if (!withConfirmation || confirm("Are you sure you want to archive this folder, and everything in it? This cannot be undone.")) {
-			const folder = $(`[data-globalfolderid='${folderId}']`);
-			if (folder.length) {
-				d20plus.ut.log("Archiving directory...");
-				folder.find("[data-itemid]").each((i, e) => {
-					const $e = $(e);
-					const itemId = $e.attr("data-itemid");
-					let toArchive = d20.Campaign.handouts.get(itemId);
-					toArchive || (toArchive = d20.Campaign.characters.get(itemId));
-					if (toArchive && toArchive.attributes) {
-						toArchive.attributes.archived = true;
-						toArchive.save()
-					}
-				});
-			}
-		}
-	};
-
-	d20plus.importer.removeDirByPath = function (...path) {
-		path = d20plus.importer.getCleanPath(path);
-		return d20plus.importer._checkOrRemoveDirByPath(true, path);
-	};
-
-	d20plus.importer.checkDirExistsByPath = function (...path) {
-		path = d20plus.importer.getCleanPath(path);
-		return d20plus.importer._checkOrRemoveDirByPath(false, path);
-	};
-
-	d20plus.importer._checkOrRemoveDirByPath = function (doDelete, path) {
-		const parts = d20plus.importer.getCleanPath(path);
-
-		const root = {i: d20plus.ut.getJournalFolderObj()};
-
-		let curDir = root;
-		for (let i = 0; i < parts.length; ++i) {
-			const p = parts[i];
-			let lastId;
-			const existing = curDir.i.find((it) => {
-				lastId = it.id;
-				// n is folder name (only folders have the n property)
-				return it.n && it.n === p;
-			});
-			if (!existing) return false;
-			curDir = existing;
-			if (i === parts.length - 1) {
-				d20plus.importer.recursiveRemoveDirById(lastId, false);
-				return true;
-			}
-		}
-	};
-
-	d20plus.importer.getExportableJournal = () => {
-		// build a list of (id, path) pairs
-		const out = [];
-
-		function recurse (entry, pos) {
-			if (entry.i) {
-				// pos.push({name: entry.n, id: entry.id}); // if IDs are required, use this instead?
-				pos.push(entry.n);
-				entry.i.forEach(nxt => recurse(nxt, pos));
-				pos.pop();
-			} else {
-				out.push({id: entry, path: MiscUtil.copy(pos)});
-			}
-		}
-
-		const root = {i: d20plus.ut.getJournalFolderObj(), n: "Root", id: "root"};
-		recurse(root, []);
-		return out;
-	};
-
-	d20plus.importer.removeFileByPath = function (...path) {
-		path = d20plus.importer.getCleanPath(path);
-		return d20plus.importer._checkOrRemoveFileByPath(true, path);
-	};
-
-	d20plus.importer.checkFileExistsByPath = function (...path) {
-		path = d20plus.importer.getCleanPath(path);
-		return d20plus.importer._checkOrRemoveFileByPath(false, path);
-	};
-
-	d20plus.importer._checkOrRemoveFileByPath = function (doDelete, path) {
-		const parts = d20plus.importer.getCleanPath(path);
-
-		const root = {i: d20plus.ut.getJournalFolderObj()};
-
-		let curDir = root;
-		for (let i = 0; i < parts.length; ++i) {
-			const p = parts[i];
-			let lastId;
-			const existing = curDir.i.find((it) => {
-				if (i === parts.length - 1) {
-					// for the last item, check handouts/characters to see if the match it (which could be a string ID)
-					const char = d20.Campaign.characters.get(it);
-					const handout = d20.Campaign.handouts.get(it);
-					if ((char && char.get("name") === p) || (handout && handout.get("name") === p)) {
-						lastId = it;
-						return true;
-					}
-				} else {
-					lastId = it.id;
-					// n is folder name (only folders have the n property)
-					return it.n && it.n === p;
-				}
-				return false;
-			});
-			if (!existing) return false;
-			curDir = existing;
-			if (i === parts.length - 1) {
-				if (doDelete) {
-					// on the last item, delete
-					let toDel = d20.Campaign.handouts.get(lastId);
-					toDel || (toDel = d20.Campaign.characters.get(lastId))
-					if (toDel) toDel.destroy();
-				}
-				return true;
-			}
-		}
-		return false;
-	};
-	// TODO END JOURNAL MANAGEMENT
 
 	d20plus.importer.getCleanText = function (str) {
 		const check = jQuery.parseHTML(str);
@@ -1176,9 +973,9 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer._checkHandleDuplicate = function (path, overwrite) {
-		const dupe = d20plus.importer.checkFileExistsByPath(path);
+		const dupe = d20plus.journal.checkFileExistsByPath(path);
 		if (dupe && !overwrite) return false;
-		else if (dupe) d20plus.importer.removeFileByPath(path);
+		else if (dupe) d20plus.journal.removeFileByPath(path);
 		return true;
 	};
 

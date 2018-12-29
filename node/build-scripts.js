@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.14.10";
+const SCRIPT_VERSION = "1.14.11";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -112,6 +112,7 @@ const SCRIPTS = {
 			"5etools-spells",
 			"5etools-backgrounds",
 			"5etools-classes",
+			"5etools-items",
 
 			"base"
 		]

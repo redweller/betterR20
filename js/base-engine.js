@@ -324,6 +324,28 @@ function d20plusEngine () {
 			return false;
 		});
 
+		/**
+		 * @param token A token.
+		 * @return {number} 0 for unknown, 1 for NPC, 2 for PC.
+		 */
+		function getTokenType (token) {
+			if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
+				const charIdMaybe = token.model.toJSON().represents;
+				if (!charIdMaybe) return 0; //
+				const charMaybe = d20.Campaign.characters.get(charIdMaybe);
+				if (charMaybe) {
+					const atbs = charMaybe.attribs.toJSON();
+					const npcAtbMaybe = atbs.find(it => it.name === "npc");
+
+					if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+						return 1;
+					} else {
+						return 2;
+					}
+				} else return 0;
+			} else return 0;
+		}
+
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
 		var i = function() {
@@ -685,7 +707,14 @@ function d20plusEngine () {
 							const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
 							if (d20plus.sheet === "ogl") {
 								showRollOptions(
-									(token, val) => `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`,
+									(token, val) => {
+										if (getTokenType(token) === 1) {
+											const short = val.substring(0, 3);
+											return `@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Save}} @{selected|rtype} + [[@{selected|npc_${short.toLowerCase()}_save}]][${short.toUpperCase()}]]]}} {{rname=${val} Save}} {{r1=[[1d20 + [[@{selected|npc_${short.toLowerCase()}_save}]][${short.toUpperCase()}]]]}}`;
+										} else {
+											return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`;
+										}
+									},
 									options
 								);
 							}
@@ -703,7 +732,7 @@ function d20plusEngine () {
 								d20.engine.select(it);
 								let toRoll = ``;
 								if (d20plus.sheet === "ogl") {
-									toRoll = `@{selected|wtype} &{template:simple} {{rname=Initiative}} {{charname=@{selected|token_name}}} {{mod=[[@{selected|initiative_bonus}]]}} {{r1=[[@{selected|d20}+@{selected|dexterity_mod} &{tracker}]]}}{{normal=1}}`;
+									toRoll = `%{selected|Initiative}`;
 								} else if (d20plus.sheet === "shaped") {
 									toRoll = `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{title=INITIATIVE}} {{roll1=[[@{selected|initiative_formula}]]}}`;
 								}
@@ -712,6 +741,8 @@ function d20plusEngine () {
 							});
 							i();
 						} else if ("rollskills" === e) {
+							// TODO a "roll abilitiy check" option? NPC macro: @{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Check}} @{selected|rtype} + [[@{selected|strength_mod}]][STR]]]}} {{rname=Strength Check}} {{r1=[[1d20 + [[@{selected|strength_mod}]][STR]]]}}
+
 							// Mass roll: Skills
 							const options = [
 								"Athletics",
@@ -742,7 +773,13 @@ function d20plusEngine () {
 									let doRoll = '';
 									if (d20plus.sheet === "ogl") {
 										doRoll = (atb = abil) => {
-											return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+											if (getTokenType(token) === 1) {
+												const slugged = val.replace(/\s/g, "_").toLowerCase();
+												return `@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Skill}} @{selected|rtype} + [[@{selected|npc_${slugged}}]]]]}}; {{rname=${val}}}; {{r1=[[1d20 + [[@{selected|npc_${slugged}}]]]]}}
+`
+											} else {
+												return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+											}
 										}
 									} else if (d20plus.sheet === "shaped"){
 										doRoll = (atb = abil) => {
@@ -848,6 +885,10 @@ function d20plusEngine () {
 							i();
 						} else if ("token-light" === e) {
 							const SOURCES = {
+								"None (Blind)": {
+									bright: 0,
+									dim: 0
+								},
 								"Torch/Light (Spell)": {
 									bright: 20,
 									dim: 20
