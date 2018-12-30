@@ -1691,10 +1691,7 @@ function d20plusEngine () {
 		const pt = d20plus.engine._tokenHover.pt;
 		const txt = unescape(d20plus.engine._tokenHover.text);
 
-		const scaleFact = (1 / d20.engine.canvasZoom);
-		const xOffset = pt.x > (d20.engine.canvasWidth / 2) ? -300 * scaleFact : 0;
-
-		$(`body`).append(`<div class="Vetools-token-hover" style="top: ${pt.y}px; left: ${pt.x + xOffset}px">${txt}</div>`);
+		$(`body`).append(`<div class="Vetools-token-hover" style="top: ${pt.y * d20.engine.canvasZoom}px; left: ${pt.x * d20.engine.canvasZoom}px">${txt}</div>`);
 	};
 	d20plus.engine.addTokenHover = () => {
 		// BEGIN ROLL20 CODE
