@@ -212,15 +212,12 @@ function d20plusMonsters () {
 	};
 
 	// Create monster character from js data object
-	d20plus.monsters.handoutBuilder = function (data, overwrite, options, folderName, saveIdsTo, options) {
+	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		const doBuild = () => {
 			if (!options) options = {};
-			if (typeof options === "string") {
-				options = {
-					charOptions: {
-						inplayerjournals: options
-					}
-				};
+			if (inJournals && typeof inJournals === "string") {
+				options.charOptions = options.charOptions || {};
+				options.charOptions.inplayerjournals = inJournals;
 			}
 
 			// make dir
@@ -545,6 +542,7 @@ function d20plusMonsters () {
 								let casterLevel = null;
 								let spellToHit = null;
 								for (const sc of data.spellcasting) {
+									if (!sc.headerEntries) continue;
 									const toCheck = sc.headerEntries.join("");
 
 									// use the first ability/DC we find, since roll20 doesn't support multiple
