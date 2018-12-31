@@ -113,6 +113,7 @@ const SCRIPTS = {
 			"5etools-backgrounds",
 			"5etools-classes",
 			"5etools-items",
+			"5etools-feats",
 
 			"base"
 		]
