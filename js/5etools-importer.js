@@ -62,6 +62,27 @@ function d20plusImporter () {
 	*/
 	};
 
+	// TODO do a pre-pass _before_ this, attempting to link content tags to already-imported 5etools content (by scanning thru GM notes and attempting to parse as JSON -- cache the results of this scan, as it will presumably be super-expensive (need to then invalidate or add to this cache when importing new stuff))
+	// TODO pass rendered text to this, as a post-processing step
+	/**
+	 * Attempt to find + swap links to 5e.tools to links to handouts.
+	 *
+	 * @param str HTML string, usually output by the renderer.
+	 */
+	d20plus.importer.tryReplaceLinks = function (str) {
+		const $temp = $(`<div/>`);
+		$temp.append(str);
+		$temp.find(`a`).filter((i, e) => {
+			const href = $(e).attr("href");
+			if (!href || !href.trim()) return false;
+			return href.toLowerCase().startsWith(BASE_SITE_URL);
+		}).each((i, e) => {
+			const txt = $(e).text();
+			// TODO get text, compare against existing handout/character names, and link them using this:
+            //   `http://journal.roll20.net/${id.type}/${id.roll20Id}`;
+		});
+	};
+
 	d20plus.importer.doFakeDrop = function (event, characterView, fakeRoll20Json, outerI) {
 		const t = event; // needs a "target" property, which should be the `.sheet-compendium-drop-target` element on the sheet
 		const e = characterView; // AKA character.view
