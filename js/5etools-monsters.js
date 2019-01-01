@@ -1,5 +1,8 @@
 function d20plusMonsters () {
-	d20plus.monsters = {};
+	d20plus.monsters = {
+		TAG_SPELL_OPEN: "#VE_MARK_SPELL_OPEN#",
+		TAG_SPELL_CLOSE: "#VE_MARK_SPELL_CLOSE#",
+	};
 
 	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "Alphabetical", "Source"];
 	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
@@ -602,7 +605,14 @@ function d20plusMonsters () {
 								setAttrib(`repeating_npctrait_${newRowId}_desc`, cleanDescription);
 
 								// begin building a spells macro
-								const tokenActionStack = [cleanDescription];
+								const $temp = $(spellTrait)
+								$temp.find("a").each((i, e) => {
+									const $wrp = $(`<div>${d20plus.monsters.TAG_SPELL_OPEN}</div>`);
+									$wrp.append(e.outerHTML);
+									$wrp.append(d20plus.monsters.TAG_SPELL_CLOSE);
+									$(e).replaceWith($wrp)
+								});
+								const tokenActionStack = [d20plus.importer.getCleanText($temp[0].outerHTML)];
 
 								// collect all the spells
 								const allSpells = [];
@@ -942,13 +952,6 @@ function d20plusMonsters () {
 
 									// on final item, add macro
 									if (index === addMacroIndex) {
-										// collect name and identifier for all the character's spells
-										const macroSpells = character.attribs.toJSON()
-											.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
-											.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
-
-										// build tokenaction
-										macroSpells.forEach(mSp => tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`));
 										if (d20plus.cfg.get("token", "tokenactionsSpells")) {
 											if (d20plus.sheet === "shaped") {
 												character.abilities.create({
@@ -957,6 +960,47 @@ function d20plusMonsters () {
 													action: `%{${character.id}|shaped_spells}`
 												}).save();
 											} else {
+												// collect name and identifier for all the character's spells
+												const macroSpells = character.attribs.toJSON()
+													.filter(it => it.name.startsWith("repeating_spell-") && it.name.endsWith("spellname"))
+													.map(it => ({identifier: it.name.replace(/_spellname$/, "_spell"), name: it.current}));
+
+												// build tokenaction
+												const ixToReplaceIn = tokenActionStack.length - 1;
+												let toReplaceIn = tokenActionStack.last();
+
+												macroSpells.forEach(mSp => {
+													let didReplace = false;
+													toReplaceIn = toReplaceIn.replace(new RegExp(`${d20plus.monsters.TAG_SPELL_OPEN}\\s*${mSp.name}\\s*${d20plus.monsters.TAG_SPELL_CLOSE}`, "gi"), () => {
+														didReplace = true;
+														return `[${mSp.name}](~selected|${mSp.identifier})`
+													});
+
+													if (!didReplace) {
+														tokenActionStack.push(`[${mSp.name}](~selected|${mSp.identifier})`)
+													}
+												});
+
+												// clean e.g.
+												/*
+												Cantrips:
+
+												[...text...]
+												 */
+												// to
+												/*
+												Cantrips:
+												[...text...]
+												 */
+												toReplaceIn = toReplaceIn.replace(/: *\n\n+/gi, ":\n");
+
+												// clean any excess tags
+												toReplaceIn = toReplaceIn
+													.replace(new RegExp(d20plus.monsters.TAG_SPELL_OPEN, "gi"), "")
+													.replace(new RegExp(d20plus.monsters.TAG_SPELL_CLOSE, "gi"), "");
+
+												tokenActionStack[ixToReplaceIn] = toReplaceIn;
+
 												character.abilities.create({
 													name: "Spells",
 													istokenaction: true,
