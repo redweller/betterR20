@@ -2821,7 +2821,7 @@ const betteR205etools = function () {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OBJECTS](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
 
 				try {
-					const avatar = data.tokenURL || `${IMG_URL}objects/${name}.png`;
+					const avatar = data.tokenUrl || `${IMG_URL}objects/${name}.png`;
 					character.size = data.size;
 					character.name = name;
 					character.senses = data.senses;
@@ -3812,7 +3812,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									const item = table.tableitems.create();
 									item.set("name", m.name);
 									// encode size info into the URL, which will get baked into the token
-									const avatar = m.tokenURL || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png?roll20_token_size=${getSizeInTiles(m.size)}`;
+									const avatar = m.tokenUrl || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png?roll20_token_size=${getSizeInTiles(m.size)}`;
 									item.set("avatar", avatar);
 									item.set("token_size", getSizeInTiles(m.size));
 									item.save();
