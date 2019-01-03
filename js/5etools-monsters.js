@@ -137,8 +137,7 @@ function d20plusMonsters () {
 	d20plus.monsters.button = function () {
 		const url = $("#import-monster-url").val();
 		if (url && url.trim()) {
-			DataUtil.loadJSON(url).then((data) => {
-
+			DataUtil.loadJSON(url).then(async data => {
 				const doShowList = () => {
 					d20plus.importer.addMeta(data._meta);
 					d20plus.importer.showImportList(
@@ -155,20 +154,23 @@ function d20plusMonsters () {
 					);
 				};
 
-				const dependencies = MiscUtil.getProperty(data, "_meta", "dependencies");
-				if (dependencies && dependencies.length) {
-					const dependencyUrls = dependencies.map(d => d20plus.monsters.formMonsterUrl(monsterDataUrls[d]));
+				await d20plus.monsters._mergeDependencies(data);
+				doShowList();
+			});
+		}
+	};
 
-					Promise.all(dependencyUrls.map(url => DataUtil.loadJSON(url))).then(depDatas => {
+	d20plus.monsters._mergeDependencies = async function (json) {
+		const dependencies = MiscUtil.getProperty(json, "_meta", "dependencies");
+		if (dependencies && dependencies.length) {
+			const dependencyUrls = dependencies.map(d => d20plus.monsters.formMonsterUrl(monsterDataUrls[d]));
 
-						const depList = depDatas.reduce((a, b) => ({monster: a.monster.concat(b.monster)}), ({monster: []})).monster;
+			Promise.all(dependencyUrls.map(url => DataUtil.loadJSON(url))).then(depDatas => {
 
-						const mergeFn = DataUtil.dependencyMergers[UrlUtil.PG_BESTIARY];
-						data.monster.forEach(it => mergeFn(depList, it));
+				const depList = depDatas.reduce((a, b) => ({monster: a.monster.concat(b.monster)}), ({monster: []})).monster;
 
-						doShowList();
-					});
-				} else doShowList();
+				const mergeFn = DataUtil.dependencyMergers[UrlUtil.PG_BESTIARY];
+				json.monster.forEach(it => mergeFn(depList, it));
 			});
 		}
 	};
@@ -189,9 +191,12 @@ function d20plusMonsters () {
 			DataUtil.multiLoadJSON(
 				toLoad.map(url => ({url})),
 				() => {},
-				(dataStack) => {
+				async dataStack => {
 					let toAdd = [];
-					dataStack.forEach(d => toAdd = toAdd.concat(d.monster));
+					await Promise.all(dataStack.map(async d => {
+						await d20plus.monsters._mergeDependencies(d);
+						toAdd = toAdd.concat(d.monster);
+					}));
 					d20plus.importer.showImportList(
 						"monster",
 						toAdd,
