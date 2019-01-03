@@ -376,8 +376,7 @@ const betteR205etools = function () {
 	});
 
 	d20plus.sheet = "ogl";
-	d20plus.psionics = {};
-	d20plus.feats = {};
+	d20plus.psionics = {}
 	d20plus.races = {};
 	d20plus.objects = {};
 	d20plus.adventures = {};
@@ -2785,89 +2784,6 @@ const betteR205etools = function () {
 		return [noteContents, gmNotes];
 	};
 
-// Import Feats button was clicked
-	d20plus.feats.button = function (forcePlayer) {
-		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-feats-url-player").val() : $("#import-feats-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
-
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
-				d20plus.importer.showImportList(
-					"feat",
-					data.feat,
-					handoutBuilder,
-					{
-						forcePlayer
-					}
-				);
-			});
-		}
-	};
-
-	d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
-		// make dir
-		const folder = d20plus.journal.makeDirTree(`Feats`, folderName);
-		const path = ["Feats", folderName, data.name];
-
-		// handle duplicates/overwrites
-		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
-
-		const name = data.name;
-		d20.Campaign.handouts.create({
-			name: name,
-			tags: d20plus.importer.getTagString([
-				Parser.sourceJsonToFull(data.source)
-			], "feat")
-		}, {
-			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_FEATS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
-
-				const [noteContents, gmNotes] = d20plus.feats._getHandoutData(data);
-
-				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
-				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
-		});
-	};
-
-	d20plus.feats.playerImportBuilder = function (data) {
-		const [notecontents, gmnotes] = d20plus.feats._getHandoutData(data);
-
-		const importId = d20plus.ut.generateRowId();
-		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-		d20plus.importer.makePlayerDraggable(importId, data.name);
-	};
-
-	d20plus.feats._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
-		renderer.setBaseUrl(BASE_SITE_URL);
-		const prerequisite = EntryRenderer.feat.getPrerequisiteText(data.prerequisite);
-		EntryRenderer.feat.mergeAbilityIncrease(data);
-
-		const renderStack = [];
-		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 2);
-		const rendered = renderStack.join("");
-
-		const r20json = {
-			"name": data.name,
-			"content": `${prerequisite ? `**Prerequisite**: ${prerequisite}\n\n` : ""}${$(rendered).text()}`,
-			"Vetoolscontent": d20plus.importer.getCleanText(rendered),
-			"htmlcontent": "",
-			"data": {
-				"Category": "Feats"
-			}
-		};
-		const gmNotes = JSON.stringify(r20json);
-
-		const baseNoteContents = `${prerequisite ? `<p><i>Prerequisite: ${prerequisite}.</i></p> ` : ""}${rendered}`;
-		const noteContents = `${baseNoteContents}<del class="hidden">${gmNotes}</del>`;
-
-		return [noteContents, gmNotes];
-	};
-
 // Import Object button was clicked
 	d20plus.objects.button = function () {
 		const url = $("#import-objects-url").val();
@@ -2905,7 +2821,7 @@ const betteR205etools = function () {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OBJECTS](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
 
 				try {
-					const avatar = data.tokenURL || `${IMG_URL}objects/${name}.png`;
+					const avatar = data.tokenUrl || `${IMG_URL}objects/${name}.png`;
 					character.size = data.size;
 					character.name = name;
 					character.senses = data.senses;
@@ -3896,7 +3812,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									const item = table.tableitems.create();
 									item.set("name", m.name);
 									// encode size info into the URL, which will get baked into the token
-									const avatar = m.tokenURL || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png?roll20_token_size=${getSizeInTiles(m.size)}`;
+									const avatar = m.tokenUrl || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png?roll20_token_size=${getSizeInTiles(m.size)}`;
 									item.set("avatar", avatar);
 									item.set("token_size", getSizeInTiles(m.size));
 									item.save();
@@ -4226,7 +4142,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 											}
 										};
 
-										d20plus.monsters.handoutBuilder(sel, true, options, `Wild Forms - ${d20Character.attributes.name}`);
+										d20plus.monsters.handoutBuilder(sel, true, false, `Wild Forms - ${d20Character.attributes.name}`, {}, options);
 									};
 
 									if (sel.hp.formula) d20plus.ut.randomRoll(sel.hp.formula, result => doBuild(result));
