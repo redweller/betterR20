@@ -437,6 +437,12 @@ function baseUtil () {
 
 		return saveAs;
 	}();
+
+	d20plus.ut.promiseDelay = function (delay) {
+		return new Promise(resolve => {
+			setTimeout(() => resolve(), delay);
+		})
+	}
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);
