@@ -3747,11 +3747,15 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				DataUtil.multiLoadJSON(
 					toLoad.map(url => ({url})),
 					() => {},
-					(dataStack) => {
+					async dataStack => {
 						$lst.empty();
-
 						let toShow = [];
-						dataStack.forEach(d => toShow = toShow.concat(d.monster));
+
+						await Promise.all(dataStack.map(async d => {
+							await d20plus.monsters._mergeDependencies(d);
+							toShow = toShow.concat(d.monster);
+						}));
+
 						toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 						let tmp = "";
@@ -3951,10 +3955,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			}
 		},
 		{
-			name: "Wild Form Builder",
-			desc: "Build a character sheet to represent a character in Wild Form.",
+			name: "Wild Shape Builder",
+			desc: "Build a character sheet to represent a character in Wild Shape.",
 			html: `
-				<div id="d20plus-wildformbuild" title="Wild Form Character Builder">
+				<div id="d20plus-wildformbuild" title="Wild Shape Character Builder">
 					<div id="wildformbuild-list">
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
@@ -4011,14 +4015,19 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 				function loadData() {
 					const toLoad = Object.keys(monsterDataUrls).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+
 					DataUtil.multiLoadJSON(
 						toLoad.map(url => ({url})),
 						() => {},
-						(dataStack) => {
+						async dataStack => {
 							$lst.empty();
-
 							let toShow = [];
-							dataStack.forEach(d => toShow = toShow.concat(d.monster));
+
+							await Promise.all(dataStack.map(async d => {
+								await d20plus.monsters._mergeDependencies(d);
+								toShow = toShow.concat(d.monster);
+							}));
+
 							toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 							let tmp = "";
