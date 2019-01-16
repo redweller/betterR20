@@ -323,9 +323,9 @@ function d20plusArtBrowser () {
 						});
 					const $btnCopyUrl = $(`<div class="artr__item__menu_item pictos" title="Copy URL">A</div>`)
 						.appendTo($itemMenu)
-						.click((evt) => {
+						.click(async (evt) => {
 							evt.stopPropagation();
-							MiscUtil.copyTextToClipboard(it.uri);
+							await MiscUtil.pCopyTextToClipboard(it.uri);
 							JqueryUtil.showCopiedEffect($btnDownload, "Copied URL!");
 						});
 					if (it.support) {
