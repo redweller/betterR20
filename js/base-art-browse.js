@@ -325,7 +325,7 @@ function d20plusArtBrowser () {
 						.appendTo($itemMenu)
 						.click((evt) => {
 							evt.stopPropagation();
-							copyText(it.uri);
+							MiscUtil.copyTextToClipboard(it.uri);
 							JqueryUtil.showCopiedEffect($btnDownload, "Copied URL!");
 						});
 					if (it.support) {
