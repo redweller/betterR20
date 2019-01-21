@@ -154,23 +154,7 @@ function d20plusMonsters () {
 					);
 				};
 
-				await d20plus.monsters._mergeDependencies(data);
 				doShowList();
-			});
-		}
-	};
-
-	d20plus.monsters._mergeDependencies = async function (json) {
-		const dependencies = MiscUtil.getProperty(json, "_meta", "dependencies");
-		if (dependencies && dependencies.length) {
-			const dependencyUrls = dependencies.map(d => d20plus.monsters.formMonsterUrl(monsterDataUrls[d]));
-
-			Promise.all(dependencyUrls.map(url => DataUtil.loadJSON(url))).then(depDatas => {
-
-				const depList = depDatas.reduce((a, b) => ({monster: a.monster.concat(b.monster)}), ({monster: []})).monster;
-
-				const mergeFn = DataUtil.dependencyMergers[UrlUtil.PG_BESTIARY];
-				json.monster.forEach(it => mergeFn(depList, it));
 			});
 		}
 	};
@@ -192,14 +176,23 @@ function d20plusMonsters () {
 				toLoad.map(url => ({url})),
 				() => {},
 				async dataStack => {
-					let toAdd = [];
+					let toShow = [];
+
+					const seen = {};
 					await Promise.all(dataStack.map(async d => {
-						await d20plus.monsters._mergeDependencies(d);
-						toAdd = toAdd.concat(d.monster);
+						const toAdd = d.monster.filter(m => {
+							const out = !(seen[m.source] && seen[m.source].has(m.name));
+							if (!seen[m.source]) seen[m.source] = new Set();
+							seen[m.source].add(m.name);
+							return out;
+						});
+
+						toShow = toShow.concat(toAdd);
 					}));
+
 					d20plus.importer.showImportList(
 						"monster",
-						toAdd,
+						toShow,
 						d20plus.monsters.handoutBuilder,
 						{
 							groupOptions: d20plus.monsters._groupOptions,
@@ -209,8 +202,7 @@ function d20plusMonsters () {
 							nextStep: d20plus.monsters._doScale
 						}
 					);
-				},
-				(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
+				}
 			);
 		}
 	};
