@@ -67,11 +67,12 @@ function baseJsLoad () {
 					onEachLoadFunction(toLoad.name, toLoad.url, data);
 					d20plus.js.chainLoad(toLoads, index + 1, onEachLoadFunction, onFinalLoadFunction);
 				}
-			}
+			},
+			!!toLoad.isJson
 		);
 	};
 
-	d20plus.js.loadWithRetries = (name, url, onSuccess) => {
+	d20plus.js.loadWithRetries = (name, url, onSuccess, isJson) => {
 		let retries = 3;
 		function withRetries () {
 			return new Promise((resolve, reject) => {
@@ -79,7 +80,8 @@ function baseJsLoad () {
 					type: "GET",
 					url: `${url}${d20plus.ut.getAntiCacheSuffix()}${retries}`,
 					success: function (data) {
-						resolve(data);
+						if (isJson) resolve(JSON.parse(data));
+						else resolve(data);
 					},
 					error: function (resp, qq, pp) {
 						if (resp && resp.status >= 400 && retries-- > 0) {

@@ -565,8 +565,8 @@ function baseConfig() {
 		d20plus.cfg._handleStatusTokenConfigChange();
 		// d20plus.cfg._handleWeatherConfigChange();
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
-			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 1), 0);
-			$(`#secondary-toolbar`).css({opacity: v});
+			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
+			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
 		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));

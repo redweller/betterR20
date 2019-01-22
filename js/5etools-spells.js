@@ -30,6 +30,7 @@ function d20plusSpells () {
 
 			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addMeta(data._meta);
+				if (data.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(data.roll20Spell);
 				d20plus.importer.showImportList(
 					"spell",
 					data.spell,
@@ -56,7 +57,10 @@ function d20plusSpells () {
 			DataUtil.multiLoadJSON(toLoad.map(url => ({url: url})), () => {
 			}, (dataStack) => {
 				let toAdd = [];
-				dataStack.forEach(d => toAdd = toAdd.concat(d.spell));
+				dataStack.forEach(d => {
+					toAdd = toAdd.concat(d.spell);
+					if (d.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(d.roll20Spell);
+				});
 				d20plus.importer.showImportList(
 					"spell",
 					toAdd,
