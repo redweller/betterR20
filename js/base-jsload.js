@@ -80,7 +80,7 @@ function baseJsLoad () {
 					type: "GET",
 					url: `${url}${d20plus.ut.getAntiCacheSuffix()}${retries}`,
 					success: function (data) {
-						if (isJson) resolve(JSON.parse(data));
+						if (isJson && typeof data === "string") resolve(JSON.parse(data));
 						else resolve(data);
 					},
 					error: function (resp, qq, pp) {
