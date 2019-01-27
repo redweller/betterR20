@@ -335,6 +335,13 @@ function d20plusImporter () {
 			name: "repeating_npcaction_" + newRowId + "_description_flag",
 			current: descriptionFlag
 		}).save();
+
+		// hidden = a single space
+		const descVisFlag = d20plus.cfg.getOrDefault("import", "hideActionDescs") ? " " : "@{description}";
+		character.attribs.create({
+			name: `repeating_npcaction_${newRowId}_show_desc`,
+			current: descVisFlag
+		}).save();
 	};
 
 	d20plus.importer.findAttrId = function (character, attrName) {
