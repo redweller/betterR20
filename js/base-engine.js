@@ -1503,6 +1503,7 @@ function d20plusEngine () {
 		const $iptLineWidth = $(`#measure_mode_ipt_5`);
 
 		// BEGIN ROLL20 CODE
+		// not used?
 		var x = function(e) {
 			e.type = "measuring",
 				e.time = (new Date).getTime(),
@@ -1520,8 +1521,9 @@ function d20plusEngine () {
 		var t = d20.engine.canvas;
 		var a = $("#editor-wrapper");
 
+		// mousemove handler from Roll20 @ 2019-01-29
 		// BEGIN ROLL20 CODE
-		const A = function(e) {
+		const R = function(e) {
 			var n, i;
 			if (e.changedTouches ? ((e.changedTouches.length > 1 || "pan" == d20.engine.mode) && (delete d20.engine.pings[window.currentPlayer.id],
 				d20.engine.pinging = !1),
@@ -1616,7 +1618,7 @@ function d20plusEngine () {
 						var d = d20.engine.drawshape.shape;
 						d.width = c,
 							d.height = u,
-							d20.engine.renderTop()
+							d20.engine.redrawScreenNextTick()
 					}
 				} else
 					d20.engine.fog.down[2] = o,
@@ -1624,7 +1626,7 @@ function d20plusEngine () {
 					0 != d20.engine.snapTo && "square" == d20.Campaign.activePage().get("grid_type") && ("gridalign" == d20.engine.mode ? e.shiftKey && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
 						d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo)) : (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled")) && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
 						d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo))),
-						d20.engine.drawOverlays();
+						d20.Campaign.activePage().get("showdarkness") ? d20.engine.redrawScreenNextTick(!0) : d20.engine.clearCanvasOnRedraw("fog");
 				if (d20.engine.pinging)
 					(c = Math.abs(d20.engine.pinging.downx - n)) + (u = Math.abs(d20.engine.pinging.downy - i)) > 10 && (delete d20.engine.pings[window.currentPlayer.id],
 						d20.engine.pinging = !1);
@@ -1656,7 +1658,7 @@ function d20plusEngine () {
 		if (UPPER_CANVAS_MOUSEMOVE) {
 			d20plus.ut.log("Enhancing mouse move");
 			d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
-			d20.engine.uppercanvas.addEventListener("mousemove", A);
+			d20.engine.uppercanvas.addEventListener("mousemove", R);
 		}
 	};
 
