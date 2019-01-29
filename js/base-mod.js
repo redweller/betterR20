@@ -532,7 +532,7 @@ function d20plusMod() {
 				}
 			});
 			if (doRender) {
-				d20.engine.debounced_renderTop()
+				d20.engine.redrawScreenNextTick();
 			}
 			// END MOD
 		}

@@ -153,7 +153,7 @@ function baseTool() {
 						path: JSON.parse(i.path)
 					});
 					d20.Campaign.activePage().addPath(i);
-					d20.engine.debounced_renderTop();
+					d20.engine.redrawScreenNextTick();
 				}
 
 				const $win = $("#d20plus-svgdraw");

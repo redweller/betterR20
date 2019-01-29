@@ -159,7 +159,7 @@ function d20plusEngine () {
 					switch (msg.type) {
 						// case "Ve_measure_clear_sticky": {
 						// 	delete d20plus._stickyMeasure[msg.player];
-						// 	d20.engine.debounced_renderTop();
+						// 	d20.engine.redrawScreenNextTick();
 						// }
 					}
 				}
@@ -1147,10 +1147,12 @@ function d20plusEngine () {
 			return minPoint;
 		}
 
-		// original roll20 mousedown code, minified as "R" (as of 2018-10-6)
+		// original roll20 mousedown code, minified as "A" (as of 2019-01-29)
 		// BEGIN ROLL20 CODE
-		const R = function(e) {
-			//BEGIN MOD
+		let C = false;
+		let T = false;
+		const A = function(e) {
+			// BEGIN MOD
 			var t = d20.engine.canvas;
 			var a = $("#editor-wrapper");
 			// END MOD
@@ -1169,22 +1171,20 @@ function d20plusEngine () {
 			} else
 				n = e.pageX,
 					o = e.pageY;
-			for (var r = d20.engine.showLastPaths.length; r--;)
+			for (var r = d20.engine.showLastPaths.length; r--; )
 				"selected" == d20.engine.showLastPaths[r].type && d20.engine.showLastPaths.splice(r, 1);
 			d20.engine.handleMetaKeys(e),
 			"select" != d20.engine.mode && "path" != d20.engine.mode || t.__onMouseDown(e),
 			(0 === e.button || e.touches && 1 == e.touches.length) && (d20.engine.leftMouseIsDown = !0),
 			2 === e.button && (d20.engine.rightMouseIsDown = !0);
 			var s = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
-				,
-				l = Math.floor(o / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
+				, l = Math.floor(o / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
 			if (d20.engine.lastMousePos = [s, l],
 				d20.engine.mousePos = [s, l],
 			!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
 				if (d20.engine.leftMouseIsDown && "fog-polygonreveal" == d20.engine.mode) {
 					// BEGIN MOD
-					var c = s;
-					var u = l;
+					var c = s, u = l;
 
 					if (0 != d20.engine.snapTo && (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled"))) {
 						if ("square" == d20.Campaign.activePage().get("grid_type")) {
@@ -1197,13 +1197,9 @@ function d20plusEngine () {
 						}
 					}
 
-					if (d20.engine.fog.points.length > 0 && Math.abs(d20.engine.fog.points[0][0] - c) + Math.abs(d20.engine.fog.points[0][1] - u) < 15) {
-						d20.engine.fog.points.push([d20.engine.fog.points[0][0], d20.engine.fog.points[0][1]]);
-						d20.engine.finishPolygonReveal();
-					} else {
-						d20.engine.fog.points.push([c, u]);
-					}
-					d20.engine.drawOverlays();
+					d20.engine.fog.points.length > 0 && Math.abs(d20.engine.fog.points[0][0] - c) + Math.abs(d20.engine.fog.points[0][1] - u) < 15 ? (d20.engine.fog.points.push([d20.engine.fog.points[0][0], d20.engine.fog.points[0][1]]),
+						d20.engine.finishPolygonReveal()) : d20.engine.fog.points.push([c, u]),
+						d20.engine.redrawScreenNextTick(!0)
 					// END MOD
 				} else if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode)
 					if (2 === e.button)
@@ -1221,12 +1217,12 @@ function d20plusEngine () {
 								d20.engine.measure.down[1] = d20.engine.snapToIncrement(d20.engine.measure.down[1] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2),
 									d20.engine.measure.down[0] = d20.engine.snapToIncrement(d20.engine.measure.down[0] + Math.floor(d20.engine.snapTo / 2), d20.engine.snapTo) - Math.floor(d20.engine.snapTo / 2);
 							else {
-								var d = d20.canvas_overlay.activeHexGrid.GetHexAt({
+								let e = d20.canvas_overlay.activeHexGrid.GetHexAt({
 									X: d20.engine.measure.down[0],
 									Y: d20.engine.measure.down[1]
 								});
-								d20.engine.measure.down[1] = d.MidPoint.Y,
-									d20.engine.measure.down[0] = d.MidPoint.X
+								e && (d20.engine.measure.down[1] = e.MidPoint.Y,
+									d20.engine.measure.down[0] = e.MidPoint.X)
 							}
 						else if (0 === d20.engine.snapTo || "snap_corner" !== d20.engine.ruler_snapping || e.altKey)
 							d20.engine.measure.flags |= 1;
@@ -1245,7 +1241,7 @@ function d20plusEngine () {
 				else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode)
 					d20.engine.fx.current || (d20.engine.fx.current = d20.fx.handleClick(s, l));
 				else if (d20.engine.leftMouseIsDown && "text" == d20.engine.mode) {
-					var h = {
+					var d = {
 						fontFamily: $("#font-family").val(),
 						fontSize: $("#font-size").val(),
 						fill: $("#font-color").val(),
@@ -1253,17 +1249,17 @@ function d20plusEngine () {
 						left: s,
 						top: l
 					}
-						, p = d20.Campaign.activePage().addText(h);
-					_.defer(function () {
-						d20.engine.editText(p.view.graphic, h.top, h.left),
-							setTimeout(function () {
+						, h = d20.Campaign.activePage().addText(d);
+					_.defer(function() {
+						d20.engine.editText(h.view.graphic, d.top, d.left),
+							setTimeout(function() {
 								$(".texteditor").focus()
 							}, 300)
 					})
 				} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
-					var f = parseInt($("#path_width").val(), 10)
-						, g = d20.engine.drawshape.shape = {
-						strokewidth: f,
+					var p = parseInt($("#path_width").val(), 10)
+						, f = d20.engine.drawshape.shape = {
+						strokewidth: p,
 						x: 0,
 						y: 0,
 						width: 10,
@@ -1274,27 +1270,26 @@ function d20plusEngine () {
 						u = l;
 					0 != d20.engine.snapTo && e.shiftKey && (c = d20.engine.snapToIncrement(c, d20.engine.snapTo),
 						u = d20.engine.snapToIncrement(u, d20.engine.snapTo)),
-						g.x = c,
-						g.y = u,
-						g.fill = $("#path_fillcolor").val(),
-						g.stroke = $("#path_strokecolor").val(),
+						f.x = c,
+						f.y = u,
+						f.fill = $("#path_fillcolor").val(),
+						f.stroke = $("#path_strokecolor").val(),
 						d20.engine.drawshape.start = [n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], o + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
-						d20.engine.renderTop()
+						d20.engine.redrawScreenNextTick()
 				} else if (d20.engine.leftMouseIsDown && "polygon" == d20.engine.mode) {
 					if (d20.engine.drawshape.shape)
-						g = d20.engine.drawshape.shape;
+						f = d20.engine.drawshape.shape;
 					else {
-						f = parseInt($("#path_width").val(), 10);
-						(g = d20.engine.drawshape.shape = {
-							strokewidth: f,
+						p = parseInt($("#path_width").val(), 10);
+						(f = d20.engine.drawshape.shape = {
+							strokewidth: p,
 							points: [],
 							type: "polygon"
 						}).fill = $("#path_fillcolor").val(),
-							g.stroke = $("#path_strokecolor").val()
+							f.stroke = $("#path_strokecolor").val()
 					}
 					// BEGIN MOD
-					var c = s;
-					var u = l;
+					c = s, u = l;
 
 					if (0 != d20.engine.snapTo && e.shiftKey) {
 						if ("square" == d20.Campaign.activePage().get("grid_type")) {
@@ -1307,21 +1302,13 @@ function d20plusEngine () {
 						}
 					}
 
-					if (g.points.length > 0 && Math.abs(g.points[0][0] - c) + Math.abs(g.points[0][1] - u) < 15) {
-						g.points.push([g.points[0][0], g.points[0][1]]);
-						if (g.points.length > 2) {
-							g.points.push([g.points[1][0], g.points[1][1]]);
-						}
-						d20.engine.finishCurrentPolygon();
-					} else {
-						g.points.push([c, u]);
-					}
-
-					d20.engine.debounced_renderTop();
+					f.points.length > 0 && Math.abs(f.points[0][0] - c) + Math.abs(f.points[0][1] - u) < 15 ? (f.points.push([f.points[0][0], f.points[0][1]]),
+						d20.engine.finishCurrentPolygon()) : f.points.push([c, u]),
+						d20.engine.redrawScreenNextTick()
 					// END MOD
 				} else if (d20.engine.leftMouseIsDown && "targeting" === d20.engine.mode) {
-					var m = d20.engine.canvas.findTarget(e, !0, !0);
-					return void (m !== undefined && "image" === m.type && m.model && d20.engine.nextTargetCallback(m))
+					var g = d20.engine.canvas.findTarget(e, !0, !0);
+					return void (g !== undefined && "image" === g.type && g.model && d20.engine.nextTargetCallback(g))
 				}
 				// BEGIN MOD
 				else if (d20.engine.leftMouseIsDown && "line_splitter" === d20.engine.mode) {
@@ -1355,7 +1342,7 @@ function d20plusEngine () {
 									offset: [...d20.engine.currentCanvasOffset]
 								};
 								setTimeout(() => {
-									d20.engine.debounced_renderTop();
+									d20.engine.redrawScreenNextTick();
 								}, 1);
 								let splitSegments = [
 									[slicePoint1, slicePoint2]
@@ -1455,7 +1442,7 @@ function d20plusEngine () {
 				if (2 === e.button && d20.engine.addWaypoint(e),
 				d20.engine.pings[window.currentPlayer.id] && d20.engine.pings[window.currentPlayer.id].radius > 20)
 					return;
-				var y = {
+				var m = {
 					left: s,
 					top: l,
 					radius: -5,
@@ -1463,13 +1450,13 @@ function d20plusEngine () {
 					pageid: d20.Campaign.activePage().id,
 					currentLayer: window.currentEditingLayer
 				};
-				window.is_gm && e.shiftKey && (y.scrollto = !0),
-					d20.engine.pings[window.currentPlayer.id] = y,
+				window.is_gm && e.shiftKey && (m.scrollto = !0),
+					d20.engine.pings[window.currentPlayer.id] = m,
 					d20.engine.pinging = {
 						downx: n,
 						downy: o
 					},
-					d20.engine.renderTop()
+					d20.engine.redrawScreenNextTick(!0)
 			}
 			d20.engine.rightMouseIsDown && ("select" == d20.engine.mode || "path" == d20.engine.mode || "text" == d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" == d20.engine.mode ? (d20.engine.pan.beginPos = [a.scrollLeft(), a.scrollTop()],
 				d20.engine.pan.panXY = [n, o],
@@ -1491,7 +1478,7 @@ function d20plusEngine () {
 		if (UPPER_CANVAS_MOUSEDOWN) {
 			d20plus.ut.log("Enhancing hex snap");
 			d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
-			d20.engine.uppercanvas.addEventListener("mousedown", R);
+			d20.engine.uppercanvas.addEventListener("mousedown", A);
 		}
 
 		// add sub-grid snap
@@ -1723,7 +1710,7 @@ function d20plusEngine () {
 			}
 
 			if (data.e.shiftKey && hoverTarget && hoverTarget.model) {
-				d20.engine.debounced_renderTop();
+				d20.engine.redrawScreenNextTick();
 				const gmNotes = hoverTarget.model.get("gmnotes");
 				const pt = d20.engine.canvas.getPointer(data.e);
 				pt.x -= d20.engine.currentCanvasOffset[0];
@@ -1734,7 +1721,7 @@ function d20plusEngine () {
 					id: hoverTarget.model.id
 				};
 			} else {
-				if (d20plus.engine._tokenHover) d20.engine.debounced_renderTop();
+				if (d20plus.engine._tokenHover) d20.engine.redrawScreenNextTick();
 				d20plus.engine._tokenHover = null;
 			}
 		})
