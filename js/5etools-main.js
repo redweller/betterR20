@@ -313,6 +313,11 @@ const betteR205etools = function () {
 			"default": "Auto Roll",
 			"_type": "_DAMAGEMODE"
 		},
+		"hideActionDescs": {
+			"name": "Hide Action Descriptions on Import",
+			"default": false,
+			"_type": "boolean"
+		},
 		"skipSenses": {
 			"name": "Skip Importing Creature Senses",
 			"default": false,
