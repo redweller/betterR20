@@ -1683,22 +1683,12 @@ function d20plusEngine () {
 		$(`body`).append(`<div class="Vetools-token-hover" style="top: ${pt.y * d20.engine.canvasZoom}px; left: ${pt.x * d20.engine.canvasZoom}px">${txt}</div>`);
 	};
 	d20plus.engine.addTokenHover = () => {
-		// BEGIN ROLL20 CODE
-		d20.engine.drawOverlaysTop = function(e) {
-			e.globalCompositeOperation = "lighter";
-			d20.fx.render(e);
-			e.globalCompositeOperation = "source-over";
-			d20.engine.redrawSightTokens(e);
-			d20.engine.drawShadowMovements(e);
-			d20.engine.drawMeasurements(e);
-			d20.engine.drawPings(e);
-			d20.engine.drawInProgressDrawings(e);
-
-			// BEGIN MOD
+		// gm notes on shift-hover
+		const cacheRenderLoop = d20.engine.renderLoop;
+		d20.engine.renderLoop = () => {
 			d20plus.engine._drawTokenHover();
-			// END MOD
+			cacheRenderLoop();
 		};
-		// END ROLL20 CODE
 
 		// store data for the rendering function to access
 		d20.engine.canvas.on("mouse:move", (data, ...others) => {
