@@ -1835,7 +1835,8 @@ function d20plusEngine () {
 			`);
 		}
 
-		d20.engine.canvasOrigRenderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
+		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
+		d20.engine.canvas._layerIteratorGenerator = d20plus.mod.layerIteratorGenerator;
 	};
 
 	d20plus.engine.removeLinkConfirmation = function () {

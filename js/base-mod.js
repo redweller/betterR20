@@ -804,75 +804,101 @@ function d20plusMod() {
 	// END ROLL20 CODE
 
 	// BEGIN ROLL20 CODE
-	d20plus.mod.renderAll = function(e) {
-		var t = this[!0 === e && this.interactive ? "contextTop" : "contextContainer"];
-		this.contextTop && this.selection && !this._groupSelector && this.clearContext(this.contextTop),
-		e || this.clearContext(t),
-		d20.engine && d20.engine.preProcessing && d20.engine.preProcessing(t, !1);
-		var n = this._objects.length
-			, i = this.getActiveGroup();
-		this.getActiveObject(),
-			new Date;
-		if (i && !window.is_gm && (i.hideResizers = !0),
-			this.fire("before:render"),
-		this.clipTo && fabric.util.clipContext(this, t),
-			t.fillStyle = d20.engine.backgroundColor,
-			t.fillRect(0, 0, Math.ceil(this.width / d20.engine.canvasZoom), Math.ceil(this.height / d20.engine.canvasZoom)),
-		"object" == typeof this.backgroundImage && this._drawBackroundImage(t),
-		n !== undefined) {
-			for (var o = [d20.engine.currentCanvasOffset[0], d20.engine.currentCanvasOffset[1]], r = [d20.engine.canvasWidth / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0], d20.engine.canvasHeight / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1]], a = {
-				map: [],
-				walls: [],
-				grid: [],
-				objects: [],
-				// BEGIN MOD
-				foreground: [],
-				// END MOD
-				gmlayer: [],
-				// BEGIN MOD
-				weather: []
-				// END MOD
-			}, s = 0; s < n; ++s)
-				if (this._objects[s].model) {
-					if (!a[this._objects[s].model.get("layer")])
-						continue;
-					a[this._objects[s].model.get("layer")].push(this._objects[s])
-				} else
-					a[window.currentEditingLayer].push(this._objects[s]);
-			for (var l in a)
-				// BEGIN MOD
-				if (!("weather" == l && "weather" !== window.currentEditingLayer || "weather" == l && !window.is_gm ||
-					"gmlayer" == l && !window.is_gm || "walls" == l && "walls" !== window.currentEditingLayer || "walls" == l && !window.is_gm))
+	d20plus.mod.renderAll = function (e) {
+		const t = e && e.context || this.contextContainer
+			, n = this.getActiveGroup()
+			, i = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
+			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset,d20.math.div(i,2)),...i,0);
+		n && !window.is_gm && (n.hideResizers = !0),
+			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
+		const r = {
+			map: [],
+			walls: [],
+			objects: [],
+			// BEGIN MOD
+			foreground: [],
+			// END MOD
+			gmlayer: []
+			// BEGIN MOD
+			, weather: []
+			// END MOD
+		};
+		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
+		for (let e of this._objects)
+			if (e.model) {
+				const t = e.model.get("layer");
+				if (!r[t])
+					continue;
+				r[t].push(e)
+			} else
+				r[window.currentEditingLayer].push(e);
+		for (const [i,a] of r) {
+			switch (a) {
+				case "grid":
+					d20.canvas_overlay.drawGrid(t);
+					continue;
+				case "afow":
+					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.afow);
+					continue;
+				case "gmlayer":
+					t.globalAlpha = d20.engine.gm_layer_opacity;
+					break;
+				case "objects":
+					// BEGIN MOD
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
+						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 					// END MOD
-					if ("grid" != l) {
-						// TODO ADD COOL CONFIG PROPERTIES FOR CHANGING TRANSPARENCY OF THESE LAYERS
-						n = a[l].length,
-							"gmlayer" == l ? t.globalAlpha = .55 : "objects" != l || "map" != window.currentEditingLayer && "walls" != window.currentEditingLayer ? t.globalAlpha = 1 : t.globalAlpha = .45;
-						for (s = 0; s < n; ++s) {
-							var c = a[l][s];
-							i && c && i.contains(c) ? (c.renderingInGroup = i,
-								c.hasControls = !1) : (c.hasControls = !0,
-								"text" != c.type && window.is_gm ? c.hideResizers = !1 : c.hideResizers = !0),
-							c.needsRender(o, r) && (c.renderThisPass = !0,
-							c.renderPre && c.renderPre(t))
-						}
-						for (s = 0; s < n; ++s) {
-							(c = a[l][s]).renderThisPass && (this._draw(t, c),
-								delete c.renderingInGroup,
-								delete c.renderThisPass)
-						}
-					} else
-						d20.engine && d20.engine.drawGrid && d20.engine.drawGrid(t, !1);
-			t.globalAlpha = 1
+						t.globalAlpha = .45;
+						break
+					}
+				// BEGIN MOD
+				case "foreground":
+					// BEGIN MOD
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
+						|| "weather" === window.currentEditingLayer) {
+					// END MOD
+						t.globalAlpha = .45;
+						break
+					}
+				// END MOD
+				default:
+					t.globalAlpha = 1
+			}
+			_.chain(i).filter(i=>{
+					let r;
+					return n && i && n.contains(i) ? (i.renderingInGroup = n,
+						i.hasControls = !1) : (i.renderingInGroup = null,
+						i.hasControls = !0,
+						"text" !== i.type && window.is_gm ? i.hideResizers = !1 : i.hideResizers = !0),
+						e && e.invalid_rects ? (r = i.intersects([o]) && (i.needsToBeDrawn || i.intersects(e.invalid_rects)),
+						i.renderPre && i.renderPre(t)) : (r = i.needsRender(o)) && i.renderPre && i.renderPre(t, {
+							should_update: !0
+						}),
+						r
+				}
+			).each(e=>{
+					this._draw(t, e),
+						e.renderingInGroup = null
+				}
+			)
 		}
-		return i && i.setCoords(),
-		d20.engine && d20.engine.postProcessing && d20.engine.postProcessing(t, !1),
-			this.renderTop(),
-		this.clipTo && t.restore(),
-		this.overlayImage && t.drawImage(this.overlayImage, this.overlayImageLeft, this.overlayImageTop),
-		this.controlsAboveOverlay && this.interactive && this.drawControls(t),
-			this.fire("after:render"),
+		return t.restore(),
 			this
+	};
+	// END ROLL20 CODE
+
+	// shoutouts to Roll20 for making me learn how `yield` works
+	// BEGIN ROLL20 CODE
+	d20plus.mod.layerIteratorGenerator = function*(e) { // e is just an options object
+		yield[this.map, "map"];
+		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]);
+		e && e.grid_before_afow && (yield[null, "grid"]);
+		e && e.disable_afow || !d20.Campaign.activePage().get("adv_fow_enabled") || !window.largefeats || (yield[null, "afow"]);
+		e && e.grid_before_afow || (yield[null, "grid"]);
+		yield[this.objects, "objects"];
+		yield[this.foreground, "foreground"];
+		window.is_gm && (yield[this.gmlayer, "gmlayer"]);
+		window.is_gm && "weather" === window.currentEditingLayer && (yield[this.weather, "weather"]);
 	};
 	// END ROLL20 CODE
 
