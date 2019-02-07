@@ -1,6 +1,8 @@
 function baseCss () {
 	d20plus.css = {};
 
+	// Convert to regular CSS:
+	// `[ ... rules ... ].map(it => `${it.s} {\n${it.r.split(";").map(str => str.trim()).join(";\n")}}\n`).join("\n")`
 	d20plus.css.baseCssRules = [
 		// generic
 		{
@@ -504,7 +506,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__item--back",
-			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; font-color: #888;"
+			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; color: #888;"
 		},
 		{
 			s: ".artr__item__top",
