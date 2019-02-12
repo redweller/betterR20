@@ -283,7 +283,9 @@ function d20plusImporter () {
 			}).save();
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit}).save();
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit", current: damage}).save();
+			// TODO this might not be necessary on Shaped sheets?
+			const critDamage = (damage || "").trim().replace(/[-+]\s*\d+$/, ""); // replace any trailing modifiers e.g. "+5"
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit", current: critDamage}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_damagetype",
 				current: damagetype
@@ -1009,9 +1011,10 @@ function d20plusImporter () {
 
 	d20plus.importer._importToggleSelectAll = function (importList, selectAllCb) {
 		const $sa = $(selectAllCb);
+		const val = $sa.prop("checked");
 		importList.items.forEach(i => Array.prototype.forEach.call(i.elm.children, (e) => {
 			if (e.tagName === "INPUT") {
-				$(e).prop("checked", $sa.prop("checked"));
+				$(e).prop("checked", val);
 			}
 		}));
 	};
