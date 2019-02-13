@@ -298,6 +298,12 @@ const betteR205etools = function () {
 			"_type": "_enum",
 			"__values": ["Bio", "GM Notes"]
 		},
+		"importCharAvatar": {
+			"name": "Set Character Avatar As...",
+			"default": "Portrait (where available)",
+			"_type": "_enum",
+			"__values": ["Portrait (where available)", "Token"]
+		},
 		"whispermode": {
 			"name": "Sheet Whisper Mode on Import",
 			"default": "Toggle (Default GM)",
