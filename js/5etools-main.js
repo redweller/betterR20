@@ -319,6 +319,11 @@ const betteR205etools = function () {
 			"default": "Auto Roll",
 			"_type": "_DAMAGEMODE"
 		},
+		"hideActionDescs": {
+			"name": "Hide Action Descriptions on Import",
+			"default": false,
+			"_type": "boolean"
+		},
 		"skipSenses": {
 			"name": "Skip Importing Creature Senses",
 			"default": false,
@@ -427,14 +432,14 @@ const betteR205etools = function () {
 	d20plus.js.scripts.push({name: "5etoolsscalecreature", url: `${SITE_JS_URL}scalecreature.js`});
 
 	d20plus.json = [
-		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
-		{name: "spell index", url: `${SPELL_DATA_DIR}index.json`},
-		{name: "spell metadata", url: SPELL_META_URL},
-		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`},
-		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`},
-		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}meta.json`},
-		{name: "adventures index", url: `${DATA_URL}adventures.json`},
-		{name: "basic items", url: `${DATA_URL}basicitems.json`}
+		{name: "class index", url: `${CLASS_DATA_DIR}index.json`, isJson: true},
+		{name: "spell index", url: `${SPELL_DATA_DIR}index.json`, isJson: true},
+		{name: "spell metadata", url: SPELL_META_URL, isJson: true},
+		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`, isJson: true},
+		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`, isJson: true},
+		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}meta.json`, isJson: true},
+		{name: "adventures index", url: `${DATA_URL}adventures.json`, isJson: true},
+		{name: "basic items", url: `${DATA_URL}basicitems.json`, isJson: true},
 	];
 
 	// add JSON index/metadata
@@ -3753,11 +3758,22 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				DataUtil.multiLoadJSON(
 					toLoad.map(url => ({url})),
 					() => {},
-					(dataStack) => {
+					async dataStack => {
 						$lst.empty();
-
 						let toShow = [];
-						dataStack.forEach(d => toShow = toShow.concat(d.monster));
+
+						const seen = {};
+						await Promise.all(dataStack.map(async d => {
+							const toAdd = d.monster.filter(m => {
+								const out = !(seen[m.source] && seen[m.source].has(m.name));
+								if (!seen[m.source]) seen[m.source] = new Set();
+								seen[m.source].add(m.name);
+								return out;
+							});
+
+							toShow = toShow.concat(toAdd);
+						}));
+
 						toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 						let tmp = "";
@@ -3828,8 +3844,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								alert("Created table!")
 							}
 						});
-					},
-					(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
+					}
 				);
 			}
 		},
@@ -3957,10 +3972,10 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			}
 		},
 		{
-			name: "Wild Form Builder",
-			desc: "Build a character sheet to represent a character in Wild Form.",
+			name: "Wild Shape Builder",
+			desc: "Build a character sheet to represent a character in Wild Shape.",
 			html: `
-				<div id="d20plus-wildformbuild" title="Wild Form Character Builder">
+				<div id="d20plus-wildformbuild" title="Wild Shape Character Builder">
 					<div id="wildformbuild-list">
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
@@ -4017,14 +4032,26 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 				function loadData() {
 					const toLoad = Object.keys(monsterDataUrls).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
+
 					DataUtil.multiLoadJSON(
 						toLoad.map(url => ({url})),
 						() => {},
-						(dataStack) => {
+						async dataStack => {
 							$lst.empty();
-
 							let toShow = [];
-							dataStack.forEach(d => toShow = toShow.concat(d.monster));
+
+							const seen = {};
+							await Promise.all(dataStack.map(async d => {
+								const toAdd = d.monster.filter(m => {
+									const out = !(seen[m.source] && seen[m.source].has(m.name));
+									if (!seen[m.source]) seen[m.source] = new Set();
+									seen[m.source].add(m.name);
+									return out;
+								});
+
+								toShow = toShow.concat(toAdd);
+							}));
+
 							toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 							let tmp = "";
@@ -4155,8 +4182,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 									else doBuild({total: 0});
 								});
 							});
-						},
-						(src) => ({src: src, url: d20plus.monsters.formMonsterUrl(monsterDataUrls[src])})
+						}
 					);
 				}
 			}

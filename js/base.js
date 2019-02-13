@@ -59,9 +59,12 @@ const betteR20Base = function () {
 	addConfigOptions("interface", {
 		"_name": "Interface",
 		"toolbarOpacity": {
-			"name": "Horizontal Toolbar Opacity (0.00-1.00)",
-			"default": 1,
-			"_type": "float"
+			"name": "Horizontal Toolbar Opacity",
+			"default": 100,
+			"_type": "_slider",
+			"__sliderMin": 1,
+			"__sliderMax": 100,
+			"__sliderStep": 1
 		},
 		"quickLayerButtons": {
 			"name": "Add Quick Layer Buttons",

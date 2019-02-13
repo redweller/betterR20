@@ -522,7 +522,7 @@ function baseToolModule () {
 					CATS.forEach(cat => $winExportP1.find(`input[name="cb-${cat}"]`).prop("checked", $cbAllExport.prop("checked")))
 				});
 
-				$winExportP1.find("button").off("click").click(() => {
+				$winExportP1.find("button").off("click").click(async () => {
 					const isCatSelected = (name) => $winExportP1.find(`input[name="cb-${name}"]`).prop("checked");
 
 					const catsToExport = new Set(CATS.filter(it => isCatSelected(it)));
@@ -532,12 +532,26 @@ function baseToolModule () {
 
 					let maps;
 					if (catsToExport.has("maps")) {
-						console.log("Exporting maps...");
-						maps = d20.Campaign.pages.models.map(map => ({ // shoutouts to Stormy
-							attributes: map.attributes,
-							graphics: (map.thegraphics || []).map(g => g.attributes),
-							text: (map.thetexts || []).map(t => t.attributes),
-							paths: (map.thepaths || []).map(p => p.attributes)
+						console.log("Exporting maps..."); // shoutouts to Stormy
+						maps = await Promise.all(d20.Campaign.pages.models.map(async map => {
+							const getOut = () => {
+								return {
+									attributes: map.attributes,
+									graphics: (map.thegraphics || []).map(g => g.attributes),
+									text: (map.thetexts || []).map(t => t.attributes),
+									paths: (map.thepaths || []).map(p => p.attributes)
+								};
+							};
+
+							if (map.get("archived")) {
+								map.set({archived: false});
+								await d20plus.ut.promiseDelay(d20plus.cfg.getOrDefault("import", "importIntervalHandout") * 2);
+								const out = getOut();
+								map.set({archived: true});
+								return out;
+							} else {
+								return getOut();
+							}
 						}));
 					}
 
