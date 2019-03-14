@@ -19,6 +19,7 @@ const betteR20Core = function () {
 	};
 
 	d20plus.onApiScriptLoad = () => {
+		JqueryUtil.initEnhancements();
 		if (window.is_gm) d20plus.cfg.loadConfig(d20plus.onConfigLoad);
 		else d20plus.cfg.loadPlayerConfig(d20plus.onConfigLoad);
 	};

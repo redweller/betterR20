@@ -397,7 +397,7 @@ function d20plusArtBrowser () {
 			const oReq = new XMLHttpRequest();
 			const p = new Promise((resolve, reject) => {
 				// FIXME cors-anywhere has a usage limit, which is pretty easy to hit when downloading many files
-				oReq.open("GET", `${"https://cors-anywhere.herokuapp.com/"}${url}`, true);
+				oReq.open("GET", `https://cors-anywhere.herokuapp.com/${url}`, true);
 				oReq.responseType = "arraybuffer";
 				let lastContentType = null;
 				oReq.onreadystatechange = () => {

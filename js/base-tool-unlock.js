@@ -2,7 +2,7 @@ function baseToolUnlock () {
 	d20plus.tool.tools.push({
 		toolId: "UNLOCKER",
 		name: "Token Unlocker",
-		desc: "Unlock Previously-Locked Tokens",
+		desc: "Unlock previously-locked tokens",
 		html: `
 			<div id="d20plus-token-unlocker" title="Token Unlocker">
 				<p>

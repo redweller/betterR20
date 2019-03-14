@@ -21,6 +21,10 @@ function baseCss () {
 			s: ".is-error",
 			r: "color: #d60000;"
 		},
+		{
+			s: ".flex-label",
+			r: "display: inline-flex; align-items: center;"
+		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
 		// {
 		// 	s: ".note-editable p",
@@ -195,6 +199,10 @@ function baseCss () {
 		{
 			s: ".float-right",
 			r: "float: right;"
+		},
+		{
+			s: ".mr-2",
+			r: "margin-right: 0.5rem !important;"
 		},
 		{
 			s: ".p-2",

@@ -1066,7 +1066,6 @@ function d20plusImporter () {
 			} else {
 				setSelection(i, true);
 			}
-
 		});
 	};
 }
