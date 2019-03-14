@@ -179,18 +179,18 @@ function d20plusSpells () {
 <strong>Components:</strong> ${Parser.spComponentsToFull(data.components)}<br>
 <strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>
 </p>`;
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		const renderStack = [];
 		const entryList = {type: "entries", entries: data.entries};
 		renderer.setBaseUrl(BASE_SITE_URL);
-		renderer.recursiveEntryRender(entryList, renderStack, 1);
+		renderer.recursiveRender(entryList, renderStack, 1);
 		r20json.content = d20plus.importer.getCleanText(renderStack.join(" "));
 		r20json.data["data-description"] = r20json.content;
 		notecontents += renderStack.join("");
 		if (data.entriesHigherLevel) {
 			const hLevelRenderStack = [];
 			const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
-			renderer.recursiveEntryRender(higherLevelsEntryList, hLevelRenderStack, 2);
+			renderer.recursiveRender(higherLevelsEntryList, hLevelRenderStack, 2);
 			const higherLevels = d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
 			r20json.content += "\n\n\"At Higher Levels: " + higherLevels;
 			r20json.htmlcontent += "<br><br>\"At Higher Levels: " + higherLevels;

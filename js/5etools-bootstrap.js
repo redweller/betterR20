@@ -58,7 +58,7 @@ const betteR205etools = function () {
 		BrewUtil.homebrew = {};
 		BrewUtil.homebrewMeta = {};
 
-		EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
+		Renderer.get().setBaseUrl(BASE_SITE_URL);
 		if (window.is_gm) d20plus.cfg.loadConfig(d20plus.onConfigLoad);
 		else d20plus.cfg.loadPlayerConfig(d20plus.onConfigLoad);
 	};

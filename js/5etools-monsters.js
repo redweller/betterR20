@@ -247,15 +247,15 @@ function d20plusMonsters () {
 			const name = data.name;
 			const pType = Parser.monTypeToFullObj(data.type);
 
-			const renderer = new EntryRenderer();
+			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
-			const fluff = EntryRenderer.monster.getFluff(data, monsterMetadata, monsterFluffData[data.source]);
+			const fluff = Renderer.monster.getFluff(data, monsterMetadata, monsterFluffData[data.source]);
 			let renderFluff = null;
 			if (fluff) {
 				const depth = fluff.type === "section" ? -1 : 2;
 				if (fluff.type !== "section") renderer.setFirstSection(false);
-				renderFluff = renderer.renderEntry({type: fluff.type, entries: fluff.entries}, depth);
+				renderFluff = renderer.render({type: fluff.type, entries: fluff.entries}, depth);
 			}
 
 			d20.Campaign.characters.create(
@@ -613,7 +613,7 @@ function d20plusMonsters () {
 
 								// add the spellcasting text
 								const newRowId = d20plus.ut.generateRowId();
-								const spellTrait = EntryRenderer.monster.getSpellcastingRenderedTraits(data, renderer).map(it => it.rendered).filter(it => it).join("");
+								const spellTrait = Renderer.monster.getSpellcastingRenderedTraits(data, renderer).map(it => it.rendered).filter(it => it).join("");
 								const cleanDescription = d20plus.importer.getCleanText(spellTrait);
 								setAttrib(`repeating_npctrait_${newRowId}_name`, "Spellcasting");
 								setAttrib(`repeating_npctrait_${newRowId}_desc`, cleanDescription);
@@ -656,11 +656,11 @@ function d20plusMonsters () {
 								// add spells to the sheet //////////////////
 								const toAdd = [];
 								allSpells.forEach(sp => {
-									const tagSplit = EntryRenderer.splitByTags(sp);
+									const tagSplit = Renderer.splitByTags(sp);
 									tagSplit.forEach(s => {
 										if (!s || !s.trim()) return;
 										if (s.charAt(0) === "@") {
-											const [tag, text] = EntryRenderer.splitFirstSpace(s);
+											const [tag, text] = Renderer.splitFirstSpace(s);
 											if (tag === "@spell") {
 												toAdd.push(text);
 											}
@@ -1030,7 +1030,7 @@ function d20plusMonsters () {
 									var newRowId = d20plus.ut.generateRowId();
 									character.attribs.create({
 										name: "repeating_npctrait_" + newRowId + "_name",
-										current: d20plus.importer.getCleanText(renderer.renderEntry(v.name))
+										current: d20plus.importer.getCleanText(renderer.render(v.name))
 									});
 
 									if (d20plus.cfg.get("token", "tokenactionsTraits")) {
@@ -1042,25 +1042,25 @@ function d20plusMonsters () {
 										});
 									}
 
-									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									var text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
 									character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: text});
 								});
 							}
 							if (data.action) {
 								let offset = 0;
 								$.each(data.action, function (i, v) {
-									const name = d20plus.importer.getCleanText(renderer.renderEntry(v.name));
-									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									const name = d20plus.importer.getCleanText(renderer.render(v.name));
+									var text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
 									if (name === "Hellfire Weapons") {
 										const baseActionEnts = v.entries.filter(it => typeof it === "string");
 										baseActionEnts[0] = "The hellfire engine uses one of the options listed below.";
-										const baseAction = renderer.renderEntry({entries: baseActionEnts}, 1);
+										const baseAction = renderer.render({entries: baseActionEnts}, 1);
 										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
 										offset++;
 
 										v.entries.find(it => it.type === "list").items.forEach(item => {
-											const itemName = d20plus.importer.getCleanText(renderer.renderEntry(item.name));
-											d20plus.importer.addAction(character, itemName, d20plus.importer.getCleanText(renderer.renderEntry({entries: [item.entry]})), i + offset);
+											const itemName = d20plus.importer.getCleanText(renderer.render(item.name));
+											d20plus.importer.addAction(character, itemName, d20plus.importer.getCleanText(renderer.render({entries: [item.entry]})), i + offset);
 											offset++;
 										});
 
@@ -1068,7 +1068,7 @@ function d20plusMonsters () {
 									} else if (name === "Eye Rays") {
 										const [base, ...others] = v.entries;
 
-										const baseAction = renderer.renderEntry({entries: [base]}, 1);
+										const baseAction = renderer.render({entries: [base]}, 1);
 										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
 										offset++;
 
@@ -1083,7 +1083,7 @@ function d20plusMonsters () {
 										});
 
 										packedOthers.forEach(it => {
-											d20plus.importer.addAction(character, it.name, d20plus.importer.getCleanText(renderer.renderEntry(it.text)), i + offset);
+											d20plus.importer.addAction(character, it.name, d20plus.importer.getCleanText(renderer.render(it.text)), i + offset);
 											offset++;
 										});
 									} else {
@@ -1108,7 +1108,7 @@ function d20plusMonsters () {
 									let text = "";
 									character.attribs.create({
 										name: "repeating_npcreaction_" + newRowId + "_name",
-										current: d20plus.importer.getCleanText(renderer.renderEntry(v.name))
+										current: d20plus.importer.getCleanText(renderer.render(v.name))
 									});
 
 									// roll20 only supports a single reaction, so only use the first
@@ -1120,7 +1120,7 @@ function d20plusMonsters () {
 										});
 									}
 
-									text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
 									character.attribs.create({
 										name: "repeating_npcreaction_" + newRowId + "_desc",
 										current: text
@@ -1180,7 +1180,7 @@ function d20plusMonsters () {
 											}
 											character.attribs.create({
 												name: "repeating_npcaction-l_" + newRowId + "_name",
-												current: d20plus.importer.getCleanText(renderer.renderEntry(name))
+												current: d20plus.importer.getCleanText(renderer.render(name))
 											});
 											character.attribs.create({
 												name: "repeating_npcaction-l_" + newRowId + "_attack_flag",
@@ -1263,7 +1263,7 @@ function d20plusMonsters () {
 										});
 									}
 
-									var text = d20plus.importer.getCleanText(renderer.renderEntry({entries: v.entries}, 1));
+									var text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
 									var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
 									character.attribs.create({
 										name: "repeating_npcaction-l_" + newRowId + "_description",

@@ -57,12 +57,12 @@ function d20plusBackgrounds () {
 	};
 
 	d20plus.backgrounds._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
 		const renderStack = [];
 
-		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
+		renderer.recursiveRender({entries: data.entries}, renderStack, 1);
 
 		const rendered = renderStack.join("");
 

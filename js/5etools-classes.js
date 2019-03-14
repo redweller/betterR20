@@ -176,7 +176,7 @@ function d20plusClass () {
 	};
 
 	d20plus.classes._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
 		const renderStack = [];
@@ -187,7 +187,7 @@ function d20plusClass () {
 			const lvlFeatureList = curClass.classFeatures[i];
 			for (let j = 0; j < lvlFeatureList.length; j++) {
 				const feature = lvlFeatureList[j];
-				renderer.recursiveEntryRender(feature, renderStack);
+				renderer.recursiveRender(feature, renderStack);
 			}
 		}
 		const rendered = renderStack.join("");
@@ -336,14 +336,14 @@ function d20plusClass () {
 	};
 
 	d20plus.subclasses._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
 		const renderStack = [];
 
 		data.subclassFeatures.forEach(lvl => {
 			lvl.forEach(f => {
-				renderer.recursiveEntryRender(f, renderStack);
+				renderer.recursiveRender(f, renderStack);
 			});
 		});
 

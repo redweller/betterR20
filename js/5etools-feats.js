@@ -58,13 +58,13 @@ function d20plusFeats () {
     };
 
     d20plus.feats._getHandoutData = function (data) {
-        const renderer = new EntryRenderer();
+        const renderer = new Renderer();
         renderer.setBaseUrl(BASE_SITE_URL);
-        const prerequisite = EntryRenderer.feat.getPrerequisiteText(data.prerequisite);
-        EntryRenderer.feat.mergeAbilityIncrease(data);
+        const prerequisite = Renderer.feat.getPrerequisiteText(data.prerequisite);
+        Renderer.feat.mergeAbilityIncrease(data);
 
         const renderStack = [];
-        renderer.recursiveEntryRender({entries: data.entries}, renderStack, 2);
+        renderer.recursiveRender({entries: data.entries}, renderStack, 2);
         const rendered = renderStack.join("");
 
         const r20json = {

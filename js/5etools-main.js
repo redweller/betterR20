@@ -428,7 +428,7 @@ const betteR205etoolsMain = function () {
 		}
 	};
 
-	d20plus.js.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}entryrender.js`});
+	d20plus.js.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}render.js`});
 	d20plus.js.scripts.push({name: "5etoolsscalecreature", url: `${SITE_JS_URL}scalecreature.js`});
 
 	d20plus.json = [
@@ -454,8 +454,8 @@ const betteR205etoolsMain = function () {
 			else if (name === "bestiary metadata") monsterMetadata = data;
 			else if (name === "adventures index") adventureMetadata = data;
 			else if (name === "basic items") {
-				data.itemProperty.forEach(p => EntryRenderer.item._addProperty(p));
-				data.itemType.forEach(t => EntryRenderer.item._addType(t));
+				data.itemProperty.forEach(p => Renderer.item._addProperty(p));
+				data.itemType.forEach(t => Renderer.item._addType(t));
 			}
 			else throw new Error(`Unhandled data from JSON ${name} (${url})`);
 
@@ -1177,7 +1177,7 @@ const betteR205etoolsMain = function () {
 		async function importBackground (character, data) {
 			const bg = data.Vetoolscontent;
 
-			const renderer = new EntryRenderer();
+			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 			const renderStack = [];
 			let feature = {};
@@ -1187,7 +1187,7 @@ const betteR205etoolsMain = function () {
 					feature.name = feature.name.replace("Feature:", "").trim();
 				}
 			});
-			if (feature) renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+			if (feature) renderer.recursiveRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
 			async function chooseSkills (from, count) {
@@ -1302,7 +1302,7 @@ const betteR205etoolsMain = function () {
 
 			if (bg.skillProficiencies && bg.skillProficiencies.length) {
 				if (bg.skillProficiencies.length > 1) {
-					const options = bg.skillProficiencies.map(item => EntryRenderer.background.getSkillSummary([item], true, []))
+					const options = bg.skillProficiencies.map(item => Renderer.background.getSkillSummary([item], true, []))
 					const chosenIndex = await chooseSkillsGroup(options);
 					await handleSkillsItem(bg.skillProficiencies[chosenIndex]);
 				} else {
@@ -1347,14 +1347,14 @@ const betteR205etoolsMain = function () {
 		}
 
 		function importRace (character, data) {
-			const renderer = new EntryRenderer();
+			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
 			const race = data.Vetoolscontent;
 
 			race.entries.filter(it => typeof it !== "string").forEach(e => {
 				const renderStack = [];
-				renderer.recursiveEntryRender({entries: e.entries}, renderStack);
+				renderer.recursiveRender({entries: e.entries}, renderStack);
 				e.text = d20plus.importer.getCleanText(renderStack.join(""));
 			});
 
@@ -1430,9 +1430,9 @@ const betteR205etoolsMain = function () {
 
 		function importOptionalFeature (character, data) {
 			const optionalFeature = data.Vetoolscontent;
-			const renderer = new EntryRenderer();
+			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
-			const rendered = renderer.renderEntry({entries: optionalFeature.entries});
+			const rendered = renderer.render({entries: optionalFeature.entries});
 			const optionalFeatureText = d20plus.importer.getCleanText(rendered);
 
 			const attrs = new CharacterAttributesProxy(character);
@@ -1462,7 +1462,7 @@ const betteR205etoolsMain = function () {
 			const maxLevel = Math.max(...levels);
 
 			const clss = data.Vetoolscontent;
-			const renderer = EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
+			const renderer = Renderer.get().setBaseUrl(BASE_SITE_URL);
 			const shapedSheetPreFilledFeaturesByClass = {
 				"Artificer": [
 					"Magic Item Analysis",
@@ -1620,7 +1620,7 @@ const betteR205etoolsMain = function () {
 					// don't add "you gain a subclass feature" or ASI's
 					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
 						const renderStack = [];
-						renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+						renderer.recursiveRender({entries: feature.entries}, renderStack);
 						feature.text = d20plus.importer.getCleanText(renderStack.join(""));
 						importClassFeature(attrs, clss, level, feature);
 					}
@@ -1739,7 +1739,7 @@ const betteR205etoolsMain = function () {
 				return;
 			}
 
-			const renderer = new EntryRenderer();
+			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 			let firstFeatures = true;
 			for (let i = 0; i < sc.subclassFeatures.length; i++) {
@@ -1798,7 +1798,7 @@ const betteR205etoolsMain = function () {
 
 			function importSubclassFeature (attrs, sc, level, feature) {
 				const renderStack = [];
-				renderer.recursiveEntryRender({entries: feature.entries}, renderStack);
+				renderer.recursiveRender({entries: feature.entries}, renderStack);
 				feature.text = d20plus.importer.getCleanText(renderStack.join(""));
 
 				const fRowId = d20plus.ut.generateRowId();
@@ -1820,7 +1820,7 @@ const betteR205etoolsMain = function () {
 		}
 
 		function importPsionicAbility (character, data) {
-			const renderer = new EntryRenderer();
+			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
 			const attrs = new CharacterAttributesProxy(character);
@@ -1836,10 +1836,10 @@ const betteR205etoolsMain = function () {
 
 			function getCleanText (entries) {
 				if (typeof entries == "string") {
-					return d20plus.importer.getCleanText(renderer.renderEntry(entries));
+					return d20plus.importer.getCleanText(renderer.render(entries));
 				} else {
 					const renderStack = [];
-					renderer.recursiveEntryRender({entries: entries}, renderStack, 3);
+					renderer.recursiveRender({entries: entries}, renderStack, 3);
 					return d20plus.importer.getCleanText(renderStack.join(""));
 				}
 			}
@@ -1901,7 +1901,7 @@ const betteR205etoolsMain = function () {
 					const level = "cantrip";
 					makeSpellTrait(level, rowId, "spelllevel", "cantrip");
 					makeSpellTrait(level, rowId, "spellname", data.name);
-					makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`);
+					makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(Renderer.psionic.getTalentText(data, renderer))}`);
 					noComponents(level, rowId, false);
 				}
 			} else if (d20plus.sheet == "shaped") {
@@ -1998,7 +1998,7 @@ const betteR205etoolsMain = function () {
 					});
 				} else {
 					const typeStr = `**Psionic Talent**\n`;
-					const talentContent = `${typeStr}\n${getCleanText(EntryRenderer.psionic.getTalentText(data, renderer))}`;
+					const talentContent = `${typeStr}\n${getCleanText(Renderer.psionic.getTalentText(data, renderer))}`;
 					const rowId = d20plus.ut.generateRowId();
 					const level = 0;
 					makeSpellTrait(level, rowId, "spell_level", shapedSpellLevel(level));
@@ -2590,11 +2590,11 @@ const betteR205etoolsMain = function () {
 	d20plus.psionics._getHandoutData = function (data) {
 		function renderTalent () {
 			const renderStack = [];
-			renderer.recursiveEntryRender(({entries: data.entries, type: "entries"}), renderStack);
+			renderer.recursiveRender(({entries: data.entries, type: "entries"}), renderStack);
 			return renderStack.join(" ");
 		}
 
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 		const r20json = {
 			"name": data.name,
@@ -2608,7 +2608,7 @@ const betteR205etoolsMain = function () {
 		const baseNoteContents = `
 			<h3>${data.name}</h3>
 			<p><em>${data.type === "D" ? `${data.order} ${Parser.psiTypeToFull(data.type)}` : `${Parser.psiTypeToFull(data.type)}`}</em></p>
-			${data.type === "D" ? `${EntryRenderer.psionic.getDisciplineText(data, renderer)}` : `${renderTalent()}`}
+			${data.type === "D" ? `${Renderer.psionic.getDisciplineText(data, renderer)}` : `${renderTalent()}`}
 			`;
 
 		const noteContents = `${baseNoteContents}<br><del class="hidden">${gmNotes}</del>`;
@@ -2627,7 +2627,7 @@ const betteR205etoolsMain = function () {
 				d20plus.importer.addMeta(data._meta);
 				d20plus.importer.showImportList(
 					"race",
-					EntryRenderer.race.mergeSubraces(data.race),
+					Renderer.race.mergeSubraces(data.race),
 					handoutBuilder,
 					{
 						forcePlayer
@@ -2674,7 +2674,7 @@ const betteR205etoolsMain = function () {
 	};
 
 	d20plus.races._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
 		// TODO
@@ -2688,7 +2688,7 @@ const betteR205etoolsMain = function () {
 			<strong>Speed:</strong> ${Parser.getSpeedString(data)}<br>
 		</p>
 	`);
-		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
+		renderer.recursiveRender({entries: data.entries}, renderStack, 1);
 		const rendered = renderStack.join("");
 
 		const r20json = {
@@ -2797,21 +2797,21 @@ const betteR205etoolsMain = function () {
 						}
 					}
 
-					const renderer = new EntryRenderer();
+					const renderer = new Renderer();
 					renderer.setBaseUrl(BASE_SITE_URL);
 					if (data.actionEntries) {
 						data.actionEntries.forEach((e, i) => {
 							const renderStack = [];
-							renderer.recursiveEntryRender({entries: e.entries}, renderStack, 2);
+							renderer.recursiveRender({entries: e.entries}, renderStack, 2);
 							const actionText = d20plus.importer.getCleanText(renderStack.join(""));
-							d20plus.importer.addAction(character, d20plus.importer.getCleanText(renderer.renderEntry(e.name)), actionText, i);
+							d20plus.importer.addAction(character, d20plus.importer.getCleanText(renderer.render(e.name)), actionText, i);
 						});
 					}
 
 					character.view._updateSheetValues();
 
 					if (data.entries) {
-						const bio = renderer.renderEntry({type: "entries", entries: data.entries});
+						const bio = renderer.render({type: "entries", entries: data.entries});
 
 						setTimeout(() => {
 							const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
@@ -2891,15 +2891,15 @@ const betteR205etoolsMain = function () {
 	};
 
 	d20plus.optionalfeatures._getHandoutData = function (data) {
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
 		const renderStack = [];
 
-		renderer.recursiveEntryRender({entries: data.entries}, renderStack, 1);
+		renderer.recursiveRender({entries: data.entries}, renderStack, 1);
 
 		const rendered = renderStack.join("");
-		const prereqs = EntryRenderer.optionalfeature.getPrerequisiteText(data.prerequisites);
+		const prereqs = Renderer.optionalfeature.getPrerequisiteText(data.prerequisites);
 
 		const r20json = {
 			"name": data.name,
@@ -2986,7 +2986,7 @@ const betteR205etoolsMain = function () {
 					}
 				});
 
-				const renderer = new EntryRenderer();
+				const renderer = new Renderer();
 				renderer.setBaseUrl(BASE_SITE_URL);
 
 				const $stsName = $("#import-name");
@@ -2994,12 +2994,12 @@ const betteR205etoolsMain = function () {
 				const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 
 				////////////////////////////////////////////////////////////////////////////////////////////////////////
-				EntryRenderer.getDefaultRenderer().setBaseUrl(BASE_SITE_URL);
+				Renderer.get().setBaseUrl(BASE_SITE_URL);
 				// pre-import tags
 				const tags = {};
 				renderer.doExportTags(tags);
 				addQueue.forEach(entry => {
-					renderer.recursiveEntryRender(entry, []);
+					renderer.recursiveRender(entry, []);
 				});
 
 				// storage for returned handout/character IDs
@@ -3060,12 +3060,12 @@ const betteR205etoolsMain = function () {
 					let cachedCount = asTags.length;
 					asTags.forEach(it => {
 						try {
-							EntryRenderer.hover._doFillThenCall(
+							Renderer.hover._doFillThenCall(
 								it.page,
 								it.source,
 								it.hash,
 								() => {
-									tmp.push(EntryRenderer.hover._getFromCache(it.page, it.source, it.hash));
+									tmp.push(Renderer.hover._getFromCache(it.page, it.source, it.hash));
 									cachedCount--;
 									if (cachedCount <= 0) callback(tmp);
 								}
@@ -3108,7 +3108,7 @@ const betteR205etoolsMain = function () {
 						// pull items out the queue in LIFO order, for journal ordering (last created will be at the top)
 						const entry = addQueue.pop();
 						entry.name = entry.name || "(Unknown)";
-						entry.name = d20plus.importer.getCleanText(renderer.renderEntry(entry.name));
+						entry.name = d20plus.importer.getCleanText(renderer.render(entry.name));
 						$stsName.text(entry.name);
 						$stsRemain.text(remaining--);
 						const folder = d20plus.journal.makeDirTree(entry.dir);
@@ -3118,7 +3118,7 @@ const betteR205etoolsMain = function () {
 						}, {
 							success: function (handout) {
 								const renderStack = [];
-								renderer.recursiveEntryRender(entry, renderStack);
+								renderer.recursiveRender(entry, renderStack);
 								if (lastId && lastName) renderStack.push(`<br><p>Next handout: <a href="http://journal.roll20.net/handout/${lastId}">${lastName}</a></p>`);
 								const rendered = renderStack.join("");
 
