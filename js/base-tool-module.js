@@ -497,8 +497,9 @@ function baseToolModule () {
 			});
 
 			const $btnLoadFile = $win.find(`[name="load-file"]`);
-			$btnLoadFile.off("click").click(() => {
-				DataUtil.userUpload((data) => handleLoadedData(data));
+			$btnLoadFile.off("click").click(async () => {
+				const data = await DataUtil.userUpload();
+				handleLoadedData(data);
 			});
 
 			const $winExportP1 = $("#d20plus-module-importer-select-exports-p1");
