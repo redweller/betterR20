@@ -284,7 +284,7 @@ function d20plusMonsters () {
 							character.name = data._displayName || data.name;
 							character.senses = data.senses;
 							character.hp = data.hp.average || 0;
-							const firstFluffImage = fluff && fluff.images ? (() => {
+							const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? (() => {
 								const firstImage = fluff.images[0] || {};
 								return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
 							})() : null;

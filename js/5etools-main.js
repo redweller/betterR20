@@ -298,6 +298,12 @@ const betteR205etoolsMain = function () {
 			"_type": "_enum",
 			"__values": ["Bio", "GM Notes"]
 		},
+		"importCharAvatar": {
+			"name": "Set Character Avatar As...",
+			"default": "Portrait (where available)",
+			"_type": "_enum",
+			"__values": ["Portrait (where available)", "Token"]
+		},
 		"whispermode": {
 			"name": "Sheet Whisper Mode on Import",
 			"default": "Toggle (Default GM)",
@@ -885,6 +891,30 @@ const betteR205etoolsMain = function () {
 			$("a#import-backgrounds-load").on(window.mousedowntype, () => d20plus.backgrounds.button());
 			$("a#import-optionalfeatures-load").on(window.mousedowntype, () => d20plus.optionalfeatures.button());
 			$("select#import-mode-select").on("change", () => d20plus.importer.importModeSwitch());
+			const changeTrackVolume = (trackId, value) => {
+				const track = d20plus.jukebox.getTrackById(trackId);
+				if (track && value) {
+					track.changeVolume(value);
+				}
+			};
+			$(`<div id="masterVolume" style="margin:10px;display:inline-block;width:80%;"></div>`)
+			.insertAfter("#jukeboxwhatsplaying").slider({
+				slide: (e, ui) => {
+					if ($("#masterVolumeEnabled").prop("checked")) {
+						window.d20.jukebox.lastFolderStructure.forEach(playlist => {
+							// The track is outside a playlist
+							if (!playlist.i) {
+								changeTrackVolume(playlist, ui.value);
+							} else {
+								playlist.i.forEach(trackId => changeTrackVolume(trackId, ui.value))
+							}
+						});
+					}
+				},
+				value: 50,
+			});
+			$("<h4>Master Volume</h4>").insertAfter("#jukeboxwhatsplaying").css("margin-left", "10px");
+			$(`<input type="checkbox" id="masterVolumeEnabled" style="position:relative;top:-11px;" title="Enable this to change the volume of all the tracks at the same time"/>`).insertAfter("#masterVolume").tooltip();
 		} else {
 			// player-only HTML if required
 		}
