@@ -143,7 +143,7 @@ function d20plusSpells () {
 				"Source": "5etoolsR20",
 				"Classes": d20plus.importer.getCleanText(Parser.spClassesToFull(data.classes)),
 				"Category": "Spells",
-				"Duration": Parser.spDurationToFull(data.duration),
+				"Duration": Parser.spDurationToFull(data.duration).replace(/Concentration,\s*/gi, ""), // prevent double concentration text
 				"Material": "",
 				"Components": d20plus.spells._parseComponents(data.components),
 				"Casting Time": Parser.spTimeListToFull(data.time)
