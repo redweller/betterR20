@@ -2,7 +2,7 @@ function baseToolModule () {
 	d20plus.tool.tools.push({
 		toolId: "MODULES",
 		name: "Module Importer/Exporter",
-		desc: "Import Full Games (Modules), or Import/Export Custom Games",
+		desc: "Import full games (modules), or import/export custom games",
 		html: `
 				<div id="d20plus-module-importer" title="Module Importer/Exporter">
 				<p style="margin-bottom: 4px;"><b style="font-size: 110%;">Exporter: </b> <button class="btn" name="export">Export Game to File</button> <i>The exported file can later be used with the "Upload File" option, below.</i></p>

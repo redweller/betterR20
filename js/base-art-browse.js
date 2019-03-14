@@ -314,12 +314,7 @@ function d20plusArtBrowser () {
 						.appendTo($itemMenu)
 						.click((evt) => {
 							evt.stopPropagation();
-							const fileName = it.uri.split("/").filter(it => it).last();
-							const $a = $(`<a href="${it.uri}" download="${fileName}" target="_blank" style="position: fixed; top: -500px; left: -500px;">dl</a>`).appendTo($(`body`))
-								.click(() => {
-									setTimeout(() => $a.remove(), 1);
-								});
-							$a.click();
+							window.open(it.uri, "_blank");
 						});
 					const $btnCopyUrl = $(`<div class="artr__item__menu_item pictos" title="Copy URL">A</div>`)
 						.appendTo($itemMenu)
@@ -333,11 +328,7 @@ function d20plusArtBrowser () {
 							.appendTo($itemMenu)
 							.click((evt) => {
 								evt.stopPropagation();
-								const $a = $(`<a href="${it.support}" target="_blank" style="position: fixed; top: -500px; left: -500px;">dl</a>`).appendTo($(`body`))
-									.click(() => {
-										setTimeout(() => $a.remove(), 1);
-									});
-								$a.click();
+								window.open(it.support, "_blank");
 							});
 					}
 
@@ -406,7 +397,7 @@ function d20plusArtBrowser () {
 			const oReq = new XMLHttpRequest();
 			const p = new Promise((resolve, reject) => {
 				// FIXME cors-anywhere has a usage limit, which is pretty easy to hit when downloading many files
-				oReq.open("GET", `${"https://cors-anywhere.herokuapp.com/"}${url}`, true);
+				oReq.open("GET", `https://cors-anywhere.herokuapp.com/${url}`, true);
 				oReq.responseType = "arraybuffer";
 				let lastContentType = null;
 				oReq.onreadystatechange = () => {

@@ -1,6 +1,8 @@
 function baseCss () {
 	d20plus.css = {};
 
+	// Convert to regular CSS:
+	// `[ ... rules ... ].map(it => `${it.s} {\n${it.r.split(";").map(str => str.trim()).join(";\n")}}\n`).join("\n")`
 	d20plus.css.baseCssRules = [
 		// generic
 		{
@@ -18,6 +20,10 @@ function baseCss () {
 		{
 			s: ".is-error",
 			r: "color: #d60000;"
+		},
+		{
+			s: ".flex-label",
+			r: "display: inline-flex; align-items: center;"
 		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
 		// {
@@ -193,6 +199,10 @@ function baseCss () {
 		{
 			s: ".float-right",
 			r: "float: right;"
+		},
+		{
+			s: ".mr-2",
+			r: "margin-right: 0.5rem !important;"
 		},
 		{
 			s: ".p-2",
@@ -504,7 +514,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__item--back",
-			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; font-color: #888;"
+			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; color: #888;"
 		},
 		{
 			s: ".artr__item__top",

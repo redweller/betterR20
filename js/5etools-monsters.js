@@ -85,6 +85,23 @@ function d20plusMonsters () {
 		$btn.click(() => {
 			const queueCopy = JSON.parse(JSON.stringify(origImportQueue));
 
+			const applyRename = (mon, newName) => {
+				const applyTo = (prop) => {
+					mon[prop] && mon[prop].forEach(it => {
+						if (it.entries) it.entries = JSON.parse(JSON.stringify(it.entries).replace(new RegExp(mon.name, "gi"), newName));
+						if (it.headerEntries) it.headerEntries = JSON.parse(JSON.stringify(it.headerEntries).replace(new RegExp(mon.name, "gi"), newName));
+					})
+				};
+
+				applyTo("action");
+				applyTo("reaction");
+				applyTo("trait");
+				applyTo("legendary");
+				applyTo("variant");
+
+				mon._displayName = newName;
+			};
+
 			let failed = false;
 			const promises = [];
 			for (const it of list.items) {
@@ -108,11 +125,11 @@ function d20plusMonsters () {
 						} else if (asNum !== Parser.crToNumber(origCr)) {
 							promises.push(ScaleCreature.scale(m, asNum).then(scaled => {
 								queueCopy[ix] = scaled;
-								if (rename) queueCopy[ix]._displayName = rename;
+								if (rename) applyRename(queueCopy[ix], rename);
 								return Promise.resolve();
 							}));
 						} else {
-							if (rename) queueCopy[ix]._displayName = rename;
+							if (rename) applyRename(queueCopy[ix], rename);
 							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
 						}
 					} else {
@@ -121,7 +138,7 @@ function d20plusMonsters () {
 						break;
 					}
 				} else {
-					if (rename) queueCopy[ix]._displayName = rename;
+					if (rename) applyRename(queueCopy[ix], rename);
 				}
 			}
 
@@ -264,10 +281,10 @@ function d20plusMonsters () {
 							const source = Parser.sourceJsonToAbv(data.source);
 							const avatar = data.tokenUrl || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
 							character.size = data.size;
-							character.name = name;
+							character.name = data._displayName || data.name;
 							character.senses = data.senses;
 							character.hp = data.hp.average || 0;
-							const firstFluffImage = fluff && fluff.images ? (() => {
+							const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? (() => {
 								const firstImage = fluff.images[0] || {};
 								return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
 							})() : null;
@@ -308,7 +325,7 @@ function d20plusMonsters () {
 								current: d20plus.importer.getDesiredWhisperToggle()
 							});
 							character.attribs.create({name: "dtype", current: d20plus.importer.getDesiredDamageType()});
-							character.attribs.create({name: "npc_name", current: name});
+							character.attribs.create({name: "npc_name", current: data._displayName || data.name});
 							character.attribs.create({name: "npc_size", current: size});
 							character.attribs.create({name: "type", current: type});
 							character.attribs.create({name: "npc_type", current: size + " " + type + ", " + alignment});

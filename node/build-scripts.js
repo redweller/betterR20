@@ -77,7 +77,7 @@ const SCRIPTS = {
 			"base-template",
 			"base-emoji",
 
-			"core-main",
+			"core-bootstrap",
 
 			"base"
 		]
@@ -106,6 +106,7 @@ const SCRIPTS = {
 			"base-template",
 			"base-emoji",
 
+			"5etools-bootstrap",
 			"5etools-main",
 			"5etools-importer",
 			"5etools-monsters",
