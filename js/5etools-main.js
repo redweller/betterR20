@@ -1019,6 +1019,9 @@ const betteR205etoolsMain = function () {
 			$wrprControls.append(altBindButton);
 		}
 		$("#journal btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+
+		// Better20 jukebox tab
+		d20plus.remoteLibre.init();
 	};
 
 	d20plus.updateDifficulty = function () {
