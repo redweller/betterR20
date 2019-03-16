@@ -64,7 +64,7 @@ function d20plusFeats () {
         Renderer.feat.mergeAbilityIncrease(data);
 
         const renderStack = [];
-        renderer.recursiveRender({entries: data.entries}, renderStack, 2);
+        renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 2});
         const rendered = renderStack.join("");
 
         const r20json = {

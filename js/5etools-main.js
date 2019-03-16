@@ -1839,7 +1839,7 @@ const betteR205etoolsMain = function () {
 					return d20plus.importer.getCleanText(renderer.render(entries));
 				} else {
 					const renderStack = [];
-					renderer.recursiveRender({entries: entries}, renderStack, 3);
+					renderer.recursiveRender({entries: entries}, renderStack, {depth: 3});
 					return d20plus.importer.getCleanText(renderStack.join(""));
 				}
 			}
@@ -2688,7 +2688,7 @@ const betteR205etoolsMain = function () {
 			<strong>Speed:</strong> ${Parser.getSpeedString(data)}<br>
 		</p>
 	`);
-		renderer.recursiveRender({entries: data.entries}, renderStack, 1);
+		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 1});
 		const rendered = renderStack.join("");
 
 		const r20json = {
@@ -2802,7 +2802,7 @@ const betteR205etoolsMain = function () {
 					if (data.actionEntries) {
 						data.actionEntries.forEach((e, i) => {
 							const renderStack = [];
-							renderer.recursiveRender({entries: e.entries}, renderStack, 2);
+							renderer.recursiveRender({entries: e.entries}, renderStack, {depth: 2});
 							const actionText = d20plus.importer.getCleanText(renderStack.join(""));
 							d20plus.importer.addAction(character, d20plus.importer.getCleanText(renderer.render(e.name)), actionText, i);
 						});
@@ -2896,7 +2896,7 @@ const betteR205etoolsMain = function () {
 
 		const renderStack = [];
 
-		renderer.recursiveRender({entries: data.entries}, renderStack, 1);
+		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 1});
 
 		const rendered = renderStack.join("");
 		const prereqs = Renderer.optionalfeature.getPrerequisiteText(data.prerequisites);

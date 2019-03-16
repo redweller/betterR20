@@ -183,14 +183,14 @@ function d20plusSpells () {
 		const renderStack = [];
 		const entryList = {type: "entries", entries: data.entries};
 		renderer.setBaseUrl(BASE_SITE_URL);
-		renderer.recursiveRender(entryList, renderStack, 1);
+		renderer.recursiveRender(entryList, renderStack, {depth: 1});
 		r20json.content = d20plus.importer.getCleanText(renderStack.join(" "));
 		r20json.data["data-description"] = r20json.content;
 		notecontents += renderStack.join("");
 		if (data.entriesHigherLevel) {
 			const hLevelRenderStack = [];
 			const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
-			renderer.recursiveRender(higherLevelsEntryList, hLevelRenderStack, 2);
+			renderer.recursiveRender(higherLevelsEntryList, hLevelRenderStack, {depth: 2});
 			const higherLevels = d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
 			r20json.content += "\n\n\"At Higher Levels: " + higherLevels;
 			r20json.htmlcontent += "<br><br>\"At Higher Levels: " + higherLevels;

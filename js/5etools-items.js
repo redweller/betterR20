@@ -252,7 +252,7 @@ function d20plusItems () {
 		const renderStack = [];
 		const entryList = {type: "entries", entries: data.entries};
 		renderer.setBaseUrl(BASE_SITE_URL);
-		renderer.recursiveRender(entryList, renderStack, 1);
+		renderer.recursiveRender(entryList, renderStack, {depth: 1});
 		var textstring = renderStack.join("");
 		if (textstring) {
 			notecontents += `<hr>`;

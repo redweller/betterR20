@@ -62,7 +62,7 @@ function d20plusBackgrounds () {
 
 		const renderStack = [];
 
-		renderer.recursiveRender({entries: data.entries}, renderStack, 1);
+		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 1});
 
 		const rendered = renderStack.join("");
 
