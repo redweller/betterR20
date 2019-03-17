@@ -4,7 +4,7 @@ function d20plusItems () {
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
 	d20plus.items._listCols = ["name", "type", "rarity", "source"];
 	d20plus.items._listItemBuilder = (it) => {
-		if (!it._isEnhanced) EntryRenderer.item.enhanceItem(it);
+		if (!it._isEnhanced) Renderer.item.enhanceItem(it);
 
 		return `
 		<span class="name col-3" title="name">${it.name}</span>
@@ -13,7 +13,7 @@ function d20plusItems () {
 		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	};
 	d20plus.items._listIndexConverter = (it) => {
-		if (!it._isEnhanced) EntryRenderer.item.enhanceItem(it);
+		if (!it._isEnhanced) Renderer.item.enhanceItem(it);
 		return {
 			name: it.name.toLowerCase(),
 			type: it.typeText.toLowerCase().split(","),
@@ -29,7 +29,7 @@ function d20plusItems () {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
 			if (url.trim() === `${DATA_URL}items.json`) {
-				EntryRenderer.item.buildList((itemList) => {
+				Renderer.item.buildList((itemList) => {
 						const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
 
 						const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
@@ -100,8 +100,8 @@ function d20plusItems () {
 			} else {
 				// for non-standard URLs, do a generic import
 				DataUtil.loadJSON(url).then((data) => {
-					(data.itemProperty || []).forEach(p => EntryRenderer.item._addProperty(p));
-					(data.itemType || []).forEach(t => EntryRenderer.item._addType(t));
+					(data.itemProperty || []).forEach(p => Renderer.item._addProperty(p));
+					(data.itemType || []).forEach(t => Renderer.item._addType(t));
 					d20plus.importer.addMeta(data._meta);
 					d20plus.importer.showImportList(
 						"item",
@@ -131,7 +131,7 @@ function d20plusItems () {
 
 		const name = data.name;
 
-		if (!data._isEnhanced) EntryRenderer.item.enhanceItem(data); // for homebrew items
+		if (!data._isEnhanced) Renderer.item.enhanceItem(data); // for homebrew items
 
 		// build item handout
 		d20.Campaign.handouts.create({
@@ -248,11 +248,11 @@ function d20plusItems () {
 			roll20Data.data.Weight = String(data.weight);
 		}
 		var itemtext = data.entries ? data.entries : "";
-		const renderer = new EntryRenderer();
+		const renderer = new Renderer();
 		const renderStack = [];
 		const entryList = {type: "entries", entries: data.entries};
 		renderer.setBaseUrl(BASE_SITE_URL);
-		renderer.recursiveEntryRender(entryList, renderStack, 1);
+		renderer.recursiveRender(entryList, renderStack, {depth: 1});
 		var textstring = renderStack.join("");
 		if (textstring) {
 			notecontents += `<hr>`;
