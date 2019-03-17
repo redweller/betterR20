@@ -1839,7 +1839,7 @@ const betteR205etoolsMain = function () {
 					return d20plus.importer.getCleanText(renderer.render(entries));
 				} else {
 					const renderStack = [];
-					renderer.recursiveRender({entries: entries}, renderStack, {depth: 3});
+					renderer.recursiveRender({entries: entries}, renderStack, {depth: 2});
 					return d20plus.importer.getCleanText(renderStack.join(""));
 				}
 			}
@@ -3605,23 +3605,23 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			r: "display: none;"
 		},
 		{
-			s: ".userscript-entry-title",
+			s: ".userscript-rd__h",
 			r: "font-weight: bold;"
 		},
 		{
-			s: ".userscript-statsBlockHead > .userscript-entry-title",
+			s: ".userscript-rd__h--0",
 			r: "font-weight: bold; font-size: 1.5em;"
 		},
 		{
-			s: ".userscript-statsBlockHead > .userscript-statsBlockSubHead > .userscript-entry-title",
+			s: ".userscript-rd__h--2",
 			r: "font-weight: bold; font-size: 1.3em;"
 		},
 		{
-			s: ".userscript-statsInlineHead > .userscript-entry-title, .userscript-statsInlineHeadSubVariant > .userscript-entry-title",
+			s: ".userscript-rd__h--3, .userscript-rd__h--4",
 			r: "font-style: italic"
 		},
 		{
-			s: ".userscript-statsBlockInsetReadaloud",
+			s: ".userscript-rd__b-inset--readaloud",
 			r: "background: #cbd6c688 !important"
 		},
 	]);
