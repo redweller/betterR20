@@ -498,7 +498,7 @@ function baseToolModule () {
 
 			const $btnLoadFile = $win.find(`[name="load-file"]`);
 			$btnLoadFile.off("click").click(async () => {
-				const data = await DataUtil.userUpload();
+				const data = await DataUtil.pUserUpload();
 				handleLoadedData(data);
 			});
 
