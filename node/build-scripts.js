@@ -105,6 +105,7 @@ const SCRIPTS = {
 			"base-mod",
 			"base-template",
 			"base-emoji",
+			"base-remote-libre",
 
 			"5etools-bootstrap",
 			"5etools-main",
