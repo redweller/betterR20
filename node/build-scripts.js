@@ -76,6 +76,7 @@ const SCRIPTS = {
 			"base-mod",
 			"base-template",
 			"base-emoji",
+			"base-remote-libre",
 
 			"core-bootstrap",
 
