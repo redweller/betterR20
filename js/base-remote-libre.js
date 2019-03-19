@@ -13,15 +13,15 @@ function remoteLibre() {
         downloadPlaylist(url) {
             return fetch(url)
             .then(response => response.json())
-            .catch(error => console.error(error))
+            .catch(error => console.error("Error when fetching", url, error))
         },
-        
+
         processRemotePlaylists(imports) {
             return $.map(imports.filter(p=>!!p), entry => {
                 return $.map(entry.playlists, playlist => playlist.songs)
             }).filter(track => track.source === "My Audio")
         },
-        
+
         drawRemoteLibreResults(tracks) {
             return tracks.map((t, i) => `
                 <p style="margin-top:15px">${t.title}</p>
@@ -34,7 +34,7 @@ function remoteLibre() {
                 </div>
             `);
         },
-        
+
         drawJukeBoxTab(tracks) {
             const trackHtml = d20plus.remoteLibre.drawRemoteLibreResults(tracks);
             return `

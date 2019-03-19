@@ -3765,9 +3765,11 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				<p>
 					This experimental tool allows you to download characters as JSON, to later upload to other games.
 				</p>
-				<select style="margin-bottom: 0;"></select> <button class="btn download">Download</button>
+				<select name="sel_char" style="margin-bottom: 0;"></select> <button class="btn download">Download</button>
 				<hr>
-				<button class="btn upload">Upload</button><input accept=".json" type="file" style="position: absolute; left: -9999px;"> (Previously Download-ed files only)
+				<button class="btn upload">Upload</button><input accept=".json" type="file" style="position: absolute; left: -9999px;"> (Previously Downloaded files only)
+				<br>
+				<select name="sel_player" class="mt-2"></select>
 				</div>
 				`,
 			dialogFn: () => {
@@ -3775,14 +3777,14 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					autoOpen: false,
 					resizable: true,
 					width: 400,
-					height: 250,
+					height: 300,
 				});
 			},
 			openFn: () => {
 				const $win = $("#d20plus-paupervault");
 				$win.dialog("open");
 
-				const $selChar = $win.find(`select`);
+				const $selChar = $win.find(`select[name="sel_char"]`).empty();
 
 				$selChar.append(d20.Campaign.characters.toJSON().sort((a, b) => SortUtil.ascSort(a.name, b.name)).map(c => {
 					return `<option value="${c.id}">${c.name || `(Unnamed; ID ${c.id})`}</option>`
@@ -3813,6 +3815,12 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					rawChar._getLatestBlob("defaulttoken", (data) => handleBlob("defaulttoken", data));
 				});
 
+				const $selPlayer = $win.find(`select[name="sel_player"]`).empty().append(`<option value="">Assign to...</option>`);
+				$selPlayer[0].selectedIndex = 0;
+				d20.Campaign.players.toJSON()
+					.sort((a, b) => SortUtil.ascSortLower(a.displayname, b.displayname))
+					.forEach(pl => $(`<option/>`).text(pl.displayname).val(pl.id).appendTo($selPlayer));
+
 				const $btnUl = $win.find(`.upload`);
 				$btnUl.off("click");
 				$btnUl.on("click", () => {
@@ -3834,6 +3842,12 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								return;
 							}
 							const char = json.char;
+
+							const assignTo = $selPlayer.val();
+							if (assignTo) {
+								char.inplayerjournals = assignTo;
+								char.controlledby = assignTo
+							}
 
 							const newId = d20plus.ut.generateRowId();
 							d20.Campaign.characters.create(
@@ -3860,6 +3874,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 													defaulttoken: blobs.defaulttoken || ""
 												});
 											}
+											alert("Done!")
 										} catch (e) {
 											window.alert("Failed to import character! See the log for details.");
 											console.error(e);

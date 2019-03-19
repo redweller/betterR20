@@ -201,6 +201,10 @@ function baseCss () {
 			r: "float: right;"
 		},
 		{
+			s: ".mt-2",
+			r: "margin-top: 0.5rem !important;"
+		},
+		{
 			s: ".mr-2",
 			r: "margin-right: 0.5rem !important;"
 		},
