@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.14.21";
+const SCRIPT_VERSION = "1.14.22";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -76,6 +76,7 @@ const SCRIPTS = {
 			"base-mod",
 			"base-template",
 			"base-emoji",
+			"base-remote-libre",
 
 			"core-bootstrap",
 
@@ -105,6 +106,7 @@ const SCRIPTS = {
 			"base-mod",
 			"base-template",
 			"base-emoji",
+			"base-remote-libre",
 
 			"5etools-bootstrap",
 			"5etools-main",
