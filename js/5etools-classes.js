@@ -234,9 +234,13 @@ function d20plusClass () {
 				const allData = MiscUtil.copy(data.subclass || []);
 				(data.class || []).map(c => {
 					if (c.subclasses) {
+						// make a copy without subclasses to prevent circular references
+						const cpy = MiscUtil.copy(c);
+						delete cpy.subclasses;
 						c.subclasses.forEach(sc => {
 							sc.class = c.name;
 							sc.source = sc.source || c.source;
+							sc._baseClass = cpy;
 						});
 						return c.subclasses;
 					} else return false;
@@ -267,6 +271,9 @@ function d20plusClass () {
 
 		if (baseClass) {
 			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(baseClass);
+			return Promise.resolve();
+		} else if(subclass._baseClass) {
+			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(subclass._baseClass);
 			return Promise.resolve();
 		} else {
 			d20plus.ut.log("Preloading class...");
