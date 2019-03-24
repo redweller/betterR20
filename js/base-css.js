@@ -14,6 +14,26 @@ function baseCss () {
 			r: "font-weight: bold;"
 		},
 		{
+			s: ".clickable",
+			r: "cursor: pointer;"
+		},
+		{
+			s: ".split",
+			r: "display: flex; justify-content: space-between;"
+		},
+		{
+			s: ".flex",
+			r: "display: flex;"
+		},
+		{
+			s: ".flex-col",
+			r: "display: flex; flex-direction: column;"
+		},
+		{
+			s: ".no-shrink",
+			r: "flex-shrink: 0;"
+		},
+		{
 			s: ".text-center",
 			r: "text-align: center;"
 		},
@@ -207,6 +227,10 @@ function baseCss () {
 		{
 			s: ".mr-2",
 			r: "margin-right: 0.5rem !important;"
+		},
+		{
+			s: ".mb-2",
+			r: "margin-bottom: 0.5rem !important;"
 		},
 		{
 			s: ".p-2",
@@ -560,6 +584,68 @@ function baseCss () {
 			s: ".artr__big_img",
 			r: "display: block; max-width: 100%; max-height: 100%;"
 		},
+	]);
+
+	// Animator CSS -- `anm__` prefix
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// fix box sizing
+		{
+			s: ".anm__win *",
+			r: "box-sizing: border-box;"
+		},
+		{
+			s: ".ui-dialog .anm__row",
+			r: `
+    			display: flex;
+    			align-items: center;
+    			margin-bottom: 3px;
+    			height: 20px;
+			`
+		},
+		{
+			s: ".anm__row > div",
+			r: `
+				display: inline-flex;
+			`
+		},
+		{
+			s: ".anm__row-btn",
+			r: `
+				padding: 0 6px;
+			`
+		},
+		{
+			s: ".anm__row-wrp-cb",
+			r: `
+				justify-content: center;
+				align-items: center;
+			`
+		},
+		{
+			s: ".anm__wrp-sel-all",
+			r: `
+				align-items: center; 
+				margin-bottom: 5px;
+				display: flex;
+				justify-content: space-between;
+			`
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp",
+			r: `
+				flex-basis: 100%;
+				flex-shrink: 100;
+			`
+		},
+		{
+			s: ".anm-edit__ipt-lines",
+			r: `
+				resize: none;
+				width: 100%;
+				height: 100%;
+				margin-bottom: 0;
+			`
+		}
 	]);
 }
 
