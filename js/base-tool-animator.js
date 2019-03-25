@@ -1,13 +1,64 @@
 function baseToolAnimator () {
+	// TODO each of these should have a function `animate` which accepts three parameters:
+	//   token: the token object being animated
+	//   alpha: the absolute time since the start of the animation
+	//   delta; the time delta from the last time the animate function was run
+	// TODO each of these should have a function `hasRun` which returns true if the animation has run/completed
+	//   this can be used to clean up completed animations, removing them from the animation queue
+	// TODO each of these should have serialize/deserialize functions
 	d20plus.anim = {
 		Nop: function () {
-
+			this.animate = function () {};
 		},
 		Move: function (startTime, duration, x, y, z) {
-			// TODO
+			this._hasRun = false;
+
+			this._progress = 0; // 0 - 1f
+
+			this.animate = function (token, alpha, delta) {
+				if (alpha >= startTime) {
+					if (this._progress < (1 - Number.EPSILON)) {
+						if (this._progress === 0) delta = alpha - startTime;
+
+						const mProcess = delta / duration;
+
+						// handle movement
+						const mvX = mProcess * x;
+						const mvY = mProcess * y;
+						// TODO move token
+
+						if (z != null) {
+							const mvZ = mProcess * z;
+							// TODO move token
+						}
+
+						// update progress
+						this._progress += mProcess;
+					} else {
+						this._hasRun = true;
+					}
+				}
+			};
+
+			this.hasRun = () => this._hasRun;
 		},
 		Copy: function (startTime, childAnimation = false) {
-			// TODO
+			this._hasRun = false;
+
+			this.animate = function (token, alpha) {
+				if (!this._hasRun && alpha >= startTime) {
+					this._hasRun = true;
+
+					// TODO copy token
+
+					if (childAnimation) {
+						const nxt = d20plus.anim.TriggerAnimation(startTime, childAnimation);
+						nxt.animate();
+					}
+				}
+			};
+
+			this.hasRun = () => this._hasRun;
 		},
 		Rotate: function (startTime, duration, degrees) {
 			// TODO
@@ -35,15 +86,15 @@ function baseToolAnimator () {
 		}
 	};
 
-	d20plus.tool.tools.push({
+	const animatorTool = {
 		name: "Token Animator",
 		desc: "Manage token animations",
 		html: `
 			<div id="d20plus-token-animator" title="Token Animator" class="anm__win">
 				<p>
-					<button class="btn" name="btn-add">Add</button>
-					<button class="btn" name="btn-import">Import</button>
-					<button class="btn" name="btn-rescue">Rescue</button>
+					<button class="btn" name="btn-add">Add Animation</button>
+					<button class="btn mr-2" name="btn-import">Import Animation</button>
+					<button class="btn" name="btn-rescue">Rescue Token</button>
 				</p>
 				
 				<div class="anm__wrp-sel-all">
@@ -170,7 +221,7 @@ function baseToolAnimator () {
 			$btnAdd.click(() => this.__addAnim(this.__getNewAnim()));
 
 			$btnImport.click(() => {
-				// TODO
+				// TODO ensure the name and uid are unique - prompt for rename?
 			});
 
 			$btnRescue.click(() => {
@@ -264,7 +315,7 @@ function baseToolAnimator () {
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
 				.click(evt => {
 					evt.stopPropagation();
-					// TODO convert to JSON; download
+					// TODO convert to JSON; download (__exportAnim)
 				});
 			const $btnActive = $(`<div class="btn anm__row-btn pictos ${anim.active ? "btn-info" : ""} anm__btn-active mr-2" title="Toggle Active">e</div>`)
 				.click(evt => {
@@ -294,6 +345,7 @@ function baseToolAnimator () {
 		},
 		_initRescue () {
 			// TODO a tool for rescuing tokens which have been moved off the map
+			//   Should reset to 1.0 scale; reset flipping, place on GM layer?
 		},
 		_initEditor () {
 			this._$ed_iptName = this.$win.find(`[name="ipt-name"]`).disableSpellcheck();
@@ -306,7 +358,6 @@ function baseToolAnimator () {
 			this._$ed_btnHelp.click(() => {
 				// TODO link to a wiki page
 				alert("Coming soon to a Wiki near you");
-
 			});
 		},
 		__edit (anim) {
@@ -338,7 +389,7 @@ function baseToolAnimator () {
 			});
 
 			this._$ed_btnExportFile.off("click").click(() => {
-				// TODO
+				// TODO share logic with "Export to File" list button (__exportAnim)
 			});
 
 			this._$ed_btnValidate.off("click").click(() => {
@@ -362,6 +413,9 @@ function baseToolAnimator () {
 			// TODO use __getParsedCommand
 		},
 		__importAnim () {
+			// TODO
+		},
+		__exportAnim () {
 			// TODO
 		},
 		// command parsing
@@ -405,7 +459,86 @@ function baseToolAnimator () {
 				}
 			}
 		}
-	})
+	};
+
+	d20plus.tool.tools.push(animatorTool);
+
+	d20plus.anim.animator = {
+		// Map<UID, Map<TokenID, {token, [...animationQueue]]})
+		_active: {},
+		_tickRate: 1,
+
+		__tickCount: 0,
+
+		onPageChange () {
+			// TODO nothing?
+		},
+
+		startAnimation (token, animUid) {
+			this._active[animUid] = this._active[animUid] || [];
+			this._active[animUid][token.id] = {
+				token,
+				tick: 0
+			}
+		},
+
+		endAnimation (token, animUid) {
+			if (this._active[animUid]) {
+				delete this._active[animUid][token.id];
+				const hasKeys = (() => { for (const _ in this._active[animUid]) return true; return false; })();
+				if (!hasKeys) delete this._active[animUid];
+			}
+		},
+
+		setTickRate (tickRate) {
+			this._tickRate = tickRate;
+		},
+
+		doTick () {
+			if (this._hasAnyActive()) {
+				this._doTick();
+			} else {
+				// sleep for 1.5 seconds
+				setTimeout(() => this.doTick(), 1500)
+			}
+		},
+
+		getSaveableState () {
+			// TODO export this._active -- remove token objects, replace them with ID strings?
+			//   convert animation queue into saveable states
+		},
+
+		loadStateFrom () {
+			// TODO reload saved state, replacing token ID string with token objects
+			//   reload animation queue from saveable states
+		},
+
+		_hasAnyActive () { // fastest implementation
+			for (const _ in this._active) return true;
+			return false;
+		},
+
+		_doTick () {
+			// higher tick rate = slower
+			if (++this.__tickCount === this._tickRate) {
+				for (const uid in this._active) {
+					const animArr = this._active[uid];
+					const anim = animatorTool._anims[uid];
+
+					for (const entry in animArr) {
+						// TODO act out animation -- pass
+					}
+				}
+				this.__tickCount = 0;
+			}
+
+			requestAnimationFrame(this.doTick())
+		},
+
+		init () {
+			setTimeout(() => this.doTick(), this._tickRate)
+		}
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseToolAnimator);
