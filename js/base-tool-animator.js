@@ -138,7 +138,7 @@ function baseToolAnimator () {
 		},
 		_doLoadState () {
 			this._animId = Campaign.attributes.bR20tool__anim_id || 1;
-			this._anims = Campaign.attributes.bR20tool__anim_anims || [];
+			this._anims = Campaign.attributes.bR20tool__anim_anims || {};
 		},
 		_init () {
 			window._B20ANIM = this; // debug use only
@@ -208,7 +208,7 @@ function baseToolAnimator () {
 
 			$btnSelDelete.click(() => confirm("Are you sure?") && getSelButtons(`.anm__btn-delete`).forEach($btn => $btn.click()));
 
-			this._anims.forEach(anim => {
+			Object.values(this._anims).forEach(anim => {
 				this._$list.append(this.__getAnimListRow(anim));
 			});
 
@@ -219,7 +219,7 @@ function baseToolAnimator () {
 		},
 		__addAnim (anim) {
 			const lastSearch = ListUtil.getSearchTermAndReset(this._animList);
-			this._anims.push(anim);
+			this._anims[anim.uid] = anim;
 			this._$list.append(this.__getAnimListRow(anim));
 
 			this._animList.reIndex();
@@ -231,7 +231,7 @@ function baseToolAnimator () {
 		__getNewAnim () {
 			let nxtName = "new_animation";
 			let suffix = 1;
-			while (this._anims.find(it => it.name === nxtName)) nxtName = `new_animation_${suffix++}`;
+			while (Object.values(this._anims).find(it => it.name === nxtName)) nxtName = `new_animation_${suffix++}`;
 			return {
 				uid: this._animId++,
 				name: nxtName,
@@ -275,12 +275,9 @@ function baseToolAnimator () {
 			const $btnDelete = $(`<div class="btn anm__row-btn btn-danger pictos anm__btn-delete mr-2" title="Delete">#</div>`)
 				.click(evt => {
 					evt.stopPropagation();
-					const ix = this._anims.indexOf(anim);
-					if (~ix) {
-						this._anims.splice(ix, 1);
-						this._animList.remove("uid", anim.uid);
-						this._doSaveStateDebounced();
-					} else throw new Error(`Could not find animation in list!`);
+					delete this._anims[anim.uid];
+					this._animList.remove("uid", anim.uid);
+					this._doSaveStateDebounced();
 				});
 
 			return $$`<label class="import-cb-label anm__row">
@@ -358,7 +355,7 @@ function baseToolAnimator () {
 			if (!anim.name.length) return "Did not have a name!";
 			const illegalNameChars = anim.name.split(/[_0-9a-zA-Z]/g).filter(Boolean);
 			if (illegalNameChars.length) return `Illegal characters in name: ${illegalNameChars.map(it => `"${it}"`).join(", ")}`;
-			const sameName = this._anims.filter(it => it.uid !== anim.uid).find(it => it.name === anim.name);
+			const sameName = Object.values(this._anims).filter(it => it.uid !== anim.uid).find(it => it.name === anim.name);
 			if (sameName) return "Name must be unique!";
 
 			// validate lines
