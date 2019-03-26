@@ -270,7 +270,7 @@ function baseUtil () {
 		return null;
 	};
 
-	d20plus.ut._BYTE_UNITS = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+	d20plus.ut._BYTE_UNITS = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {
 		let i = -1;
 		do {

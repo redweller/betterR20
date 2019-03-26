@@ -3,12 +3,17 @@ function baseToolAnimator () {
 	//   token: the token object being animated
 	//   alpha: the absolute time since the start of the animation
 	//   delta; the time delta from the last time the animate function was run
+    //   and returns "true" if the token needs to be saved
 	// TODO each of these should have a function `hasRun` which returns true if the animation has run/completed
 	//   this can be used to clean up completed animations, removing them from the animation queue
 	// TODO each of these should have serialize/deserialize functions
 	d20plus.anim = {
 		Nop: function () {
-			this.animate = function () {};
+			this.animate = function () {
+			    return false;
+            };
+
+            this.hasRun = () => true;
 		},
 		Move: function (startTime, duration, x, y, z) {
 			this._hasRun = false;
@@ -25,7 +30,9 @@ function baseToolAnimator () {
 						// handle movement
 						const mvX = mProcess * x;
 						const mvY = mProcess * y;
-						// TODO move token
+
+                        token.attributes.left += mvX;
+                        token.attributes.top -= mvY;
 
 						if (z != null) {
 							const mvZ = mProcess * z;
@@ -34,10 +41,11 @@ function baseToolAnimator () {
 
 						// update progress
 						this._progress += mProcess;
-					} else {
-						this._hasRun = true;
-					}
+
+						return true;
+					} else this._hasRun = true;
 				}
+				return false;
 			};
 
 			this.hasRun = () => this._hasRun;
@@ -45,7 +53,7 @@ function baseToolAnimator () {
 		Copy: function (startTime, childAnimation = false) {
 			this._hasRun = false;
 
-			this.animate = function (token, alpha) {
+			this.animate = function (token, alpha, delta) {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
@@ -53,36 +61,187 @@ function baseToolAnimator () {
 
 					if (childAnimation) {
 						const nxt = d20plus.anim.TriggerAnimation(startTime, childAnimation);
-						nxt.animate();
+						const doSaveChild = nxt.animate(childToken, alpha, delta);
+						if (doSaveChild) childToken.save();
 					}
 				}
+				return false;
 			};
 
 			this.hasRun = () => this._hasRun;
 		},
 		Rotate: function (startTime, duration, degrees) {
-			// TODO
+            this._hasRun = false;
+            const rads = degrees * (180 / Math.PI);
+
+            this._progress = 0; // 0 - 1f
+
+            this.animate = function (token, alpha, delta) {
+                if (alpha >= startTime) {
+                    if (this._progress < (1 - Number.EPSILON)) {
+                        if (this._progress === 0) delta = alpha - startTime;
+
+                        const mProcess = delta / duration;
+
+                        // handle rotation
+                        const rot = mProcess * rads;
+
+                        // TODO rotate token
+
+                        // update progress
+                        this._progress += mProcess;
+
+                        return true;
+                    } else this._hasRun = true;
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		},
 		Flip: function (startTime, isHorizontal, isVertical) {
-			// TODO
+            this._hasRun = false;
+
+            this.animate = function (token, alpha) {
+                if (!this._hasRun && alpha >= startTime) {
+                    this._hasRun = true;
+
+                    if (isHorizontal) token.attributes.fliph = !token.attributes.fliph;
+                    if (isVertical) token.attributes.flipv = !token.attributes.flipv;
+
+                    return true;
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		},
-		Scale: function (startTime, duration, scaleFactor) {
-			// TODO
+		Scale: function (startTime, duration, scaleFactorX, scaleFactorY) {
+            this._hasRun = false;
+
+            this._progress = 0; // 0 - 1f
+
+            this.animate = function (token, alpha, delta) {
+                if (alpha >= startTime) {
+                    if (this._progress < (1 - Number.EPSILON)) {
+                        if (this._progress === 0) delta = alpha - startTime;
+
+                        const mProcess = delta / duration;
+
+                        // handle scaling
+                        const mScaleX = mProcess * scaleFactorX;
+                        const mScaleY = mProcess * scaleFactorY;
+
+                        // TODO scale token
+
+                        // update progress
+                        this._progress += mProcess;
+
+                        return true;
+                    } else this._hasRun = true;
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		},
 		Layer: function (startTime, layer) {
-			// TODO
+            this._hasRun = false;
+
+            this.animate = function (token, alpha) {
+                if (!this._hasRun && alpha >= startTime) {
+                    this._hasRun = true;
+
+                    // TODO move token to layer
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		},
+        // TODO consider making an alternate version which sets a property on the character
+        // TODO consider the ability to set properties on _other_ tokens -- might not be performant enough?
 		SetProperty: function (startTime, prop, value) {
-			// TODO
+            this._hasRun = false;
+
+            this.animate = function (token, alpha) {
+                if (!this._hasRun && alpha >= startTime) {
+                    this._hasRun = true;
+
+                    // TODO set property on token
+
+                    return true;
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		},
 		Lighting: function (startTime, duration, lightRadius, dimStart, degrees) {
-			// TODO
+            this._hasRun = false;
+
+            this._progress = 0; // 0 - 1f
+
+            this.animate = function (token, alpha, delta) {
+                if (alpha >= startTime) {
+                    if (this._progress < (1 - Number.EPSILON)) {
+                        if (this._progress === 0) delta = alpha - startTime;
+
+                        const mProcess = delta / duration;
+
+                        // handle lighting changes
+                        const mLightRadius = mProcess * lightRadius;
+                        const mDimStart = mProcess * dimStart;
+
+                        // TODO update token
+
+                        if (z != null) {
+                            const mvZ = mProcess * z;
+                            // TODO move token
+                        }
+
+                        // update progress
+                        this._progress += mProcess;
+
+                        return true;
+                    } else this._hasRun = true;
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		},
 		TriggerMacro: function (startTime, macroName) {
-			// TODO
+            this._hasRun = false;
+
+            const macro = null; // TODO fetch macro here, in advance
+
+            this.animate = function (token, alpha) {
+                if (!this._hasRun && alpha >= startTime) {
+                    this._hasRun = true;
+
+                    // TODO trigger macro
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		},
 		TriggerAnimation: function (startTime, animationName) {
-			// TODO
+            this._hasRun = false;
+
+            const anim = null; // TODO fetch animation here, in advance
+
+            this.animate = function (token, alpha, delta) {
+                if (!this._hasRun && alpha >= startTime) {
+                    this._hasRun = true;
+
+                    return anim.animate(token, alpha, delta);
+                }
+                return false;
+            };
+
+            this.hasRun = () => this._hasRun;
 		}
 	};
 
@@ -100,8 +259,6 @@ function baseToolAnimator () {
 				<div class="anm__wrp-sel-all">
 					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label>
 					<div>
-						<button class="btn" name="btn-active">Toggle Selected Active</button>
-						<button class="btn" name="btn-inactive">Toggle Selected Inactive</button>
 						<button class="btn" name="btn-export">Export Selected</button>
 						<button class="btn btn-danger" name="btn-delete">Delete Selected</button>
 					</div>
@@ -210,8 +367,6 @@ function baseToolAnimator () {
 			const $btnImport = this.$win.find(`[name="btn-import"]`);
 			const $btnRescue = this.$win.find(`[name="btn-rescue"]`);
 
-			const $btSelActivate = this.$win.find(`[name="btn-active"]`);
-			const $btSelDeactivate = this.$win.find(`[name="btn-inactive"]`);
 			const $btnSelExport = this.$win.find(`[name="btn-export"]`);
 			const $btnSelDelete = this.$win.find(`[name="btn-delete"]`);
 
@@ -234,17 +389,6 @@ function baseToolAnimator () {
 					.filter($it => $it.find(`input`).prop("checked"))
 					.map($it => $it.find(`.${ofClass}`));
 			};
-
-			const doSetSelActiveInactive = val => {
-				getSelButtons(`anm__btn-active`).forEach($btn => {
-					if (val) if (!$btn.hasClass("btn-info")) $btn.click();
-					else if ($btn.hasClass("btn-info")) $btn.click();
-				});
-			};
-
-			$btSelActivate.click(() => doSetSelActiveInactive(true));
-
-			$btSelDeactivate.click(() => doSetSelActiveInactive(false));
 
 			$btnSelExport.click(() => {
 				// TODO collect all; convert to JSON; download
@@ -286,18 +430,10 @@ function baseToolAnimator () {
 			return {
 				uid: this._animId++,
 				name: nxtName,
-				active: true,
 				lines: []
 			}
 		},
 		__getAnimListRow (anim) {
-			const setActive = val => {
-				val = !!val;
-				anim.active = val;
-				$btnActive.toggleClass("btn-info", val);
-				this._doSaveStateDebounced();
-			};
-
 			const $name = $(`<div class="name readable col-8 clickable" title="Edit Animation">${anim.name}</div>`)
 				.click(evt => {
 					evt.stopPropagation();
@@ -312,17 +448,13 @@ function baseToolAnimator () {
 					copy.uid = this._animId++;
 					this.__addAnim(copy);
 				});
+
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
 				.click(evt => {
 					evt.stopPropagation();
 					// TODO convert to JSON; download (__exportAnim)
 				});
-			const $btnActive = $(`<div class="btn anm__row-btn pictos ${anim.active ? "btn-info" : ""} anm__btn-active mr-2" title="Toggle Active">e</div>`)
-				.click(evt => {
-					evt.stopPropagation();
-					setActive(!anim.active);
-					this._doSaveStateDebounced();
-				});
+
 			const $btnDelete = $(`<div class="btn anm__row-btn btn-danger pictos anm__btn-delete mr-2" title="Delete">#</div>`)
 				.click(evt => {
 					evt.stopPropagation();
@@ -464,7 +596,7 @@ function baseToolAnimator () {
 	d20plus.tool.tools.push(animatorTool);
 
 	d20plus.anim.animator = {
-		// Map<UID, Map<TokenID, {token, [...animationQueue]]})
+        // {tokenId: {token: {...}, animationQueue: [...]}}
 		_active: {},
 		_tickRate: 1,
 
@@ -513,21 +645,33 @@ function baseToolAnimator () {
 			//   reload animation queue from saveable states
 		},
 
-		_hasAnyActive () { // fastest implementation
+		_hasAnyActive () {
+            // fastest implementation
 			for (const _ in this._active) return true;
 			return false;
 		},
 
 		_doTick () {
 			// higher tick rate = slower
+            // {tokenId: {token: {...}, animationQueue: [...], startTime}}
 			if (++this.__tickCount === this._tickRate) {
-				for (const uid in this._active) {
-					const animArr = this._active[uid];
-					const anim = animatorTool._anims[uid];
+			    const time = (new Date()).getTime();
 
-					for (const entry in animArr) {
-						// TODO act out animation -- pass
-					}
+				for (const tokenId in this._active) {
+					const tokenMeta = this._active[tokenId];
+
+                    const l = tokenMeta.animationQueue.length;
+                    let anyModification = false;
+                    for (let i = 0; i < l; ++i) {
+                        anyModification = tokenMeta.animationQueue[i].animate(
+                            tokenMeta.token,
+                            tokenMeta.startTime,
+                            tokenMeta.startTime - time
+                        ) || anyModification;
+                    }
+
+                    // save after applying animations
+                    if (anyModification) tokenMeta.token.save();
 				}
 				this.__tickCount = 0;
 			}
