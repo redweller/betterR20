@@ -35,8 +35,30 @@ function baseToolAnimator () {
                         token.attributes.top -= mvY;
 
 						if (z != null) {
-							const mvZ = mProcess * z;
-							// TODO move token
+							const statuses = token.get("statusmarkers").split(",");
+							let total = 0;
+							let pow = 1;
+							let out = "";
+
+							// reverse loop through the fluffy wings, multiplying vals by 1/10/100...
+							const len = statuses.length;
+							for (let i = len - 1; i >= 0; --i) {
+								const [name, val] = statuses[i].split("@");
+								if (name === "fluffy-wing") {
+									total += pow * Number(val);
+									pow = pow * 10;
+								} else {
+									out += statuses[i] + ",";
+								}
+							}
+
+							total += mProcess * z;
+							const nums = String(total).split("");
+							for (let i = 0; i < nums.length; ++i) {
+								out += `fluffy-wings@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
+							}
+
+							token.set("statusmarkers", out);
 						}
 
 						// update progress
@@ -57,9 +79,54 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					// TODO copy token
+					// based on "d20.clipboard.doCopy"
+					const attrs = {
+						top: token.attributes.top,
+						left: token.attributes.left
+					};
 
-					if (childAnimation) {
+					const modelattrs = {};
+					const json = token.toJSON();
+					d20.token_editor.tokenkeys.forEach(k => modelattrs[k] = json[k]);
+
+					const cpy = {
+						type: token.attributes.type,
+						attrs,
+						modelattrs,
+						oldid: token.id
+					};
+
+					// based on "d20.clipboard.doPaste"
+					let childToken;
+					const page = d20.Campaign.pages.models.find(model => model.thegraphics.models.find(it => it.id === token.id));
+					if ("image" === cpy.type) {
+						attrs.imgsrc = attrs.src;
+						childToken = page.addImage(attrs, true, false, false, false, true);
+						if (cpy.modelattrs && cpy.modelattrs.represents) {
+							const char = d20.Campaign.characters.get(cpy.modelattrs.represents);
+
+							if (char) {
+								const updateBarN = (n) => {
+									const prop = `bar${n}_link`;
+									if ("" !== cpy.modelattrs[prop] && (-1 !== cpy.modelattrs[prop].indexOf("sheetattr_"))) {
+										const l = cpy.modelattrs[prop].split("sheetattr_")[1];
+										setTimeout(() => char.updateTokensByName(l), 0.5);
+									} else {
+										const s = char.attribs.get(cpy.modelattrs[prop]);
+										const l = s.get("name");
+										setTimeout(() => char.updateTokensByName(l, cpy.modelattrs[prop]), 0.5);
+									}
+								};
+								updateBarN(1);
+								updateBarN(2);
+								updateBarN(3);
+							}
+						}
+
+						childToken && childToken.save(cpy.modelattrs);
+					}
+
+					if (childToken && childAnimation) {
 						const nxt = d20plus.anim.TriggerAnimation(startTime, childAnimation);
 						const doSaveChild = nxt.animate(childToken, alpha, delta);
 						if (doSaveChild) childToken.save();
@@ -72,7 +139,6 @@ function baseToolAnimator () {
 		},
 		Rotate: function (startTime, duration, degrees) {
             this._hasRun = false;
-            const rads = degrees * (180 / Math.PI);
 
             this._progress = 0; // 0 - 1f
 
@@ -84,9 +150,8 @@ function baseToolAnimator () {
                         const mProcess = delta / duration;
 
                         // handle rotation
-                        const rot = mProcess * rads;
-
-                        // TODO rotate token
+                        const rot = mProcess * degrees;
+						token.attributes.rotation += rot;
 
                         // update progress
                         this._progress += mProcess;
@@ -132,7 +197,8 @@ function baseToolAnimator () {
                         const mScaleX = mProcess * scaleFactorX;
                         const mScaleY = mProcess * scaleFactorY;
 
-                        // TODO scale token
+						token.attributes.scaleX += mScaleX;
+						token.attributes.scaleY += mScaleY;
 
                         // update progress
                         this._progress += mProcess;
@@ -152,7 +218,9 @@ function baseToolAnimator () {
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
-                    // TODO move token to layer
+                    token.attributes.layer = layer;
+
+					return true;
                 }
                 return false;
             };
@@ -168,7 +236,9 @@ function baseToolAnimator () {
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
-                    // TODO set property on token
+                    if (prop === "gmnotes") value = escape(value);
+                    else if (prop === "sides") value = value.split("|").map(it => escape(it)).join("|");
+					token.attributes[prop] = value;
 
                     return true;
                 }
@@ -573,7 +643,7 @@ function baseToolAnimator () {
 
 				}
 				case "layer": {
-
+					// valid are: map, objects, foreground, gmlayer, walls, weather
 				}
 				case "light": {
 					if (tokens.length < 3 || tokens.length > 5) return null;
@@ -660,14 +730,19 @@ function baseToolAnimator () {
 				for (const tokenId in this._active) {
 					const tokenMeta = this._active[tokenId];
 
-                    const l = tokenMeta.animationQueue.length;
                     let anyModification = false;
-                    for (let i = 0; i < l; ++i) {
+                    // avoid using fast-loop length optimization, as we'll splice out completed animations
+                    for (let i = 0; i < tokenMeta.animationQueue.length; ++i) {
                         anyModification = tokenMeta.animationQueue[i].animate(
                             tokenMeta.token,
                             tokenMeta.startTime,
                             tokenMeta.startTime - time
                         ) || anyModification;
+
+                        if (tokenMeta.animationQueue[i].hasRun()) {
+                        	tokenMeta.animationQueue.splice(i, 1);
+                        	--i;
+						}
                     }
 
                     // save after applying animations
@@ -680,9 +755,74 @@ function baseToolAnimator () {
 		},
 
 		init () {
-			setTimeout(() => this.doTick(), this._tickRate)
+			setTimeout(() => this.doTick(), 5000)
 		}
 	};
+
+	// all properties that can be set via the 'prop' commanhd
+	d20plus.anim.PROP_TOKEN = new Set([
+		"left",
+		"top",
+		"width",
+		"height",
+		"z_index",
+		"imgsrc",
+		"rotation",
+		"type",
+		"layer",
+		"locked",
+		"flipv",
+		"fliph",
+		"anim_loop",
+		"anim_paused_at",
+		"anim_autoplay",
+		"name",
+		"gmnotes", // `escape`d HTML
+		"controlledby",
+		"represents",
+		"bar1_value",
+		"bar1_max",
+		"bar1_link",
+		"bar2_value",
+		"bar2_max",
+		"bar2_link",
+		"bar3_value",
+		"bar3_max",
+		"bar3_link",
+		"aura1_radius",
+		"aura1_color",
+		"aura1_square",
+		"aura2_radius",
+		"aura2_color",
+		"aura2_square",
+		"tint_color",
+		"status_dead",
+		"statusmarkers",
+		"showname",
+		"showplayers_name",
+		"showplayers_bar1",
+		"showplayers_bar2",
+		"showplayers_bar3",
+		"showplayers_aura1",
+		"showplayers_aura2",
+		"playersedit_name",
+		"playersedit_bar1",
+		"playersedit_bar2",
+		"playersedit_bar3",
+		"playersedit_aura1",
+		"playersedit_aura2",
+		"light_radius",
+		"light_dimradius",
+		"light_otherplayers",
+		"light_hassight",
+		"light_angle",
+		"light_losangle",
+		"light_multiplier",
+		"adv_fow_view_distance",
+		"groupwith",
+		"sides", // pipe-separated list of `escape`d image URLs
+		"currentSide"
+	]);
 }
 
 SCRIPT_EXTENSIONS.push(baseToolAnimator);

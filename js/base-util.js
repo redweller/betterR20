@@ -442,7 +442,7 @@ function baseUtil () {
 		return new Promise(resolve => {
 			setTimeout(() => resolve(), delay);
 		})
-	}
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);
