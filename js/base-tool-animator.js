@@ -15,6 +15,7 @@ function baseToolAnimator () {
 
             this.hasRun = () => true;
 		},
+
 		Move: function (startTime, duration, x, y, z) {
 			this._hasRun = false;
 
@@ -72,6 +73,7 @@ function baseToolAnimator () {
 
 			this.hasRun = () => this._hasRun;
 		},
+
 		Copy: function (startTime, childAnimation = false) {
 			this._hasRun = false;
 
@@ -137,6 +139,7 @@ function baseToolAnimator () {
 
 			this.hasRun = () => this._hasRun;
 		},
+
 		Rotate: function (startTime, duration, degrees) {
             this._hasRun = false;
 
@@ -164,6 +167,7 @@ function baseToolAnimator () {
 
             this.hasRun = () => this._hasRun;
 		},
+
 		Flip: function (startTime, isHorizontal, isVertical) {
             this._hasRun = false;
 
@@ -181,6 +185,7 @@ function baseToolAnimator () {
 
             this.hasRun = () => this._hasRun;
 		},
+
 		Scale: function (startTime, duration, scaleFactorX, scaleFactorY) {
             this._hasRun = false;
 
@@ -211,6 +216,7 @@ function baseToolAnimator () {
 
             this.hasRun = () => this._hasRun;
 		},
+
 		Layer: function (startTime, layer) {
             this._hasRun = false;
 
@@ -227,6 +233,7 @@ function baseToolAnimator () {
 
             this.hasRun = () => this._hasRun;
 		},
+
         // TODO consider making an alternate version which sets a property on the character
         // TODO consider the ability to set properties on _other_ tokens -- might not be performant enough?
 		SetProperty: function (startTime, prop, value) {
@@ -247,6 +254,7 @@ function baseToolAnimator () {
 
             this.hasRun = () => this._hasRun;
 		},
+
 		Lighting: function (startTime, duration, lightRadius, dimStart, degrees) {
             this._hasRun = false;
 
@@ -284,6 +292,7 @@ function baseToolAnimator () {
 
             this.hasRun = () => this._hasRun;
 		},
+
 		TriggerMacro: function (startTime, macroName) {
             this._hasRun = false;
 
@@ -302,15 +311,15 @@ function baseToolAnimator () {
 
             this.hasRun = () => this._hasRun;
 		},
-		TriggerAnimation: function (startTime, animationName) {
+
+		TriggerAnimation: function (startTime, animationUid) {
             this._hasRun = false;
 
             this.animate = function (token, alpha, delta) {
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
-					const anim = Object.values(animatorTool._anims)
-						.find(it => it.name === animationName);
+                    const anim = animatorTool.getAnimation(animationUid);
 
 					if (!anim) return; // if it has been deleted/etc
 
@@ -652,6 +661,16 @@ function baseToolAnimator () {
 					if (nZ != null && isNaN(nY)) return null;
 					return new d20plus.anim.Move(nStart, nDuration, nX, nY, nZ);
 				}
+				case "rot": {
+					if (tokens.length !== 3) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const nDuration = Number(tokens[1]);
+					if (isNaN(nDuration)) return null;
+					const nRot = Number(tokens[2]);
+					if (isNaN(nRot)) return null;
+					return new d20plus.anim.Rotate(nStart, nDuration, nRot);
+				}
 				case "cp": {
 					if (tokens.length < 1 || tokens.length > 2) return null;
 					const nStart = Number(tokens[0]);
@@ -715,25 +734,55 @@ function baseToolAnimator () {
 					const nStart = Number(tokens[0]);
 					if (isNaN(nStart)) return null;
 					const macro = null; // TODO validate macro
-					return new d20plus.anim.TriggerMacro(nStart, macro.name); // TODO pass name
+					return new d20plus.anim.TriggerMacro(nStart, macro.name); // TODO pass name? pass ID?
 				}
 				case "anim": {
 					if (tokens.length !== 2) return null;
 					const nStart = Number(tokens[0]);
 					if (isNaN(nStart)) return null;
 					const anim = Object.values(this._anims).find(it => it.name === tokens[1]);
-					return new d20plus.anim.TriggerAnimation(nStart, anim.name);
+					return new d20plus.anim.TriggerAnimation(nStart, anim.uid);
 				}
 			}
-		}
+		},
+
+        getAnimation (uid) {
+		    return this._anims[uid];
+        },
+
+        getAnimQueue (animation) {
+		    // TODO
+        }
 	};
 
 	d20plus.tool.tools.push(animatorTool);
 
+	function hasAnyKey (object) {
+        for (const k in object) {
+            if (!object.hasOwnProperty(k)) continue;
+            return true;
+        }
+        return false;
+    }
+
 	d20plus.anim.animator = {
-        // {tokenId: {token: {...}, animationQueue: [...]}}
-		_active: {},
-		_tickRate: 1,
+       /*
+        _tracker: {
+            tokenId: {
+                token: {...}, // Roll20 token
+                active: {
+                    // only one instance of an animation can be active on a token at a time
+                    animUid: {
+                        queue: [...], // returned by getAnimQueue
+                        start // start time
+                    },
+                    ... // other animations
+                }
+            }
+        }
+        */
+		_tracker: {},
+		_restTicks: 1,
 
 		__tickCount: 0,
 
@@ -742,23 +791,26 @@ function baseToolAnimator () {
 		},
 
 		startAnimation (token, animUid) {
-			this._active[animUid] = this._active[animUid] || [];
-			this._active[animUid][token.id] = {
-				token,
-				tick: 0
-			}
+		    const anim = animatorTool.getAnimation(animUid);
+		    const queue = animatorTool.getAnimQueue(anim);
+
+			this._tracker[token.id] = this._tracker[token.id] || {token, active: {}};
+            this._tracker[token.id].active[animUid] = {
+                queue,
+                start: (new Date).getTime()
+            }
 		},
 
 		endAnimation (token, animUid) {
-			if (this._active[animUid]) {
-				delete this._active[animUid][token.id];
-				const hasKeys = (() => { for (const _ in this._active[animUid]) return true; return false; })();
-				if (!hasKeys) delete this._active[animUid];
-			}
+		    if (this._tracker[token.id] && this._tracker[token.id].active[animUid]) {
+		        delete this._tracker[token.id].active[animUid];
+
+                if (hasAnyKey(this._tracker[token.id].active)) delete this._tracker[token.id];
+            }
 		},
 
-		setTickRate (tickRate) {
-			this._tickRate = tickRate;
+		setRestTicks (tickRate) {
+			this._restTicks = tickRate;
 		},
 
 		doTick () {
@@ -771,7 +823,7 @@ function baseToolAnimator () {
 		},
 
 		getSaveableState () {
-			// TODO export this._active -- remove token objects, replace them with ID strings?
+			// TODO export this._tracker -- remove token objects, replace them with ID strings?
 			//   convert animation queue into saveable states
 		},
 
@@ -781,34 +833,43 @@ function baseToolAnimator () {
 		},
 
 		_hasAnyActive () {
-            // fastest implementation
-			for (const _ in this._active) return true;
-			return false;
+		    return hasAnyKey(this._tracker);
 		},
 
 		_doTick () {
 			// higher tick rate = slower
-            // {tokenId: {token: {...}, animationQueue: [...], startTime}}
-			if (++this.__tickCount === this._tickRate) {
+			if (++this.__tickCount === this._restTicks) {
 			    const time = (new Date()).getTime();
 
-				for (const tokenId in this._active) {
-					const tokenMeta = this._active[tokenId];
+				for (const tokenId in this._tracker) {
+				    if (!this._tracker.hasOwnProperty(tokenId)) continue;
+					const tokenMeta = this._tracker[tokenId];
 
                     let anyModification = false;
-                    // avoid using fast-loop length optimization, as we'll splice out completed animations
-                    for (let i = 0; i < tokenMeta.animationQueue.length; ++i) {
-                        anyModification = tokenMeta.animationQueue[i].animate(
-                            tokenMeta.token,
-                            tokenMeta.startTime,
-                            tokenMeta.startTime - time
-                        ) || anyModification;
+                    for (const animUid in tokenMeta.active) {
+                        if (!tokenMeta.active.hasOwnProperty(animUid)) continue;
+                        const instance = tokenMeta.active[animUid];
 
-                        if (tokenMeta.animationQueue[i].hasRun()) {
-                        	tokenMeta.animationQueue.splice(i, 1);
-                        	--i;
-						}
+						// avoid using fast-loop length optimization, as we'll splice out completed animations
+                        for (let i = 0; i < instance.queue.length; ++i) {
+                            anyModification = instance.queue[i].animate(
+                                tokenMeta.token,
+                                tokenMeta.start,
+                                tokenMeta.start - time
+                            ) || anyModification;
+
+                            if (instance.queue[i].hasRun()) {
+                                instance.queue.splice(i, 1);
+                                --i;
+                            }
+                        }
+
+                        // queue empty -> this animation is no longer active
+                        if (!instance.queue.length) delete tokenMeta.active[animUid];
                     }
+
+                    // no active animations -> stop tracking this token
+                    if (!hasAnyKey(tokenMeta.active)) delete this._tracker[tokenId];
 
                     // save after applying animations
                     if (anyModification) tokenMeta.token.save();
