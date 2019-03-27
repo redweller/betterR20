@@ -171,8 +171,8 @@ function baseToolAnimator () {
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
-                    if (isHorizontal) token.attributes.fliph = !token.attributes.fliph;
-                    if (isVertical) token.attributes.flipv = !token.attributes.flipv;
+                    if (isHorizontal) token.attributes.fliph = !(typeof token.attributes.fliph === "string" ? token.attributes.fliph === "true" : token.attributes.fliph);
+                    if (isVertical) token.attributes.flipv = !(typeof token.attributes.flipv === "string" ? token.attributes.flipv === "true" : token.attributes.flipv);
 
                     return true;
                 }
@@ -197,8 +197,8 @@ function baseToolAnimator () {
                         const mScaleX = mProcess * scaleFactorX;
                         const mScaleY = mProcess * scaleFactorY;
 
-						token.attributes.scaleX += mScaleX;
-						token.attributes.scaleY += mScaleY;
+						token.attributes.scaleX = Number(token.attributes.scaleX || 0) + mScaleX;
+						token.attributes.scaleY = Number(token.attributes.scaleY || 0) + mScaleY;
 
                         // update progress
                         this._progress += mProcess;
@@ -261,13 +261,16 @@ function baseToolAnimator () {
 
                         // handle lighting changes
                         const mLightRadius = mProcess * lightRadius;
-                        const mDimStart = mProcess * dimStart;
+                        token.attributes.light_radius = Number(token.attributes.light_radius || 0) + mLightRadius;
 
-                        // TODO update token
+                        if (dimStart != null) {
+							const mDimStart = mProcess * dimStart;
+							token.attributes.light_dimradius = Number(token.attributes.light_dimradius || 0) + mDimStart;
+						}
 
-                        if (z != null) {
-                            const mvZ = mProcess * z;
-                            // TODO move token
+                        if (degrees != null) {
+							const mDegrees = mProcess * degrees;
+							token.attributes.light_angle = Number(token.attributes.light_angle || 0) + mDegrees;
                         }
 
                         // update progress
@@ -284,13 +287,15 @@ function baseToolAnimator () {
 		TriggerMacro: function (startTime, macroName) {
             this._hasRun = false;
 
-            const macro = null; // TODO fetch macro here, in advance
-
             this.animate = function (token, alpha) {
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
-                    // TODO trigger macro
+					const macro = null; // TODO fetch macro
+
+					if (!macro) return;
+
+					// TODO trigger macro
                 }
                 return false;
             };
@@ -300,11 +305,14 @@ function baseToolAnimator () {
 		TriggerAnimation: function (startTime, animationName) {
             this._hasRun = false;
 
-            const anim = null; // TODO fetch animation here, in advance
-
             this.animate = function (token, alpha, delta) {
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
+
+					const anim = Object.values(animatorTool._anims)
+						.find(it => it.name === animationName);
+
+					if (!anim) return; // if it has been deleted/etc
 
                     return anim.animate(token, alpha, delta);
                 }
@@ -539,7 +547,6 @@ function baseToolAnimator () {
 				<div class="anm__row-controls col-3 text-center"">
 					${$btnDuplicate}
 					${$btnExport}
-					${$btnActive}
 					${$btnDelete}
 				</div>
 				<div class="hidden uid">${anim.uid}</div>
@@ -623,6 +630,7 @@ function baseToolAnimator () {
 		// command parsing
 		__getParsedCommand (line) {
 			// TODO return null if can't parse
+			// TODO cache these somehow? Prevent re-parsing the animation if it hasn't changed
 			line = line.split("/\/\//g")[0]; // handle comments
 			const tokens = line.split(/ +/g).filter(Boolean);
 			if (!tokens.length) return new d20plus.anim.Nop();
@@ -631,33 +639,90 @@ function baseToolAnimator () {
 			// TODO
 			switch (op) {
 				case "mv": {
-
+					if (tokens.length < 4 || tokens.length > 5) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const nDuration = Number(tokens[1]);
+					if (isNaN(nDuration)) return null;
+					const nX = Number(tokens[2]);
+					if (isNaN(nX)) return null;
+					const nY = Number(tokens[3]);
+					if (isNaN(nY)) return null;
+					const nZ = tokens[4] ? Number(tokens[4]) : null;
+					if (nZ != null && isNaN(nY)) return null;
+					return new d20plus.anim.Move(nStart, nDuration, nX, nY, nZ);
 				}
 				case "cp": {
-
+					if (tokens.length < 1 || tokens.length > 2) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const anim = tokens[1] ? Object.values(this._anims).find(it => it.name === tokens[1]) : null;
+					return new d20plus.anim.Copy(nStart, anim.name);
 				}
 				case "flip": {
-
+					if (tokens.length !== 3) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const flipH = tokens[1] === "true" ? true : tokens[1] === "false" ? false : null;
+					if (flipH == null) return null;
+					const flipV = tokens[2] === "true" ? true : tokens[2] === "false" ? false : null;
+					if (flipV == null) return null;
+					return new d20plus.anim.Flip(nStart, flipH, flipV);
 				}
 				case "scale": {
-
+					if (tokens.length !== 4) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const nDuration = Number(tokens[1]);
+					if (isNaN(nDuration)) return null;
+					const nScaleX = Number(tokens[2]);
+					if (isNaN(nScaleX)) return null;
+					const nScaleY = Number(tokens[3]);
+					if (isNaN(nScaleY)) return null;
+					return new d20plus.anim.Scale(nStart, nDuration, nScaleX, nScaleY);
 				}
 				case "layer": {
-					// valid are: map, objects, foreground, gmlayer, walls, weather
+					if (tokens.length !== 2) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return null;
+					return new d20plus.anim.Layer(nStart, tokens[1]);
 				}
 				case "light": {
-					if (tokens.length < 3 || tokens.length > 5) return null;
-					// a dash ("-") indicates "no value/clear field"
-					break;
+					if (tokens.length < 4 || tokens.length > 5) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const nDuration = Number(tokens[1]);
+					if (isNaN(nDuration)) return null;
+					const nLightRadius = Number(tokens[2]);
+					if (isNaN(nLightRadius)) return null;
+					const nDimStart = tokens[3] ? Number(tokens[3]) : null;
+					if (nDimStart != null && isNaN(nDimStart)) return null;
+					const nDegrees = tokens[4] ? Number(tokens[4]) : null;
+					if (nDegrees != null && isNaN(nDegrees)) return null;
+					return new d20plus.anim.Lighting(nStart, nDuration, nLightRadius, nDimStart, nDegrees);
 				}
 				case "prop": {
-
+					// TODO these may be type-sensitive -- pass to JSON.parse?
+					if (tokens.length !== 3) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return null;
+					return new d20plus.anim.SetProperty(nStart, tokens[1], tokens[2]);
 				}
 				case "macro": {
-
+					if (tokens.length !== 2) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const macro = null; // TODO validate macro
+					return new d20plus.anim.TriggerMacro(nStart, macro.name); // TODO pass name
 				}
 				case "anim": {
-
+					if (tokens.length !== 2) return null;
+					const nStart = Number(tokens[0]);
+					if (isNaN(nStart)) return null;
+					const anim = Object.values(this._anims).find(it => it.name === tokens[1]);
+					return new d20plus.anim.TriggerAnimation(nStart, anim.name);
 				}
 			}
 		}
@@ -759,8 +824,8 @@ function baseToolAnimator () {
 		}
 	};
 
-	// all properties that can be set via the 'prop' commanhd
-	d20plus.anim.PROP_TOKEN = new Set([
+	// all properties that can be set via the 'prop' command
+	d20plus.anim.VALID_PROP_TOKEN = new Set([
 		"left",
 		"top",
 		"width",
@@ -823,6 +888,8 @@ function baseToolAnimator () {
 		"sides", // pipe-separated list of `escape`d image URLs
 		"currentSide"
 	]);
+
+	d20plus.anim.VALID_LAYER = new Set(["map", "objects", "foreground", "gmlayer", "walls", "weather"])
 }
 
 SCRIPT_EXTENSIONS.push(baseToolAnimator);
