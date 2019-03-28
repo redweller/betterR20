@@ -6,19 +6,79 @@ function baseToolAnimator () {
     //   and returns "true" if the token needs to be saved
 	// TODO each of these should have a function `hasRun` which returns true if the animation has run/completed
 	//   this can be used to clean up completed animations, removing them from the animation queue
-	// TODO each of these should have serialize/deserialize functions
 	d20plus.anim = {
+	    deserialize: function (json) {
+	        switch (json._type) {
+                case "Nop": return new d20plus.anim.Nop();
+                case "Move": {
+                    const out = new d20plus.anim.Move(json.startTime, json.duration, json.x, json.y, json.z);
+                    out._hasRun = json._hasRun;
+                    out._progress = json._progress;
+                    return out;
+                }
+                case "Copy": {
+                    const out = new d20plus.anim.Copy(json.startTime, json.childAnimation);
+                    out._hasRun = json._hasRun;
+                    return out;
+                }
+                case "Rotate": {
+                    const out = new d20plus.anim.Rotate(json.startTime, json.duration, json.degrees);
+                    out._hasRun = json._hasRun;
+                    out._progress = json._progress;
+                    return out;
+                }
+                case "Flip": {
+                    const out = new d20plus.anim.Rotate(json.startTime, json.isHorizontal, json.isVertical);
+                    out._hasRun = json._hasRun;
+                    return out;
+                }
+                case "Scale": {
+                    const out = new d20plus.anim.Scale(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY);
+                    out._hasRun = json._hasRun;
+                    out._progress = json._progress;
+                    return out;
+                }
+                case "Layer": {
+                    const out = new d20plus.anim.Layer(json.startTime, json.layer);
+                    out._hasRun = json._hasRun;
+                    return out;
+                }
+                case "SetProperty": {
+                    const out = new d20plus.anim.SetProperty(json.startTime, json.prop, json.value);
+                    out._hasRun = json._hasRun;
+                    return out;
+                }
+                case "Lighting": {
+                    const out = new d20plus.anim.Lighting(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees);
+                    out._hasRun = json._hasRun;
+                    out._progress = json._progress;
+                    return out;
+                }
+                case "TriggerMacro": {
+                    const out = new d20plus.anim.TriggerMacro(json.startTime, json.macroName);
+                    out._hasRun = json._hasRun;
+                    return out;
+                }
+                case "TriggerAnimation": {
+                    const out = new d20plus.anim.TriggerAnimation(json.startTime, json.animationUid);
+                    out._hasRun = json._hasRun;
+                    return out;
+                }
+            }
+        },
+
 		Nop: function () {
 			this.animate = function () {
 			    return false;
             };
 
             this.hasRun = () => true;
+
+            this.serialize = () => {};
 		},
 
 		Move: function (startTime, duration, x, y, z) {
 			this._hasRun = false;
-
 			this._progress = 0; // 0 - 1f
 
 			this.animate = function (token, alpha, delta) {
@@ -72,6 +132,14 @@ function baseToolAnimator () {
 			};
 
 			this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, duration, x, y, z,
+                    _hasRun: this._hasRun,
+                    _progress: this._progress
+                }
+            };
 		},
 
 		Copy: function (startTime, childAnimation = false) {
@@ -138,11 +206,17 @@ function baseToolAnimator () {
 			};
 
 			this.hasRun = () => this._hasRun;
+
+			this.serialize = () => {
+                return {
+                    startTime, childAnimation,
+                    _hasRun: this._hasRun
+                }
+            };
 		},
 
 		Rotate: function (startTime, duration, degrees) {
             this._hasRun = false;
-
             this._progress = 0; // 0 - 1f
 
             this.animate = function (token, alpha, delta) {
@@ -166,6 +240,14 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, duration, degrees,
+                    _hasRun: this._hasRun,
+                    _progress: this._progress
+                }
+            };
 		},
 
 		Flip: function (startTime, isHorizontal, isVertical) {
@@ -184,11 +266,17 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, isHorizontal, isVertical,
+                    _hasRun: this._hasRun
+                }
+            };
 		},
 
 		Scale: function (startTime, duration, scaleFactorX, scaleFactorY) {
             this._hasRun = false;
-
             this._progress = 0; // 0 - 1f
 
             this.animate = function (token, alpha, delta) {
@@ -215,6 +303,14 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, duration, scaleFactorX, scaleFactorY,
+                    _hasRun: this._hasRun,
+                    _progress: this._progress
+                }
+            };
 		},
 
 		Layer: function (startTime, layer) {
@@ -232,6 +328,13 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, layer,
+                    _hasRun: this._hasRun
+                }
+            };
 		},
 
         // TODO consider making an alternate version which sets a property on the character
@@ -253,11 +356,17 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, prop, value,
+                    _hasRun: this._hasRun
+                }
+            };
 		},
 
 		Lighting: function (startTime, duration, lightRadius, dimStart, degrees) {
             this._hasRun = false;
-
             this._progress = 0; // 0 - 1f
 
             this.animate = function (token, alpha, delta) {
@@ -291,6 +400,14 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, duration, lightRadius, dimStart, degrees,
+                    _hasRun: this._hasRun,
+                    _progress: this._progress
+                }
+            };
 		},
 
 		TriggerMacro: function (startTime, macroName) {
@@ -310,6 +427,13 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, macroName,
+                    _hasRun: this._hasRun
+                }
+            };
 		},
 
 		TriggerAnimation: function (startTime, animationUid) {
@@ -329,8 +453,147 @@ function baseToolAnimator () {
             };
 
             this.hasRun = () => this._hasRun;
+
+            this.serialize = () => {
+                return {
+                    startTime, animationUid,
+                    _hasRun: this._hasRun
+                }
+            };
 		}
 	};
+
+	function Command (line, error, cons) {
+	    this.line = line;
+	    this.error = error;
+	    this.isRunnable = !!cons;
+
+	    this.getInstance = function () {
+	        return new cons();
+        }
+    }
+
+    // TODO convert all to returning Commands
+    Command.fromString = function (line) {
+        line = line.split("/\/\//g")[0]; // handle comments
+        const tokens = line.split(/ +/g).filter(Boolean);
+        if (!tokens.length) return new d20plus.anim.Nop();
+
+        const op = tokens.shift();
+        switch (op) {
+            case "mv": {
+                if (tokens.length < 4 || tokens.length > 5) return new Command(line, "Invalid argument count", null);
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return new Command(line, `"Start time" was not a number`, null);
+                const nDuration = Number(tokens[1]);
+                if (isNaN(nDuration)) return new Command(line, `"Duration" was not a number`, null);
+                const nX = Number(tokens[2]);
+                if (isNaN(nX)) return new Command(line, `"X" was not a number`, null);
+                const nY = Number(tokens[3]);
+                if (isNaN(nY)) return new Command(line, `"Y" was not a number`, null);
+                const nZ = tokens[4] ? Number(tokens[4]) : null;
+                if (nZ != null && isNaN(nY)) return new Command(line, `Z`, null);
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.Move.bind(nStart, nDuration, nX, nY, nZ)
+                );
+            }
+
+            case "rot": {
+                if (tokens.length !== 3) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                const nDuration = Number(tokens[1]);
+                if (isNaN(nDuration)) return null;
+                const nRot = Number(tokens[2]);
+                if (isNaN(nRot)) return null;
+                return new d20plus.anim.Rotate(nStart, nDuration, nRot);
+            }
+
+            case "cp": {
+                if (tokens.length < 1 || tokens.length > 2) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                const anim = tokens[1] ? Object.values(this._anims).find(it => it.name === tokens[1]) : null;
+                return new d20plus.anim.Copy(nStart, anim.name);
+            }
+
+            case "flip": {
+                if (tokens.length !== 3) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                const flipH = tokens[1] === "true" ? true : tokens[1] === "false" ? false : null;
+                if (flipH == null) return null;
+                const flipV = tokens[2] === "true" ? true : tokens[2] === "false" ? false : null;
+                if (flipV == null) return null;
+                return new d20plus.anim.Flip(nStart, flipH, flipV);
+            }
+
+            case "scale": {
+                if (tokens.length !== 4) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                const nDuration = Number(tokens[1]);
+                if (isNaN(nDuration)) return null;
+                const nScaleX = Number(tokens[2]);
+                if (isNaN(nScaleX)) return null;
+                const nScaleY = Number(tokens[3]);
+                if (isNaN(nScaleY)) return null;
+                return new d20plus.anim.Scale(nStart, nDuration, nScaleX, nScaleY);
+            }
+
+            case "layer": {
+                if (tokens.length !== 2) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return null;
+                return new d20plus.anim.Layer(nStart, tokens[1]);
+            }
+
+            case "light": {
+                if (tokens.length < 4 || tokens.length > 5) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                const nDuration = Number(tokens[1]);
+                if (isNaN(nDuration)) return null;
+                const nLightRadius = Number(tokens[2]);
+                if (isNaN(nLightRadius)) return null;
+                const nDimStart = tokens[3] ? Number(tokens[3]) : null;
+                if (nDimStart != null && isNaN(nDimStart)) return null;
+                const nDegrees = tokens[4] ? Number(tokens[4]) : null;
+                if (nDegrees != null && isNaN(nDegrees)) return null;
+                return new d20plus.anim.Lighting(nStart, nDuration, nLightRadius, nDimStart, nDegrees);
+            }
+
+            case "prop": {
+                if (tokens.length !== 3) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return null;
+                let prop = tokens[2];
+                try { prop = JSON.parse(prop); } catch (ignored) {}
+                return new d20plus.anim.SetProperty(nStart, tokens[1], prop);
+            }
+
+            case "macro": {
+                if (tokens.length !== 2) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                const macro = null; // TODO validate macro
+                return new d20plus.anim.TriggerMacro(nStart, macro.name); // TODO pass name? pass ID?
+            }
+
+            case "anim": {
+                if (tokens.length !== 2) return null;
+                const nStart = Number(tokens[0]);
+                if (isNaN(nStart)) return null;
+                const anim = Object.values(this._anims).find(it => it.name === tokens[1]);
+                return new d20plus.anim.TriggerAnimation(nStart, anim.uid);
+            }
+        }
+    };
 
 	const animatorTool = {
 		name: "Token Animator",
@@ -462,8 +725,36 @@ function baseToolAnimator () {
 
 			$btnAdd.click(() => this.__addAnim(this.__getNewAnim()));
 
-			$btnImport.click(() => {
-				// TODO ensure the name and uid are unique - prompt for rename?
+			$btnImport.click(async () => {
+                let data;
+                try {
+                    data = await DataUtil.pUserUpload();
+                } catch (e) {
+                    alert("File was not valid JSON!");
+                    console.error(e);
+                }
+
+                if (data.animations) {
+                    let messages = [];
+                    data.animations.forEach((anim, i) => {
+                        if (anim.uid && anim.name && anim.lines) {
+                            anim.uid = this.__getNextId();
+                            anim.name = this.__getNextName(anim.name);
+                            this.__addAnim(anim);
+                            messages.push(`Added ${anim.name}!`);
+                        } else {
+                            messages.push(`Animation at index ${i} is missing required fields!`);
+                        }
+                    });
+                    if (messages.length) {
+                        console.log(messages.jsoin("\n"));
+                        alert(messages.join("\n"))
+                    } else {
+                        alert("File contained no animations!");
+                    }
+                } else {
+                    alert("File was not a valid animation!");
+                }
 			});
 
 			$btnRescue.click(() => {
@@ -478,7 +769,12 @@ function baseToolAnimator () {
 			};
 
 			$btnSelExport.click(() => {
-				// TODO collect all; convert to JSON; download
+                const out = {
+                    animations: this._animList.items
+                        .filter(it => $(it.elm).find(`input`).prop("checked"))
+                        .map(it => this._anims[it.values().uid])
+                };
+                DataUtil.userDownload("animations", out);
 			});
 
 			$cbAll.click(() => {
@@ -511,15 +807,21 @@ function baseToolAnimator () {
 			this._doSaveStateDebounced();
 		},
 		__getNewAnim () {
-			let nxtName = "new_animation";
-			let suffix = 1;
-			while (Object.values(this._anims).find(it => it.name === nxtName)) nxtName = `new_animation_${suffix++}`;
 			return {
-				uid: this._animId++,
-				name: nxtName,
+				uid: this.__getNextId(),
+				name: this.__getNextName("new_animation"),
 				lines: []
 			}
 		},
+        __getNextName (baseName) {
+            let nxtName = baseName;
+            let suffix = 1;
+            while (Object.values(this._anims).find(it => it.name === nxtName)) nxtName = `${baseName}_${suffix++}`;
+            return nxtName;
+        },
+        __getNextId () {
+		    return this._animId++;
+        },
 		__getAnimListRow (anim) {
 			const $name = $(`<div class="name readable col-8 clickable" title="Edit Animation">${anim.name}</div>`)
 				.click(evt => {
@@ -539,7 +841,8 @@ function baseToolAnimator () {
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
 				.click(evt => {
 					evt.stopPropagation();
-					// TODO convert to JSON; download (__exportAnim)
+                    const out = {animations: anim};
+                    DataUtil.userDownload(`${anim.name}`, out);
 				});
 
 			const $btnDelete = $(`<div class="btn anm__row-btn btn-danger pictos anm__btn-delete mr-2" title="Delete">#</div>`)
@@ -607,7 +910,8 @@ function baseToolAnimator () {
 			});
 
 			this._$ed_btnExportFile.off("click").click(() => {
-				// TODO share logic with "Export to File" list button (__exportAnim)
+                const out = {animations: anim};
+                DataUtil.userDownload(`${anim.name}`, out);
 			});
 
 			this._$ed_btnValidate.off("click").click(() => {
@@ -628,122 +932,12 @@ function baseToolAnimator () {
 			if (sameName) return "Name must be unique!";
 
 			// validate lines
-			// TODO use __getParsedCommand
-		},
-		__importAnim () {
-			// TODO
-		},
-		__exportAnim () {
-			// TODO
-		},
-		// command parsing
-		__getParsedCommand (line) {
-			// TODO return null if can't parse
-			// TODO cache these somehow? Prevent re-parsing the animation if it hasn't changed
-			line = line.split("/\/\//g")[0]; // handle comments
-			const tokens = line.split(/ +/g).filter(Boolean);
-			if (!tokens.length) return new d20plus.anim.Nop();
-
-			const op = tokens.shift();
-			// TODO
-			switch (op) {
-				case "mv": {
-					if (tokens.length < 4 || tokens.length > 5) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const nDuration = Number(tokens[1]);
-					if (isNaN(nDuration)) return null;
-					const nX = Number(tokens[2]);
-					if (isNaN(nX)) return null;
-					const nY = Number(tokens[3]);
-					if (isNaN(nY)) return null;
-					const nZ = tokens[4] ? Number(tokens[4]) : null;
-					if (nZ != null && isNaN(nY)) return null;
-					return new d20plus.anim.Move(nStart, nDuration, nX, nY, nZ);
-				}
-				case "rot": {
-					if (tokens.length !== 3) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const nDuration = Number(tokens[1]);
-					if (isNaN(nDuration)) return null;
-					const nRot = Number(tokens[2]);
-					if (isNaN(nRot)) return null;
-					return new d20plus.anim.Rotate(nStart, nDuration, nRot);
-				}
-				case "cp": {
-					if (tokens.length < 1 || tokens.length > 2) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const anim = tokens[1] ? Object.values(this._anims).find(it => it.name === tokens[1]) : null;
-					return new d20plus.anim.Copy(nStart, anim.name);
-				}
-				case "flip": {
-					if (tokens.length !== 3) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const flipH = tokens[1] === "true" ? true : tokens[1] === "false" ? false : null;
-					if (flipH == null) return null;
-					const flipV = tokens[2] === "true" ? true : tokens[2] === "false" ? false : null;
-					if (flipV == null) return null;
-					return new d20plus.anim.Flip(nStart, flipH, flipV);
-				}
-				case "scale": {
-					if (tokens.length !== 4) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const nDuration = Number(tokens[1]);
-					if (isNaN(nDuration)) return null;
-					const nScaleX = Number(tokens[2]);
-					if (isNaN(nScaleX)) return null;
-					const nScaleY = Number(tokens[3]);
-					if (isNaN(nScaleY)) return null;
-					return new d20plus.anim.Scale(nStart, nDuration, nScaleX, nScaleY);
-				}
-				case "layer": {
-					if (tokens.length !== 2) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return null;
-					return new d20plus.anim.Layer(nStart, tokens[1]);
-				}
-				case "light": {
-					if (tokens.length < 4 || tokens.length > 5) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const nDuration = Number(tokens[1]);
-					if (isNaN(nDuration)) return null;
-					const nLightRadius = Number(tokens[2]);
-					if (isNaN(nLightRadius)) return null;
-					const nDimStart = tokens[3] ? Number(tokens[3]) : null;
-					if (nDimStart != null && isNaN(nDimStart)) return null;
-					const nDegrees = tokens[4] ? Number(tokens[4]) : null;
-					if (nDegrees != null && isNaN(nDegrees)) return null;
-					return new d20plus.anim.Lighting(nStart, nDuration, nLightRadius, nDimStart, nDegrees);
-				}
-				case "prop": {
-					// TODO these may be type-sensitive -- pass to JSON.parse?
-					if (tokens.length !== 3) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return null;
-					return new d20plus.anim.SetProperty(nStart, tokens[1], tokens[2]);
-				}
-				case "macro": {
-					if (tokens.length !== 2) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const macro = null; // TODO validate macro
-					return new d20plus.anim.TriggerMacro(nStart, macro.name); // TODO pass name? pass ID?
-				}
-				case "anim": {
-					if (tokens.length !== 2) return null;
-					const nStart = Number(tokens[0]);
-					if (isNaN(nStart)) return null;
-					const anim = Object.values(this._anims).find(it => it.name === tokens[1]);
-					return new d20plus.anim.TriggerAnimation(nStart, anim.uid);
-				}
-			}
+            const badLines = anim.lines.map(l => Command.fromString(l)).filter(c => c.error);
+            if (badLines.length) {
+                alert(`Invalid, the following lines could not be parsed:\n${badLines.map(c => `${c.error} @ ${c.line}`).join("\n")}`);
+            } else {
+                alert("Valid!")
+            }
 		},
 
         getAnimation (uid) {
@@ -751,7 +945,9 @@ function baseToolAnimator () {
         },
 
         getAnimQueue (animation) {
-		    // TODO
+            // TODO caching mechanism?
+		    return animation.lines.map(l => Command.fromString(l))
+                .filter(it => it.isRunnable)
         }
 	};
 
