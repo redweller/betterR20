@@ -632,6 +632,7 @@ const baseTemplate = function () {
 							<li class='head hasSub' data-menuname='VeUtil'>
 								Utilities &raquo;
 								<ul class='submenu' data-menuname='VeUtil'>
+									<li data-action-type='token-animate'>Animate</li>
 									<li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>        
 									<li data-action-type='token-light'>Set&nbsp;Light</li>
 								</ul>

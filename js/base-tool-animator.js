@@ -6,93 +6,120 @@ function baseToolAnimator () {
                 case "Move": {
                     const out = new d20plus.anim.Move(json.startTime, json.duration, json.x, json.y, json.z);
                     out._hasRun = json._hasRun;
+                    out._offset = json._offset;
                     out._progress = json._progress;
                     return out;
                 }
                 case "Copy": {
-                    const out = new d20plus.anim.Copy(json.startTime, json.childAnimation);
+                    const out = new d20plus.anim.Copy(json.startTime, json.childAnimationUid);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     return out;
                 }
                 case "Rotate": {
                     const out = new d20plus.anim.Rotate(json.startTime, json.duration, json.degrees);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     out._progress = json._progress;
                     return out;
                 }
                 case "Flip": {
                     const out = new d20plus.anim.Rotate(json.startTime, json.isHorizontal, json.isVertical);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     return out;
                 }
                 case "Scale": {
                     const out = new d20plus.anim.Scale(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     out._progress = json._progress;
                     return out;
                 }
                 case "Layer": {
                     const out = new d20plus.anim.Layer(json.startTime, json.layer);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     return out;
                 }
                 case "SetProperty": {
                     const out = new d20plus.anim.SetProperty(json.startTime, json.prop, json.value);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     return out;
                 }
                 case "Lighting": {
                     const out = new d20plus.anim.Lighting(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     out._progress = json._progress;
                     return out;
                 }
                 case "TriggerMacro": {
                     const out = new d20plus.anim.TriggerMacro(json.startTime, json.macroName);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     return out;
                 }
                 case "TriggerAnimation": {
                     const out = new d20plus.anim.TriggerAnimation(json.startTime, json.animationUid);
                     out._hasRun = json._hasRun;
+					out._offset = json._offset;
                     return out;
                 }
             }
         },
 
 		// region animations
-		// Each has `animate` which accepts three parameters:
+		// Each has `animate` which accepts up to four parameters:
 		//   token: the token object being animated
-		//   alpha: the absolute time since the start of the animation#s life
+		//   alpha: the absolute time since the start of the animation's life
 		//   delta: the time delta from the last time the `animate` function was run
+		//   queue: the queue this animation is part of
 		// The `animate` function returns `true` if the token needs to be saved, `false` otherwise
 		// Each should also have:
 		//   `serialize` function
 		//   `hasRun` function; returns `true` if the animation has been run, and can therefore be safely removed from any queues
+		//   `setOffset` function; sets a start time offset for the animation. Used when triggering child animations
+		_Base: function () {
+			this._hasRun = false;
+			this._offset = 0;
+			this._progress = 0; // 0 - 1f
+
+			this.hasRun = () => this._hasRun;
+			this.setOffset = (offset) => this._offset = offset;
+			this._serialize = () => ({
+				_hasRun: this._hasRun,
+				_offset: this._offset,
+				_progress: this._progress
+			})
+		},
+
 		Nop: function () {
+	    	d20plus.anim._Base.call(this);
+
 			this.animate = function () {
 			    return false;
             };
 
             this.hasRun = () => true;
-
             this.serialize = () => {};
+            this.setOffset = () => {};
 		},
 
 		Move: function (startTime, duration, x, y, z) {
-			this._hasRun = false;
-			this._progress = 0; // 0 - 1f
+			d20plus.anim._Base.call(this);
 
 			this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
 				if (alpha >= startTime) {
 					if (this._progress < (1 - Number.EPSILON)) {
-						if (this._progress === 0) delta = alpha - startTime;
-
-						const mProcess = delta / duration;
+						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
 
 						// handle movement
-						const mvX = mProcess * x;
-						const mvY = mProcess * y;
+						const mvX = mProgress * x;
+						const mvY = mProgress * y;
 
                         token.attributes.left += mvX;
                         token.attributes.top -= mvY;
@@ -115,7 +142,7 @@ function baseToolAnimator () {
 								}
 							}
 
-							total += mProcess * z;
+							total += mProgress * z;
 							const nums = String(total).split("");
 							for (let i = 0; i < nums.length; ++i) {
 								out += `fluffy-wings@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
@@ -125,7 +152,7 @@ function baseToolAnimator () {
 						}
 
 						// update progress
-						this._progress += mProcess;
+						this._progress += mProgress;
 
 						return true;
 					} else this._hasRun = true;
@@ -133,21 +160,20 @@ function baseToolAnimator () {
 				return false;
 			};
 
-			this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, duration, x, y, z,
-                    _hasRun: this._hasRun,
-                    _progress: this._progress
+                	...this._serialize(),
+                    startTime, duration, x, y, z
                 }
             };
 		},
 
-		Copy: function (startTime, childAnimation = false) {
-			this._hasRun = false;
+		Copy: function (startTime, childAnimationUid = false) {
+			d20plus.anim._Base.call(this);
 
 			this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
@@ -198,8 +224,8 @@ function baseToolAnimator () {
 						childToken && childToken.save(cpy.modelattrs);
 					}
 
-					if (childToken && childAnimation) {
-						const nxt = d20plus.anim.TriggerAnimation(startTime, childAnimation);
+					if (childToken && childAnimationUid) { // TODO add to queue
+						const nxt = d20plus.anim.TriggerAnimation(startTime, childAnimationUid);
 						const doSaveChild = nxt.animate(childToken, alpha, delta);
 						if (doSaveChild) childToken.save();
 					}
@@ -207,33 +233,30 @@ function baseToolAnimator () {
 				return false;
 			};
 
-			this.hasRun = () => this._hasRun;
-
 			this.serialize = () => {
                 return {
-                    startTime, childAnimation,
-                    _hasRun: this._hasRun
+					...this._serialize(),
+                    startTime, childAnimationUid
                 }
             };
 		},
 
 		Rotate: function (startTime, duration, degrees) {
-            this._hasRun = false;
-            this._progress = 0; // 0 - 1f
+			d20plus.anim._Base.call(this);
 
             this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
                 if (alpha >= startTime) {
                     if (this._progress < (1 - Number.EPSILON)) {
-                        if (this._progress === 0) delta = alpha - startTime;
-
-                        const mProcess = delta / duration;
+						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
 
                         // handle rotation
-                        const rot = mProcess * degrees;
+                        const rot = mProgress * degrees;
 						token.attributes.rotation += rot;
 
                         // update progress
-                        this._progress += mProcess;
+                        this._progress += mProgress;
 
                         return true;
                     } else this._hasRun = true;
@@ -241,21 +264,20 @@ function baseToolAnimator () {
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, duration, degrees,
-                    _hasRun: this._hasRun,
-                    _progress: this._progress
+					...this._serialize(),
+                    startTime, duration, degrees
                 }
             };
 		},
 
 		Flip: function (startTime, isHorizontal, isVertical) {
-            this._hasRun = false;
+			d20plus.anim._Base.call(this);
 
             this.animate = function (token, alpha) {
+				alpha = alpha - this._offset;
+
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
@@ -267,36 +289,33 @@ function baseToolAnimator () {
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, isHorizontal, isVertical,
-                    _hasRun: this._hasRun
+					...this._serialize(),
+                    startTime, isHorizontal, isVertical
                 }
             };
 		},
 
 		Scale: function (startTime, duration, scaleFactorX, scaleFactorY) {
-            this._hasRun = false;
-            this._progress = 0; // 0 - 1f
+			d20plus.anim._Base.call(this);
 
             this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
                 if (alpha >= startTime) {
                     if (this._progress < (1 - Number.EPSILON)) {
-                        if (this._progress === 0) delta = alpha - startTime;
-
-                        const mProcess = delta / duration;
+						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
 
                         // handle scaling
-                        const mScaleX = mProcess * scaleFactorX;
-                        const mScaleY = mProcess * scaleFactorY;
+                        const mScaleX = mProgress * scaleFactorX;
+                        const mScaleY = mProgress * scaleFactorY;
 
 						token.attributes.scaleX = Number(token.attributes.scaleX || 0) + mScaleX;
 						token.attributes.scaleY = Number(token.attributes.scaleY || 0) + mScaleY;
 
                         // update progress
-                        this._progress += mProcess;
+                        this._progress += mProgress;
 
                         return true;
                     } else this._hasRun = true;
@@ -304,21 +323,20 @@ function baseToolAnimator () {
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, duration, scaleFactorX, scaleFactorY,
-                    _hasRun: this._hasRun,
-                    _progress: this._progress
+					...this._serialize(),
+                    startTime, duration, scaleFactorX, scaleFactorY
                 }
             };
 		},
 
 		Layer: function (startTime, layer) {
-            this._hasRun = false;
+			d20plus.anim._Base.call(this);
 
             this.animate = function (token, alpha) {
+				alpha = alpha - this._offset;
+
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
@@ -329,12 +347,10 @@ function baseToolAnimator () {
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, layer,
-                    _hasRun: this._hasRun
+					...this._serialize(),
+                    startTime, layer
                 }
             };
 		},
@@ -342,9 +358,11 @@ function baseToolAnimator () {
         // TODO consider making an alternate version which sets a property on the character
         // TODO consider the ability to set properties on _other_ tokens -- might not be performant enough?
 		SetProperty: function (startTime, prop, value) {
-            this._hasRun = false;
+			d20plus.anim._Base.call(this);
 
             this.animate = function (token, alpha) {
+				alpha = alpha - this._offset;
+
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
@@ -357,43 +375,40 @@ function baseToolAnimator () {
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, prop, value,
-                    _hasRun: this._hasRun
+					...this._serialize(),
+                    startTime, prop, value
                 }
             };
 		},
 
 		Lighting: function (startTime, duration, lightRadius, dimStart, degrees) {
-            this._hasRun = false;
-            this._progress = 0; // 0 - 1f
+			d20plus.anim._Base.call(this);
 
             this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
                 if (alpha >= startTime) {
                     if (this._progress < (1 - Number.EPSILON)) {
-                        if (this._progress === 0) delta = alpha - startTime;
-
-                        const mProcess = delta / duration;
+						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
 
                         // handle lighting changes
-                        const mLightRadius = mProcess * lightRadius;
+                        const mLightRadius = mProgress * lightRadius;
                         token.attributes.light_radius = Number(token.attributes.light_radius || 0) + mLightRadius;
 
                         if (dimStart != null) {
-							const mDimStart = mProcess * dimStart;
+							const mDimStart = mProgress * dimStart;
 							token.attributes.light_dimradius = Number(token.attributes.light_dimradius || 0) + mDimStart;
 						}
 
                         if (degrees != null) {
-							const mDegrees = mProcess * degrees;
+							const mDegrees = mProgress * degrees;
 							token.attributes.light_angle = Number(token.attributes.light_angle || 0) + mDegrees;
                         }
 
                         // update progress
-                        this._progress += mProcess;
+                        this._progress += mProgress;
 
                         return true;
                     } else this._hasRun = true;
@@ -401,21 +416,20 @@ function baseToolAnimator () {
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, duration, lightRadius, dimStart, degrees,
-                    _hasRun: this._hasRun,
-                    _progress: this._progress
+					...this._serialize(),
+                    startTime, duration, lightRadius, dimStart, degrees
                 }
             };
 		},
 
 		TriggerMacro: function (startTime, macroName) {
-            this._hasRun = false;
+			d20plus.anim._Base.call(this);
 
             this.animate = function (token, alpha) {
+				alpha = alpha - this._offset;
+
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
@@ -424,38 +438,38 @@ function baseToolAnimator () {
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, macroName,
-                    _hasRun: this._hasRun
+					...this._serialize(),
+                    startTime, macroName
                 }
             };
 		},
 
 		TriggerAnimation: function (startTime, animationUid) {
-            this._hasRun = false;
+			d20plus.anim._Base.call(this);
 
-            this.animate = function (token, alpha, delta) {
+            this.animate = function (token, alpha, delta, queue) {
+				alpha = alpha - this._offset;
+
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
-                    const anim = animatorTool.getAnimation(animationUid);
+                    const anim = d20plus.anim.animatorTool.getAnimation(animationUid);
 
 					if (!anim) return; // if it has been deleted/etc
 
-                    return anim.animate(token, alpha, delta);
+					const nxtQueue = d20plus.anim.animatorTool.getAnimQueue(anim);
+					nxtQueue.forEach(it => it.setOffset(alpha + this._offset));
+					queue.push(...nxtQueue);
                 }
                 return false;
             };
 
-            this.hasRun = () => this._hasRun;
-
             this.serialize = () => {
                 return {
-                    startTime, animationUid,
-                    _hasRun: this._hasRun
+					...this._serialize(),
+                    startTime, animationUid
                 }
             };
 		}
@@ -505,7 +519,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.Move.bind(nStart, nDuration, nX, nY, nZ)
+                    d20plus.anim.Move.bind(null, nStart, nDuration, nX, nY, nZ)
                 );
             }
 
@@ -521,7 +535,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.Rotate.bind(nStart, nDuration, nRot)
+                    d20plus.anim.Rotate.bind(null, nStart, nDuration, nRot)
                 );
             }
 
@@ -529,12 +543,13 @@ function baseToolAnimator () {
                 if (tokens.length < 1 || tokens.length > 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
                 if (isNaN(nStart)) return Command.errStartNum(line);
-                const anim = tokens[1] ? Object.values(this._anims).find(it => it.name === tokens[1]) : null;
+
+                const anim = tokens[1] ? d20plus.anim.animatorTool.getAnimations().find(it => it.name === tokens[1]) : null;
 
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.Copy.bind(nStart, anim.name)
+                    d20plus.anim.Copy.bind(null, nStart, anim.uid)
                 );
             }
 
@@ -550,7 +565,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.Flip.bind(nStart, flipH, flipV)
+                    d20plus.anim.Flip.bind(null, nStart, flipH, flipV)
                 );
             }
 
@@ -568,7 +583,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.Scale.bind(nStart, nDuration, nScaleX, nScaleY)
+                    d20plus.anim.Scale.bind(null, nStart, nDuration, nScaleX, nScaleY)
                 );
             }
 
@@ -581,7 +596,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.Layer.bind(nStart, tokens[1])
+                    d20plus.anim.Layer.bind(null, nStart, tokens[1])
                 );
             }
 
@@ -601,7 +616,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.Lighting.bind(nStart, nDuration, nLightRadius, nDimStart, nDegrees)
+                    d20plus.anim.Lighting.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees)
                 );
             }
 
@@ -616,7 +631,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.SetProperty.bind(nStart, tokens[1], prop)
+                    d20plus.anim.SetProperty.bind(null, nStart, tokens[1], prop)
                 );
             }
 
@@ -629,7 +644,7 @@ function baseToolAnimator () {
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.TriggerMacro.bind(nStart, tokens[1])
+                    d20plus.anim.TriggerMacro.bind(null, nStart, tokens[1])
                 );
             }
 
@@ -637,18 +652,19 @@ function baseToolAnimator () {
                 if (tokens.length !== 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
                 if (isNaN(nStart)) return Command.errStartNum(line);
-                const anim = Object.values(this._anims).find(it => it.name === tokens[1]);
+                const anim = d20plus.anim.animatorTool.getAnimations().find(it => it.name === tokens[1]);
+                if (!anim) return new Command(line, `Could not find animation "${tokens[1]}"`);
 
                 return new Command(
                     line,
                     null,
-                    d20plus.anim.TriggerAnimation.bind(nStart, anim.uid)
+                    d20plus.anim.TriggerAnimation.bind(null, nStart, anim.uid)
                 );
             }
         }
     };
 
-	const animatorTool = {
+	d20plus.anim.animatorTool = {
 		name: "Token Animator",
 		desc: "Manage token animations",
 		html: `
@@ -690,8 +706,9 @@ function baseToolAnimator () {
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
 			</div>
-			
-			<div id="d20plus-token-animator-editor" title="Animation Editor" class="anm__win flex-col">
+		`,
+		_html_template_editor: `
+			<div title="Animation Editor" class="anm__win flex-col">
 				<div class="mb-2 no-shrink split">
 					<input name="ipt-name" placeholder="Name">
 					
@@ -722,13 +739,6 @@ function baseToolAnimator () {
 				height: 600,
 			});
 
-			$("#d20plus-token-animator-editor").dialog({
-				autoOpen: false,
-				resizable: true,
-				width: 800,
-				height: 600,
-			});
-
 			// FIXME temp code; remove
 			window.addEventListener("keypress", (evt) => {
 				if (evt.shiftKey && !evt.ctrlKey) {
@@ -736,9 +746,17 @@ function baseToolAnimator () {
 				}
 			})
 		},
-		openFn () {
+
+		init () {
 			this.$win = this.$win || $("#d20plus-token-animator");
-			if (!this.$win.data("initialised")) this._init();
+			if (!this.$win.data("initialised")) {
+				this._init();
+				d20plus.anim.animator.init();
+			}
+		},
+
+		openFn () {
+			this.init();
 			this.$win.dialog("open");
 		},
 		__doSaveState () {
@@ -761,17 +779,13 @@ function baseToolAnimator () {
 			this._anims = Campaign.attributes.bR20tool__anim_anims || {};
 		},
 		_init () {
-			window._B20ANIM = this; // debug use only
-
 			this._doLoadState();
 			this._doSaveStateDebounced = MiscUtil.debounce(this.__doSaveState, 100);
 
 			this._$winRescue = $(`#d20plus-token-animator-rescue`);
-			this._$winEditor = $(`#d20plus-token-animator-editor`);
 
 			this._initMain();
 			this._initRescue();
-			this._initEditor();
 			this.$win.data("initialised", true);
 		},
 		_initMain () {
@@ -816,7 +830,7 @@ function baseToolAnimator () {
                     });
 
                     if (messages.length) {
-                        console.log(messages.jsoin("\n"));
+                        console.log(messages.join("\n"));
                         alert(messages.join("\n"))
                     } else {
                         alert("File contained no animations!");
@@ -962,55 +976,70 @@ function baseToolAnimator () {
             doRefreshList();
 		},
 
-		_initEditor () {
-			this._$ed_iptName = this.$win.find(`[name="ipt-name"]`).disableSpellcheck();
-			this._$ed_btnSave = this.$win.find(`[name="btn-save"]`);
-			this._$ed_btnHelp = this.$win.find(`[name="btn-help"]`);
-			this._$ed_btnExportFile = this.$win.find(`[name="btn-export-file"]`);
-			this._$ed_btnValidate = this.$win.find(`[name="btn-validate"]`);
-			this._$ed_iptLines = this.$win.find(`[name="ipt-lines"]`);
-
-			this._$ed_btnHelp.click(() => {
-				// TODO link to a wiki page
-				alert("Coming soon to a Wiki near you");
-			});
-		},
 		__edit (anim) {
+			const $winEditor = $(this._html_template_editor).appendTo($("body"));
+
+			$winEditor.dialog({
+				resizable: true,
+				width: 800,
+				height: 600,
+				close: () => {
+					setTimeout(() => $winEditor.remove())
+				}
+			});
+
+			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck();
+			const $btnSave = $winEditor.find(`[name="btn-save"]`);
+			const $btnHelp = $winEditor.find(`[name="btn-help"]`);
+			const $btnExportFile = $winEditor.find(`[name="btn-export-file"]`);
+			const $btnValidate = $winEditor.find(`[name="btn-validate"]`);
+			const $iptLines = $winEditor.find(`[name="ipt-lines"]`);
+
 			anim.lines = anim.lines || [];
 
-			this._$winEditor.dialog("open");
-			const $iptLines = this._$winEditor.find(`[name="ipt-lines"]`);
+			$iptName.val(anim.name);
 			$iptLines.val(anim.lines.map(it => typeof it === "string" ? it : it.line).join("\n"));
 
 			const getValidationMessage = () => {
 				// create a fake animation object, and check it for errors
 				const toValidate = {
 					uid: anim.uid, // pass out UID, so the validator can ignore our old data when checking duplicate names
-					name: this._$ed_iptName.val(),
-					lines: this._$ed_iptLines.val().split("\n")
+					name: $iptName.val(),
+					lines: $iptLines.val().split("\n")
 				};
 				return this.__getValidationMessage(toValidate);
 			};
 
-			this._$ed_btnSave.off("click").click(() => {
+			$btnSave.off("click").click(() => {
 				const msg = getValidationMessage();
 				if (msg) return alert(msg);
 
 				// we passed validation
-				anim.name = this._$ed_iptName.val();
-				anim.lines = this._$ed_iptLines.val().split("\n");
+				anim.name = $iptName.val();
+				anim.lines = $iptLines.val().split("\n");
 				this._doSaveStateDebounced();
+
+				const matches = d20plus.anim.animatorTool._animList.get("uid", anim.uid);
+				if (matches.length) {
+					matches[0].values({name: anim.name})
+				}
+
 				alert("Saved!");
 			});
 
-			this._$ed_btnExportFile.off("click").click(() => {
+			$btnExportFile.off("click").click(() => {
                 const out = {animations: anim};
                 DataUtil.userDownload(`${anim.name}`, out);
 			});
 
-			this._$ed_btnValidate.off("click").click(() => {
+			$btnValidate.off("click").click(() => {
 				const msg = getValidationMessage();
 				alert(msg || "Valid!");
+			});
+
+			$btnHelp.click(() => {
+				// TODO link to a wiki page
+				alert("Coming soon to a Wiki near you");
 			});
 		},
 
@@ -1031,14 +1060,14 @@ function baseToolAnimator () {
 
             const badLines = anim.lines.filter(c => c.error);
             if (badLines.length) {
-                return `Invalid, the following lines could not be parsed:\n${badLines.map(c => `${c.error} -- ${c.line}`).join("\n")}`;
+                return `Invalid, the following lines could not be parsed:\n${badLines.map(c => `${c.error} at line "${c.line}"`).join("\n")}`;
             }
 
             return null;
 		},
 
         __convertLines (anim) {
-		    anim.lines = anim.lines.map(l => l instanceof "string" ? Command.fromString(l) : l);
+		    anim.lines = anim.lines.map(l => typeof l === "string" ? Command.fromString(l) : l);
         },
 
         getAnimation (uid) {
@@ -1047,11 +1076,18 @@ function baseToolAnimator () {
 
         getAnimQueue (anim) {
             this.__convertLines(anim);
-            return anim.lines.filter(it => it.isRunnable);
-        }
+            return anim.lines.filter(it => it.isRunnable).map(it => it.getInstance());
+        },
+
+		getAnimations () {
+			return Object.entries(this._anims).map(([k, v]) => ({
+				uid: k,
+				name: v.name
+			}))
+		}
 	};
 
-	d20plus.tool.tools.push(animatorTool);
+	d20plus.tool.tools.push(d20plus.anim.animatorTool);
 
 	function hasAnyKey (object) {
         for (const k in object) {
@@ -1070,7 +1106,8 @@ function baseToolAnimator () {
                     // only one instance of an animation can be active on a token at a time
                     animUid: {
                         queue: [...], // returned by getAnimQueue
-                        start // start time
+                        start, // start time
+                        lastTick // last tick time
                     },
                     ... // other animations
                 }
@@ -1087,13 +1124,15 @@ function baseToolAnimator () {
 		},
 
 		startAnimation (token, animUid) {
-		    const anim = animatorTool.getAnimation(animUid);
-		    const queue = animatorTool.getAnimQueue(anim);
+		    const anim = d20plus.anim.animatorTool.getAnimation(animUid);
+		    const queue = d20plus.anim.animatorTool.getAnimQueue(anim);
 
 			this._tracker[token.id] = this._tracker[token.id] || {token, active: {}};
+			const time = (new Date).getTime();
             this._tracker[token.id].active[animUid] = {
                 queue,
-                start: (new Date).getTime()
+                start: time,
+				lastTick: time
             }
 		},
 
@@ -1109,21 +1148,44 @@ function baseToolAnimator () {
 			this._restTicks = tickRate;
 		},
 
+		_lastTickActive: false,
 		doTick () {
 			if (this._hasAnyActive()) {
+				// if we've been sleeping, reset start times
+				// prevents an initial "jolt" as anims suddenly have catch up on 1.5s of lag
+				if (!this._lastTickActive) {
+					this._lastTickActive = true;
+					const time = (new Date()).getTime();
+
+					for (const tokenId in this._tracker) {
+						if (!this._tracker.hasOwnProperty(tokenId)) continue;
+						const tokenMeta = this._tracker[tokenId];
+
+						for (const animUid in tokenMeta.active) {
+							if (!tokenMeta.active.hasOwnProperty(animUid)) continue;
+							const instance = tokenMeta.active[animUid];
+							instance.start = time;
+							instance.lastTick = time;
+						}
+					}
+				}
+
 				this._doTick();
 			} else {
-				// sleep for 1.5 seconds
-				setTimeout(() => this.doTick(), 1500)
+				this._lastTickActive = false;
+				// if none are active, sleep for 1.5 seconds
+				setTimeout(() => {
+					this.doTick();
+				}, 1500)
 			}
 		},
 
-		getSaveableState () {
+		saveState () {
 			// TODO export this._tracker -- remove token objects, replace them with ID strings?
 			//   convert animation queue into saveable states
 		},
 
-		loadStateFrom () {
+		loadState () {
 			// TODO reload saved state, replacing token ID string with token objects
 			//   reload animation queue from saveable states
 		},
@@ -1135,7 +1197,9 @@ function baseToolAnimator () {
         // TODO add background task (web worker?) to save this out
 		_doTick () {
 			// higher tick rate = slower
-			if (++this.__tickCount === this._restTicks) {
+			if (++this.__tickCount >= this._restTicks) {
+				this.__tickCount = 0;
+
 			    const time = (new Date()).getTime();
 
 				for (const tokenId in this._tracker) {
@@ -1151,8 +1215,9 @@ function baseToolAnimator () {
                         for (let i = 0; i < instance.queue.length; ++i) {
                             anyModification = instance.queue[i].animate(
                                 tokenMeta.token,
-                                tokenMeta.start,
-                                tokenMeta.start - time
+								time - instance.start,
+								time - instance.lastTick,
+								instance.queue
                             ) || anyModification;
 
                             if (instance.queue[i].hasRun()) {
@@ -1163,6 +1228,7 @@ function baseToolAnimator () {
 
                         // queue empty -> this animation is no longer active
                         if (!instance.queue.length) delete tokenMeta.active[animUid];
+                        else instance.lastTick = time;
                     }
 
                     // no active animations -> stop tracking this token
@@ -1171,14 +1237,14 @@ function baseToolAnimator () {
                     // save after applying animations
                     if (anyModification) tokenMeta.token.save();
 				}
-				this.__tickCount = 0;
 			}
 
-			requestAnimationFrame(this.doTick())
+			requestAnimationFrame(this.doTick.bind(this))
 		},
 
 		init () {
-			setTimeout(() => this.doTick(), 5000)
+			this.loadState();
+			setTimeout(() => this.doTick(), 5000);
 		}
 	};
 

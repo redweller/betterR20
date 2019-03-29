@@ -59,6 +59,7 @@ const betteR20Core = function () {
 		d20plus.weather.addWeather();
 		d20plus.engine.repairHexMethods();
 		d20plus.remoteLibre.init(); // Better20 jukebox tab
+		d20plus.anim.animatorTool.init();
 
 		// apply config
 		if (window.is_gm) {
