@@ -473,6 +473,14 @@ function baseToolAnimator () {
         }
     }
 
+    Command.errInvalidArgCount = function (line) { return new Command(line, "Invalid argument count")};
+    Command.errStartNum = function (line) { return new Command(line, `"start time" was not a number`)};
+    Command.errDurationNum = function (line) { return new Command(line, `"duration" was not a number`)};
+    Command.errPropNum = function (line, prop) { return new Command(line, `"${prop}" was not a number`)};
+    Command.errPropBool = function (line, prop) { return new Command(line, `"${prop}" was not a boolean`)};
+    Command.errPropLayer = function (line, prop) { return new Command(line, `"${prop}" was not a layer`)};
+    Command.errPropToken = function (line, prop) { return new Command(line, `"${prop}" was not a token property`)};
+
     // TODO convert all to returning Commands
     Command.fromString = function (line) {
         line = line.split("/\/\//g")[0]; // handle comments
@@ -482,17 +490,17 @@ function baseToolAnimator () {
         const op = tokens.shift();
         switch (op) {
             case "mv": {
-                if (tokens.length < 4 || tokens.length > 5) return new Command(line, "Invalid argument count", null);
+                if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return new Command(line, `"Start time" was not a number`, null);
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return new Command(line, `"Duration" was not a number`, null);
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nX = Number(tokens[2]);
-                if (isNaN(nX)) return new Command(line, `"X" was not a number`, null);
+                if (isNaN(nX)) return Command.errPropNum(line, "x");
                 const nY = Number(tokens[3]);
-                if (isNaN(nY)) return new Command(line, `"Y" was not a number`, null);
+                if (isNaN(nY)) return Command.errPropNum(line, "y");
                 const nZ = tokens[4] ? Number(tokens[4]) : null;
-                if (nZ != null && isNaN(nY)) return new Command(line, `Z`, null);
+                if (nZ != null && isNaN(nY)) return Command.errPropNum(line, "z");
 
                 return new Command(
                     line,
@@ -502,93 +510,93 @@ function baseToolAnimator () {
             }
 
             case "rot": {
-                if (tokens.length !== 3) return null;
+                if (tokens.length !== 3) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return null;
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nRot = Number(tokens[2]);
-                if (isNaN(nRot)) return null;
+                if (isNaN(nRot)) return Command.errPropNum(line, "degrees");
                 return new d20plus.anim.Rotate(nStart, nDuration, nRot);
             }
 
             case "cp": {
-                if (tokens.length < 1 || tokens.length > 2) return null;
+                if (tokens.length < 1 || tokens.length > 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const anim = tokens[1] ? Object.values(this._anims).find(it => it.name === tokens[1]) : null;
                 return new d20plus.anim.Copy(nStart, anim.name);
             }
 
             case "flip": {
-                if (tokens.length !== 3) return null;
+                if (tokens.length !== 3) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const flipH = tokens[1] === "true" ? true : tokens[1] === "false" ? false : null;
-                if (flipH == null) return null;
+                if (flipH == null) return Command.errPropBool("flipH");
                 const flipV = tokens[2] === "true" ? true : tokens[2] === "false" ? false : null;
-                if (flipV == null) return null;
+                if (flipV == null) return Command.errPropBool("flipV");
                 return new d20plus.anim.Flip(nStart, flipH, flipV);
             }
 
             case "scale": {
-                if (tokens.length !== 4) return null;
+                if (tokens.length !== 4) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return null;
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nScaleX = Number(tokens[2]);
-                if (isNaN(nScaleX)) return null;
+                if (isNaN(nScaleX)) return Command.errPropNum(line, "scaleX");
                 const nScaleY = Number(tokens[3]);
-                if (isNaN(nScaleY)) return null;
+                if (isNaN(nScaleY)) return Command.errPropNum(line, "scaleY");
                 return new d20plus.anim.Scale(nStart, nDuration, nScaleX, nScaleY);
             }
 
             case "layer": {
-                if (tokens.length !== 2) return null;
+                if (tokens.length !== 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
-                if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
+                if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return Command.errPropLayer(line, "layer");
                 return new d20plus.anim.Layer(nStart, tokens[1]);
             }
 
             case "light": {
-                if (tokens.length < 4 || tokens.length > 5) return null;
+                if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return null;
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nLightRadius = Number(tokens[2]);
-                if (isNaN(nLightRadius)) return null;
+                if (isNaN(nLightRadius)) return Command.errPropNum(line, "lightRadius");
                 const nDimStart = tokens[3] ? Number(tokens[3]) : null;
-                if (nDimStart != null && isNaN(nDimStart)) return null;
+                if (nDimStart != null && isNaN(nDimStart)) return Command.errPropNum(line, "dimStart");
                 const nDegrees = tokens[4] ? Number(tokens[4]) : null;
-                if (nDegrees != null && isNaN(nDegrees)) return null;
+                if (nDegrees != null && isNaN(nDegrees)) return Command.errPropNum(line, "degrees");
                 return new d20plus.anim.Lighting(nStart, nDuration, nLightRadius, nDimStart, nDegrees);
             }
 
             case "prop": {
-                if (tokens.length !== 3) return null;
+                if (tokens.length !== 3) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
-                if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
+                if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return Command.errPropToken(line, "prop");
                 let prop = tokens[2];
                 try { prop = JSON.parse(prop); } catch (ignored) {}
                 return new d20plus.anim.SetProperty(nStart, tokens[1], prop);
             }
 
             case "macro": {
-                if (tokens.length !== 2) return null;
+                if (tokens.length !== 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const macro = null; // TODO validate macro
                 return new d20plus.anim.TriggerMacro(nStart, macro.name); // TODO pass name? pass ID?
             }
 
             case "anim": {
-                if (tokens.length !== 2) return null;
+                if (tokens.length !== 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const anim = Object.values(this._anims).find(it => it.name === tokens[1]);
                 return new d20plus.anim.TriggerAnimation(nStart, anim.uid);
             }
