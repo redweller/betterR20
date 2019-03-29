@@ -417,11 +417,7 @@ function baseToolAnimator () {
                 if (!this._hasRun && alpha >= startTime) {
                     this._hasRun = true;
 
-					const macro = null; // TODO fetch macro
-
-					if (!macro) return;
-
-					// TODO trigger macro
+					d20.textchat.doChatInput(`#${macroName}`)
                 }
                 return false;
             };
@@ -463,7 +459,7 @@ function baseToolAnimator () {
 		}
 	};
 
-	function Command (line, error, cons) {
+	function Command (line, error, cons = null) {
 	    this.line = line;
 	    this.error = error;
 	    this.isRunnable = !!cons;
@@ -482,17 +478,17 @@ function baseToolAnimator () {
         const op = tokens.shift();
         switch (op) {
             case "mv": {
-                if (tokens.length < 4 || tokens.length > 5) return new Command(line, "Invalid argument count", null);
+                if (tokens.length < 4 || tokens.length > 5) return new Command(line, "Invalid argument count");
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return new Command(line, `"Start time" was not a number`, null);
+                if (isNaN(nStart)) return new Command(line, `"Start time" was not a number`);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return new Command(line, `"Duration" was not a number`, null);
+                if (isNaN(nDuration)) return new Command(line, `"Duration" was not a number`);
                 const nX = Number(tokens[2]);
-                if (isNaN(nX)) return new Command(line, `"X" was not a number`, null);
+                if (isNaN(nX)) return new Command(line, `"X" was not a number`);
                 const nY = Number(tokens[3]);
-                if (isNaN(nY)) return new Command(line, `"Y" was not a number`, null);
+                if (isNaN(nY)) return new Command(line, `"Y" was not a number`);
                 const nZ = tokens[4] ? Number(tokens[4]) : null;
-                if (nZ != null && isNaN(nY)) return new Command(line, `Z`, null);
+                if (nZ != null && isNaN(nY)) return new Command(line, `Z was not a number`);
 
                 return new Command(
                     line,
@@ -502,7 +498,7 @@ function baseToolAnimator () {
             }
 
             case "rot": {
-                if (tokens.length !== 3) return null;
+                if (tokens.length !== 3) return new Command(line, "Invalid argument count");
                 const nStart = Number(tokens[0]);
                 if (isNaN(nStart)) return null;
                 const nDuration = Number(tokens[1]);
@@ -581,8 +577,8 @@ function baseToolAnimator () {
                 if (tokens.length !== 2) return null;
                 const nStart = Number(tokens[0]);
                 if (isNaN(nStart)) return null;
-                const macro = null; // TODO validate macro
-                return new d20plus.anim.TriggerMacro(nStart, macro.name); // TODO pass name? pass ID?
+                // no validation for macro -- it might exist in the future if it doesn't now, or vice-versa
+                return new d20plus.anim.TriggerMacro(nStart, tokens[1]);
             }
 
             case "anim": {

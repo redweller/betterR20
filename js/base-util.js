@@ -270,6 +270,15 @@ function baseUtil () {
 		return null;
 	};
 
+	d20plus.ut.getMacroByName = (macroName) => {
+		const macros = d20.Campaign.players.map(p => p.macros.find(m => m.get("name") === macroName && (p.id === window.currentPlayer.id || m.visibleToCurrentPlayer())))
+			.filter(Boolean);
+		if (macros.length) {
+			return macros[0];
+		}
+		return null;
+	};
+
 	d20plus.ut._BYTE_UNITS = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {
 		let i = -1;
