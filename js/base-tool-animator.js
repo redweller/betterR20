@@ -1,11 +1,4 @@
 function baseToolAnimator () {
-	// TODO each of these should have a function `animate` which accepts three parameters:
-	//   token: the token object being animated
-	//   alpha: the absolute time since the start of the animation
-	//   delta; the time delta from the last time the animate function was run
-    //   and returns "true" if the token needs to be saved
-	// TODO each of these should have a function `hasRun` which returns true if the animation has run/completed
-	//   this can be used to clean up completed animations, removing them from the animation queue
 	d20plus.anim = {
 	    deserialize: function (json) {
 	        switch (json._type) {
@@ -67,6 +60,15 @@ function baseToolAnimator () {
             }
         },
 
+		// region animations
+		// Each has `animate` which accepts three parameters:
+		//   token: the token object being animated
+		//   alpha: the absolute time since the start of the animation#s life
+		//   delta: the time delta from the last time the `animate` function was run
+		// The `animate` function returns `true` if the token needs to be saved, `false` otherwise
+		// Each should also have:
+		//   `serialize` function
+		//   `hasRun` function; returns `true` if the animation has been run, and can therefore be safely removed from any queues
 		Nop: function () {
 			this.animate = function () {
 			    return false;
@@ -457,6 +459,7 @@ function baseToolAnimator () {
                 }
             };
 		}
+		// endregion animations
 	};
 
 	function Command (line, error, cons = null) {
@@ -935,19 +938,18 @@ function baseToolAnimator () {
             // TODO a tool for rescuing tokens which have been moved off the map
             //   Should reset to 1.0 scale; reset flipping, place on GM layer?
 		    const doRefreshList = () => {
-                // TODO limit to current page?
-                d20.Campaign.pages.models.forEach(pageModel => {
+		    	const pageW = d20.Campaign.activePage().attributes.width * 70;
+		    	const pageH = d20.Campaign.activePage().attributes.height * 70;
 
-                });
-
-                // TODO get page model
-                const outOfBounds = pageModel.thegraphics.models.filter(tokenModel => {
+                const outOfBounds = d20.Campaign.activePage().thegraphics.models.filter(tokenModel => {
                     return tokenModel.attributes.scaleX < 0.01 ||
+						tokenModel.attributes.scaleX > 50.0 ||
                         tokenModel.attributes.scaleY < 0.01 ||
+                        tokenModel.attributes.scaleY > 50.0 ||
                         tokenModel.attributes.left < 0 ||
-                        tokenModel.attributes.left > PAGE_WIDTH || // TODO
+                        tokenModel.attributes.left > pageW ||
                         tokenModel.attributes.top < 0 ||
-                        tokenModel.attributes.top > PAGE_HEIGHT // TODO
+                        tokenModel.attributes.top > pageH;
                 });
 
                 // TODO init list js
