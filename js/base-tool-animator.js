@@ -933,10 +933,36 @@ function baseToolAnimator () {
 				<div class="hidden uid">${anim.uid}</div>
 			</label>`;
 		},
+
 		_initRescue () {
-			// TODO a tool for rescuing tokens which have been moved off the map
-			//   Should reset to 1.0 scale; reset flipping, place on GM layer?
+            // TODO a tool for rescuing tokens which have been moved off the map
+            //   Should reset to 1.0 scale; reset flipping, place on GM layer?
+		    const doRefreshList = () => {
+                // TODO limit to current page?
+                d20.Campaign.pages.models.forEach(pageModel => {
+
+                });
+
+                // TODO get page model
+                const outOfBounds = pageModel.thegraphics.models.filter(tokenModel => {
+                    return tokenModel.attributes.scaleX < 0.01 ||
+                        tokenModel.attributes.scaleY < 0.01 ||
+                        tokenModel.attributes.left < 0 ||
+                        tokenModel.attributes.left > PAGE_WIDTH || // TODO
+                        tokenModel.attributes.top < 0 ||
+                        tokenModel.attributes.top > PAGE_HEIGHT // TODO
+                });
+
+                // TODO init list js
+
+                outOfBounds.forEach(oob =>{
+                    // TODO add list ele
+                });
+            };
+
+            doRefreshList();
 		},
+
 		_initEditor () {
 			this._$ed_iptName = this.$win.find(`[name="ipt-name"]`).disableSpellcheck();
 			this._$ed_btnSave = this.$win.find(`[name="btn-save"]`);
@@ -1107,6 +1133,7 @@ function baseToolAnimator () {
 		    return hasAnyKey(this._tracker);
 		},
 
+        // TODO add background task (web worker?) to save this out
 		_doTick () {
 			// higher tick rate = slower
 			if (++this.__tickCount === this._restTicks) {
