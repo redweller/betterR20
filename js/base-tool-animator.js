@@ -466,29 +466,38 @@ function baseToolAnimator () {
 
 	    this.getInstance = function () {
 	        return new cons();
-        }
+        };
     }
 
-    // TODO convert all to returning Commands
+    Command.errInvalidArgCount = function (line) { return new Command(line, "Invalid argument count")};
+    Command.errStartNum = function (line) { return new Command(line, `"start time" was not a number`)};
+    Command.errDurationNum = function (line) { return new Command(line, `"duration" was not a number`)};
+    Command.errPropNum = function (line, prop) { return new Command(line, `"${prop}" was not a number`)};
+    Command.errPropBool = function (line, prop) { return new Command(line, `"${prop}" was not a boolean`)};
+    Command.errPropLayer = function (line, prop) { return new Command(line, `"${prop}" was not a layer`)};
+    Command.errPropToken = function (line, prop) { return new Command(line, `"${prop}" was not a token property`)};
+
     Command.fromString = function (line) {
-        line = line.split("/\/\//g")[0]; // handle comments
-        const tokens = line.split(/ +/g).filter(Boolean);
-        if (!tokens.length) return new d20plus.anim.Nop();
+        const cleanLine = line
+            .split("/\/\//g")[0] // handle comments
+            .trim();
+        const tokens = cleanLine.split(/ +/g).filter(Boolean);
+        if (!tokens.length) return new Command(line);
 
         const op = tokens.shift();
         switch (op) {
             case "mv": {
-                if (tokens.length < 4 || tokens.length > 5) return new Command(line, "Invalid argument count");
+                if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return new Command(line, `"Start time" was not a number`);
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return new Command(line, `"Duration" was not a number`);
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nX = Number(tokens[2]);
-                if (isNaN(nX)) return new Command(line, `"X" was not a number`);
+                if (isNaN(nX)) return Command.errPropNum(line, "x");
                 const nY = Number(tokens[3]);
-                if (isNaN(nY)) return new Command(line, `"Y" was not a number`);
+                if (isNaN(nY)) return Command.errPropNum(line, "y");
                 const nZ = tokens[4] ? Number(tokens[4]) : null;
-                if (nZ != null && isNaN(nY)) return new Command(line, `Z was not a number`);
+                if (nZ != null && isNaN(nY)) return Command.errPropNum(line, "z");
 
                 return new Command(
                     line,
@@ -498,95 +507,140 @@ function baseToolAnimator () {
             }
 
             case "rot": {
-                if (tokens.length !== 3) return new Command(line, "Invalid argument count");
+                if (tokens.length !== 3) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return null;
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nRot = Number(tokens[2]);
-                if (isNaN(nRot)) return null;
-                return new d20plus.anim.Rotate(nStart, nDuration, nRot);
+                if (isNaN(nRot)) return Command.errPropNum(line, "degrees");
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.Rotate.bind(nStart, nDuration, nRot)
+                );
             }
 
             case "cp": {
-                if (tokens.length < 1 || tokens.length > 2) return null;
+                if (tokens.length < 1 || tokens.length > 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const anim = tokens[1] ? Object.values(this._anims).find(it => it.name === tokens[1]) : null;
-                return new d20plus.anim.Copy(nStart, anim.name);
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.Copy.bind(nStart, anim.name)
+                );
             }
 
             case "flip": {
-                if (tokens.length !== 3) return null;
+                if (tokens.length !== 3) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const flipH = tokens[1] === "true" ? true : tokens[1] === "false" ? false : null;
-                if (flipH == null) return null;
+                if (flipH == null) return Command.errPropBool("flipH");
                 const flipV = tokens[2] === "true" ? true : tokens[2] === "false" ? false : null;
-                if (flipV == null) return null;
-                return new d20plus.anim.Flip(nStart, flipH, flipV);
+                if (flipV == null) return Command.errPropBool("flipV");
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.Flip.bind(nStart, flipH, flipV)
+                );
             }
 
             case "scale": {
-                if (tokens.length !== 4) return null;
+                if (tokens.length !== 4) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return null;
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nScaleX = Number(tokens[2]);
-                if (isNaN(nScaleX)) return null;
+                if (isNaN(nScaleX)) return Command.errPropNum(line, "scaleX");
                 const nScaleY = Number(tokens[3]);
-                if (isNaN(nScaleY)) return null;
-                return new d20plus.anim.Scale(nStart, nDuration, nScaleX, nScaleY);
+                if (isNaN(nScaleY)) return Command.errPropNum(line, "scaleY");
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.Scale.bind(nStart, nDuration, nScaleX, nScaleY)
+                );
             }
 
             case "layer": {
-                if (tokens.length !== 2) return null;
+                if (tokens.length !== 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
-                if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return null;
-                return new d20plus.anim.Layer(nStart, tokens[1]);
+                if (isNaN(nStart)) return Command.errStartNum(line);
+                if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return Command.errPropLayer(line, "layer");
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.Layer.bind(nStart, tokens[1])
+                );
             }
 
             case "light": {
-                if (tokens.length < 4 || tokens.length > 5) return null;
+                if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const nDuration = Number(tokens[1]);
-                if (isNaN(nDuration)) return null;
+                if (isNaN(nDuration)) return Command.errDurationNum(line);
                 const nLightRadius = Number(tokens[2]);
-                if (isNaN(nLightRadius)) return null;
+                if (isNaN(nLightRadius)) return Command.errPropNum(line, "lightRadius");
                 const nDimStart = tokens[3] ? Number(tokens[3]) : null;
-                if (nDimStart != null && isNaN(nDimStart)) return null;
+                if (nDimStart != null && isNaN(nDimStart)) return Command.errPropNum(line, "dimStart");
                 const nDegrees = tokens[4] ? Number(tokens[4]) : null;
-                if (nDegrees != null && isNaN(nDegrees)) return null;
-                return new d20plus.anim.Lighting(nStart, nDuration, nLightRadius, nDimStart, nDegrees);
+                if (nDegrees != null && isNaN(nDegrees)) return Command.errPropNum(line, "degrees");
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.Lighting.bind(nStart, nDuration, nLightRadius, nDimStart, nDegrees)
+                );
             }
 
             case "prop": {
-                if (tokens.length !== 3) return null;
+                if (tokens.length !== 3) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
-                if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
+                if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return Command.errPropToken(line, "prop");
                 let prop = tokens[2];
                 try { prop = JSON.parse(prop); } catch (ignored) {}
-                return new d20plus.anim.SetProperty(nStart, tokens[1], prop);
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.SetProperty.bind(nStart, tokens[1], prop)
+                );
             }
 
             case "macro": {
-                if (tokens.length !== 2) return null;
+                if (tokens.length !== 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
-                // no validation for macro -- it might exist in the future if it doesn't now, or vice-versa
-                return new d20plus.anim.TriggerMacro(nStart, tokens[1]);
+                if (isNaN(nStart)) return Command.errStartNum(line);
+				// no validation for macro -- it might exist in the future if it doesn't now, or vice-versa
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.TriggerMacro.bind(nStart, tokens[1])
+                );
             }
 
             case "anim": {
-                if (tokens.length !== 2) return null;
+                if (tokens.length !== 2) return Command.errInvalidArgCount(line);
                 const nStart = Number(tokens[0]);
-                if (isNaN(nStart)) return null;
+                if (isNaN(nStart)) return Command.errStartNum(line);
                 const anim = Object.values(this._anims).find(it => it.name === tokens[1]);
-                return new d20plus.anim.TriggerAnimation(nStart, anim.uid);
+
+                return new Command(
+                    line,
+                    null,
+                    d20plus.anim.TriggerAnimation.bind(nStart, anim.uid)
+                );
             }
         }
     };
@@ -685,9 +739,18 @@ function baseToolAnimator () {
 			this.$win.dialog("open");
 		},
 		__doSaveState () {
+		    // copy, and return any parsed commands to strings
+		    const saveableAnims = {};
+            Object.entries(this._anims).forEach(([k, v]) => {
+                saveableAnims[k] = {
+                    ...v,
+                    lines: v.lines.map(it => typeof it === "string" ? it : it.line)
+                }
+            });
+
 			Campaign.save({
 				bR20tool__anim_id: this._animId,
-				bR20tool__anim_anims: this._anims,
+				bR20tool__anim_anims: saveableAnims,
 			});
 		},
 		_doLoadState () {
@@ -734,14 +797,21 @@ function baseToolAnimator () {
                     let messages = [];
                     data.animations.forEach((anim, i) => {
                         if (anim.uid && anim.name && anim.lines) {
+                            const originalName = anim.name;
                             anim.uid = this.__getNextId();
                             anim.name = this.__getNextName(anim.name);
-                            this.__addAnim(anim);
-                            messages.push(`Added ${anim.name}!`);
+                            const msg = this.__getValidationMessage(anim);
+                            if (msg) {
+                                messages.push(`${originalName} was invalid: ${msg}`);
+                            } else {
+                                this.__addAnim(anim);
+                                messages.push(`Added ${originalName}${anim.name !== originalName ? ` (renamed as ${anim.name})` : ""}!`);
+                            }
                         } else {
                             messages.push(`Animation at index ${i} is missing required fields!`);
                         }
                     });
+
                     if (messages.length) {
                         console.log(messages.jsoin("\n"));
                         alert(messages.join("\n"))
@@ -860,10 +930,36 @@ function baseToolAnimator () {
 				<div class="hidden uid">${anim.uid}</div>
 			</label>`;
 		},
+
 		_initRescue () {
-			// TODO a tool for rescuing tokens which have been moved off the map
-			//   Should reset to 1.0 scale; reset flipping, place on GM layer?
+            // TODO a tool for rescuing tokens which have been moved off the map
+            //   Should reset to 1.0 scale; reset flipping, place on GM layer?
+		    const doRefreshList = () => {
+                // TODO limit to current page?
+                d20.Campaign.pages.models.forEach(pageModel => {
+
+                });
+
+                // TODO get page model
+                const outOfBounds = pageModel.thegraphics.models.filter(tokenModel => {
+                    return tokenModel.attributes.scaleX < 0.01 ||
+                        tokenModel.attributes.scaleY < 0.01 ||
+                        tokenModel.attributes.left < 0 ||
+                        tokenModel.attributes.left > PAGE_WIDTH || // TODO
+                        tokenModel.attributes.top < 0 ||
+                        tokenModel.attributes.top > PAGE_HEIGHT // TODO
+                });
+
+                // TODO init list js
+
+                outOfBounds.forEach(oob =>{
+                    // TODO add list ele
+                });
+            };
+
+            doRefreshList();
 		},
+
 		_initEditor () {
 			this._$ed_iptName = this.$win.find(`[name="ipt-name"]`).disableSpellcheck();
 			this._$ed_btnSave = this.$win.find(`[name="btn-save"]`);
@@ -882,7 +978,7 @@ function baseToolAnimator () {
 
 			this._$winEditor.dialog("open");
 			const $iptLines = this._$winEditor.find(`[name="ipt-lines"]`);
-			$iptLines.val(anim.lines.join("\n"));
+			$iptLines.val(anim.lines.map(it => typeof it === "string" ? it : it.line).join("\n"));
 
 			const getValidationMessage = () => {
 				// create a fake animation object, and check it for errors
@@ -912,9 +1008,10 @@ function baseToolAnimator () {
 
 			this._$ed_btnValidate.off("click").click(() => {
 				const msg = getValidationMessage();
-				if (msg) return alert(msg);
+				alert(msg || "Valid!");
 			});
 		},
+
 		/**
 		 * Returns `null` if valid, or an error message if invalid.
 		 * @private
@@ -928,22 +1025,27 @@ function baseToolAnimator () {
 			if (sameName) return "Name must be unique!";
 
 			// validate lines
-            const badLines = anim.lines.map(l => Command.fromString(l)).filter(c => c.error);
+            this.__convertLines(anim);
+
+            const badLines = anim.lines.filter(c => c.error);
             if (badLines.length) {
-                alert(`Invalid, the following lines could not be parsed:\n${badLines.map(c => `${c.error} @ ${c.line}`).join("\n")}`);
-            } else {
-                alert("Valid!")
+                return `Invalid, the following lines could not be parsed:\n${badLines.map(c => `${c.error} -- ${c.line}`).join("\n")}`;
             }
+
+            return null;
 		},
+
+        __convertLines (anim) {
+		    anim.lines = anim.lines.map(l => l instanceof "string" ? Command.fromString(l) : l);
+        },
 
         getAnimation (uid) {
 		    return this._anims[uid];
         },
 
-        getAnimQueue (animation) {
-            // TODO caching mechanism?
-		    return animation.lines.map(l => Command.fromString(l))
-                .filter(it => it.isRunnable)
+        getAnimQueue (anim) {
+            this.__convertLines(anim);
+            return anim.lines.filter(it => it.isRunnable);
         }
 	};
 
@@ -1028,6 +1130,7 @@ function baseToolAnimator () {
 		    return hasAnyKey(this._tracker);
 		},
 
+        // TODO add background task (web worker?) to save this out
 		_doTick () {
 			// higher tick rate = slower
 			if (++this.__tickCount === this._restTicks) {
