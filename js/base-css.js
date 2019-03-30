@@ -30,6 +30,14 @@ function baseCss () {
 			r: "display: flex; flex-direction: column;"
 		},
 		{
+			s: ".flex-v-center",
+			r: "display: flex; align-items: center; height: 100%;"
+		},
+		{
+			s: ".flex-vh-center",
+			r: "display: flex; justify-content: center; align-items: center; height: 100%;"
+		},
+		{
 			s: ".no-shrink",
 			r: "flex-shrink: 0;"
 		},

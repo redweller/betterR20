@@ -1,4 +1,7 @@
 function baseToolAnimator () {
+	// TODO need to have the concept of a "scene" which is...
+	//  multiple animations bound to multiple tokens that can be launched at the same time
+
 	d20plus.anim = {
 	    deserialize: function (json) {
 	        switch (json._type) {
@@ -672,7 +675,8 @@ function baseToolAnimator () {
 				<p>
 					<button class="btn" name="btn-add">Add Animation</button>
 					<button class="btn mr-2" name="btn-import">Import Animation</button>
-					<button class="btn" name="btn-rescue">Rescue Token</button>
+					<button class="btn" name="btn-disable">Stop Animations</button>
+					<button class="btn" name="btn-rescue">Rescue Tokens</button>
 				</p>
 				
 				<div class="anm__wrp-sel-all">
@@ -686,6 +690,29 @@ function baseToolAnimator () {
 				<div id="token-animator-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<br><br>
+					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
+				</div>
+			</div>
+			
+			<div id="d20plus-token-animator-disable" title="Stop Animation" class="anm__win">
+				<p>
+					<button class="btn" name="btn-refresh">Refresh</button>
+				</p>
+				
+				<p class="anm__wrp-sel-all">
+					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label> 
+					<button class="btn" name="btn-stop">Stop Selected</button>
+				</p>
+				
+				<div id="token-animator-disable-list-container">
+					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
+					<div class="bold flex-v-center mt-2">
+						<div class="col-1"></div>
+						<div class="col-3">Page</div>
+						<div class="col-2">Image</div>
+						<div class="col-3">Name</div>
+						<div class="col-3">Animation</div>
+					</div>
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
 			</div>
@@ -731,6 +758,13 @@ function baseToolAnimator () {
 				width: 800,
 				height: 600,
 			}).data("initialised", false);
+
+			$("#d20plus-token-animator-disable").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 600,
+			});
 
 			$("#d20plus-token-animator-rescue").dialog({
 				autoOpen: false,
@@ -782,16 +816,19 @@ function baseToolAnimator () {
 			this._doLoadState();
 			this._doSaveStateDebounced = MiscUtil.debounce(this.__doSaveState, 100);
 
+			this._$winDisable = $(`#d20plus-token-animator-disable`);
 			this._$winRescue = $(`#d20plus-token-animator-rescue`);
 
 			this._initMain();
 			this._initRescue();
+			this._dis_init();
 			this.$win.data("initialised", true);
 		},
 		_initMain () {
 			const $btnAdd = this.$win.find(`[name="btn-add"]`);
 			const $btnImport = this.$win.find(`[name="btn-import"]`);
 			const $btnRescue = this.$win.find(`[name="btn-rescue"]`);
+			const $btnDisable = this.$win.find(`[name="btn-disable"]`);
 
 			const $btnSelExport = this.$win.find(`[name="btn-export"]`);
 			const $btnSelDelete = this.$win.find(`[name="btn-delete"]`);
@@ -840,9 +877,11 @@ function baseToolAnimator () {
                 }
 			});
 
-			$btnRescue.click(() => {
-				this._$winRescue.dialog("open");
+			$btnDisable.click(() => {
+				this._dis_populate();
+				this._$winDisable.dialog("open");
 			});
+			$btnRescue.click(() => this._$winRescue.dialog("open"));
 
 			const getSelButtons = ofClass => {
 				return this._animList.items
@@ -936,8 +975,8 @@ function baseToolAnimator () {
 					this._doSaveStateDebounced();
 				});
 
-			return $$`<label class="import-cb-label anm__row">
-				<div class="col-1 anm__row-wrp-cb"><input type="checkbox"></div>
+			return $$`<div class="anm__row">
+				<label class="col-1 anm__row-wrp-cb"><input type="checkbox"></label>
 				${$name}
 				<div class="anm__row-controls col-3 text-center"">
 					${$btnDuplicate}
@@ -945,7 +984,7 @@ function baseToolAnimator () {
 					${$btnDelete}
 				</div>
 				<div class="hidden uid">${anim.uid}</div>
-			</label>`;
+			</div>`;
 		},
 
 		_initRescue () {
@@ -975,6 +1014,91 @@ function baseToolAnimator () {
 
             doRefreshList();
 		},
+
+		// region disabler
+		_dis_getSelected () {
+			return this._dis_list.items.filter(it => $(it.elm).find("input[type=checkbox]").prop("checked"));
+		},
+
+		_dis__getListItem (page, imgUrl, tokenName, animName, _tokenId, _animUid) {
+			return `<li class="flex-v-center">
+				<label class="col-1"><input type="checkbox"></label>
+				<div class="page col-3">${page}</div>				
+				<div class="col-2">
+					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
+				</div>				
+				<div class="col-3 tokenName">${tokenName || "(unnamed)"}</div>				
+				<div class="col-3 animName">${animName}</div>
+				<div class="_tokenId hidden">${_tokenId}</div>				
+				<div class="_animUid hidden">${_animUid}</div>				
+			</li>`
+		},
+
+		_dis_populate () {
+			let temp = "";
+			Object.entries(d20plus.anim.animator._tracker).forEach(([tokenId, tokenMeta]) => {
+				const imgUrl = tokenMeta.token.attributes.imgsrc;
+				const pageId = tokenMeta.token.attributes.page_id;
+				const pageName = (d20.Campaign.pages.get(pageId) || {attributes: {name: "(unknown)"}}).attributes.name;
+
+				Object.entries(tokenMeta.active).forEach(([animUid, animMeta]) => {
+					temp += this._dis__getListItem(
+						pageName,
+						imgUrl,
+						tokenMeta.token.attributes.name,
+						d20plus.anim.animatorTool.getAnimation(animUid).name,
+						tokenId,
+						animUid
+					)
+				});
+			});
+			this._dis_$wrpList.empty().append(temp);
+
+			this._dis_list = new List("token-animator-disable-list-container", {
+				valueNames: [
+					"page",
+					"tokenName",
+					"animName",
+					"_tokenId",
+					"_animUid"
+				]
+			});
+		},
+
+		_dis_init () {
+			this._dis_$btnRefresh = this._$winDisable.find(`[name="btn-refresh"]`);
+			this._dis_$btnStop = this._$winDisable.find(`[name="btn-stop"]`);
+			this._dis_$cbAll = this._$winDisable.find(`[name="cb-all"]`);
+			this._dis_$wrpList = this._$winDisable.find(`.list`);
+
+			this._dis_list = null;
+
+			this._dis_$cbAll.click(() => {
+				const toVal = this._dis_$cbAll.prop("checked");
+				this._dis_list.items.forEach(it => $(it.elm).find("input[type=checkbox]").prop("checked", toVal));
+			});
+
+			this._dis_$btnRefresh.click(() => {
+				this._dis_populate();
+			});
+
+			this._dis_$btnStop.off("click").click(() => {
+				const sel = this._dis_getSelected();
+				if (!sel.length) return alert("Please select some items from the list!");
+				if (!confirm("Are you sure?")) return;
+
+				sel.map(it => it.values()).forEach(it => {
+					delete d20plus.anim.animator._tracker[it._tokenId].active[it._animUid];
+
+					if (!hasAnyKey(d20plus.anim.animator._tracker[it._tokenId].active)) {
+						delete d20plus.anim.animator._tracker[it._tokenId];
+					}
+				});
+
+				d20plus.anim.animator.saveState();
+			});
+		},
+		// endregion disabler
 
 		__edit (anim) {
 			const $winEditor = $(this._html_template_editor).appendTo($("body"));
