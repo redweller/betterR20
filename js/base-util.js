@@ -262,7 +262,7 @@ function baseUtil () {
 		}
 	};
 
-	d20plus.ut.getTokenFromId = (tokenId) => {
+	d20plus.ut.getTokenById = (tokenId) => {
 		const foundTokenArr = d20.Campaign.pages.models.map(model => model.thegraphics.models.find(it => it.id === tokenId)).filter(it => it);
 		if (foundTokenArr.length) {
 			return foundTokenArr[0];

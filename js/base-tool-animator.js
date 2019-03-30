@@ -729,7 +729,12 @@ function baseToolAnimator () {
 				
 				<div id="token-animator-rescue-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
-					<br><br>
+					<div class="bold flex-v-center mt-2">
+						<div class="col-1"></div>
+						<div class="col-4">Page</div>
+						<div class="col-2">Image</div>
+						<div class="col-5">Name</div>
+					</div>
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
 			</div>
@@ -904,10 +909,13 @@ function baseToolAnimator () {
 			});
 
 			$btnDisable.click(() => {
-				this._dis_populate();
+				this._dis_doPopulateList();
 				this._$winDisable.dialog("open");
 			});
-			$btnRescue.click(() => this._$winRescue.dialog("open"));
+			$btnRescue.click(() => {
+				this._rescue_doPopulateList();
+				this._$winRescue.dialog("open")
+			});
 
 			const getSelButtons = ofClass => {
 				return this._animList.items
@@ -1020,32 +1028,102 @@ function baseToolAnimator () {
 		// endregion main
 
 		// region rescue
+		_rescue_getSelected () {
+			return this._rescue_list.items.filter(it => $(it.elm).find("input[type=checkbox]").prop("checked"));
+		},
+
+		_rescue_getListItem (page, imgUrl, tokenName, _tokenId) {
+			return `<label class="flex-v-center">
+				<div class="col-1"><input type="checkbox"></div>
+				<div class="page col-4">${page}</div>				
+				<div class="col-2">
+					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
+				</div>				
+				<div class="col-5 tokenName">${tokenName || "(unnamed)"}</div>
+				<div class="_tokenId hidden">${_tokenId}</div>		
+			</label>`
+		},
+
+		_rescue_doPopulateList () {
+			let temp = "";
+
+			const pageW = d20.Campaign.activePage().attributes.width * 70;
+			const pageH = d20.Campaign.activePage().attributes.height * 70;
+
+			const outOfBounds = d20.Campaign.activePage().thegraphics.models.filter(tokenModel => {
+				return tokenModel.attributes.scaleX < 0.01 ||
+					tokenModel.attributes.scaleX > 50.0 ||
+					tokenModel.attributes.scaleY < 0.01 ||
+					tokenModel.attributes.scaleY > 50.0 ||
+					tokenModel.attributes.left < 0 ||
+					tokenModel.attributes.left > pageW ||
+					tokenModel.attributes.top < 0 ||
+					tokenModel.attributes.top > pageH;
+			});
+
+			outOfBounds.forEach(token => {
+				const pageId = token.attributes.page_id;
+				const pageName = (d20.Campaign.pages.get(pageId) || {attributes: {name: "(unknown)"}}).attributes.name;
+
+				temp += this._rescue_getListItem(
+					pageName,
+					token.attributes.imgsrc,
+					token.attributes.name,
+					token.attributes.id,
+				)
+			});
+
+			this._rescue_$wrpList.empty().append(temp);
+
+			this._rescue_list = new List("token-animator-rescue-list-container", {
+				valueNames: [
+					"page",
+					"tokenName",
+					"_tokenId",
+				]
+			});
+		},
+
 		_rescue_init () {
-            // TODO a tool for rescuing tokens which have been moved off the map
-            //   Should reset to 1.0 scale; reset flipping, place on GM layer?
-		    const doRefreshList = () => {
-		    	const pageW = d20.Campaign.activePage().attributes.width * 70;
-		    	const pageH = d20.Campaign.activePage().attributes.height * 70;
+			this._rescue_$btnRefresh = this._$winRescue.find(`[name="btn-refresh"]`);
+			this._rescue_$btnRescue = this._$winRescue.find(`[name="btn-rescue"]`);
+			this._rescue_$cbAll = this._$winRescue.find(`[name="cb-all"]`);
+			this._rescue_$wrpList = this._$winRescue.find(`.list`);
 
-                const outOfBounds = d20.Campaign.activePage().thegraphics.models.filter(tokenModel => {
-                    return tokenModel.attributes.scaleX < 0.01 ||
-						tokenModel.attributes.scaleX > 50.0 ||
-                        tokenModel.attributes.scaleY < 0.01 ||
-                        tokenModel.attributes.scaleY > 50.0 ||
-                        tokenModel.attributes.left < 0 ||
-                        tokenModel.attributes.left > pageW ||
-                        tokenModel.attributes.top < 0 ||
-                        tokenModel.attributes.top > pageH;
-                });
+			this._rescue_list = null;
 
-                // TODO init list js
+			this._rescue_$cbAll.click(() => {
+				const toVal = this._rescue_$cbAll.prop("checked");
+				this._rescue_list.items.forEach(it => $(it.elm).find("input[type=checkbox]").prop("checked", toVal));
+			});
 
-                outOfBounds.forEach(oob =>{
-                    // TODO add list ele
-                });
-            };
+			this._rescue_$btnRefresh.click(() => this._rescue_doPopulateList());
 
-            doRefreshList();
+			this._rescue_$btnRescue.off("click").click(() => {
+				const sel = this._rescue_getSelected();
+				if (!sel.length) return alert("Please select some items from the list!");
+
+				sel.map(it => it.values()).forEach(it => {
+					// disable animations for token
+					delete d20plus.anim.animator._tracker[it._tokenId];
+
+					// reset token properties; place in the top-left corner of the canvas on the GM layer
+					const token = d20plus.ut.getTokenById(it._tokenId);
+					token.attributes.scaleX = 1.0;
+					token.attributes.scaleY = 1.0;
+					token.attributes.flipv = false;
+					token.attributes.fliph = false;
+					token.attributes.left = 35;
+					token.attributes.top = 35;
+					token.attributes.width = 70;
+					token.attributes.height = 70;
+					token.attributes.rotation = 0;
+					token.attributes.layer = "gmlayer";
+					token.save();
+				});
+
+				alert("Rescued tokens have been placed on the GM layer, in the top-left corner of the map");
+			});
 		},
 		// endregion rescue
 
@@ -1054,9 +1132,9 @@ function baseToolAnimator () {
 			return this._dis_list.items.filter(it => $(it.elm).find("input[type=checkbox]").prop("checked"));
 		},
 
-		_dis__getListItem (page, imgUrl, tokenName, animName, _tokenId, _animUid) {
-			return `<li class="flex-v-center">
-				<label class="col-1"><input type="checkbox"></label>
+		_dis_getListItem (page, imgUrl, tokenName, animName, _tokenId, _animUid) {
+			return `<label class="flex-v-center">
+				<div class="col-1"><input type="checkbox"></div>
 				<div class="page col-3">${page}</div>				
 				<div class="col-2">
 					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
@@ -1065,18 +1143,19 @@ function baseToolAnimator () {
 				<div class="col-3 animName">${animName}</div>
 				<div class="_tokenId hidden">${_tokenId}</div>				
 				<div class="_animUid hidden">${_animUid}</div>				
-			</li>`
+			</label>`
 		},
 
-		_dis_populate () {
+		_dis_doPopulateList () {
 			let temp = "";
+
 			Object.entries(d20plus.anim.animator._tracker).forEach(([tokenId, tokenMeta]) => {
 				const imgUrl = tokenMeta.token.attributes.imgsrc;
 				const pageId = tokenMeta.token.attributes.page_id;
 				const pageName = (d20.Campaign.pages.get(pageId) || {attributes: {name: "(unknown)"}}).attributes.name;
 
 				Object.entries(tokenMeta.active).forEach(([animUid, animMeta]) => {
-					temp += this._dis__getListItem(
+					temp += this._dis_getListItem(
 						pageName,
 						imgUrl,
 						tokenMeta.token.attributes.name,
@@ -1086,6 +1165,7 @@ function baseToolAnimator () {
 					)
 				});
 			});
+
 			this._dis_$wrpList.empty().append(temp);
 
 			this._dis_list = new List("token-animator-disable-list-container", {
@@ -1112,9 +1192,7 @@ function baseToolAnimator () {
 				this._dis_list.items.forEach(it => $(it.elm).find("input[type=checkbox]").prop("checked", toVal));
 			});
 
-			this._dis_$btnRefresh.click(() => {
-				this._dis_populate();
-			});
+			this._dis_$btnRefresh.click(() => this._dis_doPopulateList());
 
 			this._dis_$btnStop.off("click").click(() => {
 				const sel = this._dis_getSelected();
