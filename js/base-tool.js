@@ -1,6 +1,13 @@
 function baseTool() {
 	d20plus.tool = {};
 
+	/**
+	 * Each tool should have:
+	 *  - `name` List display name.
+	 *  - `desc` List display description.
+	 *  - `dialogFn` Function called to initialize dialog.
+	 *  - `openFn` Function called when tool is opened.
+	 */
 	d20plus.tool.tools = [
 		{
 			name: "Journal Cleaner",

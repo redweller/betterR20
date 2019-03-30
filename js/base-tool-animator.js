@@ -751,6 +751,7 @@ function baseToolAnimator () {
 				</div>
 			</div>
 		`,
+
 		dialogFn () {
 			$("#d20plus-token-animator").dialog({
 				autoOpen: false,
@@ -781,19 +782,39 @@ function baseToolAnimator () {
 			})
 		},
 
-		init () {
-			this.$win = this.$win || $("#d20plus-token-animator");
-			if (!this.$win.data("initialised")) {
-				this._init();
-				d20plus.anim.animator.init();
-			}
-		},
-
 		openFn () {
 			this.init();
 			this.$win.dialog("open");
 		},
-		__doSaveState () {
+
+		// region public
+		init () {
+			this.$win = this.$win || $("#d20plus-token-animator");
+			if (!this.$win.data("initialised")) {
+				this._meta_init();
+				d20plus.anim.animator.init();
+			}
+		},
+
+		getAnimation (uid) {
+			return this._anims[uid];
+		},
+
+		getAnimQueue (anim) {
+			this._edit_convertLines(anim);
+			return anim.lines.filter(it => it.isRunnable).map(it => it.getInstance());
+		},
+
+		getAnimations () {
+			return Object.entries(this._anims).map(([k, v]) => ({
+				uid: k,
+				name: v.name
+			}))
+		},
+		// endregion public
+
+		// region meta
+		_meta_doSaveState () {
 		    // copy, and return any parsed commands to strings
 		    const saveableAnims = {};
             Object.entries(this._anims).forEach(([k, v]) => {
@@ -808,23 +829,28 @@ function baseToolAnimator () {
 				bR20tool__anim_anims: saveableAnims,
 			});
 		},
-		_doLoadState () {
+
+		_meta_doLoadState () {
 			this._animId = Campaign.attributes.bR20tool__anim_id || 1;
 			this._anims = Campaign.attributes.bR20tool__anim_anims || {};
 		},
-		_init () {
-			this._doLoadState();
-			this._doSaveStateDebounced = MiscUtil.debounce(this.__doSaveState, 100);
+
+		_meta_init () {
+			this._meta_doLoadState();
+			this._doSaveStateDebounced = MiscUtil.debounce(this._meta_doSaveState, 100);
 
 			this._$winDisable = $(`#d20plus-token-animator-disable`);
 			this._$winRescue = $(`#d20plus-token-animator-rescue`);
 
-			this._initMain();
-			this._initRescue();
+			this._main_init();
+			this._rescue_init();
 			this._dis_init();
 			this.$win.data("initialised", true);
 		},
-		_initMain () {
+		// endregion meta
+
+		// region main
+		_main_init () {
 			const $btnAdd = this.$win.find(`[name="btn-add"]`);
 			const $btnImport = this.$win.find(`[name="btn-import"]`);
 			const $btnRescue = this.$win.find(`[name="btn-rescue"]`);
@@ -836,7 +862,7 @@ function baseToolAnimator () {
 			const $cbAll = this.$win.find(`[name="cb-all"]`);
 			this._$list = this.$win.find(`.list`);
 
-			$btnAdd.click(() => this.__addAnim(this.__getNewAnim()));
+			$btnAdd.click(() => this._main_addAnim(this._main_getNewAnim()));
 
 			$btnImport.click(async () => {
                 let data;
@@ -852,13 +878,13 @@ function baseToolAnimator () {
                     data.animations.forEach((anim, i) => {
                         if (anim.uid && anim.name && anim.lines) {
                             const originalName = anim.name;
-                            anim.uid = this.__getNextId();
-                            anim.name = this.__getNextName(anim.name);
-                            const msg = this.__getValidationMessage(anim);
+                            anim.uid = this._main_getNextId();
+                            anim.name = this._main_getNextName(anim.name);
+                            const msg = this._edit_getValidationMessage(anim);
                             if (msg) {
                                 messages.push(`${originalName} was invalid: ${msg}`);
                             } else {
-                                this.__addAnim(anim);
+                                this._main_addAnim(anim);
                                 messages.push(`Added ${originalName}${anim.name !== originalName ? ` (renamed as ${anim.name})` : ""}!`);
                             }
                         } else {
@@ -909,7 +935,7 @@ function baseToolAnimator () {
 			$btnSelDelete.click(() => confirm("Are you sure?") && getSelButtons(`.anm__btn-delete`).forEach($btn => $btn.click()));
 
 			Object.values(this._anims).forEach(anim => {
-				this._$list.append(this.__getAnimListRow(anim));
+				this._$list.append(this._main_getListItem(anim));
 			});
 
 			this._animList = new List("token-animator-list-container", {
@@ -917,10 +943,11 @@ function baseToolAnimator () {
 			});
 
 		},
-		__addAnim (anim) {
+
+		_main_addAnim (anim) {
 			const lastSearch = ListUtil.getSearchTermAndReset(this._animList);
 			this._anims[anim.uid] = anim;
-			this._$list.append(this.__getAnimListRow(anim));
+			this._$list.append(this._main_getListItem(anim));
 
 			this._animList.reIndex();
 			if (lastSearch) this._animList.search(lastSearch);
@@ -928,27 +955,31 @@ function baseToolAnimator () {
 
 			this._doSaveStateDebounced();
 		},
-		__getNewAnim () {
+
+		_main_getNewAnim () {
 			return {
-				uid: this.__getNextId(),
-				name: this.__getNextName("new_animation"),
+				uid: this._main_getNextId(),
+				name: this._main_getNextName("new_animation"),
 				lines: []
 			}
 		},
-        __getNextName (baseName) {
+
+        _main_getNextName (baseName) {
             let nxtName = baseName;
             let suffix = 1;
             while (Object.values(this._anims).find(it => it.name === nxtName)) nxtName = `${baseName}_${suffix++}`;
             return nxtName;
         },
-        __getNextId () {
+
+        _main_getNextId () {
 		    return this._animId++;
         },
-		__getAnimListRow (anim) {
+
+		_main_getListItem (anim) {
 			const $name = $(`<div class="name readable col-8 clickable" title="Edit Animation">${anim.name}</div>`)
 				.click(evt => {
 					evt.stopPropagation();
-					this.__edit(anim);
+					this._edit_openEditor(anim);
 				});
 
 			const $btnDuplicate = $(`<div class="btn anm__row-btn pictos mr-2" title="Duplicate">F</div>`)
@@ -957,7 +988,7 @@ function baseToolAnimator () {
 					const copy = MiscUtil.copy(anim);
 					copy.name = `${copy.name}_copy`;
 					copy.uid = this._animId++;
-					this.__addAnim(copy);
+					this._main_addAnim(copy);
 				});
 
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
@@ -986,8 +1017,10 @@ function baseToolAnimator () {
 				<div class="hidden uid">${anim.uid}</div>
 			</div>`;
 		},
+		// endregion main
 
-		_initRescue () {
+		// region rescue
+		_rescue_init () {
             // TODO a tool for rescuing tokens which have been moved off the map
             //   Should reset to 1.0 scale; reset flipping, place on GM layer?
 		    const doRefreshList = () => {
@@ -1014,6 +1047,7 @@ function baseToolAnimator () {
 
             doRefreshList();
 		},
+		// endregion rescue
 
 		// region disabler
 		_dis_getSelected () {
@@ -1100,7 +1134,8 @@ function baseToolAnimator () {
 		},
 		// endregion disabler
 
-		__edit (anim) {
+		// region editor
+		_edit_openEditor (anim) {
 			const $winEditor = $(this._html_template_editor).appendTo($("body"));
 
 			$winEditor.dialog({
@@ -1131,7 +1166,7 @@ function baseToolAnimator () {
 					name: $iptName.val(),
 					lines: $iptLines.val().split("\n")
 				};
-				return this.__getValidationMessage(toValidate);
+				return this._edit_getValidationMessage(toValidate);
 			};
 
 			$btnSave.off("click").click(() => {
@@ -1171,7 +1206,7 @@ function baseToolAnimator () {
 		 * Returns `null` if valid, or an error message if invalid.
 		 * @private
 		 */
-		__getValidationMessage (anim) {
+		_edit_getValidationMessage (anim) {
 			// validate name
 			if (!anim.name.length) return "Did not have a name!";
 			const illegalNameChars = anim.name.split(/[_0-9a-zA-Z]/g).filter(Boolean);
@@ -1180,7 +1215,7 @@ function baseToolAnimator () {
 			if (sameName) return "Name must be unique!";
 
 			// validate lines
-            this.__convertLines(anim);
+            this._edit_convertLines(anim);
 
             const badLines = anim.lines.filter(c => c.error);
             if (badLines.length) {
@@ -1190,25 +1225,10 @@ function baseToolAnimator () {
             return null;
 		},
 
-        __convertLines (anim) {
+        _edit_convertLines (anim) {
 		    anim.lines = anim.lines.map(l => typeof l === "string" ? Command.fromString(l) : l);
         },
-
-        getAnimation (uid) {
-		    return this._anims[uid];
-        },
-
-        getAnimQueue (anim) {
-            this.__convertLines(anim);
-            return anim.lines.filter(it => it.isRunnable).map(it => it.getInstance());
-        },
-
-		getAnimations () {
-			return Object.entries(this._anims).map(([k, v]) => ({
-				uid: k,
-				name: v.name
-			}))
-		}
+		// endregion editor
 	};
 
 	d20plus.tool.tools.push(d20plus.anim.animatorTool);

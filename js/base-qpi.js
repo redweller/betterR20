@@ -127,7 +127,7 @@ function baseQpi () {
 		},
 
 		_loadedScripts: null,
-		async _init () {
+		async _meta_init () {
 			Object.keys(qpi._).forEach(k => {
 				const it = qpi._[k];
 				if (it._preInit) it._preInit();
