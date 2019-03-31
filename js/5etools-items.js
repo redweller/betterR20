@@ -167,7 +167,7 @@ function d20plusItems () {
 
 	d20plus.items._getHandoutData = function (data) {
 		function removeDiceTags (str) {
-			return str ? str.replace(/{@(?:dice|damage) ([^}]+)}/g, "$1") : str;
+			return str ? Renderer.stripTags(str) : str;
 		}
 
 		var notecontents = "";
