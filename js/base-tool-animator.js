@@ -935,6 +935,12 @@ function baseToolAnimator () {
 				this._isSaveActive = !this._isSaveActive;
 				$btnToggleSave.toggleClass("active", this._isSaveActive);
 				this._doSaveStateDebounced();
+
+				// on disable, clear existing running animations
+				// prevents next load from re-loading old running state
+				if (!this._isSaveActive) {
+					Campaign.save({bR20tool__anim_running: {}});
+				}
 			});
 
 			const getSelButtons = ofClass => {
