@@ -1149,6 +1149,7 @@ function baseToolAnimator () {
 				});
 
 				alert("Rescued tokens have been placed on the GM layer, in the top-left corner of the map");
+				this._rescue_doPopulateList();
 			});
 		},
 		// endregion rescue
@@ -1234,6 +1235,7 @@ function baseToolAnimator () {
 				});
 
 				d20plus.anim.animator.saveState();
+				this._dis_doPopulateList();
 			});
 		},
 		// endregion disabler
