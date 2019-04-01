@@ -46,6 +46,10 @@ function baseCss () {
 			r: "text-align: center;"
 		},
 		{
+			s: ".text-right",
+			r: "text-align: right;"
+		},
+		{
 			s: ".is-error",
 			r: "color: #d60000;"
 		},
@@ -231,6 +235,10 @@ function baseCss () {
 		{
 			s: ".mt-2",
 			r: "margin-top: 0.5rem !important;"
+		},
+		{
+			s: ".mr-1",
+			r: "margin-right: 0.25rem !important;"
 		},
 		{
 			s: ".mr-2",

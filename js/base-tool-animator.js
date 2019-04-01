@@ -665,14 +665,17 @@ function baseToolAnimator () {
 			<div id="d20plus-token-animator" title="Token Animator" class="anm__win">
 				<div class="split mb-2">
 					<div>
-						<button class="btn" name="btn-add">Add Animation</button>
-						<button class="btn mr-2" name="btn-import">Import Animation</button>
+						<button class="btn" name="btn-scenes">Edit Scenes</button>
 						<button class="btn" name="btn-disable">Stop Animations</button>
 						<button class="btn" name="btn-rescue">Rescue Tokens</button>
 					</div>
 					<div>
 						<button class="btn" name="btn-saving" title="If enabled, can have a serious performance impact. If disabled, animations will not resume when reloading the game.">Save Active Animations</button>
 					</div>
+				</div>
+				<div class="split mb-2">
+					<button class="btn" name="btn-add">Add Animation</button>
+					<button class="btn mr-2" name="btn-import">Import Animation</button>
 				</div>
 				
 				<div class="anm__wrp-sel-all">
@@ -734,6 +737,27 @@ function baseToolAnimator () {
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
 			</div>
+			
+			<div id="d20plus-token-animator-scene" title="Scene List" class="anm__win">
+				<div class="split mb-2">
+					<button class="btn" name="btn-add">Add Scene</button>
+					<button class="btn mr-2" name="btn-import">Import Scene</button>
+				</div>
+				
+				<div class="anm__wrp-sel-all">
+					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label>
+					<div>
+						<button class="btn" name="btn-export">Export Selected</button>
+						<button class="btn btn-danger" name="btn-delete">Delete Selected</button>
+					</div>
+				</div>
+				
+				<div id="token-animator-scene-list-container">
+					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
+					<br><br>
+					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
+				</div>
+			</div>
 		`,
 		_html_template_editor: `
 			<div title="Animation Editor" class="anm__win flex-col">
@@ -749,6 +773,24 @@ function baseToolAnimator () {
 				</div>
 				<div class="anm-edit__ipt-lines-wrp">
 					<textarea name="ipt-lines" placeholder="mv 0 100 50 -50" class="anm-edit__ipt-lines"></textarea>
+				</div>
+			</div>
+		`,
+		_html_template_scene_editor: `
+			<div title="Scene Editor" class="anm__win flex-col">
+				<div class="mb-2 no-shrink split">
+					<input name="ipt-name" placeholder="Name">
+					
+					<div>
+						<button class="btn" name="btn-save">Save</button>
+						<button class="btn" name="btn-export-file">Export to File</button>
+					</div>
+				</div>
+				<div class="mb-2">
+					<button class="btn" name="btn-add">Add Part</button>
+				</div>
+				<div class="anm-edit__ipt-rows-wrp">
+					
 				</div>
 			</div>
 		`,
@@ -769,6 +811,13 @@ function baseToolAnimator () {
 			});
 
 			$("#d20plus-token-animator-rescue").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 600,
+			});
+
+			$("#d20plus-token-animator-scene").dialog({
 				autoOpen: false,
 				resizable: true,
 				width: 800,
@@ -830,15 +879,21 @@ function baseToolAnimator () {
 				}
 			});
 
+			const saveableScenes = {};
+			// TODO populate
+
 			Campaign.save({
-				bR20tool__anim_id: this._animId,
+				bR20tool__anim_id: this._anim_id,
 				bR20tool__anim_animations: saveableAnims,
 				bR20tool__anim_save: this._isSaveActive,
+				bR20tool__anim_scene_id: this._scene_id,
+				bR20tool__anim_scenes: saveableScenes,
 			});
 		},
 
 		_meta_doLoadState () {
-			this._animId = Campaign.attributes.bR20tool__anim_id || 1;
+			this._anim_id = Campaign.attributes.bR20tool__anim_id || 1;
+			this._scene_id = Campaign.attributes.bR20tool__anim_scene_id || 1;
 
 			// convert legacy "array" version to object
 			this._anims = {};
@@ -848,6 +903,8 @@ function baseToolAnimator () {
 				Object.entries(loadedAnims).filter(([k, v]) => !!v).forEach(([k, v]) => this._anims[k] = v);
 			}
 
+			this._scenes = Campaign.attributes.bR20tool__anim_scenes ? MiscUtil.copy(Campaign.attributes.bR20tool__anim_scenes) : {};
+
 			this._isSaveActive = MiscUtil.copy(Campaign.attributes.bR20tool__anim_save) || false;
 		},
 
@@ -855,21 +912,79 @@ function baseToolAnimator () {
 			this._meta_doLoadState();
 			this._doSaveStateDebounced = MiscUtil.debounce(this._meta_doSaveState, 100);
 
+			this._$winScene = $(`#d20plus-token-animator-scene`);
 			this._$winDisable = $(`#d20plus-token-animator-disable`);
 			this._$winRescue = $(`#d20plus-token-animator-rescue`);
 
 			this._main_init();
+			this._scene_init();
 			this._rescue_init();
 			this._dis_init();
 			this.$win.data("initialised", true);
 		},
 		// endregion meta
 
+		// region shared
+		async _shared_doImport (prop, name, fnNextId, fnNextName, fnGetValidMsg, fnAdd, ...requiredProps) {
+			let data;
+			try {
+				data = await DataUtil.pUserUpload();
+			} catch (e) {
+				alert("File was not valid JSON!");
+				console.error(e);
+				return;
+			}
+
+			if (data[prop] && data[prop].length) {
+				let messages = [];
+				data[prop].forEach((it, i) => {
+					const missingProp = requiredProps.find(rp => it[rp] == null);
+					if (missingProp != null) messages.push(`${name.uppercaseFirst()} at index ${i} is missing required fields!`);
+					else {
+						const originalName = it.name;
+						it.uid = fnNextId();
+						it.name = fnNextName(it.name);
+						const msg = fnGetValidMsg(it);
+						if (msg) {
+							messages.push(`${originalName} was invalid: ${msg}`);
+						} else {
+							fnAdd(it);
+							messages.push(`Added ${originalName}${it.name !== originalName ? ` (renamed as ${it.name})` : ""}!`);
+						}
+					}
+				});
+
+				if (messages.length) {
+					console.log(messages.join("\n"));
+					return alert(messages.join("\n"))
+				}
+			} else {
+				return alert(`File contained no ${name}s!`);
+			}
+		},
+
+		_shared_getValidNameMsg (obj, peers) {
+			if (!obj.name.length) return "Did not have a name!";
+			const illegalNameChars = obj.name.split(/[_0-9a-zA-Z]/g).filter(Boolean);
+			if (illegalNameChars.length) return `Illegal characters in name: ${illegalNameChars.map(it => `"${it}"`).join(", ")}`;
+			const sameName = Object.values(peers).filter(it => it.uid !== obj.uid).find(it => it.name === obj.name);
+			if (sameName) return "Name must be unique!";
+		},
+
+		_shared_getNextName (obj, baseName) {
+			let nxtName = baseName;
+			let suffix = 1;
+			while (Object.values(obj).find(it => it.name === nxtName)) nxtName = `${baseName}_${suffix++}`;
+			return nxtName;
+		},
+		// endregion
+
 		// region main
 		_main_init () {
 			const $btnAdd = this.$win.find(`[name="btn-add"]`);
 			const $btnImport = this.$win.find(`[name="btn-import"]`);
 			const $btnDisable = this.$win.find(`[name="btn-disable"]`);
+			const $btnScenes = this.$win.find(`[name="btn-scenes"]`);
 			const $btnRescue = this.$win.find(`[name="btn-rescue"]`);
 			const $btnToggleSave = this.$win.find(`[name="btn-saving"]`);
 
@@ -882,42 +997,20 @@ function baseToolAnimator () {
 			$btnAdd.click(() => this._main_addAnim(this._main_getNewAnim()));
 
 			$btnImport.click(async () => {
-				let data;
-				try {
-					data = await DataUtil.pUserUpload();
-				} catch (e) {
-					alert("File was not valid JSON!");
-					console.error(e);
-				}
+				await this._shared_doImport(
+					"animations",
+					"animation",
+					this._main_getNextId.bind(this),
+					this._shared_getNextName.bind(this, this._anims),
+					this._edit_getValidationMessage.bind(this),
+					this._main_addAnim.bind(this),
+					"uid", "name", "lines" // required properties
+				);
+			});
 
-				if (data.animations) {
-					let messages = [];
-					data.animations.forEach((anim, i) => {
-						if (anim.uid && anim.name && anim.lines) {
-							const originalName = anim.name;
-							anim.uid = this._main_getNextId();
-							anim.name = this._main_getNextName(anim.name);
-							const msg = this._edit_getValidationMessage(anim);
-							if (msg) {
-								messages.push(`${originalName} was invalid: ${msg}`);
-							} else {
-								this._main_addAnim(anim);
-								messages.push(`Added ${originalName}${anim.name !== originalName ? ` (renamed as ${anim.name})` : ""}!`);
-							}
-						} else {
-							messages.push(`Animation at index ${i} is missing required fields!`);
-						}
-					});
-
-					if (messages.length) {
-						console.log(messages.join("\n"));
-						alert(messages.join("\n"))
-					} else {
-						alert("File contained no animations!");
-					}
-				} else {
-					alert("File was not a valid animation!");
-				}
+			$btnScenes.click(() => {
+				this._scene_doPopulateList();
+				this._$winScene.dialog("open");
 			});
 
 			$btnDisable.click(() => {
@@ -944,7 +1037,7 @@ function baseToolAnimator () {
 			});
 
 			const getSelButtons = ofClass => {
-				return this._animList.items
+				return this._anim_list.items
 					.map(it => $(it.elm))
 					.filter($it => $it.find(`input`).prop("checked"))
 					.map($it => $it.find(`.${ofClass}`));
@@ -952,40 +1045,45 @@ function baseToolAnimator () {
 
 			$btnSelExport.click(() => {
 				const out = {
-					animations: this._animList.items
+					animations: this._anim_list.items
 						.filter(it => $(it.elm).find(`input`).prop("checked"))
-						.map(it => this._anims[it.values().uid])
+						.map(it => this._anims[it.values().uid]) // FIXME map out lines
 				};
 				DataUtil.userDownload("animations", out);
 			});
 
 			$cbAll.click(() => {
 				const val = $cbAll.prop("checked");
-				this._animList.items.forEach(it => {
+				this._anim_list.items.forEach(it => {
 					$(it.elm.children[0].children[0]).prop("checked", val);
 				})
 			});
 
-			$btnSelDelete.click(() => confirm("Are you sure?") && getSelButtons(`.anm__btn-delete`).forEach($btn => $btn.click()));
+			$btnSelDelete.click(() => {
+				const $btns = getSelButtons(`.anm__btn-delete`);
+				if (!$btns.length) return;
+				if (!confirm("Are you sure?")) return;
+				$btns.forEach($btn => $btn.click());
+			});
 
 			this._$list.empty();
 			Object.values(this._anims).forEach(anim => {
 				this._$list.append(this._main_getListItem(anim));
 			});
 
-			this._animList = new List("token-animator-list-container", {
+			this._anim_list = new List("token-animator-list-container", {
 				valueNames: ["name", "uid"]
 			});
 		},
 
 		_main_addAnim (anim) {
-			const lastSearch = ListUtil.getSearchTermAndReset(this._animList);
+			const lastSearch = ListUtil.getSearchTermAndReset(this._anim_list);
 			this._anims[anim.uid] = anim;
 			this._$list.append(this._main_getListItem(anim));
 
-			this._animList.reIndex();
-			if (lastSearch) this._animList.search(lastSearch);
-			this._animList.sort("name");
+			this._anim_list.reIndex();
+			if (lastSearch) this._anim_list.search(lastSearch);
+			this._anim_list.sort("name");
 
 			this._doSaveStateDebounced();
 		},
@@ -993,57 +1091,44 @@ function baseToolAnimator () {
 		_main_getNewAnim () {
 			return {
 				uid: this._main_getNextId(),
-				name: this._main_getNextName("new_animation"),
+				name: this._shared_getNextName(this._anims, "new_animation"),
 				lines: []
 			}
 		},
 
-		_main_getNextName (baseName) {
-			let nxtName = baseName;
-			let suffix = 1;
-			while (Object.values(this._anims).find(it => it.name === nxtName)) nxtName = `${baseName}_${suffix++}`;
-			return nxtName;
-		},
-
 		_main_getNextId () {
-			return this._animId++;
+			return this._anim_id++;
 		},
 
 		_main_getListItem (anim) {
-			const $name = $(`<div class="name readable col-8 clickable" title="Edit Animation">${anim.name}</div>`)
-				.click(evt => {
-					evt.stopPropagation();
-					this._edit_openEditor(anim);
-				});
+			const $name = $(`<div class="name readable col-9 clickable" title="Edit Animation">${anim.name}</div>`)
+				.click(() => this._edit_openEditor(anim));
 
 			const $btnDuplicate = $(`<div class="btn anm__row-btn pictos mr-2" title="Duplicate">F</div>`)
-				.click(evt => {
-					evt.stopPropagation();
+				.click(() => {
 					const copy = MiscUtil.copy(anim);
 					copy.name = `${copy.name}_copy`;
-					copy.uid = this._animId++;
+					copy.uid = this._anim_id++;
 					this._main_addAnim(copy);
 				});
 
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
-				.click(evt => {
-					evt.stopPropagation();
-					const out = {animations: anim};
+				.click(() => {
+					const out = {animations: [anim]};
 					DataUtil.userDownload(`${anim.name}`, out);
 				});
 
 			const $btnDelete = $(`<div class="btn anm__row-btn btn-danger pictos anm__btn-delete mr-2" title="Delete">#</div>`)
-				.click(evt => {
-					evt.stopPropagation();
+				.click(() => {
 					delete this._anims[anim.uid];
-					this._animList.remove("uid", anim.uid);
+					this._anim_list.remove("uid", anim.uid);
 					this._doSaveStateDebounced();
 				});
 
 			return $$`<div class="anm__row">
-				<label class="col-1 anm__row-wrp-cb"><input type="checkbox"></label>
+				<label class="col-1 flex-vh-center"><input type="checkbox"></label>
 				${$name}
-				<div class="anm__row-controls col-3 text-center"">
+				<div class="anm__row-controls col-2 text-center">
 					${$btnDuplicate}
 					${$btnExport}
 					${$btnDelete}
@@ -1053,6 +1138,245 @@ function baseToolAnimator () {
 		},
 		// endregion main
 
+		// region scene
+		_scene_getSelected () {
+			return this._scene_list.items.filter(it => $(it.elm).find("input[type=checkbox]").prop("checked"));
+		},
+
+		_scene_addScene (scene) {
+			const lastSearch = ListUtil.getSearchTermAndReset(this._scene_list);
+			this._scenes[scene.uid] = scene;
+			this._$list.append(this._scene_getListItem(scene));
+
+			this._scene_list.reIndex();
+			if (lastSearch) this._scene_list.search(lastSearch);
+			this._scene_list.sort("name");
+
+			this._doSaveStateDebounced();
+		},
+
+		_scene_getListItem (scene) {
+			const $name = $(`<div class="name readable col-9 clickable" title="Edit Animation">${scene.name}</div>`)
+				.click(() => this._scene_openEditor(scene));
+
+			const $btnDuplicate = $(`<div class="btn anm__row-btn pictos mr-2" title="Duplicate">F</div>`)
+				.click(() => {
+					const copy = MiscUtil.copy(scene);
+					copy.name = `${copy.name}_copy`;
+					copy.uid = this._scene_id++;
+					this._scene_addScene(copy);
+				});
+
+			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
+				.click(() => {
+					const out = {scenes: [scene]};
+					DataUtil.userDownload(`${scene.name}`, out);
+				});
+
+			const $btnDelete = $(`<div class="btn anm__row-btn btn-danger pictos anm__btn-delete mr-2" title="Delete">#</div>`)
+				.click(() => {
+					delete this._scenes[scene.uid];
+					this._scene_list.remove("uid", scene.uid);
+					this._doSaveStateDebounced();
+				});
+
+			return $$`<label class="flex-v-center">
+				<div class="col-1 flex-vh-center"><input type="checkbox"></div>
+				${$name}
+				<div class="anm__row-controls col-2 text-center">
+					${$btnDuplicate}
+					${$btnExport}
+					${$btnDelete}
+				</div>
+				<div class="_scene_id hidden">${scene.uid}</div>
+			</label>`
+		},
+
+		_scene_doPopulateList () {
+			let temp = "";
+
+			// TODO add rows
+
+			this._scene_$wrpList.empty().append(temp);
+
+			this._scene_list = new List("token-animator-scene-list-container", {
+				valueNames: [
+					"name",
+					"_scene_id"
+				]
+			});
+		},
+
+		_scene_init () {
+			this._scene_$btnAdd = this._$winScene.find(`[name="btn-add"]`);
+			this._scene_$btnImport = this._$winScene.find(`[name="btn-import"]`);
+			this._scene_$btnExport = this._$winScene.find(`[name="btn-export"]`);
+			this._scene_$btnDelete = this._$winScene.find(`[name="btn-delete"]`);
+			this._scene_$cbAll = this._$winScene.find(`[name="cb-all"]`);
+			this._scene_$wrpList = this._$winScene.find(`.list`);
+
+			this._scene_list = null;
+
+			this._scene_$cbAll.click(() => {
+				const toVal = this._scene_$cbAll.prop("checked");
+				this._scene_list.items.forEach(it => $(it.elm).find("input[type=checkbox]").prop("checked", toVal));
+			});
+
+			this._scene_$btnAdd.off("click").click(() => this._scene_addScene(this._scene_getNewScene()));
+
+			this._scene_$btnImport.click(async () => {
+				await this._shared_doImport(
+					"scenes",
+					"scene",
+					this._scene_getNextId.bind(this),
+					this._shared_getNextName.bind(this, this._scenes),
+					() => null, // TODO add validator for scene data
+					this._scene_addScene.bind(this),
+					"uid", "name" // required properties
+				);
+			});
+
+			this._scene_$btnExport.click(() => {
+				const out = {
+					scenes: this._scene_getSelected().map(it => it) // TODO map to exportable
+				};
+				DataUtil.userDownload("scenes", out);
+			});
+
+			this._scene_$btnDelete.click(() => {
+				const sel = this._scene_getSelected();
+				if (!sel.length) return;
+				if (!confirm("Are you sure?")) return;
+				sel.forEach(it => {
+					const uid = it.values()._scene_id;
+					delete this._scenes[uid];
+					this._scene_list.remove("uid", uid);
+				});
+				this._doSaveStateDebounced();
+			});
+		},
+
+		_scene_getNextId () {
+			return this._scene_id++;
+		},
+
+		_scene_getNewScene () {
+			return {
+				uid: this._scene_getNextId(),
+				name: this._shared_getNextName(this._scenes, "new_scene"),
+				anims: []
+				/*
+				TODO scene data structure
+
+				something like...
+				[
+					{
+						tokenId: "",
+						animUid: "",
+						offset: 0
+					}
+				]
+
+				 */
+			}
+		},
+
+		_scene_openEditor (scene) {
+			scene = MiscUtil.copy(scene);
+			const $winEditor = $(this._html_template_scene_editor).appendTo($("body"));
+
+			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck();
+			const $btnSave = $winEditor.find(`[name="btn-save"]`);
+			const $btnExportFile = $winEditor.find(`[name="btn-export-file"]`);
+			const $btnAdd = $winEditor.find(`[name="btn-add"]`);
+			const $wrpRows = $winEditor.find(`.anm-edit__ipt-rows-wrp`);
+
+			function $getEditorRow (animMeta) {
+				const $btnSelToken = $(`<button class="btn">Token</button>`)
+					.click(() => {
+						// TODO modal to select token (visual grid); filtered by page with a <select>?
+
+						// TODO update on selection
+						//  (assumes animMeta will be modified)
+						$wrpToken.html(getTokenPart())
+					});
+				const getTokenPart = () => {
+					const token = animMeta ? (() => {
+						d20plus.ut.getTokenById(animMeta.tokenId);
+					})() : null;
+					return token ? `<img src="${token.attributes.imgsrc}" style="max-width: 40px; max-height: 40px;">` : "";
+				};
+				const $wrpToken = `<div>${getTokenPart()}</div>`;
+
+				const $btnSelAnim = $(`<button class="btn">Animation</button>`)
+					.click(() => {
+						// TODO modal to select animation; steal from rightclick menu (base-engine:1020)
+					});
+				const getAnimPart = () => {
+					const anim = animMeta ? this.getAnimation(animMeta.animUid) : null;
+					return anim ? anim.name : "";
+				};
+				const $wrpAnim = `<div>${getAnimPart()}</div>`;
+
+				const $iptOffset = $(`<input type="number" min="0">`);
+				if (animMeta) $iptOffset.val(animMeta.offset || "");
+
+				return $$`<div class="flex">
+					<div class="col-2 text-right">${$btnSelToken}</div>
+					<div class="col-3">${$wrpToken}</div>
+					
+					<div class="col-2 text-right">${$btnSelAnim}</div>
+					<div class="col-3">${$wrpAnim}</div>
+					
+					<div class="col-2">${$iptOffset}</div>
+				</div>`;
+			}
+
+			$btnSave.off("click").click(() => {
+				const msg = this._scene_getValidationMessage(scene);
+				if (msg) return alert(msg);
+
+				// we passed validation
+				this._scenes[scene.uid] = scene;
+
+				this._doSaveStateDebounced();
+
+				const matches = this._scene_list.get("uid", scene.uid);
+				if (matches.length) {
+					matches[0].values({name: scene.name})
+				}
+
+				alert("Saved!");
+			});
+
+			$btnExportFile.off("click").click(() => {
+				const out = {scenes: [scene]};
+				DataUtil.userDownload(`${scene.name}`, out);
+			});
+
+			$btnAdd.off("click").click(() => {
+				$wrpRows.append($getEditorRow())
+			});
+
+			$wrpRows.empty();
+			scene.anims.forEach(animMeta => $wrpRows.append($getEditorRow(animMeta)));
+
+			$winEditor.dialog({
+				resizable: true,
+				width: 800,
+				height: 600,
+				close: () => {
+					setTimeout(() => $winEditor.remove())
+				}
+			});
+		},
+
+		_scene_getValidationMessage (scene) {
+			// validate name
+			return this._shared_getValidNameMsg(scene, this._scenes);
+		},
+		// endregion
+
 		// region rescue
 		_rescue_getSelected () {
 			return this._rescue_list.items.filter(it => $(it.elm).find("input[type=checkbox]").prop("checked"));
@@ -1060,7 +1384,7 @@ function baseToolAnimator () {
 
 		_rescue_getListItem (page, imgUrl, tokenName, _tokenId) {
 			return `<label class="flex-v-center">
-				<div class="col-1"><input type="checkbox"></div>
+				<div class="col-1 flex-vh-center"><input type="checkbox"></div>
 				<div class="page col-4">${page}</div>				
 				<div class="col-2">
 					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
@@ -1161,7 +1485,7 @@ function baseToolAnimator () {
 
 		_dis_getListItem (page, imgUrl, tokenName, animName, _tokenId, _animUid) {
 			return `<label class="flex-v-center">
-				<div class="col-1"><input type="checkbox"></div>
+				<div class="col-1 flex-vh-center"><input type="checkbox"></div>
 				<div class="page col-3">${page}</div>				
 				<div class="col-2">
 					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
@@ -1284,7 +1608,7 @@ function baseToolAnimator () {
 				anim.lines = $iptLines.val().split("\n");
 				this._doSaveStateDebounced();
 
-				const matches = d20plus.anim.animatorTool._animList.get("uid", anim.uid);
+				const matches = this._anim_list.get("uid", anim.uid);
 				if (matches.length) {
 					matches[0].values({name: anim.name})
 				}
@@ -1293,7 +1617,7 @@ function baseToolAnimator () {
 			});
 
 			$btnExportFile.off("click").click(() => {
-				const out = {animations: anim};
+				const out = {animations: [anim]};
 				DataUtil.userDownload(`${anim.name}`, out);
 			});
 
@@ -1314,11 +1638,8 @@ function baseToolAnimator () {
 		 */
 		_edit_getValidationMessage (anim) {
 			// validate name
-			if (!anim.name.length) return "Did not have a name!";
-			const illegalNameChars = anim.name.split(/[_0-9a-zA-Z]/g).filter(Boolean);
-			if (illegalNameChars.length) return `Illegal characters in name: ${illegalNameChars.map(it => `"${it}"`).join(", ")}`;
-			const sameName = Object.values(this._anims).filter(it => it.uid !== anim.uid).find(it => it.name === anim.name);
-			if (sameName) return "Name must be unique!";
+			const nameMsg = this._shared_getValidNameMsg(anim, this._anims);
+			if (nameMsg) return nameMsg;
 
 			// validate lines
 			this._edit_convertLines(anim);
