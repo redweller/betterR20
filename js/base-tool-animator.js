@@ -707,10 +707,10 @@ function baseToolAnimator () {
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<div class="bold flex-v-center mt-2">
 						<div class="col-1"></div>
-						<div class="col-3">Page</div>
-						<div class="col-2">Image</div>
-						<div class="col-3">Name</div>
-						<div class="col-3">Animation</div>
+						<div class="col-3 text-center">Page</div>
+						<div class="col-2 text-center">Image</div>
+						<div class="col-3 text-center">Name</div>
+						<div class="col-3 text-center">Animation</div>
 					</div>
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
@@ -730,9 +730,9 @@ function baseToolAnimator () {
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<div class="bold flex-v-center mt-2">
 						<div class="col-1"></div>
-						<div class="col-4">Page</div>
-						<div class="col-2">Image</div>
-						<div class="col-5">Name</div>
+						<div class="col-4 text-center">Page</div>
+						<div class="col-2 text-center">Image</div>
+						<div class="col-5 text-center">Name</div>
 					</div>
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
@@ -788,6 +788,14 @@ function baseToolAnimator () {
 				</div>
 				<div class="mb-2">
 					<button class="btn" name="btn-add">Add Part</button>
+				</div>
+				<div class="bold flex-v-center mt-2">
+					<div class="col-2 text-center">Token</div>
+					<div class="col-2"></div>
+					<div class="col-2 text-center">Animation</div>
+					<div class="col-2"></div>
+					<div class="col-2 text-center help" title="Delay period upon starting the scene before this animation is run (in milliseconds)">Start Time</div>
+					<div class="col-2 text-center">Delete</div>
 				</div>
 				<div class="anm-edit__ipt-rows-wrp">
 					
@@ -866,6 +874,49 @@ function baseToolAnimator () {
 		isSavingActive () {
 			return !!this._isSaveActive;
 		},
+
+		pSelectAnimation () {
+			const selFrom = this.getAnimations();
+			if (!selFrom.length) return alert("No animations available! Use the Token Animator tool to define some first.");
+
+			return new Promise(resolve => {
+				const $selAnim = $(`<select>
+				<option disabled value="-1">Select animation</option>
+				${selFrom.map(it => `<option value="${it.uid}">${it.name}</option>`)}
+				</select>`);
+				$selAnim[0].selectedIndex = 0;
+
+				const $dialog = $$`
+					<div title="Select Animation">
+						${$selAnim}
+					</div>
+				`.appendTo($("body"));
+
+				$dialog.dialog({
+					dialogClass: "no-close",
+					buttons: [
+						{
+							text: "Cancel",
+							click: function () {
+								$(this).dialog("close");
+								$dialog.remove();
+							}
+						},
+						{
+							text: "OK",
+							click: function () {
+								const selected = Number($selAnim.val());
+								$(this).dialog("close");
+								$dialog.remove();
+
+								if (~selected) resolve(selected);
+								else resolve(null);
+							}
+						}
+					]
+				});
+			});
+		},
 		// endregion public
 
 		// region meta
@@ -879,15 +930,12 @@ function baseToolAnimator () {
 				}
 			});
 
-			const saveableScenes = {};
-			// TODO populate
-
 			Campaign.save({
 				bR20tool__anim_id: this._anim_id,
 				bR20tool__anim_animations: saveableAnims,
 				bR20tool__anim_save: this._isSaveActive,
 				bR20tool__anim_scene_id: this._scene_id,
-				bR20tool__anim_scenes: saveableScenes,
+				bR20tool__anim_scenes: this._scenes,
 			});
 		},
 
@@ -1047,7 +1095,7 @@ function baseToolAnimator () {
 				const out = {
 					animations: this._anim_list.items
 						.filter(it => $(it.elm).find(`input`).prop("checked"))
-						.map(it => this._anims[it.values().uid]) // FIXME map out lines
+						.map(it => this._main_getExportableAnim(this._anims[it.values().uid]))
 				};
 				DataUtil.userDownload("animations", out);
 			});
@@ -1066,10 +1114,18 @@ function baseToolAnimator () {
 				$btns.forEach($btn => $btn.click());
 			});
 
+			this._main_doPopulateList();
+		},
+
+		_main_getExportableAnim (anim) {
+			const out = {...anim};
+			out.lines = out.lines.map(it => typeof it === "string" ? it : it.line);
+			return out;
+		},
+
+		_main_doPopulateList () {
 			this._$list.empty();
-			Object.values(this._anims).forEach(anim => {
-				this._$list.append(this._main_getListItem(anim));
-			});
+			Object.values(this._anims).forEach(anim => this._$list.append(this._main_getListItem(anim)));
 
 			this._anim_list = new List("token-animator-list-container", {
 				valueNames: ["name", "uid"]
@@ -1114,7 +1170,7 @@ function baseToolAnimator () {
 
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
 				.click(() => {
-					const out = {animations: [anim]};
+					const out = {animations: [this._main_getExportableAnim(anim)]};
 					DataUtil.userDownload(`${anim.name}`, out);
 				});
 
@@ -1126,7 +1182,7 @@ function baseToolAnimator () {
 				});
 
 			return $$`<div class="anm__row">
-				<label class="col-1 flex-vh-center"><input type="checkbox"></label>
+				<label class="col-1 flex-vh-center full-height"><input type="checkbox"></label>
 				${$name}
 				<div class="anm__row-controls col-2 text-center">
 					${$btnDuplicate}
@@ -1146,7 +1202,7 @@ function baseToolAnimator () {
 		_scene_addScene (scene) {
 			const lastSearch = ListUtil.getSearchTermAndReset(this._scene_list);
 			this._scenes[scene.uid] = scene;
-			this._$list.append(this._scene_getListItem(scene));
+			this._scene_$wrpList.append(this._scene_$getListItem(scene));
 
 			this._scene_list.reIndex();
 			if (lastSearch) this._scene_list.search(lastSearch);
@@ -1155,7 +1211,7 @@ function baseToolAnimator () {
 			this._doSaveStateDebounced();
 		},
 
-		_scene_getListItem (scene) {
+		_scene_$getListItem (scene) {
 			const $name = $(`<div class="name readable col-9 clickable" title="Edit Animation">${scene.name}</div>`)
 				.click(() => this._scene_openEditor(scene));
 
@@ -1180,29 +1236,26 @@ function baseToolAnimator () {
 					this._doSaveStateDebounced();
 				});
 
-			return $$`<label class="flex-v-center">
-				<div class="col-1 flex-vh-center"><input type="checkbox"></div>
+			return $$`<div class="flex-v-center mb-2">
+				<label class="col-1 flex-vh-center full-height"><input type="checkbox"></label>
 				${$name}
 				<div class="anm__row-controls col-2 text-center">
 					${$btnDuplicate}
 					${$btnExport}
 					${$btnDelete}
 				</div>
-				<div class="_scene_id hidden">${scene.uid}</div>
-			</label>`
+				<div class="uid hidden">${scene.uid}</div>
+			</div>`
 		},
 
 		_scene_doPopulateList () {
-			let temp = "";
-
-			// TODO add rows
-
-			this._scene_$wrpList.empty().append(temp);
+			this._scene_$wrpList.empty();
+			Object.values(this._scenes).forEach(scene => this._scene_$wrpList.append(this._scene_$getListItem(scene)));
 
 			this._scene_list = new List("token-animator-scene-list-container", {
 				valueNames: [
 					"name",
-					"_scene_id"
+					"uid"
 				]
 			});
 		},
@@ -1230,15 +1283,16 @@ function baseToolAnimator () {
 					"scene",
 					this._scene_getNextId.bind(this),
 					this._shared_getNextName.bind(this, this._scenes),
-					() => null, // TODO add validator for scene data
+					this._scene_getValidationMessage.bind(this),
 					this._scene_addScene.bind(this),
-					"uid", "name" // required properties
+					"uid", "name", "anims" // required properties
 				);
 			});
 
 			this._scene_$btnExport.click(() => {
 				const out = {
-					scenes: this._scene_getSelected().map(it => it) // TODO map to exportable
+					scenes: this._scene_getSelected()
+						.map(it => this._scenes[it.values().uid])
 				};
 				DataUtil.userDownload("scenes", out);
 			});
@@ -1266,71 +1320,33 @@ function baseToolAnimator () {
 				name: this._shared_getNextName(this._scenes, "new_scene"),
 				anims: []
 				/*
-				TODO scene data structure
-
-				something like...
+				Anims array structure:
 				[
+					...,
 					{
 						tokenId: "",
 						animUid: "",
 						offset: 0
-					}
+					},
+					...
 				]
-
 				 */
 			}
 		},
 
 		_scene_openEditor (scene) {
 			scene = MiscUtil.copy(scene);
+			scene.anims = scene.anims || []; // handle legacy data
+
 			const $winEditor = $(this._html_template_scene_editor).appendTo($("body"));
 
-			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck();
+			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck()
+				.val(scene.name)
+				.change(() => scene.name = $iptName.val().trim());
 			const $btnSave = $winEditor.find(`[name="btn-save"]`);
 			const $btnExportFile = $winEditor.find(`[name="btn-export-file"]`);
 			const $btnAdd = $winEditor.find(`[name="btn-add"]`);
 			const $wrpRows = $winEditor.find(`.anm-edit__ipt-rows-wrp`);
-
-			function $getEditorRow (animMeta) {
-				const $btnSelToken = $(`<button class="btn">Token</button>`)
-					.click(() => {
-						// TODO modal to select token (visual grid); filtered by page with a <select>?
-
-						// TODO update on selection
-						//  (assumes animMeta will be modified)
-						$wrpToken.html(getTokenPart())
-					});
-				const getTokenPart = () => {
-					const token = animMeta ? (() => {
-						d20plus.ut.getTokenById(animMeta.tokenId);
-					})() : null;
-					return token ? `<img src="${token.attributes.imgsrc}" style="max-width: 40px; max-height: 40px;">` : "";
-				};
-				const $wrpToken = `<div>${getTokenPart()}</div>`;
-
-				const $btnSelAnim = $(`<button class="btn">Animation</button>`)
-					.click(() => {
-						// TODO modal to select animation; steal from rightclick menu (base-engine:1020)
-					});
-				const getAnimPart = () => {
-					const anim = animMeta ? this.getAnimation(animMeta.animUid) : null;
-					return anim ? anim.name : "";
-				};
-				const $wrpAnim = `<div>${getAnimPart()}</div>`;
-
-				const $iptOffset = $(`<input type="number" min="0">`);
-				if (animMeta) $iptOffset.val(animMeta.offset || "");
-
-				return $$`<div class="flex">
-					<div class="col-2 text-right">${$btnSelToken}</div>
-					<div class="col-3">${$wrpToken}</div>
-					
-					<div class="col-2 text-right">${$btnSelAnim}</div>
-					<div class="col-3">${$wrpAnim}</div>
-					
-					<div class="col-2">${$iptOffset}</div>
-				</div>`;
-			}
 
 			$btnSave.off("click").click(() => {
 				const msg = this._scene_getValidationMessage(scene);
@@ -1354,12 +1370,10 @@ function baseToolAnimator () {
 				DataUtil.userDownload(`${scene.name}`, out);
 			});
 
-			$btnAdd.off("click").click(() => {
-				$wrpRows.append($getEditorRow())
-			});
+			$btnAdd.off("click").click(() => $wrpRows.append(this._scene_$getEditorRow(scene)));
 
 			$wrpRows.empty();
-			scene.anims.forEach(animMeta => $wrpRows.append($getEditorRow(animMeta)));
+			scene.anims.forEach(animMeta => $wrpRows.append(this._scene_$getEditorRow(scene, animMeta)));
 
 			$winEditor.dialog({
 				resizable: true,
@@ -1369,6 +1383,132 @@ function baseToolAnimator () {
 					setTimeout(() => $winEditor.remove())
 				}
 			});
+		},
+
+		_scene_$getEditorRow (scene, animMeta) {
+			if (!animMeta) {
+				animMeta = {
+					offset: 0
+				};
+				scene.anims.push(animMeta);
+			}
+
+			const $btnSelToken = $(`<button class="btn anm__row-btn">Select Token</button>`)
+				.click(() => {
+					let lastSelectedTokenId = null;
+
+					const $selPage = $(`<select><option disabled value="">Select Page</option></select>`)
+						.change(() => {
+							lastSelectedTokenId = null;
+							$wrpTokens.empty();
+
+							const page = d20.Campaign.pages.get($selPage.val());
+
+							if (page.thegraphics && page.thegraphics.length) {
+								const tokens = page.thegraphics.models.filter(it => it.attributes.type === "image");
+								tokens.forEach(it => {
+									const name = it.attributes.name || "(Unnamed)";
+									const $wrpToken = $$`<div class="anm-scene__wrp-token">
+											<div class="no-shrink flex-vh-center" style="width: 80px; height: 80px;">
+												<img 
+													class="no-shrink" 
+													style="max-width: 80px; max-height: 80px;" 
+													src="${it.attributes.imgsrc}"
+												>
+											</div>
+											<div class="no-shrink full-width flex-vh-center anm-scene__wrp-token-name">
+												<span title="${name}" class="anm-scene__wrp-token-name-inner">${name}</span>
+											</div>
+										</div>`.click(() => {
+										$wrpTokens.find(`.anm-scene__wrp-token`).removeClass(`anm-scene__wrp-token--active`);
+										$wrpToken.addClass(`anm-scene__wrp-token--active`);
+										lastSelectedTokenId = it.id;
+									}).appendTo($wrpTokens);
+								});
+							} else $wrpTokens.append("There are no tokens on this page!");
+						});
+					d20.Campaign.pages.forEach(it => $(`<option value="${it.id}"></option>`).text(it.attributes.name || "(Unnamed)").appendTo($selPage));
+					$selPage[0].selectedIndex = 0;
+
+					const $wrpTokens = $$`<div class="anm-scene__wrp-tokens"></div>`;
+
+					const $dialog = $$`
+							<div title="Select Token">
+								<div class="flex-col full-width full-height">
+									<div class="mb-2 no-shrink">${$selPage}</div>
+									${$wrpTokens}
+								</div>
+							</div>
+						`.appendTo($("body"));
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+
+									if (lastSelectedTokenId != null) {
+										animMeta.tokenId = lastSelectedTokenId;
+										$wrpToken.html(getTokenPart())
+									}
+								}
+							}
+						],
+						width: 640,
+						height: 480
+					});
+				});
+			const getTokenPart = () => {
+				const token = animMeta.tokenId ? d20plus.ut.getTokenById(animMeta.tokenId) : null;
+				return token ? `<img src="${token.attributes.imgsrc}" style="max-width: 40px; max-height: 40px;">` : "";
+			};
+			const $wrpToken = $(`<div>${getTokenPart()}</div>`);
+
+			const $btnSelAnim = $(`<button class="btn anm__row-btn">Select Animation</button>`)
+				.click(async () => {
+					const anim = await this.pSelectAnimation();
+					if (anim != null) {
+						animMeta.animUid = anim;
+						$wrpAnim.html(getAnimPart())
+					}
+				});
+			const getAnimPart = () => {
+				const anim = animMeta.animUid ? this.getAnimation(animMeta.animUid) : null;
+				return anim ? anim.name : "";
+			};
+			const $wrpAnim = $(`<div>${getAnimPart()}</div>`);
+
+			const $iptOffset = $(`<input type="number" min="0" style="max-width: 100%;">`);
+			$iptOffset.val(animMeta.offset || 0);
+
+			const $btnDelete = $(`<button class="btn btn-danger anm__row-btn pictos">#</button>`)
+				.click(() => {
+					scene.anims.splice(scene.anims.indexOf(animMeta), 1);
+					$out.remove();
+				});
+
+			const $out = $$`<div class="flex-vh-center mb-1">
+					<div class="col-2 text-center">${$wrpToken}</div>
+					<div class="col-2 text-center">${$btnSelToken}</div>
+					
+					<div class="col-2 text-center">${$wrpAnim}</div>
+					<div class="col-2 text-center">${$btnSelAnim}</div>
+					
+					<div class="col-2">${$iptOffset}</div>
+					
+					<div class="col-2 text-center">${$btnDelete}</div>
+				</div>`;
+			return $out;
 		},
 
 		_scene_getValidationMessage (scene) {
@@ -1384,7 +1524,7 @@ function baseToolAnimator () {
 
 		_rescue_getListItem (page, imgUrl, tokenName, _tokenId) {
 			return `<label class="flex-v-center">
-				<div class="col-1 flex-vh-center"><input type="checkbox"></div>
+				<div class="col-1 flex-vh-center full-height"><input type="checkbox"></div>
 				<div class="page col-4">${page}</div>				
 				<div class="col-2">
 					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
@@ -1485,7 +1625,7 @@ function baseToolAnimator () {
 
 		_dis_getListItem (page, imgUrl, tokenName, animName, _tokenId, _animUid) {
 			return `<label class="flex-v-center">
-				<div class="col-1 flex-vh-center"><input type="checkbox"></div>
+				<div class="col-1 flex-vh-center full-height"><input type="checkbox"></div>
 				<div class="page col-3">${page}</div>				
 				<div class="col-2">
 					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
@@ -1617,7 +1757,7 @@ function baseToolAnimator () {
 			});
 
 			$btnExportFile.off("click").click(() => {
-				const out = {animations: [anim]};
+				const out = {animations: [this._main_getExportableAnim(anim)]};
 				DataUtil.userDownload(`${anim.name}`, out);
 			});
 

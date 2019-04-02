@@ -1014,47 +1014,14 @@ function d20plusEngine () {
 							});
 							i();
 						} else if ("token-animate" === e) {
-							if (!d20plus.anim.animatorTool.getAnimations().length) return alert("No animations available! Use the Token Animator tool to define some first.");
+							d20plus.anim.animatorTool.pSelectAnimation().then(anim => {
+								if (anim == null) return;
 
-							const $selAnim = $(`<select>
-							<option disabled value="-1">Select animation</option>
-							${d20plus.anim.animatorTool.getAnimations().map(it => `<option value="${it.uid}">${it.name}</option>`)}
-							</select>`);
-							$selAnim[0].selectedIndex = 0;
-
-							const $dialog = $$`
-								<div title="Select Animation">
-									${$selAnim}
-								</div>
-							`.appendTo($("body"));
-
-							$dialog.dialog({
-								dialogClass: "no-close",
-								buttons: [
-									{
-										text: "Cancel",
-										click: function () {
-											$(this).dialog("close");
-											$dialog.remove();
-										}
-									},
-									{
-										text: "OK",
-										click: function () {
-											const selected = Number($selAnim.val());
-											$(this).dialog("close");
-											$dialog.remove();
-
-											if (~selected) {
-												d20.engine.selected().forEach(it => {
-													if (it.model) {
-														d20plus.anim.animator.startAnimation(it.model, selected)
-													}
-												});
-											}
-										}
+								d20.engine.selected().forEach(it => {
+									if (it.model) {
+										d20plus.anim.animator.startAnimation(it.model, anim)
 									}
-								]
+								});
 							});
 							i();
 						}
