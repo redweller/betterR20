@@ -1014,6 +1014,7 @@ function d20plusEngine () {
 							});
 							i();
 						} else if ("token-animate" === e) {
+							// TODO remember last selected animation; re-select
 							d20plus.anim.animatorTool.pSelectAnimation().then(anim => {
 								if (anim == null) return;
 
@@ -1022,6 +1023,13 @@ function d20plusEngine () {
 										d20plus.anim.animator.startAnimation(it.model, anim)
 									}
 								});
+							});
+							i();
+						} else if ("util-scenes" === e) {
+							// TODO remember last selected scene; re-select
+							d20plus.anim.animatorTool.pSelectScene().then(scene => {
+								if (scene == null) return;
+								d20plus.anim.animatorTool.doStartScene(scene);
 							});
 							i();
 						}

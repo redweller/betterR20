@@ -1,7 +1,4 @@
 function baseToolAnimator () {
-	// TODO need to have the concept of a "scene" which is...
-	//  multiple animations bound to multiple tokens that can be launched at the same time
-
 	function cleanNulls (obj) {
 		Object.entries(obj).filter(([k, v]) => v == null).forEach(([k]) => delete obj[k]);
 		return obj;
@@ -488,6 +485,7 @@ function baseToolAnimator () {
 	Command.errPropLayer = function (line, prop) { return new Command(line, `"${prop}" was not a layer`)};
 	Command.errPropToken = function (line, prop) { return new Command(line, `"${prop}" was not a token property`)};
 
+	// TODO ensure numerical values are >= 0 as required (start; duration)
 	Command.fromString = function (line) {
 		const cleanLine = line
 			.split("/\/\//g")[0] // handle comments
@@ -790,12 +788,12 @@ function baseToolAnimator () {
 					<button class="btn" name="btn-add">Add Part</button>
 				</div>
 				<div class="bold flex-v-center mt-2">
-					<div class="col-2 text-center">Token</div>
+					<div class="col-3 text-center">Token</div>
 					<div class="col-2"></div>
 					<div class="col-2 text-center">Animation</div>
 					<div class="col-2"></div>
 					<div class="col-2 text-center help" title="Delay period upon starting the scene before this animation is run (in milliseconds)">Start Time</div>
-					<div class="col-2 text-center">Delete</div>
+					<div class="col-1"></div>
 				</div>
 				<div class="anm-edit__ipt-rows-wrp">
 					
@@ -859,36 +857,48 @@ function baseToolAnimator () {
 			return this._anims[uid];
 		},
 
-		getAnimQueue (anim) {
+		getAnimQueue (anim, additionalOffset) {
+			additionalOffset = additionalOffset || 0;
 			this._edit_convertLines(anim);
-			return anim.lines.filter(it => it.isRunnable).map(it => it.getInstance());
+			const queue = anim.lines.filter(it => it.isRunnable).map(it => it.getInstance());
+			queue.forEach(it => it._offset += additionalOffset);
+			return queue;
 		},
 
-		getAnimations () {
-			return Object.entries(this._anims).map(([k, v]) => ({
+		_getUidItems (fromObj) {
+			return Object.entries(fromObj).map(([k, v]) => ({
 				uid: k,
 				name: v.name
 			}))
+		},
+
+		getAnimations () {
+			return this._getUidItems(this._anims);
+		},
+
+		getScenes () {
+			return this._getUidItems(this._scenes);
 		},
 
 		isSavingActive () {
 			return !!this._isSaveActive;
 		},
 
-		pSelectAnimation () {
-			const selFrom = this.getAnimations();
-			if (!selFrom.length) return alert("No animations available! Use the Token Animator tool to define some first.");
+		_pSelectUid (fnGetAll, msgNoneFound, title, defaultSelUid) {
+			const selFrom = fnGetAll();
+			if (!selFrom.length) return alert(msgNoneFound);
 
 			return new Promise(resolve => {
-				const $selAnim = $(`<select>
-				<option disabled value="-1">Select animation</option>
+				const $selUid = $(`<select>
+				<option disabled value="-1">${title}</option>
 				${selFrom.map(it => `<option value="${it.uid}">${it.name}</option>`)}
 				</select>`);
-				$selAnim[0].selectedIndex = 0;
+				if (defaultSelUid != null && selFrom.find(it => it.uid === defaultSelUid)) $selUid.val(defaultSelUid);
+				else $selUid[0].selectedIndex = 0;
 
 				const $dialog = $$`
-					<div title="Select Animation">
-						${$selAnim}
+					<div title="${title}">
+						${$selUid}
 					</div>
 				`.appendTo($("body"));
 
@@ -905,7 +915,7 @@ function baseToolAnimator () {
 						{
 							text: "OK",
 							click: function () {
-								const selected = Number($selAnim.val());
+								const selected = Number($selUid.val());
 								$(this).dialog("close");
 								$dialog.remove();
 
@@ -915,6 +925,39 @@ function baseToolAnimator () {
 						}
 					]
 				});
+			});
+		},
+
+		pSelectAnimation (defaultSelUid) {
+			return this._pSelectUid(
+				this.getAnimations.bind(this),
+				"No animations available! Use the Token Animator tool to define some first.",
+				"Select Animation",
+				defaultSelUid
+			);
+		},
+
+		pSelectScene (defaultSelUid) {
+			return this._pSelectUid(
+				this.getScenes.bind(this),
+				"No scenes available! Use Edit Scenes in the Token Animator tool to define some first.",
+				"Select Scene",
+				defaultSelUid
+			);
+		},
+
+		doStartScene (sceneUid) {
+			const scene = this._scenes[sceneUid];
+			if (!scene) return alert(`Could not find scene!`);
+
+			(scene.anims || []).forEach(animMeta => {
+				if (animMeta.tokenId && animMeta.animUid) {
+					const token = d20plus.ut.getTokenById(animMeta.tokenId);
+					if (!token) return;
+					const anim = this.getAnimation(animMeta.animUid);
+					if (!anim) return;
+					d20plus.anim.animator.startAnimation(token, animMeta.animUid, {offset: animMeta.offset || 0});
+				}
 			});
 		},
 		// endregion public
@@ -1337,6 +1380,7 @@ function baseToolAnimator () {
 		_scene_openEditor (scene) {
 			scene = MiscUtil.copy(scene);
 			scene.anims = scene.anims || []; // handle legacy data
+			const editorOptions = {};
 
 			const $winEditor = $(this._html_template_scene_editor).appendTo($("body"));
 
@@ -1370,10 +1414,10 @@ function baseToolAnimator () {
 				DataUtil.userDownload(`${scene.name}`, out);
 			});
 
-			$btnAdd.off("click").click(() => $wrpRows.append(this._scene_$getEditorRow(scene)));
+			$btnAdd.off("click").click(() => $wrpRows.append(this._scene_$getEditorRow(editorOptions, scene)));
 
 			$wrpRows.empty();
-			scene.anims.forEach(animMeta => $wrpRows.append(this._scene_$getEditorRow(scene, animMeta)));
+			scene.anims.forEach(animMeta => $wrpRows.append(this._scene_$getEditorRow(editorOptions, scene, animMeta)));
 
 			$winEditor.dialog({
 				resizable: true,
@@ -1385,7 +1429,7 @@ function baseToolAnimator () {
 			});
 		},
 
-		_scene_$getEditorRow (scene, animMeta) {
+		_scene_$getEditorRow (editorOptions, scene, animMeta) {
 			if (!animMeta) {
 				animMeta = {
 					offset: 0
@@ -1403,6 +1447,7 @@ function baseToolAnimator () {
 							$wrpTokens.empty();
 
 							const page = d20.Campaign.pages.get($selPage.val());
+							editorOptions.lastPageId = $selPage.val();
 
 							if (page.thegraphics && page.thegraphics.length) {
 								const tokens = page.thegraphics.models.filter(it => it.attributes.type === "image");
@@ -1428,7 +1473,9 @@ function baseToolAnimator () {
 							} else $wrpTokens.append("There are no tokens on this page!");
 						});
 					d20.Campaign.pages.forEach(it => $(`<option value="${it.id}"></option>`).text(it.attributes.name || "(Unnamed)").appendTo($selPage));
-					$selPage[0].selectedIndex = 0;
+					// default re-display last page
+					if (editorOptions.lastPageId && d20.Campaign.pages.get(editorOptions.lastPageId)) $selPage.val(editorOptions.lastPageId);
+					else $selPage[0].selectedIndex = 0;
 
 					const $wrpTokens = $$`<div class="anm-scene__wrp-tokens"></div>`;
 
@@ -1459,7 +1506,8 @@ function baseToolAnimator () {
 
 									if (lastSelectedTokenId != null) {
 										animMeta.tokenId = lastSelectedTokenId;
-										$wrpToken.html(getTokenPart())
+										$wrpToken.html(getTokenPart());
+										$wrpTokenName.html(getTokenNamePart());
 									}
 								}
 							}
@@ -1472,12 +1520,18 @@ function baseToolAnimator () {
 				const token = animMeta.tokenId ? d20plus.ut.getTokenById(animMeta.tokenId) : null;
 				return token ? `<img src="${token.attributes.imgsrc}" style="max-width: 40px; max-height: 40px;">` : "";
 			};
+			const getTokenNamePart = () => {
+				const token = animMeta.tokenId ? d20plus.ut.getTokenById(animMeta.tokenId) : null;
+				return token ? token.attributes.name : "";
+			};
 			const $wrpToken = $(`<div>${getTokenPart()}</div>`);
+			const $wrpTokenName = $(`<div>${getTokenNamePart()}</div>`);
 
 			const $btnSelAnim = $(`<button class="btn anm__row-btn">Select Animation</button>`)
 				.click(async () => {
-					const anim = await this.pSelectAnimation();
+					const anim = await this.pSelectAnimation(editorOptions.lastAnimUid);
 					if (anim != null) {
+						editorOptions.lastAnimUid = anim;
 						animMeta.animUid = anim;
 						$wrpAnim.html(getAnimPart())
 					}
@@ -1488,8 +1542,14 @@ function baseToolAnimator () {
 			};
 			const $wrpAnim = $(`<div>${getAnimPart()}</div>`);
 
-			const $iptOffset = $(`<input type="number" min="0" style="max-width: 100%;">`);
-			$iptOffset.val(animMeta.offset || 0);
+			const $iptOffset = $(`<input type="number" min="0" style="max-width: 100%;" class="text-right">`)
+				.val(animMeta.offset || 0)
+				.change(() => {
+					const rawNum = Number($iptOffset.val());
+					const num = isNaN(rawNum) ? 0 : rawNum;
+					animMeta.offset = Math.max(0, num);
+					$iptOffset.val(animMeta.offset);
+				});
 
 			const $btnDelete = $(`<button class="btn btn-danger anm__row-btn pictos">#</button>`)
 				.click(() => {
@@ -1498,7 +1558,8 @@ function baseToolAnimator () {
 				});
 
 			const $out = $$`<div class="flex-vh-center mb-1">
-					<div class="col-2 text-center">${$wrpToken}</div>
+					<div class="col-1 text-center">${$wrpToken}</div>
+					<div class="col-2 text-center">${$wrpTokenName}</div>
 					<div class="col-2 text-center">${$btnSelToken}</div>
 					
 					<div class="col-2 text-center">${$wrpAnim}</div>
@@ -1506,7 +1567,7 @@ function baseToolAnimator () {
 					
 					<div class="col-2">${$iptOffset}</div>
 					
-					<div class="col-2 text-center">${$btnDelete}</div>
+					<div class="col-1 text-center">${$btnDelete}</div>
 				</div>`;
 			return $out;
 		},
@@ -1831,9 +1892,11 @@ function baseToolAnimator () {
 
 		__tickCount: 0,
 
-		startAnimation (token, animUid) {
+		startAnimation (token, animUid, options) {
+			options = options || {};
+
 			const anim = d20plus.anim.animatorTool.getAnimation(animUid);
-			const queue = d20plus.anim.animatorTool.getAnimQueue(anim);
+			const queue = d20plus.anim.animatorTool.getAnimQueue(anim, options.offset || 0);
 
 			this._tracker[token.id] = this._tracker[token.id] || {token, active: {}};
 			const time = (new Date).getTime();
@@ -1841,7 +1904,7 @@ function baseToolAnimator () {
 				queue,
 				start: time,
 				lastTick: time
-			}
+			};
 		},
 
 		endAnimation (token, animUid) {
@@ -1857,7 +1920,10 @@ function baseToolAnimator () {
 		},
 
 		_lastTickActive: false,
+		_tickTimeout: null,
 		doTick () {
+			if (this._tickTimeout) clearTimeout(this._tickTimeout);
+
 			if (this._hasAnyActive()) {
 				// if we've been sleeping, reset start times
 				// prevents an initial "jolt" as anims suddenly have catch up on 1.5s of lag
@@ -1882,7 +1948,7 @@ function baseToolAnimator () {
 			} else {
 				this._lastTickActive = false;
 				// if none are active, sleep for 1.5 seconds
-				setTimeout(() => this.doTick(), 1500);
+				this._tickTimeout = setTimeout(() => this.doTick(), 1500);
 			}
 		},
 

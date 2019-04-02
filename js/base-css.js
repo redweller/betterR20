@@ -372,6 +372,11 @@ function baseCss () {
 			s: `.wth__row input[type="range"]`,
 			r: "width: calc(100% - 8px);"
 		},
+		// context menu
+		{
+			s: `.ctx__divider`,
+			r: "width: calc(100% - 2px); border: 1px solid black;"
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
