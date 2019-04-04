@@ -170,8 +170,7 @@ function baseToolAnimator () {
 
 					// based on "d20.clipboard.doCopy"
 					const attrs = {
-						top: token.attributes.top,
-						left: token.attributes.left
+						...MiscUtil.copy(token)
 					};
 
 					const modelattrs = {};
@@ -548,7 +547,7 @@ function baseToolAnimator () {
 				return new Command(
 					line,
 					null,
-					d20plus.anim.Copy.bind(null, nStart, anim.uid)
+					d20plus.anim.Copy.bind(null, nStart, anim ? anim.uid : null)
 				);
 			}
 
@@ -988,7 +987,7 @@ function baseToolAnimator () {
 			Object.entries(this._anims).forEach(([k, v]) => {
 				saveableAnims[k] = {
 					...v,
-					lines: v.lines.map(it => typeof it === "string" ? it : it.line)
+					lines: [v.lines || []].map(it => typeof it === "string" ? it : it.line)
 				}
 			});
 
