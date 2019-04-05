@@ -169,8 +169,9 @@ function baseToolAnimator () {
 					this._hasRun = true;
 
 					// based on "d20.clipboard.doCopy"
+					const graphic = token.view.graphic;
 					const attrs = {
-						...MiscUtil.copy(token)
+						...MiscUtil.copy(graphic)
 					};
 
 					const modelattrs = {};
@@ -181,7 +182,8 @@ function baseToolAnimator () {
 						type: token.attributes.type,
 						attrs,
 						modelattrs,
-						oldid: token.id
+						oldid: token.id,
+						groupwith: ""
 					};
 
 					// based on "d20.clipboard.doPaste"
@@ -215,7 +217,7 @@ function baseToolAnimator () {
 					}
 
 					if (childToken && childAnimationUid) {
-						const nxt = d20plus.anim.TriggerAnimation(startTime, childAnimationUid);
+						const nxt = new d20plus.anim.TriggerAnimation(startTime, childAnimationUid);
 						nxt.animate(childToken, alpha, delta, queue);
 					}
 				}
@@ -987,7 +989,7 @@ function baseToolAnimator () {
 			Object.entries(this._anims).forEach(([k, v]) => {
 				saveableAnims[k] = {
 					...v,
-					lines: [v.lines || []].map(it => typeof it === "string" ? it : it.line)
+					lines: [...(v.lines || [])].map(it => typeof it === "string" ? it : it.line)
 				}
 			});
 
