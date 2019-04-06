@@ -84,7 +84,14 @@ function baseToolAnimator () {
 				_hasRun: this._hasRun,
 				_offset: this._offset,
 				_progress: this._progress
-			})
+			});
+
+			this._getTickProgress = (duration, delta) => {
+				let mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
+				// prevent progress from going past 100%
+				if (this._progress + mProgress > 1) mProgress = 1 - this._progress;
+				return mProgress;
+			};
 		},
 
 		Nop: function () {
@@ -106,7 +113,7 @@ function baseToolAnimator () {
 
 				if (alpha >= startTime) {
 					if (this._progress < (1 - Number.EPSILON)) {
-						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
+						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle movement
 						const mvX = mProgress * x;
@@ -240,7 +247,7 @@ function baseToolAnimator () {
 
 				if (alpha >= startTime) {
 					if (this._progress < (1 - Number.EPSILON)) {
-						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
+						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle rotation
 						const rot = mProgress * degrees;
@@ -296,14 +303,16 @@ function baseToolAnimator () {
 
 				if (alpha >= startTime) {
 					if (this._progress < (1 - Number.EPSILON)) {
-						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
+						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle scaling
 						const mScaleX = mProgress * scaleFactorX;
 						const mScaleY = mProgress * scaleFactorY;
 
-						token.attributes.scaleX = Number(token.attributes.scaleX || 0) + mScaleX;
-						token.attributes.scaleY = Number(token.attributes.scaleY || 0) + mScaleY;
+						token.view.graphic.scaleX = Number(token.view.graphic.scaleX || 0) + mScaleX;
+						token.view.graphic.scaleY = Number(token.view.graphic.scaleY || 0) + mScaleY;
+						token.attributes.scaleX = token.view.graphic.scaleX;
+						token.attributes.scaleY = token.view.graphic.scaleY;
 
 						// update progress
 						this._progress += mProgress;
@@ -382,7 +391,7 @@ function baseToolAnimator () {
 
 				if (alpha >= startTime) {
 					if (this._progress < (1 - Number.EPSILON)) {
-						const mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
+						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle lighting changes
 						const mLightRadius = mProgress * lightRadius;
@@ -395,6 +404,7 @@ function baseToolAnimator () {
 
 						if (degrees != null) {
 							const mDegrees = mProgress * degrees;
+							if (token.attributes.light_angle === "") token.attributes.light_angle = 360;
 							token.attributes.light_angle = Number(token.attributes.light_angle || 0) + mDegrees;
 						}
 
@@ -477,17 +487,17 @@ function baseToolAnimator () {
 		};
 	}
 
-	Command.errInvalidArgCount = function (line) { return new Command(line, "Invalid argument count")};
-	Command.errPropNum = function (line, prop) { return new Command(line, `"${prop}" was not a number`)};
-	Command.errPropBool = function (line, prop) { return new Command(line, `"${prop}" was not a boolean`)};
-	Command.errPropLayer = function (line, prop) { return new Command(line, `"${prop}" was not a layer`)};
-	Command.errPropToken = function (line, prop) { return new Command(line, `"${prop}" was not a token property`)};
-	Command.errValNeg = function (line, prop) { return new Command(line, `"${prop}" was negative`)};
+	Command.errInvalidArgCount = function (line, ...counts) { return new Command(line, `Invalid argument count; expected ${counts.joinConjunct(", ", " or ")}`)};
+	Command.errPropNum = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a number`)};
+	Command.errPropBool = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a boolean`)};
+	Command.errPropLayer = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a layer (valid layers are: ${d20plus.anim._LAYERS.joinConjunct(", ", " or ")})`)};
+	Command.errPropToken = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a token property`)};
+	Command.errValNeg = function (line, prop, val) { return new Command(line, `${prop} "${val}" was negative`)};
 
-	Command.errStartNum = function (line) { return Command.errPropNum(line, "start time")};
-	Command.errStartNeg = function (line) { return Command.errValNeg(line, "start time")};
-	Command.errDurationNum = function (line) { return Command.errPropNum(line, "duration")};
-	Command.errDurationNeg = function (line) { return Command.errValNeg(line, "duration")};
+	Command.errStartNum = function (line, val) { return Command.errPropNum(line, "start time", val)};
+	Command.errStartNeg = function (line, val) { return Command.errValNeg(line, "start time", val)};
+	Command.errDurationNum = function (line, val) { return Command.errPropNum(line, "duration", val)};
+	Command.errDurationNeg = function (line, val) { return Command.errValNeg(line, "duration", val)};
 
 	Command.fromString = function (line) {
 		const cleanLine = line
@@ -499,19 +509,19 @@ function baseToolAnimator () {
 		const op = tokens.shift();
 		switch (op) {
 			case "mv": {
-				if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line);
+				if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line, 4, 5);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const nDuration = Number(tokens[1]);
-				if (isNaN(nDuration)) return Command.errDurationNum(line);
-				if (nDuration < 0) return Command.errDurationNeg(line);
+				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
+				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
 				const nX = Number(tokens[2]);
-				if (isNaN(nX)) return Command.errPropNum(line, "x");
+				if (isNaN(nX)) return Command.errPropNum(line, "x", tokens[2]);
 				const nY = Number(tokens[3]);
-				if (isNaN(nY)) return Command.errPropNum(line, "y");
+				if (isNaN(nY)) return Command.errPropNum(line, "y", tokens[3]);
 				const nZ = tokens[4] ? Number(tokens[4]) : null;
-				if (nZ != null && isNaN(nY)) return Command.errPropNum(line, "z");
+				if (nZ != null && isNaN(nY)) return Command.errPropNum(line, "z", tokens[4]);
 
 				return new Command(
 					line,
@@ -521,15 +531,15 @@ function baseToolAnimator () {
 			}
 
 			case "rot": {
-				if (tokens.length !== 3) return Command.errInvalidArgCount(line);
+				if (tokens.length !== 3) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const nDuration = Number(tokens[1]);
-				if (isNaN(nDuration)) return Command.errDurationNum(line);
-				if (nDuration < 0) return Command.errDurationNeg(line);
+				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
+				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
 				const nRot = Number(tokens[2]);
-				if (isNaN(nRot)) return Command.errPropNum(line, "degrees");
+				if (isNaN(nRot)) return Command.errPropNum(line, "degrees", tokens[2]);
 
 				return new Command(
 					line,
@@ -539,12 +549,13 @@ function baseToolAnimator () {
 			}
 
 			case "cp": {
-				if (tokens.length < 1 || tokens.length > 2) return Command.errInvalidArgCount(line);
+				if (tokens.length < 1 || tokens.length > 2) return Command.errInvalidArgCount(line, 1, 2);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 
 				const anim = tokens[1] ? d20plus.anim.animatorTool.getAnimations().find(it => it.name === tokens[1]) : null;
+				if (!anim && tokens[1]) return new Command(line, `Could not find animation "${tokens[1]}"`, tokens[1]);
 
 				return new Command(
 					line,
@@ -554,14 +565,14 @@ function baseToolAnimator () {
 			}
 
 			case "flip": {
-				if (tokens.length !== 3) return Command.errInvalidArgCount(line);
+				if (tokens.length !== 3) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const flipH = tokens[1] === "true" ? true : tokens[1] === "false" ? false : null;
-				if (flipH == null) return Command.errPropBool("flipH");
+				if (flipH == null) return Command.errPropBool(line, "flipH", tokens[1]);
 				const flipV = tokens[2] === "true" ? true : tokens[2] === "false" ? false : null;
-				if (flipV == null) return Command.errPropBool("flipV");
+				if (flipV == null) return Command.errPropBool(line, "flipV", tokens[2]);
 
 				return new Command(
 					line,
@@ -571,19 +582,19 @@ function baseToolAnimator () {
 			}
 
 			case "scale": {
-				if (tokens.length !== 4) return Command.errInvalidArgCount(line);
+				if (tokens.length !== 4) return Command.errInvalidArgCount(line, 4);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const nDuration = Number(tokens[1]);
-				if (isNaN(nDuration)) return Command.errDurationNum(line);
-				if (nDuration < 0) return Command.errDurationNeg(line);
+				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
+				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
 				const nScaleX = Number(tokens[2]);
-				if (isNaN(nScaleX)) return Command.errPropNum(line, "scaleX");
-				if (nScaleX < 0) return Command.errValNeg(line, "scaleX");
+				if (isNaN(nScaleX)) return Command.errPropNum(line, "scaleX", tokens[2]);
+				if (nScaleX < 0) return Command.errValNeg(line, "scaleX", tokens[2]);
 				const nScaleY = Number(tokens[3]);
-				if (isNaN(nScaleY)) return Command.errPropNum(line, "scaleY");
-				if (nScaleY < 0) return Command.errValNeg(line, "scaleY");
+				if (isNaN(nScaleY)) return Command.errPropNum(line, "scaleY", tokens[3]);
+				if (nScaleY < 0) return Command.errValNeg(line, "scaleY", tokens[3]);
 
 				return new Command(
 					line,
@@ -593,11 +604,11 @@ function baseToolAnimator () {
 			}
 
 			case "layer": {
-				if (tokens.length !== 2) return Command.errInvalidArgCount(line);
+				if (tokens.length !== 2) return Command.errInvalidArgCount(line, 2);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
-				if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return Command.errPropLayer(line, "layer");
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
+				if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return Command.errPropLayer(line, "layer", tokens[1]);
 
 				return new Command(
 					line,
@@ -607,20 +618,20 @@ function baseToolAnimator () {
 			}
 
 			case "light": {
-				if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line);
+				if (tokens.length < 3 || tokens.length > 5) return Command.errInvalidArgCount(line, 3, 4, 5);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const nDuration = Number(tokens[1]);
-				if (isNaN(nDuration)) return Command.errDurationNum(line);
-				if (nDuration < 0) return Command.errDurationNeg(line);
+				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
+				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
 				const nLightRadius = Number(tokens[2]);
-				if (isNaN(nLightRadius)) return Command.errPropNum(line, "lightRadius");
+				if (isNaN(nLightRadius)) return Command.errPropNum(line, "lightRadius", tokens[2]);
 				const nDimStart = tokens[3] ? Number(tokens[3]) : null;
-				if (nDimStart != null && isNaN(nDimStart)) return Command.errPropNum(line, "dimStart");
+				if (nDimStart != null && isNaN(nDimStart)) return Command.errPropNum(line, "dimStart", tokens[3]);
 				const nDegrees = tokens[4] ? Number(tokens[4]) : null;
-				if (nDegrees != null && isNaN(nDegrees)) return Command.errPropNum(line, "degrees");
-				if (nDegrees != null && nDegrees < 0) return Command.errValNeg(line, "degrees"); //  TODO is this required?
+				if (nDegrees != null && isNaN(nDegrees)) return Command.errPropNum(line, "degrees", tokens[4]);
+				if (nDegrees != null && nDegrees < 0) return Command.errValNeg(line, "degrees", tokens[4]); //  TODO is this required?
 
 				return new Command(
 					line,
@@ -630,13 +641,13 @@ function baseToolAnimator () {
 			}
 
 			case "prop": {
-				if (tokens.length !== 3) return Command.errInvalidArgCount(line);
+				if (tokens.length !== 3) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
-				if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return Command.errPropToken(line, "prop");
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
+				if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return Command.errPropToken(line, "prop", tokens[1]);
 				let prop = tokens[2];
-				try { prop = JSON.parse(prop); } catch (ignored) {}
+				try { prop = JSON.parse(prop); } catch (ignored) { console.warn(`Failed to parse "${prop}" as JSON, treating as raw string...`) }
 
 				return new Command(
 					line,
@@ -646,10 +657,10 @@ function baseToolAnimator () {
 			}
 
 			case "macro": {
-				if (tokens.length !== 2) return Command.errInvalidArgCount(line);
+				if (tokens.length !== 2) return Command.errInvalidArgCount(line, 2);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				// no validation for macro -- it might exist in the future if it doesn't now, or vice-versa
 
 				return new Command(
@@ -660,12 +671,12 @@ function baseToolAnimator () {
 			}
 
 			case "anim": {
-				if (tokens.length !== 2) return Command.errInvalidArgCount(line);
+				if (tokens.length !== 2) return Command.errInvalidArgCount(line, 2);
 				const nStart = Number(tokens[0]);
-				if (isNaN(nStart)) return Command.errStartNum(line);
-				if (nStart < 0) return Command.errStartNeg(line);
+				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
+				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const anim = d20plus.anim.animatorTool.getAnimations().find(it => it.name === tokens[1]);
-				if (!anim) return new Command(line, `Could not find animation "${tokens[1]}"`);
+				if (!anim) return new Command(line, `Could not find animation "${tokens[1]}"`, tokens[1]);
 
 				return new Command(
 					line,
@@ -736,7 +747,7 @@ function baseToolAnimator () {
 			
 			<div id="d20plus-token-animator-rescue" title="Token Rescue" class="anm__win">
 				<p>
-					<button class="btn" name="btn-refresh">Refresh</button>
+					<button class="btn mr-2" name="btn-refresh">Refresh</button>
 				</p>
 				
 				<p class="anm__wrp-sel-all">
@@ -905,8 +916,11 @@ function baseToolAnimator () {
 		},
 
 		_pSelectUid (fnGetAll, msgNoneFound, title, defaultSelUid) {
+			// convert, as the UIDs are object keys
+			if (defaultSelUid != null) defaultSelUid = String(defaultSelUid);
+
 			const selFrom = fnGetAll();
-			if (!selFrom.length) return alert(msgNoneFound);
+			if (!selFrom.length) return d20plus.ut.chatLog(msgNoneFound);
 
 			return new Promise(resolve => {
 				const $selUid = $(`<select>
@@ -968,7 +982,7 @@ function baseToolAnimator () {
 
 		doStartScene (sceneUid) {
 			const scene = this._scenes[sceneUid];
-			if (!scene) return alert(`Could not find scene!`);
+			if (!scene) return d20plus.ut.chatLog(`Could not find scene!`);
 
 			(scene.anims || []).forEach(animMeta => {
 				if (animMeta.tokenId && animMeta.animUid) {
@@ -1041,7 +1055,7 @@ function baseToolAnimator () {
 			try {
 				data = await DataUtil.pUserUpload();
 			} catch (e) {
-				alert("File was not valid JSON!");
+				d20plus.ut.chatLog("File was not valid JSON!");
 				console.error(e);
 				return;
 			}
@@ -1067,10 +1081,10 @@ function baseToolAnimator () {
 
 				if (messages.length) {
 					console.log(messages.join("\n"));
-					return alert(messages.join("\n"))
+					return d20plus.ut.chatLog(messages.join("\n"))
 				}
 			} else {
-				return alert(`File contained no ${name}s!`);
+				return d20plus.ut.chatLog(`File contained no ${name}s!`);
 			}
 		},
 
@@ -1414,7 +1428,7 @@ function baseToolAnimator () {
 
 			$btnSave.off("click").click(() => {
 				const msg = this._scene_getValidationMessage(scene);
-				if (msg) return alert(msg);
+				if (msg) return d20plus.ut.chatLog(msg);
 
 				// we passed validation
 				this._scenes[scene.uid] = scene;
@@ -1426,7 +1440,7 @@ function baseToolAnimator () {
 					matches[0].values({name: scene.name})
 				}
 
-				alert("Saved!");
+				d20plus.ut.chatLog("Saved!");
 			});
 
 			$btnExportFile.off("click").click(() => {
@@ -1622,10 +1636,10 @@ function baseToolAnimator () {
 			const pageH = d20.Campaign.activePage().attributes.height * 70;
 
 			const outOfBounds = d20.Campaign.activePage().thegraphics.models.filter(tokenModel => {
-				return tokenModel.attributes.scaleX < 0.01 ||
-					tokenModel.attributes.scaleX > 50.0 ||
-					tokenModel.attributes.scaleY < 0.01 ||
-					tokenModel.attributes.scaleY > 50.0 ||
+				return tokenModel.view.graphic.scaleX < 0.01 ||
+					tokenModel.view.graphic.scaleX > 50.0 ||
+					tokenModel.view.graphic.scaleY < 0.01 ||
+					tokenModel.view.graphic.scaleY > 50.0 ||
 					tokenModel.attributes.left < 0 ||
 					tokenModel.attributes.left > pageW ||
 					tokenModel.attributes.top < 0 ||
@@ -1672,7 +1686,7 @@ function baseToolAnimator () {
 
 			this._rescue_$btnRescue.off("click").click(() => {
 				const sel = this._rescue_getSelected();
-				if (!sel.length) return alert("Please select some items from the list!");
+				if (!sel.length) return d20plus.ut.chatLog("Please select some items from the list!");
 
 				sel.map(it => it.values()).forEach(it => {
 					// disable animations for token
@@ -1681,7 +1695,9 @@ function baseToolAnimator () {
 					// reset token properties; place in the top-left corner of the canvas on the GM layer
 					const token = d20plus.ut.getTokenById(it._tokenId);
 					token.attributes.scaleX = 1.0;
+					token.view.graphic.scaleX = token.attributes.scaleX;
 					token.attributes.scaleY = 1.0;
+					token.view.graphic.scaleY = token.attributes.scaleY;
 					token.attributes.flipv = false;
 					token.attributes.fliph = false;
 					token.attributes.left = 35;
@@ -1693,7 +1709,7 @@ function baseToolAnimator () {
 					token.save();
 				});
 
-				alert("Rescued tokens have been placed on the GM layer, in the top-left corner of the map");
+				d20plus.ut.chatLog("Rescued tokens will be placed on the GM layer, in the top-left corner of the map");
 				this._rescue_doPopulateList();
 			});
 		},
@@ -1768,7 +1784,7 @@ function baseToolAnimator () {
 
 			this._dis_$btnStop.off("click").click(() => {
 				const sel = this._dis_getSelected();
-				if (!sel.length) return alert("Please select some items from the list!");
+				if (!sel.length) return d20plus.ut.chatLog("Please select some items from the list!");
 				if (!confirm("Are you sure?")) return;
 
 				sel.map(it => it.values()).forEach(it => {
@@ -1822,7 +1838,7 @@ function baseToolAnimator () {
 
 			$btnSave.off("click").click(() => {
 				const msg = getValidationMessage();
-				if (msg) return alert(msg);
+				if (msg) return d20plus.ut.chatLog(msg);
 
 				// we passed validation
 				anim.name = $iptName.val();
@@ -1834,7 +1850,7 @@ function baseToolAnimator () {
 					matches[0].values({name: anim.name})
 				}
 
-				alert("Saved!");
+				d20plus.ut.chatLog("Saved!");
 			});
 
 			$btnExportFile.off("click").click(() => {
@@ -1844,12 +1860,12 @@ function baseToolAnimator () {
 
 			$btnValidate.off("click").click(() => {
 				const msg = getValidationMessage();
-				alert(msg || "Valid!");
+				d20plus.ut.chatLog(msg || "Valid!");
 			});
 
 			$btnHelp.click(() => {
 				// TODO link to a wiki page
-				alert("Coming soon to a Wiki near you");
+				d20plus.ut.chatLog("Coming soon to a Wiki near you");
 			});
 		},
 
@@ -2161,7 +2177,8 @@ function baseToolAnimator () {
 		"currentSide"
 	]);
 
-	d20plus.anim.VALID_LAYER = new Set(["map", "objects", "foreground", "gmlayer", "walls", "weather"])
+	d20plus.anim._LAYERS = ["map", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.anim.VALID_LAYER = new Set(d20plus.anim._LAYERS);
 }
 
 SCRIPT_EXTENSIONS.push(baseToolAnimator);

@@ -13,13 +13,13 @@ function baseUtil () {
 		d20.textchat.incoming(
 			false,
 			{
-				who: "5e.tools",
+				who: "betteR20",
 				type: "general",
 				content: (arg || "").toString(),
 				playerid: window.currentPlayer.id,
 				id: d20plus.ut.generateRowId(),
 				target: window.currentPlayer.id,
-				avatar: "https://5e.tools/icon.png"
+				avatar: "https://i.imgur.com/bBhudno.png"
 			}
 		);
 	};

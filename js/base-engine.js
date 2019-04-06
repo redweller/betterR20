@@ -348,6 +348,11 @@ function d20plusEngine () {
 			} else return 0;
 		}
 
+		const lastContextSelection = {
+			lastAnimUid: null,
+			lastSceneUid: null,
+		};
+
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
 		var i = function() {
@@ -1014,22 +1019,23 @@ function d20plusEngine () {
 							});
 							i();
 						} else if ("token-animate" === e) {
-							// TODO remember last selected animation; re-select
-							d20plus.anim.animatorTool.pSelectAnimation().then(anim => {
-								if (anim == null) return;
+							d20plus.anim.animatorTool.pSelectAnimation(lastContextSelection.lastAnimUid).then(animUid => {
+								if (animUid == null) return;
 
+								lastContextSelection.lastAnimUid = animUid;
 								d20.engine.selected().forEach(it => {
 									if (it.model) {
-										d20plus.anim.animator.startAnimation(it.model, anim)
+										d20plus.anim.animator.startAnimation(it.model, animUid)
 									}
 								});
 							});
 							i();
 						} else if ("util-scenes" === e) {
-							// TODO remember last selected scene; re-select
-							d20plus.anim.animatorTool.pSelectScene().then(scene => {
-								if (scene == null) return;
-								d20plus.anim.animatorTool.doStartScene(scene);
+							d20plus.anim.animatorTool.pSelectScene(lastContextSelection.lastSceneUid).then(sceneUid => {
+								if (sceneUid == null) return;
+
+								lastContextSelection.lastSceneUid = sceneUid;
+								d20plus.anim.animatorTool.doStartScene(sceneUid);
 							});
 							i();
 						}
