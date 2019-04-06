@@ -641,12 +641,13 @@ function baseToolAnimator () {
 			}
 
 			case "prop": {
-				if (tokens.length !== 3) return Command.errInvalidArgCount(line, 3);
+				if (tokens.length < 2) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return Command.errPropToken(line, "prop", tokens[1]);
-				let prop = tokens[2];
+				let prop = "";
+				if (tokens.length > 2) prop = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
 				try { prop = JSON.parse(prop); } catch (ignored) { console.warn(`Failed to parse "${prop}" as JSON, treating as raw string...`) }
 
 				return new Command(
