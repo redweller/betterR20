@@ -7,6 +7,7 @@ function baseToolAnimator () {
 	d20plus.anim = {
 		lineFromParsed (parsed) {
 			const stack = [];
+			const add = (...parts) => parts.forEach(p => stack.push(p == null ? "-" : p));
 
 			stack.push(d20plus.anim.COMMAND_TO_SHORT[parsed._type]);
 			if (parsed.start != null) stack.push(parsed.start);
@@ -15,8 +16,7 @@ function baseToolAnimator () {
 			switch (parsed._type) {
 				case "Move":
 				case "MoveExact": {
-					stack.push(parsed.x, parsed.y);
-					if (parsed.z != null) stack.push(parsed.z);
+					add(parsed.x, parsed.y, parsed.z);
 					break;
 				}
 				case "Rotate":
@@ -28,13 +28,14 @@ function baseToolAnimator () {
 					if (parsed.animation != null) stack.push(parsed.animation);
 					break;
 				}
-				case "Flip": {
-					stack.push(parsed.flipH, parsed.flipV);
+				case "Flip":
+				case "FlipExact": {
+					add(parsed.flipH, parsed.flipV);
 					break;
 				}
 				case "Scale":
 				case "ScaleExact": {
-					stack.push(parsed.scaleX, parsed.scaleY);
+					add(parsed.scaleX, parsed.scaleY);
 					break;
 				}
 				case "Layer": {
@@ -43,9 +44,7 @@ function baseToolAnimator () {
 				}
 				case "Lighting":
 				case "LightingExact": {
-					stack.push(parsed.lightRadius);
-					if (parsed.dimStart != null) stack.push(parsed.dimStart);
-					if (parsed.degrees != null) stack.push(parsed.degrees);
+					add(parsed.lightRadius, parsed.dimStart, parsed.degrees);
 					break;
 				}
 				case "SetProperty": {
@@ -97,7 +96,11 @@ function baseToolAnimator () {
 					break;
 				}
 				case "Flip": {
-					out = new d20plus.anim.Rotate(json.startTime, json.isHorizontal, json.isVertical);
+					out = new d20plus.anim.Flip(json.startTime, json.isHorizontal, json.isVertical);
+					break;
+				}
+				case "FlipExact": {
+					out = new d20plus.anim.FlipExact(json.startTime, json.isHorizontal, json.isVertical);
 					break;
 				}
 				case "Scale": {
@@ -239,11 +242,15 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle movement
-						const mvX = mProgress * x;
-						const mvY = mProgress * y;
+						if (x != null) {
+							const mvX = mProgress * x;
+							token.attributes.left += mvX;
+						}
 
-						token.attributes.left += mvX;
-						token.attributes.top += mvY;
+						if (y != null) {
+							const mvY = mProgress * y;
+							token.attributes.top += mvY;
+						}
 
 						if (z != null) {
 							let {total, stack} = this._getCurrentZ(token);
@@ -273,8 +280,13 @@ function baseToolAnimator () {
 						const tProgress = this._progress + mProgress;
 
 						// handle movement
-						token.attributes.left = tProgress * x;
-						token.attributes.top = tProgress * y;
+						if (x != null) {
+							token.attributes.left = tProgress * x;
+						}
+
+						if (y != null) {
+							token.attributes.top = tProgress * y;
+						}
 
 						if (z != null) {
 							let {stack} = this._getCurrentZ(token);
@@ -424,8 +436,19 @@ function baseToolAnimator () {
 			};
 		},
 
-		Flip: function (startTime, isHorizontal, isVertical) {
+		_BaseFlip: function (startTime, isHorizontal, isVertical) {
 			d20plus.anim._Base.call(this);
+
+			this.serialize = () => {
+				return cleanNulls({
+					...this._serialize(),
+					startTime, isHorizontal, isVertical
+				})
+			};
+		},
+
+		Flip: function (startTime, isHorizontal, isVertical) {
+			d20plus.anim._BaseFlip.call(this, startTime, isHorizontal, isVertical);
 
 			this.animate = function (token, alpha) {
 				alpha = alpha - this._offset;
@@ -433,19 +456,30 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					if (isHorizontal) token.attributes.fliph = !(typeof token.attributes.fliph === "string" ? token.attributes.fliph === "true" : token.attributes.fliph);
-					if (isVertical) token.attributes.flipv = !(typeof token.attributes.flipv === "string" ? token.attributes.flipv === "true" : token.attributes.flipv);
+					if (isHorizontal != null && isHorizontal) token.attributes.fliph = !(typeof token.attributes.fliph === "string" ? token.attributes.fliph === "true" : token.attributes.fliph);
+					if (isVertical != null && isVertical) token.attributes.flipv = !(typeof token.attributes.flipv === "string" ? token.attributes.flipv === "true" : token.attributes.flipv);
 
 					return true;
 				}
 				return false;
 			};
+		},
 
-			this.serialize = () => {
-				return cleanNulls({
-					...this._serialize(),
-					startTime, isHorizontal, isVertical
-				})
+		FlipExact: function (startTime, isHorizontal, isVertical) {
+			d20plus.anim._BaseFlip.call(this, startTime, isHorizontal, isVertical);
+
+			this.animate = function (token, alpha) {
+				alpha = alpha - this._offset;
+
+				if (!this._hasRun && alpha >= startTime) {
+					this._hasRun = true;
+
+					if (isHorizontal != null) token.attributes.fliph = isHorizontal;
+					if (isVertical != null) token.attributes.flipv = isVertical;
+
+					return true;
+				}
+				return false;
 			};
 		},
 
@@ -471,13 +505,17 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle scaling
-						const mScaleX = mProgress * scaleFactorX;
-						const mScaleY = mProgress * scaleFactorY;
+						if (scaleFactorX != null) {
+							const mScaleX = mProgress * scaleFactorX;
+							token.view.graphic.scaleX = Number(token.view.graphic.scaleX || 0) + mScaleX;
+							token.attributes.scaleX = token.view.graphic.scaleX;
+						}
 
-						token.view.graphic.scaleX = Number(token.view.graphic.scaleX || 0) + mScaleX;
-						token.view.graphic.scaleY = Number(token.view.graphic.scaleY || 0) + mScaleY;
-						token.attributes.scaleX = token.view.graphic.scaleX;
-						token.attributes.scaleY = token.view.graphic.scaleY;
+						if (scaleFactorY != null) {
+							const mScaleY = mProgress * scaleFactorY;
+							token.view.graphic.scaleY = Number(token.view.graphic.scaleY || 0) + mScaleY;
+							token.attributes.scaleY = token.view.graphic.scaleY;
+						}
 
 						// update progress
 						this._progress += mProgress;
@@ -501,13 +539,15 @@ function baseToolAnimator () {
 						const tProgress = this._progress + mProgress;
 
 						// handle scaling
-						const tScaleX = tProgress * scaleFactorX;
-						const tScaleY = tProgress * scaleFactorY;
+						if (scaleFactorX != null) {
+							token.view.graphic.scaleX = tProgress * scaleFactorX;
+							token.attributes.scaleX = token.view.graphic.scaleX;
+						}
 
-						token.view.graphic.scaleX = tScaleX;
-						token.view.graphic.scaleY = tScaleY;
-						token.attributes.scaleX = token.view.graphic.scaleX;
-						token.attributes.scaleY = token.view.graphic.scaleY;
+						if (scaleFactorY != null) {
+							token.view.graphic.scaleY = tProgress * scaleFactorY;
+							token.attributes.scaleY = token.view.graphic.scaleY;
+						}
 
 						// update progress
 						this._progress += mProgress;
@@ -593,8 +633,10 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle lighting changes
-						const mLightRadius = mProgress * lightRadius;
-						token.attributes.light_radius = Number(token.attributes.light_radius || 0) + mLightRadius;
+						if (lightRadius != null) {
+							const mLightRadius = mProgress * lightRadius;
+							token.attributes.light_radius = Number(token.attributes.light_radius || 0) + mLightRadius;
+						}
 
 						if (dimStart != null) {
 							const mDimStart = mProgress * dimStart;
@@ -629,7 +671,9 @@ function baseToolAnimator () {
 						const tProgress = this._progress + mProgress;
 
 						// handle lighting changes
-						token.attributes.light_radius = tProgress * lightRadius;
+						if (lightRadius != null) {
+							token.attributes.light_radius = tProgress * lightRadius;
+						}
 
 						if (dimStart != null) {
 							token.attributes.light_dimradius = tProgress * dimStart;
@@ -735,18 +779,19 @@ function baseToolAnimator () {
 		switch (op) {
 			case "mv":
 			case "mvx": {
-				if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line, 4, 5);
+				if (tokens.length !== 5) return Command.errInvalidArgCount(line, 5);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const nDuration = Number(tokens[1]);
 				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
 				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
-				const nX = Number(tokens[2]);
-				if (isNaN(nX)) return Command.errPropNum(line, "x", tokens[2]);
-				const nY = Number(tokens[3]);
-				if (isNaN(nY)) return Command.errPropNum(line, "y", tokens[3]);
-				const nZ = tokens[4] ? Number(tokens[4]) : null;
+
+				const nX = tokens[2] === "-" ? null : Number(tokens[2]);
+				if (nX != null && isNaN(nX)) return Command.errPropNum(line, "x", tokens[2]);
+				const nY = tokens[3] === "-" ? null : Number(tokens[3]);
+				if (nY != null && isNaN(nY)) return Command.errPropNum(line, "y", tokens[3]);
+				const nZ = tokens[4] === "-" ? null : Number(tokens[4]);
 				if (nZ != null && isNaN(nY)) return Command.errPropNum(line, "z", tokens[4]);
 
 				if (op === "mv") {
@@ -840,27 +885,43 @@ function baseToolAnimator () {
 				);
 			}
 
-			case "flip": {
+			case "flip":
+			case "flipx": {
 				if (tokens.length !== 3) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
-				const flipH = tokens[1] === "true" ? true : tokens[1] === "false" ? false : null;
-				if (flipH == null) return Command.errPropBool(line, "flipH", tokens[1]);
-				const flipV = tokens[2] === "true" ? true : tokens[2] === "false" ? false : null;
-				if (flipV == null) return Command.errPropBool(line, "flipV", tokens[2]);
 
-				return new Command(
-					line,
-					null,
-					d20plus.anim.Flip.bind(null, nStart, flipH, flipV),
-					{
-						_type: "Flip",
-						start: nStart,
-						flipH: flipH,
-						flipV: flipV
-					}
-				);
+				const flipH = tokens[1] === "-" ? null : tokens[1] === "true" ? true : tokens[1] === "false" ? false : undefined;
+				if (flipH === undefined) return Command.errPropBool(line, "flipH", tokens[1]);
+				const flipV = tokens[2] === "-" ? null : tokens[2] === "true" ? true : tokens[2] === "false" ? false : undefined;
+				if (flipV === undefined) return Command.errPropBool(line, "flipV", tokens[2]);
+
+				if (op === "flip") {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.Flip.bind(null, nStart, flipH, flipV),
+						{
+							_type: "Flip",
+							start: nStart,
+							flipH: flipH,
+							flipV: flipV
+						}
+					);
+				} else {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.FlipExact.bind(null, nStart, flipH, flipV),
+						{
+							_type: "FlipExact",
+							start: nStart,
+							flipH: flipH,
+							flipV: flipV
+						}
+					);
+				}
 			}
 
 			case "scale":
@@ -872,12 +933,13 @@ function baseToolAnimator () {
 				const nDuration = Number(tokens[1]);
 				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
 				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
-				const nScaleX = Number(tokens[2]);
-				if (isNaN(nScaleX)) return Command.errPropNum(line, "scaleX", tokens[2]);
-				if (nScaleX < 0) return Command.errValNeg(line, "scaleX", tokens[2]);
-				const nScaleY = Number(tokens[3]);
-				if (isNaN(nScaleY)) return Command.errPropNum(line, "scaleY", tokens[3]);
-				if (nScaleY < 0) return Command.errValNeg(line, "scaleY", tokens[3]);
+
+				const nScaleX = tokens[2] === "-" ? null : Number(tokens[2]);
+				if (nScaleX != null && isNaN(nScaleX)) return Command.errPropNum(line, "scaleX", tokens[2]);
+				if (nScaleX != null && nScaleX < 0) return Command.errValNeg(line, "scaleX", tokens[2]);
+				const nScaleY = tokens[3] === "-" ? null : Number(tokens[3]);
+				if (nScaleY != null && isNaN(nScaleY)) return Command.errPropNum(line, "scaleY", tokens[3]);
+				if (nScaleY != null && nScaleY < 0) return Command.errValNeg(line, "scaleY", tokens[3]);
 
 				if (op === "scale") {
 					return new Command(
@@ -929,20 +991,20 @@ function baseToolAnimator () {
 
 			case "light":
 			case "lightx": {
-				if (tokens.length < 3 || tokens.length > 5) return Command.errInvalidArgCount(line, 3, 4, 5);
+				if (tokens.length !== 5) return Command.errInvalidArgCount(line, 5);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				const nDuration = Number(tokens[1]);
 				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
 				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
-				const nLightRadius = Number(tokens[2]);
-				if (isNaN(nLightRadius)) return Command.errPropNum(line, "lightRadius", tokens[2]);
-				const nDimStart = tokens[3] ? Number(tokens[3]) : null;
+
+				const nLightRadius = tokens[2] === "-" ? null : Number(tokens[2]);
+				if (nLightRadius != null && isNaN(nLightRadius)) return Command.errPropNum(line, "lightRadius", tokens[2]);
+				const nDimStart = tokens[3] === "-" ? null : Number(tokens[3]);
 				if (nDimStart != null && isNaN(nDimStart)) return Command.errPropNum(line, "dimStart", tokens[3]);
-				const nDegrees = tokens[4] ? Number(tokens[4]) : null;
+				const nDegrees = tokens[4] === "-" ? null : Number(tokens[4]);
 				if (nDegrees != null && isNaN(nDegrees)) return Command.errPropNum(line, "degrees", tokens[4]);
-				if (nDegrees != null && nDegrees < 0) return Command.errValNeg(line, "degrees", tokens[4]); //  TODO is this required?
 
 				if (op === "light") {
 					return new Command(
@@ -2301,17 +2363,16 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.x = Math.round(Number($iptX.val()));
-							parsed.y = Math.round(Number($iptY.val()));
-							if ($iptZ.val().trim()) parsed.z = Math.round(Number($iptZ.val()));
-							else parsed.z = null;
+							parsed.x = $iptX.val().trim() ? Math.round(Number($iptX.val())) : null;
+							parsed.y = $iptY.val().trim() ? Math.round(Number($iptY.val())) : null;
+							parsed.z = $iptZ.val().trim() ? Math.round(Number($iptZ.val())) : null;
 							parsed._type = $cbExact.prop("checked") ? "MoveExact" : "Move";
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
 						const $iptX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
 						const $iptY = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.y);
-						const $iptZ = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.z || "");
+						const $iptZ = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.z);
 						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "MoveExact").change(() => doUpdate());
 
 						gui_$getWrapped("X", 1, true).appendTo(baseMeta.$wrpHeaders);
@@ -2376,24 +2437,36 @@ function baseToolAnimator () {
 
 						break;
 					}
-					case "Flip": {
-						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
+					case "Flip":
+					case "FlipExact": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, true);
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.flipH = $cbFlipH.prop("checked");
-							parsed.flipV = $cbFlipV.prop("checked");
+							parsed.flipH = $selFlipH.val() === "0" ? null : $selFlipH.val() !== "1";
+							parsed.flipV = $selFlipV.val() === "0" ? null : $selFlipV.val() !== "1";
+							parsed._type = $cbExact.prop("checked") ? "FlipExact" : "Flip";
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $cbFlipH = $(`<input type="checkbox">`).prop("checked", !!parsed.flipH).change(() => doUpdate());
-						const $cbFlipV = $(`<input type="checkbox">`).prop("checked", !!parsed.flipV).change(() => doUpdate());
+						const $getSelFlip = () => {
+							const VALS = ["(None)", "No", "Yes"];
+							return $(`<select class="sel-sm">${VALS.map((it, i) => `<option value="${i}">${it}</option>`).join("")}</select>`);
+						};
+
+						const $selFlipH = $getSelFlip().val(parsed.flipH == null ? "0" : parsed.flipH ? "2" : "1").change(() => doUpdate());
+						const $selFlipV = $getSelFlip().val(parsed.flipV == null ? "0" : parsed.flipV ? "2" : "1").change(() => doUpdate());
+						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "FlipExact").change(() => doUpdate());
 
 						gui_$getWrapped("Flip Horizontally", 3, true).appendTo(baseMeta.$wrpHeaders);
 						gui_$getWrapped("Flip Vertically", 3, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Is Exact", 1, true).appendTo(baseMeta.$wrpHeaders);
 
-						gui_$getWrapped($cbFlipH, 3).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped($cbFlipV, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($selFlipH, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($selFlipV, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($cbExact, 1).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
 
@@ -2405,8 +2478,8 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.scaleX = Number($iptScaleX.val());
-							parsed.scaleY = Number($iptScaleY.val());
+							parsed.scaleX = $iptScaleX.val().trim() ? Number($iptScaleX.val()) : null;
+							parsed.scaleY = $iptScaleY.val().trim() ? Number($iptScaleY.val()) : null;
 							parsed._type = $cbExact.prop("checked") ? "ScaleExact" : "Scale";
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
@@ -2455,18 +2528,16 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.lightRadius = Math.round(Number($iptLightRadius.val()));
-							if ($iptDimStart.val().trim()) parsed.dimStart = Math.round(Number($iptDimStart.val()));
-							else parsed.dimStart = null;
-							if ($iptDegrees.val().trim()) parsed.degrees = Math.round(Number($iptDegrees.val()));
-							else parsed.degrees = null;
+							parsed.lightRadius = $iptLightRadius.val().trim() ? Math.round(Number($iptLightRadius.val())) : null;
+							parsed.dimStart = $iptDimStart.val().trim() ? Math.round(Number($iptDimStart.val())) : null;
+							parsed.degrees = $iptDegrees.val().trim() ? Math.round(Number($iptDegrees.val())) : null;
 							parsed._type = $cbExact.prop("checked") ? "LightingExact" : "Lighting";
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
 						const $iptLightRadius = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
 						const $iptDimStart = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.y);
-						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.z || "");
+						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.z);
 						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "MoveExact").change(() => doUpdate());
 
 						gui_$getWrapped("Light Radius", 2, true).appendTo(baseMeta.$wrpHeaders);
@@ -2648,7 +2719,11 @@ function baseToolAnimator () {
 				});
 
 				if (type == null) return;
-				gui_doAddRow({_type: type});
+
+				// TODO need to generate a default set of attributes
+				const nuLine = {parsed: {_type: type}};
+				myLines.push(nuLine);
+				gui_doAddRow(myLines, nuLine);
 			});
 
 			$btnEditText.click(() => {
@@ -2994,6 +3069,7 @@ function baseToolAnimator () {
 		"RotateExact": "rotx",
 		"Copy": "cp",
 		"Flip": "flip",
+		"FlipExact": "flipx",
 		"Scale": "scale",
 		"ScaleExact": "scalex",
 		"Layer": "layer",
