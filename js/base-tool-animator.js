@@ -136,7 +136,7 @@ function baseToolAnimator () {
 			};
 
 			this._getCurrentZ = (token) => {
-				const statuses = token.get("statusmarkers").split(",");
+				const statuses = (token.attributes.statusmarkers || "").split(",");
 				let total = 0;
 				let pow = 1;
 				let stack = "";
@@ -157,12 +157,12 @@ function baseToolAnimator () {
 			};
 
 			this._setCurrentZ = (token, stack, total) => {
-				const nums = String(total).split("");
+				const nums = String(Math.round(total)).split("");
 				for (let i = 0; i < nums.length; ++i) {
-					stack += `fluffy-wings@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
+					stack += `fluffy-wing@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
 				}
 
-				token.set("statusmarkers", stack);
+				token.attributes.statusmarkers = stack;
 			};
 		},
 
@@ -181,12 +181,12 @@ function baseToolAnimator () {
 						const mvY = mProgress * y;
 
 						token.attributes.left += mvX;
-						token.attributes.top -= mvY;
+						token.attributes.top += mvY;
 
 						if (z != null) {
 							let {total, stack} = this._getCurrentZ(token);
 							total += mProgress * z;
-							this._setCurrentZ(token, total, stack);
+							this._setCurrentZ(token, stack, total);
 						}
 
 						// update progress
@@ -217,7 +217,7 @@ function baseToolAnimator () {
 						if (z != null) {
 							let {stack} = this._getCurrentZ(token);
 							const pZ = tProgress * z;
-							this._setCurrentZ(token, pZ, stack);
+							this._setCurrentZ(token, stack, pZ);
 						}
 
 						// update progress
