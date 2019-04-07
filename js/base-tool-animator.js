@@ -16,6 +16,11 @@ function baseToolAnimator () {
 					out._progress = json._progress;
 					break;
 				}
+				case "MoveExact": {
+					out = new d20plus.anim.MoveExact(json.startTime, json.duration, json.x, json.y, json.z);
+					out._progress = json._progress;
+					break;
+				}
 				case "Copy": {
 					out = new d20plus.anim.Copy(json.startTime, json.childAnimationUid);
 					break;
@@ -25,12 +30,22 @@ function baseToolAnimator () {
 					out._progress = json._progress;
 					break;
 				}
+				case "RotateExact": {
+					out = new d20plus.anim.RotateExact(json.startTime, json.duration, json.degrees);
+					out._progress = json._progress;
+					break;
+				}
 				case "Flip": {
 					out = new d20plus.anim.Rotate(json.startTime, json.isHorizontal, json.isVertical);
 					break;
 				}
 				case "Scale": {
 					out = new d20plus.anim.Scale(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY);
+					out._progress = json._progress;
+					break;
+				}
+				case "ScaleExact": {
+					out = new d20plus.anim.ScaleExact(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY);
 					out._progress = json._progress;
 					break;
 				}
@@ -44,6 +59,11 @@ function baseToolAnimator () {
 				}
 				case "Lighting": {
 					out = new d20plus.anim.Lighting(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees);
+					out._progress = json._progress;
+					break;
+				}
+				case "LightingExact": {
+					out = new d20plus.anim.LightingExact(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees);
 					out._progress = json._progress;
 					break;
 				}
@@ -105,8 +125,49 @@ function baseToolAnimator () {
 			this.serialize = () => {};
 		},
 
-		Move: function (startTime, duration, x, y, z) {
+		_BaseMove: function (startTime, duration, x, y, z) {
 			d20plus.anim._Base.call(this);
+
+			this.serialize = () => {
+				return cleanNulls({
+					...this._serialize(),
+					startTime, duration, x, y, z
+				})
+			};
+
+			this._getCurrentZ = (token) => {
+				const statuses = token.get("statusmarkers").split(",");
+				let total = 0;
+				let pow = 1;
+				let stack = "";
+
+				// reverse loop through the fluffy wings, multiplying vals by 1/10/100...
+				const len = statuses.length;
+				for (let i = len - 1; i >= 0; --i) {
+					const [name, val] = statuses[i].split("@");
+					if (name === "fluffy-wing") {
+						total += pow * Number(val);
+						pow = pow * 10;
+					} else {
+						stack += statuses[i] + ",";
+					}
+				}
+
+				return {total, stack};
+			};
+
+			this._setCurrentZ = (token, stack, total) => {
+				const nums = String(total).split("");
+				for (let i = 0; i < nums.length; ++i) {
+					stack += `fluffy-wings@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
+				}
+
+				token.set("statusmarkers", stack);
+			};
+		},
+
+		Move: function (startTime, duration, x, y, z) {
+			d20plus.anim._BaseMove.call(this, startTime, duration, x, y, z);
 
 			this.animate = function (token, alpha, delta) {
 				alpha = alpha - this._offset;
@@ -123,30 +184,9 @@ function baseToolAnimator () {
 						token.attributes.top -= mvY;
 
 						if (z != null) {
-							const statuses = token.get("statusmarkers").split(",");
-							let total = 0;
-							let pow = 1;
-							let out = "";
-
-							// reverse loop through the fluffy wings, multiplying vals by 1/10/100...
-							const len = statuses.length;
-							for (let i = len - 1; i >= 0; --i) {
-								const [name, val] = statuses[i].split("@");
-								if (name === "fluffy-wing") {
-									total += pow * Number(val);
-									pow = pow * 10;
-								} else {
-									out += statuses[i] + ",";
-								}
-							}
-
+							let {total, stack} = this._getCurrentZ(token);
 							total += mProgress * z;
-							const nums = String(total).split("");
-							for (let i = 0; i < nums.length; ++i) {
-								out += `fluffy-wings@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
-							}
-
-							token.set("statusmarkers", out);
+							this._setCurrentZ(token, total, stack);
 						}
 
 						// update progress
@@ -157,12 +197,36 @@ function baseToolAnimator () {
 				}
 				return false;
 			};
+		},
 
-			this.serialize = () => {
-				return cleanNulls({
-					...this._serialize(),
-					startTime, duration, x, y, z
-				})
+		MoveExact: function (startTime, duration, x, y, z) {
+			d20plus.anim._BaseMove.call(this, startTime, duration, x, y, z);
+
+			this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
+				if (alpha >= startTime) {
+					if (this._progress < (1 - Number.EPSILON)) {
+						const mProgress = this._getTickProgress(duration, delta);
+						const tProgress = this._progress + mProgress;
+
+						// handle movement
+						token.attributes.left = tProgress * x;
+						token.attributes.top = tProgress * y;
+
+						if (z != null) {
+							let {stack} = this._getCurrentZ(token);
+							const pZ = tProgress * z;
+							this._setCurrentZ(token, pZ, stack);
+						}
+
+						// update progress
+						this._progress += mProgress;
+
+						return true;
+					} else this._hasRun = true;
+				}
+				return false;
 			};
 		},
 
@@ -239,8 +303,19 @@ function baseToolAnimator () {
 			};
 		},
 
-		Rotate: function (startTime, duration, degrees) {
+		_BaseRotate: function (startTime, duration, degrees) {
 			d20plus.anim._Base.call(this);
+
+			this.serialize = () => {
+				return cleanNulls({
+					...this._serialize(),
+					startTime, duration, degrees
+				})
+			};
+		},
+
+		Rotate: function (startTime, duration, degrees) {
+			d20plus.anim._BaseRotate.call(this, startTime, duration, degrees);
 
 			this.animate = function (token, alpha, delta) {
 				alpha = alpha - this._offset;
@@ -261,12 +336,29 @@ function baseToolAnimator () {
 				}
 				return false;
 			};
+		},
 
-			this.serialize = () => {
-				return cleanNulls({
-					...this._serialize(),
-					startTime, duration, degrees
-				})
+		RotateExact: function (startTime, duration, degrees) {
+			d20plus.anim._BaseRotate.call(this, startTime, duration, degrees);
+
+			this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
+				if (alpha >= startTime) {
+					if (this._progress < (1 - Number.EPSILON)) {
+						const mProgress = this._getTickProgress(duration, delta);
+						const tProgress = this._progress + mProgress;
+
+						// handle rotation
+						token.attributes.rotation = tProgress * degrees;
+
+						// update progress
+						this._progress += mProgress;
+
+						return true;
+					} else this._hasRun = true;
+				}
+				return false;
 			};
 		},
 
@@ -295,8 +387,19 @@ function baseToolAnimator () {
 			};
 		},
 
-		Scale: function (startTime, duration, scaleFactorX, scaleFactorY) {
+		_BaseScale: function (startTime, duration, scaleFactorX, scaleFactorY) {
 			d20plus.anim._Base.call(this);
+
+			this.serialize = () => {
+				return cleanNulls({
+					...this._serialize(),
+					startTime, duration, scaleFactorX, scaleFactorY
+				})
+			};
+		},
+
+		Scale: function (startTime, duration, scaleFactorX, scaleFactorY) {
+			d20plus.anim._BaseScale.call(this, startTime, duration, scaleFactorX, scaleFactorY);
 
 			this.animate = function (token, alpha, delta) {
 				alpha = alpha - this._offset;
@@ -322,12 +425,35 @@ function baseToolAnimator () {
 				}
 				return false;
 			};
+		},
 
-			this.serialize = () => {
-				return cleanNulls({
-					...this._serialize(),
-					startTime, duration, scaleFactorX, scaleFactorY
-				})
+		ScaleExact: function (startTime, duration, scaleFactorX, scaleFactorY) {
+			d20plus.anim._BaseScale.call(this, startTime, duration, scaleFactorX, scaleFactorY);
+
+			this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
+				if (alpha >= startTime) {
+					if (this._progress < (1 - Number.EPSILON)) {
+						const mProgress = this._getTickProgress(duration, delta);
+						const tProgress = this._progress + mProgress;
+
+						// handle scaling
+						const tScaleX = tProgress * scaleFactorX;
+						const tScaleY = tProgress * scaleFactorY;
+
+						token.view.graphic.scaleX = tScaleX;
+						token.view.graphic.scaleY = tScaleY;
+						token.attributes.scaleX = token.view.graphic.scaleX;
+						token.attributes.scaleY = token.view.graphic.scaleY;
+
+						// update progress
+						this._progress += mProgress;
+
+						return true;
+					} else this._hasRun = true;
+				}
+				return false;
 			};
 		},
 
@@ -383,8 +509,19 @@ function baseToolAnimator () {
 			};
 		},
 
-		Lighting: function (startTime, duration, lightRadius, dimStart, degrees) {
+		_BaseLighting: function (startTime, duration, lightRadius, dimStart, degrees) {
 			d20plus.anim._Base.call(this);
+
+			this.serialize = () => {
+				return cleanNulls({
+					...this._serialize(),
+					startTime, duration, lightRadius, dimStart, degrees
+				})
+			};
+		},
+
+		Lighting: function (startTime, duration, lightRadius, dimStart, degrees) {
+			d20plus.anim._BaseLighting.call(this, startTime, duration, lightRadius, dimStart, degrees);
 
 			this.animate = function (token, alpha, delta) {
 				alpha = alpha - this._offset;
@@ -416,12 +553,37 @@ function baseToolAnimator () {
 				}
 				return false;
 			};
+		},
 
-			this.serialize = () => {
-				return cleanNulls({
-					...this._serialize(),
-					startTime, duration, lightRadius, dimStart, degrees
-				})
+		LightingExact: function (startTime, duration, lightRadius, dimStart, degrees) {
+			d20plus.anim._BaseLighting.call(this, startTime, duration, lightRadius, dimStart, degrees);
+
+			this.animate = function (token, alpha, delta) {
+				alpha = alpha - this._offset;
+
+				if (alpha >= startTime) {
+					if (this._progress < (1 - Number.EPSILON)) {
+						const mProgress = this._getTickProgress(duration, delta);
+						const tProgress = this._progress + mProgress;
+
+						// handle lighting changes
+						token.attributes.light_radius = tProgress * lightRadius;
+
+						if (dimStart != null) {
+							token.attributes.light_dimradius = tProgress * dimStart;
+						}
+
+						if (degrees != null) {
+							token.attributes.light_angle = tProgress * degrees;
+						}
+
+						// update progress
+						this._progress += mProgress;
+
+						return true;
+					} else this._hasRun = true;
+				}
+				return false;
 			};
 		},
 
@@ -508,7 +670,8 @@ function baseToolAnimator () {
 
 		const op = tokens.shift();
 		switch (op) {
-			case "mv": {
+			case "mv":
+			case "mvx": {
 				if (tokens.length < 4 || tokens.length > 5) return Command.errInvalidArgCount(line, 4, 5);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
@@ -523,14 +686,23 @@ function baseToolAnimator () {
 				const nZ = tokens[4] ? Number(tokens[4]) : null;
 				if (nZ != null && isNaN(nY)) return Command.errPropNum(line, "z", tokens[4]);
 
-				return new Command(
-					line,
-					null,
-					d20plus.anim.Move.bind(null, nStart, nDuration, nX, nY, nZ)
-				);
+				if (op === "mv") {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.Move.bind(null, nStart, nDuration, nX, nY, nZ)
+					);
+				} else {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.MoveExact.bind(null, nStart, nDuration, nX, nY, nZ)
+					);
+				}
 			}
 
-			case "rot": {
+			case "rot":
+			case "rotx": {
 				if (tokens.length !== 3) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
@@ -541,11 +713,19 @@ function baseToolAnimator () {
 				const nRot = Number(tokens[2]);
 				if (isNaN(nRot)) return Command.errPropNum(line, "degrees", tokens[2]);
 
-				return new Command(
-					line,
-					null,
-					d20plus.anim.Rotate.bind(null, nStart, nDuration, nRot)
-				);
+				if (op === "rot") {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.Rotate.bind(null, nStart, nDuration, nRot)
+					);
+				} else {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.RotateExact.bind(null, nStart, nDuration, nRot)
+					);
+				}
 			}
 
 			case "cp": {
@@ -581,7 +761,8 @@ function baseToolAnimator () {
 				);
 			}
 
-			case "scale": {
+			case "scale":
+			case "scalex": {
 				if (tokens.length !== 4) return Command.errInvalidArgCount(line, 4);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
@@ -596,11 +777,19 @@ function baseToolAnimator () {
 				if (isNaN(nScaleY)) return Command.errPropNum(line, "scaleY", tokens[3]);
 				if (nScaleY < 0) return Command.errValNeg(line, "scaleY", tokens[3]);
 
-				return new Command(
-					line,
-					null,
-					d20plus.anim.Scale.bind(null, nStart, nDuration, nScaleX, nScaleY)
-				);
+				if (op === "scale") {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.Scale.bind(null, nStart, nDuration, nScaleX, nScaleY)
+					);
+				} else {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.ScaleExact.bind(null, nStart, nDuration, nScaleX, nScaleY)
+					);
+				}
 			}
 
 			case "layer": {
@@ -617,7 +806,8 @@ function baseToolAnimator () {
 				);
 			}
 
-			case "light": {
+			case "light":
+			case "lightx": {
 				if (tokens.length < 3 || tokens.length > 5) return Command.errInvalidArgCount(line, 3, 4, 5);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
@@ -633,11 +823,19 @@ function baseToolAnimator () {
 				if (nDegrees != null && isNaN(nDegrees)) return Command.errPropNum(line, "degrees", tokens[4]);
 				if (nDegrees != null && nDegrees < 0) return Command.errValNeg(line, "degrees", tokens[4]); //  TODO is this required?
 
-				return new Command(
-					line,
-					null,
-					d20plus.anim.Lighting.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees)
-				);
+				if (op === "light") {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.Lighting.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees)
+					);
+				} else {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.LightingExact.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees)
+					);
+				}
 			}
 
 			case "prop": {
@@ -790,18 +988,28 @@ function baseToolAnimator () {
 			</div>
 		`,
 		_html_template_editor: `
-			<div title="Animation Editor" class="anm__win flex-col">
+			<div title="Animation Editor" class="anm__win anm-edit__gui flex-col">
 				<div class="mb-2 no-shrink split">
 					<input name="ipt-name" placeholder="Name">
 					
-					<div>
-						<button class="btn" name="btn-save">Save</button>
-						<button class="btn" name="btn-help">View Help</button>
+					<div class="flex">
+						<button class="btn mr-1" name="btn-save">Save</button>
 						<button class="btn" name="btn-export-file">Export to File</button>
-						<button class="btn" name="btn-validate">Validate</button>
+						
+						<div class="anm-edit__gui-hidden flex">
+							<button class="btn ml-2" name="btn-help">View Help</button>
+							<button class="btn ml-1" name="btn-validate">Validate</button>
+						</div>
+						
+						<button class="btn ml-2" name="btn-edit-text">Edit as Text</button>
 					</div>
 				</div>
-				<div class="anm-edit__ipt-lines-wrp">
+				
+				<div class="anm-edit__ipt-lines-wrp anm-edit__ipt-lines-wrp--gui anm-edit__gui-visible">
+					
+				</div>
+				
+				<div class="anm-edit__ipt-lines-wrp anm-edit__ipt-lines-wrp--text anm-edit__gui-hidden">
 					<textarea name="ipt-lines" placeholder="mv 0 100 50 -50" class="anm-edit__ipt-lines"></textarea>
 				</div>
 			</div>
@@ -1820,6 +2028,7 @@ function baseToolAnimator () {
 			const $btnHelp = $winEditor.find(`[name="btn-help"]`);
 			const $btnExportFile = $winEditor.find(`[name="btn-export-file"]`);
 			const $btnValidate = $winEditor.find(`[name="btn-validate"]`);
+			const $btnEditText = $winEditor.find(`[name="btn-edit-text"]`);
 			const $iptLines = $winEditor.find(`[name="ipt-lines"]`);
 
 			anim.lines = anim.lines || [];
@@ -1867,6 +2076,12 @@ function baseToolAnimator () {
 			$btnHelp.click(() => {
 				// TODO link to a wiki page
 				d20plus.ut.chatLog("Coming soon to a Wiki near you");
+			});
+
+			$btnEditText.click(() => {
+				$btnEditText.toggleClass("active");
+				$winEditor.toggleClass("anm-edit__text", $btnEditText.hasClass("active"));
+				$winEditor.toggleClass("anm-edit__gui", !$btnEditText.hasClass("active"));
 			});
 		},
 

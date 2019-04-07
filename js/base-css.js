@@ -249,8 +249,16 @@ function baseCss () {
 			r: "margin-right: 0.25rem !important;"
 		},
 		{
+			s: ".ml-1",
+			r: "margin-left: 0.25rem !important;"
+		},
+		{
 			s: ".mr-2",
 			r: "margin-right: 0.5rem !important;"
+		},
+		{
+			s: ".ml-2",
+			r: "margin-left: 0.5rem !important;"
 		},
 		{
 			s: ".mb-2",
@@ -668,6 +676,26 @@ function baseCss () {
 			r: `
 				flex-basis: 100%;
 				flex-shrink: 100;
+			`
+		},
+		{
+			s: ".anm-edit__gui .anm-edit__gui-hidden",
+			r: `
+				display: none;
+			`
+		},
+		{
+			s: ".anm-edit__text .anm-edit__gui-visible",
+			r: `
+				display: none;
+			`
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp--gui",
+			r: `
+				overflow-y: auto;
+				display: flex;
+				flex-direction: column;
 			`
 		},
 		{
