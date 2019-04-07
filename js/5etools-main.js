@@ -3843,7 +3843,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 							}
 							const char = json.char;
 
-							const assignTo = $selPlayer.val();
+							const assignTo = d20plus.ut.get$SelValue($selPlayer);
 							if (assignTo) {
 								char.inplayerjournals = assignTo;
 								char.controlledby = assignTo

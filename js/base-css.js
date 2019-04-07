@@ -65,6 +65,15 @@ function baseCss () {
 			s: ".flex-label",
 			r: "display: inline-flex; align-items: center;"
 		},
+		{
+			s: ".sel-sm",
+			r: `
+				height: 18px;
+				line-height: 18px;
+				margin: 0;
+				padding: 0;
+			`
+		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
 		// {
 		// 	s: ".note-editable p",
@@ -705,6 +714,34 @@ function baseCss () {
 				width: 100%;
 				height: 100%;
 				margin-bottom: 0;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row",
+			r: `
+				padding: 4px;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+				margin-bottom: 3px;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row:nth-child(even)",
+			r: `
+				background: #f8f8f8;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name",
+			r: `
+				color: white; 
+				-webkit-text-stroke: 1px #555; 
+				text-stroke: 1px black; 
+				padding: 3px 5px; 
+				border-radius: 3px; 
+				font-size: 16px; 
+				display: inline-block; 
+				min-width: 150px;
 			`
 		},
 		{

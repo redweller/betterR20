@@ -5,6 +5,67 @@ function baseToolAnimator () {
 	}
 
 	d20plus.anim = {
+		lineFromParsed (parsed) {
+			const stack = [];
+
+			stack.push(d20plus.anim.COMMAND_TO_SHORT[parsed._type]);
+			if (parsed.start != null) stack.push(parsed.start);
+			if (parsed.duration != null) stack.push(parsed.duration);
+
+			switch (parsed._type) {
+				case "Move":
+				case "MoveExact": {
+					stack.push(parsed.x, parsed.y);
+					if (parsed.z != null) stack.push(parsed.z);
+					break;
+				}
+				case "Rotate":
+				case "RotateExact": {
+					stack.push(parsed.degrees);
+					break;
+				}
+				case "Copy": {
+					if (parsed.animation != null) stack.push(parsed.animation);
+					break;
+				}
+				case "Flip": {
+					stack.push(parsed.flipH, parsed.flipV);
+					break;
+				}
+				case "Scale":
+				case "ScaleExact": {
+					stack.push(parsed.scaleX, parsed.scaleY);
+					break;
+				}
+				case "Layer": {
+					stack.push(parsed.layer);
+					break;
+				}
+				case "Lighting":
+				case "LightingExact": {
+					stack.push(parsed.lightRadius);
+					if (parsed.dimStart != null) stack.push(parsed.dimStart);
+					if (parsed.degrees != null) stack.push(parsed.degrees);
+					break;
+				}
+				case "SetProperty": {
+					stack.push(parsed.prop, parsed.value);
+					break;
+				}
+				case "TriggerMacro": {
+					stack.push(parsed.macro);
+					break;
+				}
+				case "TriggerAnimation": {
+					stack.push(parsed.animation);
+					break;
+				}
+				default: throw new Error(`Unhandled type "${parsed._type}"`);
+			}
+
+			return stack.join(" ");
+		},
+
 		deserialize: function (json) {
 			let out;
 			switch (json._type) {
@@ -75,6 +136,7 @@ function baseToolAnimator () {
 					out = new d20plus.anim.TriggerAnimation(json.startTime, json.animationUid);
 					break;
 				}
+				default: throw new Error(`Unhandled type "${json._type}"`);
 			}
 			out._hasRun = json._hasRun;
 			out._offset = json._offset;
@@ -639,10 +701,11 @@ function baseToolAnimator () {
 		// endregion animations
 	};
 
-	function Command (line, error, cons = null) {
+	function Command (line, error, cons = null, parsed = null) {
 		this.line = line;
 		this.error = error;
 		this.isRunnable = !!cons;
+		this.parsed = parsed;
 
 		this.getInstance = function () {
 			return new cons();
@@ -652,7 +715,7 @@ function baseToolAnimator () {
 	Command.errInvalidArgCount = function (line, ...counts) { return new Command(line, `Invalid argument count; expected ${counts.joinConjunct(", ", " or ")}`)};
 	Command.errPropNum = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a number`)};
 	Command.errPropBool = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a boolean`)};
-	Command.errPropLayer = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a layer (valid layers are: ${d20plus.anim._LAYERS.joinConjunct(", ", " or ")})`)};
+	Command.errPropLayer = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a layer (valid layers are: ${d20plus.ut.LAYERS.joinConjunct(", ", " or ")})`)};
 	Command.errPropToken = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a token property`)};
 	Command.errValNeg = function (line, prop, val) { return new Command(line, `${prop} "${val}" was negative`)};
 
@@ -690,13 +753,29 @@ function baseToolAnimator () {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.Move.bind(null, nStart, nDuration, nX, nY, nZ)
+						d20plus.anim.Move.bind(null, nStart, nDuration, nX, nY, nZ),
+						{
+							_type: "Move",
+							start: nStart,
+							duration: nDuration,
+							x: nX,
+							y: nY,
+							z: nZ
+						}
 					);
 				} else {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.MoveExact.bind(null, nStart, nDuration, nX, nY, nZ)
+						d20plus.anim.MoveExact.bind(null, nStart, nDuration, nX, nY, nZ),
+						{
+							_type: "MoveExact",
+							start: nStart,
+							duration: nDuration,
+							x: nX,
+							y: nY,
+							z: nZ
+						}
 					);
 				}
 			}
@@ -717,13 +796,25 @@ function baseToolAnimator () {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.Rotate.bind(null, nStart, nDuration, nRot)
+						d20plus.anim.Rotate.bind(null, nStart, nDuration, nRot),
+						{
+							_type: "Rotate",
+							start: nStart,
+							duration: nDuration,
+							degrees: nRot
+						}
 					);
 				} else {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.RotateExact.bind(null, nStart, nDuration, nRot)
+						d20plus.anim.RotateExact.bind(null, nStart, nDuration, nRot),
+						{
+							_type: "RotateExact",
+							start: nStart,
+							duration: nDuration,
+							degrees: nRot
+						}
 					);
 				}
 			}
@@ -740,7 +831,12 @@ function baseToolAnimator () {
 				return new Command(
 					line,
 					null,
-					d20plus.anim.Copy.bind(null, nStart, anim ? anim.uid : null)
+					d20plus.anim.Copy.bind(null, nStart, anim ? anim.uid : null),
+					{
+						_type: "Copy",
+						start: nStart,
+						animation: anim
+					}
 				);
 			}
 
@@ -757,7 +853,13 @@ function baseToolAnimator () {
 				return new Command(
 					line,
 					null,
-					d20plus.anim.Flip.bind(null, nStart, flipH, flipV)
+					d20plus.anim.Flip.bind(null, nStart, flipH, flipV),
+					{
+						_type: "Flip",
+						start: nStart,
+						flipH: flipH,
+						flipV: flipV
+					}
 				);
 			}
 
@@ -781,13 +883,27 @@ function baseToolAnimator () {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.Scale.bind(null, nStart, nDuration, nScaleX, nScaleY)
+						d20plus.anim.Scale.bind(null, nStart, nDuration, nScaleX, nScaleY),
+						{
+							_type: "Scale",
+							start: nStart,
+							duration: nDuration,
+							scaleX: nScaleX,
+							scaleY: nScaleY
+						}
 					);
 				} else {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.ScaleExact.bind(null, nStart, nDuration, nScaleX, nScaleY)
+						d20plus.anim.ScaleExact.bind(null, nStart, nDuration, nScaleX, nScaleY),
+						{
+							_type: "ScaleExact",
+							start: nStart,
+							duration: nDuration,
+							scaleX: nScaleX,
+							scaleY: nScaleY
+						}
 					);
 				}
 			}
@@ -802,7 +918,12 @@ function baseToolAnimator () {
 				return new Command(
 					line,
 					null,
-					d20plus.anim.Layer.bind(null, nStart, tokens[1])
+					d20plus.anim.Layer.bind(null, nStart, tokens[1]),
+					{
+						_type: "Layer",
+						start: nStart,
+						layer: layer
+					}
 				);
 			}
 
@@ -827,13 +948,29 @@ function baseToolAnimator () {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.Lighting.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees)
+						d20plus.anim.Lighting.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees),
+						{
+							_type: "Lighting",
+							start: nStart,
+							duration: nDuration,
+							lightRadius: nDuration,
+							dimStart: nDimStart,
+							degrees: nDegrees
+						}
 					);
 				} else {
 					return new Command(
 						line,
 						null,
-						d20plus.anim.LightingExact.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees)
+						d20plus.anim.LightingExact.bind(null, nStart, nDuration, nLightRadius, nDimStart, nDegrees),
+						{
+							_type: "LightingExact",
+							start: nStart,
+							duration: nDuration,
+							lightRadius: nDuration,
+							dimStart: nDimStart,
+							degrees: nDegrees
+						}
 					);
 				}
 			}
@@ -844,14 +981,21 @@ function baseToolAnimator () {
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 				if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return Command.errPropToken(line, "prop", tokens[1]);
-				let prop = "";
-				if (tokens.length > 2) prop = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
-				try { prop = JSON.parse(prop); } catch (ignored) { console.warn(`Failed to parse "${prop}" as JSON, treating as raw string...`) }
+				const prop = tokens[1];
+				let val = "";
+				if (tokens.length > 2) val = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
+				try { val = JSON.parse(val); } catch (ignored) { console.warn(`Failed to parse "${val}" as JSON, treating as raw string...`) }
 
 				return new Command(
 					line,
 					null,
-					d20plus.anim.SetProperty.bind(null, nStart, tokens[1], prop)
+					d20plus.anim.SetProperty.bind(null, nStart, prop, val),
+					{
+						_type: "SetProperty",
+						start: nStart,
+						prop: prop,
+						value: val
+					}
 				);
 			}
 
@@ -865,7 +1009,12 @@ function baseToolAnimator () {
 				return new Command(
 					line,
 					null,
-					d20plus.anim.TriggerMacro.bind(null, nStart, tokens[1])
+					d20plus.anim.TriggerMacro.bind(null, nStart, tokens[1]),
+					{
+						_type: "TriggerMacro",
+						start: nStart,
+						macro: tokens[1]
+					}
 				);
 			}
 
@@ -880,7 +1029,12 @@ function baseToolAnimator () {
 				return new Command(
 					line,
 					null,
-					d20plus.anim.TriggerAnimation.bind(null, nStart, anim.uid)
+					d20plus.anim.TriggerAnimation.bind(null, nStart, anim.uid),
+					{
+						_type: "TriggerAnimation",
+						start: nStart,
+						animation: anim
+					}
 				);
 			}
 		}
@@ -989,7 +1143,7 @@ function baseToolAnimator () {
 		`,
 		_html_template_editor: `
 			<div title="Animation Editor" class="anm__win anm-edit__gui flex-col">
-				<div class="mb-2 no-shrink split">
+				<div class="mb-2 no-shrink split flex-vh-center">
 					<input name="ipt-name" placeholder="Name">
 					
 					<div class="flex">
@@ -999,6 +1153,10 @@ function baseToolAnimator () {
 						<div class="anm-edit__gui-hidden flex">
 							<button class="btn ml-2" name="btn-help">View Help</button>
 							<button class="btn ml-1" name="btn-validate">Validate</button>
+						</div>
+						
+						<div class="anm-edit__gui-visible flex">
+							<button class="btn ml-2" name="btn-add-command">Add Command</button>
 						</div>
 						
 						<button class="btn ml-2" name="btn-edit-text">Edit as Text</button>
@@ -1134,7 +1292,7 @@ function baseToolAnimator () {
 			return new Promise(resolve => {
 				const $selUid = $(`<select>
 				<option disabled value="-1">${title}</option>
-				${selFrom.map(it => `<option value="${it.uid}">${it.name}</option>`)}
+				${selFrom.map(it => `<option value="${it.uid}">${it.name}</option>`).join("")}
 				</select>`);
 				if (defaultSelUid != null && selFrom.find(it => it.uid === defaultSelUid)) $selUid.val(defaultSelUid);
 				else $selUid[0].selectedIndex = 0;
@@ -1158,7 +1316,7 @@ function baseToolAnimator () {
 						{
 							text: "OK",
 							click: function () {
-								const selected = Number($selUid.val());
+								const selected = Number(d20plus.ut.get$SelValue($selUid));
 								$(this).dialog("close");
 								$dialog.remove();
 
@@ -1689,8 +1847,8 @@ function baseToolAnimator () {
 							lastSelectedTokenId = null;
 							$wrpTokens.empty();
 
-							const page = d20.Campaign.pages.get($selPage.val());
-							editorOptions.lastPageId = $selPage.val();
+							const page = d20.Campaign.pages.get(d20plus.ut.get$SelValue($selPage));
+							editorOptions.lastPageId = d20plus.ut.get$SelValue($selPage);
 
 							if (page.thegraphics && page.thegraphics.length) {
 								const tokens = page.thegraphics.models.filter(it => it.attributes.type === "image");
@@ -2026,39 +2184,412 @@ function baseToolAnimator () {
 			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck();
 			const $btnSave = $winEditor.find(`[name="btn-save"]`);
 			const $btnHelp = $winEditor.find(`[name="btn-help"]`);
+			const $btnAddCommand = $winEditor.find(`[name="btn-add-command"]`);
 			const $btnExportFile = $winEditor.find(`[name="btn-export-file"]`);
 			const $btnValidate = $winEditor.find(`[name="btn-validate"]`);
 			const $btnEditText = $winEditor.find(`[name="btn-edit-text"]`);
 			const $iptLines = $winEditor.find(`[name="ipt-lines"]`);
+			const $wrpRows = $winEditor.find(`.anm-edit__ipt-lines-wrp--gui`);
 
 			anim.lines = anim.lines || [];
-
 			$iptName.val(anim.name);
-			$iptLines.val(anim.lines.map(it => typeof it === "string" ? it : it.line).join("\n"));
+
+			// map to strings to ensure fresh array
+			let myLines = anim.lines.map(it => typeof it === "string" ? it : it.line);
+
+			const doDisplayLines = () => {
+				$iptLines.val(myLines.map(it => typeof it === "string" ? it : it.line).join("\n"));
+			};
+
+			const gui_getTitleFromType = (type, doRemoveExact) => {
+				const clean = doRemoveExact ? type.replace(/exact/gi, "") : type;
+
+				const splCaps = clean.split(/([A-Z])/g).filter(it => it.trim());
+				const stack = [];
+				for (let i = 0; i < splCaps.length; ++i) {
+					const tok = splCaps[i];
+					if (i % 2 === 0) stack.push(tok);
+					else stack[stack.length - 1] = `${stack.last()}${tok}`;
+				}
+				return stack.join(" ");
+			};
+
+			const gui_getBasicRowMeta = (myLines, line, isDuration) => {
+				const parsed = line.parsed;
+
+				const _getTitleMeta = () => {
+					const clean = parsed._type.replace(/exact/gi, "");
+
+					const _getColor = () => {
+						switch (clean) {
+							case "Move": return "#ff0004";
+							case "Rotate": return "#ff6c00";
+							case "Copy": return "#fff700";
+							case "Flip": return "#a3ff00";
+							case "Scale": return "#5eff00";
+							case "Layer": return "#00ff25";
+							case "Lighting": return "#00ffb6";
+							case "SetProperty": return "#006bff";
+							case "TriggerMacro": return "#0023ff";
+							case "TriggerAnimation": return "#9800ff";
+							default: throw new Error(`Unhandled type "${clean}"`);
+						}
+					};
+
+					const text = gui_getTitleFromType(parsed._type, true);
+
+					return {
+						text,
+						color: _getColor()
+					}
+				};
+
+				const doUpdate = () => {
+					parsed.start = Math.round(Number($iptStart.val()));
+					if (isDuration) parsed.duration = Math.round(Number($iptDuration.val()));
+					line.line = d20plus.anim.lineFromParsed(parsed);
+				};
+
+				const $btnRemove = $(`<button class="btn btn-danger mr-2">Delete</button>`).click(() => {
+					myLines.splice(myLines.indexOf(line), 1);
+					$row.remove();
+				});
+
+				const $iptStart = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.start);
+				const $iptDuration = isDuration ? $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.duration) : null;
+
+				const $wrpHeaders = $$`<div class="flex-v-center mb-2">
+						<div class="col-2 bold flex-vh-center">Start Time (ms)</div>
+						${isDuration ? `<div class="col-2 bold flex-vh-center">Duration (ms)</div>` : ""}
+					</div>`;
+
+				const $wrpInputs = $$`<div class="flex-v-center">
+						<div class="col-2 flex-vh-center">${$iptStart}</div>
+						${isDuration ? $$`<div class="col-2 flex-vh-center">${$iptDuration}</div>` : ""}
+					</div>`;
+
+				const titleMeta = _getTitleMeta();
+				const $row = $$`<div class="flex-col full-width anm-edit__gui-row">
+						<div class="split flex-v-center mb-2">
+							<div class="full-width flex-v-center full-height">
+								<div class="bold anm-edit__gui-row-name" style="background: ${titleMeta.color};">${titleMeta.text}</div>
+							</div>
+							${$btnRemove}
+						</div>			
+						${$wrpHeaders}
+						${$wrpInputs}
+					</div>`;
+
+				return {$row, doUpdate, $wrpHeaders, $wrpInputs};
+			};
+
+			const gui_$getSelAnim = (allowNone) => {
+				return $(`<select class="mr-2 sel-sm">
+					${allowNone ? `<option value="-1">(None)</option>` : ""}
+					${d20plus.anim.animatorTool.getAnimations().map(it => `<option value="${it.uid}">${it.name}</option>`).join("")} 
+					</select>`);
+			};
+
+			const gui_$getWrapped = (it, width, bold) =>  $$`<div class="col-${width} flex-vh-center ${bold ? "bold" : ""}">${it}</div>`;
+
+			const gui_doAddRow = (myLines, line) => {
+				const parsed = line.parsed;
+				switch (parsed._type) {
+					case "Move":
+					case "MoveExact": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, true);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.x = Math.round(Number($iptX.val()));
+							parsed.y = Math.round(Number($iptY.val()));
+							if ($iptZ.val().trim()) parsed.z = Math.round(Number($iptZ.val()));
+							else parsed.z = null;
+							parsed._type = $cbExact.prop("checked") ? "MoveExact" : "Move";
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $iptX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
+						const $iptY = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.y);
+						const $iptZ = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.z || "");
+						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "MoveExact").change(() => doUpdate());
+
+						gui_$getWrapped("X", 1, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Y", 1, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Z", 1, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 4).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Is Exact", 1, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($iptX, 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptY, 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptZ, 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 4).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($cbExact, 1).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "Rotate":
+					case "RotateExact": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, true);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.degrees = Math.round(Number($iptDegrees.val()));
+							parsed._type = $cbExact.prop("checked") ? "RotateExact" : "Rotate";
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.degrees);
+						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "RotateExact").change(() => doUpdate());
+
+						gui_$getWrapped("Degrees", 2, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 6).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Is Exact", 1, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($iptDegrees, 2).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 6).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($cbExact, 1).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "Copy": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							const numAnim = Number($selAnim.val());
+							parsed.animation = numAnim === -1 ? null : numAnim;
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $selAnim = gui_$getSelAnim(true).change(() => doUpdate()).val(parsed.animation);
+
+						gui_$getWrapped("Animation", 3, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($selAnim, 3).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "Flip": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.flipH = $cbFlipH.prop("checked");
+							parsed.flipV = $cbFlipV.prop("checked");
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $cbFlipH = $(`<input type="checkbox">`).prop("checked", !!parsed.flipH).change(() => doUpdate());
+						const $cbFlipV = $(`<input type="checkbox">`).prop("checked", !!parsed.flipV).change(() => doUpdate());
+
+						gui_$getWrapped("Flip Horizontally", 3, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Flip Vertically", 3, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($cbFlipH, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($cbFlipV, 3).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "Scale":
+					case "ScaleExact": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, true);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.scaleX = Number($iptScaleX.val());
+							parsed.scaleY = Number($iptScaleY.val());
+							parsed._type = $cbExact.prop("checked") ? "ScaleExact" : "Scale";
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $iptScaleX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
+						const $iptScaleY = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.y);
+						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "ScaleExact").change(() => doUpdate());
+
+						gui_$getWrapped("Horizontal Scale", 3, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Vertical Scale", 3, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Is Exact", 1, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($iptScaleX, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptScaleY, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($cbExact, 1).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "Layer": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.layer = $selLayer.val();
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $selLayer = $(`<select class="mr-2 sel-sm">${d20plus.ut.LAYERS.map(l => `<option value="${l}">${d20plus.ut.layerToName(l)}</option>`).join("")}</select>`)
+							.change(() => doUpdate()).val(parsed.layer);
+
+						gui_$getWrapped("Layer", 3, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($selLayer, 3).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "Lighting":
+					case "LightingExact": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, true);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.lightRadius = Math.round(Number($iptLightRadius.val()));
+							if ($iptDimStart.val().trim()) parsed.dimStart = Math.round(Number($iptDimStart.val()));
+							else parsed.dimStart = null;
+							if ($iptDegrees.val().trim()) parsed.degrees = Math.round(Number($iptDegrees.val()));
+							else parsed.degrees = null;
+							parsed._type = $cbExact.prop("checked") ? "LightingExact" : "Lighting";
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $iptLightRadius = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
+						const $iptDimStart = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.y);
+						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.z || "");
+						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "MoveExact").change(() => doUpdate());
+
+						gui_$getWrapped("Light Radius", 2, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Dim Start", 2, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Angle", 2, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Is Exact", 1, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($iptLightRadius, 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptDimStart, 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptDegrees, 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($cbExact, 1).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "SetProperty": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.prop = $selProp.val();
+							try { parsed.value = JSON.parse($iptVal().trim()); }
+							catch (ignored) { parsed.value = $iptVal(); }
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $selProp = $(`<select class="mr-2 sel-sm">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
+							.change(() => doUpdate()).val(parsed.prop);
+						const $iptVal = $(`<textarea></textarea>`).change(() => doUpdate()).val(parsed.value);
+
+						gui_$getWrapped("Property", 2, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Value", 8, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($selProp, 2).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptVal, 8).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "TriggerMacro": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.macro = $iptMacro.val();
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $iptMacro = $(`<input class="full-width mr-2">`).change(() => doUpdate()).val(parsed.macro);
+
+						gui_$getWrapped("Macro Name", 4, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($iptMacro, 4).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					case "TriggerAnimation": {
+						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
+
+						const doUpdate = () => {
+							baseMeta.doUpdate();
+							parsed.animation = $selAnim.val();
+							line.line = d20plus.anim.lineFromParsed(parsed);
+						};
+
+						const $selAnim = gui_$getSelAnim(false).change(() => doUpdate()).val(parsed.animation);
+
+						gui_$getWrapped("Animation", 3, true).appendTo(baseMeta.$wrpHeaders);
+
+						gui_$getWrapped($selAnim, 3).appendTo(baseMeta.$wrpInputs);
+
+						$wrpRows.append(baseMeta.$row);
+
+						break;
+					}
+					default: throw new Error(`Unhandled type "${parsed._type}"`);
+				}
+			};
+
+			const doDisplayRows = () => {
+				$wrpRows.empty();
+				const wrpMyLines = {lines: myLines};
+				this._edit_convertLines(wrpMyLines);
+
+				myLines.forEach(line => gui_doAddRow(myLines, line));
+			};
 
 			const getValidationMessage = () => {
-				// create a fake animation object, and check it for errors
-				const toValidate = {
-					uid: anim.uid, // pass out UID, so the validator can ignore our old data when checking duplicate names
-					name: $iptName.val(),
-					lines: $iptLines.val().split("\n")
-				};
-				return this._edit_getValidationMessage(toValidate);
+				if ($btnEditText.hasClass("active")) {
+					// create a fake animation object, and check it for errors
+					const toValidate = {
+						uid: anim.uid, // pass out UID, so the validator can ignore our old data when checking duplicate names
+						name: $iptName.val(),
+						lines: $iptLines.val().split("\n")
+					};
+					return this._edit_getValidationMessage(toValidate);
+				}
+				// (assume the GUI version passes validation)
+				return null;
 			};
 
 			$btnSave.off("click").click(() => {
-				const msg = getValidationMessage();
-				if (msg) return d20plus.ut.chatLog(msg);
+				if ($btnEditText.hasClass("active")) {
+					const msg = getValidationMessage();
+					if (msg) return d20plus.ut.chatLog(msg);
 
-				// we passed validation
-				anim.name = $iptName.val();
-				anim.lines = $iptLines.val().split("\n");
+					// we passed validation
+					anim.name = $iptName.val();
+					anim.lines = $iptLines.val().split("\n");
+				} else {
+					anim.name = $iptName.val();
+					anim.lines = myLines.map(it => typeof it === "string" ? it : it.line);
+				}
 				this._doSaveStateDebounced();
 
 				const matches = this._anim_list.get("uid", anim.uid);
-				if (matches.length) {
-					matches[0].values({name: anim.name})
-				}
+				if (matches.length) matches[0].values({name: anim.name});
 
 				d20plus.ut.chatLog("Saved!");
 			});
@@ -2078,11 +2609,68 @@ function baseToolAnimator () {
 				d20plus.ut.chatLog("Coming soon to a Wiki near you");
 			});
 
-			$btnEditText.click(() => {
-				$btnEditText.toggleClass("active");
-				$winEditor.toggleClass("anm-edit__text", $btnEditText.hasClass("active"));
-				$winEditor.toggleClass("anm-edit__gui", !$btnEditText.hasClass("active"));
+			$btnAddCommand.click(async () => {
+				const _KEYS = Object.keys(d20plus.anim.COMMAND_TO_SHORT);
+
+				const type = await new Promise(resolve => {
+					const $selCommand = $(`<select>
+					<option disabled value="-1">Select Command...</option>
+					${_KEYS.map((it, i) => `<option value="${i}">${gui_getTitleFromType(it, false)}</option>`).join("")}
+					</select>`);
+
+					$selCommand[0].selectedIndex = 0;
+
+					const $dialog = $$`<div title="Select Command">${$selCommand}</div>`.appendTo($("body"));
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const ix = Number(d20plus.ut.get$SelValue($selCommand));
+									$(this).dialog("close");
+									$dialog.remove();
+
+									if (~ix) resolve(_KEYS[ix]);
+									else resolve(null);
+								}
+							}
+						]
+					});
+				});
+
+				if (type == null) return;
+				gui_doAddRow({_type: type});
 			});
+
+			$btnEditText.click(() => {
+				const isTextModeNxt = !$btnEditText.hasClass("active");
+				if (isTextModeNxt) {
+					// myLines will already be up-to-date due to UI state changes; simply switch to text display
+					doDisplayLines();
+				} else {
+					// validate + update state
+					const msg = getValidationMessage();
+					if (msg) return d20plus.ut.chatLog(msg);
+
+					myLines = $iptLines.val().split("\n");
+					doDisplayRows();
+				}
+
+				$btnEditText.toggleClass("active");
+				$winEditor.toggleClass("anm-edit__text", isTextModeNxt);
+				$winEditor.toggleClass("anm-edit__gui", !isTextModeNxt);
+			});
+
+			doDisplayRows();
 		},
 
 		/**
@@ -2106,7 +2694,10 @@ function baseToolAnimator () {
 		},
 
 		_edit_convertLines (anim) {
-			anim.lines = anim.lines.map(l => typeof l === "string" ? Command.fromString(l) : l);
+			for (let i = 0; i < anim.lines.length; ++i) {
+				const line = anim.lines[i];
+				if (typeof line === "string") anim.lines[i] = Command.fromString(line);
+			}
 		},
 		// endregion editor
 	};
@@ -2329,7 +2920,7 @@ function baseToolAnimator () {
 	};
 
 	// all properties that can be set via the 'prop' command
-	d20plus.anim.VALID_PROP_TOKEN = new Set([
+	d20plus.anim._PROP_TOKEN = [
 		"left",
 		"top",
 		"width",
@@ -2391,10 +2982,27 @@ function baseToolAnimator () {
 		"groupwith",
 		"sides", // pipe-separated list of `escape`d image URLs
 		"currentSide"
-	]);
+	];
+	d20plus.anim.VALID_PROP_TOKEN = new Set(d20plus.anim._PROP_TOKEN);
 
-	d20plus.anim._LAYERS = ["map", "objects", "foreground", "gmlayer", "walls", "weather"];
-	d20plus.anim.VALID_LAYER = new Set(d20plus.anim._LAYERS);
+	d20plus.anim.VALID_LAYER = new Set(d20plus.ut.LAYERS);
+
+	d20plus.anim.COMMAND_TO_SHORT = {
+		"Move": "mv",
+		"MoveExact": "mvx",
+		"Rotate": "rot",
+		"RotateExact": "rotx",
+		"Copy": "cp",
+		"Flip": "flip",
+		"Scale": "scale",
+		"ScaleExact": "scalex",
+		"Layer": "layer",
+		"Lighting": "light",
+		"LightingExact": "lightx",
+		"SetProperty": "prop",
+		"TriggerMacro": "macro ",
+		"TriggerAnimation": "anim",
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseToolAnimator);

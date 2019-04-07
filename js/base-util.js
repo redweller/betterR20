@@ -452,6 +452,22 @@ function baseUtil () {
 			setTimeout(() => resolve(), delay);
 		})
 	};
+
+	d20plus.ut.LAYERS = ["map", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.layerToName = (l) => {
+		switch (l) {
+			case "map": return "Map & Background";
+			case "objects": return "Objects & Tokens";
+			case "foreground": return "Foreground";
+			case "gmlayer": return "GM Info Overlay";
+			case "walls":  return "Dynamic Lighting";
+			case "weather": return "Weather Exclusions";
+		}
+	};
+
+	d20plus.ut.get$SelValue = ($sel) => {
+		return $sel[0].options[$sel[0].selectedIndex].value;
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);
