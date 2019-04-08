@@ -10,22 +10,23 @@ function baseToolAnimator () {
 			const add = (...parts) => parts.forEach(p => stack.push(p == null ? "-" : p));
 
 			stack.push(d20plus.anim.COMMAND_TO_SHORT[parsed._type]);
-			if (parsed.start != null) stack.push(parsed.start);
-			if (parsed.duration != null) stack.push(parsed.duration);
+			stack.push(parsed.start || 0);
 
 			switch (parsed._type) {
 				case "Move":
 				case "MoveExact": {
+					stack.push(parsed.duration || 0);
 					add(parsed.x, parsed.y, parsed.z);
 					break;
 				}
 				case "Rotate":
 				case "RotateExact": {
-					stack.push(parsed.degrees);
+					stack.push(parsed.duration || 0);
+					add(parsed.degrees);
 					break;
 				}
 				case "Copy": {
-					if (parsed.animation != null) stack.push(parsed.animation);
+					add(parsed.animation);
 					break;
 				}
 				case "Flip":
@@ -35,28 +36,30 @@ function baseToolAnimator () {
 				}
 				case "Scale":
 				case "ScaleExact": {
+					stack.push(parsed.duration || 0);
 					add(parsed.scaleX, parsed.scaleY);
 					break;
 				}
 				case "Layer": {
-					stack.push(parsed.layer);
+					add(parsed.layer);
 					break;
 				}
 				case "Lighting":
 				case "LightingExact": {
+					stack.push(parsed.duration || 0);
 					add(parsed.lightRadius, parsed.dimStart, parsed.degrees);
 					break;
 				}
 				case "SetProperty": {
-					stack.push(parsed.prop, parsed.value);
+					add(parsed.prop, parsed.value);
 					break;
 				}
 				case "TriggerMacro": {
-					stack.push(parsed.macro);
+					add(parsed.macro);
 					break;
 				}
 				case "TriggerAnimation": {
-					stack.push(parsed.animation);
+					add(parsed.animation);
 					break;
 				}
 				default: throw new Error(`Unhandled type "${parsed._type}"`);
@@ -82,7 +85,7 @@ function baseToolAnimator () {
 					break;
 				}
 				case "Copy": {
-					out = new d20plus.anim.Copy(json.startTime, json.childAnimationUid);
+					out = new d20plus.anim.Copy(json.startTime, json.childAnimation);
 					break;
 				}
 				case "Rotate": {
@@ -136,7 +139,7 @@ function baseToolAnimator () {
 					break;
 				}
 				case "TriggerAnimation": {
-					out = new d20plus.anim.TriggerAnimation(json.startTime, json.animationUid);
+					out = new d20plus.anim.TriggerAnimation(json.startTime, json.animation);
 					break;
 				}
 				default: throw new Error(`Unhandled type "${json._type}"`);
@@ -304,7 +307,7 @@ function baseToolAnimator () {
 			};
 		},
 
-		Copy: function (startTime, childAnimationUid = false) {
+		Copy: function (startTime, childAnimation = false) {
 			d20plus.anim._Base.call(this);
 
 			this.animate = function (token, alpha, delta, queue) {
@@ -361,8 +364,8 @@ function baseToolAnimator () {
 						childToken && childToken.save(cpy.modelattrs);
 					}
 
-					if (childToken && childAnimationUid) {
-						const nxt = new d20plus.anim.TriggerAnimation(startTime, childAnimationUid);
+					if (childToken && childAnimation) {
+						const nxt = new d20plus.anim.TriggerAnimation(startTime, childAnimation);
 						nxt.animate(childToken, alpha, delta, queue);
 					}
 				}
@@ -372,7 +375,7 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, childAnimationUid
+					startTime, childAnimation
 				})
 			};
 		},
@@ -399,8 +402,10 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle rotation
-						const rot = mProgress * degrees;
-						token.attributes.rotation += rot;
+						if (degrees != null) {
+							const rot = mProgress * degrees;
+							token.attributes.rotation += rot;
+						}
 
 						// update progress
 						this._progress += mProgress;
@@ -424,7 +429,9 @@ function baseToolAnimator () {
 						const tProgress = this._progress + mProgress;
 
 						// handle rotation
-						token.attributes.rotation = tProgress * degrees;
+						if (degrees != null) {
+							token.attributes.rotation = tProgress * degrees;
+						}
 
 						// update progress
 						this._progress += mProgress;
@@ -568,7 +575,9 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					token.attributes.layer = layer;
+					if (layer != null) {
+						token.attributes.layer = layer;
+					}
 
 					return true;
 				}
@@ -594,9 +603,11 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					if (prop === "gmnotes") value = escape(value);
-					else if (prop === "sides") value = value.split("|").map(it => escape(it)).join("|");
-					token.attributes[prop] = value;
+					if (prop != null) {
+						if (prop === "gmnotes") value = escape(value);
+						else if (prop === "sides") value = value.split("|").map(it => escape(it)).join("|");
+						token.attributes[prop] = value;
+					}
 
 					return true;
 				}
@@ -702,7 +713,9 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					d20.textchat.doChatInput(`#${macroName}`)
+					if (macroName != null) {
+						d20.textchat.doChatInput(`#${macroName}`)
+					}
 				}
 				return false;
 			};
@@ -715,7 +728,7 @@ function baseToolAnimator () {
 			};
 		},
 
-		TriggerAnimation: function (startTime, animationUid) {
+		TriggerAnimation: function (startTime, animation) {
 			d20plus.anim._Base.call(this);
 
 			this.animate = function (token, alpha, delta, queue) {
@@ -724,13 +737,15 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					const anim = d20plus.anim.animatorTool.getAnimation(animationUid);
+					if (animation != null) {
+						const anim = d20plus.anim.animatorTool.getAnimationByName(animation);
 
-					if (!anim) return false; // if it has been deleted/etc
+						if (!anim) return false; // if it has been deleted/etc
 
-					const nxtQueue = d20plus.anim.animatorTool.getAnimQueue(anim);
-					nxtQueue.forEach(it => it.setOffset(alpha + this._offset));
-					queue.push(...nxtQueue);
+						const nxtQueue = d20plus.anim.animatorTool.getAnimQueue(anim);
+						nxtQueue.forEach(it => it.setOffset(alpha + this._offset));
+						queue.push(...nxtQueue);
+					}
 				}
 				return false;
 			};
@@ -738,7 +753,7 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, animationUid
+					startTime, animation
 				})
 			};
 		}
@@ -834,8 +849,9 @@ function baseToolAnimator () {
 				const nDuration = Number(tokens[1]);
 				if (isNaN(nDuration)) return Command.errDurationNum(line, tokens[1]);
 				if (nDuration < 0) return Command.errDurationNeg(line, tokens[1]);
-				const nRot = Number(tokens[2]);
-				if (isNaN(nRot)) return Command.errPropNum(line, "degrees", tokens[2]);
+
+				const nRot = tokens[2] === "-" ? null : Number(tokens[2]);
+				if (nRot != null && isNaN(nRot)) return Command.errPropNum(line, "degrees", tokens[2]);
 
 				if (op === "rot") {
 					return new Command(
@@ -870,17 +886,16 @@ function baseToolAnimator () {
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 
-				const anim = tokens[1] ? d20plus.anim.animatorTool.getAnimations().find(it => it.name === tokens[1]) : null;
-				if (!anim && tokens[1]) return new Command(line, `Could not find animation "${tokens[1]}"`, tokens[1]);
+				const childAnim = tokens[1] === "-" ? null : tokens[1];
 
 				return new Command(
 					line,
 					null,
-					d20plus.anim.Copy.bind(null, nStart, anim ? anim.uid : null),
+					d20plus.anim.Copy.bind(null, nStart, childAnim),
 					{
 						_type: "Copy",
 						start: nStart,
-						animation: anim
+						animation: childAnim
 					}
 				);
 			}
@@ -975,12 +990,14 @@ function baseToolAnimator () {
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
-				if (!d20plus.anim.VALID_LAYER.has(tokens[1])) return Command.errPropLayer(line, "layer", tokens[1]);
+
+				const layer = tokens[1] === "-" ? null : tokens[1];
+				if (layer != null && !d20plus.anim.VALID_LAYER.has(layer)) return Command.errPropLayer(line, "layer", layer);
 
 				return new Command(
 					line,
 					null,
-					d20plus.anim.Layer.bind(null, nStart, tokens[1]),
+					d20plus.anim.Layer.bind(null, nStart, layer),
 					{
 						_type: "Layer",
 						start: nStart,
@@ -1042,8 +1059,9 @@ function baseToolAnimator () {
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
-				if (!d20plus.anim.VALID_PROP_TOKEN.has(tokens[1])) return Command.errPropToken(line, "prop", tokens[1]);
-				const prop = tokens[1];
+
+				const prop = tokens[1] === "-" ? null : tokens[1];
+				if (prop != null && !d20plus.anim.VALID_PROP_TOKEN.has(prop)) return Command.errPropToken(line, "prop", prop);
 				let val = "";
 				if (tokens.length > 2) val = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
 				try { val = JSON.parse(val); } catch (ignored) { console.warn(`Failed to parse "${val}" as JSON, treating as raw string...`) }
@@ -1066,16 +1084,18 @@ function baseToolAnimator () {
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
+
 				// no validation for macro -- it might exist in the future if it doesn't now, or vice-versa
+				const macro = tokens[1];
 
 				return new Command(
 					line,
 					null,
-					d20plus.anim.TriggerMacro.bind(null, nStart, tokens[1]),
+					d20plus.anim.TriggerMacro.bind(null, nStart, macro),
 					{
 						_type: "TriggerMacro",
 						start: nStart,
-						macro: tokens[1]
+						macro: macro
 					}
 				);
 			}
@@ -1085,17 +1105,18 @@ function baseToolAnimator () {
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
-				const anim = d20plus.anim.animatorTool.getAnimations().find(it => it.name === tokens[1]);
-				if (!anim) return new Command(line, `Could not find animation "${tokens[1]}"`, tokens[1]);
+
+				// no validation for animation -- it might exist in the future if it doesn't now, or vice-versa
+				const animation = tokens[1];
 
 				return new Command(
 					line,
 					null,
-					d20plus.anim.TriggerAnimation.bind(null, nStart, anim.uid),
+					d20plus.anim.TriggerAnimation.bind(null, nStart, animation),
 					{
 						_type: "TriggerAnimation",
 						start: nStart,
-						animation: anim
+						animation: animation
 					}
 				);
 			}
@@ -1315,6 +1336,12 @@ function baseToolAnimator () {
 
 		getAnimation (uid) {
 			return this._anims[uid];
+		},
+
+		getAnimationByName (name) {
+			const fauxAnim = d20plus.anim.animatorTool.getAnimations().find(it => it.name === name);
+			if (!fauxAnim) return null;
+			return d20plus.anim.animatorTool.getAnimation(fauxAnim.uid);
 		},
 
 		getAnimQueue (anim, additionalOffset) {
@@ -2345,11 +2372,51 @@ function baseToolAnimator () {
 				return {$row, doUpdate, $wrpHeaders, $wrpInputs};
 			};
 
-			const gui_$getSelAnim = (allowNone) => {
-				return $(`<select class="mr-2 sel-sm">
-					${allowNone ? `<option value="-1">(None)</option>` : ""}
-					${d20plus.anim.animatorTool.getAnimations().map(it => `<option value="${it.uid}">${it.name}</option>`).join("")} 
-					</select>`);
+			const gui_$getBtnAnim = (allowNone, fnUpdate, $iptAnim) => {
+				return $(`<button class="btn mr-2">.</button>`)
+					.click(async () => {
+						const name = await new Promise(resolve => {
+							const $selAnim = $(`<select>
+							${allowNone ? `<option value="-1">(None)</option>` : ""}
+							${d20plus.anim.animatorTool.getAnimations().map(it => `<option value="${it.uid}">${it.name}</option>`).join("")} 
+							</select>`);
+							$selAnim[0].selectedIndex = 0;
+
+							const $dialog = $$`<div title="Select Animation">${$selAnim}</div>`.appendTo($("body"));
+
+							$dialog.dialog({
+								dialogClass: "no-close",
+								buttons: [
+									{
+										text: "Cancel",
+										click: function () {
+											$(this).dialog("close");
+											$dialog.remove();
+										}
+									},
+									{
+										text: "OK",
+										click: function () {
+											const selected = Number(d20plus.ut.get$SelValue($selAnim));
+											$(this).dialog("close");
+											$dialog.remove();
+
+											if (~selected) resolve((d20plus.anim.animatorTool.getAnimation(selected) || {}).name);
+											else resolve(null);
+										}
+									}
+								]
+							});
+						});
+
+						if (name != null) {
+							$iptAnim.val(name);
+							fnUpdate();
+						} else if (!allowNone) {
+							$iptAnim.val("-");
+							fnUpdate();
+						}
+					});
 			};
 
 			const gui_$getWrapped = (it, width, bold) =>  $$`<div class="col-${width} flex-vh-center ${bold ? "bold" : ""}">${it}</div>`;
@@ -2397,7 +2464,7 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.degrees = Math.round(Number($iptDegrees.val()));
+							parsed.degrees = $iptDegrees.val().trim() ? Math.round(Number($iptDegrees.val().trim())) : null;
 							parsed._type = $cbExact.prop("checked") ? "RotateExact" : "Rotate";
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
@@ -2422,16 +2489,16 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							const numAnim = Number($selAnim.val());
-							parsed.animation = numAnim === -1 ? null : numAnim;
+							parsed.animation = $iptAnim.val.trim() || null;
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $selAnim = gui_$getSelAnim(true).change(() => doUpdate()).val(parsed.animation);
+						const $iptAnim = $(`<input class="full-width mr-1">`).change(() => doUpdate()).val(parsed.animation);
+						const $btnSelAnim = gui_$getBtnAnim(false, doUpdate, $iptAnim);
 
 						gui_$getWrapped("Animation", 3, true).appendTo(baseMeta.$wrpHeaders);
 
-						gui_$getWrapped($selAnim, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptAnim, 3).append($btnSelAnim).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
 
@@ -2451,7 +2518,7 @@ function baseToolAnimator () {
 
 						const $getSelFlip = () => {
 							const VALS = ["(None)", "No", "Yes"];
-							return $(`<select class="sel-sm">${VALS.map((it, i) => `<option value="${i}">${it}</option>`).join("")}</select>`);
+							return $(`<select class="sel-sm mr-2">${VALS.map((it, i) => `<option value="${i}">${it}</option>`).join("")}</select>`);
 						};
 
 						const $selFlipH = $getSelFlip().val(parsed.flipH == null ? "0" : parsed.flipH ? "2" : "1").change(() => doUpdate());
@@ -2507,11 +2574,14 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.layer = $selLayer.val();
+							parsed.layer = $selLayer.val().trim() ? $selLayer.val() : null;
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $selLayer = $(`<select class="mr-2 sel-sm">${d20plus.ut.LAYERS.map(l => `<option value="${l}">${d20plus.ut.layerToName(l)}</option>`).join("")}</select>`)
+						const $selLayer = $(`<select class="mr-2 sel-sm">
+							<option value="">Select a layer...</option>
+							${d20plus.ut.LAYERS.map(l => `<option value="${l}">${d20plus.ut.layerToName(l)}</option>`).join("")}
+							</select>`)
 							.change(() => doUpdate()).val(parsed.layer);
 
 						gui_$getWrapped("Layer", 3, true).appendTo(baseMeta.$wrpHeaders);
@@ -2546,9 +2616,9 @@ function baseToolAnimator () {
 						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpHeaders);
 						gui_$getWrapped("Is Exact", 1, true).appendTo(baseMeta.$wrpHeaders);
 
-						gui_$getWrapped($iptLightRadius, 1).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped($iptDimStart, 1).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped($iptDegrees, 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptLightRadius, 2).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptDimStart, 2).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptDegrees, 2).appendTo(baseMeta.$wrpInputs);
 						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
 						gui_$getWrapped($cbExact, 1).appendTo(baseMeta.$wrpInputs);
 
@@ -2605,15 +2675,16 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.animation = $selAnim.val();
+							parsed.animation = $iptAnim.val.trim();
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $selAnim = gui_$getSelAnim(false).change(() => doUpdate()).val(parsed.animation);
+						const $iptAnim = $(`<input class="full-width mr-1">`).change(() => doUpdate()).val(parsed.animation);
+						const $btnSelAnim = gui_$getBtnAnim(false, doUpdate, $iptAnim);
 
 						gui_$getWrapped("Animation", 3, true).appendTo(baseMeta.$wrpHeaders);
 
-						gui_$getWrapped($selAnim, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptAnim, 3).append($btnSelAnim).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
 
@@ -2680,8 +2751,9 @@ function baseToolAnimator () {
 				d20plus.ut.chatLog("Coming soon to a Wiki near you");
 			});
 
+			let lastSelCommand = null;
 			$btnAddCommand.click(async () => {
-				const _KEYS = Object.keys(d20plus.anim.COMMAND_TO_SHORT);
+				const _KEYS = [...new Set(Object.keys(d20plus.anim.COMMAND_TO_SHORT).map(it => it.replace(/exact/gi, "")))];
 
 				const type = await new Promise(resolve => {
 					const $selCommand = $(`<select>
@@ -2689,7 +2761,8 @@ function baseToolAnimator () {
 					${_KEYS.map((it, i) => `<option value="${i}">${gui_getTitleFromType(it, false)}</option>`).join("")}
 					</select>`);
 
-					$selCommand[0].selectedIndex = 0;
+					if (lastSelCommand != null) $selCommand.val(lastSelCommand);
+					else $selCommand[0].selectedIndex = 0;
 
 					const $dialog = $$`<div title="Select Command">${$selCommand}</div>`.appendTo($("body"));
 
@@ -2710,8 +2783,10 @@ function baseToolAnimator () {
 									$(this).dialog("close");
 									$dialog.remove();
 
-									if (~ix) resolve(_KEYS[ix]);
-									else resolve(null);
+									if (~ix) {
+										resolve(_KEYS[ix]);
+										lastSelCommand = String(ix);
+									} else resolve(null);
 								}
 							}
 						]
@@ -2720,10 +2795,18 @@ function baseToolAnimator () {
 
 				if (type == null) return;
 
-				// TODO need to generate a default set of attributes
-				const nuLine = {parsed: {_type: type}};
+				const nuLine = (() => {
+					const short = d20plus.anim.COMMAND_TO_SHORT[type];
+					if (!short) throw new Error(`No short form found for "${short}"`);
+					const args = d20plus.anim.SHORT_TO_DEFAULT_ARGS[short];
+					if (!args) throw new Error(`No default args found for "${short}"`);
+					return `${short} ${args}`;
+				})();
+
 				myLines.push(nuLine);
-				gui_doAddRow(myLines, nuLine);
+				const wrpMyLines = {lines: myLines};
+				this._edit_convertLines(wrpMyLines);
+				gui_doAddRow(myLines, myLines.last());
 			});
 
 			$btnEditText.click(() => {
@@ -3076,8 +3159,26 @@ function baseToolAnimator () {
 		"Lighting": "light",
 		"LightingExact": "lightx",
 		"SetProperty": "prop",
-		"TriggerMacro": "macro ",
+		"TriggerMacro": "macro",
 		"TriggerAnimation": "anim",
+	};
+
+	d20plus.anim.SHORT_TO_DEFAULT_ARGS = {
+		"mv": "0 0 - - -",
+		"mvx": "0 0 - - -",
+		"rot": "0 0 -",
+		"rotx": "0 0 -",
+		"cp": "0",
+		"flip": "0 - -",
+		"flipx": "0 - -",
+		"scale": "0 0 - -",
+		"scalex": "0 0 - -",
+		"layer": "0 -",
+		"light": "0 0 - - -",
+		"lightx": "0 0 - - -",
+		"prop": "0 - -",
+		"macro": "0 -",
+		"anim": "0 -",
 	};
 }
 

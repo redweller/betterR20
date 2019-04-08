@@ -708,6 +708,12 @@ function baseCss () {
 			`
 		},
 		{
+			s: ".anm-edit__ipt-lines-wrp--gui > *",
+			r: `
+				flex-shrink: 0;
+			`
+		},
+		{
 			s: ".anm-edit__ipt-lines",
 			r: `
 				resize: none;
