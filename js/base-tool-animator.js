@@ -2506,7 +2506,7 @@ function baseToolAnimator () {
 					}
 					case "Flip":
 					case "FlipExact": {
-						const baseMeta = gui_getBasicRowMeta(myLines, line, true);
+						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
@@ -2819,7 +2819,7 @@ function baseToolAnimator () {
 					const msg = getValidationMessage();
 					if (msg) return d20plus.ut.chatLog(msg);
 
-					myLines = $iptLines.val().split("\n");
+					myLines = $iptLines.val().split("\n").map(it => it.trim()).filter(Boolean);
 					doDisplayRows();
 				}
 
