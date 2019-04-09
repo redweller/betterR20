@@ -71,81 +71,28 @@ function baseToolAnimator () {
 		deserialize: function (json) {
 			let out;
 			switch (json._type) {
-				case "Nop":
-					out = new d20plus.anim.Nop();
-					break;
-				case "Move": {
-					out = new d20plus.anim.Move(json.startTime, json.duration, json.x, json.y, json.z);
-					out._progress = json._progress;
-					break;
-				}
-				case "MoveExact": {
-					out = new d20plus.anim.MoveExact(json.startTime, json.duration, json.x, json.y, json.z);
-					out._progress = json._progress;
-					break;
-				}
-				case "Copy": {
-					out = new d20plus.anim.Copy(json.startTime, json.childAnimation);
-					break;
-				}
-				case "Rotate": {
-					out = new d20plus.anim.Rotate(json.startTime, json.duration, json.degrees);
-					out._progress = json._progress;
-					break;
-				}
-				case "RotateExact": {
-					out = new d20plus.anim.RotateExact(json.startTime, json.duration, json.degrees);
-					out._progress = json._progress;
-					break;
-				}
-				case "Flip": {
-					out = new d20plus.anim.Flip(json.startTime, json.isHorizontal, json.isVertical);
-					break;
-				}
-				case "FlipExact": {
-					out = new d20plus.anim.FlipExact(json.startTime, json.isHorizontal, json.isVertical);
-					break;
-				}
-				case "Scale": {
-					out = new d20plus.anim.Scale(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY);
-					out._progress = json._progress;
-					break;
-				}
-				case "ScaleExact": {
-					out = new d20plus.anim.ScaleExact(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY);
-					out._progress = json._progress;
-					break;
-				}
-				case "Layer": {
-					out = new d20plus.anim.Layer(json.startTime, json.layer);
-					break;
-				}
-				case "SetProperty": {
-					out = new d20plus.anim.SetProperty(json.startTime, json.prop, json.value);
-					break;
-				}
-				case "Lighting": {
-					out = new d20plus.anim.Lighting(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees);
-					out._progress = json._progress;
-					break;
-				}
-				case "LightingExact": {
-					out = new d20plus.anim.LightingExact(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees);
-					out._progress = json._progress;
-					break;
-				}
-				case "TriggerMacro": {
-					out = new d20plus.anim.TriggerMacro(json.startTime, json.macroName);
-					break;
-				}
-				case "TriggerAnimation": {
-					out = new d20plus.anim.TriggerAnimation(json.startTime, json.animation);
-					break;
-				}
+				case "Nop": out = new d20plus.anim.Nop(); break;
+				case "Move": out = new d20plus.anim.Move(json.startTime, json.duration, json.x, json.y, json.z); break;
+				case "MoveExact": out = new d20plus.anim.MoveExact(json.startTime, json.duration, json.x, json.y, json.z); break;
+				case "Copy": out = new d20plus.anim.Copy(json.startTime, json.childAnimation); break;
+				case "Rotate": out = new d20plus.anim.Rotate(json.startTime, json.duration, json.degrees); break;
+				case "RotateExact": out = new d20plus.anim.RotateExact(json.startTime, json.duration, json.degrees); break;
+				case "Flip": out = new d20plus.anim.Flip(json.startTime, json.isHorizontal, json.isVertical); break;
+				case "FlipExact": out = new d20plus.anim.FlipExact(json.startTime, json.isHorizontal, json.isVertical); break;
+				case "Scale": out = new d20plus.anim.Scale(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY); break;
+				case "ScaleExact": out = new d20plus.anim.ScaleExact(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY); break;
+				case "Layer": out = new d20plus.anim.Layer(json.startTime, json.layer); break;
+				case "SetProperty": out = new d20plus.anim.SetProperty(json.startTime, json.prop, json.value); break;
+				case "Lighting": out = new d20plus.anim.Lighting(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees); break;
+				case "LightingExact": out = new d20plus.anim.LightingExact(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees); break;
+				case "TriggerMacro": out = new d20plus.anim.TriggerMacro(json.startTime, json.macroName); break;
+				case "TriggerAnimation": out = new d20plus.anim.TriggerAnimation(json.startTime, json.animation); break;
 				default: throw new Error(`Unhandled type "${json._type}"`);
 			}
 			out._hasRun = json._hasRun;
 			out._offset = json._offset;
+			out._progress = json._progress;
+			out._snapshotFirstRun = json._snapshotFirstRun;
 			return out;
 		},
 
@@ -164,15 +111,25 @@ function baseToolAnimator () {
 			this._hasRun = false;
 			this._offset = 0;
 			this._progress = 0; // 0 - 1f
+			this._snapshotFirstRun = null;
 
 			this.hasRun = () => this._hasRun;
 			this.setOffset = offset => this._offset = offset;
-			this._serialize = () => ({
-				_type: this.constructor.name,
-				_hasRun: this._hasRun,
-				_offset: this._offset,
-				_progress: this._progress
-			});
+			this._serialize = () => {
+				// remove any undefined properties
+				const rawOut = {
+					_type: this.constructor.name,
+					_hasRun: this._hasRun,
+					_offset: this._offset,
+					_progress: this._progress,
+					_snapshotFirstRun: this._snapshotFirstRun
+				};
+				const out = {};
+				Object.entries(rawOut).forEach(([k, v]) => {
+					if (v != null) out[k] = v;
+				});
+				return out;
+			};
 
 			this._getTickProgress = (duration, delta) => {
 				let mProgress = duration === 0 ? 1 : Math.min(1, delta / duration);
@@ -278,6 +235,10 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
+					if (this._snapshotFirstRun == null) {
+						// TODO
+					}
+
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
 						const tProgress = this._progress + mProgress;
@@ -424,6 +385,10 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
+					if (this._snapshotFirstRun == null) {
+						// TODO
+					}
+
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
 						const tProgress = this._progress + mProgress;
@@ -541,6 +506,10 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
+					if (this._snapshotFirstRun == null) {
+						// TODO
+					}
+
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
 						const tProgress = this._progress + mProgress;
@@ -677,6 +646,10 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
+					if (this._snapshotFirstRun == null) {
+						// TODO
+					}
+
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
 						const tProgress = this._progress + mProgress;
