@@ -92,7 +92,7 @@ function baseToolAnimator () {
 			out._hasRun = json._hasRun;
 			out._offset = json._offset;
 			out._progress = json._progress;
-			out._snapshotFirstRun = json._snapshotFirstRun;
+			out._snapshotDiff = json._snapshotDiff;
 			return out;
 		},
 
@@ -111,10 +111,11 @@ function baseToolAnimator () {
 			this._hasRun = false;
 			this._offset = 0;
 			this._progress = 0; // 0 - 1f
-			this._snapshotFirstRun = null;
+			this._snapshotDiff = null;
 
 			this.hasRun = () => this._hasRun;
 			this.setOffset = offset => this._offset = offset;
+			this.isLastTick = () => !(this._progress < (1 - Number.EPSILON));
 			this._serialize = () => {
 				// remove any undefined properties
 				const rawOut = {
@@ -122,7 +123,7 @@ function baseToolAnimator () {
 					_hasRun: this._hasRun,
 					_offset: this._offset,
 					_progress: this._progress,
-					_snapshotFirstRun: this._snapshotFirstRun
+					_snapshotDiff: this._snapshotDiff
 				};
 				const out = {};
 				Object.entries(rawOut).forEach(([k, v]) => {
@@ -202,16 +203,8 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle movement
-						if (x != null) {
-							const mvX = mProgress * x;
-							token.attributes.left += mvX;
-						}
-
-						if (y != null) {
-							const mvY = mProgress * y;
-							token.attributes.top += mvY;
-						}
-
+						if (x != null) token.attributes.left += mProgress * x;
+						if (y != null) token.attributes.top -= mProgress * y;
 						if (z != null) {
 							let {total, stack} = this._getCurrentZ(token);
 							total += mProgress * z;
@@ -235,31 +228,39 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
-					if (this._snapshotFirstRun == null) {
-						// TODO
+					if (this._snapshotDiff == null) {
+						const {total} = this._getCurrentZ(token);
+						this._snapshotDiff = {
+							x: (x || 0) - (token.attributes.left || 0),
+							y: (y || 0) - (token.attributes.top || 0),
+							z: (z || 0) - (total),
+						};
 					}
 
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
-						const tProgress = this._progress + mProgress;
 
 						// handle movement
-						if (x != null) {
-							token.attributes.left = tProgress * x;
-						}
-
-						if (y != null) {
-							token.attributes.top = tProgress * y;
-						}
-
+						if (x != null) token.attributes.left += mProgress * this._snapshotDiff.x;
+						if (y != null) token.attributes.top -= mProgress * this._snapshotDiff.y;
 						if (z != null) {
-							let {stack} = this._getCurrentZ(token);
-							const pZ = tProgress * z;
-							this._setCurrentZ(token, stack, pZ);
+							let {total, stack} = this._getCurrentZ(token);
+							total += mProgress * this._snapshotDiff.z;
+							this._setCurrentZ(token, stack, total);
 						}
 
 						// update progress
 						this._progress += mProgress;
+
+						// on the last tick, update to precise values
+						if (this.isLastTick()) {
+							if (x != null) token.attributes.left = x;
+							if (y != null) token.attributes.top = -y;
+							if (z != null) {
+								let {stack} = this._getCurrentZ(token);
+								this._setCurrentZ(token, stack, z);
+							}
+						}
 
 						return true;
 					} else this._hasRun = true;
@@ -385,21 +386,25 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
-					if (this._snapshotFirstRun == null) {
-						// TODO
+					if (this._snapshotDiff == null) {
+						this._snapshotDiff = {
+							degrees: (degrees || 0) - Number(token.attributes.rotation || 0)
+						};
 					}
 
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
-						const tProgress = this._progress + mProgress;
 
 						// handle rotation
-						if (degrees != null) {
-							token.attributes.rotation = tProgress * degrees;
-						}
+						if (degrees != null) token.attributes.rotation = mProgress * this._snapshotDiff.degrees;
 
 						// update progress
 						this._progress += mProgress;
+
+						// on the last tick, update to precise values
+						if (this.isLastTick()) {
+							if (degrees != null) token.attributes.rotation = degrees;
+						}
 
 						return true;
 					} else this._hasRun = true;
@@ -506,27 +511,42 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
-					if (this._snapshotFirstRun == null) {
-						// TODO
+					if (this._snapshotDiff == null) {
+						this._snapshotDiff = {
+							scaleX: (scaleFactorX || 0) - (token.view.graphic.scaleX || 0),
+							scaleY: (scaleFactorY || 0) - (token.view.graphic.scaleY || 0),
+						};
 					}
 
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
-						const tProgress = this._progress + mProgress;
 
 						// handle scaling
 						if (scaleFactorX != null) {
-							token.view.graphic.scaleX = tProgress * scaleFactorX;
+							token.view.graphic.scaleX = mProgress * this._snapshotDiff.scaleX;
 							token.attributes.scaleX = token.view.graphic.scaleX;
 						}
 
 						if (scaleFactorY != null) {
-							token.view.graphic.scaleY = tProgress * scaleFactorY;
+							token.view.graphic.scaleY = mProgress * this._snapshotDiff.scaleY;
 							token.attributes.scaleY = token.view.graphic.scaleY;
 						}
 
 						// update progress
 						this._progress += mProgress;
+
+						// on the last tick, update to precise values
+						if (this.isLastTick()) {
+							if (scaleFactorX != null) {
+								token.view.graphic.scaleX = scaleFactorX;
+								token.attributes.scaleX = token.view.graphic.scaleX;
+							}
+
+							if (scaleFactorY != null) {
+								token.view.graphic.scaleY = scaleFactorY;
+								token.attributes.scaleY = token.view.graphic.scaleY;
+							}
+						}
 
 						return true;
 					} else this._hasRun = true;
@@ -613,20 +633,11 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle lighting changes
-						if (lightRadius != null) {
-							const mLightRadius = mProgress * lightRadius;
-							token.attributes.light_radius = Number(token.attributes.light_radius || 0) + mLightRadius;
-						}
-
-						if (dimStart != null) {
-							const mDimStart = mProgress * dimStart;
-							token.attributes.light_dimradius = Number(token.attributes.light_dimradius || 0) + mDimStart;
-						}
-
+						if (lightRadius != null) token.attributes.light_radius = Number(token.attributes.light_radius || 0) + mProgress * lightRadius;
+						if (dimStart != null) token.attributes.light_dimradius = Number(token.attributes.light_dimradius || 0) + mProgress * dimStart;
 						if (degrees != null) {
-							const mDegrees = mProgress * degrees;
 							if (token.attributes.light_angle === "") token.attributes.light_angle = 360;
-							token.attributes.light_angle = Number(token.attributes.light_angle || 0) + mDegrees;
+							token.attributes.light_angle = Number(token.attributes.light_angle || 0) + mProgress * degrees;
 						}
 
 						// update progress
@@ -646,29 +657,30 @@ function baseToolAnimator () {
 				alpha = alpha - this._offset;
 
 				if (alpha >= startTime) {
-					if (this._snapshotFirstRun == null) {
-						// TODO
+					if (this._snapshotDiff == null) {
+						this._snapshotDiff = {
+							lightRadius: (lightRadius || 0) - Number(token.attributes.light_radius || 0),
+							dimStart: (dimStart || 0) - Number(token.attributes.light_dimradius || 0),
+							degrees: (degrees || 0) - Number(token.attributes.light_angle || 0),
+						};
 					}
 
 					if (this._progress < (1 - Number.EPSILON)) {
 						const mProgress = this._getTickProgress(duration, delta);
-						const tProgress = this._progress + mProgress;
 
 						// handle lighting changes
-						if (lightRadius != null) {
-							token.attributes.light_radius = tProgress * lightRadius;
-						}
-
-						if (dimStart != null) {
-							token.attributes.light_dimradius = tProgress * dimStart;
-						}
-
-						if (degrees != null) {
-							token.attributes.light_angle = tProgress * degrees;
-						}
+						if (lightRadius != null) token.attributes.light_radius = mProgress * this._snapshotDiff.lightRadius;
+						if (dimStart != null) token.attributes.light_dimradius = mProgress * this._snapshotDiff.dimStart;
+						if (degrees != null) token.attributes.light_angle = mProgress * this._snapshotDiff.degrees;
 
 						// update progress
 						this._progress += mProgress;
+
+						if (this.isLastTick()) {
+							if (lightRadius != null) token.attributes.light_radius = lightRadius;
+							if (dimStart != null) token.attributes.light_dimradius = dimStart;
+							if (degrees != null) token.attributes.light_angle = degrees;
+						}
 
 						return true;
 					} else this._hasRun = true;
