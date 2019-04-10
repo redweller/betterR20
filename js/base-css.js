@@ -66,12 +66,21 @@ function baseCss () {
 			r: "display: inline-flex; align-items: center;"
 		},
 		{
-			s: ".sel-sm",
+			s: ".sel-xs",
 			r: `
 				height: 18px;
 				line-height: 18px;
 				margin: 0;
 				padding: 0;
+			`
+		},
+		{
+			s: ".btn-xs",
+			r: `
+				height: 18px;
+				line-height: 18px;
+				margin: 0;
+				padding: 0 4px;
 			`
 		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable

@@ -1017,7 +1017,7 @@ function baseToolAnimator () {
 							_type: "Lighting",
 							start: nStart,
 							duration: nDuration,
-							lightRadius: nDuration,
+							lightRadius: nLightRadius,
 							dimStart: nDimStart,
 							degrees: nDegrees
 						}
@@ -1031,7 +1031,7 @@ function baseToolAnimator () {
 							_type: "LightingExact",
 							start: nStart,
 							duration: nDuration,
-							lightRadius: nDuration,
+							lightRadius: nLightRadius,
 							dimStart: nDimStart,
 							degrees: nDegrees
 						}
@@ -1071,7 +1071,7 @@ function baseToolAnimator () {
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 
 				// no validation for macro -- it might exist in the future if it doesn't now, or vice-versa
-				const macro = tokens[1];
+				const macro = tokens[1] === "-" ? null : tokens[1];
 
 				return new Command(
 					line,
@@ -1092,7 +1092,7 @@ function baseToolAnimator () {
 				if (nStart < 0) return Command.errStartNeg(line, tokens[0]);
 
 				// no validation for animation -- it might exist in the future if it doesn't now, or vice-versa
-				const animation = tokens[1];
+				const animation = tokens[1] === "-" ? null : tokens[1];
 
 				return new Command(
 					line,
@@ -1598,7 +1598,7 @@ function baseToolAnimator () {
 				// on disable, clear existing running animations
 				// prevents next load from re-loading old running state
 				if (!this._isSaveActive) {
-					Campaign.save({bR20tool__anim_running: {}});
+					setTimeout(() => Campaign.save({bR20tool__anim_running: {}}), 100);
 				}
 			});
 
@@ -2357,12 +2357,12 @@ function baseToolAnimator () {
 				return {$row, doUpdate, $wrpHeaders, $wrpInputs};
 			};
 
-			const gui_$getBtnAnim = (allowNone, fnUpdate, $iptAnim) => {
-				return $(`<button class="btn mr-2">.</button>`)
+			const gui_$getBtnAnim = (fnUpdate, $iptAnim) => {
+				return $(`<button class="btn btn-xs mr-2 pictos">s</button>`)
 					.click(async () => {
 						const name = await new Promise(resolve => {
 							const $selAnim = $(`<select>
-							${allowNone ? `<option value="-1">(None)</option>` : ""}
+							<option value="-1">(None)</option>
 							${d20plus.anim.animatorTool.getAnimations().map(it => `<option value="${it.uid}">${it.name}</option>`).join("")} 
 							</select>`);
 							$selAnim[0].selectedIndex = 0;
@@ -2474,12 +2474,12 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.animation = $iptAnim.val.trim() || null;
+							parsed.animation = $iptAnim.val().trim() || null;
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
 						const $iptAnim = $(`<input class="full-width mr-1">`).change(() => doUpdate()).val(parsed.animation);
-						const $btnSelAnim = gui_$getBtnAnim(false, doUpdate, $iptAnim);
+						const $btnSelAnim = gui_$getBtnAnim(doUpdate, $iptAnim);
 
 						gui_$getWrapped("Animation", 3, true).appendTo(baseMeta.$wrpHeaders);
 
@@ -2503,7 +2503,7 @@ function baseToolAnimator () {
 
 						const $getSelFlip = () => {
 							const VALS = ["(None)", "No", "Yes"];
-							return $(`<select class="sel-sm mr-2">${VALS.map((it, i) => `<option value="${i}">${it}</option>`).join("")}</select>`);
+							return $(`<select class="sel-xs mr-2">${VALS.map((it, i) => `<option value="${i}">${it}</option>`).join("")}</select>`);
 						};
 
 						const $selFlipH = $getSelFlip().val(parsed.flipH == null ? "0" : parsed.flipH ? "2" : "1").change(() => doUpdate());
@@ -2536,8 +2536,8 @@ function baseToolAnimator () {
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $iptScaleX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
-						const $iptScaleY = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.y);
+						const $iptScaleX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.scaleX);
+						const $iptScaleY = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.scaleY);
 						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "ScaleExact").change(() => doUpdate());
 
 						gui_$getWrapped("Horizontal Scale", 3, true).appendTo(baseMeta.$wrpHeaders);
@@ -2563,7 +2563,7 @@ function baseToolAnimator () {
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $selLayer = $(`<select class="mr-2 sel-sm">
+						const $selLayer = $(`<select class="mr-2 sel-xs">
 							<option value="">Select a layer...</option>
 							${d20plus.ut.LAYERS.map(l => `<option value="${l}">${d20plus.ut.layerToName(l)}</option>`).join("")}
 							</select>`)
@@ -2590,9 +2590,9 @@ function baseToolAnimator () {
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $iptLightRadius = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
-						const $iptDimStart = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.y);
-						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.z);
+						const $iptLightRadius = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.lightRadius);
+						const $iptDimStart = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.dimStart);
+						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.degrees);
 						const $cbExact = $(`<input type="checkbox">`).prop("checked", parsed._type === "MoveExact").change(() => doUpdate());
 
 						gui_$getWrapped("Light Radius", 2, true).appendTo(baseMeta.$wrpHeaders);
@@ -2622,7 +2622,7 @@ function baseToolAnimator () {
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
-						const $selProp = $(`<select class="mr-2 sel-sm">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
+						const $selProp = $(`<select class="mr-2 sel-xs">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
 							.change(() => doUpdate()).val(parsed.prop);
 						const $iptVal = $(`<textarea></textarea>`).change(() => doUpdate()).val(parsed.value);
 
@@ -2641,11 +2641,12 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.macro = $iptMacro.val();
+							parsed.macro = $iptMacro.val().trim() ? $iptMacro.val().trim() : null;
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
 						const $iptMacro = $(`<input class="full-width mr-2">`).change(() => doUpdate()).val(parsed.macro);
+						// TODO add macro search button?
 
 						gui_$getWrapped("Macro Name", 4, true).appendTo(baseMeta.$wrpHeaders);
 
@@ -2660,12 +2661,12 @@ function baseToolAnimator () {
 
 						const doUpdate = () => {
 							baseMeta.doUpdate();
-							parsed.animation = $iptAnim.val.trim();
+							parsed.animation = $iptAnim.val().trim() ? $iptAnim.val().trim() : null;
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
 						const $iptAnim = $(`<input class="full-width mr-1">`).change(() => doUpdate()).val(parsed.animation);
-						const $btnSelAnim = gui_$getBtnAnim(false, doUpdate, $iptAnim);
+						const $btnSelAnim = gui_$getBtnAnim(doUpdate, $iptAnim);
 
 						gui_$getWrapped("Animation", 3, true).appendTo(baseMeta.$wrpHeaders);
 
@@ -2684,7 +2685,12 @@ function baseToolAnimator () {
 				const wrpMyLines = {lines: myLines};
 				this._edit_convertLines(wrpMyLines);
 
-				myLines.forEach(line => gui_doAddRow(myLines, line));
+				myLines.forEach(line => {
+					if (line.error) {
+						console.error(`Failed to create GUI row from line "${line.line}"!`);
+						console.error(line.error)
+					} else gui_doAddRow(myLines, line);
+				});
 			};
 
 			const getValidationMessage = () => {
