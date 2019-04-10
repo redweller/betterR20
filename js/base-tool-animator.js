@@ -396,7 +396,7 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle rotation
-						if (degrees != null) token.attributes.rotation = mProgress * this._snapshotDiff.degrees;
+						if (degrees != null) token.attributes.rotation += mProgress * this._snapshotDiff.degrees;
 
 						// update progress
 						this._progress += mProgress;
@@ -523,12 +523,12 @@ function baseToolAnimator () {
 
 						// handle scaling
 						if (scaleFactorX != null) {
-							token.view.graphic.scaleX = mProgress * this._snapshotDiff.scaleX;
+							token.view.graphic.scaleX += mProgress * this._snapshotDiff.scaleX;
 							token.attributes.scaleX = token.view.graphic.scaleX;
 						}
 
 						if (scaleFactorY != null) {
-							token.view.graphic.scaleY = mProgress * this._snapshotDiff.scaleY;
+							token.view.graphic.scaleY += mProgress * this._snapshotDiff.scaleY;
 							token.attributes.scaleY = token.view.graphic.scaleY;
 						}
 
@@ -669,9 +669,9 @@ function baseToolAnimator () {
 						const mProgress = this._getTickProgress(duration, delta);
 
 						// handle lighting changes
-						if (lightRadius != null) token.attributes.light_radius = mProgress * this._snapshotDiff.lightRadius;
-						if (dimStart != null) token.attributes.light_dimradius = mProgress * this._snapshotDiff.dimStart;
-						if (degrees != null) token.attributes.light_angle = mProgress * this._snapshotDiff.degrees;
+						if (lightRadius != null) token.attributes.light_radius = Number(token.attributes.light_radius) + mProgress * this._snapshotDiff.lightRadius;
+						if (dimStart != null) token.attributes.light_dimradius = Number(token.attributes.light_dimradius) + mProgress * this._snapshotDiff.dimStart;
+						if (degrees != null) token.attributes.light_angle = Number(token.attributes.light_angle) + mProgress * this._snapshotDiff.degrees;
 
 						// update progress
 						this._progress += mProgress;
