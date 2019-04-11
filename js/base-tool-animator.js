@@ -2749,8 +2749,8 @@ function baseToolAnimator () {
 			});
 
 			$btnHelp.click(() => {
-				// TODO link to a wiki page
-				d20plus.ut.chatLog("Coming soon to a Wiki near you");
+				d20plus.ut.chatLog(`<a href="https://gist.github.com/TheGiddyLimit/b11cdd482ca4a902bb2379ba405425be" target="_blank">Coming soon to a Wiki near you</a>`);
+				window.open("https://gist.github.com/TheGiddyLimit/b11cdd482ca4a902bb2379ba405425be");
 			});
 
 			let lastSelCommand = null;
