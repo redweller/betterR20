@@ -1,6 +1,84 @@
 // Borrowed with <3 from Stormy's JukeboxIO
 function baseJukebox () {
 	d20plus.jukebox = {
+		playPlaylist (playlistId) {
+			$(document)
+				.find(`#jukeboxfolderroot .dd-folder[data-globalfolderid="${playlistId}"]`)
+				.find("> .dd-content .play[data-isplaying=false]")
+				.trigger("click");
+		},
+
+		playTrack (trackId) {
+			$(document)
+				.find(`#jukeboxfolderroot .dd-item[data-itemid="${trackId}"]`)
+				.find("> .dd-content .play[data-isplaying=false]")
+				.trigger("click");
+		},
+
+		stopPlaylist (playlistId) {
+			$(document)
+				.find(`#jukeboxfolderroot .dd-folder[data-globalfolderid="${playlistId}"]`)
+				.find("> .dd-content .play[data-isplaying=true]")
+				.trigger("click");
+		},
+
+		stopTrack (trackId) {
+			$(document)
+				.find(`#jukeboxfolderroot .dd-item[data-itemid="${trackId}"]`)
+				.find("> .dd-content .play[data-isplaying=true]")
+				.trigger("click");
+		},
+
+		play (id) {
+			d20plus.jukebox.playPlaylist(id);
+			d20plus.jukebox.playTrack(id);
+		},
+
+		stop (id) {
+			d20plus.jukebox.stopPlaylist(id);
+			d20plus.jukebox.stopTrack(id);
+		},
+
+		stopAll () {
+			d20.jukebox.stopAllTracks();
+		},
+
+		skip () {
+			const playlistId = d20plus.jukebox.getCurrentPlayingPlaylist();
+			d20.jukebox.stopAllTracks();
+			d20plus.jukebox.playPlaylist(playlistId);
+		},
+
+		getCurrentPlayingTracks () {
+			let playlingTracks = [];
+			window.Jukebox.playlist.each((track) => {
+				if (track.get("playing")) {
+					playlingTracks.push(track.attributes);
+				}
+			});
+			return playlingTracks;
+		},
+
+		getCurrentPlayingPlaylist () {
+			const id = d20.Campaign.attributes.jukeboxplaylistplaying;
+			return id ? id.split("|")[0] : id;
+		},
+
+		addJukeboxChangeHandler (func) {
+			d20plus.jukebox.addPlaylistChangeHandler(func);
+			d20plus.jukebox.addTrackChangeHandler(func);
+		},
+
+		addPlaylistChangeHandler (func) {
+			d20.Campaign.on("change:jukeboxplaylistplaying change:jukeboxfolder", func);
+		},
+
+		addTrackChangeHandler (func) {
+			window.Jukebox.playlist.each((track) => {
+				track.on("change:playing", func);
+			});
+		},
+
 		getJukeboxFileStructure () {
 			d20plus.jukebox.forceJukeboxRefresh();
 			return window.d20.jukebox.lastFolderStructure;
@@ -15,7 +93,7 @@ function baseJukebox () {
 			const retVals = [];
 
 			for (const fsItem of fs) {
-				if (typeof(fsItem) === "string") continue;
+				if (typeof (fsItem) === "string") continue;
 
 				const rawPlaylist = fsItem;
 
@@ -47,7 +125,7 @@ function baseJukebox () {
 			const retVals = [];
 
 			for (const fsItem of fs) {
-				if (typeof(fsItem) !== "string") continue;
+				if (typeof (fsItem) !== "string") continue;
 
 				const track = d20plus.jukebox.getTrackById(fsItem);
 				if (!track) {
@@ -85,7 +163,7 @@ function baseJukebox () {
 		},
 
 		getExportableTracks () {
-			return d20plus.jukebox.getJukeboxTracks().map(d20plus.jukebox._getExportableTrack)
+			return d20plus.jukebox.getJukeboxTracks().map(d20plus.jukebox._getExportableTrack);
 		},
 
 		importWrappedData (data) {
@@ -124,10 +202,9 @@ function baseJukebox () {
 			const serializable = $jukebox.find("#jukeboxfolderroot").nestable("serialize");
 			serializable && d20.Campaign.save({
 				jukeboxfolder: JSON.stringify(serializable)
-			})
+			});
 		}
 	};
 }
-
 
 SCRIPT_EXTENSIONS.push(baseJukebox);

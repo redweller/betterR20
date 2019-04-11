@@ -109,6 +109,7 @@ const SCRIPTS = {
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
+			"base-jukebox-widget",
 
 			"5etools-bootstrap",
 			"5etools-main",

@@ -910,6 +910,7 @@ const betteR205etoolsMain = function () {
 							}
 						});
 					}
+					$("#jbwMasterVolume").slider("value", ui.value);
 				},
 				value: 50,
 			});
@@ -1018,7 +1019,7 @@ const betteR205etoolsMain = function () {
 			const $wrprControls = $(`#search-wrp-controls`);
 			$wrprControls.append(altBindButton);
 		}
-		$("#journal btn#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+		$("#journal #bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 	};
 
 	d20plus.updateDifficulty = function () {
