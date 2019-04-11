@@ -4,35 +4,32 @@ function jukeboxWidget () {
 			const buttons = d20plus.jukebox.getJukeboxFileStructure()
 				.map((playlist, i) => {
 					const hotkey = i + 1 < 10 ? i + 1 : false;
-					const title = hotkey ? "ALT+" + hotkey : "";
-					let name, id;
+					let baseName, id;
 					if (typeof playlist === "object") {
-						name = hotkey ? `${i + 1}. ${playlist.n}` : playlist.n;
+						baseName = playlist.n;
 						id = playlist.id;
 					} else {
-						const trackName = d20plus.jukebox.getTrackById(playlist).attributes.title;
-						name = hotkey ? `${i + 1}. ${trackName}` : trackName;
+						baseName = d20plus.jukebox.getTrackById(playlist).attributes.title;
 						id = playlist;
 					}
+					const title = `${hotkey ? `[ALT+${hotkey}] ` : ""}${baseName}`;
 
 					return `
 						<div
-							class="btn btn-small jukebox-widget-button"
-							style="flex:1;text-overflow:ellipsis;overflow:hidden;min-width: 50px;"
+							class="btn btn-xs jukebox-widget-button m-1"
 							title="${title}"
 							data-id=${id}
 						>
-							<span>${name}</span>
+							<span>${hotkey ? `[${i + 1}] ` : ""}${baseName}</span>
 						</div>
 					`;
 				})
 				.filter(p => !!p);
 
-			return buttons.join('');
+			return buttons.join("");
 		},
 
 		init () {
-			//TODO: Make the slider a seperate component at some point
 			const changeTrackVolume = (trackId, value) => {
 				const track = d20plus.jukebox.getTrackById(trackId);
 				if (track && value) {
@@ -40,7 +37,28 @@ function jukeboxWidget () {
 				}
 			};
 
-			slider = $(`<div id="jbwMasterVolume" style="margin:10px;display:inline-block;flex:15"></div>`)
+			$(`<div id="masterVolume" style="margin:10px;display:inline-block;width:80%;"></div>`)
+				.insertAfter("#jukeboxwhatsplaying").slider({
+				slide: (e, ui) => {
+					if ($("#masterVolumeEnabled").prop("checked")) {
+						window.d20.jukebox.lastFolderStructure.forEach(playlist => {
+							// The track is outside a playlist
+							if (!playlist.i) {
+								changeTrackVolume(playlist, ui.value);
+							} else {
+								playlist.i.forEach(trackId => changeTrackVolume(trackId, ui.value))
+							}
+						});
+					}
+					$("#jbwMasterVolume").slider("value", ui.value);
+				},
+				value: 50,
+			});
+			$("<h4>Master Volume</h4>").insertAfter("#jukeboxwhatsplaying").css("margin-left", "10px");
+			$(`<input type="checkbox" id="masterVolumeEnabled" style="position:relative;top:-11px;" title="Enable this to change the volume of all the tracks at the same time"/>`).insertAfter("#masterVolume").tooltip();
+
+			//TODO: Make the slider a separate component at some point
+			const slider = $(`<div id="jbwMasterVolume" class="jukebox-widget-slider"></div>`)
 				.slider({
 					slide: (e, ui) => {
 						if ($("#masterVolumeEnabled").prop("checked")) {
@@ -59,15 +77,15 @@ function jukeboxWidget () {
 				});
 
 			// Stop and skip buttons
-			controls = $(`
-			<div style="display:flex;">
-				<div id="jbwStop" title="ALT+S" class="btn btn-inverse" style="flex: 1;"><span class="pictos">6</span></div>
-				<div id="jbwSkip" title="ALT+D" class="btn btn-inverse" style="flex: 1;"><span class="pictos">7</span></div>
+			const controls = $(`
+			<div class="flex mb-2">
+				<div id="jbwStop" title="ALT+S" class="btn btn-inverse flex-1 mr-2"><span class="pictos">6</span></div>
+				<div id="jbwSkip" title="ALT+D" class="btn btn-inverse flex-1 mr-2"><span class="pictos">7</span></div>
 			</div>
 			`).append(slider);
 
 			// Jukebox widget layout
-			dialog = $(`<div id="jukeboxWidget" title="Jukebox Player" style="margin-top:10px"></div>`)
+			const dialog = $(`<div id="jukeboxWidget" title="Jukebox Player" style="margin-top:10px"></div>`)
 				.dialog({
 					autoOpen: false,
 					resizable: true,
@@ -87,7 +105,7 @@ function jukeboxWidget () {
 			d20plus.jukebox.addJukeboxChangeHandler(() => {
 				$("#jbwButtons").html(d20plus.jukeboxWidget.getPlaylistButtonsHtml());
 				$(".jukebox-widget-button")
-					.removeClass("btn-info")
+					.removeClass("active")
 					.click((e) => {
 						const id = e.currentTarget.dataset.id;
 						if (d20plus.jukebox.getCurrentPlayingPlaylist() === id || d20plus.jukebox.getCurrentPlayingTracks().find(t => t.id === id)) {
@@ -96,9 +114,9 @@ function jukeboxWidget () {
 							d20plus.jukebox.play(e.currentTarget.dataset.id);
 						}
 					});
-				$(`.jukebox-widget-button[data-id=${d20plus.jukebox.getCurrentPlayingPlaylist()}]`).addClass("btn-info");
+				$(`.jukebox-widget-button[data-id=${d20plus.jukebox.getCurrentPlayingPlaylist()}]`).addClass("active");
 				d20plus.jukebox.getCurrentPlayingTracks().forEach(t => {
-					$(`.jukebox-widget-button[data-id=${t.id}]`).addClass("btn-info");
+					$(`.jukebox-widget-button[data-id=${t.id}]`).addClass("active");
 				});
 			});
 

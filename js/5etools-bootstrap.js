@@ -102,7 +102,9 @@ const betteR205etools = function () {
 		d20plus.engine.addLayers();
 		d20plus.weather.addWeather();
 		d20plus.engine.repairHexMethods();
-		d20plus.remoteLibre.init(); // Better20 jukebox tab
+		// Better20 jukebox tab
+		d20plus.remoteLibre.init();
+		d20plus.jukeboxWidget.init();
 		d20plus.anim.animatorTool.init();
 
 		// apply config

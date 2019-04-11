@@ -78,6 +78,7 @@ const SCRIPTS = {
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
+			"base-jukebox-widget",
 
 			"core-bootstrap",
 

@@ -42,6 +42,10 @@ function baseCss () {
 			r: "flex-shrink: 0;"
 		},
 		{
+			s: ".flex-1",
+			r: "flex: 1"
+		},
+		{
 			s: ".full-width",
 			r: "width: 100%;"
 		},
@@ -257,6 +261,10 @@ function baseCss () {
 		{
 			s: ".float-right",
 			r: "float: right;"
+		},
+		{
+			s: ".m-1",
+			r: "margin: 0.25rem !important;"
 		},
 		{
 			s: ".mt-2",
@@ -804,6 +812,33 @@ function baseCss () {
 				white-space: nowrap; 
 			`
 		}
+	]);
+
+	// Jukebox CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".jukebox-widget-button",
+			r: `
+    			flex: 1;
+    			text-overflow: ellipsis;
+    			overflow: hidden;
+    			min-width: 50px;
+			`
+		},
+		{
+			s: ".jukebox-widget-slider",
+			r: `
+    			margin: 10px;
+    			display: inline-block;
+    			flex: 15;
+			`
+		},
+		{
+			s: ".jukebox-widget-button",
+			r: `
+    			letter-spacing: -1px
+			`
+		},
 	]);
 }
 
