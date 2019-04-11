@@ -348,6 +348,11 @@ function d20plusEngine () {
 			} else return 0;
 		}
 
+		const lastContextSelection = {
+			lastAnimUid: null,
+			lastSceneUid: null,
+		};
+
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
 		var i = function() {
@@ -1011,6 +1016,26 @@ function d20plusEngine () {
 									it.saveState();
 									it.model.save();
 								}
+							});
+							i();
+						} else if ("token-animate" === e) {
+							d20plus.anim.animatorTool.pSelectAnimation(lastContextSelection.lastAnimUid).then(animUid => {
+								if (animUid == null) return;
+
+								lastContextSelection.lastAnimUid = animUid;
+								d20.engine.selected().forEach(it => {
+									if (it.model) {
+										d20plus.anim.animator.startAnimation(it.model, animUid)
+									}
+								});
+							});
+							i();
+						} else if ("util-scenes" === e) {
+							d20plus.anim.animatorTool.pSelectScene(lastContextSelection.lastSceneUid).then(sceneUid => {
+								if (sceneUid == null) return;
+
+								lastContextSelection.lastSceneUid = sceneUid;
+								d20plus.anim.animatorTool.doStartScene(sceneUid);
 							});
 							i();
 						}

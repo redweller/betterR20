@@ -14,8 +14,52 @@ function baseCss () {
 			r: "font-weight: bold;"
 		},
 		{
+			s: ".clickable",
+			r: "cursor: pointer;"
+		},
+		{
+			s: ".split",
+			r: "display: flex; justify-content: space-between;"
+		},
+		{
+			s: ".flex",
+			r: "display: flex;"
+		},
+		{
+			s: ".flex-col",
+			r: "display: flex; flex-direction: column;"
+		},
+		{
+			s: ".flex-v-center",
+			r: "display: flex; align-items: center;"
+		},
+		{
+			s: ".flex-vh-center",
+			r: "display: flex; justify-content: center; align-items: center;"
+		},
+		{
+			s: ".no-shrink",
+			r: "flex-shrink: 0;"
+		},
+		{
+			s: ".flex-1",
+			r: "flex: 1"
+		},
+		{
+			s: ".full-width",
+			r: "width: 100%;"
+		},
+		{
+			s: ".full-height",
+			r: "height: 100%;"
+		},
+		{
 			s: ".text-center",
 			r: "text-align: center;"
+		},
+		{
+			s: ".text-right",
+			r: "text-align: right;"
 		},
 		{
 			s: ".is-error",
@@ -24,6 +68,24 @@ function baseCss () {
 		{
 			s: ".flex-label",
 			r: "display: inline-flex; align-items: center;"
+		},
+		{
+			s: ".sel-xs",
+			r: `
+				height: 18px;
+				line-height: 18px;
+				margin: 0;
+				padding: 0;
+			`
+		},
+		{
+			s: ".btn-xs",
+			r: `
+				height: 18px;
+				line-height: 18px;
+				margin: 0;
+				padding: 0 4px;
+			`
 		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
 		// {
@@ -201,12 +263,36 @@ function baseCss () {
 			r: "float: right;"
 		},
 		{
+			s: ".m-1",
+			r: "margin: 0.25rem !important;"
+		},
+		{
 			s: ".mt-2",
 			r: "margin-top: 0.5rem !important;"
 		},
 		{
+			s: ".mr-1",
+			r: "margin-right: 0.25rem !important;"
+		},
+		{
+			s: ".ml-1",
+			r: "margin-left: 0.25rem !important;"
+		},
+		{
 			s: ".mr-2",
 			r: "margin-right: 0.5rem !important;"
+		},
+		{
+			s: ".ml-2",
+			r: "margin-left: 0.5rem !important;"
+		},
+		{
+			s: ".mb-2",
+			r: "margin-bottom: 0.5rem !important;"
+		},
+		{
+			s: ".mb-1",
+			r: "margin-bottom: 0.25rem !important;"
 		},
 		{
 			s: ".p-2",
@@ -319,6 +405,11 @@ function baseCss () {
 		{
 			s: `.wth__row input[type="range"]`,
 			r: "width: calc(100% - 8px);"
+		},
+		// context menu
+		{
+			s: `.ctx__divider`,
+			r: "width: calc(100% - 2px); border: 1px solid black;"
 		},
 	];
 
@@ -559,6 +650,194 @@ function baseCss () {
 		{
 			s: ".artr__big_img",
 			r: "display: block; max-width: 100%; max-height: 100%;"
+		},
+	]);
+
+	// Animator CSS -- `anm__` prefix
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// fix box sizing
+		{
+			s: ".anm__win *",
+			r: "box-sizing: border-box;"
+		},
+		{
+			s: ".ui-dialog .anm__row",
+			r: `
+    			display: flex;
+    			align-items: center;
+    			margin-bottom: 3px;
+    			height: 20px;
+			`
+		},
+		{
+			s: ".anm__row > div",
+			r: `
+				display: inline-flex;
+			`
+		},
+		{
+			s: ".anm__row-btn",
+			r: `
+				padding: 0 6px;
+			`
+		},
+		{
+			s: ".anm__row-wrp-cb",
+			r: `
+				justify-content: center;
+				align-items: center;
+			`
+		},
+		{
+			s: ".anm__wrp-sel-all",
+			r: `
+				align-items: center; 
+				margin-bottom: 5px;
+				display: flex;
+				justify-content: space-between;
+			`
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp",
+			r: `
+				flex-basis: 100%;
+				flex-shrink: 100;
+			`
+		},
+		{
+			s: ".anm-edit__gui .anm-edit__gui-hidden",
+			r: `
+				display: none;
+			`
+		},
+		{
+			s: ".anm-edit__text .anm-edit__gui-visible",
+			r: `
+				display: none;
+			`
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp--gui",
+			r: `
+				overflow-y: auto;
+				display: flex;
+				flex-direction: column;
+			`
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp--gui > *",
+			r: `
+				flex-shrink: 0;
+			`
+		},
+		{
+			s: ".anm-edit__ipt-lines",
+			r: `
+				resize: none;
+				width: 100%;
+				height: 100%;
+				margin-bottom: 0;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row",
+			r: `
+				padding: 4px;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+				margin-bottom: 3px;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row:nth-child(even)",
+			r: `
+				background: #f8f8f8;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name",
+			r: `
+				color: white; 
+				-webkit-text-stroke: 1px #555; 
+				text-stroke: 1px black; 
+				padding: 3px 5px; 
+				border-radius: 3px; 
+				font-size: 16px; 
+				display: inline-block; 
+				min-width: 150px;
+			`
+		},
+		{
+			s: ".anm-scene__wrp-tokens",
+			r: `
+				width: 100%;
+				max-height: 100%;
+				overflow-y: auto;
+				display: flex;
+				flex-wrap: wrap;
+			`
+		},
+		{
+			s: ".anm-scene__wrp-token",
+			r: `
+				width: 80px;
+				height: 100px;
+				background: #f0f0f0;
+				box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75);
+				margin: 4px;
+				display: flex;
+				flex-direction: column;
+				padding: 3px;
+			`
+		},
+		{
+			s: ".anm-scene__wrp-token--active",
+			r: `
+				background: #a0f0ff;
+			`
+		},
+		{
+			s: ".anm-scene__wrp-token-name",
+			r: `
+				height: 20px;
+				overflow: hidden;
+			`
+		},
+		{
+			s: ".anm-scene__wrp-token-name-inner",
+			r: `
+				height: 20px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap; 
+			`
+		}
+	]);
+
+	// Jukebox CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".jukebox-widget-button",
+			r: `
+    			flex: 1;
+    			text-overflow: ellipsis;
+    			overflow: hidden;
+    			min-width: 50px;
+			`
+		},
+		{
+			s: ".jukebox-widget-slider",
+			r: `
+    			margin: 10px;
+    			display: inline-block;
+    			flex: 15;
+			`
+		},
+		{
+			s: ".jukebox-widget-button",
+			r: `
+    			letter-spacing: -1px
+			`
 		},
 	]);
 }

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.14.22";
+const SCRIPT_VERSION = "1.15.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -66,6 +66,7 @@ const SCRIPTS = {
 			"base-tool",
 			"base-tool-module",
 			"base-tool-unlock",
+			"base-tool-animator",
 			"base-art",
 			"base-art-browse",
 			"base-engine",
@@ -77,6 +78,7 @@ const SCRIPTS = {
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
+			"base-jukebox-widget",
 
 			"core-bootstrap",
 
@@ -96,6 +98,7 @@ const SCRIPTS = {
 			"base-tool",
 			"base-tool-module",
 			"base-tool-unlock",
+			"base-tool-animator",
 			"base-art",
 			"base-art-browse",
 			"base-engine",
@@ -107,6 +110,7 @@ const SCRIPTS = {
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
+			"base-jukebox-widget",
 
 			"5etools-bootstrap",
 			"5etools-main",

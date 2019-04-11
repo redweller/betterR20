@@ -13,13 +13,13 @@ function baseUtil () {
 		d20.textchat.incoming(
 			false,
 			{
-				who: "5e.tools",
+				who: "betteR20",
 				type: "general",
 				content: (arg || "").toString(),
 				playerid: window.currentPlayer.id,
 				id: d20plus.ut.generateRowId(),
 				target: window.currentPlayer.id,
-				avatar: "https://5e.tools/icon.png"
+				avatar: "https://i.imgur.com/bBhudno.png"
 			}
 		);
 	};
@@ -262,7 +262,7 @@ function baseUtil () {
 		}
 	};
 
-	d20plus.ut.getTokenFromId = (tokenId) => {
+	d20plus.ut.getTokenById = (tokenId) => {
 		const foundTokenArr = d20.Campaign.pages.models.map(model => model.thegraphics.models.find(it => it.id === tokenId)).filter(it => it);
 		if (foundTokenArr.length) {
 			return foundTokenArr[0];
@@ -270,7 +270,16 @@ function baseUtil () {
 		return null;
 	};
 
-	d20plus.ut._BYTE_UNITS = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+	d20plus.ut.getMacroByName = (macroName) => {
+		const macros = d20.Campaign.players.map(p => p.macros.find(m => m.get("name") === macroName && (p.id === window.currentPlayer.id || m.visibleToCurrentPlayer())))
+			.filter(Boolean);
+		if (macros.length) {
+			return macros[0];
+		}
+		return null;
+	};
+
+	d20plus.ut._BYTE_UNITS = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {
 		let i = -1;
 		do {
@@ -442,7 +451,23 @@ function baseUtil () {
 		return new Promise(resolve => {
 			setTimeout(() => resolve(), delay);
 		})
-	}
+	};
+
+	d20plus.ut.LAYERS = ["map", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.layerToName = (l) => {
+		switch (l) {
+			case "map": return "Map & Background";
+			case "objects": return "Objects & Tokens";
+			case "foreground": return "Foreground";
+			case "gmlayer": return "GM Info Overlay";
+			case "walls":  return "Dynamic Lighting";
+			case "weather": return "Weather Exclusions";
+		}
+	};
+
+	d20plus.ut.get$SelValue = ($sel) => {
+		return $sel[0].options[$sel[0].selectedIndex].value;
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);

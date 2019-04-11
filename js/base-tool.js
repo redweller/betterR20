@@ -1,6 +1,13 @@
 function baseTool() {
 	d20plus.tool = {};
 
+	/**
+	 * Each tool should have:
+	 *  - `name` List display name.
+	 *  - `desc` List display description.
+	 *  - `dialogFn` Function called to initialize dialog.
+	 *  - `openFn` Function called when tool is opened.
+	 */
 	d20plus.tool.tools = [
 		{
 			name: "Journal Cleaner",
@@ -640,7 +647,7 @@ function baseTool() {
 								let anyUpdates = false;
 
 								master.attributes.entangled = master.attributes.entangled.filter(id => {
-									const slave = d20plus.ut.getTokenFromId(id);
+									const slave = d20plus.ut.getTokenById(id);
 									if (slave) {
 										SYNCABLE_ATTRS.forEach(attr => slave.attributes[attr] = master.attributes[attr]);
 										slave.save();
@@ -703,8 +710,8 @@ function baseTool() {
 							else return false;
 						};
 
-						const token1 = d20plus.ut.getTokenFromId(tkId1);
-						const token2 = d20plus.ut.getTokenFromId(tkId2);
+						const token1 = d20plus.ut.getTokenById(tkId1);
+						const token2 = d20plus.ut.getTokenById(tkId2);
 
 						if (!token1) return notFound(tkId1);
 						if (!token2) return notFound(tkId2);
@@ -728,12 +735,12 @@ function baseTool() {
 					.off("click")
 					.click(() => {
 						const tkId = $iptClear.val();
-						const token = d20plus.ut.getTokenFromId(tkId);
+						const token = d20plus.ut.getTokenById(tkId);
 						if (!token) return notFound(tkId);
 
 						const count = token.attributes.entangled ? token.attributes.entangled.length : 0;
 						(token.attributes.entangled || []).forEach(eId => {
-							const ent = d20plus.ut.getTokenFromId(eId);
+							const ent = d20plus.ut.getTokenById(eId);
 							if (ent && ent.attributes.entangled && ent.attributes.entangled.includes(tkId)) {
 								ent.attributes.entangled.splice(ent.attributes.entangled.indexOf(tkId), 1);
 								ent.save();
