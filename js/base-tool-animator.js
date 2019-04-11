@@ -1295,13 +1295,6 @@ function baseToolAnimator () {
 				width: 800,
 				height: 600,
 			});
-
-			// FIXME temp code; remove
-			window.addEventListener("keypress", (evt) => {
-				if (evt.shiftKey && !evt.ctrlKey) {
-					if (evt.key === "G") this.openFn();
-				}
-			})
 		},
 
 		openFn () {
@@ -1857,11 +1850,16 @@ function baseToolAnimator () {
 			scene.anims = scene.anims || []; // handle legacy data
 			const editorOptions = {};
 
-			const $winEditor = $(this._html_template_scene_editor).appendTo($("body"));
+			const $winEditor = $(this._html_template_scene_editor)
+				.attr("title", `Scene Editor - ${scene.name}`)
+				.appendTo($("body"));
 
 			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck()
 				.val(scene.name)
-				.change(() => scene.name = $iptName.val().trim());
+				.change(() => {
+					scene.name = $iptName.val().trim();
+					$winEditor.dialog("option", "title", `Scene Editor - ${$iptName.val()}`);
+				});
 			const $btnSave = $winEditor.find(`[name="btn-save"]`);
 			const $btnExportFile = $winEditor.find(`[name="btn-export-file"]`);
 			const $btnAdd = $winEditor.find(`[name="btn-add"]`);
@@ -1915,6 +1913,7 @@ function baseToolAnimator () {
 			const $btnSelToken = $(`<button class="btn anm__row-btn">Select Token</button>`)
 				.click(() => {
 					let lastSelectedTokenId = null;
+					const $wrpTokens = $$`<div class="anm-scene__wrp-tokens"></div>`;
 
 					const $selPage = $(`<select><option disabled value="">Select Page</option></select>`)
 						.change(() => {
@@ -1925,19 +1924,25 @@ function baseToolAnimator () {
 							editorOptions.lastPageId = d20plus.ut.get$SelValue($selPage);
 
 							if (page.thegraphics && page.thegraphics.length) {
-								const tokens = page.thegraphics.models.filter(it => it.attributes.type === "image");
+								const tokens = page.thegraphics.models
+									.filter(it => it.attributes.type === "image")
+									.map(it => ({
+										id: it.id,
+										name: it.attributes.name || "(Unnamed)",
+										imgsrc: it.attributes.imgsrc
+									}))
+									.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
 								tokens.forEach(it => {
-									const name = it.attributes.name || "(Unnamed)";
 									const $wrpToken = $$`<div class="anm-scene__wrp-token">
 											<div class="no-shrink flex-vh-center" style="width: 80px; height: 80px;">
 												<img 
 													class="no-shrink" 
 													style="max-width: 80px; max-height: 80px;" 
-													src="${it.attributes.imgsrc}"
+													src="${it.imgsrc}"
 												>
 											</div>
 											<div class="no-shrink full-width flex-vh-center anm-scene__wrp-token-name">
-												<span title="${name}" class="anm-scene__wrp-token-name-inner">${name}</span>
+												<span title="${it.name}" class="anm-scene__wrp-token-name-inner">${it.name}</span>
 											</div>
 										</div>`.click(() => {
 										$wrpTokens.find(`.anm-scene__wrp-token`).removeClass(`anm-scene__wrp-token--active`);
@@ -1947,12 +1952,12 @@ function baseToolAnimator () {
 								});
 							} else $wrpTokens.append("There are no tokens on this page!");
 						});
-					d20.Campaign.pages.forEach(it => $(`<option value="${it.id}"></option>`).text(it.attributes.name || "(Unnamed)").appendTo($selPage));
+					// TODO alphabetise pages
+					d20.Campaign.pages
+						.forEach(it => $(`<option value="${it.id}"></option>`).text(it.attributes.name || "(Unnamed)").appendTo($selPage));
 					// default re-display last page
-					if (editorOptions.lastPageId && d20.Campaign.pages.get(editorOptions.lastPageId)) $selPage.val(editorOptions.lastPageId);
+					if (editorOptions.lastPageId && d20.Campaign.pages.get(editorOptions.lastPageId)) $selPage.val(editorOptions.lastPageId).change();
 					else $selPage[0].selectedIndex = 0;
-
-					const $wrpTokens = $$`<div class="anm-scene__wrp-tokens"></div>`;
 
 					const $dialog = $$`
 							<div title="Select Token">
@@ -2244,7 +2249,9 @@ function baseToolAnimator () {
 
 		// region editor
 		_edit_openEditor (anim) {
-			const $winEditor = $(this._html_template_editor).appendTo($("body"));
+			const $winEditor = $(this._html_template_editor)
+				.attr("title", `Animation Editor - ${anim.name}`)
+				.appendTo($("body"));
 
 			$winEditor.dialog({
 				resizable: true,
@@ -2266,7 +2273,11 @@ function baseToolAnimator () {
 			const $wrpRows = $winEditor.find(`.anm-edit__ipt-lines-wrp--gui`);
 
 			anim.lines = anim.lines || [];
-			$iptName.val(anim.name);
+			$iptName
+				.val(anim.name)
+				.change(() => {
+					$winEditor.dialog("option", "title", `Animation Editor - ${$iptName.val()}`);
+				});
 
 			// map to strings to ensure fresh array
 			let myLines = anim.lines.map(it => typeof it === "string" ? it : it.line);
@@ -2512,12 +2523,12 @@ function baseToolAnimator () {
 
 						gui_$getWrapped("Flip Horizontally", 3, true).appendTo(baseMeta.$wrpHeaders);
 						gui_$getWrapped("Flip Vertically", 3, true).appendTo(baseMeta.$wrpHeaders);
-						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 3).appendTo(baseMeta.$wrpHeaders);
 						gui_$getWrapped("Is Exact", 1, true).appendTo(baseMeta.$wrpHeaders);
 
 						gui_$getWrapped($selFlipH, 3).appendTo(baseMeta.$wrpInputs);
 						gui_$getWrapped($selFlipV, 3).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 3).appendTo(baseMeta.$wrpInputs);
 						gui_$getWrapped($cbExact, 1).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
