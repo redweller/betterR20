@@ -2623,7 +2623,7 @@ function baseToolAnimator () {
 
 						const $selProp = $(`<select class="mr-2 sel-xs">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
 							.change(() => doUpdate()).val(parsed.prop);
-						const $iptVal = $(`<textarea style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
+						const $iptVal = $(`<textarea class="full-width" style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
 
 						gui_$getWrapped("Property", 4, true).appendTo(baseMeta.$wrpHeaders);
 						gui_$getWrapped("Value", 6, true).appendTo(baseMeta.$wrpHeaders);
