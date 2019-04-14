@@ -1401,7 +1401,7 @@ function baseToolAnimator () {
 		pSelectAnimation (defaultSelUid) {
 			return this._pSelectUid(
 				this.getAnimations.bind(this),
-				"No animations available! Use the Token Animator tool to define some first.",
+				`No animations available! Use the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Animation",
 				defaultSelUid
 			);
@@ -1410,7 +1410,7 @@ function baseToolAnimator () {
 		pSelectScene (defaultSelUid) {
 			return this._pSelectUid(
 				this.getScenes.bind(this),
-				"No scenes available! Use Edit Scenes in the Token Animator tool to define some first.",
+				`No scenes available! Use Edit Scenes in the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Scene",
 				defaultSelUid
 			);
@@ -2737,8 +2737,8 @@ function baseToolAnimator () {
 			});
 
 			$btnHelp.click(() => {
-				d20plus.ut.chatLog(`<a href="https://gist.github.com/TheGiddyLimit/b11cdd482ca4a902bb2379ba405425be" target="_blank">Coming soon to a Wiki near you</a>`);
-				window.open("https://gist.github.com/TheGiddyLimit/b11cdd482ca4a902bb2379ba405425be");
+				d20plus.ut.chatLog(`<a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">View the Wiki page for help!</a>`);
+				window.open("https://wiki.5e.tools/index.php/Feature:_Animator");
 			});
 
 			let lastSelCommand = null;
