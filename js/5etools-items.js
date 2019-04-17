@@ -29,69 +29,70 @@ function d20plusItems () {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
 			if (url.trim() === `${DATA_URL}items.json`) {
-				Renderer.item.pBuildList((itemList) => {
-						const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
-
-						const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
-						packs.forEach(p => {
-							if (!p._r20SubItemData) {
-								const contents = p.entries.find(it => it.type === "list").items;
-
-								const out = [];
-								contents.forEach(line => {
-									if (line.includes("@item")) {
-										const [pre, tag, item] = line.split(/({@item)/g);
-										const tagItem = `${tag}${item}`;
-
-										let [n, src] = item.split("}")[0].trim().split("|");
-										if (!src) src = "dmg";
-
-										n = n.toLowerCase();
-										src = src.toLowerCase();
-
-
-										const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
-
-										let count = 1;
-										pre.replace(/\d+/g, (m) => count = Number(m));
-
-										out.push({
-											type: "item",
-											count,
-											data: subItem
-										})
-									} else {
-										out.push({
-											type: "misc",
-											data: {
-												name: line.toTitleCase(),
-												data: {
-													Category: "Items",
-													"Item Type": "Adventuring Gear"
-												}
-											}
-										})
-									}
-								});
-
-								p._r20SubItemData = out;
-							}
-						});
-
-						d20plus.importer.showImportList(
-							"item",
-							itemList,
-							handoutBuilder,
-							{
-								groupOptions: d20plus.items._groupOptions,
-								forcePlayer,
-								listItemBuilder: d20plus.items._listItemBuilder,
-								listIndex: d20plus.items._listCols,
-								listIndexConverter: d20plus.items._listIndexConverter
-							}
-						);
-					},
+				Renderer.item.pBuildList(
 					{
+						fnCallback: itemList => {
+							const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
+
+							const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
+							packs.forEach(p => {
+								if (!p._r20SubItemData) {
+									const contents = p.entries.find(it => it.type === "list").items;
+
+									const out = [];
+									contents.forEach(line => {
+										if (line.includes("@item")) {
+											const [pre, tag, item] = line.split(/({@item)/g);
+											const tagItem = `${tag}${item}`;
+
+											let [n, src] = item.split("}")[0].trim().split("|");
+											if (!src) src = "dmg";
+
+											n = n.toLowerCase();
+											src = src.toLowerCase();
+
+
+											const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
+
+											let count = 1;
+											pre.replace(/\d+/g, (m) => count = Number(m));
+
+											out.push({
+												type: "item",
+												count,
+												data: subItem
+											})
+										} else {
+											out.push({
+												type: "misc",
+												data: {
+													name: line.toTitleCase(),
+													data: {
+														Category: "Items",
+														"Item Type": "Adventuring Gear"
+													}
+												}
+											})
+										}
+									});
+
+									p._r20SubItemData = out;
+								}
+							});
+
+							d20plus.importer.showImportList(
+								"item",
+								itemList,
+								handoutBuilder,
+								{
+									groupOptions: d20plus.items._groupOptions,
+									forcePlayer,
+									listItemBuilder: d20plus.items._listItemBuilder,
+									listIndex: d20plus.items._listCols,
+									listIndexConverter: d20plus.items._listIndexConverter
+								}
+							);
+						},
 						urls: {
 							items: `${DATA_URL}items.json`,
 							basicitems: `${DATA_URL}basicitems.json`,
