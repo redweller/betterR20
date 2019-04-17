@@ -29,7 +29,7 @@ function d20plusItems () {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
 			if (url.trim() === `${DATA_URL}items.json`) {
-				Renderer.item.buildList((itemList) => {
+				Renderer.item.pBuildList((itemList) => {
 						const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
 
 						const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
@@ -92,11 +92,13 @@ function d20plusItems () {
 						);
 					},
 					{
-						items: `${DATA_URL}items.json`,
-						basicitems: `${DATA_URL}basicitems.json`,
-						magicvariants: `${DATA_URL}magicvariants.json`
-					},
-					true);
+						urls: {
+							items: `${DATA_URL}items.json`,
+							basicitems: `${DATA_URL}basicitems.json`,
+							magicvariants: `${DATA_URL}magicvariants.json`
+						},
+						isAddGroups: true,
+					});
 			} else {
 				// for non-standard URLs, do a generic import
 				DataUtil.loadJSON(url).then((data) => {
