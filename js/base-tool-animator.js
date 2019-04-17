@@ -183,10 +183,12 @@ function baseToolAnimator () {
 			};
 
 			this._setCurrentZ = (token, stack, total) => {
-				const nums = String(Math.round(total)).split("");
-				for (let i = 0; i < nums.length; ++i) {
-					stack += `fluffy-wing@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
-				}
+				if (total) {
+					const nums = String(Math.round(total)).split("");
+					for (let i = 0; i < nums.length; ++i) {
+						stack += `fluffy-wing@${nums[i]}${i < nums.length - 1 ? "," : ""}`;
+					}
+				} else stack = stack.replace(/,$/, "");
 
 				token.attributes.statusmarkers = stack;
 			};
@@ -1399,7 +1401,7 @@ function baseToolAnimator () {
 		pSelectAnimation (defaultSelUid) {
 			return this._pSelectUid(
 				this.getAnimations.bind(this),
-				"No animations available! Use the Token Animator tool to define some first.",
+				`No animations available! Use the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Animation",
 				defaultSelUid
 			);
@@ -1408,7 +1410,7 @@ function baseToolAnimator () {
 		pSelectScene (defaultSelUid) {
 			return this._pSelectUid(
 				this.getScenes.bind(this),
-				"No scenes available! Use Edit Scenes in the Token Animator tool to define some first.",
+				`No scenes available! Use Edit Scenes in the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Scene",
 				defaultSelUid
 			);
@@ -1711,6 +1713,8 @@ function baseToolAnimator () {
 		},
 
 		_scene_addScene (scene) {
+			if (scene == null) return console.error(`Scene was null!`);
+
 			const lastSearch = ListUtil.getSearchTermAndReset(this._scene_list);
 			this._scenes[scene.uid] = scene;
 			this._scene_$wrpList.append(this._scene_$getListItem(scene));
@@ -2305,27 +2309,11 @@ function baseToolAnimator () {
 				const _getTitleMeta = () => {
 					const clean = parsed._type.replace(/exact/gi, "");
 
-					const _getColor = () => {
-						switch (clean) {
-							case "Move": return "#ff0004";
-							case "Rotate": return "#ff6c00";
-							case "Copy": return "#fff700";
-							case "Flip": return "#a3ff00";
-							case "Scale": return "#5eff00";
-							case "Layer": return "#00ff25";
-							case "Lighting": return "#00ffb6";
-							case "SetProperty": return "#006bff";
-							case "TriggerMacro": return "#0023ff";
-							case "TriggerAnimation": return "#9800ff";
-							default: throw new Error(`Unhandled type "${clean}"`);
-						}
-					};
-
 					const text = gui_getTitleFromType(parsed._type, true);
 
 					return {
 						text,
-						color: _getColor()
+						className: `anm-edit__gui-row-name--${clean}`
 					}
 				};
 
@@ -2357,7 +2345,7 @@ function baseToolAnimator () {
 				const $row = $$`<div class="flex-col full-width anm-edit__gui-row">
 						<div class="split flex-v-center mb-2">
 							<div class="full-width flex-v-center full-height">
-								<div class="bold anm-edit__gui-row-name" style="background: ${titleMeta.color};">${titleMeta.text}</div>
+								<div class="bold anm-edit__gui-row-name ${titleMeta.className}">${titleMeta.text}</div>
 							</div>
 							${$btnRemove}
 						</div>			
@@ -2629,19 +2617,19 @@ function baseToolAnimator () {
 							baseMeta.doUpdate();
 							parsed.prop = $selProp.val();
 							try { parsed.value = JSON.parse($iptVal().trim()); }
-							catch (ignored) { parsed.value = $iptVal(); }
+							catch (ignored) { parsed.value = $iptVal.val(); }
 							line.line = d20plus.anim.lineFromParsed(parsed);
 						};
 
 						const $selProp = $(`<select class="mr-2 sel-xs">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
 							.change(() => doUpdate()).val(parsed.prop);
-						const $iptVal = $(`<textarea></textarea>`).change(() => doUpdate()).val(parsed.value);
+						const $iptVal = $(`<textarea class="full-width" style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
 
-						gui_$getWrapped("Property", 2, true).appendTo(baseMeta.$wrpHeaders);
-						gui_$getWrapped("Value", 8, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Property", 4, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Value", 6, true).appendTo(baseMeta.$wrpHeaders);
 
-						gui_$getWrapped($selProp, 2).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped($iptVal, 8).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($selProp, 4).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptVal, 6).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
 
@@ -2749,8 +2737,8 @@ function baseToolAnimator () {
 			});
 
 			$btnHelp.click(() => {
-				d20plus.ut.chatLog(`<a href="https://gist.github.com/TheGiddyLimit/b11cdd482ca4a902bb2379ba405425be" target="_blank">Coming soon to a Wiki near you</a>`);
-				window.open("https://gist.github.com/TheGiddyLimit/b11cdd482ca4a902bb2379ba405425be");
+				d20plus.ut.chatLog(`<a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">View the Wiki page for help!</a>`);
+				window.open("https://wiki.5e.tools/index.php/Feature:_Animator");
 			});
 
 			let lastSelCommand = null;
@@ -3178,7 +3166,7 @@ function baseToolAnimator () {
 		"layer": "0 -",
 		"light": "0 0 - - -",
 		"lightx": "0 0 - - -",
-		"prop": "0 - -",
+		"prop": "0 -",
 		"macro": "0 -",
 		"anim": "0 -",
 	};

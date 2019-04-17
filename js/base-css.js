@@ -768,6 +768,66 @@ function baseCss () {
 			`
 		},
 		{
+			s: ".anm-edit__gui-row-name--Move",
+			r: `
+				background: #ff0004;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--Rotate",
+			r: `
+				background: #ff6c00;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--Copy",
+			r: `
+				background: #fff700;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--Flip",
+			r: `
+				background: #a3ff00;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--Scale",
+			r: `
+				background: #5eff00;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--Layer",
+			r: `
+				background: #00ff25;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--Lighting",
+			r: `
+				background: #00ffb6;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--SetProperty",
+			r: `
+				background: #006bff;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--TriggerMacro",
+			r: `
+				background: #0023ff;
+			`
+		},
+		{
+			s: ".anm-edit__gui-row-name--TriggerAnimation",
+			r: `
+				background: #9800ff;
+			`
+		},
+		{
 			s: ".anm-scene__wrp-tokens",
 			r: `
 				width: 100%;
