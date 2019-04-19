@@ -2653,9 +2653,8 @@ const betteR205etoolsMain = function () {
 		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
-		// TODO
 		const renderStack = [];
-		const ability = utils_getAbilityData(data.ability);
+		const ability = Renderer.getAbilityData(data.ability);
 		renderStack.push(`
 		<h3>${data.name}</h3>
 		<p>
