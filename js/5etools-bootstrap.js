@@ -87,6 +87,10 @@ const betteR205etools = function () {
 			d20plus.engine.removeLinkConfirmation();
 			d20plus.artBrowse.initRepoBrowser();
 			d20plus.ui.addQuickUiGm();
+			d20plus.anim.animatorTool.init();
+			// Better20 jukebox tab
+			d20plus.remoteLibre.init();
+			d20plus.jukeboxWidget.init();
 		}
 		d20.Campaign.pages.each(d20plus.bindGraphics);
 		d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
@@ -102,10 +106,6 @@ const betteR205etools = function () {
 		d20plus.engine.addLayers();
 		d20plus.weather.addWeather();
 		d20plus.engine.repairHexMethods();
-		// Better20 jukebox tab
-		d20plus.remoteLibre.init();
-		d20plus.jukeboxWidget.init();
-		d20plus.anim.animatorTool.init();
 
 		// apply config
 		if (window.is_gm) {

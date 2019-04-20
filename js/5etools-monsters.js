@@ -619,7 +619,7 @@ function d20plusMonsters () {
 								setAttrib(`repeating_npctrait_${newRowId}_desc`, cleanDescription);
 
 								// begin building a spells macro
-								const $temp = $(spellTrait)
+								const $temp = $(spellTrait);
 								$temp.find("a").each((i, e) => {
 									const $wrp = $(`<div>${d20plus.monsters.TAG_SPELL_OPEN}</div>`);
 									$wrp.append(e.outerHTML);
