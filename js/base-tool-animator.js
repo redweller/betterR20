@@ -1465,6 +1465,7 @@ function baseToolAnimator () {
 			}
 
 			this._scenes = Campaign.attributes.bR20tool__anim_scenes ? MiscUtil.copy(Campaign.attributes.bR20tool__anim_scenes) : {};
+			Object.keys(this._scenes).filter(it => !this._scenes[it]).forEach(it => delete this._scenes[it]);
 
 			this._isSaveActive = Campaign.attributes.bR20tool__anim_save || false;
 		},
