@@ -1456,15 +1456,18 @@ function baseToolAnimator () {
 			this._anim_id = Campaign.attributes.bR20tool__anim_id || 1;
 			this._scene_id = Campaign.attributes.bR20tool__anim_scene_id || 1;
 
-			// convert legacy "array" version to object
+			// convert legacy "array" versions to objects
 			this._anims = {};
 			if (Campaign.attributes.bR20tool__anim_animations) {
 				const loadedAnims = MiscUtil.copy(Campaign.attributes.bR20tool__anim_animations);
-				this._anims = {};
 				Object.entries(loadedAnims).filter(([k, v]) => !!v).forEach(([k, v]) => this._anims[k] = v);
 			}
 
-			this._scenes = Campaign.attributes.bR20tool__anim_scenes ? MiscUtil.copy(Campaign.attributes.bR20tool__anim_scenes) : {};
+			this._scenes = {};
+			if (Campaign.attributes.bR20tool__anim_scenes) {
+				const loadedScenes = MiscUtil.copy(Campaign.attributes.bR20tool__anim_scenes);
+				Object.entries(loadedScenes).filter(([k, v]) => !!v).forEach(([k, v]) => this._scenes[k] = v);
+			}
 
 			this._isSaveActive = Campaign.attributes.bR20tool__anim_save || false;
 		},

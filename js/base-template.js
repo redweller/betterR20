@@ -96,7 +96,7 @@ const baseTemplate = function () {
 		`;
 
 	d20plus.template_TokenEditor = `
-	 <script id='tmpl_tokeneditor' type='text/html'>
+	<script id='tmpl_tokeneditor' type='text/html'>
       <div class='dialog largedialog tokeneditor' style='display: block;'>
         <ul class='nav nav-tabs'>
           <li class='active'>
@@ -262,78 +262,138 @@ const baseTemplate = function () {
               <div class='span6'>
                 <h4>Player Permissions</h4>
                 <div style='margin-left: 5px;'>
-                  <div class='inlineinputs'>
-                    <label style='width: 40px;'>Name</label>
-                    <label>
-                      <input class='showplayers_name' type='checkbox'>
-                      See
-                    </label>
-                    <label>
-                      <input class='playersedit_name' type='checkbox'>
-                      Edit
+                  <div class='permission_section'>
+                    <div class='inlineinputs'>
+                      <label class='permissions_category'>Name</label>
+                      <label>
+                        <input class='showplayers_name' type='checkbox'>
+                        See
+                      </label>
+                      <label>
+                        <input class='playersedit_name' type='checkbox'>
+                        Edit
+                      </label>
+                    </div>
+                    <div class='clear'></div>
+                  </div>
+                  <hr>
+                  <div class='permission_section bar1'>
+                    <div class='inlineinputs'>
+                      <label class='permissions_category'>Bar 1</label>
+                      <label>
+                        <input class='showplayers_bar1' type='checkbox'>
+                        See
+                      </label>
+                      <label>
+                        <input class='playersedit_bar1' type='checkbox'>
+                        Edit
+                      </label>
+                    </div>
+                    <div class='clear'></div>
+                    <label class='bar_val_permission'>
+                      Text Overlay:
+                      <select>
+                        <option value='hidden'>
+                          Hidden
+                        </option>
+                        <option selected value='editors'>
+                          Visible to Editors
+                        </option>
+                        <option value='everyone'>
+                          Visible to Everyone
+                        </option>
+                      </select>
                     </label>
                   </div>
-                  <div class='clear' style='height: 5px;'></div>
-                  <div class='inlineinputs'>
-                    <label style='width: 40px;'>Bar 1</label>
-                    <label>
-                      <input class='showplayers_bar1' type='checkbox'>
-                      See
-                    </label>
-                    <label>
-                      <input class='playersedit_bar1' type='checkbox'>
-                      Edit
-                    </label>
-                  </div>
-                  <div class='clear' style='height: 5px;'></div>
-                  <div class='inlineinputs'>
-                    <label style='width: 40px;'>Bar 2</label>
-                    <label>
-                      <input class='showplayers_bar2' type='checkbox'>
-                      See
-                    </label>
-                    <label>
-                      <input class='playersedit_bar2' type='checkbox'>
-                      Edit
-                    </label>
-                  </div>
-                  <div class='clear' style='height: 5px;'></div>
-                  <div class='inlineinputs'>
-                    <label style='width: 40px;'>Bar 3</label>
-                    <label>
-                      <input class='showplayers_bar3' type='checkbox'>
-                      See
-                    </label>
-                    <label>
-                      <input class='playersedit_bar3' type='checkbox'>
-                      Edit
+                  <hr>
+                  <div class='permission_section bar2'>
+                    <div class='inlineinputs'>
+                      <label class='permissions_category'>Bar 2</label>
+                      <label>
+                        <input class='showplayers_bar2' type='checkbox'>
+                        See
+                      </label>
+                      <label>
+                        <input class='playersedit_bar2' type='checkbox'>
+                        Edit
+                      </label>
+                    </div>
+                    <div class='clear'></div>
+                    <label class='bar_val_permission'>
+                      Text Overlay:
+                      <select>
+                        <option value='hidden'>
+                          Hidden
+                        </option>
+                        <option selected value='editors'>
+                          Visible to Editors
+                        </option>
+                        <option value='everyone'>
+                          Visible to Everyone
+                        </option>
+                      </select>
                     </label>
                   </div>
-                  <div class='clear' style='height: 5px;'></div>
-                  <div class='inlineinputs'>
-                    <label style='width: 40px;'>Aura 1</label>
-                    <label>
-                      <input class='showplayers_aura1' type='checkbox'>
-                      See
-                    </label>
-                    <label>
-                      <input class='playersedit_aura1' type='checkbox'>
-                      Edit
+                  <hr>
+                  <div class='permission_section bar3'>
+                    <div class='inlineinputs'>
+                      <label class='permissions_category'>Bar 3</label>
+                      <label>
+                        <input class='showplayers_bar3' type='checkbox'>
+                        See
+                      </label>
+                      <label>
+                        <input class='playersedit_bar3' type='checkbox'>
+                        Edit
+                      </label>
+                    </div>
+                    <div class='clear'></div>
+                    <label class='bar_val_permission'>
+                      Text Overlay:
+                      <select>
+                        <option value='hidden'>
+                          Hidden
+                        </option>
+                        <option selected value='editors'>
+                          Visible to Editors
+                        </option>
+                        <option value='everyone'>
+                          Visible to Everyone
+                        </option>
+                      </select>
                     </label>
                   </div>
-                  <div class='clear' style='height: 5px;'></div>
-                  <div class='inlineinputs'>
-                    <label style='width: 40px;'>Aura 2</label>
-                    <label>
-                      <input class='showplayers_aura2' type='checkbox'>
-                      See
-                    </label>
-                    <label>
-                      <input class='playersedit_aura2' type='checkbox'>
-                      Edit
-                    </label>
+                  <hr>
+                  <div class='permission_section'>
+                    <div class='inlineinputs'>
+                      <label class='permissions_category'>Aura 1</label>
+                      <label>
+                        <input class='showplayers_aura1' type='checkbox'>
+                        See
+                      </label>
+                      <label>
+                        <input class='playersedit_aura1' type='checkbox'>
+                        Edit
+                      </label>
+                    </div>
+                    <div class='clear'></div>
                   </div>
-                  <div class='clear' style='height: 10px;'></div>
+                  <hr>
+                  <div class='permission_section'>
+                    <div class='inlineinputs'>
+                      <label class='permissions_category'>Aura 2</label>
+                      <label>
+                        <input class='showplayers_aura2' type='checkbox'>
+                        See
+                      </label>
+                      <label>
+                        <input class='playersedit_aura2' type='checkbox'>
+                        Edit
+                      </label>
+                    </div>
+                    <div class='clear'></div>
+                  </div>
+                  <hr>
                   <small style='text-align: left; font-size: 0.9em;'>
                     See: All Players can view
                     <br>
@@ -400,7 +460,7 @@ const baseTemplate = function () {
           </div>
         </div>
       </div>
-	</script>
+    </script>
 	`;
 
 	d20plus.template_pageSettings = `
