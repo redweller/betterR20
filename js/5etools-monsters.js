@@ -564,11 +564,11 @@ function d20plusMonsters () {
 
 									// use the first ability/DC we find, since roll20 doesn't support multiple
 									const abM = /(strength|constitution|dexterity|intelligence|wisdom|charisma)/i.exec(toCheck);
-									const dcM = /DC (\d+)/i.exec(toCheck);
+									const dcM = /DC (\d+)|{@dc (\d+)}/i.exec(toCheck);
 									const lvlM = /(\d+)(st|nd|rd|th).level\s+spellcaster/i.exec(toCheck);
 									const spHit = /{@hit (.*?)} to hit with spell attacks/i.exec(toCheck);
 
-									if (spellDc == null && dcM) spellDc = dcM[1];
+									if (spellDc == null && dcM) spellDc = dcM[1] || dcM[2];
 									if (casterLevel == null && lvlM) casterLevel = lvlM[1];
 									if (spellAbility == null && abM) spellAbility = abM[1].toLowerCase();
 									if (spellToHit == null && spHit) spellToHit = spHit[1];
