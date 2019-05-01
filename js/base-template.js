@@ -362,6 +362,28 @@ const baseTemplate = function () {
                         </option>
                       </select>
                     </label>
+                    <div class='clear'></div>
+                  </div>
+                  <hr>
+                  <div class='permission_section barLocation'>
+                    <label class='movable_token_bar'>
+                      Bar Location:
+                      <select>
+                        <option selected value='above'>
+                          Above
+                        </option>
+                        <option value='overlap_top'>
+                          Top Overlapping
+                        </option>
+                        <option value='overlap_bottom'>
+                          Bottom Overlapping
+                        </option>
+                        <option value='below'>
+                          Below
+                        </option>
+                      </select>
+                      <a class='showtip pictos' title='&lt;b&gt;Above:&lt;/b&gt; &lt;br&gt; All bars are above the token. (Default for new games) &lt;br&gt; &lt;b&gt;Top Overlapping:&lt;/b&gt; &lt;br&gt; The bottom-most bar overlaps the top of the token. Other bars float above it. &lt;br&gt; &lt;b&gt;Bottom Overlapping:&lt;/b&gt; &lt;br&gt; Bars fill the token from the bottom up. &lt;br&gt; &lt;b&gt;Below:&lt;/b&gt; &lt;br&gt; All bars are below the token.'>?</a>
+                    </label>
                   </div>
                   <hr>
                   <div class='permission_section'>
