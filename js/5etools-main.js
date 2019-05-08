@@ -3166,7 +3166,7 @@ const betteR205etoolsMain = function () {
 		}
 	};
 
-	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute"></span>`;
+	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute; pointer-events: none"></span>`;
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 

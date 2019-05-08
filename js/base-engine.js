@@ -176,7 +176,6 @@ function d20plusEngine () {
 		temp.onload = () => {
 			const xSize = 34;
 			const iMin = 47;
-			// const iMax = 101;
 			const iMax = Math.ceil(temp.width / xSize); // round the last one up to a full image
 			for (let i = iMin; i < iMax; ++i) {
 				d20.token_editor.statusmarkers["5etools_" + (i - iMin)] = String(i * xSize);
