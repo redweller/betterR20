@@ -86,7 +86,7 @@ function baseUtil () {
 				${isStreamer ? "" : `
 				<br>
 				<br>
-				Need help? Join our <a href="https://discord.gg/AzyBjtQ">Discord</a>.
+				Need help? Join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
 				<br>
 				<br>
 				<span title="You'd think this would be obvious.">
