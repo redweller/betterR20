@@ -1,7 +1,7 @@
 **If you wish to use creatures with the Shaped sheet, import with your game using the OGL sheet, and then switch to the shaped sheet afterwards.** Due to the complexity of the process (read: it's a colossal hack), we are unable to support both sheets natively.
 
 ## Discord
-For help, advice, and updates; or to suggest improvements and changes, please [join our Discord](https://discord.gg/AzyBjtQ)!
+For help, advice, and updates; or to suggest improvements and changes, please [join our Discord](https://discord.gg/nGvRCDs)!
 
 ## How to Import 5etools Data (Monsters, Spells, Items, ...)
 1. Install the Roll20 Enhancement Suite browser extension ([Chrome](https://chrome.google.com/webstore/detail/vtt-enhancement-suite/fadcomaehamhdhekodcpiglabcjkepff)/[Firefox](https://addons.mozilla.org/en-US/firefox/addon/roll20-enhancement-suite/)/)
