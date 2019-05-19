@@ -2653,9 +2653,8 @@ const betteR205etoolsMain = function () {
 		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 
-		// TODO
 		const renderStack = [];
-		const ability = utils_getAbilityData(data.ability);
+		const ability = Renderer.getAbilityData(data.ability);
 		renderStack.push(`
 		<h3>${data.name}</h3>
 		<p>
@@ -2720,7 +2719,7 @@ const betteR205etoolsMain = function () {
 					const avatar = data.tokenUrl || `${IMG_URL}objects/${name}.png`;
 					character.size = data.size;
 					character.name = name;
-					character.senses = data.senses;
+					character.senses = data.senses ? data.senses.join(", ") : null;
 					character.hp = data.hp;
 					$.ajax({
 						url: avatar,
@@ -3167,7 +3166,7 @@ const betteR205etoolsMain = function () {
 		}
 	};
 
-	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute"></span>`;
+	d20plus.difficultyHtml = `<span class="difficulty" style="position: absolute; pointer-events: none"></span>`;
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 

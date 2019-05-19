@@ -282,7 +282,7 @@ function d20plusMonsters () {
 							const avatar = data.tokenUrl || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
 							character.size = data.size;
 							character.name = data._displayName || data.name;
-							character.senses = data.senses;
+							character.senses = data.senses ? data.senses.join(", ") : null;
 							character.hp = data.hp.average || 0;
 							const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? (() => {
 								const firstImage = fluff.images[0] || {};
@@ -305,7 +305,7 @@ function d20plusMonsters () {
 							var hpformula = data.hp.formula;
 							var passive = data.passive != null ? data.passive : "";
 							var passiveStr = passive !== "" ? "passive Perception " + passive : "";
-							var senses = data.senses || "";
+							var senses = data.senses ? data.senses.join(", ") : "";
 							var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
 							var size = d20plus.getSizeString(data.size || "");
 							var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
@@ -397,7 +397,7 @@ function d20plusMonsters () {
 							character.attribs.create({name: "passive", current: passive});
 							character.attribs.create({
 								name: "npc_languages",
-								current: data.languages != null ? data.languages : ""
+								current: data.languages != null ? data.languages.join(", ") : ""
 							});
 							const moCn = cr.cr || cr;
 							character.attribs.create({name: "npc_challenge", current: moCn});
@@ -564,11 +564,11 @@ function d20plusMonsters () {
 
 									// use the first ability/DC we find, since roll20 doesn't support multiple
 									const abM = /(strength|constitution|dexterity|intelligence|wisdom|charisma)/i.exec(toCheck);
-									const dcM = /DC (\d+)/i.exec(toCheck);
+									const dcM = /DC (\d+)|{@dc (\d+)}/i.exec(toCheck);
 									const lvlM = /(\d+)(st|nd|rd|th).level\s+spellcaster/i.exec(toCheck);
 									const spHit = /{@hit (.*?)} to hit with spell attacks/i.exec(toCheck);
 
-									if (spellDc == null && dcM) spellDc = dcM[1];
+									if (spellDc == null && dcM) spellDc = dcM[1] || dcM[2];
 									if (casterLevel == null && lvlM) casterLevel = lvlM[1];
 									if (spellAbility == null && abM) spellAbility = abM[1].toLowerCase();
 									if (spellToHit == null && spHit) spellToHit = spHit[1];
