@@ -435,8 +435,8 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					if (isHorizontal != null && isHorizontal) token.attributes.fliph = !(typeof token.attributes.fliph === "string" ? token.attributes.fliph === "true" : token.attributes.fliph);
-					if (isVertical != null && isVertical) token.attributes.flipv = !(typeof token.attributes.flipv === "string" ? token.attributes.flipv === "true" : token.attributes.flipv);
+					if (isHorizontal != null && isHorizontal) token.set("fliph", !(typeof token.get("fliph") === "string" ? token.get("fliph") === "true" : token.get("fliph")));
+					if (isVertical != null && isVertical) token.set("flipv", !(typeof token.get("flipv") === "string" ? token.get("flipv") === "true" : token.get("flipv")));
 
 					return true;
 				}
@@ -453,8 +453,8 @@ function baseToolAnimator () {
 				if (!this._hasRun && alpha >= startTime) {
 					this._hasRun = true;
 
-					if (isHorizontal != null) token.attributes.fliph = isHorizontal;
-					if (isVertical != null) token.attributes.flipv = isVertical;
+					if (isHorizontal != null) token.set("fliph", isHorizontal);
+					if (isVertical != null) token.set("fliph", isVertical);
 
 					return true;
 				}
@@ -2718,6 +2718,9 @@ function baseToolAnimator () {
 					anim.name = $iptName.val();
 					anim.lines = $iptLines.val().split("\n");
 				} else {
+					const nameMsg = this._shared_getValidNameMsg({name: $iptName.val(), uid: anim.uid}, this._anims);
+					if (nameMsg) return d20plus.ut.chatLog(nameMsg);
+
 					anim.name = $iptName.val();
 					anim.lines = myLines.map(it => typeof it === "string" ? it : it.line);
 				}
@@ -3009,6 +3012,7 @@ function baseToolAnimator () {
 			// higher tick rate = slower
 			if (++this.__tickCount >= this._restTicks) {
 				this.__tickCount = 0;
+				let anyGlobalModifications = false;
 
 				const time = (new Date()).getTime();
 
@@ -3052,9 +3056,11 @@ function baseToolAnimator () {
 
 					// save after applying animations
 					if (anyModification) tokenMeta.token.save();
+					anyGlobalModifications = anyGlobalModifications || anyModification;
 				}
 
 				this.saveState();
+				if (anyGlobalModifications) d20.engine.canvas.renderAll();
 			}
 
 			requestAnimationFrame(this.doTick.bind(this))
