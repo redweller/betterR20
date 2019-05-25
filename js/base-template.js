@@ -95,394 +95,410 @@ const baseTemplate = function () {
 		</div>
 		`;
 
-	d20plus.template_TokenEditor = `
-	<script id='tmpl_tokeneditor' type='text/html'>
-      <div class='dialog largedialog tokeneditor' style='display: block;'>
-        <ul class='nav nav-tabs'>
-          <li class='active'>
-            <a data-tab='basic' href='javascript:void(0);'>Basic</a>
-          </li>
-          <li>
-            <a data-tab='advanced' href='javascript:void(0);'>Advanced</a>
-          </li>
-        </ul>
-        <div class='tab-content'>
-          <div class='basic tab-pane'>
-            <div style='float: left; width: 300px;'>
-              <div style='float: right; margin-right: 85px; font-size: 1.2em; position: relative; top: -4px; cursor: help;'>
-                <a class='showtip pictos' title="You can choose to have the token represent a Character from the Journal. If you do, the token's name, controlling players, and bar values will be based on the Character. Most times you'll just leave this set to None/Generic.">?</a>
-              </div>
-              <label>Represents Character</label>
-              <select class='represents'>
-                <option value=''>None/Generic Token</option>
-                <$ _.each(window.Campaign.activeCharacters(), function(char) { $>
-                <option value="<$!char.id$>"><$!char.get("name")$></option>
-                <$ }); $>
-              </select>
-              <div class='clear'></div>
-              <div style='float: right; margin-right: 75px;'>
-                <label>
-                  <input class='showname' type='checkbox' value='1'>
-                  Show nameplate?
-                </label>
-              </div>
-              <label>Name</label>
-              <input class='name' style='width: 210px;' type='text'>
-              <div class='clear'></div>
-              <label>Controlled By</label>
-              <$ if(this.character) { $>
-              <p>(Determined by Character settings)</p>
-              <$ } else { $>
-              <select class='controlledby chosen' multiple='true'>
-                <option value='all'>All Players</option>
-                <$ window.Campaign.players.each(function(player) { $>
-                <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-                <$ }); $>
-              </select>
-              <$ } $>
-              <div class='clear' style='height: 10px;'></div>
-              <label>
-                Tint Color
-              </label>
-              <input class='tint_color colorpicker' type='text'>
-              <div class='clear'></div>
-            </div>
-            <div style='float: left; width: 300px;'>
-              <label>
-                <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar1_color')$>'></span>
-                Bar 1
-              </label>
-              <div class='clear' style='height: 1px;'></div>
-              <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                <input class='bar1_value' type='text'>
-                /
-                <input class='bar1_max' type='text'>
-                <$ if(this.character) { $>
-                <div style='float: right;'>
-                  <select class='bar1_link' style='width: 125px;'>
-                    <option value=''>None</option>
-                    <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                    <option value="<$!attrib.id$>"><$!attrib.name$>
-                    <$ }); $>
-                  </select>
-                  <a class='pictos showtip' style='font-size: 1.2em; position: relative; top: -5px; margin-left: 10px; cursor: help;' title='You can choose an Attribute from the Character this token represents. The values for this bar will be synced to the values of that Attribute.'>?</a>
-                </div>
-                <$ } $>
-              </div>
-              <span style='color: #888;'>(Leave blank for no bar)</span>
-              <div class='clear'></div>
-              <label>
-                <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar2_color')$>'></span>
-                Bar 2
-              </label>
-              <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                <input class='bar2_value' type='text'>
-                /
-                <input class='bar2_max' type='text'>
-                <$ if(this.character) { $>
-                <div style='float: right; margin-right: 30px;'>
-                  <select class='bar2_link' style='width: 125px;'>
-                    <option value=''>None</option>
-                    <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                    <option value="<$!attrib.id$>"><$!attrib.name$>
-                    <$ }); $>
-                  </select>
-                </div>
-                <$ } $>
-              </div>
-              <span style='color: #888;'>(Leave blank for no bar)</span>
-              <div class='clear'></div>
-              <label>
-                <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar3_color')$>'></span>
-                Bar 3
-              </label>
-              <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                <input class='bar3_value' type='text'>
-                /
-                <input class='bar3_max' type='text'>
-                <$ if(this.character) { $>
-                <div style='float: right; margin-right: 30px;'>
-                  <select class='bar3_link' style='width: 125px;'>
-                    <option value=''>None</option>
-                    <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                    <option value="<$!attrib.id$>"><$!attrib.name$>
-                    <$ }); $>
-                  </select>
-                </div>
-                <$ } $>
-              </div>
-              <span style='color: #888;'>(Leave blank for no bar)</span>
-              <div class='clear' style='height: 10px;'></div>
-              <div style='float: left; width: 130px;'>
-                <div style='float: right;'>
-                  <label>
-                    <input class='aura1_square' type='checkbox'>
-                    Square
-                  </label>
-                </div>
-                <label>
-                  Aura 1
-                </label>
-                <div class='inlineinputs' style='margin-top: 5px;'>
-                  <input class='aura1_radius' type='text'>
-                  <$!window.Campaign.activePage().get("scale_units")$>.
-                  <input class='aura1_color colorpicker' type='text'>
-                </div>
-              </div>
-              <div style='float: left; width: 130px; margin-left: 20px;'>
-                <div style='float: right;'>
-                  <label>
-                    <input class='aura2_square' type='checkbox'>
-                    Square
-                  </label>
-                </div>
-                <label>
-                  Aura 2
-                </label>
-                <div class='inlineinputs' style='margin-top: 5px;'>
-                  <input class='aura2_radius' type='text'>
-                  <$!window.Campaign.activePage().get("scale_units")$>.
-                  <input class='aura2_color colorpicker' type='text'>
-                </div>
-              </div>
-              <div class='clear'></div>
-            </div>
-            <div class='clear'></div>
-            <hr>
-            <h4>
-              GM Notes
-              <span style='font-weight: regular; font-size: 0.9em;'>(Only visible to GMs)</span>
-            </h4>
-            <textarea class='gmnotes summernote'></textarea>
-            <div class='clear'></div>
-            <label>&nbsp;</label>
+	// no mods; just switched in to grant full features to non-pro
+	d20plus.template_TokenEditor = `<script id='tmpl_tokeneditor' type='text/html'>
+  <div class='dialog largedialog tokeneditor' style='display: block;'>
+    <ul class='nav nav-tabs'>
+      <li class='active'>
+        <a data-tab='basic' href='javascript:void(0);'>Basic</a>
+      </li>
+      <li>
+        <a data-tab='advanced' href='javascript:void(0);'>Advanced</a>
+      </li>
+    </ul>
+    <div class='tab-content'>
+      <div class='basic tab-pane'>
+        <div style='float: left; width: 300px;'>
+          <div style='float: right; margin-right: 85px; font-size: 1.2em; position: relative; top: -4px; cursor: help;'>
+            <a class='showtip pictos' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
           </div>
-          <div class='advanced tab-pane'>
-            <div class='row-fluid'>
-              <div class='span6'>
-                <h4>Player Permissions</h4>
-                <div style='margin-left: 5px;'>
-                  <div class='permission_section'>
-                    <div class='inlineinputs'>
-                      <label class='permissions_category'>Name</label>
-                      <label>
-                        <input class='showplayers_name' type='checkbox'>
-                        See
-                      </label>
-                      <label>
-                        <input class='playersedit_name' type='checkbox'>
-                        Edit
-                      </label>
-                    </div>
-                    <div class='clear'></div>
-                  </div>
-                  <hr>
-                  <div class='permission_section bar1'>
-                    <div class='inlineinputs'>
-                      <label class='permissions_category'>Bar 1</label>
-                      <label>
-                        <input class='showplayers_bar1' type='checkbox'>
-                        See
-                      </label>
-                      <label>
-                        <input class='playersedit_bar1' type='checkbox'>
-                        Edit
-                      </label>
-                    </div>
-                    <div class='clear'></div>
-                    <label class='bar_val_permission'>
-                      Text Overlay:
-                      <select>
-                        <option value='hidden'>
-                          Hidden
-                        </option>
-                        <option selected value='editors'>
-                          Visible to Editors
-                        </option>
-                        <option value='everyone'>
-                          Visible to Everyone
-                        </option>
-                      </select>
-                    </label>
-                  </div>
-                  <hr>
-                  <div class='permission_section bar2'>
-                    <div class='inlineinputs'>
-                      <label class='permissions_category'>Bar 2</label>
-                      <label>
-                        <input class='showplayers_bar2' type='checkbox'>
-                        See
-                      </label>
-                      <label>
-                        <input class='playersedit_bar2' type='checkbox'>
-                        Edit
-                      </label>
-                    </div>
-                    <div class='clear'></div>
-                    <label class='bar_val_permission'>
-                      Text Overlay:
-                      <select>
-                        <option value='hidden'>
-                          Hidden
-                        </option>
-                        <option selected value='editors'>
-                          Visible to Editors
-                        </option>
-                        <option value='everyone'>
-                          Visible to Everyone
-                        </option>
-                      </select>
-                    </label>
-                  </div>
-                  <hr>
-                  <div class='permission_section bar3'>
-                    <div class='inlineinputs'>
-                      <label class='permissions_category'>Bar 3</label>
-                      <label>
-                        <input class='showplayers_bar3' type='checkbox'>
-                        See
-                      </label>
-                      <label>
-                        <input class='playersedit_bar3' type='checkbox'>
-                        Edit
-                      </label>
-                    </div>
-                    <div class='clear'></div>
-                    <label class='bar_val_permission'>
-                      Text Overlay:
-                      <select>
-                        <option value='hidden'>
-                          Hidden
-                        </option>
-                        <option selected value='editors'>
-                          Visible to Editors
-                        </option>
-                        <option value='everyone'>
-                          Visible to Everyone
-                        </option>
-                      </select>
-                    </label>
-                    <div class='clear'></div>
-                  </div>
-                  <hr>
-                  <div class='permission_section barLocation'>
-                    <label class='movable_token_bar'>
-                      Bar Location:
-                      <select>
-                        <option selected value='above'>
-                          Above
-                        </option>
-                        <option value='overlap_top'>
-                          Top Overlapping
-                        </option>
-                        <option value='overlap_bottom'>
-                          Bottom Overlapping
-                        </option>
-                        <option value='below'>
-                          Below
-                        </option>
-                      </select>
-                      <a class='showtip pictos' title='&lt;b&gt;Above:&lt;/b&gt; &lt;br&gt; All bars are above the token. (Default for new games) &lt;br&gt; &lt;b&gt;Top Overlapping:&lt;/b&gt; &lt;br&gt; The bottom-most bar overlaps the top of the token. Other bars float above it. &lt;br&gt; &lt;b&gt;Bottom Overlapping:&lt;/b&gt; &lt;br&gt; Bars fill the token from the bottom up. &lt;br&gt; &lt;b&gt;Below:&lt;/b&gt; &lt;br&gt; All bars are below the token.'>?</a>
-                    </label>
-                  </div>
-                  <hr>
-                  <div class='permission_section'>
-                    <div class='inlineinputs'>
-                      <label class='permissions_category'>Aura 1</label>
-                      <label>
-                        <input class='showplayers_aura1' type='checkbox'>
-                        See
-                      </label>
-                      <label>
-                        <input class='playersedit_aura1' type='checkbox'>
-                        Edit
-                      </label>
-                    </div>
-                    <div class='clear'></div>
-                  </div>
-                  <hr>
-                  <div class='permission_section'>
-                    <div class='inlineinputs'>
-                      <label class='permissions_category'>Aura 2</label>
-                      <label>
-                        <input class='showplayers_aura2' type='checkbox'>
-                        See
-                      </label>
-                      <label>
-                        <input class='playersedit_aura2' type='checkbox'>
-                        Edit
-                      </label>
-                    </div>
-                    <div class='clear'></div>
-                  </div>
-                  <hr>
-                  <small style='text-align: left; font-size: 0.9em;'>
-                    See: All Players can view
-                    <br>
-                    Edit: Controlling players can view and change
-                  </small>
+          <label>Represents Character</label>
+          <select class='represents'>
+            <option value=''>None/Generic Token</option>
+            <$ _.each(window.Campaign.activeCharacters(), function(char) { $>
+            <option value="<$!char.id$>"><$!char.get("name")$></option>
+            <$ }); $>
+          </select>
+          <div class='clear'></div>
+          <div style='float: right; margin-right: 75px;'>
+            <label>
+              <input class='showname' type='checkbox' value='1'>
+              Show nameplate?
+            </label>
+          </div>
+          <label>Name</label>
+          <input class='name' style='width: 210px;' type='text'>
+          <div class='clear'></div>
+          <label>Controlled By</label>
+          <$ if(this.character) { $>
+          <p>(Determined by Character settings)</p>
+          <$ } else { $>
+          <select class='controlledby chosen' multiple='true'>
+            <option value='all'>All Players</option>
+            <$ window.Campaign.players.each(function(player) { $>
+            <option value="<$!player.id$>"><$!player.get("displayname")$></option>
+            <$ }); $>
+          </select>
+          <$ } $>
+          <div class='clear' style='height: 10px;'></div>
+          <label>
+            Tint Color
+          </label>
+          <input class='tint_color colorpicker' type='text'>
+          <div class='clear'></div>
+        </div>
+        <div style='float: left; width: 300px;'>
+          <label>
+            <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar1_color')$>'></span>
+            Bar 1
+          </label>
+          <div class='clear' style='height: 1px;'></div>
+          <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+            <input class='bar1_value' type='text'>
+            /
+            <input class='bar1_max' type='text'>
+            <$ if(this.character) { $>
+            <div style='float: right;'>
+              <select class='bar1_link' style='width: 125px;'>
+                <option value=''>None</option>
+                <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
+                <option value="<$!attrib.id$>"><$!attrib.name$>
+                  <$ }); $>
+              </select>
+              <a class='pictos showtip' style='font-size: 1.2em; position: relative; top: -5px; margin-left: 10px; cursor: help;' title='You can choose an Attribute from the Character this token represents. The values for this bar will be synced to the values of that Attribute.'>?</a>
+            </div>
+            <$ } $>
+          </div>
+          <span style='color: #888;'>(Leave blank for no bar)</span>
+          <div class='clear'></div>
+          <label>
+            <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar2_color')$>'></span>
+            Bar 2
+          </label>
+          <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+            <input class='bar2_value' type='text'>
+            /
+            <input class='bar2_max' type='text'>
+            <$ if(this.character) { $>
+            <div style='float: right; margin-right: 30px;'>
+              <select class='bar2_link' style='width: 125px;'>
+                <option value=''>None</option>
+                <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
+                <option value="<$!attrib.id$>"><$!attrib.name$>
+                  <$ }); $>
+              </select>
+            </div>
+            <$ } $>
+          </div>
+          <span style='color: #888;'>(Leave blank for no bar)</span>
+          <div class='clear'></div>
+          <label>
+            <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar3_color')$>'></span>
+            Bar 3
+          </label>
+          <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+            <input class='bar3_value' type='text'>
+            /
+            <input class='bar3_max' type='text'>
+            <$ if(this.character) { $>
+            <div style='float: right; margin-right: 30px;'>
+              <select class='bar3_link' style='width: 125px;'>
+                <option value=''>None</option>
+                <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
+                <option value="<$!attrib.id$>"><$!attrib.name$>
+                  <$ }); $>
+              </select>
+            </div>
+            <$ } $>
+          </div>
+          <span style='color: #888;'>(Leave blank for no bar)</span>
+          <div class='clear' style='height: 10px;'></div>
+          <div style='float: left; width: 130px;'>
+            <div style='float: right;'>
+              <label>
+                <input class='aura1_square' type='checkbox'>
+                Square
+              </label>
+            </div>
+            <label>
+              Aura 1
+            </label>
+            <div class='inlineinputs' style='margin-top: 5px;'>
+              <input class='aura1_radius' type='text'>
+              <$!window.Campaign.activePage().get("scale_units")$>.
+              <input class='aura1_color colorpicker' type='text'>
+            </div>
+          </div>
+          <div style='float: left; width: 130px; margin-left: 20px;'>
+            <div style='float: right;'>
+              <label>
+                <input class='aura2_square' type='checkbox'>
+                Square
+              </label>
+            </div>
+            <label>
+              Aura 2
+            </label>
+            <div class='inlineinputs' style='margin-top: 5px;'>
+              <input class='aura2_radius' type='text'>
+              <$!window.Campaign.activePage().get("scale_units")$>.
+              <input class='aura2_color colorpicker' type='text'>
+            </div>
+          </div>
+          <div class='clear'></div>
+        </div>
+        <div class='clear'></div>
+        <hr>
+        <h4>
+          GM Notes
+          <span style='font-weight: regular; font-size: 0.9em;'>(Only visible to GMs)</span>
+        </h4>
+        <textarea class='gmnotes summernote'></textarea>
+        <div class='clear'></div>
+        <label>&nbsp;</label>
+      </div>
+      <div class='advanced tab-pane'>
+        <div class='row-fluid'>
+          <div class='span6'>
+            <h4>Player Permissions</h4>
+            <div style='margin-left: 5px;'>
+              <div class='permission_section'>
+                <div class='inlineinputs'>
+                  <label class='permissions_category'>Name</label>
+                  <label>
+                    <input class='showplayers_name' type='checkbox'>
+                    See
+                  </label>
+                  <label>
+                    <input class='playersedit_name' type='checkbox'>
+                    Edit
+                  </label>
                 </div>
                 <div class='clear'></div>
               </div>
-              <div class='span6'>
-                <h4>Emits Light</h4>
-                <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                  <input class='light_radius' type='text'>
-                  <$!window.Campaign.activePage().get("scale_units")$>.
-                  <input class='light_dimradius' type='text'>
-                  <$!window.Campaign.activePage().get("scale_units")$>.
-                  <input class='light_angle' placeholder='360' type='text'>
-                  <span style='font-size: 2.0em;'>&deg;</span>
-                </div>
-                <span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
-                <div class='inlineinputs' style='margin-top: 5px;'>
-                  <label style='margin-left: 7px;'>
-                    <input class='light_otherplayers' type='checkbox'>
-                    All Players See Light
+              <hr>
+              <div class='permission_section bar1'>
+                <div class='inlineinputs'>
+                  <label class='permissions_category'>Bar 1</label>
+                  <label>
+                    <input class='showplayers_bar1' type='checkbox'>
+                    See
+                  </label>
+                  <label>
+                    <input class='playersedit_bar1' type='checkbox'>
+                    Edit
                   </label>
                 </div>
-                <div class='inlineinputs' style='margin-top: 2px;'>
-                  <label style='margin-left: 7px;'>
-                    <input class='light_hassight' type='checkbox'>
-                    Has Sight
-                  </label>
-                  <span style="margin-left: 9px; margin-right: 28px;">/</span>
-                  Angle:
-                  <input class='light_losangle' placeholder='360' type='text'>
-                  <span style='font-size: 2.0em;'>&deg;</span>
-                </div>
-                <div class='inlineinputs' style='margin-left: 90px; margin-top: 5px;'>
-                  <span style="margin-left: 8px; margin-right: 12px;">/</span>
-                  Multiplyer:
-                  <input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
-                </div>
-                <h4>Advanced Fog of War</h4>
-                <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                  <input class='advfow_viewdistance' type='text'>
-                  <$!window.Campaign.activePage().get("scale_units")$>.
-                </div>
-                <span style='color: #888; padding-left: 5px;'>View Distance</span>
-                <!-- %h4 -->
-                <!-- Token Actions -->
-                <!-- %a.pictos.showtip(style="margin-left: 15px; cursor: help; font-size: 1.1em; position: relative; top: -2px;" title="Choose from Macros and Abilities of linked Character to show when token is selected") ? -->
-                <!-- %p -->
-                <!-- %strong Add New Token Action: -->
-                <!-- %br -->
-                <!-- %select.chosen(placeholder="Choose from the list...") -->
-                <!-- %option(value="") Choose from the list... -->
-                <!-- <$ if(this.character) { $> -->
-                <!-- <optgroup label="Abilities"> -->
-                <!-- <$ this.character.abilities.each(function(abil) { $> -->
-                <!-- <option value="ability|<$!abil.get('id')$>"><$!abil.get('name')$></option> -->
-                <!-- <$ }); $> -->
-                <!-- </optgroup> -->
-                <!-- <$ } $> -->
+                <div class='clear'></div>
+                <label class='bar_val_permission'>
+                  Text Overlay:
+                  <select class='bar1options'>
+                    <option value='hidden'>
+                      Hidden
+                    </option>
+                    <option selected value='editors'>
+                      Visible to Editors
+                    </option>
+                    <option value='everyone'>
+                      Visible to Everyone
+                    </option>
+                  </select>
+                </label>
               </div>
+              <hr>
+              <div class='permission_section bar2'>
+                <div class='inlineinputs'>
+                  <label class='permissions_category'>Bar 2</label>
+                  <label>
+                    <input class='showplayers_bar2' type='checkbox'>
+                    See
+                  </label>
+                  <label>
+                    <input class='playersedit_bar2' type='checkbox'>
+                    Edit
+                  </label>
+                </div>
+                <div class='clear'></div>
+                <label class='bar_val_permission'>
+                  Text Overlay:
+                  <select class='bar2options'>
+                    <option value='hidden'>
+                      Hidden
+                    </option>
+                    <option selected value='editors'>
+                      Visible to Editors
+                    </option>
+                    <option value='everyone'>
+                      Visible to Everyone
+                    </option>
+                  </select>
+                </label>
+              </div>
+              <hr>
+              <div class='permission_section bar3'>
+                <div class='inlineinputs'>
+                  <label class='permissions_category'>Bar 3</label>
+                  <label>
+                    <input class='showplayers_bar3' type='checkbox'>
+                    See
+                  </label>
+                  <label>
+                    <input class='playersedit_bar3' type='checkbox'>
+                    Edit
+                  </label>
+                </div>
+                <div class='clear'></div>
+                <label class='bar_val_permission'>
+                  Text Overlay:
+                  <select class='bar3options'>
+                    <option value='hidden'>
+                      Hidden
+                    </option>
+                    <option selected value='editors'>
+                      Visible to Editors
+                    </option>
+                    <option value='everyone'>
+                      Visible to Everyone
+                    </option>
+                  </select>
+                </label>
+                <div class='clear'></div>
+              </div>
+              <hr>
+              <div class='permission_section barLocation'>
+                <label class='movable_token_bar'>
+                  Bar Location:
+                  <select>
+                    <option selected value='above'>
+                      Above
+                    </option>
+                    <option value='overlap_top'>
+                      Top Overlapping
+                    </option>
+                    <option value='overlap_bottom'>
+                      Bottom Overlapping
+                    </option>
+                    <option value='below'>
+                      Below
+                    </option>
+                  </select>
+                  <a class='showtip pictos' style='padding-left: 26px;' title='&lt;b&gt;Above:&lt;/b&gt; &lt;br&gt; All bars are above the token. (Default for new games) &lt;br&gt; &lt;b&gt;Top Overlapping:&lt;/b&gt; &lt;br&gt; The bottom-most bar overlaps the top of the token. Other bars float above it. &lt;br&gt; &lt;b&gt;Bottom Overlapping:&lt;/b&gt; &lt;br&gt; Bars fill the token from the bottom up. &lt;br&gt; &lt;b&gt;Below:&lt;/b&gt; &lt;br&gt; All bars are below the token.'>?</a>
+                </label>
+                <label class='compact_bar'>
+                  Bar Style:
+                  <div class='radio'>
+                    <label>
+                      <input name='barStyle' type='radio' value='standard'>
+                      Standard
+                    </label>
+                  </div>
+                  <div class='radio'>
+                    <label style='width:50px;'>
+                      <input name='barStyle' type='radio' value='compact'>
+                      Compact
+                    </label>
+                  </div>
+                  <a class='showtip pictos' id='barstyletip' title='&lt;b&gt;Standard:&lt;/b&gt;&lt;br&gt; Full sized token bar, displays text overlays. &lt;br&gt; &lt;b&gt;Compact:&lt;/b&gt; &lt;br&gt;Narrow token bars. No text overlay.'>?</a>
+                </label>
+              </div>
+              <hr>
+              <div class='permission_section'>
+                <div class='inlineinputs'>
+                  <label class='permissions_category'>Aura 1</label>
+                  <label>
+                    <input class='showplayers_aura1' type='checkbox'>
+                    See
+                  </label>
+                  <label>
+                    <input class='playersedit_aura1' type='checkbox'>
+                    Edit
+                  </label>
+                </div>
+                <div class='clear'></div>
+              </div>
+              <hr>
+              <div class='permission_section'>
+                <div class='inlineinputs'>
+                  <label class='permissions_category'>Aura 2</label>
+                  <label>
+                    <input class='showplayers_aura2' type='checkbox'>
+                    See
+                  </label>
+                  <label>
+                    <input class='playersedit_aura2' type='checkbox'>
+                    Edit
+                  </label>
+                </div>
+                <div class='clear'></div>
+              </div>
+              <hr>
+              <small style='text-align: left; font-size: 0.9em;'>
+                See: All Players can view
+                <br>
+                Edit: Controlling players can view and change
+              </small>
             </div>
+            <div class='clear'></div>
+          </div>
+          <div class='span6'>
+            <h4>Emits Light</h4>
+            <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+              <input class='light_radius' type='text'>
+              <$!window.Campaign.activePage().get("scale_units")$>.
+              <input class='light_dimradius' type='text'>
+              <$!window.Campaign.activePage().get("scale_units")$>.
+              <input class='light_angle' placeholder='360' type='text'>
+              <span style='font-size: 2.0em;'>&deg;</span>
+            </div>
+            <span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
+            <div class='inlineinputs' style='margin-top: 5px;'>
+              <label style='margin-left: 7px;'>
+                <input class='light_otherplayers' type='checkbox'>
+                All Players See Light
+              </label>
+            </div>
+            <div class='inlineinputs' style='margin-top: 2px;'>
+              <label style='margin-left: 7px;'>
+                <input class='light_hassight' type='checkbox'>
+                Has Sight
+              </label>
+              <span style="margin-left: 9px; margin-right: 28px;">/</span>
+              Angle:
+              <input class='light_losangle' placeholder='360' type='text'>
+              <span style='font-size: 2.0em;'>&deg;</span>
+            </div>
+            <div class='inlineinputs' style='margin-left: 90px; margin-top: 5px;'>
+              <span style="margin-left: 8px; margin-right: 12px;">/</span>
+              Multiplier:
+              <input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
+            </div>
+            <h4>Advanced Fog of War</h4>
+            <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+              <input class='advfow_viewdistance' type='text'>
+              <$!window.Campaign.activePage().get("scale_units")$>.
+            </div>
+            <span style='color: #888; padding-left: 5px;'>Reveal Distance</span>
+            <!-- %h4 -->
+            <!-- Token Actions -->
+            <!-- %a.pictos.showtip(style="margin-left: 15px; cursor: help; font-size: 1.1em; position: relative; top: -2px;" title="Choose from Macros and Abilities of linked Character to show when token is selected") ? -->
+            <!-- %p -->
+            <!-- %strong Add New Token Action: -->
+            <!-- %br -->
+            <!-- %select.chosen(placeholder="Choose from the list...") -->
+            <!-- %option(value="") Choose from the list... -->
+            <!-- <$ if(this.character) { $> -->
+            <!-- <optgroup label="Abilities"> -->
+            <!-- <$ this.character.abilities.each(function(abil) { $> -->
+            <!-- <option value="ability|<$!abil.get('id')$>"><$!abil.get('name')$></option> -->
+            <!-- <$ }); $> -->
+            <!-- </optgroup> -->
+            <!-- <$ } $> -->
           </div>
         </div>
       </div>
-    </script>
+    </div>
+  </div>
+</script>
 	`;
 
 	d20plus.template_pageSettings = `
