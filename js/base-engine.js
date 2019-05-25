@@ -1870,8 +1870,9 @@ function d20plusEngine () {
 		$(document).off("click", "a").on("click", "a", d20.utils.handleURL);
 	};
 
-	d20plus.engine.repairHexMethods = function () {
+	d20plus.engine.repairPrototypeMethods = function () {
 		d20plus.mod.fixHexMethods();
+		d20plus.mod.fixVideoMethods();
 	};
 }
 

@@ -959,6 +959,18 @@ function d20plusMod() {
 			console.error(ignored)
 		}
 	};
+
+	// prevent prototype methods from breaking some poorly-written property loops
+	d20plus.mod.fixVideoMethods = () => {
+		const arr = [];
+		for (const k in arr) {
+			const v = arr[k];
+			if (typeof v === "function") {
+				v.getReceiver = v.getReceiver || (() => null);
+				v.getSender = v.getSender || (() => null);
+			}
+		}
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusMod);
