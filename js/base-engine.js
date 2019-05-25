@@ -1792,7 +1792,7 @@ function d20plusEngine () {
 				t = t.replace(/{{{}}}/g, function() {
 					return n.shift()
 				})
-		}
+		};
 		// END ROLL20 CODE
 
 		// after a short delay, replace any old content in the chat
