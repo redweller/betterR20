@@ -1547,6 +1547,20 @@ function d20plusEngine () {
 		var t = d20.engine.canvas;
 		var a = $("#editor-wrapper");
 
+		// Roll20 bug (present as of 2019-5-25) workaround
+		//   when box-selecting + moving tokens, the "object:moving" event throws an exception
+		//   try-catch-ignore this, because it's extremely annoying
+		const cachedFire = t.fire.bind(t);
+		t.fire = function (namespace, opts) {
+			if (namespace === "object:moving") {
+				try {
+					cachedFire(namespace, opts);
+				} catch (e) {}
+			} else {
+				cachedFire(namespace, opts);
+			}
+		};
+
 		// mousemove handler from Roll20 @ 2019-01-29
 		// BEGIN ROLL20 CODE
 		const R = function(e) {
@@ -1873,6 +1887,11 @@ function d20plusEngine () {
 	d20plus.engine.repairPrototypeMethods = function () {
 		d20plus.mod.fixHexMethods();
 		d20plus.mod.fixVideoMethods();
+	};
+
+	d20plus.engine.disableFrameRecorder = function () {
+		d20.engine.frame_recorder.active = false;
+		d20.engine.frame_recorder._active = false;
 	};
 }
 
