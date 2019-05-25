@@ -226,7 +226,7 @@ function d20plusEngine () {
 			});
 			d20.pagetoolbar.noReload = false;
 			d20.pagetoolbar.refreshPageListing();
-		}
+		};
 
 		function overwriteDraggables () {
 			// make them draggable on both axes
