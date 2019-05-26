@@ -27,7 +27,8 @@ function baseToolModule () {
 						<option value="maps">Maps</option>
 						<option value="rolltables">Rollable Tables</option>
 					</select>
-					<button class="btn" name="view-select-entrues">View/Select Entries</button>
+					<button class="btn" name="view-select-entries">View/Select Entries</button>
+					<button class="btn" name="select-all-entries">Select All</button>
 					<div name="selection-summary" style="margin-top: 5px;"></div>
 				</div>
 				<hr>
@@ -162,7 +163,8 @@ function baseToolModule () {
 			const $wrpDataLoadingMessage = $win.find(`[name="data-loading-message"]`);
 
 			const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
-			const $btnViewCat = $win.find(`[name="view-select-entrues"]`).off("click").prop("disabled", true);
+			const $btnViewCat = $win.find(`[name="view-select-entries"]`).off("click").prop("disabled", true);
+			const $btnSelAllContent = $win.find(`[name="select-all-entries"]`).off("click").prop("disabled", true);
 
 			const $selDataType = $win.find(`[name="data-type"]`).prop("disabled", true);
 			let lastDataType = $selDataType.val();
@@ -185,6 +187,10 @@ function baseToolModule () {
 				lastLoadedData = data;
 				selected = getFreshSelected();
 				$selDataType.prop("disabled", false);
+
+				function updateSummary () {
+					$wrpSummary.text(Object.entries(selected).filter(([prop, ents]) => ents.length).map(([prop, ents]) => `${DISPLAY_NAMES[prop]}: ${ents.length} selected`).join("; "));
+				}
 
 				$btnViewCat.prop("disabled", false);
 				$btnViewCat.off("click").click(() => {
@@ -249,12 +255,18 @@ function baseToolModule () {
 							.filter(it => $(it.elm).find(`input`).prop("checked"))
 							.map(it => moduleData[$(it.elm).attr("data-listid")]);
 
-						if (!sel.length) return alert("No entries selected!");
-
 						$cbAll.prop("checked", false);
 						$winList.dialog("close");
 						selected[prop] = sel;
-						$wrpSummary.text(Object.entries(selected).filter(([prop, ents]) => ents.length).map(([prop, ents]) => `${DISPLAY_NAMES[prop]}: ${ents.length} selected`).join("; "));
+						updateSummary();
+					});
+				});
+
+				$btnSelAllContent.prop("disabled", false);
+				$btnSelAllContent.off("click").click(() => {
+					Object.keys(selected).forEach(k => {
+						selected[k] = data[k];
+						updateSummary();
 					});
 				});
 
