@@ -1048,17 +1048,20 @@ function d20plusMonsters () {
 							}
 							if (data.action) {
 								let offset = 0;
-								$.each(data.action, function (i, v) {
-									const name = d20plus.importer.getCleanText(renderer.render(v.name));
-									var text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
-									if (name === "Hellfire Weapons") {
-										const baseActionEnts = v.entries.filter(it => typeof it === "string");
+
+								$.each(data.action, function (i, action) {
+									const name = d20plus.importer.getCleanText(renderer.render(action.name));
+									const text = d20plus.importer.getCleanText(renderer.render({entries: action.entries}, 1));
+
+									// special cases for specific creatures
+									if (data.name === "Hellfire Engine" && data.source === SRC_MTF && name === "Hellfire Weapons") {
+										const baseActionEnts = action.entries.filter(it => typeof it === "string");
 										baseActionEnts[0] = "The hellfire engine uses one of the options listed below.";
 										const baseAction = renderer.render({entries: baseActionEnts}, 1);
 										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
 										offset++;
 
-										v.entries.find(it => it.type === "list").items.forEach(item => {
+										action.entries.find(it => it.type === "list").items.forEach(item => {
 											const itemName = d20plus.importer.getCleanText(renderer.render(item.name));
 											d20plus.importer.addAction(character, itemName, d20plus.importer.getCleanText(renderer.render({entries: [item.entry]})), i + offset);
 											offset++;
@@ -1066,7 +1069,7 @@ function d20plusMonsters () {
 
 										offset++;
 									} else if (name === "Eye Rays") {
-										const [base, ...others] = v.entries;
+										const [base, ...others] = action.entries;
 
 										const baseAction = renderer.render({entries: [base]}, 1);
 										d20plus.importer.addAction(character, name, d20plus.importer.getCleanText(baseAction), i + offset);
