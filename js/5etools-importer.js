@@ -210,68 +210,69 @@ function d20plusImporter () {
 			}).save();
 		}
 
-		var newRowId = d20plus.ut.generateRowId();
-		var actiontext = text;
-		var action_desc = actiontext; // required for later reduction of information dump.
-		var rollbase = d20plus.importer.rollbase();
-		// attack parsing
-		if (actiontext.indexOf(" Attack:") > -1) {
-			var attacktype = "";
-			var attacktype2 = "";
-			if (actiontext.indexOf(" Weapon Attack:") > -1) {
-				attacktype = actiontext.split(" Weapon Attack:")[0];
-				attacktype2 = " Weapon Attack:";
-			} else if (actiontext.indexOf(" Spell Attack:") > -1) {
-				attacktype = actiontext.split(" Spell Attack:")[0];
-				attacktype2 = " Spell Attack:";
+		const newRowId = d20plus.ut.generateRowId();
+		const actionText = text;
+		let actionDesc = actionText; // required for later reduction of information dump.
+
+		function handleAttack () {
+			const rollBase = d20plus.importer.rollbase(); // macro
+
+			let attackType = "";
+			let attackType2 = "";
+			if (actionText.indexOf(" Weapon Attack:") > -1) {
+				attackType = actionText.split(" Weapon Attack:")[0];
+				attackType2 = " Weapon Attack:";
+			} else if (actionText.indexOf(" Spell Attack:") > -1) {
+				attackType = actionText.split(" Spell Attack:")[0];
+				attackType2 = " Spell Attack:";
 			}
-			var attackrange = "";
-			var rangetype = "";
-			if (attacktype.indexOf("Melee") > -1) {
-				attackrange = (actiontext.match(/reach (.*?),/) || ["", ""])[1];
-				rangetype = "Reach";
+			let attackRange = "";
+			let rangeType = "";
+			if (attackType.indexOf("Melee") > -1) {
+				attackRange = (actionText.match(/reach (.*?),/) || ["", ""])[1];
+				rangeType = "Reach";
 			} else {
-				attackrange = (actiontext.match(/range (.*?),/) || ["", ""])[1];
-				rangetype = "Range";
+				attackRange = (actionText.match(/range (.*?),/) || ["", ""])[1];
+				rangeType = "Range";
 			}
-			var tohit = (actiontext.match(/\+(.*?) to hit/) || ["", ""])[1];
-			var damage = "";
-			var damagetype = "";
-			var damage2 = "";
-			var damagetype2 = "";
-			var onhit = "";
-			damageregex = /\d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage/g;
-			damagesearches = damageregex.exec(actiontext);
-			if (damagesearches) {
-				onhit = damagesearches[0];
-				damage = damagesearches[1];
-				damagetype = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
-				damagesearches = damageregex.exec(actiontext);
-				if (damagesearches) {
-					onhit += " plus " + damagesearches[0];
-					damage2 = damagesearches[1];
-					damagetype2 = (damagesearches[2] != null) ? damagesearches[2].trim() : "";
+			const toHit = (actionText.match(/\+(.*?) to hit/) || ["", ""])[1];
+			let damage = "";
+			let damageType = "";
+			let damage2 = "";
+			let damageType2 = "";
+			let onHit = "";
+			let damageRegex = /\d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage/g;
+			let damageSearches = damageRegex.exec(actionText);
+			if (damageSearches) {
+				onHit = damageSearches[0];
+				damage = damageSearches[1];
+				damageType = (damageSearches[2] != null) ? damageSearches[2].trim() : "";
+				damageSearches = damageRegex.exec(actionText);
+				if (damageSearches) {
+					onHit += " plus " + damageSearches[0];
+					damage2 = damageSearches[1];
+					damageType2 = (damageSearches[2] != null) ? damageSearches[2].trim() : "";
 				}
 			}
-			onhit = onhit.trim();
-			var attacktarget = (actiontext.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1];
+			onHit = onHit.trim();
+			const attackTarget = (actionText.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1];
 			// Cut the information dump in the description
-			var atk_desc_simple_regex = /Hit: \d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
-			var atk_desc_complex_regex = /(Hit:.*)/g;
+			const atkDescSimpleRegex = /Hit: \d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
+			const atkDescComplexRegex = /(Hit:.*)/g;
 			// is it a simple attack (just 1 damage type)?
-			var match_simple_atk = atk_desc_simple_regex.exec(actiontext);
+			const match_simple_atk = atkDescSimpleRegex.exec(actionText);
 			if (match_simple_atk != null) {
 				//if yes, then only display special effects, if any
-				action_desc = match_simple_atk[3].trim();
+				actionDesc = match_simple_atk[3].trim();
 			} else {
 				//if not, simply cut everything before "Hit:" so there are no details lost.
-				var match_compl_atk = atk_desc_complex_regex.exec(actiontext);
-				if (match_compl_atk != null) action_desc = match_compl_atk[1].trim();
+				const matchCompleteAtk = atkDescComplexRegex.exec(actionText);
+				if (matchCompleteAtk != null) actionDesc = matchCompleteAtk[1].trim();
 			}
-			var tohitrange = "+" + tohit + ", " + rangetype + " " + attackrange + ", " + attacktarget + ".";
-			var damageflags = `{{damage=1}} {{dmg1flag=1}}${damage2 ? ` {{dmg2flag=1}}` : ""}`
+			const toHitRange = "+" + toHit + ", " + rangeType + " " + attackRange + ", " + attackTarget + ".";
+			const damageFlags = `{{damage=1}} {{dmg1flag=1}}${damage2 ? ` {{dmg2flag=1}}` : ""}`;
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_flag", current: "on"}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_flag", current: "1"}).save();
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: "0"}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_display_flag",
@@ -281,14 +282,14 @@ function d20plusImporter () {
 				name: "repeating_npcaction_" + newRowId + "_attack_options",
 				current: "{{attack=1}}"
 			}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: tohit}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohit", current: toHit}).save();
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_damage", current: damage}).save();
 			// TODO this might not be necessary on Shaped sheets?
 			const critDamage = (damage || "").trim().replace(/[-+]\s*\d+$/, ""); // replace any trailing modifiers e.g. "+5"
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit", current: critDamage}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_damagetype",
-				current: damagetype
+				current: damageType
 			}).save();
 			if (damage2) {
 				character.attribs.create({
@@ -301,49 +302,53 @@ function d20plusImporter () {
 				}).save();
 				character.attribs.create({
 					name: "repeating_npcaction_" + newRowId + "_attack_damagetype2",
-					current: damagetype2
+					current: damageType2
 				}).save();
 			}
 			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type", current: attacktype}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollBase}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_type", current: attackType}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_type_display",
-				current: attacktype + attacktype2
+				current: attackType + attackType2
 			}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_tohitrange",
-				current: tohitrange
+				current: toHitRange
 			}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_range", current: attackrange}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_range", current: attackRange}).save();
 			character.attribs.create({
 				name: "repeating_npcaction_" + newRowId + "_attack_target",
-				current: attacktarget
+				current: attackTarget
 			}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: damageflags}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: onhit}).save();
-		} else {
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: 0}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollbase}).save();
-			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name_display", current: name}).save();
-		}
-		var descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
-		character.attribs.create({
-			name: "repeating_npcaction_" + newRowId + "_description",
-			current: action_desc
-		}).save();
-		character.attribs.create({
-			name: "repeating_npcaction_" + newRowId + "_description_flag",
-			current: descriptionFlag
-		}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: damageFlags}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: onHit}).save();
 
-		// hidden = a single space
-		const descVisFlag = d20plus.cfg.getOrDefault("import", "hideActionDescs") ? " " : "@{description}";
-		character.attribs.create({
-			name: `repeating_npcaction_${newRowId}_show_desc`,
-			current: descVisFlag
-		}).save();
+			const descriptionFlag = Math.max(Math.ceil(text.length / 57), 1);
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_description", current: actionDesc}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_description_flag", current: descriptionFlag}).save();
+
+			// hidden = a single space
+			const descVisFlag = d20plus.cfg.getOrDefault("import", "hideActionDescs") ? " " : "@{description}";
+			character.attribs.create({name: `repeating_npcaction_${newRowId}_show_desc`, current: descVisFlag}).save();
+		}
+
+		function handleOtherAction () {
+			const rollBase = d20plus.importer.rollbase(false); // macro
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_name", current: name}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_npc_options-flag", current: "0"}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_description", current: actionDesc}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_tohitrange", current: "+0"}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_onhit", current: ""}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_damage_flag", current: ""}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit", current: ""}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_attack_crit2", current: ""}).save();
+			character.attribs.create({name: "repeating_npcaction_" + newRowId + "_rollbase", current: rollBase}).save();
+		}
+
+		// attack parsing
+		if (actionText.includes(" Attack:")) handleAttack();
+		else handleOtherAction();
 	};
 
 	d20plus.importer.findAttrId = function (character, attrName) {
@@ -401,12 +406,12 @@ function d20plusImporter () {
 	};
 
 	// from OGL sheet, Aug 2018
-	d20plus.importer.rollbase = () => {
+	d20plus.importer.rollbase = (isAttack = true) => {
 		const dtype = d20plus.importer.getDesiredDamageType();
 		if (dtype === "full") {
-			return `@{wtype}&{template:npcaction} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=@{name}}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{show_desc}}} @{charname_output}`;
+			return `@{wtype}&{template:npcaction} ${isAttack ? `{{attack=1}}` : ""} @{damage_flag} @{npc_name_flag} {{rname=@{name}}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{dmg1=[[@{attack_damage}+0]]}} {{dmg1type=@{attack_damagetype}}} {{dmg2=[[@{attack_damage2}+0]]}} {{dmg2type=@{attack_damagetype2}}} {{crit1=[[@{attack_crit}+0]]}} {{crit2=[[@{attack_crit2}+0]]}} {{description=@{show_desc}}} @{charname_output}`;
 		} else {
-			return `@{wtype}&{template:npcatk} {{attack=1}} @{damage_flag} @{npc_name_flag} {{rname=[@{name}](~repeating_npcaction_npc_dmg)}} {{rnamec=[@{name}](~repeating_npcaction_npc_crit)}} {{type=[Attack](~repeating_npcaction_npc_dmg)}} {{typec=[Attack](~repeating_npcaction_npc_crit)}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{description=@{show_desc}}} @{charname_output}`;
+			return `@{wtype}&{template:npcatk} ${isAttack ? `{{attack=1}}` : ""} @{damage_flag} @{npc_name_flag} {{rname=[@{name}](~repeating_npcaction_npc_dmg)}} {{rnamec=[@{name}](~repeating_npcaction_npc_crit)}} {{type=[Attack](~repeating_npcaction_npc_dmg)}} {{typec=[Attack](~repeating_npcaction_npc_crit)}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{description=@{show_desc}}} @{charname_output}`;
 		}
 
 	};
