@@ -1890,8 +1890,10 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.disableFrameRecorder = function () {
-		d20.engine.frame_recorder.active = false;
-		d20.engine.frame_recorder._active = false;
+		if (d20.engine.frame_recorder) {
+			d20.engine.frame_recorder.active = false;
+			d20.engine.frame_recorder._active = false;
+		}
 	};
 }
 
