@@ -846,16 +846,24 @@ function d20plusMod() {
 				case "objects":
 					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
+						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 					// END MOD
 						t.globalAlpha = .45;
 						break
 					}
 				// BEGIN MOD
+				case "background":
+					// BEGIN MOD
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
+						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
+						// END MOD
+						t.globalAlpha = .45;
+						break
+					}
 				case "foreground":
 					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "weather" === window.currentEditingLayer) {
+						|| "background" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 					// END MOD
 						t.globalAlpha = .45;
 						break
@@ -895,6 +903,7 @@ function d20plusMod() {
 		e && e.grid_before_afow && (yield[null, "grid"]);
 		e && e.disable_afow || !d20.Campaign.activePage().get("adv_fow_enabled") || !window.largefeats || (yield[null, "afow"]);
 		e && e.grid_before_afow || (yield[null, "grid"]);
+		yield[this.background, "background"];
 		yield[this.objects, "objects"];
 		yield[this.foreground, "foreground"];
 		window.is_gm && (yield[this.gmlayer, "gmlayer"]);
@@ -916,7 +925,7 @@ function d20plusMod() {
 				$("#drawingtools .choosepath").hide();
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
 			} else {
-				e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
 					$("#drawingtools .choosepath").hide(),
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
 			}

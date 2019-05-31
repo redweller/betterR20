@@ -453,10 +453,11 @@ function baseUtil () {
 		})
 	};
 
-	d20plus.ut.LAYERS = ["map", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.LAYERS = ["map", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
 	d20plus.ut.layerToName = (l) => {
 		switch (l) {
-			case "map": return "Map & Background";
+			case "map": return "Map";
+			case "background": return "Background";
 			case "objects": return "Objects & Tokens";
 			case "foreground": return "Foreground";
 			case "gmlayer": return "GM Info Overlay";
