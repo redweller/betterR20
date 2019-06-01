@@ -769,6 +769,9 @@ const baseTemplate = function () {
 							Layer &raquo;
 							<ul class='submenu' data-menuname='positioning'>
 								<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'>Map Layer</li>
+								<!-- BEGIN MOD -->
+								<li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'>Background Layer</li>
+								<!-- END MOD -->
 								<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'>Token Layer</li>
 								<!-- BEGIN MOD -->
 								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'>Foreground Layer</li>

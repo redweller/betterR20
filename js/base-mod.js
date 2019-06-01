@@ -813,6 +813,9 @@ function d20plusMod() {
 			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
 		const r = {
 			map: [],
+			// BEGIN MOD
+			background: [],
+			// END MOD
 			walls: [],
 			objects: [],
 			// BEGIN MOD
@@ -833,6 +836,9 @@ function d20plusMod() {
 			} else
 				r[window.currentEditingLayer].push(e);
 		for (const [i,a] of r) {
+			// BEGIN MOD
+			t.globalAlpha = 1;
+			// END MOD
 			switch (a) {
 				case "grid":
 					d20.canvas_overlay.drawGrid(t);
@@ -846,20 +852,28 @@ function d20plusMod() {
 				case "objects":
 					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-					// END MOD
+						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
-						break
 					}
+					break;
+					// END MOD
 				// BEGIN MOD
+				case "background":
+					// BEGIN MOD
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
+						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
+						t.globalAlpha = .45;
+					}
+					break;
+					// END MOD
 				case "foreground":
 					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "weather" === window.currentEditingLayer) {
-					// END MOD
+						|| "background" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
-						break
 					}
+					break;
+					// END MOD
 				// END MOD
 				default:
 					t.globalAlpha = 1
@@ -895,6 +909,7 @@ function d20plusMod() {
 		e && e.grid_before_afow && (yield[null, "grid"]);
 		e && e.disable_afow || !d20.Campaign.activePage().get("adv_fow_enabled") || !window.largefeats || (yield[null, "afow"]);
 		e && e.grid_before_afow || (yield[null, "grid"]);
+		yield[this.background, "background"];
 		yield[this.objects, "objects"];
 		yield[this.foreground, "foreground"];
 		window.is_gm && (yield[this.gmlayer, "gmlayer"]);
@@ -916,7 +931,7 @@ function d20plusMod() {
 				$("#drawingtools .choosepath").hide();
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
 			} else {
-				e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
 					$("#drawingtools .choosepath").hide(),
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
 			}

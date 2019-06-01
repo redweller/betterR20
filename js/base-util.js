@@ -453,10 +453,11 @@ function baseUtil () {
 		})
 	};
 
-	d20plus.ut.LAYERS = ["map", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.LAYERS = ["map", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
 	d20plus.ut.layerToName = (l) => {
 		switch (l) {
-			case "map": return "Map & Background";
+			case "map": return "Map";
+			case "background": return "Background";
 			case "objects": return "Objects & Tokens";
 			case "foreground": return "Foreground";
 			case "gmlayer": return "GM Info Overlay";
@@ -467,6 +468,10 @@ function baseUtil () {
 
 	d20plus.ut.get$SelValue = ($sel) => {
 		return $sel[0].options[$sel[0].selectedIndex].value;
+	};
+
+	d20plus.ut.isUseSharedJs = () => {
+		return BASE_SITE_URL.includes("://5e.tools") || BASE_SITE_URL.includes("://5etools.com");
 	};
 }
 

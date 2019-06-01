@@ -355,12 +355,12 @@ function baseCss () {
 			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;"
 		},
 		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground",
+			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.background li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;"
 		},
 		// extra layer buttons
 		{
-			s: "#editinglayer.weather div.submenu li.chooseweather",
+			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;"
 		},
 		{
@@ -368,12 +368,12 @@ function baseCss () {
 			r: "content: \"C\";"
 		},
 		{
-			s: "#editinglayer.foreground div.submenu li.chooseforeground",
-			r: "background-color: #54C3E8; color: #333;"
-		},
-		{
 			s: "#editinglayer.foreground .currentselection:after",
 			r: "content: \"B\";"
+		},
+		{
+			s: "#editinglayer.background .currentselection:after",
+			r: "content: \"a\";"
 		},
 		// adjust the "Talking to Yourself" box
 		{

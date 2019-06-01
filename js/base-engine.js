@@ -1861,6 +1861,13 @@ function d20plusEngine () {
 
 		d20plus.mod.editingLayerOnclick();
 		if (window.is_gm) {
+			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
+			$(`#floatingtoolbar .choosemap`).after(`
+				<li class="choosebackground">
+					<span class="pictos">a</span>
+					Background
+				</li>
+			`);
 			$(`#floatingtoolbar .chooseobjects`).after(`
 				<li class="chooseforeground">
 					<span class="pictos">B</span>

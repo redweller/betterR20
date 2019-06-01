@@ -387,7 +387,7 @@ const betteR205etoolsMain = function () {
 	});
 
 	d20plus.sheet = "ogl";
-	d20plus.psionics = {}
+	d20plus.psionics = {};
 	d20plus.races = {};
 	d20plus.objects = {};
 	d20plus.adventures = {};
@@ -428,8 +428,10 @@ const betteR205etoolsMain = function () {
 		}
 	};
 
-	d20plus.js.scripts.push({name: "5etoolsrender", url: `${SITE_JS_URL}render.js`});
-	d20plus.js.scripts.push({name: "5etoolsscalecreature", url: `${SITE_JS_URL}scalecreature.js`});
+	if (!d20plus.ut.isUseSharedJs()) {
+		d20plus.js.scripts.push({name: "5etoolsRender", url: `${SITE_JS_URL}render.js`});
+		d20plus.js.scripts.push({name: "5etoolsScalecreature", url: `${SITE_JS_URL}scalecreature.js`});
+	}
 
 	d20plus.json = [
 		{name: "class index", url: `${CLASS_DATA_DIR}index.json`, isJson: true},
