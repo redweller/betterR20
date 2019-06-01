@@ -813,6 +813,9 @@ function d20plusMod() {
 			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
 		const r = {
 			map: [],
+			// BEGIN MOD
+			background: [],
+			// END MOD
 			walls: [],
 			objects: [],
 			// BEGIN MOD
@@ -833,6 +836,9 @@ function d20plusMod() {
 			} else
 				r[window.currentEditingLayer].push(e);
 		for (const [i,a] of r) {
+			// BEGIN MOD
+			t.globalAlpha = 1;
+			// END MOD
 			switch (a) {
 				case "grid":
 					d20.canvas_overlay.drawGrid(t);
@@ -847,27 +853,27 @@ function d20plusMod() {
 					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
 						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-					// END MOD
 						t.globalAlpha = .45;
-						break
 					}
+					break;
+					// END MOD
 				// BEGIN MOD
 				case "background":
 					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
 						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-						// END MOD
 						t.globalAlpha = .45;
-						break
 					}
+					break;
+					// END MOD
 				case "foreground":
 					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
 						|| "background" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-					// END MOD
 						t.globalAlpha = .45;
-						break
 					}
+					break;
+					// END MOD
 				// END MOD
 				default:
 					t.globalAlpha = 1
