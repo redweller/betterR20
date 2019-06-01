@@ -469,6 +469,10 @@ function baseUtil () {
 	d20plus.ut.get$SelValue = ($sel) => {
 		return $sel[0].options[$sel[0].selectedIndex].value;
 	};
+
+	d20plus.ut.isUseSharedJs = () => {
+		return BASE_SITE_URL.includes("://5e.tools") || BASE_SITE_URL.includes("://5etools.com");
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);

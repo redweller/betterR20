@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.15.9";
+const SCRIPT_VERSION = "1.15.10";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -57,9 +57,9 @@ const SCRIPTS = {
 		header: HEADER_CORE,
 		scripts: [
 			"header",
+			"base-util",
 			"base-jsload",
 			"base-qpi",
-			"base-util",
 			"base-jukebox",
 			"base-math",
 			"base-config",
@@ -89,9 +89,9 @@ const SCRIPTS = {
 		header: HEADER_5ETOOLS,
 		scripts: [
 			"header",
+			"base-util",
 			"base-jsload",
 			"base-qpi",
-			"base-util",
 			"base-jukebox",
 			"base-math",
 			"base-config",
