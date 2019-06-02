@@ -384,6 +384,14 @@ function baseCss () {
 			s: "#textchat-notifier:after",
 			r: "content: '!'"
 		},
+		{
+			s: ".ctx__layer-icon",
+			r: `
+			display: inline-block;
+			width: 12px;
+			text-align: center;
+			`
+		},
 		// fix the shitty undersized "fire" icon
 		{
 			s: ".choosewalls > .pictostwo",
