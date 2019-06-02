@@ -440,23 +440,9 @@ function d20plusMonsters () {
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 
 							// add Tokenaction Macros
-							if (d20plus.cfg.get("token", "tokenactionsSkillsSaves")) {
+							if (d20plus.cfg.get("token", "tokenactionsSkills")) {
 								if (d20plus.sheet === "shaped") {
-									character.abilities.create({
-										name: "Init",
-										istokenaction: true,
-										action: `%{${character.id}|shaped_initiative}`
-									});
-									character.abilities.create({
-										name: "Saving Throws",
-										istokenaction: true,
-										action: `%{${character.id}|shaped_saving_throw_query}`
-									});
-									character.abilities.create({
-										name: "Ability Checks",
-										istokenaction: true,
-										action: `%{${character.id}|shaped_ability_checks_query}`
-									});
+
 								} else {
 									character.abilities.create({
 										name: "Perception",
@@ -464,10 +450,61 @@ function d20plusMonsters () {
 										action: d20plus.actionMacroPerception
 									});
 									character.abilities.create({
+										name: "Skill-Check",
+										istokenaction: true,
+										action: d20plus.actionMacroSkillCheck
+									});
+								}
+							}
+							if (d20plus.cfg.get("token", "tokenactionsSaves")) {
+								if (d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Saving Throws",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_saving_throw_query}`
+									});
+								} else {
+									character.abilities.create({
+										name: "Saves",
+										istokenaction: true,
+										action: d20plus.actionMacroSaves
+									});
+								}
+							}
+							if (d20plus.cfg.get("token", "tokenactionsInitiative")) {
+								if (d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Init",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_initiative}`
+									});
+								} else {
+									character.abilities.create({
 										name: "Init",
 										istokenaction: true,
 										action: d20plus.actionMacroInit
 									});
+								}
+							}
+							if (d20plus.cfg.get("token", "tokenactionsChecks")) {
+								if (d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Ability Checks",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_ability_checks_query}`
+									});
+								} else {
+									character.abilities.create({
+										name: "Ability-Check",
+										istokenaction: true,
+										action: d20plus.actionMacroAbilityCheck
+									});
+								}
+							}
+							if (d20plus.cfg.get("token", "tokenactionsOther")) {
+								if (d20plus.sheet === "shaped") {
+
+								} else {
 									character.abilities.create({
 										name: "DR/Immunities",
 										istokenaction: true,
@@ -477,21 +514,6 @@ function d20plusMonsters () {
 										name: "Stats",
 										istokenaction: true,
 										action: d20plus.actionMacroStats
-									});
-									character.abilities.create({
-										name: "Saves",
-										istokenaction: true,
-										action: d20plus.actionMacroSaves
-									});
-									character.abilities.create({
-										name: "Skill-Check",
-										istokenaction: true,
-										action: d20plus.actionMacroSkillCheck
-									});
-									character.abilities.create({
-										name: "Ability-Check",
-										istokenaction: true,
-										action: d20plus.actionMacroAbilityCheck
 									});
 								}
 							}

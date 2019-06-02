@@ -254,8 +254,28 @@ const betteR205etoolsMain = function () {
 			"default": true,
 			"_type": "boolean"
 		},
-		"tokenactionsSkillsSaves": {
-			"name": "Add TokenAction Macros on Import (Skills, Checks, and Saves)",
+		"tokenactionsSkills": {
+			"name": "Add TokenAction Macros on Import (Skills)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsSaves": {
+			"name": "Add TokenAction Macros on Import (Saves)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsInitiative": {
+			"name": "Add TokenAction Macros on Import (Initiative)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsChecks": {
+			"name": "Add TokenAction Macros on Import (Checks)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsOther": {
+			"name": "Add TokenAction Macros on Import (Other)",
 			"default": true,
 			"_type": "boolean"
 		},
