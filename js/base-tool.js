@@ -612,12 +612,28 @@ function baseTool() {
 					<br>
 					You can learn Token IDs by rightclicking a token -> "Advanced" -> "View Token ID."</i></p>
 					<hr>
-					<input id="token-entangle-id-1" placeholder="Master Token ID">
-					<input id="token-entangle-id-2" placeholder="Slave Token ID">
+					<input id="token-entangle-id-1" placeholder="Master ID">
+					Type: 
+					<select id="token-entangle-type-1">
+						<option value="0">Token</option>
+						<option value="1">Path</option>
+					</select>
+					<br>
+					<input id="token-entangle-id-2" placeholder="Slave ID">
+					Type:  
+					<select id="token-entangle-type-2">
+						<option value="0">Token</option>
+						<option value="1">Path</option>
+					</select>
 					<br>
 					<button class="btn btn-default" id="token-entangle-go">Entangle</button>
 					<hr>
-					<input id="token-clear-entangles" placeholder="Token ID to Clear">
+					<input id="token-clear-entangles" placeholder="ID to Clear">
+					Type:  
+					<select id="token-clear-type">
+						<option value="0">Token</option>
+						<option value="1">Path</option>
+					</select>
 					<button class="btn btn-default" id="token-entangle-clear">Clear Entangles</button>
 				</div>
 				`,
@@ -625,7 +641,8 @@ function baseTool() {
 				const $win = $("#d20plus-token-entangle");
 
 				const entangleTracker = {};
-				const SYNCABLE_ATTRS = [
+				const ALLOWED_TYPES = ["path", "image"];
+				const SYNCABLE_ATTRS_IMAGE = [
 					"rotation",
 					"width",
 					"height",
@@ -636,20 +653,35 @@ function baseTool() {
 					"fliph",
 					"flipv"
 				];
+				const SYNCABLE_ATTRS_PATH = [
+					"rotation",
+					"top",
+					"left",
+					"scaleX",
+					"scaleY"
+				];
 
 				$win.data("VE_DO_ENTANGLE", (master) => {
+					if (!ALLOWED_TYPES.includes(master.attributes.type)) return;
+
 					// prevent double-binding
 					if (entangleTracker[master.id]) return;
 
-					master.on("change", (it) => {
-						if (master.attributes.entangled && master.attributes.entangled.length) {
-							if (SYNCABLE_ATTRS.filter(attr => it.changed !== undefined).length) {
-								let anyUpdates = false;
+					const TO_SYNC = master.attributes.type === "image" ? SYNCABLE_ATTRS_IMAGE : SYNCABLE_ATTRS_PATH;
 
-								master.attributes.entangled = master.attributes.entangled.filter(id => {
+					master.on("change", (it) => {
+						let anyUpdates = false;
+
+						if (master.attributes.entangledImages && master.attributes.entangledImages.length) {
+							if (TO_SYNC.filter(attr => it.changed[attr] !== undefined).length) {
+								master.attributes.entangledImages = master.attributes.entangledImages.filter(id => {
 									const slave = d20plus.ut.getTokenById(id);
+									const SLAVE_ATTRS = slave.attributes.type === "image" ? SYNCABLE_ATTRS_IMAGE : SYNCABLE_ATTRS_PATH;
 									if (slave) {
-										SYNCABLE_ATTRS.forEach(attr => slave.attributes[attr] = master.attributes[attr]);
+										TO_SYNC
+											.filter(attr => SLAVE_ATTRS.includes(attr))
+											.filter(attr => master.attributes[attr] != null)
+											.forEach(attr => slave.attributes[attr] = master.attributes[attr]);
 										slave.save();
 										return true;
 									} else {
@@ -658,9 +690,30 @@ function baseTool() {
 									}
 								});
 
-								if (anyUpdates) master.save();
 							}
 						}
+
+						if (master.attributes.entangledPaths && master.attributes.entangledPaths.length) {
+							if (TO_SYNC.filter(attr => it.changed[attr] !== undefined).length) {
+								master.attributes.entangledPaths = master.attributes.entangledPaths.filter(id => {
+									const slave = d20plus.ut.getPathById(id);
+									const SLAVE_ATTRS = slave.attributes.type === "image" ? SYNCABLE_ATTRS_IMAGE : SYNCABLE_ATTRS_PATH;
+									if (slave) {
+										TO_SYNC
+											.filter(attr => SLAVE_ATTRS.includes(attr))
+											.filter(attr => master.attributes[attr] != null)
+											.forEach(attr => slave.attributes[attr] = master.attributes[attr]);
+										slave.save();
+										return true;
+									} else {
+										console.warn(`Cound not find entangled path with ID "${id}", removing...`);
+										anyUpdates = true;
+									}
+								});
+							}
+						}
+
+						if (anyUpdates) master.save();
 					})
 				});
 
@@ -670,11 +723,21 @@ function baseTool() {
 					if (pages && pages.models) {
 						d20plus.ut.log("Initialisng existing entangles...");
 						d20.Campaign.pages.models
-							.filter(model => model.thegraphics && model.thegraphics.models)
-							.forEach(model => model.thegraphics.models.filter(it => it.attributes.entangled && it.attributes.entangled.length)
-							.forEach(it => {
-								$win.data("VE_DO_ENTANGLE")(it);
-							}));
+							.forEach(model => {
+								const PROPS = {
+									thegraphics: "entangledImages",
+									thepaths: "entangledPaths"
+								};
+								Object.keys(PROPS).forEach(prop => {
+									Object.values(PROPS).forEach(attrK => {
+										if (model[prop] && model[prop].models) {
+											model[prop].models.filter(it => it.attributes[attrK] && it.attributes[attrK].length).forEach(it => {
+												$win.data("VE_DO_ENTANGLE")(it);
+											})
+										}
+									});
+								});
+							});
 					} else {
 						console.log("Pages uninitialised, waiting...");
 						setTimeout(runInitial, 1000);
@@ -686,68 +749,90 @@ function baseTool() {
 				$win.dialog({
 					autoOpen: false,
 					resizable: true,
-					width: 300,
+					width: 800,
 					height: 400,
 				});
 			},
 			openFn: () => {
-				const notFound = (id) => alert(`Token with ID ${id} didn't exist!`);
+				const ATTR_PROPS = ["entangledImages", "entangledPaths"];
+
+				const notFound = (id, type) => alert(`${type === "image" ? "Token" : "Path"} with ID ${id} didn't exist!`);
 
 				const $win = $("#d20plus-token-entangle");
 				$win.dialog("open");
 
 				const $ipt1 = $(`#token-entangle-id-1`);
 				const $ipt2 = $(`#token-entangle-id-2`);
+				const $selType1 = $(`#token-entangle-type-1`);
+				const $selType2 = $(`#token-entangle-type-2`);
 
 				const $btnGo = $(`#token-entangle-go`)
 					.off("click")
 					.click(() => {
-						const tkId1 = $ipt1.val();
-						const tkId2 = $ipt2.val();
+						const id1 = $ipt1.val();
+						const id2 = $ipt2.val();
 						const checkExisting = (a, b) => {
-							if (a.attributes.entangled && a.attributes.entangled.includes(b.id)) return `"${a.id}" is already entangled to "${b.id}"!`;
-							else if (b.attributes.entangled && b.attributes.entangled.includes(a.id)) return `"${b.id}" is already entangled to "${a.id}"!`;
-							else return false;
+							const _check = (p, q) => ATTR_PROPS.some(prop => p.attributes[prop] && a.attributes[prop].includes(q.id));
+
+							if (_check(a, b)) return `"${a.id}" is already entangled to "${b.id}"!`;
+							if (_check(b, a)) return `"${b.id}" is already entangled to "${a.id}"!`;
+							return false;
 						};
 
-						const token1 = d20plus.ut.getTokenById(tkId1);
-						const token2 = d20plus.ut.getTokenById(tkId2);
+						const entity1 = $selType1.val() === "0" ? d20plus.ut.getTokenById(id1) : d20plus.ut.getPathById(id1);
+						const entity2 = $selType2.val() === "0" ? d20plus.ut.getTokenById(id2) : d20plus.ut.getPathById(id2);
 
-						if (!token1) return notFound(tkId1);
-						if (!token2) return notFound(tkId2);
+						if (!entity1) return notFound(id1, $selType1.val() === "0" ? "image" : "path");
+						if (!entity2) return notFound(id2, $selType2.val() === "0" ? "image" : "path");
 
-						const existing = checkExisting(token1, token2);
+						const existing = checkExisting(entity1, entity2);
 						if (existing) return alert(existing);
 
-						(token1.attributes.entangled = token1.attributes.entangled || []).push(tkId2);
-						token1.save();
-						(token2.attributes.entangled = token2.attributes.entangled || []).push(tkId1);
-						token2.save();
+						const prop1 = entity2.attributes.type === "image" ? "entangledImages" : "entangledPaths";
+						const prop2 = entity1.attributes.type === "image" ? "entangledImages" : "entangledPaths";
 
-						$win.data("VE_DO_ENTANGLE")(token1);
-						$win.data("VE_DO_ENTANGLE")(token2);
-						alert("Tokens entangled!");
+						(entity1.attributes[prop1] = entity1.attributes[prop1] || []).push(id2);
+						entity1.save();
+						(entity2.attributes[prop2] = entity2.attributes[prop2] || []).push(id1);
+						entity2.save();
+
+						$win.data("VE_DO_ENTANGLE")(entity1);
+						$win.data("VE_DO_ENTANGLE")(entity2);
+						alert("Entangled!");
 					});
 
 				const $iptClear = $(`#token-clear-entangles`);
 
+				const $selTypeClear = $(`#token-clear-type`);
+
 				const $btnClear = $(`#token-entangle-clear`)
 					.off("click")
 					.click(() => {
-						const tkId = $iptClear.val();
-						const token = d20plus.ut.getTokenById(tkId);
-						if (!token) return notFound(tkId);
+						const id = $iptClear.val();
+						const entity = $selTypeClear.val() === "0" ? d20plus.ut.getTokenById(id) : d20plus.ut.getPathById(id);
+						if (!entity) return notFound(id, $selTypeClear.val() === "0" ? "image" : "path");
 
-						const count = token.attributes.entangled ? token.attributes.entangled.length : 0;
-						(token.attributes.entangled || []).forEach(eId => {
+						const count = (entity.attributes.entangledImages ? entity.attributes.entangledImages.length : 0) + (entity.attributes.entangledPaths ? entity.attributes.entangledPaths.length : 0);
+
+						(entity.attributes.entangledImages || []).forEach(eId => {
 							const ent = d20plus.ut.getTokenById(eId);
-							if (ent && ent.attributes.entangled && ent.attributes.entangled.includes(tkId)) {
-								ent.attributes.entangled.splice(ent.attributes.entangled.indexOf(tkId), 1);
+							if (ent && ent.attributes.entangledImages && ent.attributes.entangledImages.includes(id)) {
+								ent.attributes.entangledImages.splice(ent.attributes.entangledImages.indexOf(id), 1);
 								ent.save();
 							}
 						});
-						token.attributes.entangled = [];
-						token.save();
+
+						(entity.attributes.entangledPaths || []).forEach(eId => {
+							const ent = d20plus.ut.getPathById(eId);
+							if (ent && ent.attributes.entangledPaths && ent.attributes.entangledPaths.includes(id)) {
+								ent.attributes.entangledPaths.splice(ent.attributes.entangledPaths.indexOf(id), 1);
+								ent.save();
+							}
+						});
+
+						entity.attributes.entangledImages = [];
+						entity.attributes.entangledPaths = [];
+						entity.save();
 						alert(`${count} entangle${count === 1 ? "" : "s"} cleared.`);
 					});
 			}

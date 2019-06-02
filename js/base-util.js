@@ -262,12 +262,17 @@ function baseUtil () {
 		}
 	};
 
+	d20plus.ut.getPathById = (pathId) => {
+		return d20plus.ut._getCanvasElementById(pathId, "thepaths");
+	};
+
 	d20plus.ut.getTokenById = (tokenId) => {
-		const foundTokenArr = d20.Campaign.pages.models.map(model => model.thegraphics.models.find(it => it.id === tokenId)).filter(it => it);
-		if (foundTokenArr.length) {
-			return foundTokenArr[0];
-		}
-		return null;
+		return d20plus.ut._getCanvasElementById(tokenId, "thegraphics");
+	};
+
+	d20plus.ut._getCanvasElementById = (id, prop) => {
+		const foundArr = d20.Campaign.pages.models.map(model => model[prop] && model[prop].models ? model[prop].models.find(it => it.id === id) : null).filter(it => it);
+		return foundArr.length ? foundArr[0] : null;
 	};
 
 	d20plus.ut.getMacroByName = (macroName) => {

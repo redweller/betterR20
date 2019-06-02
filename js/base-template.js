@@ -762,6 +762,9 @@ const baseTemplate = function () {
 								<$ if(this.get && this.get("type") == "image") { $>
 									<li data-action-type='copy-tokenid'>View Token ID</li>
 								<$ } $>
+								<$ if(this.get && this.get("type") == "path") { $>
+									<li data-action-type='copy-pathid'>View Path ID</li>
+								<$ } $>
 							</ul>
 						</li>
 

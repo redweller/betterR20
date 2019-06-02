@@ -839,6 +839,10 @@ function d20plusEngine () {
 							const sel = d20.engine.selected();
 							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
 							i();
+						} else if ("copy-pathid" === e) {
+							const sel = d20.engine.selected();
+							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
+							i();
 						} else if ("token-fly" === e) {
 							const sel = d20.engine.selected().filter(it => it && it.type === "image");
 							new Promise((resolve, reject) => {
