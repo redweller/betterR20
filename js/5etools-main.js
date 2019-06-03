@@ -245,51 +245,6 @@ const betteR205etoolsMain = function () {
 			"_type": "boolean",
 			"_player": true
 		},
-		"tokenactions": {
-			"name": "Add TokenAction Macros on Import (Actions)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"tokenactionsTraits": {
-			"name": "Add TokenAction Macros on Import (Traits)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"tokenactionsSkills": {
-			"name": "Add TokenAction Macros on Import (Skills)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"tokenactionsSaves": {
-			"name": "Add TokenAction Macros on Import (Saves)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"tokenactionsInitiative": {
-			"name": "Add TokenAction Macros on Import (Initiative)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"tokenactionsChecks": {
-			"name": "Add TokenAction Macros on Import (Checks)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"tokenactionsOther": {
-			"name": "Add TokenAction Macros on Import (Other)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"tokenactionsSpells": {
-			"name": "Add TokenAction Macros on Import (Spells)",
-			"default": true,
-			"_type": "boolean"
-		},
-		"namesuffix": {
-			"name": "Append Text to Names on Import",
-			"default": "",
-			"_type": "String"
-		}
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
@@ -355,6 +310,51 @@ const betteR205etoolsMain = function () {
 			"default": true,
 			"_type": "boolean"
 		},
+		"tokenactions": {
+			"name": "Add TokenAction Macros on Import (Actions)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsTraits": {
+			"name": "Add TokenAction Macros on Import (Traits)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsSkills": {
+			"name": "Add TokenAction Macros on Import (Skills)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsSaves": {
+			"name": "Add TokenAction Macros on Import (Saves)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsInitiative": {
+			"name": "Add TokenAction Macros on Import (Initiative)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsChecks": {
+			"name": "Add TokenAction Macros on Import (Checks)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsOther": {
+			"name": "Add TokenAction Macros on Import (Other)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"tokenactionsSpells": {
+			"name": "Add TokenAction Macros on Import (Spells)",
+			"default": true,
+			"_type": "boolean"
+		},
+		"namesuffix": {
+			"name": "Append Text to Names on Import",
+			"default": "",
+			"_type": "String"
+		}
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
@@ -2788,7 +2788,7 @@ const betteR205etoolsMain = function () {
 					if (data.entries != null) {
 						character.attribs.create({name: "repeating_npctrait_0_name", current: name});
 						character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
-						if (d20plus.cfg.get("token", "tokenactionsTraits")) {
+						if (d20plus.cfg.get("import", "tokenactionsTraits")) {
 							character.abilities.create({
 								name: "Information: " + name,
 								istokenaction: true,
