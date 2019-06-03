@@ -384,6 +384,14 @@ function baseCss () {
 			s: "#textchat-notifier:after",
 			r: "content: '!'"
 		},
+		{
+			s: ".ctx__layer-icon",
+			r: `
+			display: inline-block;
+			width: 12px;
+			text-align: center;
+			`
+		},
 		// fix the shitty undersized "fire" icon
 		{
 			s: ".choosewalls > .pictostwo",
@@ -410,6 +418,47 @@ function baseCss () {
 		{
 			s: `.ctx__divider`,
 			r: "width: calc(100% - 2px); border: 1px solid black;"
+		},
+		// sidebar fix
+		{
+			s: `#rightsidebar`,
+			r: `
+			    display: flex;
+			    flex-direction: column;
+			`
+		},
+		{
+			s: `#rightsidebar ul.tabmenu`,
+			r: `
+			    padding: 0;
+    			flex-shrink: 0;
+    			position: relative;
+    			top: 0;
+    			width: 100%;
+			`
+		},
+		{
+			s: `#rightsidebar .ui-tabs-panel`,
+			r: `
+				height: 100% !important;
+				display: block;
+				top: 0;
+			`
+		},
+		{
+			s: `#textchat-input`,
+			r: `
+				display: none;
+				position: relative;
+    			flex-shrink: 0;
+			`
+		},
+		{
+			s: `#textchat-input textarea`,
+			r: `
+				width: 100%;
+				resize: vertical;
+			`
 		},
 	];
 

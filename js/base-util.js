@@ -262,12 +262,17 @@ function baseUtil () {
 		}
 	};
 
+	d20plus.ut.getPathById = (pathId) => {
+		return d20plus.ut._getCanvasElementById(pathId, "thepaths");
+	};
+
 	d20plus.ut.getTokenById = (tokenId) => {
-		const foundTokenArr = d20.Campaign.pages.models.map(model => model.thegraphics.models.find(it => it.id === tokenId)).filter(it => it);
-		if (foundTokenArr.length) {
-			return foundTokenArr[0];
-		}
-		return null;
+		return d20plus.ut._getCanvasElementById(tokenId, "thegraphics");
+	};
+
+	d20plus.ut._getCanvasElementById = (id, prop) => {
+		const foundArr = d20.Campaign.pages.models.map(model => model[prop] && model[prop].models ? model[prop].models.find(it => it.id === id) : null).filter(it => it);
+		return foundArr.length ? foundArr[0] : null;
 	};
 
 	d20plus.ut.getMacroByName = (macroName) => {
@@ -472,6 +477,19 @@ function baseUtil () {
 
 	d20plus.ut.isUseSharedJs = () => {
 		return BASE_SITE_URL.includes("://5e.tools") || BASE_SITE_URL.includes("://5etools.com");
+	};
+
+	d20plus.ut.fixSidebarLayout = () => {
+		$(`#textchat-input`).show().insertAfter(`#textchat`);
+		const cached = d20.textchat.showPopout;
+		d20.textchat.showPopout = function () {
+			cached();
+			const cached2 = d20.textchat.childWindow.onbeforeunload;
+			d20.textchat.childWindow.onbeforeunload = function () {
+				cached2();
+				$(`#textchat-input`).insertAfter(`#textchat`);
+			}
+		}
 	};
 }
 

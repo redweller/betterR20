@@ -163,7 +163,7 @@ function d20plusImporter () {
 		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max(...character.senses.match(/\d+/g));
 		var lightmin = 0;
 		if (character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
-		const nameSuffix = d20plus.cfg.get("token", "namesuffix");
+		const nameSuffix = d20plus.cfg.get("import", "namesuffix");
 		var defaulttoken = {
 			represents: character.id,
 			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
@@ -202,7 +202,7 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.addAction = function (character, name, actionText, index) {
-		if (d20plus.cfg.get("token", "tokenactions")) {
+		if (d20plus.cfg.get("import", "tokenactions")) {
 			character.abilities.create({
 				name: index + ": " + name,
 				istokenaction: true,

@@ -440,23 +440,9 @@ function d20plusMonsters () {
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 
 							// add Tokenaction Macros
-							if (d20plus.cfg.get("token", "tokenactionsSkillsSaves")) {
+							if (d20plus.cfg.get("import", "tokenactionsSkills")) {
 								if (d20plus.sheet === "shaped") {
-									character.abilities.create({
-										name: "Init",
-										istokenaction: true,
-										action: `%{${character.id}|shaped_initiative}`
-									});
-									character.abilities.create({
-										name: "Saving Throws",
-										istokenaction: true,
-										action: `%{${character.id}|shaped_saving_throw_query}`
-									});
-									character.abilities.create({
-										name: "Ability Checks",
-										istokenaction: true,
-										action: `%{${character.id}|shaped_ability_checks_query}`
-									});
+
 								} else {
 									character.abilities.create({
 										name: "Perception",
@@ -464,10 +450,61 @@ function d20plusMonsters () {
 										action: d20plus.actionMacroPerception
 									});
 									character.abilities.create({
+										name: "Skill-Check",
+										istokenaction: true,
+										action: d20plus.actionMacroSkillCheck
+									});
+								}
+							}
+							if (d20plus.cfg.get("import", "tokenactionsSaves")) {
+								if (d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Saving Throws",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_saving_throw_query}`
+									});
+								} else {
+									character.abilities.create({
+										name: "Saves",
+										istokenaction: true,
+										action: d20plus.actionMacroSaves
+									});
+								}
+							}
+							if (d20plus.cfg.get("import", "tokenactionsInitiative")) {
+								if (d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Init",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_initiative}`
+									});
+								} else {
+									character.abilities.create({
 										name: "Init",
 										istokenaction: true,
 										action: d20plus.actionMacroInit
 									});
+								}
+							}
+							if (d20plus.cfg.get("import", "tokenactionsChecks")) {
+								if (d20plus.sheet === "shaped") {
+									character.abilities.create({
+										name: "Ability Checks",
+										istokenaction: true,
+										action: `%{${character.id}|shaped_ability_checks_query}`
+									});
+								} else {
+									character.abilities.create({
+										name: "Ability-Check",
+										istokenaction: true,
+										action: d20plus.actionMacroAbilityCheck
+									});
+								}
+							}
+							if (d20plus.cfg.get("import", "tokenactionsOther")) {
+								if (d20plus.sheet === "shaped") {
+
+								} else {
 									character.abilities.create({
 										name: "DR/Immunities",
 										istokenaction: true,
@@ -477,21 +514,6 @@ function d20plusMonsters () {
 										name: "Stats",
 										istokenaction: true,
 										action: d20plus.actionMacroStats
-									});
-									character.abilities.create({
-										name: "Saves",
-										istokenaction: true,
-										action: d20plus.actionMacroSaves
-									});
-									character.abilities.create({
-										name: "Skill-Check",
-										istokenaction: true,
-										action: d20plus.actionMacroSkillCheck
-									});
-									character.abilities.create({
-										name: "Ability-Check",
-										istokenaction: true,
-										action: d20plus.actionMacroAbilityCheck
 									});
 								}
 							}
@@ -966,7 +988,7 @@ function d20plusMonsters () {
 
 									// on final item, add macro
 									if (index === addMacroIndex) {
-										if (d20plus.cfg.get("token", "tokenactionsSpells")) {
+										if (d20plus.cfg.get("import", "tokenactionsSpells")) {
 											if (d20plus.sheet === "shaped") {
 												character.abilities.create({
 													name: "Spells",
@@ -1033,7 +1055,7 @@ function d20plusMonsters () {
 										current: d20plus.importer.getCleanText(renderer.render(v.name))
 									});
 
-									if (d20plus.cfg.get("token", "tokenactionsTraits")) {
+									if (d20plus.cfg.get("import", "tokenactionsTraits")) {
 										const offsetIndex = data.spellcasting ? 1 + i : i;
 										character.abilities.create({
 											name: "Trait" + offsetIndex + ": " + v.name,
@@ -1098,7 +1120,7 @@ function d20plusMonsters () {
 								character.attribs.create({name: "reaction_flag", current: 1});
 								character.attribs.create({name: "npcreactionsflag", current: 1});
 
-								if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet === "shaped") {
+								if (d20plus.cfg.get("import", "tokenactions") && d20plus.sheet === "shaped") {
 									character.abilities.create({
 										name: "Reactions",
 										istokenaction: true,
@@ -1115,7 +1137,7 @@ function d20plusMonsters () {
 									});
 
 									// roll20 only supports a single reaction, so only use the first
-									if (d20plus.cfg.get("token", "tokenactions") && i === 0 && d20plus.sheet !== "shaped") {
+									if (d20plus.cfg.get("import", "tokenactions") && i === 0 && d20plus.sheet !== "shaped") {
 										character.abilities.create({
 											name: "Reaction: " + v.name,
 											istokenaction: true,
@@ -1139,7 +1161,7 @@ function d20plusMonsters () {
 								let legendaryActions = data.legendaryActions || 3;
 								character.attribs.create({name: "npc_legendary_actions", current: legendaryActions.toString()});
 
-								if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet === "shaped") {
+								if (d20plus.cfg.get("import", "tokenactions") && d20plus.sheet === "shaped") {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
@@ -1151,7 +1173,7 @@ function d20plusMonsters () {
 								$.each(data.legendary, function (i, v) {
 									var newRowId = d20plus.ut.generateRowId();
 
-									if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet !== "shaped") {
+									if (d20plus.cfg.get("import", "tokenactions") && d20plus.sheet !== "shaped") {
 										tokenactiontext += "[" + v.name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
 									}
 
@@ -1278,7 +1300,7 @@ function d20plusMonsters () {
 									});
 								});
 
-								if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet !== "shaped") {
+								if (d20plus.cfg.get("import", "tokenactions") && d20plus.sheet !== "shaped") {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
@@ -1292,7 +1314,7 @@ function d20plusMonsters () {
 								character.attribs.create({name: "npc_name_flag", current: 0});
 							}
 
-							if (d20plus.cfg.get("token", "tokenactions") && d20plus.sheet === "shaped") {
+							if (d20plus.cfg.get("import", "tokenactions") && d20plus.sheet === "shaped") {
 								character.abilities.create({
 									name: "Actions",
 									istokenaction: true,

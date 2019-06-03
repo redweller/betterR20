@@ -624,50 +624,54 @@ function d20plusEngine () {
 								}),
 								i()
 						} else if ("side_choose" == e) {
-							var l = n[0]
-								, h = l.model.toJSON()
-								, p = h.currentSide;
-							h.sidesarray = h.sides.split("|");
-							var c = $($("#tmpl_chooseside").jqote(h)).dialog({
+							const e = n[0]
+								, t = e.model.toJSON()
+								, o = t.sides.split("|");
+							let r = t.currentSide;
+							const a = $($("#tmpl_chooseside").jqote()).dialog({
 								title: "Choose Side",
 								width: 325,
 								height: 225,
 								buttons: {
 									Choose: function() {
-										const imgUrl = unescape(h.sidesarray[p]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-											l.model.save(getRollableTokenUpdate(imgUrl, p)),
-											l = null,
-											h = null,
-											c.off("slide"),
-											c.dialog("destroy").remove()
+											e.model.save({
+												currentSide: r,
+												imgsrc: unescape(o[r])
+											}),
+											a.off("slide"),
+											a.dialog("destroy").remove()
 									},
 									Cancel: function() {
-										l = null,
-											h = null,
-											c.off("slide"),
-											c.dialog("destroy").remove()
+										a.off("slide"),
+											a.dialog("destroy").remove()
 									}
 								},
 								beforeClose: function() {
-									l = null,
-										h = null,
-										c.off("slide"),
-										c.dialog("destroy").remove()
+									a.off("slide"),
+										a.dialog("destroy").remove()
 								}
-							});
-							c.find(".sideslider").slider({
-								min: 0,
-								max: h.sidesarray.length - 1,
-								step: 1,
-								value: h.currentSide
-							}),
-								c.on("slide", function(e, t) {
-									t.value != p && (p = t.value,
-										c.find(".sidechoices .sidechoice").hide().eq(t.value).show())
+							})
+								, s = a.find(".sidechoices");
+							for (const e of o) {
+								const t = unescape(e);
+								let n = d20.utils.isVideo(t) ? `<video src="${t.replace("/med.webm", "/thumb.webm")}" muted autoplay loop />` : `<img src="${t}" />`;
+								n = `<div class="sidechoice">${n}</div>`,
+									s.append(n)
+							}
+							s.children().attr("data-selected", !1).eq(r).attr("data-selected", !0),
+								a.find(".sideslider").slider({
+									min: 0,
+									max: o.length - 1,
+									step: 1,
+									value: r
 								}),
-								c.find(".sidechoices .sidechoice").hide().eq(h.currentSide).show(),
-								i()
+								a.on("slide", function(e, t) {
+									t.value != r && (r = t.value,
+										a.find(".sidechoices .sidechoice").attr("data-selected", !1).eq(t.value).attr("data-selected", !0))
+								}),
+								i(),
+								d20.token_editor.removeRadialMenu()
 						}
 						// BEGIN MOD
 						const showRollOptions = (formula, options) => {
@@ -832,6 +836,10 @@ function d20plusEngine () {
 							resizeToken();
 							i();
 						} else if ("copy-tokenid" === e) {
+							const sel = d20.engine.selected();
+							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
+							i();
+						} else if ("copy-pathid" === e) {
 							const sel = d20.engine.selected();
 							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
 							i();
