@@ -285,21 +285,10 @@ function d20plusItems () {
 		} else {
 			roll20Data.data["Requires Attunement"] = "No";
 		}
-		// TODO handle other magic versions
-		// roll20Data.data.Modifiers = ... ; // this can be a variety of things, and is a comma separated list
-		// some examples, that are currently handled:
-		// "Ranged Attacks +3, Ranged Damage +3"
-		// "Ac +2"
-		// "Spell Attack +2"
-		// "Saving Throws +1"
-		// "AC +15, Spell Attack +2, Spell DC +2"
-		// ...and some examples, that are not:
-		// "Constitution +2"
-		// "Strength: 21"
-		if (data.modifier) {
-			const allModifiers = data.modifier.filter(m => m.__text).map(m => m.__text.split(" ").map(s => s.uppercaseFirst()).join(" ")).join(", ");
-			roll20Data.data.Modifiers = allModifiers;
-		}
+
+		// load modifiers (e.g. "+1 Armor"); this is a comma-separated string
+		const itemMeta = (itemMetadata.item || []).find(it => it.name === data.name && it.source === data.source);
+		if (itemMeta) roll20Data.data.Modifiers = itemMeta.Modifiers;
 
 		if (data._r20SubItemData) {
 			roll20Data._subItems = data._r20SubItemData.map(subItem => {

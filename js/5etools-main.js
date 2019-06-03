@@ -116,6 +116,7 @@ const betteR205etoolsMain = function () {
 	let monsterFluffData = {};
 	let monsterMetadata = {};
 	let adventureMetadata = {};
+	let itemMetadata = {};
 	let classDataUrls = {};
 	let brewCollectionIndex = {};
 
@@ -462,6 +463,7 @@ const betteR205etoolsMain = function () {
 		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}meta.json`, isJson: true},
 		{name: "adventures index", url: `${DATA_URL}adventures.json`, isJson: true},
 		{name: "basic items", url: `${DATA_URL}basicitems.json`, isJson: true},
+		{name: "item modifiers", url: `${DATA_URL}roll20-items.json`, isJson: true},
 	];
 
 	// add JSON index/metadata
@@ -479,6 +481,7 @@ const betteR205etoolsMain = function () {
 				data.itemProperty.forEach(p => Renderer.item._addProperty(p));
 				data.itemType.forEach(t => Renderer.item._addType(t));
 			}
+			else if (name === "item modifiers") itemMetadata = data;
 			else throw new Error(`Unhandled data from JSON ${name} (${url})`);
 
 			d20plus.ut.log(`JSON [${name}] Loaded`);
