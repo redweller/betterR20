@@ -381,10 +381,10 @@ function baseTool() {
 								if (tbl) {
 									throw new Error("No blank line found between tables")
 								}
-								const [junk, tblName,showHide] = line.split("--").map(it => it.trim());
+								const [junk, tblName, showHide] = line.split("--").map(it => it.trim());
 								tbl = {
 									name: tblName,
-									isShown: showHide.toLowerCase() === "show"
+									isShown: (showHide || "").toLowerCase() === "show"
 								};
 								tbl.items = [];
 							} else if (line.trim()) {
