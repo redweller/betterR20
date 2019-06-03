@@ -478,6 +478,19 @@ function baseUtil () {
 	d20plus.ut.isUseSharedJs = () => {
 		return BASE_SITE_URL.includes("://5e.tools") || BASE_SITE_URL.includes("://5etools.com");
 	};
+
+	d20plus.ut.fixSidebarLayout = () => {
+		$(`#textchat-input`).show().insertAfter(`#textchat`);
+		const cached = d20.textchat.showPopout;
+		d20.textchat.showPopout = function () {
+			cached();
+			const cached2 = d20.textchat.childWindow.onbeforeunload;
+			d20.textchat.childWindow.onbeforeunload = function () {
+				cached2();
+				$(`#textchat-input`).insertAfter(`#textchat`);
+			}
+		}
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);
