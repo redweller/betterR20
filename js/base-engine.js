@@ -1505,14 +1505,14 @@ function d20plusEngine () {
 		};
 		// END ROLL20 CODE
 
-		if (UPPER_CANVAS_MOUSEDOWN_LIST.length) {
-			UPPER_CANVAS_MOUSEDOWN = (UPPER_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
+			FINAL_CANVAS_MOUSEDOWN = (FINAL_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
 		}
 
-		if (UPPER_CANVAS_MOUSEDOWN) {
+		if (FINAL_CANVAS_MOUSEDOWN) {
 			d20plus.ut.log("Enhancing hex snap");
-			d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
-			d20.engine.uppercanvas.addEventListener("mousedown", A);
+			d20.engine.final_canvas.removeEventListener("mousedown", FINAL_CANVAS_MOUSEDOWN);
+			d20.engine.final_canvas.addEventListener("mousedown", A);
 		}
 
 		// add sub-grid snap
@@ -1552,14 +1552,14 @@ function d20plusEngine () {
 		// END ROLL20 CODE
 
 		// add missing vars
-		var t = d20.engine.canvas;
-		var a = $("#editor-wrapper");
+		var i = d20.engine.canvas;
+		var r = $("#editor-wrapper");
 
 		// Roll20 bug (present as of 2019-5-25) workaround
 		//   when box-selecting + moving tokens, the "object:moving" event throws an exception
 		//   try-catch-ignore this, because it's extremely annoying
-		const cachedFire = t.fire.bind(t);
-		t.fire = function (namespace, opts) {
+		const cachedFire = i.fire.bind(i);
+		i.fire = function (namespace, opts) {
 			if (namespace === "object:moving") {
 				try {
 					cachedFire(namespace, opts);
@@ -1569,25 +1569,25 @@ function d20plusEngine () {
 			}
 		};
 
-		// mousemove handler from Roll20 @ 2019-01-29
+		// mousemove handler from Roll20 @ 2019-06-04
 		// BEGIN ROLL20 CODE
-		const R = function(e) {
-			var n, i;
+		const A = function(e) {
+			var t, n;
 			if (e.changedTouches ? ((e.changedTouches.length > 1 || "pan" == d20.engine.mode) && (delete d20.engine.pings[window.currentPlayer.id],
 				d20.engine.pinging = !1),
 				e.preventDefault(),
-				n = e.changedTouches[0].pageX,
-				i = e.changedTouches[0].pageY) : (n = e.pageX,
-				i = e.pageY),
-			"select" != d20.engine.mode && "path" != d20.engine.mode && "targeting" != d20.engine.mode || t.__onMouseMove(e),
+				t = e.changedTouches[0].pageX,
+				n = e.changedTouches[0].pageY) : (t = e.pageX,
+				n = e.pageY),
+			"select" != d20.engine.mode && "path" != d20.engine.mode && "targeting" != d20.engine.mode || i.__onMouseMove(e),
 			d20.engine.leftMouseIsDown || d20.engine.rightMouseIsDown) {
-				var o = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
-					, r = Math.floor(i / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
-				if (d20.engine.mousePos = [o, r],
+				var o = Math.floor(t / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
+					, a = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] / d20.engine.canvasZoom);
+				if (d20.engine.mousePos = [o, a],
 				!d20.engine.leftMouseIsDown || "fog-reveal" != d20.engine.mode && "fog-hide" != d20.engine.mode && "gridalign" != d20.engine.mode) {
 					if (d20.engine.leftMouseIsDown && "measure" == d20.engine.mode && d20.engine.measure.down[0] !== undefined && d20.engine.measure.down[1] !== undefined) {
 						d20.engine.measure.down[2] = o,
-							d20.engine.measure.down[3] = r,
+							d20.engine.measure.down[3] = a,
 							d20.engine.measure.sticky |= e.shiftKey;
 						let t = d20.Campaign.activePage().get("grid_type")
 							, n = "snap_corner" === d20.engine.ruler_snapping && !e.altKey && 0 !== d20.engine.snapTo
@@ -1655,12 +1655,12 @@ function d20plusEngine () {
 					} else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode) {
 						if (d20.engine.fx.current) {
 							var l = (new Date).getTime();
-							l - d20.engine.fx.lastMoveBroadcast > d20.engine.fx.MOVE_BROADCAST_FREQ ? (d20.fx.moveFx(d20.engine.fx.current, o, r),
-								d20.engine.fx.lastMoveBroadcast = l) : d20.fx.moveFx(d20.engine.fx.current, o, r, !0)
+							l - d20.engine.fx.lastMoveBroadcast > d20.engine.fx.MOVE_BROADCAST_FREQ ? (d20.fx.moveFx(d20.engine.fx.current, o, a),
+								d20.engine.fx.lastMoveBroadcast = l) : d20.fx.moveFx(d20.engine.fx.current, o, a, !0)
 						}
 					} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
-						var c = (n + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
-							, u = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
+						var c = (t + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
+							, u = (n + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
 						0 != d20.engine.snapTo && e.shiftKey && (c = d20.engine.snapToIncrement(c, d20.engine.snapTo),
 							u = d20.engine.snapToIncrement(u, d20.engine.snapTo));
 						var d = d20.engine.drawshape.shape;
@@ -1670,23 +1670,23 @@ function d20plusEngine () {
 					}
 				} else
 					d20.engine.fog.down[2] = o,
-						d20.engine.fog.down[3] = r,
+						d20.engine.fog.down[3] = a,
 					0 != d20.engine.snapTo && "square" == d20.Campaign.activePage().get("grid_type") && ("gridalign" == d20.engine.mode ? e.shiftKey && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
 						d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo)) : (e.shiftKey && !d20.Campaign.activePage().get("adv_fow_enabled") || !e.shiftKey && d20.Campaign.activePage().get("adv_fow_enabled")) && (d20.engine.fog.down[2] = d20.engine.snapToIncrement(d20.engine.fog.down[2], d20.engine.snapTo),
 						d20.engine.fog.down[3] = d20.engine.snapToIncrement(d20.engine.fog.down[3], d20.engine.snapTo))),
 						d20.Campaign.activePage().get("showdarkness") ? d20.engine.redrawScreenNextTick(!0) : d20.engine.clearCanvasOnRedraw("fog");
 				if (d20.engine.pinging)
-					(c = Math.abs(d20.engine.pinging.downx - n)) + (u = Math.abs(d20.engine.pinging.downy - i)) > 10 && (delete d20.engine.pings[window.currentPlayer.id],
+					(c = Math.abs(d20.engine.pinging.downx - t)) + (u = Math.abs(d20.engine.pinging.downy - n)) > 10 && (delete d20.engine.pings[window.currentPlayer.id],
 						d20.engine.pinging = !1);
 				if (d20.engine.pan.panning) {
-					c = 2 * (n - d20.engine.pan.panXY[0]),
-						u = 2 * (i - d20.engine.pan.panXY[1]);
+					c = 2 * (t - d20.engine.pan.panXY[0]),
+						u = 2 * (n - d20.engine.pan.panXY[1]);
 					if (d20.engine.pan.lastPanDist += Math.abs(c) + Math.abs(u),
 					d20.engine.pan.lastPanDist < 10)
 						return;
 					var h = d20.engine.pan.beginPos[0] - c
 						, p = d20.engine.pan.beginPos[1] - u;
-					a.stop().animate({
+					r.stop().animate({
 						scrollLeft: h,
 						scrollTop: p
 					}, {
@@ -1699,14 +1699,14 @@ function d20plusEngine () {
 		};
 		// END ROLL20 CODE
 
-		if (UPPER_CANVAS_MOUSEMOVE_LIST.length) {
-			UPPER_CANVAS_MOUSEMOVE = (UPPER_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		if (FINAL_CANVAS_MOUSEMOVE_LIST.length) {
+			FINAL_CANVAS_MOUSEMOVE = (FINAL_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
 		}
 
-		if (UPPER_CANVAS_MOUSEMOVE) {
+		if (FINAL_CANVAS_MOUSEMOVE) {
 			d20plus.ut.log("Enhancing mouse move");
-			d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
-			d20.engine.uppercanvas.addEventListener("mousemove", R);
+			d20.engine.final_canvas.removeEventListener("mousemove", FINAL_CANVAS_MOUSEMOVE);
+			d20.engine.final_canvas.addEventListener("mousemove", A);
 		}
 	};
 

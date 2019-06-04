@@ -445,14 +445,20 @@ function d20plusMonsters () {
 
 								} else {
 									character.abilities.create({
-										name: "Perception",
-										istokenaction: true,
-										action: d20plus.actionMacroPerception
-									});
-									character.abilities.create({
 										name: "Skill-Check",
 										istokenaction: true,
 										action: d20plus.actionMacroSkillCheck
+									});
+								}
+							}
+							if (d20plus.cfg.get("import", "tokenactionsPerception")) {
+								if (d20plus.sheet === "shaped") {
+
+								} else {
+									character.abilities.create({
+										name: "Perception",
+										istokenaction: true,
+										action: d20plus.actionMacroPerception
 									});
 								}
 							}

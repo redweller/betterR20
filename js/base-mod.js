@@ -73,7 +73,7 @@ function d20plusMod() {
 
 	d20plus.mod.drawMeasurements = function () {
 		// BEGIN ROLL20 CODE
-		var E = function(e, t) {
+		var k = function(e, t) {
 			let n = {
 				scale: 0,
 				grid: 0
@@ -91,7 +91,7 @@ function d20plusMod() {
 					o > -1 ? (a.x = t.waypoints[o][0],
 						a.y = t.waypoints[o][1]) : (a.x = t.x,
 						a.y = t.y);
-					let s = S(e, a, !0, "nub", n, i);
+					let s = E(e, a, !0, "nub", n, i);
 					n.scale += s.scale_distance,
 						n.grid += s.grid_distance,
 						i = s.diagonals % 2,
@@ -103,16 +103,18 @@ function d20plusMod() {
 				to_y: t.to_y,
 				color: t.color,
 				flags: t.flags,
-				hide: t.hide,
+				hide: t.hide
+				// BEGIN MOD
+				,
 				Ve: t.Ve
+				// END MOD
 			};
 			-1 === o ? (r.x = t.x,
 				r.y = t.y) : (r.x = t.waypoints[o][0],
 				r.y = t.waypoints[o][1]),
-				S(e, r, !0, "arrow", n, i)
+				E(e, r, !0, "arrow", n, i)
 		}
-
-		var S = function(e, t, n, i, o, r) {
+			, E = function(e, t, n, i, o, r) {
 			let a = e=>e / d20.engine.canvasZoom
 				, s = d20.engine.getDistanceInScale({
 				x: t.x,
@@ -121,7 +123,9 @@ function d20plusMod() {
 				x: t.to_x,
 				y: t.to_y
 			}, r, 15 & t.flags);
-			e.globalCompositeOperation = "source-over",
+			e.save(),
+				e.globalCompositeOperation = "source-over",
+				e.globalAlpha = 1,
 				e.strokeStyle = t.color,
 				e.fillStyle = e.strokeStyle,
 				e.lineWidth = a(3);
@@ -472,31 +476,31 @@ function d20plusMod() {
 			}
 			// END MOD
 
-			return s
+			return e.restore(),
+				s
 		};
 
 		d20.engine.drawMeasurements = function (e) {
-			e.globalCompositeOperation = "source-over",
-				e.globalAlpha = 1,
-				_.each(d20.engine.measurements, function(t) {
-					if (t.pageid !== d20.Campaign.activePage().id)
-						return;
-					let n = {
-						color: d20.Campaign.players.get(t.player).get("color"),
-						to_x: t.to_x - d20.engine.currentCanvasOffset[0],
-						to_y: t.to_y - d20.engine.currentCanvasOffset[1],
-						x: t.x - d20.engine.currentCanvasOffset[0],
-						y: t.y - d20.engine.currentCanvasOffset[1],
-						flags: t.flags,
-						hide: t.hide,
-						waypoints: _.map(t.waypoints, e=>[e[0] - d20.engine.currentCanvasOffset[0], e[1] - d20.engine.currentCanvasOffset[1]])
-						// BEGIN MOD
-						,
-						Ve: t.Ve ? JSON.parse(JSON.stringify(t.Ve)) : undefined
-						// END MOD
-					};
-					E(e, n)
-				})
+			_.each(d20.engine.measurements, function(t) {
+				if (t.pageid !== d20.Campaign.activePage().id)
+					return;
+				let n = {
+					color: d20.Campaign.players.get(t.player).get("color"),
+					to_x: t.to_x - d20.engine.currentCanvasOffset[0],
+					to_y: t.to_y - d20.engine.currentCanvasOffset[1],
+					x: t.x - d20.engine.currentCanvasOffset[0],
+					y: t.y - d20.engine.currentCanvasOffset[1],
+					flags: t.flags,
+					hide: t.hide,
+					waypoints: _.map(t.waypoints, e=>[e[0] - d20.engine.currentCanvasOffset[0], e[1] - d20.engine.currentCanvasOffset[1]])
+					// BEGIN MOD
+					,
+					Ve: t.Ve ? JSON.parse(JSON.stringify(t.Ve)) : undefined
+					// END MOD
+				};
+				k(e, n)
+			}),
+				e.restore()
 
 			// BEGIN MOD
 			const offset = (num, offset, xy) => {
@@ -827,7 +831,8 @@ function d20plusMod() {
 			// END MOD
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
-		for (let e of this._objects)
+		const a = e && e.tokens_to_render ? _.compact(_.map(e.tokens_to_render.models, e=>e.view.graphic)) : this._objects;
+		for (let e of a)
 			if (e.model) {
 				const t = e.model.get("layer");
 				if (!r[t])
@@ -836,45 +841,38 @@ function d20plusMod() {
 			} else
 				r[window.currentEditingLayer].push(e);
 		for (const [i,a] of r) {
-			// BEGIN MOD
-			t.globalAlpha = 1;
-			// END MOD
 			switch (a) {
 				case "grid":
 					d20.canvas_overlay.drawGrid(t);
 					continue;
 				case "afow":
-					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.afow);
+					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
 					continue;
 				case "gmlayer":
 					t.globalAlpha = d20.engine.gm_layer_opacity;
 					break;
-				case "objects":
-					// BEGIN MOD
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-						t.globalAlpha = .45;
-					}
-					break;
-					// END MOD
 				// BEGIN MOD
 				case "background":
-					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
 						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
 					}
 					break;
-					// END MOD
 				case "foreground":
-					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
 						|| "background" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
 					}
 					break;
-					// END MOD
 				// END MOD
+				case "objects":
+					// BEGIN MOD
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
+						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
+						// END MOD
+						t.globalAlpha = .45;
+						break
+					}
 				default:
 					t.globalAlpha = 1
 			}
@@ -885,14 +883,17 @@ function d20plusMod() {
 						i.hasControls = !0,
 						"text" !== i.type && window.is_gm ? i.hideResizers = !1 : i.hideResizers = !0),
 						e && e.invalid_rects ? (r = i.intersects([o]) && (i.needsToBeDrawn || i.intersects(e.invalid_rects)),
-						i.renderPre && i.renderPre(t)) : (r = i.needsRender(o)) && i.renderPre && i.renderPre(t, {
+						!e.skip_prerender && i.renderPre && i.renderPre(t)) : (r = i.needsRender(o),
+						(!e || !e.skip_prerender) && r && i.renderPre && i.renderPre(t, {
 							should_update: !0
-						}),
+						})),
 						r
 				}
-			).each(e=>{
-					this._draw(t, e),
-						e.renderingInGroup = null
+			).each(n=>{
+					const i = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id)
+						, o = e && e.owned_auras_only;
+					(!o || o && !i) && this._draw(t, n),
+						n.renderingInGroup = null
 				}
 			)
 		}
@@ -904,16 +905,25 @@ function d20plusMod() {
 	// shoutouts to Roll20 for making me learn how `yield` works
 	// BEGIN ROLL20 CODE
 	d20plus.mod.layerIteratorGenerator = function*(e) { // e is just an options object
-		yield[this.map, "map"];
+		yield[this.map, "map"],
 		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]);
-		e && e.grid_before_afow && (yield[null, "grid"]);
-		e && e.disable_afow || !d20.Campaign.activePage().get("adv_fow_enabled") || !window.largefeats || (yield[null, "afow"]);
-		e && e.grid_before_afow || (yield[null, "grid"]);
-		yield[this.background, "background"];
-		yield[this.objects, "objects"];
-		yield[this.foreground, "foreground"];
-		window.is_gm && (yield[this.gmlayer, "gmlayer"]);
+		const t = e && e.grid_before_afow
+			, n = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow
+			, i = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+		t && !i && (yield[null, "grid"]),
+		!n && window.largefeats && (yield[null, "afow"]),
+		t || i || (yield[null, "grid"]),
+			// BEGIN MOD
+			yield[this.background, "background"],
+			// END MOD
+			yield[this.objects, "objects"],
+			// BEGIN MOD
+			yield[this.foreground, "foreground"],
+			// END MOD
+		window.is_gm && (yield[this.gmlayer, "gmlayer"])
+		// BEGIN MOD
 		window.is_gm && "weather" === window.currentEditingLayer && (yield[this.weather, "weather"]);
+		// END MOD
 	};
 	// END ROLL20 CODE
 
