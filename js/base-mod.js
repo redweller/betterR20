@@ -905,16 +905,25 @@ function d20plusMod() {
 	// shoutouts to Roll20 for making me learn how `yield` works
 	// BEGIN ROLL20 CODE
 	d20plus.mod.layerIteratorGenerator = function*(e) { // e is just an options object
-		yield[this.map, "map"];
+		yield[this.map, "map"],
 		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]);
-		e && e.grid_before_afow && (yield[null, "grid"]);
-		e && e.disable_afow || !d20.Campaign.activePage().get("adv_fow_enabled") || !window.largefeats || (yield[null, "afow"]);
-		e && e.grid_before_afow || (yield[null, "grid"]);
-		yield[this.background, "background"];
-		yield[this.objects, "objects"];
-		yield[this.foreground, "foreground"];
-		window.is_gm && (yield[this.gmlayer, "gmlayer"]);
+		const t = e && e.grid_before_afow
+			, n = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow
+			, i = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+		t && !i && (yield[null, "grid"]),
+		!n && window.largefeats && (yield[null, "afow"]),
+		t || i || (yield[null, "grid"]),
+			// BEGIN MOD
+			yield[this.background, "background"],
+			// END MOD
+			yield[this.objects, "objects"],
+			// BEGIN MOD
+			yield[this.foreground, "foreground"],
+			// END MOD
+		window.is_gm && (yield[this.gmlayer, "gmlayer"])
+		// BEGIN MOD
 		window.is_gm && "weather" === window.currentEditingLayer && (yield[this.weather, "weather"]);
+		// END MOD
 	};
 	// END ROLL20 CODE
 
