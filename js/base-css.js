@@ -456,7 +456,7 @@ function baseCss () {
 		{
 			s: `#textchat-input textarea`,
 			r: `
-				width: 100%;
+				width: calc(100% - 8px) !important;
 				resize: vertical;
 			`
 		},
