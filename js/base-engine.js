@@ -1505,14 +1505,14 @@ function d20plusEngine () {
 		};
 		// END ROLL20 CODE
 
-		if (UPPER_CANVAS_MOUSEDOWN_LIST.length) {
-			UPPER_CANVAS_MOUSEDOWN = (UPPER_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
+			FINAL_CANVAS_MOUSEDOWN = (FINAL_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
 		}
 
-		if (UPPER_CANVAS_MOUSEDOWN) {
+		if (FINAL_CANVAS_MOUSEDOWN) {
 			d20plus.ut.log("Enhancing hex snap");
-			d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
-			d20.engine.uppercanvas.addEventListener("mousedown", A);
+			d20.engine.final_canvas.removeEventListener("mousedown", FINAL_CANVAS_MOUSEDOWN);
+			d20.engine.final_canvas.addEventListener("mousedown", A);
 		}
 
 		// add sub-grid snap
@@ -1552,14 +1552,14 @@ function d20plusEngine () {
 		// END ROLL20 CODE
 
 		// add missing vars
-		var t = d20.engine.canvas;
+		var i = d20.engine.canvas;
 		var r = $("#editor-wrapper");
 
 		// Roll20 bug (present as of 2019-5-25) workaround
 		//   when box-selecting + moving tokens, the "object:moving" event throws an exception
 		//   try-catch-ignore this, because it's extremely annoying
-		const cachedFire = t.fire.bind(t);
-		t.fire = function (namespace, opts) {
+		const cachedFire = i.fire.bind(i);
+		i.fire = function (namespace, opts) {
 			if (namespace === "object:moving") {
 				try {
 					cachedFire(namespace, opts);
@@ -1699,14 +1699,14 @@ function d20plusEngine () {
 		};
 		// END ROLL20 CODE
 
-		if (UPPER_CANVAS_MOUSEMOVE_LIST.length) {
-			UPPER_CANVAS_MOUSEMOVE = (UPPER_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		if (FINAL_CANVAS_MOUSEMOVE_LIST.length) {
+			FINAL_CANVAS_MOUSEMOVE = (FINAL_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
 		}
 
-		if (UPPER_CANVAS_MOUSEMOVE) {
+		if (FINAL_CANVAS_MOUSEMOVE) {
 			d20plus.ut.log("Enhancing mouse move");
-			d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
-			d20.engine.uppercanvas.addEventListener("mousemove", A);
+			d20.engine.final_canvas.removeEventListener("mousemove", FINAL_CANVAS_MOUSEMOVE);
+			d20.engine.final_canvas.addEventListener("mousemove", A);
 		}
 	};
 

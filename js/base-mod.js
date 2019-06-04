@@ -73,7 +73,7 @@ function d20plusMod() {
 
 	d20plus.mod.drawMeasurements = function () {
 		// BEGIN ROLL20 CODE
-		var E = function(e, t) {
+		var k = function(e, t) {
 			let n = {
 				scale: 0,
 				grid: 0
@@ -91,7 +91,7 @@ function d20plusMod() {
 					o > -1 ? (a.x = t.waypoints[o][0],
 						a.y = t.waypoints[o][1]) : (a.x = t.x,
 						a.y = t.y);
-					let s = S(e, a, !0, "nub", n, i);
+					let s = E(e, a, !0, "nub", n, i);
 					n.scale += s.scale_distance,
 						n.grid += s.grid_distance,
 						i = s.diagonals % 2,
@@ -103,16 +103,18 @@ function d20plusMod() {
 				to_y: t.to_y,
 				color: t.color,
 				flags: t.flags,
-				hide: t.hide,
+				hide: t.hide
+				// BEGIN MOD
+				,
 				Ve: t.Ve
+				// END MOD
 			};
 			-1 === o ? (r.x = t.x,
 				r.y = t.y) : (r.x = t.waypoints[o][0],
 				r.y = t.waypoints[o][1]),
-				S(e, r, !0, "arrow", n, i)
+				E(e, r, !0, "arrow", n, i)
 		}
-
-		var S = function(e, t, n, i, o, r) {
+			, E = function(e, t, n, i, o, r) {
 			let a = e=>e / d20.engine.canvasZoom
 				, s = d20.engine.getDistanceInScale({
 				x: t.x,
@@ -121,7 +123,9 @@ function d20plusMod() {
 				x: t.to_x,
 				y: t.to_y
 			}, r, 15 & t.flags);
-			e.globalCompositeOperation = "source-over",
+			e.save(),
+				e.globalCompositeOperation = "source-over",
+				e.globalAlpha = 1,
 				e.strokeStyle = t.color,
 				e.fillStyle = e.strokeStyle,
 				e.lineWidth = a(3);
@@ -472,31 +476,31 @@ function d20plusMod() {
 			}
 			// END MOD
 
-			return s
+			return e.restore(),
+				s
 		};
 
 		d20.engine.drawMeasurements = function (e) {
-			e.globalCompositeOperation = "source-over",
-				e.globalAlpha = 1,
-				_.each(d20.engine.measurements, function(t) {
-					if (t.pageid !== d20.Campaign.activePage().id)
-						return;
-					let n = {
-						color: d20.Campaign.players.get(t.player).get("color"),
-						to_x: t.to_x - d20.engine.currentCanvasOffset[0],
-						to_y: t.to_y - d20.engine.currentCanvasOffset[1],
-						x: t.x - d20.engine.currentCanvasOffset[0],
-						y: t.y - d20.engine.currentCanvasOffset[1],
-						flags: t.flags,
-						hide: t.hide,
-						waypoints: _.map(t.waypoints, e=>[e[0] - d20.engine.currentCanvasOffset[0], e[1] - d20.engine.currentCanvasOffset[1]])
-						// BEGIN MOD
-						,
-						Ve: t.Ve ? JSON.parse(JSON.stringify(t.Ve)) : undefined
-						// END MOD
-					};
-					E(e, n)
-				})
+			_.each(d20.engine.measurements, function(t) {
+				if (t.pageid !== d20.Campaign.activePage().id)
+					return;
+				let n = {
+					color: d20.Campaign.players.get(t.player).get("color"),
+					to_x: t.to_x - d20.engine.currentCanvasOffset[0],
+					to_y: t.to_y - d20.engine.currentCanvasOffset[1],
+					x: t.x - d20.engine.currentCanvasOffset[0],
+					y: t.y - d20.engine.currentCanvasOffset[1],
+					flags: t.flags,
+					hide: t.hide,
+					waypoints: _.map(t.waypoints, e=>[e[0] - d20.engine.currentCanvasOffset[0], e[1] - d20.engine.currentCanvasOffset[1]])
+					// BEGIN MOD
+					,
+					Ve: t.Ve ? JSON.parse(JSON.stringify(t.Ve)) : undefined
+					// END MOD
+				};
+				k(e, n)
+			}),
+				e.restore()
 
 			// BEGIN MOD
 			const offset = (num, offset, xy) => {
