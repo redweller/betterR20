@@ -325,6 +325,11 @@ const betteR205etoolsMain = function () {
 			"default": true,
 			"_type": "boolean"
 		},
+		"tokenactionsPerception": {
+			"name": "Add TokenAction Macros on Import (Perception)",
+			"default": true,
+			"_type": "boolean"
+		},
 		"tokenactionsSaves": {
 			"name": "Add TokenAction Macros on Import (Saves)",
 			"default": true,
