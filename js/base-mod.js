@@ -827,7 +827,8 @@ function d20plusMod() {
 			// END MOD
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
-		for (let e of this._objects)
+		const a = e && e.tokens_to_render ? _.compact(_.map(e.tokens_to_render.models, e=>e.view.graphic)) : this._objects;
+		for (let e of a)
 			if (e.model) {
 				const t = e.model.get("layer");
 				if (!r[t])
@@ -836,45 +837,38 @@ function d20plusMod() {
 			} else
 				r[window.currentEditingLayer].push(e);
 		for (const [i,a] of r) {
-			// BEGIN MOD
-			t.globalAlpha = 1;
-			// END MOD
 			switch (a) {
 				case "grid":
 					d20.canvas_overlay.drawGrid(t);
 					continue;
 				case "afow":
-					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.afow);
+					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
 					continue;
 				case "gmlayer":
 					t.globalAlpha = d20.engine.gm_layer_opacity;
 					break;
-				case "objects":
-					// BEGIN MOD
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-						t.globalAlpha = .45;
-					}
-					break;
-					// END MOD
 				// BEGIN MOD
 				case "background":
-					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
 						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
 					}
 					break;
-					// END MOD
 				case "foreground":
-					// BEGIN MOD
 					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
 						|| "background" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
 					}
 					break;
-					// END MOD
 				// END MOD
+				case "objects":
+					// BEGIN MOD
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
+						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
+						// END MOD
+						t.globalAlpha = .45;
+						break
+					}
 				default:
 					t.globalAlpha = 1
 			}
@@ -885,14 +879,17 @@ function d20plusMod() {
 						i.hasControls = !0,
 						"text" !== i.type && window.is_gm ? i.hideResizers = !1 : i.hideResizers = !0),
 						e && e.invalid_rects ? (r = i.intersects([o]) && (i.needsToBeDrawn || i.intersects(e.invalid_rects)),
-						i.renderPre && i.renderPre(t)) : (r = i.needsRender(o)) && i.renderPre && i.renderPre(t, {
+						!e.skip_prerender && i.renderPre && i.renderPre(t)) : (r = i.needsRender(o),
+						(!e || !e.skip_prerender) && r && i.renderPre && i.renderPre(t, {
 							should_update: !0
-						}),
+						})),
 						r
 				}
-			).each(e=>{
-					this._draw(t, e),
-						e.renderingInGroup = null
+			).each(n=>{
+					const i = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id)
+						, o = e && e.owned_auras_only;
+					(!o || o && !i) && this._draw(t, n),
+						n.renderingInGroup = null
 				}
 			)
 		}
