@@ -133,7 +133,7 @@ const baseTemplate = function () {
           <$ if(this.character) { $>
           <p>(Determined by Character settings)</p>
           <$ } else { $>
-          <select class='controlledby chosen' multiple='true'>
+          <select class='controlledby selectize' multiple='true'>
             <option value='all'>All Players</option>
             <$ window.Campaign.players.each(function(player) { $>
             <option value="<$!player.id$>"><$!player.get("displayname")$></option>
@@ -803,223 +803,273 @@ const baseTemplate = function () {
 		</script>
 		`;
 
-	d20plus.template_charactereditor = `
- <script id='tmpl_charactereditor' type='text/html'>
-     <div class='dialog largedialog charactereditor' style='display: block;'>
-        <div class='tab-content'>
-          <div class='bioinfo tab-pane'>
-            <div class='row-fluid'>
-              <div class='span5'>
-                <label>
-                  <strong>Avatar</strong>
-                </label>
-                <$ if(true) { $>
-                <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
-                <div class="status"></div>
-                <div class="inner">
-                <$ if(this.get("avatar") == "") { $>
-                <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file<small>(JPG, PNG, GIF)</small></h4>
-                <br /> or
-                <button class="btn">Choose a file...</button>
-                <input class="manual" type="file" />
-                <$ } else { $>
-                <img src="<$!this.get("avatar")$>" draggable="false" />
-                <div class='remove'><a href='#'>Remove</a></div>
-                <$ } $>
-                </div>
-                </div>
-                <$ } else { $>
-                <div class='avatar'>
-                <$ if(this.get("avatar") != "") { $>
-                <img src="<$!this.get("avatar")$>" draggable="false" />
-                <$ } $>
-                </div>
-                <$ } $>
-                <div class='clear'></div>
-                <!-- BEGIN MOD -->
-                <button class="btn character-image-by-url">Set Image from URL</button>
-                <div class='clear'></div>
-                <!-- END MOD -->
-                <$ if (window.is_gm) { $>
-                <label>
-                  <strong>Default Token (Optional)</strong>
-                </label>
-                <div class="defaulttoken tokenslot <$! this.get("defaulttoken") !== "" ? "filled" : "" $> style="width: 95%;">
-                <$ if(this.get("defaulttoken") !== "") { $>
-                <img src="" draggable="false" />
-                <div class="remove"><a href="#">Remove</a></div>
-                <$ } else { $>
-                <button class="btn">Use Selected Token</button>
-                <small>Select a token on the tabletop to use as the Default Token</small>
-                <$ } $>
-                </div>
-                <!-- BEGIN MOD -->
-                <button class="btn token-image-by-url">Set Token Image from URL</button>
-                <small style="text-align: left;">(Update will only be visible upon re-opening the sheet)</small>
-                <div class='clear'></div>
-                <!-- END MOD -->
-                <$ } $>
-              </div>
-              <div class='span7'>
-                <label>
-                  <strong>Name</strong>
-                </label>
-                <input class='name' type='text'>
-                <div class='clear'></div>
-                <$ if(window.is_gm) { $>
-                <label>
-                  <strong>In Player's Journals</strong>
-                </label>
-                <select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
-                  <option value="all">All Players</option>
-                  <$ window.Campaign.players.each(function(player) { $>
-                  <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-                  <$ }); $>
-                </select>
-                <div class='clear'></div>
-                <label>
-                  <strong>Can Be Edited &amp; Controlled By</strong>
-                </label>
-                <select class='controlledby chosen' multiple='true' style='width: 100%;'>
-                  <option value="all">All Players</option>
-                  <$ window.Campaign.players.each(function(player) { $>
-                  <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-                  <$ }); $>
-                </select>
-                <div class='clear'></div>
-                <label>
-                  <strong>Tags</strong>
-                </label>
-                <input class='tags'>
-                <div class='clear'></div>
-                <hr>
-                <button class='delete btn btn-danger' style='float: right;'>
-                  Delete
-                </button>
-                <button class='duplicate btn' style='margin-right: 10px;'>
-                  Duplicate
-                </button>
-                <button class='archive btn'>
-                  <$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
-                </button>
-                <div class='clear'></div>
-                <$ } $>
-                <div class='clear'></div>
-              </div>
-            </div>
-            <div class='row-fluid'>
-              <div class='span12'>
-                <hr>
-                <label>
-                  <strong>Bio & Info</strong>
-                </label>
-                <textarea class='bio'></textarea>
-                <div class='clear'></div>
-                <$ if(window.is_gm) { $>
-                <label>
-                  <strong>GM Notes (Only visible to GM)</strong>
-                </label>
-                <textarea class='gmnotes'></textarea>
-                <div class='clear'></div>
-                <$ } $>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </script>		
-		`;
-
-	d20plus.template_handouteditor = `
-			<script id='tmpl_handouteditor' type='text/html'>
-      <div class='dialog largedialog handouteditor' style='display: block;'>
+	d20plus.template_charactereditor = `<script id='tmpl_charactereditor' type='text/html'>
+  <div class='dialog largedialog charactereditor' style='display: block;'>
+    <div class='tab-content'>
+      <div class='bioinfo tab-pane'>
         <div class='row-fluid'>
-          <div class='span12'>
+          <div class='span5'>
             <label>
-              <strong>Name</strong>
+              <strong>Avatar</strong>
             </label>
-            <input class='name' type='text'>
-            <div class='clear'></div>
-            <$ if (window.is_gm) { $>
-            <label>
-              <strong>In Player's Journals</strong>
-            </label>
-            <select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
-              <option value="all">All Players</option>
-              <$ window.Campaign.players.each(function(player) { $>
-              <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-              <$ }); $>
-            </select>
-            <div class='clear'></div>
-            <label>
-              <strong>Can Be Edited By</strong>
-            </label>
-            <select class='controlledby chosen' multiple='true' style='width: 100%;'>
-              <option value="all">All Players</option>
-              <$ window.Campaign.players.each(function(player) { $>
-              <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-              <$ }); $>
-            </select>
-            <div class='clear'></div>
-            <label>
-              <strong>Tags</strong>
-            </label>
-            <input class='tags'>
-            <div class='clear'></div>
-            <$ } $>
-          </div>
-        </div>
-        <div class='row-fluid'>
-          <div class='span12'>
-            <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+            <$ if(true) { $>
+            <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
             <div class="status"></div>
             <div class="inner">
-            <$ if(this.get("avatar") == "") { $>
-            <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
-            <br /> or
-            <button class="btn">Choose a file...</button>
-            <input class="manual" type="file" />
-            <$ } else { $>
-            <img src="<$!this.get("avatar")$>" />
-            <div class='remove'><a href='#'>Remove</a></div>
-            <$ } $>
+              <$ if(this.get("avatar") == "") { $>
+              <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+              <br /> or
+              <button class="btn">Click to Upload</button>
+              <input class="manual" type="file" />
+              <$ } else { $>
+              <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+              <video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+              <$ } else { $>
+              <img src="<$!this.get("avatar")$>" draggable="false" />
+              <$ } $>
+              <div class='remove'><a href='#'>Remove</a></div>
+              <$ } $>
             </div>
-            </div>
-            <div class='clear'></div>
           </div>
+          <$ } else { $>
+          <div class='avatar'>
+            <$ if(this.get("avatar") != "") { $>
+            <img src="<$!this.get("avatar")$>" draggable="false" />
+            <$ } $>
+          </div>
+          <$ } $>
+          <div class='clear'></div>
+          <!-- BEGIN MOD -->
+          <button class="btn character-image-by-url">Set Image from URL</button>
+          <div class='clear'></div>
+          <!-- END MOD -->
+          <$ if (window.is_gm) { $>
+          <label>
+            <strong>Default Token (Optional)</strong>
+          </label>
+          <div class="defaulttoken tokenslot <$! this.get("defaulttoken") !== "" ? "filled" : "" $> style="width: 95%;">
+          <$ if(this.get("defaulttoken") !== "") { $>
+          <img src="" draggable="false" />
+          <div class="remove"><a href="#">Remove</a></div>
+          <$ } else { $>
+          <button class="btn">Use Selected Token</button>
+          <small>Select a token on the tabletop to use as the Default Token</small>
+          <$ } $>
         </div>
         <!-- BEGIN MOD -->
-        <div class='row-fluid'>
-		<button class="btn handout-image-by-url">Set Image from URL</button>
-		<div class='clear'></div>
-		</div>
-		<!-- END MOD -->
-        <div class='row-fluid'>
-          <div class='span12'>
-            <label>
-              <strong>Description & Notes</strong>
-            </label>
-            <textarea class='notes'></textarea>
-            <div class='clear'></div>
-            <$ if(window.is_gm) { $>
-            <label>
-              <strong>GM Notes (Only visible to GM)</strong>
-            </label>
-            <textarea class='gmnotes'></textarea>
-            <div class='clear'></div>
-            <hr>
-            <button class='delete btn btn-danger' style='float: right;'>
-              Delete Handout
-            </button>
-            <button class='archive btn'>
-              <$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive Handout<$ } $>
-            </button>
-            <div class='clear'></div>
-            <$ } $>
-          </div>
+        <button class="btn token-image-by-url">Set Token Image from URL</button>
+        <small style="text-align: left;">(Update will only be visible upon re-opening the sheet)</small>
+        <div class='clear'></div>
+        <!-- END MOD -->
+        <$ } $>
+      </div>
+      <div class='span7'>
+        <label>
+          <strong>Name</strong>
+        </label>
+        <input class='name' type='text'>
+        <div class='clear'></div>
+        <$ if(window.is_gm) { $>
+        <label>
+          <strong>In Player's Journals</strong>
+        </label>
+        <select class='inplayerjournals selectize' multiple='true' style='width: 100%;'>
+          <option value="all">All Players</option>
+          <$ window.Campaign.players.each(function(player) { $>
+          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
+          <$ }); $>
+        </select>
+        <div class='clear'></div>
+        <label>
+          <strong>Can Be Edited &amp; Controlled By</strong>
+        </label>
+        <select class='controlledby selectize' multiple='true' style='width: 100%;'>
+          <option value="all">All Players</option>
+          <$ window.Campaign.players.each(function(player) { $>
+          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
+          <$ }); $>
+        </select>
+        <div class='clear'></div>
+        <label>
+          <strong>Tags</strong>
+        </label>
+        <input class='tags'>
+        <div class='clear'></div>
+        <hr>
+        <button class='delete btn btn-danger' style='float: right;'>
+          Delete
+        </button>
+        <button class='duplicate btn' style='margin-right: 10px;'>
+          Duplicate
+        </button>
+        <button class='archive btn'>
+          <$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
+        </button>
+        <div class='clear'></div>
+        <$ } $>
+        <div class='clear'></div>
+      </div>
+    </div>
+    <div class='row-fluid'>
+      <div class='span12'>
+        <hr>
+        <label>
+          <strong>Bio & Info</strong>
+        </label>
+        <textarea class='bio'></textarea>
+        <div class='clear'></div>
+        <$ if(window.is_gm) { $>
+        <label>
+          <strong>GM Notes (Only visible to GM)</strong>
+        </label>
+        <textarea class='gmnotes'></textarea>
+        <div class='clear'></div>
+        <$ } $>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+</script>
+		`;
+
+	d20plus.template_handouteditor = `<script id='tmpl_handouteditor' type='text/html'>
+  <div class='dialog largedialog handouteditor' style='display: block;'>
+    <div class='row-fluid'>
+      <div class='span12'>
+        <label>
+          <strong>Name</strong>
+        </label>
+        <input class='name' type='text'>
+        <div class='clear'></div>
+        <$ if (window.is_gm) { $>
+        <label>
+          <strong>In Player's Journals</strong>
+        </label>
+        <select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
+          <option value="all">All Players</option>
+          <$ window.Campaign.players.each(function(player) { $>
+          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
+          <$ }); $>
+        </select>
+        <div class='clear'></div>
+        <label>
+          <strong>Can Be Edited By</strong>
+        </label>
+        <select class='controlledby chosen' multiple='true' style='width: 100%;'>
+          <option value="all">All Players</option>
+          <$ window.Campaign.players.each(function(player) { $>
+          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
+          <$ }); $>
+        </select>
+        <div class='clear'></div>
+        <label>
+          <strong>Tags</strong>
+        </label>
+        <input class='tags'>
+        <div class='clear'></div>
+        <$ } $>
+      </div>
+    </div>
+    <div class='row-fluid'>
+      <div class='span12'>
+        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+        <div class="status"></div>
+        <div class="inner">
+          <$ if(this.get("avatar") == "") { $>
+          <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+          <br /> or
+          <button class="btn">Choose a file...</button>
+          <input class="manual" type="file" />
+          <$ } else { $>
+          <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+          <video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+          <$ } else { $>
+          <img src="<$!this.get("avatar")$>" />
+          <$ } $>
+          <div class='remove'><a href='#'>Remove</a></div>
+          <$ } $>
         </div>
       </div>
-    </script>
+      <div class='clear'></div>
+    </div>
+  </div>
+  <!-- BEGIN MOD -->
+  <div class='row-fluid'>
+  <button class="btn handout-image-by-url">Set Image from URL</button>
+  <div class='clear'></div>
+  </div>
+  <!-- END MOD -->
+  <div class='row-fluid'>
+    <div class='span12'>
+      <label>
+        <strong>Description & Notes</strong>
+      </label>
+      <textarea class='notes'></textarea>
+      <div class='clear'></div>
+      <$ if(window.is_gm) { $>
+      <label>
+        <strong>GM Notes (Only visible to GM)</strong>
+      </label>
+      <textarea class='gmnotes'></textarea>
+      <div class='clear'></div>
+      <hr>
+      <button class='delete btn btn-danger' style='float: right;'>
+        Delete Handout
+      </button>
+      <button class='duplicate btn' style='margin-right: 10px;'>
+        Duplicate
+      </button>
+      <button class='archive btn'>
+        <$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive<$ } $>
+      </button>
+      <div class='clear'></div>
+      <$ } $>
+    </div>
+  </div>
+  </div>
+</script>
+<script id='tmpl_handoutviewer' type='text/html'>
+  <div class='dialog largedialog handoutviewer' style='display: block;'>
+    <div style='padding: 10px;'>
+      <$ if(this.get("avatar") != "") { $>
+      <div class='row-fluid'>
+        <div class='span12'>
+          <div class='avatar'>
+            <a class="lightly" target="_blank" href="<$!(this.get("avatar").indexOf("d20.io/") !== -1 ? this.get("avatar").replace(/\\/med\\.(?!webm)/, "/max.") : this.get("avatar"))$>">
+            <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+            <video src="<$!this.get("avatar")$>" draggable="false" loop muted autoplay />
+            <$ } else { $>
+            <img src="<$!this.get("avatar")$>" draggable="false" />
+            <$ } $>
+            <div class='mag-glass pictos'>s</div></a>
+            </a>
+          </div>
+          <div class='clear'></div>
+        </div>
+      </div>
+      <$ } $>
+      <div class='row-fluid'>
+        <div class='span12'>
+          <div class='content note-editor notes'></div>
+          <div class='clear'></div>
+        </div>
+      </div>
+      <$ if(window.is_gm) { $>
+      <div class='row-fluid'>
+        <div class='span12'>
+          <hr>
+          <label>
+            <strong>GM Notes (Only visible to GM)</strong>
+          </label>
+          <div class='content note-editor gmnotes'></div>
+          <div class='clear'></div>
+        </div>
+      </div>
+      <$ } $>
+    </div>
+  </div>
+</script>
 	`;
 
 	d20plus.template.deckeditor = `
