@@ -494,3 +494,17 @@ function baseUtil () {
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);
+
+/*
+
+map
+afow
+grid
+background
+objects
+foreground
+gmlayer
+walls
+weather
+
+ */
