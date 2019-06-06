@@ -807,6 +807,7 @@ function d20plusMod() {
 	};
 	// END ROLL20 CODE
 
+	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background", "foreground"]);
 	// BEGIN ROLL20 CODE
 	d20plus.mod.renderAll = function (e) {
 		const t = e && e.context || this.contextContainer
@@ -831,7 +832,7 @@ function d20plusMod() {
 			// END MOD
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
-		const a = e && e.tokens_to_render ? _.compact(_.map(e.tokens_to_render.models, e=>e.view.graphic)) : this._objects;
+		const a = e && e.tokens_to_render || this._objects;
 		for (let e of a)
 			if (e.model) {
 				const t = e.model.get("layer");
@@ -853,23 +854,14 @@ function d20plusMod() {
 					break;
 				// BEGIN MOD
 				case "background":
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-						t.globalAlpha = .45;
-					}
-					break;
 				case "foreground":
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "background" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
+					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.currentEditingLayer !== a && window.currentEditingLayer !== "objects") {
 						t.globalAlpha = .45;
+						break;
 					}
-					break;
 				// END MOD
 				case "objects":
-					// BEGIN MOD
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer
-						|| "background" === window.currentEditingLayer || "foreground" === window.currentEditingLayer || "weather" === window.currentEditingLayer) {
-						// END MOD
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
 						break
 					}

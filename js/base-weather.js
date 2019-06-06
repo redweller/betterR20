@@ -24,6 +24,7 @@ function baseWeather () {
 								<option>Ripples</option>
 								<option>Snow</option>
 								<option>Waves</option>
+								<option>Blood Rain</option>
 								<option>Custom (see below)</option>
 							</select>
 						</label>
@@ -184,13 +185,15 @@ function baseWeather () {
 			"Snow": new Image,
 			"Fog": new Image,
 			"Waves": new Image,
-			"Ripples": new Image
+			"Ripples": new Image,
+			"Blood Rain": new Image
 		};
 		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
 		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
 		IMAGES.Fog.src = "https://i.imgur.com/SRsUpHW.png";
 		IMAGES.Waves.src = "https://i.imgur.com/iYEzmvB.png";
 		IMAGES.Ripples.src = "https://i.imgur.com/fFCr0yx.png";
+		IMAGES["Blood Rain"].src = "https://i.imgur.com/SP2aoeq.png";
 		const SFX = {
 			lightning: []
 		};
@@ -255,12 +258,14 @@ function baseWeather () {
 
 		function getImage (page) {
 			const imageName = page.get("bR20cfg_weatherType1");
+
 			switch (imageName) {
 				case "Rain":
 				case "Snow":
 				case "Fog":
 				case "Waves":
 				case "Ripples":
+				case "Blood Rain":
 					IMAGES["Custom"] = null;
 					return IMAGES[imageName];
 				case "Custom (see below)":
