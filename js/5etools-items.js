@@ -95,7 +95,7 @@ function d20plusItems () {
 						},
 						urls: {
 							items: `${DATA_URL}items.json`,
-							basicitems: `${DATA_URL}items-base.json`,
+							baseitems: `${DATA_URL}items-base.json`,
 							magicvariants: `${DATA_URL}magicvariants.json`
 						},
 						isAddGroups: true,
