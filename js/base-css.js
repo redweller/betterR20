@@ -642,7 +642,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__item__menu_item",
-			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; border-radius: 5px; margin: 4px 2px; padding: 2px; text-align: center; display: block;"
+			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; border-radius: 5px; margin: 4px; padding: 2px; text-align: center; display: block; border: 1px solid #ccc; background: white;"
 		},
 		{
 			s: ".artr__item--index",
