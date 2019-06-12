@@ -2793,7 +2793,7 @@ const betteR205etoolsMain = function () {
 					if (data.entries != null) {
 						character.attribs.create({name: "repeating_npctrait_0_name", current: name});
 						character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
-						if (d20plus.cfg.get("import", "tokenactionsTraits")) {
+						if (d20plus.cfg.getOrDefault("import", "tokenactionsTraits")) {
 							character.abilities.create({
 								name: "Information: " + name,
 								istokenaction: true,
