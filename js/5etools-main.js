@@ -773,7 +773,7 @@ const betteR205etoolsMain = function () {
 			DataUtil.loadJSON(brewUrl).then(async (data, debugUrl) => {
 				if (data.message) console.error(debugUrl, data.message);
 
-				const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(BrewUtil._dirToCat(homebrewDir)));
+				const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(BrewUtil._pRenderBrewScreen_dirToCat(homebrewDir)));
 				if (collectionItems.length) {
 					data = MiscUtil.copy(data);
 					const collectionIndex = await DataUtil.loadJSON(DataUtil.brew.getDirUrl("collection"));
