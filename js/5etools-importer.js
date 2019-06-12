@@ -202,7 +202,7 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.addAction = function (character, name, actionText, index) {
-		if (d20plus.cfg.get("import", "tokenactions")) {
+		if (d20plus.cfg.getOrDefault("import", "tokenactions")) {
 			character.abilities.create({
 				name: index + ": " + name,
 				istokenaction: true,

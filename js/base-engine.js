@@ -1181,21 +1181,20 @@ function d20plusEngine () {
 			return minPoint;
 		}
 
-		// original roll20 mousedown code, minified as "A" (as of 2019-01-29)
+		// original roll20 mousedown code, minified as "T" (as of 2019-06-08)
 		// BEGIN ROLL20 CODE
-		let C = false;
-		let T = false;
-		const A = function(e) {
+		var S = !1;
+		const T = function(e) {
 			// BEGIN MOD
-			var t = d20.engine.canvas;
-			var a = $("#editor-wrapper");
+			var i = d20.engine.canvas;
+			var r = $("#editor-wrapper");
 			// END MOD
 			var n, o;
 			if (d20.tddice && d20.tddice.handleInteraction && d20.tddice.handleInteraction(),
 				e.touches) {
 				if ("pan" == d20.engine.mode)
 					return;
-				e.touches.length > 1 && (C = d20.engine.mode,
+				e.touches.length > 1 && (S = d20.engine.mode,
 					d20.engine.mode = "pan",
 					d20.engine.leftMouseIsDown = !0),
 					d20.engine.lastTouchStarted = (new Date).getTime(),
@@ -1205,10 +1204,10 @@ function d20plusEngine () {
 			} else
 				n = e.pageX,
 					o = e.pageY;
-			for (var r = d20.engine.showLastPaths.length; r--; )
-				"selected" == d20.engine.showLastPaths[r].type && d20.engine.showLastPaths.splice(r, 1);
+			for (var a = d20.engine.showLastPaths.length; a--; )
+				"selected" == d20.engine.showLastPaths[a].type && d20.engine.showLastPaths.splice(a, 1);
 			d20.engine.handleMetaKeys(e),
-			"select" != d20.engine.mode && "path" != d20.engine.mode || t.__onMouseDown(e),
+			"select" != d20.engine.mode && "path" != d20.engine.mode || i.__onMouseDown(e),
 			(0 === e.button || e.touches && 1 == e.touches.length) && (d20.engine.leftMouseIsDown = !0),
 			2 === e.button && (d20.engine.rightMouseIsDown = !0);
 			var s = Math.floor(n / d20.engine.canvasZoom + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] / d20.engine.canvasZoom)
@@ -1492,7 +1491,7 @@ function d20plusEngine () {
 					},
 					d20.engine.redrawScreenNextTick(!0)
 			}
-			d20.engine.rightMouseIsDown && ("select" == d20.engine.mode || "path" == d20.engine.mode || "text" == d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" == d20.engine.mode ? (d20.engine.pan.beginPos = [a.scrollLeft(), a.scrollTop()],
+			d20.engine.rightMouseIsDown && ("select" == d20.engine.mode || "path" == d20.engine.mode || "text" == d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" == d20.engine.mode ? (d20.engine.pan.beginPos = [r.scrollLeft(), r.scrollTop()],
 				d20.engine.pan.panXY = [n, o],
 				d20.engine.pan.panning = !0) : d20.engine.pan.panning = !1,
 			2 === e.button && !d20.engine.leftMouseIsDown && d20.engine.measurements[window.currentPlayer.id] && d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.endMeasure(),
@@ -1512,7 +1511,7 @@ function d20plusEngine () {
 		if (UPPER_CANVAS_MOUSEDOWN) {
 			d20plus.ut.log("Enhancing hex snap");
 			d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
-			d20.engine.uppercanvas.addEventListener("mousedown", A);
+			d20.engine.uppercanvas.addEventListener("mousedown", T);
 		}
 
 		// add sub-grid snap

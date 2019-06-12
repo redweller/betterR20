@@ -467,7 +467,7 @@ const betteR205etoolsMain = function () {
 		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`, isJson: true},
 		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}meta.json`, isJson: true},
 		{name: "adventures index", url: `${DATA_URL}adventures.json`, isJson: true},
-		{name: "basic items", url: `${DATA_URL}basicitems.json`, isJson: true},
+		{name: "base items", url: `${DATA_URL}items-base.json`, isJson: true},
 		{name: "item modifiers", url: `${DATA_URL}roll20-items.json`, isJson: true},
 	];
 
@@ -482,7 +482,7 @@ const betteR205etoolsMain = function () {
 			else if (name === "bestiary fluff index") monsterFluffDataUrls = data;
 			else if (name === "bestiary metadata") monsterMetadata = data;
 			else if (name === "adventures index") adventureMetadata = data;
-			else if (name === "basic items") {
+			else if (name === "base items") {
 				data.itemProperty.forEach(p => Renderer.item._addProperty(p));
 				data.itemType.forEach(t => Renderer.item._addType(t));
 			}
@@ -2793,7 +2793,7 @@ const betteR205etoolsMain = function () {
 					if (data.entries != null) {
 						character.attribs.create({name: "repeating_npctrait_0_name", current: name});
 						character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
-						if (d20plus.cfg.get("import", "tokenactionsTraits")) {
+						if (d20plus.cfg.getOrDefault("import", "tokenactionsTraits")) {
 							character.abilities.create({
 								name: "Information: " + name,
 								istokenaction: true,
