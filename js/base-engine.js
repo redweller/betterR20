@@ -1499,19 +1499,19 @@ function d20plusEngine () {
 					player: window.currentPlayer.id
 				})),
 				// BEGIN MOD
-			$(`#upperCanvas`).hasClass("hasfocus") || $(`#upperCanvas`).focus()
+			$(`#finalcanvas`).hasClass("hasfocus") || $(`#finalcanvas`).focus()
 			// END MOD
 		};
 		// END ROLL20 CODE
 
-		if (UPPER_CANVAS_MOUSEDOWN_LIST.length) {
-			UPPER_CANVAS_MOUSEDOWN = (UPPER_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
+			FINAL_CANVAS_MOUSEDOWN = (FINAL_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
 		}
 
-		if (UPPER_CANVAS_MOUSEDOWN) {
+		if (FINAL_CANVAS_MOUSEDOWN) {
 			d20plus.ut.log("Enhancing hex snap");
-			d20.engine.uppercanvas.removeEventListener("mousedown", UPPER_CANVAS_MOUSEDOWN);
-			d20.engine.uppercanvas.addEventListener("mousedown", T);
+			d20.engine.final_canvas.removeEventListener("mousedown", FINAL_CANVAS_MOUSEDOWN);
+			d20.engine.final_canvas.addEventListener("mousedown", T);
 		}
 
 		// add sub-grid snap
@@ -1698,14 +1698,14 @@ function d20plusEngine () {
 		};
 		// END ROLL20 CODE
 
-		if (UPPER_CANVAS_MOUSEMOVE_LIST.length) {
-			UPPER_CANVAS_MOUSEMOVE = (UPPER_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.uppercanvas) || {}).listener;
+		if (FINAL_CANVAS_MOUSEMOVE_LIST.length) {
+			FINAL_CANVAS_MOUSEMOVE = (FINAL_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
 		}
 
-		if (UPPER_CANVAS_MOUSEMOVE) {
+		if (FINAL_CANVAS_MOUSEMOVE) {
 			d20plus.ut.log("Enhancing mouse move");
-			d20.engine.uppercanvas.removeEventListener("mousemove", UPPER_CANVAS_MOUSEMOVE);
-			d20.engine.uppercanvas.addEventListener("mousemove", A);
+			d20.engine.final_canvas.removeEventListener("mousemove", FINAL_CANVAS_MOUSEMOVE);
+			d20.engine.final_canvas.addEventListener("mousemove", A);
 		}
 	};
 
