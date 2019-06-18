@@ -34,9 +34,9 @@ function d20plusMod() {
 		("text" == e || "select" == e) && $("#floatingtoolbar ." + e).show(),
 			"gridalign" == e ? $("#gridaligninstructions").show() : "gridalign" === d20.engine.mode && $("#gridaligninstructions").hide(),
 			"targeting" === e ? ($("#targetinginstructions").show(),
-				$("#upperCanvas").addClass("targeting"),
+				$("#finalcanvas").addClass("targeting"),
 				d20.engine.canvas.hoverCursor = "crosshair") : "targeting" === d20.engine.mode && ($("#targetinginstructions").hide(),
-				$("#upperCanvas").removeClass("targeting"),
+				$("#finalcanvas").removeClass("targeting"),
 			d20.engine.nextTargetCallback && _.defer(function () {
 				d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
 			}),
@@ -813,7 +813,7 @@ function d20plusMod() {
 		const t = e && e.context || this.contextContainer
 			, n = this.getActiveGroup()
 			, i = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
-			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset, d20.math.div(i, 2)),...i,0);
+			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset,d20.math.div(i,2)),...i,0);
 		n && !window.is_gm && (n.hideResizers = !0),
 			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
 		const r = {
@@ -832,7 +832,8 @@ function d20plusMod() {
 			// END MOD
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
-		for (let e of this._objects)
+		const a = e && e.tokens_to_render || this._objects;
+		for (let e of a)
 			if (e.model) {
 				const t = e.model.get("layer");
 				if (!r[t])
@@ -846,7 +847,7 @@ function d20plusMod() {
 					d20.canvas_overlay.drawGrid(t);
 					continue;
 				case "afow":
-					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.afow);
+					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
 					continue;
 				case "gmlayer":
 					t.globalAlpha = d20.engine.gm_layer_opacity;
@@ -874,14 +875,18 @@ function d20plusMod() {
 						i.hasControls = !0,
 						"text" !== i.type && window.is_gm ? i.hideResizers = !1 : i.hideResizers = !0),
 						e && e.invalid_rects ? (r = i.intersects([o]) && (i.needsToBeDrawn || i.intersects(e.invalid_rects)),
-						i.renderPre && i.renderPre(t)) : (r = i.needsRender(o)) && i.renderPre && i.renderPre(t, {
+						!e.skip_prerender && i.renderPre && i.renderPre(t)) : (r = i.needsRender(o),
+						(!e || !e.skip_prerender) && r && i.renderPre && i.renderPre(t, {
 							should_update: !0
-						}),
+						})),
 						r
 				}
-			).each(e=>{
-					this._draw(t, e),
-						e.renderingInGroup = null
+			).each(n=>{
+					const i = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id)
+						, o = n._model && n._model.get("light_hassight")
+						, r = e && e.owned_with_sight_auras_only;
+					r && (!r || i && o) || this._draw(t, n),
+						n.renderingInGroup = null
 				}
 			)
 		}
@@ -894,10 +899,13 @@ function d20plusMod() {
 	// BEGIN ROLL20 CODE
 	d20plus.mod.layerIteratorGenerator = function*(e) { // e is just an options object
 		yield[this.map, "map"],
-		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]),
-		e && e.grid_before_afow && (yield[null, "grid"]),
-		e && e.disable_afow || !d20.Campaign.activePage().get("adv_fow_enabled") || !window.largefeats || (yield[null, "afow"]),
-		e && e.grid_before_afow || (yield[null, "grid"]),
+		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]);
+		const t = e && e.grid_before_afow
+			, n = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow
+			, i = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+		t && !i && (yield[null, "grid"]),
+		!n && window.largefeats && (yield[null, "afow"]),
+		t || i || (yield[null, "grid"]),
 			// BEGIN MOD
 			yield[this.background, "background"],
 			// END MOD
