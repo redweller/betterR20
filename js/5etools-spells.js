@@ -48,32 +48,31 @@ function d20plusSpells () {
 	};
 
 	// Import All Spells button was clicked
-	d20plus.spells.buttonAll = function (forcePlayer) {
+	d20plus.spells.buttonAll = async function (forcePlayer) {
 		const toLoad = Object.keys(spellDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
 
 		if (toLoad.length) {
 			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
 
-			DataUtil.multiLoadJSON(toLoad.map(url => ({url: url})), () => {
-			}, (dataStack) => {
-				let toAdd = [];
-				dataStack.forEach(d => {
-					toAdd = toAdd.concat(d.spell);
-					if (d.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(d.roll20Spell);
-				});
-				d20plus.importer.showImportList(
-					"spell",
-					toAdd,
-					handoutBuilder,
-					{
-						groupOptions: d20plus.spells._groupOptions,
-						forcePlayer,
-						listItemBuilder: d20plus.spells._listItemBuilder,
-						listIndex: d20plus.spells._listCols,
-						listIndexConverter: d20plus.spells._listIndexConverter
-					}
-				);
+			const dataStack = await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)));
+
+			let toAdd = [];
+			dataStack.forEach(d => {
+				toAdd = toAdd.concat(d.spell);
+				if (d.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(d.roll20Spell);
 			});
+			d20plus.importer.showImportList(
+				"spell",
+				toAdd,
+				handoutBuilder,
+				{
+					groupOptions: d20plus.spells._groupOptions,
+					forcePlayer,
+					listItemBuilder: d20plus.spells._listItemBuilder,
+					listIndex: d20plus.spells._listCols,
+					listIndexConverter: d20plus.spells._listIndexConverter
+				}
+			);
 		}
 	};
 
@@ -176,7 +175,7 @@ function d20plusSpells () {
 <em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}${builderOptions.isSpellPoints && data.level ? ` (${d20plus.spells.spLevelToSpellPoints(data.level)} spell points)` : ""}</em></p><p>
 <strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
 <strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
-<strong>Components:</strong> ${Parser.spComponentsToFull(data.components)}<br>
+<strong>Components:</strong> ${Parser.spComponentsToFull(data)}<br>
 <strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>
 </p>`;
 		const renderer = new Renderer();
