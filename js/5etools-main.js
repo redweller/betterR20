@@ -3669,7 +3669,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				const $lst = $win.find(`.list`);
 				let tokenList;
 
-				const dataStack = await Promise.all(toLoad.map(async url => await DataUtil.loadJSON(url)));
+				const dataStack = (await Promise.all(toLoad.map(async url => await DataUtil.loadJSON(url)))).flat();
 
 				$lst.empty();
 				let toShow = [];
@@ -3956,7 +3956,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 				const toLoad = Object.keys(monsterDataUrls).map(src => d20plus.monsters.formMonsterUrl(monsterDataUrls[src]));
 
-				const dataStack = await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)));
+				const dataStack = (await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)))).flat();
 
 				$lst.empty();
 				let toShow = [];

@@ -54,7 +54,7 @@ function d20plusSpells () {
 		if (toLoad.length) {
 			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
 
-			const dataStack = await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)));
+			const dataStack = (await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)))).flat();
 
 			let toAdd = [];
 			dataStack.forEach(d => {

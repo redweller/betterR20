@@ -189,7 +189,7 @@ function d20plusMonsters () {
 		}
 
 		if (toLoad.length) {
-			const dataStack = await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)));
+			const dataStack = (await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)))).flat();
 
 			let toShow = [];
 
