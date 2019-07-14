@@ -28,7 +28,8 @@ function baseToolModule () {
 						<option value="rolltables">Rollable Tables</option>
 					</select>
 					<button class="btn" name="view-select-entries">View/Select Entries</button>
-					<button class="btn" name="select-all-entries">Select All</button>
+					<br>
+					<button class="btn" name="select-all-entries">Select Everything</button>
 					<div name="selection-summary" style="margin-top: 5px;"></div>
 				</div>
 				<hr>
@@ -189,7 +190,7 @@ function baseToolModule () {
 				$selDataType.prop("disabled", false);
 
 				function updateSummary () {
-					$wrpSummary.text(Object.entries(selected).filter(([prop, ents]) => ents.length).map(([prop, ents]) => `${DISPLAY_NAMES[prop]}: ${ents.length} selected`).join("; "));
+					$wrpSummary.text(Object.entries(selected).filter(([prop, ents]) => ents && ents.length).map(([prop, ents]) => `${DISPLAY_NAMES[prop]}: ${ents.length} selected`).join("; "));
 				}
 
 				$btnViewCat.prop("disabled", false);
@@ -271,7 +272,7 @@ function baseToolModule () {
 				});
 
 				$btnImport.prop("disabled", false).off("click").click(() => {
-					const totalSelected = Object.values(selected).map(it => it.length).reduce((a, b) => a + b, 0);
+					const totalSelected = Object.values(selected).map(it => it ? it.length : 0).reduce((a, b) => a + b, 0);
 					if (!totalSelected) return alert("No entries selected!");
 
 					const $name = $winProgress.find(`.name`);
@@ -286,7 +287,7 @@ function baseToolModule () {
 
 					let queue = [];
 					let jukebox = {};
-					Object.entries(selected).filter(([k, v]) => v.length).forEach(([prop, ents]) => {
+					Object.entries(selected).filter(([k, v]) => v && v.length).forEach(([prop, ents]) => {
 						if (prop === "playlists") return jukebox.playlists = (jukebox.playlists || []).concat(ents);
 						else if (prop === "tracks") return jukebox.tracks = (jukebox.tracks || []).concat(ents);
 

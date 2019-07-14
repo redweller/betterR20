@@ -177,7 +177,7 @@ function d20plusMonsters () {
 	};
 
 	// Import All Monsters button was clicked
-	d20plus.monsters.buttonAll = function () {
+	d20plus.monsters.buttonAll = async function () {
 		const filterUnofficial = !d20plus.cfg.getOrDefault("import", "allSourcesIncludeUnofficial");
 
 		const toLoad = Object.keys(monsterDataUrls)
@@ -189,36 +189,32 @@ function d20plusMonsters () {
 		}
 
 		if (toLoad.length) {
-			DataUtil.multiLoadJSON(
-				toLoad.map(url => ({url})),
-				() => {},
-				async dataStack => {
-					let toShow = [];
+			const dataStack = (await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)))).flat();
 
-					const seen = {};
-					await Promise.all(dataStack.map(async d => {
-						const toAdd = d.monster.filter(m => {
-							const out = !(seen[m.source] && seen[m.source].has(m.name));
-							if (!seen[m.source]) seen[m.source] = new Set();
-							seen[m.source].add(m.name);
-							return out;
-						});
+			let toShow = [];
 
-						toShow = toShow.concat(toAdd);
-					}));
+			const seen = {};
+			await Promise.all(dataStack.map(async d => {
+				const toAdd = d.monster.filter(m => {
+					const out = !(seen[m.source] && seen[m.source].has(m.name));
+					if (!seen[m.source]) seen[m.source] = new Set();
+					seen[m.source].add(m.name);
+					return out;
+				});
 
-					d20plus.importer.showImportList(
-						"monster",
-						toShow,
-						d20plus.monsters.handoutBuilder,
-						{
-							groupOptions: d20plus.monsters._groupOptions,
-							listItemBuilder: d20plus.monsters._listItemBuilder,
-							listIndex: d20plus.monsters._listCols,
-							listIndexConverter: d20plus.monsters._listIndexConverter,
-							nextStep: d20plus.monsters._doScale
-						}
-					);
+				toShow = toShow.concat(toAdd);
+			}));
+
+			d20plus.importer.showImportList(
+				"monster",
+				toShow,
+				d20plus.monsters.handoutBuilder,
+				{
+					groupOptions: d20plus.monsters._groupOptions,
+					listItemBuilder: d20plus.monsters._listItemBuilder,
+					listIndex: d20plus.monsters._listCols,
+					listIndexConverter: d20plus.monsters._listIndexConverter,
+					nextStep: d20plus.monsters._doScale
 				}
 			);
 		}
