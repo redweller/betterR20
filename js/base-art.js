@@ -194,22 +194,23 @@ function d20plusArt () {
 		});
 	};
 
-	d20plus.art.loadArt = (nextFn) => {
+	d20plus.art.pLoadArt = async () => {
 		d20plus.ut.log("Loading custom art");
 		const handout = d20plus.art.getArtHandout();
 		if (handout) {
 			handout.view.render();
-			handout._getLatestBlob("gmnotes", function (gmnotes) {
-				const decoded = decodeURIComponent(gmnotes);
-				try {
-					d20plus.art.custom = JSON.parse(decoded);
-					nextFn();
-				} catch (e) {
-					nextFn();
-				}
+			return new Promise(resolve => {
+				handout._getLatestBlob("gmnotes", function (gmnotes) {
+					const decoded = decodeURIComponent(gmnotes);
+					try {
+						d20plus.art.custom = JSON.parse(decoded);
+						resolve();
+					} catch (e) {
+						console.error(e);
+						resolve();
+					}
+				});
 			});
-		} else {
-			nextFn();
 		}
 	};
 

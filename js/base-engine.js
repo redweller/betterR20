@@ -214,6 +214,7 @@ function d20plusEngine () {
 
 	d20plus.engine.enhancePageSelector = () => {
 		d20plus.ut.log("Enhancing page selector");
+
 		var updatePageOrder = function () {
 			d20plus.ut.log("Saving page order...");
 			var pos = 0;

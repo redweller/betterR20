@@ -472,26 +472,28 @@ const betteR205etoolsMain = function () {
 	];
 
 	// add JSON index/metadata
-	d20plus.addJson = function (onLoadFunction) {
+	d20plus.pAddJson = async function () {
 		d20plus.ut.log("Load JSON");
-		const onEachLoadFunction = function (name, url, data) {
-			if (name === "class index") classDataUrls = data;
-			else if (name === "spell index") spellDataUrls = data;
-			else if (name === "spell metadata") spellMetaData = data;
-			else if (name === "bestiary index") monsterDataUrls = data;
-			else if (name === "bestiary fluff index") monsterFluffDataUrls = data;
-			else if (name === "bestiary metadata") monsterMetadata = data;
-			else if (name === "adventures index") adventureMetadata = data;
-			else if (name === "base items") {
+
+		await Promise.all(d20plus.json.map(async it => {
+			const data = await d20plus.js.pLoadWithRetries(it.name, it.url, true);
+
+			if (it.name === "class index") classDataUrls = data;
+			else if (it.name === "spell index") spellDataUrls = data;
+			else if (it.name === "spell metadata") spellMetaData = data;
+			else if (it.name === "bestiary index") monsterDataUrls = data;
+			else if (it.name === "bestiary fluff index") monsterFluffDataUrls = data;
+			else if (it.name === "bestiary metadata") monsterMetadata = data;
+			else if (it.name === "adventures index") adventureMetadata = data;
+			else if (it.name === "base items") {
 				data.itemProperty.forEach(p => Renderer.item._addProperty(p));
 				data.itemType.forEach(t => Renderer.item._addType(t));
 			}
-			else if (name === "item modifiers") itemMetadata = data;
-			else throw new Error(`Unhandled data from JSON ${name} (${url})`);
+			else if (it.name === "item modifiers") itemMetadata = data;
+			else throw new Error(`Unhandled data from JSON ${it.name} (${it.url})`);
 
-			d20plus.ut.log(`JSON [${name}] Loaded`);
-		};
-		d20plus.js.chainLoad(d20plus.json, 0, onEachLoadFunction, onLoadFunction);
+			d20plus.ut.log(`JSON [${it.name}] Loaded`);
+		}));
 	};
 
 	d20plus.handleConfigChange = function (isSyncingPlayer) {
@@ -2342,6 +2344,7 @@ const betteR205etoolsMain = function () {
 
 // Change character sheet formulas
 	d20plus.setSheet = function () {
+		d20plus.ut.log("Switched Character Sheet Template")
 		d20plus.sheet = "ogl";
 		if (window.is_gm && (!d20.journal.customSheets || !d20.journal.customSheets)) {
 			d20.textchat.incoming(false, ({
