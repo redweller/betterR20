@@ -46,7 +46,6 @@ const betteR20Core = function () {
 				d20plus.remoteLibre.init();
 				d20plus.jukeboxWidget.init();
 			}
-			d20plus.chat.enhanceChat();
 			d20plus.engine.enhancePathWidths();
 			d20plus.ut.disable3dDice();
 			d20plus.engine.addLayers();
@@ -54,6 +53,7 @@ const betteR20Core = function () {
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
 			d20plus.ut.fixSidebarLayout();
+			d20plus.chat.enhanceChat();
 
 			// apply config
 			if (window.is_gm) {

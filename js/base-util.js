@@ -482,7 +482,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.fixSidebarLayout = () => {
-		$(`#textchat-input`).show().insertAfter(`#textchat`);
+		$(`#textchat-input`).insertAfter(`#textchat`);
 		const cached = d20.textchat.showPopout;
 		d20.textchat.showPopout = function () {
 			cached();
