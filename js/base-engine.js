@@ -613,9 +613,10 @@ function d20plusEngine () {
 									var t = e.model.get("sides").split("|")
 										, n = t.length
 										, i = d20.textchat.diceengine.random(n);
-
+									// BEGIN MOD
 									const imgUrl = unescape(t[i]);
 									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+									// END MOD
 										d.push(t[i])
 								}
 							}),
@@ -635,11 +636,11 @@ function d20plusEngine () {
 								height: 225,
 								buttons: {
 									Choose: function() {
+										const imgUrl = unescape(o[r]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-											e.model.save({
-												currentSide: r,
-												imgsrc: unescape(o[r])
-											}),
+											// BEGIN MOD
+											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											// END MOD
 											a.off("slide"),
 											a.dialog("destroy").remove()
 									},

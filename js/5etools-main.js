@@ -3548,8 +3548,7 @@ To import from third-party sources, either individually select one available in 
 `;
 
 	d20plus.settingsHtmlPtImportFooter = `
-<br>
-<a class="btn bind-drop-locations" href="#" id="bind-drop-locations" style="margin-top: 3px;">Bind Drag-n-Drop</a>
+<p><a class="btn bind-drop-locations" href="#" id="bind-drop-locations" style="margin-top: 5px;width: 100%;box-sizing: border-box;">Bind Drag-n-Drop</a></p>
 <p><strong>Readme</strong></p>
 <p>
 You can drag-and-drop imported handouts to character sheets.<br>
