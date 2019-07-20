@@ -1276,7 +1276,7 @@ function d20plusEngine () {
 				else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode)
 					d20.engine.fx.current || (d20.engine.fx.current = d20.fx.handleClick(s, l));
 				else if (d20.engine.leftMouseIsDown && "text" == d20.engine.mode) {
-					var d = {
+					const e = {
 						fontFamily: $("#font-family").val(),
 						fontSize: $("#font-size").val(),
 						fill: $("#font-color").val(),
@@ -1284,13 +1284,13 @@ function d20plusEngine () {
 						left: s,
 						top: l
 					}
-						, h = d20.Campaign.activePage().addText(d);
-					_.defer(function() {
-						d20.engine.editText(h.view.graphic, d.top, d.left),
-							setTimeout(function() {
+						, t = d20.Campaign.activePage().addText(e);
+					$("body").on("mouseup.create_text_editor", ()=>{
+							$("body").off("mouseup.create_text_editor"),
+								d20.engine.editText(t.view.graphic, e.top, e.left),
 								$(".texteditor").focus()
-							}, 300)
-					})
+						}
+					)
 				} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
 					var p = parseInt($("#path_width").val(), 10)
 						, f = d20.engine.drawshape.shape = {
