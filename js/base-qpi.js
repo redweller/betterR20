@@ -214,7 +214,7 @@ function baseQpi () {
 				const url = $win.find(`.qpi-url`).val();
 				if (url && script.trim()) {
 					qpi._log(`Attempting to load: "${url}"`);
-					d20plus.js.loadWithRetries(
+					d20plus.js.pLoadWithRetries(
 						url,
 						url,
 						(data) => {
@@ -258,7 +258,7 @@ function baseQpi () {
 	window.qpi = qpi;
 
 	d20plus.qpi = {};
-	d20plus.qpi.initMockApi = async () => { // TODO check if this needs to be enabled for players too
+	d20plus.qpi.pInitMockApi = async () => { // TODO check if this needs to be enabled for players too
 		d20plus.ut.log("Initialising mock API");
 		await qpi._init();
 	};

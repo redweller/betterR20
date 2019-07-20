@@ -214,6 +214,7 @@ function d20plusEngine () {
 
 	d20plus.engine.enhancePageSelector = () => {
 		d20plus.ut.log("Enhancing page selector");
+
 		var updatePageOrder = function () {
 			d20plus.ut.log("Saving page order...");
 			var pos = 0;
@@ -612,9 +613,10 @@ function d20plusEngine () {
 									var t = e.model.get("sides").split("|")
 										, n = t.length
 										, i = d20.textchat.diceengine.random(n);
-
+									// BEGIN MOD
 									const imgUrl = unescape(t[i]);
 									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+									// END MOD
 										d.push(t[i])
 								}
 							}),
@@ -634,11 +636,11 @@ function d20plusEngine () {
 								height: 225,
 								buttons: {
 									Choose: function() {
+										const imgUrl = unescape(o[r]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-											e.model.save({
-												currentSide: r,
-												imgsrc: unescape(o[r])
-											}),
+											// BEGIN MOD
+											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											// END MOD
 											a.off("slide"),
 											a.dialog("destroy").remove()
 									},
@@ -1274,7 +1276,7 @@ function d20plusEngine () {
 				else if (d20.engine.leftMouseIsDown && "fxtools" == d20.engine.mode)
 					d20.engine.fx.current || (d20.engine.fx.current = d20.fx.handleClick(s, l));
 				else if (d20.engine.leftMouseIsDown && "text" == d20.engine.mode) {
-					var d = {
+					const e = {
 						fontFamily: $("#font-family").val(),
 						fontSize: $("#font-size").val(),
 						fill: $("#font-color").val(),
@@ -1282,13 +1284,13 @@ function d20plusEngine () {
 						left: s,
 						top: l
 					}
-						, h = d20.Campaign.activePage().addText(d);
-					_.defer(function() {
-						d20.engine.editText(h.view.graphic, d.top, d.left),
-							setTimeout(function() {
+						, t = d20.Campaign.activePage().addText(e);
+					$("body").on("mouseup.create_text_editor", ()=>{
+							$("body").off("mouseup.create_text_editor"),
+								d20.engine.editText(t.view.graphic, e.top, e.left),
 								$(".texteditor").focus()
-							}, 300)
-					})
+						}
+					)
 				} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
 					var p = parseInt($("#path_width").val(), 10)
 						, f = d20.engine.drawshape.shape = {

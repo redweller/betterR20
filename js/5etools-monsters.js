@@ -108,7 +108,7 @@ function d20plusMonsters () {
 				const $ele = $(it.elm);
 				const ix = Number($ele.find(`.index`).text());
 				const m = origImportQueue[ix];
-				const origCr = m.cr.cr || m.cr;
+				const origCr = m.cr ? (m.cr.cr || m.cr) : "Unknown";
 				const $iptCr = $ele.find(`.target-cr`);
 				const rename = ($ele.find(`.target-rename`).val() || "").trim();
 				const crValRaw = $iptCr.val();
@@ -306,7 +306,7 @@ function d20plusMonsters () {
 							var size = d20plus.getSizeString(data.size || "");
 							var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
 							var cr = data.cr ? (data.cr.cr || data.cr) : "";
-							var xp = Parser.crToXpNumber(cr);
+							var xp = Parser.crToXpNumber(cr) || 0;
 							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc_toggle", current: 1});
 							character.attribs.create({name: "npc_options-flag", current: 0});

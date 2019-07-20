@@ -1,24 +1,22 @@
 function baseConfig() {
 	d20plus.cfg = {current: {}};
 
-	d20plus.cfg.loadConfigFailed = false;
+	d20plus.cfg.pLoadConfigFailed = false;
 
-	d20plus.cfg.loadConfig = (nextFn) => {
+	d20plus.cfg.pLoadConfig = async () => {
 		d20plus.ut.log("Reading Config");
 		let configHandout = d20plus.cfg.getConfigHandout();
 
 		if (!configHandout) {
 			d20plus.ut.log("No config found! Initialising new config...");
-			d20plus.cfg.makeDefaultConfig(doLoad);
-		} else {
-			doLoad();
+			await d20plus.cfg.pMakeDefaultConfig();
 		}
 
-		function doLoad () {
-			configHandout = d20plus.cfg.getConfigHandout();
-			if (configHandout) {
-				configHandout.view.render();
-				configHandout._getLatestBlob("gmnotes", function (gmnotes) {
+		configHandout = d20plus.cfg.getConfigHandout();
+		if (configHandout) {
+			configHandout.view.render();
+			return new Promise(resolve => {
+				configHandout._getLatestBlob("gmnotes", async function (gmnotes) {
 					try {
 						const decoded = decodeURIComponent(gmnotes);
 
@@ -26,30 +24,28 @@ function baseConfig() {
 
 						d20plus.ut.log("Config Loaded:");
 						d20plus.ut.log(d20plus.cfg.current);
-						nextFn();
+						resolve();
 					} catch (e) {
-						if (!d20plus.cfg.loadConfigFailed) {
+						console.error(e);
+						if (!d20plus.cfg.pLoadConfigFailed) {
 							// prevent infinite loops
-							d20plus.cfg.loadConfigFailed = true;
+							d20plus.cfg.pLoadConfigFailed = true;
 
 							d20plus.ut.log("Corrupted config! Rebuilding...");
-							d20plus.cfg.makeDefaultConfig(() => {
-								d20plus.cfg.loadConfig(nextFn)
-							});
+							await d20plus.cfg.pMakeDefaultConfig();
+							await d20plus.cfg.pLoadConfig();
+							resolve();
 						} else {
 							// if the config fails, continue to load anyway
-							nextFn();
+							resolve();
 						}
 					}
 				});
-			} else {
-				d20plus.ut.log("Failed to create config handout!");
-				nextFn();
-			}
-		}
+			});
+		} else d20plus.ut.log("Failed to create config handout!");
 	};
 
-	d20plus.cfg.loadPlayerConfig = async (nextFn) => {
+	d20plus.cfg.pLoadPlayerConfig = async () => {
 		d20plus.ut.log("Reading player Config");
 		const loaded = await StorageUtil.pGet(`Veconfig`);
 		if (!loaded) {
@@ -62,26 +58,27 @@ function baseConfig() {
 		}
 		d20plus.ut.log("Player config Loaded:");
 		d20plus.ut.log(d20plus.cfg.current);
-		nextFn();
 	};
 
-	d20plus.cfg.makeDefaultConfig = (nextFn) => {
-		d20.Campaign.handouts.create({
-			name: CONFIG_HANDOUT,
-			archived: true
-		}, {
-			success: function (handout) {
-				notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel.";
+	d20plus.cfg.pMakeDefaultConfig = () => {
+		return new Promise(resolve => {
+			d20.Campaign.handouts.create({
+				name: CONFIG_HANDOUT,
+				archived: true
+			}, {
+				success: function (handout) {
+					notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel.";
 
-				// default settings
-				// token settings mimic official content; other settings as vanilla as possible
-				const gmnotes = JSON.stringify(d20plus.cfg.getDefaultConfig());
+					// default settings
+					// token settings mimic official content; other settings as vanilla as possible
+					const gmnotes = JSON.stringify(d20plus.cfg.getDefaultConfig());
 
-				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+					handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
+					handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
 
-				if (nextFn) nextFn();
-			}
+					resolve();
+				}
+			});
 		});
 	};
 
@@ -466,7 +463,7 @@ function baseConfig() {
 				if (window.is_gm) {
 					let handout = d20plus.cfg.getConfigHandout();
 					if (!handout) {
-						d20plus.cfg.makeDefaultConfig(doSave);
+						d20plus.cfg.pMakeDefaultConfig(doSave);
 					} else {
 						doSave();
 					}

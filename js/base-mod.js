@@ -833,6 +833,19 @@ function d20plusMod() {
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
 		const a = e && e.tokens_to_render || this._objects;
+		// BEGIN MOD
+		// Add foreground objects if we're rendering player tokens
+		if (e && e.tokens_to_render) {
+			for (let obj of this._objects) {
+				if (obj.model) {
+					const layer = obj.model.get("layer");
+					if (layer !== "foreground") continue;
+					if (!r[layer]) continue;
+					r[layer].push(obj)
+				}
+			}
+		}
+		// END MOD
 		for (let e of a)
 			if (e.model) {
 				const t = e.model.get("layer");
@@ -869,6 +882,11 @@ function d20plusMod() {
 					t.globalAlpha = 1
 			}
 			_.chain(i).filter(i=>{
+				// BEGIN MOD
+				// forcibly render foreground elements over everything
+				if (a === "foreground") return true;
+				// END MOD
+
 					let r;
 					return n && i && n.contains(i) ? (i.renderingInGroup = n,
 						i.hasControls = !1) : (i.renderingInGroup = null,
@@ -882,13 +900,18 @@ function d20plusMod() {
 						r
 				}
 			).each(n=>{
-					const i = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id)
-						, o = n._model && n._model.get("light_hassight")
-						, r = e && e.owned_with_sight_auras_only;
-					r && (!r || i && o) || this._draw(t, n),
-						n.renderingInGroup = null
+				// BEGIN MOD
+				const opts = e; // rename for clarity
+
+				const isOwnedByPlayer = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id);
+				const hasSight = n._model && n._model.get("light_hassight");
+				const isOwnedSightAurasOnly = opts && opts.owned_with_sight_auras_only; // always true?
+				if (!isOwnedSightAurasOnly || !isOwnedByPlayer || !hasSight) {
+					this._draw(t, n)
 				}
-			)
+				n.renderingInGroup = null
+				// END MOD
+			})
 		}
 		return t.restore(),
 			this

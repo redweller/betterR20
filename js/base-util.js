@@ -41,6 +41,8 @@ function baseUtil () {
 	};
 
 	d20plus.ut.checkVersion = () => {
+		d20plus.ut.log("Checking current version");
+
 		function cmpVersions (a, b) {
 			const regExStrip0 = /(\.0+)+$/;
 			const segmentsA = a.replace(regExStrip0, '').split('.');
@@ -56,7 +58,6 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
-		d20plus.ut.log("Checking current version");
 		$.ajax({
 			url: `https://get.5e.tools`,
 			success: (data) => {
@@ -133,7 +134,8 @@ function baseUtil () {
 	};
 
 	d20plus.ut.addAllCss = () => {
-		d20plus.ut.log("Add CSS");
+		d20plus.ut.log("Adding CSS");
+
 		const targetSheet =  [...window.document.styleSheets]
 			.filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
 			.find(it => it.href.includes("app.css"));
@@ -480,7 +482,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.fixSidebarLayout = () => {
-		$(`#textchat-input`).show().insertAfter(`#textchat`);
+		$(`#textchat-input`).insertAfter(`#textchat`);
 		const cached = d20.textchat.showPopout;
 		d20.textchat.showPopout = function () {
 			cached();
