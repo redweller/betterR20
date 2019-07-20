@@ -445,20 +445,20 @@ function baseCss () {
 				top: 0;
 			`
 		},
-		{
-			s: `#textchat-input`,
-			r: `
-				position: relative;
-    			flex-shrink: 0;
-			`
-		},
-		{
-			s: `#textchat-input textarea`,
-			r: `
-				width: calc(100% - 8px) !important;
-				resize: vertical;
-			`
-		},
+		// {
+		// 	s: `#textchat-input`,
+		// 	r: `
+		// 		position: relative;
+    	// 		flex-shrink: 0;
+		// 	`
+		// },
+		// {
+		// 	s: `#textchat-input textarea`,
+		// 	r: `
+		// 		width: calc(100% - 8px) !important;
+		// 		resize: vertical;
+		// 	`
+		// },
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
