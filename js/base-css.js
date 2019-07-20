@@ -448,7 +448,6 @@ function baseCss () {
 		{
 			s: `#textchat-input`,
 			r: `
-				display: none;
 				position: relative;
     			flex-shrink: 0;
 			`
