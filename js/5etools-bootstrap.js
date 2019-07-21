@@ -28,7 +28,7 @@ const betteR205etools = function () {
 			await d20plus.pAddJson();
 			await monkeyPatch5etoolsCode();
 
-			if (window.is_gm) await d20plus.art.pLoadArt();
+			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
