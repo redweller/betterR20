@@ -109,7 +109,7 @@ const betteR205etools = function () {
 	}
 
 	async function monkeyPatch5etoolsCode () {
-		IS_ROLL20 = true; // global variable from 5etools' utils.js
+		IS_VTT = true; // global variable from 5etools' utils.js
 		BrewUtil._buildSourceCache = function () {
 			// no-op when building source cache; we'll handle this elsewhere
 			BrewUtil._sourceCache = BrewUtil._sourceCache || {};

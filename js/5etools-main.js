@@ -1424,10 +1424,12 @@ const betteR205etoolsMain = function () {
 				const fRowId = d20plus.ut.generateRowId();
 				attrs.add(`repeating_modifier_${fRowId}_name`, race.name);
 				attrs.add(`repeating_modifier_${fRowId}_ability_score_toggle`, "1");
-				Object.keys(race.ability).forEach(abilityAbv => {
-					const value = race.ability[abilityAbv];
-					const ability = Parser.attAbvToFull(abilityAbv).toLowerCase();
-					attrs.add(`repeating_modifier_${fRowId}_${ability}_score_modifier`, value);
+				(race.ability || []).forEach(raceAbility => {
+					Object.keys(raceAbility).filter(it => it !== "choose").forEach(abilityAbv => {
+						const value = raceAbility[abilityAbv];
+						const ability = Parser.attAbvToFull(abilityAbv).toLowerCase();
+						attrs.add(`repeating_modifier_${fRowId}_${ability}_score_modifier`, value);
+					});
 				});
 			} else {
 				console.warn(`Race import is not supported for ${d20plus.sheet} character sheet`);
