@@ -54,6 +54,10 @@ function baseToolAnimator () {
 					add(parsed.prop, parsed.value);
 					break;
 				}
+				case "SumProperty": {
+					add(parsed.prop, parsed.value);
+					break;
+				}
 				case "TriggerMacro": {
 					add(parsed.macro);
 					break;
@@ -83,6 +87,7 @@ function baseToolAnimator () {
 				case "ScaleExact": out = new d20plus.anim.ScaleExact(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY); break;
 				case "Layer": out = new d20plus.anim.Layer(json.startTime, json.layer); break;
 				case "SetProperty": out = new d20plus.anim.SetProperty(json.startTime, json.prop, json.value); break;
+				case "SumProperty": out = new d20plus.anim.SumProperty(json.startTime, json.prop, json.value); break;
 				case "Lighting": out = new d20plus.anim.Lighting(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees); break;
 				case "LightingExact": out = new d20plus.anim.LightingExact(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees); break;
 				case "TriggerMacro": out = new d20plus.anim.TriggerMacro(json.startTime, json.macroName); break;
@@ -583,10 +588,41 @@ function baseToolAnimator () {
 			};
 		},
 
+		_BaseProperty: function (startTime, prop, value) {
+			d20plus.anim._Base.call(this);
+
+			this.serialize = () => {
+				return cleanNulls({
+					...this._serialize(),
+					startTime, prop, value
+				})
+			};
+		},
+
+		SumProperty: function (startTime, prop, value) {
+			d20plus.anim._BaseProperty.call(this, startTime, prop, value);
+
+			this.animate = function (token, alpha) {
+				alpha = alpha - this._offset;
+
+				if (!this._hasRun && alpha >= startTime) {
+					this._hasRun = true;
+
+					if (prop != null) {
+						const curNum = Number(token.attributes[prop]);
+						token.attributes[prop] = (isNaN(curNum) ? 0 : curNum) + eval(value);
+					}
+
+					return true;
+				}
+				return false;
+			};
+		},
+
 		// TODO consider making an alternate version which sets a property on the character
 		// TODO consider the ability to set properties on _other_ tokens -- might not be performant enough?
 		SetProperty: function (startTime, prop, value) {
-			d20plus.anim._Base.call(this);
+			d20plus.anim._BaseProperty.call(this, startTime, prop, value);
 
 			this.animate = function (token, alpha) {
 				alpha = alpha - this._offset;
@@ -603,13 +639,6 @@ function baseToolAnimator () {
 					return true;
 				}
 				return false;
-			};
-
-			this.serialize = () => {
-				return cleanNulls({
-					...this._serialize(),
-					startTime, prop, value
-				})
 			};
 		},
 
@@ -1041,7 +1070,8 @@ function baseToolAnimator () {
 				}
 			}
 
-			case "prop": {
+			case "prop":
+			case "propSum": {
 				if (tokens.length < 2) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
@@ -2613,7 +2643,8 @@ function baseToolAnimator () {
 
 						break;
 					}
-					case "SetProperty": {
+					case "SetProperty":
+					case "SumProperty": {
 						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
 
 						const doUpdate = () => {
@@ -2622,17 +2653,27 @@ function baseToolAnimator () {
 							try { parsed.value = JSON.parse($iptVal().trim()); }
 							catch (ignored) { parsed.value = $iptVal.val(); }
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							parsed._type = $selMode.val();
 						};
 
 						const $selProp = $(`<select class="mr-2 sel-xs">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
 							.change(() => doUpdate()).val(parsed.prop);
 						const $iptVal = $(`<textarea class="full-width" style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
+						const $selMode = $(`<select class="mr-2 sel-xs">
+							<option value="SetProperty">Set</option>
+							<option value="SumProperty">Sum</option>
+						</select>`)
+							.change(() => doUpdate()).val(parsed._type);
 
 						gui_$getWrapped("Property", 4, true).appendTo(baseMeta.$wrpHeaders);
-						gui_$getWrapped("Value", 6, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Value", 3, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Mode", 2, true).appendTo(baseMeta.$wrpHeaders);
 
 						gui_$getWrapped($selProp, 4).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped($iptVal, 6).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptVal, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($selMode, 3).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
 
@@ -3158,6 +3199,7 @@ function baseToolAnimator () {
 		"Lighting": "light",
 		"LightingExact": "lightx",
 		"SetProperty": "prop",
+		"SumProperty": "propSum",
 		"TriggerMacro": "macro",
 		"TriggerAnimation": "anim",
 	};
@@ -3176,6 +3218,7 @@ function baseToolAnimator () {
 		"light": "0 0 - - -",
 		"lightx": "0 0 - - -",
 		"prop": "0 -",
+		"propSum": "0 -",
 		"macro": "0 -",
 		"anim": "0 -",
 	};
