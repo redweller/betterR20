@@ -50,10 +50,7 @@ function baseToolAnimator () {
 					add(parsed.lightRadius, parsed.dimStart, parsed.degrees);
 					break;
 				}
-				case "SetProperty": {
-					add(parsed.prop, parsed.value);
-					break;
-				}
+				case "SetProperty":
 				case "SumProperty": {
 					add(parsed.prop, parsed.value);
 					break;
@@ -1083,17 +1080,31 @@ function baseToolAnimator () {
 				if (tokens.length > 2) val = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
 				try { val = JSON.parse(val); } catch (ignored) { console.warn(`Failed to parse "${val}" as JSON, treating as raw string...`) }
 
-				return new Command(
-					line,
-					null,
-					d20plus.anim.SetProperty.bind(null, nStart, prop, val),
-					{
-						_type: "SetProperty",
-						start: nStart,
-						prop: prop,
-						value: val
-					}
-				);
+				if (op === "propSum") {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.SumProperty.bind(null, nStart, prop, val),
+						{
+							_type: "SumProperty",
+							start: nStart,
+							prop: prop,
+							value: val
+						}
+					);
+				} else {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.SetProperty.bind(null, nStart, prop, val),
+						{
+							_type: "SetProperty",
+							start: nStart,
+							prop: prop,
+							value: val
+						}
+					);
+				}
 			}
 
 			case "macro": {
@@ -2374,19 +2385,19 @@ function baseToolAnimator () {
 						${isDuration ? $$`<div class="col-2 flex-vh-center">${$iptDuration}</div>` : ""}
 					</div>`;
 
+				const $dispName = $(`<div class="bold anm-edit__gui-row-name ${titleMeta.className}">${titleMeta.text}</div>`);
+
 				const titleMeta = _getTitleMeta();
 				const $row = $$`<div class="flex-col full-width anm-edit__gui-row">
 						<div class="split flex-v-center mb-2">
-							<div class="full-width flex-v-center full-height">
-								<div class="bold anm-edit__gui-row-name ${titleMeta.className}">${titleMeta.text}</div>
-							</div>
+							<div class="full-width flex-v-center full-height">${$dispName}</div>
 							${$btnRemove}
 						</div>			
 						${$wrpHeaders}
 						${$wrpInputs}
 					</div>`;
 
-				return {$row, doUpdate, $wrpHeaders, $wrpInputs};
+				return {$row, doUpdate, $wrpHeaders, $wrpInputs, $dispName};
 			};
 
 			const gui_$getBtnAnim = (fnUpdate, $iptAnim) => {
@@ -2452,6 +2463,7 @@ function baseToolAnimator () {
 							parsed.z = $iptZ.val().trim() ? Math.round(Number($iptZ.val())) : null;
 							parsed._type = $cbExact.prop("checked") ? "MoveExact" : "Move";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
@@ -2484,6 +2496,7 @@ function baseToolAnimator () {
 							parsed.degrees = $iptDegrees.val().trim() ? Math.round(Number($iptDegrees.val().trim())) : null;
 							parsed._type = $cbExact.prop("checked") ? "RotateExact" : "Rotate";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.degrees);
@@ -2531,6 +2544,7 @@ function baseToolAnimator () {
 							parsed.flipV = $selFlipV.val() === "0" ? null : $selFlipV.val() !== "1";
 							parsed._type = $cbExact.prop("checked") ? "FlipExact" : "Flip";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $getSelFlip = () => {
@@ -2566,6 +2580,7 @@ function baseToolAnimator () {
 							parsed.scaleY = $iptScaleY.val().trim() ? Number($iptScaleY.val()) : null;
 							parsed._type = $cbExact.prop("checked") ? "ScaleExact" : "Scale";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptScaleX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.scaleX);
@@ -2620,6 +2635,7 @@ function baseToolAnimator () {
 							parsed.degrees = $iptDegrees.val().trim() ? Math.round(Number($iptDegrees.val())) : null;
 							parsed._type = $cbExact.prop("checked") ? "LightingExact" : "Lighting";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptLightRadius = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.lightRadius);
@@ -2654,16 +2670,18 @@ function baseToolAnimator () {
 							catch (ignored) { parsed.value = $iptVal.val(); }
 							line.line = d20plus.anim.lineFromParsed(parsed);
 							parsed._type = $selMode.val();
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $selProp = $(`<select class="mr-2 sel-xs">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
 							.change(() => doUpdate()).val(parsed.prop);
-						const $iptVal = $(`<textarea class="full-width" style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
+						const $iptVal = $(`<textarea class="full-width my-0" style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
 						const $selMode = $(`<select class="mr-2 sel-xs">
 							<option value="SetProperty">Set</option>
 							<option value="SumProperty">Sum</option>
 						</select>`)
-							.change(() => doUpdate()).val(parsed._type);
+							.val(parsed._type)
+							.change(() => doUpdate());
 
 						gui_$getWrapped("Property", 4, true).appendTo(baseMeta.$wrpHeaders);
 						gui_$getWrapped("Value", 3, true).appendTo(baseMeta.$wrpHeaders);
@@ -2673,7 +2691,7 @@ function baseToolAnimator () {
 						gui_$getWrapped($selProp, 4).appendTo(baseMeta.$wrpInputs);
 						gui_$getWrapped($iptVal, 3).appendTo(baseMeta.$wrpInputs);
 						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped($selMode, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($selMode, 2).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
 

@@ -263,6 +263,10 @@ function baseCss () {
 			r: "float: right;"
 		},
 		{
+			s: ".my-0",
+			r: "margin-top: 0 !important; margin-bottom: 0 !important;"
+		},
+		{
 			s: ".m-1",
 			r: "margin: 0.25rem !important;"
 		},
@@ -858,7 +862,10 @@ function baseCss () {
 			`
 		},
 		{
-			s: ".anm-edit__gui-row-name--SetProperty",
+			s: [
+				".anm-edit__gui-row-name--SetProperty",
+				".anm-edit__gui-row-name--SumProperty"
+			],
 			r: `
 				background: #006bff;
 			`

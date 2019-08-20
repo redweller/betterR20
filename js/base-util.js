@@ -117,20 +117,24 @@ function baseUtil () {
 		}));
 	};
 
-	d20plus.ut.addCSS = (sheet, selector, rules) => {
-		const index = sheet.cssRules.length;
-		try {
-			if ("insertRule" in sheet) {
-				sheet.insertRule(selector + "{" + rules + "}", index);
-			} else if ("addRule" in sheet) {
-				sheet.addRule(selector, rules, index);
+	d20plus.ut.addCSS = (sheet, selectors, rules) => {
+		if (!(selectors instanceof Array)) selectors = [selectors];
+
+		selectors.forEach(selector => {
+			const index = sheet.cssRules.length;
+			try {
+				if ("insertRule" in sheet) {
+					sheet.insertRule(selector + "{" + rules + "}", index);
+				} else if ("addRule" in sheet) {
+					sheet.addRule(selector, rules, index);
+				}
+			} catch (e) {
+				if ((!selector && selector.startsWith("-webkit-"))) {
+					console.error(e);
+					console.error(`Selector was "${selector}"; rules were "${rules}"`);
+				}
 			}
-		} catch (e) {
-			if ((!selector && selector.startsWith("-webkit-"))) {
-				console.error(e);
-				console.error(`Selector was "${selector}"; rules were "${rules}"`);
-			}
-		}
+		});
 	};
 
 	d20plus.ut.addAllCss = () => {
