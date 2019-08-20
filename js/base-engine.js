@@ -1855,13 +1855,13 @@ function d20plusEngine () {
 			setTimeout(() => {
 				const $btnAlpha = $(`#vetools-transmog-alpha`);
 				if (!$btnAlpha.length) {
-					const $prependTarget = $(`.ui-dialog-title:textEquals(Transmogrifier)`).first().parent().parent().find(`.ui-dialog-content`);
+					const $prependTarget = $(`.ui-dialog-title:textEquals(transmogrifier)`).first().parent().parent().find(`.ui-dialog-content`);
 					$(`<button id="#vetools-transmog-alpha" class="btn btn default" style="margin-bottom: 5px;">Sort Items Alphabetically</button>`).on("click", () => {
 						// coped from a bookmarklet
 						$('iframe').contents().find('.objects').each((c,e)=>{ let $e=$(e); $e.children().sort( (a,b)=>{ let name1=$(a).find(".name").text().toLowerCase(), name2=$(b).find(".name").text().toLowerCase(), comp = name1.localeCompare(name2); return comp; }) .each((i,c)=>$e.append(c)); });
 					}).prependTo($prependTarget);
 				}
-			}, 5);
+			}, 35);
 		})
 	};
 
