@@ -278,7 +278,7 @@ function d20plusMonsters () {
 							const avatar = data.tokenUrl || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
 							character.size = data.size;
 							character.name = data._displayName || data.name;
-							character.senses = data.senses ? data.senses.join(", ") : null;
+							character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
 							character.hp = data.hp.average || 0;
 							const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? (() => {
 								const firstImage = fluff.images[0] || {};
@@ -301,7 +301,7 @@ function d20plusMonsters () {
 							var hpformula = data.hp.formula;
 							var passive = data.passive != null ? data.passive : "";
 							var passiveStr = passive !== "" ? "passive Perception " + passive : "";
-							var senses = data.senses ? data.senses.join(", ") : "";
+							var senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : "";
 							var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
 							var size = d20plus.getSizeString(data.size || "");
 							var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
