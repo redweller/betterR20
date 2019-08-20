@@ -175,7 +175,7 @@ function d20plusSpells () {
 <em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}${builderOptions.isSpellPoints && data.level ? ` (${d20plus.spells.spLevelToSpellPoints(data.level)} spell points)` : ""}</em></p><p>
 <strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
 <strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
-<strong>Components:</strong> ${Parser.spComponentsToFull(data)}<br>
+<strong>Components:</strong> ${Parser.spComponentsToFull(data.components, data.level)}<br>
 <strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>
 </p>`;
 		const renderer = new Renderer();

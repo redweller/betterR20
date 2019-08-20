@@ -278,7 +278,7 @@ function d20plusMonsters () {
 							const avatar = data.tokenUrl || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
 							character.size = data.size;
 							character.name = data._displayName || data.name;
-							character.senses = data.senses ? data.senses.join(", ") : null;
+							character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
 							character.hp = data.hp.average || 0;
 							const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? (() => {
 								const firstImage = fluff.images[0] || {};
@@ -301,12 +301,13 @@ function d20plusMonsters () {
 							var hpformula = data.hp.formula;
 							var passive = data.passive != null ? data.passive : "";
 							var passiveStr = passive !== "" ? "passive Perception " + passive : "";
-							var senses = data.senses ? data.senses.join(", ") : "";
+							var senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : "";
 							var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
 							var size = d20plus.getSizeString(data.size || "");
 							var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
 							var cr = data.cr ? (data.cr.cr || data.cr) : "";
 							var xp = Parser.crToXpNumber(cr) || 0;
+							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc_toggle", current: 1});
 							character.attribs.create({name: "npc_options-flag", current: 0});
@@ -393,7 +394,7 @@ function d20plusMonsters () {
 							character.attribs.create({name: "passive", current: passive});
 							character.attribs.create({
 								name: "npc_languages",
-								current: data.languages != null ? data.languages.join(", ") : ""
+								current: data.languages != null ? data.languages instanceof Array ? data.languages.join(", ") : data.languages : ""
 							});
 							const moCn = cr.cr || cr;
 							character.attribs.create({name: "npc_challenge", current: moCn});
@@ -434,6 +435,12 @@ function d20plusMonsters () {
 								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
 							});
 							character.attribs.create({name: "npc_senses", current: sensesStr});
+							if (d20plus.cfg.getOrDefault("import", "dexTiebreaker")) {
+								character.attribs.create({
+									name: "init_tiebreaker",
+									current: "@{dexterity}/100"
+								});
+							}
 
 							// add Tokenaction Macros
 							if (d20plus.cfg.getOrDefault("import", "tokenactionsSkills")) {

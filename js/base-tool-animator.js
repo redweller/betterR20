@@ -50,7 +50,8 @@ function baseToolAnimator () {
 					add(parsed.lightRadius, parsed.dimStart, parsed.degrees);
 					break;
 				}
-				case "SetProperty": {
+				case "SetProperty":
+				case "SumProperty": {
 					add(parsed.prop, parsed.value);
 					break;
 				}
@@ -83,6 +84,7 @@ function baseToolAnimator () {
 				case "ScaleExact": out = new d20plus.anim.ScaleExact(json.startTime, json.duration, json.scaleFactorX, json.scaleFactorY); break;
 				case "Layer": out = new d20plus.anim.Layer(json.startTime, json.layer); break;
 				case "SetProperty": out = new d20plus.anim.SetProperty(json.startTime, json.prop, json.value); break;
+				case "SumProperty": out = new d20plus.anim.SumProperty(json.startTime, json.prop, json.value); break;
 				case "Lighting": out = new d20plus.anim.Lighting(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees); break;
 				case "LightingExact": out = new d20plus.anim.LightingExact(json.startTime, json.duration, json.lightRadius, json.dimStart, json.degrees); break;
 				case "TriggerMacro": out = new d20plus.anim.TriggerMacro(json.startTime, json.macroName); break;
@@ -583,10 +585,41 @@ function baseToolAnimator () {
 			};
 		},
 
+		_BaseProperty: function (startTime, prop, value) {
+			d20plus.anim._Base.call(this);
+
+			this.serialize = () => {
+				return cleanNulls({
+					...this._serialize(),
+					startTime, prop, value
+				})
+			};
+		},
+
+		SumProperty: function (startTime, prop, value) {
+			d20plus.anim._BaseProperty.call(this, startTime, prop, value);
+
+			this.animate = function (token, alpha) {
+				alpha = alpha - this._offset;
+
+				if (!this._hasRun && alpha >= startTime) {
+					this._hasRun = true;
+
+					if (prop != null) {
+						const curNum = Number(token.attributes[prop]);
+						token.attributes[prop] = (isNaN(curNum) ? 0 : curNum) + eval(value);
+					}
+
+					return true;
+				}
+				return false;
+			};
+		},
+
 		// TODO consider making an alternate version which sets a property on the character
 		// TODO consider the ability to set properties on _other_ tokens -- might not be performant enough?
 		SetProperty: function (startTime, prop, value) {
-			d20plus.anim._Base.call(this);
+			d20plus.anim._BaseProperty.call(this, startTime, prop, value);
 
 			this.animate = function (token, alpha) {
 				alpha = alpha - this._offset;
@@ -603,13 +636,6 @@ function baseToolAnimator () {
 					return true;
 				}
 				return false;
-			};
-
-			this.serialize = () => {
-				return cleanNulls({
-					...this._serialize(),
-					startTime, prop, value
-				})
 			};
 		},
 
@@ -1041,7 +1067,8 @@ function baseToolAnimator () {
 				}
 			}
 
-			case "prop": {
+			case "prop":
+			case "propSum": {
 				if (tokens.length < 2) return Command.errInvalidArgCount(line, 3);
 				const nStart = Number(tokens[0]);
 				if (isNaN(nStart)) return Command.errStartNum(line, tokens[0]);
@@ -1053,17 +1080,31 @@ function baseToolAnimator () {
 				if (tokens.length > 2) val = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
 				try { val = JSON.parse(val); } catch (ignored) { console.warn(`Failed to parse "${val}" as JSON, treating as raw string...`) }
 
-				return new Command(
-					line,
-					null,
-					d20plus.anim.SetProperty.bind(null, nStart, prop, val),
-					{
-						_type: "SetProperty",
-						start: nStart,
-						prop: prop,
-						value: val
-					}
-				);
+				if (op === "propSum") {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.SumProperty.bind(null, nStart, prop, val),
+						{
+							_type: "SumProperty",
+							start: nStart,
+							prop: prop,
+							value: val
+						}
+					);
+				} else {
+					return new Command(
+						line,
+						null,
+						d20plus.anim.SetProperty.bind(null, nStart, prop, val),
+						{
+							_type: "SetProperty",
+							start: nStart,
+							prop: prop,
+							value: val
+						}
+					);
+				}
 			}
 
 			case "macro": {
@@ -2344,19 +2385,19 @@ function baseToolAnimator () {
 						${isDuration ? $$`<div class="col-2 flex-vh-center">${$iptDuration}</div>` : ""}
 					</div>`;
 
+				const $dispName = $(`<div class="bold anm-edit__gui-row-name ${titleMeta.className}">${titleMeta.text}</div>`);
+
 				const titleMeta = _getTitleMeta();
 				const $row = $$`<div class="flex-col full-width anm-edit__gui-row">
 						<div class="split flex-v-center mb-2">
-							<div class="full-width flex-v-center full-height">
-								<div class="bold anm-edit__gui-row-name ${titleMeta.className}">${titleMeta.text}</div>
-							</div>
+							<div class="full-width flex-v-center full-height">${$dispName}</div>
 							${$btnRemove}
 						</div>			
 						${$wrpHeaders}
 						${$wrpInputs}
 					</div>`;
 
-				return {$row, doUpdate, $wrpHeaders, $wrpInputs};
+				return {$row, doUpdate, $wrpHeaders, $wrpInputs, $dispName};
 			};
 
 			const gui_$getBtnAnim = (fnUpdate, $iptAnim) => {
@@ -2422,6 +2463,7 @@ function baseToolAnimator () {
 							parsed.z = $iptZ.val().trim() ? Math.round(Number($iptZ.val())) : null;
 							parsed._type = $cbExact.prop("checked") ? "MoveExact" : "Move";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.x);
@@ -2454,6 +2496,7 @@ function baseToolAnimator () {
 							parsed.degrees = $iptDegrees.val().trim() ? Math.round(Number($iptDegrees.val().trim())) : null;
 							parsed._type = $cbExact.prop("checked") ? "RotateExact" : "Rotate";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptDegrees = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.degrees);
@@ -2501,6 +2544,7 @@ function baseToolAnimator () {
 							parsed.flipV = $selFlipV.val() === "0" ? null : $selFlipV.val() !== "1";
 							parsed._type = $cbExact.prop("checked") ? "FlipExact" : "Flip";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $getSelFlip = () => {
@@ -2536,6 +2580,7 @@ function baseToolAnimator () {
 							parsed.scaleY = $iptScaleY.val().trim() ? Number($iptScaleY.val()) : null;
 							parsed._type = $cbExact.prop("checked") ? "ScaleExact" : "Scale";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptScaleX = $(`<input type="number" min="0" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.scaleX);
@@ -2590,6 +2635,7 @@ function baseToolAnimator () {
 							parsed.degrees = $iptDegrees.val().trim() ? Math.round(Number($iptDegrees.val())) : null;
 							parsed._type = $cbExact.prop("checked") ? "LightingExact" : "Lighting";
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $iptLightRadius = $(`<input type="number" class="full-width mr-2">`).change(() => doUpdate()).val(parsed.lightRadius);
@@ -2613,7 +2659,8 @@ function baseToolAnimator () {
 
 						break;
 					}
-					case "SetProperty": {
+					case "SetProperty":
+					case "SumProperty": {
 						const baseMeta = gui_getBasicRowMeta(myLines, line, false);
 
 						const doUpdate = () => {
@@ -2622,17 +2669,29 @@ function baseToolAnimator () {
 							try { parsed.value = JSON.parse($iptVal().trim()); }
 							catch (ignored) { parsed.value = $iptVal.val(); }
 							line.line = d20plus.anim.lineFromParsed(parsed);
+							parsed._type = $selMode.val();
+							baseMeta.$dispName.text(parsed._type);
 						};
 
 						const $selProp = $(`<select class="mr-2 sel-xs">${d20plus.anim._PROP_TOKEN.sort(SortUtil.ascSortLower).map(it => `<option>${it}</option>`).join("")}</select>`)
 							.change(() => doUpdate()).val(parsed.prop);
-						const $iptVal = $(`<textarea class="full-width" style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
+						const $iptVal = $(`<textarea class="full-width my-0" style="resize: vertical;"></textarea>`).change(() => doUpdate()).val(parsed.value);
+						const $selMode = $(`<select class="mr-2 sel-xs">
+							<option value="SetProperty">Set</option>
+							<option value="SumProperty">Sum</option>
+						</select>`)
+							.val(parsed._type)
+							.change(() => doUpdate());
 
 						gui_$getWrapped("Property", 4, true).appendTo(baseMeta.$wrpHeaders);
-						gui_$getWrapped("Value", 6, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Value", 3, true).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpHeaders);
+						gui_$getWrapped("Mode", 2, true).appendTo(baseMeta.$wrpHeaders);
 
 						gui_$getWrapped($selProp, 4).appendTo(baseMeta.$wrpInputs);
-						gui_$getWrapped($iptVal, 6).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($iptVal, 3).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped("", 1).appendTo(baseMeta.$wrpInputs);
+						gui_$getWrapped($selMode, 2).appendTo(baseMeta.$wrpInputs);
 
 						$wrpRows.append(baseMeta.$row);
 
@@ -3158,6 +3217,7 @@ function baseToolAnimator () {
 		"Lighting": "light",
 		"LightingExact": "lightx",
 		"SetProperty": "prop",
+		"SumProperty": "propSum",
 		"TriggerMacro": "macro",
 		"TriggerAnimation": "anim",
 	};
@@ -3176,6 +3236,7 @@ function baseToolAnimator () {
 		"light": "0 0 - - -",
 		"lightx": "0 0 - - -",
 		"prop": "0 -",
+		"propSum": "0 -",
 		"macro": "0 -",
 		"anim": "0 -",
 	};

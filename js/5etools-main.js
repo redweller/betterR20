@@ -310,6 +310,11 @@ const betteR205etoolsMain = function () {
 			"default": true,
 			"_type": "boolean"
 		},
+		"dexTiebreaker": {
+			"name": "Add DEX Tiebreaker to Initiative",
+			"default": false,
+			"_type": "boolean"
+		},
 		"tokenactions": {
 			"name": "Add TokenAction Macros on Import (Actions)",
 			"default": true,
@@ -2754,7 +2759,7 @@ const betteR205etoolsMain = function () {
 					const avatar = data.tokenUrl || `${IMG_URL}objects/${name}.png`;
 					character.size = data.size;
 					character.name = name;
-					character.senses = data.senses ? data.senses.join(", ") : null;
+					character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
 					character.hp = data.hp;
 					$.ajax({
 						url: avatar,
