@@ -833,19 +833,6 @@ function d20plusMod() {
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
 		const a = e && e.tokens_to_render || this._objects;
-		// BEGIN MOD
-		// Add foreground objects if we're rendering player tokens
-		if (e && e.tokens_to_render) {
-			for (let obj of this._objects) {
-				if (obj.model) {
-					const layer = obj.model.get("layer");
-					if (layer !== "foreground") continue;
-					if (!r[layer]) continue;
-					r[layer].push(obj)
-				}
-			}
-		}
-		// END MOD
 		for (let e of a)
 			if (e.model) {
 				const t = e.model.get("layer");
@@ -884,33 +871,27 @@ function d20plusMod() {
 			_.chain(i).filter(i=>{
 				// BEGIN MOD
 				// forcibly render foreground elements over everything
-				if (a === "foreground") return true;
+				// if (a === "foreground") return true;
 				// END MOD
 
-					let r;
-					return n && i && n.contains(i) ? (i.renderingInGroup = n,
-						i.hasControls = !1) : (i.renderingInGroup = null,
-						i.hasControls = !0,
-						"text" !== i.type && window.is_gm ? i.hideResizers = !1 : i.hideResizers = !0),
-						e && e.invalid_rects ? (r = i.intersects([o]) && (i.needsToBeDrawn || i.intersects(e.invalid_rects)),
-						!e.skip_prerender && i.renderPre && i.renderPre(t)) : (r = i.needsRender(o),
-						(!e || !e.skip_prerender) && r && i.renderPre && i.renderPre(t, {
-							should_update: !0
-						})),
-						r
+				let r;
+				return n && i && n.contains(i) ? (i.renderingInGroup = n,
+					i.hasControls = !1) : (i.renderingInGroup = null,
+					i.hasControls = !0,
+					"text" !== i.type && window.is_gm ? i.hideResizers = !1 : i.hideResizers = !0),
+					e && e.invalid_rects ? (r = i.intersects([o]) && (i.needsToBeDrawn || i.intersects(e.invalid_rects)),
+					!e.skip_prerender && i.renderPre && i.renderPre(t)) : (r = i.needsRender(o),
+					(!e || !e.skip_prerender) && r && i.renderPre && i.renderPre(t, {
+						should_update: !0
+					})),
+					r
 				}
 			).each(n=>{
-				// BEGIN MOD
-				const opts = e; // rename for clarity
-
-				const isOwnedByPlayer = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id);
-				const hasSight = n._model && n._model.get("light_hassight");
-				const isOwnedSightAurasOnly = opts && opts.owned_with_sight_auras_only; // always true?
-				if (!isOwnedSightAurasOnly || !isOwnedByPlayer || !hasSight) {
-					this._draw(t, n)
-				}
-				n.renderingInGroup = null
-				// END MOD
+				const i = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id)
+					, o = n._model && n._model.get("light_hassight")
+					, r = e && e.owned_with_sight_auras_only;
+				r && (!r || i && o) || this._draw(t, n),
+					n.renderingInGroup = null
 			})
 		}
 		return t.restore(),
