@@ -308,6 +308,7 @@ function d20plusMonsters () {
 							var cr = data.cr ? (data.cr.cr || data.cr) : "";
 							var xp = Parser.crToXpNumber(cr) || 0;
 							character.attribs.create({name: "npc", current: 1});
+							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc_toggle", current: 1});
 							character.attribs.create({name: "npc_options-flag", current: 0});
 							character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
@@ -393,7 +394,7 @@ function d20plusMonsters () {
 							character.attribs.create({name: "passive", current: passive});
 							character.attribs.create({
 								name: "npc_languages",
-								current: data.languages != null ? data.languages.join(", ") : ""
+								current: data.languages != null ? data.languages instanceof Array ? data.languages.join(", ") : data.languages : ""
 							});
 							const moCn = cr.cr || cr;
 							character.attribs.create({name: "npc_challenge", current: moCn});
@@ -434,6 +435,12 @@ function d20plusMonsters () {
 								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
 							});
 							character.attribs.create({name: "npc_senses", current: sensesStr});
+							if (d20plus.cfg.getOrDefault("import", "dexTiebreaker")) {
+								character.attribs.create({
+									name: "init_tiebreaker",
+									current: "@{dexterity}/100"
+								});
+							}
 
 							// add Tokenaction Macros
 							if (d20plus.cfg.getOrDefault("import", "tokenactionsSkills")) {

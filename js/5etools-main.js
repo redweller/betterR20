@@ -310,6 +310,11 @@ const betteR205etoolsMain = function () {
 			"default": true,
 			"_type": "boolean"
 		},
+		"dexTiebreaker": {
+			"name": "Add DEX Tiebreaker to Initiative",
+			"default": false,
+			"_type": "boolean"
+		},
 		"tokenactions": {
 			"name": "Add TokenAction Macros on Import (Actions)",
 			"default": true,
