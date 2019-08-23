@@ -1032,7 +1032,9 @@ function d20plusEngine () {
 								if (animUid == null) return;
 
 								lastContextSelection.lastAnimUid = animUid;
-								d20.engine.selected().forEach(it => {
+								const selected = d20.engine.selected();
+								d20.engine.unselect();
+								selected.forEach(it => {
 									if (it.model) {
 										d20plus.anim.animator.startAnimation(it.model, animUid)
 									}
