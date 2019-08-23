@@ -2385,9 +2385,8 @@ function baseToolAnimator () {
 						${isDuration ? $$`<div class="col-2 flex-vh-center">${$iptDuration}</div>` : ""}
 					</div>`;
 
-				const $dispName = $(`<div class="bold anm-edit__gui-row-name ${titleMeta.className}">${titleMeta.text}</div>`);
-
 				const titleMeta = _getTitleMeta();
+				const $dispName = $(`<div class="bold anm-edit__gui-row-name ${titleMeta.className}">${titleMeta.text}</div>`);
 				const $row = $$`<div class="flex-col full-width anm-edit__gui-row">
 						<div class="split flex-v-center mb-2">
 							<div class="full-width flex-v-center full-height">${$dispName}</div>
