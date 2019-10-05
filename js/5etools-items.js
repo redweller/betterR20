@@ -301,7 +301,7 @@ function d20plusItems () {
 	};
 
 	d20plus.items.parseType = function (type) {
-		const result = Parser.itemTypeToAbv(type);
+		const result = Parser.itemTypeToFull(type);
 		return result ? result : "n/a";
 	};
 
