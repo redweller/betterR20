@@ -856,8 +856,8 @@ function d20plusImporter () {
 					default:
 						if (it.type) {
 							folderName = Parser.itemTypeToAbv(it.type);
-						} else if (it.typeText) {
-							folderName = it.typeText;
+						} else if (it._typeListText) {
+							folderName = it._typeListText.join(", ");
 						} else {
 							folderName = "Unknown";
 						}

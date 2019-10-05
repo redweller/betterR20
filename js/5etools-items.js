@@ -8,7 +8,7 @@ function d20plusItems () {
 
 		return `
 		<span class="name col-3" title="name">${it.name}</span>
-		<span class="type col-5" title="type">${it.typeText.split(",").map(t => `TYP[${t.trim()}]`).join(", ")}</span>
+		<span class="type col-5" title="type">${it._typeListText.map(t => `TYP[${t.trim()}]`).join(", ")}</span>
 		<span class="rarity col-2" title="rarity">RAR[${it.rarity}]</span>
 		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	};
@@ -16,7 +16,7 @@ function d20plusItems () {
 		if (!it._isEnhanced) Renderer.item.enhanceItem(it);
 		return {
 			name: it.name.toLowerCase(),
-			type: it.typeText.toLowerCase().split(","),
+			type: it._typeListText.map(t => t.toLowerCase()),
 			rarity: it.rarity.toLowerCase(),
 			source: Parser.sourceJsonToAbv(it.source).toLowerCase()
 		};
@@ -141,7 +141,7 @@ function d20plusItems () {
 			name: name,
 			tags: d20plus.importer.getTagString([
 				`rarity ${data.rarity}`,
-				...data.procType,
+				...data._typeListText,
 				Parser.sourceJsonToFull(data.source)
 			], "item")
 		}, {
@@ -190,8 +190,8 @@ function d20plusItems () {
 			const fullType = d20plus.items.parseType(data.type);
 			typeArray.push(fullType);
 			roll20Data.data["Item Type"] = fullType;
-		} else if (data.typeText) {
-			roll20Data.data["Item Type"] = data.typeText;
+		} else if (data._typeListText) {
+			roll20Data.data["Item Type"] = data._typeListText.join(", ");
 		}
 		var typestring = typeArray.join(", ");
 		var damage = "";
@@ -250,16 +250,14 @@ function d20plusItems () {
 			notecontents += `<p><strong>Weight: </strong>${data.weight} lbs.</p>`;
 			roll20Data.data.Weight = String(data.weight);
 		}
-		var itemtext = data.entries ? data.entries : "";
-		const renderer = new Renderer();
-		const renderStack = [];
-		const entryList = {type: "entries", entries: data.entries};
-		renderer.setBaseUrl(BASE_SITE_URL);
-		renderer.recursiveRender(entryList, renderStack, {depth: 1});
-		var textstring = renderStack.join("");
-		if (textstring) {
+
+		const textString = Renderer.item.getRenderedEntries(data);
+		if (textString) {
 			notecontents += `<hr>`;
-			notecontents += textstring;
+			notecontents += textString;
+
+			roll20Data.content = d20plus.importer.getCleanText(textString);
+			roll20Data.htmlcontent = roll20Data.content;
 		}
 
 		if (data.range) {
@@ -269,10 +267,6 @@ function d20plusItems () {
 			roll20Data.data.Damage = cleanDmg1;
 			roll20Data.data["Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
 		}
-		if (textstring.trim()) {
-			roll20Data.content = d20plus.importer.getCleanText(textstring);
-			roll20Data.htmlcontent = roll20Data.content;
-		}
 		if (data.stealth) {
 			roll20Data.data.Stealth = "Disadvantage";
 		}
@@ -280,7 +274,7 @@ function d20plusItems () {
 		// roll20Data.data.Save = "Constitution"; // used by e.g. poison, ball bearings; not shown in sheet
 		// roll20Data.data.Target = "Each creature in a 10-foot square centered on a point within range"; // used by e.g. ball bearings; not shown in sheet
 		// roll20Data.data["Item Rarity"] = "Wondrous"; // used by Iron Bands of Binding... and nothing else?; not shown in sheet
-		if (data.reqAttune === "YES") {
+		if (data.reqAttune === true) {
 			roll20Data.data["Requires Attunement"] = "Yes";
 		} else {
 			roll20Data.data["Requires Attunement"] = "No";

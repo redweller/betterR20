@@ -40,7 +40,7 @@ function baseUtil () {
 		d20.tddice.canRoll3D = () => false;
 	};
 
-	d20plus.ut.checkVersion = () => {
+	d20plus.ut.checkVersion = (scriptType) => {
 		d20plus.ut.log("Checking current version");
 
 		function cmpVersions (a, b) {
@@ -56,6 +56,13 @@ function baseUtil () {
 				}
 			}
 			return segmentsA.length - segmentsB.length;
+		}
+
+		let scriptUrl;
+		switch (scriptType) {
+			case "core": scriptType = `https://get.5e.tools/script/betteR20-core.user.js${d20plus.ut.getAntiCacheSuffix()}`; break;
+			case "5etools": scriptType = `https://get.5e.tools/script/betteR20-5etools.user.js${d20plus.ut.getAntiCacheSuffix()}`; break;
+			default: scriptUrl = "https://get.5e.tools/"; break;
 		}
 
 		$.ajax({

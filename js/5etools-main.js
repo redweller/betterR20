@@ -1387,9 +1387,13 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 				});
 
-				if (race.languageTags) {
+				if (race.languageProficiencies && race.languageProficiencies.length) {
+					// FIXME this discards information
+					const profs = race.languageProficiencies[0];
+					const asText = Object.keys(profs).filter(it => it !== "choose").map(it => it === "anyStandard" ? "any" : it).map(it => it.toTitleCase()).join(", ");
+
 					const lRowId = d20plus.ut.generateRowId();
-					attrs.add(`repeating_proficiencies_${lRowId}_name`, race.languageTags.join(", "));
+					attrs.add(`repeating_proficiencies_${lRowId}_name`, asText);
 					attrs.add(`repeating_proficiencies_${lRowId}_options-flag`, "0");
 				}
 			} else if (d20plus.sheet === "shaped") {
