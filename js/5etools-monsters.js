@@ -4,7 +4,7 @@ function d20plusMonsters () {
 		TAG_SPELL_CLOSE: "#VE_MARK_SPELL_CLOSE#",
 	};
 
-	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "Alphabetical", "Source"];
+	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "CR → Type", "Alphabetical", "Source"];
 	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
 	d20plus.monsters._listItemBuilder = (it) => `
 		<span class="name col-4" title="name">${it.name}</span>
@@ -235,7 +235,7 @@ function d20plusMonsters () {
 
 			// make dir
 			const folder = d20plus.journal.makeDirTree(`Monsters`, folderName);
-			const path = ["Monsters", folderName, data._displayName || data.name];
+			const path = ["Monsters", ...folderName, data._displayName || data.name];
 
 			// handle duplicates/overwrites
 			if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
