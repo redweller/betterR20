@@ -2798,6 +2798,11 @@ const betteR205etoolsMain = function () {
 					character.attribs.create({name: "npc", current: 1});
 					character.attribs.create({name: "npc_toggle", current: 1});
 					character.attribs.create({name: "npc_options-flag", current: 0});
+					// region disable charachtermancer
+					character.attribs.create({name: "mancer_confirm_flag", current: ""});
+					character.attribs.create({name: "mancer_cancel", current: "on"});
+					character.attribs.create({name: "l1mancer_status", current: "completed"});
+					// endregion
 					character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
 					character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
 					character.attribs.create({

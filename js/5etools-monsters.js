@@ -308,9 +308,13 @@ function d20plusMonsters () {
 							var cr = data.cr ? (data.cr.cr || data.cr) : "";
 							var xp = Parser.crToXpNumber(cr) || 0;
 							character.attribs.create({name: "npc", current: 1});
-							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc_toggle", current: 1});
 							character.attribs.create({name: "npc_options-flag", current: 0});
+							// region disable charachtermancer
+							character.attribs.create({name: "mancer_confirm_flag", current: ""});
+							character.attribs.create({name: "mancer_cancel", current: "on"});
+							character.attribs.create({name: "l1mancer_status", current: "completed"});
+							// endregion
 							character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
 							character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
 							character.attribs.create({
@@ -372,31 +376,39 @@ function d20plusMonsters () {
 							character.attribs.create({name: "strength_base", current: `${data.str}`});
 							character.attribs.create({name: "strength_mod", current: calcMod(data.str)});
 							character.attribs.create({name: "npc_str_negative", current: calcMod(data.str) < 0});
+							character.attribs.create({name: "strength_flag", current: 0});
 
 							character.attribs.create({name: "dexterity", current: data.dex});
 							character.attribs.create({name: "dexterity_base", current: `${data.dex}`});
 							character.attribs.create({name: "dexterity_mod", current: calcMod(data.dex)});
 							character.attribs.create({name: "npc_dex_negative", current: calcMod(data.dex) < 0});
+							character.attribs.create({name: "dexterity_flag", current: 0});
 
 							character.attribs.create({name: "constitution", current: data.con});
 							character.attribs.create({name: "constitution_base", current: `${data.con}`});
 							character.attribs.create({name: "constitution_mod", current: calcMod(data.con)});
 							character.attribs.create({name: "npc_con_negative", current: calcMod(data.con) < 0});
+							character.attribs.create({name: "constitution_flag", current: 0});
 
 							character.attribs.create({name: "intelligence", current: data.int});
 							character.attribs.create({name: "intelligence_base", current: `${data.int}`});
 							character.attribs.create({name: "intelligence_mod", current: calcMod(data.int)});
 							character.attribs.create({name: "npc_int_negative", current: calcMod(data.int) < 0});
+							character.attribs.create({name: "intelligence_flag", current: 0});
 
 							character.attribs.create({name: "wisdom", current: data.wis});
 							character.attribs.create({name: "wisdom_base", current: `${data.wis}`});
 							character.attribs.create({name: "wisdom_mod", current: calcMod(data.wis)});
 							character.attribs.create({name: "npc_wis_negative", current: calcMod(data.wis) < 0});
+							character.attribs.create({name: "wisdom_flag", current: 0});
 
 							character.attribs.create({name: "charisma", current: data.cha});
 							character.attribs.create({name: "charisma_base", current: `${data.cha}`});
 							character.attribs.create({name: "charisma_mod", current: calcMod(data.cha)});
 							character.attribs.create({name: "npc_cha_negative", current: calcMod(data.cha) < 0});
+							character.attribs.create({name: "charisma_flag", current: 0});
+
+							character.attribs.create({name: "initiative_bonus", current: calcMod(data.dex)});
 
 							character.attribs.create({name: "passive", current: passive});
 							character.attribs.create({
