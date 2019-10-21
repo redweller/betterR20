@@ -80,7 +80,7 @@ function d20plusSpells () {
 	d20plus.spells.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Spells`, folderName);
-		const path = ["Spells", folderName, data.name];
+		const path = ["Spells", ...folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;

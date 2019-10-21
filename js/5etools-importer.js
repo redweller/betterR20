@@ -169,7 +169,8 @@ function d20plusImporter () {
 			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
 			imgsrc: avatar,
 			width: 70 * tokensize,
-			height: 70 * tokensize
+			height: 70 * tokensize,
+			compact_bar: d20plus.cfg.getOrDefault("token", "isCompactBars") ? "compact" : "standard"
 		};
 		if (!d20plus.cfg.get("import", "skipSenses")) {
 			defaulttoken.light_hassight = true;
@@ -177,6 +178,13 @@ function d20plusImporter () {
 				defaulttoken.light_radius = `${lightradius}`;
 				defaulttoken.light_dimradius = `${lightmin}`;
 			}
+		}
+		const barLocation = d20plus.cfg.getOrDefault("token", "barLocation");
+		switch (barLocation) {
+			case "Above": defaulttoken.bar_location = "above"; break;
+			case "Top Overlapping": defaulttoken.bar_location = "overlap_top"; break;
+			case "Bottom Overlapping": defaulttoken.bar_location = "overlap_bottom"; break;
+			case "Below": defaulttoken.bar_location = "below"; break;
 		}
 
 		// ensure any portrait URL exists
@@ -813,6 +821,9 @@ function d20plusImporter () {
 						break;
 					case "Type (with tags)":
 						folderName = Parser.monTypeToFullObj(it.type).asText.uppercaseFirst();
+						break;
+					case "CR → Type":
+						folderName = [it.cr ? (it.cr.cr || it.cr) : "Unknown", Parser.monTypeToFullObj(it.type).type.uppercaseFirst()];
 						break;
 					case "Type":
 					default:

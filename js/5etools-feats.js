@@ -25,7 +25,7 @@ function d20plusFeats () {
     d20plus.feats.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
         // make dir
         const folder = d20plus.journal.makeDirTree(`Feats`, folderName);
-        const path = ["Feats", folderName, data.name];
+        const path = ["Feats", ...folderName, data.name];
 
         // handle duplicates/overwrites
         if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;

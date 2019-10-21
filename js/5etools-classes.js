@@ -52,7 +52,7 @@ function d20plusClass () {
 
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Classes`, folderName);
-		const path = ["Classes", folderName, data.name];
+		const path = ["Classes", ...folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -300,7 +300,7 @@ function d20plusClass () {
 	d20plus.subclasses.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options, baseClass) {
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Subclasses`, folderName);
-		const path = ["Sublasses", folderName, data.name];
+		const path = ["Sublasses", ...folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;

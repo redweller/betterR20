@@ -245,6 +245,24 @@ const betteR205etoolsMain = function () {
 			"_type": "boolean",
 			"_player": true
 		},
+		"barLocation": {
+			"name": "Bar Location",
+			"default": "above",
+			"_type": "_enum",
+			"__values": [
+				"Above",
+				"Top Overlapping",
+				"Bottom Overlapping",
+				"Below"
+			],
+			"_player": true
+		},
+		"isCompactBars": {
+			"name": "Compact Bars",
+			"default": false,
+			"_type": "boolean",
+			"_player": true
+		},
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
@@ -2573,7 +2591,7 @@ const betteR205etoolsMain = function () {
 	d20plus.psionics.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Psionics`, folderName);
-		const path = ["Psionics", folderName, data.name];
+		const path = ["Psionics", ...folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -2660,7 +2678,7 @@ const betteR205etoolsMain = function () {
 	d20plus.races.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Races`, folderName);
-		const path = ["Races", folderName, data.name];
+		const path = ["Races", ...folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -2741,7 +2759,7 @@ const betteR205etoolsMain = function () {
 	d20plus.objects.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Objects`, folderName);
-		const path = ["Objects", folderName, data.name];
+		const path = ["Objects", ...folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -2780,6 +2798,11 @@ const betteR205etoolsMain = function () {
 					character.attribs.create({name: "npc", current: 1});
 					character.attribs.create({name: "npc_toggle", current: 1});
 					character.attribs.create({name: "npc_options-flag", current: 0});
+					// region disable charachtermancer
+					character.attribs.create({name: "mancer_confirm_flag", current: ""});
+					character.attribs.create({name: "mancer_cancel", current: "on"});
+					character.attribs.create({name: "l1mancer_status", current: "completed"});
+					// endregion
 					character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
 					character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
 					character.attribs.create({
@@ -2877,7 +2900,7 @@ const betteR205etoolsMain = function () {
 	d20plus.optionalfeatures.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Optional Features`, folderName);
-		const path = ["Optional Features", folderName, data.name];
+		const path = ["Optional Features", ...folderName, data.name];
 
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;

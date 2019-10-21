@@ -4,7 +4,7 @@ function d20plusMonsters () {
 		TAG_SPELL_CLOSE: "#VE_MARK_SPELL_CLOSE#",
 	};
 
-	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "Alphabetical", "Source"];
+	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "CR → Type", "Alphabetical", "Source"];
 	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
 	d20plus.monsters._listItemBuilder = (it) => `
 		<span class="name col-4" title="name">${it.name}</span>
@@ -68,7 +68,7 @@ function d20plusMonsters () {
 					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-1 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
 					<span class="cr col-2 ib">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
 					<span class="col-2 ib"><input class="target-rename" style="max-width: calc(100% - 18px);" placeholder="Rename To..."></span>
-					<span class="col-2 ib"><input class="target-cr" style="max-width: calc(100% - 18spx);" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
+					<span class="col-2 ib"><input class="target-cr" placeholder="Adjusted CR (optional; 0-30)"></span>
 					<span class="index" style="display: none;">${i}</span>
 				</div>
 			`;
@@ -235,7 +235,7 @@ function d20plusMonsters () {
 
 			// make dir
 			const folder = d20plus.journal.makeDirTree(`Monsters`, folderName);
-			const path = ["Monsters", folderName, data._displayName || data.name];
+			const path = ["Monsters", ...folderName, data._displayName || data.name];
 
 			// handle duplicates/overwrites
 			if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
@@ -308,9 +308,13 @@ function d20plusMonsters () {
 							var cr = data.cr ? (data.cr.cr || data.cr) : "";
 							var xp = Parser.crToXpNumber(cr) || 0;
 							character.attribs.create({name: "npc", current: 1});
-							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc_toggle", current: 1});
 							character.attribs.create({name: "npc_options-flag", current: 0});
+							// region disable charachtermancer
+							character.attribs.create({name: "mancer_confirm_flag", current: ""});
+							character.attribs.create({name: "mancer_cancel", current: "on"});
+							character.attribs.create({name: "l1mancer_status", current: "completed"});
+							// endregion
 							character.attribs.create({name: "wtype", current: d20plus.importer.getDesiredWhisperType()});
 							character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
 							character.attribs.create({
@@ -367,29 +371,44 @@ function d20plusMonsters () {
 							}
 
 							character.attribs.create({name: "npc_speed", current: parsedSpeed != null ? parsedSpeed : ""});
+
 							character.attribs.create({name: "strength", current: data.str});
-							character.attribs.create({name: "strength_base", current: data.str});
+							character.attribs.create({name: "strength_base", current: `${data.str}`});
 							character.attribs.create({name: "strength_mod", current: calcMod(data.str)});
+							character.attribs.create({name: "npc_str_negative", current: calcMod(data.str) < 0});
+							character.attribs.create({name: "strength_flag", current: 0});
 
 							character.attribs.create({name: "dexterity", current: data.dex});
-							character.attribs.create({name: "dexterity_base", current: data.dex});
+							character.attribs.create({name: "dexterity_base", current: `${data.dex}`});
 							character.attribs.create({name: "dexterity_mod", current: calcMod(data.dex)});
+							character.attribs.create({name: "npc_dex_negative", current: calcMod(data.dex) < 0});
+							character.attribs.create({name: "dexterity_flag", current: 0});
 
 							character.attribs.create({name: "constitution", current: data.con});
-							character.attribs.create({name: "constitution_base", current: data.con});
+							character.attribs.create({name: "constitution_base", current: `${data.con}`});
 							character.attribs.create({name: "constitution_mod", current: calcMod(data.con)});
+							character.attribs.create({name: "npc_con_negative", current: calcMod(data.con) < 0});
+							character.attribs.create({name: "constitution_flag", current: 0});
 
 							character.attribs.create({name: "intelligence", current: data.int});
-							character.attribs.create({name: "intelligence_base", current: data.int});
+							character.attribs.create({name: "intelligence_base", current: `${data.int}`});
 							character.attribs.create({name: "intelligence_mod", current: calcMod(data.int)});
+							character.attribs.create({name: "npc_int_negative", current: calcMod(data.int) < 0});
+							character.attribs.create({name: "intelligence_flag", current: 0});
 
 							character.attribs.create({name: "wisdom", current: data.wis});
-							character.attribs.create({name: "wisdom_base", current: data.wis});
+							character.attribs.create({name: "wisdom_base", current: `${data.wis}`});
 							character.attribs.create({name: "wisdom_mod", current: calcMod(data.wis)});
+							character.attribs.create({name: "npc_wis_negative", current: calcMod(data.wis) < 0});
+							character.attribs.create({name: "wisdom_flag", current: 0});
 
 							character.attribs.create({name: "charisma", current: data.cha});
-							character.attribs.create({name: "charisma_base", current: data.cha});
+							character.attribs.create({name: "charisma_base", current: `${data.cha}`});
 							character.attribs.create({name: "charisma_mod", current: calcMod(data.cha)});
+							character.attribs.create({name: "npc_cha_negative", current: calcMod(data.cha) < 0});
+							character.attribs.create({name: "charisma_flag", current: 0});
+
+							character.attribs.create({name: "initiative_bonus", current: calcMod(data.dex)});
 
 							character.attribs.create({name: "passive", current: passive});
 							character.attribs.create({
