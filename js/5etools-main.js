@@ -245,6 +245,24 @@ const betteR205etoolsMain = function () {
 			"_type": "boolean",
 			"_player": true
 		},
+		"barLocation": {
+			"name": "Bar Location",
+			"default": "above",
+			"_type": "_enum",
+			"__values": [
+				"Above",
+				"Top Overlapping",
+				"Bottom Overlapping",
+				"Below"
+			],
+			"_player": true
+		},
+		"isCompactBars": {
+			"name": "Compact Bars",
+			"default": false,
+			"_type": "boolean",
+			"_player": true
+		},
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
