@@ -68,7 +68,7 @@ function d20plusMonsters () {
 					<span title="${Parser.sourceJsonToFull(m.source)}" class="src col-1 ib">SRC[${Parser.sourceJsonToAbv(m.source)}]</span>
 					<span class="cr col-2 ib">${m.cr === undefined ? "CR[Unknown]" : `CR[${(m.cr.cr || m.cr)}]`}</span>
 					<span class="col-2 ib"><input class="target-rename" style="max-width: calc(100% - 18px);" placeholder="Rename To..."></span>
-					<span class="col-2 ib"><input class="target-cr" style="max-width: calc(100% - 18spx);" type="number" placeholder="Adjusted CR (optional; 0-30)"></span>
+					<span class="col-2 ib"><input class="target-cr" placeholder="Adjusted CR (optional; 0-30)"></span>
 					<span class="index" style="display: none;">${i}</span>
 				</div>
 			`;
