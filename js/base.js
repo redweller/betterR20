@@ -99,26 +99,39 @@ const D20plus = function (version) {
 
 	// Window loaded
 	function doBootstrap () {
-		d20plus.ut.log("Bootstrapping...");
+        d20plus.ut.log("Waiting for enhancement suite...");
 
-		let hasRunInit = false;
-		if (window.enhancementSuiteEnabled) {
-			// r20es will expose the d20 variable if we wait
-			// this should always trigger after window.onload has fired, but track init state just in case
-			(function waitForD20 () {
-				if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
-					hasRunInit = true;
-					d20plus.Init();
+        let timeWaitedForEnhancementSuiteMs = 0;
+
+		(function waitForEnhancementSuite () {
+
+			let hasRunInit = false;
+			if (window.enhancementSuiteEnabled) {
+				d20plus.ut.log("Bootstrapping...");
+
+				// r20es will expose the d20 variable if we wait
+				// this should always trigger after window.onload has fired, but track init state just in case
+				(function waitForD20 () {
+					if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
+						hasRunInit = true;
+						d20plus.Init();
+					} else {
+						setTimeout(waitForD20, 50);
+					}
+				})();
+
+				window.d20plus = d20plus;
+				d20plus.ut.log("Injected");
+			} else {
+				if(timeWaitedForEnhancementSuiteMs > 2 * 1000) {
+					alert("betteR20 requires the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
+					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {
-					setTimeout(waitForD20, 50);
+					timeWaitedForEnhancementSuiteMs += 100;
+					setTimeout(waitForEnhancementSuite, 100);
 				}
-			})();
-
-			window.d20plus = d20plus;
-			d20plus.ut.log("Injected");
-		} else {
-			alert(`The R20ES extension is required! Please install it from https://ssstormy.github.io/roll20-enhancement-suite/`);
-		}
+			}
+		})();
 	}
 
 	(function doCheckDepsLoaded () {
