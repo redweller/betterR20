@@ -9,13 +9,13 @@ function d20plusSpells () {
 	d20plus.spells._listCols = ["name", "class", "level", "source"];
 	d20plus.spells._listItemBuilder = (it) => `
 		<span class="name col-4" title="name">${it.name}</span>
-		<span class="class col-3" title="class">${it.classes.fromClassList.map(c => `CLS[${c.name}]`).join(", ")}</span>
+		<span class="class col-3" title="class">${((it.classes || {}).fromClassList || []).map(c => `CLS[${c.name}]`).join(", ")}</span>
 		<span class="level col-3" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
 		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.spells._listIndexConverter = (sp) => {
 		return {
 			name: sp.name.toLowerCase(),
-			class: sp.classes.fromClassList.map(c => c.name.toLowerCase()),
+			class: ((sp.classes || {}).fromClassList || []).map(c => c.name.toLowerCase()),
 			level: Parser.spLevelToFull(sp.level).toLowerCase(),
 			source: Parser.sourceJsonToAbv(sp.source).toLowerCase()
 		};
@@ -92,7 +92,7 @@ function d20plusSpells () {
 			tags: d20plus.importer.getTagString([
 				Parser.spSchoolAbvToFull(data.school),
 				Parser.spLevelToFull(data.level),
-				...data.classes.fromClassList.map(c => c.name),
+				...(((data.classes || {}).fromClassList || []).map(c => c.name)),
 				Parser.sourceJsonToFull(data.source)
 			], "spell")
 		}, {

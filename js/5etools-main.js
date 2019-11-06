@@ -2941,7 +2941,7 @@ const betteR205etoolsMain = function () {
 		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 1});
 
 		const rendered = renderStack.join("");
-		const prereqs = Renderer.optionalfeature.getPrerequisiteText(data.prerequisites);
+		const prereqs = Renderer.utils.getPrerequisiteText(data.prerequisites);
 
 		const r20json = {
 			"name": data.name,
