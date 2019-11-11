@@ -311,19 +311,7 @@ function d20plusItems () {
 	};
 
 	d20plus.items.parseProperty = function (property) {
-		if (property === "A") return "ammunition";
-		if (property === "AF") return "ammunition";
-		if (property === "BF") return "burst fire";
-		if (property === "F") return "finesse";
-		if (property === "H") return "heavy";
-		if (property === "L") return "light";
-		if (property === "LD") return "loading";
-		if (property === "R") return "reach";
-		if (property === "RLD") return "reload";
-		if (property === "S") return "special";
-		if (property === "T") return "thrown";
-		if (property === "2H") return "two-handed";
-		if (property === "V") return "versatile";
+		if (Renderer.item.propertyMap[property]) return Renderer.item.propertyMap[property].name;
 		return "n/a";
 	};
 }
