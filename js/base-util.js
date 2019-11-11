@@ -504,6 +504,21 @@ function baseUtil () {
 			}
 		}
 	};
+
+	/**
+	 * Assumes any other lists have been searched using the same term
+	 */
+	d20plus.ut.getSearchTermAndReset = (list, ...otherLists) => {
+		let lastSearch = null;
+		if (list.searched) {
+			lastSearch = $(`#search`).val();
+			list.search();
+			otherLists.forEach(l => l.search());
+		}
+		list.filter();
+		otherLists.forEach(l => l.filter());
+		return lastSearch;
+	};
 }
 
 SCRIPT_EXTENSIONS.push(baseUtil);
