@@ -1690,7 +1690,7 @@ function baseToolAnimator () {
 		},
 
 		_main_addAnim (anim) {
-			const lastSearch = ListUtil.getSearchTermAndReset(this._anim_list);
+			const lastSearch = d20plus.ut.getSearchTermAndReset(this._anim_list);
 			this._anims[anim.uid] = anim;
 			this._$list.append(this._main_getListItem(anim));
 
@@ -1759,7 +1759,7 @@ function baseToolAnimator () {
 		_scene_addScene (scene) {
 			if (scene == null) return console.error(`Scene was null!`);
 
-			const lastSearch = ListUtil.getSearchTermAndReset(this._scene_list);
+			const lastSearch = d20plus.ut.getSearchTermAndReset(this._scene_list);
 			this._scenes[scene.uid] = scene;
 			this._scene_$wrpList.append(this._scene_$getListItem(scene));
 

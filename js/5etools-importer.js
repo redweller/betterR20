@@ -33,6 +33,7 @@ function d20plusImporter () {
 		$ele.find("td, th").append(" | ");
 		$ele.find("tr").append("\n");
 		$ele.find("p, li, br").append("\n\n");
+		$ele.find("li").prepend(" - ");
 
 		return $ele.text()
 			.trim()
@@ -264,8 +265,8 @@ function d20plusImporter () {
 			onHit = onHit.trim();
 			const attackTarget = ((actionText.match(/\.,(?!.*\.,)(.*)\. Hit:/) || ["", ""])[1] || "").trim();
 			// Cut the information dump in the description
-			const atkDescSimpleRegex = /Hit: \d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage\.(.*)/g;
-			const atkDescComplexRegex = /(Hit:.*)/g;
+			const atkDescSimpleRegex = /Hit: \d+ \((\d+d\d+\s?(?:\+|-)?\s?\d*)\) (\S+ )?damage\.([\s\S]*)/gm;
+			const atkDescComplexRegex = /(Hit:[\s\S]*)/g;
 			// is it a simple attack (just 1 damage type)?
 			const match_simple_atk = atkDescSimpleRegex.exec(actionText);
 			if (match_simple_atk != null) {
