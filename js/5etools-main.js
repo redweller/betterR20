@@ -2980,11 +2980,15 @@ const betteR205etoolsMain = function () {
 				$("#d20plus-import").dialog("open");
 				$("#import-remaining").text("Initialising...");
 
+				// FIXME(homebrew) this always selects the first item in a list of homebrew adventures
+				// FIXME(5etools) this selects the source based on the select dropdown, which can be wrong
 				// get metadata
-				const adMeta = adventureMetadata.adventure.find(a => a.id.toLowerCase() === $("#import-adventures-url").data("id").toLowerCase())
+				const adMeta = data.adventure
+					? data.adventure[0] :
+					adventureMetadata.adventure.find(a => a.id.toLowerCase() === $("#import-adventures-url").data("id").toLowerCase());
 
 				const addQueue = [];
-				const sections = JSON.parse(JSON.stringify(data.data));
+				const sections = JSON.parse(JSON.stringify(data.adventureData ? data.adventureData[0].data : data.data));
 				const adDir = `${Parser.sourceJsonToFull(adMeta.id)}`;
 				sections.forEach((s, i) => {
 					if (i >= adMeta.contents.length) return;
