@@ -180,24 +180,20 @@ function d20plusItems () {
 				Category: "Items"
 			}
 		};
-		const typeArray = [];
-		if (data.wondrous) typeArray.push("Wondrous Item");
-		if (data.technology) typeArray.push(data.technology);
-		if (data.age) typeArray.push(data.age);
-		if (data.weaponCategory) typeArray.push(data.weaponCategory + " Weapon");
+
+		const [damage, damageType, propertiesTxt] = Renderer.item.getDamageAndPropertiesText(data);
+		const typeRarityAttunement = Renderer.item.getTypeRarityAndAttunementText(data);
+
 		var type = data.type;
 		if (data.type) {
-			const fullType = d20plus.items.parseType(data.type);
-			typeArray.push(fullType);
-			roll20Data.data["Item Type"] = fullType;
+			roll20Data.data["Item Type"] = d20plus.items.parseType(data.type);
 		} else if (data._typeListText) {
 			roll20Data.data["Item Type"] = data._typeListText.join(", ");
 		}
-		var typestring = typeArray.join(", ");
-		var damage = "";
+
 		const cleanDmg1 = removeDiceTags(data.dmg1);
 		const cleanDmg2 = removeDiceTags(data.dmg2);
-		if (data.dmg1 && data.dmgType) damage = cleanDmg1 + " " + Parser.dmgTypeToFull(data.dmgType);
+
 		var armorclass = "";
 		if (type === "S") armorclass = "+" + data.ac;
 		if (type === "LA") armorclass = data.ac + " + Dex";
@@ -219,37 +215,15 @@ function d20plusItems () {
 				properties += a;
 			}
 		}
-		var reqAttune = data.reqAttune;
-		var attunementstring = "";
-		if (reqAttune) {
-			if (reqAttune === "(Requires Attunement)") {
-				attunementstring = " (Requires Attunement)";
-			} else if (reqAttune === "OPTIONAL") {
-				attunementstring = " (Attunement Optional)";
-			} else {
-				attunementstring = " (Requires Attunement " + reqAttune + ")";
-			}
-		}
-		notecontents += `<p><h3>${data.name}</h3></p><em>${typestring}`;
-		if (data.tier) notecontents += ", " + data.tier;
-		var rarity = data.rarity;
-		var ismagicitem = (rarity !== "None" && rarity !== "Unknown");
-		if (ismagicitem) notecontents += ", " + rarity;
-		if (attunementstring) notecontents += attunementstring;
-		notecontents += `</em>`;
-		if (damage) notecontents += `<p><strong>Damage: </strong>${damage}</p>`;
-		if (properties) {
-			notecontents += `<p><strong>Properties: </strong>${properties}</p>`;
-			roll20Data.data.Properties = properties;
-		}
-		if (armorclass) {
-			notecontents += `<p><strong>Armor Class: </strong>${armorclass}</p>`;
-			roll20Data.data.AC = String(data.ac);
-		}
-		if (data.weight) {
-			notecontents += `<p><strong>Weight: </strong>${data.weight} lbs.</p>`;
-			roll20Data.data.Weight = String(data.weight);
-		}
+		notecontents += `<p><h3>${data.name}</h3></p>
+		<p><em>${typeRarityAttunement}</em></p>
+		<p><strong>Value/Weight:</strong> ${[Parser.itemValueToFull(data), Parser.itemWeightToFull(data)].filter(Boolean).join(", ")}</p>
+		<p><strong>Info: </strong>${[damage, damageType, propertiesTxt].filter(Boolean).join(" ")}</p>
+		`;
+
+		if (propertiesTxt) roll20Data.data.Properties = properties;
+		if (armorclass) roll20Data.data.AC = String(data.ac);
+		if (data.weight) roll20Data.data.Weight = String(data.weight);
 
 		const textString = Renderer.item.getRenderedEntries(data);
 		if (textString) {
