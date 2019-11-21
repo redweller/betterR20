@@ -20,8 +20,14 @@ function d20plusImporter () {
 		if (meta.sources) {
 			meta.sources.forEach(src => {
 				BrewUtil._sourceCache[src.json] = {abbreviation: src.abbreviation, full: src.full};
-			})
+			});
 		}
+		const cpy = MiscUtil.copy(meta);
+		delete cpy.sources;
+		Object.keys(cpy).forEach(k => {
+			BrewUtil.homebrewMeta[k] = BrewUtil.homebrewMeta[k] || {};
+			Object.assign(BrewUtil.homebrewMeta[k], cpy[k]);
+		});
 	};
 
 	d20plus.importer.getCleanText = function (str) {
