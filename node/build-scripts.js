@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.16.13";
+const SCRIPT_VERSION = "1.16.14";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
