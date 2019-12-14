@@ -3104,18 +3104,13 @@ const betteR205etoolsMain = function () {
 				function doPreImport (asTags, callback) {
 					const tmp = [];
 					let cachedCount = asTags.length;
-					asTags.forEach(it => {
+					// FIXME crappy inefficient conversion to promise-based version; requires cleanup
+					asTags.forEach(async it => {
 						try {
-							Renderer.hover._doFillThenCall(
-								it.page,
-								it.source,
-								it.hash,
-								() => {
-									tmp.push(Renderer.hover._getFromCache(it.page, it.source, it.hash));
-									cachedCount--;
-									if (cachedCount <= 0) callback(tmp);
-								}
-							);
+							await Renderer.hover.pCacheAndGet(it.page, it.source, it.hash);
+							tmp.push(Renderer.hover._getFromCache(it.page, it.source, it.hash));
+							cachedCount--;
+							if (cachedCount <= 0) callback(tmp);
 						} catch (x) {
 							console.log(x);
 							cachedCount--;

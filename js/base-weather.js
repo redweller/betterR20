@@ -232,7 +232,8 @@ function baseWeather () {
 			cachedSetCanvasSize(e, n);
 		};
 
-		d20.engine.setCanvasSize($wrpEditor[0].clientWidth, $wrpEditor[0].clientHeight);
+		cv.width = cvBuf.width = d20.engine.canvas.width;
+		cv.height = cvBuf.height = d20.engine.canvas.height;
 
 		const ctx = cv.getContext("2d");
 
