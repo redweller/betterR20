@@ -22,6 +22,10 @@ function baseCss () {
 			r: "display: flex; justify-content: space-between;"
 		},
 		{
+			s: ".relative",
+			r: "position: relative !important;"
+		},
+		{
 			s: ".flex",
 			r: "display: flex;"
 		},
