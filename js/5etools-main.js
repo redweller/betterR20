@@ -2373,9 +2373,24 @@ const betteR205etoolsMain = function () {
 
 // Change character sheet formulas
 	d20plus.setSheet = function () {
-		d20plus.ut.log("Switched Character Sheet Template")
+		d20plus.ut.log("Switched Character Sheet Template");
 		d20plus.sheet = "ogl";
 		if (window.is_gm && (!d20.journal.customSheets || !d20.journal.customSheets)) {
+			const $body = $(`body`);
+			$body.addClass("ve-nosheet__body");
+			const $btnClose = $(`<button class="btn btn-danger ve-nosheet__btn-close">X</button>`)
+				.click(() => {
+					$overlay.remove();
+					$body.removeClass("ve-nosheet__body");
+				});
+			const $overlay = $(`<div class="flex-col flex-vh-center ve-nosheet__overlay"/>`);
+			$btnClose.appendTo($overlay);
+			$overlay.append(`<div class="flex-col flex-vh-center">
+				<div class="ve-nosheet__title mb-2">NO CHARACTER SHEET</div>
+				<div><i>Your game does not have a character sheet template selected.<br>
+				Please either disable betteR20, or visit the settings page for your game to choose one. We recommend the OGL sheet, which is listed as &quot;D&D 5E by Roll20.&quot;</i></div>
+			</div>`).appendTo($body);
+
 			d20.textchat.incoming(false, ({
 				who: "system",
 				type: "system",
@@ -3663,6 +3678,37 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		{
 			s: ".userscript-rd__b-inset--readaloud",
 			r: "background: #cbd6c688 !important"
+		},
+		// "No character sheet" message
+		{
+			s: ".ve-nosheet__body",
+			r: "overflow: hidden !important;"
+		},
+		{
+			s: ".ve-nosheet__overlay",
+			r: `
+				background: darkred;
+				position: fixed;
+				z-index: 99999;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				color: white;
+				font-family: monospace;`
+		},
+		{
+			s: ".ve-nosheet__title",
+			r: "font-size: 72px;"
+		},
+		{
+			s: ".ve-nosheet__btn-close",
+			r: `position: absolute;
+				top: 8px;
+				right: 8px;
+				font-size: 16px;`
 		},
 	]);
 
