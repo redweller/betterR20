@@ -13,21 +13,6 @@ const betteR20Base = function () {
 
 	addConfigOptions("token", {
 			"_name": "Tokens",
-			"enhanceStatus": {
-				"name": "Use Custom Status Icons",
-				"default": true,
-				"_type": "boolean"
-			},
-			"statusSheetUrl": {
-				"name": `Custom Status Spritesheet Url (<a style="color: blue" href="https://app.roll20.net/images/statussheet.png" target="_blank">Original</a>)`,
-				"default": "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet.png",
-				"_type": "String"
-			},
-			"statusSheetSmallUrl": {
-				"name": `Custom Status Spritesheet (Small) Url (<a style="color: blue" href="https://app.roll20.net/images/statussheet_small.png" target="_blank">Original</a>)`,
-				"default": "https://raw.githubusercontent.com/TheGiddyLimit/5etoolsR20/master/img/statussheet_small.png",
-				"_type": "String"
-			},
 			"massRollWhisperName": {
 				"name": "Whisper Token Name to Mass-Rolls",
 				"default": false,

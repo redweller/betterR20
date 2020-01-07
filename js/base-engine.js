@@ -169,25 +169,6 @@ function d20plusEngine () {
 		d20plus.mod.drawMeasurements();
 	};
 
-	d20plus.engine._addStatusEffectEntries = () => {
-		const sheetUrl = window.is_gm ? d20plus.cfg.get("token", "statusSheetUrl") || d20plus.cfg.getDefault("token", "statusSheetUrl"): window.Campaign.attributes.bR20cfg_statussheet;
-
-		const temp = new Image();
-		temp.onload = () => {
-			const xSize = 34;
-			const iMin = 47;
-			const iMax = Math.ceil(temp.width / xSize); // round the last one up to a full image
-			for (let i = iMin; i < iMax; ++i) {
-				d20.token_editor.statusmarkers["5etools_" + (i - iMin)] = String(i * xSize);
-			}
-		};
-		temp.src = sheetUrl;
-
-		$(`#5etools-status-css`).html(`#radial-menu .markermenu .markericon {
-				background-image: url(${sheetUrl});
-			}`);
-	};
-
 	d20plus.engine._removeStatusEffectEntries = () => {
 		$(`#5etools-status-css`).html("");
 		Object.keys(d20.token_editor.statusmarkers).filter(k => k.startsWith("5etools_")).forEach(k => delete d20.token_editor.statusmarkers[k]);
@@ -196,7 +177,6 @@ function d20plusEngine () {
 	d20plus.engine.enhanceStatusEffects = () => {
 		d20plus.ut.log("Enhance status effects");
 		$(`head`).append(`<style id="5etools-status-css"/>`);
-		d20plus.cfg._handleStatusTokenConfigChange();
 
 		d20plus.mod.overwriteStatusEffects();
 
