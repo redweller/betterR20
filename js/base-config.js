@@ -490,44 +490,6 @@ function baseConfig() {
 		}
 	};
 
-	d20plus.cfg._handleStatusTokenConfigChange = () => {
-		if (window.is_gm) {
-			if (d20plus.cfg.get("token", "enhanceStatus")) {
-				const sheetUrl = d20plus.cfg.get("token", "statusSheetUrl") || d20plus.cfg.getDefault("token", "statusSheetUrl");
-				const sheetSmallUrl = d20plus.cfg.get("token", "statusSheetSmallUrl") || d20plus.cfg.getDefault("token", "statusSheetSmallUrl");
-
-				window.Campaign && window.Campaign.save({
-					"bR20cfg_statussheet": sheetUrl,
-					"bR20cfg_statussheet_small": sheetSmallUrl
-				});
-
-				d20.token_editor.statussheet.src = sheetUrl;
-				d20.token_editor.statussheet_small.src =  sheetSmallUrl;
-				d20plus.engine._removeStatusEffectEntries(); // clean up any old data
-				d20plus.engine._addStatusEffectEntries();
-			} else {
-				window.Campaign && window.Campaign.save({
-					"bR20cfg_statussheet": "",
-					"bR20cfg_statussheet_small": ""
-				});
-
-				d20.token_editor.statussheet.src = "/images/statussheet.png";
-				d20.token_editor.statussheet_small.src = "/images/statussheet_small.png";
-				d20plus.engine._removeStatusEffectEntries();
-			}
-		} else {
-			if (window.Campaign && window.Campaign.attributes && window.Campaign.attributes.bR20cfg_statussheet && window.Campaign.attributes.bR20cfg_statussheet_small) {
-				d20.token_editor.statussheet.src = window.Campaign.attributes.bR20cfg_statussheet;
-				d20.token_editor.statussheet_small.src =  window.Campaign.attributes.bR20cfg_statussheet_small;
-				d20plus.engine._addStatusEffectEntries();
-			} else {
-				d20.token_editor.statussheet.src = "/images/statussheet.png";
-				d20.token_editor.statussheet_small.src = "/images/statussheet_small.png";
-				d20plus.engine._removeStatusEffectEntries();
-			}
-		}
-	};
-
 	/*
 	// Left here for future use, in case anything similar is required
 	d20plus.cfg._handleWeatherConfigChange = () => {
@@ -559,7 +521,6 @@ function baseConfig() {
 	*/
 
 	d20plus.cfg.baseHandleConfigChange = () => {
-		d20plus.cfg._handleStatusTokenConfigChange();
 		// d20plus.cfg._handleWeatherConfigChange();
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
