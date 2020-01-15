@@ -1938,7 +1938,7 @@ const betteR205etoolsMain = function () {
 					const level = "cantrip";
 					makeSpellTrait(level, rowId, "spelllevel", "cantrip");
 					makeSpellTrait(level, rowId, "spellname", data.name);
-					makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(Renderer.psionic.getTalentText(data, renderer))}`);
+					makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(Renderer.psionic.getBodyText(data, renderer))}`);
 					noComponents(level, rowId, false);
 				}
 			} else if (d20plus.sheet == "shaped") {
@@ -2035,7 +2035,7 @@ const betteR205etoolsMain = function () {
 					});
 				} else {
 					const typeStr = `**Psionic Talent**\n`;
-					const talentContent = `${typeStr}\n${getCleanText(Renderer.psionic.getTalentText(data, renderer))}`;
+					const talentContent = `${typeStr}\n${getCleanText(Renderer.psionic.getBodyText(data, renderer))}`;
 					const rowId = d20plus.ut.generateRowId();
 					const level = 0;
 					makeSpellTrait(level, rowId, "spell_level", shapedSpellLevel(level));
@@ -2470,7 +2470,7 @@ const betteR205etoolsMain = function () {
 					case "Passive Perception": {
 						replaceStack.push(`
 							<$ var passive = (typeof char !== "undefined" && char && typeof char.autoCalcFormula !== "undefined") ? (char.autoCalcFormula('@{passive}') || char.autoCalcFormula('${d20plus.formulas[d20plus.sheet].pp}')) : "\u2014"; $>
-							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>							
+							<span class='pp tracker-col' alt='Passive Perception' title='Passive Perception'><$!passive$></span>
 						`);
 						headerStack.push(`<span class='tracker-col'>PP</span>`);
 						break;
@@ -2661,7 +2661,7 @@ const betteR205etoolsMain = function () {
 		const baseNoteContents = `
 			<h3>${data.name}</h3>
 			<p><em>${data.type === "D" ? `${data.order} ${Parser.psiTypeToFull(data.type)}` : `${Parser.psiTypeToFull(data.type)}`}</em></p>
-			${data.type === "D" ? `${Renderer.psionic.getDisciplineText(data, renderer)}` : `${renderTalent()}`}
+			${Renderer.psionic.getBodyText(data, renderer)}
 			`;
 
 		const noteContents = `${baseNoteContents}<br><del class="hidden">${gmNotes}</del>`;
@@ -3256,7 +3256,7 @@ const betteR205etoolsMain = function () {
 		<!-- populate with js -->
 	</div>
 	<div class="append-list-journal" style="max-height: 400px; overflow-y: auto;">
-		<!-- populate with js -->		
+		<!-- populate with js -->
 	</div>
 	<p><i>Player-imported items are temporary, as players can't make handouts. GMs may also use this functionality to avoid cluttering the journal. Once imported, items can be drag-dropped to character sheets.</i></p>
 	</div>`;
@@ -3292,7 +3292,7 @@ const betteR205etoolsMain = function () {
 
 	d20plus.importListPropsHTML = `<div id="d20plus-import-props" title="Choose Properties to Import">
 	<div class="select-props" style="max-height: 400px; overflow-y: auto; transform: translateZ(0)">
-		<!-- populate with JS -->		
+		<!-- populate with JS -->
 	</div>
 	<p>
 		Warning: this feature is highly experimental, and disabling <span style="color: red;">properties which are assumed to always exist</span> is not recommended.
@@ -4206,7 +4206,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				<button type='button' class='initmacrobutton ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only pictos' role='button' aria-disabled='false'>
 				<span class='ui-button-text'>N</span>
 				</button>
-			</span>		
+			</span>
 		<$ } $>
 		<span alt='Initiative' title='Initiative' class='initiative <$ if (this.iseditable) { $>editable<$ } $>'>
 			<$!this.pr$>
