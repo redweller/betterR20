@@ -75,7 +75,7 @@ function baseUtil () {
 					const cmp = cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
-							d20plus.ut.sendHackerChat(`A newer version of the script is available. Get ${avail} <a href="https://get.5e.tools/">here</a>. For help and support, see our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
+							d20plus.ut.sendHackerChat(`A newer version of betteR20 is available. Get ${avail} <a href="https://get.5e.tools/">here</a>. For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
 						}, 1000);
 					}
 				}
