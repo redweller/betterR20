@@ -27,13 +27,13 @@ function d20plusMonsters () {
 					<input type="search" class="search" placeholder="Search creatures...">
 					<input type="search" class="filter" placeholder="Filter...">
 					<span title="Filter format example: 'cr:1/4; cr:1/2; type:beast; source:MM'" style="cursor: help;">[?]</span>
-				
+
 					<div style="margin-top: 10px;">
-						<span class="col-3 ib"><b>Name</b></span>				
-						<span class="col-1 ib"><b>Source</b></span>				
-						<span class="col-2 ib"><b>CR</b></span>				
+						<span class="col-3 ib"><b>Name</b></span>
+						<span class="col-1 ib"><b>Source</b></span>
+						<span class="col-2 ib"><b>CR</b></span>
 						<span class="col-2 ib"><b>Rename To</b></span>
-						<span class="col-3 ib"><b>Scale CR</b></span>								
+						<span class="col-3 ib"><b>Scale CR</b></span>
 					</div>
 					<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: auto; overflow-x: hidden;"><i>Loading...</i></div>
 				</div>
@@ -246,7 +246,7 @@ function d20plusMonsters () {
 			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
-			const fluff = Renderer.monster.getFluff(data, monsterMetadata, monsterFluffData[data.source]);
+			const fluff = Renderer.monster.getFluff(data, monsterFluffData[data.source]);
 			let renderFluff = null;
 			if (fluff) {
 				const depth = fluff.type === "section" ? -1 : 2;
