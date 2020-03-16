@@ -94,15 +94,15 @@ function baseUtil () {
 				${isStreamer ? "" : `
 				<br>
 				<br>
-				Need help? Join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
+				Need help? Visit our <a href="https://wiki.5e.tools/index.php/Feature:_BetteR20">Wiki</a> or Join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
 				<br>
 				<br>
 				<span title="You'd think this would be obvious.">
 				Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
 				<br>
 				<br>
-				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.				
-				`} 
+				Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
+				`}
 				</span>
 			`);
 	};

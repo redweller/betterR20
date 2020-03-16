@@ -91,7 +91,7 @@ const D20plus = function (version) {
 		(function waitForEnhancementSuite () {
 
 			let hasRunInit = false;
-			if (window.enhancementSuiteEnabled) {
+			if (window.d20 || window.enhancementSuiteEnabled) {
 				d20plus.ut.log("Bootstrapping...");
 
 				// r20es will expose the d20 variable if we wait
@@ -108,7 +108,7 @@ const D20plus = function (version) {
 				window.d20plus = d20plus;
 				d20plus.ut.log("Injected");
 			} else {
-				if(timeWaitedForEnhancementSuiteMs > 2 * 1000) {
+				if(timeWaitedForEnhancementSuiteMs > 2 * 5000) {
 					alert("betteR20 requires the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
 					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {
