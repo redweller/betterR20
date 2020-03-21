@@ -1,3 +1,6 @@
+> DISCLAIMER: This tool is intended to enhance your Roll20 experience by allowing you to easily utilize content that you already own.
+> The use of this tool may be against the [Roll 20 Marketplace Asset End User License Agreement](https://wiki.roll20.net/Marketplace_Asset_EULA) and the [Roll 20 EULA or Terms of Service](https://wiki.roll20.net/Terms_of_Service_and_Privacy_Policy), and/or may be considered grounds for account suspension or termination. Use at your own risk.
+
 **If you wish to use creatures with the Shaped sheet, import with your game using the OGL sheet, and then switch to the shaped sheet afterwards.** Due to the complexity of the process (read: it's a colossal hack), we are unable to support both sheets natively.
 
 ## Discord
@@ -16,7 +19,7 @@ For help, advice, and updates; or to suggest improvements and changes, please [j
 
 5. Go to the gear icon and select the category you want to import from the dropdown. Use the Importer to pick things you want to import.
 
-6. Hit import, and let it run. The journal will start fill up with the stuff you selected. It's not too laggy but can take a long time depending on the amount of stuff you selected. **Adding hundreds of character sheets will slow down your game, including loading times, significantly.** We recommend importing creatures only as you need them, but other categories can be fully imported without noticeable impact on performance. 
+6. Hit import, and let it run. The journal will start fill up with the stuff you selected. It's not too laggy but can take a long time depending on the amount of stuff you selected. **Adding hundreds of character sheets will slow down your game, including loading times, significantly.** We recommend importing creatures only as you need them, but other categories can be fully imported without noticeable impact on performance.
 
 7. Done. If you are using the Shaped sheet, be sure to open up the NPC sheets and let them convert before using it.
 
@@ -43,4 +46,4 @@ Node.js is required.
 Usable scripts can be produced with `npm run build`; output to the `dist/` directory.
 
 The "core" userscript includes generic improvements which can be used in all games.
-The "5etools" userscript includes the above, and various tools to import content from [5e.tools](https://5e.tools) 
+The "5etools" userscript includes the above, and various tools to import content from [5e.tools](https://5e.tools)

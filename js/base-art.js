@@ -181,10 +181,10 @@ function d20plusArt () {
 
 		// TODO load a decent default art library from somewhere
 		default: [
-			{
-				name: "Phoenix",
-				url: "http://www.discgolfbirmingham.com/wordpress/wp-content/uploads/2014/04/phoenix-rising.jpg"
-			}
+			// {
+			// 	name: "Phoenix",
+			// 	url: "http://www.discgolfbirmingham.com/wordpress/wp-content/uploads/2014/04/phoenix-rising.jpg"
+			// }
 		]
 	};
 
