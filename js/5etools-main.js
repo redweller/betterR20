@@ -488,7 +488,7 @@ const betteR205etoolsMain = function () {
 		{name: "spell metadata", url: SPELL_META_URL, isJson: true},
 		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`, isJson: true},
 		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`, isJson: true},
-		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}meta.json`, isJson: true},
+		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}legendarygroups.json`, isJson: true},
 		{name: "adventures index", url: `${DATA_URL}adventures.json`, isJson: true},
 		{name: "base items", url: `${DATA_URL}items-base.json`, isJson: true},
 		{name: "item modifiers", url: `${DATA_URL}roll20-items.json`, isJson: true},
