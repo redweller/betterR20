@@ -246,12 +246,18 @@ function d20plusMonsters () {
 			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
-			const fluff = Renderer.monster.getFluff(data, monsterFluffData[data.source]);
+			let fluff;
+			if (data.fluff) fluff = data.fluff;
+			else if (monsterFluffData[data.source]) {
+				fluff = (monsterFluffData[data.source].monsterFluff || [])
+					.find(it => it.name === data.name && it.source === data.source)
+			}
+
 			let renderFluff = null;
 			if (fluff) {
 				const depth = fluff.type === "section" ? -1 : 2;
 				if (fluff.type !== "section") renderer.setFirstSection(false);
-				renderFluff = renderer.render({type: fluff.type, entries: fluff.entries}, depth);
+				renderFluff = renderer.render({type: fluff.type, entries: fluff.entries || []}, depth);
 			}
 
 			d20.Campaign.characters.create(
