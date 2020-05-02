@@ -8,7 +8,10 @@ function baseJsLoad () {
 	];
 
 	if (d20plus.ut.isUseSharedJs()) d20plus.js.scripts.push({name: "5etoolsShared", url: `${SITE_JS_URL}shared.js`});
-	else d20plus.js.scripts.push({name: "5etoolsUtils", url: `${SITE_JS_URL}utils.js`});
+	else {
+		d20plus.js.scripts.push({name: "5etoolsParser", url: `${SITE_JS_URL}parser.js`});
+		d20plus.js.scripts.push({name: "5etoolsUtils", url: `${SITE_JS_URL}utils.js`});
+	}
 
 	d20plus.js.apiScripts = [
 		{name: "VecMath", url: "https://raw.githubusercontent.com/Roll20/roll20-api-scripts/master/Vector%20Math/1.0/VecMath.js"},
