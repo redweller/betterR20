@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.16.23";
+const SCRIPT_VERSION = "1.17.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -42,21 +42,90 @@ ${matchString}
 `;
 
 const JS_DIR = "./js/";
+const LIB_DIR = "./lib/";
 const BUILD_DIR = "./dist";
 
 function joinParts (...parts) {
 	return parts.join("\n\n");
 }
 
+function getDataDirPaths () {
+	const walkSync = (dir, filelist = []) => {
+		fs.readdirSync(dir).forEach(file => {
+
+			filelist = fs.statSync(dir + "/" + file).isDirectory()
+				? walkSync(dir + "/" + file, filelist)
+				: filelist.concat(dir +"/" + file);
+		});
+		return filelist;
+	}
+	return walkSync("data").filter(it => it.toLowerCase().endsWith("json"));
+}
+
+function wrapLibData (filePath, data) {
+	data = JSON.stringify(JSON.parse(data));
+	return `
+JSON_DATA[\`${filePath}\`] = JSON.parse(${JSON.stringify(data)});
+`
+}
+
+let ixLibApiScript = 0;
+function wrapLibScript (script, isApiScript) {
+	const name = `lib_script_${ixLibApiScript++}`;
+	return `
+${isApiScript ? "EXT_LIB_API_SCRIPTS" : "EXT_LIB_SCRIPTS"}.push((function ${name} () {
+${script}
+}).toString());
+`;
+}
+
 if (!fs.existsSync(BUILD_DIR)){
 	fs.mkdirSync(BUILD_DIR);
 }
+
+const LIB_SCRIPTS = {
+	core: [
+		"list.min.js",
+		"jszip.min.js",
+		"localforage.min.js",
+
+		"parser.js",
+		"utils.js",
+	],
+	"5etools": [
+		"list.min.js",
+		"jszip.min.js",
+		"localforage.min.js",
+
+		"parser.js",
+		"utils.js",
+		"render.js",
+		"scalecreature.js"
+	]
+};
+
+const LIB_SCRIPTS_API = {
+	core: [
+		"VecMath.js",
+		"matrixMath.js",
+		"PathMath.js",
+	],
+	"5etools": [
+		"VecMath.js",
+		"matrixMath.js",
+		"PathMath.js",
+	]
+};
+
+const LIB_JSON = {
+	core: [],
+	"5etools": getDataDirPaths()
+};
 
 const SCRIPTS = {
 	core: {
 		header: HEADER_CORE,
 		scripts: [
-			"header",
 			"base-util",
 			"base-jsload",
 			"base-qpi",
@@ -88,7 +157,6 @@ const SCRIPTS = {
 	"5etools": {
 		header: HEADER_5ETOOLS,
 		scripts: [
-			"header",
 			"base-util",
 			"base-jsload",
 			"base-qpi",
@@ -128,8 +196,19 @@ const SCRIPTS = {
 };
 
 Object.entries(SCRIPTS).forEach(([k, v]) => {
+	const libScripts = LIB_SCRIPTS[k];
+	const libScriptsApi = LIB_SCRIPTS_API[k];
+	const libJson = LIB_JSON[k];
+
 	const filename = `${BUILD_DIR}/betteR20-${k}.user.js`;
-	const fullScript = joinParts(v.header, ...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`).toString()));
+	const fullScript = joinParts(
+		v.header,
+		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString(),
+		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
+		...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString()),
+		...libScripts.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString())),
+		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true))
+	);
 	fs.writeFileSync(filename, fullScript);
 });
 

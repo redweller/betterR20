@@ -1,7 +1,7 @@
 if(unsafeWindow.d20plus) {
   unsafeWindow.eval(`alert("An instance of betteR20 is already running! You may have two versions of betteR20 installed (e.g core and 5etools). Please only use one.");`);
   unsafeWindow.eval(`alert("Your game may not launch. Please only run one instance of betteR20.");`);
-  return;
+  throw new Error("");
 }
 
 unsafeWindow.d20plus = {};
