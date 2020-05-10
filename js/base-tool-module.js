@@ -35,8 +35,8 @@ function baseToolModule () {
 				<hr>
 				<p><button class="btn" style="float: right;" name="import">Import Selected</button></p>
 				</div>
-				
-				<div id="d20plus-module-importer-list" title="Select Entries">					
+
+				<div id="d20plus-module-importer-list" title="Select Entries">
 					<div id="module-importer-list">
 						<input type="search" class="search" placeholder="Search..." disabled>
 						<div class="list" style="transform: translateZ(0); max-height: 650px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
@@ -48,20 +48,20 @@ function baseToolModule () {
 						<button class="btn" style="float: right;" name="confirm-selection">Confirm Selection</button>
 					</div>
 				</div>
-				
-				<div id="d20plus-module-importer-progress" title="Import Progress">					
+
+				<div id="d20plus-module-importer-progress" title="Import Progress">
 					<h3 class="name"></h3>
-					<span class="remaining"></span> 
+					<span class="remaining"></span>
 					<p>Errors: <span class="errors">0</span> <span class="error-names"></span></p>
 					<p><button class="btn cancel">Cancel</button></p>
 				</div>
-				
+
 				<div id="d20plus-module-importer-help" title="Readme">
 					<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import, and "View/Select Entries." Once you've selected everything you wish to import from the module, hit "Import Selected." This ensures entries are imported in the correct order.</p>
 					<p><b>Note:</b> The script-wide configurable "rest time" options affect how quickly each category of entries is imported (tables and decks use the "Handout" rest time).</p>
 					<p><b>Note:</b> Configuration options (aside from "rest time" as detailed above) <i>do not</i> affect the module importer. It effectively "clones" the content as-exported from the original module, including any whisper/advantage/etc settings.</p>
 				</div>
-				
+
 				<div id="d20plus-module-importer-5etools" title="Select Module">
 					<div id="module-importer-list-5etools">
 						<input type="search" class="search" placeholder="Search modules...">
@@ -79,7 +79,7 @@ function baseToolModule () {
 					</div>
 					<p><button class="btn load">Load Module Data</button></p>
 				</div>
-				
+
 				<div id="d20plus-module-importer-select-exports-p1" title="Select Categories to Export">
 					<div>
 						<label>Characters <input type="checkbox" class="float-right" name="cb-characters"></label>

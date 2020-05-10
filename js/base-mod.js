@@ -811,10 +811,10 @@ function d20plusMod() {
 	// BEGIN ROLL20 CODE
 	d20plus.mod.renderAll = function (e) {
 		const t = e && e.context || this.contextContainer
-			, n = this.getActiveGroup()
-			, i = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
-			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset,d20.math.div(i,2)),...i,0);
-		n && !window.is_gm && (n.hideResizers = !0),
+			, i = this.getActiveGroup()
+			, n = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
+			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset, d20.math.div(n, 2)),...n,0);
+		i && !window.is_gm && (i.hideResizers = !0),
 			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
 		const r = {
 			map: [],
@@ -841,8 +841,13 @@ function d20plusMod() {
 				r[t].push(e)
 			} else
 				r[window.currentEditingLayer].push(e);
-		for (const [i,a] of r) {
+		for (const [n,a] of r) {
 			switch (a) {
+				case "lighting and fog":
+					d20.dyn_fog.render({
+						map_layer_canvas: this.contextContainer.canvas
+					});
+					continue;
 				case "grid":
 					d20.canvas_overlay.drawGrid(t);
 					continue;
@@ -868,31 +873,28 @@ function d20plusMod() {
 				default:
 					t.globalAlpha = 1
 			}
-			_.chain(i).filter(i=>{
-				// BEGIN MOD
-				// forcibly render foreground elements over everything
-				// if (a === "foreground") return true;
-				// END MOD
-
-				let r;
-				return n && i && n.contains(i) ? (i.renderingInGroup = n,
-					i.hasControls = !1) : (i.renderingInGroup = null,
-					i.hasControls = !0,
-					"text" !== i.type && window.is_gm ? i.hideResizers = !1 : i.hideResizers = !0),
-					e && e.invalid_rects ? (r = i.intersects([o]) && (i.needsToBeDrawn || i.intersects(e.invalid_rects)),
-					!e.skip_prerender && i.renderPre && i.renderPre(t)) : (r = i.needsRender(o),
-					(!e || !e.skip_prerender) && r && i.renderPre && i.renderPre(t, {
-						should_update: !0
-					})),
-					r
+			_.chain(n).filter(n=>{
+					let r;
+					return i && n && i.contains(n) ? (n.renderingInGroup = i,
+						n.hasControls = !1) : (n.renderingInGroup = null,
+						n.hasControls = !0,
+						"text" !== n.type && window.is_gm ? n.hideResizers = !1 : n.hideResizers = !0),
+						e && e.invalid_rects ? (r = n.intersects([o]) && (n.needsToBeDrawn || n.intersects(e.invalid_rects)),
+						!e.skip_prerender && n.renderPre && n.renderPre(t)) : (r = n.needsRender(o),
+						(!e || !e.skip_prerender) && r && n.renderPre && n.renderPre(t, {
+							should_update: !0
+						})),
+						r
 				}
-			).each(n=>{
-				const i = "image" === n.type.toLowerCase() && n.model.controlledByPlayer(window.currentPlayer.id)
-					, o = n._model && n._model.get("light_hassight")
-					, r = e && e.owned_with_sight_auras_only;
-				r && (!r || i && o) || this._draw(t, n),
-					n.renderingInGroup = null
-			})
+			).each(i=>{
+					const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
+						, o = e && e.owned_with_sight_auras_only;
+					let r = i._model;
+					r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
+					o && (!o || n && r) || this._draw(t, i),
+						i.renderingInGroup = null
+				}
+			)
 		}
 		return t.restore(),
 			this
@@ -905,14 +907,16 @@ function d20plusMod() {
 		yield[this.map, "map"],
 		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]);
 		const t = e && e.grid_before_afow
-			, n = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow
-			, i = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
-		t && !i && (yield[null, "grid"]),
-		!n && window.largefeats && (yield[null, "afow"]),
-		t || i || (yield[null, "grid"]),
-			// BEGIN MOD
-			yield[this.background, "background"],
-			// END MOD
+			, i = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow
+			, n = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+		t && !n && (yield[null, "grid"]),
+		!i && window.largefeats && (yield[null, "afow"]),
+		t || n || (yield[null, "grid"]);
+		// BEGIN MOD
+		yield[this.background, "background"]
+		// END MOD
+		const o = e && e.enable_dynamic_fog;
+		d20.dyn_fog.ready() && o && (yield[null, "lighting and fog"]),
 			yield[this.objects, "objects"],
 			// BEGIN MOD
 			yield[this.foreground, "foreground"],

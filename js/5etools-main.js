@@ -478,8 +478,8 @@ const betteR205etoolsMain = function () {
 	};
 
 	if (!d20plus.ut.isUseSharedJs()) {
-		d20plus.js.scripts.push({name: "5etoolsRender", url: `${SITE_JS_URL}render.js`});
-		d20plus.js.scripts.push({name: "5etoolsScalecreature", url: `${SITE_JS_URL}scalecreature.js`});
+		// d20plus.js.scripts.push({name: "5etoolsRender", url: `${SITE_JS_URL}render.js`});
+		// d20plus.js.scripts.push({name: "5etoolsScalecreature", url: `${SITE_JS_URL}scalecreature.js`});
 	}
 
 	d20plus.json = [
@@ -2980,11 +2980,9 @@ const betteR205etoolsMain = function () {
 	// Fetch adventure data from file
 	d20plus.adventures.load = function (url) {
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
-		$.ajax({
-			type: "GET",
-			url: url,
-			dataType: "text",
-			success: function (data) {
+		DataUtil.loadJSON(url)
+			.then(data => {
+
 				data = JSON.parse(data);
 
 				function isPart (e) {
@@ -3187,8 +3185,7 @@ const betteR205etoolsMain = function () {
 						});
 					}, interval);
 				}
-			}
-		});
+			});
 	};
 
 	d20plus.miniInitStyle = `

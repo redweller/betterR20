@@ -7,6 +7,11 @@ DATA_URL = BASE_SITE_URL + "data/";
 
 SCRIPT_EXTENSIONS = [];
 
+EXT_LIB_SCRIPTS = [];
+EXT_LIB_API_SCRIPTS = [];
+
+JSON_DATA = {};
+
 CONFIG_OPTIONS = {
 	interface: {
 		_name: "Interface",
