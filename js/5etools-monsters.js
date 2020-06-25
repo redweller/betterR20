@@ -715,8 +715,8 @@ function d20plusMonsters () {
 									const tagSplit = Renderer.splitByTags(sp);
 									tagSplit.forEach(s => {
 										if (!s || !s.trim()) return;
-										if (s.charAt(0) === "@") {
-											const [tag, text] = Renderer.splitFirstSpace(s);
+										if (s.startsWith("{@")) {
+											const [tag, text] = Renderer.splitFirstSpace(s.slice(1, -1));
 											if (tag === "@spell") {
 												toAdd.push(text);
 											}
