@@ -11,8 +11,17 @@ function d20plusClass () {
 
 			const officialClassUrls = Object.values(classDataUrls).map(v => d20plus.formSrcUrl(CLASS_DATA_DIR, v));
 
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				d20plus.importer.addBrewMeta(data._meta);
+				await d20plus.importer.pAddBrew(data);
+
+				if (!data.class) return;
+
+				data = MiscUtil.copy(data);
+				for (let i = 0; i < data.class.length; ++i) {
+					data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
+				}
+
 				d20plus.importer.showImportList(
 					"class",
 					data.class,
@@ -32,7 +41,7 @@ function d20plusClass () {
 	d20plus.classes.buttonAll = function (forcePlayer) {
 		const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
 
-		DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
+		DataUtil.class.loadJSON().then((data) => {
 			d20plus.importer.showImportList(
 				"class",
 				data.class,
@@ -132,7 +141,7 @@ function d20plusClass () {
 			data.subclasses.forEach(sc => {
 				if (importStrategy === 1 && SourceUtil.isNonstandardSource(sc.source)) return;
 
-				sc.class = data.name;
+				sc.className = data.name;
 				sc.classSource = sc.classSource || data.source;
 				sc._gainAtLevels = gainFeatureArray;
 				if (playerMode) {
@@ -211,12 +220,12 @@ function d20plusClass () {
 	d20plus.subclasses._listCols = ["name", "class", "source"];
 	d20plus.subclasses._listItemBuilder = (it) => `
 		<span class="name col-6">${it.name}</span>
-		<span class="class col-4">CLS[${it.class}]</span>
+		<span class="class col-4">CLS[${it.className}]</span>
 		<span title="${Parser.sourceJsonToFull(it.source)}" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.subclasses._listIndexConverter = (sc) => {
 		return {
 			name: sc.name.toLowerCase(),
-			class: sc.class.toLowerCase(),
+			class: sc.className.toLowerCase(),
 			source: Parser.sourceJsonToAbv(sc.source).toLowerCase()
 		};
 	};
@@ -227,8 +236,17 @@ function d20plusClass () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				d20plus.importer.addBrewMeta(data._meta);
+				await d20plus.importer.pAddBrew(data);
+
+				data = MiscUtil.copy(data);
+				for (let i = 0; i < (data.class || []).length; ++i) {
+					data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
+				}
+				for (let i = 0; i < (data.subclass || []).length; ++i) {
+					data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
+				}
 
 				// merge in any subclasses contained in class data
 				const allData = MiscUtil.copy(data.subclass || []);
@@ -238,7 +256,7 @@ function d20plusClass () {
 						const cpy = MiscUtil.copy(c);
 						delete cpy.subclasses;
 						c.subclasses.forEach(sc => {
-							sc.class = c.name;
+							sc.className = c.name;
 							sc.source = sc.source || c.source;
 							sc._baseClass = cpy;
 						});
@@ -267,7 +285,7 @@ function d20plusClass () {
 	 * @param baseClass Will be defined if importing as part of a class, undefined otherwise.
 	 */
 	d20plus.subclasses._preloadClass = function (subclass, baseClass) {
-		if (!subclass.class) Promise.resolve();
+		if (!subclass.className) return Promise.resolve();
 
 		if (baseClass) {
 			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(baseClass);
@@ -277,10 +295,10 @@ function d20plusClass () {
 			return Promise.resolve();
 		} else {
 			d20plus.ut.log("Preloading class...");
-			return DataUtil.class.loadJSON(BASE_SITE_URL).then((data) => {
-				const clazz = data.class.find(it => it.name.toLowerCase() === subclass.class.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
+			return DataUtil.class.loadJSON().then((data) => {
+				const clazz = data.class.find(it => it.name.toLowerCase() === subclass.className.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
 				if (!clazz) {
-					throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.class}::${subclass.classSource || SRC_PHB}`);
+					throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.className}::${subclass.classSource || SRC_PHB}`);
 				}
 
 				subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(clazz);
@@ -306,11 +324,11 @@ function d20plusClass () {
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
 		d20plus.subclasses._preloadClass(data, baseClass).then(() => {
-			const name = `${data.shortName} (${data.class})`;
+			const name = `${data.shortName} (${data.className})`;
 			d20.Campaign.handouts.create({
 				name: name,
 				tags: d20plus.importer.getTagString([
-					data.class,
+					data.className,
 					Parser.sourceJsonToFull(data.source)
 				], "subclass")
 			}, {
@@ -337,7 +355,7 @@ function d20plusClass () {
 
 			const importId = d20plus.ut.generateRowId();
 			d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-			const name = `${data.class ? `${data.class} \u2014 ` : ""}${data.name}`;
+			const name = `${data.className ? `${data.className} \u2014 ` : ""}${data.name}`;
 			d20plus.importer.makePlayerDraggable(importId, name);
 		});
 	};

@@ -156,7 +156,7 @@ function d20plusMonsters () {
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then(async data => {
 				const doShowList = () => {
-					d20plus.importer.addMeta(data._meta);
+					d20plus.importer.addBrewMeta(data._meta);
 					d20plus.importer.showImportList(
 						"monster",
 						data.monster,
@@ -715,8 +715,8 @@ function d20plusMonsters () {
 									const tagSplit = Renderer.splitByTags(sp);
 									tagSplit.forEach(s => {
 										if (!s || !s.trim()) return;
-										if (s.charAt(0) === "@") {
-											const [tag, text] = Renderer.splitFirstSpace(s);
+										if (s.startsWith("{@")) {
+											const [tag, text] = Renderer.splitFirstSpace(s.slice(1, -1));
 											if (tag === "@spell") {
 												toAdd.push(text);
 											}

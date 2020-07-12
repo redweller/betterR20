@@ -1049,9 +1049,6 @@
 			"miscTags": [
 				"MW",
 				"RCH"
-			],
-			"conditionInflict": [
-				"incapacitated"
 			]
 		},
 		{
@@ -1716,8 +1713,7 @@
 			],
 			"conditionInflict": [
 				"grappled",
-				"restrained",
-				"unconscious"
+				"restrained"
 			],
 			"conditionInflictSpell": [
 				"invisible"
@@ -1852,6 +1848,12 @@
 						"flags": "i"
 					}
 				}
+			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
 			},
 			"ac": [
 				{
@@ -2331,8 +2333,7 @@
 				"MW"
 			],
 			"conditionInflict": [
-				"grappled",
-				"incapacitated"
+				"grappled"
 			]
 		},
 		{
@@ -4191,6 +4192,12 @@
 						"flags": "i"
 					}
 				}
+			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
 			},
 			"action": [
 				{

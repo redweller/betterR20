@@ -192,6 +192,31 @@
 			"hasToken": true
 		},
 		{
+			"name": "Cave Badger",
+			"source": "OotA",
+			"page": 96,
+			"_copy": {
+				"name": "Giant Badger",
+				"source": "MM"
+			},
+			"ac": [
+				{
+					"ac": 12,
+					"from": [
+						"natural armor"
+					]
+				}
+			],
+			"speed": {
+				"walk": 30,
+				"burrow": 15
+			},
+			"senses": [
+				"darkvision 30 ft.",
+				"tremorsense 60 ft."
+			]
+		},
+		{
 			"name": "Chamberlain of Zuggtmoy",
 			"source": "OotA",
 			"page": 230,
@@ -1255,6 +1280,27 @@
 				"RNG",
 				"RW"
 			]
+		},
+		{
+			"name": "Fiendish Giant Spider",
+			"source": "OotA",
+			"page": 97,
+			"_copy": {
+				"name": "Giant Wolf Spider",
+				"source": "MM"
+			},
+			"resist": [
+				"cold",
+				"fire",
+				"lightning"
+			],
+			"immune": [
+				"poison"
+			],
+			"conditionImmune": [
+				"poisoned"
+			],
+			"cr": "1/2"
 		},
 		{
 			"name": "Giant Riding Lizard",

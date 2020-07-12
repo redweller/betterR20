@@ -97,7 +97,6 @@
 		},
 		{
 			"name": "Evil Mage",
-			"isNpc": true,
 			"source": "LMoP",
 			"page": 57,
 			"otherSources": [
@@ -218,7 +217,11 @@
 			"page": 41,
 			"_copy": {
 				"name": "Commoner",
-				"source": "MM"
+				"source": "MM",
+				"_trait": {
+					"name": "Mountain Dwarf",
+					"source": "PHB"
+				}
 			},
 			"hasToken": true
 		},
@@ -493,7 +496,11 @@
 			"page": 50,
 			"_copy": {
 				"name": "Commoner",
-				"source": "MM"
+				"source": "MM",
+				"_trait": {
+					"name": "Mountain Dwarf",
+					"source": "PHB"
+				}
 			},
 			"hasToken": true
 		},

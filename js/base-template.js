@@ -570,8 +570,74 @@ Updated
 								<p>Please enter a positive number.</p>
 							</div>
 						</div>
+						<div class='row-fluid clearfix toggle-element dark_vision_input'>
+							<div class='span8'>
+								<label class='vision-color'>Tint Color</label>
+							</div>
+							<div class='span4 dyn_fog_switch'>
+								<input class='dyn_fog_dark_vision_color colorpicker' type='text'>
+							</div>
+						</div>
 					</div>
 					<hr>
+					<div class='limit_field_of_vision hidden' style='padding-top: 10px;'>
+						<div class='row-fluid clearfix'>
+							<div class='span8'>
+								<p class='vision_title'>Limit Field of Vision</p>
+							</div>
+							<div class='span4 dyn_fog_switch'>
+								<label class='switch'>
+									<input class='field_of_vision feature_toggle' data-target='.field_of_vision_inputs' data-toggle='toggle' type='checkbox'>
+									<span class='slider round'></span>
+									</input>
+								</label>
+							</div>
+						</div>
+						<div class='row-fluid clearfix'>
+							<div class='span12'>
+								<p class='description'>Limit the field revealed for the token.</p>
+							</div>
+						</div>
+						<div class='row-fluid clearfix toggle-element field_of_vision_inputs'>
+							<div class='span3'>
+								<label class='distance'>Total</label>
+							</div>
+							<div class='span3 dyn_fog_switch'>
+								<div class='form-group'>
+									<div class='input-group'>
+										<input class='field_of_vision_total' max='360' min='0' type='number'>
+										<span class='input-group-addon'>&deg;</span>
+									</div>
+								</div>
+							</div>
+							<div class='span3'>
+								<label class='distance'>Center</label>
+							</div>
+							<div class='span3 dyn_fog_switch'>
+								<div class='form-group'>
+									<div class='input-group'>
+										<input class='field_of_vision_center' max='360' min='0' type='number'>
+										<span class='input-group-addon'>&deg;</span>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'></div>
+							<div class='row-fluid clearfix'>
+								<div class='alert alert-danger wrong_number_alert_vision hidden' role='alert'>
+									<p>Please enter a number between 0-360.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span6'>
+									<p class='description'>Total size of the Field of Vision.</p>
+								</div>
+								<div class='span6'>
+									<p class='description'>50% of Vision is before the Center, 50% is after.</p>
+								</div>
+							</div>
+						</div>
+						<hr>
+					</div>
 				</div>
 				<div class='token_light'>
 					<p class='token_light_title'>Token Emits Light</p>
@@ -651,6 +717,64 @@ Updated
 						</div>
 					</div>
 					<hr>
+					<div class='directional_bright_light hidden' style='padding-top: 10px;'>
+						<div class='row-fluid clearfix'>
+							<div class='span8'>
+								<p class='light_title'>Directional Light</p>
+							</div>
+							<div class='span4 dyn_fog_switch'>
+								<label class='switch'>
+									<input class='directional_bright_light_toggle feature_toggle' data-target='.directional_bright_light_inputs' data-toggle='toggle' type='checkbox'>
+									<span class='slider round'></span>
+									</input>
+								</label>
+							</div>
+						</div>
+						<div class='row-fluid clearfix'>
+							<div class='span12'>
+								<p class='description'>Set the direction of the Light emitting from this token.</p>
+							</div>
+						</div>
+						<div class='row-fluid clearfix toggle-element directional_bright_light_inputs'>
+							<div class='span3'>
+								<label class='distance'>Total</label>
+							</div>
+							<div class='span3 dyn_fog_switch'>
+								<div class='form-group'>
+									<div class='input-group'>
+										<input class='directional_bright_light_total' max='360' min='0' type='number'>
+										<span class='input-group-addon'>&deg;</span>
+									</div>
+								</div>
+							</div>
+							<div class='span3'>
+								<label class='distance'>Center</label>
+							</div>
+							<div class='span3 dyn_fog_switch'>
+								<div class='form-group'>
+									<div class='input-group'>
+										<input class='directional_bright_light_center' max='360' min='0' type='number'>
+										<span class='input-group-addon'>&deg;</span>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'></div>
+							<div class='row-fluid clearfix'>
+								<div class='alert alert-danger wrong_number_alert_bright hidden' role='alert'>
+									<p>Please enter a number between 0-360.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span6'>
+									<p class='description'>Total size of the Field of Light.</p>
+								</div>
+								<div class='span6'>
+									<p class='description'>50% of Light is before the Center, 50% is after.</p>
+								</div>
+							</div>
+						</div>
+						<hr>
+					</div>
 					<div class='total_light'>
 						<div class='row-fluid clearfix'>
 							<div class='span8'>

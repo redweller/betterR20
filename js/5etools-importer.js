@@ -14,7 +14,7 @@ function d20plusImporter () {
 		d20plus.importer._playerImports = {};
 	};
 
-	d20plus.importer.addMeta = function (meta) {
+	d20plus.importer.addBrewMeta = function (meta) {
 		if (!meta) return;
 		BrewUtil._sourceCache = BrewUtil._sourceCache || {};
 		if (meta.sources) {
@@ -28,6 +28,24 @@ function d20plusImporter () {
 			BrewUtil.homebrewMeta[k] = BrewUtil.homebrewMeta[k] || {};
 			Object.assign(BrewUtil.homebrewMeta[k], cpy[k]);
 		});
+	};
+
+	d20plus.importer.pAddBrew = async function (data) {
+		if (!data) return;
+
+		const toAdd = {};
+		if (data._meta) toAdd._meta = data._meta;
+		BrewUtil._STORABLE
+			.filter(k => data[k] != null && data[k] instanceof Array)
+			.forEach(k => {
+				toAdd[k] = data[k].filter(it => {
+					if (it.source) return !Parser.SOURCE_JSON_TO_ABV[it.source];
+					if (it.inherits) return !Parser.SOURCE_JSON_TO_ABV[it.inherits.source];
+					return false;
+				});
+			});
+
+		await BrewUtil.pDoHandleBrewJson(toAdd, "NO_PAGE");
 	};
 
 	d20plus.importer.getCleanText = function (str) {
@@ -873,7 +891,7 @@ function d20plusImporter () {
 					case "Type":
 					default:
 						if (it.type) {
-							folderName = Parser.itemTypeToFull(it.type);
+							folderName = Renderer.item.getItemTypeName(it.type);
 						} else if (it._typeListText) {
 							folderName = it._typeListText.join(", ");
 						} else {
@@ -949,7 +967,7 @@ function d20plusImporter () {
 						break;
 					case "Class":
 					default:
-						folderName = it.class;
+						folderName = it.className;
 				}
 				return folderName;
 			}

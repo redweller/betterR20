@@ -9,7 +9,7 @@ function d20plusFeats () {
             const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
 
             DataUtil.loadJSON(url).then((data) => {
-                d20plus.importer.addMeta(data._meta);
+                d20plus.importer.addBrewMeta(data._meta);
                 d20plus.importer.showImportList(
                     "feat",
                     data.feat,

@@ -368,7 +368,6 @@
 		},
 		{
 			"name": "Awakened Rat",
-			"isNpc": true,
 			"source": "WDH",
 			"page": 102,
 			"size": "T",
@@ -417,7 +416,10 @@
 				}
 			],
 			"hasToken": true,
-			"soundClip": "https://media-waterdeep.cursecdn.com/file-attachments/0/405/rat.mp3",
+			"soundClip": {
+				"type": "internal",
+				"path": "bestiary/rat.mp3"
+			},
 			"traitTags": [
 				"Keen Senses"
 			],
@@ -4779,7 +4781,6 @@
 		},
 		{
 			"name": "Mechanical Bird",
-			"isNpc": true,
 			"source": "WDH",
 			"page": 46,
 			"size": "T",
@@ -8179,7 +8180,7 @@
 				{
 					"name": "Staff Spells",
 					"entries": [
-						"While holding the blackstaff, Vajra can use an action to expend 1 or more of its charges to cast one of the following spells from it, using her spell save DC and spell attack bonus: cone of cold (5 charges), fireball (5th-level version, 5 charges), globe of invulnerability (6 charges), hold monster (5 charges), levitate (2 charges), lightning bolt (5th-level version, 5 charges), magic missile (1 charge), Ray of Enfeeblement (1 charge), or wall of force (5 charges)."
+						"While holding the blackstaff, Vajra can use an action to expend 1 or more of its charges to cast one of the following spells from it, using her spell save DC and spell attack bonus: {@spell cone of cold} (5 charges), {@spell fireball} (5th-level version, 5 charges), {@spell globe of invulnerability} (6 charges), {@spell hold monster} (5 charges), {@spell levitate} (2 charges), {@spell lightning bolt} (5th-level version, 5 charges), {@spell magic missile} (1 charge), {@spell ray of enfeeblement} (1 charge), or {@spell wall of force} (5 charges)."
 					]
 				}
 			],
@@ -8537,7 +8538,7 @@
 				{
 					"name": "Summon Devil (Recharges after 9 Days)",
 					"entries": [
-						"Victoro summons a barbed devil. The devil appears in an unoccupied space within 30 feet of Victoro, acts as Victoro's ally, and can't summon other devils. It remains for 1 minute, until it or Victoro dies, or until Victoro dismisses it as an action."
+						"Victoro summons a {@creature barbed devil}. The devil appears in an unoccupied space within 30 feet of Victoro, acts as Victoro's ally, and can't summon other devils. It remains for 1 minute, until it or Victoro dies, or until Victoro dismisses it as an action."
 					]
 				}
 			],

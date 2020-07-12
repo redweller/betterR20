@@ -22,7 +22,9 @@ function d20plusItems () {
 		};
 	};
 	// Import Items button was clicked
-	d20plus.items.button = function (forcePlayer) {
+	d20plus.items.button = async function (forcePlayer) {
+		await Renderer.item.populatePropertyAndTypeReference();
+
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-items-url-player").val() : $("#import-items-url").val();
 		if (url && url.trim()) {
@@ -105,7 +107,7 @@ function d20plusItems () {
 				DataUtil.loadJSON(url).then((data) => {
 					(data.itemProperty || []).forEach(p => Renderer.item._addProperty(p));
 					(data.itemType || []).forEach(t => Renderer.item._addType(t));
-					d20plus.importer.addMeta(data._meta);
+					d20plus.importer.addBrewMeta(data._meta);
 					d20plus.importer.showImportList(
 						"item",
 						data.item,
@@ -275,7 +277,7 @@ function d20plusItems () {
 	};
 
 	d20plus.items.parseType = function (type) {
-		const result = Parser.itemTypeToFull(type);
+		const result = Renderer.item.getItemTypeName(type);
 		return result ? result : "n/a";
 	};
 
