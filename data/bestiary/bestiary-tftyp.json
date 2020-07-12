@@ -664,6 +664,10 @@
 					}
 				}
 			},
+			"hp": {
+				"average": 30,
+				"formula": "8d10 + 40"
+			},
 			"hasToken": true,
 			"actionTags": []
 		},
@@ -992,9 +996,6 @@
 				"MW",
 				"RNG",
 				"RW"
-			],
-			"conditionInflict": [
-				"incapacitated"
 			]
 		},
 		{
@@ -1092,6 +1093,10 @@
 			"_copy": {
 				"name": "Druid",
 				"source": "MM",
+				"_trait": {
+					"name": "Wood Elf",
+					"source": "PHB"
+				},
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -2027,6 +2032,10 @@
 			"_copy": {
 				"name": "Priest",
 				"source": "MM",
+				"_trait": {
+					"name": "Mountain Dwarf",
+					"source": "PHB"
+				},
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -3491,6 +3500,12 @@
 					}
 				}
 			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
+			},
 			"hasToken": true
 		},
 		{
@@ -3767,17 +3782,35 @@
 			"isNpc": true,
 			"source": "TftYP",
 			"page": 54,
-			"size": "M",
-			"type": {
-				"type": "humanoid",
-				"tags": [
-					"dwarf"
-				]
+			"_copy": {
+				"name": "Duergar",
+				"source": "MM",
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "the duergar",
+						"with": "Nimira",
+						"flags": "i"
+					},
+					"action": {
+						"mode": "prependArr",
+						"items": [
+							{
+								"name": "Multiattack",
+								"entries": [
+									"Multiattack. Nimira makes two greatsword attacks."
+								]
+							},
+							{
+								"name": "Greatsword",
+								"entries": [
+									"{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}9 ({@damage 2d6 + 2}) slashing damage, or 16 ({@damage 4d6 + 2}) slashing damage while enlarged."
+								]
+							}
+						]
+					}
+				}
 			},
-			"alignment": [
-				"L",
-				"E"
-			],
 			"ac": [
 				{
 					"ac": 17,
@@ -3790,102 +3823,8 @@
 				"average": 52,
 				"formula": "8d8 + 16"
 			},
-			"speed": {
-				"walk": 25
-			},
-			"str": 14,
-			"dex": 11,
-			"con": 14,
-			"int": 11,
-			"wis": 10,
-			"cha": 9,
-			"senses": [
-				"darkvision 120 ft."
-			],
-			"passive": 10,
-			"resist": [
-				"poison"
-			],
-			"languages": [
-				"Dwarvish",
-				"Undercommon"
-			],
 			"cr": "3",
-			"trait": [
-				{
-					"name": "Duergar Resilience",
-					"entries": [
-						"The duergar has advantage on saving throws against poison, spells, and illusions, as well as to resist being {@condition charmed} or {@condition paralyzed}."
-					]
-				},
-				{
-					"name": "Sunlight Sensitivity",
-					"entries": [
-						"While in sunlight, the duergar has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
-					]
-				}
-			],
-			"action": [
-				{
-					"name": "Enlarge (Recharges after a Short or Long Rest)",
-					"entries": [
-						"For 1 minute, the duergar magically increases in size, along with anything it is wearing or carrying. While enlarged, the duergar is Large, doubles its damage dice on Strength-based weapon attacks (included in the attacks), and makes Strength checks and Strength saving throws with advantage. If the duergar lacks the room to become Large, it attains the maximum size possible in the space available."
-					]
-				},
-				{
-					"name": "Multiattack",
-					"entries": [
-						"Multiattack. Nimira makes two greatsword attacks."
-					]
-				},
-				{
-					"name": "Greatsword",
-					"entries": [
-						"{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}9 ({@damage 2d6 + 2}) slashing damage, or 16 ({@damage 4d6 + 2}) slashing damage while enlarged."
-					]
-				},
-				{
-					"name": "War Pick",
-					"entries": [
-						"{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}6 ({@damage 1d8 + 2}) piercing damage, or 11 ({@damage 2d8 + 2}) piercing damage while enlarged."
-					]
-				},
-				{
-					"name": "Javelin",
-					"entries": [
-						"{@atk mw,rw} {@hit 4} to hit, reach 5 ft. or range 30/120 ft., one target. {@h}5 ({@damage 1d6 + 2}) piercing damage, or 9 ({@damage 2d6 + 2}) piercing damage while enlarged."
-					]
-				},
-				{
-					"name": "Invisibility (Recharges after a Short or Long Rest)",
-					"entries": [
-						"The duergar magically turns {@condition invisible} until it attacks, casts a spell, or uses its Enlarge, or until its concentration is broken, up to 1 hour (as if concentrating on a spell). Any equipment the duergar wears or carries is {@condition invisible} with it."
-					]
-				}
-			],
-			"hasToken": true,
-			"traitTags": [
-				"Sunlight Sensitivity"
-			],
-			"senseTags": [
-				"SD"
-			],
-			"actionTags": [
-				"Multiattack"
-			],
-			"languageTags": [
-				"D",
-				"U"
-			],
-			"damageTags": [
-				"P",
-				"S"
-			],
-			"miscTags": [
-				"MW",
-				"RW",
-				"THW"
-			]
+			"hasToken": true
 		},
 		{
 			"name": "Obmi",
@@ -3895,6 +3834,10 @@
 			"_copy": {
 				"name": "Assassin",
 				"source": "MM",
+				"_trait": {
+					"name": "Mountain Dwarf",
+					"source": "PHB"
+				},
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -4199,6 +4142,12 @@
 						"flags": "i"
 					}
 				}
+			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
 			},
 			"hasToken": true
 		},
@@ -4536,7 +4485,10 @@
 					]
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"conditionInflict": [
+				"poisoned"
+			]
 		},
 		{
 			"name": "Reduced-Threat Owlbear",
@@ -4820,7 +4772,11 @@
 			"page": 119,
 			"_copy": {
 				"name": "Knight",
-				"source": "MM"
+				"source": "MM",
+				"_trait": {
+					"name": "High Elf",
+					"source": "PHB"
+				}
 			},
 			"hasToken": true
 		},
@@ -5043,6 +4999,11 @@
 			"isNpc": true,
 			"source": "TftYP",
 			"page": 243,
+			"otherSources": [
+				{
+					"source": "MOT"
+				}
+			],
 			"size": "M",
 			"type": "fey",
 			"alignment": [
@@ -6672,6 +6633,12 @@
 						"flags": "i"
 					}
 				}
+			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"troglodyte"
+				]
 			},
 			"hasToken": true
 		},

@@ -725,6 +725,12 @@
 					}
 				}
 			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
+			},
 			"alignment": [
 				"N",
 				"E"
@@ -788,6 +794,12 @@
 			"_copy": {
 				"name": "Tribal Warrior",
 				"source": "MM"
+			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
 			},
 			"hasToken": true
 		},

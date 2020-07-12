@@ -1843,7 +1843,7 @@ const betteR205etoolsMain = function () {
 				if (d20plus.sheet == "ogl") {
 					attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
 					attrs.add(`repeating_traits_${fRowId}_source`, "Class");
-					attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.class} (${sc.name} ${level})`);
+					attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.className} (${sc.name} ${level})`);
 					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
 				} else if (d20plus.sheet == "shaped") {
@@ -2586,7 +2586,7 @@ const betteR205etoolsMain = function () {
 			const handoutBuilder = playerMode ? d20plus.psionics.playerImportBuilder : d20plus.psionics.handoutBuilder;
 
 			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
+				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"psionic",
 					data.psionic,
@@ -2677,7 +2677,7 @@ const betteR205etoolsMain = function () {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
 
 			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
+				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"race",
 					Renderer.race.mergeSubraces(data.race),
@@ -2761,7 +2761,7 @@ const betteR205etoolsMain = function () {
 		const url = $("#import-objects-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
+				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"object",
 					data.object,
@@ -2899,7 +2899,7 @@ const betteR205etoolsMain = function () {
 			const handoutBuilder = playerMode ? d20plus.optionalfeatures.playerImportBuilder : d20plus.optionalfeatures.handoutBuilder;
 
 			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addMeta(data._meta);
+				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"optionalfeature",
 					data.optionalfeature,

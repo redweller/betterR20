@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.17.0";
+const SCRIPT_VERSION = "1.18.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -100,6 +100,7 @@ const LIB_SCRIPTS = {
 		"parser.js",
 		"utils.js",
 		"render.js",
+		"render-dice.js",
 		"scalecreature.js"
 	]
 };

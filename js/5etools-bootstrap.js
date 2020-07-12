@@ -116,7 +116,7 @@ const betteR205etools = function () {
 		};
 		// dummy values
 		BrewUtil.homebrew = {};
-		BrewUtil.homebrewMeta = {};
+		BrewUtil.homebrewMeta = {sources: []};
 
 		Renderer.get().setBaseUrl(BASE_SITE_URL);
 	}

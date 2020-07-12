@@ -1118,7 +1118,10 @@
 				}
 			],
 			"hasToken": true,
-			"soundClip": "https://media-waterdeep.cursecdn.com/file-attachments/0/254/guard-drake.mp3",
+			"soundClip": {
+				"type": "internal",
+				"path": "bestiary/guard-drake.mp3"
+			},
 			"senseTags": [
 				"D"
 			],
@@ -1429,6 +1432,12 @@
 				"name": "Commoner",
 				"source": "MM"
 			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
+			},
 			"hp": {
 				"average": 8,
 				"formula": "1d8"
@@ -1470,6 +1479,12 @@
 						}
 					}
 				}
+			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
 			},
 			"hasToken": true
 		},

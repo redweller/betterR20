@@ -1592,7 +1592,7 @@
 		},
 		{
 			"name": "Stahlmaster",
-			"source": "EGW",
+			"source": "DD",
 			"page": 235,
 			"vehicleType": "CREATURE",
 			"size": "L",
@@ -1745,7 +1745,7 @@
 					"type": "entries",
 					"name": "Juke",
 					"entries": [
-						"If the Tormentor is able to move, the driver can use its reaction to grant the Devil's Ride advantage on a Dexterity saving throw."
+						"If the Tormentor is able to move, the driver can use its reaction to grant the Tormentor advantage on a Dexterity saving throw."
 					]
 				}
 			],

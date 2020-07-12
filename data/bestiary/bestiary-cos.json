@@ -1788,6 +1788,47 @@
 			"ac": [
 				10
 			],
+			"spellcasting": [
+				{
+					"name": "Spellcasting",
+					"headerEntries": [
+						"Fiona is a 5th-level spellcaster. Her spellcasting ability is Wisdom (spell save {@dc 13}, {@hit 5} to hit with spell attacks). Fiona has the following cleric spells prepared:"
+					],
+					"spells": {
+						"0": {
+							"spells": [
+								"{@spell light}",
+								"{@spell mending}",
+								"{@spell thaumaturgy}"
+							]
+						},
+						"1": {
+							"slots": 4,
+							"spells": [
+								"{@spell command}",
+								"{@spell purify food and drink}",
+								"{@spell sanctuary}"
+							]
+						},
+						"2": {
+							"slots": 3,
+							"spells": [
+								"{@spell augury}",
+								"{@spell gentle repose}",
+								"{@spell hold person}"
+							]
+						},
+						"3": {
+							"slots": 2,
+							"spells": [
+								"{@spell animate dead}",
+								"{@spell create food and water}"
+							]
+						}
+					},
+					"ability": "wis"
+				}
+			],
 			"hasToken": true
 		},
 		{
@@ -3473,13 +3514,13 @@
 					]
 				},
 				{
-					"name": "Unarmed Strike (Vampire Form Only)",
+					"name": "Unarmed Strike (Vampire or Wolf Form Only)",
 					"entries": [
-						"{@atk mw} {@hit 9} to hit, reach 5 ft., one target. {@h}8 ({@damage 1d8 + 4}) bludgeoning damage, plus 14 ({@damage 4d6}) necrotic damage. If the target is a creature, Strahd can grapple it (escape {@dc 18}) instead of dealing the bludgeoning damage."
+						"{@atk mw} {@hit 9} to hit, reach 5 ft., one target. {@h}8 ({@damage 1d8 + 4}) slashing damage, plus 14 ({@damage 4d6}) necrotic damage. If the target is a creature, Strahd can grapple it (escape {@dc 18}) instead of dealing the bludgeoning damage."
 					]
 				},
 				{
-					"name": "Bite (Bat or Vampire Form Only)",
+					"name": "Bite",
 					"entries": [
 						"{@atk mw} {@hit 9} to hit, reach 5 ft., one willing creature, or a creature that is {@condition grappled} by Strahd, {@condition incapacitated}, or {@condition restrained}. {@h}7 ({@damage 1d6 + 4}) piercing damage plus 10 ({@damage 3d6}) necrotic damage. The target's hit point maximum is reduced by an amount equal to the necrotic damage taken, and Strahd regains hit points equal to that amount. The reduction lasts until the target finishes a long rest. The target dies if its hit point maximum is reduced to 0. A humanoid slain in this way and then buried in the ground rises the following night as a {@creature vampire spawn} under Strahd's control."
 					]
