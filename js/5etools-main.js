@@ -3881,7 +3881,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						blobs: {}
 					};
 					blobCount = 3;
-					const onBlobsReady = () => DataUtil.userDownload(char.name.replace(/[^0-9A-Za-z -_()[\]{}]/, "_"), JSON.stringify(out, null, "\t"));
+					const onBlobsReady = () => d20plus.ut.saveAsJson(char.name.replace(/[^0-9A-Za-z -_()[\]{}]/, "_"), out);
 
 					const handleBlob = (asKey, data) => {
 						out.blobs[asKey] = data;
