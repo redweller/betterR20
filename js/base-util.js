@@ -311,6 +311,11 @@ function baseUtil () {
 		return str.trim().replace(/[^\w\-]/g, "_");
 	};
 
+	d20plus.ut.saveAsJson = function (filename, data) {
+		const blob = new Blob([JSON.stringify(data, null, "\t")], {type: "application/json"});
+		d20plus.ut.saveAs(blob, `${filename}.json`);
+	};
+
 	// based on:
 	/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js */
 	d20plus.ut.saveAs = function() {

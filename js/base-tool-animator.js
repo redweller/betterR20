@@ -1170,7 +1170,7 @@ function baseToolAnimator () {
 					<button class="btn" name="btn-add">Add Animation</button>
 					<button class="btn mr-2" name="btn-import">Import Animation</button>
 				</div>
-				
+
 				<div class="anm__wrp-sel-all">
 					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label>
 					<div>
@@ -1178,24 +1178,24 @@ function baseToolAnimator () {
 						<button class="btn btn-danger" name="btn-delete">Delete Selected</button>
 					</div>
 				</div>
-				
+
 				<div id="token-animator-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<br><br>
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
 			</div>
-			
+
 			<div id="d20plus-token-animator-disable" title="Stop Animation" class="anm__win">
 				<p>
 					<button class="btn" name="btn-refresh">Refresh</button>
 				</p>
-				
+
 				<p class="anm__wrp-sel-all">
-					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label> 
+					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label>
 					<button class="btn" name="btn-stop">Stop Selected</button>
 				</p>
-				
+
 				<div id="token-animator-disable-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<div class="bold flex-v-center mt-2">
@@ -1208,17 +1208,17 @@ function baseToolAnimator () {
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
 			</div>
-			
+
 			<div id="d20plus-token-animator-rescue" title="Token Rescue" class="anm__win">
 				<p>
 					<button class="btn mr-2" name="btn-refresh">Refresh</button>
 				</p>
-				
+
 				<p class="anm__wrp-sel-all">
-					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label> 
+					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label>
 					<button class="btn" name="btn-rescue">Rescue Selected</button>
 				</p>
-				
+
 				<div id="token-animator-rescue-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<div class="bold flex-v-center mt-2">
@@ -1230,13 +1230,13 @@ function baseToolAnimator () {
 					<ul class="list" style="max-height: 420px; overflow-y: auto; display: block; margin: 0;"></ul>
 				</div>
 			</div>
-			
+
 			<div id="d20plus-token-animator-scene" title="Scene List" class="anm__win">
 				<div class="split mb-2">
 					<button class="btn" name="btn-add">Add Scene</button>
 					<button class="btn mr-2" name="btn-import">Import Scene</button>
 				</div>
-				
+
 				<div class="anm__wrp-sel-all">
 					<label class="flex-label"><input type="checkbox" title="Select all" name="cb-all" class="mr-2"> <span>Select All</span></label>
 					<div>
@@ -1244,7 +1244,7 @@ function baseToolAnimator () {
 						<button class="btn btn-danger" name="btn-delete">Delete Selected</button>
 					</div>
 				</div>
-				
+
 				<div id="token-animator-scene-list-container">
 					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
 					<br><br>
@@ -1256,28 +1256,28 @@ function baseToolAnimator () {
 			<div title="Animation Editor" class="anm__win anm-edit__gui flex-col">
 				<div class="mb-2 no-shrink split flex-vh-center">
 					<input name="ipt-name" placeholder="Name">
-					
+
 					<div class="flex">
 						<button class="btn mr-1" name="btn-save">Save</button>
 						<button class="btn" name="btn-export-file">Export to File</button>
-						
+
 						<div class="anm-edit__gui-hidden flex">
 							<button class="btn ml-2" name="btn-help">View Help</button>
 							<button class="btn ml-1" name="btn-validate">Validate</button>
 						</div>
-						
+
 						<div class="anm-edit__gui-visible flex">
 							<button class="btn ml-2" name="btn-add-command">Add Command</button>
 						</div>
-						
+
 						<button class="btn ml-2" name="btn-edit-text">Edit as Text</button>
 					</div>
 				</div>
-				
+
 				<div class="anm-edit__ipt-lines-wrp anm-edit__ipt-lines-wrp--gui anm-edit__gui-visible">
-					
+
 				</div>
-				
+
 				<div class="anm-edit__ipt-lines-wrp anm-edit__ipt-lines-wrp--text anm-edit__gui-hidden">
 					<textarea name="ipt-lines" placeholder="mv 0 100 50 -50" class="anm-edit__ipt-lines"></textarea>
 				</div>
@@ -1287,7 +1287,7 @@ function baseToolAnimator () {
 			<div title="Scene Editor" class="anm__win flex-col">
 				<div class="mb-2 no-shrink split">
 					<input name="ipt-name" placeholder="Name">
-					
+
 					<div>
 						<button class="btn" name="btn-save">Save</button>
 						<button class="btn" name="btn-export-file">Export to File</button>
@@ -1305,7 +1305,7 @@ function baseToolAnimator () {
 					<div class="col-1"></div>
 				</div>
 				<div class="anm-edit__ipt-rows-wrp">
-					
+
 				</div>
 			</div>
 		`,
@@ -1654,7 +1654,7 @@ function baseToolAnimator () {
 						.filter(it => $(it.elm).find(`input`).prop("checked"))
 						.map(it => this._main_getExportableAnim(this._anims[it.values().uid]))
 				};
-				DataUtil.userDownload("animations", out);
+				d20plus.ut.saveAsJson("animations", out);
 			});
 
 			$cbAll.click(() => {
@@ -1728,7 +1728,7 @@ function baseToolAnimator () {
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
 				.click(() => {
 					const out = {animations: [this._main_getExportableAnim(anim)]};
-					DataUtil.userDownload(`${anim.name}`, out);
+					d20plus.ut.saveAsJson(`${anim.name}`, out);
 				});
 
 			const $btnDelete = $(`<div class="btn anm__row-btn btn-danger pictos anm__btn-delete mr-2" title="Delete">#</div>`)
@@ -1785,7 +1785,7 @@ function baseToolAnimator () {
 			const $btnExport = $(`<div class="btn anm__row-btn pictos mr-2" title="Export to File">I</div>`)
 				.click(() => {
 					const out = {scenes: [scene]};
-					DataUtil.userDownload(`${scene.name}`, out);
+					d20plus.ut.saveAsJson(`${scene.name}`, out);
 				});
 
 			const $btnDelete = $(`<div class="btn anm__row-btn btn-danger pictos anm__btn-delete mr-2" title="Delete">#</div>`)
@@ -1853,7 +1853,7 @@ function baseToolAnimator () {
 					scenes: this._scene_getSelected()
 						.map(it => this._scenes[it.values().uid])
 				};
-				DataUtil.userDownload("scenes", out);
+				d20plus.ut.saveAsJson("scenes", out);
 			});
 
 			this._scene_$btnDelete.click(() => {
@@ -1932,7 +1932,7 @@ function baseToolAnimator () {
 
 			$btnExportFile.off("click").click(() => {
 				const out = {scenes: [scene]};
-				DataUtil.userDownload(`${scene.name}`, out);
+				d20plus.ut.saveAsJson(`${scene.name}`, out);
 			});
 
 			$btnAdd.off("click").click(() => $wrpRows.append(this._scene_$getEditorRow(editorOptions, scene)));
@@ -1983,9 +1983,9 @@ function baseToolAnimator () {
 								tokens.forEach(it => {
 									const $wrpToken = $$`<div class="anm-scene__wrp-token">
 											<div class="no-shrink flex-vh-center" style="width: 80px; height: 80px;">
-												<img 
-													class="no-shrink" 
-													style="max-width: 80px; max-height: 80px;" 
+												<img
+													class="no-shrink"
+													style="max-width: 80px; max-height: 80px;"
 													src="${it.imgsrc}"
 												>
 											</div>
@@ -2089,12 +2089,12 @@ function baseToolAnimator () {
 					<div class="col-1 text-center">${$wrpToken}</div>
 					<div class="col-2 text-center">${$wrpTokenName}</div>
 					<div class="col-2 text-center">${$btnSelToken}</div>
-					
+
 					<div class="col-2 text-center">${$wrpAnim}</div>
 					<div class="col-2 text-center">${$btnSelAnim}</div>
-					
+
 					<div class="col-2">${$iptOffset}</div>
-					
+
 					<div class="col-1 text-center">${$btnDelete}</div>
 				</div>`;
 			return $out;
@@ -2114,12 +2114,12 @@ function baseToolAnimator () {
 		_rescue_getListItem (page, imgUrl, tokenName, _tokenId) {
 			return `<label class="flex-v-center">
 				<div class="col-1 flex-vh-center full-height"><input type="checkbox"></div>
-				<div class="page col-4">${page}</div>				
+				<div class="page col-4">${page}</div>
 				<div class="col-2">
 					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
-				</div>				
+				</div>
 				<div class="col-5 tokenName">${tokenName || "(unnamed)"}</div>
-				<div class="_tokenId hidden">${_tokenId}</div>		
+				<div class="_tokenId hidden">${_tokenId}</div>
 			</label>`
 		},
 
@@ -2217,14 +2217,14 @@ function baseToolAnimator () {
 		_dis_getListItem (page, imgUrl, tokenName, animName, _tokenId, _animUid) {
 			return `<label class="flex-v-center">
 				<div class="col-1 flex-vh-center full-height"><input type="checkbox"></div>
-				<div class="page col-3">${page}</div>				
+				<div class="page col-3">${page}</div>
 				<div class="col-2">
 					<a href="${imgUrl}" target="_blank"><img src="${imgUrl}" style="max-width: 40px; max-height: 40px;"></a>
-				</div>				
-				<div class="col-3 tokenName">${tokenName || "(unnamed)"}</div>				
+				</div>
+				<div class="col-3 tokenName">${tokenName || "(unnamed)"}</div>
 				<div class="col-3 animName">${animName}</div>
-				<div class="_tokenId hidden">${_tokenId}</div>				
-				<div class="_animUid hidden">${_animUid}</div>				
+				<div class="_tokenId hidden">${_tokenId}</div>
+				<div class="_animUid hidden">${_animUid}</div>
 			</label>`
 		},
 
@@ -2391,7 +2391,7 @@ function baseToolAnimator () {
 						<div class="split flex-v-center mb-2">
 							<div class="full-width flex-v-center full-height">${$dispName}</div>
 							${$btnRemove}
-						</div>			
+						</div>
 						${$wrpHeaders}
 						${$wrpInputs}
 					</div>`;
@@ -2405,7 +2405,7 @@ function baseToolAnimator () {
 						const name = await new Promise(resolve => {
 							const $selAnim = $(`<select>
 							<option value="-1">(None)</option>
-							${d20plus.anim.animatorTool.getAnimations().map(it => `<option value="${it.uid}">${it.name}</option>`).join("")} 
+							${d20plus.anim.animatorTool.getAnimations().map(it => `<option value="${it.uid}">${it.name}</option>`).join("")}
 							</select>`);
 							$selAnim[0].selectedIndex = 0;
 
@@ -2792,7 +2792,7 @@ function baseToolAnimator () {
 
 			$btnExportFile.off("click").click(() => {
 				const out = {animations: [this._main_getExportableAnim(anim)]};
-				DataUtil.userDownload(`${anim.name}`, out);
+				d20plus.ut.saveAsJson(`${anim.name}`, out);
 			});
 
 			$btnValidate.off("click").click(() => {
