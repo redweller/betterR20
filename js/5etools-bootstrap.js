@@ -89,22 +89,10 @@ const betteR205etools = function () {
 
 	async function loadHomebrewMetadata () {
 		d20plus.ut.log("Loading homebrew metadata");
-		const brewUrl = DataUtil.brew.getDirUrl("creature");
 		try {
-			const brewMeta = await DataUtil.loadJSON(brewUrl);
-			brewMeta.forEach(it => {
-				const url = `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`;
-				const name = `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`;
-				monsterBrewDataUrls.push({url, name});
-			});
+			brewIndex = await DataUtil.brew.pLoadPropIndex();
 		} catch (e) {
-			d20plus.ut.error(`Failed to load bestiary homebrew metadata!`);
-		}
-
-		try {
-			brewCollectionIndex = await DataUtil.brew.pLoadCollectionIndex();
-		} catch (e) {
-			d20plus.ut.error("Failed to pre-load homebrew collection index");
+			d20plus.ut.error(`Failed to load homebrew index!`);
 		}
 	}
 
