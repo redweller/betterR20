@@ -118,9 +118,7 @@ const betteR205etoolsMain = function () {
 	let adventureMetadata = {};
 	let itemMetadata = {};
 	let classDataUrls = {};
-	let brewCollectionIndex = {};
-
-	let monsterBrewDataUrls = [];
+	let brewIndex = {};
 
 // build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
 	function SheetAttribute (name, ogl, shaped) {
@@ -779,14 +777,14 @@ const betteR205etoolsMain = function () {
 	};
 
 	d20plus.addCustomHTML = function () {
-		function populateDropdown (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, homebrewDir) {
+		function populateDropdown (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, brewProps) {
 			const defaultUrl = defaultSel ? d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]) : "";
 			$(inputFieldId).val(defaultUrl);
 			const dropdown = $(dropdownId);
 			$.each(Object.keys(srcUrlObject), function (i, src) {
 				dropdown.append($('<option>', {
 					value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
-					text: homebrewDir === "class" ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src)
+					text: brewProps.includes("class") ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src)
 				}));
 			});
 			dropdown.append($('<option>', {
@@ -794,24 +792,26 @@ const betteR205etoolsMain = function () {
 				text: "Custom"
 			}));
 
-			const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
-			DataUtil.loadJSON(brewUrl).then(async (data, debugUrl) => {
-				if (data.message) console.error(debugUrl, data.message);
-
-				const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(BrewUtil._pRenderBrewScreen_dirToCat(homebrewDir)));
-				if (collectionItems.length) {
-					data = MiscUtil.copy(data);
-					const collectionIndex = await DataUtil.loadJSON(DataUtil.brew.getDirUrl("collection"));
-					collectionIndex.filter(it => collectionItems.includes(it.name)).forEach(it => data.push(it));
-				}
-
-				data.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
-					dropdown.append($('<option>', {
-						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
-					}));
-				});
-			}, brewUrl);
+			const dataList = [];
+			const seenPaths = new Set();
+			brewProps.forEach(prop => {
+				Object.entries(brewIndex[prop] || {})
+					.forEach(([path, dir]) => {
+						if (seenPaths.has(path)) return;
+						seenPaths.add(path);
+						dataList.push({
+							download_url: DataUtil.brew.getFileUrl(path),
+							path,
+							name: path.split("/").slice(1).join("/")
+						});
+					});
+			});
+			dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
+				dropdown.append($('<option>', {
+					value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
+					text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
+				}));
+			});
 
 			dropdown.val(defaultUrl);
 			dropdown.change(function () {
@@ -819,7 +819,7 @@ const betteR205etoolsMain = function () {
 			});
 		}
 
-		function populateBasicDropdown (dropdownId, inputFieldId, defaultSel, homebrewDir, addForPlayers) {
+		function populateBasicDropdown (dropdownId, inputFieldId, defaultSel, brewProps, addForPlayers) {
 			function doPopulate (dropdownId, inputFieldId) {
 				const $sel = $(dropdownId);
 				const existingItems = !!$sel.find(`option`).length;
@@ -837,24 +837,26 @@ const betteR205etoolsMain = function () {
 					}));
 				}
 
-				const brewUrl = DataUtil.brew.getDirUrl(homebrewDir);
-				DataUtil.loadJSON(brewUrl).then(async (data, debugUrl) => {
-					if (data.message) console.error(debugUrl, data.message);
-
-					const collectionItems = Object.keys(brewCollectionIndex).filter(k => brewCollectionIndex[k].includes(homebrewDir));
-					if (collectionItems.length) {
-						data = MiscUtil.copy(data);
-						const collectionIndex = await DataUtil.loadJSON(DataUtil.brew.getDirUrl("collection"));
-						collectionIndex.filter(it => collectionItems.includes(it.name)).forEach(it => data.push(it));
-					}
-
-					data.forEach(it => {
-						$sel.append($('<option>', {
-							value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-							text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
-						}));
-					});
-				}, brewUrl);
+				const dataList = [];
+				const seenPaths = new Set();
+				brewProps.forEach(prop => {
+					Object.entries(brewIndex[prop] || {})
+						.forEach(([path, dir]) => {
+							if (seenPaths.has(path)) return;
+							seenPaths.add(path);
+							dataList.push({
+								download_url: DataUtil.brew.getFileUrl(path),
+								path,
+								name: path.split("/").slice(1).join("/")
+							});
+						});
+				});
+				dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
+					$sel.append($('<option>', {
+						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
+						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
+					}));
+				});
 
 				$sel.val(defaultSel);
 				$sel.change(function () {
@@ -862,8 +864,8 @@ const betteR205etoolsMain = function () {
 				});
 			}
 
-			doPopulate(dropdownId, inputFieldId, defaultSel, homebrewDir);
-			if (addForPlayers) doPopulate(`${dropdownId}-player`, `${inputFieldId}-player`, defaultSel, homebrewDir);
+			doPopulate(dropdownId, inputFieldId);
+			if (addForPlayers) doPopulate(`${dropdownId}-player`, `${inputFieldId}-player`);
 		}
 
 		const $body = $("body");
@@ -904,8 +906,8 @@ const betteR205etoolsMain = function () {
 			});
 			d20plus.updateDifficulty();
 
-			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", "creature");
-			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, "object");
+			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", ["creature"]);
+			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, ["object"]);
 
 			populateAdventuresDropdown();
 
@@ -1017,22 +1019,22 @@ const betteR205etoolsMain = function () {
 			height: 600
 		});
 
-		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
-		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB", "spell");
-		populateDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_DIR, classDataUrls, "", "class");
-		populateDropdown("#button-classes-select-player", "#import-classes-url-player", CLASS_DATA_DIR, classDataUrls, "", "class");
+		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB", ["spell"]);
+		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB", ["spell"]);
+		populateDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
+		populateDropdown("#button-classes-select-player", "#import-classes-url-player", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
 
 		// add class subclasses to the subclasses dropdown(s)
-		populateDropdown("#button-subclasses-select", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", "class");
-		populateDropdown("#button-subclasses-select-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", "class");
+		populateDropdown("#button-subclasses-select", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
+		populateDropdown("#button-subclasses-select-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
 
-		populateBasicDropdown("#button-items-select", "#import-items-url", ITEM_DATA_URL, "item", true);
-		populateBasicDropdown("#button-psionics-select", "#import-psionics-url", PSIONIC_DATA_URL, "psionic", true);
-		populateBasicDropdown("#button-feats-select", "#import-feats-url", FEAT_DATA_URL, "feat", true);
-		populateBasicDropdown("#button-races-select", "#import-races-url", RACE_DATA_URL, "race", true);
-		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", "subclass", true);
-		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, "background", true);
-		populateBasicDropdown("#button-optionalfeatures-select", "#import-optionalfeatures-url", OPT_FEATURE_DATA_URL, "optionalfeature", true);
+		populateBasicDropdown("#button-items-select", "#import-items-url", ITEM_DATA_URL, ["item"], true);
+		populateBasicDropdown("#button-psionics-select", "#import-psionics-url", PSIONIC_DATA_URL, ["psionic"], true);
+		populateBasicDropdown("#button-feats-select", "#import-feats-url", FEAT_DATA_URL, ["feat"], true);
+		populateBasicDropdown("#button-races-select", "#import-races-url", RACE_DATA_URL, ["race"], true);
+		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", ["subclass"], true);
+		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, ["background"], true);
+		populateBasicDropdown("#button-optionalfeatures-select", "#import-optionalfeatures-url", OPT_FEATURE_DATA_URL, ["optionalfeature"], true);
 
 		// bind tokens button
 		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);

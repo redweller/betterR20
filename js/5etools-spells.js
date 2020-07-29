@@ -140,7 +140,7 @@ function d20plusSpells () {
 				"Range": Parser.spRangeToFull(data.range),
 				"School": Parser.spSchoolAbvToFull(data.school),
 				"Source": "5etoolsR20",
-				"Classes": d20plus.importer.getCleanText(Parser.spClassesToFull(data.classes)),
+				"Classes": d20plus.importer.getCleanText(Parser.spClassesToFull(data)),
 				"Category": "Spells",
 				"Duration": Parser.spDurationToFull(data.duration).replace(/Concentration,\s*/gi, ""), // prevent double concentration text
 				"Material": "",
@@ -196,7 +196,7 @@ function d20plusSpells () {
 			notecontents += hLevelRenderStack.join("");
 			r20Data["Higher Spell Slot Desc"] = higherLevels;
 		}
-		notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data.classes)}</p>`;
+		notecontents += `<p><strong>Classes:</strong> ${Parser.spClassesToFull(data)}</p>`;
 		gmnotes = JSON.stringify(r20json);
 		notecontents += `<del class="hidden">${gmnotes}</del>`;
 
