@@ -906,7 +906,7 @@ const betteR205etoolsMain = function () {
 			});
 			d20plus.updateDifficulty();
 
-			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", ["creature"]);
+			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", ["monster"]);
 			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, ["object"]);
 
 			populateAdventuresDropdown();
