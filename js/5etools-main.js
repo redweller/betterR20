@@ -2985,8 +2985,6 @@ const betteR205etoolsMain = function () {
 		DataUtil.loadJSON(url)
 			.then(data => {
 
-				data = JSON.parse(data);
-
 				function isPart (e) {
 					return typeof e === "string" || typeof e === "object" && (e.type !== "entries");
 				}
