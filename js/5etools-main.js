@@ -497,7 +497,7 @@ const betteR205etoolsMain = function () {
 		d20plus.ut.log("Load JSON");
 
 		await Promise.all(d20plus.json.map(async it => {
-			const data = await d20plus.js.pLoadWithRetries(it.name, it.url, true);
+			const data = await DataUtil.loadJSON(it.url);
 
 			if (it.name === "class index") classDataUrls = data;
 			else if (it.name === "spell index") spellDataUrls = data;
