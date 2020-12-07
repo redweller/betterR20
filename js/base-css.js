@@ -930,6 +930,25 @@ function baseCss () {
 				text-overflow: ellipsis;
 				white-space: nowrap; 
 			`
+		},
+		{
+			s: ".flex-row",
+			r: `
+			    display: flex;
+			    float: left;
+				align-items: center;
+			    margin-bottom: 5px;
+			`
+		},
+		{
+			s: ".pagedetails .flex-row input.units,.pagedetails .flex-row input.pixels",
+			r: `
+				width: 20%;
+			    text-align: center;
+			    border: 1px solid;
+			    border-radius: 5px;
+			    margin: 0 2%;
+			`
 		}
 	]);
 
