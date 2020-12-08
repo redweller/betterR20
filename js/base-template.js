@@ -821,14 +821,14 @@ Updated
 			</label>
 			<br>
 			<div id='size_settings'>
-				<div class='row'>
+				<div class='row flex-row'>
 					<span>Width:</span>
 					<input type="number" class="width units" value="<$!this.model.get("width")$>" />
 					<span>x 70 px =</span>
 					<input type="number" class="px_width pixels" value="<$!this.model.get("width")*70$>" />
 					<span>px<sup>*</sup></span>
 				</div>
-				<div class='row'>
+				<div class='row flex-row'>
 					<span>Height:</span>
 					<input type="number" class="height units" value="<$!this.model.get("height")$>" />
 					<span>x 70 px =</span>
@@ -890,8 +890,8 @@ Updated
 						<option class='hexonly' value='hex'>Hex Path</option>
 						<option value='pythagorean'>Euclidean</option>
 					</select>
-					<div style='float: right;'>
-						<a class='tipsy-w showtip pictos' href='https://wiki.roll20.net/Page_Settings#Grid' target='_blank' title='The number of cells per 70 pixels in your grid. Ex .5 = 35 pixels per cell.'>?</a>
+					<div style='float: right;position:relative' class="flex-row">
+						<a style="position: absolute; left: -8%; top: 0;" class='tipsy-w showtip pictos' href='https://wiki.roll20.net/Page_Settings#Grid' target='_blank' title='The number of cells per 70 pixels in your grid. Ex .5 = 35 pixels per cell.'>?</a>
 						<span id='cell_measurement'>Cell Width:</span>
 						<input type="number" class="snappingincrement units" value="<$!this.model.get("snapping_increment")$>" />
 						<span>x 70 px =</span>
