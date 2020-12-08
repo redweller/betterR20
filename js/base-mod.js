@@ -828,8 +828,9 @@ function d20plusMod() {
 			// END MOD
 			gmlayer: []
 			// BEGIN MOD
-			, weather: []
+			, weather: [],
 			// END MOD
+			_save_map_layer: this._save_map_layer
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
 		const a = e && e.tokens_to_render || this._objects;
@@ -844,8 +845,8 @@ function d20plusMod() {
 		for (const [n,a] of r) {
 			switch (a) {
 				case "lighting and fog":
-					d20.dyn_fog.render({
-						map_layer_canvas: this.contextContainer.canvas
+					d20.engine.drawHighlights(this.contextContainer), d20.dyn_fog.render({
+						main_canvas: this.contextContainer.canvas
 					});
 					continue;
 				case "grid":
@@ -903,25 +904,34 @@ function d20plusMod() {
 
 	// shoutouts to Roll20 for making me learn how `yield` works
 	// BEGIN ROLL20 CODE
-	d20plus.mod.layerIteratorGenerator = function*(e) { // e is just an options object
-		yield[this.map, "map"],
-		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]);
-		const t = e && e.grid_before_afow
-			, i = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow
-			, n = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
-		t && !n && (yield[null, "grid"]),
-		!i && window.largefeats && (yield[null, "afow"]),
-		t || n || (yield[null, "grid"]);
+	d20plus.mod.layerIteratorGenerator= function*(e) {
+        yield [this.map, "map"], 
+		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
+		this._save_map_layer = !1),
+		window.is_gm && "walls" === window.currentEditingLayer && (yield [this.walls, "walls"]);
+		
+		
+        const grid_before_afow = e && e.grid_before_afow,
+            adv_fow_enabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow,
+            grid_show = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+			
+			
+        grid_before_afow && !grid_show && (yield [null, "grid"]),
+		!adv_fow_enabled && window.largefeats && (yield [null, "afow"]),
+		grid_before_afow || grid_show || (yield [null, "grid"])
+		
+		
+		
 		// BEGIN MOD
 		yield[this.background, "background"]
 		// END MOD
 		const o = e && e.enable_dynamic_fog;
-		d20.dyn_fog.ready() && o && (yield[null, "lighting and fog"]),
-			yield[this.objects, "objects"],
-			// BEGIN MOD
-			yield[this.foreground, "foreground"],
-			// END MOD
-		window.is_gm && (yield[this.gmlayer, "gmlayer"])
+		d20.dyn_fog.ready() && o && (yield [null, "lighting and fog"]),
+		yield [this.objects, "objects"], 
+		// BEGIN MOD
+		yield[this.foreground, "foreground"],
+		// END MOD
+		window.is_gm && (yield [this.gmlayer, "gmlayer"]);
 		// BEGIN MOD
 		window.is_gm && "weather" === window.currentEditingLayer && (yield[this.weather, "weather"]);
 		// END MOD
