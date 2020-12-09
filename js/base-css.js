@@ -428,45 +428,50 @@ function baseCss () {
 			r: "width: calc(100% - 2px); border: 1px solid black;"
 		},
 		// sidebar fix
-		// {
-		// 	s: `#rightsidebar`,
-		// 	r: `
-		// 	    display: flex;
-		// 	    flex-direction: column;
-		// 	`
-		// },
-		// {
-		// 	s: `#rightsidebar ul.tabmenu`,
-		// 	r: `
-		// 	    padding: 0;
-    	// 		flex-shrink: 0;
-    	// 		position: relative;
-    	// 		top: 0;
-    	// 		width: 100%;
-		// 	`
-		// },
-		// {
-		// 	s: `#rightsidebar .ui-tabs-panel`,
-		// 	r: `
-		// 		height: 100% !important;
-		// 		display: block;
-		// 		top: 0;
-		// 	`
-		// },
-		// {
-		// 	s: `#textchat-input`,
-		// 	r: `
-		// 		position: relative;
-    	// 		flex-shrink: 0;
-		// 	`
-		// },
-		// {
-		// 	s: `#textchat-input textarea`,
-		// 	r: `
-		// 		width: calc(100% - 8px) !important;
-		// 		resize: vertical;
-		// 	`
-		// },
+		/*{
+			s: `#rightsidebar`,
+			r: `
+			    display: flex;
+			    flex-direction: column;
+			`
+		},
+		{
+			s: `#rightsidebar ul.tabmenu`,
+			r: `
+			    padding: 0;
+    			flex-shrink: 0;
+    			position: relative;
+    			top: 0;
+    			width: 100%;
+			`
+		},
+		{
+			s: `#rightsidebar .ui-tabs-panel`,
+			r: `
+				height: 100% !important;
+				display: block;
+				top: 0;
+			`
+		},
+		{
+			s: `#textchat-input`,
+			r: `
+				position: relative;
+    			flex-shrink: 0;
+			`
+		},
+		{
+			s: `#textchat-input textarea`,
+			r: `
+				width: calc(100% - 8px) !important;
+				resize: vertical;
+			`
+		},*/
+		// Missing page toolbar
+		{
+			s: `#page-toolbar`,
+			r: `display: initial;`
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
@@ -747,7 +752,7 @@ function baseCss () {
 		{
 			s: ".anm__wrp-sel-all",
 			r: `
-				align-items: center; 
+				align-items: center;
 				margin-bottom: 5px;
 				display: flex;
 				justify-content: space-between;
@@ -813,13 +818,13 @@ function baseCss () {
 		{
 			s: ".anm-edit__gui-row-name",
 			r: `
-				color: white; 
-				-webkit-text-stroke: 1px #555; 
-				text-stroke: 1px black; 
-				padding: 3px 5px; 
-				border-radius: 3px; 
-				font-size: 16px; 
-				display: inline-block; 
+				color: white;
+				-webkit-text-stroke: 1px #555;
+				text-stroke: 1px black;
+				padding: 3px 5px;
+				border-radius: 3px;
+				font-size: 16px;
+				display: inline-block;
 				min-width: 150px;
 			`
 		},
@@ -928,7 +933,7 @@ function baseCss () {
 				height: 20px;
 				overflow: hidden;
 				text-overflow: ellipsis;
-				white-space: nowrap; 
+				white-space: nowrap;
 			`
 		},
 		{

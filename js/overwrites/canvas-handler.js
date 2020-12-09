@@ -97,7 +97,7 @@ function initCanvasHandlerOverwrite() {
 						type: "polygon"
 					}).fill = $("#path_fillcolor").val(), h.stroke = $("#path_strokecolor").val()
 				}
-				// BEGIN  MOD
+				// BEGIN MOD
 				c = s, u = l;
 
 				if (0 != d20.engine.snapTo && e.shiftKey) {
@@ -262,11 +262,11 @@ function initCanvasHandlerOverwrite() {
 		d20.engine.rightMouseIsDown && g.includes(d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" === d20.engine.mode ? (d20.engine.pan.beginPos = [wrp.scrollLeft(), wrp.scrollTop()], d20.engine.pan.panXY = [ii, nn], d20.engine.pan.panning = !0, $(`#finalcanvas`).css("cursor", "grabbing")) : d20.engine.pan.panning = !1, 2 === e.button && !d20.engine.leftMouseIsDown && d20.engine.measurements[window.currentPlayer.id] && d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.endMeasure(), d20.engine.announceEndMeasure({
 			player: window.currentPlayer.id
 		}))
-		
+
         $(`#finalcanvas`).hasClass("hasfocus") || $(`#finalcanvas`).focus()
 	}
-	
-	
+
+
 	const canvasHandlerMove = function(e) {
 		// BEGIN MOD
 		var cnv = d20.engine.canvas;
