@@ -137,31 +137,37 @@
 				{
 					"name": "Eye Ray",
 					"entries": [
-						"Belashyrra shoots one of the following magical eye rays of its choice, targeting one creature it can see within 120 feet of it:"
-					]
-				},
-				{
-					"name": "1",
-					"entries": [
-						"Psyche-Reconstruction Ray. The target must make a {@dc 22} Wisdom saving throw, taking 49 ({@damage 9d10}) psychic damage on a failed save, or half as much damage on a successful one. If this damage reduces a creature to 0 hit points, it dies and transforms into a spectator under Belashyrra's control and acts immediately after Belashyrra in the initiative order. The target can't be returned to its original form by any means short of a wish spell."
-					]
-				},
-				{
-					"name": "2",
-					"entries": [
-						"Domination Ray. The target must succeed on a {@dc 22} Wisdom saving throw or be {@condition charmed} by Belashyrra for 1 minute or until the target takes damage. Belashyrra can issue telepathic commands to the {@condition charmed} creature (no action required), which it does its best to obey."
-					]
-				},
-				{
-					"name": "3",
-					"entries": [
-						"Mind-Weakening Ray. The target must succeed on a {@dc 22} Intelligence saving throw or take 36 ({@damage 8d8}) psychic damage and be unable to cast spells or activate magic items for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
-					]
-				},
-				{
-					"name": "4",
-					"entries": [
-						"Blinding Ray. The target and each creature within 10 feet of it must succeed on a {@dc 22} Constitution saving throw or take 19 ({@damage 3d12}) radiant damage and be {@condition blinded} for 1 minute. Until this blindness ends, Belyshyrra can see through the {@condition blinded} creature's eyes. The {@condition blinded} creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+						"Belashyrra shoots one of the following magical eye rays of its choice, targeting one creature it can see within 120 feet of it:",
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "1. Psyche-Reconstruction Ray.",
+									"style": "italic",
+									"entry": "The target must make a {@dc 22} Wisdom saving throw, taking 49 ({@damage 9d10}) psychic damage on a failed save, or half as much damage on a successful one. If this damage reduces a creature to 0 hit points, it dies and transforms into a spectator under Belashyrra's control and acts immediately after Belashyrra in the initiative order. The target can't be returned to its original form by any means short of a wish spell."
+								},
+								{
+									"type": "item",
+									"name": "2. Domination Ray.",
+									"style": "italic",
+									"entry": "The target must succeed on a {@dc 22} Wisdom saving throw or be {@condition charmed} by Belashyrra for 1 minute or until the target takes damage. Belashyrra can issue telepathic commands to the {@condition charmed} creature (no action required), which it does its best to obey."
+								},
+								{
+									"type": "item",
+									"name": "3. Mind-Weakening Ray.",
+									"style": "italic",
+									"entry": "The target must succeed on a {@dc 22} Intelligence saving throw or take 36 ({@damage 8d8}) psychic damage and be unable to cast spells or activate magic items for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "4. Blinding Ray.",
+									"style": "italic",
+									"entry": "The target and each creature within 10 feet of it must succeed on a {@dc 22} Constitution saving throw or take 19 ({@damage 3d12}) radiant damage and be {@condition blinded} for 1 minute. Until this blindness ends, Belyshyrra can see through the {@condition blinded} creature's eyes. The {@condition blinded} creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								}
+							]
+						}
 					]
 				}
 			],
@@ -246,7 +252,7 @@
 				{
 					"ac": 20,
 					"from": [
-						"bonecraft armour"
+						"bonecraft armor"
 					]
 				}
 			],
@@ -727,7 +733,7 @@
 				{
 					"ac": 15,
 					"from": [
-						"natural armour",
+						"natural armor",
 						"{@item shield|phb}"
 					]
 				}
@@ -1440,9 +1446,6 @@
 			"page": 62,
 			"size": "T",
 			"type": "construct",
-			"alignment": [
-				"N"
-			],
 			"ac": [
 				{
 					"ac": 13,
@@ -1452,7 +1455,7 @@
 				}
 			],
 			"hp": {
-				"special": "equal the homunculus's Constitution modifier + your Intelligence modifier + your level in this class"
+				"special": "1 + your Intelligence modifier + your artificer level (the homunculus has a number of Hit Dice [d4s] equal to your artificer level)"
 			},
 			"speed": {
 				"walk": 20,
@@ -1465,16 +1468,16 @@
 			"wis": 10,
 			"cha": 7,
 			"save": {
-				"dex": "+4"
+				"dex": "+2 plus PB"
 			},
 			"skill": {
-				"perception": "+4",
-				"stealth": "+4"
+				"perception": "+0 plus PB × 2",
+				"stealth": "+2 plus PB"
 			},
 			"senses": [
 				"darkvision 60 ft."
 			],
-			"passive": 14,
+			"passive": "10 + (PB × 2)",
 			"immune": [
 				"poison"
 			],
@@ -1485,6 +1488,7 @@
 			"languages": [
 				"understands the languages you speak"
 			],
+			"pbNote": "equals your bonus",
 			"trait": [
 				{
 					"name": "Evasion",
@@ -1504,7 +1508,7 @@
 				{
 					"name": "Force Strike",
 					"entries": [
-						"{@atk rw} {@hit 4} to hit, range 30 ft., one target you can see. {@h}{@damage 1d4 + 2} force damage."
+						"{@atk rw} {@hitYourSpellAttack} to hit, range 30 ft., one target you can see. {@h}{@damage 1d4 + PB} force damage."
 					]
 				}
 			],
@@ -1516,6 +1520,7 @@
 					]
 				}
 			],
+			"hasToken": true,
 			"senseTags": [
 				"D"
 			],
@@ -1638,31 +1643,49 @@
 					"entries": [
 						"The Inspired are vessels for quori spirits, allowing the quori to manifest a portion of their power while the vessel is possessed. An Inspired can gain benefits depending on the type of quori possessing it. The quori also gains access to the Inspired's knowledge and features.",
 						{
-							"type": "entries",
-							"name": "Suggestion (3/Day)",
+							"type": "variantInner",
+							"name": "Hashalaq",
 							"entries": [
-								"The Inspired can cast the {@spell suggestion} spell (spell save {@dc 13}), requiring no material components."
+								{
+									"type": "entries",
+									"name": "Suggestion (3/Day)",
+									"entries": [
+										"The Inspired can cast the {@spell suggestion} spell (spell save {@dc 13}), requiring no material components."
+									]
+								}
 							]
 						},
 						{
-							"type": "entries",
-							"name": "All Around Vision",
+							"type": "variantInner",
+							"name": "Kalaraq",
 							"entries": [
-								"The Inspired can't be surprised."
+								{
+									"type": "entries",
+									"name": "All Around Vision",
+									"entries": [
+										"The Inspired can't be surprised."
+									]
+								},
+								{
+									"type": "entries",
+									"name": "Arcane Eye (3/Day)",
+									"entries": [
+										"The Inspired can cast the {@spell arcane eye} spell, requiring no material components."
+									]
+								}
 							]
 						},
 						{
-							"type": "entries",
-							"name": "Arcane Eye (3/Day)",
+							"type": "variantInner",
+							"name": "Tsucora",
 							"entries": [
-								"The Inspired can cast the {@spell arcane eye} spell, requiring no material components."
-							]
-						},
-						{
-							"type": "entries",
-							"name": "Fear (1/Day)",
-							"entries": [
-								"The Inspired can cast the {@spell fear} spell (spell save {@dc 13}), requiring no material components."
+								{
+									"type": "entries",
+									"name": "Fear (1/Day)",
+									"entries": [
+										"The Inspired can cast the {@spell fear} spell (spell save {@dc 13}), requiring no material components."
+									]
+								}
 							]
 						}
 					]
@@ -1720,7 +1743,7 @@
 			"wis": 11,
 			"cha": 7,
 			"skill": {
-				"perception": "+3",
+				"perception": "+4",
 				"stealth": "+4"
 			},
 			"senses": [
@@ -1842,7 +1865,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -2238,7 +2262,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -2501,7 +2526,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2588,7 +2614,7 @@
 			},
 			"str": 10,
 			"dex": 15,
-			"con": 14,
+			"con": 20,
 			"int": 3,
 			"wis": 11,
 			"cha": 6,
@@ -2603,7 +2629,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2715,7 +2742,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2915,7 +2943,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"vulnerable": [
@@ -2923,7 +2952,8 @@
 					"vulnerable": [
 						"piercing"
 					],
-					"note": "from magic weapons wielded by good creatures"
+					"note": "from magic weapons wielded by good creatures",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -3079,7 +3109,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -3250,7 +3281,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -3488,9 +3520,6 @@
 			"page": 61,
 			"size": "M",
 			"type": "construct",
-			"alignment": [
-				"N"
-			],
 			"ac": [
 				{
 					"ac": 15,
@@ -3500,7 +3529,7 @@
 				}
 			],
 			"hp": {
-				"special": "equal the steel defender's Constitution modifier + your Intelligence modifier + five times your level in this class"
+				"special": "2 + your Intelligence modifier + five times your artificer level (the defender has a number of Hit Dice [ d8s] equal to your artificer level)"
 			},
 			"speed": {
 				"walk": 40
@@ -3512,17 +3541,17 @@
 			"wis": 10,
 			"cha": 6,
 			"save": {
-				"dex": "+3",
-				"con": "+4"
+				"dex": "+1 plus PB",
+				"con": "+2 plus PB"
 			},
 			"skill": {
-				"athletics": "+4",
-				"perception": "+4"
+				"athletics": "+2 plus PB",
+				"perception": "+0 plus PB × 2"
 			},
 			"senses": [
 				"darkvision 60 ft."
 			],
-			"passive": 14,
+			"passive": "10 + (PB × 2)",
 			"immune": [
 				"poison"
 			],
@@ -3534,13 +3563,8 @@
 			"languages": [
 				"understands the languages you speak"
 			],
+			"pbNote": "equals your bonus",
 			"trait": [
-				{
-					"name": "Might of the Master",
-					"entries": [
-						"The following numbers increase by 1 when your proficiency bonus increases by 1: the defender's skill and saving throw bonuses (above), the bonuses to hit and damage of its rend attack, and the number of hit points restored by its Repair action (below)."
-					]
-				},
 				{
 					"name": "Vigilant",
 					"entries": [
@@ -3553,13 +3577,13 @@
 				{
 					"name": "Force-Empowered Rend",
 					"entries": [
-						"{@atk mw} {@hit 4} to hit, reach 5 ft., one target you can see. {@h}{@damage 1d8 + 2} force damage."
+						"{@atk mw} {@hitYourSpellAttack} to hit, reach 5 ft., one target you can see. {@h}{@damage 1d8 + PB} force damage."
 					]
 				},
 				{
 					"name": "Repair (3/Day)",
 					"entries": [
-						"The magical mechanisms inside the defender restore {@dice 2d8 + 2} hit points to itself or to one construct or object within 5 feet of it."
+						"The magical mechanisms inside the defender restore {@dice 2d8 + PB} hit points to itself or to one construct or object within 5 feet of it."
 					]
 				}
 			],
@@ -3646,7 +3670,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -4153,6 +4178,9 @@
 				"O",
 				"S"
 			],
+			"spellcastingTags": [
+				"CA"
+			],
 			"miscTags": [
 				"MW",
 				"RCH",
@@ -4254,7 +4282,7 @@
 				{
 					"name": "Stinger",
 					"entries": [
-						"{@atk mw} {@hit 6} to hit, reach 10 ft., one creature. {@h}8 ({@damage 1d10 + 3}) piercing damage plus 10 ({@damage 3d10}) psychic damage, and the target must succeed on a {@dc 14} Wisdom saving throw or be {@condition frightened} of the quori for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+						"{@atk mw} {@hit 6} to hit, reach 10 ft., one creature. {@h}8 ({@damage 1d10 + 3}) piercing damage plus 10 ({@damage 3d6}) psychic damage, and the target must succeed on a {@dc 14} Wisdom saving throw or be {@condition frightened} of the quori for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 					]
 				},
 				{
@@ -4576,7 +4604,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -4918,7 +4947,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -5298,7 +5328,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"vulnerable": [
@@ -5306,7 +5337,8 @@
 					"vulnerable": [
 						"piercing"
 					],
-					"note": "from magic weapons wielded by good creatures"
+					"note": "from magic weapons wielded by good creatures",
+					"cond": true
 				}
 			],
 			"languages": [

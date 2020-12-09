@@ -62,7 +62,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -147,7 +148,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -342,7 +343,7 @@
 			"savingThrow": [
 				"dexterity"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength",
 				"dexterity"
 			],
@@ -431,7 +432,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -509,7 +510,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -584,11 +585,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -673,6 +676,9 @@
 					]
 				}
 			],
+			"miscTags": [
+				"MAC"
+			],
 			"areaTags": [
 				"ST"
 			],
@@ -690,7 +696,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -936,18 +943,6 @@
 					{
 						"name": "Wizard",
 						"source": "PHB"
-					}
-				],
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
 					}
 				]
 			}
@@ -1210,7 +1205,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -1265,7 +1260,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -1469,11 +1465,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Paladin",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -1961,7 +1959,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -2106,18 +2104,6 @@
 						"name": "Wizard",
 						"source": "PHB"
 					}
-				],
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
-					}
 				]
 			}
 		},
@@ -2232,7 +2218,8 @@
 				"You teleport up to 60 feet to an unoccupied space you can see. On each of your turns before the spell ends, you can use a bonus action to teleport in this way again."
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"classes": {
 				"fromClassList": [
@@ -2376,7 +2363,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -2465,7 +2452,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -2542,6 +2529,9 @@
 			"savingThrow": [
 				"constitution"
 			],
+			"miscTags": [
+				"THP"
+			],
 			"classes": {
 				"fromClassList": [
 					{
@@ -2569,7 +2559,7 @@
 					"page": 107
 				},
 				{
-					"source": "ERLW",
+					"source": "TCE",
 					"page": 50
 				}
 			],
@@ -2636,7 +2626,7 @@
 			"races": [
 				{
 					"name": "Half-Elf (Mark of Storm)",
-					"source": "ERLW",
+					"source": "TCE",
 					"baseName": "Half-Elf",
 					"baseSource": "PHB"
 				}
@@ -2899,7 +2889,7 @@
 				"wisdom",
 				"intelligence"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"miscTags": [
@@ -2985,7 +2975,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -3044,8 +3035,8 @@
 				}
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -3588,11 +3579,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Paladin",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -3786,7 +3779,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -3836,7 +3829,8 @@
 				"wisdom"
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"THP"
 			],
 			"areaTags": [
 				"MT"
@@ -3859,7 +3853,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -3919,7 +3914,7 @@
 			"savingThrow": [
 				"strength"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"miscTags": [
@@ -4079,7 +4074,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -4217,7 +4213,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -4336,8 +4333,9 @@
 				"constitution"
 			],
 			"miscTags": [
+				"SGT",
 				"SMN",
-				"SGT"
+				"THP"
 			],
 			"areaTags": [
 				"ST"
@@ -4414,7 +4412,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -4480,7 +4479,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -4702,7 +4702,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -4741,7 +4741,8 @@
 				"wisdom"
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"areaTags": [
 				"MT"
@@ -4764,7 +4765,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -5104,13 +5106,14 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -5182,7 +5185,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -5234,7 +5237,7 @@
 			"savingThrow": [
 				"dexterity"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"areaTags": [
@@ -5260,7 +5263,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -5458,7 +5461,8 @@
 				"M"
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"areaTags": [
 				"MT"
@@ -5609,8 +5613,8 @@
 				"charisma"
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -5704,7 +5708,7 @@
 						]
 					]
 				},
-				"The DM chooses the demons, such as manes or dretches, and you choose the unoccupied spaces you can see within range where they appear. A summoned demon disappears when it drops to 0 hit points or when the spell ends.",
+				"The DM chooses the demons, such as {@creature manes} or {@creature dretch||dretches}, and you choose the unoccupied spaces you can see within range where they appear. A summoned demon disappears when it drops to 0 hit points or when the spell ends.",
 				"The demons are hostile to all creatures, including you. Roll initiative for the summoned demons as a group, which has its own turns. The demons pursue and attack the nearest non-demons to the best of their ability.",
 				"As part of casting the spell, you can form a circle on the ground with the blood used as a material component. The circle is large enough to encompass your space. While the spell lasts, the summoned demons can't cross the circle or harm it, and they can't target anyone within it. Using the material component in this manner consumes it when the spell ends."
 			],
@@ -5718,8 +5722,8 @@
 				}
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -5847,8 +5851,8 @@
 				"charisma"
 			],
 			"miscTags": [
-				"PRM",
 				"HL",
+				"PRM",
 				"SGT"
 			],
 			"classes": {
@@ -5917,6 +5921,9 @@
 			"savingThrow": [
 				"constitution"
 			],
+			"miscTags": [
+				"THP"
+			],
 			"classes": {
 				"fromClassList": [
 					{
@@ -5927,7 +5934,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -5979,7 +5987,8 @@
 				"constitution"
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"areaTags": [
 				"S"
@@ -6002,7 +6011,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -6093,7 +6103,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -6225,13 +6235,14 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -6389,7 +6400,7 @@
 				"strength",
 				"dexterity"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"miscTags": [
@@ -6414,7 +6425,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -6578,7 +6589,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -6645,7 +6657,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -6934,7 +6947,7 @@
 				"dexterity",
 				"strength"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength",
 				"dexterity"
 			],
@@ -7103,7 +7116,7 @@
 				"dexterity",
 				"strength"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"miscTags": [

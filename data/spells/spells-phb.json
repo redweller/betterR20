@@ -72,13 +72,14 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -158,7 +159,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -191,16 +192,48 @@
 							"name": "Unity (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -288,7 +321,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -310,6 +343,26 @@
 						"subclass": {
 							"name": "Watchers (UA)",
 							"source": "UA2020SubclassesPt1"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
 						}
 					}
 				]
@@ -405,7 +458,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -432,11 +485,21 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Moon",
+							"source": "PHB"
 						}
 					}
 				]
@@ -453,6 +516,12 @@
 				{
 					"name": "Simic Scientist",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Master of Myriad Forms",
+					"source": "PHB"
 				}
 			]
 		},
@@ -799,14 +868,15 @@
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -959,7 +1029,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -1042,7 +1112,7 @@
 				"If you move so that an affected creature is forced to pass through the barrier, the spell ends."
 			],
 			"areaTags": [
-				"C"
+				"S"
 			],
 			"classes": {
 				"fromClassList": [
@@ -1090,6 +1160,16 @@
 						"subclass": {
 							"name": "Grave",
 							"source": "XGE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
 						}
 					}
 				]
@@ -1291,7 +1371,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -1352,7 +1438,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -1405,6 +1491,36 @@
 							"name": "Clockwork Soul (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -1426,6 +1542,12 @@
 				{
 					"name": "Dimir Operative",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Visions of Distant Realms",
+					"source": "PHB"
 				}
 			]
 		},
@@ -1468,7 +1590,8 @@
 				"Any creature or object entering the portal exits from the other portal as if the two were adjacent to each other; passing through a portal from the nonportal side has no effect. The mist that fills each portal is opaque and blocks vision through it. On your turn, you can rotate the rings as a bonus action so that the active side faces in a different direction."
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"classes": {
 				"fromClassList": [
@@ -1543,7 +1666,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -1620,6 +1743,9 @@
 			],
 			"damageInflict": [
 				"cold"
+			],
+			"miscTags": [
+				"THP"
 			],
 			"classes": {
 				"fromClassList": [
@@ -1752,12 +1878,12 @@
 				"fromSubclass": [
 					{
 						"class": {
-							"name": "Cleric",
+							"name": "Sorcerer",
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
+							"name": "Aberrant Mind (UA)",
+							"source": "UASorcererAndWarlock"
 						}
 					},
 					{
@@ -1766,8 +1892,8 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Aberrant Mind (UA)",
-							"source": "UASorcererAndWarlock"
+							"name": "Aberrant Mind",
+							"source": "TCE"
 						}
 					}
 				]
@@ -1917,16 +2043,6 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
-						}
-					},
-					{
-						"class": {
 							"name": "Barbarian",
 							"source": "PHB"
 						},
@@ -1949,11 +2065,23 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Wizard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Wizard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -2049,12 +2177,48 @@
 							"name": "Wildfire (UA)",
 							"source": "UAClericDruidWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Cleric",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -2141,11 +2305,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -2177,12 +2341,38 @@
 							"name": "Watchers (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Cleric",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -2283,22 +2473,44 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Cleric",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -2371,7 +2583,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -2517,9 +2730,25 @@
 							"name": "Onomancy (UA)",
 							"source": "UAClericDruidWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
 					}
 				]
-			}
+			},
+			"eldritchInvocations": [
+				{
+					"name": "Thief of Five Fates",
+					"source": "PHB"
+				}
+			]
 		},
 		{
 			"name": "Banishing Smite",
@@ -2592,11 +2821,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					}
 				]
@@ -2816,6 +3045,16 @@
 							"name": "Watchers (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
 					}
 				]
 			}
@@ -2857,6 +3096,9 @@
 			"entries": [
 				"You touch a willing creature. Until the spell ends, the target's skin has a rough, bark-like appearance, and the target's AC can't be less than 16, regardless of what kind of armor it is wearing."
 			],
+			"miscTags": [
+				"MAC"
+			],
 			"areaTags": [
 				"ST"
 			],
@@ -2891,6 +3133,16 @@
 							"name": "Land",
 							"source": "PHB",
 							"subSubclass": "Forest"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -2932,9 +3184,6 @@
 			],
 			"entries": [
 				"This spell bestows hope and vitality. Choose any number of creatures within range. For the duration, each target has advantage on Wisdom saving throws and death saving throws, and regains the maximum number of hit points possible from any healing."
-			],
-			"miscTags": [
-				"HL"
 			],
 			"areaTags": [
 				"MT"
@@ -2983,16 +3232,6 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
 							"name": "Unity (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
@@ -3005,6 +3244,16 @@
 						"subclass": {
 							"name": "Love (UA)",
 							"source": "UA2020SubclassesPt2"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
 						}
 					}
 				]
@@ -3240,6 +3489,12 @@
 					"name": "Orzhov Representative",
 					"source": "GGR"
 				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Sign of Ill Omen",
+					"source": "PHB"
+				}
 			]
 		},
 		{
@@ -3279,7 +3534,7 @@
 			],
 			"entries": [
 				"You create a Large hand of shimmering, translucent force in an unoccupied space that you can see within range. The hand lasts for the spell's duration, and it moves at your command, mimicking the movements of your own hand.",
-				"The hand is an object that has AC 20 and hit points equal to your hit point maximum. If it drops to 0 hit points, the spell ends. It has a Strength of 26 (+8) and a Dexterity of 10 (+0). The hand doesn't fill its space.",
+				"The hand is an object that has AC 20 and hit points equal to your hit point maximum. If it drops to 0 hit points, the spell ends. It has a Strength of 26 ({@d20 8}) and a Dexterity of 10 ({@d20 0}). The hand doesn't fill its space.",
 				"When you cast the spell and as a bonus action on your subsequent turns, you can move the hand up to 60 feet and then cause one of the following effects with it.",
 				{
 					"type": "entries",
@@ -3326,7 +3581,7 @@
 			"spellAttack": [
 				"M"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"miscTags": [
@@ -3344,7 +3599,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -3357,6 +3612,23 @@
 							"name": "Noble Genie (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
+						}
+					}
+				],
+				"fromClassListVariant": [
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -3728,16 +4000,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -3763,17 +4025,27 @@
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -3861,7 +4133,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -3981,16 +4254,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Druid",
 							"source": "PHB"
 						},
@@ -4006,7 +4269,17 @@
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
 						}
 					}
 				]
@@ -4071,7 +4344,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -4181,7 +4454,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -4215,6 +4488,36 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Marid"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -4318,18 +4621,19 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -4472,6 +4776,36 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Efreeti"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -4599,12 +4933,22 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
+							"name": "Druid",
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
 						}
 					}
 				]
@@ -4701,6 +5045,16 @@
 						"subclass": {
 							"name": "Aberrant Mind (UA)",
 							"source": "UASorcererAndWarlock"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
 						}
 					}
 				]
@@ -4906,16 +5260,6 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
 							"name": "Love (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
@@ -4938,6 +5282,36 @@
 						"subclass": {
 							"name": "Fey Wanderer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
 						}
 					}
 				]
@@ -5302,6 +5676,16 @@
 						"subclass": {
 							"name": "Twilight (UA)",
 							"source": "UAClericDruidWizard"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
 						}
 					}
 				]
@@ -5669,26 +6053,6 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -5704,7 +6068,7 @@
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -5720,11 +6084,31 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -5803,7 +6187,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -5999,14 +6389,30 @@
 						},
 						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Bard",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Glamour",
+							"source": "XGE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -6107,7 +6513,7 @@
 						},
 						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -6117,7 +6523,17 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
 						}
 					}
 				]
@@ -6219,16 +6635,6 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
-						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
 							"name": "Lurker in the Deep (UA)",
 							"source": "UASorcererAndWarlock"
 						}
@@ -6240,6 +6646,16 @@
 						},
 						"subclass": {
 							"name": "Totem Warrior",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
 							"source": "PHB"
 						}
 					}
@@ -6528,18 +6944,8 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -6559,7 +6965,17 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
 						}
 					}
 				]
@@ -6568,6 +6984,12 @@
 				{
 					"name": "Azorius Functionary",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Bewitching Whispers",
+					"source": "PHB"
 				}
 			]
 		},
@@ -6678,16 +7100,6 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -6709,11 +7121,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -6726,12 +7138,58 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Marid"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -6921,7 +7379,7 @@
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -6948,6 +7406,12 @@
 				{
 					"name": "Rakdos Cultist",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Dreadful Word",
+					"source": "PHB"
 				}
 			]
 		},
@@ -7010,8 +7474,8 @@
 				}
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -7111,11 +7575,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					}
 				]
@@ -7184,8 +7648,8 @@
 				}
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -7271,6 +7735,26 @@
 							"source": "PHB",
 							"subSubclass": "Coast"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
+						}
 					}
 				]
 			},
@@ -7286,6 +7770,12 @@
 				{
 					"name": "Izzet Engineer",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Minions of Chaos",
+					"source": "PHB"
 				}
 			]
 		},
@@ -7339,8 +7829,8 @@
 				}
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -7414,8 +7904,8 @@
 				}
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -7426,6 +7916,18 @@
 					{
 						"name": "Wizard",
 						"source": "PHB"
+					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
+						}
 					}
 				]
 			},
@@ -7492,6 +7994,18 @@
 						"name": "Ranger",
 						"source": "PHB"
 					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
+						}
+					}
 				]
 			}
 		},
@@ -7555,8 +8069,8 @@
 				}
 			],
 			"miscTags": [
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -7629,7 +8143,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -7761,22 +8276,12 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Druid",
 							"source": "PHB"
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -7787,6 +8292,16 @@
 						"subclass": {
 							"name": "Spores (UA)",
 							"source": "UAThreeSubclasses"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
 						}
 					}
 				]
@@ -7901,13 +8416,19 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -7996,7 +8517,7 @@
 			"savingThrow": [
 				"strength"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"areaTags": [
@@ -8045,16 +8566,6 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
-						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
 							"name": "Lurker in the Deep (UA)",
 							"source": "UASorcererAndWarlock"
 						}
@@ -8068,6 +8579,46 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Marid"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -8404,6 +8955,16 @@
 							"name": "Watchers (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -8466,7 +9027,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -8509,6 +9070,26 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
 						}
 					}
 				]
@@ -8602,8 +9183,8 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
+							"name": "Lurker in the Deep (UA)",
+							"source": "UASorcererAndWarlock"
 						}
 					},
 					{
@@ -8612,8 +9193,8 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Lurker in the Deep (UA)",
-							"source": "UASorcererAndWarlock"
+							"name": "Fathomless",
+							"source": "TCE"
 						}
 					}
 				]
@@ -8795,7 +9376,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -8837,6 +9418,16 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
 						}
 					}
 				]
@@ -9109,7 +9700,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -9151,6 +9742,16 @@
 						"subclass": {
 							"name": "Divine Soul",
 							"source": "XGE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
 						}
 					}
 				]
@@ -9229,7 +9830,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -9341,32 +9942,32 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Cleric",
 							"source": "PHB"
 						},
 						"subclass": {
 							"name": "Twilight (UA)",
 							"source": "UAClericDruidWizard"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Shadow",
+							"source": "XGE"
 						}
 					}
 				]
@@ -9513,7 +10114,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -9632,6 +10233,16 @@
 						"subclass": {
 							"name": "Celestial",
 							"source": "XGE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -9772,18 +10383,29 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -9932,7 +10554,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -10029,16 +10657,6 @@
 							"name": "Zeal (PSA)",
 							"source": "PSA"
 						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
 					}
 				]
 			},
@@ -10106,6 +10724,16 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
 						}
 					}
 				]
@@ -10195,7 +10823,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -10207,6 +10835,16 @@
 						"subclass": {
 							"name": "Arcana",
 							"source": "SCAG"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
 						}
 					}
 				]
@@ -10221,6 +10859,12 @@
 					"source": "ERLW",
 					"baseName": "Half-Elf",
 					"baseSource": "PHB"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Eldritch Sight",
+					"source": "PHB"
 				}
 			]
 		},
@@ -10344,7 +10988,7 @@
 			"savingThrow": [
 				"wisdom"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"miscTags": [
@@ -10394,6 +11038,16 @@
 						"subclass": {
 							"name": "Aberrant Mind (UA)",
 							"source": "UASorcererAndWarlock"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
 						}
 					}
 				]
@@ -10468,7 +11122,8 @@
 				"force"
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"classes": {
 				"fromClassList": [
@@ -10522,12 +11177,32 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
+							"name": "Ranger",
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
 						}
 					}
 				]
@@ -10578,7 +11253,7 @@
 				"The changes wrought by this spell fail to hold up to physical inspection. For example, if you use this spell to add a hat to your outfit, objects pass through the hat, and anyone who touches it would feel nothing or would feel your head and hair. If you use this spell to appear thinner than you are, the hand of someone who reaches out to touch you would bump into you while it was seemingly still in midair.",
 				"To discern that you are disguised, a creature can use its action to inspect your appearance and must succeed on an Intelligence ({@skill Investigation}) check against your spell save DC."
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"miscTags": [
@@ -10608,7 +11283,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -10714,6 +11389,12 @@
 				{
 					"name": "Dimir Operative",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Mask of Many Faces",
+					"source": "PHB"
 				}
 			]
 		},
@@ -10941,7 +11622,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -10993,6 +11674,46 @@
 						"subclass": {
 							"name": "Fey Wanderer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
 						}
 					}
 				]
@@ -11083,6 +11804,16 @@
 							"name": "Aberrant Mind (UA)",
 							"source": "UASorcererAndWarlock"
 						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -11163,16 +11894,38 @@
 							"source": "PHB",
 							"subSubclass": "Grassland"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Wizard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Wizard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -11488,7 +12241,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -11772,18 +12531,8 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -11943,6 +12692,16 @@
 							"name": "Twilight (UA)",
 							"source": "UAClericDruidWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -12093,7 +12852,7 @@
 				"constitution",
 				"dexterity"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"miscTags": [
@@ -12237,7 +12996,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -12283,16 +13042,6 @@
 					},
 					{
 						"class": {
-							"name": "Sorcerer",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Stone (UA)",
-							"source": "UASorcerer"
-						}
-					},
-					{
-						"class": {
 							"name": "Cleric",
 							"source": "PHB"
 						},
@@ -12305,7 +13054,18 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -12412,6 +13172,9 @@
 					]
 				}
 			],
+			"miscTags": [
+				"THP"
+			],
 			"areaTags": [
 				"ST"
 			],
@@ -12443,7 +13206,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -12494,18 +13257,40 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Wizard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Wizard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -12598,7 +13383,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -12615,16 +13400,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Warlock",
 							"source": "PHB"
 						},
@@ -12637,11 +13412,23 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -12719,7 +13506,7 @@
 			"savingThrow": [
 				"strength"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"classes": {
@@ -12798,7 +13585,7 @@
 			"savingThrow": [
 				"strength"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"areaTags": [
@@ -12847,7 +13634,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -12921,18 +13714,18 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
+							"name": "Love (UA)",
+							"source": "UA2020SubclassesPt2"
 						}
 					},
 					{
 						"class": {
-							"name": "Cleric",
+							"name": "Paladin",
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Love (UA)",
-							"source": "UA2020SubclassesPt2"
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
 						}
 					}
 				]
@@ -13085,7 +13878,7 @@
 			"savingThrow": [
 				"dexterity"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength",
 				"dexterity"
 			],
@@ -13115,26 +13908,6 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Sorcerer",
 							"source": "PHB"
 						},
@@ -13151,6 +13924,16 @@
 						"subclass": {
 							"name": "Lurker in the Deep (UA)",
 							"source": "UASorcererAndWarlock"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
 						}
 					}
 				]
@@ -13216,7 +13999,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -13228,6 +14011,16 @@
 						"subclass": {
 							"name": "Treachery (UA)",
 							"source": "UAPaladin"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
 						}
 					}
 				]
@@ -13392,7 +14185,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -13486,7 +14279,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -13508,16 +14301,6 @@
 						"subclass": {
 							"name": "Archfey",
 							"source": "PHB"
-						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
 						}
 					},
 					{
@@ -13548,6 +14331,46 @@
 						"subclass": {
 							"name": "Swarmkeeper (UA)",
 							"source": "UAFighterRangerRogue"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
 						}
 					}
 				]
@@ -13624,6 +14447,9 @@
 					]
 				}
 			],
+			"miscTags": [
+				"THP"
+			],
 			"classes": {
 				"fromClassList": [
 					{
@@ -13644,7 +14470,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -13697,9 +14523,25 @@
 							"name": "Grave",
 							"source": "XGE"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
 					}
 				]
-			}
+			},
+			"eldritchInvocations": [
+				{
+					"name": "Fiendish Vigor",
+					"source": "PHB"
+				}
+			]
 		},
 		{
 			"name": "Fear",
@@ -13818,26 +14660,6 @@
 							"name": "Gloom Stalker",
 							"source": "XGE"
 						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
 					}
 				]
 			},
@@ -13908,7 +14730,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -14101,6 +14923,16 @@
 							"name": "Raven Queen (UA)",
 							"source": "UAWarlockAndWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
 					}
 				]
 			}
@@ -14154,8 +14986,8 @@
 			],
 			"miscTags": [
 				"PRM",
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"classes": {
 				"fromClassList": [
@@ -14302,7 +15134,7 @@
 				}
 			],
 			"entries": [
-				"You sense the presence of any trap within range that is within line of sight. A trap, for the purpose of this spell, includes anything that would inflict a sudden or unexpected effect you consider harmful or undesirable, which was specifically intended as such by its creator. Thus, the spell would sense an area affected by the alarm spell, a glyph of warding, or a mechanical pit trap, but it would not reveal a natural weakness in the floor, an unstable ceiling, or a hidden sinkhole.",
+				"You sense the presence of any trap within range that is within line of sight. A trap, for the purpose of this spell, includes anything that would inflict a sudden or unexpected effect you consider harmful or undesirable, which was specifically intended as such by its creator. Thus, the spell would sense an area affected by the {@spell alarm} spell, a {@spell glyph of warding}, or a mechanical pit trap, but it would not reveal a natural weakness in the floor, an unstable ceiling, or a hidden sinkhole.",
 				"This spell merely reveals that a trap is present. You don't learn the location of each trap, but you do learn the general nature of the danger posed by a trap you sense."
 			],
 			"classes": {
@@ -14382,9 +15214,9 @@
 				"constitution"
 			],
 			"miscTags": [
-				"SMN",
 				"PRM",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"areaTags": [
 				"ST"
@@ -14476,7 +15308,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -14613,17 +15445,17 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
@@ -14640,16 +15472,68 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Efreeti"
 						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -14809,16 +15693,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -14840,11 +15714,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -14857,9 +15731,35 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Efreeti"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
 					}
 				]
-			}
+			},
+			"eldritchInvocations": [
+				{
+					"name": "Kiss of Mephistopheles",
+					"source": "UAWarlockAndWizard"
+				}
+			]
 		},
 		{
 			"name": "Flame Blade",
@@ -14928,7 +15828,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -15109,14 +16015,45 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Paladin",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -15251,18 +16188,34 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -15322,8 +16275,8 @@
 				"constitution"
 			],
 			"miscTags": [
-				"SGT",
-				"PRM"
+				"PRM",
+				"SGT"
 			],
 			"areaTags": [
 				"ST"
@@ -15342,11 +16295,23 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -15424,7 +16389,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -15538,6 +16503,36 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Marid"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -15746,7 +16741,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -15819,7 +16815,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -15915,7 +16911,37 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
 						}
 					}
 				]
@@ -15936,6 +16962,12 @@
 				{
 					"name": "Simic Scientist",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Trickster's Escape",
+					"source": "XGE"
 				}
 			]
 		},
@@ -16152,7 +17184,7 @@
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -16178,11 +17210,51 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
 						}
 					}
 				]
@@ -16263,7 +17335,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Warlock",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -16451,7 +17529,7 @@
 						},
 						"subclass": {
 							"name": "Spores",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -16468,7 +17546,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Paladin",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Paladin",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -16545,16 +17629,6 @@
 						"subclass": {
 							"name": "Primeval Guardian (UA)",
 							"source": "UARangerAndRogue"
-						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
 						}
 					},
 					{
@@ -16774,7 +17848,7 @@
 			"savingThrow": [
 				"dexterity"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"areaTags": [
@@ -16804,7 +17878,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -17048,13 +18122,19 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -17201,7 +18281,7 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
@@ -17217,6 +18297,66 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Djinni"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -17298,7 +18438,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -17341,12 +18481,38 @@
 							"name": "Love (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -17668,7 +18834,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -17768,7 +18934,17 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
 						}
 					}
 				]
@@ -17855,16 +19031,6 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
-						}
-					},
-					{
-						"class": {
 							"name": "Sorcerer",
 							"source": "PHB"
 						},
@@ -17894,12 +19060,58 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Djinni"
 						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -17955,7 +19167,7 @@
 					"type": "entries",
 					"name": "At Higher Levels",
 					"entries": [
-						"If you cast this spell using a spell slot of 2nd level or higher, the damage increases by {@scaledamage 1d10|1-9|1d10} for each slot level above 1st (to a maximum of {@scaledamage 1d10|1-9|6d10})."
+						"If you cast this spell using a spell slot of 2nd level or higher, the damage increases by {@scaledamage 1d10|1-6|1d10} for each slot level above 1st (to a maximum of {@damage 6d10})."
 					]
 				}
 			],
@@ -18192,7 +19404,7 @@
 				"You make natural terrain in a 150-foot cube in range look, sound, and smell like some other sort of natural terrain. Thus, open fields or a road can be made to resemble a swamp, hill, crevasse, or some other difficult or impassable terrain. A pond can be made to seem like a grassy meadow, a precipice like a gentle slope, or a rock-strewn gully like a wide and smooth road. Manufactured structures, equipment, and creatures within the area aren't changed in appearance.",
 				"The tactile characteristics of the terrain are unchanged, so creatures entering the area are likely to see through the illusion. If the difference isn't obvious by touch, a creature carefully examining the illusion can attempt an Intelligence ({@skill Investigation}) check against your spell save DC to disbelieve it. A creature who discerns the illusion for what it is, sees it as a vague image superimposed on the terrain."
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"areaTags": [
@@ -18227,6 +19439,16 @@
 							"name": "Land",
 							"source": "PHB",
 							"subSubclass": "Desert"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -18333,6 +19555,7 @@
 				"When the spell ends, the target can't move or take actions until after its next turn, as a wave of lethargy sweeps over it."
 			],
 			"miscTags": [
+				"MAC",
 				"SGT"
 			],
 			"areaTags": [
@@ -18358,7 +19581,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -18440,7 +19663,27 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
 						}
 					}
 				]
@@ -18579,11 +19822,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					}
 				]
@@ -18673,7 +19916,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -18888,7 +20131,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -18938,6 +20187,9 @@
 					]
 				}
 			],
+			"miscTags": [
+				"THP"
+			],
 			"areaTags": [
 				"ST"
 			],
@@ -18980,18 +20232,8 @@
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -19007,11 +20249,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -19041,7 +20283,17 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
 						}
 					}
 				]
@@ -19116,18 +20368,6 @@
 						"name": "Warlock",
 						"source": "PHB"
 					}
-				],
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
-					}
 				]
 			},
 			"races": [
@@ -19136,6 +20376,12 @@
 					"source": "PSZ",
 					"baseName": "Elf (Zendikar)",
 					"baseSource": "PSZ"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Relentless Hex",
+					"source": "XGE"
 				}
 			]
 		},
@@ -19260,26 +20506,6 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Cleric",
 							"source": "PHB"
 						},
@@ -19297,9 +20523,45 @@
 							"name": "Watchers (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Monster Slayer",
+							"source": "XGE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Monster Slayer",
+							"source": "XGE"
+						}
 					}
 				]
-			}
+			},
+			"eldritchInvocations": [
+				{
+					"name": "Chains of Carceri",
+					"source": "PHB"
+				}
+			]
 		},
 		{
 			"name": "Hold Person",
@@ -19487,7 +20749,17 @@
 						},
 						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -19625,6 +20897,16 @@
 							"name": "Aberrant Mind (UA)",
 							"source": "UASorcererAndWarlock"
 						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
+						}
 					}
 				]
 			}
@@ -19674,7 +20956,7 @@
 					]
 				}
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"wisdom"
 			],
 			"miscTags": [
@@ -19808,16 +21090,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -19839,11 +21111,21 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
 						}
 					}
 				]
@@ -19961,16 +21243,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -19982,11 +21254,31 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
 						}
 					}
 				]
@@ -20050,7 +21342,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -20347,7 +21639,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -20427,16 +21725,6 @@
 						"subclass": {
 							"name": "Divine Soul",
 							"source": "XGE"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
 						}
 					}
 				]
@@ -20638,6 +21926,46 @@
 							"name": "Swarmkeeper (UA)",
 							"source": "UAFighterRangerRogue"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -20728,7 +22056,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -20772,6 +22100,16 @@
 						"subclass": {
 							"name": "Twilight (UA)",
 							"source": "UAClericDruidWizard"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -20819,6 +22157,12 @@
 					"baseName": "Elf",
 					"baseSource": "PHB"
 				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Shroud of Shadow",
+					"source": "XGE"
+				}
 			]
 		},
 		{
@@ -20855,7 +22199,7 @@
 				}
 			],
 			"entries": [
-				"You touch a creature. The creature's jump distance is tripled until the spell ends."
+				"You touch a creature. The creature's {@book jump distance|phb|8|Jumping} is tripled until the spell ends."
 			],
 			"areaTags": [
 				"ST"
@@ -20888,7 +22232,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -20900,16 +22244,6 @@
 						"subclass": {
 							"name": "Seeker (UA)",
 							"source": "UATheFaithful"
-						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
 						}
 					}
 				]
@@ -20938,6 +22272,12 @@
 				{
 					"name": "Simic Scientist",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Otherworldly Leap",
+					"source": "PHB"
 				}
 			]
 		},
@@ -20996,7 +22336,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -21111,6 +22452,16 @@
 							"name": "Archivist",
 							"source": "UAArtificerRevisited"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
 					}
 				]
 			},
@@ -21179,7 +22530,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -21265,6 +22616,28 @@
 						"name": "Wizard",
 						"source": "PHB"
 					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight (UA)",
+							"source": "UAClericDruidWizard"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
+					}
 				]
 			},
 			"races": [
@@ -21342,7 +22715,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -21384,6 +22757,16 @@
 						"subclass": {
 							"name": "Celestial",
 							"source": "XGE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
 						}
 					}
 				]
@@ -21466,7 +22849,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -21478,6 +22861,16 @@
 						"subclass": {
 							"name": "Seeker (UA)",
 							"source": "UATheFaithful"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
 						}
 					}
 				]
@@ -21500,6 +22893,12 @@
 					"source": "ERLW",
 					"baseName": "Half-Elf",
 					"baseSource": "PHB"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Ascendant Step",
+					"source": "PHB"
 				}
 			]
 		},
@@ -21566,7 +22965,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -21588,6 +22987,16 @@
 						"subclass": {
 							"name": "Celestial",
 							"source": "XGE"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Light",
+							"source": "PHB"
 						}
 					}
 				]
@@ -21774,16 +23183,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Warlock",
 							"source": "PHB"
 						},
@@ -21795,11 +23194,41 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
 						}
 					}
 				]
@@ -21919,7 +23348,7 @@
 			],
 			"entries": [
 				"Describe or name a creature that is familiar to you. You sense the direction to the creature's location, as long as that creature is within 1,000 feet of you. If the creature is moving, you know the direction of its movement.",
-				"The spell can locate a specific creature known to you, or the nearest creature of a specific kind (such as a human or a unicorn), so long as you have seen such a creature up close\u2014within 30 feet\u2014at least once. If the creature you described or named is in a different form, such as being under the effects of a polymorph spell, this spell doesn't locate the creature.",
+				"The spell can locate a specific creature known to you, or the nearest creature of a specific kind (such as a human or a {@creature unicorn}), so long as you have seen such a creature up close\u2014within 30 feet\u2014at least once. If the creature you described or named is in a different form, such as being under the effects of a {@spell polymorph} spell, this spell doesn't locate the creature.",
 				"This spell can't locate a creature if running water at least 10 feet wide blocks a direct path between you and the creature."
 			],
 			"classes": {
@@ -22008,7 +23437,7 @@
 						},
 						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
@@ -22019,6 +23448,16 @@
 						"subclass": {
 							"name": "Archivist",
 							"source": "UAArtificerRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -22218,7 +23657,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -22273,6 +23712,9 @@
 			"entries": [
 				"You touch a willing creature who isn't wearing armor, and a protective magical force surrounds it until the spell ends. The target's base AC becomes 13 + its Dexterity modifier. The spell ends if the target dons armor or if you dismiss the spell as an action."
 			],
+			"miscTags": [
+				"MAC"
+			],
 			"areaTags": [
 				"ST"
 			],
@@ -22294,6 +23736,12 @@
 					"source": "ERLW",
 					"baseName": "Dwarf",
 					"baseSource": "PHB"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Armor of Shadows",
+					"source": "PHB"
 				}
 			]
 		},
@@ -22359,7 +23807,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -22381,6 +23829,46 @@
 						"subclass": {
 							"name": "Psionics (UA)",
 							"source": "UAFighterRogueWizard"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Rogue",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Arcane Trickster",
+							"source": "PHB"
 						}
 					}
 				]
@@ -22652,7 +24140,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -22733,11 +24222,21 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
 						}
 					}
 				]
@@ -22821,7 +24320,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -22899,7 +24398,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -22980,14 +24479,25 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -23049,7 +24559,7 @@
 					]
 				}
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"miscTags": [
@@ -23181,11 +24691,21 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
 						}
 					}
 				]
@@ -23311,24 +24831,30 @@
 						},
 						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					},
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -23474,7 +25000,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -23558,12 +25085,48 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Dao"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -23657,11 +25220,21 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -23728,29 +25301,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
-					}
-				],
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Artificer",
-							"source": "ERLW"
-						},
-						"subclass": {
-							"name": "Artillerist",
-							"source": "ERLW"
-						}
-					},
-					{
-						"class": {
-							"name": "Artificer",
-							"source": "ERLW"
-						},
-						"subclass": {
-							"name": "Battle Smith",
-							"source": "ERLW"
-						}
+						"source": "TCE"
 					}
 				]
 			},
@@ -23824,7 +25375,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -23958,9 +25509,6 @@
 			"damageImmune": [
 				"psychic"
 			],
-			"damageInflict": [
-				"psychic"
-			],
 			"classes": {
 				"fromClassList": [
 					{
@@ -24013,7 +25561,7 @@
 				"If you create an image of an object\u2014such as a chair, muddy footprints, or a small chest\u2014it must be no larger than a 5-foot cube. The image can't create sound, light, smell, or any other sensory effect. Physical interaction with the image reveals it to be an illusion, because things can pass through it.",
 				"If a creature uses its action to examine the sound or image, the creature can determine that it is an illusion with a successful Intelligence ({@skill Investigation}) check against your spell save DC. If a creature discerns the illusion for what it is, the illusion becomes faint to the creature."
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"classes": {
@@ -24045,6 +25593,16 @@
 							"name": "Giant Soul (UA)",
 							"source": "UAGiantSoulSorcerer",
 							"subSubclass": "Cloud"
+						}
+					},
+					{
+						"class": {
+							"name": "Wizard",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Illusion",
+							"source": "PHB"
 						}
 					}
 				]
@@ -24236,18 +25794,44 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -24319,7 +25903,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Warlock",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -24341,6 +25931,46 @@
 						"subclass": {
 							"name": "Fey Wanderer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
 						}
 					}
 				]
@@ -24385,7 +26015,8 @@
 				"Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see."
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"classes": {
 				"fromClassList": [
@@ -24472,6 +26103,46 @@
 						"subclass": {
 							"name": "Fey Wanderer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Fey Wanderer",
+							"source": "TCE"
 						}
 					}
 				]
@@ -24623,7 +26294,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -24720,6 +26392,26 @@
 							"name": "Watchers (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
 					}
 				]
 			}
@@ -24785,7 +26477,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -24934,7 +26626,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -25164,6 +26856,16 @@
 							"name": "Watchers (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -25310,7 +27012,7 @@
 			"savingThrow": [
 				"constitution"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"areaTags": [
@@ -25321,6 +27023,13 @@
 					{
 						"name": "Wizard",
 						"source": "PHB"
+					}
+				],
+				"fromClassListVariant": [
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -25403,7 +27112,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -25445,6 +27154,16 @@
 						"subclass": {
 							"name": "Clockwork Soul (UA)",
 							"source": "UA2020SubclassesPt2"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
 						}
 					}
 				]
@@ -25587,6 +27306,16 @@
 							"source": "PHB",
 							"subSubclass": "Grassland"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -25700,11 +27429,31 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -25757,7 +27506,7 @@
 			"savingThrow": [
 				"intelligence"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"miscTags": [
@@ -25817,6 +27566,26 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
 						}
 					}
 				]
@@ -25940,12 +27709,28 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -25998,6 +27783,18 @@
 					{
 						"name": "Wizard",
 						"source": "PHB"
+					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
 					}
 				]
 			},
@@ -26098,7 +27895,7 @@
 				}
 			],
 			"entries": [
-				"With this spell, you attempt to bind a {@filter celestial|bestiary|type=celestial|miscellaneous=!swarm}, an {@filter elemental|bestiary|type=elemental|miscellaneous=!swarm}, a {@filter fey|bestiary|type=fey|miscellaneous=!swarm}, or a {@filter fiend|bestiary|type=fiend|miscellaneous=!swarm} to your service. The creature must be within range for the entire casting of the spell. (Typically, the creature is first summoned into the center of an inverted magic circle in order to keep it trapped while this spell is cast.) At the completion of the casting, the target must make a Charisma saving throw. On a failed save, it is bound to serve you for the duration. If the creature was summoned or created by another spell, that spell's duration is extended to match the duration of this spell.",
+				"With this spell, you attempt to bind a {@filter celestial|bestiary|type=celestial|miscellaneous=!swarm}, an {@filter elemental|bestiary|type=elemental|miscellaneous=!swarm}, a {@filter fey|bestiary|type=fey|miscellaneous=!swarm}, or a {@filter fiend|bestiary|type=fiend|miscellaneous=!swarm} to your service. The creature must be within range for the entire casting of the spell. (Typically, the creature is first summoned into the center of an inverted {@spell magic circle} in order to keep it trapped while this spell is cast.) At the completion of the casting, the target must make a Charisma saving throw. On a failed save, it is bound to serve you for the duration. If the creature was summoned or created by another spell, that spell's duration is extended to match the duration of this spell.",
 				"A bound creature must follow your instructions to the best of its ability. You might command the creature to accompany you on an adventure, to guard a location, or to deliver a message. The creature obeys the letter of your instructions, but if the creature is hostile to you, it strives to twist your words to achieve its own objectives. If the creature carries out your instructions completely before the spell ends, it travels to you to report this fact if you are on the same plane of existence. If you are on a different plane of existence, it returns to the place where you bound it and remains there until the spell ends."
 			],
 			"entriesHigherLevel": [
@@ -26193,7 +27990,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Warlock",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -26375,6 +28178,26 @@
 							"name": "Wildfire (UA)",
 							"source": "UAClericDruidWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -26468,7 +28291,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			},
@@ -26577,6 +28400,12 @@
 					"name": "Simic Scientist",
 					"source": "GGR"
 				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Sculptor of Flesh",
+					"source": "PHB"
+				}
 			]
 		},
 		{
@@ -26625,11 +28454,18 @@
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Cleric",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -26814,7 +28650,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Paladin",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Paladin",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -26900,7 +28742,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -27056,7 +28898,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -27185,7 +29033,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -27317,7 +29171,7 @@
 				"The triggering condition can be as general or as detailed as you like, though it must be based on visual or audible conditions that occur within 30 feet of the area. For example, you could create an illusion of yourself to appear and warn off others who attempt to open a trapped door, or you could set the illusion to trigger only when a creature says the correct word or phrase.",
 				"Physical interaction with the image reveals it to be an illusion, because things can pass through it. A creature that uses its action to examine the image can determine that it is an illusion with a successful Intelligence ({@skill Investigation}) check against your spell save DC. If a creature discerns the illusion for what it is, the creature can see through the image, and any noise it makes sounds hollow to the creature."
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"classes": {
@@ -27381,7 +29235,7 @@
 				"blinded",
 				"deafened"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"miscTags": [
@@ -27401,7 +29255,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -27484,7 +29339,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -27596,7 +29451,37 @@
 						},
 						"subclass": {
 							"name": "Glory",
-							"source": "MOT"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Heroism (UA)",
+							"source": "UABardAndPaladin"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
 						}
 					}
 				]
@@ -27793,16 +29678,33 @@
 							"name": "Clockwork Soul (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -27877,7 +29779,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -27964,7 +29866,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -28100,11 +30002,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					}
 				]
@@ -28181,12 +30083,38 @@
 							"name": "Unity (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -28393,7 +30321,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -28525,11 +30453,21 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Alchemist",
-							"source": "ERLW"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
 						}
 					}
 				]
@@ -28933,7 +30871,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -29132,7 +31070,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -29185,16 +31123,38 @@
 							"name": "Grave",
 							"source": "XGE"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -29254,7 +31214,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -29459,7 +31419,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -29502,6 +31462,36 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Dao"
+						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -29614,11 +31604,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -29630,6 +31620,36 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Efreeti"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Wildfire",
+							"source": "TCE"
 						}
 					}
 				]
@@ -29837,6 +31857,26 @@
 							"name": "Psionics (UA)",
 							"source": "UAFighterRogueWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
 					}
 				]
 			}
@@ -29952,7 +31992,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Ranger",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -30030,7 +32076,29 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
+					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Paladin",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Watchers",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -30085,7 +32153,7 @@
 			"savingThrow": [
 				"charisma"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"miscTags": [
@@ -30169,6 +32237,26 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Djinni"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -30266,6 +32354,26 @@
 							"name": "Unity (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -30275,6 +32383,12 @@
 					"source": "ERLW",
 					"baseName": "Gnome",
 					"baseSource": "PHB"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Far Scribe",
+					"source": "UAClassFeatureVariants"
 				}
 			]
 		},
@@ -30393,7 +32507,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -30492,16 +32607,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -30523,21 +32628,31 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
 						}
 					}
 				]
@@ -30584,6 +32699,9 @@
 			],
 			"entries": [
 				"An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from magic missile."
+			],
+			"miscTags": [
+				"MAC"
 			],
 			"classes": {
 				"fromClassList": [
@@ -30650,27 +32768,27 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
@@ -30737,6 +32855,9 @@
 			],
 			"entries": [
 				"A shimmering field appears and surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration."
+			],
+			"miscTags": [
+				"MAC"
 			],
 			"areaTags": [
 				"ST"
@@ -30925,7 +33046,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -31041,6 +33162,46 @@
 							"name": "Raven Queen (UA)",
 							"source": "UAWarlockAndWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Lurker in the Deep (UA)",
+							"source": "UASorcererAndWarlock"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
 					}
 				]
 			},
@@ -31093,7 +33254,7 @@
 				"You can use your action to cause the image to move to any spot within range. As the image changes location, you can alter its appearance so that its movements appear natural for the image. For example, if you create an image of a creature and move it, you can alter the image so that it appears to be walking.",
 				"Physical interaction with the image reveals it to be an illusion, because things can pass through it. A creature that uses its action to examine the image can determine that it is an illusion with a successful Intelligence ({@skill Investigation}) check against your spell save DC. If a creature discerns the illusion for what it is, the creature can see through the image."
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"classes": {
@@ -31118,6 +33279,12 @@
 					"source": "ERLW",
 					"baseName": "Elf",
 					"baseSource": "PHB"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Misty Visions",
+					"source": "PHB"
 				}
 			]
 		},
@@ -31162,6 +33329,9 @@
 				"The simulacrum is friendly to you and creatures you designate. It obeys your spoken commands, moving and acting in accordance with your wishes and acting on your turn in combat. The simulacrum lacks the ability to learn or become more powerful, so it never increases its level or other abilities, nor can it regain expended spell slots.",
 				"If the simulacrum is damaged, you can repair it in an alchemical laboratory, using rare herbs and minerals worth 100 gp per hit point it regains. The simulacrum lasts until it drops to 0 hit points, at which point it reverts to snow and melts instantly.",
 				"If you cast this spell again, any currently active duplicates you created with this spell are instantly destroyed."
+			],
+			"areaTags": [
+				"ST"
 			],
 			"classes": {
 				"fromClassList": [
@@ -31291,6 +33461,16 @@
 							"name": "Noble Genie (UA)",
 							"source": "UA2020SubclassesPt1"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -31416,6 +33596,56 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Marid"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
 					}
 				]
 			},
@@ -31470,8 +33700,10 @@
 				"A creature affected by this spell makes another Wisdom saving throw at the end of each of its turns. On a successful save, the effect ends for it."
 			],
 			"savingThrow": [
-				"wisdom",
-				"dexterity"
+				"wisdom"
+			],
+			"miscTags": [
+				"MAC"
 			],
 			"areaTags": [
 				"MT",
@@ -31527,17 +33759,39 @@
 						},
 						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Bard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Bard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
-			}
+			},
+			"eldritchInvocations": [
+				{
+					"name": "Mire the Mind",
+					"source": "PHB"
+				}
+			]
 		},
 		{
 			"name": "Spare the Dying",
@@ -31585,7 +33839,29 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
+					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Grave",
+							"source": "XGE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undying",
+							"source": "SCAG"
+						}
 					}
 				]
 			},
@@ -31709,6 +33985,12 @@
 					"name": "Gruul Anarch",
 					"source": "GGR"
 				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Beast Speech",
+					"source": "PHB"
+				}
 			]
 		},
 		{
@@ -31800,12 +34082,28 @@
 							"name": "Raven Queen (UA)",
 							"source": "UAWarlockAndWizard"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Wizard",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Wizard",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -31813,6 +34111,12 @@
 				{
 					"name": "Orzhov Representative",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Whispers of the Grave",
+					"source": "PHB"
 				}
 			]
 		},
@@ -31954,7 +34258,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -31989,6 +34293,16 @@
 							"name": "Land",
 							"source": "PHB",
 							"subSubclass": "Underdark"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -32050,7 +34364,7 @@
 			"damageInflict": [
 				"piercing"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"wisdom"
 			],
 			"areaTags": [
@@ -32120,6 +34434,36 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Dao"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -32218,7 +34562,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Paladin",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -32436,16 +34781,6 @@
 					},
 					{
 						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
 							"name": "Artificer (Revisited)",
 							"source": "UAArtificerRevisited"
 						},
@@ -32560,6 +34895,16 @@
 							"name": "Alchemist",
 							"source": "UAArtificerRevisited"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
 					}
 				]
 			}
@@ -32620,7 +34965,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -32655,6 +35000,36 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Dao"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -32745,7 +35120,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -33020,16 +35395,6 @@
 							"name": "Knowledge (PSA)",
 							"source": "PSA"
 						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Beauty (Twitter)",
-							"source": "Twitter"
-						}
 					}
 				]
 			},
@@ -33118,6 +35483,13 @@
 						"name": "Wizard",
 						"source": "PHB"
 					}
+				],
+				"fromClassListVariant": [
+					{
+						"name": "Cleric",
+						"source": "PHB",
+						"definedInSource": "TCE"
+					}
 				]
 			}
 		},
@@ -33181,6 +35553,13 @@
 					{
 						"name": "Wizard",
 						"source": "PHB"
+					}
+				],
+				"fromClassListVariant": [
+					{
+						"name": "Cleric",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -33349,7 +35728,7 @@
 				"charisma",
 				"intelligence"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"intelligence"
 			],
 			"areaTags": [
@@ -33373,7 +35752,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Druid",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Druid",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -33556,6 +35941,16 @@
 						"subclass": {
 							"name": "Psionics (UA)",
 							"source": "UAFighterRogueWizard"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Aberrant Mind",
+							"source": "TCE"
 						}
 					}
 				]
@@ -33748,7 +36143,8 @@
 				}
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"TP"
 			],
 			"classes": {
 				"fromClassList": [
@@ -33810,7 +36206,8 @@
 				"You can create a permanent teleportation circle by casting this spell in the same location every day for one year. You need not use the circle to teleport when you cast the spell in this way."
 			],
 			"miscTags": [
-				"PRM"
+				"PRM",
+				"TP"
 			],
 			"classes": {
 				"fromClassList": [
@@ -33882,7 +36279,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Warlock",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -34166,7 +36569,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				]
 			}
@@ -34328,16 +36731,6 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
-						}
-					},
-					{
-						"class": {
 							"name": "Sorcerer",
 							"source": "PHB"
 						},
@@ -34370,11 +36763,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -34387,12 +36780,63 @@
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Djinni"
 						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Storm (UA)",
+							"source": "UAWaterborneAdventures"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Fathomless",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -34531,7 +36975,8 @@
 				"fromClassListVariant": [
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			},
@@ -34740,8 +37185,8 @@
 			],
 			"miscTags": [
 				"PRM",
-				"SMN",
-				"SGT"
+				"SGT",
+				"SMN"
 			],
 			"areaTags": [
 				"ST"
@@ -34994,7 +37439,7 @@
 			"savingThrow": [
 				"strength"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"areaTags": [
@@ -35190,32 +37635,18 @@
 							"name": "Grave",
 							"source": "XGE"
 						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
-						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Darkness (Twitter)",
-							"source": "Twitter"
-						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Sorcerer",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Sorcerer",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -35444,11 +37875,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					}
 				]
@@ -35560,11 +37991,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -35580,11 +38011,31 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Armorer (UA)",
 							"source": "UA2020SubclassesPt3"
+						}
+					},
+					{
+						"class": {
+							"name": "Artificer",
+							"source": "TCE"
+						},
+						"subclass": {
+							"name": "Armorer",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Sorcerer",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Clockwork Soul",
+							"source": "TCE"
 						}
 					}
 				]
@@ -35730,7 +38181,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -35765,6 +38216,36 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Dao"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -35878,6 +38359,9 @@
 				"This spell wards a willing creature you touch and creates a mystic connection between you and the target until the spell ends. While the target is within 60 feet of you, it gains a +1 bonus to AC and saving throws, and it has resistance to all damage. Also, each time it takes damage, you take the same amount of damage.",
 				"The spell ends if you drop to 0 hit points or if you and the target become separated by more than 60 feet. It also ends if the spell is cast again on either of the connected creatures. You can also dismiss the spell as an action."
 			],
+			"miscTags": [
+				"MAC"
+			],
 			"areaTags": [
 				"ST"
 			],
@@ -35922,11 +38406,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Battle Smith",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -35948,16 +38432,33 @@
 							"name": "Love (UA)",
 							"source": "UA2020SubclassesPt2"
 						}
+					},
+					{
+						"class": {
+							"name": "Cleric",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Peace",
+							"source": "TCE"
+						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Paladin",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					},
 					{
 						"name": "Ranger",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Paladin",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			},
@@ -36050,7 +38551,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -36067,12 +38568,12 @@
 					},
 					{
 						"class": {
-							"name": "Warlock",
+							"name": "Druid",
 							"source": "PHB"
 						},
 						"subclass": {
-							"name": "Kraken (Stream)",
-							"source": "Stream"
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -36081,6 +38582,16 @@
 				{
 					"name": "Simic Scientist",
 					"source": "GGR"
+				}
+			],
+			"eldritchInvocations": [
+				{
+					"name": "Sea Twins' Gift",
+					"source": "UAWarlockAndWizard"
+				},
+				{
+					"name": "Gift of the Depths",
+					"source": "XGE"
 				}
 			]
 		},
@@ -36159,7 +38670,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -36183,6 +38694,16 @@
 							"name": "Land",
 							"source": "PHB",
 							"subSubclass": "Swamp"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
 						}
 					}
 				]
@@ -36239,7 +38760,7 @@
 			"savingThrow": [
 				"dexterity"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"strength"
 			],
 			"areaTags": [
@@ -36257,7 +38778,7 @@
 					},
 					{
 						"name": "Artificer",
-						"source": "ERLW"
+						"source": "TCE"
 					}
 				],
 				"fromSubclass": [
@@ -36270,16 +38791,6 @@
 							"name": "Land",
 							"source": "PHB",
 							"subSubclass": "Underdark"
-						}
-					},
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Lolth (Twitter)",
-							"source": "Twitter"
 						}
 					},
 					{
@@ -36310,6 +38821,46 @@
 						"subclass": {
 							"name": "Swarmkeeper (UA)",
 							"source": "UAFighterRangerRogue"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Spell-less)",
+							"source": "UAModifyingClasses"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Ranger (Revised)",
+							"source": "UATheRangerRevised"
+						},
+						"subclass": {
+							"name": "Swarmkeeper",
+							"source": "TCE"
 						}
 					}
 				]
@@ -36382,7 +38933,13 @@
 				"fromClassListVariant": [
 					{
 						"name": "Warlock",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
+					},
+					{
+						"name": "Warlock",
+						"source": "PHB",
+						"definedInSource": "TCE"
 					}
 				]
 			}
@@ -36527,11 +39084,11 @@
 					{
 						"class": {
 							"name": "Artificer",
-							"source": "ERLW"
+							"source": "TCE"
 						},
 						"subclass": {
 							"name": "Artillerist",
-							"source": "ERLW"
+							"source": "TCE"
 						}
 					},
 					{
@@ -36543,6 +39100,26 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited",
 							"subSubclass": "Djinni"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie (UA)",
+							"source": "UA2020SubclassesRevisited"
 						}
 					}
 				]
@@ -36647,6 +39224,16 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Genie",
+							"source": "TCE"
 						}
 					}
 				]
@@ -36756,6 +39343,9 @@
 				"You and up to five willing creatures within 5 feet of you instantly teleport to a previously designated sanctuary. You and any creatures that teleport with you appear in the nearest unoccupied space to the spot you designated when you prepared your sanctuary (see below). If you cast this spell without first preparing a sanctuary, the spell has no effect.",
 				"You must designate a sanctuary by casting this spell within a location, such as a temple, dedicated to or strongly linked to your deity. If you attempt to cast the spell in this manner in an area that isn't dedicated to your deity, the spell has no effect."
 			],
+			"miscTags": [
+				"TP"
+			],
 			"classes": {
 				"fromClassList": [
 					{
@@ -36808,7 +39398,7 @@
 			"savingThrow": [
 				"wisdom"
 			],
-			"opposedCheck": [
+			"abilityCheck": [
 				"wisdom"
 			],
 			"classes": {
@@ -36848,22 +39438,13 @@
 							"name": "Stone (UA)",
 							"source": "UASorcerer"
 						}
-					},
-					{
-						"class": {
-							"name": "Cleric",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Destruction (Twitter)",
-							"source": "Twitter"
-						}
 					}
 				],
 				"fromClassListVariant": [
 					{
 						"name": "Cleric",
-						"source": "PHB"
+						"source": "PHB",
+						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
 			}
@@ -36994,7 +39575,7 @@
 						},
 						"subclass": {
 							"name": "Order",
-							"source": "GGR"
+							"source": "TCE"
 						}
 					}
 				]

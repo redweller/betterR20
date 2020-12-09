@@ -52,7 +52,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -302,7 +303,8 @@
 				"D"
 			],
 			"actionTags": [
-				"Multiattack"
+				"Multiattack",
+				"Teleport"
 			],
 			"languageTags": [
 				"CE",

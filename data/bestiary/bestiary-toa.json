@@ -77,7 +77,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -1154,7 +1155,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"vulnerable": [
@@ -1543,9 +1545,9 @@
 			],
 			"trait": [
 				{
-					"name": "Elemental Nature",
+					"name": "Unusual Nature",
 					"entries": [
-						"Chwingas sleep but don't require air, food, or drink."
+						"The chwinga doesn't require air, food, or drink. When it dies, it turns into a handful of flower petals, a cloud of pollen, a stone statuette resembling its former self, a tiny sphere of smooth stone, or a puddle of fresh water (your choice)."
 					]
 				},
 				{
@@ -2157,7 +2159,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks not made with adamantine weapons"
+					"note": "from nonmagical attacks not made with adamantine weapons",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -3175,7 +3178,7 @@
 			"cha": 2,
 			"skill": {
 				"perception": "+4",
-				"stealth": "+7"
+				"stealth": "+6"
 			},
 			"senses": [
 				"tremorsense 30 ft."
@@ -4165,7 +4168,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -4287,7 +4291,7 @@
 			"speed": {
 				"walk": {
 					"number": 50,
-					"condition": " (in one direction chosen at the start of its turn)"
+					"condition": "(in one direction chosen at the start of its turn)"
 				}
 			},
 			"str": 16,
@@ -4308,7 +4312,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks not made with adamantine weapons"
+					"note": "from nonmagical attacks not made with adamantine weapons",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -4796,7 +4801,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -4906,7 +4912,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -5215,7 +5222,7 @@
 				"wis": "+9"
 			},
 			"skill": {
-				"arcana": "+18",
+				"arcana": "+19",
 				"history": "+12",
 				"insight": "+9",
 				"perception": "+9"
@@ -5237,7 +5244,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -5667,7 +5675,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [

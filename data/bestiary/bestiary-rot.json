@@ -179,11 +179,11 @@
 			"wis": 12,
 			"cha": 14,
 			"save": {
-				"wis": "+3"
+				"wis": "+4"
 			},
 			"skill": {
-				"deception": "+4",
-				"stealth": "+5"
+				"deception": "+5",
+				"stealth": "+6"
 			},
 			"passive": 11,
 			"resist": [
@@ -837,7 +837,7 @@
 			"cha": 16,
 			"save": {
 				"dex": "+5",
-				"wis": "+4"
+				"wis": "+6"
 			},
 			"skill": {
 				"perception": "+6",
@@ -855,7 +855,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -1142,7 +1143,8 @@
 								"piercing",
 								"slashing"
 							],
-							"note": "from nonmagical attacks"
+							"note": "from nonmagical attacks",
+							"cond": true
 						}
 					],
 					"preNote": "While wearing the mask of the Dragon Queen:"
@@ -1376,7 +1378,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
