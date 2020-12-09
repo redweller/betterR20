@@ -164,7 +164,7 @@ function baseWeather () {
 					doShowDialog(page);
 				} else d20plus.ut.error(`No page found with ID "${d20plus.weather._lastSettingsPageId}"`);
 			} else d20plus.ut.error(`No page settings button was clicked?!`);
-		}).on("mousedown", ".chooseablepage .settings", function () {
+		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
 			const $this = $(this);
 			d20plus.weather._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
 		});

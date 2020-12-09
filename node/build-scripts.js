@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.18.4";
+const SCRIPT_VERSION = "1.18.5.fix.2";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -139,6 +139,9 @@ const SCRIPTS = {
 			"base-tool-animator",
 			"base-art",
 			"base-art-browse",
+			"overwrites/base",
+			"overwrites/canvas-handler",
+			"overwrites/canvas-handler-default",
 			"base-engine",
 			"base-weather",
 			"base-journal",
@@ -170,6 +173,9 @@ const SCRIPTS = {
 			"base-tool-animator",
 			"base-art",
 			"base-art-browse",
+			"overwrites/base",
+			"overwrites/canvas-handler",
+			"overwrites/canvas-handler-default",
 			"base-engine",
 			"base-weather",
 			"base-journal",
