@@ -271,6 +271,13 @@ function initCanvasHandlerOverwrite() {
 		// BEGIN MOD
 		var cnv = d20.engine.canvas;
 		var wrp = $("#editor-wrapper");
+		const $selMeasureMode = $(`#measure_mode`);
+		const $selRadMode = $(`#measure_mode_sel_2`);
+		const $iptConeWidth = $(`#measure_mode_ipt_3`);
+		const $selConeMode = $(`#measure_mode_sel_3`);
+		const $selBoxMode = $(`#measure_mode_sel_4`);
+		const $selLineMode = $(`#measure_mode_sel_5`);
+		const $iptLineWidth = $(`#measure_mode_ipt_5`);
 		// END MOD
 		var t, i;
 		if (e.changedTouches ? ((e.changedTouches.length > 1 || "pan" == d20.engine.mode) && (delete d20.engine.pings[window.currentPlayer.id], d20.engine.pinging = !1), e.preventDefault(), t = e.changedTouches[0].pageX, i = e.changedTouches[0].pageY) : (t = e.pageX, i = e.pageY), "select" != d20.engine.mode && "path" != d20.engine.mode && "targeting" != d20.engine.mode || cnv.__onMouseMove(e), d20.engine.leftMouseIsDown || d20.engine.rightMouseIsDown) {
