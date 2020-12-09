@@ -1188,34 +1188,10 @@ function d20plusEngine () {
 
 	};
 
+	// needs to be called after `enhanceMeasureTool()`
 	d20plus.engine.enhanceMouseMove = () => {
-		// needs to be called after `enhanceMeasureTool()`
-		const $selMeasureMode = $(`#measure_mode`);
-		const $selRadMode = $(`#measure_mode_sel_2`);
-		const $iptConeWidth = $(`#measure_mode_ipt_3`);
-		const $selConeMode = $(`#measure_mode_sel_3`);
-		const $selBoxMode = $(`#measure_mode_sel_4`);
-		const $selLineMode = $(`#measure_mode_sel_5`);
-		const $iptLineWidth = $(`#measure_mode_ipt_5`);
-
-		// BEGIN ROLL20 CODE
-		// not used?
-		var x = function(e) {
-			e.type = "measuring",
-				e.time = (new Date).getTime(),
-				d20.textchat.sendShout(e)
-		}
-			, k = _.throttle(x, 200)
-			, E = function(e) {
-			k(e),
-			d20.tutorial && d20.tutorial.active && $(document.body).trigger("measure"),
-				d20.engine.receiveMeasureUpdate(e)
-		};
-		// END ROLL20 CODE
-
 		// add missing vars
 		var i = d20.engine.canvas;
-		var r = $("#editor-wrapper");
 
 		// Roll20 bug (present as of 2019-5-25) workaround
 		//   when box-selecting + moving tokens, the "object:moving" event throws an exception
