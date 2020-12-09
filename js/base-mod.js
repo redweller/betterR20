@@ -926,8 +926,8 @@ function d20plusMod() {
 		yield[this.background, "background"]
 		// END MOD
 		const o = e && e.enable_dynamic_fog;
-		d20.dyn_fog.ready() && o && (yield [null, "lighting and fog"]),
 		yield [this.objects, "objects"], 
+		d20.dyn_fog.ready() && o && (yield [null, "lighting and fog"]),
 		// BEGIN MOD
 		yield[this.foreground, "foreground"],
 		// END MOD
