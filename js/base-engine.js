@@ -1131,40 +1131,6 @@ function d20plusEngine () {
 	d20plus.engine._tempTopRenderLines = {}, // format: {x: ..., y: ..., to_x: ..., to_y: ..., ticks: ..., offset: ...}
 	// previously "enhanceSnap"
 	d20plus.engine.enhanceMouseDown = () => {
-		/**
-		 * Dumb variable names copy-pasted from uglified code
-		 * @param c x co-ord
-		 * @param u y c-ord
-		 * @returns {*[]} 2-len array; [0] = x and [1] = y
-		 */
-		function getClosestHexPoint (c, u) {
-			function getEuclidDist (x1, y1, x2, y2) {
-				return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-			}
-
-			const hx = d20.canvas_overlay.activeHexGrid.GetHexAt({
-				X: c,
-				Y: u
-			});
-
-			let minDist = 1000000;
-			let minPoint = [c, u];
-
-			function checkDist(x1, y1) {
-				const dist = getEuclidDist(x1, y1, c, u);
-				if (dist < minDist) {
-					minDist =  dist;
-					minPoint = [x1, y1];
-				}
-			}
-			hx.Points.forEach(pt => {
-				checkDist(pt.X, pt.Y);
-			});
-			checkDist(hx.MidPoint.X, hx.MidPoint.Y);
-
-			return minPoint;
-		}
-
 		const R = d20plus.overwrites.canvasHandlerDown
 
 		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
