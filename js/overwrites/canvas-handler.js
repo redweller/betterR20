@@ -1,4 +1,4 @@
-function initCanvasHandlerOverwrite() {
+function initCanvasHandlerOverwrite () {
 
 	const canvasHandlerDown = function(e) {
 		// BEGIN MOD

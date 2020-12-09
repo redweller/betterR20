@@ -76,9 +76,9 @@ function d20plusEngine () {
 			}
 
 			// ensure tokens have editable sight
-			$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
+			$("#tmpl_tokeneditor").replaceWith(d20plus.templates.templateTokenEditor);
 			// show dynamic lighting/etc page settings
-			$("#tmpl_pagesettings").replaceWith(d20plus.template_pageSettings);
+			$("#tmpl_pagesettings").replaceWith(d20plus.templates.templatePageSettings);
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
 				var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
@@ -1164,7 +1164,7 @@ function d20plusEngine () {
 
 			return minPoint;
 		}
-		
+
 		const R = d20plus.overwrites.canvasHandlerDown
 
 		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
@@ -1231,7 +1231,7 @@ function d20plusEngine () {
 			}
 		};
 
-		const I = d20plus.overwrites.canvasHandlerMove 
+		const I = d20plus.overwrites.canvasHandlerMove
 
 		if (FINAL_CANVAS_MOUSEMOVE_LIST.length) {
 			FINAL_CANVAS_MOUSEMOVE = (FINAL_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
