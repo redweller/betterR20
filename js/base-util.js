@@ -113,7 +113,7 @@ function baseUtil () {
 			${isStreamer ? "Script" : message} initialising, please wait...<br><br>
 		`);
 		d20plus.ut.sendHackerChat(`
-			This version will work only on VTT Enhancement Suite >= 1.15.35<br><br>
+			VTT Enhancement Suite version 1.15.35 or above is required.<br><br>
 		`);
 	};
 

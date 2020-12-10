@@ -425,7 +425,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -564,7 +565,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -715,7 +717,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -855,7 +858,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -1198,7 +1202,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -1372,7 +1377,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -1547,7 +1553,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -1936,7 +1943,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -2283,7 +2291,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2441,7 +2450,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2670,7 +2680,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -2803,7 +2814,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -3033,7 +3045,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -3058,7 +3071,7 @@
 				{
 					"name": "Summon Specters (Recharges after a Short or Long Rest)",
 					"entries": [
-						"As a bonus action, the cadaver collector calls up the enslaved spirits of those it has slain; {@dice 1d6} specters (without Sunlight Sensitivity) arise in unoccupied spaces within 15 feet of the cadaver collector. The specters act right after the cadaver collector on the same initiative count and fight until they're destroyed. They disappear when the cadaver collector is destroyed."
+						"As a bonus action, the cadaver collector calls up the enslaved spirits of those it has slain; {@dice 1d6} {@creature specter||specters} (without Sunlight Sensitivity) arise in unoccupied spaces within 15 feet of the cadaver collector. The specters act right after the cadaver collector on the same initiative count and fight until they're destroyed. They disappear when the cadaver collector is destroyed."
 					]
 				}
 			],
@@ -3170,7 +3183,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -3568,7 +3582,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -3743,7 +3758,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -3936,7 +3952,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -4104,7 +4121,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -4564,7 +4582,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -4722,7 +4741,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -6301,6 +6321,11 @@
 			"name": "Duergar Hammerer",
 			"source": "MTF",
 			"page": 188,
+			"otherSources": [
+				{
+					"source": "IDRotF"
+				}
+			],
 			"size": "M",
 			"type": "construct",
 			"alignment": [
@@ -6547,6 +6572,11 @@
 			"name": "Duergar Mind Master",
 			"source": "MTF",
 			"page": 189,
+			"otherSources": [
+				{
+					"source": "IDRotF"
+				}
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -6564,6 +6594,10 @@
 					"from": [
 						"{@item leather armor|phb}"
 					]
+				},
+				{
+					"ac": 19,
+					"condition": "while reduced"
 				}
 			],
 			"hp": {
@@ -7378,7 +7412,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -7540,7 +7575,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -7675,7 +7711,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -7968,7 +8005,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -8243,7 +8281,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -8401,7 +8440,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -8726,7 +8766,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -10128,7 +10169,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -10342,7 +10384,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -10515,7 +10558,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -10666,7 +10710,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -10799,7 +10844,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -11043,7 +11089,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -11230,7 +11277,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -11363,7 +11411,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -11693,7 +11742,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -11969,7 +12019,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -12126,7 +12177,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -12375,7 +12427,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -12521,7 +12574,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -12708,7 +12762,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -12944,7 +12999,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -13158,7 +13214,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -13520,7 +13577,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -13669,7 +13727,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -13807,7 +13866,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -13907,7 +13967,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -14477,7 +14538,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -14669,8 +14731,8 @@
 				"wis": "+13"
 			},
 			"skill": {
-				"arcana": "+12",
-				"perception": "+12"
+				"arcana": "+13",
+				"perception": "+13"
 			},
 			"senses": [
 				"truesight 120 ft."
@@ -14690,7 +14752,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -14899,7 +14962,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -15078,7 +15142,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -15263,7 +15328,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -15438,7 +15504,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -15807,7 +15874,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -16092,7 +16160,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -16500,7 +16569,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -16645,7 +16715,7 @@
 				{
 					"name": "Summon Undead (Costs 3 Actions)",
 					"entries": [
-						"Up to five skeletons or zombies appear in unoccupied spaces within 30 feet of the skull lord and remain until destroyed. Undead summoned in this way roll initiative and act in the next available turn. The skull lord can have up to five undead summoned by this ability at a time."
+						"Up to five {@creature skeleton||skeletons} or {@creature zombie||zombies} appear in unoccupied spaces within 30 feet of the skull lord and remain until destroyed. Undead summoned in this way roll initiative and act in the next available turn. The skull lord can have up to five undead summoned by this ability at a time."
 					]
 				}
 			],
@@ -16719,11 +16789,11 @@
 			"cha": 13,
 			"save": {
 				"dex": "+7",
-				"wis": "+7",
+				"wis": "+6",
 				"cha": "+5"
 			},
 			"skill": {
-				"perception": "+7"
+				"perception": "+6"
 			},
 			"senses": [
 				"darkvision 60 ft."
@@ -16906,7 +16976,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -17042,7 +17113,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -17285,7 +17357,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -17407,7 +17480,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -17708,7 +17782,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -17855,7 +17930,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -18102,7 +18178,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -18229,7 +18306,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -18382,7 +18460,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -18525,7 +18604,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -18633,7 +18713,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "while in dim light or darkness"
+					"note": "while in dim light or darkness",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -18737,7 +18818,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "while in dim light or darkness"
+					"note": "while in dim light or darkness",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -18847,7 +18929,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "while in dim light or darkness"
+					"note": "while in dim light or darkness",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -18967,7 +19050,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "while in dim light or darkness"
+					"note": "while in dim light or darkness",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -19079,7 +19163,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "while in dim light or darkness"
+					"note": "while in dim light or darkness",
+					"cond": true
 				}
 			],
 			"cr": "1/4",
@@ -19183,7 +19268,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -19675,7 +19761,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -19942,7 +20029,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -20101,7 +20189,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -20230,7 +20319,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -20389,7 +20479,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -20557,7 +20648,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -20762,7 +20854,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -21058,7 +21151,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -21273,7 +21367,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -21510,7 +21605,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [

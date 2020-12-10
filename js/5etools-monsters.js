@@ -47,7 +47,7 @@ function d20plusMonsters () {
 				autoOpen: false,
 				resizable: true,
 				width: 800,
-				height: 650,
+				height: 700,
 			});
 		}
 		const $win = $("#d20plus-monster-import-cr-scale");
@@ -1107,7 +1107,7 @@ function d20plusMonsters () {
 
 								$.each(data.action, function (i, action) {
 									const name = d20plus.importer.getCleanText(renderer.render(action.name));
-									const text = d20plus.importer.getCleanText(renderer.render({entries: action.entries}, 1));
+									const text = d20plus.importer.getCleanText(renderer.render({entries: action.entries}, 1)).replace(/^\s*Hit:\s*/, "");
 
 									// special cases for specific creatures
 									if (data.name === "Hellfire Engine" && data.source === SRC_MTF && name === "Hellfire Weapons") {

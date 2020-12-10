@@ -213,9 +213,6 @@
 				{
 					"source": "XGE",
 					"page": 19
-				},
-				{
-					"source": "GGR"
 				}
 			],
 			"pantheon": "Egyptian",
@@ -488,11 +485,6 @@
 			"name": "Asmodeus",
 			"source": "DMG",
 			"page": 10,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Dawn War",
 			"alignment": [
 				"L",
@@ -576,11 +568,6 @@
 			],
 			"source": "SCAG",
 			"page": 21,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Faerûnian",
 			"alignment": [
 				"L",
@@ -613,11 +600,6 @@
 			"source": "PHB",
 			"page": 298,
 			"srd": true,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Greek",
 			"alignment": [
 				"L",
@@ -634,7 +616,7 @@
 		{
 			"name": "Athreos",
 			"source": "MOT",
-			"page": 0,
+			"page": 37,
 			"pantheon": "Theros",
 			"title": "God of Passage",
 			"domains": [
@@ -945,11 +927,6 @@
 			"name": "Aureon",
 			"source": "PHB",
 			"page": 296,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Eberron",
 			"alignment": [
 				"L",
@@ -1378,11 +1355,6 @@
 			"name": "Bane",
 			"source": "DMG",
 			"page": 10,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Dawn War",
 			"alignment": [
 				"L",
@@ -1462,11 +1434,6 @@
 			"name": "Bane",
 			"source": "PHB",
 			"page": 294,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Forgotten Realms",
 			"alignment": [
 				"L",
@@ -1487,11 +1454,6 @@
 			],
 			"source": "SCAG",
 			"page": 21,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Faerûnian",
 			"alignment": [
 				"L",
@@ -2932,7 +2894,7 @@
 		{
 			"name": "Ephara",
 			"source": "MOT",
-			"page": 0,
+			"page": 40,
 			"pantheon": "Theros",
 			"title": "God of the Polis",
 			"domains": [
@@ -3227,11 +3189,6 @@
 			"name": "Erathis",
 			"source": "DMG",
 			"page": 10,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Dawn War",
 			"alignment": [
 				"L",
@@ -3309,7 +3266,7 @@
 		{
 			"name": "Erebos",
 			"source": "MOT",
-			"page": 0,
+			"page": 43,
 			"pantheon": "Theros",
 			"title": "God of the Dead",
 			"domains": [
@@ -3731,11 +3688,6 @@
 			"name": "Forseti",
 			"source": "PHB",
 			"page": 299,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Norse",
 			"alignment": [
 				"N"
@@ -4497,7 +4449,7 @@
 		{
 			"name": "Heliod",
 			"source": "MOT",
-			"page": 0,
+			"page": 46,
 			"pantheon": "Theros",
 			"title": "God of the Sun",
 			"domains": [
@@ -5221,7 +5173,7 @@
 		{
 			"name": "Iroas",
 			"source": "MOT",
-			"page": 0,
+			"page": 49,
 			"pantheon": "Theros",
 			"title": "God of Victory",
 			"domains": [
@@ -5622,7 +5574,7 @@
 		{
 			"name": "Karametra",
 			"source": "MOT",
-			"page": 0,
+			"page": 52,
 			"pantheon": "Theros",
 			"title": "God of Harvests",
 			"domains": [
@@ -6007,7 +5959,7 @@
 		{
 			"name": "Keranos",
 			"source": "MOT",
-			"page": 0,
+			"page": 55,
 			"pantheon": "Theros",
 			"title": "God of Storms",
 			"domains": [
@@ -6375,7 +6327,7 @@
 		{
 			"name": "Klothys",
 			"source": "MOT",
-			"page": 0,
+			"page": 58,
 			"pantheon": "Theros",
 			"title": "God of Destiny",
 			"domains": [
@@ -6809,7 +6761,7 @@
 		{
 			"name": "Kruphix",
 			"source": "MOT",
-			"page": 0,
+			"page": 61,
 			"pantheon": "Theros",
 			"title": "God of Horizons",
 			"domains": [
@@ -7650,11 +7602,6 @@
 			"name": "Maglubiyet",
 			"source": "PHB",
 			"page": 296,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Nonhuman",
 			"alignment": [
 				"L",
@@ -7671,11 +7618,6 @@
 			"name": "Majere",
 			"source": "PHB",
 			"page": 295,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Dragonlance",
 			"alignment": [
 				"L",
@@ -8070,7 +8012,7 @@
 		{
 			"name": "Mogis",
 			"source": "MOT",
-			"page": 0,
+			"page": 64,
 			"pantheon": "Theros",
 			"title": "God of Slaughter",
 			"domains": [
@@ -8851,11 +8793,6 @@
 			"source": "PHB",
 			"page": 298,
 			"srd": true,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Celtic",
 			"alignment": [
 				"N"
@@ -8883,7 +8820,7 @@
 		{
 			"name": "Nylea",
 			"source": "MOT",
-			"page": 0,
+			"page": 67,
 			"pantheon": "Theros",
 			"title": "God of the Hunt",
 			"domains": [
@@ -9543,7 +9480,7 @@
 		{
 			"name": "Pharika",
 			"source": "MOT",
-			"page": 0,
+			"page": 70,
 			"pantheon": "Theros",
 			"title": "God of Affliction",
 			"domains": [
@@ -9846,7 +9783,7 @@
 		{
 			"name": "Phenax",
 			"source": "MOT",
-			"page": 0,
+			"page": 73,
 			"pantheon": "Theros",
 			"title": "God of Deception",
 			"domains": [
@@ -10132,11 +10069,6 @@
 			"name": "Pholtus",
 			"source": "PHB",
 			"page": 295,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Greyhawk",
 			"alignment": [
 				"L",
@@ -10184,7 +10116,7 @@
 		{
 			"name": "Purphoros",
 			"source": "MOT",
-			"page": 0,
+			"page": 76,
 			"pantheon": "Theros",
 			"title": "God of the Forge",
 			"domains": [
@@ -11982,7 +11914,7 @@
 		{
 			"name": "Thassa",
 			"source": "MOT",
-			"page": 0,
+			"page": 79,
 			"pantheon": "Theros",
 			"title": "God of the Sea",
 			"domains": [
@@ -13294,11 +13226,6 @@
 			"name": "Tyr",
 			"source": "PHB",
 			"page": 294,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Forgotten Realms",
 			"alignment": [
 				"L",
@@ -13315,11 +13242,6 @@
 			"name": "Tyr",
 			"source": "PHB",
 			"page": 299,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Norse",
 			"alignment": [
 				"L",
@@ -13342,11 +13264,6 @@
 			],
 			"source": "SCAG",
 			"page": 21,
-			"additionalSources": [
-				{
-					"source": "GGR"
-				}
-			],
 			"pantheon": "Faerûnian",
 			"alignment": [
 				"L",
@@ -13875,9 +13792,6 @@
 				{
 					"source": "XGE",
 					"page": 19
-				},
-				{
-					"source": "GGR"
 				}
 			],
 			"pantheon": "Greyhawk",

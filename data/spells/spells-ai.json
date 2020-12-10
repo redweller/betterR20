@@ -370,6 +370,9 @@
 			"damageInflict": [
 				"force"
 			],
+			"spellAttack": [
+				"R"
+			],
 			"miscTags": [
 				"SGT"
 			],
@@ -432,12 +435,13 @@
 					"type": "entries",
 					"name": "At Higher Levels",
 					"entries": [
-						"At Higher Levels. When you cast this spell using a spell slot of 4th level or higher, the temporary hit points increase by 5 for each slot level above 3rd."
+						"When you cast this spell using a spell slot of 4th level or higher, the temporary hit points increase by 5 for each slot level above 3rd."
 					]
 				}
 			],
 			"miscTags": [
-				"SGT"
+				"SGT",
+				"THP"
 			],
 			"areaTags": [
 				"MT"
