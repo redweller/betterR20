@@ -1,4 +1,5 @@
 dist/*
+scratch/*
 
 # Windows image file caches
 Thumbs.db

@@ -2058,7 +2058,7 @@
 				{
 					"ac": 18,
 					"from": [
-						"{@item scale mail +1||+1 scale mail}",
+						"{@item +1 scale mail}",
 						"{@item shield|phb}"
 					]
 				}
@@ -2157,7 +2157,7 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Talis has {@item scale mail +1||+1 scale mail} and a {@item wand of winter|hotdq}."
+						"Talis has {@item +1 scale mail} and a {@item wand of winter|hotdq}."
 					]
 				},
 				{
@@ -2245,7 +2245,7 @@
 			"wis": 9,
 			"cha": 7,
 			"skill": {
-				"perception": "+1"
+				"perception": "+2"
 			},
 			"senses": [
 				"darkvision 60 ft."

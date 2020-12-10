@@ -76,9 +76,9 @@ function d20plusEngine () {
 			}
 
 			// ensure tokens have editable sight
-			$("#tmpl_tokeneditor").replaceWith(d20plus.template_TokenEditor);
+			$("#tmpl_tokeneditor").replaceWith(d20plus.templates.templateTokenEditor);
 			// show dynamic lighting/etc page settings
-			$("#tmpl_pagesettings").replaceWith(d20plus.template_pageSettings);
+			$("#tmpl_pagesettings").replaceWith(d20plus.templates.templatePageSettings);
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
 				var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
@@ -1131,40 +1131,6 @@ function d20plusEngine () {
 	d20plus.engine._tempTopRenderLines = {}, // format: {x: ..., y: ..., to_x: ..., to_y: ..., ticks: ..., offset: ...}
 	// previously "enhanceSnap"
 	d20plus.engine.enhanceMouseDown = () => {
-		/**
-		 * Dumb variable names copy-pasted from uglified code
-		 * @param c x co-ord
-		 * @param u y c-ord
-		 * @returns {*[]} 2-len array; [0] = x and [1] = y
-		 */
-		function getClosestHexPoint (c, u) {
-			function getEuclidDist (x1, y1, x2, y2) {
-				return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-			}
-
-			const hx = d20.canvas_overlay.activeHexGrid.GetHexAt({
-				X: c,
-				Y: u
-			});
-
-			let minDist = 1000000;
-			let minPoint = [c, u];
-
-			function checkDist(x1, y1) {
-				const dist = getEuclidDist(x1, y1, c, u);
-				if (dist < minDist) {
-					minDist =  dist;
-					minPoint = [x1, y1];
-				}
-			}
-			hx.Points.forEach(pt => {
-				checkDist(pt.X, pt.Y);
-			});
-			checkDist(hx.MidPoint.X, hx.MidPoint.Y);
-
-			return minPoint;
-		}
-		
 		const R = d20plus.overwrites.canvasHandlerDown
 
 		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
@@ -1188,34 +1154,10 @@ function d20plusEngine () {
 
 	};
 
+	// needs to be called after `enhanceMeasureTool()`
 	d20plus.engine.enhanceMouseMove = () => {
-		// needs to be called after `enhanceMeasureTool()`
-		const $selMeasureMode = $(`#measure_mode`);
-		const $selRadMode = $(`#measure_mode_sel_2`);
-		const $iptConeWidth = $(`#measure_mode_ipt_3`);
-		const $selConeMode = $(`#measure_mode_sel_3`);
-		const $selBoxMode = $(`#measure_mode_sel_4`);
-		const $selLineMode = $(`#measure_mode_sel_5`);
-		const $iptLineWidth = $(`#measure_mode_ipt_5`);
-
-		// BEGIN ROLL20 CODE
-		// not used?
-		var x = function(e) {
-			e.type = "measuring",
-				e.time = (new Date).getTime(),
-				d20.textchat.sendShout(e)
-		}
-			, k = _.throttle(x, 200)
-			, E = function(e) {
-			k(e),
-			d20.tutorial && d20.tutorial.active && $(document.body).trigger("measure"),
-				d20.engine.receiveMeasureUpdate(e)
-		};
-		// END ROLL20 CODE
-
 		// add missing vars
 		var i = d20.engine.canvas;
-		var r = $("#editor-wrapper");
 
 		// Roll20 bug (present as of 2019-5-25) workaround
 		//   when box-selecting + moving tokens, the "object:moving" event throws an exception
@@ -1231,7 +1173,7 @@ function d20plusEngine () {
 			}
 		};
 
-		const I = d20plus.overwrites.canvasHandlerMove 
+		const I = d20plus.overwrites.canvasHandlerMove
 
 		if (FINAL_CANVAS_MOUSEMOVE_LIST.length) {
 			FINAL_CANVAS_MOUSEMOVE = (FINAL_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;

@@ -278,7 +278,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -359,7 +360,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -406,7 +408,7 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Arkhan wields Fane-Eater and wears a suit of Obsidian Flint Dragon Plate. The armor gives Arkhan advantage on ability checks and saving throws made to avoid or end the {@condition grappled} condition on him."
+						"Arkhan wields {@item Fane-Eater|bgdia} and wears a suit of {@item Obsidian Flint Dragon Plate|bgdia}. The armor gives Arkhan advantage on ability checks and saving throws made to avoid or end the {@condition grappled} condition on him."
 					]
 				}
 			],
@@ -503,10 +505,10 @@
 				"wis": "+12"
 			},
 			"skill": {
-				"arcana": "+14",
-				"deception": "+15",
-				"insight": "+11",
-				"persuasion": "+15"
+				"arcana": "+15",
+				"deception": "+16",
+				"insight": "+12",
+				"persuasion": "+16"
 			},
 			"senses": [
 				"truesight 120 ft."
@@ -520,7 +522,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -1084,7 +1087,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -1141,7 +1145,7 @@
 				{
 					"name": "Disgorge Allies {@recharge}",
 					"entries": [
-						"Crokek'toeck opens its mouth and disgorges {@dice 1d4} barlguras, {@dice 3d6} gnolls led by 1 gnoll fang of Yeenoghu, {@dice 6d6} dretches, or {@dice 1d3} vrocks. Each creature it disgorges appears in an unoccupied space within 30 feet of Crokek'toeck's mouth, or the next closest unoccupied space."
+						"Crokek'toeck opens its mouth and disgorges {@dice 1d4} {@creature barlgura||barlguras}, {@dice 3d6} {@creature gnoll||gnolls} led by 1 {@creature gnoll fang of Yeenoghu}, {@dice 6d6} {@creature dretch||dretches}, or {@dice 1d3} {@creature vrock||vrocks}. Each creature it disgorges appears in an unoccupied space within 30 feet of Crokek'toeck's mouth, or the next closest unoccupied space."
 					]
 				}
 			],
@@ -1530,7 +1534,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine or silvered"
+					"note": "from nonmagical attacks that aren't adamantine or silvered",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -1777,7 +1782,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2045,7 +2051,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2312,7 +2319,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -2724,7 +2732,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"vulnerable": [
@@ -2732,7 +2741,8 @@
 					"vulnerable": [
 						"piercing"
 					],
-					"note": "from magic weapons wielded by good creatures"
+					"note": "from magic weapons wielded by good creatures",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -3189,7 +3199,6 @@
 			"hasToken": true,
 			"damageTags": [
 				"A",
-				"F",
 				"N",
 				"P"
 			]
@@ -3821,7 +3830,7 @@
 				{
 					"ac": 18,
 					"from": [
-						"{@item leather armor +2||+2 leather armor}"
+						"{@item +2 leather armor}"
 					]
 				}
 			],
@@ -3853,7 +3862,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [

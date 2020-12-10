@@ -3260,8 +3260,6 @@ const betteR205etoolsMain = function () {
 
 	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import..." style="width: 1000px;">
 <p style="display: flex">
-	<button type="button" id="importlist-selectall" class="btn" style="margin: 0 2px;"><span>Select All</span></button>
-	<button type="button" id="importlist-deselectall" class="btn" style="margin: 0 2px;"><span>Deselect All</span></button>
 	<button type="button" id="importlist-selectvis" class="btn" style="margin: 0 2px;"><span>Select Visible</span></button>
 	<button type="button" id="importlist-deselectvis" class="btn" style="margin: 0 2px;"><span>Deselect Visible</span></button>
 	<span style="width:1px;background: #bbb;height: 26px;margin: 2px;"></span>

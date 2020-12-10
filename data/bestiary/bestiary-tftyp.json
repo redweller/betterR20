@@ -485,7 +485,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -1106,7 +1107,10 @@
 					}
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"traitTags": [
+				"Fey Ancestry"
+			]
 		},
 		{
 			"name": "Elder Black Pudding",
@@ -1430,7 +1434,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2489,7 +2494,7 @@
 			"wis": 9,
 			"cha": 3,
 			"skill": {
-				"stealth": "+4"
+				"stealth": "+5"
 			},
 			"senses": [
 				"blindsight 30 ft."
@@ -3390,7 +3395,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -3824,7 +3830,10 @@
 				"formula": "8d8 + 16"
 			},
 			"cr": "3",
-			"hasToken": true
+			"hasToken": true,
+			"actionTags": [
+				"Multiattack"
+			]
 		},
 		{
 			"name": "Obmi",
@@ -3934,7 +3943,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -4608,10 +4618,11 @@
 			"page": 242,
 			"otherSources": [
 				{
-					"source": "GoS"
+					"source": "LR"
 				},
 				{
-					"source": "LR"
+					"source": "GoS",
+					"page": 252
 				}
 			],
 			"size": "L",
@@ -4696,7 +4707,7 @@
 			"hasToken": true,
 			"altArt": [
 				{
-					"name": "Sea Lion (Alt)",
+					"name": "Sea Lion",
 					"source": "GoS"
 				}
 			],
@@ -4778,7 +4789,10 @@
 					"source": "PHB"
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"traitTags": [
+				"Fey Ancestry"
+			]
 		},
 		{
 			"name": "Sharwyn Hucrele",
@@ -5157,7 +5171,7 @@
 			"speed": {
 				"walk": {
 					"number": 30,
-					"condition": " (40 ft. in wolf form)"
+					"condition": "(40 ft. in wolf form)"
 				}
 			},
 			"str": 15,
@@ -5167,7 +5181,7 @@
 			"wis": 11,
 			"cha": 10,
 			"skill": {
-				"perception": "+4"
+				"perception": "+3"
 			},
 			"passive": 14,
 			"immune": [
@@ -5177,7 +5191,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -5271,6 +5286,9 @@
 			"traitTags": [
 				"Keen Senses",
 				"Shapechanger"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"C",
@@ -5547,7 +5565,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -5771,7 +5790,8 @@
 					"resist": [
 						"bludgeoning"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -6217,7 +6237,7 @@
 			},
 			"skill": {
 				"perception": "+3",
-				"stealth": "+7"
+				"stealth": "+6"
 			},
 			"senses": [
 				"darkvision 60 ft."
@@ -6231,7 +6251,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [

@@ -619,12 +619,6 @@ function d20plusImporter () {
 
 		$("#d20plus-importlist button").unbind("click");
 
-		$("#importlist-selectall").bind("click", () => {
-			d20plus.importer._importSelectAll(importList);
-		});
-		$("#importlist-deselectall").bind("click", () => {
-			d20plus.importer._importDeselectAll(importList);
-		});
 		$("#importlist-selectvis").bind("click", () => {
 			d20plus.importer._importSelectVisible(importList);
 		});

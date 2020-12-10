@@ -904,36 +904,37 @@ function d20plusMod() {
 
 	// shoutouts to Roll20 for making me learn how `yield` works
 	// BEGIN ROLL20 CODE
-	d20plus.mod.layerIteratorGenerator= function*(e) {
-        yield [this.map, "map"], 
+	d20plus.mod.layerIteratorGenerator = function*(e) {
+		yield [this.map, "map"],
 		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
-		this._save_map_layer = !1),
-		window.is_gm && "walls" === window.currentEditingLayer && (yield [this.walls, "walls"]);
-		
-		
-        const grid_before_afow = e && e.grid_before_afow,
-            adv_fow_enabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow,
-            grid_show = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
-			
-			
-        grid_before_afow && !grid_show && (yield [null, "grid"]),
-		!adv_fow_enabled && window.largefeats && (yield [null, "afow"]),
-		grid_before_afow || grid_show || (yield [null, "grid"])
-		
-		
-		
+			this._save_map_layer = !1);
+		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
+
+		const grid_before_afow = e && e.grid_before_afow;
+		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
+		const grid_hide = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+
+		if (grid_before_afow && !grid_hide) yield [null, "grid"];
+		if (!adv_fow_disabled) yield [null, "afow"];
+		if (!grid_before_afow && !grid_hide) yield [null, "grid"];
+
 		// BEGIN MOD
 		yield[this.background, "background"]
 		// END MOD
-		const o = e && e.enable_dynamic_fog;
-		yield [this.objects, "objects"], 
-		d20.dyn_fog.ready() && o && (yield [null, "lighting and fog"]),
+
+		yield[this.objects, "objects"];
+
 		// BEGIN MOD
-		yield[this.foreground, "foreground"],
+		yield[this.foreground, "foreground"];
 		// END MOD
-		window.is_gm && (yield [this.gmlayer, "gmlayer"]);
+
+		if (window.is_gm) yield [this.gmlayer, "gmlayer"];
+
+		const enable_dynamic_fog = e && e.enable_dynamic_fog;
+		if (d20.dyn_fog.ready() && enable_dynamic_fog) yield [null, "lighting and fog"];
+
 		// BEGIN MOD
-		window.is_gm && "weather" === window.currentEditingLayer && (yield[this.weather, "weather"]);
+		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
 		// END MOD
 	};
 	// END ROLL20 CODE

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.18.5";
+const SCRIPT_VERSION = "1.19.1";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -141,13 +141,15 @@ const SCRIPTS = {
 			"base-art-browse",
 			"overwrites/base",
 			"overwrites/canvas-handler",
-			"overwrites/canvas-handler-default",
 			"base-engine",
 			"base-weather",
 			"base-journal",
 			"base-css",
 			"base-ui",
 			"base-mod",
+			"templates/base",
+			"templates/template-token-editor",
+			"templates/template-page-settings",
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
@@ -175,13 +177,15 @@ const SCRIPTS = {
 			"base-art-browse",
 			"overwrites/base",
 			"overwrites/canvas-handler",
-			"overwrites/canvas-handler-default",
 			"base-engine",
 			"base-weather",
 			"base-journal",
 			"base-css",
 			"base-ui",
 			"base-mod",
+			"templates/base",
+			"templates/template-token-editor",
+			"templates/template-page-settings",
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",

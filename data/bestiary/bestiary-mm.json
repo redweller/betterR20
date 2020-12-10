@@ -16,6 +16,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -292,6 +295,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -453,6 +459,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -545,6 +554,7 @@
 		},
 		{
 			"name": "Adult Black Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 88,
 			"srd": true,
@@ -929,6 +939,7 @@
 		},
 		{
 			"name": "Adult Blue Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 91,
 			"srd": true,
@@ -1114,6 +1125,7 @@
 		},
 		{
 			"name": "Adult Brass Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 105,
 			"srd": true,
@@ -1309,6 +1321,7 @@
 		},
 		{
 			"name": "Adult Bronze Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 108,
 			"srd": true,
@@ -1527,6 +1540,7 @@
 		},
 		{
 			"name": "Adult Copper Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 112,
 			"srd": true,
@@ -1716,6 +1730,7 @@
 		},
 		{
 			"name": "Adult Gold Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 114,
 			"srd": true,
@@ -1924,6 +1939,7 @@
 		},
 		{
 			"name": "Adult Green Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 94,
 			"srd": true,
@@ -2116,6 +2132,7 @@
 		},
 		{
 			"name": "Adult Red Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 98,
 			"srd": true,
@@ -2306,6 +2323,7 @@
 		},
 		{
 			"name": "Adult Silver Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 117,
 			"srd": true,
@@ -2507,6 +2525,7 @@
 		},
 		{
 			"name": "Adult White Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 101,
 			"srd": true,
@@ -2746,6 +2765,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -2786,7 +2808,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2953,6 +2976,7 @@
 		},
 		{
 			"name": "Ancient Black Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 87,
 			"srd": true,
@@ -3130,12 +3154,16 @@
 		},
 		{
 			"name": "Ancient Blue Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 90,
 			"srd": true,
 			"otherSources": [
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "G",
@@ -3308,6 +3336,7 @@
 		},
 		{
 			"name": "Ancient Brass Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 104,
 			"srd": true,
@@ -3505,6 +3534,7 @@
 		},
 		{
 			"name": "Ancient Bronze Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 107,
 			"srd": true,
@@ -3711,6 +3741,7 @@
 		},
 		{
 			"name": "Ancient Copper Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 110,
 			"srd": true,
@@ -3907,6 +3938,7 @@
 		},
 		{
 			"name": "Ancient Gold Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 113,
 			"srd": true,
@@ -4107,6 +4139,7 @@
 		},
 		{
 			"name": "Ancient Green Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 93,
 			"srd": true,
@@ -4299,6 +4332,7 @@
 		},
 		{
 			"name": "Ancient Red Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 97,
 			"srd": true,
@@ -4308,6 +4342,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "G",
@@ -4480,6 +4517,7 @@
 		},
 		{
 			"name": "Ancient Silver Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 116,
 			"srd": true,
@@ -4673,6 +4711,7 @@
 		},
 		{
 			"name": "Ancient White Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 100,
 			"srd": true,
@@ -4682,6 +4721,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "G",
@@ -4917,7 +4959,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -5097,6 +5140,7 @@
 				"CC"
 			],
 			"miscTags": [
+				"AOE",
 				"MW"
 			],
 			"conditionInflict": [
@@ -5143,6 +5187,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -5504,6 +5554,12 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -5547,8 +5603,8 @@
 			},
 			"skill": {
 				"arcana": "+13",
-				"deception": "+9",
-				"insight": "+9",
+				"deception": "+11",
+				"insight": "+11",
 				"perception": "+7"
 			},
 			"senses": [
@@ -5565,7 +5621,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -5747,6 +5804,12 @@
 			],
 			"miscTags": [
 				"MW"
+			],
+			"conditionInflictSpell": [
+				"frightened",
+				"incapacitated",
+				"invisible",
+				"paralyzed"
 			]
 		},
 		{
@@ -5784,6 +5847,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -6031,6 +6097,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -6174,6 +6246,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "S",
@@ -6268,6 +6343,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -6360,6 +6438,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -6668,6 +6749,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "H",
@@ -6722,7 +6806,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -6875,6 +6960,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -7009,6 +7097,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -7143,6 +7234,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -7191,7 +7285,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -7300,6 +7395,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -7357,7 +7458,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -7639,6 +7741,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -7727,6 +7832,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -7817,6 +7925,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -7868,7 +7979,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -8098,6 +8210,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -8174,18 +8289,78 @@
 					"name": "Eye Rays",
 					"entries": [
 						"The beholder shoots three of the following magical eye rays at random (reroll duplicates), choosing one to three targets it can see within 120 feet of it:",
-						"{@i 1. Charm Ray.} The targeted creature must succeed on a {@dc 16} Wisdom saving throw or be {@condition charmed} by the beholder for 1 hour, or until the beholder harms the creature.",
-						"{@i 2. Paralyzing Ray.} The targeted creature must succeed on a {@dc 16} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"{@i 3. Fear Ray.} The targeted creature must succeed on a {@dc 16} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"{@i 4. Slowing Ray.} The targeted creature must succeed on a {@dc 16} Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn, not both. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"{@i 5. Enervation Ray.} The targeted creature must make a {@dc 16} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one.",
-						"{@i 6. Telekinetic Ray.} If the target is a creature, it must succeed on a {@dc 16} Strength saving throw or the beholder moves it up to 30 feet in any direction. It is {@condition restrained} by the ray's telekinetic grip until the start of the beholder's next turn or until the beholder is {@condition incapacitated}.",
-						"If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 feet in any direction. The beholder can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or a container.",
-						"{@i 7. Sleep Ray.} The targeted creature must succeed on a {@dc 16} Wisdom saving throw or fall asleep and remain {@condition unconscious} for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on constructs and undead.",
-						"{@i 8. Petrification Ray.} The targeted creature must make a {@dc 16} Dexterity saving throw. On a failed save, the creature begins to turn to stone and is {@condition restrained}. It must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the creature is {@condition petrified} until freed by the  {@spell greater restoration} spell or other magic.",
-						"{@i 9. Disintegration Ray.} If the target is a creature, it must succeed on a {@dc 16} Dexterity saving throw or take 45 ({@damage 10d8}) force damage. If this damage reduces the creature to 0 hit points, its body becomes a pile of fine gray dust.",
-						"If the target is a Large or smaller nonmagical object or creation of magical force, it is disintegrated without a saving throw. If the target is a Huge or larger object or creation of magical force, this ray disintegrates a 10-foot cube of it.",
-						"{@i 10. Death Ray.} The targeted creature must succeed on a {@dc 16} Dexterity saving throw or take 55 ({@damage 10d10}) necrotic damage. The target dies if the ray reduces it to 0 hit points."
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "1. Charm Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 16} Wisdom saving throw or be {@condition charmed} by the beholder for 1 hour, or until the beholder harms the creature."
+								},
+								{
+									"type": "item",
+									"name": "2. Paralyzing Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 16} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "3. Fear Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 16} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "4. Slowing Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 16} Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn, not both. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "5. Enervation Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must make a {@dc 16} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one."
+								},
+								{
+									"type": "item",
+									"name": "6. Telekinetic Ray.",
+									"style": "italic",
+									"entries": [
+										"If the target is a creature, it must succeed on a {@dc 16} Strength saving throw or the beholder moves it up to 30 feet in any direction. It is {@condition restrained} by the ray's telekinetic grip until the start of the beholder's next turn or until the beholder is {@condition incapacitated}.",
+										"If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 feet in any direction. The beholder can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or a container."
+									]
+								},
+								{
+									"type": "item",
+									"name": "7. Sleep Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 16} Wisdom saving throw or fall asleep and remain {@condition unconscious} for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on constructs and undead."
+								},
+								{
+									"type": "item",
+									"name": "8. Petrification Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must make a {@dc 16} Dexterity saving throw. On a failed save, the creature begins to turn to stone and is {@condition restrained}. It must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the creature is {@condition petrified} until freed by the  {@spell greater restoration} spell or other magic."
+								},
+								{
+									"type": "item",
+									"name": "9. Disintegration Ray.",
+									"style": "italic",
+									"entries": [
+										"If the target is a creature, it must succeed on a {@dc 16} Dexterity saving throw or take 45 ({@damage 10d8}) force damage. If this damage reduces the creature to 0 hit points, its body becomes a pile of fine gray dust.",
+										"If the target is a Large or smaller nonmagical object or creation of magical force, it is disintegrated without a saving throw. If the target is a Huge or larger object or creation of magical force, this ray disintegrates a 10-foot cube of it."
+									]
+								},
+								{
+									"type": "item",
+									"name": "10. Death Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 16} Dexterity saving throw or take 55 ({@damage 10d10}) necrotic damage. The target dies if the ray reduces it to 0 hit points."
+								}
+							]
+						}
 					]
 				}
 			],
@@ -8321,11 +8496,39 @@
 					"name": "Eye Ray",
 					"entries": [
 						"The zombie uses a random magical eye ray, choosing a target that it can see within 60 feet of it.",
-						"1. Paralyzing Ray. The targeted creature must succeed on a {@dc 14} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"2. Fear Ray. The targeted creature must succeed on a {@dc 14} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"3. Enervation Ray. The targeted creature must make a {@dc 14} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one.",
-						"4. Disintegration Ray. If the target is a creature, it must succeed on a {@dc 14} Dexterity saving throw or take 45 ({@damage 10d8}) force damage. If this damage reduces the creature to 0 hit points, its body becomes a pile of fine gray dust.",
-						"If the target is a Large or smaller nonmagical object or creation of magical force, it is disintegrated without a saving throw. If the target is a Huge or larger nonmagical object or creation of magical force, this ray disintegrates a 10-foot cube of it."
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "1. Paralyzing Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 14} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "2. Fear Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 14} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "3. Enervation Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must make a {@dc 14} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one."
+								},
+								{
+									"type": "item",
+									"name": "4. Disintegration Ray.",
+									"style": "italic",
+									"entries": [
+										"If the target is a creature, it must succeed on a {@dc 14} Dexterity saving throw or take 45 ({@damage 10d8}) force damage. If this damage reduces the creature to 0 hit points, its body becomes a pile of fine gray dust.",
+										"If the target is a Large or smaller nonmagical object or creation of magical force, it is disintegrated without a saving throw. If the target is a Huge or larger nonmagical object or creation of magical force, this ray disintegrates a 10-foot cube of it."
+									]
+								}
+							]
+						}
 					]
 				}
 			],
@@ -8403,6 +8606,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -8592,6 +8798,7 @@
 		},
 		{
 			"name": "Black Dragon Wyrmling",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 88,
 			"srd": true,
@@ -8723,6 +8930,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -8842,6 +9052,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -9015,6 +9228,7 @@
 		},
 		{
 			"name": "Blue Dragon Wyrmling",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 91,
 			"srd": true,
@@ -9116,6 +9330,9 @@
 			"otherSources": [
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -9415,7 +9632,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -9772,6 +9990,7 @@
 		},
 		{
 			"name": "Brass Dragon Wyrmling",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 106,
 			"srd": true,
@@ -9882,6 +10101,7 @@
 		},
 		{
 			"name": "Bronze Dragon Wyrmling",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 109,
 			"srd": true,
@@ -10021,6 +10241,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -10142,6 +10365,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -10386,6 +10615,9 @@
 				},
 				{
 					"source": "SKT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -10680,7 +10912,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -10898,6 +11131,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -11024,6 +11260,12 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "T",
@@ -11374,7 +11616,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -11931,7 +12174,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -12502,6 +12746,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -12663,6 +12913,7 @@
 		},
 		{
 			"name": "Copper Dragon Wyrmling",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 111,
 			"srd": true,
@@ -12788,6 +13039,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -12838,7 +13092,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -12942,6 +13197,12 @@
 			"miscTags": [
 				"MW",
 				"RCH"
+			],
+			"conditionInflict": [
+				"grappled",
+				"poisoned",
+				"restrained",
+				"unconscious"
 			]
 		},
 		{
@@ -13052,6 +13313,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -13287,6 +13551,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -13480,6 +13750,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -13698,6 +13971,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -14085,6 +14361,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -14282,6 +14561,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -14563,18 +14845,78 @@
 					"name": "Eye Rays",
 					"entries": [
 						"The death tyrant shoots three of the following magical eye rays at random (reroll duplicates), choosing one to three targets it can see within 120 feet of it:",
-						"1. Charm Ray. The targeted creature must succeed on a {@dc 17} Wisdom saving throw or be {@condition charmed} by the death tyrant for 1 hour, or until the death tyrant harms the creature.",
-						"2. Paralyzing Ray. The targeted creature must succeed on a {@dc 17} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"3. Fear Ray. The targeted creature must succeed on a {@dc 17} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"4. Slowing Ray. The targeted creature must succeed on a {@dc 17} Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn, not both. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"5. Enervation Ray. The targeted creature must make a {@dc 17} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one.",
-						"6. Telekinetic Ray. If the target is a creature, it must succeed on a {@dc 17} Strength saving throw or the death tyrant moves it up to 30 feet in any direction. It is {@condition restrained} by the ray's telekinetic grip until the start of the death tyrant's next turn or until the death tyrant is {@condition incapacitated}.",
-						"If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 feet in any direction. The death tyrant can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or a container.",
-						"7. Sleep Ray. The targeted creature must succeed on a {@dc 17} Wisdom saving throw or fall asleep and remain {@condition unconscious} for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on constructs and undead.",
-						"8. Petrification Ray. The targeted creature must make a {@dc 17} Dexterity saving throw. On a failed save, the creature begins to turn to stone and is {@condition restrained}. It must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the creature is {@condition petrified} until freed by the  {@spell greater restoration} spell or other magic.",
-						"9. Disintegration Ray. If the target is a creature, it must succeed on a {@dc 17} Dexterity saving throw or take 45 ({@damage 10d8}) force damage. If this damage reduces the creature to 0 hit points, its body becomes a pile of fine gray dust.",
-						"If the target is a Large or smaller nonmagical object or creation of magical force, it is disintegrated without a saving throw. If the target is a Huge or larger object or creation of magical force, this ray disintegrates a 10-foot cube of it.",
-						"10. Death Ray. The targeted creature must succeed on a {@dc 17} Dexterity saving throw or take 55 ({@damage 10d10}) necrotic damage. The target dies if the ray reduces it to 0 hit points."
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "1. Charm Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 17} Wisdom saving throw or be {@condition charmed} by the death tyrant for 1 hour, or until the death tyrant harms the creature."
+								},
+								{
+									"type": "item",
+									"name": "2. Paralyzing Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 17} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "3. Fear Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 17} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "4. Slowing Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 17} Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn, not both. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "5. Enervation Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must make a {@dc 17} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one."
+								},
+								{
+									"type": "item",
+									"name": "6. Telekinetic Ray.",
+									"style": "italic",
+									"entries": [
+										"If the target is a creature, it must succeed on a {@dc 17} Strength saving throw or the death tyrant moves it up to 30 feet in any direction. It is {@condition restrained} by the ray's telekinetic grip until the start of the death tyrant's next turn or until the death tyrant is {@condition incapacitated}.",
+										"If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 feet in any direction. The death tyrant can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or a container."
+									]
+								},
+								{
+									"type": "item",
+									"name": "7. Sleep Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 17} Wisdom saving throw or fall asleep and remain {@condition unconscious} for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on constructs and undead."
+								},
+								{
+									"type": "item",
+									"name": "8. Petrification Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must make a {@dc 17} Dexterity saving throw. On a failed save, the creature begins to turn to stone and is {@condition restrained}. It must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the creature is {@condition petrified} until freed by the  {@spell greater restoration} spell or other magic."
+								},
+								{
+									"type": "item",
+									"name": "9. Disintegration Ray.",
+									"style": "italic",
+									"entries": [
+										"If the target is a creature, it must succeed on a {@dc 17} Dexterity saving throw or take 45 ({@damage 10d8}) force damage. If this damage reduces the creature to 0 hit points, its body becomes a pile of fine gray dust.",
+										"If the target is a Large or smaller nonmagical object or creation of magical force, it is disintegrated without a saving throw. If the target is a Huge or larger object or creation of magical force, this ray disintegrates a 10-foot cube of it."
+									]
+								},
+								{
+									"type": "item",
+									"name": "10. Death Ray.",
+									"style": "italic",
+									"entry": "The targeted creature must succeed on a {@dc 17} Dexterity saving throw or take 55 ({@damage 10d10}) necrotic damage. The target dies if the ray reduces it to 0 hit points."
+								}
+							]
+						}
 					]
 				}
 			],
@@ -14844,6 +15186,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -14895,7 +15240,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from magic weapons"
+					"note": "from magic weapons",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -14908,7 +15254,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -15097,7 +15444,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -15215,6 +15563,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -15408,6 +15759,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -15612,6 +15966,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -16370,7 +16727,7 @@
 							"type": "entries",
 							"entries": [
 								"Drow often wear magic armor and carry magic weapons that lose their enhancement bonuses permanently if they are exposed to sunlight for 1 hour or longer.",
-								"A {@creature drow} wearing a {@item chain shirt +1||+1 chain shirt} and carrying a {@item shortsword +1||+1 shortsword} has AC 16 and a +1 bonus on attack and damage rolls with shortsword attacks."
+								"A {@creature drow} wearing a {@item +1 chain shirt} and carrying a {@item +1 shortsword} has AC 16 and a +1 bonus on attack and damage rolls with shortsword attacks."
 							]
 						}
 					]
@@ -16432,6 +16789,9 @@
 				},
 				{
 					"source": "SLW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -16555,7 +16915,7 @@
 							"type": "entries",
 							"entries": [
 								"Drow often wear magic armor and carry magic weapons that lose their enhancement bonuses permanently if they are exposed to sunlight for 1 hour or longer.",
-								"A {@creature drow elite warrior} wearing {@item studded leather armor +2||+2 studded leather} and carrying a {@item shortsword +2||+2 shortsword} has AC 20 and a +2 bonus on attack and damage rolls with shortsword attacks."
+								"A {@creature drow elite warrior} wearing {@item +2 Studded Leather Armor||+2 studded leather} and carrying a {@item +2 shortsword} has AC 20 and a +2 bonus on attack and damage rolls with shortsword attacks."
 							]
 						}
 					]
@@ -16625,6 +16985,9 @@
 				},
 				{
 					"source": "DIP"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -16661,7 +17024,7 @@
 			"cha": 12,
 			"skill": {
 				"arcana": "+6",
-				"deception": "+5",
+				"deception": "+4",
 				"perception": "+4",
 				"stealth": "+5"
 			},
@@ -16995,7 +17358,7 @@
 							"type": "entries",
 							"entries": [
 								"Drow often wear magic armor and carry magic weapons that lose their enhancement bonuses permanently if they are exposed to sunlight for 1 hour or longer.",
-								"A {@creature drow priestess of lolth} wearing {@item scale mail +3||+3 scale mail} has AC 19."
+								"A {@creature drow priestess of lolth} wearing {@item +3 scale mail} has AC 19."
 							]
 						}
 					]
@@ -17079,6 +17442,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -17210,6 +17576,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -17367,6 +17736,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -17820,6 +18192,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -17861,7 +18236,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -17959,6 +18335,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -18207,6 +18586,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -18362,7 +18744,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -18548,7 +18931,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -19961,6 +20345,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -19995,7 +20382,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -20279,7 +20667,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -20378,6 +20767,12 @@
 				},
 				{
 					"source": "RMBRE"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "T",
@@ -20582,6 +20977,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -20618,7 +21016,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -20839,6 +21238,9 @@
 				},
 				{
 					"source": "WDH"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -20946,6 +21348,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "S",
@@ -21232,6 +21640,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -21356,6 +21767,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -21378,7 +21792,7 @@
 			"speed": {
 				"walk": {
 					"number": 15,
-					"condition": " (30 ft. when rolling, 60 ft. rolling downhill)"
+					"condition": "(30 ft. when rolling, 60 ft. rolling downhill)"
 				}
 			},
 			"str": 20,
@@ -21399,7 +21813,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -21507,6 +21922,9 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -21548,7 +21966,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -21741,6 +22160,9 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -22025,6 +22447,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -22068,7 +22496,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -22203,6 +22632,12 @@
 				},
 				{
 					"source": "RMBRE"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -22472,6 +22907,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -22657,6 +23095,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "S",
@@ -23446,6 +23887,9 @@
 				},
 				{
 					"source": "SLW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -23620,6 +24064,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -23727,6 +24174,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -23953,6 +24403,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -24047,6 +24500,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "S",
@@ -24340,6 +24796,9 @@
 				},
 				{
 					"source": "LR"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -24472,6 +24931,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -24593,6 +25055,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -24703,6 +25168,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -24967,6 +25435,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -25079,6 +25550,12 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -25568,6 +26045,10 @@
 							"{@spell jump}",
 							"{@spell see invisibility}",
 							"{@spell shield}"
+						],
+						"1e": [
+							"{@spell phantasmal killer}",
+							"{@spell plane shift}"
 						]
 					},
 					"ability": "wis"
@@ -25692,7 +26173,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -25836,6 +26318,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -25978,6 +26463,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -26086,6 +26574,9 @@
 			"otherSources": [
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -26353,6 +26844,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -26465,6 +26959,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "S",
@@ -26587,6 +27087,12 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "S",
@@ -26703,6 +27209,7 @@
 		},
 		{
 			"name": "Gold Dragon Wyrmling",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 115,
 			"srd": true,
@@ -26992,7 +27499,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -27422,6 +27930,7 @@
 		},
 		{
 			"name": "Green Dragon Wyrmling",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 95,
 			"srd": true,
@@ -27545,6 +28054,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -27755,6 +28267,9 @@
 			"otherSources": [
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -27955,6 +28470,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -28116,7 +28634,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"cr": "2",
@@ -28219,7 +28738,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"cr": "7",
@@ -28312,6 +28832,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -28869,7 +29392,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -29041,6 +29565,9 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -29128,6 +29655,7 @@
 		},
 		{
 			"name": "Half-Red Dragon Veteran",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 180,
 			"srd": true,
@@ -29177,8 +29705,8 @@
 			"wis": 11,
 			"cha": 10,
 			"skill": {
-				"athletics": "+5",
-				"perception": "+2"
+				"athletics": "+6",
+				"perception": "+3"
 			},
 			"senses": [
 				"blindsight 10 ft.",
@@ -29279,6 +29807,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -29377,6 +29908,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -29607,6 +30141,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -29651,7 +30188,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -29707,7 +30245,8 @@
 				"path": "bestiary/helmed-horror.mp3"
 			},
 			"traitTags": [
-				"Magic Resistance"
+				"Magic Resistance",
+				"Spell Immunity"
 			],
 			"senseTags": [
 				"B"
@@ -29798,7 +30337,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -30802,7 +31342,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -31022,6 +31563,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -31207,6 +31751,9 @@
 			"otherSources": [
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -31259,7 +31806,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -31394,6 +31942,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "S",
@@ -31552,6 +32103,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "T",
@@ -31600,7 +32154,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks not made with silvered weapons"
+					"note": "from nonmagical attacks not made with silvered weapons",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -31714,6 +32269,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -31771,7 +32329,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -31905,7 +32464,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -31920,7 +32480,7 @@
 				{
 					"name": "Detect Sentience",
 					"entries": [
-						"The intellect devourer can sense the presence and location of any creature within 300 feet of it that has an Intelligence of 3 or higher, regardless of interposing barriers, unless the creature is protected by a mind blank spell."
+						"The intellect devourer can sense the presence and location of any creature within 300 feet of it that has an Intelligence of 3 or higher, regardless of interposing barriers, unless the creature is protected by a {@spell mind blank} spell."
 					]
 				}
 			],
@@ -32019,6 +32579,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -32062,7 +32625,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -32159,6 +32723,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -32201,7 +32768,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -32432,7 +33000,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -32636,6 +33205,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -33085,7 +33657,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -33424,7 +33997,7 @@
 			"cha": 14,
 			"skill": {
 				"perception": "+9",
-				"religion": "+6"
+				"religion": "+7"
 			},
 			"senses": [
 				"darkvision 120 ft."
@@ -33597,7 +34170,7 @@
 					"ac": 13,
 					"from": [
 						"natural armor",
-						"unarmored defense"
+						"Unarmored Defense"
 					]
 				}
 			],
@@ -33617,7 +34190,7 @@
 			"cha": 11,
 			"skill": {
 				"perception": "+6",
-				"religion": "+4"
+				"religion": "+5"
 			},
 			"senses": [
 				"darkvision 120 ft."
@@ -33759,7 +34332,7 @@
 			"cha": 11,
 			"skill": {
 				"perception": "+6",
-				"religion": "+4"
+				"religion": "+5"
 			},
 			"senses": [
 				"darkvision 120 ft."
@@ -34119,6 +34692,12 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -34178,7 +34757,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -34551,6 +35131,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -34844,6 +35427,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -35077,7 +35663,7 @@
 				{
 					"name": "Bite",
 					"entries": [
-						"{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}5 ({@damage 1d6 + 2}) piercing damage, or 7 ({@damage 1d10 + 2}) piercing damage in crocodile form. If the lizardfolk is in crocodile form and the target is a Large or smaller creature, the target is {@condition grappled} (escape {@dc 12}). Until this grapple ends, the target is {@condition restrained}, and the lizardfolk can't bite another target. If the lizardfolk reverts to its true form, the grapple ends."
+						"{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}5 ({@damage 1d6 + 2}) piercing damage, or 7 ({@damage 1d10 + 2}) piercing damage in {@creature crocodile} form. If the lizardfolk is in crocodile form and the target is a Large or smaller creature, the target is {@condition grappled} (escape {@dc 12}). Until this grapple ends, the target is {@condition restrained}, and the lizardfolk can't bite another target. If the lizardfolk reverts to its true form, the grapple ends."
 					]
 				},
 				{
@@ -35089,7 +35675,7 @@
 				{
 					"name": "Change Shape (Recharges after a Short or Long Rest)",
 					"entries": [
-						"The lizardfolk magically polymorphs into a crocodile, remaining in that form for up to 1 hour. It can revert to its true form as a bonus action. Its statistics, other than its size, are the same in each form. Any equipment it is wearing or carrying isn't transformed. It reverts to its true form if it dies."
+						"The lizardfolk magically polymorphs into a {@creature crocodile}, remaining in that form for up to 1 hour. It can revert to its true form as a bonus action. Its statistics, other than its size, are the same in each form. Any equipment it is wearing or carrying isn't transformed. It reverts to its true form if it dies."
 					]
 				}
 			],
@@ -35104,6 +35690,9 @@
 			},
 			"traitTags": [
 				"Hold Breath"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"DR"
@@ -35183,6 +35772,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -35532,7 +36127,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -35594,6 +36190,9 @@
 			"otherSources": [
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -35921,6 +36520,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -36118,6 +36720,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -36172,7 +36777,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -36624,6 +37230,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -36799,7 +37408,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -36958,6 +37568,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -37095,6 +37708,12 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -38040,6 +38659,12 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -38083,7 +38708,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -38164,6 +38790,9 @@
 				},
 				{
 					"source": "SKT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -38216,7 +38845,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"vulnerable": [
@@ -38563,6 +39193,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -38869,7 +39502,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -38975,6 +39609,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -39085,6 +39722,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -39115,10 +39758,10 @@
 			"wis": 14,
 			"cha": 16,
 			"skill": {
-				"deception": "+7",
-				"insight": "+6",
-				"perception": "+6",
-				"stealth": "+6"
+				"deception": "+6",
+				"insight": "+5",
+				"perception": "+5",
+				"stealth": "+5"
 			},
 			"senses": [
 				"darkvision 120 ft."
@@ -39133,7 +39776,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -39472,6 +40116,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -39580,6 +40227,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -39704,6 +40354,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -39759,7 +40412,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -40024,6 +40678,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "S",
@@ -40162,6 +40819,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -40270,6 +40930,9 @@
 				},
 				{
 					"source": "SDW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -40376,6 +41039,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -40559,6 +41225,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -40683,6 +41352,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -40837,6 +41509,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -41243,6 +41918,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -41363,6 +42041,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -41772,6 +42453,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -41813,7 +42497,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -41908,6 +42593,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -42021,6 +42709,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -42118,6 +42809,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -42170,7 +42864,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -42470,7 +43165,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -42593,6 +43289,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -42763,6 +43462,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -42855,6 +43557,9 @@
 			"otherSources": [
 				{
 					"source": "CoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -42900,7 +43605,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -43098,6 +43804,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -43242,6 +43954,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -43686,6 +44401,9 @@
 			"otherSources": [
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -43791,6 +44509,9 @@
 			"otherSources": [
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -43877,6 +44598,9 @@
 			"otherSources": [
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -44020,6 +44744,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "T",
@@ -44066,7 +44793,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -44176,6 +44904,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -44265,6 +44996,9 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -44309,7 +45043,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"vulnerable": [
@@ -44317,7 +45052,8 @@
 					"vulnerable": [
 						"piercing"
 					],
-					"note": "from magic weapons wielded by good creatures"
+					"note": "from magic weapons wielded by good creatures",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -44428,6 +45164,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -44503,6 +45242,9 @@
 			"otherSources": [
 				{
 					"source": "CoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -44568,6 +45310,7 @@
 		},
 		{
 			"name": "Red Dragon Wyrmling",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 98,
 			"srd": true,
@@ -44678,6 +45421,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -44918,6 +45664,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "H",
@@ -45196,6 +45945,9 @@
 				},
 				{
 					"source": "WDH"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -45364,6 +46116,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "G",
@@ -45750,6 +46505,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -45842,6 +46600,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -46436,7 +47197,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -46710,7 +47472,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -46908,6 +47671,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -47033,6 +47799,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -47299,6 +48068,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -47342,7 +48117,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -47445,6 +48221,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -47497,7 +48276,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -47739,6 +48519,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -47934,12 +48717,16 @@
 		},
 		{
 			"name": "Silver Dragon Wyrmling",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 118,
 			"srd": true,
 			"otherSources": [
 				{
 					"source": "SKT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -48096,6 +48883,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -48188,6 +48978,9 @@
 			"otherSources": [
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -48466,7 +49259,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -48637,6 +49431,9 @@
 				},
 				{
 					"source": "RMBRE"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -48698,10 +49495,36 @@
 					"name": "Eye Rays",
 					"entries": [
 						"The spectator shoots up to two of the following magical eye rays at one or two creatures it can see within 90 feet of it. It can use each ray only once on a turn.",
-						"1. Confusion Ray. The target must succeed on a {@dc 13} Wisdom saving throw, or it can't take reactions until the end of its next turn. On its turn, the target can't move, and it uses its action to make a melee or ranged attack against a randomly determined creature within range. If the target can't attack, it does nothing on its turn.",
-						"2. Paralyzing Ray. The target must succeed on a {@dc 13} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-						"3. Fear Ray. The target must succeed on a {@dc 13} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, with disadvantage if the spectator is visible to the target, ending the effect on itself on a success.",
-						"4. Wounding Ray. The target must make a {@dc 13} Constitution saving throw, taking 16 ({@damage 3d10}) necrotic damage on a failed save, or half as much damage on a successful one."
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "1. Confusion Ray.",
+									"style": "italic",
+									"entry": "The target must succeed on a {@dc 13} Wisdom saving throw, or it can't take reactions until the end of its next turn. On its turn, the target can't move, and it uses its action to make a melee or ranged attack against a randomly determined creature within range. If the target can't attack, it does nothing on its turn."
+								},
+								{
+									"type": "item",
+									"name": "2. Paralyzing Ray.",
+									"style": "italic",
+									"entry": "The target must succeed on a {@dc 13} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "3. Fear Ray.",
+									"style": "italic",
+									"entry": "The target must succeed on a {@dc 13} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, with disadvantage if the spectator is visible to the target, ending the effect on itself on a success."
+								},
+								{
+									"type": "item",
+									"name": "4. Wounding Ray.",
+									"style": "italic",
+									"entry": "The target must make a {@dc 13} Constitution saving throw, taking 16 ({@damage 3d10}) necrotic damage on a failed save, or half as much damage on a successful one."
+								}
+							]
+						}
 					]
 				},
 				{
@@ -48806,6 +49629,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -48851,7 +49680,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -49073,7 +49903,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -49507,6 +50338,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -50100,7 +50934,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -50387,6 +51222,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -50444,7 +51282,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -51224,6 +52063,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -51334,6 +52176,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -51665,6 +52513,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "G",
@@ -51716,7 +52570,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -52059,6 +52914,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -52302,6 +53163,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "H",
@@ -52444,6 +53311,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -53311,7 +54181,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -53470,6 +54341,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -53587,6 +54461,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -53744,7 +54621,8 @@
 				"D"
 			],
 			"actionTags": [
-				"Multiattack"
+				"Multiattack",
+				"Teleport"
 			],
 			"languageTags": [
 				"CE",
@@ -53801,6 +54679,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -53856,7 +54737,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -53975,12 +54857,16 @@
 			},
 			"traitTags": [
 				"Legendary Resistances",
+				"Light Sensitivity",
 				"Regeneration",
 				"Shapechanger",
 				"Spider Climb"
 			],
 			"senseTags": [
 				"SD"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"LF"
@@ -54032,6 +54918,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -54081,7 +54970,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -54142,6 +55032,7 @@
 				"path": "bestiary/vampire-spawn.mp3"
 			},
 			"traitTags": [
+				"Light Sensitivity",
 				"Regeneration",
 				"Spider Climb"
 			],
@@ -54225,7 +55116,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -54399,12 +55291,16 @@
 			},
 			"traitTags": [
 				"Legendary Resistances",
+				"Light Sensitivity",
 				"Regeneration",
 				"Shapechanger",
 				"Spider Climb"
 			],
 			"senseTags": [
 				"SD"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"LF"
@@ -54486,7 +55382,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -54617,6 +55514,7 @@
 			},
 			"traitTags": [
 				"Legendary Resistances",
+				"Light Sensitivity",
 				"Regeneration",
 				"Shapechanger",
 				"Spider Climb"
@@ -54699,6 +55597,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -55021,6 +55922,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -55075,7 +55979,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -55344,31 +56249,31 @@
 							"rows": [
 								[
 									"12",
-									"Leather"
+									"{@item Leather barding|phb|Leather}"
 								],
 								[
 									"13",
-									"Studded leather"
+									"{@item Studded leather barding|phb|Studded leather}"
 								],
 								[
 									"14",
-									"Ring mail"
+									"{@item Ring mail barding|phb|Ring mail}"
 								],
 								[
 									"15",
-									"Scale mail"
+									"{@item Scale mail barding|phb|Scale mail}"
 								],
 								[
 									"16",
-									"Chain mail"
+									"{@item Chain mail barding|phb|Chain mail}"
 								],
 								[
 									"17",
-									"Splint"
+									"{@item Splint barding|phb|Splint}"
 								],
 								[
 									"18",
-									"Plate"
+									"{@item Plate barding|phb|Plate}"
 								]
 							]
 						}
@@ -55503,6 +56408,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "L",
@@ -55544,7 +56452,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -55648,6 +56557,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -55684,7 +56596,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -55757,6 +56670,11 @@
 			"source": "MM",
 			"page": 340,
 			"srd": true,
+			"otherSources": [
+				{
+					"source": "IDRotF"
+				}
+			],
 			"size": "T",
 			"type": "beast",
 			"alignment": [
@@ -55862,7 +56780,7 @@
 			"speed": {
 				"walk": {
 					"number": 30,
-					"condition": " (40 ft., climb 30 ft. in bear or hybrid form)"
+					"condition": "(40 ft., climb 30 ft. in bear or hybrid form)"
 				}
 			},
 			"str": 19,
@@ -55882,7 +56800,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -55991,6 +56910,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -56025,7 +56947,7 @@
 			"speed": {
 				"walk": {
 					"number": 30,
-					"condition": " (40 ft. in boar form)"
+					"condition": "(40 ft. in boar form)"
 				}
 			},
 			"str": 17,
@@ -56045,7 +56967,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -56112,7 +57035,11 @@
 				"path": "bestiary/wereboar.mp3"
 			},
 			"traitTags": [
+				"Charge",
 				"Shapechanger"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"C",
@@ -56204,7 +57131,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -56276,6 +57204,9 @@
 			"senseTags": [
 				"D"
 			],
+			"actionTags": [
+				"Multiattack"
+			],
 			"languageTags": [
 				"C",
 				"CS"
@@ -56324,7 +57255,7 @@
 			"speed": {
 				"walk": {
 					"number": 30,
-					"condition": " (40 ft. in tiger form)"
+					"condition": "(40 ft. in tiger form)"
 				}
 			},
 			"str": 17,
@@ -56348,7 +57279,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -56428,10 +57360,14 @@
 			},
 			"traitTags": [
 				"Keen Senses",
+				"Pounce",
 				"Shapechanger"
 			],
 			"senseTags": [
 				"D"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"C",
@@ -56483,6 +57419,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -56517,7 +57456,7 @@
 			"speed": {
 				"walk": {
 					"number": 30,
-					"condition": " (40 ft. in wolf form)"
+					"condition": "(40 ft. in wolf form)"
 				}
 			},
 			"str": 15,
@@ -56537,7 +57476,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -56606,6 +57546,9 @@
 				"Keen Senses",
 				"Shapechanger"
 			],
+			"actionTags": [
+				"Multiattack"
+			],
 			"languageTags": [
 				"C",
 				"CS"
@@ -56622,6 +57565,7 @@
 		},
 		{
 			"name": "White Dragon Wyrmling",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 102,
 			"srd": true,
@@ -56631,6 +57575,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -56761,6 +57708,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "M",
@@ -56806,7 +57756,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -56839,7 +57790,7 @@
 					"name": "Life Drain",
 					"entries": [
 						"{@atk mw} {@hit 4} to hit, reach 5 ft., one creature. {@h}5 ({@damage 1d6 + 2}) necrotic damage. The target must succeed on a {@dc 13} Constitution saving throw or its hit point maximum is reduced by an amount equal to the damage taken. This reduction lasts until the target finishes a long rest. The target dies if this effect reduces its hit point maximum to 0.",
-						"A humanoid slain by this attack rises 24 hours later as a zombie under the wight's control, unless the humanoid is restored to life or its body is destroyed. The wight can have no more than twelve zombies under its control at one time."
+						"A humanoid slain by this attack rises 24 hours later as a {@creature zombie} under the wight's control, unless the humanoid is restored to life or its body is destroyed. The wight can have no more than twelve zombies under its control at one time."
 					]
 				},
 				{
@@ -56921,6 +57872,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "T",
@@ -56966,7 +57920,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -57183,6 +58138,9 @@
 				},
 				{
 					"source": "ToA"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -57318,6 +58276,12 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -57415,6 +58379,9 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -57546,6 +58513,12 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "IDRotF"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
@@ -57591,7 +58564,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -57832,9 +58806,11 @@
 			"resist": [
 				{
 					"resist": [
-						"piercing"
+						"piercing",
+						"slashing"
 					],
-					"note": "and slashing from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -57920,6 +58896,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -58106,7 +59085,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -58242,6 +59222,7 @@
 		},
 		{
 			"name": "Young Black Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 88,
 			"srd": true,
@@ -58381,6 +59362,7 @@
 		},
 		{
 			"name": "Young Blue Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 91,
 			"srd": true,
@@ -58513,6 +59495,7 @@
 		},
 		{
 			"name": "Young Brass Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 105,
 			"srd": true,
@@ -58652,6 +59635,7 @@
 		},
 		{
 			"name": "Young Bronze Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 108,
 			"srd": true,
@@ -58802,6 +59786,7 @@
 		},
 		{
 			"name": "Young Copper Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 112,
 			"srd": true,
@@ -58938,6 +59923,7 @@
 		},
 		{
 			"name": "Young Gold Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 115,
 			"srd": true,
@@ -59082,6 +60068,7 @@
 		},
 		{
 			"name": "Young Green Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 94,
 			"srd": true,
@@ -59234,6 +60221,7 @@
 		},
 		{
 			"name": "Young Red Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 98,
 			"srd": true,
@@ -59395,14 +60383,14 @@
 			"wis": 11,
 			"cha": 19,
 			"save": {
-				"dex": "+4",
-				"con": "+9",
-				"wis": "+4",
-				"cha": "+8"
+				"dex": "+5",
+				"con": "+10",
+				"wis": "+5",
+				"cha": "+9"
 			},
 			"skill": {
-				"perception": "+8",
-				"stealth": "+8"
+				"perception": "+10",
+				"stealth": "+10"
 			},
 			"senses": [
 				"blindsight 30 ft.",
@@ -59510,6 +60498,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -59531,7 +60522,7 @@
 			},
 			"speed": {
 				"walk": 30,
-				"burrow": 20
+				"burrow": 30
 			},
 			"str": 18,
 			"dex": 13,
@@ -59587,6 +60578,7 @@
 		},
 		{
 			"name": "Young Silver Dragon",
+			"group": "Metallic Dragon",
 			"source": "MM",
 			"page": 118,
 			"srd": true,
@@ -59727,6 +60719,7 @@
 		},
 		{
 			"name": "Young White Dragon",
+			"group": "Chromatic Dragon",
 			"source": "MM",
 			"page": 101,
 			"srd": true,
@@ -59739,6 +60732,9 @@
 				},
 				{
 					"source": "DIP"
+				},
+				{
+					"source": "IDRotF"
 				}
 			],
 			"size": "L",
@@ -60016,6 +61012,9 @@
 			"senseTags": [
 				"D"
 			],
+			"actionTags": [
+				"Multiattack"
+			],
 			"languageTags": [
 				"AB",
 				"C",
@@ -60213,6 +61212,9 @@
 			"senseTags": [
 				"D"
 			],
+			"actionTags": [
+				"Multiattack"
+			],
 			"languageTags": [
 				"AB",
 				"C",
@@ -60387,6 +61389,9 @@
 			],
 			"senseTags": [
 				"D"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"AB",
@@ -60577,6 +61582,9 @@
 			],
 			"senseTags": [
 				"D"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"AB",
@@ -60813,6 +61821,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "TCE"
 				}
 			],
 			"size": "M",
