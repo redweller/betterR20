@@ -467,10 +467,10 @@ function baseCss () {
 				resize: vertical;
 			`
 		},*/
-		// Missing page toolbar
+		// Ensure page toolbar is displayed
 		{
 			s: `#page-toolbar`,
-			r: `display: initial;`
+			r: `display: block;`
 		},
 	];
 
@@ -478,7 +478,12 @@ function baseCss () {
 		{
 			s: ".player-hidden",
 			r: "display: none !important;"
-		}
+		},
+		// Force-hide page toolbar
+		{
+			s: `#page-toolbar`,
+			r: `display: none;`
+		},
 	];
 
 	d20plus.css.cssRules = []; // other scripts should populate this
