@@ -38,6 +38,7 @@ function initCanvasHandlerOverwrite () {
 		// BEGIN MOD
 		var cnv = d20.engine.canvas;
 		var wrp = $("#editor-wrapper");
+		const $finalCanvas = $(d20.engine.final_canvas);
 		// END MOD
 		var i, n;
 		if (d20.tddice && d20.tddice.handleInteraction && d20.tddice.handleInteraction(),
@@ -345,18 +346,20 @@ function initCanvasHandlerOverwrite () {
 				},
 				d20.engine.redrawScreenNextTick(!0)
 		}
+
 		const g = ["select", "path", "text", "fxtools", "measure", "fxtools", "rect"];
 		d20.engine.rightMouseIsDown && g.includes(d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" === d20.engine.mode ? (d20.engine.pan.beginPos = [wrp.scrollLeft(), wrp.scrollTop()],
 			d20.engine.pan.panXY = [i, n],
 			d20.engine.pan.panning = !0,
-			t.css("cursor", "grabbing")) : d20.engine.pan.panning = !1,
+			// BEGIN MOD
+			$finalCanvas.css("cursor", "grabbing")) : d20.engine.pan.panning = !1,
+			// END MOD
 		2 === e.button && !d20.engine.leftMouseIsDown && d20.engine.measurements[window.currentPlayer.id] && d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.endMeasure(),
 			d20.engine.announceEndMeasure({
 				player: window.currentPlayer.id
 			}));
 
 		// BEGIN MOD
-		const $finalCanvas = $(`#finalcanvas`);
 		$finalCanvas.hasClass("hasfocus") || $finalCanvas.focus();
 		// END MOD
 	}
