@@ -4185,11 +4185,69 @@
 			"data": {
 				"Damage": "4d12",
 				"Damage Type": "Force",
-				"Target": "Up to twp creatures, loose objects, or structures within 5 feet of the blade",
+				"Target": "Up to two creatures, loose objects, or structures within 5 feet of the blade",
 				"Spell Attack": "Melee"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "attack"
+			}
+		},
+		{
+			"name": "Mind Sliver",
+			"source": "TCE",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "1d6",
+				"Damage Type": "Psychic",
+				"Damage Progression": "Cantrip Dice",
+				"Target": "One creature you can see within range"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Spirit Shroud",
+			"source": "TCE",
+			"data": {
+				"Damage": "1d8",
+				"Damage Type": "Radiant, necrotic, or cold (your choice)",
+				"Target": "One creature you hit within 10 feet of you",
+				"Higher Spell Slot Die": "d8",
+				"Higher Spell Slot Dice": "0.49"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "auto"
+			}
+		},
+		{
+			"name": "Tasha's Caustic Brew",
+			"source": "TCE",
+			"data": {
+				"Save": "Dexterity",
+				"Damage": "2d4",
+				"Damage Type": "Acid",
+				"Target": "Each creature in a 30-foot long, 5-foot wide line",
+				"Save Success": "Not covered in acid",
+				"Higher Spell Slot Die": "d4",
+				"Higher Spell Slot Dice": "2"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Tasha's Mind Whip",
+			"source": "TCE",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "3d6",
+				"Damage Type": "Psychic",
+				"Target": "One creature you can see within range",
+				"Save Success": "Half damage and no other effects"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
 			}
 		}
 	]
