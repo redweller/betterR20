@@ -91,6 +91,7 @@ const LIB_SCRIPTS = {
 
 		"parser.js",
 		"utils.js",
+		"utils-ui.js",
 	],
 	"5etools": [
 		"list.min.js",
@@ -99,6 +100,7 @@ const LIB_SCRIPTS = {
 
 		"parser.js",
 		"utils.js",
+		"utils-ui.js",
 		"render.js",
 		"render-dice.js",
 		"scalecreature.js"
