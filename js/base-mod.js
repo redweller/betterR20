@@ -888,6 +888,10 @@ function d20plusMod() {
 						r
 				}
 			).each(i=>{
+				// FIXME this results in tokens with vision being (re)rendered above the foreground.
+				//  Ideally, if a foreground object occludes the token, it should not be re-rendered.
+				//  Given that foreground objects can be arbitrary images with transparency/etc., or drawing tool
+				//  scribbles, this may not be feasible.
 					const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
 						, o = e && e.owned_with_sight_auras_only;
 					let r = i._model;
@@ -919,13 +923,13 @@ function d20plusMod() {
 		if (!grid_before_afow && !grid_hide) yield [null, "grid"];
 
 		// BEGIN MOD
-		yield[this.background, "background"]
+		yield [this.background, "background"];
 		// END MOD
 
-		yield[this.objects, "objects"];
+		yield [this.objects, "objects"];
 
 		// BEGIN MOD
-		yield[this.foreground, "foreground"];
+		yield [this.foreground, "foreground"];
 		// END MOD
 
 		if (window.is_gm) yield [this.gmlayer, "gmlayer"];
