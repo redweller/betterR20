@@ -2841,7 +2841,7 @@
 		},
 		{
 			"name": "Booming Blade",
-			"source": "SCAG",
+			"source": "TCE",
 			"data": {
 				"Damage": "([[ceil((@{level} + 2) / 6)]]-1)d8",
 				"Damage Type": "Thunder",
@@ -2856,7 +2856,7 @@
 		},
 		{
 			"name": "Green-Flame Blade",
-			"source": "SCAG",
+			"source": "TCE",
 			"data": {
 				"Damage": "([[ceil((@{level} + 2) / 6)]]-1)d8",
 				"Damage Type": "Fire",
@@ -2871,7 +2871,7 @@
 		},
 		{
 			"name": "Lightning Lure",
-			"source": "SCAG",
+			"source": "TCE",
 			"data": {
 				"Save": "Strength",
 				"Damage": "1d8",
@@ -2885,7 +2885,7 @@
 		},
 		{
 			"name": "Sword Burst",
-			"source": "SCAG",
+			"source": "TCE",
 			"data": {
 				"Save": "Dexterity",
 				"Damage": "1d6",
@@ -4177,6 +4177,19 @@
 			},
 			"shapedData": {
 				"primaryDamageCondition": "auto"
+			}
+		},
+		{
+			"name": "Blade of Disaster",
+			"source": "TCE",
+			"data": {
+				"Damage": "4d12",
+				"Damage Type": "Force",
+				"Target": "Up to twp creatures, loose objects, or structures within 5 feet of the blade",
+				"Spell Attack": "Melee"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "attack"
 			}
 		}
 	]

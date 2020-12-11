@@ -82,7 +82,7 @@ function baseJsLoad () {
 		}
 	};
 
-	d20plus.js.pLoadWithRetries = async (name, url, isJson) => {
+	d20plus.js.pLoadWithRetries = async (name, url) => {
 		let retries = 3;
 
 		function pFetchData () {
@@ -91,8 +91,7 @@ function baseJsLoad () {
 					type: "GET",
 					url: `${url}${d20plus.ut.getAntiCacheSuffix()}${retries}`,
 					success: function (data) {
-						if (isJson && typeof data === "string") resolve(JSON.parse(data));
-						else resolve(data);
+						resolve(data);
 					},
 					error: function (resp, qq, pp) {
 						if (resp && resp.status >= 400 && retries-- > 0) {
@@ -120,7 +119,33 @@ function baseJsLoad () {
 		} while (!data && --retries > 0);
 
 		if (data) return data;
-		else throw new Error(`Failed to load ${name} from URL ${url} (isJson: ${!!isJson})`);
+		else throw new Error(`Failed to load ${name} from URL ${url}`);
+	};
+
+	d20plus.js.pLoadJsonWithRetries = async (name, url) => {
+		let retries = 3;
+
+		let out;
+		let lastErr = null;
+		while (retries-- > 0) {
+			try {
+				out = await DataUtil.loadJSON(`${url}${d20plus.ut.getAntiCacheSuffix()}${retries}`);
+			} catch (e) {
+				lastErr = e;
+			}
+
+			if (lastErr && retries) {
+				d20plus.ut.log(`Error loading ${name}; retrying after 100ms`);
+				await MiscUtil.pDelay(100);
+			}
+		}
+
+		if (!retries) {
+			d20plus.ut.error(`Failed to load "${name}" (URL was: ${url} )`);
+			throw lastErr;
+		}
+
+		return out;
 	};
 }
 

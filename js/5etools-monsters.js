@@ -381,37 +381,37 @@ function d20plusMonsters () {
 							character.attribs.create({name: "strength", current: data.str});
 							character.attribs.create({name: "strength_base", current: `${data.str}`});
 							character.attribs.create({name: "strength_mod", current: calcMod(data.str)});
-							character.attribs.create({name: "npc_str_negative", current: calcMod(data.str) < 0});
+							character.attribs.create({name: "npc_str_negative", current: calcMod(data.str) < 0 ? 1 : 0});
 							character.attribs.create({name: "strength_flag", current: 0});
 
 							character.attribs.create({name: "dexterity", current: data.dex});
 							character.attribs.create({name: "dexterity_base", current: `${data.dex}`});
 							character.attribs.create({name: "dexterity_mod", current: calcMod(data.dex)});
-							character.attribs.create({name: "npc_dex_negative", current: calcMod(data.dex) < 0});
+							character.attribs.create({name: "npc_dex_negative", current: calcMod(data.dex) < 0 ? 1 : 0});
 							character.attribs.create({name: "dexterity_flag", current: 0});
 
 							character.attribs.create({name: "constitution", current: data.con});
 							character.attribs.create({name: "constitution_base", current: `${data.con}`});
 							character.attribs.create({name: "constitution_mod", current: calcMod(data.con)});
-							character.attribs.create({name: "npc_con_negative", current: calcMod(data.con) < 0});
+							character.attribs.create({name: "npc_con_negative", current: calcMod(data.con) < 0 ? 1 : 0});
 							character.attribs.create({name: "constitution_flag", current: 0});
 
 							character.attribs.create({name: "intelligence", current: data.int});
 							character.attribs.create({name: "intelligence_base", current: `${data.int}`});
 							character.attribs.create({name: "intelligence_mod", current: calcMod(data.int)});
-							character.attribs.create({name: "npc_int_negative", current: calcMod(data.int) < 0});
+							character.attribs.create({name: "npc_int_negative", current: calcMod(data.int) < 0 ? 1 : 0});
 							character.attribs.create({name: "intelligence_flag", current: 0});
 
 							character.attribs.create({name: "wisdom", current: data.wis});
 							character.attribs.create({name: "wisdom_base", current: `${data.wis}`});
 							character.attribs.create({name: "wisdom_mod", current: calcMod(data.wis)});
-							character.attribs.create({name: "npc_wis_negative", current: calcMod(data.wis) < 0});
+							character.attribs.create({name: "npc_wis_negative", current: calcMod(data.wis) < 0 ? 1 : 0});
 							character.attribs.create({name: "wisdom_flag", current: 0});
 
 							character.attribs.create({name: "charisma", current: data.cha});
 							character.attribs.create({name: "charisma_base", current: `${data.cha}`});
 							character.attribs.create({name: "charisma_mod", current: calcMod(data.cha)});
-							character.attribs.create({name: "npc_cha_negative", current: calcMod(data.cha) < 0});
+							character.attribs.create({name: "npc_cha_negative", current: calcMod(data.cha) < 0 ? 1 : 0});
 							character.attribs.create({name: "charisma_flag", current: 0});
 
 							character.attribs.create({name: "initiative_bonus", current: calcMod(data.dex)});
@@ -557,11 +557,11 @@ function d20plusMonsters () {
 								Object.keys(data.save).forEach(k => {
 									character.attribs.create({
 										name: "npc_" + k + "_save_flag",
-										current: Number(data.save[k])
+										current: Number(data.save[k]) != 0 ? 1 : 0
 									});
 									character.attribs.create({
 										name: "npc_" + k + "_save",
-										current: Number(data.save[k])
+										current: Number(data.save[k]) != 0 ? 1 : 0
 									});
 								});
 							}
@@ -600,7 +600,7 @@ function d20plusMonsters () {
 										});
 										character.attribs.create({
 											name: "npc_" + cleanSkill + "_flag",
-											current: Number(v)
+											current: Number(v) != 0 ? 1 : 0
 										});
 									}
 								});
