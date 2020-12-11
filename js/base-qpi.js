@@ -152,7 +152,7 @@ function baseQpi () {
 					</div>
 					<hr>
 					<button class="btn qpi-help">Help/README</button> <i>Note that this tool is a for-testing faceplate over some internal code. It is intended for internal use only.</i>
-				</div>	
+				</div>
 			`);
 			$(`#qpi-manager`).dialog({
 				autoOpen: false,
@@ -164,7 +164,7 @@ function baseQpi () {
 			$(`body`).append(`
 				<div id="qpi-manager-readme" title="QPI README - v${qpi._version}">
 					<div class="qpi-readme"></div>
-				</div>	
+				</div>
 			`);
 			$(`#qpi-manager-readme`).dialog({
 				autoOpen: false,
@@ -217,15 +217,14 @@ function baseQpi () {
 					d20plus.js.pLoadWithRetries(
 						url,
 						url,
-						(data) => {
-							d20plus.js._addScript(url, data).then(() => {
-								alert("Loaded successfully!");
-								$win.find(`.qpi-url`).val("");
-							}).catch(() => {
-								alert("Failed to load script! See the console for more details (CTRL-SHIFT-J on Chrome)");
-							});
-						}
-					)
+					).then(data => {
+						d20plus.js._addScript(url, data).then(() => {
+							alert("Loaded successfully!");
+							$win.find(`.qpi-url`).val("");
+						}).catch(() => {
+							alert(`Failed to load script! ${VeCt.STR_SEE_CONSOLE}`);
+						});
+					})
 				} else {
 					alert("Please enter a URL!");
 				}

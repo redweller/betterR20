@@ -481,15 +481,15 @@ const betteR205etoolsMain = function () {
 	}
 
 	d20plus.json = [
-		{name: "class index", url: `${CLASS_DATA_DIR}index.json`, isJson: true},
-		{name: "spell index", url: `${SPELL_DATA_DIR}index.json`, isJson: true},
-		{name: "spell metadata", url: SPELL_META_URL, isJson: true},
-		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`, isJson: true},
-		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`, isJson: true},
-		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}legendarygroups.json`, isJson: true},
-		{name: "adventures index", url: `${DATA_URL}adventures.json`, isJson: true},
-		{name: "base items", url: `${DATA_URL}items-base.json`, isJson: true},
-		{name: "item modifiers", url: `${DATA_URL}roll20-items.json`, isJson: true},
+		{name: "class index", url: `${CLASS_DATA_DIR}index.json`},
+		{name: "spell index", url: `${SPELL_DATA_DIR}index.json`},
+		{name: "spell metadata", url: SPELL_META_URL},
+		{name: "bestiary index", url: `${MONSTER_DATA_DIR}index.json`},
+		{name: "bestiary fluff index", url: `${MONSTER_DATA_DIR}fluff-index.json`},
+		{name: "bestiary metadata", url: `${MONSTER_DATA_DIR}legendarygroups.json`},
+		{name: "adventures index", url: `${DATA_URL}adventures.json`},
+		{name: "base items", url: `${DATA_URL}items-base.json`},
+		{name: "item modifiers", url: `${DATA_URL}roll20-items.json`},
 	];
 
 	// add JSON index/metadata
@@ -497,7 +497,7 @@ const betteR205etoolsMain = function () {
 		d20plus.ut.log("Load JSON");
 
 		await Promise.all(d20plus.json.map(async it => {
-			const data = await d20plus.js.pLoadWithRetries(it.name, it.url, true);
+			const data = await d20plus.js.pLoadJsonWithRetries(it.name, it.url);
 
 			if (it.name === "class index") classDataUrls = data;
 			else if (it.name === "spell index") spellDataUrls = data;

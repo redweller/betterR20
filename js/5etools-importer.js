@@ -49,6 +49,8 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.getCleanText = function (str) {
+		if (!str || !str.trim()) return "";
+
 		const check = jQuery.parseHTML(str);
 		if (check.length === 1 && check[0].constructor === Text) {
 			return str;
