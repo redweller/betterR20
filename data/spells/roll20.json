@@ -7,7 +7,7 @@
 				"Save": "Dexterity",
 				"Damage": "1d6",
 				"Damage Type": "Acid",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "save"
@@ -345,7 +345,7 @@
 				"Damage": "1d8",
 				"Damage Type": "Necrotic",
 				"Spell Attack": "Ranged",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "attack"
@@ -853,8 +853,7 @@
 			"data": {
 				"Damage": "1d10",
 				"Damage Type": "Force",
-				"Spell Attack": "Ranged",
-				"Damage Progression": "Cantrip Beams"
+				"Spell Attack": "Ranged"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "attack"
@@ -1031,7 +1030,7 @@
 				"Damage": "1d10",
 				"Damage Type": "Fire",
 				"Spell Attack": "Ranged",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "attack"
@@ -1980,7 +1979,7 @@
 				"Save": "Constitution",
 				"Damage": "1d12",
 				"Damage Type": "Poison",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "save"
@@ -2058,7 +2057,7 @@
 			"source": "PHB",
 			"data": {
 				"Damage": "1d8",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Damage Type": "Fire",
 				"Spell Attack": "Ranged"
 			},
@@ -2124,7 +2123,7 @@
 				"Damage": "1d8",
 				"Damage Type": "Cold",
 				"Spell Attack": "Ranged",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "attack"
@@ -2199,7 +2198,7 @@
 				"Save": "Dexterity",
 				"Damage": "1d8",
 				"Damage Type": "Radiant",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "save"
@@ -2315,7 +2314,7 @@
 				"Damage": "1d8",
 				"Damage Type": "Lightning",
 				"Spell Attack": "Melee",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "attack"
@@ -2558,7 +2557,7 @@
 			"data": {
 				"Damage": "1d6",
 				"Damage Type": "Piercing",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Spell Attack": "Melee",
 				"Target": "A creature in range"
 			},
@@ -2676,7 +2675,7 @@
 				"Save": "Wisdom",
 				"Damage": "1d4",
 				"Damage Type": "Psychic",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "save"
@@ -2876,7 +2875,7 @@
 				"Save": "Strength",
 				"Damage": "1d8",
 				"Damage Type": "Lightning",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature you can see within range"
 			},
 			"shapedData": {
@@ -2890,7 +2889,7 @@
 				"Save": "Dexterity",
 				"Damage": "1d6",
 				"Damage Type": "Force",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "Each creature within range other than you"
 			},
 			"shapedData": {
@@ -3014,7 +3013,7 @@
 				"Save": "Constitution",
 				"Damage": "1d6",
 				"Damage Type": "Radiant",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "Each creature of your choice that you can see within range"
 			},
 			"shapedData": {
@@ -3035,7 +3034,7 @@
 				"Save": "Constitution",
 				"Damage": "1d6",
 				"Damage Type": "Piercing",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature you can see within range"
 			},
 			"shapedData": {
@@ -3048,7 +3047,7 @@
 			"data": {
 				"Damage": "1d10",
 				"Damage Type": "Piercing or slashing damage (your choice)",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature within 5 feet of you",
 				"Spell Attack": "Melee"
 			},
@@ -3087,9 +3086,9 @@
 				"Save": "Wisdom",
 				"Damage": "1d12",
 				"Damage Type": "Necrotic",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature you can see within range",
-				"Secondary Damage": "1d8",
+				"Secondary Damage": "[[round((@{level} + 1) / 6 + 0.5)]]d8",
 				"Secondary Damage Type": "Necrotic"
 			},
 			"shapedData": {
@@ -3287,7 +3286,7 @@
 				"Save": "Dexterity",
 				"Damage": "1d8",
 				"Damage Type": "Fire",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "save"
@@ -3468,7 +3467,7 @@
 				"Save": "Constitution",
 				"Damage": "1d6",
 				"Damage Type": "Cold",
-				"Damage Progression": "Cantrip Dice"
+				"data-Cantrip Scaling": "dice"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "save"
@@ -3567,7 +3566,7 @@
 				"Save": "Constitution",
 				"Damage": "1d6",
 				"Damage Type": "Poison",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature you can see within range"
 			},
 			"shapedData": {
@@ -3789,7 +3788,7 @@
 			"data": {
 				"Damage": "1d10",
 				"Damage Type": "Acid",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature within 5 feet of you",
 				"Spell Attack": "Melee"
 			},
@@ -4007,7 +4006,7 @@
 				"Save": "Constitution",
 				"Damage": "1d6",
 				"Damage Type": "Thunder",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "Each creature within range other than you"
 			},
 			"shapedData": {
@@ -4040,11 +4039,10 @@
 				"Save": "Wisdom",
 				"Damage": "1d8",
 				"Damage Type": "Necrotic",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature you can see within range",
-				"Secondary Damage": "1d12",
-				"Secondary Damage Type": "Necrotic",
-				"Secondary Damage Progression": "Cantrip Dice"
+				"Secondary Damage": "[[round((@{level} + 1) / 6 + 0.5)]]d12",
+				"Secondary Damage Type": "Necrotic"
 			},
 			"shapedData": {
 				"primaryDamageCondition": "save",
@@ -4144,7 +4142,7 @@
 				"Save": "Constitution",
 				"Damage": "1d6",
 				"Damage Type": "Radiant",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "Each creature of your choice that you can see within range"
 			},
 			"shapedData": {
@@ -4199,7 +4197,7 @@
 				"Save": "Intelligence",
 				"Damage": "1d6",
 				"Damage Type": "Psychic",
-				"Damage Progression": "Cantrip Dice",
+				"data-Cantrip Scaling": "dice",
 				"Target": "One creature you can see within range"
 			},
 			"shapedData": {
