@@ -932,15 +932,15 @@ function d20plusMod() {
 					r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
 					// BEGIN MOD
 					// We don't draw immediately the token. Instead we check it "to_render"
-					o && (!o || n && r) || (to_render = true) ,
-						i.renderingInGroup = null
+					o && (!o || n && r) || (to_render = true)
 					if (to_render) {
 						// For the token checked "to_render", we draw them if
 						// there isn't a foreground layer for the map or
 						// is a first render (with a foreground)
 						// is everything but an object
 						if ( no_foreground_layer || current_render_has_foreground || a != 'objects' ) {
-						 this._draw(t, i)
+						 this._draw(t, i) ,
+	 					 i.renderingInGroup = null
 						}
 					}
 					// END MOD
