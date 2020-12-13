@@ -842,6 +842,44 @@ function d20plusMod() {
 				r[t].push(e)
 			} else
 				r[window.currentEditingLayer].push(e);
+
+		// BEGIN MOD
+		// Here we get the layers and look if there's a foreground in the current map
+		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
+		let no_foreground_layer = false
+		layers.forEach((l) => {
+			if (l == 'foreground') {
+				no_foreground_layer = false
+			}
+		});
+		current_render_has_foreground = false
+		// Here we are getting the filtered layers for the render to distinguish
+		// between the first render with everything and the second render where
+		// only objects controlled by current player with vision are rendered
+		// (used by r20 to show the tokens on top of the lighting layer even
+		// when they can't see anything). If there's a foreground layer among them
+		// we set the variable current_render_has_foreground to true
+		for (const [n,a] of r) {
+			_.chain(n).filter(n=>{
+					let w;
+					return i && n && i.contains(n) ? (n.renderingInGroup = i,
+						n.hasControls = !1) : (n.renderingInGroup = null,
+						n.hasControls = !0,
+						"text" !== n.type && window.is_gm ? n.hideResizers = !1 : n.hideResizers = !0),
+						e && e.invalid_rects ? (w = n.intersects([o]) && (n.needsToBeDrawn || n.intersects(e.invalid_rects)),
+						!e.skip_prerender && n.renderPre && n.renderPre(t)) : (w = n.needsRender(o),
+						(!e || !e.skip_prerender) && w && n.renderPre && n.renderPre(t, {
+							should_update: !0
+						})),
+						w
+				}
+			).each(i=>{
+				if (i && i.model && i.model.get('layer') == 'foreground') {
+					current_render_has_foreground = true
+				}
+			})
+		}
+		// END MOD
 		for (const [n,a] of r) {
 			switch (a) {
 				case "lighting and fog":
@@ -888,16 +926,24 @@ function d20plusMod() {
 						r
 				}
 			).each(i=>{
-				// FIXME this results in tokens with vision being (re)rendered above the foreground.
-				//  Ideally, if a foreground object occludes the token, it should not be re-rendered.
-				//  Given that foreground objects can be arbitrary images with transparency/etc., or drawing tool
-				//  scribbles, this may not be feasible.
 					const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
 						, o = e && e.owned_with_sight_auras_only;
 					let r = i._model;
 					r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
-					o && (!o || n && r) || this._draw(t, i),
+					// BEGIN MOD
+					// We don't draw immediately the token. Instead we check it "to_render"
+					o && (!o || n && r) || (to_render = true) ,
 						i.renderingInGroup = null
+					if (to_render) {
+						// For the token checked "to_render", we draw them if
+						// there isn't a foreground layer for the map or
+						// is a first render (with a foreground)
+						// is everything but an object
+						if ( no_foreground_layer || current_render_has_foreground || a != 'objects' ) {
+						 this._draw(t, i)
+						}
+					}
+					// END MOD
 				}
 			)
 		}
