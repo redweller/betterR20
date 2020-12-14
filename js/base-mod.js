@@ -846,7 +846,7 @@ function d20plusMod() {
 		// BEGIN MOD
 		// Here we get the layers and look if there's a foreground in the current map
 		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
-		let no_foreground_layer = false
+		let no_foreground_layer = true
 		layers.forEach((l) => {
 			if (l == 'foreground') {
 				no_foreground_layer = false
