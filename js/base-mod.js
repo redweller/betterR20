@@ -846,40 +846,9 @@ function d20plusMod() {
 		// BEGIN MOD
 		// Here we get the layers and look if there's a foreground in the current map
 		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
-		let no_foreground_layer = true
-		layers.forEach((l) => {
-			if (l == 'foreground') {
-				no_foreground_layer = false
-			}
-		});
-		current_render_has_foreground = false
-		// Here we are getting the filtered layers for the render to distinguish
-		// between the first render with everything and the second render where
-		// only objects controlled by current player with vision are rendered
-		// (used by r20 to show the tokens on top of the lighting layer even
-		// when they can't see anything). If there's a foreground layer among them
-		// we set the variable current_render_has_foreground to true
-		for (const [n,a] of r) {
-			_.chain(n).filter(n=>{
-					let w;
-					return i && n && i.contains(n) ? (n.renderingInGroup = i,
-						n.hasControls = !1) : (n.renderingInGroup = null,
-						n.hasControls = !0,
-						"text" !== n.type && window.is_gm ? n.hideResizers = !1 : n.hideResizers = !0),
-						e && e.invalid_rects ? (w = n.intersects([o]) && (n.needsToBeDrawn || n.intersects(e.invalid_rects)),
-						!e.skip_prerender && n.renderPre && n.renderPre(t)) : (w = n.needsRender(o),
-						(!e || !e.skip_prerender) && w && n.renderPre && n.renderPre(t, {
-							should_update: !0
-						})),
-						w
-				}
-			).each(i=>{
-				if (i && i.model && i.model.get('layer') == 'foreground') {
-					current_render_has_foreground = true
-				}
-			})
-		}
+		const noForegroundLayer = !layers.some(it => it === 'foreground');
 		// END MOD
+
 		for (const [n,a] of r) {
 			switch (a) {
 				case "lighting and fog":
@@ -925,27 +894,37 @@ function d20plusMod() {
 						})),
 						r
 				}
-			).each(i=>{
-					const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
-						, o = e && e.owned_with_sight_auras_only;
-					let r = i._model;
-					r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
-					// BEGIN MOD
-					// We don't draw immediately the token. Instead we check it "to_render"
-					o && (!o || n && r) || (to_render = true)
-					if (to_render) {
-						// For the token checked "to_render", we draw them if
-						// there isn't a foreground layer for the map or
-						// is a first render (with a foreground)
-						// is everything but an object
-						if ( no_foreground_layer || current_render_has_foreground || a != 'objects' ) {
-						 this._draw(t, i) ,
-	 					 i.renderingInGroup = null
-						}
+			).each(i=> {
+				// BEGIN MOD
+				let toRender = false;
+				// END MOD
+
+				const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
+
+				// BEGIN MOD
+				// If there is a foreground layer, do not give "owned tokens with sight" special treatment;
+				//   render them during the normal render flow (rather than skipping them)
+				 const o = noForegroundLayer ? e && e.owned_with_sight_auras_only : false;
+				// END MOD
+
+				let r = i._model;
+				r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
+				// BEGIN MOD
+				// We don't draw immediately the token. Instead, we mark it as "to render"
+				o && (!o || n && r) || (toRender = true);
+
+				if (toRender) {
+					// For the token checked "to render", we draw them if
+					//  - we're in a "render everything" call (i.e. no specific `tokens_to_render`), rather than a "render own tokens" call
+					//  - there isn't a foreground layer for the map or
+					//  - is everything but an object
+					if (!e.tokens_to_render || noForegroundLayer || a !== 'objects') {
+						this._draw(t, i);
 					}
-					// END MOD
+					i.renderingInGroup = null;
 				}
-			)
+				// END MOD
+			})
 		}
 		return t.restore(),
 			this
