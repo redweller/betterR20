@@ -842,6 +842,13 @@ function d20plusMod() {
 				r[t].push(e)
 			} else
 				r[window.currentEditingLayer].push(e);
+
+		// BEGIN MOD
+		// Here we get the layers and look if there's a foreground in the current map
+		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
+		const noForegroundLayer = !layers.some(it => it === 'foreground');
+		// END MOD
+
 		for (const [n,a] of r) {
 			switch (a) {
 				case "lighting and fog":
@@ -887,19 +894,37 @@ function d20plusMod() {
 						})),
 						r
 				}
-			).each(i=>{
-				// FIXME this results in tokens with vision being (re)rendered above the foreground.
-				//  Ideally, if a foreground object occludes the token, it should not be re-rendered.
-				//  Given that foreground objects can be arbitrary images with transparency/etc., or drawing tool
-				//  scribbles, this may not be feasible.
-					const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
-						, o = e && e.owned_with_sight_auras_only;
-					let r = i._model;
-					r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
-					o && (!o || n && r) || this._draw(t, i),
-						i.renderingInGroup = null
+			).each(i=> {
+				// BEGIN MOD
+				let toRender = false;
+				// END MOD
+
+				const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
+
+				// BEGIN MOD
+				// If there is a foreground layer, do not give "owned tokens with sight" special treatment;
+				//   render them during the normal render flow (rather than skipping them)
+				 const o = noForegroundLayer ? e && e.owned_with_sight_auras_only : false;
+				// END MOD
+
+				let r = i._model;
+				r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
+				// BEGIN MOD
+				// We don't draw immediately the token. Instead, we mark it as "to render"
+				o && (!o || n && r) || (toRender = true);
+
+				if (toRender) {
+					// For the token checked "to render", we draw them if
+					//  - we're in a "render everything" call (i.e. no specific `tokens_to_render`), rather than a "render own tokens" call
+					//  - there isn't a foreground layer for the map or
+					//  - is everything but an object
+					if (!e.tokens_to_render || noForegroundLayer || a !== 'objects') {
+						this._draw(t, i);
+					}
+					i.renderingInGroup = null;
 				}
-			)
+				// END MOD
+			})
 		}
 		return t.restore(),
 			this
