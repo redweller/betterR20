@@ -4247,6 +4247,323 @@
 			"shapedData": {
 				"primaryDamageCondition": "save"
 			}
+		},
+		{
+			"name": "Jim's Magic Missile",
+			"source": "AI",
+			"data": {
+				"Damage": "2d4",
+				"Damage Type": "Force",
+				"Target": "A creature you can see within range",
+				"Spell Attack": "Ranged"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "attack"
+			}
+		},
+		{
+			"name": "Dark Star",
+			"source": "EGW",
+			"data": {
+				"Save": "Constitution",
+				"Damage": "8d10",
+				"Damage Type": "Force",
+				"Target": "A creature that enters the area for the first time on a turn or starts its turn there",
+				"Save Success": "Half damage"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Gravity Fissure",
+			"source": "EGW",
+			"data": {
+				"Save": "Constitution",
+				"Damage": "8d8",
+				"Damage Type": "Force",
+				"Target": "Each creature in a 100-foot long, 5-foot wide line, and all creatures within 10 feet of the line",
+				"Save Success": "Half damage, not pulled",
+				"Higher Spell Slot Die": "d8",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Gravity Sinkhole",
+			"source": "EGW",
+			"data": {
+				"Save": "Constitution",
+				"Damage": "5d10",
+				"Damage Type": "Force",
+				"Target": "Each creature in a 20-foot radius sphere",
+				"Save Success": "Half damage, not pulled",
+				"Higher Spell Slot Die": "d10",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Magnify Gravity",
+			"source": "EGW",
+			"data": {
+				"Save": "Constitution",
+				"Damage": "2d8",
+				"Damage Type": "Force",
+				"Target": "Each creature in a 10-foot radius sphere",
+				"Save Success": "Half damage, no speed loss",
+				"Higher Spell Slot Die": "d8",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Pulse Wave",
+			"source": "EGW",
+			"data": {
+				"Save": "Constitution",
+				"Damage": "6d6",
+				"Damage Type": "Force",
+				"Target": "Each creature in a 30-foot cone",
+				"Save Success": "Half damage, not moved",
+				"Higher Spell Slot Die": "d6",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Ravenous Void",
+			"source": "EGW",
+			"data": {
+				"Save": "Strength",
+				"Damage": "5d10",
+				"Damage Type": "Force",
+				"Target": "Each creature in a 20-foot radius sphere, all creatures and objects within 100 feet of the sphere",
+				"Save Success": "Not pulled"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Sapping Sting",
+			"source": "EGW",
+			"data": {
+				"Save": "Consitution",
+				"Damage": "1d4",
+				"Damage Type": "Necrotic",
+				"Target": "A creature you can see in range",
+				"data-Cantrip Scaling": "dice"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Time Ravage",
+			"source": "EGW",
+			"data": {
+				"Save": "Constitution",
+				"Damage": "10d12",
+				"Damage Type": "Necrotic",
+				"Target": "A creature you can see within range"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Frost Fingers",
+			"source": "IDRotF",
+			"data": {
+				"Save": "Constitution",
+				"Damage": "2d8",
+				"Damage Type": "Cold",
+				"Target": "Each creature in a 15-foot cone",
+				"Save Success": "Half damage",
+				"Higher Spell Slot Die": "d8",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Mind Sliver",
+			"source": "UA2020PsionicOptionsRevisited",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "1d6",
+				"Damage Type": "Psychic",
+				"data-Cantrip Scaling": "dice",
+				"Target": "One creature you can see within range"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Mind Thrust",
+			"source": "UA2020PsionicOptionsRevisited",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "3d6",
+				"Damage Type": "Psychic",
+				"Target": "One creature you can see within range",
+				"Save Success": "Half damage and no other effects"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Acid Stream",
+			"source": "UA2020SpellsAndMagicTattoos",
+			"data": {
+				"Save": "Dexterity",
+				"Damage": "3d4",
+				"Damage Type": "Acid",
+				"Target": "Each creature in a 30-foot long, 5-foot wide line",
+				"Save Success": "Not covered in acid",
+				"Higher Spell Slot Die": "d4",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Spirit Shroud",
+			"source": "UA2020SpellsAndMagicTattoos",
+			"data": {
+				"Damage": "1d8",
+				"Damage Type": "Radiant or necrotic",
+				"Target": "One creature you hit within 10 feet of you",
+				"Higher Spell Slot Die": "d8",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "auto"
+			}
+		},
+		{
+			"name": "Arcane Weapon",
+			"source": "UAArtificerRevisited",
+			"data": {
+				"Damage": "1d6",
+				"Damage Type": "Variable",
+				"Target": "One creature you hit with the weapon targeted by this spell"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "auto"
+			}
+		},
+		{
+			"name": "Id Insinuation",
+			"source": "UAFighterRogueWizard",
+			"data": {
+				"Save": "Wisdom",
+				"Damage": "1d12",
+				"Damage Type": "Psychic",
+				"Target": "One creature you can see"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "auto"
+			}
+		},
+		{
+			"name": "Mind Sliver",
+			"source": "UAFighterRogueWizard",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "1d6",
+				"Damage Type": "Psychic",
+				"data-Cantrip Scaling": "dice",
+				"Target": "One creature you can see within range"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Mind Thrust",
+			"source": "UAFighterRogueWizard",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "3d6",
+				"Damage Type": "Psychic",
+				"Target": "One creature you can see within range",
+				"Save Success": "Half damage and no other effects"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Psionic Blast",
+			"source": "UAFighterRogueWizard",
+			"data": {
+				"Save": "Dexterity",
+				"Damage": "5d8",
+				"Damage Type": "Psychic",
+				"Target": "Each creature in a 30-foot cone",
+				"Save Success": "Half damage and not pulled or prone",
+				"Higher Spell Slot Die": "d8",
+				"Higher Spell Slot Dice": "1"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Psychic Crush",
+			"source": "UAFighterRogueWizard",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "12d6",
+				"Damage Type": "Psychic",
+				"Target": "A creature you can see within range",
+				"Save Success": "Half damage and not stunned"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Haywire (UA)",
+			"source": "UAModernMagic",
+			"data": {
+				"Save": "Dexterity",
+				"Damage": "6d6",
+				"Damage Type": "Lightning",
+				"Target": "Each electronic device within 10 feet of a point you choose",
+				"Save Success": "Half damage"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
+		},
+		{
+			"name": "Mind Sliver",
+			"source": "UASorcererAndWarlock",
+			"data": {
+				"Save": "Intelligence",
+				"Damage": "1d6",
+				"Damage Type": "Psychic",
+				"data-Cantrip Scaling": "dice",
+				"Target": "One creature you can see within range"
+			},
+			"shapedData": {
+				"primaryDamageCondition": "save"
+			}
 		}
 	]
 }
