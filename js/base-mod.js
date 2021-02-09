@@ -740,6 +740,7 @@ function d20plusMod() {
 		}),
 			$(document).on("keypress.statusnum", function (t) {
 				// BEGIN MOD // TODO see if this clashes with keyboard shortcuts
+				var currentcontexttarget = d20.engine.selected()[0];
 				if ("dead" !== a && currentcontexttarget) {
 					// END MOD
 					var n = String.fromCharCode(t.which)
