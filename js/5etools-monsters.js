@@ -561,7 +561,7 @@ function d20plusMonsters () {
 									});
 									character.attribs.create({
 										name: "npc_" + k + "_save",
-										current: Number(data.save[k]) != 0 ? 1 : 0
+										current: Number(data.save[k]) != 0 ? Number(data.save[k]) : 0
 									});
 								});
 							}
