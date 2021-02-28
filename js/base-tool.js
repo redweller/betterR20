@@ -273,6 +273,163 @@ function baseTool() {
 			}
 		},
 		{
+			name: "Table Importer Expanded",
+			desc: "Import TableExport data from an expanded list",
+			html: `
+				<div id="d20plus-expanded" title="Table Importer Expanded">
+					<div>
+					<button class="btn paste-clipboard">Paste from Clipboard</button> <i>Accepts <a href="https://app.roll20.net/forum/post/1144568/script-tableexport-a-script-for-exporting-and-importing-rollable-tables-between-accounts">TableExport</a> format.</i>
+					</div>
+					<br>
+					<div id="table-list">
+						<input type="search" class="search" placeholder="Search tables...">
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<button class="btn start-import">Import</button>
+				</div>
+				
+				<div id="d20plus-expanded-clipboard" title="Paste from Clipboard"/>
+				`,
+			dialogFn: () => {
+				$("#d20plus-expanded").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 650,
+					height: 720,
+				});
+				$(`#d20plus-expanded-clipboard`).dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 640,
+					height: 480,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-expanded");
+				$win.dialog("open");
+
+				const $btnImport = $win.find(`.start-import`).off("click");
+				const $btnClipboard = $win.find(`.paste-clipboard`).off("click");
+
+				const url = `${BASE_SITE_URL}/data/roll20-tables.json`;
+				DataUtil.loadJSON(url).then((data) => {
+					function createTable (t) {
+						const r20t = d20.Campaign.rollabletables.create({
+							name: t.name.replace(/\s+/g, "-"),
+							showplayers: t.isShown,
+							id: d20plus.ut.generateRowId()
+						});
+
+						r20t.tableitems.reset(t.items.map(i => {
+							const out = {
+								id: d20plus.ut.generateRowId(),
+								name: i.row
+							};
+							if (i.weight !== undefined) out.weight = i.weight;
+							if (i.avatar) out.avatar = i.avatar;
+							return out;
+						}));
+						r20t.tableitems.forEach(it => it.save());
+					}
+
+					// Allow pasting of custom tables
+					$btnClipboard.on("click", () => {
+						const $wrpClip = $(`#d20plus-expanded-clipboard`);
+						const $iptClip = $(`<textarea placeholder="Paste TableExport data here" style="display: block; width: 600px; height: 340px;"/>`).appendTo($wrpClip);
+						const $btnCheck = $(`<button class="btn" style="margin-right: 5px;">Check if Valid</button>`).on("click", () => {
+							let error = false;
+							try {
+								getFromPaste($iptClip.val());
+							} catch (e) {
+								console.error(e);
+								window.alert(e.message);
+								error = true;
+							}
+							if (!error) window.alert("Looking good!");
+						}).appendTo($wrpClip);
+						const $btnImport = $(`<button class="btn">Import</button>`).on("click", () => {
+							$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
+							const ts = getFromPaste($iptClip.val());
+							ts.forEach(t => createTable(t));
+							window.alert("Import complete");
+						}).appendTo($wrpClip);
+
+						$wrpClip.dialog("open");
+					});
+
+					function getFromPaste (paste) {
+						const tables = [];
+						let tbl = null;
+
+						paste.split("\n").forEach(line => parseLine(line.trim()));
+						parseLine(""); // ensure trailing newline
+						return tables;
+
+						function parseLine (line) {
+							if (line.startsWith("!import-table-item")) {
+								if (!tbl) {
+									throw new Error("No !import-table statement found");
+								}
+								const [junk, tblName, row, weight, avatar] = line.split("--").map(it => it.trim());
+								tbl.items.push({
+									row,
+									weight,
+									avatar
+								})
+							} else if (line.startsWith("!import-table")) {
+								if (tbl) {
+									throw new Error("No blank line found between tables")
+								}
+								const [junk, tblName, showHide] = line.split("--").map(it => it.trim());
+								tbl = {
+									name: tblName,
+									isShown: (showHide || "").toLowerCase() === "show"
+								};
+								tbl.items = [];
+							} else if (line.trim()) {
+								throw new Error("Non-empty line which didn't match !import-table or !import-table-item")
+							} else {
+								if (tbl) {
+									tables.push(tbl);
+									tbl = null;
+								}
+							}
+						}
+					}
+
+					// Official tables
+					const $lst = $win.find(`.list`);
+					const tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+					let tmp = "";
+					tables.forEach((t, i) => {
+						tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="checkbox">
+									<span class="name col-10">${t.name}</span>
+									<span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
+								</label>
+							`;
+					});
+					$lst.html(tmp);
+					tmp = null;
+
+					const tableList = new List("table-list", {
+						valueNames: ["name", "source"]
+					});
+
+					$btnImport.on("click", () => {
+						$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
+						const sel = tableList.items
+							.filter(it => $(it.elm).find(`input`).prop("checked"))
+							.map(it => tables[$(it.elm).attr("data-listid")]);
+
+						sel.forEach(t => createTable(t));
+					});
+				});
+			}
+		},
+		{
 			name: "Table Importer",
 			desc: "Import TableExport data",
 			html: `

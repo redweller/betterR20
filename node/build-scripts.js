@@ -27,7 +27,7 @@ ${matchString}
 `;
 
 const HEADER_5ETOOLS = `// ==UserScript==
-// @name         betteR20-5etools
+// @name         betteR20-5etools-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
