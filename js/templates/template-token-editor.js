@@ -14,9 +14,9 @@ function initTemplateTokenEditor () {
                 </a>
             </li>
             <li class='nav-tabs--beta'>
-<span class='label label-info'>
-Updated
-</span>
+                <span class='label label-info'>
+                    Updated
+                </span>
                 <a data-tab='prototype' href='javascript:void(0);'>
                     <h2>Dynamic Lighting</h2>
                 </a>
@@ -900,6 +900,20 @@ Updated
                                     <div class='input-group'>
                                         <input class='dyn_fog_dim_light_range' min='0' type='number'>
                                         <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='row-fluid clearfix toggle-element low_light_input'>
+                            <div class='span8'>
+                                <label class='distance'>Brightness</label>
+                            </div>
+                            <div class='span4 dyn_fog_switch'>
+                                <div class='form-group'>
+                                    <div class='input-group flex-group'>
+                                        <img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
+                                        <input class='dyn_fog_dim_light_opacity flex-item' max='1' min='0.2' step='0.05' type='range'>
+                                        <img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
                                     </div>
                                 </div>
                             </div>
