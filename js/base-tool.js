@@ -277,11 +277,7 @@ function baseTool() {
 			desc: "Import TableExport data from an expanded list",
 			html: `
 				<div id="d20plus-expanded" title="Table Importer Expanded">
-					<div>
-					<button class="btn paste-clipboard">Paste from Clipboard</button> <i>Accepts <a href="https://app.roll20.net/forum/post/1144568/script-tableexport-a-script-for-exporting-and-importing-rollable-tables-between-accounts">TableExport</a> format.</i>
-					</div>
-					<br>
-					<div id="table-list">
+					<div id="table-list-expanded">
 						<input type="search" class="search" placeholder="Search tables...">
 						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
 					</div>
@@ -310,93 +306,26 @@ function baseTool() {
 				$win.dialog("open");
 
 				const $btnImport = $win.find(`.start-import`).off("click");
-				const $btnClipboard = $win.find(`.paste-clipboard`).off("click");
 
-				const url = `${BASE_SITE_URL}/data/roll20-tables.json`;
+				const url = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/data/generated/gendata-tables.json";
 				DataUtil.loadJSON(url).then((data) => {
 					function createTable (t) {
 						const r20t = d20.Campaign.rollabletables.create({
 							name: t.name.replace(/\s+/g, "-"),
-							showplayers: t.isShown,
 							id: d20plus.ut.generateRowId()
 						});
-
-						r20t.tableitems.reset(t.items.map(i => {
+						r20t.tableitems.reset(t.rows.map(i => {
 							const out = {
 								id: d20plus.ut.generateRowId(),
-								name: i.row
+								name: i[1]
 							};
-							if (i.weight !== undefined) out.weight = i.weight;
+							//if (i.weight !== undefined) out.weight = i.weight;
 							if (i.avatar) out.avatar = i.avatar;
 							return out;
 						}));
 						r20t.tableitems.forEach(it => it.save());
 					}
 
-					// Allow pasting of custom tables
-					$btnClipboard.on("click", () => {
-						const $wrpClip = $(`#d20plus-expanded-clipboard`);
-						const $iptClip = $(`<textarea placeholder="Paste TableExport data here" style="display: block; width: 600px; height: 340px;"/>`).appendTo($wrpClip);
-						const $btnCheck = $(`<button class="btn" style="margin-right: 5px;">Check if Valid</button>`).on("click", () => {
-							let error = false;
-							try {
-								getFromPaste($iptClip.val());
-							} catch (e) {
-								console.error(e);
-								window.alert(e.message);
-								error = true;
-							}
-							if (!error) window.alert("Looking good!");
-						}).appendTo($wrpClip);
-						const $btnImport = $(`<button class="btn">Import</button>`).on("click", () => {
-							$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
-							const ts = getFromPaste($iptClip.val());
-							ts.forEach(t => createTable(t));
-							window.alert("Import complete");
-						}).appendTo($wrpClip);
-
-						$wrpClip.dialog("open");
-					});
-
-					function getFromPaste (paste) {
-						const tables = [];
-						let tbl = null;
-
-						paste.split("\n").forEach(line => parseLine(line.trim()));
-						parseLine(""); // ensure trailing newline
-						return tables;
-
-						function parseLine (line) {
-							if (line.startsWith("!import-table-item")) {
-								if (!tbl) {
-									throw new Error("No !import-table statement found");
-								}
-								const [junk, tblName, row, weight, avatar] = line.split("--").map(it => it.trim());
-								tbl.items.push({
-									row,
-									weight,
-									avatar
-								})
-							} else if (line.startsWith("!import-table")) {
-								if (tbl) {
-									throw new Error("No blank line found between tables")
-								}
-								const [junk, tblName, showHide] = line.split("--").map(it => it.trim());
-								tbl = {
-									name: tblName,
-									isShown: (showHide || "").toLowerCase() === "show"
-								};
-								tbl.items = [];
-							} else if (line.trim()) {
-								throw new Error("Non-empty line which didn't match !import-table or !import-table-item")
-							} else {
-								if (tbl) {
-									tables.push(tbl);
-									tbl = null;
-								}
-							}
-						}
-					}
 
 					// Official tables
 					const $lst = $win.find(`.list`);
@@ -414,7 +343,7 @@ function baseTool() {
 					$lst.html(tmp);
 					tmp = null;
 
-					const tableList = new List("table-list", {
+					const tableList = new List("table-list-expanded", {
 						valueNames: ["name", "source"]
 					});
 
