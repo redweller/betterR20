@@ -4182,6 +4182,8 @@
 			"source": "TCE",
 			"data": {
 				"Damage": "4d12",
+				"Crit": "8d12",
+				"Crit Range": "18",
 				"Damage Type": "Force",
 				"Target": "Up to two creatures, loose objects, or structures within 5 feet of the blade",
 				"Spell Attack": "Melee"
@@ -4253,6 +4255,7 @@
 			"source": "AI",
 			"data": {
 				"Damage": "2d4",
+				"Crit": "3d4",
 				"Damage Type": "Force",
 				"Target": "A creature you can see within range",
 				"Spell Attack": "Ranged"
