@@ -2914,7 +2914,7 @@
 				{
 					"ac": 24,
 					"from": [
-						"{@item leather armor +3||+3 leather armor}",
+						"{@item +3 leather armor}",
 						"Suave Defense"
 					]
 				}
@@ -2980,7 +2980,7 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Jarlaxle wears {@item leather armor +3||+3 leather armor}, a {@item hat of disguise}, a {@item bracer of flying daggers|wdh}, a {@item cloak of invisibility}, a {@item knave's eye patch|wdh}, and a {@item ring of truth telling|wdh}. He wields a {@item rapier +3||+3 rapier} and carries a {@item portable hole} and a {@item wand of web}. His hat is adorned with a {@item feather of diatryma summoning|wdh}."
+						"Jarlaxle wears {@item +3 leather armor}, a {@item hat of disguise}, a {@item bracer of flying daggers|wdh}, a {@item cloak of invisibility}, a {@item knave's eye patch|wdh}, and a {@item ring of truth telling|wdh}. He wields a {@item +3 rapier} and carries a {@item portable hole} and a {@item wand of web}. His hat is adorned with a {@item feather of diatryma summoning|wdh}."
 					]
 				},
 				{
@@ -3491,7 +3491,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -4585,16 +4586,16 @@
 			"wis": 15,
 			"cha": 16,
 			"save": {
-				"str": "+2",
-				"dex": "+4",
-				"con": "+3",
-				"int": "+13",
-				"wis": "+9",
-				"cha": "+5"
+				"str": "+3",
+				"dex": "+5",
+				"con": "+4",
+				"int": "+12",
+				"wis": "+8",
+				"cha": "+6"
 			},
 			"skill": {
-				"arcana": "+11",
-				"history": "+11"
+				"arcana": "+12",
+				"history": "+12"
 			},
 			"senses": [
 				"darkvision 60 ft."
@@ -4613,7 +4614,7 @@
 				{
 					"name": "Spellcasting",
 					"headerEntries": [
-						"Manshoon is an 18th-level spellcaster. His spellcasting ability is Intelligence. He has the following wizard spells prepared:"
+						"Manshoon is an 18th-level spellcaster. His spellcasting ability is Intelligence (spell save {@dc 21}, {@hit 15} to hit with spell attacks). He has the following wizard spells prepared:"
 					],
 					"spells": {
 						"0": {
@@ -5115,7 +5116,7 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Mirt wears {@item bracers of defense} and a {@item ring of regeneration}. He wields a {@item longsword +1||+1 longsword} and a {@item dagger +1||+1 dagger}."
+						"Mirt wears {@item bracers of defense} and a {@item ring of regeneration}. He wields a {@item +1 longsword} and a {@item +1 dagger}."
 					]
 				},
 				{
@@ -5477,7 +5478,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -6693,7 +6695,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "damage from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -6761,6 +6764,9 @@
 			],
 			"senseTags": [
 				"D"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"C",
@@ -8253,7 +8259,7 @@
 			"skill": {
 				"medicine": "+7",
 				"persuasion": "+3",
-				"religion": "+4"
+				"religion": "+5"
 			},
 			"passive": 13,
 			"resist": [
@@ -8646,7 +8652,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks not made with adamantine weapons"
+					"note": "from nonmagical attacks not made with adamantine weapons",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -8768,6 +8775,9 @@
 							]
 						}
 					}
+				},
+				"_preserve": {
+					"legendaryGroup": true
 				}
 			},
 			"hasToken": true
@@ -8926,7 +8936,7 @@
 			"cha": 16,
 			"skill": {
 				"deception": "+5",
-				"insight": "+4",
+				"insight": "+5",
 				"persuasion": "+5"
 			},
 			"passive": 13,
@@ -9216,7 +9226,7 @@
 				{
 					"ac": 17,
 					"from": [
-						"{@item leather armor +2||+2 leather armor}"
+						"{@item +2 leather armor}"
 					]
 				}
 			],

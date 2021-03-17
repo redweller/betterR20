@@ -740,6 +740,7 @@ function d20plusMod() {
 		}),
 			$(document).on("keypress.statusnum", function (t) {
 				// BEGIN MOD // TODO see if this clashes with keyboard shortcuts
+				let currentcontexttarget = d20.engine.selected()[0];
 				if ("dead" !== a && currentcontexttarget) {
 					// END MOD
 					var n = String.fromCharCode(t.which)
@@ -828,8 +829,9 @@ function d20plusMod() {
 			// END MOD
 			gmlayer: []
 			// BEGIN MOD
-			, weather: []
+			, weather: [],
 			// END MOD
+			_save_map_layer: this._save_map_layer
 		};
 		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
 		const a = e && e.tokens_to_render || this._objects;
@@ -841,11 +843,18 @@ function d20plusMod() {
 				r[t].push(e)
 			} else
 				r[window.currentEditingLayer].push(e);
+
+		// BEGIN MOD
+		// Here we get the layers and look if there's a foreground in the current map
+		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
+		const noForegroundLayer = !layers.some(it => it === 'foreground');
+		// END MOD
+
 		for (const [n,a] of r) {
 			switch (a) {
 				case "lighting and fog":
-					d20.dyn_fog.render({
-						map_layer_canvas: this.contextContainer.canvas
+					d20.engine.drawHighlights(this.contextContainer), d20.dyn_fog.render({
+						main_canvas: this.contextContainer.canvas
 					});
 					continue;
 				case "grid":
@@ -886,15 +895,37 @@ function d20plusMod() {
 						})),
 						r
 				}
-			).each(i=>{
-					const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
-						, o = e && e.owned_with_sight_auras_only;
-					let r = i._model;
-					r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
-					o && (!o || n && r) || this._draw(t, i),
-						i.renderingInGroup = null
+			).each(i=> {
+				// BEGIN MOD
+				let toRender = false;
+				// END MOD
+
+				const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
+
+				// BEGIN MOD
+				// If there is a foreground layer, do not give "owned tokens with sight" special treatment;
+				//   render them during the normal render flow (rather than skipping them)
+				 const o = noForegroundLayer ? e && e.owned_with_sight_auras_only : false;
+				// END MOD
+
+				let r = i._model;
+				r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
+				// BEGIN MOD
+				// We don't draw immediately the token. Instead, we mark it as "to render"
+				o && (!o || n && r) || (toRender = true);
+
+				if (toRender) {
+					// For the token checked "to render", we draw them if
+					//  - we're in a "render everything" call (i.e. no specific `tokens_to_render`), rather than a "render own tokens" call
+					//  - there isn't a foreground layer for the map or
+					//  - is everything but an object
+					if (!e.tokens_to_render || noForegroundLayer || a !== 'objects') {
+						this._draw(t, i);
+					}
+					i.renderingInGroup = null;
 				}
-			)
+				// END MOD
+			})
 		}
 		return t.restore(),
 			this
@@ -903,27 +934,37 @@ function d20plusMod() {
 
 	// shoutouts to Roll20 for making me learn how `yield` works
 	// BEGIN ROLL20 CODE
-	d20plus.mod.layerIteratorGenerator = function*(e) { // e is just an options object
-		yield[this.map, "map"],
-		window.is_gm && "walls" === window.currentEditingLayer && (yield[this.walls, "walls"]);
-		const t = e && e.grid_before_afow
-			, i = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow
-			, n = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
-		t && !n && (yield[null, "grid"]),
-		!i && window.largefeats && (yield[null, "afow"]),
-		t || n || (yield[null, "grid"]);
+	d20plus.mod.layerIteratorGenerator = function*(e) {
+		yield [this.map, "map"],
+		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
+			this._save_map_layer = !1);
+		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
+
+		const grid_before_afow = e && e.grid_before_afow;
+		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
+		const grid_hide = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+
+		if (grid_before_afow && !grid_hide) yield [null, "grid"];
+		if (!adv_fow_disabled) yield [null, "afow"];
+		if (!grid_before_afow && !grid_hide) yield [null, "grid"];
+
 		// BEGIN MOD
-		yield[this.background, "background"]
+		yield [this.background, "background"];
 		// END MOD
-		const o = e && e.enable_dynamic_fog;
-		d20.dyn_fog.ready() && o && (yield[null, "lighting and fog"]),
-			yield[this.objects, "objects"],
-			// BEGIN MOD
-			yield[this.foreground, "foreground"],
-			// END MOD
-		window.is_gm && (yield[this.gmlayer, "gmlayer"])
+
+		yield [this.objects, "objects"];
+
 		// BEGIN MOD
-		window.is_gm && "weather" === window.currentEditingLayer && (yield[this.weather, "weather"]);
+		yield [this.foreground, "foreground"];
+		// END MOD
+
+		if (window.is_gm) yield [this.gmlayer, "gmlayer"];
+
+		const enable_dynamic_fog = e && e.enable_dynamic_fog;
+		if (d20.dyn_fog.ready() && enable_dynamic_fog) yield [null, "lighting and fog"];
+
+		// BEGIN MOD
+		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
 		// END MOD
 	};
 	// END ROLL20 CODE

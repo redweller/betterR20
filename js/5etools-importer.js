@@ -49,6 +49,8 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.getCleanText = function (str) {
+		if (!str || !str.trim()) return "";
+
 		const check = jQuery.parseHTML(str);
 		if (check.length === 1 && check[0].constructor === Text) {
 			return str;
@@ -619,12 +621,6 @@ function d20plusImporter () {
 
 		$("#d20plus-importlist button").unbind("click");
 
-		$("#importlist-selectall").bind("click", () => {
-			d20plus.importer._importSelectAll(importList);
-		});
-		$("#importlist-deselectall").bind("click", () => {
-			d20plus.importer._importDeselectAll(importList);
-		});
 		$("#importlist-selectvis").bind("click", () => {
 			d20plus.importer._importSelectVisible(importList);
 		});

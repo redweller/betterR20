@@ -676,7 +676,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -1626,7 +1627,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -2125,7 +2127,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2250,7 +2253,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2824,6 +2828,10 @@
 				"AOE",
 				"MW",
 				"RCH"
+			],
+			"conditionInflict": [
+				"petrified",
+				"restrained"
 			]
 		},
 		{
@@ -5352,7 +5360,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -5469,6 +5478,10 @@
 					]
 				}
 			],
+			"legendaryGroup": {
+				"name": "Tromokratis",
+				"source": "MOT"
+			},
 			"hasToken": true,
 			"traitTags": [
 				"Amphibious",

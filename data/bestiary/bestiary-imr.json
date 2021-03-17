@@ -837,6 +837,9 @@
 				"S",
 				"Y"
 			],
+			"spellcastingTags": [
+				"CA"
+			],
 			"miscTags": [
 				"MW"
 			]
@@ -1474,6 +1477,9 @@
 			"damageTags": [
 				"P"
 			],
+			"spellcastingTags": [
+				"CA"
+			],
 			"miscTags": [
 				"MW",
 				"RW",
@@ -1644,7 +1650,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [

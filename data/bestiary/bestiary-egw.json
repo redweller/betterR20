@@ -1396,7 +1396,8 @@
 				"formula": "11d8 + 44"
 			},
 			"cr": "1",
-			"hasToken": true
+			"hasToken": true,
+			"actionTags": []
 		},
 		{
 			"name": "Ferol Sal",
@@ -1691,7 +1692,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2287,7 +2289,11 @@
 					"name": "Shadow Dragon",
 					"source": "MM"
 				}
-			}
+			},
+			"traitTags": [
+				"Legendary Resistances",
+				"Sunlight Sensitivity"
+			]
 		},
 		{
 			"name": "Kobold Underling",
@@ -2683,7 +2689,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -2824,6 +2831,10 @@
 			"alignment": [
 				"C",
 				"E"
+			],
+			"traitTags": [
+				"Legendary Resistances",
+				"Magic Resistance"
 			]
 		},
 		{
@@ -2906,7 +2917,10 @@
 					}
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"traitTags": [
+				"Fey Ancestry"
+			]
 		},
 		{
 			"name": "Sahuagin Warlock of Uk'otoa",
@@ -3127,7 +3141,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -3731,7 +3746,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"vulnerable": [

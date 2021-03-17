@@ -155,16 +155,9 @@ function d20plusJournal () {
 
 		// New command on FOLDERS
 		const last = $("#journalmenu ul li").last();
-		last.after("<li style=\"background-color: #FA5050; color: white;\" data-action-type=\"fulldelete\">Delete Folder + Contents</li>");
-		last.after("<li data-action-type=\"archiveall\">Archive All Contents</li>");
+		last.before("<li data-action-type=\"archiveall\">Archive All Contents</li>");
 
 		const $journalUl = $("#journalmenu ul");
-
-		$journalUl.on(window.mousedowntype, "li[data-action-type=fulldelete]", function () {
-			d20plus.journal.recursiveRemoveDirById(d20plus.journal.lastClickedFolderId, true);
-			d20plus.journal.lastClickedFolderId = null;
-			$("#journalmenu").hide();
-		});
 
 		$journalUl.on(window.mousedowntype, "li[data-action-type=archiveall]", function () {
 			d20plus.journal.recursiveArchiveDirById(d20plus.journal.lastClickedFolderId, true);

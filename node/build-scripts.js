@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.18.5";
+const SCRIPT_VERSION = "1.19.7";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -34,7 +34,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @updateURL    https://get.5e.tools/script/betteR20-5etools.user.js
 // @downloadURL  https://get.5e.tools/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm
 ${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start
@@ -91,6 +91,7 @@ const LIB_SCRIPTS = {
 
 		"parser.js",
 		"utils.js",
+		"utils-ui.js",
 	],
 	"5etools": [
 		"list.min.js",
@@ -99,6 +100,7 @@ const LIB_SCRIPTS = {
 
 		"parser.js",
 		"utils.js",
+		"utils-ui.js",
 		"render.js",
 		"render-dice.js",
 		"scalecreature.js"
@@ -139,12 +141,17 @@ const SCRIPTS = {
 			"base-tool-animator",
 			"base-art",
 			"base-art-browse",
+			"overwrites/base",
+			"overwrites/canvas-handler",
 			"base-engine",
 			"base-weather",
 			"base-journal",
 			"base-css",
 			"base-ui",
 			"base-mod",
+			"templates/base",
+			"templates/template-token-editor",
+			"templates/template-page-settings",
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
@@ -170,12 +177,17 @@ const SCRIPTS = {
 			"base-tool-animator",
 			"base-art",
 			"base-art-browse",
+			"overwrites/base",
+			"overwrites/canvas-handler",
 			"base-engine",
 			"base-weather",
 			"base-journal",
 			"base-css",
 			"base-ui",
 			"base-mod",
+			"templates/base",
+			"templates/template-token-editor",
+			"templates/template-page-settings",
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",

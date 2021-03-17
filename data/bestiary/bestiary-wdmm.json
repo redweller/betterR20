@@ -761,7 +761,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't adamantine"
+					"note": "from nonmagical attacks that aren't adamantine",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -1633,9 +1634,7 @@
 				"P"
 			],
 			"miscTags": [
-				"MW",
-				"RCH",
-				"THW"
+				"MW"
 			]
 		},
 		{
@@ -1938,26 +1937,9 @@
 			"cr": "23",
 			"spellcasting": [
 				{
-					"name": "Innate Spellcasting",
-					"headerEntries": [
-						"Halaster's spellcasting ability is Intelligence (spell save {@dc 22}). He can innately cast the following spells, requiring no material components:"
-					],
-					"will": [
-						"{@spell disguise self}",
-						"{@spell invisibility}"
-					],
-					"daily": {
-						"1": [
-							"{@spell fly}",
-							"{@spell lightning bolt}"
-						]
-					},
-					"ability": "int"
-				},
-				{
 					"name": "Spellcasting",
 					"headerEntries": [
-						"Halaster is a 20th-level spellcaster. His spellcasting ability is Intelligence (spell save {@dc 22}, {@hit 14} to hit with spell attacks). He can cast disguise self and invisibility at will. He can cast fly and lightning bolt once each without expending a spell slot, but can't do so again until he finishes a short or long rest. Halaster has the following wizard spells prepared:"
+						"Halaster is a 20th-level spellcaster. His spellcasting ability is Intelligence (spell save {@dc 22}, {@hit 14} to hit with spell attacks). He can cast {@spell disguise self} and {@spell invisibility} at will. He can cast {@spell fly} and {@spell lightning bolt} once each without expending a spell slot, but can't do so again until he finishes a short or long rest. Halaster has the following wizard spells prepared:"
 					],
 					"spells": {
 						"0": {
@@ -2042,6 +2024,20 @@
 							]
 						}
 					},
+					"will": [
+						"{@spell disguise self}",
+						"{@spell invisibility}"
+					],
+					"daily": {
+						"1": [
+							"{@spell fly}",
+							"{@spell lightning bolt}"
+						]
+					},
+					"hidden": [
+						"will",
+						"daily"
+					],
 					"ability": "int"
 				}
 			],
@@ -2256,7 +2252,7 @@
 			"con": 13,
 			"int": 3,
 			"wis": 10,
-			"cha": 10,
+			"cha": 3,
 			"passive": 10,
 			"cr": "0",
 			"trait": [
@@ -2289,8 +2285,8 @@
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
-						"replace": "mage",
-						"with": "horned sister"
+						"replace": "(^| )mage",
+						"with": "$1horned sister"
 					}
 				}
 			},
@@ -2565,7 +2561,7 @@
 				{
 					"name": "Spellcasting",
 					"headerEntries": [
-						"Keresta is a 9th-level spellcaster. Her spellcasting ability is Intelligence (spell save {@dc 16}, {@hit 8} to hit with spell attacks). She has the following wizard spells prepared:"
+						"Keresta is a 9th-level spellcaster. Her spellcasting ability is Wisdom (spell save {@dc 15}, {@hit 7} to hit with spell attacks). She has the following cleric spells prepared:"
 					],
 					"spells": {
 						"0": {
@@ -2668,6 +2664,10 @@
 					]
 				}
 			},
+			"hp": {
+				"average": 20,
+				"formula": "2d8 + 4"
+			},
 			"hasToken": true,
 			"damageTags": [
 				"B",
@@ -2737,7 +2737,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from metal weapons"
+					"note": "from metal weapons",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -3375,10 +3376,36 @@
 							"name": "Eye Ray",
 							"entries": [
 								"The zombie uses a random magical eye ray, choosing a target that it can see within 60 feet of it.",
-								"1. Paralyzing Ray. The targeted creature must succeed on a {@dc 14} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-								"2. Fear Ray. The targeted creature must succeed on a {@dc 14} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
-								"3. Enervation Ray. The targeted creature must make a {@dc 14} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one.",
-								"4. Telekinetic Ray. If the target is a creature, it must succeed on a DC 14 Strength saving throw, or the zombie moves it up to 30 feet in any direction. It is restrained by the ray's telekinetic grip until the start of the zombie's next turn or until the zombie is incapacitated. If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 feet in any direction. The zombie can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or container."
+								{
+									"type": "list",
+									"style": "list-hang-notitle",
+									"items": [
+										{
+											"type": "item",
+											"name": "1. Paralyzing Ray.",
+											"style": "italic",
+											"entry": "The targeted creature must succeed on a {@dc 14} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+										},
+										{
+											"type": "item",
+											"name": "2. Fear Ray.",
+											"style": "italic",
+											"entry": "The targeted creature must succeed on a {@dc 14} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+										},
+										{
+											"type": "item",
+											"name": "3. Enervation Ray.",
+											"style": "italic",
+											"entry": "The targeted creature must make a {@dc 14} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one."
+										},
+										{
+											"type": "item",
+											"name": "4. Telekinetic Ray.",
+											"style": "italic",
+											"entry": "If the target is a creature, it must succeed on a DC 14 Strength saving throw, or the zombie moves it up to 30 feet in any direction. It is restrained by the ray's telekinetic grip until the start of the zombie's next turn or until the zombie is incapacitated. If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 feet in any direction. The zombie can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or container."
+										}
+									]
+								}
 							]
 						}
 					}
@@ -3760,7 +3787,6 @@
 		},
 		{
 			"name": "Rowboat Mimic",
-			"isNpc": true,
 			"source": "WDMM",
 			"page": 76,
 			"_copy": {
@@ -3841,7 +3867,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -3962,7 +3989,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -4926,6 +4954,7 @@
 		},
 		{
 			"name": "Werebat",
+			"group": "Lycanthropes",
 			"source": "WDMM",
 			"page": 317,
 			"size": "S",
@@ -4974,7 +5003,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks that aren't silvered"
+					"note": "from nonmagical attacks that aren't silvered",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -5047,6 +5077,9 @@
 			],
 			"senseTags": [
 				"D"
+			],
+			"actionTags": [
+				"Multiattack"
 			],
 			"languageTags": [
 				"CS",
@@ -5260,7 +5293,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from nonmagical attacks"
+					"note": "from nonmagical attacks",
+					"cond": true
 				}
 			],
 			"languages": [
