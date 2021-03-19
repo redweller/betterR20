@@ -1365,8 +1365,6 @@ function d20plusMonsters () {
 								*/
 							}
 
-							character.view._updateSheetValues();
-
 							if (renderFluff) {
 								setTimeout(() => {
 									const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
@@ -1399,10 +1397,10 @@ function d20plusMonsters () {
 		const src = data.source;
 		if (src && monsterFluffDataUrls[src]) {
 			const fluffUrl = d20plus.monsters.formMonsterUrl(monsterFluffDataUrls[src]);
+			console.log(fluffUrl);
 			DataUtil.loadJSON(fluffUrl).then((data) => {
 				monsterFluffData[src] = data;
 			}).catch(e => {
-				console.error(e);
 				monsterFluffData[src] = {monster: []};
 			}).then(doBuild);
 		} else {
