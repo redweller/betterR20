@@ -1402,7 +1402,7 @@ function d20plusMonsters () {
 			DataUtil.loadJSON(fluffUrl).then((data) => {
 				monsterFluffData[src] = data;
 			}).catch(e => {
-				console.log(e);
+				console.error(e);
 				monsterFluffData[src] = {monster: []};
 			}).then(doBuild);
 		} else {
