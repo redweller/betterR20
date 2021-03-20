@@ -2867,7 +2867,7 @@ const betteR205etoolsMain = function () {
 						});
 					}
 
-					character.view._updateSheetValues();
+					character.view.updateSheetValues();
 
 					if (data.entries) {
 						const bio = renderer.render({type: "entries", entries: data.entries});

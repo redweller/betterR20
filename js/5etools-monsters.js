@@ -1365,8 +1365,7 @@ function d20plusMonsters () {
 								*/
 							}
 
-							// This is where the character.view._updateSheetValues(); function would be
-
+							character.view.updateSheetValues();
 
 							if (renderFluff) {
 								setTimeout(() => {
