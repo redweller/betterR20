@@ -4,7 +4,7 @@ function baseToolModule () {
 		name: "Module Importer/Exporter",
 		desc: "Import full games (modules), or import/export custom games",
 		html: `
-				<div id="d20plus-module-importer" title="Module Importer/Exporter">
+				<div id="d20plus-module-importer" title="Better20 - Module Importer/Exporter">
 				<p style="margin-bottom: 4px;"><b style="font-size: 110%;">Exporter: </b> <button class="btn" name="export">Export Game to File</button> <i>The exported file can later be used with the "Upload File" option, below.</i></p>
 				<hr style="margin: 4px;">
 				<p style="margin-bottom: 4px;">

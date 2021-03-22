@@ -975,13 +975,16 @@ const betteR205etoolsMain = function () {
 
 		const $wrpPlayerImport = $(`
 			<div style="padding: 0 10px">
-				<div style="clear: both"></div>
+				<h3 style="margin-bottom: 4px">BetteR20</h3>
+				<button id="b20-temp-import-open-button" class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Temp Import Spells, Items, Classes,...</button>
+					<div style="clear: both"></div>
+				<hr></hr>
 			</div>`);
-		const $btnPlayerImport = $(`<button class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Temp Import Spells, Items, Classes,...</button>`)
-			.on("click", () => {
-				$winPlayer.dialog("open");
-			});
-		$wrpPlayerImport.prepend($btnPlayerImport);
+
+		$wrpPlayerImport.find("#b20-temp-import-open-button").on("click", () => {
+			$winPlayer.dialog("open");
+		});
+
 		$(`#journal`).prepend($wrpPlayerImport);
 
 		// SHARED WINDOWS/BUTTONS
@@ -3248,7 +3251,7 @@ const betteR205etoolsMain = function () {
 
 	d20plus.multipliers = [1, 1.5, 2, 2.5, 3, 4, 5];
 
-	d20plus.playerImportHtml = `<div id="d20plus-playerimport" title="Temporary Import">
+	d20plus.playerImportHtml = `<div id="d20plus-playerimport" title="BetteR20 - Temporary Import">
 	<div class="append-target">
 		<!-- populate with js -->
 	</div>
@@ -3258,7 +3261,7 @@ const betteR205etoolsMain = function () {
 	<p><i>Player-imported items are temporary, as players can't make handouts. GMs may also use this functionality to avoid cluttering the journal. Once imported, items can be drag-dropped to character sheets.</i></p>
 	</div>`;
 
-	d20plus.importListHTML = `<div id="d20plus-importlist" title="Import..." style="width: 1000px;">
+	d20plus.importListHTML = `<div id="d20plus-importlist" title="BetteR20 - Import..." style="width: 1000px;">
 <p style="display: flex">
 	<button type="button" id="importlist-selectvis" class="btn" style="margin: 0 2px;"><span>Select Visible</span></button>
 	<button type="button" id="importlist-deselectvis" class="btn" style="margin: 0 2px;"><span>Deselect Visible</span></button>
@@ -3712,7 +3715,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			name: "Shapeshifter Token Builder",
 			desc: "Build a rollable table and related token to represent a shapeshifting creature.",
 			html: `
-				<div id="d20plus-shapeshiftbuild" title="Shapeshifter Token Builder">
+				<div id="d20plus-shapeshiftbuild" title="Better20 - Shapeshifter Token Builder">
 					<div id="shapeshiftbuild-list">
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">
@@ -3838,7 +3841,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			name: "Pauper's Character Vault",
 			desc: "Dump characters to JSON, or import dumped characters.",
 			html: `
-				<div id="d20plus-paupervault" title="Pauper's Character Vault">
+				<div id="d20plus-paupervault" title="Better20 - Pauper's Character Vault">
 				<p>
 					This experimental tool allows you to download characters as JSON, to later upload to other games.
 				</p>
@@ -3976,7 +3979,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 			name: "Wild Shape Builder",
 			desc: "Build a character sheet to represent a character in Wild Shape.",
 			html: `
-				<div id="d20plus-wildformbuild" title="Wild Shape Character Builder">
+				<div id="d20plus-wildformbuild" title="Better20 - Wild Shape Character Builder">
 					<div id="wildformbuild-list">
 						<input type="search" class="search" placeholder="Search creatures...">
 						<input type="search" class="filter" placeholder="Filter...">

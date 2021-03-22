@@ -10,7 +10,7 @@ function d20plusArtBrowser () {
 			return new Promise(resolve => $.getJSON(url, data => resolve(data)));
 		}
 
-		const $win = $(`<div title="Art Repository" class="artr__win"/>`)
+		const $win = $(`<div title="BetteR20 - Art Repository" class="artr__win"/>`)
 			.appendTo($(`body`))
 			.dialog({
 				autoOpen: false,

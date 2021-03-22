@@ -13,7 +13,7 @@ function baseTool() {
 			name: "Journal Cleaner",
 			desc: "Quickly select and delete journal items, especially useful for cleaning up loose items after deleting a folder.",
 			html: `
-				<div id="d20plus-quickdelete" title="Journal Root Cleaner">
+				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
 				<label style="font-weight: bold">Root Only <input type="checkbox" class="cb-deep" checked></label>
 				<hr>
@@ -133,7 +133,7 @@ function baseTool() {
 			name: "SVG Draw",
 			desc: "Paste SVG data as text to automatically draw the paths.",
 			html: `
-				<div id="d20plus-svgdraw" title="SVG Drawing Tool">
+				<div id="d20plus-svgdraw" title="Better20 - SVG Drawing Tool">
 				<p>Paste SVG data as text to automatically draw any included &lt;path&gt;s. Draws to the current layer, in the top-left corner, with no scaling. Takes colour information from &quot;stroke&quot; attributes.</p>
 				<p>Line width (px; default values are 1, 3, 5, 8, 14): <input name="stroke-width" placeholder="5" value="5" type="number"></p>
 				<textarea rows="10" cols="100" placeholder="Paste SVG data here"></textarea>
@@ -188,7 +188,7 @@ function baseTool() {
 			name: "Multi-Whisper",
 			desc: "Send whispers to multiple players ",
 			html: `
-				<div id="d20plus-whispers" title="Multi-Whisper Tool">
+				<div id="d20plus-whispers" title="Better20 - Multi-Whisper Tool">
 				<div>
 					<button class="btn toggle-dc">Show Disconnected Players</button>
 					<button class="btn send-all">Send All Messages</button>
@@ -276,7 +276,7 @@ function baseTool() {
 			name: "Table Importer",
 			desc: "Import TableExport data",
 			html: `
-				<div id="d20plus-tables" title="Table Importer">
+				<div id="d20plus-tables" title="Better20 - Table Importer">
 					<div>
 					<button class="btn paste-clipboard">Paste from Clipboard</button> <i>Accepts <a href="https://app.roll20.net/forum/post/1144568/script-tableexport-a-script-for-exporting-and-importing-rollable-tables-between-accounts">TableExport</a> format.</i>
 					</div>
@@ -433,7 +433,7 @@ function baseTool() {
 			name: "Token Avatar URL Fixer",
 			desc: "Change the root URL for tokens en-masse.",
 			html: `
-				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
+				<div id="d20plus-avatar-fixer" title="Better20 - Avatar Fixer">
 				<p><b>Warning:</b> this thing doesn't really work.</p>
 				<p>Current URLs (view only): <select class="view-only"></select></p>
 				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
@@ -510,7 +510,7 @@ function baseTool() {
 			name: "Mass-Delete Pages",
 			desc: "Quickly delete multiple pages.",
 			html: `
-				<div id="d20plus-mass-page-delete" title="Mass-Delete Pages">
+				<div id="d20plus-mass-page-delete" title="Better20 - Mass-Delete Pages">
 					<div id="del-pages-list">
 						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden; margin-bottom: 10px;"><i>Loading...</i></div>
 					</div>
@@ -607,7 +607,7 @@ function baseTool() {
 			name: "Quantum Token Entangler",
 			desc: "Connect tokens between pages, linking their positions.",
 			html: `
-				<div id="d20plus-token-entangle" title="Quantum Token Entangler">
+				<div id="d20plus-token-entangle" title="Better20 - Quantum Token Entangler">
 					<p><i>Please note that this feature is highly experimental.
 					<br>
 					You can learn Token IDs by rightclicking a token -> "Advanced" -> "View Token ID."</i></p>
