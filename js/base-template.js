@@ -23,14 +23,17 @@ const baseTemplate = function () {
 		`;
 
 	d20plus.artTabHtml = `
-	<p style="display: flex; width: 100%; justify-content: space-between;">
-		<button class="btn" id="button-add-external-art" style="margin-right: 5px; width: 100%;">Manage External Art</button>
-		<button class="btn" id="button-browse-external-art" style="width: 100%;">Browse Repo</button>
-	</p>
+	<div>
+		<h3 style="margin-bottom: 4px;">BetteR20</h3>
+		<p style="display: flex; width: 100%; justify-content: space-between;">
+			<button class="btn" id="button-add-external-art" style="margin-right: 5px; width: 100%;">Manage External Art</button>
+			<button class="btn" id="button-browse-external-art" style="width: 100%;">Browse Repo</button>
+		</p>
+	</div>
 	`;
 
 	d20plus.addArtHTML = `
-	<div id="d20plus-artfolder" title="External Art" style="position: relative">
+	<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative">
 	<p>Add external images by URL. Any direct link to an image should work.</p>
 	<p>
 	<input placeholder="Name*" id="art-list-add-name">
@@ -73,7 +76,7 @@ const baseTemplate = function () {
 	</div>`;
 
 	d20plus.configEditorHTML = `
-	<div id="d20plus-configeditor" title="Config Editor" style="position: relative">
+	<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
 	<!-- populate with js -->
 	</div>`;
 
@@ -88,7 +91,7 @@ const baseTemplate = function () {
 	`;
 
 	d20plus.tool.toolsListHtml = `
-		<div id="d20-tools-list" title="Tools List" style="position: relative">
+		<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
 		<div class="tools-list">
 		<!-- populate with js -->
 		</div>

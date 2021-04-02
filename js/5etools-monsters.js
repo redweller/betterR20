@@ -426,6 +426,7 @@ function d20plusMonsters () {
 
 							// set a rough character level for spellcasting calculations
 							const pb = Parser.crToPb(moCn);
+							character.attribs.create({name: "pb", current: pb});
 							const charLevel = pb === 2 ? 1 : pb === 3 ? 5 : cr === 4 ? 11 : cr === 6 ? 17 : cr > 6 ? 20 : 1;
 							character.attribs.create({name: "level", current: charLevel}).save();
 
@@ -558,6 +559,11 @@ function d20plusMonsters () {
 									character.attribs.create({
 										name: "npc_" + k + "_save_flag",
 										current: Number(data.save[k]) != 0 ? 1 : 0
+									});
+									// save the values in case someone wants to edit them later
+									character.attribs.create({
+										name: "npc_" + k + "_save_base",
+										current: Number(data.save[k])
 									});
 									character.attribs.create({
 										name: "npc_" + k + "_save",
@@ -744,7 +750,7 @@ function d20plusMonsters () {
 								}, spAbilsDelayMs);
 
 								function addSpell3 (data, VeSp, index, addMacroIndex) {
-									console.log("Adding spell: ", data.name)
+									console.log("Adding spell: ", data.name);
 									// prepare data
 									data.content = addInlineRollers(data.content);
 									const DESC_KEY = "data-description";
@@ -780,8 +786,11 @@ function d20plusMonsters () {
 											"repeating_spell-" + lvl + "_" + spellid + "_spellrange",
 											"repeating_spell-" + lvl + "_" + spellid + "_spelltarget",
 											"repeating_spell-" + lvl + "_" + spellid + "_spellattack",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellcritrange",
 											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit",
 											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage2",
+											"repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit2",
 											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype",
 											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2",
 											"repeating_spell-" + lvl + "_" + spellid + "_spellhealing",
@@ -828,6 +837,10 @@ function d20plusMonsters () {
 											description = description + v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] + " Spell Attack. ";
 										}
 
+										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellcritrange"]) {
+											update["repeating_attack_" + attackid + "_atkcritrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellcritrange"];
+										}
+
 										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] && v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] != "") {
 											update["repeating_attack_" + attackid + "_dmgflag"] = "{{damage=1}} {{dmg1flag=1}}";
 											if(v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] && v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] === "Cantrip Dice") {
@@ -835,6 +848,7 @@ function d20plusMonsters () {
 											}
 											else {
 												update["repeating_attack_" + attackid + "_dmgbase"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"];
+												update["repeating_attack_" + attackid + "_dmgcustcrit"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit"] || "";
 											}
 										}
 										else {
@@ -856,6 +870,7 @@ function d20plusMonsters () {
 											update["repeating_attack_" + attackid + "_dmg2base"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"];
 											update["repeating_attack_" + attackid + "_dmg2attr"] = 0;
 											update["repeating_attack_" + attackid + "_dmg2flag"] = "{{damage=1}} {{dmg2flag=1}}";
+											update["repeating_attack_" + attackid + "_dmg2custcrit"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit2"] || "";
 										}
 										else {
 											update["repeating_attack_" + attackid + "_dmg2base"] = "";
@@ -997,9 +1012,12 @@ function d20plusMonsters () {
 											update["repeating_spell-" + lvl + "_" + id + "_rollcontent"] = "@{wtype}&{template:spell} {{level=@{spellschool} " + spelllevel + "}} {{name=@{spellname}}} {{castingtime=@{spellcastingtime}}} {{range=@{spellrange}}} {{target=@{spelltarget}}} @{spellcomp_v} @{spellcomp_s} @{spellcomp_m} {{material=@{spellcomp_materials}}} {{duration=@{spellduration}}} {{description=@{spelldescription}}} {{athigherlevels=@{spellathigherlevels}}} @{spellritual} {{innate=@{innate}}} @{spellconcentration} @{charname_output}";
 										};
 										if(page.data["Spell Attack"]) {update["repeating_spell-" + lvl + "_" + id + "_spellattack"] = page.data["Spell Attack"]};
+										if(page.data["Crit Range"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcritrange"] = page.data["Crit Range"]};
 										if(page.data["Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage"] = page.data["Damage"]};
+										if(page.data["Crit"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcustcrit"] = page.data["Crit"]};
 										if(page.data["Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype"] = page.data["Damage Type"]};
 										if(page.data["Secondary Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage2"] = page.data["Secondary Damage"]};
+										if(page.data["Secondary Crit"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcustcrit2"] = page.data["Secondary Crit"]};
 										if(page.data["Secondary Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype2"] = page.data["Secondary Damage Type"]};
 										if(page.data["Healing"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhealing"] = page.data["Healing"];};
 										if(page.data["Add Casting Modifier"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldmgmod"] = page.data["Add Casting Modifier"]};
@@ -1365,7 +1383,7 @@ function d20plusMonsters () {
 								*/
 							}
 
-							character.view._updateSheetValues();
+							character.view.updateSheetValues();
 
 							if (renderFluff) {
 								setTimeout(() => {

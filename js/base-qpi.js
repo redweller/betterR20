@@ -137,7 +137,7 @@ function baseQpi () {
 			qpi._loadedScripts = await StorageUtil.pGet("VeQpi") || {};
 
 			$(`body`).append(`
-				<div id="qpi-manager" title="QPI Script Manager - v${qpi._version}">
+				<div id="qpi-manager" title="Better20 - QPI Script Manager - v${qpi._version}">
 					<div class="qpi-table"></div>
 					<div>
 						<input placeholder="URL*" class="qpi-url">

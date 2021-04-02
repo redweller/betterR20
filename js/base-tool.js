@@ -13,7 +13,7 @@ function baseTool() {
 			name: "Journal Cleaner",
 			desc: "Quickly select and delete journal items, especially useful for cleaning up loose items after deleting a folder.",
 			html: `
-				<div id="d20plus-quickdelete" title="Journal Root Cleaner">
+				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
 				<label style="font-weight: bold">Root Only <input type="checkbox" class="cb-deep" checked></label>
 				<hr>
@@ -133,7 +133,7 @@ function baseTool() {
 			name: "SVG Draw",
 			desc: "Paste SVG data as text to automatically draw the paths.",
 			html: `
-				<div id="d20plus-svgdraw" title="SVG Drawing Tool">
+				<div id="d20plus-svgdraw" title="Better20 - SVG Drawing Tool">
 				<p>Paste SVG data as text to automatically draw any included &lt;path&gt;s. Draws to the current layer, in the top-left corner, with no scaling. Takes colour information from &quot;stroke&quot; attributes.</p>
 				<p>Line width (px; default values are 1, 3, 5, 8, 14): <input name="stroke-width" placeholder="5" value="5" type="number"></p>
 				<textarea rows="10" cols="100" placeholder="Paste SVG data here"></textarea>
@@ -188,7 +188,7 @@ function baseTool() {
 			name: "Multi-Whisper",
 			desc: "Send whispers to multiple players ",
 			html: `
-				<div id="d20plus-whispers" title="Multi-Whisper Tool">
+				<div id="d20plus-whispers" title="Better20 - Multi-Whisper Tool">
 				<div>
 					<button class="btn toggle-dc">Show Disconnected Players</button>
 					<button class="btn send-all">Send All Messages</button>
@@ -273,10 +273,143 @@ function baseTool() {
 			}
 		},
 		{
+			name: "Table Importer Expanded",
+			desc: "Import TableExport data from an expanded list",
+			html: `
+				<div id="d20plus-expanded" title="Table Importer Expanded">
+					<div id="table-list-expanded">
+						<input type="search" class="search" placeholder="Search tables...">
+						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
+					</div>
+				<br>
+				<button class="btn start-import">Import</button>
+				</div>
+				
+				<div id="d20plus-expanded-clipboard" title="Paste from Clipboard"/>
+				`,
+			dialogFn: () => {
+				$("#d20plus-expanded").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 650,
+					height: 720,
+				});
+				$(`#d20plus-expanded-clipboard`).dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 640,
+					height: 480,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-expanded");
+				$win.dialog("open");
+
+				const $btnImport = $win.find(`.start-import`).off("click");
+
+				const url = "https://raw.githubusercontent.com/TheGiddyLimit/TheGiddyLimit.github.io/master/data/generated/gendata-tables.json";
+				DataUtil.loadJSON(url).then((data) => {
+					// The function in charge of generating and saving the full table
+					function createTable (t) {
+						// Creates the table, with data for the full table
+						const r20t = d20.Campaign.rollabletables.create({
+							name: t.name.replace(/\s+/g, "-"),
+							id: d20plus.ut.generateRowId()
+						});
+
+						labels = t.colLabels;
+						// Gets the index of the first column labeled with a dice roll
+						// For example, finds the d100 column
+						const dplace = labels.findIndex(l => /d[0-9]+/.test(l));
+						const tlen = labels.length;
+
+						r20t.tableitems.reset(t.rows.map(i => {
+							// Create the return value
+							const out = {
+								id: d20plus.ut.generateRowId(),
+								name: ""
+							};
+
+							// Set the name
+							for (col = 0; col < tlen; col++) {
+								// Add a seperator for cases of multiple columns
+								if (out.name.length > 0) {
+									out.name += " | "
+								}
+								// Add each column to out.name
+								if (col !== dplace) {
+									// Get rid of ugly notation
+									clean = i[col].replace(/\{@[\w\d]* (.*)\}/, "$1");
+									out.name += clean;
+								}
+							}
+
+							// Set the weight
+							if (dplace !== -1) {
+								weight = i[dplace];
+								dash = weight.indexOf("–"); //Note: – is different from -
+
+								// If the weight is a range
+								if (dash !== -1) {
+									// Get the two numbers in the range, subtract them, add 1
+									low = parseInt(weight.substring(0, dash));
+									high = parseInt(weight.substring(dash + 1));
+									if (high === 0) high = 100;
+									out.weight = high - low + 1;
+								}
+								// If the weight is a signle value
+								else {
+									out.weight = 1;
+								}
+							}
+							// If the weight is unlisted
+							else {
+								out.weight = 1;
+							}
+
+							if (i.avatar) out.avatar = i.avatar;
+							return out;
+						}));
+						r20t.tableitems.forEach(it => it.save());
+					}
+
+
+					// Official tables
+					const $lst = $win.find(`.list`);
+					const tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+					let tmp = "";
+					tables.forEach((t, i) => {
+						tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="checkbox">
+									<span class="name col-10">${t.name}</span>
+									<span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
+								</label>
+							`;
+					});
+					$lst.html(tmp);
+					tmp = null;
+
+					const tableList = new List("table-list-expanded", {
+						valueNames: ["name", "source"]
+					});
+
+					$btnImport.on("click", () => {
+						$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
+						const sel = tableList.items
+							.filter(it => $(it.elm).find(`input`).prop("checked"))
+							.map(it => tables[$(it.elm).attr("data-listid")]);
+
+						sel.forEach(t => createTable(t));
+					});
+				});
+			}
+		},
+		{
 			name: "Table Importer",
 			desc: "Import TableExport data",
 			html: `
-				<div id="d20plus-tables" title="Table Importer">
+				<div id="d20plus-tables" title="Better20 - Table Importer">
 					<div>
 					<button class="btn paste-clipboard">Paste from Clipboard</button> <i>Accepts <a href="https://app.roll20.net/forum/post/1144568/script-tableexport-a-script-for-exporting-and-importing-rollable-tables-between-accounts">TableExport</a> format.</i>
 					</div>
@@ -433,7 +566,7 @@ function baseTool() {
 			name: "Token Avatar URL Fixer",
 			desc: "Change the root URL for tokens en-masse.",
 			html: `
-				<div id="d20plus-avatar-fixer" title="Avatar Fixer">
+				<div id="d20plus-avatar-fixer" title="Better20 - Avatar Fixer">
 				<p><b>Warning:</b> this thing doesn't really work.</p>
 				<p>Current URLs (view only): <select class="view-only"></select></p>
 				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
@@ -510,7 +643,7 @@ function baseTool() {
 			name: "Mass-Delete Pages",
 			desc: "Quickly delete multiple pages.",
 			html: `
-				<div id="d20plus-mass-page-delete" title="Mass-Delete Pages">
+				<div id="d20plus-mass-page-delete" title="Better20 - Mass-Delete Pages">
 					<div id="del-pages-list">
 						<div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden; margin-bottom: 10px;"><i>Loading...</i></div>
 					</div>
@@ -607,7 +740,7 @@ function baseTool() {
 			name: "Quantum Token Entangler",
 			desc: "Connect tokens between pages, linking their positions.",
 			html: `
-				<div id="d20plus-token-entangle" title="Quantum Token Entangler">
+				<div id="d20plus-token-entangle" title="Better20 - Quantum Token Entangler">
 					<p><i>Please note that this feature is highly experimental.
 					<br>
 					You can learn Token IDs by rightclicking a token -> "Advanced" -> "View Token ID."</i></p>
