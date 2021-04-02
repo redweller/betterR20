@@ -1383,7 +1383,7 @@ function d20plusMonsters () {
 								*/
 							}
 
-							character.view._updateSheetValues();
+							character.view.updateSheetValues();
 
 							if (renderFluff) {
 								setTimeout(() => {
