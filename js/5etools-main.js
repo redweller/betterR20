@@ -1120,24 +1120,10 @@ const betteR205etoolsMain = function () {
 		addClasses("Races");
 		addClasses("Optional Features");
 
-		// if player, force-enable dragging
-		if (!window.is_gm) {
-			$(`.Vetools-draggable`).draggable({
-				revert: true,
-				distance: 10,
-				revertDuration: 0,
-				helper: "clone",
-				handle: ".namecontainer",
-				appendTo: "body",
-				scroll: true,
-				start: function () {
-					$("#journalfolderroot").addClass("externaldrag")
-				},
-				stop: function () {
-					$("#journalfolderroot").removeClass("externaldrag")
-				}
-			});
-		}
+		// ~~if player,~~ force-enable dragging
+		$(`.Vetools-draggable`).each((i, e) => {
+			d20plus.importer.bindFakeCompendiumDraggable($(e));
+		});
 
 		class CharacterAttributesProxy {
 			constructor (character) {
@@ -2185,79 +2171,108 @@ const betteR205etoolsMain = function () {
 		}
 
 		d20.Campaign.characters.models.each(function (v, i) {
-			v.view.rebindCompendiumDropTargets = function () {
-				// ready character sheet for draggable
-				$(".sheet-compendium-drop-target").each(function () {
-					$(this).droppable({
-						hoverClass: "dropping",
-						tolerance: "pointer",
-						activeClass: "active-drop-target",
-						accept: ".compendium-item",
-						drop: function (t, i) {
-							var characterid = $(".characterdialog").has(t.target).attr("data-characterid");
-							var character = d20.Campaign.characters.get(characterid).view;
-							var inputData;
-							const $hlpr = $(i.helper[0]);
+			// region BEGIN ROLL20 CODE
+			v.view.compendiumDragOver = function (e, t) {
+				if (this.popoutWindow) return
+				this.$currentDropTarget = this.childWindow.d20.compendiumDragOver(e, t)
 
-							if ($hlpr.hasClass("handout")) {
-								console.log("Handout item dropped onto target!");
-								t.originalEvent.dropHandled = !0;
-
-								if ($hlpr.hasClass(`player-imported`)) {
-									const data = d20plus.importer.retrievePlayerImport($hlpr.attr("data-playerimportid"));
-									importData(character, data, t);
-								} else {
-									var id = $hlpr.attr("data-itemid");
-									var handout = d20.Campaign.handouts.get(id);
-									console.log(character);
-									var data = "";
-									if (window.is_gm) {
-										handout._getLatestBlob("gmnotes", function (gmnotes) {
-											data = gmnotes;
-											handout.updateBlobs({gmnotes: gmnotes});
-											importData(character, JSON.parse(data), t);
-										});
-									} else {
-										handout._getLatestBlob("notes", function (notes) {
-											data = $(notes).filter("del").html();
-											importData(character, JSON.parse(data), t);
-										});
-									}
-								}
-							} else {
-								// rename some variables...
-								const e = character;
-								const n = i;
-
-								// BEGIN ROLL20 CODE
-								console.log("Compendium item dropped onto target!"),
-									t.originalEvent.dropHandled = !0,
-									window.wantsToReceiveDrop(this, t, function() {
-										var i = $(n.helper[0]).attr("data-pagename");
-										console.log(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true"),
-											$.get(d20.compendium.compendiumBase + "compendium/" + COMPENDIUM_BOOK_NAME + "/" + i + ".json?plaintext=true", function(n) {
-												var o = _.clone(n.data);
-												o.Name = n.name,
-													o.data = JSON.stringify(n.data),
-													o.uniqueName = i,
-													o.Content = n.content,
-													$(t.target).find("*[accept]").each(function() {
-														var t = $(this)
-															, n = t.attr("accept");
-														o[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-															var e = $(this);
-															e.val() !== o[n] && e.text() !== o[n] || e.prop("selected", !0)
-														}) : $(this).val(o[n]),
-															e.saveSheetValues(this))
-													})
-											})
-									});
-								// END ROLL20 CODE
-							}
-						}
-					});
-				});
+				// Cache the last drop target, since it has a habit of disappearing every other loop.
+				// This probably breaks other things, but, who cares!
+				if (this.$currentDropTarget) this._b20_$prevDropTarget = this.$currentDropTarget;
+				if (!this.$currentDropTarget) this.$currentDropTarget = this._b20_$prevDropTarget;
 			};
+			// endregion END ROLL20 CODE
+
+			v.view.bindCompendiumDropTarget = function () {
+				if (this.popoutWindow) return;
+				const e = this;
+
+				this.$compendiumDropTarget.droppable({
+					accept: ".compendium-item",
+					tolerance: "pointer",
+					over() {
+						e.dragOver = !0
+					},
+					out() {
+						e.dragOver = !1,
+							e.childWindow.d20.deactivateDrop()
+					},
+					drop(t, i) {
+						const characterid = $(".characterdialog").has(t.target).attr("data-characterid");
+						const character = d20.Campaign.characters.get(characterid).view;
+						const $hlpr = $(i.helper[0]);
+
+						if ($hlpr.hasClass("handout")) {
+							console.log("Handout item dropped onto target!");
+							t.originalEvent.dropHandled = !0;
+
+							if ($hlpr.hasClass(`player-imported`)) {
+								const data = d20plus.importer.retrievePlayerImport($hlpr.attr("data-playerimportid"));
+								importData(character, data, t);
+							} else {
+								var id = $hlpr.attr("data-itemid");
+								var handout = d20.Campaign.handouts.get(id);
+								console.log(character);
+								var data = "";
+								if (window.is_gm) {
+									handout._getLatestBlob("gmnotes", function (gmnotes) {
+										data = gmnotes;
+										handout.updateBlobs({gmnotes: gmnotes});
+										importData(character, JSON.parse(data), t);
+									});
+								} else {
+									handout._getLatestBlob("notes", function (notes) {
+										data = $(notes).filter("del").html();
+										importData(character, JSON.parse(data), t);
+									});
+								}
+							}
+							return;
+						}
+
+						console.log("Compendium item dropped onto target!");
+						// region BEGIN ROLL20 CODE
+						t.originalEvent.dropHandled = !0,
+						e.activeDrop && (e.dragOver = !1,
+							e.childWindow.d20.deactivateDrop(),
+						e.$currentDropTarget && window.wantsToReceiveDrop(this, t, ()=>{
+								const t = $(i.helper[0]).attr("data-pagename")
+									, n = $(i.helper[0]).attr("data-subhead");
+								$.ajax({
+									url: "/compendium/compendium/getPages",
+									data: {
+										bookName: COMPENDIUM_BOOK_NAME,
+										pages: [t],
+										sharedCompendium: campaign_id
+									},
+									cache: !1,
+									dataType: "JSON"
+								}).done(i=>{
+										const o = JSON.parse(i[0])
+											, r = _.clone(o.data);
+										r.Name = o.name,
+											r.data = o.data,
+											r.data = JSON.stringify(r.data),
+											r.uniqueName = t,
+											r.Content = o.content,
+											r.dropSubhead = n,
+											e.$currentDropTarget.find("*[accept]").each(function() {
+												const t = $(this)
+													, i = t.attr("accept");
+												r[i] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") || "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() === r[i] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+													const e = $(this);
+													e.val() !== r[i] && e.text() !== r[i] || e.prop("selected", !0)
+												}) : $(this).val(r[i]),
+													e.saveSheetValues(this, "compendium"))
+											})
+									}
+								)
+							}
+						))
+						// endregion END ROLL20 CODE
+					}
+				})
+			}
 		});
 	};
 

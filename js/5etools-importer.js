@@ -111,32 +111,45 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.doFakeDrop = function (event, characterView, fakeRoll20Json, outerI) {
-		const t = event; // needs a "target" property, which should be the `.sheet-compendium-drop-target` element on the sheet
 		const e = characterView; // AKA character.view
-		const n = fakeRoll20Json;
-		// var i = $(outerI.helper[0]).attr("data-pagename"); // always undefined, since we're not using a compendium drag-drop element
-		const i = d20plus.ut.generateRowId();
+		const o = fakeRoll20Json;
 
-		$(t.target).find("*[accept]").each(function() {
-			$(this).val(undefined);
-		});
+		// The page/subheading area always undefined, since we're not coming from the compendium. Pass in some junk.
+		const t = d20plus.ut.generateRowId(); // `$(i.helper[0]).attr("data-pagename")` e.g. "Spells%3AFire%20Bolt"
+		const n = undefined; // `$(i.helper[0]).attr("data-subhead")` e.g. undefined
+
+		// Clean out any lingering values
+		if (e.$currentDropTarget) {
+			e.$currentDropTarget.find("*[accept]").each(function() {
+				$(this).val(undefined);
+			});
+		} else {
+			console.error(`Could not find current drop target!`);
+			return;
+		}
 
 		// BEGIN ROLL20 CODE
-		var o = _.clone(n.data);
-		o.Name = n.name,
-			o.data = JSON.stringify(n.data),
-			o.uniqueName = i,
-			o.Content = n.content,
-			$(t.target).find("*[accept]").each(function() {
-				var t = $(this)
-					, n = t.attr("accept");
-				o[n] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() == o[n] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-					var e = $(this);
-					e.val() !== o[n] && e.text() !== o[n] || e.prop("selected", !0)
-				}) : $(this).val(o[n]),
-					e.saveSheetValues(this))
+		const r = _.clone(o.data);
+		r.Name = o.name,
+			r.data = o.data,
+			r.data = JSON.stringify(r.data),
+			r.uniqueName = t,
+			r.Content = o.content,
+			r.dropSubhead = n,
+			e.$currentDropTarget.find("*[accept]").each(function() {
+				const t = $(this)
+					, i = t.attr("accept");
+				r[i] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") || "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() === r[i] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+					const e = $(this);
+					e.val() !== r[i] && e.text() !== r[i] || e.prop("selected", !0)
+				}) : $(this).val(r[i]),
+					e.saveSheetValues(this, "compendium"))
 			})
 		// END ROLL20 CODE
+
+		// reset the drag UI
+		characterView.activeDrop = false;
+		characterView.compendiumDragOver()
 	};
 
 	// caller should run `$iptFilter.off("keydown").off("keyup");` before calling this
@@ -390,22 +403,54 @@ function d20plusImporter () {
 			</div>
 		</li>
 	`);
-		$li.draggable({
-			revert: true,
+		d20plus.importer.bindFakeCompendiumDraggable($li);
+		$appTo.prepend($li);
+	};
+
+	d20plus.importer.bindFakeCompendiumDraggable = function ($ele) {
+		$ele.draggable({
+			// region BEGIN ROLL20 CODE
+			revert: !0,
 			distance: 10,
 			revertDuration: 0,
 			helper: "clone",
-			handle: ".namecontainer",
 			appendTo: "body",
-			scroll: true,
-			start: function () {
-				console.log("drag start")
+			scroll: !1,
+			iframeFix: !0,
+			start() {
+				$(".characterdialog iframe").css("pointer-events", "none"),
+					$(".characterdialog .charsheet-compendium-drop-target").show()
 			},
-			stop: function () {
-				console.log("drag stop")
-			}
+			drag(e) {
+				let t, i = 0;
+				const n = [];
+				$(".characterdialog[data-characterid]").each((e,o)=>{
+						const r = d20.Campaign.characters.get($(o).data("characterid"));
+						if (r && r.view.dragOver) {
+							const e = parseInt(r.view.$el.parent().css("z-index"));
+							n.push(r),
+							e > i && (t = r.id,
+								i = e)
+						}
+					}
+				);
+				n.forEach(i=>{
+						if (i.id === t) {
+							const t = i.view.$el.offset();
+							i.view.compendiumDragOver(e.pageX - t.left, e.pageY - t.top),
+								i.view.activeDrop = !0
+						} else
+							i.view.activeDrop = !1,
+								i.view.compendiumDragOver()
+					}
+				)
+			},
+			stop() {
+				$(".characterdialog iframe").css("pointer-events", "auto"),
+					$(".characterdialog .charsheet-compendium-drop-target").hide()
+			},
+			// endregion END ROLL20 CODE
 		});
-		$appTo.prepend($li);
 	};
 
 	d20plus.importer.getTagString = function (data, prefix) {
