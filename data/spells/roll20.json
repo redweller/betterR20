@@ -2922,13 +2922,6 @@
 			"data": {}
 		},
 		{
-			"name": "Haywire (UA)",
-			"source": "UAModernMagic",
-			"data": {
-				"Save": "Wisdom"
-			}
-		},
-		{
 			"name": "Infallible Relay (UA)",
 			"source": "UAModernMagic",
 			"data": {
@@ -4360,7 +4353,7 @@
 			"name": "Sapping Sting",
 			"source": "EGW",
 			"data": {
-				"Save": "Consitution",
+				"Save": "Constitution",
 				"Damage": "1d4",
 				"Damage Type": "Necrotic",
 				"Target": "A creature you can see in range",
@@ -4544,7 +4537,7 @@
 			"name": "Haywire (UA)",
 			"source": "UAModernMagic",
 			"data": {
-				"Save": "Dexterity",
+				"Save": "Wisdom",
 				"Damage": "6d6",
 				"Damage Type": "Lightning",
 				"Target": "Each electronic device within 10 feet of a point you choose",

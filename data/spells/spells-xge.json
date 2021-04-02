@@ -1398,7 +1398,8 @@
 						"source": "PHB"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dawn",
@@ -1703,6 +1704,7 @@
 				"strength"
 			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"classes": {
@@ -2284,7 +2286,8 @@
 						"source": "PHB"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Flame Arrows",
@@ -2559,6 +2562,10 @@
 					"page": 107
 				},
 				{
+					"source": "ERLW",
+					"page": 50
+				},
+				{
 					"source": "TCE",
 					"page": 50
 				}
@@ -2602,6 +2609,7 @@
 				"strength"
 			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"areaTags": [
@@ -2682,6 +2690,9 @@
 			"miscTags": [
 				"HL",
 				"SGT"
+			],
+			"areaTags": [
+				"C"
 			],
 			"classes": {
 				"fromClassList": [
@@ -3049,7 +3060,8 @@
 						"source": "PHB"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Infestation",
@@ -3440,6 +3452,7 @@
 				"constitution"
 			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"areaTags": [
@@ -3699,6 +3712,7 @@
 				"strength"
 			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"areaTags": [
@@ -4137,7 +4151,8 @@
 						"source": "PHB"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Mind Spike",
@@ -4834,7 +4849,8 @@
 						"source": "PHB"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shadow of Moil",
@@ -5558,7 +5574,8 @@
 						"source": "PHB"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Summon Greater Demon",
@@ -5582,7 +5599,10 @@
 			"components": {
 				"v": true,
 				"s": true,
-				"m": "a vial of blood from a humanoid killed within the past 24 hours"
+				"m": {
+					"text": "a vial of blood from a humanoid killed within the past 24 hours",
+					"consume": "optional"
+				}
 			},
 			"duration": [
 				{
@@ -5651,7 +5671,10 @@
 			"components": {
 				"v": true,
 				"s": true,
-				"m": "a vial of blood from a humanoid killed within the past 24 hours"
+				"m": {
+					"text": "a vial of blood from a humanoid killed within the past 24 hours",
+					"consume": "optional"
+				}
 			},
 			"duration": [
 				{
@@ -6245,7 +6268,8 @@
 						"definedInSource": "UAClassFeatureVariants"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Toll the Dead",
@@ -6795,6 +6819,9 @@
 					]
 				}
 			],
+			"conditionInflict": [
+				"deafened"
+			],
 			"classes": {
 				"fromClassList": [
 					{
@@ -6952,6 +6979,7 @@
 				"dexterity"
 			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"areaTags": [

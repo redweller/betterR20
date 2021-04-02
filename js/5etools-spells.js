@@ -101,7 +101,6 @@ function d20plusSpells () {
 
 				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data, options);
 
-				console.log(notecontents);
 				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
 				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);

@@ -188,7 +188,8 @@
 			],
 			"miscTags": [
 				"MW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Lhammaruntosz",
@@ -457,7 +458,9 @@
 				"charmed",
 				"invisible",
 				"unconscious"
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Spellcaster (Healer)",

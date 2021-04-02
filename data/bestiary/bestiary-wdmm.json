@@ -98,7 +98,8 @@
 			],
 			"miscTags": [
 				"RW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Animated Jade Serpent",
@@ -305,7 +306,8 @@
 			"miscTags": [
 				"AOE",
 				"MW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Animated Wand",
@@ -451,7 +453,9 @@
 					"ability": "int"
 				}
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ashtyrranthor",
@@ -668,7 +672,8 @@
 				"DS",
 				"OTH",
 				"U"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Big Xorn",
@@ -830,7 +835,8 @@
 			"miscTags": [
 				"MW",
 				"RCH"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Captain N'ghathrod",
@@ -912,7 +918,8 @@
 			"conditionInflict": [
 				"paralyzed",
 				"poisoned"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Cassiok Shadowdusk",
@@ -1063,7 +1070,8 @@
 				"I",
 				"U"
 			],
-			"miscTags": []
+			"miscTags": [],
+			"hasFluff": true
 		},
 		{
 			"name": "Copper Stormforge",
@@ -1098,7 +1106,8 @@
 				"C",
 				"D",
 				"X"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Crow",
@@ -1182,7 +1191,8 @@
 			"miscTags": [
 				"AOE",
 				"MW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Deformed Duergar",
@@ -1222,7 +1232,8 @@
 				"RCH",
 				"RW",
 				"THW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Dezmyr Shadowdusk",
@@ -1298,7 +1309,8 @@
 					"ability": "cha"
 				}
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Drivvin Freth",
@@ -1391,7 +1403,8 @@
 			"damageTags": [
 				"F",
 				"S"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Ezzat",
@@ -1556,7 +1569,8 @@
 			"miscTags": [
 				"MW",
 				"RCH"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Fidelio",
@@ -1813,7 +1827,8 @@
 			"languageTags": [
 				"D",
 				"U"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gorzil's Gang Troglodyte",
@@ -2113,6 +2128,9 @@
 				"I",
 				"U"
 			],
+			"damageTags": [
+				"T"
+			],
 			"spellcastingTags": [
 				"CW",
 				"I"
@@ -2127,7 +2145,9 @@
 				"invisible",
 				"stunned",
 				"unconscious"
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Halaster Horror",
@@ -2267,9 +2287,19 @@
 					"entries": [
 						"A creature that uses an action to touch the living snail gains 6 temporary hit points that last for 24 hours. Any creature or object that touches the living snail also gains the benefit of a {@spell remove curse} spell. The snail loses these magical properties if it dies."
 					]
+				},
+				{
+					"name": "Spider Climb",
+					"entries": [
+						"The snail can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+					]
 				}
 			],
-			"hasToken": true
+			"hasToken": true,
+			"traitTags": [
+				"Spider Climb"
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Horned Sister",
@@ -2294,13 +2324,21 @@
 				"L",
 				"E"
 			],
+			"languages": [
+				"Common",
+				"Draconic",
+				"Infernal",
+				"Undercommon"
+			],
 			"hasToken": true,
 			"senseTags": [
 				"D"
 			],
 			"languageTags": [
+				"C",
+				"DR",
 				"I",
-				"X"
+				"U"
 			],
 			"spellcastingTags": [
 				"CW",
@@ -2353,8 +2391,7 @@
 				"Multiattack"
 			],
 			"damageTags": [
-				"A",
-				"B"
+				"A"
 			]
 		},
 		{
@@ -2624,7 +2661,8 @@
 			"hasToken": true,
 			"spellcastingTags": [
 				"CW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Kol'daan",
@@ -2791,7 +2829,9 @@
 			],
 			"miscTags": [
 				"MW"
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Living Unseen Servant",
@@ -2869,7 +2909,8 @@
 			],
 			"miscTags": [
 				"MW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Mad Golem",
@@ -2920,7 +2961,8 @@
 				"E",
 				"I",
 				"U"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Maddgoth's Homunculus",
@@ -2964,7 +3006,9 @@
 				"DR",
 				"G"
 			],
-			"damageTags": []
+			"damageTags": [
+				"P"
+			]
 		},
 		{
 			"name": "Marta Moonshadow",
@@ -3027,7 +3071,8 @@
 				"DR",
 				"E",
 				"U"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Melissara Shadowdusk",
@@ -3352,7 +3397,9 @@
 			"miscTags": [
 				"MW",
 				"RCH"
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Nerozar the Defeated",
@@ -3483,7 +3530,8 @@
 				"DR",
 				"GI",
 				"T"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Old Troglodyte",
@@ -3546,7 +3594,9 @@
 			"str": 18,
 			"cr": "3",
 			"hasToken": true,
-			"damageTags": []
+			"damageTags": [
+				"P"
+			]
 		},
 		{
 			"name": "Play-by-Play Generator",
@@ -3761,7 +3811,8 @@
 			"conditionInflict": [
 				"frightened",
 				"paralyzed"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Rabbithead",
@@ -3937,7 +3988,9 @@
 			],
 			"conditionInflict": [
 				"grappled"
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shadow Assassin",
@@ -4068,7 +4121,8 @@
 			],
 			"miscTags": [
 				"MW"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Shapechanged Roper",
@@ -4240,7 +4294,8 @@
 				"L",
 				"E"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Sing-Along",
@@ -4420,7 +4475,8 @@
 				"E",
 				"I",
 				"U"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Sundeth",
@@ -4459,7 +4515,8 @@
 			"languageTags": [
 				"C",
 				"GI"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Thwad Underbrew",
@@ -4520,7 +4577,8 @@
 			"damageTags": [
 				"B",
 				"P"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Torbit",
@@ -4556,7 +4614,8 @@
 				"OTH",
 				"TC",
 				"X"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Trenzia",
@@ -4638,7 +4697,8 @@
 			"hasToken": true,
 			"damageTags": [
 				"L"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Trobriand",
@@ -4748,7 +4808,8 @@
 			"hasToken": true,
 			"spellcastingTags": [
 				"CW"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Umbraxakar",
@@ -4835,7 +4896,8 @@
 					]
 				}
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Valtagar Steelshadow",
@@ -4892,7 +4954,8 @@
 				"OTH",
 				"T",
 				"U"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Vertrand Shadowdusk",
@@ -5093,7 +5156,9 @@
 				"MW",
 				"RNG",
 				"RW"
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Wooden Donkey",
@@ -5129,7 +5194,8 @@
 			"hasToken": true,
 			"senseTags": [
 				"B"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Wyllow",
@@ -5172,7 +5238,8 @@
 				"C",
 				"DU",
 				"E"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Zalthar Shadowdusk",

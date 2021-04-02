@@ -147,7 +147,8 @@
 			"conditionInflict": [
 				"frightened",
 				"incapacitated"
-			]
+			],
+			"hasFluff": true
 		},
 		{
 			"name": "Expert",

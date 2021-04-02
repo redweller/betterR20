@@ -752,7 +752,7 @@
 				}
 			],
 			"entries": [
-				"Your magic turns others into beasts. Choose any number of willing creatures that you can see within range. You transform each target into the form of a Large or smaller beast with a challenge rating of 4 or lower. On subsequent turns, you can use your action to transform affected creatures into new forms.",
+				"Your magic turns others into beasts. Choose any number of willing creatures that you can see within range. You transform each target into the form of a {@filter Large or smaller beast with a challenge rating of 4 or lower|bestiary|challenge rating=[&0;&4]|type=beast|size=f;d;t;s;m;l|miscellaneous=!swarm}. On subsequent turns, you can use your action to transform affected creatures into new forms.",
 				"The transformation lasts for the duration for each target, or until the target drops to 0 hit points or dies. You can choose a different form for each target. A target's game statistics are replaced by the statistics of the chosen beast, though the target retains its alignment and Intelligence, Wisdom, and Charisma scores. The target assumes the hit points of its new form, and when it reverts to its normal form, it returns to the number of hit points it had before it transformed. If it reverts as a result of dropping to 0 hit points, any excess damage carries over to its normal form. As long as the excess damage doesn't reduce the creature's normal form to 0 hit points, it isn't knocked {@condition unconscious}. The creature is limited in the actions it can perform by the nature of its new form, and it can't speak or cast spells.",
 				"The target's gear melds into the new form. The target can't activate, wield, or otherwise benefit from any of its equipment."
 			],
@@ -1960,6 +1960,10 @@
 					{
 						"name": "Wizard",
 						"source": "PHB"
+					},
+					{
+						"name": "Monk",
+						"source": "PHB"
 					}
 				]
 			}
@@ -3146,7 +3150,8 @@
 						}
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Beacon of Hope",
@@ -3585,6 +3590,7 @@
 				"strength"
 			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"classes": {
@@ -4806,6 +4812,26 @@
 							"name": "Wildfire",
 							"source": "TCE"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Sun Soul",
+							"source": "XGE"
+						}
 					}
 				]
 			},
@@ -4840,7 +4866,8 @@
 					"name": "Rakdos Cultist",
 					"source": "GGR"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Call Lightning",
@@ -6118,7 +6145,8 @@
 					"name": "Golgari Agent",
 					"source": "GGR"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Color Spray",
@@ -7177,6 +7205,16 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
 						}
 					}
 				],
@@ -8344,7 +8382,7 @@
 				}
 			],
 			"entries": [
-				"Choose a spell of 5th level or lower that you can cast, that has a casting time of 1 action, and that can target you. You cast that spell\u2014called the contingent spell\u2014as part of casting contingency, expending spell slots for both, but the contingent spell doesn't come into effect. Instead, it takes effect when a certain circumstance occurs. You describe that circumstance when you cast the two spells. For example, a contingency cast with water breathing might stipulate that water breathing comes into effect when you are engulfed in water or a similar liquid.",
+				"Choose a spell of 5th level or lower that you can cast, that has a casting time of 1 action, and that can target you. You cast that spell\u2014called the contingent spell\u2014as part of casting contingency, expending spell slots for both, but the contingent spell doesn't come into effect. Instead, it takes effect when a certain circumstance occurs. You describe that circumstance when you cast the two spells. For example, a contingency cast with {@spell water breathing} might stipulate that {@spell water breathing} comes into effect when you are engulfed in water or a similar liquid.",
 				"The contingent spell takes effect immediately after the circumstance is met for the first time, whether or not you want it to, and then contingency ends.",
 				"The contingent spell takes effect only on you, even if it can normally target others. You can use only one contingency spell at a time. If you cast this spell again, the effect of another contingency spell on you ends. Also, contingency ends on you if its material component is ever not on your person."
 			],
@@ -8519,6 +8557,9 @@
 			],
 			"abilityCheck": [
 				"strength"
+			],
+			"miscTags": [
+				"FMV"
 			],
 			"areaTags": [
 				"N"
@@ -9969,6 +10010,16 @@
 							"name": "Shadow",
 							"source": "XGE"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Shadow",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -10115,6 +10166,18 @@
 					{
 						"name": "Artificer",
 						"source": "TCE"
+					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Shadow",
+							"source": "PHB"
+						}
 					}
 				]
 			}
@@ -11214,7 +11277,8 @@
 					"baseName": "Human",
 					"baseSource": "PHB"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Disguise Self",
@@ -12680,7 +12744,7 @@
 						"subclass": {
 							"name": "Land",
 							"source": "PHB",
-							"subSubclass": "Forest"
+							"subSubclass": "Grassland"
 						}
 					},
 					{
@@ -13825,6 +13889,18 @@
 					{
 						"name": "Wizard",
 						"source": "PHB"
+					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Twilight (UA)",
+							"source": "UADruid"
+						}
 					}
 				]
 			}
@@ -15751,6 +15827,16 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -15759,7 +15845,8 @@
 					"name": "Kiss of Mephistopheles",
 					"source": "UAWarlockAndWizard"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Flame Blade",
@@ -16391,6 +16478,18 @@
 						"name": "Artificer",
 						"source": "TCE"
 					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
+						}
+					}
 				]
 			}
 		},
@@ -16590,7 +16689,7 @@
 				"ritual": true
 			},
 			"entries": [
-				"You create a ward against magical travel that protects up to 40,000 square feet of floor space to a height of 30 feet above the floor. For the duration, creatures can't teleport into the area or use portals, such as those created by the {@spell gate} spell, to enter the area. The spell proofs the area against planar travel, and therefore prevents creatures from accessing the area by way of the Astral Plane, Ethereal Plane, Feywild, Shadowfell, or the plane shift spell.",
+				"You create a ward against magical travel that protects up to 40,000 square feet of floor space to a height of 30 feet above the floor. For the duration, creatures can't teleport into the area or use portals, such as those created by the {@spell gate} spell, to enter the area. The spell proofs the area against planar travel, and therefore prevents creatures from accessing the area by way of the Astral Plane, Ethereal Plane, Feywild, Shadowfell, or the {@spell plane shift} spell.",
 				"In addition, the spell damages types of creatures that you choose when you cast it. Choose one or more of the following: celestials, elementals, fey, fiends, and undead. When a chosen creature enters the spell's area for the first time on a turn or starts its turn there, the creature takes {@damage 5d10} radiant or necrotic damage (your choice when you cast this spell).",
 				"When you cast this spell, you can designate a password. A creature that speaks the password as it enters the area takes no damage from the spell.",
 				"The spell's area can't overlap with the area of another forbiddance spell. If you cast forbiddance every day for 30 days in the same location, the spell lasts until it is dispelled, and the material components are consumed on the last casting."
@@ -17255,6 +17354,16 @@
 						"subclass": {
 							"name": "Swarmkeeper",
 							"source": "TCE"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
 						}
 					}
 				]
@@ -18027,6 +18136,7 @@
 				"dexterity"
 			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"areaTags": [
@@ -18677,7 +18787,8 @@
 					"baseName": "Human",
 					"baseSource": "PHB"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Guards and Wards",
@@ -19000,6 +19111,9 @@
 			"savingThrow": [
 				"strength"
 			],
+			"miscTags": [
+				"FMV"
+			],
 			"areaTags": [
 				"L"
 			],
@@ -19099,6 +19213,16 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
 						}
 					}
 				],
@@ -20761,6 +20885,16 @@
 							"name": "Land",
 							"source": "PHB"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -21869,6 +22003,17 @@
 					},
 					{
 						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB",
+							"subSubclass": "Underdark"
+						}
+					},
+					{
+						"class": {
 							"name": "Paladin",
 							"source": "PHB"
 						},
@@ -21929,16 +22074,6 @@
 					},
 					{
 						"class": {
-							"name": "Druid",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Land",
-							"source": "PHB"
-						}
-					},
-					{
-						"class": {
 							"name": "Ranger",
 							"source": "PHB"
 						},
@@ -21974,7 +22109,8 @@
 					"name": "Golgari Agent",
 					"source": "GGR"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Invisibility",
@@ -25604,6 +25740,16 @@
 							"name": "Illusion",
 							"source": "PHB"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Shadow",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -26704,7 +26850,8 @@
 						"source": "PHB"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Move Earth",
@@ -27314,6 +27461,16 @@
 						},
 						"subclass": {
 							"name": "Land",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Shadow",
 							"source": "PHB"
 						}
 					}
@@ -28907,7 +29064,8 @@
 						"definedInSource": "TCE"
 					}
 				]
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Prismatic Wall",
@@ -31493,6 +31651,26 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Open Hand",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Tranquility (UA)",
+							"source": "UAMonk"
+						}
 					}
 				]
 			}
@@ -31659,7 +31837,8 @@
 					"name": "Boros Legionnaire",
 					"source": "GGR"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Scrying",
@@ -32654,6 +32833,16 @@
 							"name": "Armorer",
 							"source": "TCE"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -33201,6 +33390,16 @@
 						"subclass": {
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Shadow",
+							"source": "PHB"
 						}
 					}
 				]
@@ -34158,7 +34357,7 @@
 				"You can also turn difficult terrain caused by plant growth (such as thickets and undergrowth) into ordinary terrain that lasts for the duration. Or you can turn ordinary terrain where plants are present into difficult terrain that lasts for the duration, causing vines and branches to hinder pursuers, for example.",
 				"Plants might be able to perform other tasks on your behalf, at the DM's discretion. The spell doesn't enable plants to uproot themselves and move about, but they can freely move branches, tendrils, and stalks.",
 				"If a plant creature is in the area, you can communicate with it as if you shared a common language, but you gain no magical ability to influence it.",
-				"This spell can cause the plants created by the entangle spell to release a {@condition restrained} creature."
+				"This spell can cause the plants created by the {@spell entangle} spell to release a {@condition restrained} creature."
 			],
 			"classes": {
 				"fromClassList": [
@@ -35203,6 +35402,27 @@
 							"name": "Strength (PSA)",
 							"source": "PSA"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Land",
+							"source": "PHB",
+							"subSubclass": "Mountain"
+						}
 					}
 				]
 			},
@@ -35601,9 +35821,6 @@
 				"You transmute your quiver so it produces an endless supply of nonmagical ammunition, which seems to leap into your hand when you reach for it.",
 				"On each of your turns until the spell ends, you can use a bonus action to make two attacks with a weapon that uses ammunition from the quiver. Each time you make such a ranged attack, your quiver magically replaces the piece of ammunition you used with a similar piece of nonmagical ammunition. Any pieces of ammunition created by this spell disintegrate when the spell ends. If the quiver leaves your possession, the spell ends."
 			],
-			"miscTags": [
-				"SCL"
-			],
 			"classes": {
 				"fromClassList": [
 					{
@@ -35888,24 +36105,28 @@
 					"type": "entries",
 					"name": "Creature",
 					"entries": [
-						"You can try to move a Huge or smaller creature. Make an ability check with your spellcasting ability contested by the creature's Strength check. If you win the contest, you move the creature up to 30 feet in any direction, including upward but not beyond the range of this spell. Until the end of your next turn, the creature is {@condition restrained} in your telekinetic grip. A creature lifted upward is suspended in mid-air."
+						"You can try to move a Huge or smaller creature. Make an ability check with your spellcasting ability contested by the creature's Strength check. If you win the contest, you move the creature up to 30 feet in any direction, including upward but not beyond the range of this spell. Until the end of your next turn, the creature is {@condition restrained} in your telekinetic grip. A creature lifted upward is suspended in mid-air.",
+						"On subsequent rounds, you can use your action to attempt to maintain your telekinetic grip on the creature by repeating the contest."
 					]
 				},
-				"On subsequent rounds, you can use your action to attempt to maintain your telekinetic grip on the creature by repeating the contest.",
 				{
 					"type": "entries",
 					"name": "Object",
 					"entries": [
-						"You can try to move an object that weighs up to 1,000 pounds. If the object isn't being worn or carried, you automatically move it up to 30 feet in any direction, but not beyond the range of this spell."
+						"You can try to move an object that weighs up to 1,000 pounds. If the object isn't being worn or carried, you automatically move it up to 30 feet in any direction, but not beyond the range of this spell.",
+						"If the object is worn or carried by a creature, you must make an ability check with your spellcasting ability contested by that creature's Strength check. If you succeed, you pull the object away from that creature and can move it up to 30 feet in any direction but not beyond the range of this spell.",
+						"You can exert fine control on objects with your telekinetic grip, such as manipulating a simple tool, opening a door or a container, stowing or retrieving an item from an open container, or pouring the contents from a vial."
 					]
-				},
-				"If the object is worn or carried by a creature, you must make an ability check with your spellcasting ability contested by that creature's Strength check. If you succeed, you pull the object away from that creature and can move it up to 30 feet in any direction but not beyond the range of this spell.",
-				"You can exert fine control on objects with your telekinetic grip, such as manipulating a simple tool, opening a door or a container, stowing or retrieving an item from an open container, or pouring the contents from a vial."
+				}
 			],
 			"conditionInflict": [
 				"restrained"
 			],
+			"abilityCheck": [
+				"strength"
+			],
 			"miscTags": [
+				"FMV",
 				"SGT"
 			],
 			"areaTags": [
@@ -36552,6 +36773,7 @@
 				"M"
 			],
 			"miscTags": [
+				"FMV",
 				"SCL"
 			],
 			"areaTags": [
@@ -36616,6 +36838,9 @@
 			],
 			"savingThrow": [
 				"strength"
+			],
+			"miscTags": [
+				"FMV"
 			],
 			"classes": {
 				"fromClassList": [
@@ -36695,6 +36920,9 @@
 			],
 			"savingThrow": [
 				"constitution"
+			],
+			"miscTags": [
+				"FMV"
 			],
 			"areaTags": [
 				"C"
@@ -36829,6 +37057,16 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
 						}
 					}
 				],
@@ -37881,6 +38119,16 @@
 							"name": "Artillerist",
 							"source": "TCE"
 						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
+						}
 					}
 				]
 			},
@@ -38246,6 +38494,16 @@
 						"subclass": {
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
+						}
+					},
+					{
+						"class": {
+							"name": "Monk",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Four Elements",
+							"source": "PHB"
 						}
 					}
 				]
@@ -38872,7 +39130,8 @@
 					"baseName": "Tiefling",
 					"baseSource": "PHB"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Weird",
