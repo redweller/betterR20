@@ -433,32 +433,32 @@ function d20plusMonsters () {
 							character.attribs.create({name: "npc_xp", current: xp});
 							character.attribs.create({
 								name: "npc_vulnerabilities",
-								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.vulnerable)) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.vulnerable)) : ""
 							});
 							character.attribs.create({
 								name: "damage_vulnerabilities",
-								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.vulnerable)) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.vulnerable)) : ""
 							});
 							character.attribs.create({
 								name: "npc_resistances",
-								current: data.resist != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.resist)) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.resist)) : ""
 							});
 							character.attribs.create({
 								name: "damage_resistances",
-								current: data.resist != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.resist)) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.resist)) : ""
 							});
-							character.attribs.create({name: "npc_immunities", current: data.immune != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.immune)) : ""});
+							character.attribs.create({name: "npc_immunities", current: data.immune != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.immune)) : ""});
 							character.attribs.create({
 								name: "damage_immunities",
-								current: data.immune != null ? d20plus.importer.getCleanText(Parser.monImmResToFull(data.immune)) : ""
+								current: data.immune != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.immune)) : ""
 							});
 							character.attribs.create({
 								name: "npc_condition_immunities",
-								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.getFullCondImm(data.conditionImmune)) : ""
 							});
 							character.attribs.create({
 								name: "damage_condition_immunities",
-								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.monCondImmToFull(data.conditionImmune)) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.getFullCondImm(data.conditionImmune)) : ""
 							});
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 							if (d20plus.cfg.getOrDefault("import", "dexTiebreaker")) {
