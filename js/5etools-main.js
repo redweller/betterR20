@@ -2205,6 +2205,10 @@ const betteR205etoolsMain = function () {
 						if ($hlpr.hasClass("handout")) {
 							console.log("Handout item dropped onto target!");
 							t.originalEvent.dropHandled = !0;
+							if (e.activeDrop) {
+								e.dragOver = !1;
+                            	e.childWindow.d20.deactivateDrop();
+							}
 
 							if ($hlpr.hasClass(`player-imported`)) {
 								const data = d20plus.importer.retrievePlayerImport($hlpr.attr("data-playerimportid"));
