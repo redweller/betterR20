@@ -78,8 +78,8 @@ function baseTool() {
 						const handout = d20.Campaign.handouts.get(itId);
 						if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return null; // skip 5etools handouts
 						const character = d20.Campaign.characters.get(itId);
-						if (handout) return {type: "handouts", id: itId, name: handout.get("name"), path: path};
-						if (character) return {type: "characters", id: itId, name: character.get("name"), path: path};
+						if (handout) return {type: "handouts", id: itId, name: handout.get("name"), path: path, archived: handout.attributes.archived};
+						if (character) return {type: "characters", id: itId, name: character.get("name"), path: path, archived: character.attributes.archived};
 					}
 
 					function getJournalItems () {
@@ -97,6 +97,7 @@ function baseTool() {
 							<label class="import-cb-label" data-listid="${i}">
 								<input type="checkbox">
 								<span class="name readable">${it.path ? `${it.path} / ` : ""}${it.name}</span>
+								${it.archived ? "<span class=\"name readable\">(archived)</span>" : ""}
 							</label>
 						`);
 					});
