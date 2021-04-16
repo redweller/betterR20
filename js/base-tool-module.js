@@ -14,6 +14,7 @@ function baseToolModule () {
 				</p>
 				<div style="border-bottom: 1px solid #ccc; margin-bottom: 3px; padding-bottom: 3px;">
 					<button class="btn" name="load-Vetools">Load from 5etools</button>
+					<button class="btn" name="load-dmsguild">Load from R20 Repo</button>
 					<button class="btn" name="load-file">Upload File</button>
 				</div>
 				<div>
@@ -493,6 +494,64 @@ function baseToolModule () {
 						$win.dialog("open");
 						$wrpDataLoadingMessage.html("<i>Loading...</i>");
 						DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-${sel.id.toLowerCase()}.json`)
+							.then(moduleFile => {
+								$wrpDataLoadingMessage.html("");
+								return handleLoadedData(moduleFile);
+							})
+							.catch(e => {
+								$wrpDataLoadingMessage.html("");
+								console.error(e);
+								alert(`Failed to load data! See the console for more information.`);
+							});
+					});
+				}).catch(e => {
+					console.error(e);
+					alert(`Failed to load data! See the console for more information.`);
+				});
+			});
+
+			// For content loaded from the R20 repo
+			const $btnLoadDmsguild = $win.find(`[name="load-dmsguild"]`);
+			$btnLoadDmsguild.off("click").click(() => {
+				$win5etools.dialog("open");
+				const $btnLoad = $win5etools.find(`.load`).off("click");
+				// url for the repo
+				const urlbase = "https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/Module/";
+
+				DataUtil.loadJSON(`${urlbase}index.json`).then(data => {
+					const $lst = $win5etools.find(`.list`);
+					const modules = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
+					let tmp = "";
+					// Display each module in the selector
+					modules.forEach((t, i) => {
+						tmp += `
+								<label class="import-cb-label" data-listid="${i}">
+									<input type="radio" name="map-5etools">
+									<span class="name col-5 readable">${t.name}</span>
+									<span class="version col-1 readable" style="text-align: center;">${t.version || ""}</span>
+									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? MiscUtil.dateToStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
+									<span class="size col-1 readable" style="text-align: right;">${ t.size ? d20plus.ut.getReadableFileSizeString(t.size) : ""}</span>
+									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
+								</label>
+							`;
+					});
+					$lst.html(tmp);
+					tmp = null;
+
+					const list5etools = new List("module-importer-list-5etools", {
+						valueNames: ["name"]
+					});
+
+					$btnLoad.on("click", () => {
+						const sel = list5etools.items
+							.filter(it => $(it.elm).find(`input`).prop("checked"))
+							.map(it => modules[$(it.elm).attr("data-listid")])[0];
+
+						$win5etools.dialog("close");
+						$win.dialog("open");
+						$wrpDataLoadingMessage.html("<i>Loading...</i>");
+						// Load the chosen module
+						DataUtil.loadJSON(`${urlbase}${sel.filename}`)
 							.then(moduleFile => {
 								$wrpDataLoadingMessage.html("");
 								return handleLoadedData(moduleFile);
