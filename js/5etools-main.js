@@ -1211,6 +1211,7 @@ const betteR205etoolsMain = function () {
 			if (feature) renderer.recursiveRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
+			// Add skills
 			async function chooseSkills (from, count) {
 				return new Promise((resolve, reject) => {
 					const $dialog = $(`
@@ -1329,6 +1330,21 @@ const betteR205etoolsMain = function () {
 				} else {
 					await handleSkillsItem(bg.skillProficiencies[0]);
 				}
+			}
+
+			// Add languages
+			// Note: Doing this a bit differently from Giddy's method
+			// Giddy, if you want me to do everything your way, you can learn to document your code
+			async function chooseLanguages(langs) {
+				langs.forEach(l => 
+					l === "choose" ?
+						console.log("idk") :
+						console.log(l)
+				);
+			}
+
+			if (bg.languageProficiencies && bg.languageProficiencies.length === 1) {
+				await chooseLanguages(bg.languageProficiencies);
 			}
 
 			const attrs = new CharacterAttributesProxy(character);
