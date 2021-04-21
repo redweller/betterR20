@@ -1325,6 +1325,8 @@ const betteR205etoolsMain = function () {
 			if (bg.skillProficiencies && bg.skillProficiencies.length) {
 				if (bg.skillProficiencies.length > 1) {
 					const options = bg.skillProficiencies.map(item => Renderer.background.getSkillSummary([item], true, []))
+					console.log(bg.skillProficiencies);
+					console.log(options);
 					const chosenIndex = await chooseSkillsGroup(options);
 					await handleSkillsItem(bg.skillProficiencies[chosenIndex]);
 				} else {
@@ -1335,16 +1337,92 @@ const betteR205etoolsMain = function () {
 			// Add languages
 			// Note: Doing this a bit differently from Giddy's method
 			// Giddy, if you want me to do everything your way, you can learn to document your code
-			async function chooseLanguages(langs) {
-				langs.forEach(l => 
-					l === "choose" ?
-						console.log("idk") :
-						console.log(l)
-				);
+			async function chooseLanguages (from, count) {
+				// Shamelessly stolen from Giddy
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose Languages">
+							<div name="remain" style="font-weight: bold">Remaining: ${count}</div>
+							<div>
+								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-language="${it}" type="checkbox"></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $remain = $dialog.find(`[name="remain"]`);
+					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
+
+					$cbSkill.on("change", function () {
+						const $e = $(this);
+						let selectedCount = getSelected().length;
+						if (selectedCount > count) {
+							$e.prop("checked", false);
+							selectedCount--;
+						}
+						$remain.text(`Remaining: ${count - selectedCount}`);
+					});
+
+					function getSelected () {
+						return $cbSkill.map((i, e) => ({skill: $(e).data("language"), selected: $(e).prop("checked")})).get()
+							.filter(it => it.selected).map(it => it.skill);
+					}
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = getSelected();
+									if (selected.length === count) {
+										$(this).dialog("close");
+										$dialog.remove();
+										resolve(selected);
+									} else {
+										alert(`Please select ${count} language${count === 1 ? "" : "s"}`);
+									}
+								}
+							}
+						]
+					})
+				});
+			}
+
+			async function handleLanguages(langs) {
+				console.log("I am refreshing");
+				// Handle the language options, let user choose if needed
+				// Note: this is made for the language json as it is, if the json gets weird, that's someone else's problem
+				ret = []
+				Object.entries(langs[0]).forEach(([key, value]) => {
+					if (key === "choose") {
+						// If choice is needed, call popup function
+						// The await here causes things to crash, idk why
+						const choice = await chooseLanguages(value.from, 1);
+						console.log(choice);
+						ret.push(value.from);
+					}
+					else if (key === "anyStandard") {
+						// If any language is available, add any
+						for (i = 0; i < value; i++) ret.push("any");
+					}
+					else if (value) {
+						// If no choice is needed, add the language normally
+						ret.push(key);
+					}
+				});
+				return ret;
 			}
 
 			if (bg.languageProficiencies && bg.languageProficiencies.length === 1) {
-				await chooseLanguages(bg.languageProficiencies);
+				x = await handleLanguages(bg.languageProficiencies);
+				console.log(x);
 			}
 
 			const attrs = new CharacterAttributesProxy(character);
