@@ -1325,8 +1325,6 @@ const betteR205etoolsMain = function () {
 			if (bg.skillProficiencies && bg.skillProficiencies.length) {
 				if (bg.skillProficiencies.length > 1) {
 					const options = bg.skillProficiencies.map(item => Renderer.background.getSkillSummary([item], true, []))
-					console.log(bg.skillProficiencies);
-					console.log(options);
 					const chosenIndex = await chooseSkillsGroup(options);
 					await handleSkillsItem(bg.skillProficiencies[chosenIndex]);
 				} else {
@@ -1399,14 +1397,17 @@ const betteR205etoolsMain = function () {
 				console.log("I am refreshing");
 				// Handle the language options, let user choose if needed
 				// Note: this is made for the language json as it is, if the json gets weird, that's someone else's problem
+				// The edge case of Clan Crafter is specifically ignored.
 				ret = []
-				Object.entries(langs[0]).forEach(([key, value]) => {
+				const langEntries = Object.entries(langs[0]);
+				for (const entry of langEntries) {
+					// Loop must be in this form -- Thanks for figuring this out Giddy
+					const [key, value] = entry;
 					if (key === "choose") {
 						// If choice is needed, call popup function
-						// The await here causes things to crash, idk why
+						// Assumes there is only one choice, which is true at present
 						const choice = await chooseLanguages(value.from, 1);
-						console.log(choice);
-						ret.push(value.from);
+						ret.push(choice[0]);
 					}
 					else if (key === "anyStandard") {
 						// If any language is available, add any
@@ -1416,15 +1417,16 @@ const betteR205etoolsMain = function () {
 						// If no choice is needed, add the language normally
 						ret.push(key);
 					}
-				});
+				}
 				return ret;
 			}
 
-			if (bg.languageProficiencies && bg.languageProficiencies.length === 1) {
-				x = await handleLanguages(bg.languageProficiencies);
-				console.log(x);
+			let backgroundLanguages = [];
+			if (bg.languageProficiencies && bg.languageProficiencies.length > 0) {
+				backgroundLanguages = await handleLanguages(bg.languageProficiencies);
 			}
 
+			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
 
@@ -1441,6 +1443,12 @@ const betteR205etoolsMain = function () {
 
 				skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
 					attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
+				});
+
+				backgroundLanguages.map(l => l.toTitleCase()).forEach(l => {
+					const lRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_proficiencies_${lRowId}_name`, l);
+					attrs.add(`repeating_proficiencies_${lRowId}_options-flag`, "0");
 				});
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
