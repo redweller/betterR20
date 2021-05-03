@@ -15,7 +15,7 @@ function d20plusSpells () {
 	d20plus.spells._listIndexConverter = (sp) => {
 		return {
 			name: sp.name.toLowerCase(),
-			class: ((sp.classes || {}).fromClassList || (it.classes || {}).fromClassListVariant || []).map(c => c.name.toLowerCase()),
+			class: ((sp.classes || {}).fromClassList || (sp.classes || {}).fromClassListVariant || []).map(c => c.name.toLowerCase()),
 			level: Parser.spLevelToFull(sp.level).toLowerCase(),
 			source: Parser.sourceJsonToAbv(sp.source).toLowerCase()
 		};
