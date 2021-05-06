@@ -1333,8 +1333,7 @@ const betteR205etoolsMain = function () {
 			}
 
 			// Add languages
-			// Note: Doing this a bit differently from Giddy's method
-			// Giddy, if you want me to do everything your way, you can learn to document your code
+			// Note: Doing this mostly stealing from Giddy's code
 			async function chooseLanguages (from, count) {
 				// Shamelessly stolen from Giddy
 				return new Promise((resolve, reject) => {
@@ -1393,13 +1392,53 @@ const betteR205etoolsMain = function () {
 				});
 			}
 
+			async function chooseLangsGroup (options) {
+				// For when there are two separate ways to choose languages
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose Languages">
+							<div>
+								${options.map((it, i) => `<label class="split"><input name="language-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${
+									// Format it nicely
+									Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).join(", ")
+								}</span></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $rdOpt = $dialog.find(`input[type="radio"]`);
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = $rdOpt.filter((i, e) => $(e).prop("checked"))
+										.map((i, e) => $(e).data("ix")).get()[0];
+									$(this).dialog("close");
+									$dialog.remove();
+									resolve(selected);
+								}
+							}
+						]
+					})
+				});
+			}
+
 			async function handleLanguages(langs) {
-				console.log("I am refreshing");
 				// Handle the language options, let user choose if needed
 				// Note: this is made for the language json as it is, if the json gets weird, that's someone else's problem
 				// The edge case of Clan Crafter is specifically ignored.
 				ret = []
-				const langEntries = Object.entries(langs[0]);
+				const langEntries = Object.entries(langs);
 				for (const entry of langEntries) {
 					// Loop must be in this form -- Thanks for figuring this out Giddy
 					const [key, value] = entry;
@@ -1422,8 +1461,17 @@ const betteR205etoolsMain = function () {
 			}
 
 			let backgroundLanguages = [];
-			if (bg.languageProficiencies && bg.languageProficiencies.length > 0) {
-				backgroundLanguages = await handleLanguages(bg.languageProficiencies);
+			if (bg.languageProficiencies && bg.languageProficiencies.length) {
+				if (bg.languageProficiencies.length > 1) {
+					// See Clan Crafter for an example
+					profIndex = await chooseLangsGroup(bg.languageProficiencies);
+					console.log(profIndex);
+					backgroundLanguages = await handleLanguages(bg.languageProficiencies[profIndex]);
+				}
+				else {
+					// Most common case
+					backgroundLanguages = await handleLanguages(bg.languageProficiencies[0]);
+				}
 			}
 
 			// Update Sheet
