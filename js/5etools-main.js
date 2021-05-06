@@ -1332,16 +1332,17 @@ const betteR205etoolsMain = function () {
 				}
 			}
 
-			// Add languages
+			// Add Proficiencies (mainly language and tool, but extendable)
+			// Skills are still done Giddy's way so I don't need to mess with his code
 			// Note: Doing this mostly stealing from Giddy's code
-			async function chooseLanguages (from, count) {
+			async function chooseProfs (from, count, profType) {
 				// Shamelessly stolen from Giddy
 				return new Promise((resolve, reject) => {
 					const $dialog = $(`
-						<div title="Choose Languages">
+						<div title="Choose ${profType}">
 							<div name="remain" style="font-weight: bold">Remaining: ${count}</div>
 							<div>
-								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-language="${it}" type="checkbox"></label>`).join("")}
+								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-prof="${it}" type="checkbox"></label>`).join("")}
 							</div>
 						</div>
 					`).appendTo($("body"));
@@ -1359,7 +1360,7 @@ const betteR205etoolsMain = function () {
 					});
 
 					function getSelected () {
-						return $cbSkill.map((i, e) => ({skill: $(e).data("language"), selected: $(e).prop("checked")})).get()
+						return $cbSkill.map((i, e) => ({skill: $(e).data("prof"), selected: $(e).prop("checked")})).get()
 							.filter(it => it.selected).map(it => it.skill);
 					}
 
@@ -1392,15 +1393,15 @@ const betteR205etoolsMain = function () {
 				});
 			}
 
-			async function chooseLangsGroup (options) {
+			async function chooseProfsGroup (options, profType) {
 				// For when there are two separate ways to choose languages
 				return new Promise((resolve, reject) => {
 					const $dialog = $(`
-						<div title="Choose Languages">
+						<div title="Choose ${profType}">
 							<div>
-								${options.map((it, i) => `<label class="split"><input name="language-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${
+								${options.map((it, i) => `<label class="split"><input name="prof-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${
 									// Format it nicely
-									Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).join(", ")
+									Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).map(a => a.toTitleCase()).join(", ")
 								}</span></label>`).join("")}
 							</div>
 						</div>
@@ -1433,6 +1434,7 @@ const betteR205etoolsMain = function () {
 				});
 			}
 
+			// Language proficiencies
 			async function handleLanguages(langs) {
 				// Handle the language options, let user choose if needed
 				// Note: this is made for the language json as it is, if the json gets weird, that's someone else's problem
@@ -1445,7 +1447,7 @@ const betteR205etoolsMain = function () {
 					if (key === "choose") {
 						// If choice is needed, call popup function
 						// Assumes there is only one choice, which is true at present
-						const choice = await chooseLanguages(value.from, 1);
+						const choice = await chooseProfs(value.from, 1, "Languages");
 						ret.push(choice[0]);
 					}
 					else if (key === "anyStandard") {
@@ -1460,12 +1462,12 @@ const betteR205etoolsMain = function () {
 				return ret;
 			}
 
+			// Get data for language proficiencies specifically
 			let backgroundLanguages = [];
 			if (bg.languageProficiencies && bg.languageProficiencies.length) {
 				if (bg.languageProficiencies.length > 1) {
 					// See Clan Crafter for an example
-					profIndex = await chooseLangsGroup(bg.languageProficiencies);
-					console.log(profIndex);
+					profIndex = await chooseProfsGroup(bg.languageProficiencies, "Languages");
 					backgroundLanguages = await handleLanguages(bg.languageProficiencies[profIndex]);
 				}
 				else {
@@ -1473,6 +1475,9 @@ const betteR205etoolsMain = function () {
 					backgroundLanguages = await handleLanguages(bg.languageProficiencies[0]);
 				}
 			}
+
+			// Skill Proficiencies
+			// Coming soon
 
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
