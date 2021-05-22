@@ -1333,7 +1333,7 @@ const betteR205etoolsMain = function () {
 			}
 
 			// Add Proficiencies (mainly language and tool, but extendable)
-			// Skills are still done Giddy's way so I don't need to mess with his code
+			// Skills are still done Giddy's way so I don't need to mess with his code (and I couldn't easily convert his code to my method)
 			// Note: Doing this mostly stealing from Giddy's code
 			async function chooseProfs (from, count, profType) {
 				// Shamelessly stolen from Giddy
@@ -1436,8 +1436,7 @@ const betteR205etoolsMain = function () {
 
 			async function handleProfs(profs, profType) {
 				// Handle the language options, let user choose if needed
-				// Note: this is made for the language json as it is, if the json gets weird, that's someone else's problem
-				// The edge case of Clan Crafter is specifically ignored.
+				// Handles most edge cases I think
 				ret = []
 				const profEntries = Object.entries(profs);
 				for (const entry of profEntries) {
@@ -1480,14 +1479,15 @@ const betteR205etoolsMain = function () {
 			let backgroundTools = [];
 			if (bg.toolProficiencies && bg.toolProficiencies.length) {
 				if (bg.toolProficiencies.length > 1) {
+					// If there are different types of options
 					profIndex = await chooseProfsGroup(bg.toolProficiencies, "Tools");
 					backgroundTools = await handleProfs(bg.toolProficiencies[profIndex], "Tools")
 				}
 				else if (bg.toolProficiencies.length > 0) {
+					// Most common case
 					backgroundTools = await handleProfs(bg.toolProficiencies[0] , "Tools");
 				}
 			}
-			console.log(backgroundTools);
 
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
