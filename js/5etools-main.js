@@ -1434,28 +1434,28 @@ const betteR205etoolsMain = function () {
 				});
 			}
 
-			// Language proficiencies
-			async function handleLanguages(langs) {
+			async function handleProfs(profs, profType) {
 				// Handle the language options, let user choose if needed
 				// Note: this is made for the language json as it is, if the json gets weird, that's someone else's problem
 				// The edge case of Clan Crafter is specifically ignored.
 				ret = []
-				const langEntries = Object.entries(langs);
-				for (const entry of langEntries) {
+				const profEntries = Object.entries(profs);
+				for (const entry of profEntries) {
 					// Loop must be in this form -- Thanks for figuring this out Giddy
 					const [key, value] = entry;
 					if (key === "choose") {
 						// If choice is needed, call popup function
-						// Assumes there is only one choice, which is true at present
-						const choice = await chooseProfs(value.from, 1, "Languages");
-						ret.push(choice[0]);
+						numChoice = 1;
+						if (value.count) numChoice = value.count;
+						const choice = await chooseProfs(value.from, numChoice, profType);
+						choice.forEach(c => ret.push(c));
 					}
 					else if (key === "anyStandard") {
 						// If any language is available, add any
 						for (i = 0; i < value; i++) ret.push("any");
 					}
 					else if (value) {
-						// If no choice is needed, add the language normally
+						// If no choice is needed, add the proficiency normally
 						ret.push(key);
 					}
 				}
@@ -1468,16 +1468,26 @@ const betteR205etoolsMain = function () {
 				if (bg.languageProficiencies.length > 1) {
 					// See Clan Crafter for an example
 					profIndex = await chooseProfsGroup(bg.languageProficiencies, "Languages");
-					backgroundLanguages = await handleLanguages(bg.languageProficiencies[profIndex]);
+					backgroundLanguages = await handleProfs(bg.languageProficiencies[profIndex], "Languages");
 				}
-				else {
+				else if (bg.languageProficiencies.length > 0) {
 					// Most common case
-					backgroundLanguages = await handleLanguages(bg.languageProficiencies[0]);
+					backgroundLanguages = await handleProfs(bg.languageProficiencies[0], "Languages");
 				}
 			}
 
-			// Skill Proficiencies
-			// Coming soon
+			// Tool Proficiencies
+			let backgroundTools = [];
+			if (bg.toolProficiencies && bg.toolProficiencies.length) {
+				if (bg.toolProficiencies.length > 1) {
+					profIndex = await chooseProfsGroup(bg.toolProficiencies, "Tools");
+					backgroundTools = await handleProfs(bg.toolProficiencies[profIndex], "Tools")
+				}
+				else if (bg.toolProficiencies.length > 0) {
+					backgroundTools = await handleProfs(bg.toolProficiencies[0] , "Tools");
+				}
+			}
+			console.log(backgroundTools);
 
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
@@ -1502,6 +1512,20 @@ const betteR205etoolsMain = function () {
 					const lRowId = d20plus.ut.generateRowId();
 					attrs.add(`repeating_proficiencies_${lRowId}_name`, l);
 					attrs.add(`repeating_proficiencies_${lRowId}_options-flag`, "0");
+				});
+
+				backgroundTools.map(t => t.toTitleCase()).forEach(t => {
+					const tRowID = d20plus.ut.generateRowId();
+					attrs.add(`repeating_tool_${tRowID}_toolname`, t);
+					attrs.add(`repeating_tool_${tRowID}_toolbonus_base`, "@{pb}");
+					attrs.add(`repeating_tool_${tRowID}_options-flag`, "0");
+					// All Tools assume the query option
+					// The long strings are annoying but they are also necessary
+					attrs.add(`repeating_tool_${tRowID}_toolattr`, "QUERY");
+					attrs.add(`repeating_tool_${tRowID}_toolbonus`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}+0+@{pb}");
+					attrs.add(`repeating_tool_${tRowID}_toolroll`, "@{wtype}&{template:simple} {{rname=@{toolname}}} {{mod=@{toolbonus}}} {{r1=[[@{d20}+@{toolbonus}[Mods]@{pbd_safe}]]}} {{always=1}} {{r2=[[@{d20}+@{toolbonus}[Mods]@{pbd_safe}]]}} {{global=@{global_skill_mod}}} @{charname_output}");
+					attrs.add(`repeating_tool_${tRowID}_toolattr_base`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}");
+					attrs.add(`repeating_tool_${tRowID}_toolbonus_display`, "?");
 				});
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
