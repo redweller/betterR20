@@ -2,6 +2,25 @@ function d20plusClass () {
 	d20plus.classes = {};
 	d20plus.subclasses = {};
 
+	d20plus.classes._pLoadMergedClassJON = async function () {
+		let data = await DataUtil.class.loadJSON();
+		data = MiscUtil.copy(data);
+		d20plus.classes._doAttachChildSubclasses(data);
+		return data;
+	};
+
+	d20plus.classes._doAttachChildSubclasses = function (data) {
+		data.class = data.class || [];
+		data.subclass = data.subclass || [];
+
+		for (let i = 0; i < data.subclass.length; ++i) {
+			// Attach subclasses to parent classes
+			const cls = data.class.find(it => it.name === data.subclass[i].className && it.source === data.subclass[i].classSource);
+			if (!cls) continue;
+			(cls.subclasses = cls.subclasses || []).push(data.subclass[i]);
+		}
+	};
+
 	// Import Classes button was clicked
 	d20plus.classes.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -18,9 +37,18 @@ function d20plusClass () {
 				if (!data.class) return;
 
 				data = MiscUtil.copy(data);
+				data.class = data.class || [];
 				for (let i = 0; i < data.class.length; ++i) {
 					data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
 				}
+
+				if (data.subclass) {
+					for (let i = 0; i < data.subclass.length; ++i) {
+						data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
+					}
+				}
+
+				d20plus.classes._doAttachChildSubclasses(data);
 
 				d20plus.importer.showImportList(
 					"class",
@@ -41,19 +69,20 @@ function d20plusClass () {
 	d20plus.classes.buttonAll = function (forcePlayer) {
 		const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
 
-		DataUtil.class.loadJSON().then((data) => {
-			d20plus.importer.showImportList(
-				"class",
-				data.class,
-				handoutBuilder,
-				{
-					forcePlayer,
-					builderOptions: {
-						isHomebrew: false
+		d20plus.classes._pLoadMergedClassJON()
+			.then(data => {
+				d20plus.importer.showImportList(
+					"class",
+					data.class,
+					handoutBuilder,
+					{
+						forcePlayer,
+						builderOptions: {
+							isHomebrew: false
+						}
 					}
-				}
-			);
-		});
+				);
+			});
 	};
 
 	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
@@ -295,7 +324,7 @@ function d20plusClass () {
 			return Promise.resolve();
 		} else {
 			d20plus.ut.log("Preloading class...");
-			return DataUtil.class.loadJSON().then((data) => {
+			return d20plus.classes._pLoadMergedClassJON().then((data) => {
 				const clazz = data.class.find(it => it.name.toLowerCase() === subclass.className.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
 				if (!clazz) {
 					throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.className}::${subclass.classSource || SRC_PHB}`);
