@@ -1489,6 +1489,41 @@ const betteR205etoolsMain = function () {
 				}
 			}
 
+			// Import items
+			async function parseItems(item) {
+				// Returns a standardized object from a very unstandardized object
+				// Get the important variables
+				iname = "";
+				if (typeof item !== 'object') {
+					iname = item;
+				}
+				else if ('item' in item) {
+					iname = item.item;
+				}
+				else if ('special' in item) {
+					iname = item.special;
+				}
+
+				// Make the input object
+				const pareseditem = {"name": iname};
+				// Create item data in the format importItem likes
+				const itemdata = JSON.parse(d20plus.items._getHandoutData(pareseditem)[1]);
+				// Call the importItem function usually used to import items
+				importItem(character, itemdata, null);
+				console.log(itemdata);
+			}
+
+			async function fetchItems(equiplist) {
+				// Generic handler for adding items from background
+				const itemlist = Object.entries(equiplist);
+				for (const it of itemlist) {
+					const [key, value] = it;
+					parseItems(value)
+				}
+			}
+
+			fetchItems(bg.startingEquipment[0]._);
+
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
