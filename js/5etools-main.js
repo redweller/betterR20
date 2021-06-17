@@ -1482,7 +1482,7 @@ const betteR205etoolsMain = function () {
 			attrs.notifySheetWorkers();
 		}
 
-		function importClass (character, data) {
+		async function importClass (character, data) {
 			let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
 			if (!levels) return;
 
@@ -1637,6 +1637,76 @@ const betteR205etoolsMain = function () {
 
 			importClassGeneral(attrs, clss, maxLevel);
 
+			async function chooseSource(from, count) {
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose Feature Sources">
+							
+							<div>
+								${from
+									.map(
+										(it) =>
+											`<label class="split"><span>${it}</span> <input data-skill="${it}" type="checkbox"></label>`
+									)
+									.join("")}
+							</div>
+							<p> <br></p>
+							<div style="font-weight: bold">WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.</div>
+						</div>
+					`).appendTo($("body"));
+					const $remain = $dialog.find(`[name="remain"]`);
+					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
+					console.log($cbSkill);
+
+					function getSelected() {
+						return $cbSkill
+							.map((i, e) => ({
+								skill: $(e).data("skill"),
+								selected: $(e).prop("checked"),
+							}))
+							.get()
+							.filter((it) => it.selected)
+							.map((it) => it.skill);
+					}
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								},
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = getSelected();
+									if (selected.length > 0) {
+										$(this).dialog("close");
+										$dialog.remove();
+										resolve(selected);
+									} else {
+										alert(`Please select a Source`);
+									}
+								},
+							},
+						],
+					});
+				});
+			}
+			
+			let featureSourceWhitelist = await chooseSource(
+				["PHB", "TCE", "UA"],
+				4
+			);
+
+			featureSourceWhitelist = featureSourceWhitelist.map((element) => {
+				return element === "UA" ? "UAClassFeatureVariants" : element;
+			});
+			
 			for (let i = 0; i < maxLevel; i++) {
 				const level = i + 1;
 				if (!levels.has(level)) continue;
@@ -1645,7 +1715,7 @@ const betteR205etoolsMain = function () {
 				for (let j = 0; j < lvlFeatureList.length; j++) {
 					const feature = lvlFeatureList[j];
 					// don't add "you gain a subclass feature" or ASI's
-					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
+					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement" &&	featureSourceWhitelist.includes(feature.source)) {
 						const renderStack = [];
 						renderer.recursiveRender({entries: feature.entries}, renderStack);
 						feature.text = d20plus.importer.getCleanText(renderStack.join(""));
