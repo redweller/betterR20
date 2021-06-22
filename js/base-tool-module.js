@@ -568,10 +568,12 @@ function baseToolModule () {
 				});
 			});
 
+			// Load from file
 			const $btnLoadFile = $win.find(`[name="load-file"]`);
 			$btnLoadFile.off("click").click(async () => {
 				const data = await DataUtil.pUserUpload();
-				handleLoadedData(data);
+				// Needs to be the first element of data for some reason
+				handleLoadedData(data[0]);
 			});
 
 			const $winExportP1 = $("#d20plus-module-importer-select-exports-p1");
