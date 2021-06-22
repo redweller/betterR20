@@ -572,8 +572,8 @@ function baseToolModule () {
 			const $btnLoadFile = $win.find(`[name="load-file"]`);
 			$btnLoadFile.off("click").click(async () => {
 				const data = await DataUtil.pUserUpload();
-				// Needs to be the first element of data for some reason
-				handleLoadedData(data[0]);
+				// Due to the new util functon, need to account for data being an array
+				data.forEach(d => handleLoadedData(d));
 			});
 
 			const $winExportP1 = $("#d20plus-module-importer-select-exports-p1");

@@ -1540,6 +1540,9 @@ function baseToolAnimator () {
 				return;
 			}
 
+			// Done as a quick fix to account for the pUserUpload lib function changing
+			data = data[0];
+
 			if (data[prop] && data[prop].length) {
 				let messages = [];
 				data[prop].forEach((it, i) => {
