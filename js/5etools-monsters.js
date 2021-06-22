@@ -1142,7 +1142,7 @@ function d20plusMonsters () {
 										});
 
 										offset++;
-									} else if (name === "Eye Rays") {
+									} else if (name === "Eye Rays" || name === "Eye Ray") {
 										const [base, ...others] = action.entries;
 
 										const baseAction = renderer.render({entries: [base]}, 1);
