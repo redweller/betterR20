@@ -1490,39 +1490,101 @@ const betteR205etoolsMain = function () {
 			}
 
 			// Import items
-			async function parseItems(item) {
-				// Returns a standardized object from a very unstandardized object
-				// Get the important variables
-				iname = "";
-				if (typeof item !== 'object') {
-					iname = item;
-				}
-				else if ('item' in item) {
-					iname = item.item;
-				}
-				else if ('special' in item) {
-					iname = item.special;
-				}
+			async function parseItems(itemlist) {
+				const allitemList = await Renderer.item.pBuildList();
+				const x = Object.values(itemlist).map(function (item) {
+					// Returns a standardized object from a very unstandardized object
+					// Get the important variables
+					iname = "";
+					if (typeof item !== 'object') {
+						iname = item;
+					}
+					else if ('item' in item) {
+						iname = item.item;
+					}
+					else if ('special' in item) {
+						iname = item.special;
+					}
 
-				// Make the input object
-				const pareseditem = {"name": iname};
-				// Create item data in the format importItem likes
-				const itemdata = JSON.parse(d20plus.items._getHandoutData(pareseditem)[1]);
-				// Call the importItem function usually used to import items
-				importItem(character, itemdata, null);
-				console.log(itemdata);
+					// Make the input object
+					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
+					const it = allitemList.find(pareseditem) || pareseditem;
+					// Create item data in the format importItem likes
+					const itemdata = JSON.parse(d20plus.items._getHandoutData(it)[1]);
+					// Call the importItem function usually used to import items
+					return itemdata
+				});
+
+				const y = x.map(it => {
+					const el = {
+						subItem: JSON.stringify(it),
+						count: 1
+					}
+					return el
+				});
+
+				const allItems = {
+					name: 'All Items',
+					_subItems: [...y],
+					data: {}
+				};
+
+				importItem(character, allItems, null);
 			}
 
-			async function fetchItems(equiplist) {
-				// Generic handler for adding items from background
-				const itemlist = Object.entries(equiplist);
-				for (const it of itemlist) {
-					const [key, value] = it;
-					parseItems(value)
-				}
+			async function  chooseItemsFromBackground (itemChoices) {
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+							<div title="Items Import">
+								<label class="flex">
+									<span>Which item would you like to import?</span>
+									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
+								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special).split("|")[0].toTitleCase()}</option>`)}
+									 </select>
+								</label>
+							</div>
+						`).appendTo($("body"));
+					const $selStrat = $dialog.find(`select`);
+	
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = $selStrat.val();
+									$(this).dialog("close");
+									$dialog.remove();
+									resolve(selected);
+								}
+							}
+						]
+					})
+				});
 			}
 
-			fetchItems(bg.startingEquipment[0]._);
+			if (bg.startingEquipment) {
+				for (const equip of bg.startingEquipment) {
+					// Loop because there can be any number of objects and in any order
+					if (equip._) {
+						// The _ property means not a will be imported
+						parseItems(equip._);
+					}
+					else {
+						// Otherwise there is a choice of what to import
+						const itemchoicefrombackgorund = await chooseItemsFromBackground(equip);
+                		parseItems(equip[itemchoicefrombackgorund]);
+					}
+				};
+			}
 
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
