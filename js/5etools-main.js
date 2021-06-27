@@ -1699,12 +1699,15 @@ const betteR205etoolsMain = function () {
 			}
 			
 			let featureSourceWhitelist = await chooseSource(
-				["PHB", "TCE", "UA"],
+				["Player's Handbook (PHB)", "Tasha's Cauldron of Everything (TCE)", "Unearthed Arcana (UA)"],
 				4
 			);
-
+			
+			//changing the answers to match the database
 			featureSourceWhitelist = featureSourceWhitelist.map((element) => {
-				return element === "UA" ? "UAClassFeatureVariants" : element;
+				if (element === "Player's Handbook (PHB)") return "PHB"
+				if (element === "Tasha's Cauldron of Everything (TCE)") return "TCE"
+				if (element === "Unearthed Arcana (UA)") return "UAClassFeatureVariants"
 			});
 			
 			for (let i = 0; i < maxLevel; i++) {
