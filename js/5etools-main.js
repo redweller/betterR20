@@ -2263,7 +2263,6 @@ const betteR205etoolsMain = function () {
 			} else if (data.data.Category === "Items") {
 				importItem(character, data, event);
 			} else if (data.data.Category === "Spells") {
-				console.log(data)
 				importSpells(character, data, event);
 			} else {
 				d20plus.importer.doFakeDrop(event, character, data, null);
