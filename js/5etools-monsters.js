@@ -1142,7 +1142,7 @@ function d20plusMonsters () {
 										});
 
 										offset++;
-									} else if (name === "Eye Rays") {
+									} else if (name === "Eye Rays" || name === "Eye Ray") {
 										const [base, ...others] = action.entries;
 
 										const baseAction = renderer.render({entries: [base]}, 1);
@@ -1150,17 +1150,27 @@ function d20plusMonsters () {
 										offset++;
 
 										const packedOthers = [];
-										others.forEach(it => {
-											const m = /^(\d+\.\s*[^.]+?\s*)[.:](.*)$/.exec(it);
-											if (m) {
-												const partName = m[1].trim();
-												const text = m[2].trim();
-												packedOthers.push({name: partName, text: text});
-											} else packedOthers[packedOthers.length - 1].text += ` ${it}`;
+										const items = others[0].items;
+										items.forEach(it => {
+											const partName = /^\d+\.\s*[^.]+/.exec(it.name);
+											if ("entry" in it) {
+												actionText = it["entry"];
+											} else {
+												actionText = "";
+												const entries = it["entries"];
+												firstTime = true;
+												entries.forEach(entryIt => {
+													actionText += firstTime ? `${entryIt}` : `\n${entryIt}`;
+													firstTime = false;
+												});
+											}
+											packedOthers.push({name: partName, text: actionText});
 										});
 
 										packedOthers.forEach(it => {
-											d20plus.importer.addAction(character, it.name, d20plus.importer.getCleanText(renderer.render(it.text)), i + offset);
+											const actionName = d20plus.importer.getCleanText(renderer.render(it.name));
+											const cleanText = d20plus.importer.getCleanText(renderer.render(it.text));
+											d20plus.importer.addAction(character, actionName, cleanText, i + offset);
 											offset++;
 										});
 									} else {
