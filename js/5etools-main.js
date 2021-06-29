@@ -1211,6 +1211,7 @@ const betteR205etoolsMain = function () {
 			if (feature) renderer.recursiveRender({entries: feature.entries}, renderStack);
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
+			// Add skills
 			async function chooseSkills (from, count) {
 				return new Promise((resolve, reject) => {
 					const $dialog = $(`
@@ -1331,6 +1332,261 @@ const betteR205etoolsMain = function () {
 				}
 			}
 
+			// Add Proficiencies (mainly language and tool, but extendable)
+			// Skills are still done Giddy's way so I don't need to mess with his code (and I couldn't easily convert his code to my method)
+			// Note: Doing this mostly stealing from Giddy's code
+			async function chooseProfs (from, count, profType) {
+				// Shamelessly stolen from Giddy
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose ${profType}">
+							<div name="remain" style="font-weight: bold">Remaining: ${count}</div>
+							<div>
+								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-prof="${it}" type="checkbox"></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $remain = $dialog.find(`[name="remain"]`);
+					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
+
+					$cbSkill.on("change", function () {
+						const $e = $(this);
+						let selectedCount = getSelected().length;
+						if (selectedCount > count) {
+							$e.prop("checked", false);
+							selectedCount--;
+						}
+						$remain.text(`Remaining: ${count - selectedCount}`);
+					});
+
+					function getSelected () {
+						return $cbSkill.map((i, e) => ({skill: $(e).data("prof"), selected: $(e).prop("checked")})).get()
+							.filter(it => it.selected).map(it => it.skill);
+					}
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = getSelected();
+									if (selected.length === count) {
+										$(this).dialog("close");
+										$dialog.remove();
+										resolve(selected);
+									} else {
+										alert(`Please select ${count} language${count === 1 ? "" : "s"}`);
+									}
+								}
+							}
+						]
+					})
+				});
+			}
+
+			async function chooseProfsGroup (options, profType) {
+				// For when there are two separate ways to choose languages
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+						<div title="Choose ${profType}">
+							<div>
+								${options.map((it, i) => `<label class="split"><input name="prof-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${
+									// Format it nicely
+									Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).map(a => a.toTitleCase()).join(", ")
+								}</span></label>`).join("")}
+							</div>
+						</div>
+					`).appendTo($("body"));
+					const $rdOpt = $dialog.find(`input[type="radio"]`);
+
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = $rdOpt.filter((i, e) => $(e).prop("checked"))
+										.map((i, e) => $(e).data("ix")).get()[0];
+									$(this).dialog("close");
+									$dialog.remove();
+									resolve(selected);
+								}
+							}
+						]
+					})
+				});
+			}
+
+			async function handleProfs(profs, profType) {
+				// Handle the language options, let user choose if needed
+				// Handles most edge cases I think
+				ret = []
+				const profEntries = Object.entries(profs);
+				for (const entry of profEntries) {
+					// Loop must be in this form -- Thanks for figuring this out Giddy
+					const [key, value] = entry;
+					if (key === "choose") {
+						// If choice is needed, call popup function
+						numChoice = 1;
+						if (value.count) numChoice = value.count;
+						const choice = await chooseProfs(value.from, numChoice, profType);
+						choice.forEach(c => ret.push(c));
+					}
+					else if (key === "anyStandard") {
+						// If any language is available, add any
+						for (i = 0; i < value; i++) ret.push("any");
+					}
+					else if (value) {
+						// If no choice is needed, add the proficiency normally
+						ret.push(key);
+					}
+				}
+				return ret;
+			}
+
+			// Get data for language proficiencies specifically
+			let backgroundLanguages = [];
+			if (bg.languageProficiencies && bg.languageProficiencies.length) {
+				if (bg.languageProficiencies.length > 1) {
+					// See Clan Crafter for an example
+					profIndex = await chooseProfsGroup(bg.languageProficiencies, "Languages");
+					backgroundLanguages = await handleProfs(bg.languageProficiencies[profIndex], "Languages");
+				}
+				else if (bg.languageProficiencies.length > 0) {
+					// Most common case
+					backgroundLanguages = await handleProfs(bg.languageProficiencies[0], "Languages");
+				}
+			}
+
+			// Tool Proficiencies
+			let backgroundTools = [];
+			if (bg.toolProficiencies && bg.toolProficiencies.length) {
+				if (bg.toolProficiencies.length > 1) {
+					// If there are different types of options
+					profIndex = await chooseProfsGroup(bg.toolProficiencies, "Tools");
+					backgroundTools = await handleProfs(bg.toolProficiencies[profIndex], "Tools")
+				}
+				else if (bg.toolProficiencies.length > 0) {
+					// Most common case
+					backgroundTools = await handleProfs(bg.toolProficiencies[0] , "Tools");
+				}
+			}
+
+			// Import items
+			async function parseItems(itemlist) {
+				const allitemList = await Renderer.item.pBuildList();
+				const x = Object.values(itemlist).map(function (item) {
+					// Returns a standardized object from a very unstandardized object
+					// Get the important variables
+					iname = "";
+					if (typeof item !== 'object') {
+						iname = item;
+					}
+					else if ('item' in item) {
+						iname = item.item;
+					}
+					else if ('special' in item) {
+						iname = item.special;
+					}
+
+					// Make the input object
+					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
+					const it = allitemList.find(pareseditem) || pareseditem;
+					// Create item data in the format importItem likes
+					const itemdata = JSON.parse(d20plus.items._getHandoutData(it)[1]);
+					// Call the importItem function usually used to import items
+					return itemdata
+				});
+
+				const y = x.map(it => {
+					const el = {
+						subItem: JSON.stringify(it),
+						count: 1
+					}
+					return el
+				});
+
+				const allItems = {
+					name: 'All Items',
+					_subItems: [...y],
+					data: {}
+				};
+
+				importItem(character, allItems, null);
+			}
+
+			async function  chooseItemsFromBackground (itemChoices) {
+				return new Promise((resolve, reject) => {
+					const $dialog = $(`
+							<div title="Items Import">
+								<label class="flex">
+									<span>Which item would you like to import?</span>
+									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
+								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special).split("|")[0].toTitleCase()}</option>`)}
+									 </select>
+								</label>
+							</div>
+						`).appendTo($("body"));
+					const $selStrat = $dialog.find(`select`);
+	
+					$dialog.dialog({
+						dialogClass: "no-close",
+						buttons: [
+							{
+								text: "Cancel",
+								click: function () {
+									$(this).dialog("close");
+									$dialog.remove();
+									reject(`User cancelled the prompt`);
+								}
+							},
+							{
+								text: "OK",
+								click: function () {
+									const selected = $selStrat.val();
+									$(this).dialog("close");
+									$dialog.remove();
+									resolve(selected);
+								}
+							}
+						]
+					})
+				});
+			}
+
+			if (bg.startingEquipment) {
+				for (const equip of bg.startingEquipment) {
+					// Loop because there can be any number of objects and in any order
+					if (equip._) {
+						// The _ property means not a will be imported
+						parseItems(equip._);
+					}
+					else {
+						// Otherwise there is a choice of what to import
+						const itemchoicefrombackgorund = await chooseItemsFromBackground(equip);
+                		parseItems(equip[itemchoicefrombackgorund]);
+					}
+				};
+			}
+
+			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
 
@@ -1347,6 +1603,26 @@ const betteR205etoolsMain = function () {
 
 				skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
 					attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
+				});
+
+				backgroundLanguages.map(l => l.toTitleCase()).forEach(l => {
+					const lRowId = d20plus.ut.generateRowId();
+					attrs.add(`repeating_proficiencies_${lRowId}_name`, l);
+					attrs.add(`repeating_proficiencies_${lRowId}_options-flag`, "0");
+				});
+
+				backgroundTools.map(t => t.toTitleCase()).forEach(t => {
+					const tRowID = d20plus.ut.generateRowId();
+					attrs.add(`repeating_tool_${tRowID}_toolname`, t);
+					attrs.add(`repeating_tool_${tRowID}_toolbonus_base`, "@{pb}");
+					attrs.add(`repeating_tool_${tRowID}_options-flag`, "0");
+					// All Tools assume the query option
+					// The long strings are annoying but they are also necessary
+					attrs.add(`repeating_tool_${tRowID}_toolattr`, "QUERY");
+					attrs.add(`repeating_tool_${tRowID}_toolbonus`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}+0+@{pb}");
+					attrs.add(`repeating_tool_${tRowID}_toolroll`, "@{wtype}&{template:simple} {{rname=@{toolname}}} {{mod=@{toolbonus}}} {{r1=[[@{d20}+@{toolbonus}[Mods]@{pbd_safe}]]}} {{always=1}} {{r2=[[@{d20}+@{toolbonus}[Mods]@{pbd_safe}]]}} {{global=@{global_skill_mod}}} @{charname_output}");
+					attrs.add(`repeating_tool_${tRowID}_toolattr_base`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}");
+					attrs.add(`repeating_tool_${tRowID}_toolbonus_display`, "?");
 				});
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
