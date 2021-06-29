@@ -1737,45 +1737,19 @@ const betteR205etoolsMain = function () {
 			const attrs = new CharacterAttributesProxy(character);
 			const sc = data.Vetoolscontent;
 
-			const desiredIxs = new Set(); // indexes into the subclass feature array
-			const gainLevels = [];
-
-			// _gainAtLevels should be a 20-length array of booleans
-			if (sc._gainAtLevels) {
-				const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-				if (levels) {
-					let scFeatureIndex = 0;
-					for (let i = 0; i < 20; i++) {
-						if (sc._gainAtLevels[i]) {
-							if (levels.has(i + 1)) {
-								desiredIxs.add(scFeatureIndex);
-							}
-							scFeatureIndex++;
-							gainLevels.push(i + 1);
-						}
-					}
-				} else {
-					return;
-				}
-			} else {
-				throw new Error("No subclass._gainAtLevels supplied!");
-			}
-
-			if (!desiredIxs.size) {
-				alert("No subclass features were found within the range specified.");
-				return;
-			}
+			const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+			if (!levels || !levels.size) return;
 
 			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 			let firstFeatures = true;
 			for (let i = 0; i < sc.subclassFeatures.length; i++) {
-				if (!desiredIxs.has(i)) continue;
-
 				const lvlFeatureList = sc.subclassFeatures[i];
 				for (let j = 0; j < lvlFeatureList.length; j++) {
 					const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
 					let feature = lvlFeatureList[j];
+
+					if (!levels.has(feature.level)) continue;
 
 					try {
 						while (!feature.name || (feature[0] && !feature[0].name)) {
@@ -1810,13 +1784,13 @@ const betteR205etoolsMain = function () {
 								return false;
 							} else return true;
 						});
-						importSubclassFeature(attrs, sc, gainLevels[i],
+						importSubclassFeature(attrs, sc, feature.level,
 								{name: feature.name, type: feature.type, entries: baseFeatures});
 						subFeatures.forEach(sf => {
-							importSubclassFeature(attrs, sc, gainLevels[i], sf);
+							importSubclassFeature(attrs, sc, feature.level, sf);
 						})
 					} else {
-						importSubclassFeature(attrs, sc, gainLevels[i], feature);
+						importSubclassFeature(attrs, sc, feature.level, feature);
 					}
 
 					firstFeatures = false;
