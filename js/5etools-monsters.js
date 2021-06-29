@@ -1142,7 +1142,7 @@ function d20plusMonsters () {
 										});
 
 										offset++;
-									} else if (name === "Eye Rays" || name === "Eye Ray") {
+									} else if (/\bEye Rays?\b/i.test(name || "")) {
 										const [base, ...others] = action.entries;
 
 										const baseAction = renderer.render({entries: [base]}, 1);
@@ -1153,18 +1153,10 @@ function d20plusMonsters () {
 										const items = others[0].items;
 										items.forEach(it => {
 											const partName = /^\d+\.\s*[^.]+/.exec(it.name);
-											if ("entry" in it) {
-												actionText = it["entry"];
-											} else {
-												actionText = "";
-												const entries = it["entries"];
-												firstTime = true;
-												entries.forEach(entryIt => {
-													actionText += firstTime ? `${entryIt}` : `\n${entryIt}`;
-													firstTime = false;
-												});
-											}
-											packedOthers.push({name: partName, text: actionText});
+											packedOthers.push({
+												name: partName,
+												text: it.entry ? `${it.entry}` : it.entries.map(it => `${it}`).join("\n")
+											});
 										});
 
 										packedOthers.forEach(it => {
