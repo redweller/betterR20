@@ -303,7 +303,7 @@ function d20plusMonsters () {
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
 							var ac = parsedAc.match(/^\d+/);
 							var actype = /\(([^)]+)\)/.exec(parsedAc);
-							var hp = data.hp.average != null ? data.hp.average : "";
+							var hp = data.hp.average ?? "";
 							var hpformula = data.hp.formula;
 							var passive = data.passive != null ? data.passive : "";
 							var passiveStr = passive !== "" ? "passive Perception " + passive : "";
