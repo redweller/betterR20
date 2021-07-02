@@ -1637,86 +1637,16 @@ const betteR205etoolsMain = function () {
 
 			importClassGeneral(attrs, clss, maxLevel);
 
-			async function chooseCheckboxList (dataArray, dataTitle, message, options) {
-				/*
-				dataArray = options to choose from
-				dataTitle = title for the window
-				message = message when user does not choose correct number of choices
-				options = {
-					displayFormatter = function to format dataArray for diplay
-					count = exact number of  options the user must choose
-					note = add a note at the bottom of the window
-				}
-				*/
-				return new Promise((resolve, reject) => {
-					const $dialog = $(`
-						<div title="${dataTitle}">
-							${options.count ? `<div name="remain" style="font-weight: bold">Remaining: ${options.count}</div>` : ""}
-							<div>
-								${dataArray.map(it => `<label class="split"><span>${options.displayFormatter ? options.displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
-							</div>
-							${options.note ? `<br><div style="font-weight: bold">${options.note}</div>` : ""}
-						</div>
-					`).appendTo($("body"));
-					const $remain = $dialog.find(`[name="remain"]`);
-					const $cbChoices = $dialog.find(`input[type="checkbox"]`);
-
-					if (options.count) {
-						$cbChoices.on("change", function () {
-							const $e = $(this);
-							let selectedCount = getSelected().length;
-							if (selectedCount > options.count) {
-								$e.prop("checked", false);
-								selectedCount--;
-							}
-							$remain.text(`Remaining: ${options.count - selectedCount}`);
-						});
-					}
-
-					function getSelected () {
-						return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
-							.filter(it => it.selected).map(it => it.choice);
-					}
-
-					$dialog.dialog({
-						dialogClass: "no-close",
-						buttons: [
-							{
-								text: "Cancel",
-								click: function () {
-									$(this).dialog("close");
-									$dialog.remove();
-									reject(`User cancelled the prompt`);
-								}
-							},
-							{
-								text: "OK",
-								click: function () {
-									const selected = getSelected();
-									if (selected.length === options.count || !options.count) {
-										$(this).dialog("close");
-										$dialog.remove();
-										resolve(selected);
-									} else {
-										alert(message);
-									}
-								}
-							}
-						]
-					})
-				});
-			}
-
-			let featureSourceWhitelist = await chooseCheckboxList(
+			let featureSourceWhitelist = await d20plus.ui.chooseCheckboxList(
 				[SRC_PHB, SRC_TCE, SRC_UACFV],
 				"Choose Source to Import Class Features",
 				"Please select a source",
-				options = {
+				{
 					note: "WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.",
 					displayFormatter: (it => Parser.sourceJsonToFull(it))
 				}
 			);
-			
+
 			for (let i = 0; i < maxLevel; i++) {
 				const level = i + 1;
 				if (!levels.has(level)) continue;
