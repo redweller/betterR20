@@ -165,14 +165,11 @@ function d20plusClass () {
 			const importStrategy = await chooseSubclassImportStrategy(options.isHomebrew || (data.source && SourceUtil.isNonstandardSource(data.source)));
 			if (importStrategy === 3) return;
 
-			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
-
 			data.subclasses.forEach(sc => {
 				if (importStrategy === 1 && SourceUtil.isNonstandardSource(sc.source)) return;
 
 				sc.className = data.name;
 				sc.classSource = sc.classSource || data.source;
-				sc._gainAtLevels = gainFeatureArray;
 				if (playerMode) {
 					d20plus.subclasses.playerImportBuilder(sc, data);
 				} else {
@@ -183,22 +180,6 @@ function d20plusClass () {
 				}
 			});
 		}
-	};
-
-	d20plus.classes._getGainAtLevelArr = function (clazz) {
-		const gainFeatureArray = [];
-		outer: for (let i = 0; i < 20; i++) {
-			const lvlFeatureList = clazz.classFeatures[i];
-			for (let j = 0; j < lvlFeatureList.length; j++) {
-				const feature = lvlFeatureList[j];
-				if (feature.gainSubclassFeature) {
-					gainFeatureArray.push(true);
-					continue outer;
-				}
-			}
-			gainFeatureArray.push(false);
-		}
-		return gainFeatureArray;
 	};
 
 	d20plus.classes.playerImportBuilder = function (data, _1, _2, _3, _4, options) {
@@ -316,11 +297,7 @@ function d20plusClass () {
 	d20plus.subclasses._preloadClass = function (subclass, baseClass) {
 		if (!subclass.className) return Promise.resolve();
 
-		if (baseClass) {
-			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(baseClass);
-			return Promise.resolve();
-		} else if(subclass._baseClass) {
-			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(subclass._baseClass);
+		if (baseClass || subclass._baseClass) {
 			return Promise.resolve();
 		} else {
 			d20plus.ut.log("Preloading class...");
@@ -329,8 +306,6 @@ function d20plusClass () {
 				if (!clazz) {
 					throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.className}::${subclass.classSource || SRC_PHB}`);
 				}
-
-				subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(clazz);
 			});
 		}
 	};
