@@ -1713,8 +1713,7 @@ const betteR205etoolsMain = function () {
 				"Please select a source",
 				options = {
 					note: "WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.",
-					displayFormatter: (it => Parser.sourceJsonToFull(it)),
-					count: 2
+					displayFormatter: (it => Parser.sourceJsonToFull(it))
 				}
 			);
 			
