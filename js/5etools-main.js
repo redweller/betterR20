@@ -1650,7 +1650,7 @@ const betteR205etoolsMain = function () {
 				*/
 				return new Promise((resolve, reject) => {
 					const $dialog = $(`
-						<div title="Choose ${dataTitle}">
+						<div title="${dataTitle}">
 							${options.count ? `<div name="remain" style="font-weight: bold">Remaining: ${options.count}</div>` : ""}
 							<div>
 								${dataArray.map(it => `<label class="split"><span>${options.displayFormatter ? options.displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
@@ -1709,7 +1709,7 @@ const betteR205etoolsMain = function () {
 
 			let featureSourceWhitelist = await chooseCheckboxList(
 				[SRC_PHB, SRC_TCE, SRC_UACFV],
-				"Source to Import Class Features",
+				"Choose Source to Import Class Features",
 				"Please select a source",
 				options = {
 					note: "WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.",
