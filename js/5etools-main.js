@@ -1637,36 +1637,45 @@ const betteR205etoolsMain = function () {
 
 			importClassGeneral(attrs, clss, maxLevel);
 
-			async function chooseSource(from, count) {
+			async function chooseCheckboxList (dataArray, dataTitle, message, options) {
+				/*
+				dataArray = options to choose from
+				dataTitle = title for the window
+				message = message when user does not choose correct number of choices
+				options = {
+					displayFormatter = function to format dataArray for diplay
+					count = exact number of  options the user must choose
+					note = add a note at the bottom of the window
+				}
+				*/
 				return new Promise((resolve, reject) => {
 					const $dialog = $(`
-						<div title="Choose Feature Sources">
-							
+						<div title="Choose ${dataTitle}">
+							${options.count ? `<div name="remain" style="font-weight: bold">Remaining: ${options.count}</div>` : ""}
 							<div>
-								${from
-									.map(
-										(it) =>
-											`<label class="split"><span>${it}</span> <input data-skill="${it}" type="checkbox"></label>`
-									)
-									.join("")}
+								${dataArray.map(it => `<label class="split"><span>${options.displayFormatter ? options.displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
 							</div>
-							<p> <br></p>
-							<div style="font-weight: bold">WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.</div>
+							${options.note ? `<br><div style="font-weight: bold">${options.note}</div>` : ""}
 						</div>
 					`).appendTo($("body"));
 					const $remain = $dialog.find(`[name="remain"]`);
-					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
-					console.log($cbSkill);
+					const $cbChoices = $dialog.find(`input[type="checkbox"]`);
 
-					function getSelected() {
-						return $cbSkill
-							.map((i, e) => ({
-								skill: $(e).data("skill"),
-								selected: $(e).prop("checked"),
-							}))
-							.get()
-							.filter((it) => it.selected)
-							.map((it) => it.skill);
+					if (options.count) {
+						$cbChoices.on("change", function () {
+							const $e = $(this);
+							let selectedCount = getSelected().length;
+							if (selectedCount > options.count) {
+								$e.prop("checked", false);
+								selectedCount--;
+							}
+							$remain.text(`Remaining: ${options.count - selectedCount}`);
+						});
+					}
+
+					function getSelected () {
+						return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
+							.filter(it => it.selected).map(it => it.choice);
 					}
 
 					$dialog.dialog({
@@ -1678,37 +1687,36 @@ const betteR205etoolsMain = function () {
 									$(this).dialog("close");
 									$dialog.remove();
 									reject(`User cancelled the prompt`);
-								},
+								}
 							},
 							{
 								text: "OK",
 								click: function () {
 									const selected = getSelected();
-									if (selected.length > 0) {
+									if (selected.length === options.count || !options.count) {
 										$(this).dialog("close");
 										$dialog.remove();
 										resolve(selected);
 									} else {
-										alert(`Please select a Source`);
+										alert(message);
 									}
-								},
-							},
-						],
-					});
+								}
+							}
+						]
+					})
 				});
 			}
-			
-			let featureSourceWhitelist = await chooseSource(
-				["Player's Handbook (PHB)", "Tasha's Cauldron of Everything (TCE)", "Unearthed Arcana (UA)"],
-				4
+
+			let featureSourceWhitelist = await chooseCheckboxList(
+				[SRC_PHB, SRC_TCE, SRC_UACFV],
+				"Source to Import Class Features",
+				"Please select a source",
+				options = {
+					note: "WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.",
+					displayFormatter: (it => Parser.sourceJsonToFull(it)),
+					count: 2
+				}
 			);
-			
-			//changing the answers to match the database
-			featureSourceWhitelist = featureSourceWhitelist.map((element) => {
-				if (element === "Player's Handbook (PHB)") return "PHB"
-				if (element === "Tasha's Cauldron of Everything (TCE)") return "TCE"
-				if (element === "Unearthed Arcana (UA)") return "UAClassFeatureVariants"
-			});
 			
 			for (let i = 0; i < maxLevel; i++) {
 				const level = i + 1;
@@ -1787,6 +1795,7 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
 					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+					attrs.add(`repeating_traits_${fRowId}_display_flag`, "on");
 				} else if (d20plus.sheet == "shaped") {
 					if (shapedSheetPreFilledFeatures.includes(feature.name))
 						return;
