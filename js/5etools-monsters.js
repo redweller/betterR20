@@ -303,7 +303,7 @@ function d20plusMonsters () {
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
 							var ac = parsedAc.match(/^\d+/);
 							var actype = /\(([^)]+)\)/.exec(parsedAc);
-							var hp = data.hp.average || 0;
+							var hp = data.hp.average ?? "";
 							var hpformula = data.hp.formula;
 							var passive = data.passive != null ? data.passive : "";
 							var passiveStr = passive !== "" ? "passive Perception " + passive : "";
@@ -339,11 +339,8 @@ function d20plusMonsters () {
 							character.attribs.create({name: "npc_alignment", current: alignment});
 							character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
 							character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
-							character.attribs.create({name: "npc_hpbase", current: hp != null ? hp : ""});
-							character.attribs.create({
-								name: "npc_hpformula",
-								current: hpformula != null ? hpformula || "" : ""
-							});
+							character.attribs.create({name: "hp", current: hp, max: hp});
+							character.attribs.create({name: "npc_hpformula", current: hpformula != null ? hpformula || "" : ""});
 
 							const hpModId = d20plus.ut.generateRowId();
 							character.attribs.create({name: `repeating_hpmod_${hpModId}_source`, current: "CON"});
@@ -1142,7 +1139,7 @@ function d20plusMonsters () {
 										});
 
 										offset++;
-									} else if (name === "Eye Rays") {
+									} else if (/\bEye Rays?\b/i.test(name || "")) {
 										const [base, ...others] = action.entries;
 
 										const baseAction = renderer.render({entries: [base]}, 1);
@@ -1150,17 +1147,19 @@ function d20plusMonsters () {
 										offset++;
 
 										const packedOthers = [];
-										others.forEach(it => {
-											const m = /^(\d+\.\s*[^.]+?\s*)[.:](.*)$/.exec(it);
-											if (m) {
-												const partName = m[1].trim();
-												const text = m[2].trim();
-												packedOthers.push({name: partName, text: text});
-											} else packedOthers[packedOthers.length - 1].text += ` ${it}`;
+										const items = others[0].items;
+										items.forEach(it => {
+											const partName = /^\d+\.\s*[^.]+/.exec(it.name);
+											packedOthers.push({
+												name: partName,
+												text: it.entry ? `${it.entry}` : it.entries.map(it => `${it}`).join("\n")
+											});
 										});
 
 										packedOthers.forEach(it => {
-											d20plus.importer.addAction(character, it.name, d20plus.importer.getCleanText(renderer.render(it.text)), i + offset);
+											const actionName = d20plus.importer.getCleanText(renderer.render(it.name));
+											const cleanText = d20plus.importer.getCleanText(renderer.render(it.text));
+											d20plus.importer.addAction(character, actionName, cleanText, i + offset);
 											offset++;
 										});
 									} else {
