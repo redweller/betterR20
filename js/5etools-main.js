@@ -1991,7 +1991,6 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
 					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-					attrs.add(`repeating_traits_${fRowId}_display_flag`, "on");
 				} else if (d20plus.sheet == "shaped") {
 					if (shapedSheetPreFilledFeatures.includes(feature.name))
 						return;
