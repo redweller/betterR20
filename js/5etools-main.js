@@ -1505,6 +1505,8 @@ const betteR205etoolsMain = function () {
 					else if ('special' in item) {
 						iname = item.special;
 					}
+					
+					if (item.containsValue) startingGold = item.containsValue/100;
 
 					// Make the input object
 					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
@@ -1570,7 +1572,9 @@ const betteR205etoolsMain = function () {
 					})
 				});
 			}
-
+			
+		    let startingGold = 0;
+			
 			if (bg.startingEquipment) {
 				for (const equip of bg.startingEquipment) {
 					// Loop because there can be any number of objects and in any order
@@ -1592,6 +1596,7 @@ const betteR205etoolsMain = function () {
 
 			if (d20plus.sheet === "ogl") {
 				attrs.addOrUpdate("background", bg.name);
+				attrs.addOrUpdate("gp", startingGold);
 
 				attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
 				attrs.add(`repeating_traits_${fRowId}_source`, "Background");
