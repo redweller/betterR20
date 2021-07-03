@@ -1334,7 +1334,7 @@ const betteR205etoolsMain = function () {
 						let numChoice = 1;
 						if (value.count) numChoice = value.count;
 						const choice = await d20plus.ui.chooseCheckboxList(
-							value.from, `Choosse ${profType}`, `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`,	{count: numChoice,	displayFormatter: (it => it.toTitleCase())}
+							value.from, `Choose ${profType}`, `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`,	{count: numChoice,	displayFormatter: (it => it.toTitleCase())}
 							);
 						choice.forEach(c => ret.push(c));
 					}
