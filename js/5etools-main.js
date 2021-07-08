@@ -2463,9 +2463,6 @@ const betteR205etoolsMain = function () {
 
 		async function importSpells(character, data, event) {
 
-			//this is working fine for spells.
-			d20plus.importer.doFakeDrop(event, character, data, null);
-
 			const importCriticalData = function (){
 				//give it time to update the sheet
 				setTimeout(() => {
@@ -2484,6 +2481,9 @@ const betteR205etoolsMain = function () {
 				},1000)
 			}
 			
+			//this is working fine for spells.
+			d20plus.importer.doFakeDrop(event, character, data, null);
+
 			//adding critical info that is missing.
 			if (data.data.Crit || data.data["Crit Range"]) importCriticalData()
 		}
