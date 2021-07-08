@@ -376,6 +376,15 @@ function d20plusImporter () {
 		return found ? found.id : undefined;
 	};
 
+	d20plus.importer.findOrGenerateRepeatingRowId = function (character, namePattern, current) {
+		const [namePrefix, nameSuffix] = namePattern.split(/\$\d?/);
+		const attr = character.attribs.toJSON()
+			.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current == current);
+		return attr ?
+			attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1") :
+			d20plus.ut.generateRowId();
+	}
+
 	d20plus.importer.addOrUpdateAttr = function (character, attrName, value) {
 		const id = d20plus.importer.findAttrId(character, attrName);
 		if (id) {

@@ -2469,15 +2469,18 @@ const betteR205etoolsMain = function () {
 			const importCriticalData = function (){
 				//give it time to update the sheet
 				setTimeout(() => {
-					//stolen from "findOrGenerateRepeatingRowId"
-					const attr = character.model.attribs.toJSON().find(a => a.name.startsWith("repeating_attack_") && a.name.endsWith("_atkname") && a.current == data.name);
-					const rowID = attr.name.replace(RegExp(`^repeating_attack_(.*)_atkname$`), "$1")
-
+					const rowID = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name)
+									
 					//crit damage
-					if (data.data.Crit && rowID) character.model.attribs.create({name: `repeating_attack_${rowID}_dmgcustcrit`}).set({current: data.data.Crit}).save()
-					//if (data.data.Crit && rowID) character.model.attribs.create({name: `repeating_attack_${rowID}_dmgcustcrit`, current: data.data.Crit}).save()
+					if (data.data.Crit && rowID) {
+						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_dmgcustcrit`, data.data.Crit)
+						const critID = d20plus.importer.findAttrId(character.model, `repeating_attack_${rowID}_rollbase_crit`);
+						const newCrit = character.model.attribs.get(critID).get("current").replace(/\{\{crit1\=\[\[\d\d?d\d\d?\]\]\}\}/g, '{{crit1=[[@{dmgcustcrit}]]}}');
+						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_rollbase_crit`, newCrit)
+					}
+
 					//crit range
-					if (data.data["Crit Range"] && rowID) character.model.attribs.create({name: `repeating_attack_${rowID}_atkcritrange`, current: data.data["Crit Range"]}).save()
+					if (data.data["Crit Range"] && rowID) d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_atkcritrange`, data.data["Crit Range"])
 				},1000)
 			}
 			
