@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.21.0";
+const SCRIPT_VERSION = "1.23.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -92,6 +92,7 @@ const LIB_SCRIPTS = {
 		"parser.js",
 		"utils.js",
 		"utils-ui.js",
+		"hist-port.js",
 	],
 	"5etools": [
 		"list.min.js",
@@ -101,6 +102,7 @@ const LIB_SCRIPTS = {
 		"parser.js",
 		"utils.js",
 		"utils-ui.js",
+		"hist-port.js",
 		"render.js",
 		"render-dice.js",
 		"scalecreature.js"

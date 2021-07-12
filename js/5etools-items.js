@@ -218,7 +218,7 @@ function d20plusItems () {
 			}
 		}
 		notecontents += `<p><h3>${data.name}</h3></p>
-		<p><em>${typeRarityAttunement}</em></p>
+		<p><em>${typeRarityAttunement.join(", ")}</em></p>
 		<p><strong>Value/Weight:</strong> ${[Parser.itemValueToFull(data), Parser.itemWeightToFull(data)].filter(Boolean).join(", ")}</p>
 		<p><strong>Details: </strong>${[damage, damageType, propertiesTxt].filter(Boolean).join(" ")}</p>
 		`;

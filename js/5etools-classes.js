@@ -2,6 +2,25 @@ function d20plusClass () {
 	d20plus.classes = {};
 	d20plus.subclasses = {};
 
+	d20plus.classes._pLoadMergedClassJON = async function () {
+		let data = await DataUtil.class.loadJSON();
+		data = MiscUtil.copy(data);
+		d20plus.classes._doAttachChildSubclasses(data);
+		return data;
+	};
+
+	d20plus.classes._doAttachChildSubclasses = function (data) {
+		data.class = data.class || [];
+		data.subclass = data.subclass || [];
+
+		for (let i = 0; i < data.subclass.length; ++i) {
+			// Attach subclasses to parent classes
+			const cls = data.class.find(it => it.name === data.subclass[i].className && it.source === data.subclass[i].classSource);
+			if (!cls) continue;
+			(cls.subclasses = cls.subclasses || []).push(data.subclass[i]);
+		}
+	};
+
 	// Import Classes button was clicked
 	d20plus.classes.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -18,9 +37,18 @@ function d20plusClass () {
 				if (!data.class) return;
 
 				data = MiscUtil.copy(data);
+				data.class = data.class || [];
 				for (let i = 0; i < data.class.length; ++i) {
 					data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
 				}
+
+				if (data.subclass) {
+					for (let i = 0; i < data.subclass.length; ++i) {
+						data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
+					}
+				}
+
+				d20plus.classes._doAttachChildSubclasses(data);
 
 				d20plus.importer.showImportList(
 					"class",
@@ -41,19 +69,20 @@ function d20plusClass () {
 	d20plus.classes.buttonAll = function (forcePlayer) {
 		const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
 
-		DataUtil.class.loadJSON().then((data) => {
-			d20plus.importer.showImportList(
-				"class",
-				data.class,
-				handoutBuilder,
-				{
-					forcePlayer,
-					builderOptions: {
-						isHomebrew: false
+		d20plus.classes._pLoadMergedClassJON()
+			.then(data => {
+				d20plus.importer.showImportList(
+					"class",
+					data.class,
+					handoutBuilder,
+					{
+						forcePlayer,
+						builderOptions: {
+							isHomebrew: false
+						}
 					}
-				}
-			);
-		});
+				);
+			});
 	};
 
 	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
@@ -136,14 +165,11 @@ function d20plusClass () {
 			const importStrategy = await chooseSubclassImportStrategy(options.isHomebrew || (data.source && SourceUtil.isNonstandardSource(data.source)));
 			if (importStrategy === 3) return;
 
-			const gainFeatureArray = d20plus.classes._getGainAtLevelArr(data);
-
 			data.subclasses.forEach(sc => {
 				if (importStrategy === 1 && SourceUtil.isNonstandardSource(sc.source)) return;
 
 				sc.className = data.name;
 				sc.classSource = sc.classSource || data.source;
-				sc._gainAtLevels = gainFeatureArray;
 				if (playerMode) {
 					d20plus.subclasses.playerImportBuilder(sc, data);
 				} else {
@@ -154,22 +180,6 @@ function d20plusClass () {
 				}
 			});
 		}
-	};
-
-	d20plus.classes._getGainAtLevelArr = function (clazz) {
-		const gainFeatureArray = [];
-		outer: for (let i = 0; i < 20; i++) {
-			const lvlFeatureList = clazz.classFeatures[i];
-			for (let j = 0; j < lvlFeatureList.length; j++) {
-				const feature = lvlFeatureList[j];
-				if (feature.gainSubclassFeature) {
-					gainFeatureArray.push(true);
-					continue outer;
-				}
-			}
-			gainFeatureArray.push(false);
-		}
-		return gainFeatureArray;
 	};
 
 	d20plus.classes.playerImportBuilder = function (data, _1, _2, _3, _4, options) {
@@ -287,21 +297,15 @@ function d20plusClass () {
 	d20plus.subclasses._preloadClass = function (subclass, baseClass) {
 		if (!subclass.className) return Promise.resolve();
 
-		if (baseClass) {
-			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(baseClass);
-			return Promise.resolve();
-		} else if(subclass._baseClass) {
-			subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(subclass._baseClass);
+		if (baseClass || subclass._baseClass) {
 			return Promise.resolve();
 		} else {
 			d20plus.ut.log("Preloading class...");
-			return DataUtil.class.loadJSON().then((data) => {
+			return d20plus.classes._pLoadMergedClassJON().then((data) => {
 				const clazz = data.class.find(it => it.name.toLowerCase() === subclass.className.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
 				if (!clazz) {
 					throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.className}::${subclass.classSource || SRC_PHB}`);
 				}
-
-				subclass._gainAtLevels = d20plus.classes._getGainAtLevelArr(clazz);
 			});
 		}
 	};

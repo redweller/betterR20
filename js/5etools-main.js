@@ -1437,21 +1437,19 @@ const betteR205etoolsMain = function () {
 			async function handleProfs(profs, profType) {
 				// Handle the language options, let user choose if needed
 				// Handles most edge cases I think
-				ret = []
-				const profEntries = Object.entries(profs);
-				for (const entry of profEntries) {
+				const ret = []
+				for (const [key, value] of Object.entries(profs)) {
 					// Loop must be in this form -- Thanks for figuring this out Giddy
-					const [key, value] = entry;
 					if (key === "choose") {
 						// If choice is needed, call popup function
-						numChoice = 1;
+						let numChoice = 1;
 						if (value.count) numChoice = value.count;
 						const choice = await chooseProfs(value.from, numChoice, profType);
 						choice.forEach(c => ret.push(c));
 					}
 					else if (key === "anyStandard") {
 						// If any language is available, add any
-						for (i = 0; i < value; i++) ret.push("any");
+						for (let i = 0; i < value; i++) ret.push("any");
 					}
 					else if (value) {
 						// If no choice is needed, add the proficiency normally
@@ -1466,7 +1464,7 @@ const betteR205etoolsMain = function () {
 			if (bg.languageProficiencies && bg.languageProficiencies.length) {
 				if (bg.languageProficiencies.length > 1) {
 					// See Clan Crafter for an example
-					profIndex = await chooseProfsGroup(bg.languageProficiencies, "Languages");
+					let profIndex = await chooseProfsGroup(bg.languageProficiencies, "Languages");
 					backgroundLanguages = await handleProfs(bg.languageProficiencies[profIndex], "Languages");
 				}
 				else if (bg.languageProficiencies.length > 0) {
@@ -1480,7 +1478,7 @@ const betteR205etoolsMain = function () {
 			if (bg.toolProficiencies && bg.toolProficiencies.length) {
 				if (bg.toolProficiencies.length > 1) {
 					// If there are different types of options
-					profIndex = await chooseProfsGroup(bg.toolProficiencies, "Tools");
+					let profIndex = await chooseProfsGroup(bg.toolProficiencies, "Tools");
 					backgroundTools = await handleProfs(bg.toolProficiencies[profIndex], "Tools")
 				}
 				else if (bg.toolProficiencies.length > 0) {
@@ -1495,7 +1493,7 @@ const betteR205etoolsMain = function () {
 				const x = Object.values(itemlist).map(function (item) {
 					// Returns a standardized object from a very unstandardized object
 					// Get the important variables
-					iname = "";
+					let iname = "";
 					if (typeof item !== 'object') {
 						iname = item;
 					}
@@ -1511,19 +1509,12 @@ const betteR205etoolsMain = function () {
 					// Make the input object
 					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
 					const it = allitemList.find(pareseditem) || pareseditem;
-					// Create item data in the format importItem likes
-					const itemdata = JSON.parse(d20plus.items._getHandoutData(it)[1]);
-					// Call the importItem function usually used to import items
-					return itemdata
+					// Create item data in the format importItem likes,
+					//   then call the importItem function usually used to import items
+					return JSON.parse(d20plus.items._getHandoutData(it)[1])
 				});
 
-				const y = x.map(it => {
-					const el = {
-						subItem: JSON.stringify(it),
-						count: 1
-					}
-					return el
-				});
+				const y = x.map(it => ({subItem: JSON.stringify(it), count: 1}));
 
 				const allItems = {
 					name: 'All Items',
@@ -1547,7 +1538,7 @@ const betteR205etoolsMain = function () {
 							</div>
 						`).appendTo($("body"));
 					const $selStrat = $dialog.find(`select`);
-	
+
 					$dialog.dialog({
 						dialogClass: "no-close",
 						buttons: [
@@ -1587,7 +1578,7 @@ const betteR205etoolsMain = function () {
 						const itemchoicefrombackgorund = await chooseItemsFromBackground(equip);
                 		parseItems(equip[itemchoicefrombackgorund]);
 					}
-				};
+				}
 			}
 
 			// Update Sheet
@@ -2018,45 +2009,19 @@ const betteR205etoolsMain = function () {
 			const attrs = new CharacterAttributesProxy(character);
 			const sc = data.Vetoolscontent;
 
-			const desiredIxs = new Set(); // indexes into the subclass feature array
-			const gainLevels = [];
-
-			// _gainAtLevels should be a 20-length array of booleans
-			if (sc._gainAtLevels) {
-				const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-				if (levels) {
-					let scFeatureIndex = 0;
-					for (let i = 0; i < 20; i++) {
-						if (sc._gainAtLevels[i]) {
-							if (levels.has(i + 1)) {
-								desiredIxs.add(scFeatureIndex);
-							}
-							scFeatureIndex++;
-							gainLevels.push(i + 1);
-						}
-					}
-				} else {
-					return;
-				}
-			} else {
-				throw new Error("No subclass._gainAtLevels supplied!");
-			}
-
-			if (!desiredIxs.size) {
-				alert("No subclass features were found within the range specified.");
-				return;
-			}
+			const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+			if (!levels || !levels.size) return;
 
 			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 			let firstFeatures = true;
 			for (let i = 0; i < sc.subclassFeatures.length; i++) {
-				if (!desiredIxs.has(i)) continue;
-
 				const lvlFeatureList = sc.subclassFeatures[i];
 				for (let j = 0; j < lvlFeatureList.length; j++) {
 					const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
 					let feature = lvlFeatureList[j];
+
+					if (!levels.has(feature.level)) continue;
 
 					try {
 						while (!feature.name || (feature[0] && !feature[0].name)) {
@@ -2091,13 +2056,13 @@ const betteR205etoolsMain = function () {
 								return false;
 							} else return true;
 						});
-						importSubclassFeature(attrs, sc, gainLevels[i],
+						importSubclassFeature(attrs, sc, feature.level,
 								{name: feature.name, type: feature.type, entries: baseFeatures});
 						subFeatures.forEach(sf => {
-							importSubclassFeature(attrs, sc, gainLevels[i], sf);
+							importSubclassFeature(attrs, sc, feature.level, sf);
 						})
 					} else {
-						importSubclassFeature(attrs, sc, gainLevels[i], feature);
+						importSubclassFeature(attrs, sc, feature.level, feature);
 					}
 
 					firstFeatures = false;
