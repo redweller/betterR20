@@ -1660,6 +1660,7 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_traits_${fRowId}_source_type`, race.name);
 					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+					if (e.name === "Lucky") attrs.addOrUpdate(`halflingluck_flag`, "1")
 				});
 
 				if (race.languageProficiencies && race.languageProficiencies.length) {
@@ -2389,6 +2390,7 @@ const betteR205etoolsMain = function () {
 		}
 
 		function importData (character, data, event) {
+			console.log(data)
 			// TODO remove feature import workarounds below when roll20 and sheets supports their drag-n-drop properly
 			if (data.data.Category === "Feats") {
 				importFeat(character, data);
