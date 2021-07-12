@@ -2390,7 +2390,6 @@ const betteR205etoolsMain = function () {
 		}
 
 		function importData (character, data, event) {
-			console.log(data)
 			// TODO remove feature import workarounds below when roll20 and sheets supports their drag-n-drop properly
 			if (data.data.Category === "Feats") {
 				importFeat(character, data);
