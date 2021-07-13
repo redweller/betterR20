@@ -2370,7 +2370,7 @@ const betteR205etoolsMain = function () {
 							makeProp(rowId, "itemname", siD.name);
 							const w = (siD.data || {}).Weight;
 							if (w) makeProp(rowId, "itemweight", w);
-							makeProp(rowId, "itemcontent", Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
+							makeProp(rowId, "itemcontent", siD.content || Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
 							makeProp(rowId, "itemcount", String(si.count));
 
 						} else {
