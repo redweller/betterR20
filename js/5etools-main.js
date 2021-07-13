@@ -1571,7 +1571,7 @@ const betteR205etoolsMain = function () {
 					// Loop because there can be any number of objects and in any order
 					if (equip._) {
 						// The _ property means not a will be imported
-						parseItems(equip._);
+						await parseItems(equip._);
 					}
 					else {
 						// Otherwise there is a choice of what to import
