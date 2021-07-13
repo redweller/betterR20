@@ -1660,7 +1660,6 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_traits_${fRowId}_source_type`, race.name);
 					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-					if (e.name === "Lucky") attrs.addOrUpdate(`halflingluck_flag`, "1")
 				});
 
 				if (race.languageProficiencies && race.languageProficiencies.length) {
@@ -2290,61 +2289,49 @@ const betteR205etoolsMain = function () {
 				if (data.data._versatile) {
 					setTimeout(() => {
 						const rowId = d20plus.ut.generateRowId();
+						const sibRowId = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name);						
+						const itemId = d20plus.importer.getAttrCurrVal(character.model, `repeating_attack_${sibRowId}_itemid`);
+						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${sibRowId}_atkname`, data.name + " (One-Handed)");
+						d20plus.importer.addOrUpdateAttr(character.model, `repeating_inventory_${itemId}_itemattackid`, sibRowId + `,${rowId}`);
 
 						function makeItemTrait (key, val) {
-							const toSave = character.model.attribs.create({
-								name: `repeating_attack_${rowId}_${key}`,
-								current: val
-							}).save();
-							toSave.save();
+							character.model.attribs.create({name: `repeating_attack_${rowId}_${key}`, current: val}).save();					
 						}
 
-						const attr = (data.data["Item Type"] || "").includes("Melee") ? "strength" : "dexterity";
+						const attr = (data.data["Item Type"] || "").includes("melee") ? "strength" : "dexterity";
 						const attrTag = `@{${attr}_mod}`;
+						const attrABV = Parser.attFullToAbv(attr.toTitleCase()).toUpperCase();
 
 						const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
 						const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
 						const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
+												
+						const modifiers = data.data.Modifiers ? d20plus.items.parseItemModifiers(data.data.Modifiers) : {};
 
-						// This links the item to the attack, and vice-versa.
-						// Unfortunately, it doesn't work,
-						//   because Roll20 thinks items<->attacks is a 1-to-1 relationship.
-						/*
-						let lastItemId = null;
-						try {
-							const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
-							const lastItem = items[items.length - 1];
-							lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
+						let mgcatkbonus = modifiers['Weapon Attacks'] || modifiers['Ranged Attacks'] || modifiers['Melee Attacks'] || 0;
+						let mgcatkdmg = modifiers['Weapon Damage'] || modifiers['Ranged Damage'] || modifiers['Melee Damage'] || 0;
+						if (typeof mgcatkbonus === "string") mgcatkbonus = Number(mgcatkbonus.replace("+", ""))
+						if (typeof mgcatkdmg === "string") mgcatkdmg = Number(mgcatkdmg.replace("+", ""))
 
-							// link the inventory item to this attack
-							const toSave = character.model.attribs.create({
-								name: `repeating_inventory_${lastItemId}_itemattackid`,
-								current: rowId
-							});
-							toSave.save();
-						} catch (ex) {
-							console.error("Failed to get last item ID");
-							console.error(ex);
-						}
-
-						if (lastItemId) {
-							makeItemTrait("itemid", lastItemId);
-						}
-						*/
+						const rollbaseAtk = `${attrBonus ? "+ " + attrBonus + `[${attrABV}]` : ""} + ${Number(proficiencyBonus.current)}[PROF]${mgcatkbonus ? " + " + mgcatkbonus + "[MAGIC]" : ""}`;
+						const rollbaseDmg = `${data.data._versatile}${attrBonus ? " + " + attrBonus + `[${attrABV}]` : ""}${mgcatkdmg ? " + " + mgcatkdmg + "[MAGIC]" : ""}`;
 
 						makeItemTrait("options-flag", "0");
-						makeItemTrait("atkname", data.name);
+						makeItemTrait("itemid", itemId);
+						makeItemTrait("atkname", data.name + ' (Two-Handed)');
 						makeItemTrait("dmgbase", data.data._versatile);
-						makeItemTrait("dmgtype", data.data["Damage Type"]);
+						makeItemTrait("dmgtype", data.data["Damage Type"]);				
+						makeItemTrait("versatile_alt", "1");						
 						makeItemTrait("atkattr_base", attrTag);
 						makeItemTrait("dmgattr", attrTag);
-						makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-						makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+						makeItemTrait("atkmagic", mgcatkbonus || "");
+						makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}${mgcatkdmg ? `+ ${mgcatkdmg} Magic Bonus`: ""}`);
+						makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${rollbaseDmg}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
+						makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${rollbaseDmg}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
 						if (proficiencyBonus) {
-							makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus}`);
-						}
-						makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}`);
-						makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
+							makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus + mgcatkbonus}`);
+						}						
+						makeItemTrait("rollbase", `@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} ${rollbaseAtk}]]}} @{rtype}cs>@{atkcritrange} ${rollbaseAtk}]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}`);
 					}, 350); // defer this, so we can hopefully pull item ID
 				}
 
@@ -2390,7 +2377,6 @@ const betteR205etoolsMain = function () {
 		}
 
 		function importData (character, data, event) {
-			console.log(data)
 			// TODO remove feature import workarounds below when roll20 and sheets supports their drag-n-drop properly
 			if (data.data.Category === "Feats") {
 				importFeat(character, data);
