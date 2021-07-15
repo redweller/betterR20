@@ -2286,6 +2286,9 @@ const betteR205etoolsMain = function () {
 
 		function importItem (character, data, event) {
 			if (d20plus.sheet == "ogl") {
+
+				//the whole `if (data.data._versatile)` block is now obsolete because i found an easier way with "Alternate Damage"
+				//leaving it here for troubleshooting and maybe delete it after testing the other method a bit longer
 				if (data.data._versatile) {
 					setTimeout(() => {
 						const rowId = d20plus.ut.generateRowId();

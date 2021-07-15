@@ -209,7 +209,8 @@ function d20plusItems () {
 				var b = propertieslist[i];
 				if (b === "V") {
 					a = a + " (" + cleanDmg2 + ")";
-					roll20Data.data._versatile = cleanDmg2;
+					roll20Data.data["Alternate Damage"] = cleanDmg2;
+					roll20Data.data["Alternate Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
 				}
 				if (b === "T" || b === "A") a = a + " (" + data.range + "ft.)";
 				if (b === "RLD") a = a + " (" + data.reload + " shots)";
