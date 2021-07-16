@@ -376,15 +376,6 @@ function d20plusImporter () {
 		return found ? found.id : undefined;
 	};
 
-	d20plus.importer.findOrGenerateRepeatingRowId = function (character, namePattern, current) {
-		const [namePrefix, nameSuffix] = namePattern.split(/\$\d?/);
-		const attr = character.attribs.toJSON()
-			.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current == current);
-		return attr ?
-			attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1") :
-			d20plus.ut.generateRowId();
-	};
-
 	d20plus.importer.addOrUpdateAttr = function (character, attrName, value) {
 		const id = d20plus.importer.findAttrId(character, attrName);
 		if (id) {
@@ -398,12 +389,6 @@ function d20plusImporter () {
 			it.save();
 		}
 	};
-
-	d20plus.importer.getAttrCurrVal = function (character, attrName) {
-		const attr = character.attribs.toJSON().find(a => a.name === attrName);
-		return attr ? attr.current : undefined;
-	};
-
 
 	d20plus.importer.makePlayerDraggable = function (importId, name) {
 		const $appTo = $(`#d20plus-playerimport`).find(`.Vetools-player-imported`);
