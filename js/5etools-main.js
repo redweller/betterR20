@@ -1488,8 +1488,10 @@ const betteR205etoolsMain = function () {
 			}
 
 			// Import items
-			async function parseItems(itemlist) {
+			async function importItemsAndGetGold(itemlist) {
 				const allitemList = await Renderer.item.pBuildList();
+				let containedGold = 0;
+
 				const x = Object.values(itemlist).map(function (item) {
 					// Returns a standardized object from a very unstandardized object
 					// Get the important variables
@@ -1504,7 +1506,7 @@ const betteR205etoolsMain = function () {
 						iname = item.special;
 					}
 					
-					if (item.containsValue) startingGold = item.containsValue/100;
+					if (item.containsValue) containedGold += item.containsValue/100;
 
 					// Make the input object
 					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
@@ -1523,6 +1525,8 @@ const betteR205etoolsMain = function () {
 				};
 
 				importItem(character, allItems, null);
+
+				return containedGold;
 			}
 
 			async function  chooseItemsFromBackground (itemChoices) {
@@ -1571,12 +1575,12 @@ const betteR205etoolsMain = function () {
 					// Loop because there can be any number of objects and in any order
 					if (equip._) {
 						// The _ property means not a will be imported
-						await parseItems(equip._);
+						startingGold += await importItemsAndGetGold(equip._);
 					}
 					else {
 						// Otherwise there is a choice of what to import
 						const itemchoicefrombackgorund = await chooseItemsFromBackground(equip);
-                		parseItems(equip[itemchoicefrombackgorund]);
+                		startingGold += await importItemsAndGetGold(equip[itemchoicefrombackgorund]);
 					}
 				}
 			}
