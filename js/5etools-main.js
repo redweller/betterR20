@@ -2286,58 +2286,7 @@ const betteR205etoolsMain = function () {
 
 		function importItem (character, data, event) {
 			if (d20plus.sheet == "ogl") {
-
-				//the whole `if (data.data._versatile)` block is now obsolete because i found an easier way with "Alternate Damage"
-				//leaving it here for troubleshooting and maybe delete it after testing the other method a bit longer
-				if (data.data._versatile) {
-					setTimeout(() => {
-						const rowId = d20plus.ut.generateRowId();
-						const sibRowId = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name);						
-						const itemId = d20plus.importer.getAttrCurrVal(character.model, `repeating_attack_${sibRowId}_itemid`);
-						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${sibRowId}_atkname`, data.name + " (One-Handed)");
-						d20plus.importer.addOrUpdateAttr(character.model, `repeating_inventory_${itemId}_itemattackid`, sibRowId + `,${rowId}`);
-
-						function makeItemTrait (key, val) {
-							character.model.attribs.create({name: `repeating_attack_${rowId}_${key}`, current: val}).save();					
-						}
-
-						const attr = (data.data["Item Type"] || "").includes("melee") ? "strength" : "dexterity";
-						const attrTag = `@{${attr}_mod}`;
-						const attrABV = Parser.attFullToAbv(attr.toTitleCase()).toUpperCase();
-
-						const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
-						const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
-						const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
-												
-						const modifiers = data.data.Modifiers ? d20plus.items.parseItemModifiers(data.data.Modifiers) : {};
-
-						let mgcatkbonus = modifiers['Weapon Attacks'] || modifiers['Ranged Attacks'] || modifiers['Melee Attacks'] || 0;
-						let mgcatkdmg = modifiers['Weapon Damage'] || modifiers['Ranged Damage'] || modifiers['Melee Damage'] || 0;
-						if (typeof mgcatkbonus === "string") mgcatkbonus = Number(mgcatkbonus.replace("+", ""))
-						if (typeof mgcatkdmg === "string") mgcatkdmg = Number(mgcatkdmg.replace("+", ""))
-
-						const rollbaseAtk = `${attrBonus ? "+ " + attrBonus + `[${attrABV}]` : ""} + ${Number(proficiencyBonus.current)}[PROF]${mgcatkbonus ? " + " + mgcatkbonus + "[MAGIC]" : ""}`;
-						const rollbaseDmg = `${data.data._versatile}${attrBonus ? " + " + attrBonus + `[${attrABV}]` : ""}${mgcatkdmg ? " + " + mgcatkdmg + "[MAGIC]" : ""}`;
-
-						makeItemTrait("options-flag", "0");
-						makeItemTrait("itemid", itemId);
-						makeItemTrait("atkname", data.name + ' (Two-Handed)');
-						makeItemTrait("dmgbase", data.data._versatile);
-						makeItemTrait("dmgtype", data.data["Damage Type"]);				
-						makeItemTrait("versatile_alt", "1");						
-						makeItemTrait("atkattr_base", attrTag);
-						makeItemTrait("dmgattr", attrTag);
-						makeItemTrait("atkmagic", mgcatkbonus || "");
-						makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}${mgcatkdmg ? `+ ${mgcatkdmg} Magic Bonus`: ""}`);
-						makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${rollbaseDmg}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-						makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${rollbaseDmg}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-						if (proficiencyBonus) {
-							makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus + mgcatkbonus}`);
-						}						
-						makeItemTrait("rollbase", `@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} ${rollbaseAtk}]]}} @{rtype}cs>@{atkcritrange} ${rollbaseAtk}]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}`);
-					}, 350); // defer this, so we can hopefully pull item ID
-				}
-
+				
 				// for packs, etc
 				if (data._subItems) {
 					const queue = [];
