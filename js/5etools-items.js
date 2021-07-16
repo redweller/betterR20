@@ -292,19 +292,6 @@ function d20plusItems () {
 		if (Renderer.item.propertyMap[property]) return Renderer.item.propertyMap[property].name;
 		return "n/a";
 	};
-
-	d20plus.items.parseItemModifiers = function (itemModifiers) {
-		const modArr = itemModifiers.split(',').map(i => i.trim());
-		const mods = {};
-		const modRe = /(.*) (\+?\d\d?)/
-		
-		for (let mod of modArr) {
-			const prop = modRe.exec(mod)
-			mods[prop[1]] = prop[2];  	
-		}
-	  
-		return mods
-	  }
 }
 
 SCRIPT_EXTENSIONS.push(d20plusItems);
