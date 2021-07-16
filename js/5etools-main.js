@@ -1504,7 +1504,7 @@ const betteR205etoolsMain = function () {
 						iname = item.special;
 					}
 					
-					if (item.containsValue) startingGold = item.containsValue/100;
+					if (item.containsValue) startingGold += item.containsValue/100;
 
 					// Make the input object
 					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
