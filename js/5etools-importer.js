@@ -249,7 +249,7 @@ function d20plusImporter () {
 		character.save({defaulttoken: (new Date()).getTime()});
 	};
 
-	d20plus.importer.$baseAddAction = function (character, baseAction, name, actionText, prefix, index, expand) {
+	d20plus.importer._baseAddAction = function (character, baseAction, name, actionText, prefix, index, expand) {
 		if (d20plus.cfg.getOrDefault("import", "tokenactions") && expand) {
 			character.abilities.create({
 				name: prefix + index + ": " + name,
@@ -372,17 +372,17 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.addAction = function (character, name, actionText, index) {
-		d20plus.importer.$baseAddAction(character, "repeating_npcaction", name, actionText, "", index, true);
+		d20plus.importer._baseAddAction(character, "repeating_npcaction", name, actionText, "", index, true);
 	};
 
 	d20plus.importer.addLegendaryAction = function (character, name, actionText, index) {
 		const expand = d20plus.cfg.getOrDefault("import", "tokenactionsExpanded");
-		d20plus.importer.$baseAddAction(character, "repeating_npcaction-l", name, actionText, "Legendary", index, expand);
+		d20plus.importer._baseAddAction(character, "repeating_npcaction-l", name, actionText, "Legendary", index, expand);
 	};
 
 	d20plus.importer.addMythicAction = function (character, name, actionText, index) {
 		const expand = d20plus.cfg.getOrDefault("import", "tokenactionsExpanded");
-		d20plus.importer.$baseAddAction(character, "repeating_npcaction-m", name, actionText, "Mythic", index, expand);
+		d20plus.importer._baseAddAction(character, "repeating_npcaction-m", name, actionText, "Mythic", index, expand);
 	};
 
 	d20plus.importer.findAttrId = function (character, attrName) {
