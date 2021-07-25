@@ -2810,11 +2810,16 @@ const betteR205etoolsMain = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
 
-			DataUtil.loadJSON(url).then((data) => {
+			DataUtil.loadJSON(url).then(async (data) => {
+				const toImport = MiscUtil.copy(data.race);
+				if (data.subrace){
+					const allraces = await DataUtil.loadJSON(RACE_DATA_URL);
+					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))
+				}
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"race",
-					Renderer.race.mergeSubraces(data.race),
+					Renderer.race.mergeSubraces(toImport),
 					handoutBuilder,
 					{
 						forcePlayer
@@ -2889,6 +2894,40 @@ const betteR205etoolsMain = function () {
 
 		return [noteContents, gmNotes];
 	};
+
+	d20plus.races.adoptSubraces = function (allRaces, subraces, keepOriginalSubraces = true) {
+		const nxtData = [];
+
+		subraces.forEach(sr => {
+			if (!sr.race || !sr.race.name || !sr.race.source) throw new Error(`Subrace was missing parent race!`);
+
+			const _baseRace = allRaces.find(r => r.name === sr.race.name && r.source === sr.race.source);
+			if (!_baseRace) {
+				console.warn(`${sr.race.name} parent race not found!`);
+				return;
+			}	
+
+			// Attempt to graft multiple subraces from the same data set onto the same base race copy
+			let baseRace = nxtData.find(r => r.name === sr.race.name && r.source === sr.race.source);
+			if (!baseRace) {
+				// copy and remove base-race-specific data
+				baseRace = MiscUtil.copy(_baseRace);
+				if (baseRace._rawName) {
+					baseRace.name = baseRace._rawName;
+					delete baseRace._rawName;
+				}
+				delete baseRace._isBaseRace;
+				delete baseRace._baseRaceEntries;
+
+				baseRace.subraces = baseRace.subraces && keepOriginalSubraces ? baseRace.subraces : [];
+				nxtData.push(baseRace);
+			}
+
+			baseRace.subraces.push(sr);
+		});
+
+		return nxtData;
+	}
 
 
 	d20plus.optionalfeatures.button = function (forcePlayer) {
