@@ -1781,7 +1781,7 @@
 				{
 					"name": "Magic Resistance",
 					"entries": [
-						"While holding his holy avenger, Dragonbait creates an aura in a 10-foot radius around him. While this aura is active, Dragonbait and all creatures friendly to him in the aura have advantage on saving throws against spells and other magical effects."
+						"While holding his {@item holy avenger longsword||holy avenger longsword}, Dragonbait creates an aura in a 10-foot radius around him. While this aura is active, Dragonbait and all creatures friendly to him in the aura have advantage on saving throws against spells and other magical effects."
 					]
 				}
 			],
@@ -2969,7 +2969,7 @@
 				{
 					"name": "Summon Swarm {@recharge 5}",
 					"entries": [
-						"The King of Feathers exhales a swarm of insects (wasps) that forms in a space within 20 feet of it. The swarm acts as an ally of the King of Feathers and takes its turn immediately after it. The swarm disperses after 1 minute. It can't use the Summon Swarm action while it is grappling a creature with its jaws."
+						"The King of Feathers exhales a {@creature swarm of wasps||swarm of insects (wasps)} that forms in a space within 20 feet of it. The swarm acts as an ally of the King of Feathers and takes its turn immediately after it. The swarm disperses after 1 minute. It can't use the Summon Swarm action while it is grappling a creature with its jaws."
 					]
 				}
 			],

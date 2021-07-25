@@ -1171,6 +1171,16 @@
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
+						}
 					}
 				]
 			},
@@ -2015,7 +2025,7 @@
 					]
 				},
 				"The spell doesn't take into account any possible circumstances that might change the outcome, such as the casting of additional spells or the loss or gain of a companion.",
-				"If you cast the spell two or more times before completing your next long rest, there is a cumulative 25 percent chance for each casting after the first that you get a random reading. The DM makes this roll in secret."
+				"If you cast the spell two or more times before completing your next long rest, there is a cumulative {@chance 25|25 percent} chance for each casting after the first that you get a random reading. The DM makes this roll in secret."
 			],
 			"classes": {
 				"fromClassList": [
@@ -2743,6 +2753,16 @@
 						"subclass": {
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
 						}
 					}
 				]
@@ -4286,6 +4306,16 @@
 						"subclass": {
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
 						}
 					}
 				]
@@ -6137,6 +6167,16 @@
 							"name": "Land",
 							"source": "PHB"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
+						}
 					}
 				]
 			},
@@ -6494,7 +6534,7 @@
 			"entries": [
 				"You contact your deity or a divine proxy and ask up to three questions that can be answered with a yes or no. You must ask your questions before the spell ends. You receive a correct answer for each question.",
 				"Divine beings aren't necessarily omniscient, so you might receive \"unclear\" as an answer if a question pertains to information that lies beyond the deity's knowledge. In a case where a one-word answer could be misleading or contrary to the deity's interests, the DM might offer a short phrase as an answer instead.",
-				"If you cast the spell two or more times before finishing your next long rest, there is a cumulative 25 percent chance for each casting after the first that you get no answer. The DM makes this roll in secret."
+				"If you cast the spell two or more times before finishing your next long rest, there is a cumulative {@chance 25|25 percent} chance for each casting after the first that you get no answer. The DM makes this roll in secret."
 			],
 			"classes": {
 				"fromClassList": [
@@ -8521,7 +8561,7 @@
 					"name": "Flood",
 					"entries": [
 						"You cause the water level of all standing water in the area to rise by as much as 20 feet. If the area includes a shore, the flooding water spills over onto dry land.",
-						"If you choose an area in a large body of water, you instead create a 20-foot tall wave that travels from one side of the area to the other and then crashes down. Any Huge or smaller vehicles in the wave's path are carried with it to the other side. Any Huge or smaller vehicles struck by the wave have a 25 percent chance of capsizing.",
+						"If you choose an area in a large body of water, you instead create a 20-foot tall wave that travels from one side of the area to the other and then crashes down. Any Huge or smaller vehicles in the wave's path are carried with it to the other side. Any Huge or smaller vehicles struck by the wave have a {@chance 25|25 percent} chance of capsizing.",
 						"The water level remains elevated until the spell ends or you choose a different effect. If this effect produced a wave, the wave repeats on the start of your next turn while the flood effect lasts."
 					]
 				},
@@ -10462,6 +10502,16 @@
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
+						}
 					}
 				],
 				"fromClassListVariant": [
@@ -11927,7 +11977,7 @@
 			"entries": [
 				"Your magic and an offering put you in contact with a god or a god's servants. You ask a single question concerning a specific goal, event, or activity to occur within 7 days. The DM offers a truthful reply. The reply might be a short phrase, a cryptic rhyme, or an omen.",
 				"The spell doesn't take into account any possible circumstances that might change the outcome, such as the casting of additional spells or the loss or gain of a companion.",
-				"If you cast the spell two or more times before finishing your next long rest, there is a cumulative 25 percent chance for each casting after the first that you get a random reading. The DM makes this roll in secret."
+				"If you cast the spell two or more times before finishing your next long rest, there is a cumulative {@chance 25|25 percent} chance for each casting after the first that you get a random reading. The DM makes this roll in secret."
 			],
 			"classes": {
 				"fromClassList": [
@@ -12839,6 +12889,14 @@
 					}
 				]
 			},
+			"races": [
+				{
+					"name": "Halfling (Lotusden)",
+					"source": "EGW",
+					"baseName": "Halfling",
+					"baseSource": "PHB"
+				}
+			],
 			"backgrounds": [
 				{
 					"name": "Selesnya Initiate",
@@ -14614,6 +14672,16 @@
 						"subclass": {
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
 						}
 					}
 				]
@@ -18474,6 +18542,16 @@
 							"name": "Genie (UA)",
 							"source": "UA2020SubclassesRevisited"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
+						}
 					}
 				]
 			},
@@ -18840,7 +18918,7 @@
 					"type": "entries",
 					"name": "Corridors",
 					"entries": [
-						"Fog fills all the warded corridors, making them heavily obscured. In addition, at each intersection or branching passage offering a choice of direction, there is a 50 percent chance that a creature other than you will believe it is going in the opposite direction from the one it chooses."
+						"Fog fills all the warded corridors, making them heavily obscured. In addition, at each intersection or branching passage offering a choice of direction, there is a {@chance 50|50 percent} chance that a creature other than you will believe it is going in the opposite direction from the one it chooses."
 					]
 				},
 				{
@@ -18953,6 +19031,38 @@
 						"name": "Artificer",
 						"source": "TCE"
 					}
+				],
+				"fromSubclass": [
+					{
+						"class": {
+							"name": "Bard",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Spirits (UA)",
+							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Bard",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Spirits",
+							"source": "VRGR"
+						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Stars",
+							"source": "TCE"
+						}
+					}
 				]
 			},
 			"backgrounds": [
@@ -19063,6 +19173,16 @@
 							"name": "Heroism (UA)",
 							"source": "UABardAndPaladin"
 						}
+					},
+					{
+						"class": {
+							"name": "Druid",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Stars",
+							"source": "TCE"
+						}
 					}
 				]
 			},
@@ -19111,7 +19231,7 @@
 			"entries": [
 				"A line of strong wind 60 feet long and 10 feet wide blasts from you in a direction you choose for the spell's duration. Each creature that starts its turn in the line must succeed on a Strength saving throw or be pushed 15 feet away from you in a direction following the line.",
 				"Any creature in the line must spend 2 feet of movement for every 1 foot it moves when moving closer to you.",
-				"The gust disperses gas or vapor, and it extinguishes candles, torches, and similar unprotected flames in the area. It causes protected flames, such as those of lanterns, to dance wildly and has a 50 percent chance to extinguish them.",
+				"The gust disperses gas or vapor, and it extinguishes candles, torches, and similar unprotected flames in the area. It causes protected flames, such as those of lanterns, to dance wildly and has a {@chance 50|50 percent} chance to extinguish them.",
 				"As a bonus action on each of your turns before the spell ends, you can change the direction in which the line blasts from you."
 			],
 			"savingThrow": [
@@ -22651,7 +22771,7 @@
 			"entries": [
 				"You hide a chest, and all its contents, on the Ethereal Plane. You must touch the chest and the miniature replica that serves as a material component for the spell. The chest can contain up to 12 cubic feet of nonliving material (3 feet by 2 feet by 2 feet).",
 				"While the chest remains on the Ethereal Plane, you can use an action and touch the replica to recall the chest. It appears in an unoccupied space on the ground within 5 feet of you. You can send the chest back to the Ethereal Plane by using an action and touching both the chest and the replica.",
-				"After 60 days, there is a cumulative 5 percent chance per day that the spell's effect ends. This effect ends if you cast this spell again, if the smaller replica chest is destroyed, or if you choose to end the spell as an action. If the spell ends and the larger chest is on the Ethereal Plane, it is irretrievably lost."
+				"After 60 days, there is a cumulative {@chance 5|5 percent} chance per day that the spell's effect ends. This effect ends if you cast this spell again, if the smaller replica chest is destroyed, or if you choose to end the spell as an action. If the spell ends and the larger chest is on the Ethereal Plane, it is irretrievably lost."
 			],
 			"miscTags": [
 				"PRM"
@@ -27750,6 +27870,16 @@
 							"name": "Genie",
 							"source": "TCE"
 						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
+						}
 					}
 				]
 			}
@@ -27957,6 +28087,16 @@
 						"subclass": {
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
 						}
 					}
 				]
@@ -29136,7 +29276,7 @@
 					"type": "entries",
 					"name": "Green",
 					"entries": [
-						"The creature takes {@damage 10d6} poison damage on a failed save, or half as much damage on a successful one. A passwall spell, or another spell of equal or greater level that can open a portal on a solid surface, destroys this layer."
+						"The creature takes {@damage 10d6} poison damage on a failed save, or half as much damage on a successful one. A {@spell passwall} spell, or another spell of equal or greater level that can open a portal on a solid surface, destroys this layer."
 					]
 				},
 				{
@@ -29151,7 +29291,7 @@
 					"name": "Indigo",
 					"entries": [
 						"On a failed save, the creature is {@condition restrained}. It must then make a Constitution saving throw at the end of each of its turns. If it successfully saves three times, the spell ends. If it fails its save three times, it permanently turns to stone and is subjected to the {@condition petrified} condition. The successes and failures don't need to be consecutive; keep track of both until the creature collects three of a kind.",
-						"While this layer is in place, spells can't be cast through the wall. The layer is destroyed by bright light shed by a daylight spell or a similar spell of equal or higher level."
+						"While this layer is in place, spells can't be cast through the wall. The layer is destroyed by bright light shed by a {@spell daylight} spell or a similar spell of equal or higher level."
 					]
 				},
 				{
@@ -32224,7 +32364,7 @@
 			"components": {
 				"v": true,
 				"s": true,
-				"m": "a pinch of Talc and a small sprinkling of powdered silver"
+				"m": "a pinch of talc and a small sprinkling of powdered silver"
 			},
 			"duration": [
 				{
@@ -32482,7 +32622,7 @@
 			],
 			"entries": [
 				"You send a short message of twenty-five words or less to a creature with which you are familiar. The creature hears the message in its mind, recognizes you as the sender if it knows you, and can answer in a like manner immediately. The spell enables creatures with Intelligence scores of at least 1 to understand the meaning of your message.",
-				"You can send the message across any distance and even to other planes of existence, but if the target is on a different plane than you, there is a 5 percent chance that the message doesn't arrive."
+				"You can send the message across any distance and even to other planes of existence, but if the target is on a different plane than you, there is a {@chance 5|5 percent} chance that the message doesn't arrive."
 			],
 			"classes": {
 				"fromClassList": [
@@ -34296,6 +34436,16 @@
 						"subclass": {
 							"name": "Undead (UA)",
 							"source": "UA2020SubclassesPt4"
+						}
+					},
+					{
+						"class": {
+							"name": "Warlock",
+							"source": "PHB"
+						},
+						"subclass": {
+							"name": "Undead",
+							"source": "VRGR"
 						}
 					}
 				],
@@ -39447,7 +39597,7 @@
 						"You allow up to twenty creatures that you can see to regain all hit points, and you end all effects on them described in the {@spell greater restoration} spell.",
 						"You grant up to ten creatures that you can see resistance to a damage type you choose.",
 						"You grant up to ten creatures you can see immunity to a single spell or other magical effect for 8 hours. For instance, you could make yourself and all your companions immune to a {@creature lich}'s life drain attack.",
-						"You undo a single recent event by forcing a reroll of any roll made within the last round (including your last turn). Reality reshapes itself to accommodate the new result. For example, a wish spell could undo an opponent's successful save, a foe's critical hit, or a friend's failed save. You can force the reroll to be made with advantage or disadvantage, and you can choose whether to use the reroll or the original roll."
+						"You undo a single recent event by forcing a reroll of any roll made within the last round (including your last turn). Reality reshapes itself to accommodate the new result. For example, a {@spell wish} spell could undo an opponent's successful save, a foe's critical hit, or a friend's failed save. You can force the reroll to be made with advantage or disadvantage, and you can choose whether to use the reroll or the original roll."
 					]
 				},
 				"You might be able to achieve something beyond the scope of the above examples. State your wish to the DM as precisely as possible. The DM has great latitude in ruling what occurs in such an instance; the greater the wish, the greater the likelihood that something goes wrong. This spell might simply fail, the effect you desire might only be partly achieved, or you might suffer some unforeseen consequence as a result of how you worded the wish. For example, wishing that a villain were dead might propel you forward in time to a period when that villain is no longer alive, effectively removing you from the game. Similarly, wishing for a legendary magic item or artifact might instantly transport you to the presence of the item's current owner.",

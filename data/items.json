@@ -126,7 +126,7 @@
 			],
 			"weapon": true,
 			"entries": [
-				"This silver-bladed sickle glimmers softly with moonlight. While holding this magic weapon, you gain a bonus to attack and damage rolls made with it, and you gain a +1 bonus to spell attack rolls and the saving throw DCs of your druid and ranger spells. In addition, you can use the sickle as a spellcasting focus for your druid and ranger spells.",
+				"This silver-bladed sickle glimmers softly with moonlight. While holding this magic weapon, you gain a +1 bonus to attack and damage rolls made with it, and you gain a +1 bonus to spell attack rolls and the saving throw DCs of your druid and ranger spells. In addition, you can use the sickle as a spellcasting focus for your druid and ranger spells.",
 				"When you cast a spell that restores hit points, you can roll a {@dice d4} and add the number rolled to the amount of hit points restored, provided you are holding the sickle."
 			]
 		},
@@ -314,7 +314,7 @@
 			],
 			"weapon": true,
 			"entries": [
-				"This silver-bladed sickle glimmers softly with moonlight. While holding this magic weapon, you gain a bonus to attack and damage rolls made with it, and you gain a +2 bonus to spell attack rolls and the saving throw DCs of your druid and ranger spells. In addition, you can use the sickle as a spellcasting focus for your druid and ranger spells.",
+				"This silver-bladed sickle glimmers softly with moonlight. While holding this magic weapon, you gain a +2 bonus to attack and damage rolls made with it, and you gain a +2 bonus to spell attack rolls and the saving throw DCs of your druid and ranger spells. In addition, you can use the sickle as a spellcasting focus for your druid and ranger spells.",
 				"When you cast a spell that restores hit points, you can roll a {@dice d4} and add the number rolled to the amount of hit points restored, provided you are holding the sickle."
 			]
 		},
@@ -502,7 +502,7 @@
 			],
 			"weapon": true,
 			"entries": [
-				"This silver-bladed sickle glimmers softly with moonlight. While holding this magic weapon, you gain a bonus to attack and damage rolls made with it, and you gain a +3 bonus to spell attack rolls and the saving throw DCs of your druid and ranger spells. In addition, you can use the sickle as a spellcasting focus for your druid and ranger spells.",
+				"This silver-bladed sickle glimmers softly with moonlight. While holding this magic weapon, you gain a +3 bonus to attack and damage rolls made with it, and you gain a +3 bonus to spell attack rolls and the saving throw DCs of your druid and ranger spells. In addition, you can use the sickle as a spellcasting focus for your druid and ranger spells.",
 				"When you cast a spell that restores hit points, you can roll a {@dice d4} and add the number rolled to the amount of hit points restored, provided you are holding the sickle."
 			]
 		},
@@ -3534,7 +3534,7 @@
 			"type": "INS",
 			"rarity": "none",
 			"entries": [
-				"Pan pipes or satyr pipes, also known as the shalm, these are sacred to Lliira and popular with wood elf and wild elf bards."
+				"Pan pipes or satyr pipes, also known as the shalm, these are sacred to {@deity Lliira|Faerûnian|scag} and popular with wood elf and wild elf bards."
 			]
 		},
 		{
@@ -6189,7 +6189,7 @@
 				"_mod": {
 					"entries": {
 						"mode": "appendArr",
-						"items": "Each time you expend a charge from this wand, there is a 50 percent chance that nothing happens and the charge is wasted."
+						"items": "Each time you expend a charge from this wand, there is a {@chance 50|50 percent} chance that nothing happens and the charge is wasted."
 					}
 				}
 			}
@@ -13542,7 +13542,7 @@
 					"name": "Vampiric Strike",
 					"type": "entries",
 					"entries": [
-						"The staff can be wielded as a magic quarterstaff. On a hit, it deals damage as a normal quarterstaff, and you can expend 1 charge to regain a number of hit points equal to the damage dealt by the weapon. Each time a charge is spent, red blood oozes from the staff's pores, and you must succeed on a DC 12 Wisdom saving throw or be afflicted with short term madness (see \"Madness\" in chapter 8 of the Dungeon Master's Guide)."
+						"The staff can be wielded as a magic quarterstaff. On a hit, it deals damage as a normal quarterstaff, and you can expend 1 charge to regain a number of hit points equal to the damage dealt by the weapon. Each time a charge is spent, red blood oozes from the staff's pores, and you must succeed on a DC 12 Wisdom saving throw or be afflicted with {@table Short-Term Madness|DMG|short term madness} (see \"{@variantrule Madness|DMG}\" in chapter 8 of the Dungeon Master's Guide)."
 					]
 				},
 				{
@@ -14102,7 +14102,7 @@
 				"This bulky, eyeless helmet is made for a {@creature pit fiend} but magically resizes to fit the heads of other wearers.",
 				"While wearing the helm, you can see out of it as though you weren't wearing it. In addition, you know the exact location and type of all devils within 1,000 feet of you. You can telepathically communicate with a devil within range, or you can broadcast your thoughts to all devils within range. The devils receiving your broadcasted thoughts have no special means of replying to them.",
 				"The helm has 3 charges. As an action, you can expend 1 charge to cast {@spell dominate monster} (save DC 21), which affects devils only. (The spell fails and the charge is wasted if you target any creature that's not a devil.) If a devil can see you when you cast this spell on it, the devil knows you tried to charm it. The helm regains all its charges 24 hours after its last charge is expended.",
-				"If you are not a devil, using the helm's {@spell dominate monster} property in the Nine Hells has a 20 percent chance of attracting a {@creature narzugon|MTF}, which arrives on the back of a {@creature nightmare} mount in {@dice 1d4} hours. The narzugon tries to recover the helm, killing you if necessary to obtain it. If it gets the helm, the narzugon tries to deliver it to its infernal master."
+				"If you are not a devil, using the helm's {@spell dominate monster} property in the Nine Hells has a {@chance 20|20 percent} chance of attracting a {@creature narzugon|MTF}, which arrives on the back of a {@creature nightmare} mount in {@dice 1d4} hours. The narzugon tries to recover the helm, killing you if necessary to obtain it. If it gets the helm, the narzugon tries to deliver it to its infernal master."
 			],
 			"attachedSpells": [
 				"dominate monster"
@@ -18430,7 +18430,7 @@
 					"type": "entries",
 					"name": "Destroying the Deck",
 					"entries": [
-						"Luba's Tarokka of Souls can be destroyed only if all fourteen souls within are released and destroyed. This reveals a fifteenth soul, a lich, that inhabits the Nether card, which appears only when the fourteen souls are defeated. If this ancient entity is destroyed, the Nether card vanishes and the deck becomes a normal tarokka deck, with no special properties, but it includes a new card of the DM's design.",
+						"Luba's Tarokka of Souls can be destroyed only if all fourteen souls within are released and destroyed. This reveals a fifteenth soul, a {@creature lich}, that inhabits the Nether card, which appears only when the fourteen souls are defeated. If this ancient entity is destroyed, the Nether card vanishes and the deck becomes a normal tarokka deck, with no special properties, but it includes a new card of the DM's design.",
 						{
 							"type": "entries",
 							"name": "Mother Luba and the Vistani",
@@ -19364,7 +19364,7 @@
 					"entries": [
 						"Two creatures can be attuned to the servant at a time. If a third creature tries to attune to it, nothing happens.",
 						"The servant's controls are accessed by a hatch in its upper back, which is easily opened while there are no creatures attuned to the artifact.",
-						"Attuning to the artifact requires two hours, which can be undertaken as part of a long rest, during which time you must be inside the servant, interacting with its controls. While crew members are attuning themselves, any creature or structure outside and within 50 feet of the servant has a 25 percent chance of being accidentally targeted by one of its Destructive Fist attacks once during the attunement. This process must be undergone every time a creature attunes itself to the artifact."
+						"Attuning to the artifact requires two hours, which can be undertaken as part of a long rest, during which time you must be inside the servant, interacting with its controls. While crew members are attuning themselves, any creature or structure outside and within 50 feet of the servant has a {@chance 25|25 percent} chance of being accidentally targeted by one of its Destructive Fist attacks once during the attunement. This process must be undergone every time a creature attunes itself to the artifact."
 					]
 				},
 				{
@@ -21242,7 +21242,7 @@
 					"items": [
 						"Undead within 30 feet of the figurine can't be turned.",
 						"Dead creatures within 30 feet of the figurine can't be brought back to life.",
-						"A creature that holds the figurine while praying to Orcus for at least 1 hour has a 10 percent chance of summoning a smoky avatar of the demon lord. Once this avatar is summoned, it can't be summoned again for 30 days. Orcus's avatar has the statistics of a {@creature wraith} except that it's chaotic evil. It attacks all non-undead creatures it encounters, and it disappears after 1 hour or when reduced to 0 hit points."
+						"A creature that holds the figurine while praying to Orcus for at least 1 hour has a {@chance 10|10 percent} chance of summoning a smoky avatar of the demon lord. Once this avatar is summoned, it can't be summoned again for 30 days. Orcus's avatar has the statistics of a {@creature wraith} except that it's chaotic evil. It attacks all non-undead creatures it encounters, and it disappears after 1 hour or when reduced to 0 hit points."
 					]
 				}
 			],
@@ -21260,7 +21260,7 @@
 			"bonusAc": "+2",
 			"entries": [
 				"While holding this shield, you have a +2 bonus to AC. This bonus is in addition to the shield's normal bonus to AC.",
-				"The shield is emblazoned with a stylized silver dragon that is the emblem of the Order of the Silver Dragon (see {@adventure {@i Curse of Strahd}, chapter 7|CoS|7|The Order of the Silver Dragon}). The shield whispers warnings to its bearer, granting a +2 bonus to initiative if the bearer isn't incapacitated.",
+				"The shield is emblazoned with a stylized silver dragon that is the emblem of the Order of the Silver Dragon (see {@adventure {@i Curse of Strahd}, chapter 7|CoS|7|The Order of the Silver Dragon}). The shield whispers warnings to its bearer, granting a +2 bonus to initiative if the bearer isn't {@condition incapacitated}.",
 				"A shield is made from wood or metal and is carried in one hand. Wielding a shield increases your Armor Class by 2. You can benefit from only one shield at a time."
 			]
 		},
@@ -23725,10 +23725,12 @@
 			"name": "Professor Skant",
 			"source": "IDRotF",
 			"page": 315,
-			"rarity": "rare",
-			"wondrous": true,
+			"_copy": {
+				"name": "Professor Orb",
+				"source": "WDMM"
+			},
 			"entries": [
-				"The {@item professor orb|WDMM} owned by Vellynne Harpell and stolen by Nass Lantomir calls itself Professor Skant. It is lawful good, and it has a Wisdom of 11 and a Charisma of 9. It speaks and reads Common, Draconic, Elvish, and Loross (the dead language of the Empire of Netheril). Professor Skant is a chatterbox and assumes all humanoids are dunderheads. When elaborating on its areas of expertise, it adopts an unintentionally patronizing tone. It has the following four areas of expertise:",
+				"The {@item professor orb|WDMM} owned by Vellynne Harpell and stolen by Nass Lantomir calls itself Professor Skant. It is lawful good, and it has a Wisdom of 11 and a Charisma of 9 {@note (as a professor orb, it has an Intelligence of 18)}. It speaks and reads Common, Draconic, Elvish, and Loross (the dead language of the Empire of Netheril). Professor Skant is a chatterbox and assumes all humanoids are dunderheads. When elaborating on its areas of expertise, it adopts an unintentionally patronizing tone. It has the following four areas of expertise:",
 				{
 					"type": "list",
 					"items": [
@@ -23737,7 +23739,11 @@
 						"Rituals surrounding the making, bottling, and drinking of Elverquisst (a rare, ruby-colored elven liquor distilled from sunshine and rare summer fruits)",
 						"The {@creature tarrasque} (see the Monster Manual)"
 					]
-				}
+				},
+				"When making an Intelligence check to recall lore from any of its areas of expertise, the orb has a +9 bonus to its roll (including its Intelligence modifier).",
+				"Professor Skant takes the form of a smooth, solid, 5-pound sphere of smoky gray quartz about the size of a grapefruit. Close examination reveals two or more pinpricks of silver light deep inside the sphere.",
+				"Professor Skant can see and hear normally out to a range of 60 feet. Unlike most sentient items, the orb has no will of its own and can't initiate a conflict with the creature in possession of it.",
+				"In addition to the knowledge it possesses, Professor Skant can cast the {@spell mage hand} cantrip at will. It uses the spell only to transport itself. Its spellcasting ability is Intelligence."
 			]
 		},
 		{
@@ -23754,7 +23760,7 @@
 			],
 			"wondrous": true,
 			"entries": [
-				"While worn, the helm allows its wearer to use an action to cast the {@spell levitate} spell, requiring no components. The helm's propeller spins and whirs loudly until the spell ends. Each time the spell ends, there is a 50 percent chance that the helm loses its magic and becomes nonmagical."
+				"While worn, the helm allows its wearer to use an action to cast the {@spell levitate} spell, requiring no components. The helm's propeller spins and whirs loudly until the spell ends. Each time the spell ends, there is a {@chance 50|50 percent} chance that the helm loses its magic and becomes nonmagical."
 			]
 		},
 		{
@@ -24399,6 +24405,9 @@
 			"wondrous": true,
 			"entries": [
 				"When this small pouch of purple dust is sprinkled on a dead humanoid or a piece of a dead humanoid, the dust is absorbed by the remains. If willing, the dead creature returns to life with a new body as if the {@spell reincarnate} spell had been cast on the remains."
+			],
+			"attachedSpells": [
+				"reincarnate"
 			]
 		},
 		{
@@ -27132,7 +27141,7 @@
 					"type": "entries",
 					"name": "Freeing Gargauth",
 					"entries": [
-						"Casting {@spell dispel evil and good} on the shield has a 1 percent chance of freeing the pit fiend, or automatically succeeds if the spell is cast by a {@creature solar}, a {@creature planetar}, or an archdevil. A god can release the pit fiend by touching the shield and speaking Gargauth's name. When released, Gargauth appears in a random, unoccupied space as close to the shield as possible."
+						"Casting {@spell dispel evil and good} on the shield has a {@chance 1|1 percent} chance of freeing the pit fiend, or automatically succeeds if the spell is cast by a {@creature solar}, a {@creature planetar}, or an archdevil. A god can release the pit fiend by touching the shield and speaking Gargauth's name. When released, Gargauth appears in a random, unoccupied space as close to the shield as possible."
 					]
 				}
 			],
@@ -30166,7 +30175,14 @@
 			"entries": [
 				"The Sunsword is a unique blade once possessed by Strahd's brother, Sergei von Zarovich. In its original form, it had a platinum hilt and guard, and a thin crystal blade as strong as steel.",
 				"Strahd employed a powerful wizard named Khazan to destroy the weapon after Sergei's death. The first part of the process required the hilt and the blade to be separated, which Khazan accomplished. While Khazan was busying himself destroying the blade, his apprentice stole the hilt and fled. Khazan later located his apprentice's mutilated corpse in the Svalich Woods, but the hilt was nowhere to be found. To avoid the vampire's wrath, Khazan told Strahd that the entire weapon had been destroyed.",
-				"The hilt, which is sentient, knows that it can never be reunited with its original crystal blade. It has, however, gained the properties of a {@item sun blade}.",
+				"The hilt, which is sentient, knows that it can never be reunited with its original crystal blade. It has, however, gained the properties of a {@item sun blade}:",
+				{
+					"type": "list",
+					"items": [
+						"You gain a +2 bonus to attack and damage rolls made with this weapon, which deals radiant damage instead of slashing damage. When you hit an undead with it, that target takes an extra {@dice 1d8} radiant damage.",
+						"The sword's luminous blade emits bright light in a 15-foot radius and dim light for an additional 15 feet. The light is sunlight. While the blade persists, you can use an action to expand or reduce its radius of bright and dim light by 5 feet each, to a maximum of 30 feet each or a minimum of 10 feet each."
+					]
+				},
 				{
 					"name": "Sentience",
 					"type": "entries",
@@ -31491,7 +31507,7 @@
 					"type": "entries",
 					"name": "Wish",
 					"entries": [
-						"The Infernal Machine has the ability to bend the nature of reality, with the proper combination of controls recreating the effect of a {@spell wish} spell (including all side effects). Due to the complex nature of its programming, this feature can be used only once per month. Each time this effect is used, there is a cumulative 10 percent chance of the Infernal Machine malfunctioning, necessitating seven days' worth of repairs and reprogramming, as well as the expenditure of 500 gp in parts, before it can be used again. When these repairs are done, the cumulative chance of malfunction returns to 10 percent."
+						"The Infernal Machine has the ability to bend the nature of reality, with the proper combination of controls recreating the effect of a {@spell wish} spell (including all side effects). Due to the complex nature of its programming, this feature can be used only once per month. Each time this effect is used, there is a cumulative {@chance 10|10 percent} chance of the Infernal Machine malfunctioning, necessitating seven days' worth of repairs and reprogramming, as well as the expenditure of 500 gp in parts, before it can be used again. When these repairs are done, the cumulative chance of malfunction returns to 10 percent."
 					]
 				},
 				{
@@ -34746,11 +34762,14 @@
 			"page": 227,
 			"baseItem": "mace|phb",
 			"type": "WD",
+			"typeAlt": "M",
 			"rarity": "artifact",
 			"reqAttune": true,
 			"sentient": true,
 			"weight": 4,
 			"weaponCategory": "simple",
+			"dmg1": "1d6",
+			"dmgType": "B",
 			"bonusWeapon": "+3",
 			"bonusAc": "+3",
 			"recharge": "dawn",
@@ -34759,7 +34778,7 @@
 				"The ghastly Wand of Orcus rarely leaves {@creature Orcus|MTF|Orcus's} side. The device, as evil as its creator, shares the demon lord's aims to snuff out the lives of all living things and bind the Material Plane in the stasis of undeath. {@creature Orcus|MTF} allows the wand to slip from his grasp from time to time. When it does, it magically appears wherever its master senses an opportunity to achieve some fell goal.",
 				"Made from bones as hard as iron, the wand is topped with a magically enlarged skull that once belonged to a human hero slain by {@creature Orcus|MTF}. The wand can magically change in size to better conform to the grip of its user. Plants wither, drinks spoil, flesh rots, and vermin thrive in the wand's presence.",
 				"Any creature besides {@creature Orcus|MTF} that tries to attune to the wand must make a DC 17 Constitution saving throw. On a successful save, the creature takes {@dice 10d6} necrotic damage. On a failed save, the creature dies and rises as a {@creature zombie}.",
-				"In the hands of one who is attuned to it, the wand can be wielded as a magic mace that grants a +3 bonus to attack and damage rolls made with it. The wand deals an extra {@dice 2d12} necrotic damage on a hit.",
+				"In the hands of one who is attuned to it, the wand can be wielded as a magic {@item mace|phb} that grants a +3 bonus to attack and damage rolls made with it. The wand deals an extra {@dice 2d12} necrotic damage on a hit.",
 				{
 					"name": "Random Properties",
 					"type": "entries",
@@ -36171,24 +36190,6 @@
 					]
 				}
 			]
-		},
-		{
-			"name": "Wooden Staff",
-			"source": "PHB",
-			"page": 151,
-			"srd": true,
-			"type": "SCF",
-			"scfType": "druid",
-			"rarity": "none",
-			"weight": 4,
-			"value": 500,
-			"weaponCategory": "simple",
-			"property": [
-				"V"
-			],
-			"dmg1": "1d6",
-			"dmgType": "B",
-			"dmg2": "1d8"
 		},
 		{
 			"name": "Wreath of the Prism",

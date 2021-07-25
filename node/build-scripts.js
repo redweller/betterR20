@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.23.0";
+const SCRIPT_VERSION = "1.24.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -34,7 +34,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @updateURL    https://get.5e.tools/script/betteR20-5etools.user.js
 // @downloadURL  https://get.5e.tools/script/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
 ${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start

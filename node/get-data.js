@@ -17,8 +17,6 @@ const recursiveReadDir = (p, a = []) => {
 // endregion
 
 async function main () {
-	const siteDataRoot = path.join(process.argv[2], "data");
-
 	const curListing = recursiveReadDir("data");
 
 	for (const pth of curListing) {

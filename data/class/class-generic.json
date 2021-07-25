@@ -169,7 +169,7 @@
 			"isGainAtNextFeatureLevel": true,
 			"entries": [
 				"{@i Level 1+ Mage of Lorehold Feature}",
-				"You learn the cantrip sacred flame and the 1st-level spell comprehend languages. You learn additional spells when you reach certain levels in this class, as shown on the Lorehold Spells table.",
+				"You learn the cantrip {@spell sacred flame} and the 1st-level spell {@spell comprehend languages}. You learn additional spells when you reach certain levels in this class, as shown on the Lorehold Spells table.",
 				"Each of these spells counts as a class spell for you, but it doesn't count against the number of spells you know. If you are a wizard, you can add these spells to your spellbook upon learning them, without expending any gold, and prepare them as normal.",
 				{
 					"type": "table",
@@ -245,6 +245,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 6,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 6+ Mage of Lorehold Feature}",
 				"Through your studies, you learn how to better listen and take to heart the teachings of history. When you bond with your ancient companion, you gain the following additional benefits depending on the type of spirit you chose:",
@@ -282,6 +283,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 10,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 10+ Mage of Lorehold Feature}",
 				"By pulling from the magic of the past, you can cause your opponent's old wounds to resonate anew. Once per turn, when a creature you can see hits a target with an attack roll, you can use your reaction to force the target to make a Wisdom saving throw against your spell save DC. On a failure, the target becomes vulnerable to one of the damage types dealt by the attack. This vulnerability lasts until the end of the target's next turn and affects the damage dealt by the triggering attack.",
@@ -298,6 +300,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 14,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 14+ Mage of Lorehold Feature}",
 				"Through steeping yourself in the chaotic whims of history, you learn how to briefly channel the wild nature of time itself. As a bonus action, you can enter a state of chronal chaos. When you enter this state, and at the start of each of your subsequent turns while in this state, you gain one of the following benefits of your choice:",
@@ -420,6 +423,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 6,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 6+ Mage of Prismari Feature}",
 				"You have honed your forms of elemental expression to best suit your ideas. Choose one of the following damage types: cold, fire, or lightning. You gain resistance to that damage type.",
@@ -437,6 +441,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 10,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 10+ Mage of Prismari Feature}",
 				"Honing your talents, you skillfully infuse your motions with even more potent expressions of elemental might. Once per turn when you deal damage to at least one target, you gain an additional effect determined by the damage type chosen for your Favored Medium feature:",
@@ -473,6 +478,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 14,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 14+ Mage of Prismari Feature}",
 				"Your relentless dedication and training have instilled an outstanding sense of precision and grace in your art. You gain proficiency in Dexterity saving throws if you do not already have it. Additionally, when you make a Dexterity saving throw, you can treat a {@dice d20} roll of a 9 or lower as a 10."
@@ -597,6 +603,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 6,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 6+ Mage of Quandrix Feature}",
 				"You learn to manipulate kinetic formulas and alter the velocity of another creature. When a creature you can see starts its turn or moves to a space within 30 feet of you, you can use your reaction to force the creature to make a Charisma saving throw against your spell save DC, which it can choose to fail. On a failure, the creature is teleported to an unoccupied space of your choice that you can see within 30 feet of you.",
@@ -613,6 +620,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 10,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 10+ Mage of Quandrix Feature}",
 				"Through careful calculations, you beset your enemies with abstract equations that reduce their might. Once per turn, immediately after dealing damage to a creature, you can force the creature to make a Constitution saving throw against your spell save DC. On a failure, the creature has disadvantage on Strength and Dexterity saving throws, and its weapon attacks deal only half damage. These effects last until the start of your next turn.",
@@ -629,6 +637,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 14,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 14+ Mage of Quandrix Feature}",
 				"Your mathematical expertise extends to altering the foundational equations of your very being. You gain resistance to bludgeoning, piercing, and slashing damage.",
@@ -647,7 +656,7 @@
 			"isGainAtNextFeatureLevel": true,
 			"entries": [
 				"{@i Level 1+ Mage of Silverquill Feature}",
-				"You learn one cantrip of your choice, either sacred flame or vicious mockery. It doesn't count against the number of cantrips you know, and it is added to your class spell list if it isn't there already.",
+				"You learn one cantrip of your choice, either {@spell sacred flame} or {@spell vicious mockery}. It doesn't count against the number of cantrips you know, and it is added to your class spell list if it isn't there already.",
 				"Additionally, you gain proficiency in your choice of two of the following skills: {@skill Deception}, {@skill Intimidation}, {@skill Performance}, {@skill Persuasion}, or {@skill Insight}."
 			]
 		},
@@ -709,9 +718,10 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 6,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 6+ Mage of Silverquill Feature}",
-				"You learn the darkness spell, and it is added to your class spell list if it isn't there already. If you are a wizard, you add it to your spellbook, if it's not there already.",
+				"You learn the {@spell darkness} spell, and it is added to your class spell list if it isn't there already. If you are a wizard, you add it to your spellbook, if it's not there already.",
 				"You can cast the spell without expending a spell slot, and you can't do so again until you finish a long rest. When you cast the spell in this way, you can see normally through the darkness created, and when a creature you can see starts its turn in the darkness, you can deal {@damage 2d10} psychic damage to that creature.",
 				"You can also cast the spell normally, without the additional effects, by using spell slots you have of 2nd level or higher."
 			]
@@ -726,6 +736,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 10,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 10+ Mage of Silverquill Feature}",
 				"When you cast a spell that deals damage, you can invoke additional words of power to change the spell's damage type to your choice of psychic or radiant. Any creature damaged by the spell takes extra damage equal to your proficiency bonus and has its emotions swayed with despair or adoration, based on the damage type dealt:",
@@ -758,6 +769,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 14,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 14+ Mage of Silverquill Feature}",
 				"You can invoke a word of power that is the pinnacle of your magical study. You gain the following options:",
@@ -899,6 +911,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 6,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 6+ Mage of Witherbloom Feature}",
 				"You gain proficiency with herbalism kits if you don't already have it.",
@@ -936,6 +949,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 10,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 10+ Mage of Witherbloom Feature}",
 				"Your connection to the flow of life force deepens. Once per turn when you deal necrotic damage or restore hit points using a spell, one target of the spell takes additional damage or regains additional hit points equal to your proficiency bonus."
@@ -951,6 +965,7 @@
 			"subclassSource": "UA2021MagesOfStrixhaven",
 			"level": 14,
 			"isGainAtNextFeatureLevel": true,
+			"header": 2,
 			"entries": [
 				"{@i Level 14+ Mage of Witherbloom Feature}",
 				"When you cast a spell using a spell slot that deals necrotic damage to any number of creatures that aren't Undead or Constructs, choose one of the creatures that took damage. You drain an amount of life energy equal to half the damage dealt to the chosen creature. One creature other than yourself that you can see within 30 feet of you regains a number of hit points equal to the life energy drained.",

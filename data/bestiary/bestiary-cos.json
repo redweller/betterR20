@@ -129,8 +129,8 @@
 			"source": "CoS",
 			"page": 121,
 			"_copy": {
-				"name": "Assassin",
-				"source": "MM",
+				"name": "Vistana Assassin",
+				"source": "CoS",
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -292,7 +292,7 @@
 				{
 					"name": "Shapechanger",
 					"entries": [
-						"Baba Lysaga can use an action to polymorph into a swarm of insects (flies), or back into her true form. While in swarm form, she has a walking speed of 5 feet and a flying speed of 30 feet. Anything she is wearing transforms with her, but nothing she is carrying does."
+						"Baba Lysaga can use an action to polymorph into a {@creature swarm of insects} (flies), or back into her true form. While in swarm form, she has a walking speed of 5 feet and a flying speed of 30 feet. Anything she is wearing transforms with her, but nothing she is carrying does."
 					]
 				},
 				{
@@ -1610,7 +1610,7 @@
 							{
 								"name": "Special Equipment",
 								"entries": [
-									"Kasimir wears a {@item ring of warmth} and carries a spellbook containing all the spells he has prepared plus the following spells: {@spell arcane lock}, {@spell comprehend languages}, {@spell hold person}, {@spell identify}, {@spell locate object}, {@spell nondetection}, {@spell polymorph}, {@spell protection from evil and good}, {@spell ray of frost}, and {@spell wall of stone}."
+									"Kasimir wears a {@item ring of warmth} and carries a spellbook containing all the spells he has prepared plus the following spells: {@spell arcane lock}, {@spell comprehend languages}, {@spell hold person}, {@spell identify}, {@spell locate object}, {@spell nondetection}, {@spell polymorph}, {@spell protection from evil and good}, and {@spell wall of stone}."
 								]
 							}
 						]
@@ -3597,7 +3597,8 @@
 				"Legendary Resistances",
 				"Regeneration",
 				"Shapechanger",
-				"Spider Climb"
+				"Spider Climb",
+				"Sunlight Sensitivity"
 			],
 			"senseTags": [
 				"SD"
@@ -3903,6 +3904,10 @@
 					}
 				}
 			},
+			"alignment": [
+				"L",
+				"E"
+			],
 			"hasToken": true
 		},
 		{
@@ -4252,6 +4257,104 @@
 				"N",
 				"E"
 			],
+			"hasToken": true
+		},
+		{
+			"name": "Vistana Assassin",
+			"source": "CoS",
+			"page": 28,
+			"_copy": {
+				"name": "Assassin",
+				"source": "MM",
+				"_trait": {
+					"name": "Vistana",
+					"source": "CoS"
+				}
+			},
+			"hasToken": true
+		},
+		{
+			"name": "Vistana Bandit",
+			"source": "CoS",
+			"page": 28,
+			"_copy": {
+				"name": "Bandit",
+				"source": "MM",
+				"_trait": {
+					"name": "Vistana",
+					"source": "CoS"
+				}
+			},
+			"hasToken": true
+		},
+		{
+			"name": "Vistana Bandit Captain",
+			"source": "CoS",
+			"page": 28,
+			"_copy": {
+				"name": "Bandit Captain",
+				"source": "MM",
+				"_trait": {
+					"name": "Vistana",
+					"source": "CoS"
+				}
+			},
+			"hasToken": true
+		},
+		{
+			"name": "Vistana Commoner",
+			"source": "CoS",
+			"page": 28,
+			"_copy": {
+				"name": "Commoner",
+				"source": "MM",
+				"_trait": {
+					"name": "Vistana",
+					"source": "CoS"
+				}
+			},
+			"hasToken": true
+		},
+		{
+			"name": "Vistana Guard",
+			"source": "CoS",
+			"page": 28,
+			"_copy": {
+				"name": "Guard",
+				"source": "MM",
+				"_trait": {
+					"name": "Vistana",
+					"source": "CoS"
+				}
+			},
+			"hasToken": true
+		},
+		{
+			"name": "Vistana Spy",
+			"source": "CoS",
+			"page": 28,
+			"_copy": {
+				"name": "Spy",
+				"source": "MM",
+				"_trait": {
+					"name": "Vistana",
+					"source": "CoS"
+				}
+			},
+			"hasToken": true
+		},
+		{
+			"name": "Vistana Thug",
+			"source": "CoS",
+			"page": 28,
+			"_copy": {
+				"name": "Thug",
+				"source": "MM",
+				"_trait": {
+					"name": "Vistana",
+					"source": "CoS"
+				}
+			},
 			"hasToken": true
 		},
 		{

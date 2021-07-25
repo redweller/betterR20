@@ -2272,7 +2272,7 @@
 						],
 						[
 							"05-06",
-							"A {@filter modron|bestiary|search=modron} chosen and controlled by the DM appears in an unoccupied space within 5 feet of you, then disappears 1 minute later."
+							"A {@filter modron|bestiary|source=mm|search=modron} chosen and controlled by the DM appears in an unoccupied space within 5 feet of you, then disappears 1 minute later."
 						],
 						[
 							"07-08",

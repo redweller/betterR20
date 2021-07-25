@@ -1891,7 +1891,7 @@
 				{
 					"name": "Scythe",
 					"entries": [
-						"{@atk mw} {@hit 14} to hit, reach 10 ft., one creature. {@h}18 ({@damage 2d10 + 7}) slashing damage plus 19 ({@damage 3d12}) necrotic damage. Any creature reduced to 0 hit points by this attack dies, with its body and everything it is wearing and carrying, except magic items, exploding into a cloud of ash. The creature can be restored to life only by means of a wish spell."
+						"{@atk mw} {@hit 14} to hit, reach 10 ft., one creature. {@h}18 ({@damage 2d10 + 7}) slashing damage plus 19 ({@damage 3d12}) necrotic damage. Any creature reduced to 0 hit points by this attack dies, with its body and everything it is wearing and carrying, except magic items, exploding into a cloud of ash. The creature can be restored to life only by means of a {@spell wish} spell."
 					]
 				},
 				{

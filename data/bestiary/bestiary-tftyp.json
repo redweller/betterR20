@@ -2966,60 +2966,6 @@
 			]
 		},
 		{
-			"name": "Keeper",
-			"isNpc": true,
-			"source": "TftYP",
-			"page": 173,
-			"_copy": {
-				"name": "Stone Giant",
-				"source": "MM",
-				"_mod": {
-					"*": {
-						"mode": "replaceTxt",
-						"replace": "giant",
-						"with": "Keeper",
-						"flags": "i"
-					},
-					"action": [
-						{
-							"mode": "replaceArr",
-							"replace": "Multiattack",
-							"items": {
-								"name": "Multiattack",
-								"entries": [
-									"The Keeper makes two battleaxe attacks."
-								]
-							}
-						},
-						{
-							"mode": "replaceArr",
-							"replace": "Greatclub",
-							"items": {
-								"name": "Battleaxe +2",
-								"entries": [
-									"{@atk mw} {@hit 10} to hit, reach 15 ft., one target. {@h}20 ({@damage 3d8 + 7}) slashing damage, or 23 ({@damage 3d10 + 7}) slashing damage if used with both hands."
-								]
-							}
-						}
-					]
-				}
-			},
-			"ac": [
-				{
-					"ac": 17,
-					"from": [
-						"{@item chain mail|phb}"
-					]
-				}
-			],
-			"trait": null,
-			"hasToken": true,
-			"damageTags": [
-				"B",
-				"S"
-			]
-		},
-		{
 			"name": "Kelpie",
 			"source": "TftYP",
 			"page": 238,
@@ -6148,6 +6094,60 @@
 			]
 		},
 		{
+			"name": "The Keeper",
+			"isNpc": true,
+			"source": "TftYP",
+			"page": 173,
+			"_copy": {
+				"name": "Stone Giant",
+				"source": "MM",
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "giant",
+						"with": "Keeper",
+						"flags": "i"
+					},
+					"action": [
+						{
+							"mode": "replaceArr",
+							"replace": "Multiattack",
+							"items": {
+								"name": "Multiattack",
+								"entries": [
+									"The Keeper makes two battleaxe attacks."
+								]
+							}
+						},
+						{
+							"mode": "replaceArr",
+							"replace": "Greatclub",
+							"items": {
+								"name": "Battleaxe +2",
+								"entries": [
+									"{@atk mw} {@hit 10} to hit, reach 15 ft., one target. {@h}20 ({@damage 3d8 + 7}) slashing damage, or 23 ({@damage 3d10 + 7}) slashing damage if used with both hands."
+								]
+							}
+						}
+					]
+				}
+			},
+			"ac": [
+				{
+					"ac": 17,
+					"from": [
+						"{@item chain mail|phb}"
+					]
+				}
+			],
+			"trait": null,
+			"hasToken": true,
+			"damageTags": [
+				"B",
+				"S"
+			]
+		},
+		{
 			"name": "Therzt",
 			"isNpc": true,
 			"source": "TftYP",
@@ -6394,7 +6394,8 @@
 			"traitTags": [
 				"Regeneration",
 				"Shapechanger",
-				"Spider Climb"
+				"Spider Climb",
+				"Sunlight Sensitivity"
 			],
 			"senseTags": [
 				"D"
@@ -6446,14 +6447,30 @@
 				"name": "Weretiger",
 				"source": "MM",
 				"_mod": {
-					"*": {
-						"mode": "replaceTxt",
-						"replace": "tiger",
-						"with": "jaguar",
-						"flags": "i"
-					}
+					"*": [
+						{
+							"mode": "replaceTxt",
+							"replace": "tiger",
+							"with": "jaguar",
+							"flags": "i"
+						},
+						{
+							"mode": "replaceName",
+							"replace": "Tiger",
+							"with": "Jaguar"
+						}
+					]
 				}
 			},
+			"speed": {
+				"walk": {
+					"number": 30,
+					"condition": "(40 ft. in jaguar form)"
+				}
+			},
+			"languages": [
+				"Common (can't speak in jaguar form)"
+			],
 			"hasToken": true
 		},
 		{
