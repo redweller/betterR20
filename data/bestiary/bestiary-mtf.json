@@ -316,7 +316,7 @@
 				{
 					"name": "Eat Memories",
 					"entries": [
-						"The oblex targets one creature it can see within 5 feet of it. The target must succeed on a {@dc 15} Wisdom saving throw or take 18 ({@damage 4d8}) psychic damage and become memory drained until it finishes a short or long rest or until it benefits from the {@spell greater restoration} or heal spell. Constructs, oozes, plants, and undead succeed on the save automatically.",
+						"The oblex targets one creature it can see within 5 feet of it. The target must succeed on a {@dc 15} Wisdom saving throw or take 18 ({@damage 4d8}) psychic damage and become memory drained until it finishes a short or long rest or until it benefits from the {@spell greater restoration} or {@spell heal} spell. Constructs, oozes, plants, and undead succeed on the save automatically.",
 						"While memory drained, the target must roll a {@dice d4} and subtract the number rolled from any ability check or attack roll it makes. Each time the target is memory drained beyond the first, the die size increases by one: the {@dice d4} becomes a {@dice d6}, the {@dice d6} becomes a {@dice d8}, and so on until the die becomes a {@dice d20}, at which point the target becomes {@condition unconscious} for 1 hour. The effect then ends.",
 						"When an oblex causes a target to become memory drained, the oblex learns all the languages the target knows and gains all its proficiencies, except for any saving throw proficiencies."
 					]
@@ -5016,7 +5016,7 @@
 				{
 					"name": "Change Shape (Recharges after a Short or Long Rest)",
 					"entries": [
-						"The drow can use a bonus action to magically polymorph into a giant spider, remaining in that form for up to 1 hour. It can revert to its true form as a bonus action. Its statistics, other than its size, are the same in each form. It can speak and cast spells while in giant spider form. Any equipment it is wearing or carrying in humanoid form melds into the giant spider form. It can't activate, use, wield, or otherwise benefit from any of its equipment. It reverts to its humanoid form if it dies."
+						"The drow can use a bonus action to magically polymorph into a {@creature giant spider}, remaining in that form for up to 1 hour. It can revert to its true form as a bonus action. Its statistics, other than its size, are the same in each form. It can speak and cast spells while in giant spider form. Any equipment it is wearing or carrying in humanoid form melds into the giant spider form. It can't activate, use, wield, or otherwise benefit from any of its equipment. It reverts to its humanoid form if it dies."
 					]
 				},
 				{
@@ -5710,7 +5710,7 @@
 							"name": "Summon Demon (1/Day)",
 							"type": "entries",
 							"entries": [
-								"The drow attempts to magically summon a yochlol, with a 50 percent chance of success. If the attempt fails, the drow takes 5 ({@damage 1d10}) psychic damage. Otherwise, the summoned demon appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other demons. It remains for 10 minutes, until it or its summoner dies, or until its summoner dismisses it as an action. (see notes for link)"
+								"The drow attempts to magically summon a yochlol, with a {@chance 50|50 percent} chance of success. If the attempt fails, the drow takes 5 ({@damage 1d10}) psychic damage. Otherwise, the summoned demon appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other demons. It remains for 10 minutes, until it or its summoner dies, or until its summoner dismisses it as an action. (see notes for link)"
 							]
 						}
 					]
@@ -6179,7 +6179,7 @@
 							"name": "Summon Shadow Demon (1/Day)",
 							"type": "entries",
 							"entries": [
-								"The drow attempts to magically summon a shadow demon with a 50 percent chance of success. If the attempt fails, the drow takes 5 ({@damage 1d10}) psychic damage. Otherwise, the summoned demon appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other demons. It remains for 10 minutes, until it or its summoner dies, or until its summoner dismisses it as an action."
+								"The drow attempts to magically summon a shadow demon with a {@chance 50|50 percent} chance of success. If the attempt fails, the drow takes 5 ({@damage 1d10}) psychic damage. Otherwise, the summoned demon appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other demons. It remains for 10 minutes, until it or its summoner dies, or until its summoner dismisses it as an action."
 							]
 						}
 					]
@@ -7993,7 +7993,7 @@
 				{
 					"name": "Eat Memories",
 					"entries": [
-						"The oblex targets one creature it can see within 5 feet of it. The target must succeed on a {@dc 18} Wisdom saving throw or take 44 ({@damage 8d10}) psychic damage and become memory drained until it finishes a short or long rest or until it benefits from the {@spell greater restoration} or heal spell. Constructs, oozes, plants, and undead succeed on the save automatically.",
+						"The oblex targets one creature it can see within 5 feet of it. The target must succeed on a {@dc 18} Wisdom saving throw or take 44 ({@damage 8d10}) psychic damage and become memory drained until it finishes a short or long rest or until it benefits from the {@spell greater restoration} or {@spell heal} spell. Constructs, oozes, plants, and undead succeed on the save automatically.",
 						"While memory drained, the target must roll a {@dice d4} and subtract the number rolled from any ability check or attack roll it makes. Each time the target is memory drained beyond the first, the die size increases by one: the {@dice d4} becomes a {@dice d6}, the {@dice d6} becomes a {@dice d8}, and so on until the die becomes a {@dice d20}, at which point the target becomes {@condition unconscious} for 1 hour. The effect then ends.",
 						"When an oblex causes a target to become memory drained, the oblex learns all the languages the target knows and gains all its proficiencies, except any saving throw proficiencies."
 					]
@@ -9752,7 +9752,7 @@
 				{
 					"name": "Change Gravity (Costs 3 Actions)",
 					"entries": [
-						"The anarch casts the reverse gravity spell. The spell has the normal effect, except that the anarch can orient the area in any direction and creatures and objects fall toward the end of the area."
+						"The anarch casts the {@spell reverse gravity} spell. The spell has the normal effect, except that the anarch can orient the area in any direction and creatures and objects fall toward the end of the area."
 					]
 				}
 			],
@@ -13272,7 +13272,7 @@
 							"name": "Summon Demon (1/Day)",
 							"type": "entries",
 							"entries": [
-								"As an action, the molydeus has a 50 percent chance of summoning its choice of {@dice 1d6} babaus, {@dice 1d4} {@creature chasme||chasmes}, or one {@creature marilith}. A summoned demon appears in an unoccupied space within 60 feet of the molydeus, acts as an ally of the molydeus, and can't summon other demons. It remains for 1 minute, until it or the molydeus dies, or until the molydeus dismisses it as an action."
+								"As an action, the molydeus has a {@chance 50|50 percent} chance of summoning its choice of {@dice 1d6} babaus, {@dice 1d4} {@creature chasme||chasmes}, or one {@creature marilith}. A summoned demon appears in an unoccupied space within 60 feet of the molydeus, acts as an ally of the molydeus, and can't summon other demons. It remains for 1 minute, until it or the molydeus dies, or until the molydeus dismisses it as an action."
 							]
 						}
 					]
@@ -14845,6 +14845,7 @@
 			],
 			"conditionInflict": [
 				"charmed",
+				"exhaustion",
 				"poisoned",
 				"restrained"
 			],
@@ -17735,7 +17736,7 @@
 				{
 					"name": "Return to Worms",
 					"entries": [
-						"When the larva mage is reduced to 0 hit points, it breaks apart into a swarm of insects in the same space. Unless the swarm is destroyed, the larva mage reforms from it 24 hours later."
+						"When the larva mage is reduced to 0 hit points, it breaks apart into a {@creature swarm of insects} in the same space. Unless the swarm is destroyed, the larva mage reforms from it 24 hours later."
 					]
 				}
 			],

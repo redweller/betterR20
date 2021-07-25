@@ -790,13 +790,13 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Moghadam wields Ruinblade (see appendix C)."
+						"Moghadam wields {@item Ruinblade|IMR} (see appendix C)."
 					]
 				},
 				{
 					"name": "Artificial Mind",
 					"entries": [
-						"Moghadam can manifest an artificial mind as a floating spectral image of a demilich's jeweled skull. Moghadam can communicate telepathically with this mind, send it up to 300 feet away from him, and see and hear through it."
+						"Moghadam can manifest an artificial mind as a floating spectral image of a {@creature demilich}'s jeweled skull. Moghadam can communicate telepathically with this mind, send it up to 300 feet away from him, and see and hear through it."
 					]
 				},
 				{
@@ -816,13 +816,13 @@
 				{
 					"name": "Blight (1/Day)",
 					"entries": [
-						"While wielding  Ruinblade, Moghadam can cast the blight spell ({@dc 15})."
+						"While wielding {@item Ruinblade|IMR}, Moghadam can cast the {@spell blight} spell ({@dc 15})."
 					]
 				},
 				{
 					"name": "Disintegrate (1/7 Days)",
 					"entries": [
-						"While wielding Ruinblade, Moghadam can cast the disintegrate spell against any nonmagical object or creation of magical force."
+						"While wielding {@item Ruinblade|IMR}, Moghadam can cast the {@spell disintegrate} spell against any nonmagical object or creation of magical force."
 					]
 				},
 				{
@@ -1450,13 +1450,13 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Thessalar wields a +1 dagger coated with thessaltoxin poison (see appendix C)."
+						"Thessalar wields a {@item +1 dagger} coated with {@item Thessaltoxin|IMR|thessaltoxin poison} (see appendix C)."
 					]
 				},
 				{
 					"name": "Alchemical Homunculus",
 					"entries": [
-						"Thessalar is accompanied by his thessalars homunculus. If the mending spell is cast on it, the homunculus regains {@dice 2d6} hit points."
+						"Thessalar is accompanied by his {@creature Thessalar's homunculus|IMR}. If the {@spell mending} spell is cast on it, the homunculus regains {@dice 2d6} hit points."
 					]
 				},
 				{
@@ -1468,7 +1468,7 @@
 				{
 					"name": "Greater Restoration (1/Day)",
 					"entries": [
-						"Thessalar can cast greater restoration if he has access to alchemical supplies."
+						"Thessalar can cast {@spell greater restoration} if he has access to {@item Alchemist's Supplies|phb|alchemical supplies}."
 					]
 				}
 			],
@@ -1476,7 +1476,7 @@
 				{
 					"name": "Dagger",
 					"entries": [
-						"{@atk mw,rw} {@hit 5} to hit, reach 5 ft. or range 20/60 ft., one target. {@h}3 ({@damage 1d4 + 1}) piercing damage, and the target must succeed on a {@dc 15} Constitution saving throw. On a failed save, the target is affected as if by the polymorph spell, transforming into a random beast or a creature it has seen within the last 24 hours (as chosen by the DM). This effect lasts until the target finishes a long rest."
+						"{@atk mw,rw} {@hit 5} to hit, reach 5 ft. or range 20/60 ft., one target. {@h}3 ({@damage 1d4 + 1}) piercing damage, and the target must succeed on a {@dc 15} Constitution saving throw. On a failed save, the target is affected as if by the {@spell polymorph} spell, transforming into a random {@filter beast|bestiary|type=beast|miscellaneous=!swarm} or a creature it has seen within the last 24 hours (as chosen by the DM). This effect lasts until the target finishes a long rest."
 					]
 				}
 			],

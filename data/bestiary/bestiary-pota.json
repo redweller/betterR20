@@ -4071,7 +4071,7 @@
 				{
 					"name": "Eye of Frost",
 					"entries": [
-						"The one-eyed shiver casts ray of frost from its missing eye. If it hits, the target is also {@condition restrained}. A target {@condition restrained} in this way can end the condition by using an action, succeeding on a {@dc 13} Strength check."
+						"The one-eyed shiver casts {@spell ray of frost} from its missing eye. If it hits, the target is also {@condition restrained}. A target {@condition restrained} in this way can end the condition by using an action, succeeding on a {@dc 13} Strength check."
 					]
 				}
 			],

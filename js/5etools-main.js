@@ -1749,7 +1749,7 @@ const betteR205etoolsMain = function () {
 			attrs.notifySheetWorkers();
 		}
 
-		function importClass (character, data) {
+		async function importClass (character, data) {
 			let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
 			if (!levels) return;
 
@@ -1904,6 +1904,16 @@ const betteR205etoolsMain = function () {
 
 			importClassGeneral(attrs, clss, maxLevel);
 
+			let featureSourceWhitelist = await d20plus.ui.chooseCheckboxList(
+				[SRC_PHB, SRC_TCE, SRC_UACFV],
+				"Choose Source to Import Class Features",
+				"Please select a source",
+				{
+					note: "WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.",
+					displayFormatter: (it => Parser.sourceJsonToFull(it))
+				}
+			);
+
 			for (let i = 0; i < maxLevel; i++) {
 				const level = i + 1;
 				if (!levels.has(level)) continue;
@@ -1912,7 +1922,7 @@ const betteR205etoolsMain = function () {
 				for (let j = 0; j < lvlFeatureList.length; j++) {
 					const feature = lvlFeatureList[j];
 					// don't add "you gain a subclass feature" or ASI's
-					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement") {
+					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement" &&	featureSourceWhitelist.includes(feature.source)) {
 						const renderStack = [];
 						renderer.recursiveRender({entries: feature.entries}, renderStack);
 						feature.text = d20plus.importer.getCleanText(renderStack.join(""));
@@ -1981,6 +1991,7 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
 					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+					attrs.add(`repeating_traits_${fRowId}_display_flag`, "on");
 				} else if (d20plus.sheet == "shaped") {
 					if (shapedSheetPreFilledFeatures.includes(feature.name))
 						return;
@@ -2365,7 +2376,7 @@ const betteR205etoolsMain = function () {
 							makeProp(rowId, "itemname", siD.name);
 							const w = (siD.data || {}).Weight;
 							if (w) makeProp(rowId, "itemweight", w);
-							makeProp(rowId, "itemcontent", Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
+							makeProp(rowId, "itemcontent", siD.content || Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
 							makeProp(rowId, "itemcount", String(si.count));
 
 						} else {

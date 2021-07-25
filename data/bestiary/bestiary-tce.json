@@ -1568,7 +1568,7 @@
 				}
 			],
 			"hp": {
-				"special": "2 + your Intelligence modifier + five times your artificer level (the defender has a number of Hit Dice [ d8s] equal to your artificer level)"
+				"special": "2 + your Intelligence modifier + five times your artificer level (the defender has a number of Hit Dice [d8s] equal to your artificer level)"
 			},
 			"speed": {
 				"walk": 40
