@@ -1267,8 +1267,13 @@ const betteR205etoolsMain = function () {
 					const sansExisting = choose.from.filter(it => !skills.includes(it));
 					const count = choose.count || 1;
 					const chosenSkills = await d20plus.ui.chooseCheckboxList(
-						sansExisting, "Choose Skills", `Please select ${count} skill${count === 1 ? "" : "s"}`,	{count,	displayFormatter: (it => it.toTitleCase())}
-						);
+						sansExisting,
+						"Choose Skills",
+						{
+							count,
+							displayFormatter: (it => it.toTitleCase()), messageCountIncomplete: `Please select ${count} skill${count === 1 ? "" : "s"}`
+						},
+					);
 					chosenSkills.forEach(it => skills.push(it));
 				}
 			}
@@ -1339,8 +1344,14 @@ const betteR205etoolsMain = function () {
 						let numChoice = 1;
 						if (value.count) numChoice = value.count;
 						const choice = await d20plus.ui.chooseCheckboxList(
-							value.from, `Choose ${profType}`, `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`,	{count: numChoice,	displayFormatter: (it => it.toTitleCase())}
-							);
+							value.from,
+							`Choose ${profType}`,
+							{
+								count: numChoice,
+								displayFormatter: (it => it.toTitleCase()),
+								messageCountIncomplete: `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`
+							},
+						);
 						choice.forEach(c => ret.push(c));
 					}
 					else if (key === "anyStandard") {
@@ -1809,13 +1820,12 @@ const betteR205etoolsMain = function () {
 
 			importClassGeneral(attrs, clss, maxLevel);
 
-			let featureSourceWhitelist = await d20plus.ui.chooseCheckboxList(
-				[SRC_PHB, SRC_TCE, SRC_UACFV],
-				"Choose Source to Import Class Features",
-				"Please select a source",
+			let featureSourceBlacklist = await d20plus.ui.chooseCheckboxList(
+				[SRC_TCE, SRC_UACFV],
+				"Choose Variant/Optional Feature Sources to Exclude",
 				{
-					note: "WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.",
-					displayFormatter: (it => Parser.sourceJsonToFull(it))
+					note: "Choosing to exclude a source will prevent its features from being added to your sheet.",
+					displayFormatter: (it => Parser.sourceJsonToFull(it)),
 				}
 			);
 
@@ -1827,7 +1837,11 @@ const betteR205etoolsMain = function () {
 				for (let j = 0; j < lvlFeatureList.length; j++) {
 					const feature = lvlFeatureList[j];
 					// don't add "you gain a subclass feature" or ASI's
-					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement" &&	featureSourceWhitelist.includes(feature.source)) {
+					if (
+						!feature.gainSubclassFeature
+						&& feature.name !== "Ability Score Improvement"
+						&& (!feature.isClassFeatureVariant || !featureSourceBlacklist.includes(feature.source))
+					) {
 						const renderStack = [];
 						renderer.recursiveRender({entries: feature.entries}, renderStack);
 						feature.text = d20plus.importer.getCleanText(renderStack.join(""));

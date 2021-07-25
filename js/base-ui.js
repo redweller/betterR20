@@ -134,13 +134,13 @@ function baseUi () {
 	 *
 	 * @param dataArray options to choose from
 	 * @param dataTitle title for the window
-	 * @param message message when user does not choose correct number of choices
+	 * @param messageCountIncomplete message when user does not choose correct number of choices
 	 * @param displayFormatter function to format dataArray for display
 	 * @param count exact number of  options the user must choose
 	 * @param note add a note at the bottom of the window
 	 * @return {Promise}
 	 */
-	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, message, {displayFormatter = null, count = null, note = null} = {}) {
+	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, note = null, messageCountIncomplete = null} = {}) {
 		return new Promise((resolve, reject) => {
 			const $dialog = $(`
 				<div title="${dataTitle}">
@@ -148,7 +148,7 @@ function baseUi () {
 					<div>
 						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
 					</div>
-					${note ? `<br><div class="bold">${note}</div>` : ""}
+					${note ? `<br><div class="italic">${note}</div>` : ""}
 				</div>
 			`).appendTo($("body"));
 			const $remain = $dialog.find(`[name="remain"]`);
@@ -191,7 +191,7 @@ function baseUi () {
 								$dialog.remove();
 								resolve(selected);
 							} else {
-								alert(message);
+								alert(messageCountIncomplete ?? "Please select more options!");
 							}
 						}
 					}

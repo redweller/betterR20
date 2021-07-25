@@ -14,6 +14,10 @@ function baseCss () {
 			r: "font-weight: bold;"
 		},
 		{
+			s: ".italic",
+			r: "font-style: italic;"
+		},
+		{
 			s: ".clickable",
 			r: "cursor: pointer;"
 		},
