@@ -66,6 +66,37 @@
 				22,
 				22
 			],
+			"additionalSpells": [
+				{
+					"name": "Magical Secrets",
+					"prepared": {
+						"10": [
+							{
+								"choose": "level=0;1;2;3;4;5"
+							},
+							{
+								"choose": "level=0;1;2;3;4;5"
+							}
+						],
+						"14": [
+							{
+								"choose": "level=0;1;2;3;4;5;6;7"
+							},
+							{
+								"choose": "level=0;1;2;3;4;5;6;7"
+							}
+						],
+						"18": [
+							{
+								"choose": ""
+							},
+							{
+								"choose": ""
+							}
+						]
+					}
+				}
+			],
 			"startingProficiencies": {
 				"armor": [
 					"light"
@@ -908,6 +939,21 @@
 			"classSource": "PHB",
 			"page": 54,
 			"srd": true,
+			"additionalSpells": [
+				{
+					"name": "Additional Magical Secrets",
+					"prepared": {
+						"6": [
+							{
+								"choose": "level=0;1;2;3"
+							},
+							{
+								"choose": "level=0;1;2;3"
+							}
+						]
+					}
+				}
+			],
 			"subclassFeatures": [
 				"College of Lore|Bard||Lore||3",
 				"Additional Magical Secrets|Bard||Lore||6",
@@ -1079,6 +1125,7 @@
 			"className": "Bard",
 			"classSource": "PHB",
 			"page": 1,
+			"isReprinted": true,
 			"subclassFeatures": [
 				"College of Spirits|Bard||Spirits (UA)|UA2020SubclassesPt4|3",
 				"Spirit Session|Bard||Spirits (UA)|UA2020SubclassesPt4|6",

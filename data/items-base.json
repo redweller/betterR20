@@ -1346,6 +1346,13 @@
 			"rarity": "none",
 			"weight": 4,
 			"value": 500,
+			"weaponCategory": "simple",
+			"property": [
+				"V"
+			],
+			"dmg1": "1d6",
+			"dmgType": "B",
+			"dmg2": "1d8",
 			"staff": true
 		},
 		{
@@ -1444,6 +1451,24 @@
 			"dmg1": "1d4",
 			"dmgType": "S",
 			"weapon": true
+		},
+		{
+			"name": "Wooden Staff",
+			"source": "PHB",
+			"page": 151,
+			"srd": true,
+			"type": "SCF",
+			"scfType": "druid",
+			"rarity": "none",
+			"weight": 4,
+			"value": 500,
+			"weaponCategory": "simple",
+			"property": [
+				"V"
+			],
+			"dmg1": "1d6",
+			"dmgType": "B",
+			"dmg2": "1d8"
 		},
 		{
 			"name": "Yklwa",

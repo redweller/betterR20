@@ -1139,7 +1139,7 @@
 				{
 					"name": "Reduce to Ash (Costs 3 Actions)",
 					"entries": [
-						"The ashen rider targets a creature it can see within 60 feet of it. The target must succeed on a {@dc 18} Constitution saving throw, or it takes 27 ({@damage 5d10}) necrotic damage and its hit point maximum is reduced by an amount equal to the necrotic damage taken. This reduction lasts until the target finishes a long rest. If the target's hit point maximum is reduced to 0, its body and everything it is wearing and carrying, except for magic items, are reduced to ash. A creature reduced to ash can't be revived by any means short of a wish spell."
+						"The ashen rider targets a creature it can see within 60 feet of it. The target must succeed on a {@dc 18} Constitution saving throw, or it takes 27 ({@damage 5d10}) necrotic damage and its hit point maximum is reduced by an amount equal to the necrotic damage taken. This reduction lasts until the target finishes a long rest. If the target's hit point maximum is reduced to 0, its body and everything it is wearing and carrying, except for magic items, are reduced to ash. A creature reduced to ash can't be revived by any means short of a {@spell wish} spell."
 					]
 				}
 			],

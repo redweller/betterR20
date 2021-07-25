@@ -1897,6 +1897,15 @@
 			"additionalSpells": [
 				{
 					"name": "Arctic",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"hold person",
@@ -1918,6 +1927,15 @@
 				},
 				{
 					"name": "Coast",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"mirror image",
@@ -1939,6 +1957,15 @@
 				},
 				{
 					"name": "Desert",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"blur",
@@ -1960,6 +1987,15 @@
 				},
 				{
 					"name": "Forest",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"barkskin",
@@ -1981,6 +2017,15 @@
 				},
 				{
 					"name": "Grassland",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"invisibility",
@@ -2002,6 +2047,15 @@
 				},
 				{
 					"name": "Mountain",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"spider climb",
@@ -2023,6 +2077,15 @@
 				},
 				{
 					"name": "Swamp",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"darkness",
@@ -2044,6 +2107,15 @@
 				},
 				{
 					"name": "Underdark",
+					"innate": {
+						"1": {
+							"_": [
+								{
+									"choose": "level=0|class=Druid"
+								}
+							]
+						}
+					},
 					"prepared": {
 						"3": [
 							"spider climb",
@@ -2319,6 +2391,20 @@
 			"className": "Druid",
 			"classSource": "PHB",
 			"page": 38,
+			"additionalSpells": [
+				{
+					"innate": {
+						"2": [
+							"guidance"
+						]
+					},
+					"prepared": {
+						"2": [
+							"guiding bolt"
+						]
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Circle of Stars|Druid||Stars|TCE|2",
 				"Cosmic Omen|Druid||Stars|TCE|6",

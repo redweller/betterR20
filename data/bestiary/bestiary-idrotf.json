@@ -225,7 +225,7 @@
 				{
 					"name": "Divine Rejuvenation",
 					"entries": [
-						"When Auril drops to 0 hit points, her body turns to slush and melts away. Auril instantly reappears in her second form, in an unoccupied space within 60 feet of where her first form disappeared. Her initiative count doesn't change."
+						"When Auril drops to 0 hit points, her body turns to slush and melts away. Auril instantly reappears in her {@creature Auril (second form)|idrotf|second form}, in an unoccupied space within 60 feet of where her first form disappeared. Her initiative count doesn't change."
 					]
 				},
 				{
@@ -401,7 +401,7 @@
 				{
 					"name": "Divine Rejuvenation",
 					"entries": [
-						"When Auril drops to 0 hit points, her body collapses into shards of ice, whereupon Auril instantly reappears in her third form, in an unoccupied space within 60 feet of where her second form was destroyed. Her initiative count doesn't change."
+						"When Auril drops to 0 hit points, her body collapses into shards of ice, whereupon Auril instantly reappears in her {@creature Auril (third form)|idrotf|third form}, in an unoccupied space within 60 feet of where her second form was destroyed. Her initiative count doesn't change."
 					]
 				},
 				{
@@ -815,7 +815,7 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Avarice wields a staff of frost with 10 charges (see \"Actions\" below)."
+						"Avarice wields a {@item staff of frost} with 10 charges (see \"Actions\" below)."
 					]
 				}
 			],
@@ -829,7 +829,7 @@
 				{
 					"name": "Staff of Frost",
 					"entries": [
-						"While holding this staff, Avarice can expend 1 or more of its charges to cast one of the following spells from it (spell save {@dc 14}): cone of cold (5 charges), fog cloud (1 charge), ice storm (4 charges), or wall of ice (4 charges). The staff regains {@dice 1d6 + 4} charges daily at dawn. If its last charge is expended, roll a {@dice d20}; on a 1, the staff turns to water and is destroyed."
+						"While holding this staff, Avarice can expend 1 or more of its charges to cast one of the following spells from it (spell save {@dc 14}): {@spell cone of cold} (5 charges), {@spell fog cloud} (1 charge), {@spell ice storm} (4 charges), or {@spell wall of ice} (4 charges). The staff regains {@dice 1d6 + 4} charges daily at dawn. If its last charge is expended, roll a {@dice d20}; on a 1, the staff turns to water and is destroyed."
 					]
 				}
 			],

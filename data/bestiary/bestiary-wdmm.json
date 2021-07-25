@@ -1673,22 +1673,61 @@
 			"_copy": {
 				"name": "Cloud Giant",
 				"source": "MM",
-				"_trait": {
-					"name": "Drow",
-					"source": "PHB"
-				},
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
 						"replace": "giant",
 						"with": "drow",
 						"flags": "i"
+					},
+					"trait": {
+						"mode": "appendArr",
+						"items": [
+							{
+								"name": "Fey Ancestry",
+								"entries": [
+									"The drow has advantage on saving throws against being charmed, and magic can't put the drow to sleep."
+								]
+							},
+							{
+								"name": "Sunlight Sensitivity",
+								"entries": [
+									"While in sunlight, the drow has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
+								]
+							}
+						]
 					}
 				}
 			},
+			"type": "giant",
 			"alignment": [
 				"N",
 				"E"
+			],
+			"senses": [
+				"darkvision 120 ft."
+			],
+			"languages": [
+				"Elvish",
+				"Undercommon"
+			],
+			"spellcasting": [
+				{
+					"name": "Innate Spellcasting",
+					"headerEntries": [
+						"The drow's innate spellcasting ability is Charisma (spell save DC 15). The drow can innately cast the following spells, requiring no material components:"
+					],
+					"will": [
+						"{@spell dancing lights}"
+					],
+					"daily": {
+						"1e": [
+							"{@spell darkness}",
+							"{@spell faerie fire}"
+						]
+					},
+					"ability": "cha"
+				}
 			],
 			"hasToken": true,
 			"traitTags": [
@@ -5024,7 +5063,7 @@
 			"type": {
 				"type": "humanoid",
 				"tags": [
-					"goblin",
+					"goblinoid",
 					"shapechanger"
 				]
 			},
@@ -5494,7 +5533,8 @@
 				"Legendary Resistances",
 				"Regeneration",
 				"Shapechanger",
-				"Spider Climb"
+				"Spider Climb",
+				"Sunlight Sensitivity"
 			],
 			"senseTags": [
 				"SD"

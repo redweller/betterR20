@@ -10095,6 +10095,10 @@
 					"primordial": true
 				}
 			],
+			"soundClip": {
+				"type": "internal",
+				"path": "races/kenku.mp3"
+			},
 			"entries": [
 				{
 					"name": "Ambusher",
@@ -10166,7 +10170,7 @@
 			],
 			"soundClip": {
 				"type": "internal",
-				"path": "races/kenku-2.mp3"
+				"path": "races/kenku.mp3"
 			},
 			"entries": [
 				{
