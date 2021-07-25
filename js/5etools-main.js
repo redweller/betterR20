@@ -1217,7 +1217,7 @@ const betteR205etoolsMain = function () {
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
 			// Add skills
-			
+
 			async function chooseSkillsGroup (options) {
 				return new Promise((resolve, reject) => {
 					const $dialog = $(`
@@ -1401,7 +1401,7 @@ const betteR205etoolsMain = function () {
 					else if ('special' in item) {
 						iname = item.special;
 					}
-					
+
 					if (item.containsValue) containedGold += item.containsValue/100;
 
 					// Make the input object
@@ -1463,9 +1463,9 @@ const betteR205etoolsMain = function () {
 					})
 				});
 			}
-			
+
 		    let startingGold = 0;
-			
+
 			if (bg.startingEquipment) {
 				for (const equip of bg.startingEquipment) {
 					// Loop because there can be any number of objects and in any order
@@ -2201,7 +2201,7 @@ const betteR205etoolsMain = function () {
 
 		function importItem (character, data, event) {
 			if (d20plus.sheet == "ogl") {
-				
+
 				// for packs, etc
 				if (data._subItems) {
 					const queue = [];
@@ -2795,16 +2795,11 @@ const betteR205etoolsMain = function () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
 
-			DataUtil.loadJSON(url).then(async (data) => {
-				const toImport = MiscUtil.copy(data.race);
-				if (data.subrace){
-					const allraces = await DataUtil.loadJSON(RACE_DATA_URL);
-					toImport.push(...Renderer.race.adoptSubraces(allraces.race, data.subrace, false))
-				}
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"race",
-					Renderer.race.mergeSubraces(toImport),
+					Renderer.race.mergeSubraces(data.race),
 					handoutBuilder,
 					{
 						forcePlayer
