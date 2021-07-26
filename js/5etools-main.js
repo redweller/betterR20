@@ -2814,6 +2814,7 @@ const betteR205etoolsMain = function () {
 				const toImport = MiscUtil.copy(data.race);
 				if (data.subrace){
 					const allraces = await DataUtil.loadJSON(RACE_DATA_URL);
+					//TODO maybe load homebrew parent race if required from the subraces.
 					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))
 				}
 				d20plus.importer.addBrewMeta(data._meta);
