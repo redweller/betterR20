@@ -2814,7 +2814,8 @@ const betteR205etoolsMain = function () {
 				const toImport = MiscUtil.copy(data.race);
 				if (data.subrace){
 					const allraces = await DataUtil.loadJSON(RACE_DATA_URL);
-					//this does not handle homebrew parent races but i found none in the existing homebrew at the current time so propably will not be such an issue
+					//this does not handle homebrew parent races in "subrace" block
+					//i found none in the existing homebrew at the time of doing this, so propably won't be such an issue
 					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))
 				}
 				d20plus.importer.addBrewMeta(data._meta);
@@ -2896,6 +2897,7 @@ const betteR205etoolsMain = function () {
 		return [noteContents, gmNotes];
 	};
 
+	//copied from ../lib/render.js for small changes
 	d20plus.races.adoptSubraces = function (allRaces, subraces, keepOriginalSubraces = true) {
 		const nxtData = [];
 
@@ -2904,7 +2906,7 @@ const betteR205etoolsMain = function () {
 
 			const _baseRace = allRaces.find(r => r.name === sr.race.name && r.source === sr.race.source);
 			if (!_baseRace) {
-				console.warn(`${sr.race.name} parent race not found!`);
+				console.warn(`${sr.race.name} parent race not found! Contact homebrew maintainer as it is probably a wrong entry`);
 				return;
 			}	
 
