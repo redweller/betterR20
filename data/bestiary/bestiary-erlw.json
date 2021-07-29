@@ -147,7 +147,7 @@
 									"type": "item",
 									"name": "1. Psyche-Reconstruction Ray.",
 									"style": "italic",
-									"entry": "The target must make a {@dc 22} Wisdom saving throw, taking 49 ({@damage 9d10}) psychic damage on a failed save, or half as much damage on a successful one. If this damage reduces a creature to 0 hit points, it dies and transforms into a spectator under Belashyrra's control and acts immediately after Belashyrra in the initiative order. The target can't be returned to its original form by any means short of a wish spell."
+									"entry": "The target must make a {@dc 22} Wisdom saving throw, taking 49 ({@damage 9d10}) psychic damage on a failed save, or half as much damage on a successful one. If this damage reduces a creature to 0 hit points, it dies and transforms into a spectator under Belashyrra's control and acts immediately after Belashyrra in the initiative order. The target can't be returned to its original form by any means short of a {@spell wish} spell."
 								},
 								{
 									"type": "item",
@@ -1877,7 +1877,7 @@
 				{
 					"name": "Soul Binding",
 					"entries": [
-						"{@atk ms} {@hit 13} to hit, reach 5 ft., one target. {@h}29 ({@damage 4d10 + 7}) necrotic damage. A creature reduced to 0 hit points from this attack dies and has its soul imprisoned in one of the quori's eyes. The target can't be revived by any means short of a wish spell until the quori is destroyed."
+						"{@atk ms} {@hit 13} to hit, reach 5 ft., one target. {@h}29 ({@damage 4d10 + 7}) necrotic damage. A creature reduced to 0 hit points from this attack dies and has its soul imprisoned in one of the quori's eyes. The target can't be revived by any means short of a {@spell wish} spell until the quori is destroyed."
 					]
 				},
 				{

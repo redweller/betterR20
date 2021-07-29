@@ -490,225 +490,6 @@
 						]
 					},
 					"ability": "cha"
-				},
-				{
-					"name": "Shared Spellcasting (Coven Only)",
-					"headerEntries": [
-						"While all three members of a hag coven are within 30 feet of one another, they can each cast the following spells from the wizard's spell list but must share the spell slots among themselves:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell identify}",
-								"{@spell ray of sickness}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell hold person}",
-								"{@spell locate object}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell bestow curse}",
-								"{@spell counterspell}",
-								"{@spell lightning bolt}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell phantasmal killer}",
-								"{@spell polymorph}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell contact other plane}",
-								"{@spell scrying}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell eyebite}"
-							]
-						}
-					},
-					"footerEntries": [
-						"For casting these spells, each hag is a 12th-level spellcaster that uses Intelligence as her spellcasting ability. The spell save DC is 12 + the hag's Intelligence modifier, and the spell attack bonus is 4 + the hag's Intelligence modifier."
-					]
-				},
-				{
-					"name": "Variant: Death Coven",
-					"headerEntries": [
-						"For a death coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell false life}",
-								"{@spell inflict wounds}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell gentle repose}",
-								"{@spell ray of enfeeblement}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell animate dead}",
-								"{@spell revivify}",
-								"{@spell speak with dead}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell blight}",
-								"{@spell death ward}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell contagion}",
-								"{@spell raise dead}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell circle of death}"
-							]
-						}
-					}
-				},
-				{
-					"name": "Variant: Nature Coven",
-					"headerEntries": [
-						"For a nature coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell entangle}",
-								"{@spell speak with animals}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell flaming sphere}",
-								"{@spell moonbeam}",
-								"{@spell spike growth}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell call lightning}",
-								"{@spell plant growth}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell dominate beast}",
-								"{@spell grasping vine}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell insect plague}",
-								"{@spell tree stride}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell wall of thorns}"
-							]
-						}
-					}
-				},
-				{
-					"name": "Variant: Prophecy Coven",
-					"headerEntries": [
-						"For a prophecy coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell bane}",
-								"{@spell bless}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell augury}",
-								"{@spell detect thoughts}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell clairvoyance}",
-								"{@spell dispel magic}",
-								"{@spell nondetection}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell arcane eye}",
-								"{@spell locate creature}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell geas}",
-								"{@spell legend lore}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell true seeing}"
-							]
-						}
-					}
-				}
-			],
-			"trait": [
-				{
-					"name": "Hag Coven",
-					"entries": [
-						"When hags must work together, they form covens, in spite of their selfish natures. A coven is made up of hags of any type, all of whom are equals within the group. However, each of the hags continues to desire more personal power.",
-						"A coven consists of three hags so that any arguments between two hags can be settled by the third. If more than three hags ever come together, as might happen if two covens come into conflict, the result is usually chaos."
-					]
-				},
-				{
-					"name": "Hag Eye (Coven Only)",
-					"entries": [
-						"A hag coven can craft a magic item called a hag eye, which is made from a real eye coated in varnish and often fitted to a pendant or other wearable item. The hag eye is usually entrusted to a minion for safekeeping and transport. A hag in the coven can take an action to see what the hag eye sees if the hag eye is on the same plane of existence. A hag eye has AC 10, 1 hit point, and darkvision with a radius of 60 feet. If it is destroyed, each coven member takes {@dice 3d10} psychic damage and is {@condition blinded} for 24 hours.",
-						"A hag coven can have only one hag eye at a time, and creating a new one requires all three members of the coven to perform a ritual. The ritual takes 1 hour, and the hags can't perform it while {@condition blinded}. During the ritual, if the hags take any action other than performing the ritual, they must start over."
-					]
 				}
 			],
 			"action": [
@@ -734,6 +515,253 @@
 					"name": "Crushing Hug",
 					"entries": [
 						"{@atk mw} {@hit 8} to hit, reach 5 ft., one target. {@h}36 ({@damage 9d6 + 5}) bludgeoning damage, and the target is {@condition grappled} (escape {@dc 15}) if it is a Large or smaller creature. Until the grapple ends, the target takes 36 ({@damage 9d6 + 5}) bludgeoning damage at the start of each of the hag's turns. The hag can't make attacks while grappling a creature in this way."
+					]
+				}
+			],
+			"legendaryGroup": {
+				"name": "Annis Hag",
+				"source": "VGM"
+			},
+			"variant": [
+				{
+					"type": "inset",
+					"name": "Hag Covens",
+					"entries": [
+						"When hags must work together, they form covens, in spite of their selfish natures. A coven is made up of hags of any type, all of whom are equals within the group. However, each of the hags continues to desire more personal power.",
+						"A coven consists of three hags so that any arguments between two hags can be settled by the third. If more than three hags ever come together, as might happen if two covens come into conflict, the result is usually chaos.",
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"While all three members of a hag coven are within 30 feet of one another, they can each cast the following spells from the wizard's spell list but must share the spell slots among themselves:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell identify}",
+										"{@spell ray of sickness}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell hold person}",
+										"{@spell locate object}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell bestow curse}",
+										"{@spell counterspell}",
+										"{@spell lightning bolt}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell phantasmal killer}",
+										"{@spell polymorph}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell contact other plane}",
+										"{@spell scrying}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell eyebite}"
+									]
+								}
+							},
+							"footerEntries": [
+								"For casting these spells, each hag is a 12th-level spellcaster that uses Intelligence as her spellcasting ability. The spell save DC is 12 + the hag's Intelligence modifier, and the spell attack bonus is 4 + the hag's Intelligence modifier."
+							]
+						},
+						{
+							"type": "entries",
+							"name": "Hag Eye",
+							"entries": [
+								"A hag coven can craft a magic item called a hag eye, which is made from a real eye coated in varnish and often fitted to a pendant or other wearable item. The hag eye is usually entrusted to a minion for safekeeping and transport. A hag in the coven can take an action to see what the hag eye sees if the hag eye is on the same plane of existence. A hag eye has AC 10, 1 hit point, and darkvision with a radius of 60 feet. If it is destroyed, each coven member takes {@dice 3d10} psychic damage and is {@condition blinded} for 24 hours.",
+								"A hag coven can have only one hag eye at a time, and creating a new one requires all three members of the coven to perform a ritual. The ritual takes 1 hour, and the hags can't perform it while {@condition blinded}. During the ritual, if the hags take any action other than performing the ritual, they must start over."
+							]
+						}
+					]
+				},
+				{
+					"type": "variant",
+					"name": "Death Coven",
+					"entries": [
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"For a death coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell false life}",
+										"{@spell inflict wounds}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell gentle repose}",
+										"{@spell ray of enfeeblement}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell animate dead}",
+										"{@spell revivify}",
+										"{@spell speak with dead}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell blight}",
+										"{@spell death ward}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell contagion}",
+										"{@spell raise dead}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell circle of death}"
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"type": "variant",
+					"name": "Nature Coven",
+					"entries": [
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"For a nature coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell entangle}",
+										"{@spell speak with animals}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell flaming sphere}",
+										"{@spell moonbeam}",
+										"{@spell spike growth}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell call lightning}",
+										"{@spell plant growth}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell dominate beast}",
+										"{@spell grasping vine}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell insect plague}",
+										"{@spell tree stride}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell wall of thorns}"
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"type": "variant",
+					"name": "Prophecy Coven",
+					"entries": [
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"For a prophecy coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell bane}",
+										"{@spell bless}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell augury}",
+										"{@spell detect thoughts}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell clairvoyance}",
+										"{@spell dispel magic}",
+										"{@spell nondetection}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell arcane eye}",
+										"{@spell locate creature}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell geas}",
+										"{@spell legend lore}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell true seeing}"
+									]
+								}
+							}
+						}
 					]
 				}
 			],
@@ -1821,7 +1849,7 @@
 					"name": "Soul Feeding",
 					"entries": [
 						"A barghest can feed on the corpse of a humanoid that it killed that has been dead for less than 10 minutes, devouring both flesh and soul in doing so. This feeding takes at least 1 minute, and it destroys the victim's body. The victim's soul is trapped in the barghest for 24 hours, after which time it is digested. If the barghest dies before the soul is digested, the soul is released.",
-						"While a humanoid's soul is trapped in a barghest, any form of revival that could work has only a 50 percent chance of doing so, freeing the soul from the barghest if it is successful. Once a creature's soul is digested, however, no mortal magic can return that humanoid to life."
+						"While a humanoid's soul is trapped in a barghest, any form of revival that could work has only a {@chance 50|50 percent} chance of doing so, freeing the soul from the barghest if it is successful. Once a creature's soul is digested, however, no mortal magic can return that humanoid to life."
 					]
 				}
 			],
@@ -1956,209 +1984,6 @@
 						]
 					},
 					"ability": "cha"
-				},
-				{
-					"name": "Shared Spellcasting (Coven Only)",
-					"headerEntries": [
-						"While all three members of a hag coven are within 30 feet of one another, they can each cast the following spells from the wizard's spell list but must share the spell slots among themselves:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell identify}",
-								"{@spell ray of sickness}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell hold person}",
-								"{@spell locate object}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell bestow curse}",
-								"{@spell counterspell}",
-								"{@spell lightning bolt}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell phantasmal killer}",
-								"{@spell polymorph}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell contact other plane}",
-								"{@spell scrying}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell eyebite}"
-							]
-						}
-					},
-					"footerEntries": [
-						"For casting these spells, each hag is a 12th-level spellcaster that uses Intelligence as her spellcasting ability. The spell save DC is 12 + the hag's Intelligence modifier, and the spell attack bonus is 4 + the hag's Intelligence modifier."
-					]
-				},
-				{
-					"name": "Variant: Death Coven",
-					"headerEntries": [
-						"For a death coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell false life}",
-								"{@spell inflict wounds}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell gentle repose}",
-								"{@spell ray of enfeeblement}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell animate dead}",
-								"{@spell revivify}",
-								"{@spell speak with dead}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell blight}",
-								"{@spell death ward}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell contagion}",
-								"{@spell raise dead}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell circle of death}"
-							]
-						}
-					}
-				},
-				{
-					"name": "Variant: Nature Coven",
-					"headerEntries": [
-						"For a nature coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell entangle}",
-								"{@spell speak with animals}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell flaming sphere}",
-								"{@spell moonbeam}",
-								"{@spell spike growth}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell call lightning}",
-								"{@spell plant growth}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell dominate beast}",
-								"{@spell grasping vine}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell insect plague}",
-								"{@spell tree stride}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell wall of thorns}"
-							]
-						}
-					}
-				},
-				{
-					"name": "Variant: Prophecy Coven",
-					"headerEntries": [
-						"For a prophecy coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
-					],
-					"spells": {
-						"1": {
-							"slots": 4,
-							"spells": [
-								"{@spell bane}",
-								"{@spell bless}"
-							]
-						},
-						"2": {
-							"slots": 3,
-							"spells": [
-								"{@spell augury}",
-								"{@spell detect thoughts}"
-							]
-						},
-						"3": {
-							"slots": 3,
-							"spells": [
-								"{@spell clairvoyance}",
-								"{@spell dispel magic}",
-								"{@spell nondetection}"
-							]
-						},
-						"4": {
-							"slots": 3,
-							"spells": [
-								"{@spell arcane eye}",
-								"{@spell locate creature}"
-							]
-						},
-						"5": {
-							"slots": 2,
-							"spells": [
-								"{@spell geas}",
-								"{@spell legend lore}"
-							]
-						},
-						"6": {
-							"slots": 1,
-							"spells": [
-								"{@spell true seeing}"
-							]
-						}
-					}
 				}
 			],
 			"trait": [
@@ -2173,20 +1998,6 @@
 					"entries": [
 						"The hag can move across and climb icy surfaces without needing to make an ability check. Additionally, difficult terrain composed of ice or snow doesn't cost her extra moment."
 					]
-				},
-				{
-					"name": "Hag Coven",
-					"entries": [
-						"When hags must work together, they form covens, in spite of their selfish natures. A coven is made up of hags of any type, all of whom are equals within the group. However, each of the hags continues to desire more personal power.",
-						"A coven consists of three hags so that any arguments between two hags can be settled by the third. If more than three hags ever come together, as might happen if two covens come into conflict, the result is usually chaos."
-					]
-				},
-				{
-					"name": "Hag Eye (Coven Only)",
-					"entries": [
-						"A hag coven can craft a magic item called a hag eye, which is made from a real eye coated in varnish and often fitted to a pendant or other wearable item. The hag eye is usually entrusted to a minion for safekeeping and transport. A hag in the coven can take an action to see what the hag eye sees if the hag eye is on the same plane of existence. A hag eye has AC 10, 1 hit point, and darkvision with a radius of 60 feet. If it is destroyed, each coven member takes {@dice 3d10} psychic damage and is {@condition blinded} for 24 hours.",
-						"A hag coven can have only one hag eye at a time, and creating a new one requires all three members of the coven to perform a ritual. The ritual takes 1 hour, and the hags can't perform it while {@condition blinded}. During the ritual, if the hags take any action other than performing the ritual, they must start over."
-					]
 				}
 			],
 			"action": [
@@ -2200,6 +2011,253 @@
 					"name": "Maddening Feast",
 					"entries": [
 						"The hag feasts on the corpse of one enemy within 5 feet of her that died within the past minute. Each creature of the hag's choice that is within 60 feet of her and able to see her must succeed on a {@dc 15} Wisdom saving throw or be {@condition frightened} of her for 1 minute. While {@condition frightened} in this way, a creature is {@condition incapacitated}, can't understand what others say, can't read, and speaks only in gibberish; the DM controls the creature's movement, which is erratic. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the hag's Maddening Feast for the next 24 hours."
+					]
+				}
+			],
+			"legendaryGroup": {
+				"name": "Bheur Hag",
+				"source": "VGM"
+			},
+			"variant": [
+				{
+					"type": "inset",
+					"name": "Hag Covens",
+					"entries": [
+						"When hags must work together, they form covens, in spite of their selfish natures. A coven is made up of hags of any type, all of whom are equals within the group. However, each of the hags continues to desire more personal power.",
+						"A coven consists of three hags so that any arguments between two hags can be settled by the third. If more than three hags ever come together, as might happen if two covens come into conflict, the result is usually chaos.",
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"While all three members of a hag coven are within 30 feet of one another, they can each cast the following spells from the wizard's spell list but must share the spell slots among themselves:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell identify}",
+										"{@spell ray of sickness}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell hold person}",
+										"{@spell locate object}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell bestow curse}",
+										"{@spell counterspell}",
+										"{@spell lightning bolt}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell phantasmal killer}",
+										"{@spell polymorph}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell contact other plane}",
+										"{@spell scrying}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell eyebite}"
+									]
+								}
+							},
+							"footerEntries": [
+								"For casting these spells, each hag is a 12th-level spellcaster that uses Intelligence as her spellcasting ability. The spell save DC is 12 + the hag's Intelligence modifier, and the spell attack bonus is 4 + the hag's Intelligence modifier."
+							]
+						},
+						{
+							"type": "entries",
+							"name": "Hag Eye",
+							"entries": [
+								"A hag coven can craft a magic item called a hag eye, which is made from a real eye coated in varnish and often fitted to a pendant or other wearable item. The hag eye is usually entrusted to a minion for safekeeping and transport. A hag in the coven can take an action to see what the hag eye sees if the hag eye is on the same plane of existence. A hag eye has AC 10, 1 hit point, and darkvision with a radius of 60 feet. If it is destroyed, each coven member takes {@dice 3d10} psychic damage and is {@condition blinded} for 24 hours.",
+								"A hag coven can have only one hag eye at a time, and creating a new one requires all three members of the coven to perform a ritual. The ritual takes 1 hour, and the hags can't perform it while {@condition blinded}. During the ritual, if the hags take any action other than performing the ritual, they must start over."
+							]
+						}
+					]
+				},
+				{
+					"type": "variant",
+					"name": "Death Coven",
+					"entries": [
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"For a death coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell false life}",
+										"{@spell inflict wounds}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell gentle repose}",
+										"{@spell ray of enfeeblement}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell animate dead}",
+										"{@spell revivify}",
+										"{@spell speak with dead}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell blight}",
+										"{@spell death ward}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell contagion}",
+										"{@spell raise dead}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell circle of death}"
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"type": "variant",
+					"name": "Nature Coven",
+					"entries": [
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"For a nature coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell entangle}",
+										"{@spell speak with animals}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell flaming sphere}",
+										"{@spell moonbeam}",
+										"{@spell spike growth}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell call lightning}",
+										"{@spell plant growth}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell dominate beast}",
+										"{@spell grasping vine}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell insect plague}",
+										"{@spell tree stride}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell wall of thorns}"
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"type": "variant",
+					"name": "Prophecy Coven",
+					"entries": [
+						{
+							"type": "spellcasting",
+							"name": "Shared Spellcasting (Coven Only)",
+							"headerEntries": [
+								"For a prophecy coven, replace the spell list of the hags' Shared Spellcasting trait with the following spells:"
+							],
+							"spells": {
+								"1": {
+									"slots": 4,
+									"spells": [
+										"{@spell bane}",
+										"{@spell bless}"
+									]
+								},
+								"2": {
+									"slots": 3,
+									"spells": [
+										"{@spell augury}",
+										"{@spell detect thoughts}"
+									]
+								},
+								"3": {
+									"slots": 3,
+									"spells": [
+										"{@spell clairvoyance}",
+										"{@spell dispel magic}",
+										"{@spell nondetection}"
+									]
+								},
+								"4": {
+									"slots": 3,
+									"spells": [
+										"{@spell arcane eye}",
+										"{@spell locate creature}"
+									]
+								},
+								"5": {
+									"slots": 2,
+									"spells": [
+										"{@spell geas}",
+										"{@spell legend lore}"
+									]
+								},
+								"6": {
+									"slots": 1,
+									"spells": [
+										"{@spell true seeing}"
+									]
+								}
+							}
+						}
 					]
 				}
 			],
@@ -6832,7 +6890,7 @@
 				{
 					"name": "Extra Heads",
 					"entries": [
-						"The giant has a 25 percent chance of having more than one head. If it has more than one, it has advantage on Wisdom ({@skill Perception}) checks and on saving throws against being {@condition blinded}, {@condition charmed}, {@condition deafened}, {@condition frightened}, {@condition stunned}, or knocked {@condition unconscious}."
+						"The giant has a {@chance 25|25 percent} chance of having more than one head. If it has more than one, it has advantage on Wisdom ({@skill Perception}) checks and on saving throws against being {@condition blinded}, {@condition charmed}, {@condition deafened}, {@condition frightened}, {@condition stunned}, or knocked {@condition unconscious}."
 					]
 				},
 				{
@@ -15908,7 +15966,7 @@
 				{
 					"name": "Kiss",
 					"entries": [
-						"The vargouille kisses one {@condition incapacitated} humanoid within 5 feet of it. The target must succeed on a {@dc 12} Charisma saving throw or become cursed. The cursed target loses 1 point of Charisma after each hour, as its head takes on fiendish aspects. The curse doesn't advance while the target is in sunlight or the area of a daylight spell; don't count that time. When the cursed target's Charisma becomes 2, it dies, and its head tears from its body and becomes a new vargouille. Casting {@spell remove curse}, {@spell greater restoration}, or a similar spell on the target before the transformation is complete can end the curse. Doing so undoes the changes made to the target by the curse."
+						"The vargouille kisses one {@condition incapacitated} humanoid within 5 feet of it. The target must succeed on a {@dc 12} Charisma saving throw or become cursed. The cursed target loses 1 point of Charisma after each hour, as its head takes on fiendish aspects. The curse doesn't advance while the target is in sunlight or the area of a {@spell daylight} spell; don't count that time. When the cursed target's Charisma becomes 2, it dies, and its head tears from its body and becomes a new vargouille. Casting {@spell remove curse}, {@spell greater restoration}, or a similar spell on the target before the transformation is complete can end the curse. Doing so undoes the changes made to the target by the curse."
 					]
 				},
 				{

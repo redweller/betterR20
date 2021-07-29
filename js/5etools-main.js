@@ -336,6 +336,11 @@ const betteR205etoolsMain = function () {
 			"default": true,
 			"_type": "boolean"
 		},
+		"tokenactionsExpanded": {
+			"name": "Expand TokenAction Macros on Import (Legendary / Mythic)",
+			"default": false,
+			"_type": "boolean"
+		},
 		"tokenactionsTraits": {
 			"name": "Add TokenAction Macros on Import (Traits)",
 			"default": true,
@@ -1212,62 +1217,6 @@ const betteR205etoolsMain = function () {
 			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
 
 			// Add skills
-			async function chooseSkills (from, count) {
-				return new Promise((resolve, reject) => {
-					const $dialog = $(`
-						<div title="Choose Skills">
-							<div name="remain" style="font-weight: bold">Remaining: ${count}</div>
-							<div>
-								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-skill="${it}" type="checkbox"></label>`).join("")}
-							</div>
-						</div>
-					`).appendTo($("body"));
-					const $remain = $dialog.find(`[name="remain"]`);
-					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
-
-					$cbSkill.on("change", function () {
-						const $e = $(this);
-						let selectedCount = getSelected().length;
-						if (selectedCount > count) {
-							$e.prop("checked", false);
-							selectedCount--;
-						}
-						$remain.text(`Remaining: ${count - selectedCount}`);
-					});
-
-					function getSelected () {
-						return $cbSkill.map((i, e) => ({skill: $(e).data("skill"), selected: $(e).prop("checked")})).get()
-							.filter(it => it.selected).map(it => it.skill);
-					}
-
-					$dialog.dialog({
-						dialogClass: "no-close",
-						buttons: [
-							{
-								text: "Cancel",
-								click: function () {
-									$(this).dialog("close");
-									$dialog.remove();
-									reject(`User cancelled the prompt`);
-								}
-							},
-							{
-								text: "OK",
-								click: function () {
-									const selected = getSelected();
-									if (selected.length === count) {
-										$(this).dialog("close");
-										$dialog.remove();
-										resolve(selected);
-									} else {
-										alert(`Please select ${count} skill${count === 1 ? "" : "s"}`);
-									}
-								}
-							}
-						]
-					})
-				});
-			}
 
 			async function chooseSkillsGroup (options) {
 				return new Promise((resolve, reject) => {
@@ -1317,7 +1266,14 @@ const betteR205etoolsMain = function () {
 					const choose = item.choose;
 					const sansExisting = choose.from.filter(it => !skills.includes(it));
 					const count = choose.count || 1;
-					const chosenSkills = await chooseSkills(sansExisting, count);
+					const chosenSkills = await d20plus.ui.chooseCheckboxList(
+						sansExisting,
+						"Choose Skills",
+						{
+							count,
+							displayFormatter: (it => it.toTitleCase()), messageCountIncomplete: `Please select ${count} skill${count === 1 ? "" : "s"}`
+						},
+					);
 					chosenSkills.forEach(it => skills.push(it));
 				}
 			}
@@ -1335,63 +1291,6 @@ const betteR205etoolsMain = function () {
 			// Add Proficiencies (mainly language and tool, but extendable)
 			// Skills are still done Giddy's way so I don't need to mess with his code (and I couldn't easily convert his code to my method)
 			// Note: Doing this mostly stealing from Giddy's code
-			async function chooseProfs (from, count, profType) {
-				// Shamelessly stolen from Giddy
-				return new Promise((resolve, reject) => {
-					const $dialog = $(`
-						<div title="Choose ${profType}">
-							<div name="remain" style="font-weight: bold">Remaining: ${count}</div>
-							<div>
-								${from.map(it => `<label class="split"><span>${it.toTitleCase()}</span> <input data-prof="${it}" type="checkbox"></label>`).join("")}
-							</div>
-						</div>
-					`).appendTo($("body"));
-					const $remain = $dialog.find(`[name="remain"]`);
-					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
-
-					$cbSkill.on("change", function () {
-						const $e = $(this);
-						let selectedCount = getSelected().length;
-						if (selectedCount > count) {
-							$e.prop("checked", false);
-							selectedCount--;
-						}
-						$remain.text(`Remaining: ${count - selectedCount}`);
-					});
-
-					function getSelected () {
-						return $cbSkill.map((i, e) => ({skill: $(e).data("prof"), selected: $(e).prop("checked")})).get()
-							.filter(it => it.selected).map(it => it.skill);
-					}
-
-					$dialog.dialog({
-						dialogClass: "no-close",
-						buttons: [
-							{
-								text: "Cancel",
-								click: function () {
-									$(this).dialog("close");
-									$dialog.remove();
-									reject(`User cancelled the prompt`);
-								}
-							},
-							{
-								text: "OK",
-								click: function () {
-									const selected = getSelected();
-									if (selected.length === count) {
-										$(this).dialog("close");
-										$dialog.remove();
-										resolve(selected);
-									} else {
-										alert(`Please select ${count} language${count === 1 ? "" : "s"}`);
-									}
-								}
-							}
-						]
-					})
-				});
-			}
 
 			async function chooseProfsGroup (options, profType) {
 				// For when there are two separate ways to choose languages
@@ -1444,7 +1343,15 @@ const betteR205etoolsMain = function () {
 						// If choice is needed, call popup function
 						let numChoice = 1;
 						if (value.count) numChoice = value.count;
-						const choice = await chooseProfs(value.from, numChoice, profType);
+						const choice = await d20plus.ui.chooseCheckboxList(
+							value.from,
+							`Choose ${profType}`,
+							{
+								count: numChoice,
+								displayFormatter: (it => it.toTitleCase()),
+								messageCountIncomplete: `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`
+							},
+						);
 						choice.forEach(c => ret.push(c));
 					}
 					else if (key === "anyStandard") {
@@ -1488,8 +1395,10 @@ const betteR205etoolsMain = function () {
 			}
 
 			// Import items
-			async function parseItems(itemlist) {
+			async function importItemsAndGetGold(itemlist) {
 				const allitemList = await Renderer.item.pBuildList();
+				let containedGold = 0;
+
 				const x = Object.values(itemlist).map(function (item) {
 					// Returns a standardized object from a very unstandardized object
 					// Get the important variables
@@ -1503,6 +1412,8 @@ const betteR205etoolsMain = function () {
 					else if ('special' in item) {
 						iname = item.special;
 					}
+
+					if (item.containsValue) containedGold += item.containsValue/100;
 
 					// Make the input object
 					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
@@ -1521,6 +1432,8 @@ const betteR205etoolsMain = function () {
 				};
 
 				importItem(character, allItems, null);
+
+				return containedGold;
 			}
 
 			async function  chooseItemsFromBackground (itemChoices) {
@@ -1562,17 +1475,19 @@ const betteR205etoolsMain = function () {
 				});
 			}
 
+		    let startingGold = 0;
+
 			if (bg.startingEquipment) {
 				for (const equip of bg.startingEquipment) {
 					// Loop because there can be any number of objects and in any order
 					if (equip._) {
 						// The _ property means not a will be imported
-						parseItems(equip._);
+						startingGold += await importItemsAndGetGold(equip._);
 					}
 					else {
 						// Otherwise there is a choice of what to import
 						const itemchoicefrombackgorund = await chooseItemsFromBackground(equip);
-                		parseItems(equip[itemchoicefrombackgorund]);
+                		startingGold += await importItemsAndGetGold(equip[itemchoicefrombackgorund]);
 					}
 				}
 			}
@@ -1583,6 +1498,7 @@ const betteR205etoolsMain = function () {
 
 			if (d20plus.sheet === "ogl") {
 				attrs.addOrUpdate("background", bg.name);
+				attrs.addOrUpdate("gp", startingGold);
 
 				attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
 				attrs.add(`repeating_traits_${fRowId}_source`, "Background");
@@ -1660,6 +1576,7 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_traits_${fRowId}_source_type`, race.name);
 					attrs.add(`repeating_traits_${fRowId}_description`, e.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+					if (race._baseName === "Halfling" && e.name === "Lucky") attrs.addOrUpdate(`halflingluck_flag`, "1");
 				});
 
 				if (race.languageProficiencies && race.languageProficiencies.length) {
@@ -1904,79 +1821,15 @@ const betteR205etoolsMain = function () {
 
 			importClassGeneral(attrs, clss, maxLevel);
 
-			async function chooseSource(from, count) {
-				return new Promise((resolve, reject) => {
-					const $dialog = $(`
-						<div title="Choose Feature Sources">
-							
-							<div>
-								${from
-									.map(
-										(it) =>
-											`<label class="split"><span>${it}</span> <input data-skill="${it}" type="checkbox"></label>`
-									)
-									.join("")}
-							</div>
-							<p> <br></p>
-							<div style="font-weight: bold">WARNING: TCE and UA may import features that are duplicates or mutually exclusive with PHB.</div>
-						</div>
-					`).appendTo($("body"));
-					const $remain = $dialog.find(`[name="remain"]`);
-					const $cbSkill = $dialog.find(`input[type="checkbox"]`);
-					console.log($cbSkill);
-
-					function getSelected() {
-						return $cbSkill
-							.map((i, e) => ({
-								skill: $(e).data("skill"),
-								selected: $(e).prop("checked"),
-							}))
-							.get()
-							.filter((it) => it.selected)
-							.map((it) => it.skill);
-					}
-
-					$dialog.dialog({
-						dialogClass: "no-close",
-						buttons: [
-							{
-								text: "Cancel",
-								click: function () {
-									$(this).dialog("close");
-									$dialog.remove();
-									reject(`User cancelled the prompt`);
-								},
-							},
-							{
-								text: "OK",
-								click: function () {
-									const selected = getSelected();
-									if (selected.length > 0) {
-										$(this).dialog("close");
-										$dialog.remove();
-										resolve(selected);
-									} else {
-										alert(`Please select a Source`);
-									}
-								},
-							},
-						],
-					});
-				});
-			}
-			
-			let featureSourceWhitelist = await chooseSource(
-				["Player's Handbook (PHB)", "Tasha's Cauldron of Everything (TCE)", "Unearthed Arcana (UA)"],
-				4
+			let featureSourceBlacklist = await d20plus.ui.chooseCheckboxList(
+				[SRC_TCE, SRC_UACFV],
+				"Choose Variant/Optional Feature Sources to Exclude",
+				{
+					note: "Choosing to exclude a source will prevent its features from being added to your sheet.",
+					displayFormatter: (it => Parser.sourceJsonToFull(it)),
+				}
 			);
-			
-			//changing the answers to match the database
-			featureSourceWhitelist = featureSourceWhitelist.map((element) => {
-				if (element === "Player's Handbook (PHB)") return "PHB"
-				if (element === "Tasha's Cauldron of Everything (TCE)") return "TCE"
-				if (element === "Unearthed Arcana (UA)") return "UAClassFeatureVariants"
-			});
-			
+
 			for (let i = 0; i < maxLevel; i++) {
 				const level = i + 1;
 				if (!levels.has(level)) continue;
@@ -1985,7 +1838,11 @@ const betteR205etoolsMain = function () {
 				for (let j = 0; j < lvlFeatureList.length; j++) {
 					const feature = lvlFeatureList[j];
 					// don't add "you gain a subclass feature" or ASI's
-					if (!feature.gainSubclassFeature && feature.name !== "Ability Score Improvement" &&	featureSourceWhitelist.includes(feature.source)) {
+					if (
+						!feature.gainSubclassFeature
+						&& feature.name !== "Ability Score Improvement"
+						&& (!feature.isClassFeatureVariant || !featureSourceBlacklist.includes(feature.source))
+					) {
 						const renderStack = [];
 						renderer.recursiveRender({entries: feature.entries}, renderStack);
 						feature.text = d20plus.importer.getCleanText(renderStack.join(""));
@@ -2359,66 +2216,6 @@ const betteR205etoolsMain = function () {
 
 		function importItem (character, data, event) {
 			if (d20plus.sheet == "ogl") {
-				if (data.data._versatile) {
-					setTimeout(() => {
-						const rowId = d20plus.ut.generateRowId();
-
-						function makeItemTrait (key, val) {
-							const toSave = character.model.attribs.create({
-								name: `repeating_attack_${rowId}_${key}`,
-								current: val
-							}).save();
-							toSave.save();
-						}
-
-						const attr = (data.data["Item Type"] || "").includes("Melee") ? "strength" : "dexterity";
-						const attrTag = `@{${attr}_mod}`;
-
-						const proficiencyBonus = character.model.attribs.toJSON().find(it => it.name.includes("pb"));
-						const attrToFind = character.model.attribs.toJSON().find(it => it.name === attr);
-						const attrBonus = attrToFind ? Parser.getAbilityModNumber(Number(attrToFind.current)) : 0;
-
-						// This links the item to the attack, and vice-versa.
-						// Unfortunately, it doesn't work,
-						//   because Roll20 thinks items<->attacks is a 1-to-1 relationship.
-						/*
-						let lastItemId = null;
-						try {
-							const items = character.model.attribs.toJSON().filter(it => it.name.includes("repeating_inventory"));
-							const lastItem = items[items.length - 1];
-							lastItemId = lastItem.name.replace(/repeating_inventory_/, "").split("_")[0];
-
-							// link the inventory item to this attack
-							const toSave = character.model.attribs.create({
-								name: `repeating_inventory_${lastItemId}_itemattackid`,
-								current: rowId
-							});
-							toSave.save();
-						} catch (ex) {
-							console.error("Failed to get last item ID");
-							console.error(ex);
-						}
-
-						if (lastItemId) {
-							makeItemTrait("itemid", lastItemId);
-						}
-						*/
-
-						makeItemTrait("options-flag", "0");
-						makeItemTrait("atkname", data.name);
-						makeItemTrait("dmgbase", data.data._versatile);
-						makeItemTrait("dmgtype", data.data["Damage Type"]);
-						makeItemTrait("atkattr_base", attrTag);
-						makeItemTrait("dmgattr", attrTag);
-						makeItemTrait("rollbase_dmg", `@{wtype}&{template:dmg} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-						makeItemTrait("rollbase_crit", `@{wtype}&{template:dmg} {{crit=1}} {{rname=@{atkname}}} @{atkflag} {{range=@{atkrange}}} @{dmgflag} {{dmg1=[[${data.data._versatile}+${attrBonus}]]}} {{dmg1type=${data.data["Damage Type"]} }} @{dmg2flag} {{dmg2=[[0]]}} {{dmg2type=}} {{crit1=[[${data.data._versatile}]]}} {{crit2=[[0]]}} @{saveflag} {{desc=@{atk_desc}}} @{hldmg}  {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globaldamage=[[0]]}} {{globaldamagecrit=[[0]]}} {{globaldamagetype=@{global_damage_mod_type}}} @{charname_output}`);
-						if (proficiencyBonus) {
-							makeItemTrait("atkbonus", `+${Number(proficiencyBonus.current) + attrBonus}`);
-						}
-						makeItemTrait("atkdmgtype", `${data.data._versatile}${attrBonus > 0 ? `+${attrBonus}` : attrBonus < 0 ? attrBonus : ""} ${data.data["Damage Type"]}`);
-						makeItemTrait("rollbase", "@{wtype}&{template:atk} {{mod=@{atkbonus}}} {{rname=[@{atkname}](~repeating_attack_attack_dmg)}} {{rnamec=[@{atkname}](~repeating_attack_attack_crit)}} {{r1=[[@{d20}cs>@{atkcritrange} + 2[PROF]]]}} @{rtype}cs>@{atkcritrange} + 2[PROF]]]}} {{range=@{atkrange}}} {{desc=@{atk_desc}}} {{spelllevel=@{spelllevel}}} {{innate=@{spell_innate}}} {{globalattack=@{global_attack_mod}}} ammo=@{ammo} @{charname_output}");
-					}, 350); // defer this, so we can hopefully pull item ID
-				}
 
 				// for packs, etc
 				if (data._subItems) {
@@ -4463,14 +4260,18 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		return "@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npctrait_$" + index + "_name}}} {{description=@{selected|repeating_npctrait_$" + index + "_desc} }}";
 	};
 
-	d20plus.actionMacroAction = function (index) {
-		return "%{selected|repeating_npcaction_$" + index + "_npc_action}";
+	d20plus.actionMacroAction = function (baseAction, index) {
+		return "%{selected|" + baseAction + "_$" + index + "_npc_action}";
 	};
 
 	d20plus.actionMacroReaction = "@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$0_name}}} {{description=@{selected|repeating_npcreaction_$0_desc} }} ";
 
 	d20plus.actionMacroLegendary = function (tokenactiontext) {
 		return "@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r" + tokenactiontext + "}} ";
+	}
+
+	d20plus.actionMacroMythic = function (tokenactiontext) {
+		return "@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Mythic Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} mythic actions, choosing from the options below. Only one mythic option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent mythic actions at the start of its turn.\n\r" + tokenactiontext + "}} ";
 	}
 };
 

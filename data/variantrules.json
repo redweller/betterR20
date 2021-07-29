@@ -395,7 +395,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"These rules for magic item creation are derived from the system presented in Xanathar's Guide to Everything. This also offers the idea that the creation of a magic item is a complex procedure and that complications can arise. If you use this rule, there's a 10 percent chance of a complication arising for every five workweeks spent on crafting the item. Xanathar's Guide presents a number of possible complications. Here are few tied to Eberron.",
+						"These rules for magic item creation are derived from the system presented in Xanathar's Guide to Everything. This also offers the idea that the creation of a magic item is a complex procedure and that complications can arise. If you use this rule, there's a {@chance 10|10 percent} chance of a complication arising for every five workweeks spent on crafting the item. Xanathar's Guide presents a number of possible complications. Here are few tied to Eberron.",
 						{
 							"type": "table",
 							"colLabels": [
@@ -1075,7 +1075,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Characters who carouse risk bar brawls, accumulating a cloud of nasty rumors, and building a bad reputation around town. As a rule of thumb, a character has a 10 percent chance of triggering a complication for each workweek of carousing.",
+						"Characters who carouse risk bar brawls, accumulating a cloud of nasty rumors, and building a bad reputation around town. As a rule of thumb, a character has a {@chance 10|10 percent} chance of triggering a complication for each workweek of carousing.",
 						{
 							"type": "table",
 							"caption": "Lower-Class Carousing Complications",
@@ -1240,8 +1240,8 @@
 			"ruleType": "O",
 			"entries": [
 				"Magic items are the DM's purview, so you decide how they fall into the party's possession. As an option, you can allow player characters to craft magic items.",
-				"The creation of a magic item is a lengthy, expensive task. To start, a character must have a formula that describes the construction of the item. The character must also be a spellcaster with spell slots and must be able to cast any spells that the item can produce. Moreover, the character must meet a level minimum determined by the item's rarity, as shown in the Crafting Magic Items table. For example, a 3rd-level character could create a wand of magic missiles (an uncommon item), as long as the character has spell slots and can cast magic missile. That same character could make a +1 weapon (another uncommon item), no particular spell required.",
-				"You can decide that certain items also require special materials or locations to be created. For example, a character might need {@item alchemist's supplies|phb} to brew a particular potion, or the formula for a flame tongue might require that the weapon be forged with lava.",
+				"The creation of a magic item is a lengthy, expensive task. To start, a character must have a formula that describes the construction of the item. The character must also be a spellcaster with spell slots and must be able to cast any spells that the item can produce. Moreover, the character must meet a level minimum determined by the item's rarity, as shown in the Crafting Magic Items table. For example, a 3rd-level character could create a {@item wand of magic missiles} (an uncommon item), as long as the character has spell slots and can cast {@spell magic missile}. That same character could make a {@item +1 weapon} (another uncommon item), no particular spell required.",
+				"You can decide that certain items also require special materials or locations to be created. For example, a character might need {@item alchemist's supplies|phb} to brew a particular potion, or the formula for a {@item flame tongue} might require that the weapon be forged with lava.",
 				{
 					"type": "table",
 					"caption": "Crafting Magic Items",
@@ -1445,7 +1445,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Most of the complications involved in creating something, especially a magic item, are linked to the difficulty in finding rare ingredients or components needed to complete the work. The complications a character might face as byproducts of the creation process are most interesting when the characters are working on a magic item: there's a 10 percent chance for every five workweeks spent on crafting an item that a complication occurs. The Crafting Complications table provides examples of what might happen.",
+						"Most of the complications involved in creating something, especially a magic item, are linked to the difficulty in finding rare ingredients or components needed to complete the work. The complications a character might face as byproducts of the creation process are most interesting when the characters are working on a magic item: there's a {@chance 10|10 percent} chance for every five workweeks spent on crafting an item that a complication occurs. The Crafting Complications table provides examples of what might happen.",
 						{
 							"type": "table",
 							"caption": "Crafting Complications",
@@ -1716,7 +1716,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Gambling tends to attract unsavory individuals. The potential complications involved come from run-ins with the law and associations with various criminals tied to the activity. Every workweek spent gambling brings a 10 percent chance of a complication, examples of which are on the Gambling Complications table.",
+						"Gambling tends to attract unsavory individuals. The potential complications involved come from run-ins with the law and associations with various criminals tied to the activity. Every workweek spent gambling brings a {@chance 10|10 percent} chance of a complication, examples of which are on the Gambling Complications table.",
 						{
 							"type": "table",
 							"caption": "Gambling Complications",
@@ -1830,7 +1830,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Characters involved in pit fighting must deal with their opponents, the people who bet on matches, and the matches' promoters. Every workweek spent pit fighting brings a 10 percent chance of a complication, examples of which are on the Pit Fighting Complications table.",
+						"Characters involved in pit fighting must deal with their opponents, the people who bet on matches, and the matches' promoters. Every workweek spent pit fighting brings a {@chance 10|10 percent} chance of a complication, examples of which are on the Pit Fighting Complications table.",
 						{
 							"type": "table",
 							"caption": "Pit Fighting Complications",
@@ -1961,7 +1961,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Temples can be labyrinths of political and social scheming. Even the best-intentioned sect can fall prone to rivalries. A character who serves a temple risks becoming embroiled in such struggles. Every workweek spent in religious service brings a 10 percent chance of a complication, examples of which are on the Religious Service Complications table.",
+						"Temples can be labyrinths of political and social scheming. Even the best-intentioned sect can fall prone to rivalries. A character who serves a temple risks becoming embroiled in such struggles. Every workweek spent in religious service brings a {@chance 10|10 percent} chance of a complication, examples of which are on the Religious Service Complications table.",
 						{
 							"type": "table",
 							"caption": "Religious Service Complications",
@@ -2066,7 +2066,7 @@
 					"name": "Complications",
 					"entries": [
 						"The greatest risk in research is uncovering false information. Not all lore is accurate or truthful, and a rival with a scholarly bent might try to lead the character astray, especially if the object of the research is known to the rival. The rival might plant false information, bribe sages to give bad advice, or steal key tomes needed to find the truth.",
-						"In addition, a character might run into other complications during research. Every workweek spent in research brings a 10 percent chance of a complication, examples of which are on the Research Complications table.",
+						"In addition, a character might run into other complications during research. Every workweek spent in research brings a {@chance 10|10 percent} chance of a complication, examples of which are on the Research Complications table.",
 						{
 							"type": "table",
 							"caption": "Research Complications",
@@ -2251,7 +2251,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Crafting a spell scroll is a solitary task, unlikely to attract much attention. The complications that arise are more likely to involve the preparation needed for the activity. Every workweek spent scribing brings a 10 percent chance of a complication, examples of which are on the Scribe a Scroll Complications table.",
+						"Crafting a spell scroll is a solitary task, unlikely to attract much attention. The complications that arise are more likely to involve the preparation needed for the activity. Every workweek spent scribing brings a {@chance 10|10 percent} chance of a complication, examples of which are on the Scribe a Scroll Complications table.",
 						{
 							"type": "table",
 							"caption": "Scribe a Scroll Complications",
@@ -2386,7 +2386,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"The main risk in selling a magic item lies in attracting thieves and anyone else who wants the item but doesn't want to pay for it. Other folk might try to undermine a deal in order to bolster their own business or seek to discredit the character as a legitimate seller. Every workweek spent trying to sell an item brings a 10 percent chance of a complication, examples of which are on the Magic Item Sale Complications table.",
+						"The main risk in selling a magic item lies in attracting thieves and anyone else who wants the item but doesn't want to pay for it. Other folk might try to undermine a deal in order to bolster their own business or seek to discredit the character as a legitimate seller. Every workweek spent trying to sell an item brings a {@chance 10|10 percent} chance of a complication, examples of which are on the Magic Item Sale Complications table.",
 						{
 							"type": "table",
 							"caption": "Magic Item Sale Complications",
@@ -2582,7 +2582,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Complications that arise while training typically involve the teacher. Every ten workweeks spent in training brings a 10 percent chance of a complication, examples of which are on the Training Complications table.",
+						"Complications that arise while training typically involve the teacher. Every ten workweeks spent in training brings a {@chance 10|10 percent} chance of a complication, examples of which are on the Training Complications table.",
 						{
 							"type": "table",
 							"caption": "Training Complications",
@@ -2730,7 +2730,7 @@
 					"type": "entries",
 					"name": "Complications",
 					"entries": [
-						"Ordinary work is rarely filled with significant complications. Still, the Work Complications table can add some difficulties to a worker's life. Each workweek of activity brings a 10 percent chance that a character encounters a complication.",
+						"Ordinary work is rarely filled with significant complications. Still, the Work Complications table can add some difficulties to a worker's life. Each workweek of activity brings a {@chance 10|10 percent} chance that a character encounters a complication.",
 						{
 							"type": "table",
 							"caption": "Work Complications",
@@ -7991,7 +7991,7 @@
 							"name": "Time Warp",
 							"entries": [
 								"While time seems to pass normally in the Feywild, characters might spend a day there and realize, upon leaving the plane, that less or more time has elapsed everywhere else in the multiverse.",
-								"Whenever a creature or group of creatures leaves the Feywild after spending at least 1 day on that plane, you can choose a time change that works best for your campaign, if any, or roll on the Feywild Time Warp table. A wish spell can be used to remove the effect on up to ten creatures. Some powerful fey have the ability to grant such wishes and might do so if the beneficiaries agree to subject themselves to a {@spell geas} spell and complete a quest after the {@spell wish} spell is cast.",
+								"Whenever a creature or group of creatures leaves the Feywild after spending at least 1 day on that plane, you can choose a time change that works best for your campaign, if any, or roll on the Feywild Time Warp table. A {@spell wish} spell can be used to remove the effect on up to ten creatures. Some powerful fey have the ability to grant such wishes and might do so if the beneficiaries agree to subject themselves to a {@spell geas} spell and complete a quest after the {@spell wish} spell is cast.",
 								{
 									"type": "table",
 									"caption": "Feywild Time Warp",
@@ -14296,7 +14296,7 @@
 							"name": "Other Events",
 							"entries": [
 								"In addition to rough seas and daunting weather, a ship might face a number of other threats.",
-								"The hazards below serve as examples of what can go wrong on a ship. Each one requires a different officer to spend a day dealing with the hazard instead of engaging in other activity. As a rule of thumb, there is a 10 percent chance each day that one of the following events occurs.",
+								"The hazards below serve as examples of what can go wrong on a ship. Each one requires a different officer to spend a day dealing with the hazard instead of engaging in other activity. As a rule of thumb, there is a {@chance 10|10 percent} chance each day that one of the following events occurs.",
 								{
 									"type": "entries",
 									"name": "Emergency Maneuvers",
@@ -15341,7 +15341,7 @@
 									"type": "entries",
 									"name": "W7b. Supply Closets",
 									"entries": [
-										"These supply closets held food and liturgical materials that were lost to or broken by the sea. A closet has a 25 percent chance of containing a hungry quipper and a 10 percent chance of containing an object from the 25 gp {@book Art Objects table|DMG|7|Art Objects} in chapter 7 of the {@book Dungeon Master's Guide|DMG}."
+										"These supply closets held food and liturgical materials that were lost to or broken by the sea. A closet has a {@chance 25|25 percent} chance of containing a hungry quipper and a {@chance 10|10 percent} chance of containing an object from the 25 gp {@book Art Objects table|DMG|7|Art Objects} in chapter 7 of the {@book Dungeon Master's Guide|DMG}."
 									]
 								},
 								{
