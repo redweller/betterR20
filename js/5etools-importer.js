@@ -375,6 +375,10 @@ function d20plusImporter () {
 		d20plus.importer._baseAddAction(character, "repeating_npcaction", name, actionText, "", index, true);
 	};
 
+	d20plus.importer.addBonusAction = function (character, name, actionText, index) {
+		d20plus.importer._baseAddAction(character, "repeating_npcbonusaction", name, actionText, "Bonus", index, true);
+	};
+
 	d20plus.importer.addLegendaryAction = function (character, name, actionText, index) {
 		const expand = d20plus.cfg.getOrDefault("import", "tokenactionsExpanded");
 		d20plus.importer._baseAddAction(character, "repeating_npcaction-l", name, actionText, "Legendary", index, expand);

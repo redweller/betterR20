@@ -4277,7 +4277,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		return "%{selected|" + baseAction + "_$" + index + "_npc_action}";
 	};
 
-	d20plus.actionMacroReaction = "@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$0_name}}} {{description=@{selected|repeating_npcreaction_$0_desc} }} ";
+	d20plus.actionMacroReaction = function (index) {
+		return "@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$" + index + "_name}}} {{description=@{selected|repeating_npcreaction_$" + index + "_desc} }} ";
+	};
 
 	d20plus.actionMacroLegendary = function (tokenactiontext) {
 		return "@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r" + tokenactiontext + "}} ";
