@@ -78,6 +78,12 @@ function d20plusBackgrounds () {
 
 		return [noteContents, gmNotes];
 	};
+
+	// The popup menu for choosing traits, ideals, bonds and flaws
+	// Needs to be its own thing due to having a choose randomly button
+	d20plus.backgrounds.traitMenu = function(data) {
+		// TODO: this
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusBackgrounds);

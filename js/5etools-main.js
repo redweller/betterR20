@@ -1492,6 +1492,52 @@ const betteR205etoolsMain = function () {
 				}
 			}
 
+			// Choose and import personallity traits/ideals/bonds/flaws.
+			traits = null;
+			ptrait = null; // Personallity trait
+			ideal = null;
+			bond = null;
+			flaw = null;
+			// Get the JSON for all the tables
+			if (bg.entries) {
+				for (const ent of bg.entries) {
+					if (ent.name && ent.name === "Suggested Characteristics") {
+						traits = ent;
+					}
+				}
+			}
+
+			// Fill the rows 
+			if (traits !== null && traits.entries && traits.entries.length) {
+				for (let i = 0; i < traits.entries.length; i++) {
+					ent = traits.entries[i];
+					// This seems to be the best way to parse the information with some room for errors
+					// It seems like the schema is based on on the website, which is why colLabels is where the identifier is
+					if (ent.colLabels && ent.colLabels.length == 2 && ent.rows) {
+						if (ent.colLabels[1] === "Personality Trait") {
+							ptrait = ent.rows.map(r => r[1]);
+						}
+						if (ent.colLabels[1] === "Ideal") {
+							ideal = ent.rows.map(r => r[1]);
+						}
+						if (ent.colLabels[1] === "Bond") {
+							bond = ent.rows.map(r => r[1]);
+						}
+						if (ent.colLabels[1] === "Flaw") {
+							flaw = ent.rows.map(r => r[1]);
+						}
+					}
+				}
+			}
+			console.log("Ptrait");
+			console.log(ptrait);
+			console.log("Ideal");
+			console.log(ideal);
+			console.log("Bond");
+			console.log(bond);
+			console.log("Flaw");
+			console.log(flaw);
+
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
