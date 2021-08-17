@@ -1529,14 +1529,12 @@ const betteR205etoolsMain = function () {
 					}
 				}
 			}
-			console.log("Ptrait");
-			console.log(ptrait);
-			console.log("Ideal");
-			console.log(ideal);
-			console.log("Bond");
-			console.log(bond);
-			console.log("Flaw");
-			console.log(flaw);
+
+			if (ptrait != null) {
+				traits = await d20plus.backgrounds.traitMenu(ptrait, ideal, bond, flaw);
+				console.log(traits);
+			}
+			
 
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
