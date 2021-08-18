@@ -2020,6 +2020,7 @@ function baseTool() {
 				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
 				<label style="font-weight: bold">Root Only <input type="checkbox" class="cb-deep" checked></label>
+				<label style="font-weight: bold">Include tables <input type="checkbox" class="cb-tables"></label>
 				<hr>
 				<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
 				<div id="delete-list-container">
@@ -2041,6 +2042,7 @@ function baseTool() {
 				const $win = $("#d20plus-quickdelete");
 				$win.dialog("open");
 				const $cbDeep = $win.find(`.cb-deep`);
+				const $cbTables = $win.find(`.cb-tables`);
 
 				const $cbAll = $("#deletelist-selectall").unbind("click");
 
@@ -2091,7 +2093,28 @@ function baseTool() {
 						else return getAllJournalItems().filter(it => it);
 					}
 
+					// Allow for deleting tables as well
+					function getRollableTables() {
+						const tItems = [];
+						if ($cbTables.prop("checked")) {
+							tableObject = d20.Campaign.rollabletables;
+							for (i = 0; i < tableObject.length; i++) {
+								tAttr = tableObject.at(i).attributes;
+								tObj = {
+									name: tAttr.name,
+									id: tAttr.id,
+									type: "rollabletables",
+									table: true
+								};
+								tItems.push(tObj);
+							}
+						}
+						return tItems;
+					}
+
 					const journalItems = getJournalItems();
+					const tableItems = getRollableTables();
+					tableItems.forEach(t => journalItems.push(t));
 
 					const $delList = $win.find(`.list`);
 					$delList.empty();
@@ -2102,6 +2125,7 @@ function baseTool() {
 								<input type="checkbox">
 								<span class="name readable">${it.path ? `${it.path} / ` : ""}${it.name}</span>
 								${it.archived ? "<span class=\"name readable\">(archived)</span>" : ""}
+								${it.table ? "<span class=\"name readable\">(table)</span>" : ""}
 							</label>
 						`);
 					});
