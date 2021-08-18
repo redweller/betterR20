@@ -2097,8 +2097,10 @@ function baseTool() {
 					function getRollableTables() {
 						const tItems = [];
 						if ($cbTables.prop("checked")) {
+							// Get a tableobject from the d20 thing and loop through it
 							tableObject = d20.Campaign.rollabletables;
 							for (i = 0; i < tableObject.length; i++) {
+								// If it looks confusing, it is. Just trust that I got the objects properly
 								tAttr = tableObject.at(i).attributes;
 								tObj = {
 									name: tAttr.name,
@@ -2114,6 +2116,7 @@ function baseTool() {
 
 					const journalItems = getJournalItems();
 					const tableItems = getRollableTables();
+					// Add tables to the list
 					tableItems.forEach(t => journalItems.push(t));
 
 					const $delList = $win.find(`.list`);
