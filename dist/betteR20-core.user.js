@@ -17,6 +17,11 @@
 
 // @grant        unsafeWindow
 // @run-at       document-start
+
+// @grant        GM_webRequest
+// @webRequest   [{"selector": { "include": "*://www.google-analytics.com/analytics.js" },  "action": "cancel"}]
+// @webRequest   [{"selector": { "include": "*://cdn.userleap.com/shim.js?*" },  "action": "cancel"}]
+
 // ==/UserScript==
 
 
