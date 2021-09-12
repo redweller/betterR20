@@ -1,19 +1,19 @@
 const betteR205etoolsMain = function () {
-	const IMG_URL = BASE_SITE_URL + "img/";
+	IMG_URL = BASE_SITE_URL + "img/";
 
-	const SPELL_DATA_DIR = `${DATA_URL}spells/`;
-	const SPELL_META_URL = `${SPELL_DATA_DIR}roll20.json`;
-	const MONSTER_DATA_DIR = `${DATA_URL}bestiary/`;
-	const ADVENTURE_DATA_DIR = `${DATA_URL}adventure/`;
-	const CLASS_DATA_DIR = `${DATA_URL}class/`;
+	SPELL_DATA_DIR = `${DATA_URL}spells/`;
+	SPELL_META_URL = `${SPELL_DATA_DIR}roll20.json`;
+	MONSTER_DATA_DIR = `${DATA_URL}bestiary/`;
+	ADVENTURE_DATA_DIR = `${DATA_URL}adventure/`;
+	CLASS_DATA_DIR = `${DATA_URL}class/`;
 
-	const ITEM_DATA_URL = `${DATA_URL}items.json`;
-	const FEAT_DATA_URL = `${DATA_URL}feats.json`;
-	const PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
-	const OBJECT_DATA_URL = `${DATA_URL}objects.json`;
-	const BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
-	const OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
-	const RACE_DATA_URL = `${DATA_URL}races.json`;
+	ITEM_DATA_URL = `${DATA_URL}items.json`;
+	FEAT_DATA_URL = `${DATA_URL}feats.json`;
+	PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
+	OBJECT_DATA_URL = `${DATA_URL}objects.json`;
+	BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
+	OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
+	RACE_DATA_URL = `${DATA_URL}races.json`;
 
 	// the GitHub API has a 60 requests/hour limit per IP which we quickly hit if the user refreshes their Roll20 a couple of times
 	// embed shitty OAth2 details here to enable 5k/hour requests per IP (sending them with requests to the API relaxes the limit)
@@ -149,6 +149,16 @@ const betteR205etoolsMain = function () {
 	PC_SHEET_ATTRIBUTES["speed"] = new SheetAttribute("Speed", "speed", "speed"); // TODO check shaped
 	PC_SHEET_ATTRIBUTES["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_dc"); // TODO check shaped
 
+	addConfigOptions("website", {
+		"_name": "Website",
+		"_player": true,
+		"base": {
+			"name": "5e Tools Website (reload to apply changes)",
+			"default": "https://5e.tools",
+			"_type": "String",
+			"_player": true
+		}
+	});
 	addConfigOptions("token", {
 		"_name": "Tokens",
 		"_player": true,
