@@ -257,7 +257,7 @@ function baseTool() {
 									${players.map((pp, ii) => `<label style="margin-right: 10px; ${pp.online || ` display: none;`}" data-online="${pp.online}" class="display-inline-block">${pp.displayname} <input data-player-id="${pp.id}" type="checkbox" ${i === ii ? `checked="true"` : ""}></label>`).join("")}
 								</div>
 								<textarea style="display: block; width: 95%;" placeholder="Enter whisper" class="message"></textarea>
-							</div>						
+							</div>
 						`).append($btnSend).append($btnClear).append(`<hr>`));
 				});
 
@@ -584,8 +584,6 @@ function baseTool() {
 				});
 			},
 			openFn: () => {
-				// FIXME this doesn't work, because it saves a nonsensical blob (imgsrc) instead of defaulttoken
-				// see the working code in `initArtFromUrlButtons` for how this _should_ be done
 
 				function replaceAll (str, search, replacement) {
 					return str.split(search).join(replacement);
@@ -625,6 +623,7 @@ function baseTool() {
 						}
 						if (realC.get("defaulttoken")) {
 							realC._getLatestBlob("defaulttoken", (bl) => {
+								bl = bl && bl.trim() ? JSON.parse(bl) : {};
 								if (bl && bl.imgsrc && bl.imgsrc.includes(search)) {
 									count++;
 									realC.updateBlobs({imgsrc: replaceAll(bl.imgsrc, search, replace)});
