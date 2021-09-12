@@ -285,7 +285,7 @@ function baseTool() {
 				<br>
 				<button class="btn start-import">Import</button>
 				</div>
-				
+
 				<div id="d20plus-expanded-clipboard" title="Paste from Clipboard"/>
 				`,
 			dialogFn: () => {
@@ -422,7 +422,7 @@ function baseTool() {
 				<br>
 				<button class="btn start-import">Import</button>
 				</div>
-				
+
 				<div id="d20plus-tables-clipboard" title="Paste from Clipboard"/>
 				`,
 			dialogFn: () => {
@@ -634,6 +634,18 @@ function baseTool() {
 						if (toSave) {
 							realC.save();
 						}
+						for (const page of d20.Campaign.pages.models) {
+							if(page.thegraphics && page.thegraphics.models) {
+								for (let token of page.thegraphics.models) {
+									let tokenImgsrc = token.get("imgsrc");
+									if (tokenImgsrc.includes(search)) {
+										token.set("imgsrc", tokenImgsrc.replace(search, replace));
+										token.save();
+										count++;
+									}
+								}
+							}
+						}
 					});
 					window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
 				});
@@ -746,14 +758,14 @@ function baseTool() {
 					You can learn Token IDs by rightclicking a token -> "Advanced" -> "View Token ID."</i></p>
 					<hr>
 					<input id="token-entangle-id-1" placeholder="Master ID">
-					Type: 
+					Type:
 					<select id="token-entangle-type-1">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
 					</select>
 					<br>
 					<input id="token-entangle-id-2" placeholder="Slave ID">
-					Type:  
+					Type:
 					<select id="token-entangle-type-2">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
@@ -762,7 +774,7 @@ function baseTool() {
 					<button class="btn btn-default" id="token-entangle-go">Entangle</button>
 					<hr>
 					<input id="token-clear-entangles" placeholder="ID to Clear">
-					Type:  
+					Type:
 					<select id="token-clear-type">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
