@@ -149,16 +149,6 @@ const betteR205etoolsMain = function () {
 	PC_SHEET_ATTRIBUTES["speed"] = new SheetAttribute("Speed", "speed", "speed"); // TODO check shaped
 	PC_SHEET_ATTRIBUTES["spell_save_dc"] = new SheetAttribute("Spell Save DC", "spell_save_dc", "spell_save_dc"); // TODO check shaped
 
-	addConfigOptions("website", {
-		"_name": "Website",
-		"_player": true,
-		"base": {
-			"name": "5e Tools Website (reload to apply changes)",
-			"default": "https://5e.tools",
-			"_type": "String",
-			"_player": true
-		}
-	});
 	addConfigOptions("token", {
 		"_name": "Tokens",
 		"_player": true,
@@ -274,6 +264,12 @@ const betteR205etoolsMain = function () {
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
+		"baseSiteUrl": {
+			"name": "5e Tools Website (reload to apply changes)",
+			"default": "https://5etools-mirror-1.github.io",
+			"_type": "String",
+			"_player": true
+		},
 		"allSourcesIncludeUnofficial": {
 			"name": `Include Unofficial (UA/etc) Content in "Import Monsters From All Sources" List`,
 			"default": false,
@@ -2274,7 +2270,7 @@ const betteR205etoolsMain = function () {
 				//give it time to update the sheet
 				setTimeout(() => {
 					const rowID = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name)
-									
+
 					//crit damage
 					if (data.data.Crit && rowID) {
 						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_dmgcustcrit`, data.data.Crit)
@@ -2287,7 +2283,7 @@ const betteR205etoolsMain = function () {
 					if (data.data["Crit Range"] && rowID) d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_atkcritrange`, data.data["Crit Range"])
 				},1000)
 			}
-			
+
 			//this is working fine for spells.
 			d20plus.importer.doFakeDrop(event, character, data, null);
 
@@ -2947,7 +2943,7 @@ const betteR205etoolsMain = function () {
 			if (!_baseRace) {
 				console.warn(`${sr.race.name} parent race not found! Contact homebrew maintainer as it is probably a wrong entry`);
 				return;
-			}	
+			}
 
 			// Attempt to graft multiple subraces from the same data set onto the same base race copy
 			let baseRace = nxtData.find(r => r.name === sr.race.name && r.source === sr.race.source);

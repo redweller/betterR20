@@ -31,6 +31,8 @@ const betteR205etools = function () {
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
+			d20plus.cfg5e.updateBaseSiteUrl();
+
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
 			d20plus.bindDropLocations();
