@@ -123,36 +123,6 @@ function d20plusJournal () {
 			}
 		});
 
-		// "Duplicate" option
-		first.after("<li data-action-type=\"cloneitem\">Duplicate</li>");
-		first.after("<li style=\"height: 10px;\">&nbsp;</li>");
-		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=cloneitem]", function () {
-			var id = $currentItemTarget.attr("data-itemid");
-			var character = d20.Campaign.characters.get(id);
-			var handout = d20.Campaign.handouts.get(id);
-			d20plus.ut.log("Duplicating..");
-			if (character) {
-				character.editview.render();
-				character.editview.$el.find("button.duplicate").trigger("click");
-			}
-			if (handout) {
-				handout.view.render();
-				var json = handout.toJSON();
-				delete json.id;
-				json.name = "Copy of " + json.name;
-				handout.collection.create(json, {
-					success: function (h) {
-						handout._getLatestBlob("gmnotes", function (gmnotes) {
-							h.updateBlobs({gmnotes: gmnotes});
-						});
-						handout._getLatestBlob("notes", function (notes) {
-							h.updateBlobs({notes: notes});
-						});
-					}
-				});
-			}
-		});
-
 		// New command on FOLDERS
 		const last = $("#journalmenu ul li").last();
 		last.before("<li data-action-type=\"archiveall\">Archive All Contents</li>");
