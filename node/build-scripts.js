@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.25.1";
+const SCRIPT_VERSION = "1.26.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -206,6 +206,7 @@ const SCRIPTS = {
 			"base-jukebox-widget",
 
 			"5etools-bootstrap",
+			"5etools-config",
 			"5etools-main",
 			"5etools-importer",
 			"5etools-monsters",

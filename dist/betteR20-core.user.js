@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.25.1
+// @version      1.26.0
 // @updateURL    https://get.5e.tools/script/betteR20-core.user.js
 // @downloadURL  https://get.5e.tools/script/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -136,7 +136,7 @@ function baseUtil () {
 		d20.tddice.canRoll3D = () => false;
 	};
 
-	d20plus.ut.checkVersion = (scriptType) => {
+	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
 		function cmpVersions (a, b) {
@@ -154,24 +154,18 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
-		let scriptUrl;
-		switch (scriptType) {
-			case "core": scriptType = `https://get.5e.tools/script/betteR20-core.user.js${d20plus.ut.getAntiCacheSuffix()}`; break;
-			case "5etools": scriptType = `https://get.5e.tools/script/betteR20-5etools.user.js${d20plus.ut.getAntiCacheSuffix()}`; break;
-			default: scriptUrl = "https://get.5e.tools/"; break;
-		}
-
 		$.ajax({
-			url: `https://get.5e.tools`,
+			url: `https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-version?raw=true`,
 			success: (data) => {
-				const m = /<!--\s*(\d+\.\d+\.\d+)\s*-->/.exec(data);
-				if (m) {
+				if (data) {
 					const curr = d20plus.version;
-					const avail = m[1];
+					const avail = data;
 					const cmp = cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
-							d20plus.ut.sendHackerChat(`A newer version of betteR20 is available. Get ${avail} <a href="https://get.5e.tools/">here</a>. For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
+							const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
+							const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
+							d20plus.ut.sendHackerChat(`A newer version of betteR20 is available. Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>. For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
 						}, 1000);
 					}
 				}
@@ -2584,8 +2578,8 @@ function baseTool() {
 				<div id="d20plus-avatar-fixer" title="Better20 - Avatar Fixer">
 				<p><b>Warning:</b> this thing doesn't really work.</p>
 				<p>Current URLs (view only): <select class="view-only"></select></p>
-				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
-				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
+				<p><label>Replace:<br><input name="search" value="https://5e.tools/"></label></p>
+				<p><label>With:<br><input name="replace" value="https://5etools-mirror-1.github.io/"></label></p>
 				<p><button class="btn">Go!</button></p>
 				</div>
 				`,
@@ -10701,36 +10695,6 @@ function d20plusJournal () {
 			}
 		});
 
-		// "Duplicate" option
-		first.after("<li data-action-type=\"cloneitem\">Duplicate</li>");
-		first.after("<li style=\"height: 10px;\">&nbsp;</li>");
-		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=cloneitem]", function () {
-			var id = $currentItemTarget.attr("data-itemid");
-			var character = d20.Campaign.characters.get(id);
-			var handout = d20.Campaign.handouts.get(id);
-			d20plus.ut.log("Duplicating..");
-			if (character) {
-				character.editview.render();
-				character.editview.$el.find("button.duplicate").trigger("click");
-			}
-			if (handout) {
-				handout.view.render();
-				var json = handout.toJSON();
-				delete json.id;
-				json.name = "Copy of " + json.name;
-				handout.collection.create(json, {
-					success: function (h) {
-						handout._getLatestBlob("gmnotes", function (gmnotes) {
-							h.updateBlobs({gmnotes: gmnotes});
-						});
-						handout._getLatestBlob("notes", function (notes) {
-							h.updateBlobs({notes: notes});
-						});
-					}
-				});
-			}
-		});
-
 		// New command on FOLDERS
 		const last = $("#journalmenu ul li").last();
 		last.before("<li data-action-type=\"archiveall\">Archive All Contents</li>");
@@ -16484,7 +16448,7 @@ const betteR20Core = function () {
 		try {
 			d20plus.ut.log("Init (v" + d20plus.version + ")");
 			d20plus.ut.showLoadingMessage(scriptName);
-			d20plus.ut.checkVersion("core");
+			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
 			d20plus.template.swapTemplates();
