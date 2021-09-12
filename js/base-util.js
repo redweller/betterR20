@@ -40,7 +40,7 @@ function baseUtil () {
 		d20.tddice.canRoll3D = () => false;
 	};
 
-	d20plus.ut.checkVersion = (scriptType) => {
+	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
 		function cmpVersions (a, b) {
@@ -58,24 +58,18 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
-		let scriptUrl;
-		switch (scriptType) {
-			case "core": scriptType = `https://get.5e.tools/script/betteR20-core.user.js${d20plus.ut.getAntiCacheSuffix()}`; break;
-			case "5etools": scriptType = `https://get.5e.tools/script/betteR20-5etools.user.js${d20plus.ut.getAntiCacheSuffix()}`; break;
-			default: scriptUrl = "https://get.5e.tools/"; break;
-		}
-
 		$.ajax({
-			url: `https://get.5e.tools`,
+			url: `https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-version?raw=true`,
 			success: (data) => {
-				const m = /<!--\s*(\d+\.\d+\.\d+)\s*-->/.exec(data);
-				if (m) {
+				if (data) {
 					const curr = d20plus.version;
-					const avail = m[1];
+					const avail = data;
 					const cmp = cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
-							d20plus.ut.sendHackerChat(`A newer version of betteR20 is available. Get ${avail} <a href="https://get.5e.tools/">here</a>. For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
+							const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
+							const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
+							d20plus.ut.sendHackerChat(`A newer version of betteR20 is available. Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>. For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
 						}, 1000);
 					}
 				}

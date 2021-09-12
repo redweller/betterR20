@@ -6,7 +6,7 @@ const betteR205etools = function () {
 			d20plus.ut.log("Init (v" + d20plus.version + ")");
 			d20plus.ut.showLoadingMessage(scriptName);
 
-			d20plus.ut.checkVersion("5etools");
+			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 
 			d20plus.template.swapTemplates();
@@ -30,6 +30,8 @@ const betteR205etools = function () {
 
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
+
+			d20plus.cfg5e.updateBaseSiteUrl();
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 

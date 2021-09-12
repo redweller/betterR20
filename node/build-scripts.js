@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.25.1";
+const SCRIPT_VERSION = "1.26.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -24,8 +24,8 @@ const HEADER_CORE = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5e.tools/script/betteR20-core.user.js
-// @downloadURL  https://get.5e.tools/script/betteR20-core.user.js
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 ${matchString}
@@ -40,8 +40,8 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5e.tools/script/betteR20-5etools.user.js
-// @downloadURL  https://get.5e.tools/script/betteR20-5etools.user.js
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
 ${matchString}
@@ -206,6 +206,7 @@ const SCRIPTS = {
 			"base-jukebox-widget",
 
 			"5etools-bootstrap",
+			"5etools-config",
 			"5etools-main",
 			"5etools-importer",
 			"5etools-monsters",
@@ -237,5 +238,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	);
 	fs.writeFileSync(filename, fullScript);
 });
+
+fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
 
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);
