@@ -4,7 +4,7 @@ const betteR20Core = function () {
 		try {
 			d20plus.ut.log("Init (v" + d20plus.version + ")");
 			d20plus.ut.showLoadingMessage(scriptName);
-			d20plus.ut.checkVersion("core");
+			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
 			d20plus.template.swapTemplates();
@@ -24,7 +24,6 @@ const betteR20Core = function () {
 
 			d20plus.engine.enhanceMarkdown();
 			d20plus.engine.addProFeatures();
-			d20plus.engine.enhanceMeasureTool();
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.enhanceStatusEffects();
