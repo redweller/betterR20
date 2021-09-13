@@ -1585,15 +1585,12 @@ const betteR205etoolsMain = function () {
 
 				// Add flavor traits
 				if (traits && traits.length == 4) {
-					if (traits[0].length == 1) {
-						attrs.addOrUpdate(`personality_traits`, traits[0][0]);
-					}
-					if (traits[0].length == 2) {
-						attrs.addOrUpdate(`personality_traits`, traits[0][0] + "\n" + traits[0][1]);
-					}
-					attrs.addOrUpdate(`ideals`, traits[1][0]);
-					attrs.addOrUpdate(`bonds`, traits[2][0]);
-					attrs.addOrUpdate(`flaws`, traits[3][0]);
+					// Only add the trait if the trait has a non-zero number of options
+					if (traits[0].length == 1) attrs.addOrUpdate(`personality_traits`, traits[0][0]);
+					if (traits[0].length == 2) attrs.addOrUpdate(`personality_traits`, traits[0][0] + "\n" + traits[0][1]);
+					if (traits[1].length == 1) attrs.addOrUpdate(`ideals`, traits[1][0]);
+					if (traits[2].length == 1) attrs.addOrUpdate(`bonds`, traits[2][0]);
+					if (traits[3].length == 1) attrs.addOrUpdate(`flaws`, traits[3][0]);
 				}
 
 			} else if (d20plus.sheet === "shaped") {

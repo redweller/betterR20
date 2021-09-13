@@ -152,9 +152,9 @@ function baseUi () {
 				console.log("count is mutually exclusive with countMin and countMax, and countMin and countMax require each other.");
 				reject("Bad arguments")
 			}
-			useRange = isInt(countMax) && countMax;
+			useRange = isInt(countMin) && countMax;
 
-			// Generate the HTLM
+			// Generate the HTML
 			const $dialog = $(`
 				<div title="${dataTitle}">
 					${isInt(count) ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
@@ -205,7 +205,7 @@ function baseUi () {
 						text: "OK",
 						click: function () {
 							const selected = getSelected();
-							if (countMin && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
+							if (isInt(countMin) && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
 								$(this).dialog("close");
 								$dialog.remove();
 								resolve(selected);

@@ -84,13 +84,12 @@ function d20plusBackgrounds () {
 	d20plus.backgrounds.traitMenu = async function(ptrait, ideal, bond, flaw) {
 		// Arguments to send
 		ptraitargs = {
-			countMin: 1,
+			countMin: 0,
 			countMax: 2,
-			additionalHTML: ""
 		}
 		args = {
-			count: 1,
-			additionalHTML: ""
+			countMin: 0,
+			countMax: 1,
 		}
 		
 		// Call the menu
