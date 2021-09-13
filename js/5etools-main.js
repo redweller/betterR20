@@ -1534,6 +1534,7 @@ const betteR205etoolsMain = function () {
 						}
 					}
 				}
+				console.log([ptrait, ideal, bond, flaw]);
 			}
 
 			if (ptrait != null) {
@@ -1581,6 +1582,20 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_tool_${tRowID}_toolattr_base`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}");
 					attrs.add(`repeating_tool_${tRowID}_toolbonus_display`, "?");
 				});
+
+				// Add flavor traits
+				if (traits && traits.length == 4) {
+					if (traits[0].length == 1) {
+						attrs.addOrUpdate(`personality_traits`, traits[0][0]);
+					}
+					if (traits[0].length == 2) {
+						attrs.addOrUpdate(`personality_traits`, traits[0][0] + "\n" + traits[0][1]);
+					}
+					attrs.addOrUpdate(`ideals`, traits[1][0]);
+					attrs.addOrUpdate(`bonds`, traits[2][0]);
+					attrs.addOrUpdate(`flaws`, traits[3][0]);
+				}
+
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
 				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
