@@ -1,19 +1,19 @@
 const betteR205etoolsMain = function () {
-	const IMG_URL = BASE_SITE_URL + "img/";
+	IMG_URL = BASE_SITE_URL + "img/";
 
-	const SPELL_DATA_DIR = `${DATA_URL}spells/`;
-	const SPELL_META_URL = `${SPELL_DATA_DIR}roll20.json`;
-	const MONSTER_DATA_DIR = `${DATA_URL}bestiary/`;
-	const ADVENTURE_DATA_DIR = `${DATA_URL}adventure/`;
-	const CLASS_DATA_DIR = `${DATA_URL}class/`;
+	SPELL_DATA_DIR = `${DATA_URL}spells/`;
+	SPELL_META_URL = `${SPELL_DATA_DIR}roll20.json`;
+	MONSTER_DATA_DIR = `${DATA_URL}bestiary/`;
+	ADVENTURE_DATA_DIR = `${DATA_URL}adventure/`;
+	CLASS_DATA_DIR = `${DATA_URL}class/`;
 
-	const ITEM_DATA_URL = `${DATA_URL}items.json`;
-	const FEAT_DATA_URL = `${DATA_URL}feats.json`;
-	const PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
-	const OBJECT_DATA_URL = `${DATA_URL}objects.json`;
-	const BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
-	const OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
-	const RACE_DATA_URL = `${DATA_URL}races.json`;
+	ITEM_DATA_URL = `${DATA_URL}items.json`;
+	FEAT_DATA_URL = `${DATA_URL}feats.json`;
+	PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
+	OBJECT_DATA_URL = `${DATA_URL}objects.json`;
+	BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
+	OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
+	RACE_DATA_URL = `${DATA_URL}races.json`;
 
 	// the GitHub API has a 60 requests/hour limit per IP which we quickly hit if the user refreshes their Roll20 a couple of times
 	// embed shitty OAth2 details here to enable 5k/hour requests per IP (sending them with requests to the API relaxes the limit)
@@ -264,6 +264,12 @@ const betteR205etoolsMain = function () {
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
+		"baseSiteUrl": {
+			"name": "5e Tools Website (reload to apply changes)",
+			"default": "https://5etools-mirror-1.github.io",
+			"_type": "String",
+			"_player": true
+		},
 		"allSourcesIncludeUnofficial": {
 			"name": `Include Unofficial (UA/etc) Content in "Import Monsters From All Sources" List`,
 			"default": false,
@@ -2264,7 +2270,7 @@ const betteR205etoolsMain = function () {
 				//give it time to update the sheet
 				setTimeout(() => {
 					const rowID = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name)
-									
+
 					//crit damage
 					if (data.data.Crit && rowID) {
 						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_dmgcustcrit`, data.data.Crit)
@@ -2277,7 +2283,7 @@ const betteR205etoolsMain = function () {
 					if (data.data["Crit Range"] && rowID) d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_atkcritrange`, data.data["Crit Range"])
 				},1000)
 			}
-			
+
 			//this is working fine for spells.
 			d20plus.importer.doFakeDrop(event, character, data, null);
 
@@ -2937,7 +2943,7 @@ const betteR205etoolsMain = function () {
 			if (!_baseRace) {
 				console.warn(`${sr.race.name} parent race not found! Contact homebrew maintainer as it is probably a wrong entry`);
 				return;
-			}	
+			}
 
 			// Attempt to graft multiple subraces from the same data set onto the same base race copy
 			let baseRace = nxtData.find(r => r.name === sr.race.name && r.source === sr.race.source);
