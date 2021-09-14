@@ -59,7 +59,7 @@ function baseUtil () {
 		}
 
 		$.ajax({
-			url: `https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-version?raw=true`,
+			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;
@@ -69,7 +69,9 @@ function baseUtil () {
 						setTimeout(() => {
 							const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
 							const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
-							d20plus.ut.sendHackerChat(`A newer version of betteR20 is available. Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>. For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
+							d20plus.ut.sendHackerChat(`<br>A newer version of betteR20 is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
+							d20plus.ut.sendHackerChat(`For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
+							window.alert("There is a new vesion of BetteR20 available.\nPlease click the appropriate link in chat.");
 						}, 1000);
 					}
 				}
