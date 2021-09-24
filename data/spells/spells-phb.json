@@ -4543,7 +4543,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Marid"
 						}
 					},
 					{
@@ -4820,7 +4821,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Efreeti"
 						}
 					},
 					{
@@ -6534,7 +6536,7 @@
 			"entries": [
 				"You contact your deity or a divine proxy and ask up to three questions that can be answered with a yes or no. You must ask your questions before the spell ends. You receive a correct answer for each question.",
 				"Divine beings aren't necessarily omniscient, so you might receive \"unclear\" as an answer if a question pertains to information that lies beyond the deity's knowledge. In a case where a one-word answer could be misleading or contrary to the deity's interests, the DM might offer a short phrase as an answer instead.",
-				"If you cast the spell two or more times before finishing your next long rest, there is a cumulative {@chance 25|25 percent} chance for each casting after the first that you get no answer. The DM makes this roll in secret."
+				"If you cast the spell two or more times before finishing your next long rest, there is a cumulative {@chance 75|25 percent} chance for each casting after the first that you get no answer. The DM makes this roll in secret."
 			],
 			"classes": {
 				"fromClassList": [
@@ -7234,7 +7236,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Marid"
 						}
 					},
 					{
@@ -7244,7 +7247,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Marid"
 						}
 					},
 					{
@@ -8689,7 +8693,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Marid"
 						}
 					},
 					{
@@ -8699,7 +8704,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Marid"
 						}
 					}
 				]
@@ -15185,6 +15191,7 @@
 				"You can't have more than one steed bonded by this spell at a time. As an action, you can release the steed from its bond at any time, causing it to disappear."
 			],
 			"miscTags": [
+				"PRM",
 				"SMN"
 			],
 			"classes": {
@@ -15640,7 +15647,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Efreeti"
 						}
 					},
 					{
@@ -15889,7 +15897,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Efreeti"
 						}
 					},
 					{
@@ -16186,7 +16195,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Efreeti"
 						}
 					},
 					{
@@ -16695,7 +16705,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Marid"
 						}
 					},
 					{
@@ -18530,7 +18541,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Djinni"
 						}
 					},
 					{
@@ -18540,7 +18552,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Djinni"
 						}
 					},
 					{
@@ -19328,7 +19341,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Djinni"
 						}
 					},
 					{
@@ -19338,7 +19352,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Djinni"
 						}
 					},
 					{
@@ -25365,7 +25380,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Dao"
 						}
 					},
 					{
@@ -28641,7 +28657,7 @@
 				}
 			],
 			"entries": [
-				"This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect. The spell has no effect on a shapechanger or a creature with 0 hit points.",
+				"This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect. The spell has no effect on an unwilling shapechanger or a creature with 0 hit points.",
 				"The transformation lasts for the duration, or until the target drops to 0 hit points or dies. The new form can be {@filter any beast|bestiary|type=beast|miscellaneous=!swarm} whose challenge rating is equal to or less than the target's (or the target's level, if it doesn't have a challenge rating). The target's game statistics, including mental ability scores, are replaced by the statistics of the chosen beast. It retains its alignment and personality.",
 				"The target assumes the hit points of its new form. When it reverts to its normal form, the creature returns to the number of hit points it had before it transformed. If it reverts as a result of dropping to 0 hit points, any excess damage carries over to its normal form. As long as the excess damage doesn't reduce the creature's normal form to 0 hit points, it isn't knocked unconscious.",
 				"The creature is limited in the actions it can perform by the nature of its new form, and it can't speak, cast spells, or take any other action that requires hands or speech.",
@@ -31785,7 +31801,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Dao"
 						}
 					},
 					{
@@ -31795,7 +31812,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Dao"
 						}
 					},
 					{
@@ -31953,7 +31971,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Efreeti"
 						}
 					},
 					{
@@ -32571,7 +32590,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Djinni"
 						}
 					},
 					{
@@ -33979,7 +33999,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Marid"
 						}
 					},
 					{
@@ -33989,7 +34010,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Marid"
 						}
 					}
 				]
@@ -34808,7 +34830,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Dao"
 						}
 					},
 					{
@@ -35374,7 +35397,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Dao"
 						}
 					},
 					{
@@ -37202,7 +37226,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Djinni"
 						}
 					},
 					{
@@ -37212,7 +37237,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Djinni"
 						}
 					},
 					{
@@ -38645,7 +38671,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Dao"
 						}
 					},
 					{
@@ -38655,7 +38682,8 @@
 						},
 						"subclass": {
 							"name": "Genie (UA)",
-							"source": "UA2020SubclassesRevisited"
+							"source": "UA2020SubclassesRevisited",
+							"subSubclass": "Dao"
 						}
 					},
 					{
@@ -39530,7 +39558,8 @@
 						},
 						"subclass": {
 							"name": "Genie",
-							"source": "TCE"
+							"source": "TCE",
+							"subSubclass": "Djinni"
 						}
 					},
 					{

@@ -4098,6 +4098,16 @@
 			"name": "Mighty Fortress",
 			"source": "XGE",
 			"page": 161,
+			"otherSources": [
+				{
+					"source": "AitFR-AVT",
+					"page": 10
+				},
+				{
+					"source": "AitFR-FCD",
+					"page": 12
+				}
+			],
 			"level": 8,
 			"school": "C",
 			"time": [
