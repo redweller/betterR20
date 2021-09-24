@@ -71,7 +71,6 @@ function baseUtil () {
 							const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
 							d20plus.ut.sendHackerChat(`<br>A newer version of betteR20 is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
 							d20plus.ut.sendHackerChat(`For help and support, see our <a href="https://wiki.5e.tools/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
-							window.alert("There is a new vesion of BetteR20 available.\nPlease click the appropriate link in chat.");
 						}, 1000);
 					}
 				}
