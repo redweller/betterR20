@@ -631,13 +631,15 @@ function baseTool() {
 								}
 							});
 						}
+
 						if (toSave) {
 							realC.save();
 						}
+
 						for (const page of d20.Campaign.pages.models) {
-							if(page.thegraphics && page.thegraphics.models) {
-								for (let token of page.thegraphics.models) {
-									let tokenImgsrc = token.get("imgsrc");
+							if (page.thegraphics && page.thegraphics.models) {
+								for (const token of page.thegraphics.models) {
+									const tokenImgsrc = token.get("imgsrc");
 									if (tokenImgsrc.includes(search)) {
 										token.set("imgsrc", tokenImgsrc.replace(search, replace));
 										token.save();
