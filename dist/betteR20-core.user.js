@@ -3,8 +3,8 @@
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      1.26.0
-// @updateURL    https://get.5e.tools/script/betteR20-core.user.js
-// @downloadURL  https://get.5e.tools/script/betteR20-core.user.js
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 
@@ -2265,7 +2265,7 @@ function baseTool() {
 									${players.map((pp, ii) => `<label style="margin-right: 10px; ${pp.online || ` display: none;`}" data-online="${pp.online}" class="display-inline-block">${pp.displayname} <input data-player-id="${pp.id}" type="checkbox" ${i === ii ? `checked="true"` : ""}></label>`).join("")}
 								</div>
 								<textarea style="display: block; width: 95%;" placeholder="Enter whisper" class="message"></textarea>
-							</div>						
+							</div>
 						`).append($btnSend).append($btnClear).append(`<hr>`));
 				});
 
@@ -2293,7 +2293,7 @@ function baseTool() {
 				<br>
 				<button class="btn start-import">Import</button>
 				</div>
-				
+
 				<div id="d20plus-expanded-clipboard" title="Paste from Clipboard"/>
 				`,
 			dialogFn: () => {
@@ -2430,7 +2430,7 @@ function baseTool() {
 				<br>
 				<button class="btn start-import">Import</button>
 				</div>
-				
+
 				<div id="d20plus-tables-clipboard" title="Paste from Clipboard"/>
 				`,
 			dialogFn: () => {
@@ -2592,8 +2592,6 @@ function baseTool() {
 				});
 			},
 			openFn: () => {
-				// FIXME this doesn't work, because it saves a nonsensical blob (imgsrc) instead of defaulttoken
-				// see the working code in `initArtFromUrlButtons` for how this _should_ be done
 
 				function replaceAll (str, search, replacement) {
 					return str.split(search).join(replacement);
@@ -2633,6 +2631,7 @@ function baseTool() {
 						}
 						if (realC.get("defaulttoken")) {
 							realC._getLatestBlob("defaulttoken", (bl) => {
+								bl = bl && bl.trim() ? JSON.parse(bl) : {};
 								if (bl && bl.imgsrc && bl.imgsrc.includes(search)) {
 									count++;
 									realC.updateBlobs({imgsrc: replaceAll(bl.imgsrc, search, replace)});
@@ -2640,8 +2639,22 @@ function baseTool() {
 								}
 							});
 						}
+
 						if (toSave) {
 							realC.save();
+						}
+
+						for (const page of d20.Campaign.pages.models) {
+							if (page.thegraphics && page.thegraphics.models) {
+								for (const token of page.thegraphics.models) {
+									const tokenImgsrc = token.get("imgsrc");
+									if (tokenImgsrc.includes(search)) {
+										token.set("imgsrc", tokenImgsrc.replace(search, replace));
+										token.save();
+										count++;
+									}
+								}
+							}
 						}
 					});
 					window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
@@ -2755,14 +2768,14 @@ function baseTool() {
 					You can learn Token IDs by rightclicking a token -> "Advanced" -> "View Token ID."</i></p>
 					<hr>
 					<input id="token-entangle-id-1" placeholder="Master ID">
-					Type: 
+					Type:
 					<select id="token-entangle-type-1">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
 					</select>
 					<br>
 					<input id="token-entangle-id-2" placeholder="Slave ID">
-					Type:  
+					Type:
 					<select id="token-entangle-type-2">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
@@ -2771,7 +2784,7 @@ function baseTool() {
 					<button class="btn btn-default" id="token-entangle-go">Entangle</button>
 					<hr>
 					<input id="token-clear-entangles" placeholder="ID to Clear">
-					Type:  
+					Type:
 					<select id="token-clear-type">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
