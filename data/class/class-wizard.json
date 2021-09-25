@@ -850,9 +850,9 @@
 			"page": 118,
 			"additionalSpells": [
 				{
-					"prepared": {
+					"known": {
 						"1": [
-							"minor illusion"
+							"minor illusion#c"
 						]
 					}
 				}

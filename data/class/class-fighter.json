@@ -963,16 +963,16 @@
 			"page": 28,
 			"additionalSpells": [
 				{
-					"innate": {
+					"known": {
 						"3": [
-							"prestidigitation"
+							"prestidigitation#c"
 						]
 					}
 				},
 				{
-					"innate": {
+					"known": {
 						"3": [
-							"druidcraft"
+							"druidcraft#c"
 						]
 					}
 				}

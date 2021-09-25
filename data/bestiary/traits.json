@@ -2132,6 +2132,14 @@
 							"mode": "scalarMultXp",
 							"scalar": 0.5,
 							"floor": true
+						},
+						{
+							"mode": "addAllSaves",
+							"saves": 0
+						},
+						{
+							"mode": "addAllSkills",
+							"skills": 0
 						}
 					],
 					"hp": {

@@ -69,7 +69,7 @@
 			"additionalSpells": [
 				{
 					"name": "Magical Secrets",
-					"prepared": {
+					"known": {
 						"10": [
 							{
 								"choose": "level=0;1;2;3;4;5"
@@ -113,29 +113,7 @@
 				],
 				"skills": [
 					{
-						"choose": {
-							"from": [
-								"athletics",
-								"acrobatics",
-								"sleight of hand",
-								"stealth",
-								"arcana",
-								"history",
-								"investigation",
-								"nature",
-								"religion",
-								"animal handling",
-								"insight",
-								"medicine",
-								"perception",
-								"survival",
-								"deception",
-								"intimidation",
-								"performance",
-								"persuasion"
-							],
-							"count": 3
-						}
+						"any": 3
 					}
 				]
 			},
@@ -942,7 +920,7 @@
 			"additionalSpells": [
 				{
 					"name": "Additional Magical Secrets",
-					"prepared": {
+					"known": {
 						"6": [
 							{
 								"choose": "level=0;1;2;3"
@@ -1175,9 +1153,9 @@
 			"page": 28,
 			"additionalSpells": [
 				{
-					"innate": {
+					"known": {
 						"3": [
-							"guidance"
+							"guidance#c"
 						]
 					}
 				}

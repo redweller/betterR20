@@ -133,6 +133,7 @@
 			"name": "Beast of the Land",
 			"source": "TCE",
 			"page": 61,
+			"summonedByClass": "Ranger|PHB",
 			"size": "M",
 			"type": "beast",
 			"alignment": [
@@ -207,6 +208,7 @@
 			"name": "Beast of the Sea",
 			"source": "TCE",
 			"page": 61,
+			"summonedByClass": "Ranger|PHB",
 			"size": "M",
 			"type": "beast",
 			"alignment": [
@@ -282,6 +284,7 @@
 			"name": "Beast of the Sky",
 			"source": "TCE",
 			"page": 61,
+			"summonedByClass": "Ranger|PHB",
 			"size": "S",
 			"type": "beast",
 			"alignment": [
@@ -634,6 +637,7 @@
 			"name": "Dancing Item",
 			"source": "TCE",
 			"page": 29,
+			"summonedByClass": "Bard|PHB",
 			"size": "L",
 			"sizeNote": "or smaller",
 			"type": "construct",
@@ -1086,6 +1090,7 @@
 					"page": 62
 				}
 			],
+			"summonedByClass": "Artificer|TCE",
 			"size": "T",
 			"type": "construct",
 			"ac": [
@@ -1327,6 +1332,7 @@
 				"blinded",
 				"charmed",
 				"deafened",
+				"exhaustion",
 				"frightened",
 				"grappled",
 				"incapacitated",
@@ -1557,6 +1563,7 @@
 					"page": 61
 				}
 			],
+			"summonedByClass": "Artificer|TCE",
 			"size": "M",
 			"type": "construct",
 			"ac": [
@@ -1765,6 +1772,7 @@
 			"name": "Wildfire Spirit",
 			"source": "TCE",
 			"page": 40,
+			"summonedByClass": "Druid|PHB",
 			"size": "S",
 			"type": "elemental",
 			"alignment": [

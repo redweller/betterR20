@@ -2818,6 +2818,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -5275,6 +5278,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -6346,6 +6352,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -6447,6 +6456,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "H",
@@ -6716,6 +6728,9 @@
 				},
 				{
 					"source": "CoS"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -6782,6 +6797,11 @@
 			"source": "MM",
 			"page": 318,
 			"srd": true,
+			"otherSources": [
+				{
+					"source": "WBtW"
+				}
+			],
 			"size": "T",
 			"type": "beast",
 			"alignment": [
@@ -7357,6 +7377,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -7963,6 +7986,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -8517,6 +8543,82 @@
 				"name": "Beholder",
 				"source": "MM"
 			},
+			"variant": [
+				{
+					"type": "inset",
+					"name": "Variant Abilities",
+					"entries": [
+						"When a beholder's dream-imagination runs wild, the result can be an offspring that has an unusual or unique set of abilities. Rather than the standard powers of a beholder's central eye and eyestalks, the creature has one or more variant abilities\u2014guaranteed to surprise any enemies who thought they knew what they were getting themselves into.",
+						"This section provides several alternative spell effects for a beholder's eye. Each of these effects is designed to be of the same power level as the one it replaces, enabling you to create a custom beholder without altering the monster's challenge rating. As another option, you can switch any of the damaging eye rays in the {@book Monster Manual|MM} to an effect with a different damage type, such as replacing the enervation ray with a combustion ray that deals fire damage instead of necrotic damage.",
+						"Unless otherwise indicated, an alternative ability has the same range as the eye ray it is replacing, and it affects only one creature per use (even if the ability is based on a spell that normally affects an area or multiple targets). The saving throw for an alternative ability uses the same DC and the same ability score as the spell the eye ray is based on.",
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "Antimagic Cone:",
+									"entry": "{@spell mirage arcane}, {@spell power word stun} (affecting the weakest non-{@condition stunned} target in the cone each round)"
+								},
+								{
+									"type": "item",
+									"name": "Charm Ray:",
+									"entry": "{@spell banishment} (1 minute), {@spell confusion} (1 minute)"
+								},
+								{
+									"type": "item",
+									"name": "Death Ray:",
+									"entry": "{@spell circle of death} (10-foot-radius sphere; 4d6 necrotic damage to all creatures in the area), {@spell feeblemind}"
+								},
+								{
+									"type": "item",
+									"name": "Disintegration Ray:",
+									"entry": "{@spell chain lightning} (primary target takes 6d8 lightning damage; two secondary targets within 30 feet of the primary target take 3d8 lightning damage each), eyebite (sickened effect; 1 minute)"
+								},
+								{
+									"type": "item",
+									"name": "Enervation Ray:",
+									"entry": "{@spell create undead} (usable regardless of the time of day), {@spell polymorph} (1 minute)"
+								},
+								{
+									"type": "item",
+									"name": "Fear Ray:",
+									"entry": "{@spell gaseous form} (self or willing creature only), {@spell moonbeam}"
+								},
+								{
+									"type": "item",
+									"name": "Paralyzing Ray:",
+									"entry": "{@spell modify memory}, {@spell silence} (1 minute)"
+								},
+								{
+									"type": "item",
+									"name": "Petrification Ray:",
+									"entry": "{@spell Otto's irresistible dance} (1 minute), {@spell wall of ice} (1 minute; one 10-foot-square panel)"
+								},
+								{
+									"type": "item",
+									"name": "Sleep Ray:",
+									"entry": "{@spell blindness/deafness}, {@spell misty step} (self or willing creature only)"
+								},
+								{
+									"type": "item",
+									"name": "Slowing Ray:",
+									"entry": "{@spell bestow curse} (1 minute), {@spell sleet storm} (one 10-foot-cube)"
+								},
+								{
+									"type": "item",
+									"name": "Telekinesis Ray:",
+									"entry": "{@spell geas} (1 hour), {@spell wall of force} (1 minute; one 10-foot-square panel)"
+								}
+							]
+						}
+					],
+					"variantSource": {
+						"source": "VGM",
+						"page": 12
+					}
+				}
+			],
 			"environment": [
 				"underdark"
 			],
@@ -9208,6 +9310,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -9641,6 +9746,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -10420,6 +10528,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -10547,6 +10658,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -10902,6 +11016,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -11463,6 +11580,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -11652,6 +11772,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -12838,6 +12961,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -12970,6 +13096,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -13649,6 +13778,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -14098,6 +14230,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "H",
@@ -14403,6 +14538,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -15933,6 +16071,9 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -16598,6 +16739,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -17288,6 +17432,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -17752,6 +17899,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -17891,6 +18041,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -19396,6 +19549,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -20238,6 +20394,9 @@
 			"otherSources": [
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -20386,6 +20545,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -20710,6 +20872,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -21144,6 +21309,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -21846,6 +22014,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "H",
@@ -21955,6 +22126,9 @@
 				},
 				{
 					"source": "CoS"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -22169,6 +22343,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -22571,6 +22748,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -23058,6 +23238,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -23606,6 +23789,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "H",
@@ -23907,6 +24093,9 @@
 			"otherSources": [
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -24212,6 +24401,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -24321,6 +24513,9 @@
 				},
 				{
 					"source": "CoS"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -24840,6 +25035,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -24940,6 +25138,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -25502,6 +25703,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -25883,6 +26087,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -27315,6 +27522,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -27433,6 +27643,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -27563,6 +27776,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -27820,6 +28036,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -28221,6 +28440,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -28416,6 +28638,11 @@
 			"source": "MM",
 			"page": 95,
 			"srd": true,
+			"otherSources": [
+				{
+					"source": "WBtW"
+				}
+			],
 			"size": "M",
 			"type": "dragon",
 			"alignment": [
@@ -28544,6 +28771,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -30441,6 +30671,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -30822,6 +31055,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -31239,6 +31475,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -32850,6 +33089,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -33164,6 +33406,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -33613,7 +33858,7 @@
 				{
 					"name": "Pack Tactics",
 					"entries": [
-						"The jackalwere has advantage on an attack roll against a creature if at least one of the wolf's allies is within 5 feet of the creature and the ally isn't {@condition incapacitated}."
+						"The jackalwere has advantage on an attack roll against a creature if at least one of the jackalwere's allies is within 5 feet of the creature and the ally isn't {@condition incapacitated}."
 					]
 				}
 			],
@@ -33850,7 +34095,7 @@
 				{
 					"name": "Hold Breath",
 					"entries": [
-						"The whale can hold its breath for 30 minutes"
+						"The whale can hold its breath for 30 minutes."
 					]
 				},
 				{
@@ -33940,6 +34185,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -35071,6 +35319,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -36411,6 +36662,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -36723,6 +36977,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -36920,6 +37177,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -37779,6 +38039,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -37886,6 +38149,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -38231,6 +38497,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -39123,6 +39392,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -40460,10 +40732,10 @@
 			"wis": 14,
 			"cha": 16,
 			"skill": {
-				"deception": "+7",
-				"insight": "+6",
-				"perception": "+6",
-				"stealth": "+6"
+				"deception": "+6",
+				"insight": "+5",
+				"perception": "+5",
+				"stealth": "+5"
 			},
 			"senses": [
 				"darkvision 120 ft."
@@ -40840,6 +41112,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -41410,6 +41685,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -41778,6 +42056,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -42254,6 +42535,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -42795,6 +43079,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -43000,6 +43287,9 @@
 				},
 				{
 					"source": "MOT"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -43213,6 +43503,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -43773,6 +44066,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -44475,6 +44771,9 @@
 			"otherSources": [
 				{
 					"source": "SKT"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -44878,6 +45177,9 @@
 				},
 				{
 					"source": "ERLW"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -45545,6 +45847,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -46056,6 +46361,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -46943,6 +47251,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "G",
@@ -47220,6 +47531,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -48138,6 +48452,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -48533,6 +48850,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -48947,6 +49267,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -49263,6 +49586,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -49774,6 +50100,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -51109,6 +51438,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -51261,6 +51593,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -52327,6 +52662,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -52883,6 +53221,9 @@
 				},
 				{
 					"source": "LR"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -53368,6 +53709,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -54133,6 +54477,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "H",
@@ -54906,6 +55253,9 @@
 				},
 				{
 					"source": "RMBRE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -55447,6 +55797,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "L",
@@ -57103,6 +57456,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",
@@ -57699,6 +58055,9 @@
 			"otherSources": [
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -58930,6 +59289,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "T",
@@ -62961,6 +63323,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "M",

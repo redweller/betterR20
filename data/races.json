@@ -171,9 +171,6 @@
 			"additionalSpells": [
 				{
 					"innate": {
-						"1": [
-							"light"
-						],
 						"3": {
 							"daily": {
 								"1": [
@@ -189,7 +186,12 @@
 							}
 						}
 					},
-					"ability": "cha"
+					"ability": "cha",
+					"known": {
+						"1": [
+							"light#c"
+						]
+					}
 				}
 			],
 			"entries": [
@@ -286,12 +288,12 @@
 			},
 			"additionalSpells": [
 				{
-					"innate": {
+					"ability": "cha",
+					"known": {
 						"1": [
-							"light"
+							"light#c"
 						]
-					},
-					"ability": "cha"
+					}
 				}
 			],
 			"entries": [
@@ -605,7 +607,9 @@
 							],
 							"type": "entries"
 						}
-					]
+					],
+					"hasFluff": true,
+					"hasFluffImages": true
 				},
 				{
 					"name": "Ibis-Headed",
@@ -623,9 +627,13 @@
 							],
 							"type": "entries"
 						}
-					]
+					],
+					"hasFluff": true,
+					"hasFluffImages": true
 				}
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Aven",
@@ -1088,7 +1096,8 @@
 					"type": "entries"
 				}
 			],
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Centaur",
@@ -1236,8 +1245,7 @@
 					"type": "entries"
 				}
 			],
-			"hasFluff": true,
-			"hasFluffImages": true
+			"hasFluff": true
 		},
 		{
 			"name": "Changeling",
@@ -1624,28 +1632,7 @@
 			"feats": 1,
 			"skillProficiencies": [
 				{
-					"choose": {
-						"from": [
-							"athletics",
-							"acrobatics",
-							"sleight of hand",
-							"stealth",
-							"arcana",
-							"history",
-							"investigation",
-							"nature",
-							"religion",
-							"animal handling",
-							"insight",
-							"medicine",
-							"perception",
-							"survival",
-							"deception",
-							"intimidation",
-							"performance",
-							"persuasion"
-						]
-					}
+					"any": 1
 				}
 			],
 			"languageProficiencies": [
@@ -2497,12 +2484,6 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
-								"1": [
-									"alarm",
-									"mage armor"
-								]
-							},
 							"expanded": {
 								"s1": [
 									"alarm",
@@ -2524,7 +2505,13 @@
 									"antilife shell"
 								]
 							},
-							"ability": "int"
+							"ability": "int",
+							"known": {
+								"1": [
+									"alarm",
+									"mage armor"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -2868,9 +2855,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"dancing lights"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -2886,7 +2870,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"dancing lights#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -2943,7 +2932,8 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
+							"ability": "cha",
+							"known": {
 								"1": {
 									"rest": {
 										"1": [
@@ -2951,8 +2941,7 @@
 										]
 									}
 								}
-							},
-							"ability": "cha"
+							}
 						}
 					],
 					"entries": [
@@ -3044,12 +3033,12 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
+							"known": {
 								"1": [
-									"friends",
-									"chill touch",
-									"minor illusion",
-									"fire bolt"
+									"friends#c",
+									"chill touch#c",
+									"minor illusion#c",
+									"fire bolt#c"
 								]
 							}
 						}
@@ -3129,7 +3118,7 @@
 					"additionalSpells": [
 						{
 							"ability": "wis",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -3197,7 +3186,7 @@
 					"additionalSpells": [
 						{
 							"ability": "int",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -3245,41 +3234,25 @@
 						}
 					],
 					"traitTags": [
+						"Skill Proficiency",
 						"Tool Proficiency"
 					],
-					"skillProficiencies": [
+					"skillToolLanguageProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion",
-									{
-										"tool": true
-									}
-								]
-							}
+							"choose": [
+								{
+									"from": [
+										"anySkill",
+										"anyTool"
+									]
+								}
+							]
 						}
 					],
 					"additionalSpells": [
 						{
 							"ability": "int",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -3335,7 +3308,7 @@
 					"additionalSpells": [
 						{
 							"ability": "int",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -3391,9 +3364,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"minor illusion"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -3423,7 +3393,12 @@
 									"mislead"
 								]
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"minor illusion#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -3502,9 +3477,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"light"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -3520,7 +3492,12 @@
 									}
 								}
 							},
-							"ability": "wis"
+							"ability": "wis",
+							"known": {
+								"1": [
+									"light#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -3720,28 +3697,28 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
+							"ability": "cha",
+							"known": {
 								"1": [
-									"chill touch"
+									"chill touch#c"
 								]
-							},
-							"ability": "cha"
+							}
 						},
 						{
-							"innate": {
+							"ability": "cha",
+							"known": {
 								"1": [
-									"spare the dying"
+									"spare the dying#c"
 								]
-							},
-							"ability": "cha"
+							}
 						},
 						{
-							"innate": {
+							"ability": "cha",
+							"known": {
 								"1": [
-									"thaumaturgy"
+									"thaumaturgy#c"
 								]
-							},
-							"ability": "cha"
+							}
 						}
 					],
 					"entries": [
@@ -4034,7 +4011,7 @@
 					"additionalSpells": [
 						{
 							"ability": "wis",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -4205,9 +4182,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"chill touch"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -4223,7 +4197,12 @@
 									}
 								}
 							},
-							"ability": "wis"
+							"ability": "wis",
+							"known": {
+								"1": [
+									"chill touch#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -4269,36 +4248,20 @@
 						}
 					],
 					"traitTags": [
+						"Skill Proficiency",
 						"Tool Proficiency"
 					],
-					"skillProficiencies": [
+					"skillToolLanguageProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion",
-									{
-										"tool": true
-									}
-								],
-								"count": 2
-							}
+							"choose": [
+								{
+									"from": [
+										"anySkill",
+										"anyTool"
+									],
+									"count": 2
+								}
+							]
 						}
 					],
 					"entries": [
@@ -4331,18 +4294,26 @@
 			},
 			"additionalSpells": [
 				{
-					"innate": {
-						"1": [
-							"druidcraft",
-							"faerie fire"
-						]
-					},
 					"ability": {
 						"choose": [
 							"int",
 							"wis",
 							"cha"
 						]
+					},
+					"known": {
+						"1": [
+							"druidcraft#c"
+						]
+					},
+					"innate": {
+						"1": {
+							"daily": {
+								"1": [
+									"faerie fire"
+								]
+							}
+						}
 					}
 				}
 			],
@@ -4377,6 +4348,80 @@
 				}
 			],
 			"hasFluff": true
+		},
+		{
+			"name": "Fairy",
+			"source": "WBtW",
+			"lineage": "VRGR",
+			"creatureTypes": [
+				"fey"
+			],
+			"size": [
+				"S"
+			],
+			"speed": {
+				"walk": 30,
+				"fly": 30
+			},
+			"additionalSpells": [
+				{
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					},
+					"known": {
+						"1": [
+							"druidcraft#c"
+						]
+					},
+					"innate": {
+						"3": {
+							"daily": {
+								"1": [
+									"faerie fire"
+								]
+							}
+						},
+						"5": {
+							"daily": {
+								"1": [
+									"enlarge/reduce"
+								]
+							}
+						}
+					}
+				}
+			],
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Creature Type",
+					"entries": [
+						"You are a Fey."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Flight",
+					"entries": [
+						"Because of your wings, you have a flying speed equal to your walking speed. You can't use this flying speed if you're wearing medium or heavy armor."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Fairy Magic",
+					"entries": [
+						"You know the {@spell druidcraft} cantrip.",
+						"Starting at 3rd level, you can cast the {@spell faerie fire} spell with this trait. Starting at 5th level, you can also cast the {@spell enlarge/reduce} spell with this trait. Once you cast {@spell faerie fire} or {@spell enlarge/reduce} with this trait, you can't cast that spell with it again until you finish a long rest. You can also cast either of those spells using any spell slots you have of the appropriate level.",
+						"Intelligence, Wisdom, or Charisma is your spellcasting ability for these spells when you cast them with this trait (choose when you select this race)."
+					]
+				}
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Firbolg",
@@ -4421,7 +4466,7 @@
 			"additionalSpells": [
 				{
 					"ability": "wis",
-					"innate": {
+					"known": {
 						"1": {
 							"rest": {
 								"1": [
@@ -4679,12 +4724,12 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
+							"ability": "con",
+							"known": {
 								"1": [
 									"levitate"
 								]
-							},
-							"ability": "con"
+							}
 						}
 					],
 					"entries": [
@@ -4716,12 +4761,12 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
+							"ability": "con",
+							"known": {
 								"1": [
 									"pass without trace"
 								]
-							},
-							"ability": "con"
+							}
 						}
 					],
 					"entries": [
@@ -4758,9 +4803,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"produce flame"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -4769,7 +4811,12 @@
 									}
 								}
 							},
-							"ability": "con"
+							"ability": "con",
+							"known": {
+								"1": [
+									"produce flame#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -4819,9 +4866,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"shape water|xge"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -4830,7 +4874,12 @@
 									}
 								}
 							},
-							"ability": "con"
+							"ability": "con",
+							"known": {
+								"1": [
+									"shape water|xge#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -4927,34 +4976,9 @@
 						"baseWeight": 100,
 						"weightMod": "2d4"
 					},
-					"skillProficiencies": [
-						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion",
-									{
-										"tool": true
-									}
-								]
-							}
-						}
+					"traitTags": [
+						"Skill Proficiency",
+						"Tool Proficiency"
 					],
 					"weaponProficiencies": [
 						{
@@ -4969,12 +4993,21 @@
 							"medium": true
 						}
 					],
+					"skillToolLanguageProficiencies": [
+						{
+							"choose": [
+								{
+									"from": [
+										"anySkill",
+										"anyTool"
+									]
+								}
+							]
+						}
+					],
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -4990,7 +5023,12 @@
 									}
 								}
 							},
-							"ability": "int"
+							"ability": "int",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -5045,9 +5083,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -5063,7 +5098,12 @@
 									}
 								}
 							},
-							"ability": "wis"
+							"ability": "wis",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -5147,34 +5187,9 @@
 							"str": 2
 						}
 					],
-					"skillProficiencies": [
-						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion",
-									{
-										"tool": true
-									}
-								]
-							}
-						}
+					"traitTags": [
+						"Skill Proficiency",
+						"Tool Proficiency"
 					],
 					"armorProficiencies": [
 						{
@@ -5182,12 +5197,21 @@
 							"medium": true
 						}
 					],
+					"skillToolLanguageProficiencies": [
+						{
+							"choose": [
+								{
+									"from": [
+										"anySkill",
+										"anyTool"
+									]
+								}
+							]
+						}
+					],
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -5203,7 +5227,12 @@
 									}
 								}
 							},
-							"ability": "int"
+							"ability": "int",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -5252,9 +5281,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -5270,7 +5296,12 @@
 									}
 								}
 							},
-							"ability": "wis"
+							"ability": "wis",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -5598,12 +5629,12 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
+							"ability": "int",
+							"known": {
 								"1": [
-									"minor illusion"
+									"minor illusion#c"
 								]
-							},
-							"ability": "int"
+							}
 						}
 					],
 					"entries": [
@@ -5651,10 +5682,7 @@
 										"1": [
 											"comprehend languages"
 										]
-									},
-									"_": [
-										"message"
-									]
+									}
 								},
 								"3": {
 									"daily": {
@@ -5685,7 +5713,12 @@
 									"dream"
 								]
 							},
-							"ability": "int"
+							"ability": "int",
+							"known": {
+								"1": [
+									"message#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -5830,15 +5863,15 @@
 			],
 			"additionalSpells": [
 				{
-					"innate": {
+					"ability": "int",
+					"known": {
 						"1": [
 							"nondetection",
 							"blindness/deafness",
 							"blur",
 							"disguise self"
 						]
-					},
-					"ability": "int"
+					}
 				}
 			],
 			"entries": [
@@ -6664,29 +6697,7 @@
 			],
 			"skillProficiencies": [
 				{
-					"choose": {
-						"from": [
-							"athletics",
-							"acrobatics",
-							"sleight of hand",
-							"stealth",
-							"arcana",
-							"history",
-							"investigation",
-							"nature",
-							"religion",
-							"animal handling",
-							"insight",
-							"medicine",
-							"perception",
-							"survival",
-							"deception",
-							"intimidation",
-							"performance",
-							"persuasion"
-						],
-						"count": 2
-					}
+					"any": 2
 				}
 			],
 			"languageProficiencies": [
@@ -6789,29 +6800,7 @@
 			],
 			"skillProficiencies": [
 				{
-					"choose": {
-						"from": [
-							"athletics",
-							"acrobatics",
-							"sleight of hand",
-							"stealth",
-							"arcana",
-							"history",
-							"investigation",
-							"nature",
-							"religion",
-							"animal handling",
-							"insight",
-							"medicine",
-							"perception",
-							"survival",
-							"deception",
-							"intimidation",
-							"performance",
-							"persuasion"
-						],
-						"count": 2
-					}
+					"any": 2
 				}
 			],
 			"languageProficiencies": [
@@ -6884,29 +6873,7 @@
 					"speed": 30,
 					"skillProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion"
-								],
-								"count": 2
-							}
+							"any": 2
 						}
 					],
 					"entries": [
@@ -6951,37 +6918,12 @@
 					"page": 116,
 					"skillProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion"
-								],
-								"count": 2
-							}
+							"any": 2
 						}
 					],
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"dancing lights"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -6997,7 +6939,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"dancing lights#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -7191,11 +7138,6 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
-								"1": [
-									"gust|xge"
-								]
-							},
 							"expanded": {
 								"s1": [
 									"feather fall",
@@ -7217,7 +7159,12 @@
 									"conjure elemental"
 								]
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"gust|xge#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -7297,29 +7244,7 @@
 					"page": 116,
 					"skillProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion"
-								],
-								"count": 2
-							}
+							"any": 2
 						}
 					],
 					"weaponProficiencies": [
@@ -7333,7 +7258,7 @@
 					"additionalSpells": [
 						{
 							"ability": "int",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -7393,29 +7318,7 @@
 					"page": 116,
 					"skillProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion"
-								],
-								"count": 2
-							}
+							"any": 2
 						}
 					],
 					"weaponProficiencies": [
@@ -7885,9 +7788,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"druidcraft"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -7903,7 +7803,12 @@
 									}
 								}
 							},
-							"ability": "wis"
+							"ability": "wis",
+							"known": {
+								"1": [
+									"druidcraft#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -8059,13 +7964,6 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
-								"1": [
-									"prestidigitation",
-									"purify food and drink",
-									"unseen servant"
-								]
-							},
 							"expanded": {
 								"s1": [
 									"goodberry",
@@ -8087,7 +7985,14 @@
 									"hallow"
 								]
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"prestidigitation#c",
+									"purify food and drink",
+									"unseen servant"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -8176,6 +8081,67 @@
 			"hasFluffImages": true
 		},
 		{
+			"name": "Harengon",
+			"source": "WBtW",
+			"lineage": "VRGR",
+			"size": [
+				"S",
+				"M"
+			],
+			"speed": 30,
+			"skillProficiencies": [
+				{
+					"perception": true
+				}
+			],
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Creature Type",
+					"entries": [
+						"You are a Humanoid."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Size",
+					"entries": [
+						"You are Medium or Small. You choose the size when you select this race."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Hare-Trigger",
+					"entries": [
+						"You can add your proficiency bonus to your initiative rolls."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Leporine Senses",
+					"entries": [
+						"You have proficiency in the {@skill Perception} skill."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Lucky Footwork",
+					"entries": [
+						"When you fail a Dexterity saving throw, you can use your reaction to roll a {@dice d4} and add it to the save, potentially turning the failure into a success. You can't use this reaction if you're {@condition prone} or your speed is 0."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Rabbit Hop",
+					"entries": [
+						"As a bonus action, you can jump a number of feet equal to five times your proficiency bonus, without provoking opportunity attacks. You can use this trait only if your speed is greater than 0. You can use it a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+					]
+				}
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
+		},
+		{
 			"name": "Hexblood",
 			"source": "UA2021GothicLineages",
 			"page": 3,
@@ -8192,17 +8158,17 @@
 			"darkvision": 60,
 			"additionalSpells": [
 				{
-					"innate": {
-						"1": [
-							"disguise self",
-							"hex"
-						]
-					},
 					"ability": {
 						"choose": [
 							"int",
 							"wis",
 							"cha"
+						]
+					},
+					"known": {
+						"1": [
+							"disguise self",
+							"hex"
 						]
 					}
 				}
@@ -8273,17 +8239,17 @@
 			"darkvision": 60,
 			"additionalSpells": [
 				{
-					"innate": {
-						"1": [
-							"disguise self",
-							"hex"
-						]
-					},
 					"ability": {
 						"choose": [
 							"int",
 							"wis",
 							"cha"
+						]
+					},
+					"known": {
+						"1": [
+							"disguise self",
+							"hex"
 						]
 					}
 				}
@@ -8548,7 +8514,7 @@
 			"weaponProficiencies": [
 				{
 					"choose": {
-						"from": "type=martial weapon|miscellaneous=mundane",
+						"fromFilter": "type=martial weapon|miscellaneous=mundane",
 						"count": 2
 					}
 				}
@@ -8936,16 +8902,6 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
-								"1": {
-									"rest": {
-										"1": [
-											"animal friendship",
-											"speak with animals"
-										]
-									}
-								}
-							},
 							"expanded": {
 								"s1": [
 									"animal friendship",
@@ -8967,7 +8923,17 @@
 									"awaken"
 								]
 							},
-							"ability": "wis"
+							"ability": "wis",
+							"known": {
+								"1": {
+									"rest": {
+										"1": [
+											"animal friendship",
+											"speak with animals"
+										]
+									}
+								}
+							}
 						}
 					],
 					"entries": [
@@ -9063,19 +9029,13 @@
 					"traitTags": [
 						"Dragonmark"
 					],
-					"skillProficiencies": [
+					"toolProficiencies": [
 						{
-							"tool": true
+							"anyArtisans": 1
 						}
 					],
 					"additionalSpells": [
 						{
-							"innate": {
-								"1": [
-									"mending",
-									"magic weapon"
-								]
-							},
 							"expanded": {
 								"s1": [
 									"identify",
@@ -9097,7 +9057,13 @@
 									"creation"
 								]
 							},
-							"ability": "int"
+							"ability": "int",
+							"known": {
+								"1": [
+									"mending#c",
+									"magic weapon"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -9196,11 +9162,6 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
-								"1": [
-									"misty step"
-								]
-							},
 							"expanded": {
 								"s1": [
 									"expeditious retreat",
@@ -9222,7 +9183,12 @@
 									"teleportation circle"
 								]
 							},
-							"ability": "dex"
+							"ability": "dex",
+							"known": {
+								"1": [
+									"misty step"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -9311,11 +9277,6 @@
 					],
 					"additionalSpells": [
 						{
-							"innate": {
-								"1": [
-									"shield"
-								]
-							},
 							"expanded": {
 								"s1": [
 									"compelled duel",
@@ -9337,7 +9298,12 @@
 									"bigby's hand"
 								]
 							},
-							"ability": "wis"
+							"ability": "wis",
+							"known": {
+								"1": [
+									"shield"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -9427,28 +9393,7 @@
 					"feats": 1,
 					"skillProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion"
-								]
-							}
+							"any": 1
 						}
 					],
 					"entries": [
@@ -9498,28 +9443,7 @@
 			"feats": 1,
 			"skillProficiencies": [
 				{
-					"choose": {
-						"from": [
-							"athletics",
-							"acrobatics",
-							"sleight of hand",
-							"stealth",
-							"arcana",
-							"history",
-							"investigation",
-							"nature",
-							"religion",
-							"animal handling",
-							"insight",
-							"medicine",
-							"perception",
-							"survival",
-							"deception",
-							"intimidation",
-							"performance",
-							"persuasion"
-						]
-					}
+					"any": 1
 				}
 			],
 			"languageProficiencies": [
@@ -9578,7 +9502,9 @@
 					],
 					"type": "entries"
 				}
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Human (Innistrad)",
@@ -9704,36 +9630,20 @@
 						}
 					],
 					"traitTags": [
+						"Skill Proficiency",
 						"Tool Proficiency"
 					],
-					"skillProficiencies": [
+					"skillToolLanguageProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion",
-									{
-										"tool": true
-									}
-								],
-								"count": 4
-							}
+							"choose": [
+								{
+									"from": [
+										"anySkill",
+										"anyTool"
+									],
+									"count": 4
+								}
+							]
 						}
 					],
 					"entries": [
@@ -10296,7 +10206,9 @@
 					],
 					"type": "entries"
 				}
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Kobold",
@@ -11129,7 +11041,8 @@
 					]
 				}
 			],
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Loxodon",
@@ -11233,8 +11146,7 @@
 					]
 				}
 			],
-			"hasFluff": true,
-			"hasFluffImages": true
+			"hasFluff": true
 		},
 		{
 			"name": "Merfolk",
@@ -11387,7 +11299,7 @@
 					"additionalSpells": [
 						{
 							"ability": "wis",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -11506,7 +11418,7 @@
 					"additionalSpells": [
 						{
 							"ability": "cha",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -11551,7 +11463,7 @@
 					"additionalSpells": [
 						{
 							"ability": "wis",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -11598,7 +11510,7 @@
 					"additionalSpells": [
 						{
 							"ability": "int",
-							"innate": {
+							"known": {
 								"1": {
 									"_": [
 										{
@@ -12064,7 +11976,9 @@
 					],
 					"type": "entries"
 				}
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Minotaur (Krynn)",
@@ -12258,7 +12172,9 @@
 					],
 					"type": "entries"
 				}
-			]
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Orc",
@@ -12700,19 +12616,19 @@
 			],
 			"additionalSpells": [
 				{
-					"innate": {
-						"1": {
-							"ritual": [
-								"detect magic"
-							]
-						}
-					},
 					"ability": {
 						"choose": [
 							"int",
 							"wis",
 							"cha"
 						]
+					},
+					"known": {
+						"1": {
+							"ritual": [
+								"detect magic"
+							]
+						}
 					}
 				}
 			],
@@ -13074,20 +12990,23 @@
 			},
 			"traitTags": [
 				"Magic Resistance",
-				"Tool Proficiency",
 				"Unarmed Strike"
 			],
 			"skillProficiencies": [
 				{
 					"performance": true,
-					"persuasion": true,
-					"tool": true
+					"persuasion": true
 				}
 			],
 			"languageProficiencies": [
 				{
 					"common": true,
 					"sylvan": true
+				}
+			],
+			"toolProficiencies": [
+				{
+					"musical instrument": true
 				}
 			],
 			"entries": [
@@ -13900,7 +13819,8 @@
 					]
 				}
 			],
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Simic Hybrid",
@@ -14027,8 +13947,7 @@
 					]
 				}
 			],
-			"hasFluff": true,
-			"hasFluffImages": true
+			"hasFluff": true
 		},
 		{
 			"name": "Siren",
@@ -14054,9 +13973,9 @@
 			],
 			"additionalSpells": [
 				{
-					"innate": {
+					"known": {
 						"1": [
-							"friends"
+							"friends#c"
 						]
 					}
 				}
@@ -14311,9 +14230,6 @@
 			"additionalSpells": [
 				{
 					"innate": {
-						"1": [
-							"thaumaturgy"
-						],
 						"3": {
 							"daily": {
 								"1": [
@@ -14329,7 +14245,12 @@
 							}
 						}
 					},
-					"ability": "cha"
+					"ability": "cha",
+					"known": {
+						"1": [
+							"thaumaturgy#c"
+						]
+					}
 				}
 			],
 			"entries": [
@@ -14410,14 +14331,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"dancing lights",
-									"true strike",
-									"light",
-									"message",
-									"spare the dying",
-									"prestidigitation"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14442,6 +14355,16 @@
 										]
 									}
 								}
+							},
+							"known": {
+								"1": [
+									"dancing lights#c",
+									"true strike#c",
+									"light#c",
+									"message#c",
+									"spare the dying#c",
+									"prestidigitation#c"
+								]
 							}
 						}
 					],
@@ -14558,9 +14481,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14576,7 +14496,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14601,9 +14526,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14619,7 +14541,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14648,9 +14575,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14666,7 +14590,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14700,9 +14629,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14718,7 +14644,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14750,9 +14681,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"friends"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14768,7 +14696,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"friends#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14802,9 +14735,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"friends"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14820,7 +14750,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"friends#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14852,9 +14787,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"minor illusion"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14870,7 +14802,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"minor illusion#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14904,9 +14841,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"minor illusion"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14922,7 +14856,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"minor illusion#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -14954,9 +14893,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"ray of frost"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -14972,7 +14908,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"ray of frost#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15006,9 +14947,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"ray of frost"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15024,7 +14962,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"ray of frost#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15050,9 +14993,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15068,7 +15008,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15093,9 +15038,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15111,7 +15053,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15134,9 +15081,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15152,7 +15096,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15177,9 +15126,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"mage hand"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15195,7 +15141,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"mage hand#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15231,9 +15182,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"vicious mockery"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15249,7 +15197,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"vicious mockery#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15295,9 +15248,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15313,7 +15263,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15359,9 +15314,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15377,7 +15329,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15455,9 +15412,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15473,7 +15427,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -15507,9 +15466,6 @@
 					"additionalSpells": [
 						{
 							"innate": {
-								"1": [
-									"thaumaturgy"
-								],
 								"3": {
 									"daily": {
 										"1": [
@@ -15525,7 +15481,12 @@
 									}
 								}
 							},
-							"ability": "cha"
+							"ability": "cha",
+							"known": {
+								"1": [
+									"thaumaturgy#c"
+								]
+							}
 						}
 					],
 					"entries": [
@@ -16086,8 +16047,7 @@
 							"performance",
 							"sleight of hand"
 						]
-					},
-					"tool": true
+					}
 				}
 			],
 			"languageProficiencies": [
@@ -16095,6 +16055,11 @@
 					"common": true,
 					"other": true,
 					"anyStandard": 1
+				}
+			],
+			"toolProficiencies": [
+				{
+					"any": 1
 				}
 			],
 			"entries": [
@@ -16149,7 +16114,8 @@
 					"type": "entries"
 				}
 			],
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Vedalken",
@@ -16280,8 +16246,7 @@
 					"type": "entries"
 				}
 			],
-			"hasFluff": true,
-			"hasFluffImages": true
+			"hasFluff": true
 		},
 		{
 			"name": "Verdan",
@@ -16497,38 +16462,18 @@
 			],
 			"skillProficiencies": [
 				{
-					"choose": {
-						"from": [
-							"athletics",
-							"acrobatics",
-							"sleight of hand",
-							"stealth",
-							"arcana",
-							"history",
-							"investigation",
-							"nature",
-							"religion",
-							"animal handling",
-							"insight",
-							"medicine",
-							"perception",
-							"survival",
-							"deception",
-							"intimidation",
-							"performance",
-							"persuasion",
-							{
-								"tool": true
-							}
-						],
-						"count": 2
-					}
+					"any": 1
 				}
 			],
 			"languageProficiencies": [
 				{
 					"common": true,
 					"anyStandard": 1
+				}
+			],
+			"toolProficiencies": [
+				{
+					"any": 1
 				}
 			],
 			"resist": [
@@ -16818,28 +16763,7 @@
 					],
 					"skillProficiencies": [
 						{
-							"choose": {
-								"from": [
-									"athletics",
-									"acrobatics",
-									"sleight of hand",
-									"stealth",
-									"arcana",
-									"history",
-									"investigation",
-									"nature",
-									"religion",
-									"animal handling",
-									"insight",
-									"medicine",
-									"perception",
-									"survival",
-									"deception",
-									"intimidation",
-									"performance",
-									"persuasion"
-								]
-							}
+							"any": 1
 						}
 					],
 					"entries": [
@@ -16969,7 +16893,6 @@
 				{
 					"innate": {
 						"1": [
-							"poison spray",
 							"animal friendship"
 						],
 						"3": {
@@ -16980,7 +16903,12 @@
 							}
 						}
 					},
-					"ability": "cha"
+					"ability": "cha",
+					"known": {
+						"1": [
+							"poison spray#c"
+						]
+					}
 				}
 			],
 			"entries": [
