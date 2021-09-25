@@ -21269,8 +21269,8 @@
 			"source": "WBtW",
 			"skillProficiencies": [
 				{
-					"deception": true,
-					"survival": true
+					"performance": true,
+					"sleight of hand": true
 				}
 			],
 			"languageProficiencies": [

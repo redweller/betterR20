@@ -990,7 +990,12 @@
 				"E"
 			],
 			"ac": [
-				19
+				{
+					"ac": 19,
+					"from": [
+						"natural armor"
+					]
+				}
 			],
 			"hp": {
 				"average": 225,
