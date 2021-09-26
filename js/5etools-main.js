@@ -1514,7 +1514,7 @@ const betteR205etoolsMain = function () {
 			}
 
 			// Fill the rows 
-			if (traits !== null && traits.entries && traits.entries.length) {
+			if (traits !== null && traits.entries?.length) {
 				for (let i = 0; i < traits.entries.length; i++) {
 					ent = traits.entries[i];
 					// This seems to be the best way to parse the information with some room for errors
@@ -1585,13 +1585,12 @@ const betteR205etoolsMain = function () {
 
 				// Add flavor traits
 				const {personalityTraits, ideals, bonds, flaws} = traits || {}; //Got some help from Giddy with this one
-				console.log(personalityTraits, ideals, bonds, flaws)
 				// Only add the trait if the trait exists
-				if (personalityTraits && personalityTraits.length == 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
-				if (personalityTraits && personalityTraits.length == 2) attrs.addOrUpdate(`personality_traits`, personalityTraits[0] + "\n" + personalityTraits[1]);
-				if (ideals && ideals.length == 1) attrs.addOrUpdate(`ideals`, ideals[0]);
-				if (bonds && bonds.length == 1) attrs.addOrUpdate(`bonds`, bonds[0]);
-				if (flaws && flaws.length == 1) attrs.addOrUpdate(`flaws`, flaws[0]);
+				if (personalityTraits?.length == 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
+				if (personalityTraits?.length == 2) attrs.addOrUpdate(`personality_traits`, personalityTraits[0] + "\n" + personalityTraits[1]);
+				if (ideals?.length == 1) attrs.addOrUpdate(`ideals`, ideals[0]);
+				if (bonds?.length == 1) attrs.addOrUpdate(`bonds`, bonds[0]);
+				if (flaws?.length == 1) attrs.addOrUpdate(`flaws`, flaws[0]);
 				
 
 			} else if (d20plus.sheet === "shaped") {
