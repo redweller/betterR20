@@ -1,4 +1,4 @@
-function baseConfig() {
+function baseConfig () {
 	d20plus.cfg = {current: {}};
 
 	d20plus.cfg.pLoadConfigFailed = false;
@@ -26,6 +26,7 @@ function baseConfig() {
 						d20plus.ut.log(d20plus.cfg.current);
 						resolve();
 					} catch (e) {
+						// eslint-disable-next-line no-console
 						console.error(e);
 						if (!d20plus.cfg.pLoadConfigFailed) {
 							// prevent infinite loops
@@ -64,7 +65,7 @@ function baseConfig() {
 		return new Promise(resolve => {
 			d20.Campaign.handouts.create({
 				name: CONFIG_HANDOUT,
-				archived: true
+				archived: true,
 			}, {
 				success: function (handout) {
 					notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel.";
@@ -74,10 +75,10 @@ function baseConfig() {
 					const gmnotes = JSON.stringify(d20plus.cfg.getDefaultConfig());
 
 					handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-					handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+					handout.save({notes: (new Date()).getTime(), inplayerjournals: ""});
 
 					resolve();
-				}
+				},
 			});
 		});
 	};
@@ -153,7 +154,7 @@ function baseConfig() {
 		return {
 			min: it.__sliderMin,
 			max: it.__sliderMax,
-			step: it.__sliderStep
+			step: it.__sliderStep,
 		}
 	};
 
@@ -239,9 +240,8 @@ function baseConfig() {
 			if (!window.is_gm) sortedKeys = sortedKeys.filter(k => CONFIG_OPTIONS[k]._player);
 
 			const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
-			const contentList = sortedKeys.map(k => makeTab(k));
 
-			function makeTab (cfgK) {
+			const makeTab = (cfgK) => {
 				const cfgGroup = CONFIG_OPTIONS[cfgK];
 				configFields[cfgK] = {};
 
@@ -443,10 +443,12 @@ function baseConfig() {
 				return content;
 			}
 
+			const contentList = sortedKeys.map(k => makeTab(k));
+
 			d20plus.cfg.makeTabPane(
 				appendTo,
 				tabList,
-				contentList
+				contentList,
 			);
 
 			const saveButton = $(`#configsave`);
@@ -461,24 +463,24 @@ function baseConfig() {
 				}
 
 				if (window.is_gm) {
-					let handout = d20plus.cfg.getConfigHandout();
-					if (!handout) {
-						d20plus.cfg.pMakeDefaultConfig(doSave);
-					} else {
-						doSave();
-					}
-
-					function doSave () {
+					const doSave = () => {
 						_updateLoadedConfig();
 
 						const gmnotes = JSON.stringify(d20plus.cfg.current).replace(/%/g, "%25");
 						handout.updateBlobs({gmnotes: gmnotes});
-						handout.save({notes: (new Date).getTime()});
+						handout.save({notes: (new Date()).getTime()});
 
 						d20plus.ut.log("Saved config");
 
 						d20plus.cfg.baseHandleConfigChange();
 						if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+					};
+
+					let handout = d20plus.cfg.getConfigHandout();
+					if (!handout) {
+						d20plus.cfg.pMakeDefaultConfig(doSave);
+					} else {
+						doSave();
 					}
 				} else {
 					_updateLoadedConfig();

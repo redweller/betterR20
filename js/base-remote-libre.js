@@ -1,19 +1,21 @@
 function remoteLibre () {
 	d20plus.remoteLibre = {
 		getRemotePlaylists () {
-			return fetch('https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist')
+			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
 				.then(response => response.json())
 				.then(data => {
 					const promises = data.filter(file => file.download_url.toLowerCase().endsWith(".json"))
 						.map(file => d20plus.remoteLibre.downloadPlaylist(file.download_url));
 					return Promise.all(promises).then(res => d20plus.remoteLibre.processRemotePlaylists(res));
 				})
+				// eslint-disable-next-line no-console
 				.catch(error => console.error(error));
 		},
 
 		downloadPlaylist (url) {
 			return fetch(url)
 				.then(response => response.json())
+				// eslint-disable-next-line no-console
 				.catch(error => console.error("Error when fetching", url, error));
 		},
 
@@ -28,7 +30,7 @@ function remoteLibre () {
                 <p style="margin-top:15px">${t.title}</p>
                 <div class="br20-result" style="display: flex">
                     <audio class="audio" controls preload="none" style="flex: 35" src="${t.track_id}"></audio>
-                    
+
                     <button class="remote-track btn" data-id=${i} style="margin-top:auto;margin-bottom:auto;flex:1;font-size:15px;margin-left:10px;">
                         <span class="pictos">&amp;</span>
                     </button>

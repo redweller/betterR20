@@ -39,25 +39,25 @@ function jukeboxWidget () {
 
 			$(`<div id="masterVolume" style="margin:10px;display:inline-block;width:80%;"></div>`)
 				.insertAfter("#jukeboxwhatsplaying").slider({
-				slide: (e, ui) => {
-					if ($("#masterVolumeEnabled").prop("checked")) {
-						window.d20.jukebox.lastFolderStructure.forEach(playlist => {
+					slide: (e, ui) => {
+						if ($("#masterVolumeEnabled").prop("checked")) {
+							window.d20.jukebox.lastFolderStructure.forEach(playlist => {
 							// The track is outside a playlist
-							if (!playlist.i) {
-								changeTrackVolume(playlist, ui.value);
-							} else {
-								playlist.i.forEach(trackId => changeTrackVolume(trackId, ui.value))
-							}
-						});
-					}
-					$("#jbwMasterVolume").slider("value", ui.value);
-				},
-				value: 50,
-			});
+								if (!playlist.i) {
+									changeTrackVolume(playlist, ui.value);
+								} else {
+									playlist.i.forEach(trackId => changeTrackVolume(trackId, ui.value))
+								}
+							});
+						}
+						$("#jbwMasterVolume").slider("value", ui.value);
+					},
+					value: 50,
+				});
 			$("<h4>Master Volume</h4>").insertAfter("#jukeboxwhatsplaying").css("margin-left", "10px");
 			$(`<input type="checkbox" id="masterVolumeEnabled" style="position:relative;top:-11px;" title="Enable this to change the volume of all the tracks at the same time"/>`).insertAfter("#masterVolume").tooltip();
 
-			//TODO: Make the slider a separate component at some point
+			// TODO: Make the slider a separate component at some point
 			const slider = $(`<div id="jbwMasterVolume" class="jukebox-widget-slider"></div>`)
 				.slider({
 					slide: (e, ui) => {
@@ -153,7 +153,7 @@ function jukeboxWidget () {
 					}
 				}
 			});
-		}
+		},
 	};
 }
 

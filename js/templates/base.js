@@ -1,4 +1,4 @@
-function initTemplates() {
+function initTemplates () {
 	d20plus.templates = {};
 }
 

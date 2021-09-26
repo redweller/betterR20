@@ -10,7 +10,7 @@ function d20plusObjects () {
 				d20plus.importer.showImportList(
 					"object",
 					data.object,
-					d20plus.objects.handoutBuilder
+					d20plus.objects.handoutBuilder,
 				);
 			});
 		}
@@ -30,8 +30,8 @@ function d20plusObjects () {
 				name: name,
 				tags: d20plus.importer.getTagString([
 					Parser.sizeAbvToFull(data.size),
-					Parser.sourceJsonToFull(data.source)
-				], "object")
+					Parser.sourceJsonToFull(data.source),
+				], "object"),
 			},
 			{
 				success: function (character) {
@@ -45,13 +45,13 @@ function d20plusObjects () {
 						character.hp = data.hp;
 						$.ajax({
 							url: avatar,
-							type: 'HEAD',
+							type: "HEAD",
 							error: function () {
 								d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
 							},
 							success: function () {
 								d20plus.importer.getSetAvatarImage(character, avatar);
-							}
+							},
 						});
 						const ac = data.ac.match(/^\d+/);
 						const size = Parser.sizeAbvToFull(data.size);
@@ -67,11 +67,11 @@ function d20plusObjects () {
 						character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
 						character.attribs.create({
 							name: "advantagetoggle",
-							current: d20plus.importer.getDesiredAdvantageToggle()
+							current: d20plus.importer.getDesiredAdvantageToggle(),
 						});
 						character.attribs.create({
 							name: "whispertoggle",
-							current: d20plus.importer.getDesiredWhisperToggle()
+							current: d20plus.importer.getDesiredWhisperToggle(),
 						});
 						character.attribs.create({name: "dtype", current: d20plus.importer.getDesiredDamageType()});
 						character.attribs.create({name: "npc_name", current: name});
@@ -86,15 +86,15 @@ function d20plusObjects () {
 						character.attribs.create({name: "npc_immunities", current: data.immune ? data.immune : ""});
 						character.attribs.create({name: "damage_immunities", current: data.immune ? data.immune : ""});
 
-						//Should only be one entry for objects
+						// Should only be one entry for objects
 						if (data.entries != null) {
 							character.attribs.create({name: "repeating_npctrait_0_name", current: name});
 							character.attribs.create({name: "repeating_npctrait_0_desc", current: data.entries});
 							if (d20plus.cfg.getOrDefault("import", "tokenactionsTraits")) {
 								character.abilities.create({
-									name: "Information: " + name,
+									name: `Information: ${name}`,
 									istokenaction: true,
-									action: d20plus.actionMacroTrait(0)
+									action: d20plus.actionMacroTrait(0),
 								});
 							}
 						}
@@ -117,23 +117,23 @@ function d20plusObjects () {
 
 							setTimeout(() => {
 								const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
-								let k = fluffAs === "Bio"? "bio" : "gmnotes";
+								let k = fluffAs === "Bio" ? "bio" : "gmnotes";
 								character.updateBlobs({
-									[k]: Markdown.parse(bio)
+									[k]: Markdown.parse(bio),
 								});
 								character.save({
-									[k]: (new Date).getTime()
+									[k]: (new Date()).getTime(),
 								});
 							}, 500);
 						}
 					} catch (e) {
 						d20plus.ut.log(`Error loading [${name}]`);
 						d20plus.addImportError(name);
-						console.log(data);
-						console.log(e);
+						// eslint-disable-next-line no-console
+						console.log(data, e);
 					}
 					d20.journal.addItemToFolderStructure(character.id, folder.id);
-				}
+				},
 			});
 	};
 }

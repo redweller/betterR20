@@ -1,4 +1,6 @@
-> DISCLAIMER: This tool is intended to enhance your Roll20 experience by allowing you to easily utilize content that you already own.
+# betteR20
+
+> > DISCLAIMER: This tool is intended to enhance your Roll20 experience by allowing you to easily utilize content that you already own.
 > The use of this tool may be against the [Roll 20 Marketplace Asset End User License Agreement](https://wiki.roll20.net/Marketplace_Asset_EULA) and the [Roll 20 EULA or Terms of Service](https://wiki.roll20.net/Terms_of_Service_and_Privacy_Policy), and/or may be considered grounds for account suspension or termination. Use at your own risk.
 
 **If you wish to use creatures with the Shaped sheet, import with your game using the OGL sheet, and then switch to the shaped sheet afterwards.** Due to the complexity of the process (read: it's a colossal hack), we are unable to support both sheets natively.

@@ -73,6 +73,7 @@ function baseJsLoad () {
 		// sanity check
 		if (js instanceof Promise) throw new Error(`Promise was passed instead of text! This is a bug.`);
 		try {
+			// eslint-disable-next-line no-eval
 			window.eval(js);
 			d20plus.ut.log(`JS [${name}] Loaded`);
 		} catch (e) {
@@ -95,18 +96,20 @@ function baseJsLoad () {
 					},
 					error: function (resp, qq, pp) {
 						if (resp && resp.status >= 400 && retries-- > 0) {
+							// eslint-disable-next-line no-console
 							console.error(resp, qq, pp);
 							d20plus.ut.log(`Error loading ${name}; retrying`);
 							setTimeout(() => {
 								reject(new Error(`Loading "${name}" failed (status ${resp.status}): ${resp} ${qq} ${pp}`));
 							}, 500);
 						} else {
+							// eslint-disable-next-line no-console
 							console.error(resp, qq, pp);
 							setTimeout(() => {
 								reject(new Error(`Loading "${name}" failed (status ${resp.status}): ${resp} ${qq} ${pp}`));
 							}, 500);
 						}
-					}
+					},
 				});
 			})
 		}
@@ -115,7 +118,9 @@ function baseJsLoad () {
 		do {
 			try {
 				data = await pFetchData();
-			} catch (e) {} // error handling is done as part of data fetching
+			} catch (e) {
+				// error handling is done as part of data fetching
+			}
 		} while (!data && --retries > 0);
 
 		if (data) return data;

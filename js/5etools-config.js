@@ -1,4 +1,4 @@
-function tools5eConfig() {
+function tools5eConfig () {
 	d20plus.cfg5e = {};
 
 	d20plus.cfg5e.updateBaseSiteUrl = () => {
@@ -7,10 +7,10 @@ function tools5eConfig() {
 		BASE_SITE_URL = d20plus.cfg.get("import", "baseSiteUrl");
 		d20plus.ut.log(`Base Site Url updated: ${BASE_SITE_URL}`);
 
-		SITE_JS_URL = BASE_SITE_URL + "js/";
-		DATA_URL = BASE_SITE_URL + "data/";
+		SITE_JS_URL = `${BASE_SITE_URL}js/`;
+		DATA_URL = `${BASE_SITE_URL}data/`;
 
-		IMG_URL = BASE_SITE_URL + "img/";
+		IMG_URL = `${BASE_SITE_URL}img/`;
 
 		SPELL_DATA_DIR = `${DATA_URL}spells/`;
 		SPELL_META_URL = `${SPELL_DATA_DIR}roll20.json`;
