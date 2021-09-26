@@ -82,7 +82,7 @@ function baseUi () {
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
 				zIndex: 10600,
-				backgroundColor: "rgba(255,255,255,0.80)"
+				backgroundColor: "rgba(255,255,255,0.80)",
 			})
 			.appendTo($(`body`)).find(`ul`);
 
@@ -200,8 +200,8 @@ function baseUi () {
 						click: function () {
 							$(this).dialog("close");
 							$dialog.remove();
-							reject(`User cancelled the prompt`);
-						}
+							reject(new Error(`User cancelled the prompt`));
+						},
 					},
 					{
 						text: "OK",
@@ -219,9 +219,9 @@ function baseUi () {
 							} else {
 								alert(messageCountIncomplete ?? "Please select more options!");
 							}
-						}
-					}
-				]
+						},
+					},
+				],
 			})
 		});
 	};

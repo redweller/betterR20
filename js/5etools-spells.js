@@ -17,7 +17,7 @@ function d20plusSpells () {
 			name: sp.name.toLowerCase(),
 			class: ((sp.classes || {}).fromClassList || (sp.classes || {}).fromClassListVariant || []).map(c => c.name.toLowerCase()),
 			level: Parser.spLevelToFull(sp.level).toLowerCase(),
-			source: Parser.sourceJsonToAbv(sp.source).toLowerCase()
+			source: Parser.sourceJsonToAbv(sp.source).toLowerCase(),
 		};
 	};
 
@@ -40,8 +40,8 @@ function d20plusSpells () {
 						forcePlayer,
 						listItemBuilder: d20plus.spells._listItemBuilder,
 						listIndex: d20plus.spells._listCols,
-						listIndexConverter: d20plus.spells._listIndexConverter
-					}
+						listIndexConverter: d20plus.spells._listIndexConverter,
+					},
 				);
 			});
 		}
@@ -70,8 +70,8 @@ function d20plusSpells () {
 					forcePlayer,
 					listItemBuilder: d20plus.spells._listItemBuilder,
 					listIndex: d20plus.spells._listCols,
-					listIndexConverter: d20plus.spells._listIndexConverter
-				}
+					listIndexConverter: d20plus.spells._listIndexConverter,
+				},
 			);
 		}
 	};
@@ -93,8 +93,8 @@ function d20plusSpells () {
 				Parser.spSchoolAbvToFull(data.school),
 				Parser.spLevelToFull(data.level),
 				...(((data.classes || {}).fromClassList || []).map(c => c.name)),
-				Parser.sourceJsonToFull(data.source)
-			], "spell")
+				Parser.sourceJsonToFull(data.source),
+			], "spell"),
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_SPELLS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -102,9 +102,9 @@ function d20plusSpells () {
 				const [notecontents, gmnotes] = d20plus.spells._getHandoutData(data, options);
 
 				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+			},
 		});
 	};
 
@@ -144,19 +144,19 @@ function d20plusSpells () {
 				"Duration": Parser.spDurationToFull(data.duration).replace(/Concentration,\s*/gi, ""), // prevent double concentration text
 				"Material": "",
 				"Components": d20plus.spells._parseComponents(data.components),
-				"Casting Time": Parser.spTimeListToFull(data.time)
-			}
+				"Casting Time": Parser.spTimeListToFull(data.time),
+			},
 		);
 
 		if (data.range.type === "point" && (data.range.distance.type === UNT_FEET || data.range.distance.type === UNT_MILES)) {
-			r20Data["data-RangeNum"] = data.range.distance.amount + "";
+			r20Data["data-RangeNum"] = `${data.range.distance.amount}`;
 		}
 
-		var r20json = {
+		let r20json = {
 			name: data.name,
 			content: "",
 			htmlcontent: "",
-			data: r20Data
+			data: r20Data,
 		};
 		if (data.components && data.components.m) {
 			if (data.components.m.text) r20json.data["Material"] = data.components.m.text;
@@ -168,8 +168,8 @@ function d20plusSpells () {
 		if (data.duration.filter(d => d.concentration).length > 0) {
 			r20json.data["Concentration"] = "Yes";
 		}
-		var notecontents = "";
-		var gmnotes = "";
+		let notecontents = "";
+		let gmnotes = "";
 		notecontents += `<p><h3>${data.name}</h3>
 <em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}${builderOptions.isSpellPoints && data.level ? ` (${d20plus.spells.spLevelToSpellPoints(data.level)} spell points)` : ""}</em></p><p>
 <strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
@@ -190,8 +190,8 @@ function d20plusSpells () {
 			const higherLevelsEntryList = {type: "entries", entries: data.entriesHigherLevel};
 			renderer.recursiveRender(higherLevelsEntryList, hLevelRenderStack, {depth: 2});
 			const higherLevels = d20plus.importer.getCleanText(hLevelRenderStack.join(" ").replace("At Higher Levels.", ""));
-			r20json.content += "\n\n\"At Higher Levels: " + higherLevels;
-			r20json.htmlcontent += "<br><br>\"At Higher Levels: " + higherLevels;
+			r20json.content += `\n\n"At Higher Levels: ${higherLevels}`;
+			r20json.htmlcontent += `<br><br>"At Higher Levels: ${higherLevels}`;
 			notecontents += hLevelRenderStack.join("");
 			r20Data["Higher Spell Slot Desc"] = higherLevels;
 		}

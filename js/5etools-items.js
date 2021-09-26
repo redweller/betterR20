@@ -18,7 +18,7 @@ function d20plusItems () {
 			name: it.name.toLowerCase(),
 			type: it._typeListText.map(t => t.toLowerCase()),
 			rarity: it.rarity.toLowerCase(),
-			source: Parser.sourceJsonToAbv(it.source).toLowerCase()
+			source: Parser.sourceJsonToAbv(it.source).toLowerCase(),
 		};
 	};
 	// Import Items button was clicked
@@ -53,7 +53,6 @@ function d20plusItems () {
 											n = n.toLowerCase();
 											src = src.toLowerCase();
 
-
 											const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
 
 											let count = 1;
@@ -62,7 +61,7 @@ function d20plusItems () {
 											out.push({
 												type: "item",
 												count,
-												data: subItem
+												data: subItem,
 											})
 										} else {
 											out.push({
@@ -71,9 +70,9 @@ function d20plusItems () {
 													name: line.toTitleCase(),
 													data: {
 														Category: "Items",
-														"Item Type": "Adventuring Gear"
-													}
-												}
+														"Item Type": "Adventuring Gear",
+													},
+												},
 											})
 										}
 									});
@@ -91,14 +90,14 @@ function d20plusItems () {
 									forcePlayer,
 									listItemBuilder: d20plus.items._listItemBuilder,
 									listIndex: d20plus.items._listCols,
-									listIndexConverter: d20plus.items._listIndexConverter
-								}
+									listIndexConverter: d20plus.items._listIndexConverter,
+								},
 							);
 						},
 						urls: {
 							items: `${DATA_URL}items.json`,
 							baseitems: `${DATA_URL}items-base.json`,
-							magicvariants: `${DATA_URL}magicvariants.json`
+							magicvariants: `${DATA_URL}magicvariants.json`,
 						},
 						isAddGroups: true,
 					});
@@ -117,8 +116,8 @@ function d20plusItems () {
 							forcePlayer,
 							listItemBuilder: d20plus.items._listItemBuilder,
 							listIndex: d20plus.items._listCols,
-							listIndexConverter: d20plus.items._listIndexConverter
-						}
+							listIndexConverter: d20plus.items._listIndexConverter,
+						},
 					);
 				});
 			}
@@ -144,8 +143,8 @@ function d20plusItems () {
 			tags: d20plus.importer.getTagString([
 				`rarity ${data.rarity}`,
 				...data._typeListText,
-				Parser.sourceJsonToFull(data.source)
-			], "item")
+				Parser.sourceJsonToFull(data.source),
+			], "item"),
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -154,11 +153,11 @@ function d20plusItems () {
 
 				handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
 				handout.save({
-					notes: (new Date).getTime(),
-					inplayerjournals: inJournals
+					notes: (new Date()).getTime(),
+					inplayerjournals: inJournals,
 				});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+			},
 		});
 	};
 
@@ -175,18 +174,18 @@ function d20plusItems () {
 			return str ? Renderer.stripTags(str) : str;
 		}
 
-		var notecontents = "";
+		let notecontents = "";
 		const roll20Data = {
 			name: data.name,
 			data: {
-				Category: "Items"
-			}
+				Category: "Items",
+			},
 		};
 
 		const [damage, damageType, propertiesTxt] = Renderer.item.getDamageAndPropertiesText(data);
 		const typeRarityAttunement = Renderer.item.getTypeRarityAndAttunementText(data);
 
-		var type = data.type;
+		let type = data.type;
 		if (data.type) {
 			roll20Data.data["Item Type"] = d20plus.items.parseType(data.type);
 		} else if (data._typeListText) {
@@ -196,25 +195,25 @@ function d20plusItems () {
 		const cleanDmg1 = removeDiceTags(data.dmg1);
 		const cleanDmg2 = removeDiceTags(data.dmg2);
 
-		var armorclass = "";
-		if (type === "S") armorclass = "+" + data.ac;
-		if (type === "LA") armorclass = data.ac + " + Dex";
-		if (type === "MA") armorclass = data.ac + " + Dex (max 2)";
+		let armorclass = "";
+		if (type === "S") armorclass = `+${data.ac}`;
+		if (type === "LA") armorclass = `${data.ac} + Dex`;
+		if (type === "MA") armorclass = `${data.ac} + Dex (max 2)`;
 		if (type === "HA") armorclass = data.ac;
-		var properties = "";
+		let properties = "";
 		if (data.property) {
-			var propertieslist = data.property;
-			for (var i = 0; i < propertieslist.length; i++) {
-				var a = d20plus.items.parseProperty(propertieslist[i]);
-				var b = propertieslist[i];
+			let propertieslist = data.property;
+			for (let i = 0; i < propertieslist.length; i++) {
+				let a = d20plus.items.parseProperty(propertieslist[i]);
+				let b = propertieslist[i];
 				if (b === "V") {
-					a = a + " (" + cleanDmg2 + ")";
+					a = `${a} (${cleanDmg2})`;
 					roll20Data.data["Alternate Damage"] = cleanDmg2;
 					roll20Data.data["Alternate Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
 				}
-				if (b === "T" || b === "A") a = a + " (" + data.range + "ft.)";
-				if (b === "RLD") a = a + " (" + data.reload + " shots)";
-				if (i > 0) a = ", " + a;
+				if (b === "T" || b === "A") a = `${a} (${data.range}ft.)`;
+				if (b === "RLD") a = `${a} (${data.reload} shots)`;
+				if (i > 0) a = `, ${a}`;
 				properties += a;
 			}
 		}
@@ -258,7 +257,7 @@ function d20plusItems () {
 		}
 
 		// load modifiers (e.g. "+1 Armor"); this is a comma-separated string
-		const r20metaname = data.name.includes("+") ? data.name.slice(3) + " " + data.name.slice(0,2) : data.name;
+		const r20metaname = data.name.includes("+") ? `${data.name.slice(3)} ${data.name.slice(0, 2)}` : data.name;
 		const itemMeta = (itemMetadata.item || []).find(it => it.name === r20metaname && it.source === data.source);
 		if (itemMeta) roll20Data.data.Modifiers = itemMeta.Modifiers;
 
@@ -280,12 +279,12 @@ function d20plusItems () {
 
 	d20plus.items.parseType = function (type) {
 		const result = Renderer.item.getItemTypeName(type);
-		return result ? result : "n/a";
+		return result || "n/a";
 	};
 
 	d20plus.items.parseDamageType = function (damagetype) {
 		const result = Parser.dmgTypeToFull(damagetype);
-		return result ? result : false;
+		return result || false;
 	};
 
 	d20plus.items.parseProperty = function (property) {

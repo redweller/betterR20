@@ -1,8 +1,10 @@
 /**
  * All the modified minified based on parts of Roll20's `app.js`
  */
-function d20plusMod() {
+function d20plusMod () {
 	d20plus.mod = {};
+
+	/* eslint-disable */
 
 	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
 	// BEGIN ROLL20 CODE
@@ -563,6 +565,8 @@ function d20plusMod() {
 			}
 		}
 	};
+
+	/* eslint-enable */
 }
 
 SCRIPT_EXTENSIONS.push(d20plusMod);

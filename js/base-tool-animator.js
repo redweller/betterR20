@@ -125,7 +125,7 @@ function baseToolAnimator () {
 					_hasRun: this._hasRun,
 					_offset: this._offset,
 					_progress: this._progress,
-					_snapshotDiff: this._snapshotDiff
+					_snapshotDiff: this._snapshotDiff,
 				};
 				const out = {};
 				Object.entries(rawOut).forEach(([k, v]) => {
@@ -159,7 +159,11 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, x, y, z
+					startTime,
+					duration,
+					x,
+					y,
+					z,
 				})
 			};
 
@@ -177,7 +181,7 @@ function baseToolAnimator () {
 						total += pow * Number(val);
 						pow = pow * 10;
 					} else {
-						stack += statuses[i] + ",";
+						stack += `${statuses[i]},`;
 					}
 				}
 
@@ -285,7 +289,7 @@ function baseToolAnimator () {
 					// based on "d20.clipboard.doCopy"
 					const graphic = token.view.graphic;
 					const attrs = {
-						...MiscUtil.copy(graphic)
+						...MiscUtil.copy(graphic),
 					};
 
 					const modelattrs = {};
@@ -297,13 +301,13 @@ function baseToolAnimator () {
 						attrs,
 						modelattrs,
 						oldid: token.id,
-						groupwith: ""
+						groupwith: "",
 					};
 
 					// based on "d20.clipboard.doPaste"
 					let childToken;
 					const page = d20.Campaign.pages.models.find(model => model.thegraphics.models.find(it => it.id === token.id));
-					if ("image" === cpy.type) {
+					if (cpy.type === "image") {
 						attrs.imgsrc = attrs.src;
 						childToken = page.addImage(attrs, true, false, false, false, true);
 						if (cpy.modelattrs && cpy.modelattrs.represents) {
@@ -312,7 +316,7 @@ function baseToolAnimator () {
 							if (char) {
 								const updateBarN = (n) => {
 									const prop = `bar${n}_link`;
-									if ("" !== cpy.modelattrs[prop] && (-1 !== cpy.modelattrs[prop].indexOf("sheetattr_"))) {
+									if (cpy.modelattrs[prop] !== "" && (cpy.modelattrs[prop].indexOf("sheetattr_") !== -1)) {
 										const l = cpy.modelattrs[prop].split("sheetattr_")[1];
 										setTimeout(() => char.updateTokensByName(l), 0.5);
 									} else {
@@ -341,7 +345,8 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, childAnimation
+					startTime,
+					childAnimation,
 				})
 			};
 		},
@@ -352,7 +357,9 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, degrees
+					startTime,
+					duration,
+					degrees,
 				})
 			};
 		},
@@ -392,7 +399,7 @@ function baseToolAnimator () {
 				if (alpha >= startTime) {
 					if (this._snapshotDiff == null) {
 						this._snapshotDiff = {
-							degrees: (degrees || 0) - Number(token.attributes.rotation || 0)
+							degrees: (degrees || 0) - Number(token.attributes.rotation || 0),
 						};
 					}
 
@@ -423,7 +430,9 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, isHorizontal, isVertical
+					startTime,
+					isHorizontal,
+					isVertical,
 				})
 			};
 		},
@@ -470,7 +479,10 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, scaleFactorX, scaleFactorY
+					startTime,
+					duration,
+					scaleFactorX,
+					scaleFactorY,
 				})
 			};
 		},
@@ -580,7 +592,8 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, layer
+					startTime,
+					layer,
 				})
 			};
 		},
@@ -591,7 +604,9 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, prop, value
+					startTime,
+					prop,
+					value,
 				})
 			};
 		},
@@ -607,6 +622,7 @@ function baseToolAnimator () {
 
 					if (prop != null) {
 						const curNum = Number(token.attributes[prop]);
+						// eslint-disable-next-line no-eval
 						token.attributes[prop] = (isNaN(curNum) ? 0 : curNum) + eval(value);
 					}
 
@@ -645,7 +661,11 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, lightRadius, dimStart, degrees
+					startTime,
+					duration,
+					lightRadius,
+					dimStart,
+					degrees,
 				})
 			};
 		},
@@ -736,7 +756,8 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, macroName
+					startTime,
+					macroName,
 				})
 			};
 		},
@@ -766,39 +787,40 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, animation
+					startTime,
+					animation,
 				})
 			};
-		}
+		},
 		// endregion animations
 	};
 
-	function Command (line, error, cons = null, parsed = null) {
+	function Command (line, error, Cons = null, parsed = null) {
 		this.line = line;
 		this.error = error;
-		this.isRunnable = !!cons;
+		this.isRunnable = !!Cons;
 		this.parsed = parsed;
 
 		this.getInstance = function () {
-			return new cons();
+			return new Cons();
 		};
 	}
 
-	Command.errInvalidArgCount = function (line, ...counts) { return new Command(line, `Invalid argument count; expected ${counts.joinConjunct(", ", " or ")}`)};
-	Command.errPropNum = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a number`)};
-	Command.errPropBool = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a boolean`)};
-	Command.errPropLayer = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a layer (valid layers are: ${d20plus.ut.LAYERS.joinConjunct(", ", " or ")})`)};
-	Command.errPropToken = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a token property`)};
-	Command.errValNeg = function (line, prop, val) { return new Command(line, `${prop} "${val}" was negative`)};
+	Command.errInvalidArgCount = function (line, ...counts) { return new Command(line, `Invalid argument count; expected ${counts.joinConjunct(", ", " or ")}`) };
+	Command.errPropNum = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a number`) };
+	Command.errPropBool = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a boolean`) };
+	Command.errPropLayer = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a layer (valid layers are: ${d20plus.ut.LAYERS.joinConjunct(", ", " or ")})`) };
+	Command.errPropToken = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a token property`) };
+	Command.errValNeg = function (line, prop, val) { return new Command(line, `${prop} "${val}" was negative`) };
 
-	Command.errStartNum = function (line, val) { return Command.errPropNum(line, "start time", val)};
-	Command.errStartNeg = function (line, val) { return Command.errValNeg(line, "start time", val)};
-	Command.errDurationNum = function (line, val) { return Command.errPropNum(line, "duration", val)};
-	Command.errDurationNeg = function (line, val) { return Command.errValNeg(line, "duration", val)};
+	Command.errStartNum = function (line, val) { return Command.errPropNum(line, "start time", val) };
+	Command.errStartNeg = function (line, val) { return Command.errValNeg(line, "start time", val) };
+	Command.errDurationNum = function (line, val) { return Command.errPropNum(line, "duration", val) };
+	Command.errDurationNeg = function (line, val) { return Command.errValNeg(line, "duration", val) };
 
 	Command.fromString = function (line) {
 		const cleanLine = line
-			.split("/\/\//g")[0] // handle comments
+			.split(/\/\//g)[0] // handle comments
 			.trim();
 		const tokens = cleanLine.split(/ +/g).filter(Boolean);
 		if (!tokens.length) return new Command(line);
@@ -833,8 +855,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							x: nX,
 							y: nY,
-							z: nZ
-						}
+							z: nZ,
+						},
 					);
 				} else {
 					return new Command(
@@ -847,8 +869,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							x: nX,
 							y: nY,
-							z: nZ
-						}
+							z: nZ,
+						},
 					);
 				}
 			}
@@ -875,8 +897,8 @@ function baseToolAnimator () {
 							_type: "Rotate",
 							start: nStart,
 							duration: nDuration,
-							degrees: nRot
-						}
+							degrees: nRot,
+						},
 					);
 				} else {
 					return new Command(
@@ -887,8 +909,8 @@ function baseToolAnimator () {
 							_type: "RotateExact",
 							start: nStart,
 							duration: nDuration,
-							degrees: nRot
-						}
+							degrees: nRot,
+						},
 					);
 				}
 			}
@@ -908,8 +930,8 @@ function baseToolAnimator () {
 					{
 						_type: "Copy",
 						start: nStart,
-						animation: childAnim
-					}
+						animation: childAnim,
+					},
 				);
 			}
 
@@ -934,8 +956,8 @@ function baseToolAnimator () {
 							_type: "Flip",
 							start: nStart,
 							flipH: flipH,
-							flipV: flipV
-						}
+							flipV: flipV,
+						},
 					);
 				} else {
 					return new Command(
@@ -946,8 +968,8 @@ function baseToolAnimator () {
 							_type: "FlipExact",
 							start: nStart,
 							flipH: flipH,
-							flipV: flipV
-						}
+							flipV: flipV,
+						},
 					);
 				}
 			}
@@ -979,8 +1001,8 @@ function baseToolAnimator () {
 							start: nStart,
 							duration: nDuration,
 							scaleX: nScaleX,
-							scaleY: nScaleY
-						}
+							scaleY: nScaleY,
+						},
 					);
 				} else {
 					return new Command(
@@ -992,8 +1014,8 @@ function baseToolAnimator () {
 							start: nStart,
 							duration: nDuration,
 							scaleX: nScaleX,
-							scaleY: nScaleY
-						}
+							scaleY: nScaleY,
+						},
 					);
 				}
 			}
@@ -1014,8 +1036,8 @@ function baseToolAnimator () {
 					{
 						_type: "Layer",
 						start: nStart,
-						layer: layer
-					}
+						layer: layer,
+					},
 				);
 			}
 
@@ -1047,8 +1069,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							lightRadius: nLightRadius,
 							dimStart: nDimStart,
-							degrees: nDegrees
-						}
+							degrees: nDegrees,
+						},
 					);
 				} else {
 					return new Command(
@@ -1061,8 +1083,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							lightRadius: nLightRadius,
 							dimStart: nDimStart,
-							degrees: nDegrees
-						}
+							degrees: nDegrees,
+						},
 					);
 				}
 			}
@@ -1078,6 +1100,7 @@ function baseToolAnimator () {
 				if (prop != null && !d20plus.anim.VALID_PROP_TOKEN.has(prop)) return Command.errPropToken(line, "prop", prop);
 				let val = "";
 				if (tokens.length > 2) val = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
+				// eslint-disable-next-line no-console
 				try { val = JSON.parse(val); } catch (ignored) { console.warn(`Failed to parse "${val}" as JSON, treating as raw string...`) }
 
 				if (op === "propSum") {
@@ -1089,8 +1112,8 @@ function baseToolAnimator () {
 							_type: "SumProperty",
 							start: nStart,
 							prop: prop,
-							value: val
-						}
+							value: val,
+						},
 					);
 				} else {
 					return new Command(
@@ -1101,8 +1124,8 @@ function baseToolAnimator () {
 							_type: "SetProperty",
 							start: nStart,
 							prop: prop,
-							value: val
-						}
+							value: val,
+						},
 					);
 				}
 			}
@@ -1123,8 +1146,8 @@ function baseToolAnimator () {
 					{
 						_type: "TriggerMacro",
 						start: nStart,
-						macro: macro
-					}
+						macro: macro,
+					},
 				);
 			}
 
@@ -1144,8 +1167,8 @@ function baseToolAnimator () {
 					{
 						_type: "TriggerAnimation",
 						start: nStart,
-						animation: animation
-					}
+						animation: animation,
+					},
 				);
 			}
 		}
@@ -1376,7 +1399,7 @@ function baseToolAnimator () {
 		_getUidItems (fromObj) {
 			return Object.entries(fromObj).map(([k, v]) => ({
 				uid: k,
-				name: v.name
+				name: v.name,
 			}))
 		},
 
@@ -1421,7 +1444,7 @@ function baseToolAnimator () {
 							click: function () {
 								$(this).dialog("close");
 								$dialog.remove();
-							}
+							},
 						},
 						{
 							text: "OK",
@@ -1432,9 +1455,9 @@ function baseToolAnimator () {
 
 								if (~selected) resolve(selected);
 								else resolve(null);
-							}
-						}
-					]
+							},
+						},
+					],
 				});
 			});
 		},
@@ -1444,7 +1467,7 @@ function baseToolAnimator () {
 				this.getAnimations.bind(this),
 				`No animations available! Use the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Animation",
-				defaultSelUid
+				defaultSelUid,
 			);
 		},
 
@@ -1453,7 +1476,7 @@ function baseToolAnimator () {
 				this.getScenes.bind(this),
 				`No scenes available! Use Edit Scenes in the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Scene",
-				defaultSelUid
+				defaultSelUid,
 			);
 		},
 
@@ -1480,7 +1503,7 @@ function baseToolAnimator () {
 			Object.entries(this._anims).forEach(([k, v]) => {
 				saveableAnims[k] = {
 					...v,
-					lines: [...(v.lines || [])].map(it => typeof it === "string" ? it : it.line)
+					lines: [...(v.lines || [])].map(it => typeof it === "string" ? it : it.line),
 				}
 			});
 
@@ -1536,6 +1559,7 @@ function baseToolAnimator () {
 				data = await DataUtil.pUserUpload();
 			} catch (e) {
 				d20plus.ut.chatLog("File was not valid JSON!");
+				// eslint-disable-next-line no-console
 				console.error(e);
 				return;
 			}
@@ -1563,6 +1587,7 @@ function baseToolAnimator () {
 				});
 
 				if (messages.length) {
+					// eslint-disable-next-line no-console
 					console.log(messages.join("\n"));
 					return d20plus.ut.chatLog(messages.join("\n"))
 				}
@@ -1612,7 +1637,7 @@ function baseToolAnimator () {
 					this._shared_getNextName.bind(this, this._anims),
 					this._edit_getValidationMessage.bind(this),
 					this._main_addAnim.bind(this),
-					"uid", "name", "lines" // required properties
+					"uid", "name", "lines", // required properties
 				);
 			});
 
@@ -1655,7 +1680,7 @@ function baseToolAnimator () {
 				const out = {
 					animations: this._anim_list.items
 						.filter(it => $(it.elm).find(`input`).prop("checked"))
-						.map(it => this._main_getExportableAnim(this._anims[it.values().uid]))
+						.map(it => this._main_getExportableAnim(this._anims[it.values().uid])),
 				};
 				d20plus.ut.saveAsJson("animations", out);
 			});
@@ -1688,7 +1713,7 @@ function baseToolAnimator () {
 			Object.values(this._anims).forEach(anim => this._$list.append(this._main_getListItem(anim)));
 
 			this._anim_list = new List("token-animator-list-container", {
-				valueNames: ["name", "uid"]
+				valueNames: ["name", "uid"],
 			});
 		},
 
@@ -1708,7 +1733,7 @@ function baseToolAnimator () {
 			return {
 				uid: this._main_getNextId(),
 				name: this._shared_getNextName(this._anims, "new_animation"),
-				lines: []
+				lines: [],
 			}
 		},
 
@@ -1760,6 +1785,7 @@ function baseToolAnimator () {
 		},
 
 		_scene_addScene (scene) {
+			// eslint-disable-next-line no-console
 			if (scene == null) return console.error(`Scene was null!`);
 
 			const lastSearch = d20plus.ut.getSearchTermAndReset(this._scene_list);
@@ -1817,8 +1843,8 @@ function baseToolAnimator () {
 			this._scene_list = new List("token-animator-scene-list-container", {
 				valueNames: [
 					"name",
-					"uid"
-				]
+					"uid",
+				],
 			});
 		},
 
@@ -1847,14 +1873,14 @@ function baseToolAnimator () {
 					this._shared_getNextName.bind(this, this._scenes),
 					this._scene_getValidationMessage.bind(this),
 					this._scene_addScene.bind(this),
-					"uid", "name", "anims" // required properties
+					"uid", "name", "anims", // required properties
 				);
 			});
 
 			this._scene_$btnExport.click(() => {
 				const out = {
 					scenes: this._scene_getSelected()
-						.map(it => this._scenes[it.values().uid])
+						.map(it => this._scenes[it.values().uid]),
 				};
 				d20plus.ut.saveAsJson("scenes", out);
 			});
@@ -1880,7 +1906,7 @@ function baseToolAnimator () {
 			return {
 				uid: this._scene_getNextId(),
 				name: this._shared_getNextName(this._scenes, "new_scene"),
-				anims: []
+				anims: [],
 				/*
 				Anims array structure:
 				[
@@ -1949,14 +1975,14 @@ function baseToolAnimator () {
 				height: 600,
 				close: () => {
 					setTimeout(() => $winEditor.remove())
-				}
+				},
 			});
 		},
 
 		_scene_$getEditorRow (editorOptions, scene, animMeta) {
 			if (!animMeta) {
 				animMeta = {
-					offset: 0
+					offset: 0,
 				};
 				scene.anims.push(animMeta);
 			}
@@ -1980,7 +2006,7 @@ function baseToolAnimator () {
 									.map(it => ({
 										id: it.id,
 										name: it.attributes.name || "(Unnamed)",
-										imgsrc: it.attributes.imgsrc
+										imgsrc: it.attributes.imgsrc,
 									}))
 									.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
 								tokens.forEach(it => {
@@ -1996,10 +2022,10 @@ function baseToolAnimator () {
 												<span title="${it.name}" class="anm-scene__wrp-token-name-inner">${it.name}</span>
 											</div>
 										</div>`.click(() => {
-										$wrpTokens.find(`.anm-scene__wrp-token`).removeClass(`anm-scene__wrp-token--active`);
-										$wrpToken.addClass(`anm-scene__wrp-token--active`);
-										lastSelectedTokenId = it.id;
-									}).appendTo($wrpTokens);
+		$wrpTokens.find(`.anm-scene__wrp-token`).removeClass(`anm-scene__wrp-token--active`);
+		$wrpToken.addClass(`anm-scene__wrp-token--active`);
+		lastSelectedTokenId = it.id;
+	}).appendTo($wrpTokens);
 								});
 							} else $wrpTokens.append("There are no tokens on this page!");
 						});
@@ -2027,7 +2053,7 @@ function baseToolAnimator () {
 								click: function () {
 									$(this).dialog("close");
 									$dialog.remove();
-								}
+								},
 							},
 							{
 								text: "OK",
@@ -2040,11 +2066,11 @@ function baseToolAnimator () {
 										$wrpToken.html(getTokenPart());
 										$wrpTokenName.html(getTokenNamePart());
 									}
-								}
-							}
+								},
+							},
 						],
 						width: 640,
-						height: 480
+						height: 480,
 					});
 				});
 			const getTokenPart = () => {
@@ -2133,14 +2159,14 @@ function baseToolAnimator () {
 			const pageH = d20.Campaign.activePage().attributes.height * 70;
 
 			const outOfBounds = d20.Campaign.activePage().thegraphics.models.filter(tokenModel => {
-				return tokenModel.view.graphic.scaleX < 0.01 ||
-					tokenModel.view.graphic.scaleX > 50.0 ||
-					tokenModel.view.graphic.scaleY < 0.01 ||
-					tokenModel.view.graphic.scaleY > 50.0 ||
-					tokenModel.attributes.left < 0 ||
-					tokenModel.attributes.left > pageW ||
-					tokenModel.attributes.top < 0 ||
-					tokenModel.attributes.top > pageH;
+				return tokenModel.view.graphic.scaleX < 0.01
+					|| tokenModel.view.graphic.scaleX > 50.0
+					|| tokenModel.view.graphic.scaleY < 0.01
+					|| tokenModel.view.graphic.scaleY > 50.0
+					|| tokenModel.attributes.left < 0
+					|| tokenModel.attributes.left > pageW
+					|| tokenModel.attributes.top < 0
+					|| tokenModel.attributes.top > pageH;
 			});
 
 			outOfBounds.forEach(token => {
@@ -2162,7 +2188,7 @@ function baseToolAnimator () {
 					"page",
 					"tokenName",
 					"_tokenId",
-				]
+				],
 			});
 		},
 
@@ -2246,7 +2272,7 @@ function baseToolAnimator () {
 						tokenMeta.token.attributes.name,
 						d20plus.anim.animatorTool.getAnimation(animUid).name,
 						tokenId,
-						animUid
+						animUid,
 					)
 				});
 			});
@@ -2259,8 +2285,8 @@ function baseToolAnimator () {
 					"tokenName",
 					"animName",
 					"_tokenId",
-					"_animUid"
-				]
+					"_animUid",
+				],
 			});
 		},
 
@@ -2310,7 +2336,7 @@ function baseToolAnimator () {
 				height: 600,
 				close: () => {
 					setTimeout(() => $winEditor.remove())
-				}
+				},
 			});
 
 			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck();
@@ -2360,7 +2386,7 @@ function baseToolAnimator () {
 
 					return {
 						text,
-						className: `anm-edit__gui-row-name--${clean}`
+						className: `anm-edit__gui-row-name--${clean}`,
 					}
 				};
 
@@ -2422,7 +2448,7 @@ function baseToolAnimator () {
 										click: function () {
 											$(this).dialog("close");
 											$dialog.remove();
-										}
+										},
 									},
 									{
 										text: "OK",
@@ -2433,9 +2459,9 @@ function baseToolAnimator () {
 
 											if (~selected) resolve((d20plus.anim.animatorTool.getAnimation(selected) || {}).name);
 											else resolve(null);
-										}
-									}
-								]
+										},
+									},
+								],
 							});
 						});
 
@@ -2449,7 +2475,7 @@ function baseToolAnimator () {
 					});
 			};
 
-			const gui_$getWrapped = (it, width, bold) =>  $$`<div class="col-${width} flex-vh-center ${bold ? "bold" : ""}">${it}</div>`;
+			const gui_$getWrapped = (it, width, bold) => $$`<div class="col-${width} flex-vh-center ${bold ? "bold" : ""}">${it}</div>`;
 
 			const gui_doAddRow = (myLines, line) => {
 				const parsed = line.parsed;
@@ -2668,8 +2694,7 @@ function baseToolAnimator () {
 						const doUpdate = () => {
 							baseMeta.doUpdate();
 							parsed.prop = $selProp.val();
-							try { parsed.value = JSON.parse($iptVal().trim()); }
-							catch (ignored) { parsed.value = $iptVal.val(); }
+							try { parsed.value = JSON.parse($iptVal().trim()); } catch (ignored) { parsed.value = $iptVal.val(); }
 							line.line = d20plus.anim.lineFromParsed(parsed);
 							parsed._type = $selMode.val();
 							baseMeta.$dispName.text(parsed._type);
@@ -2750,8 +2775,8 @@ function baseToolAnimator () {
 
 				myLines.forEach(line => {
 					if (line.error) {
-						console.error(`Failed to create GUI row from line "${line.line}"!`);
-						console.error(line.error)
+						// eslint-disable-next-line no-console
+						console.error(`Failed to create GUI row from line "${line.line}"!`, line.error);
 					} else gui_doAddRow(myLines, line);
 				});
 			};
@@ -2762,7 +2787,7 @@ function baseToolAnimator () {
 					const toValidate = {
 						uid: anim.uid, // pass out UID, so the validator can ignore our old data when checking duplicate names
 						name: $iptName.val(),
-						lines: $iptLines.val().split("\n")
+						lines: $iptLines.val().split("\n"),
 					};
 					return this._edit_getValidationMessage(toValidate);
 				}
@@ -2831,7 +2856,7 @@ function baseToolAnimator () {
 								click: function () {
 									$(this).dialog("close");
 									$dialog.remove();
-								}
+								},
 							},
 							{
 								text: "OK",
@@ -2844,9 +2869,9 @@ function baseToolAnimator () {
 										resolve(_KEYS[ix]);
 										lastSelCommand = String(ix);
 									} else resolve(null);
-								}
-							}
-						]
+								},
+							},
+						],
 					});
 				});
 
@@ -2928,7 +2953,7 @@ function baseToolAnimator () {
 	}
 
 	d20plus.anim.animator = {
-	   /*
+		/*
 		_tracker: {
 			tokenId: {
 				token: {...}, // Roll20 token
@@ -2957,11 +2982,11 @@ function baseToolAnimator () {
 			const queue = d20plus.anim.animatorTool.getAnimQueue(anim, options.offset || 0);
 
 			this._tracker[token.id] = this._tracker[token.id] || {token, active: {}};
-			const time = (new Date).getTime();
+			const time = (new Date()).getTime();
 			this._tracker[token.id].active[animUid] = {
 				queue,
 				start: time,
-				lastTick: time
+				lastTick: time,
 			};
 		},
 
@@ -3018,7 +3043,7 @@ function baseToolAnimator () {
 				Object.entries(tokenMeta.active).forEach(([animUid, state]) => {
 					saveableTokenMeta.active[animUid] = {
 						queue: state.queue.map(it => it.serialize()),
-						lastAlpha: state.lastAlpha
+						lastAlpha: state.lastAlpha,
 					};
 				});
 
@@ -3026,7 +3051,7 @@ function baseToolAnimator () {
 			});
 
 			Campaign.save({
-				bR20tool__anim_running: toSave
+				bR20tool__anim_running: toSave,
 			});
 		},
 
@@ -3041,6 +3066,7 @@ function baseToolAnimator () {
 			Object.entries(saved).forEach(([tokenId, savedTokenMeta]) => {
 				// load real token
 				const token = d20plus.ut.getTokenById(tokenId);
+				// eslint-disable-next-line no-console
 				if (!token) return console.log(`Token ${tokenId} not found!`);
 				const tokenMeta = {};
 				tokenMeta.token = token;
@@ -3048,12 +3074,13 @@ function baseToolAnimator () {
 				const active = {};
 				Object.entries(savedTokenMeta.active).forEach(([animUid, savedState]) => {
 					const anim = d20plus.anim.animatorTool.getAnimation(animUid);
+					// eslint-disable-next-line no-console
 					if (!anim) return console.log(`Animation ${animUid} not found!`);
 
 					active[animUid] = {
 						queue: savedState.queue.map(it => d20plus.anim.deserialize(it)),
 						start: time - savedState.lastAlpha,
-						lastTick: time
+						lastTick: time,
 					}
 				});
 
@@ -3095,7 +3122,7 @@ function baseToolAnimator () {
 								tokenMeta.token,
 								alpha,
 								delta,
-								instance.queue
+								instance.queue,
 							) || anyModification;
 
 							if (instance.queue[i].hasRun()) {
@@ -3199,7 +3226,7 @@ function baseToolAnimator () {
 		"adv_fow_view_distance",
 		"groupwith",
 		"sides", // pipe-separated list of `escape`d image URLs
-		"currentSide"
+		"currentSide",
 	];
 	d20plus.anim.VALID_PROP_TOKEN = new Set(d20plus.anim._PROP_TOKEN);
 
