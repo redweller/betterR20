@@ -83,23 +83,28 @@ function d20plusBackgrounds () {
 	// Needs to be its own thing due to having a choose randomly button
 	d20plus.backgrounds.traitMenu = async function(ptrait, ideal, bond, flaw) {
 		// Arguments to send
-		ptraitargs = {
+		const ptraitargs = {
 			countMin: 0,
 			countMax: 2,
 		}
-		args = {
+		const args = {
 			countMin: 0,
 			countMax: 1,
 		}
 		
 		// Call the menu
-		pt = await d20plus.ui.chooseCheckboxList(ptrait, "Personality Trait", ptraitargs);
-		id = await d20plus.ui.chooseCheckboxList(ideal, "Ideal", args);
-		bd = await d20plus.ui.chooseCheckboxList(bond, "Bond", args);
-		fl = await d20plus.ui.chooseCheckboxList(flaw, "Flaw", args);
+		const pt = await d20plus.ui.chooseCheckboxList(ptrait, "Personality Trait", ptraitargs);
+		const id = await d20plus.ui.chooseCheckboxList(ideal, "Ideal", args);
+		const bd = await d20plus.ui.chooseCheckboxList(bond, "Bond", args);
+		const fl = await d20plus.ui.chooseCheckboxList(flaw, "Flaw", args);
 
 		//Return
-		return [pt, id, bd, fl];
+		return {
+			"personalityTraits": pt,
+			"ideals": id,
+			"bonds":bd,
+			"flaws":fl
+		}
 	};
 }
 

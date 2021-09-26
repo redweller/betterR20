@@ -1499,11 +1499,11 @@ const betteR205etoolsMain = function () {
 			}
 
 			// Choose and import personallity traits/ideals/bonds/flaws.
-			traits = null;
-			ptrait = null; // Personallity trait
-			ideal = null;
-			bond = null;
-			flaw = null;
+			let traits = null;
+			let ptrait = null; // Personallity trait
+			let ideal = null;
+			let bond = null;
+			let flaw = null;
 			// Get the JSON for all the tables
 			if (bg.entries) {
 				for (const ent of bg.entries) {
@@ -1520,26 +1520,26 @@ const betteR205etoolsMain = function () {
 					// This seems to be the best way to parse the information with some room for errors
 					// It seems like the schema is based on on the website, which is why colLabels is where the identifier is
 					if (ent.colLabels && ent.colLabels.length == 2 && ent.rows) {
-						if (ent.colLabels[1] === "Personality Trait") {
-							ptrait = ent.rows.map(r => r[1]);
-						}
-						if (ent.colLabels[1] === "Ideal") {
-							ideal = ent.rows.map(r => r[1]);
-						}
-						if (ent.colLabels[1] === "Bond") {
-							bond = ent.rows.map(r => r[1]);
-						}
-						if (ent.colLabels[1] === "Flaw") {
-							flaw = ent.rows.map(r => r[1]);
+						switch(ent.colLabels[1]){
+							case "Personality Trait":
+								ptrait = ent.rows.map(r => r[1]);
+								break;
+							case "Ideal":
+								ideal = ent.rows.map(r => r[1]);
+								break;
+							case "Bond":
+								bond = ent.rows.map(r => r[1]);
+								break;
+							case "Flaw":
+								flaw = ent.rows.map(r => r[1]);
+								break;
 						}
 					}
 				}
-				console.log([ptrait, ideal, bond, flaw]);
 			}
 
 			if (ptrait != null) {
 				traits = await d20plus.backgrounds.traitMenu(ptrait, ideal, bond, flaw);
-				console.log(traits);
 			}
 			
 
@@ -1584,14 +1584,15 @@ const betteR205etoolsMain = function () {
 				});
 
 				// Add flavor traits
-				if (traits && traits.length == 4) {
-					// Only add the trait if the trait has a non-zero number of options
-					if (traits[0].length == 1) attrs.addOrUpdate(`personality_traits`, traits[0][0]);
-					if (traits[0].length == 2) attrs.addOrUpdate(`personality_traits`, traits[0][0] + "\n" + traits[0][1]);
-					if (traits[1].length == 1) attrs.addOrUpdate(`ideals`, traits[1][0]);
-					if (traits[2].length == 1) attrs.addOrUpdate(`bonds`, traits[2][0]);
-					if (traits[3].length == 1) attrs.addOrUpdate(`flaws`, traits[3][0]);
-				}
+				const {personalityTraits, ideals, bonds, flaws} = traits || {}; //Got some help from Giddy with this one
+				console.log(personalityTraits, ideals, bonds, flaws)
+				// Only add the trait if the trait exists
+				if (personalityTraits && personalityTraits.length == 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
+				if (personalityTraits && personalityTraits.length == 2) attrs.addOrUpdate(`personality_traits`, personalityTraits[0] + "\n" + personalityTraits[1]);
+				if (ideals && ideals.length == 1) attrs.addOrUpdate(`ideals`, ideals[0]);
+				if (bonds && bonds.length == 1) attrs.addOrUpdate(`bonds`, bonds[0]);
+				if (flaws && flaws.length == 1) attrs.addOrUpdate(`flaws`, flaws[0]);
+				
 
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);

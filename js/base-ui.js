@@ -147,18 +147,20 @@ function baseUi () {
 		return new Promise((resolve, reject) => {
 			// Ensure count, countMin, and countMax don't mess up
 			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
-			isInt = Number.isInteger;
-			if ((isInt(count) && isInt(countMin)) || (isInt(count) && isInt(countMax)) || (count == null && (isInt(countMin) ^ isInt(countMax))) || (countMin > countMax)) {
+			if ((Number.isInteger(count) && Number.isInteger(countMin)) 
+			|| (Number.isInteger(count) && Number.isInteger(countMax)) 
+			|| (count == null && (Number.isInteger(countMin) ^ Number.isInteger(countMax))) 
+			|| (countMin > countMax)) {
 				console.log("count is mutually exclusive with countMin and countMax, and countMin and countMax require each other.");
 				reject("Bad arguments")
 			}
-			useRange = isInt(countMin) && countMax;
+			const useRange = Number.isInteger(countMin) && countMax;
 
 			// Generate the HTML
 			const $dialog = $(`
 				<div title="${dataTitle}">
-					${isInt(count) ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
-					${isInt(countMax) ? `<div name="remain" class="bold">Remaining: ${countMax}, Minimum: ${countMin}</div>` : ""}
+					${Number.isInteger(count) ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
+					${Number.isInteger(countMax) ? `<div name="remain" class="bold">Remaining: ${countMax}, Minimum: ${countMin}</div>` : ""}
 					<div>
 						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
 					</div>
@@ -171,8 +173,8 @@ function baseUi () {
 
 			// Ensure the proper number of items is chosen
 			if (count != null || useRange) {
-				targetCount = count || countMax;
-				remainMin = countMax ? `, Minimum: ${countMin}` : "";
+				const targetCount = count || countMax;
+				const remainMin = countMax ? `, Minimum: ${countMin}` : "";
 				$cbChoices.on("change", function () {
 					const $e = $(this);
 					let selectedCount = getSelected().length;
@@ -205,7 +207,7 @@ function baseUi () {
 						text: "OK",
 						click: function () {
 							const selected = getSelected();
-							if (isInt(countMin) && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
+							if (Number.isInteger(countMin) && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
 								$(this).dialog("close");
 								$dialog.remove();
 								resolve(selected);
