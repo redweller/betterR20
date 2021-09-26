@@ -1,5 +1,9 @@
 {
 	"AI": "bestiary-ai.json",
+	"AitFR-ISF": "bestiary-aitfr-isf.json",
+	"AitFR-THP": "bestiary-aitfr-thp.json",
+	"AitFR-DN": "bestiary-aitfr-dn.json",
+	"AitFR-FCD": "bestiary-aitfr-fcd.json",
 	"BGDIA": "bestiary-bgdia.json",
 	"CM": "bestiary-cm.json",
 	"CoS": "bestiary-cos.json",
@@ -55,6 +59,7 @@
 	"UAArtificerRevisited": "bestiary-ua-ar.json",
 	"UAClassFeatureVariants": "bestiary-ua-cfv.json",
 	"UAClericDruidWizard": "bestiary-ua-cdw.json",
+	"WBtW": "bestiary-wbtw.json",
 	"WDH": "bestiary-wdh.json",
 	"WDMM": "bestiary-wdmm.json"
 }

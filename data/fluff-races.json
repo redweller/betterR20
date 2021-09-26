@@ -98,7 +98,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Aarakocra.png"
+						"path": "races/EEPC/Aarakocra.png"
 					}
 				}
 			]
@@ -256,7 +256,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Aasimar.png"
+						"path": "races/VGM/Aasimar.png"
 					}
 				}
 			]
@@ -334,6 +334,104 @@
 			}
 		},
 		{
+			"name": "Aven",
+			"source": "PSA",
+			"entries": [
+				{
+					"type": "entries",
+					"entries": [
+						"Aven have humanlike bodies, arms, and legs, along with birdlike wings and heads. Two distinct varieties of aven are found in Naktamun. One has the head of a hawk or similar bird of prey, with short wings allowing fast flight. The other variety has the head of an ibis atop a long neck, with wide, angular wings better suited to soaring. All aven have lean bodies with feathers ex-tending from their heads down to their shoulders.",
+						"Aven delight in flying above their foes, using their superior mobility to confound and outpace their opponents. They love soaring through the sky as well, though the Hekma limits their altitude. Like all people of Naktamun, they are grateful for the Hekma's protective magic, of course. But they keenly anticipate the hour when the God-Pharaoh will return and dissolve the veil, letting them fly without limit in the afterlife.",
+						{
+							"type": "entries",
+							"name": "Combat Classes",
+							"entries": [
+								"Spellcasters are common among ibis-headed aven drawn to follow the teachings of Kefnet. Their physical resemblance to the god of knowledge is reflected in the metal discipline, focus, and confidence for which aven spellcasters are known. They wield magic of air, wind, and sometimes water to buffet their foes, enhance their own flight, and counter enemy attacks. Hawk-headed aven who follow the path of the mage are more likely to learn sand-based magic that can cloud the air, blast their foes, or bury enemies in living dunes.",
+								"Hawk-headed aven are often drawn to master tech-niques of long-range combat, whether the javelin that is the preferred weapon of many, the bow, or other thrown weapons. Whatever weapon they use, aven hover and swoop in the air above the fray, seeking the opportune moment to strike in exactly the right place. In line with the teachings of the god of solidarity, they often fly in tight formations with other aven in their crops, supporting and protecting each other. Aven take great pride in the precision of their attacks, relying on their keen vision and superior vantage points. They view the sharp tip of a {@item javelin|phb} or {@item arrow|phb} as a symbol of their love for precision, and some initiates maintain carefully tended collections of spearheads or arrowheads.",
+								"A relatively small number of aven of both varieties end up focusing on hand-to-hand combat. Even there, they use their ability to fly to great advantage, often swooping down on their foes from a great height. The speed and power of a blow from a diving aven can be utterly devastating, but such a strike poses a tremendous risk to the aven as well as the target. An aven who fails to pull up from the dive in time can suffer even worse injuries than the target of the attack. Aven often minimize this risk by hurling {@item javelin|phb|javelins} while they dive, then pulling up early after a successful throw."
+							]
+						}
+					]
+				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Aven.webp"
+					}
+				},
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Aven2.webp"
+					}
+				}
+			]
+		},
+		{
+			"name": "Aven (Hawk-Headed)",
+			"source": "PSA",
+			"_copy": {
+				"name": "Aven",
+				"source": "PSA",
+				"_mod": {
+					"entries": {
+						"mode": "prependArr",
+						"items": {
+							"type": "section",
+							"entries": [
+								{
+									"type": "entries",
+									"entries": [
+										"Following the example of Oketra, hawk-headed aven often focus on the techniques of long-range combat. Most prefer {@item javelin|phb|javelins}, but some are skilled with bows, {@item spear|phb|spears}, and {@item handaxe|phb|throwing axes}."
+									]
+								}
+							]
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Aven (Ibis-Headed)",
+			"source": "PSA",
+			"_copy": {
+				"name": "Aven",
+				"source": "PSA",
+				"_mod": {
+					"entries": {
+						"mode": "prependArr",
+						"items": {
+							"type": "section",
+							"entries": [
+								{
+									"type": "entries",
+									"entries": [
+										"A majority of ibis-headed aven, drawn to the teachings of Kefnet, specialize in spellcasting. They take great pride in all the qualities they share with the god of knowledge\u2014not just their avian heads, but their quick wit, self-confidence, cunning, and spellcasting prowess."
+									]
+								}
+							]
+						}
+					},
+					"images": {
+						"mode": "appendArr",
+						"items": [
+							{
+								"type": "image",
+								"href": {
+									"type": "internal",
+									"path": "races/PSA/Aven (Ibis-Headed).webp"
+								}
+							}
+						]
+					}
+				}
+			}
+		},
+		{
 			"name": "Bugbear",
 			"source": "VGM",
 			"monstrous": true,
@@ -342,7 +440,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Bugbear.png"
+						"path": "races/VGM/Bugbear.png"
 					}
 				}
 			]
@@ -407,6 +505,15 @@
 							]
 						}
 					]
+				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/GGR/Centaur.png"
+					}
 				}
 			]
 		},
@@ -561,15 +668,6 @@
 							]
 						}
 					]
-				}
-			],
-			"images": [
-				{
-					"type": "image",
-					"href": {
-						"type": "internal",
-						"path": "races/Centaur.png"
-					}
 				}
 			]
 		},
@@ -961,7 +1059,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Dragonborn.png"
+						"path": "races/PHB/Dragonborn.png"
 					}
 				}
 			]
@@ -1131,7 +1229,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Dwarf.png"
+						"path": "races/PHB/Dwarf.png"
 					}
 				}
 			]
@@ -1326,7 +1424,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Elf.png"
+						"path": "races/PHB/Elf.png"
 					}
 				}
 			]
@@ -1868,7 +1966,7 @@
 								{
 									"type": "entries",
 									"entries": [
-										"The Tajuru nation is the largest of the three main elven nations, concentrated in Murasa and spread across  other parts of Zendikar as hundreds of far-flung clans. Tajuru elves are the most open to people of other races, seeing their skills and perspectives as valuable new tools for survival. The Tajuru are also more open to new lifestyles, be it living in a mountaintop citadel or roaming grassy plains."
+										"The Tajuru nation is the largest of the three main elven nations, concentrated in Murasa and spread across other parts of Zendikar as hundreds of far-flung clans. Tajuru elves are the most open to people of other races, seeing their skills and perspectives as valuable new tools for survival. The Tajuru are also more open to new lifestyles, be it living in a mountaintop citadel or roaming grassy plains."
 									]
 								}
 							]
@@ -1918,6 +2016,60 @@
 						[
 							"6",
 							"Your hands never look dirty."
+						],
+						[
+							"7",
+							"You smell like fresh brownies."
+						],
+						[
+							"8",
+							"A noticeable, harmless chill surrounds you."
+						]
+					]
+				}
+			]
+		},
+		{
+			"name": "Fairy",
+			"source": "WBtW",
+			"entries": [
+				"The Feywild is home to many fantastic peoples, including fairies. Fairies are a wee folk, but not nearly as much so as their pixie and sprite friends. The first fairies spoke Elvish, Goblin, or Sylvan, and encounters with human visitors prompted many of them to learn Common as well.",
+				"Infused with the magic of the Feywild, most fairies look like Small elves with insectile wings, but each fairy has a special physical characteristic that sets the fairy apart. For your fairy, roll on the Fey Characteristics table or choose an option from it. You're also free to come up with your own characteristic if none of the suggestions below fit your character.",
+				{
+					"type": "table",
+					"caption": "Fey Characteristics",
+					"colLabels": [
+						"d8",
+						"Characteristic"
+					],
+					"colStyles": [
+						"col-2 text-center",
+						"col-10"
+					],
+					"rows": [
+						[
+							"1",
+							"Your wings are like those of a bird."
+						],
+						[
+							"2",
+							"You have shimmering, multicolored skin."
+						],
+						[
+							"3",
+							"You have exceptionally large ears."
+						],
+						[
+							"4",
+							"A glittering mist constantly surrounds you."
+						],
+						[
+							"5",
+							"You have a small spectral horn on your forehead, like a little unicorn horn."
+						],
+						[
+							"6",
+							"Your legs are insectile."
 						],
 						[
 							"7",
@@ -2056,7 +2208,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Firbolg.png"
+						"path": "races/VGM/Firbolg.png"
 					}
 				}
 			]
@@ -2128,7 +2280,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Genasi.png"
+						"path": "races/EEPC/Genasi.png"
 					}
 				}
 			]
@@ -2275,7 +2427,7 @@
 							"type": "image",
 							"href": {
 								"type": "internal",
-								"path": "races/Githyanki.png"
+								"path": "races/MTF/Githyanki.png"
 							}
 						}
 					}
@@ -2400,7 +2552,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Gnome.png"
+						"path": "races/PHB/Gnome.png"
 					}
 				}
 			]
@@ -2609,7 +2761,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Goblin.png"
+						"path": "races/VGM/Goblin.png"
 					}
 				}
 			]
@@ -2811,7 +2963,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Goliath.png"
+						"path": "races/VGM/Goliath.png"
 					}
 				}
 			]
@@ -2867,7 +3019,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Half-Elf.png"
+						"path": "races/PHB/Half-Elf.png"
 					}
 				}
 			]
@@ -2940,7 +3092,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Half-Orc.png"
+						"path": "races/PHB/Half-Orc.png"
 					}
 				}
 			]
@@ -3062,7 +3214,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Halfling.png"
+						"path": "races/PHB/Halfling.png"
 					}
 				}
 			]
@@ -3170,6 +3322,14 @@
 					}
 				}
 			}
+		},
+		{
+			"name": "Harengon",
+			"source": "WBtW",
+			"entries": [
+				"Harengons originated in the Feywild, where they spoke Sylvan and embodied the spirit of freedom and travel. In time, these rabbitfolk hopped into other worlds, bringing the fey realm's exuberance with them and learning new languages as they went.",
+				"Harengons are bipedal, with the characteristic long feet of the rabbits they resemble and fur in a variety of colors. They share the keen senses and powerful legs of leporine creatures and are full of energy, like a wound-up spring. Harengons are blessed with a little fey luck, and they often find themselves a few fortunate feet away from dangers during adventures."
+			]
 		},
 		{
 			"name": "Hexblood",
@@ -3338,7 +3498,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Hobgoblin.png"
+						"path": "races/VGM/Hobgoblin.png"
 					}
 				}
 			]
@@ -3582,7 +3742,66 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Human.png"
+						"path": "races/PHB/Human.png"
+					}
+				}
+			]
+		},
+		{
+			"name": "Human (Amonkhet)",
+			"source": "PSA",
+			"entries": [
+				{
+					"type": "entries",
+					"entries": [
+						"Of the five humanoid races of Amonkhet, humans are the most diverse and adaptable. Different humans train in a wide variety of fighting styles, including those particularly favored by other races. A human mage might use any of the five colors of mana, while mages of other races focus on one of only two colors. Human {@background vizier|psa|viziers} serve all five gods, and different human {@background initiate|psa|initiates} excel in different trials. Humans defy trends and categorization, and opponents who face a human in one-on-one combat can't know what kind of fight to expect\u2014from the foresight and cunning often associated with Kefnet, to a ruthlessness that emulates Bontu. At the beginning of such a fight, this uncertainty can give an edge to the human combatant.",
+						"Once the fight has begun, of course, victory relies on different factors. But here, the human drive toward perfection once more tilts the scales in their favor. Humans are willing to go to any length, exhausting all available options, to reach the pinnacle of achievement and win the favor of the God-Pharaoh.",
+						{
+							"type": "entries",
+							"name": "Two Roads to Perfection ",
+							"entries": [
+								"As diverse as they are in most respects, the humans of Amonkhet share a drive toward perfection. However, they approach this challenge differently. Some humans specialize in a relatively narrow set of skills, while others seek to master a wide range.",
+								{
+									"type": "entries",
+									"name": "Perfection through Specialization",
+									"entries": [
+										"Humans who choose a path of specialization often piously identify with one of the five gods (often as a {@background vizier|psa}), and thus focus on one aspect of perfection. For them, the best way to earn a place in the afterlife is to hone a single facet of their character to the utmost quality, and as {@background initiate|psa|initiates}, they hope to put that quality to use in all five trials. A mage {@background initiate|psa} who identifies with Hazoret might cultivate zeal above all other virtues, master spells of fiery magic to channel that powerful emotion, and rely on raw energy and enthusiasm to get through the four trials leading up to Hazoret's final test. An {@background initiate|psa} dedicated to Oketra, on the other hand, relies on cooperation, solidarity, and teamwork to get through the trials\u2014even Bontu's Trial of Ambition, which attempts to break down such bonds. To Oketra's disciple, ambition means a drive to help an entire crop of initiates achieve glory together, rather than exalting oneself over others. Humans with this viewpoint see their chosen virtue coloring all others, and believe that the five gods offer their people a choice of which virtue to emulate and emphasize."
+									]
+								},
+								{
+									"type": "entries",
+									"name": "Perfection through Balance",
+									"entries": [
+										"Other humans believe that true perfection lies in mastering all the virtues, without giving preference to any one over the others. They compare themselves to multifaceted stones whose beauty lies in the polished perfection of every facet. These humans are careful not to let their skills in one area outshine their other efforts, and if they grow too accomplished in one set of skills, they set it aside to concentrate their training on others until their abilities are in balance once more.",
+										"Philosophically, such humans believe that the gods are five in number so as to remind the people of Amonkhet not to focus their attention on a single god or a single virtue, but to serve the gods equally and master their teachings to the same degree. Thus they hope to achieve a balanced state of perfection that will guarantee their admission into the afterlife."
+									]
+								}
+							]
+						},
+						{
+							"type": "entries",
+							"name": "Combat Classes",
+							"entries": [
+								"Most human initiates focus their studies on a single specialization\u2014hand-to-hand combat, long-range combat, or magical combat. Humans who choose hand-to-hand combat might focus with single-minded devotion on the use of the sickle-bladed khopesh (treat as a {@item longsword|phb}). Other hand-to-hand specialists take a broader perspective and study the use of all weapons equally.",
+								"Some humans, however, apply the idea of perfection through balance to these combat specializations as well, fusing multiple styles together into a unique blend. For example, a human initiate might use spells to shape sand into a sword or to wreathe arrows with life-draining magic. Other initiates strike with an axe in one hand while throwing smaller axes with the other, employing techniques of both hand-to-hand and long-range combat. Some humans use slings to launch fireballs, create illusory nets to restrain their opponents, or craft their blades from solid toxins."
+							]
+						}
+					]
+				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Human (Amonkhet).webp"
+					}
+				},
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Human (Amonkhet)2.webp"
 					}
 				}
 			]
@@ -3825,7 +4044,55 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Kenku.png"
+						"path": "races/VGM/Kenku.png"
+					}
+				}
+			]
+		},
+		{
+			"name": "Khenra",
+			"source": "PSA",
+			"entries": [
+				{
+					"type": "entries",
+					"entries": [
+						"The khenra of Amonkhet are tall and lean, with graceful bodies and heads that strongly resemble {@creature jackal||jackals}. Their snouts are long and sharp, and their angular ears rise straight above their heads. Their bodies are covered in dark, sleek hair that ranges from the brown of the desert sands to ebony black. Despite their sharp teeth, they consider biting to be an uncouth and unworthy combat tactic.",
+						"Nearly every khenra is born a fraternal or identical twin, and a pair of khenra twins forms an extremely close emotional bond unknown to most other residents of Amonkhet. The death of one twin in training or the trials causes a tremendous shock to the survivor, who typically grows more aggressive and foolhardy in battle. The rare khenra who are born without twins are believed to have killed their siblings in the womb, and are thus viewed as natural-born initiates, sure to achieve a glorified death in the Trial of Zeal.",
+						{
+							"type": "entries",
+							"name": "Strength and Zeal",
+							"entries": [
+								"Many khenra believe that they are created in the image of Hazoret, and though they venerate all five gods in the manner of all citizens of Naktamun, they have a special affinity for the teachings and philosophy of the god of zeal. These khenra share a deep love of combat, especially hand-to-hand fighting, and they devote themselves to their training with particular intensity.",
+								"The familial bond experienced in the Family Temple of Hazoret's monument is a part of every khenra's experience as one of a pair of twins. As such, these khenra sometimes think of themselves as Hazoret's children even before they finish the fourth trial. For her part, Hazoret seems to favor khenra among her {@background vizier|psa|viziers}, and some say that she shows particular favor to khenra {@background initiate|psa|initiates} who survive to reach the Trial of Zeal.",
+								"Other khenra choose to distance themselves from Hazoret and the reckless battle frenzy she encourages. They devote themselves instead to honing their physical strength, resilience, and adaptability, inspired and guided by the teachings of Rhonas. These khenra have a great fondness for wrestling (or tussling, as they often call it), and they keep careful track of the matches they win and lose against other {@background initiate|psa|initiates}. They often seek out matches against {@race minotaur (amonkhet)|psa|minotaurs}, enjoying the challenge of pitting their sinewy strength against the brute muscle of larger and heavier opponents."
+							]
+						},
+						{
+							"type": "entries",
+							"name": "Combat Classes",
+							"entries": [
+								"Khenra, especially those devoted to Hazoret, are particularly drawn to hand-to-hand combat styles. But the other styles each have their own appeal, and khenra initiates might find themselves specializing in any of the three.",
+								"Khenra who focus on hand-to-hand combat often wield the khopesh\u2014a large sickle-bladed sword\u2014as their weapon of choice (treat as a {@item longsword|phb}). Khenra wield these blades with devastating accuracy and power, landing one crushing blow after another in a hail of furious attacks. They favor lightweight armor that doesn't impede their movement, often comparing fighting in organized ranks to wearing a leash that limits their ability to charge, lunge, and roll away from danger. Their natural aggression makes them ideal shock troops, scouts, and skirmishers. And that aggression is even more pronounced in khenra who have already lost their twin, and who sometimes lose any sense of self-preservation as a result.",
+								"Khenra who focus on long-range combat prefer hurled weapons\u2014spears and javelins\u2014over bows and slings, and they are known and feared for their deadly accuracy. They carry small cases of {@item javelin|phb|javelins} into combat, and feel ashamed if they reach the end of a battle with any weapons left unthrown. A khenra might ride on a {@item chariot|phb} as a {@item spear|phb} thrower, sometimes augmenting attacks with minor spells of fire magic.",
+								"Many khenra mages specialize in fire spells, creating blades or hails of flame to sear and scorch their foes. Their strategy emphasizes overwhelming initial assaults, in magical emulation of Hazoret's battle frenzy. Others prefer magic that augments their natural speed and strength, bolsters their endurance, or drains strength from their enemies. They work to hone their spells alongside their bodies, incorporating elements of hand-to-hand combat into their spellcasting."
+							]
+						}
+					]
+				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Khenra.webp"
+					}
+				},
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Khenra2.webp"
 					}
 				}
 			]
@@ -3847,7 +4114,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Kobold.png"
+						"path": "races/VGM/Kobold.png"
 					}
 				}
 			]
@@ -4133,7 +4400,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Lizardfolk.png"
+						"path": "races/VGM/Lizardfolk.png"
 					}
 				}
 			]
@@ -4159,7 +4426,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Locathah.png"
+						"path": "races/LR/Locathah.png"
 					}
 				}
 			]
@@ -4232,6 +4499,15 @@
 						}
 					]
 				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/GGR/Loxodon.png"
+					}
+				}
 			]
 		},
 		{
@@ -4301,15 +4577,6 @@
 							]
 						}
 					]
-				}
-			],
-			"images": [
-				{
-					"type": "image",
-					"href": {
-						"type": "internal",
-						"path": "races/Loxodon.png"
-					}
 				}
 			]
 		},
@@ -4487,7 +4754,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Minotaur.png"
+						"path": "races/GGR/Minotaur.png"
 					}
 				}
 			]
@@ -4623,6 +4890,92 @@
 			]
 		},
 		{
+			"name": "Minotaur (Amonkhet)",
+			"source": "PSA",
+			"entries": [
+				{
+					"type": "entries",
+					"entries": [
+						"Minotaurs are powerfully built, barrel-chested humanoids with heads resembling rams. Their horns curl tight-ly against the sides of their heads to encircle their ears, and manes of shaggy fur\u2014shorter in females\u2014fall over their broad shoulders. As their appearance suggests, they combine physical strength with stubbornness, bravado, and reckless bravery. They revel in combat, especially when the odds against them seem overwhelming.",
+						"Minotaurs are rowdy, boisterous, and direct to the point of rudeness. They have no qualms about declaring what they want and defying others to keep it from them. In combat, they bellow loud challenges in defiance of their foes, and roar with laughter as they triumph.",
+						"Minotaurs believe they hold a unique place among the races of Amonkhet. The {@race khenra|psa} can look to Hazoret, the {@race naga|psa} to Rhonas, and the {@race aven|psa} to Kefnet to see themselves represented among the gods. Humans have no single god to look to, which explains why they demonstrate such variety. But only one god bears a pair of curving horns: the God-Pharaoh himself, who holds a special place for many of the minotaurs of Amonkhet.",
+						{
+							"type": "entries",
+							"name": "Ruthless and Reckless",
+							"entries": [
+								"Even those minotaurs who feel personal affinity for the horned God-Pharaoh align themselves most closely with Bontu and Hazoret in practice. Driven by a fierce and powerful desire to prove themselves, to earn glory in life, and to win a glorious death, they view every challenge or obstacle as a chance to demonstrate their prowess. With ruthless abandon, they slash, batter, and pummel their way through anyone or anything that stands in the way of their own advancement. With reckless fervor, they fight without heed for their own safety, shrugging off the blows of their enemies."
+							]
+						},
+						{
+							"type": "entries",
+							"name": "Combat Classes",
+							"entries": [
+								"Their size and strength makes minotaurs ideally suited for hand-to-hand combat. They are most effective on the offensive, delivering an endless barrage of attacks that keep their foes off balance, shatter shields and weapons, and inevitably break their opponents. These minotaurs favor large, heavy weapons such as axes, {@item maul|phb|mauls}, and two-handed khopeshes (treat as a {@item greatsword|phb}), but they are also fond of unarmed combat. Many love to throw their weapons aside in favor of pummeling opponents into submission with their horns and bare hands, believing that such a victory is more glorious\u2014and more humiliating to the loser.",
+								"But though minotaurs are known for their physical size and strength, this hardly precludes the presence of keen minds and powerful spellcasters among them. Though they are fewer in number than hand-to-hand specialists, minotaur mages draw on their natural ferocity to instill terror in the hearts of their opponents with a terrible roaring bellow. They manifest their fury as blasts of flame, or imbue their own horns and fists with searing heat to make their physical attacks more deadly.",
+								"The relatively few minotaurs who specialize in long-range combat enjoy one aspect of that style in particular\u2014the opportunity to draw first blood, marking the moment when a battle has truly begun. Minotaurs use {@item longbow|phb|heavy bows} and {@item javelin|phb|javelins}, and take special delight in firing into the middle of enemy formations to sow as much chaos and confusion as possible."
+							]
+						}
+					]
+				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Minotaur (Amonkhet).webp"
+					}
+				},
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Minotaur (Amonkhet)2.webp"
+					}
+				}
+			]
+		},
+		{
+			"name": "Naga",
+			"source": "PSA",
+			"entries": [
+				{
+					"type": "entries",
+					"entries": [
+						"Naga resemble enormous snakes with shoulders, arms, and a torso that resembles a humanoid form. They typically hold their heads and torsos off the ground while moving, but they can increase their speed by lowering their bodies and using their hands for extra propulsion. They adorn their torsos with armor, jewelry, and a vague nod toward the clothing worn by other races. Male naga have broad hoods, wider than their shoulders, while females have narrower hoods and longer faces.",
+						"Naga believe in a principle called the Sweetest Harmony, which describes a perfect balance between the body and the mind. Finding that balance, as they understand it, is a sure path to glory in the trials, since a combination of physical and mental preparation will ensure success in every trial. For an example of this Sweetest Harmony, they point to the Luxa river and the land it nourishes, which exist in a delicate and life-giving balance. Either one without the other would be diminished and useless. Just so, mental strength supports physical capabilities, and physical fortitude feeds mental tenacity, so neither mind nor body can exist in isolation.",
+						"In the same way, the naga believe that Kefnet and Rhonas exist in interdependence, and that their trials are best conceived as two halves of a whole. But in practice, as much as they strive for balance and harmony, most naga identify more strongly with one god than the other.",
+						{
+							"type": "entries",
+							"name": "Combat Classes",
+							"entries": [
+								"To the benefit of those naga who struggle with the ideal of the Sweetest Harmony, the training of acolytes encourages specialization. Thus, naga who follow in the path of the snake-headed god Rhonas can cultivate their physical strength as they specialize in hand-to-hand combat styles, while other naga favor the teachings of Kefnet and other combat styles.",
+								"Naga who specialize in hand-to-hand combat rely on axes, {@item dagger|phb|daggers}, and {@item shortsword|phb|shortswords}\u2014but also on their own fangs and the constricting strength of their serpentine bodies. They make extensive use of poison, coating their weapons with multiple layers of deadly substances\u2014including, but by no means limited to, their own venom. Quick, well-timed, and well-placed blows, followed by an equally nimble retreat, allow many naga to triumph over opponents who might seem stronger. With acknowledgment of the Sweetest Harmony, these naga cultivate an understanding of strategy and tactics that enhances their physical training.",
+								"Speed and accuracy are equally important to naga who specialize in long-range combat. Some prefer to analyze a battle from a distance and pick off the strongest opponents with their ranged weapons, including poisoned {@item spear|phb|spears} and {@item arrow|phb|arrows}. Others ride in {@item chariot|phb|chariots} driven by trusted drivers (usually other naga) and throw their {@item spear|phb|spears} from the midst of battle. In any case, they excel at finding and exploiting strategic advantages.",
+								"Some naga mages, drawn to the example of Kefnet, make extensive use of illusion magic to trick and mislead their opponents. Others apply Rhonas's teachings to their studies, wielding poisonous magic that weakens opponents or kills them outright with clouds or darts of deadly toxins. Still others, in service to the ideal of balance, use the magical power of their minds to enhance their physical strength and speed."
+							]
+						}
+					]
+				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Naga.webp"
+					}
+				},
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/PSA/Naga2.webp"
+					}
+				}
+			]
+		},
+		{
 			"name": "Orc",
 			"source": "VGM",
 			"monstrous": true,
@@ -4631,7 +4984,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Orc.png"
+						"path": "races/VGM/Orc.png"
 					}
 				}
 			]
@@ -5232,6 +5585,15 @@
 						}
 					]
 				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/GGR/Simic Hybrid.png"
+					}
+				}
 			]
 		},
 		{
@@ -5264,15 +5626,6 @@
 							]
 						}
 					]
-				}
-			],
-			"images": [
-				{
-					"type": "image",
-					"href": {
-						"type": "internal",
-						"path": "races/Simic Hybrid.png"
-					}
 				}
 			]
 		},
@@ -5478,7 +5831,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Tabaxi.png"
+						"path": "races/VGM/Tabaxi.png"
 					}
 				}
 			]
@@ -5555,7 +5908,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Tiefling.png"
+						"path": "races/PHB/Tiefling.png"
 					}
 				}
 			]
@@ -5765,7 +6118,7 @@
 							"type": "image",
 							"href": {
 								"type": "internal",
-								"path": "races/Feral Tiefling.png"
+								"path": "races/SCAG/Feral Tiefling.png"
 							}
 						}
 					}
@@ -5874,7 +6227,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Tortle.png"
+						"path": "races/TTP/Tortle.png"
 					}
 				}
 			]
@@ -6100,7 +6453,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Triton.png"
+						"path": "races/VGM/Triton.png"
 					}
 				}
 			]
@@ -6187,6 +6540,15 @@
 						}
 					]
 				}
+			],
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "races/GGR/Vedalken.png"
+					}
+				}
 			]
 		},
 		{
@@ -6248,15 +6610,6 @@
 							]
 						}
 					]
-				}
-			],
-			"images": [
-				{
-					"type": "image",
-					"href": {
-						"type": "internal",
-						"path": "races/Vedalken.png"
-					}
 				}
 			]
 		},
@@ -6354,7 +6707,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Verdan.png"
+						"path": "races/AI/Verdan.png"
 					},
 					"title": "Varieties of Adult Verdan"
 				}
@@ -6541,7 +6894,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/Yuan-ti Pureblood.png"
+						"path": "races/VGM/Yuan-ti Pureblood.png"
 					}
 				}
 			]

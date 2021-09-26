@@ -4,8 +4,8 @@ function tools5eConfig() {
 	d20plus.cfg5e.updateBaseSiteUrl = () => {
 		if (!d20plus.cfg.get("import", "baseSiteUrl")) return;
 
+		BASE_SITE_URL = d20plus.cfg.get("import", "baseSiteUrl");
 		d20plus.ut.log(`Base Site Url updated: ${BASE_SITE_URL}`);
-		BASE_SITE_URL = d20plus.cfg.get("website", "base");
 
 		SITE_JS_URL = BASE_SITE_URL + "js/";
 		DATA_URL = BASE_SITE_URL + "data/";
