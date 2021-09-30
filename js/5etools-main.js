@@ -1418,6 +1418,9 @@ const betteR205etoolsMain = function () {
 					else if ('special' in item) {
 						iname = item.special;
 					}
+					else if('equipclean' in item) {
+						iname = item.equipclean;
+					}
 
 					if (item.containsValue) containedGold += item.containsValue/100;
 
@@ -1444,13 +1447,32 @@ const betteR205etoolsMain = function () {
 
 			async function  chooseItemsFromBackground (itemChoices) {
 				return new Promise((resolve, reject) => {
-					// TODO: handle equipmenttype better
+					// Deal with the equipmenttype case specifically
+					let equiptmp = null;
+					Object.entries(itemChoices).forEach(([key,value]) => {
+						if (value[0]?.equipmentType) {
+							switch (value[0].equipmentType) {
+								case "setGaming":
+									equiptmp = "Gaming Set";
+									break;
+								case "instrumentMusical":
+									equiptmp = "Instrument";
+									break;
+								case "toolArtisan":
+									equiptmp = "Artisan's Tools";
+									break;
+							}
+							value[0].equipclean = equiptmp;
+						}
+					});
+					
+					// Make the menu
 					const $dialog = $(`
 							<div title="Items Import">
 								<label class="flex">
 									<span>Which item would you like to import?</span>
 									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
-								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipmentType || value[0]).split("|")[0].toTitleCase()}</option>`)}
+								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipclean || value[0]).split("|")[0].toTitleCase()}</option>`)}
 									 </select>
 								</label>
 							</div>
