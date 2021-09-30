@@ -1513,8 +1513,6 @@ const betteR205etoolsMain = function () {
 					}
 				}
 			}
-			console.log("traits");
-			console.log(traits);
 
 			// Fill the rows 
 			if (traits !== null && traits.entries?.length) {
