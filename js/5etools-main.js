@@ -1444,12 +1444,13 @@ const betteR205etoolsMain = function () {
 
 			async function  chooseItemsFromBackground (itemChoices) {
 				return new Promise((resolve, reject) => {
+					// TODO: handle equipmenttype better
 					const $dialog = $(`
 							<div title="Items Import">
 								<label class="flex">
 									<span>Which item would you like to import?</span>
 									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
-								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0]).split("|")[0].toTitleCase()}</option>`)}
+								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipmentType || value[0]).split("|")[0].toTitleCase()}</option>`)}
 									 </select>
 								</label>
 							</div>
@@ -1512,6 +1513,8 @@ const betteR205etoolsMain = function () {
 					}
 				}
 			}
+			console.log("traits");
+			console.log(traits);
 
 			// Fill the rows 
 			if (traits !== null && traits.entries?.length) {
