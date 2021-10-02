@@ -41,11 +41,3 @@ There are a variety of other features added by the script. Some highlights inclu
 
 ## But I Don't Play 5e!
 A version of the script including all the non-5e related features is available [here](https://get.5e.tools/) (along with the full version). **Do not use both scripts at the same time, they are mutually incompatible.**
-
-## Development
-Node.js is required.
-
-Usable scripts can be produced with `npm run build`; output to the `dist/` directory.
-
-The "core" userscript includes generic improvements which can be used in all games.
-The "5etools" userscript includes the above, and various tools to import content from [5e.tools](https://5e.tools)
