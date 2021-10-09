@@ -29,17 +29,6 @@ function baseUtil () {
 		return b < a ? 1 : -1;
 	};
 
-	d20plus.ut.disable3dDice = () => {
-		d20plus.ut.log("Disabling 3D dice");
-		const $cb3dDice = $(`#enable3ddice`);
-		$cb3dDice.prop("checked", false).attr("disabled", true);
-		$cb3dDice.closest("p").after(`<p><i>3D dice are incompatible with betteR20. We apologise for any inconvenience caused.</i></p>`);
-
-		$(`#autoroll`).prop("checked", false).attr("disabled", true);;
-
-		d20.tddice.canRoll3D = () => false;
-	};
-
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 

@@ -64,7 +64,6 @@ const betteR205etools = function () {
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.addLineCutterTool();
 			d20plus.engine.enhancePathWidths();
-			d20plus.ut.disable3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
