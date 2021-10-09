@@ -134,35 +134,55 @@ function baseUi () {
 	 *
 	 * @param dataArray options to choose from
 	 * @param dataTitle title for the window
-	 * @param messageCountIncomplete message when user does not choose correct number of choices
 	 * @param displayFormatter function to format dataArray for display
-	 * @param count exact number of  options the user must choose
+	 * @param count exact number of  options the user must, mutually exclusive with countMin and countMax
+	 * @param countMin lowest number of options the user must choose, requires countMax, mutually exclusive with count
+	 * @param countMax highest number of options the user must choose, requires countMax, mutually exclusive with count
+	 * @param additionalHTML additional html code, such as a button
 	 * @param note add a note at the bottom of the window
+	 * @param messageCountIncomplete message when user does not choose correct number of choices
 	 * @return {Promise}
 	 */
-	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, note = null, messageCountIncomplete = null} = {}) {
+	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
 		return new Promise((resolve, reject) => {
+			// Ensure count, countMin, and countMax don't mess up
+			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
+			if ((Number.isInteger(count) && Number.isInteger(countMin)) 
+			|| (Number.isInteger(count) && Number.isInteger(countMax)) 
+			|| (count == null && (Number.isInteger(countMin) ^ Number.isInteger(countMax))) 
+			|| (countMin > countMax)) {
+				console.log("count is mutually exclusive with countMin and countMax, and countMin and countMax require each other.");
+				reject("Bad arguments")
+			}
+			const useRange = Number.isInteger(countMin) && countMax;
+
+			// Generate the HTML
 			const $dialog = $(`
 				<div title="${dataTitle}">
-					${count != null ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
+					${Number.isInteger(count) ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
+					${Number.isInteger(countMax) ? `<div name="remain" class="bold">Remaining: ${countMax}, Minimum: ${countMin}</div>` : ""}
 					<div>
 						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
 					</div>
+					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
 					${note ? `<br><div class="italic">${note}</div>` : ""}
 				</div>
 			`).appendTo($("body"));
 			const $remain = $dialog.find(`[name="remain"]`);
 			const $cbChoices = $dialog.find(`input[type="checkbox"]`);
 
-			if (count != null) {
+			// Ensure the proper number of items is chosen
+			if (count != null || useRange) {
+				const targetCount = count || countMax;
+				const remainMin = countMax ? `, Minimum: ${countMin}` : "";
 				$cbChoices.on("change", function () {
 					const $e = $(this);
 					let selectedCount = getSelected().length;
-					if (selectedCount > count) {
+					if (selectedCount > targetCount) {
 						$e.prop("checked", false);
 						selectedCount--;
 					}
-					$remain.text(`Remaining: ${count - selectedCount}`);
+					$remain.text(`Remaining: ${targetCount - selectedCount}${remainMin}`);
 				});
 			}
 
@@ -171,6 +191,7 @@ function baseUi () {
 					.filter(it => it.selected).map(it => it.choice);
 			}
 
+			// Accept or reject selection
 			$dialog.dialog({
 				dialogClass: "no-close",
 				buttons: [
@@ -186,7 +207,12 @@ function baseUi () {
 						text: "OK",
 						click: function () {
 							const selected = getSelected();
-							if (selected.length === count || count == null) {
+							if (Number.isInteger(countMin) && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							}
+							else if (!useRange && (selected.length === count || count == null)) {
 								$(this).dialog("close");
 								$dialog.remove();
 								resolve(selected);

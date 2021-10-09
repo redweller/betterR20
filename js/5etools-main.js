@@ -1418,6 +1418,9 @@ const betteR205etoolsMain = function () {
 					else if ('special' in item) {
 						iname = item.special;
 					}
+					else if('equipclean' in item) {
+						iname = item.equipclean;
+					}
 
 					if (item.containsValue) containedGold += item.containsValue/100;
 
@@ -1444,12 +1447,32 @@ const betteR205etoolsMain = function () {
 
 			async function  chooseItemsFromBackground (itemChoices) {
 				return new Promise((resolve, reject) => {
+					// Deal with the equipmenttype case specifically
+					let equiptmp = null;
+					Object.entries(itemChoices).forEach(([key,value]) => {
+						if (value[0]?.equipmentType) {
+							switch (value[0].equipmentType) {
+								case "setGaming":
+									equiptmp = "Gaming Set";
+									break;
+								case "instrumentMusical":
+									equiptmp = "Instrument";
+									break;
+								case "toolArtisan":
+									equiptmp = "Artisan's Tools";
+									break;
+							}
+							value[0].equipclean = equiptmp;
+						}
+					});
+					
+					// Make the menu
 					const $dialog = $(`
 							<div title="Items Import">
 								<label class="flex">
 									<span>Which item would you like to import?</span>
 									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
-								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0]).split("|")[0].toTitleCase()}</option>`)}
+								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipclean || value[0]).split("|")[0].toTitleCase()}</option>`)}
 									 </select>
 								</label>
 							</div>
@@ -1498,6 +1521,51 @@ const betteR205etoolsMain = function () {
 				}
 			}
 
+			// Choose and import personallity traits/ideals/bonds/flaws.
+			let traits = null;
+			let ptrait = null; // Personallity trait
+			let ideal = null;
+			let bond = null;
+			let flaw = null;
+			// Get the JSON for all the tables
+			if (bg.entries) {
+				for (const ent of bg.entries) {
+					if (ent.name && ent.name === "Suggested Characteristics") {
+						traits = ent;
+					}
+				}
+			}
+
+			// Fill the rows 
+			if (traits !== null && traits.entries?.length) {
+				for (let i = 0; i < traits.entries.length; i++) {
+					ent = traits.entries[i];
+					// This seems to be the best way to parse the information with some room for errors
+					// It seems like the schema is based on on the website, which is why colLabels is where the identifier is
+					if (ent.colLabels && ent.colLabels.length == 2 && ent.rows) {
+						switch(ent.colLabels[1]){
+							case "Personality Trait":
+								ptrait = ent.rows.map(r => r[1]);
+								break;
+							case "Ideal":
+								ideal = ent.rows.map(r => r[1]);
+								break;
+							case "Bond":
+								bond = ent.rows.map(r => r[1]);
+								break;
+							case "Flaw":
+								flaw = ent.rows.map(r => r[1]);
+								break;
+						}
+					}
+				}
+			}
+
+			if (ptrait != null) {
+				traits = await d20plus.backgrounds.traitMenu(ptrait, ideal, bond, flaw);
+			}
+			
+
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
@@ -1537,6 +1605,17 @@ const betteR205etoolsMain = function () {
 					attrs.add(`repeating_tool_${tRowID}_toolattr_base`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}");
 					attrs.add(`repeating_tool_${tRowID}_toolbonus_display`, "?");
 				});
+
+				// Add flavor traits
+				const {personalityTraits, ideals, bonds, flaws} = traits || {}; //Got some help from Giddy with this one
+				// Only add the trait if the trait exists
+				if (personalityTraits?.length == 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
+				if (personalityTraits?.length == 2) attrs.addOrUpdate(`personality_traits`, personalityTraits[0] + "\n" + personalityTraits[1]);
+				if (ideals?.length == 1) attrs.addOrUpdate(`ideals`, ideals[0]);
+				if (bonds?.length == 1) attrs.addOrUpdate(`bonds`, bonds[0]);
+				if (flaws?.length == 1) attrs.addOrUpdate(`flaws`, flaws[0]);
+				
+
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
 				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
