@@ -78,6 +78,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 3,
+				"max": 30
+			},
 			"traitTags": [
 				"Unarmed Strike"
 			],
@@ -153,6 +157,10 @@
 					"cha": 2
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"darkvision": 60,
 			"languageProficiencies": [
 				{
@@ -270,6 +278,10 @@
 				"heightMod": "2d10",
 				"baseWeight": 110,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 160
 			},
 			"darkvision": 60,
 			"languageProficiencies": [
@@ -448,6 +460,10 @@
 					}
 				}
 			],
+			"age": {
+				"mature": 0,
+				"max": 3
+			},
 			"darkvision": 60,
 			"skillProficiencies": [
 				{
@@ -527,6 +543,202 @@
 			]
 		},
 		{
+			"name": "Astral Elf",
+			"source": "UA2021TravelersOfTheMultiverse",
+			"page": 1,
+			"lineage": "VRGR",
+			"size": [
+				"M"
+			],
+			"speed": 30,
+			"darkvision": 60,
+			"traitTags": [
+				"Improved Resting"
+			],
+			"skillProficiencies": [
+				{
+					"perception": true
+				}
+			],
+			"additionalSpells": [
+				{
+					"known": {
+						"1": [
+							"dancing lights#c"
+						]
+					},
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					}
+				},
+				{
+					"known": {
+						"1": [
+							"light#c"
+						]
+					},
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					}
+				},
+				{
+					"known": {
+						"1": [
+							"sacred flame#c"
+						]
+					},
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					}
+				}
+			],
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Astral Fire",
+					"entries": [
+						"You know one of the following cantrips of your choice: {@spell dancing lights}, {@spell light}, or {@spell sacred flame}. Intelligence, Wisdom, or Charisma is your spellcasting ability for it (choose when you select this race)."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Darkvision",
+					"entries": [
+						"You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Fey Ancestry",
+					"entries": [
+						"You have advantage on saving throws you make to avoid or end the {@condition charmed} condition on yourself."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Keen Senses",
+					"entries": [
+						"You have proficiency in the {@skill Perception} skill."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Radiant Soul",
+					"entries": [
+						"When you succeed on a death save, you can regain a number of hit points equal to your proficiency bonus + your Intelligence, Wisdom, or Charisma modifier (choose when you select this race). You can't use this trait again until you finish a long rest."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Trance",
+					"entries": [
+						"You don't need to sleep, and magic can't put you to sleep. You can finish a long rest in 4 hours if you spend those hours in a trance-like meditation, during which you remain conscious."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Trance Proficiencies",
+					"entries": [
+						"Whenever you finish a long rest using your Trance trait, you gain two proficiencies, each one with a weapon or a tool of your choice (selected from the \"{@book Equipment|PHB|5}\" chapter of the Player's Handbook). You mystically acquire these proficiencies by drawing them from shared elven memory, and you retain them until you finish your next long rest."
+					]
+				}
+			],
+			"hasFluff": true
+		},
+		{
+			"name": "Autognome",
+			"source": "UA2021TravelersOfTheMultiverse",
+			"page": 2,
+			"lineage": "VRGR",
+			"creatureTypes": [
+				"construct"
+			],
+			"size": [
+				"S"
+			],
+			"speed": 30,
+			"traitTags": [
+				"Improved Resting",
+				"Natural Armor"
+			],
+			"toolProficiencies": [
+				{
+					"any": 2
+				}
+			],
+			"resist": [
+				"poison"
+			],
+			"conditionImmune": [
+				"disease"
+			],
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Creature Type",
+					"entries": [
+						"You are a Construct."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Armored Casing",
+					"entries": [
+						"You are encased in thin metal or some other durable material. While you aren't wearing armor, your base Armor Class is 13 + your Dexterity modifier."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Built for Success",
+					"entries": [
+						"You can add a {@dice d4} to one attack roll, ability check, or saving throw you make, and you can do so after seeing the {@dice d20} but before the effects of the roll are resolved. You can use this trait a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Mechanical Nature",
+					"entries": [
+						"You have resistance to poison damage and immunity to disease, and you have advantage on saving throws against being {@condition paralyzed} or {@condition poisoned}. You don't need to eat, drink, or breathe."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Sentry's Rest",
+					"entries": [
+						"When you take a long rest, you spend at least 6 hours in an inactive, motionless state, instead of sleeping. In this state, you appear inert, but you aren't {@condition unconscious}."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Specialized Design",
+					"entries": [
+						"You gain two tool proficiencies of your choice."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "True Life",
+					"entries": [
+						"If the {@spell mending} spell is cast on you, you can expend a Hit Die, roll it, and regain a number of hit points equal to the roll plus your Constitution modifier (minimum of 1 hit point).",
+						"In addition, your creator designed you to benefit from common spells that preserve life but that normally don't affect Constructs: {@spell cure wounds}, {@spell healing word}, and {@spell spare the dying}."
+					]
+				}
+			],
+			"hasFluff": true
+		},
+		{
 			"name": "Aven",
 			"source": "PSA",
 			"page": 15,
@@ -542,6 +754,10 @@
 					"dex": 2
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -652,6 +868,10 @@
 					"wis": 2
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"skillProficiencies": [
 				{
 					"perception": true
@@ -727,6 +947,10 @@
 				"heightMod": "2d12",
 				"baseWeight": 200,
 				"weightMod": "2d6"
+			},
+			"age": {
+				"mature": 16,
+				"max": 80
 			},
 			"darkvision": 60,
 			"traitTags": [
@@ -835,6 +1059,10 @@
 				"heightMod": "2d12",
 				"baseWeight": 200,
 				"weightMod": "2d6"
+			},
+			"age": {
+				"mature": 16,
+				"max": 80
 			},
 			"darkvision": 60,
 			"traitTags": [
@@ -1007,6 +1235,10 @@
 				"baseWeight": 600,
 				"weightMod": "2d12"
 			},
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"traitTags": [
 				"Powerful Build",
 				"Unarmed Strike"
@@ -1165,6 +1397,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"traitTags": [
 				"Powerful Build",
 				"Unarmed Strike"
@@ -1281,6 +1517,10 @@
 				"heightMod": "2d4",
 				"baseWeight": 115,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 100
 			},
 			"skillProficiencies": [
 				{
@@ -1425,6 +1665,10 @@
 					}
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"traitTags": [
 				"Tool Proficiency"
 			],
@@ -1608,6 +1852,7 @@
 			"name": "Custom Lineage",
 			"source": "TCE",
 			"page": 8,
+			"lineage": true,
 			"size": [
 				"S",
 				"M"
@@ -1845,6 +2090,10 @@
 				"heightMod": "2d8",
 				"baseWeight": 175,
 				"weightMod": "2d6"
+			},
+			"age": {
+				"mature": 15,
+				"max": 80
 			},
 			"traitTags": [
 				"Uncommon Race"
@@ -2241,6 +2490,10 @@
 					"con": 2
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 350
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Tool Proficiency"
@@ -2622,6 +2875,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 350
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Tool Proficiency"
@@ -2715,6 +2972,10 @@
 					"dex": 2
 				}
 			],
+			"age": {
+				"mature": 100,
+				"max": 750
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Improved Resting"
@@ -3894,6 +4155,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 100,
+				"max": 750
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Improved Resting"
@@ -4054,6 +4319,10 @@
 					"wis": 2
 				}
 			],
+			"age": {
+				"mature": 100,
+				"max": 750
+			},
 			"darkvision": 60,
 			"skillProficiencies": [
 				{
@@ -4352,6 +4621,7 @@
 		{
 			"name": "Fairy",
 			"source": "WBtW",
+			"page": 12,
 			"lineage": "VRGR",
 			"creatureTypes": [
 				"fey"
@@ -4448,6 +4718,10 @@
 				"heightMod": "2d12",
 				"baseWeight": 175,
 				"weightMod": "2d6"
+			},
+			"age": {
+				"mature": 30,
+				"max": 500
 			},
 			"traitTags": [
 				"Powerful Build"
@@ -4672,6 +4946,10 @@
 				"heightMod": "2d10",
 				"baseWeight": 110,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 120
 			},
 			"languageProficiencies": [
 				{
@@ -4920,6 +5198,39 @@
 			"hasFluffImages": true
 		},
 		{
+			"name": "Giff",
+			"source": "UA2021TravelersOfTheMultiverse",
+			"page": 2,
+			"lineage": "VRGR",
+			"size": [
+				"M"
+			],
+			"speed": {
+				"walk": 30,
+				"swim": 30
+			},
+			"traitTags": [
+				"Powerful Build"
+			],
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Damage Dealer",
+					"entries": [
+						"Like a hippopotamus in a crystalware shop, you are naturally adept at damaging things. When you roll a 1 on a damage die for a melee attack, you can reroll the die and use the new roll. You can do so no more than once per turn."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Hippo Build",
+					"entries": [
+						"You have advantage on Strength-based ability checks and Strength saving throws. In addition, you count as one size larger when determining your carrying capacity and the weight you can push, drag, or lift."
+					]
+				}
+			],
+			"hasFluff": true
+		},
+		{
 			"name": "Gith",
 			"source": "MTF",
 			"page": 96,
@@ -4932,6 +5243,10 @@
 					"int": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -5149,6 +5464,10 @@
 					"int": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -5393,6 +5712,10 @@
 				"heightMod": "2d4",
 				"baseWeight": 35
 			},
+			"age": {
+				"mature": 40,
+				"max": 500
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Uncommon Race"
@@ -5461,6 +5784,10 @@
 							"dex": 1
 						}
 					],
+					"age": {
+						"mature": 25,
+						"max": 250
+					},
 					"darkvision": 120,
 					"languageProficiencies": [
 						{
@@ -5547,6 +5874,10 @@
 							"dex": 1
 						}
 					],
+					"age": {
+						"mature": 25,
+						"max": 250
+					},
 					"darkvision": 120,
 					"languageProficiencies": [
 						{
@@ -6085,6 +6416,10 @@
 				"heightMod": "2d4",
 				"baseWeight": 35
 			},
+			"age": {
+				"mature": 8,
+				"max": 60
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Monstrous Race"
@@ -6208,6 +6543,10 @@
 					"dex": 2
 				}
 			],
+			"age": {
+				"mature": 12,
+				"max": 50
+			},
 			"darkvision": 60,
 			"languageProficiencies": [
 				{
@@ -6273,6 +6612,10 @@
 					"con": 2
 				}
 			],
+			"age": {
+				"mature": 12,
+				"max": 50
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Natural Armor"
@@ -6414,6 +6757,10 @@
 				"heightMod": "2d10",
 				"baseWeight": 200,
 				"weightMod": "2d6"
+			},
+			"age": {
+				"mature": 20,
+				"max": 100
 			},
 			"traitTags": [
 				"Powerful Build"
@@ -6568,6 +6915,10 @@
 					"con": 1
 				}
 			],
+			"age": {
+				"mature": 1,
+				"max": 50
+			},
 			"traitTags": [
 				"Amphibious"
 			],
@@ -6662,6 +7013,51 @@
 			]
 		},
 		{
+			"name": "Hadozee",
+			"source": "UA2021TravelersOfTheMultiverse",
+			"page": 3,
+			"lineage": "VRGR",
+			"size": [
+				"S",
+				"M"
+			],
+			"speed": {
+				"walk": 30,
+				"climb": 30
+			},
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Size",
+					"entries": [
+						"You are Medium or Small. You choose the size when you gain this lineage."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Dexterous Feet",
+					"entries": [
+						"You can take the {@action Use an Object} action as a bonus action."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Glide",
+					"entries": [
+						"If you are not {@condition incapacitated} or wearing heavy armor, you can extend your skin membranes and glide. When you do so, you can perform the following aerial maneuvers:",
+						{
+							"type": "list",
+							"items": [
+								"When you fall, you can move up to 5 feet horizontally for every 1 foot you descend.",
+								"When you would take damage from a fall, you can use your reaction to reduce the fall's damage to 0."
+							]
+						}
+					]
+				}
+			],
+			"hasFluff": true
+		},
+		{
 			"name": "Half-Elf",
 			"source": "PHB",
 			"page": 38,
@@ -6690,6 +7086,10 @@
 				"heightMod": "2d8",
 				"baseWeight": 110,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 180
 			},
 			"darkvision": 60,
 			"traitTags": [
@@ -6793,6 +7193,10 @@
 				"heightMod": "2d8",
 				"baseWeight": 110,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 180
 			},
 			"darkvision": 60,
 			"traitTags": [
@@ -7402,6 +7806,10 @@
 				"baseWeight": 140,
 				"weightMod": "2d6"
 			},
+			"age": {
+				"mature": 14,
+				"max": 75
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Uncommon Race"
@@ -7507,6 +7915,10 @@
 				"heightMod": "2d10",
 				"baseWeight": 140,
 				"weightMod": "2d6"
+			},
+			"age": {
+				"mature": 14,
+				"max": 75
 			},
 			"darkvision": 60,
 			"traitTags": [
@@ -7671,6 +8083,10 @@
 				"baseHeight": 31,
 				"heightMod": "2d4",
 				"baseWeight": 35
+			},
+			"age": {
+				"mature": 20,
+				"max": 250
 			},
 			"languageProficiencies": [
 				{
@@ -8083,6 +8499,7 @@
 		{
 			"name": "Harengon",
 			"source": "WBtW",
+			"page": 13,
 			"lineage": "VRGR",
 			"size": [
 				"S",
@@ -8501,6 +8918,10 @@
 				"baseWeight": 110,
 				"weightMod": "2d4"
 			},
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Monstrous Race"
@@ -8593,6 +9014,10 @@
 				"baseWeight": 110,
 				"weightMod": "2d4"
 			},
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -8657,6 +9082,10 @@
 							"con": 1
 						}
 					],
+					"age": {
+						"mature": 20,
+						"max": 100
+					},
 					"skillProficiencies": [
 						{
 							"athletics": true
@@ -9440,6 +9869,10 @@
 					}
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"feats": 1,
 			"skillProficiencies": [
 				{
@@ -9514,6 +9947,10 @@
 				"M"
 			],
 			"speed": 30,
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -9707,6 +10144,10 @@
 					"cha": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -9808,6 +10249,10 @@
 				"baseWeight": 110,
 				"weightMod": "1d6"
 			},
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -9905,6 +10350,10 @@
 					}
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -10059,6 +10508,10 @@
 				"baseWeight": 50,
 				"weightMod": "1d6"
 			},
+			"age": {
+				"mature": 12,
+				"max": 60
+			},
 			"skillProficiencies": [
 				{
 					"choose": {
@@ -10150,6 +10603,10 @@
 					"str": 1
 				}
 			],
+			"age": {
+				"mature": 13,
+				"max": 60
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -10334,6 +10791,10 @@
 				"heightMod": "2d4",
 				"baseWeight": 25
 			},
+			"age": {
+				"mature": 6,
+				"max": 120
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Monstrous Race",
@@ -10423,6 +10884,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"skillProficiencies": [
 				{
 					"athletics": true,
@@ -10582,6 +11047,10 @@
 				"baseWeight": 180,
 				"weightMod": "2d6"
 			},
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Unarmed Strike"
@@ -10738,6 +11207,10 @@
 				"baseWeight": 120,
 				"weightMod": "2d6"
 			},
+			"age": {
+				"mature": 14,
+				"max": 60
+			},
 			"traitTags": [
 				"Natural Armor",
 				"Unarmed Strike"
@@ -10861,6 +11334,10 @@
 					"dex": 1
 				}
 			],
+			"age": {
+				"mature": 10,
+				"max": 80
+			},
 			"traitTags": [
 				"Amphibious",
 				"Natural Armor"
@@ -10957,6 +11434,10 @@
 				"heightMod": "2d10",
 				"baseWeight": 295,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 450
 			},
 			"traitTags": [
 				"Natural Armor",
@@ -11058,6 +11539,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 450
+			},
 			"traitTags": [
 				"Natural Armor",
 				"Powerful Build"
@@ -11202,6 +11687,10 @@
 					"cha": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"traitTags": [
 				"Amphibious"
 			],
@@ -11345,6 +11834,10 @@
 					"cha": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"traitTags": [
 				"Amphibious"
 			],
@@ -11664,6 +12157,10 @@
 				"baseWeight": 175,
 				"weightMod": "2d6"
 			},
+			"age": {
+				"mature": 17,
+				"max": 150
+			},
 			"traitTags": [
 				"Unarmed Strike"
 			],
@@ -11805,6 +12302,10 @@
 					"con": 1
 				}
 			],
+			"age": {
+				"mature": 17,
+				"max": 150
+			},
 			"traitTags": [
 				"Unarmed Strike"
 			],
@@ -11905,6 +12406,10 @@
 					"con": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 40
+			},
 			"traitTags": [
 				"Unarmed Strike"
 			],
@@ -12001,6 +12506,10 @@
 					}
 				}
 			],
+			"age": {
+				"mature": 17,
+				"max": 150
+			},
 			"traitTags": [
 				"Tool Proficiency",
 				"Unarmed Strike"
@@ -12097,6 +12606,10 @@
 					"int": 1
 				}
 			],
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"traitTags": [
 				"Tool Proficiency",
 				"Unarmed Strike"
@@ -12317,6 +12830,10 @@
 				"baseWeight": 175,
 				"weightMod": "2d6"
 			},
+			"age": {
+				"mature": 12,
+				"max": 50
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Powerful Build"
@@ -12422,6 +12939,10 @@
 				"baseWeight": 175,
 				"weightMod": "2d6"
 			},
+			"age": {
+				"mature": 12,
+				"max": 50
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Monstrous Race",
@@ -12524,6 +13045,10 @@
 					"con": 1
 				}
 			],
+			"age": {
+				"mature": 14,
+				"max": 75
+			},
 			"darkvision": 60,
 			"skillProficiencies": [
 				{
@@ -12673,6 +13198,78 @@
 					"name": "Silent Feathers",
 					"entries": [
 						"You have proficiency in the {@skill Stealth} skill."
+					]
+				}
+			],
+			"hasFluff": true
+		},
+		{
+			"name": "Plasmoid",
+			"source": "UA2021TravelersOfTheMultiverse",
+			"page": 3,
+			"lineage": "VRGR",
+			"creatureTypes": [
+				"ooze"
+			],
+			"size": [
+				"S",
+				"M"
+			],
+			"speed": 30,
+			"darkvision": 60,
+			"resist": [
+				"acid",
+				"poison"
+			],
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Creature Type",
+					"entries": [
+						"You are an Ooze."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Size",
+					"entries": [
+						"You are Medium or Small. You choose the size when you gain this race."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Amorphous",
+					"entries": [
+						"You can squeeze through a space as narrow as 1 inch wide, provided you are wearing and carrying nothing. You also have advantage on ability checks you make to initiate or escape a grapple."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Darkvision",
+					"entries": [
+						"You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Hold Breath",
+					"entries": [
+						"You can hold your breath for 1 hour."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Natural Resilience",
+					"entries": [
+						"You have resistance to acid and poison damage, and you have advantage on saving throws against being {@condition poisoned}."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Shape Self",
+					"entries": [
+						"If you are not {@condition incapacitated}, you can reshape your body to give yourself a head, one or two arms, one or two legs, and makeshift hands and feet, or you can revert to a limbless blob (no action required).",
+						"As a bonus action, you can extrude a pseudopod that is up to 6 inches wide and 10 feet long or reabsorb it into your body. You can use this pseudopod to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour out the contents of a container. The pseudopod can't attack, activate magic items, or carry more than 10 pounds."
 					]
 				}
 			],
@@ -12988,6 +13585,10 @@
 				"baseWeight": 100,
 				"weightMod": "2d4"
 			},
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"traitTags": [
 				"Magic Resistance",
 				"Unarmed Strike"
@@ -13096,6 +13697,10 @@
 				"heightMod": "2d8",
 				"baseWeight": 90,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 10,
+				"max": 70
 			},
 			"darkvision": 60,
 			"languageProficiencies": [
@@ -13480,6 +14085,10 @@
 					"dex": 1
 				}
 			],
+			"age": {
+				"mature": 10,
+				"max": 70
+			},
 			"darkvision": 60,
 			"skillProficiencies": [
 				{
@@ -14108,6 +14717,10 @@
 				"baseWeight": 90,
 				"weightMod": "2d4"
 			},
+			"age": {
+				"mature": 20,
+				"max": 100
+			},
 			"darkvision": 60,
 			"traitTags": [
 				"Unarmed Strike"
@@ -14190,6 +14803,85 @@
 			"hasFluffImages": true
 		},
 		{
+			"name": "Thri-kreen",
+			"source": "UA2021TravelersOfTheMultiverse",
+			"page": 4,
+			"lineage": "VRGR",
+			"creatureTypes": [
+				"monstrosity"
+			],
+			"size": [
+				"S",
+				"M"
+			],
+			"speed": 30,
+			"darkvision": 60,
+			"traitTags": [
+				"Improved Resting",
+				"Natural Armor"
+			],
+			"entries": [
+				{
+					"type": "entries",
+					"name": "Creature Type",
+					"entries": [
+						"You are a Monstrosity."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Size",
+					"entries": [
+						"You are Medium or Small. You choose the size when you select this race."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Chameleon Carapace",
+					"entries": [
+						"While you aren't wearing armor, your carapace gives you a base Armor Class of 13 + your Dexterity modifier.",
+						"As an action, you can change the color of your carapace to match the color and texture of your surroundings, giving you advantage on Dexterity ({@skill Stealth}) checks made to hide in those surroundings."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Darkvision",
+					"entries": [
+						"You can see in dim light within 60 feet of you as if it were bright light and in darkness as if it were dim light. You discern colors in that darkness only as shades of gray."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Secondary Arms",
+					"entries": [
+						"You have two slightly smaller secondary arms below your primary pair of arms. The secondary arms function like your primary arms, with the following exceptions:",
+						{
+							"type": "list",
+							"items": [
+								"You can use a secondary arm to wield a weapon that has the light property, but you can't use a secondary arm to wield other kinds of weapons.",
+								"You can't wield a shield with a secondary arm."
+							]
+						}
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Sleepless Revitalization",
+					"entries": [
+						"You do not require sleep and can choose to remain conscious during a long rest, though you must still refrain from strenuous activity to gain the benefit of the rest."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Thrik-reen Telepathy",
+					"entries": [
+						"You have the magical ability to communicate mentally with any number of willing creatures you can see within 120 feet of you. A contacted creature doesn't need to share a language with you, but it must be able to understand at least one language. Your telepathic link to a creature is broken if you and the creature move more than 120 feet apart, if either of you is {@condition incapacitated}, or if either of you mentally breaks the contact (no action required)."
+					]
+				}
+			],
+			"hasFluff": true
+		},
+		{
 			"name": "Tiefling",
 			"source": "PHB",
 			"page": 42,
@@ -14209,6 +14901,10 @@
 				"heightMod": "2d8",
 				"baseWeight": 110,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 100
 			},
 			"darkvision": 60,
 			"traitTags": [
@@ -15529,6 +16225,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 15,
+				"max": 50
+			},
 			"traitTags": [
 				"Natural Armor",
 				"Unarmed Strike"
@@ -15667,6 +16367,10 @@
 				"heightMod": "2d10",
 				"baseWeight": 90,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 15,
+				"max": 200
 			},
 			"darkvision": 60,
 			"traitTags": [
@@ -16036,6 +16740,10 @@
 				"baseWeight": 110,
 				"weightMod": "2d4"
 			},
+			"age": {
+				"mature": 40,
+				"max": 500
+			},
 			"skillProficiencies": [
 				{
 					"choose": {
@@ -16131,6 +16839,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 40,
+				"max": 500
+			},
 			"languageProficiencies": [
 				{
 					"common": true,
@@ -16196,6 +16908,10 @@
 					"wis": 1
 				}
 			],
+			"age": {
+				"mature": 40,
+				"max": 500
+			},
 			"languageProficiencies": [
 				{
 					"common": true
@@ -16262,6 +16978,10 @@
 					"cha": 2
 				}
 			],
+			"age": {
+				"mature": 24,
+				"max": 200
+			},
 			"skillProficiencies": [
 				{
 					"persuasion": true
@@ -16349,6 +17069,10 @@
 					"str": 1
 				}
 			],
+			"age": {
+				"mature": 13,
+				"max": 60
+			},
 			"traitTags": [
 				"Unarmed Strike"
 			],
@@ -16455,6 +17179,10 @@
 				"heightMod": "2d6",
 				"baseWeight": 270,
 				"weightMod": "4"
+			},
+			"age": {
+				"mature": 2,
+				"max": 30
 			},
 			"traitTags": [
 				"Improved Resting",
@@ -16632,6 +17360,10 @@
 					"con": 1
 				}
 			],
+			"age": {
+				"mature": 2,
+				"max": 30
+			},
 			"traitTags": [
 				"Improved Resting",
 				"Natural Armor"
@@ -16870,6 +17602,10 @@
 				"heightMod": "2d10",
 				"baseWeight": 110,
 				"weightMod": "2d4"
+			},
+			"age": {
+				"mature": 20,
+				"max": 100
 			},
 			"darkvision": 60,
 			"traitTags": [
