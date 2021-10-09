@@ -387,6 +387,36 @@ function initTemplateTokenEditor () {
                     </div>
                 </div>
                 <hr>
+                <!-- Token Tooltip -->
+                <div class='tokendescription w-100'>
+                    <div class='w-100 d-inline-flex flex-wrap tokeneditor__container tokeneditor__tooltip-title'>
+                        <div class='flex-col'>
+                            <div class='tokeneditor__header w-100'>
+                                <h3 class='page_title text-capitalize'>Tooltip</h3>
+                            </div>
+                        </div>
+                        <div class='tokeneditor__container-tooltip tooltip_disable_box'>
+                            <div class='d-flex justify-content-center align-items-center'>
+                                <label class='sr-only' for='token-general-description-toggle'>show tooltip on token</label>
+                                <input class='show_tooltip' id='token-general-tooltip-toggle' type='checkbox' value='1'>
+                            </div>
+                            <h4 class='text-capitalize'>Show</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class='tokeneditor__row'>
+                    <div class='tokeneditor__container'>
+                        <div class='d-flex'>
+                            <textarea class='token-tooltip' id='token-general-description' maxlength='150' type='text'></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <small>
+                <span class='tooltip-count'>0</span>
+                /150
+                </small>
+                <hr>
                 <!-- Token Bar Options -->
                 <div class='tokenbaroptions w-100'>
                     <div class='tokeneditor__header w-100'>
