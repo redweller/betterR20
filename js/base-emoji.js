@@ -1,6 +1,8 @@
 const betteR20Emoji = function () {
 	d20plus.chat = {};
 
+	/* eslint-disable */
+
 	// to dump the keys as one-per-line colon-fotmatted: `JSON.stringify(Object.keys(d20plus.chat.emojiIndex).sort(SortUtil.ascSortLower), null, 1).replace(/",/g, ":").replace(/"/g, ":").replace(/[ \[\]]/g, "").trim()`
 	d20plus.chat.emojiIndex = {
 		joy: !0,
@@ -1181,6 +1183,8 @@ const betteR20Emoji = function () {
 		"100": !0
 	};
 
+	/* eslint-enable */
+
 	addConfigOptions(
 		"interface", {
 			_name: "Interface",
@@ -1188,9 +1192,9 @@ const betteR20Emoji = function () {
 				name: "Add Emoji Replacement to Chat",
 				default: true,
 				_type: "boolean",
-				_player: true
-			}
-		}
+				_player: true,
+			},
+		},
 	);
 
 	d20plus.chat.enhanceChat = () => {

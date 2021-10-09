@@ -17,7 +17,7 @@ function d20plusArt () {
 			// init list library
 			const artList = new List("art-list-container", {
 				valueNames: ["name"],
-				listClass: "artlist"
+				listClass: "artlist",
 			});
 
 			const $btnAdd = $(`#art-list-add-btn`);
@@ -51,32 +51,30 @@ function d20plusArt () {
 					const massUrls = $iptUrls.val();
 					const spl = massUrls.split("\n").map(s => s.trim()).filter(s => s);
 					if (!spl.length) return;
-					else {
-						const delim = "---";
-						const toAdd = [];
-						for (const s of spl) {
-							if (!s.includes(delim)) {
+					const delim = "---";
+					const toAdd = [];
+					for (const s of spl) {
+						if (!s.includes(delim)) {
+							alert(`Badly formatted line: ${s}`);
+							return;
+						} else {
+							const parts = s.split(delim);
+							if (parts.length !== 2) {
 								alert(`Badly formatted line: ${s}`);
 								return;
 							} else {
-								const parts = s.split(delim);
-								if (parts.length !== 2) {
-									alert(`Badly formatted line: ${s}`);
-									return;
-								} else {
-									toAdd.push({
-										name: parts[0],
-										url: parts[1]
-									});
-								}
+								toAdd.push({
+									name: parts[0],
+									url: parts[1],
+								});
 							}
 						}
-						toAdd.forEach(a => {
-							$artList.append(getArtLi(a.name, a.url));
-						});
-						refreshCustomArtList();
-						$("#d20plus-artmassadd").dialog("close");
 					}
+					toAdd.forEach(a => {
+						$artList.append(getArtLi(a.name, a.url));
+					});
+					refreshCustomArtList();
+					$("#d20plus-artmassadd").dialog("close");
 				});
 			});
 
@@ -120,8 +118,8 @@ function d20plusArt () {
 				return $liArt;
 			}
 
-			function deleteCustomArt (name) {			
-				artList.remove('name', name)
+			function deleteCustomArt (name) {
+				artList.remove("name", name)
 				d20plus.art.custom.splice(d20plus.art.custom.findIndex(i => i.name === name), 1);
 				makeDraggables();
 				d20plus.art.saveToHandout();
@@ -134,7 +132,7 @@ function d20plusArt () {
 					const $ele = $(i.elm);
 					custom.push({
 						name: $ele.find(`.name`).text(),
-						url: $ele.find(`.url`).text()
+						url: $ele.find(`.url`).text(),
 					});
 				});
 				d20plus.art.custom = custom;
@@ -148,7 +146,7 @@ function d20plusArt () {
 					revert: true,
 					revertDuration: 0,
 					helper: "clone",
-					appendTo: "body"
+					appendTo: "body",
 				})
 			}
 		},
@@ -158,20 +156,20 @@ function d20plusArt () {
 			if (!handout) {
 				d20.Campaign.handouts.create({
 					name: ART_HANDOUT,
-					archived: true
+					archived: true,
 				}, {
 					success: function (handout) {
 						notecontents = "This handout is used to store custom art URLs.";
 
 						const gmnotes = JSON.stringify(d20plus.art.custom);
 						handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-						handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
-					}
+						handout.save({notes: (new Date()).getTime(), inplayerjournals: ""});
+					},
 				});
 			} else {
 				const gmnotes = JSON.stringify(d20plus.art.custom);
 				handout.updateBlobs({gmnotes: gmnotes});
-				handout.save({notes: (new Date).getTime()});
+				handout.save({notes: (new Date()).getTime()});
 			}
 		},
 
@@ -192,7 +190,7 @@ function d20plusArt () {
 			// 	name: "Phoenix",
 			// 	url: "http://www.discgolfbirmingham.com/wordpress/wp-content/uploads/2014/04/phoenix-rising.jpg"
 			// }
-		]
+		],
 	};
 
 	d20plus.art.getArtHandout = () => {
@@ -213,6 +211,7 @@ function d20plusArt () {
 						d20plus.art.custom = JSON.parse(decoded);
 						resolve();
 					} catch (e) {
+						// eslint-disable-next-line no-console
 						console.error(e);
 						resolve();
 					}
@@ -269,7 +268,7 @@ function d20plusArt () {
 				revert: true,
 				revertDuration: 0,
 				helper: "clone",
-				appendTo: "body"
+				appendTo: "body",
 			}).addTouch();
 		});
 	};
@@ -348,7 +347,7 @@ function d20plusArt () {
 							avatar: url,
 							id: d20plus.ut.generateRowId(),
 							name,
-							placement: 99
+							placement: 99,
 						});
 						toSaveAll.push(toSave);
 					}
@@ -361,7 +360,7 @@ function d20plusArt () {
 
 			$dialog.dialog({
 				width: 800,
-				height: 650
+				height: 650,
 			});
 		});
 	};

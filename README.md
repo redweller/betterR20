@@ -1,4 +1,6 @@
-> DISCLAIMER: This tool is intended to enhance your Roll20 experience by allowing you to easily utilize content that you already own.
+# betteR20
+
+> > DISCLAIMER: This tool is intended to enhance your Roll20 experience by allowing you to easily utilize content that you already own.
 > The use of this tool may be against the [Roll 20 Marketplace Asset End User License Agreement](https://wiki.roll20.net/Marketplace_Asset_EULA) and the [Roll 20 EULA or Terms of Service](https://wiki.roll20.net/Terms_of_Service_and_Privacy_Policy), and/or may be considered grounds for account suspension or termination. Use at your own risk.
 
 **If you wish to use creatures with the Shaped sheet, import with your game using the OGL sheet, and then switch to the shaped sheet afterwards.** Due to the complexity of the process (read: it's a colossal hack), we are unable to support both sheets natively.
@@ -39,11 +41,3 @@ There are a variety of other features added by the script. Some highlights inclu
 
 ## But I Don't Play 5e!
 A version of the script including all the non-5e related features is available [here](https://get.5e.tools/) (along with the full version). **Do not use both scripts at the same time, they are mutually incompatible.**
-
-## Development
-Node.js is required.
-
-Usable scripts can be produced with `npm run build`; output to the `dist/` directory.
-
-The "core" userscript includes generic improvements which can be used in all games.
-The "5etools" userscript includes the above, and various tools to import content from [5e.tools](https://5e.tools)

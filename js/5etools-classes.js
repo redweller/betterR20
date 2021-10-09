@@ -57,9 +57,9 @@ function d20plusClass () {
 					{
 						forcePlayer,
 						builderOptions: {
-							isHomebrew: !officialClassUrls.includes(url)
-						}
-					}
+							isHomebrew: !officialClassUrls.includes(url),
+						},
+					},
 				);
 			});
 		}
@@ -78,9 +78,9 @@ function d20plusClass () {
 					{
 						forcePlayer,
 						builderOptions: {
-							isHomebrew: false
-						}
-					}
+							isHomebrew: false,
+						},
+					},
 				);
 			});
 	};
@@ -99,8 +99,8 @@ function d20plusClass () {
 		d20.Campaign.handouts.create({
 			name: name,
 			tags: d20plus.importer.getTagString([
-				Parser.sourceJsonToFull(data.source)
-			], "class")
+				Parser.sourceJsonToFull(data.source),
+			], "class"),
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -108,9 +108,9 @@ function d20plusClass () {
 				const [noteContents, gmNotes] = d20plus.classes._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+			},
 		});
 
 		d20plus.classes._handleSubclasses(data, overwrite, inJournals, folderName, false, options);
@@ -141,8 +141,8 @@ function d20plusClass () {
 							click: function () {
 								$(this).dialog("close");
 								$dialog.remove();
-								reject(`User cancelled the prompt`);
-							}
+								reject(new Error(`User cancelled the prompt`));
+							},
 						},
 						{
 							text: "OK",
@@ -150,11 +150,11 @@ function d20plusClass () {
 								const selected = Number($selStrat.val());
 								$(this).dialog("close");
 								$dialog.remove();
-								if (isNaN(selected)) reject(`Value was not a number!`);
+								if (isNaN(selected)) reject(new Error(`Value was not a number!`));
 								resolve(selected);
-							}
-						}
-					]
+							},
+						},
+					],
 				})
 			});
 		}
@@ -215,8 +215,8 @@ function d20plusClass () {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Classes"
-			}
+				"Category": "Classes",
+			},
 		};
 		const gmNotes = JSON.stringify(r20json);
 		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
@@ -224,7 +224,7 @@ function d20plusClass () {
 		return [noteContents, gmNotes];
 	};
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
 	d20plus.subclasses._listCols = ["name", "class", "source"];
@@ -236,7 +236,7 @@ function d20plusClass () {
 		return {
 			name: sc.name.toLowerCase(),
 			class: sc.className.toLowerCase(),
-			source: Parser.sourceJsonToAbv(sc.source).toLowerCase()
+			source: Parser.sourceJsonToAbv(sc.source).toLowerCase(),
 		};
 	};
 	// Import Subclasses button was clicked
@@ -283,8 +283,8 @@ function d20plusClass () {
 						forcePlayer,
 						listItemBuilder: d20plus.subclasses._listItemBuilder,
 						listIndex: d20plus.subclasses._listCols,
-						listIndexConverter: d20plus.subclasses._listIndexConverter
-					}
+						listIndexConverter: d20plus.subclasses._listIndexConverter,
+					},
 				);
 			});
 		}
@@ -333,8 +333,8 @@ function d20plusClass () {
 				name: name,
 				tags: d20plus.importer.getTagString([
 					data.className,
-					Parser.sourceJsonToFull(data.source)
-				], "subclass")
+					Parser.sourceJsonToFull(data.source),
+				], "subclass"),
 			}, {
 				success: function (handout) {
 					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -342,9 +342,9 @@ function d20plusClass () {
 					const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
 
 					handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-					handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+					handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
 					d20.journal.addItemToFolderStructure(handout.id, folder.id);
-				}
+				},
 			});
 		});
 	};
@@ -382,15 +382,14 @@ function d20plusClass () {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Subclasses"
-			}
+				"Category": "Subclasses",
+			},
 		};
 		const gmNotes = JSON.stringify(r20json);
 		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
-
 }
 
 SCRIPT_EXTENSIONS.push(d20plusClass);

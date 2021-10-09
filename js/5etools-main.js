@@ -1,5 +1,5 @@
 const betteR205etoolsMain = function () {
-	IMG_URL = BASE_SITE_URL + "img/";
+	IMG_URL = `${BASE_SITE_URL}img/`;
 
 	SPELL_DATA_DIR = `${DATA_URL}spells/`;
 	SPELL_META_URL = `${SPELL_DATA_DIR}roll20.json`;
@@ -38,7 +38,7 @@ const betteR205etoolsMain = function () {
 			"speed",
 			"str",
 			"type",
-			"wis"
+			"wis",
 		],
 		"spell": [
 			"name",
@@ -50,22 +50,22 @@ const betteR205etoolsMain = function () {
 			"duration",
 			"classes",
 			"entries",
-			"source"
+			"source",
 		],
 		"item": [
 			"name",
 			"rarity",
-			"source"
+			"source",
 		],
 		"psionic": [
 			"name",
 			"source",
-			"type"
+			"type",
 		],
 		"feat": [
 			"name",
 			"source",
-			"entries"
+			"entries",
 		],
 		"object": [
 			"name",
@@ -75,7 +75,7 @@ const betteR205etoolsMain = function () {
 			"ac",
 			"hp",
 			"immune",
-			"entries"
+			"entries",
 		],
 		"class": [
 			"name",
@@ -87,7 +87,7 @@ const betteR205etoolsMain = function () {
 			"startingEquipment",
 			"classFeatures",
 			"subclassTitle",
-			"subclasses"
+			"subclasses",
 		],
 		"subclass": [
 
@@ -96,17 +96,17 @@ const betteR205etoolsMain = function () {
 			"name",
 			"source",
 			"skillProficiencies",
-			"entries"
+			"entries",
 		],
 		"race": [
 			"name",
-			"source"
+			"source",
 		],
 		"optionalfeature": [
 			"name",
 			"source",
-			"entries"
-		]
+			"entries",
+		],
 	};
 
 	let spellDataUrls = {};
@@ -120,7 +120,7 @@ const betteR205etoolsMain = function () {
 	let classDataUrls = {};
 	let brewIndex = {};
 
-// build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
+	// build a big dictionary of sheet properties to be used as reference throughout // TODO use these as reference throughout
 	function SheetAttribute (name, ogl, shaped) {
 		this.name = name;
 		this.ogl = ogl;
@@ -128,10 +128,10 @@ const betteR205etoolsMain = function () {
 	}
 
 	NPC_SHEET_ATTRIBUTES = {};
-// these (other than the name, which is for display only) are all lowercased; any comparison should be lowercased
+	// these (other than the name, which is for display only) are all lowercased; any comparison should be lowercased
 	NPC_SHEET_ATTRIBUTES["empty"] = new SheetAttribute("--Empty--", "", "");
-// TODO: implement custom entry (enable textarea)
-//NPC_SHEET_ATTRIBUTES["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
+	// TODO: implement custom entry (enable textarea)
+	// NPC_SHEET_ATTRIBUTES["custom"] = new SheetAttribute("-Custom-", "-Custom-", "-Custom-");
 	NPC_SHEET_ATTRIBUTES["npc_hpbase"] = new SheetAttribute("HP", "npc_hpbase", "npc_hpbase");
 	NPC_SHEET_ATTRIBUTES["npc_ac"] = new SheetAttribute("AC", "npc_ac", "ac");
 	NPC_SHEET_ATTRIBUTES["passive"] = new SheetAttribute("Passive Perception", "passive", "passive");
@@ -156,92 +156,92 @@ const betteR205etoolsMain = function () {
 			"name": "Bar 1 (NPC)",
 			"default": "npc_hpbase",
 			"_type": "_SHEET_ATTRIBUTE",
-			"_player": true
+			"_player": true,
 		},
 		"bar1_pc": {
 			"name": "Bar 1 (PC)",
 			"default": "",
-			"_type": "_SHEET_ATTRIBUTE_PC"
+			"_type": "_SHEET_ATTRIBUTE_PC",
 		},
 		"bar1_max": {
 			"name": "Set Bar 1 Max",
 			"default": true,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"bar1_reveal": {
 			"name": "Reveal Bar 1",
 			"default": false,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"bar2": {
 			"name": "Bar 2 (NPC)",
 			"default": "npc_ac",
 			"_type": "_SHEET_ATTRIBUTE",
-			"_player": true
+			"_player": true,
 		},
 		"bar2_pc": {
 			"name": "Bar 2 (PC)",
 			"default": "",
-			"_type": "_SHEET_ATTRIBUTE_PC"
+			"_type": "_SHEET_ATTRIBUTE_PC",
 		},
 		"bar2_max": {
 			"name": "Set Bar 2 Max",
 			"default": false,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"bar2_reveal": {
 			"name": "Reveal Bar 2",
 			"default": false,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"bar3": {
 			"name": "Bar 3 (NPC)",
 			"default": "passive",
 			"_type": "_SHEET_ATTRIBUTE",
-			"_player": true
+			"_player": true,
 		},
 		"bar3_pc": {
 			"name": "Bar 3 (PC)",
 			"default": "",
-			"_type": "_SHEET_ATTRIBUTE_PC"
+			"_type": "_SHEET_ATTRIBUTE_PC",
 		},
 		"bar3_max": {
 			"name": "Set Bar 3 Max",
 			"default": false,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"bar3_reveal": {
 			"name": "Reveal Bar 3",
 			"default": false,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"rollHP": {
 			"name": "Roll Token HP",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"maximiseHp": {
 			"name": "Maximise Token HP",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"name": {
 			"name": "Show Nameplate",
 			"default": true,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"name_reveal": {
 			"name": "Reveal Nameplate",
 			"default": false,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"barLocation": {
 			"name": "Bar Location",
@@ -251,15 +251,15 @@ const betteR205etoolsMain = function () {
 				"Above",
 				"Top Overlapping",
 				"Bottom Overlapping",
-				"Below"
+				"Below",
 			],
-			"_player": true
+			"_player": true,
 		},
 		"isCompactBars": {
 			"name": "Compact Bars",
 			"default": false,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 	});
 	addConfigOptions("import", {
@@ -268,130 +268,130 @@ const betteR205etoolsMain = function () {
 			"name": "5e Tools Website (reload to apply changes)",
 			"default": "https://5etools-mirror-1.github.io/",
 			"_type": "String",
-			"_player": true
+			"_player": true,
 		},
 		"allSourcesIncludeUnofficial": {
 			"name": `Include Unofficial (UA/etc) Content in "Import Monsters From All Sources" List`,
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"allSourcesIncludeHomebrew": {
 			"name": `Include Homebrew in "Import Monsters From All Sources" List (Warning: Slow)`,
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"importIntervalHandout": {
 			"name": "Rest Time between Each Handout (msec)",
 			"default": 100,
-			"_type": "integer"
+			"_type": "integer",
 		},
 		"importIntervalCharacter": {
 			"name": "Rest Time between Each Character (msec)",
 			"default": 2500,
-			"_type": "integer"
+			"_type": "integer",
 		},
 		"importFluffAs": {
 			"name": "Import Creature Fluff As...",
 			"default": "Bio",
 			"_type": "_enum",
-			"__values": ["Bio", "GM Notes"]
+			"__values": ["Bio", "GM Notes"],
 		},
 		"importCharAvatar": {
 			"name": "Set Character Avatar As...",
 			"default": "Portrait (where available)",
 			"_type": "_enum",
-			"__values": ["Portrait (where available)", "Token"]
+			"__values": ["Portrait (where available)", "Token"],
 		},
 		"whispermode": {
 			"name": "Sheet Whisper Mode on Import",
 			"default": "Toggle (Default GM)",
-			"_type": "_WHISPERMODE"
+			"_type": "_WHISPERMODE",
 		},
 		"advantagemode": {
 			"name": "Sheet Advantage Mode on Import",
 			"default": "Toggle (Default Advantage)",
-			"_type": "_ADVANTAGEMODE"
+			"_type": "_ADVANTAGEMODE",
 		},
 		"damagemode": {
 			"name": "Sheet Auto Roll Damage Mode on Import",
 			"default": "Auto Roll",
-			"_type": "_DAMAGEMODE"
+			"_type": "_DAMAGEMODE",
 		},
 		"hideActionDescs": {
 			"name": "Hide Action Descriptions on Import",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"skipSenses": {
 			"name": "Skip Importing Creature Senses",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"showNpcNames": {
 			"name": "Show NPC Names in Rolls",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"dexTiebreaker": {
 			"name": "Add DEX Tiebreaker to Initiative",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactions": {
 			"name": "Add TokenAction Macros on Import (Actions)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsExpanded": {
 			"name": "Expand TokenAction Macros on Import (Legendary / Mythic)",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsTraits": {
 			"name": "Add TokenAction Macros on Import (Traits)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsSkills": {
 			"name": "Add TokenAction Macros on Import (Skills)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsPerception": {
 			"name": "Add TokenAction Macros on Import (Perception)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsSaves": {
 			"name": "Add TokenAction Macros on Import (Saves)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsInitiative": {
 			"name": "Add TokenAction Macros on Import (Initiative)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsChecks": {
 			"name": "Add TokenAction Macros on Import (Checks)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsOther": {
 			"name": "Add TokenAction Macros on Import (Other)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"tokenactionsSpells": {
 			"name": "Add TokenAction Macros on Import (Spells)",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"namesuffix": {
 			"name": "Append Text to Names on Import",
 			"default": "",
-			"_type": "String"
-		}
+			"_type": "String",
+		},
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
@@ -399,49 +399,49 @@ const betteR205etoolsMain = function () {
 		"customTracker": {
 			"name": "Add Additional Info to Tracker",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"trackerCol1": {
 			"name": "Tracker Column 1",
 			"default": "HP",
-			"_type": "_FORMULA"
+			"_type": "_FORMULA",
 		},
 		"trackerCol2": {
 			"name": "Tracker Column 2",
 			"default": "AC",
-			"_type": "_FORMULA"
+			"_type": "_FORMULA",
 		},
 		"trackerCol3": {
 			"name": "Tracker Column 3",
 			"default": "PP",
-			"_type": "_FORMULA"
+			"_type": "_FORMULA",
 		},
 		"trackerSheetButton": {
 			"name": "Add Sheet Button To Tracker",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"minifyTracker": {
 			"name": "Shrink Initiative Tracker Text",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"showDifficulty": {
 			"name": "Show Difficulty in Tracker",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"emoji": {
 			"name": "Add Emoji Replacement to Chat",
 			"default": true,
 			"_type": "boolean",
-			"_player": true
+			"_player": true,
 		},
 		"showCustomArtPreview": {
 			"name": "Show Custom Art Previews",
 			"default": true,
-			"_type": "boolean"
-		}
+			"_type": "boolean",
+		},
 	});
 
 	d20plus.sheet = "ogl";
@@ -463,7 +463,7 @@ const betteR205etoolsMain = function () {
 			"hp": "@{hp}",
 			"pp": "@{passive_wisdom}",
 			"macro": "",
-			"spellDc": "@{spell_save_dc}"
+			"spellDc": "@{spell_save_dc}",
 		},
 		"community": {
 			"cr": "@{npc_challenge}",
@@ -472,7 +472,7 @@ const betteR205etoolsMain = function () {
 			"hp": "@{HP}",
 			"pp": "10 + @{perception}",
 			"macro": "",
-			"spellDc": "@{spell_save_dc}"
+			"spellDc": "@{spell_save_dc}",
 		},
 		"shaped": {
 			"cr": "@{challenge}",
@@ -481,8 +481,8 @@ const betteR205etoolsMain = function () {
 			"hp": "@{HP}",
 			"pp": "@{repeating_skill_$11_passive}",
 			"macro": "shaped_statblock",
-			"spellDc": "@{spell_save_dc}"
-		}
+			"spellDc": "@{spell_save_dc}",
+		},
 	};
 
 	if (!d20plus.ut.isUseSharedJs()) {
@@ -519,8 +519,7 @@ const betteR205etoolsMain = function () {
 			else if (it.name === "base items") {
 				data.itemProperty.forEach(p => Renderer.item._addProperty(p));
 				data.itemType.forEach(t => Renderer.item._addType(t));
-			}
-			else if (it.name === "item modifiers") itemMetadata = data;
+			} else if (it.name === "item modifiers") itemMetadata = data;
 			else throw new Error(`Unhandled data from JSON ${it.name} (${it.url})`);
 
 			d20plus.ut.log(`JSON [${it.name}] Loaded`);
@@ -542,7 +541,7 @@ const betteR205etoolsMain = function () {
 		const bars = [
 			d20plus.cfg.get("token", "bar1"),
 			d20plus.cfg.get("token", "bar2"),
-			d20plus.cfg.get("token", "bar3")
+			d20plus.cfg.get("token", "bar3"),
 		];
 		return bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
 	};
@@ -553,39 +552,39 @@ const betteR205etoolsMain = function () {
 		try {
 			if (page.get("archived") === false) {
 				page.thegraphics.on("add", function (e) {
-					var character = e.character;
+					let character = e.character;
 					if (character) {
-						var npc = character.attribs.find(function (a) {
-							return a.get("name").toLowerCase() == "npc";
+						let npc = character.attribs.find(function (a) {
+							return a.get("name").toLowerCase() === "npc";
 						});
-						var isNPC = npc ? parseInt(npc.get("current")) : 0;
+						let isNPC = npc ? parseInt(npc.get("current")) : 0;
 						// Set bars if configured to do so
-						var barsList = ["bar1", "bar2", "bar3"];
+						let barsList = ["bar1", "bar2", "bar3"];
 						$.each(barsList, (i, barName) => {
 							// PC config keys are suffixed "_pc"
 							const confVal = d20plus.cfg.get("token", `${barName}${isNPC ? "" : "_pc"}`);
 							if (confVal) {
-								const charAttr = character.attribs.find(a => a.get("name").toLowerCase() == confVal);
+								const charAttr = character.attribs.find(a => a.get("name").toLowerCase() === confVal);
 								if (charAttr) {
-									e.attributes[barName + "_value"] = charAttr.get("current");
-									if (d20plus.cfg.has("token", barName + "_max")) {
-										if (d20plus.cfg.get("token", barName + "_max") && !isNPC && confVal === "hp") { // player HP is current; need to set max to max
-											e.attributes[barName + "_max"] = charAttr.get("max");
+									e.attributes[`${barName}_value`] = charAttr.get("current");
+									if (d20plus.cfg.has("token", `${barName}_max`)) {
+										if (d20plus.cfg.get("token", `${barName}_max`) && !isNPC && confVal === "hp") { // player HP is current; need to set max to max
+											e.attributes[`${barName}_max`] = charAttr.get("max");
 										} else {
 											if (isNPC) {
 												// TODO: Setting a value to empty/null does not overwrite existing values on the token.
 												// setting a specific value does. Must figure this out.
-												e.attributes[barName + "_max"] = d20plus.cfg.get("token", barName + "_max") ? charAttr.get("current") : "";
+												e.attributes[`${barName}_max`] = d20plus.cfg.get("token", `${barName}_max`) ? charAttr.get("current") : "";
 											} else {
 												// preserve default token for player tokens
-												if (d20plus.cfg.get("token", barName + "_max")) {
-													e.attributes[barName + "_max"] = charAttr.get("current");
+												if (d20plus.cfg.get("token", `${barName}_max`)) {
+													e.attributes[`${barName}_max`] = charAttr.get("current");
 												}
 											}
 										}
 									}
-									if (d20plus.cfg.has("token", barName + "_reveal")) {
-										e.attributes["showplayers_" + barName] = d20plus.cfg.get("token", barName + "_reveal");
+									if (d20plus.cfg.has("token", `${barName}_reveal`)) {
+										e.attributes[`showplayers_${barName}`] = d20plus.cfg.get("token", `${barName}_reveal`);
 									}
 								}
 							}
@@ -604,32 +603,35 @@ const betteR205etoolsMain = function () {
 							// Roll HP
 							// TODO: npc_hpbase appears to be hardcoded here? Refactor for NPC_SHEET_ATTRIBUTES?
 							if ((d20plus.cfg.get("token", "rollHP") || d20plus.cfg.get("token", "maximiseHp")) && d20plus.cfg.getCfgKey("token", "npc_hpbase")) {
-								var hpf = character.attribs.find(function (a) {
-									return a.get("name").toLowerCase() == NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
+								let hpf = character.attribs.find(function (a) {
+									return a.get("name").toLowerCase() === NPC_SHEET_ATTRIBUTES["npc_hpformula"][d20plus.sheet];
 								});
-								var barName = d20plus.cfg.getCfgKey("token", "npc_hpbase");
+								let barName = d20plus.cfg.getCfgKey("token", "npc_hpbase");
 
 								if (hpf && hpf.get("current")) {
-									var hpformula = hpf.get("current");
+									let hpformula = hpf.get("current");
 									if (d20plus.cfg.get("token", "maximiseHp")) {
 										const maxSum = hpformula.replace("d", "*");
 										try {
+											// eslint-disable-next-line no-eval
 											const max = eval(maxSum);
 											if (!isNaN(max)) {
-												e.attributes[barName + "_value"] = max;
-												e.attributes[barName + "_max"] = max;
+												e.attributes[`${barName}_value`] = max;
+												e.attributes[`${barName}_max`] = max;
 											}
 										} catch (error) {
 											d20plus.ut.log("Error Maximising HP");
+											// eslint-disable-next-line no-console
 											console.log(error);
 										}
 									} else {
 										d20plus.ut.randomRoll(hpformula, function (result) {
-											e.attributes[barName + "_value"] = result.total;
-											e.attributes[barName + "_max"] = result.total;
-											d20plus.ut.log("Rolled HP for [" + character.get("name") + "]");
+											e.attributes[`${barName}_value`] = result.total;
+											e.attributes[`${barName}_max`] = result.total;
+											d20plus.ut.log(`Rolled HP for [${character.get("name")}]`);
 										}, function (error) {
 											d20plus.ut.log("Error Rolling HP Dice");
+											// eslint-disable-next-line no-console
 											console.log(error);
 										});
 									}
@@ -640,12 +642,14 @@ const betteR205etoolsMain = function () {
 				});
 			}
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.log("D20Plus bindGraphics Exception", e);
+			// eslint-disable-next-line no-console
 			console.log("PAGE", page);
 		}
 	};
 
-// bind token HP to initiative tracker window HP field
+	// bind token HP to initiative tracker window HP field
 	d20plus.bindToken = function (token) {
 		function getInitTrackerToken () {
 			const $window = $("#initiativewindow");
@@ -664,7 +668,7 @@ const betteR205etoolsMain = function () {
 		// if there's a HP column enabled
 		if ($iptHp.length) {
 			let toBind;
-			if (!token.character || npcFlag && npcFlag.get("current") == "1") {
+			if (!token.character || (npcFlag && `${npcFlag.get("current")}` === "1")) {
 				const hpBar = d20plus.getCfgHpBarNumber();
 				// and a HP bar chosen
 				if (hpBar) {
@@ -702,27 +706,27 @@ const betteR205etoolsMain = function () {
 	};
 	d20plus.tokenBindings = {};
 
-// Determine difficulty of current encounter (iniativewindow)
+	// Determine difficulty of current encounter (iniativewindow)
 	d20plus.getDifficulty = function () {
-		var difficulty = "Unknown";
-		var partyXPThreshold = [0, 0, 0, 0];
-		var players = [];
-		var npcs = [];
+		let difficulty = "Unknown";
+		let partyXPThreshold = [0, 0, 0, 0];
+		let players = [];
+		let npcs = [];
 		try {
 			$.each(d20.Campaign.initiativewindow.cleanList(), function (i, v) {
-				var page = d20.Campaign.pages.get(v._pageid);
+				let page = d20.Campaign.pages.get(v._pageid);
 				if (page) {
-					var token = page.thegraphics.get(v.id);
+					let token = page.thegraphics.get(v.id);
 					if (token) {
-						var char = token.character;
+						let char = token.character;
 						if (char) {
-							var npc = char.attribs.find(function (a) {
+							let npc = char.attribs.find(function (a) {
 								return a.get("name").toLowerCase() === "npc";
 							});
 							if (npc && (npc.get("current") === 1 || npc.get("current") === "1")) { // just in casies
 								npcs.push(char);
 							} else {
-								var level = char.attribs.find(function (a) {
+								let level = char.attribs.find(function (a) {
 									return a.get("name").toLowerCase() === "level";
 								});
 								// Can't determine difficulty without level
@@ -741,33 +745,34 @@ const betteR205etoolsMain = function () {
 			if (!players.length) return difficulty;
 			// If a player doesn't have level set, fail out.
 			if (partyXPThreshold !== null) {
-				var len = npcs.length;
-				var multiplier = 0;
-				var adjustedxp = 0;
-				var xp = 0;
-				var index = 0;
+				let len = npcs.length;
+				let multiplier = 0;
+				let adjustedxp = 0;
+				let xp = 0;
+				let index = 0;
 				// Adjust for number of monsters
 				if (len < 2) index = 0;
 				else if (len < 3) index = 1;
 				else if (len < 7) index = 2;
 				else if (len < 11) index = 3;
 				else if (len < 15) index = 4;
-				else
-					index = 5;
+				else { index = 5; }
 				// Adjust for smaller parties
 				if (players.length < 3) index++;
 				// Set multiplier
 				multiplier = d20plus.multipliers[index];
 				// Total monster xp
 				$.each(npcs, function (i, v) {
-					var cr = v.attribs.find(function (a) {
+					let cr = v.attribs.find(function (a) {
 						return a.get("name").toLowerCase() === "npc_challenge";
 					});
 					if (cr && cr.get("current")) xp += parseInt(Parser.crToXpNumber(cr.get("current")));
 				});
 				// Encounter's adjusted xp
 				adjustedxp = xp * multiplier;
+				// eslint-disable-next-line no-console
 				console.log("Party XP Threshold", partyXPThreshold);
+				// eslint-disable-next-line no-console
 				console.log("Adjusted XP", adjustedxp);
 				// Determine difficulty
 				if (adjustedxp < partyXPThreshold[0]) difficulty = "Trivial";
@@ -777,6 +782,7 @@ const betteR205etoolsMain = function () {
 				else difficulty = "Deadly";
 			}
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.log("D20Plus getDifficulty Exception", e);
 		}
 		return difficulty;
@@ -792,14 +798,14 @@ const betteR205etoolsMain = function () {
 			$(inputFieldId).val(defaultUrl);
 			const dropdown = $(dropdownId);
 			$.each(Object.keys(srcUrlObject), function (i, src) {
-				dropdown.append($('<option>', {
+				dropdown.append($("<option>", {
 					value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
-					text: brewProps.includes("class") ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src)
+					text: brewProps.includes("class") ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src),
 				}));
 			});
-			dropdown.append($('<option>', {
+			dropdown.append($("<option>", {
 				value: "",
-				text: "Custom"
+				text: "Custom",
 			}));
 
 			const dataList = [];
@@ -812,14 +818,14 @@ const betteR205etoolsMain = function () {
 						dataList.push({
 							download_url: DataUtil.brew.getFileUrl(path),
 							path,
-							name: path.split("/").slice(1).join("/")
+							name: path.split("/").slice(1).join("/"),
 						});
 					});
 			});
 			dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
-				dropdown.append($('<option>', {
+				dropdown.append($("<option>", {
 					value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-					text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
+					text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
 				}));
 			});
 
@@ -835,15 +841,15 @@ const betteR205etoolsMain = function () {
 				const existingItems = !!$sel.find(`option`).length;
 				if (defaultSel) {
 					$(inputFieldId).val(defaultSel);
-					$sel.append($('<option>', {
+					$sel.append($("<option>", {
 						value: defaultSel,
-						text: "Official Sources"
+						text: "Official Sources",
 					}));
 				}
 				if (!existingItems) {
-					$sel.append($('<option>', {
+					$sel.append($("<option>", {
 						value: "",
-						text: "Custom"
+						text: "Custom",
 					}));
 				}
 
@@ -857,14 +863,14 @@ const betteR205etoolsMain = function () {
 							dataList.push({
 								download_url: DataUtil.brew.getFileUrl(path),
 								path,
-								name: path.split("/").slice(1).join("/")
+								name: path.split("/").slice(1).join("/"),
 							});
 						});
 				});
 				dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
-					$sel.append($('<option>', {
+					$sel.append($("<option>", {
 						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`
+						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
 					}));
 				});
 
@@ -897,7 +903,7 @@ const betteR205etoolsMain = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtOptfeatures);
 			const $ptAdventures = $(d20plus.settingsHtmlPtAdventures);
 			$wrpSettings.append($ptAdventures);
-			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get('MODULES').openFn());
+			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get("MODULES").openFn());
 			$wrpSettings.append(d20plus.settingsHtmlPtImportFooter);
 
 			$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
@@ -919,23 +925,21 @@ const betteR205etoolsMain = function () {
 			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", ["monster"]);
 			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, ["object"]);
 
-			populateAdventuresDropdown();
-
-			function populateAdventuresDropdown () {
+			const populateAdventuresDropdown = () => {
 				const defaultAdvUrl = d20plus.formSrcUrl(ADVENTURE_DATA_DIR, "adventure-lmop.json");
 				const $iptUrl = $("#import-adventures-url");
 				$iptUrl.val(defaultAdvUrl);
 				$iptUrl.data("id", "lmop");
 				const $sel = $("#button-adventures-select");
 				adventureMetadata.adventure.forEach(a => {
-					$sel.append($('<option>', {
+					$sel.append($("<option>", {
 						value: d20plus.formSrcUrl(ADVENTURE_DATA_DIR, `adventure-${a.id.toLowerCase()}.json|${a.id}`),
-						text: a.name
+						text: a.name,
 					}));
 				});
-				$sel.append($('<option>', {
+				$sel.append($("<option>", {
 					value: "",
-					text: "Custom"
+					text: "Custom",
 				}));
 				$sel.val(defaultAdvUrl);
 				$sel.change(() => {
@@ -944,6 +948,8 @@ const betteR205etoolsMain = function () {
 					$iptUrl.data("id", id);
 				});
 			}
+
+			populateAdventuresDropdown();
 
 			// import
 			$("a#button-spells-load").on(window.mousedowntype, () => d20plus.spells.button());
@@ -1017,19 +1023,19 @@ const betteR205etoolsMain = function () {
 		$body.append(d20plus.importListPropsHTML);
 		$("#d20plus-import").dialog({
 			autoOpen: false,
-			resizable: false
+			resizable: false,
 		});
 		$("#d20plus-importlist").dialog({
 			autoOpen: false,
 			resizable: true,
 			width: 1000,
-			height: 700
+			height: 700,
 		});
 		$("#d20plus-import-props").dialog({
 			autoOpen: false,
 			resizable: true,
 			width: 300,
-			height: 600
+			height: 600,
 		});
 
 		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB", ["spell"]);
@@ -1080,7 +1086,7 @@ const betteR205etoolsMain = function () {
 			}
 
 			if (d20plus.cfg.get("interface", "showDifficulty")) {
-				$span.text("Difficulty: " + d20plus.getDifficulty());
+				$span.text(`Difficulty: ${d20plus.getDifficulty()}`);
 				$span.show();
 			} else {
 				$span.hide();
@@ -1088,7 +1094,7 @@ const betteR205etoolsMain = function () {
 		}
 	};
 
-// bind tokens to the initiative tracker
+	// bind tokens to the initiative tracker
 	d20plus.bindTokens = function () {
 		// Gets a list of all the tokens on the current page:
 		const curTokens = d20.Campaign.pages.get(d20.Campaign.activePage()).thegraphics.toArray();
@@ -1097,11 +1103,11 @@ const betteR205etoolsMain = function () {
 		});
 	};
 
-// bind drop locations on sheet to accept custom handouts
+	// bind drop locations on sheet to accept custom handouts
 	d20plus.bindDropLocations = function () {
 		if (window.is_gm) {
 			// Bind Spells and Items, add compendium-item to each of them
-			var journalFolder = d20.Campaign.get("journalfolder");
+			let journalFolder = d20.Campaign.get("journalfolder");
 			if (journalFolder === "") {
 				d20.journal.addFolderToFolderStructure("Spells");
 				d20.journal.addFolderToFolderStructure("Psionics");
@@ -1150,17 +1156,17 @@ const betteR205etoolsMain = function () {
 			findOrGenerateRepeatingRowId (namePattern, current) {
 				const [namePrefix, nameSuffix] = namePattern.split(/\$\d?/);
 				const attr = this.character.model.attribs.toJSON()
-					.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current == current);
-				return attr ?
-					attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1") :
-					d20plus.ut.generateRowId();
+					.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current === current);
+				return attr
+					? attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1")
+					: d20plus.ut.generateRowId();
 			}
 
 			add (name, current, max) {
 				this.character.model.attribs.create({
 					name: name,
 					current: current,
-					...(max == undefined ? {} : {max: max})
+					...(max == null ? {} : {max: max}),
 				}).save();
 				this._changedAttrs.push(name);
 			}
@@ -1170,7 +1176,7 @@ const betteR205etoolsMain = function () {
 				if (id) {
 					this.character.model.attribs.get(id).set({
 						current: current,
-						...(max == undefined ? {} : {max: max})
+						...(max == null ? {} : {max: max}),
 					}).save();
 					this._changedAttrs.push(name);
 				} else {
@@ -1190,16 +1196,17 @@ const betteR205etoolsMain = function () {
 			const attrs = new CharacterAttributesProxy(character);
 			const rowId = d20plus.ut.generateRowId();
 
-			if (d20plus.sheet == "ogl") {
+			if (d20plus.sheet === "ogl") {
 				attrs.add(`repeating_traits_${rowId}_options-flag`, "0");
 				attrs.add(`repeating_traits_${rowId}_name`, featName);
 				attrs.add(`repeating_traits_${rowId}_description`, featText);
 				attrs.add(`repeating_traits_${rowId}_source`, "Feat");
-			} else if (d20plus.sheet == "shaped") {
+			} else if (d20plus.sheet === "shaped") {
 				attrs.add(`repeating_feat_${rowId}_name`, featName);
 				attrs.add(`repeating_feat_${rowId}_content`, featText);
 				attrs.add(`repeating_feat_${rowId}_content_toggle`, "1");
 			} else {
+				// eslint-disable-next-line no-console
 				console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
 			}
 
@@ -1243,8 +1250,8 @@ const betteR205etoolsMain = function () {
 								click: function () {
 									$(this).dialog("close");
 									$dialog.remove();
-									reject(`User cancelled the prompt`);
-								}
+									reject(new Error(`User cancelled the prompt`));
+								},
 							},
 							{
 								text: "OK",
@@ -1254,9 +1261,9 @@ const betteR205etoolsMain = function () {
 									$(this).dialog("close");
 									$dialog.remove();
 									resolve(selected);
-								}
-							}
-						]
+								},
+							},
+						],
 					})
 				});
 			}
@@ -1277,7 +1284,8 @@ const betteR205etoolsMain = function () {
 						"Choose Skills",
 						{
 							count,
-							displayFormatter: (it => it.toTitleCase()), messageCountIncomplete: `Please select ${count} skill${count === 1 ? "" : "s"}`
+							displayFormatter: it => it.toTitleCase(),
+							messageCountIncomplete: `Please select ${count} skill${count === 1 ? "" : "s"}`,
 						},
 					);
 					chosenSkills.forEach(it => skills.push(it));
@@ -1305,9 +1313,9 @@ const betteR205etoolsMain = function () {
 						<div title="Choose ${profType}">
 							<div>
 								${options.map((it, i) => `<label class="split"><input name="prof-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${
-									// Format it nicely
-									Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).map(a => a.toTitleCase()).join(", ")
-								}</span></label>`).join("")}
+		// Format it nicely
+		Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).map(a => a.toTitleCase()).join(", ")
+	}</span></label>`).join("")}
 							</div>
 						</div>
 					`).appendTo($("body"));
@@ -1321,8 +1329,8 @@ const betteR205etoolsMain = function () {
 								click: function () {
 									$(this).dialog("close");
 									$dialog.remove();
-									reject(`User cancelled the prompt`);
-								}
+									reject(new Error(`User cancelled the prompt`));
+								},
 							},
 							{
 								text: "OK",
@@ -1332,14 +1340,14 @@ const betteR205etoolsMain = function () {
 									$(this).dialog("close");
 									$dialog.remove();
 									resolve(selected);
-								}
-							}
-						]
+								},
+							},
+						],
 					})
 				});
 			}
 
-			async function handleProfs(profs, profType) {
+			async function handleProfs (profs, profType) {
 				// Handle the language options, let user choose if needed
 				// Handles most edge cases I think
 				const ret = []
@@ -1354,17 +1362,15 @@ const betteR205etoolsMain = function () {
 							`Choose ${profType}`,
 							{
 								count: numChoice,
-								displayFormatter: (it => it.toTitleCase()),
-								messageCountIncomplete: `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`
+								displayFormatter: it => it.toTitleCase(),
+								messageCountIncomplete: `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`,
 							},
 						);
 						choice.forEach(c => ret.push(c));
-					}
-					else if (key === "anyStandard") {
+					} else if (key === "anyStandard") {
 						// If any language is available, add any
 						for (let i = 0; i < value; i++) ret.push("any");
-					}
-					else if (value) {
+					} else if (value) {
 						// If no choice is needed, add the proficiency normally
 						ret.push(key);
 					}
@@ -1379,8 +1385,7 @@ const betteR205etoolsMain = function () {
 					// See Clan Crafter for an example
 					let profIndex = await chooseProfsGroup(bg.languageProficiencies, "Languages");
 					backgroundLanguages = await handleProfs(bg.languageProficiencies[profIndex], "Languages");
-				}
-				else if (bg.languageProficiencies.length > 0) {
+				} else if (bg.languageProficiencies.length > 0) {
 					// Most common case
 					backgroundLanguages = await handleProfs(bg.languageProficiencies[0], "Languages");
 				}
@@ -1393,15 +1398,14 @@ const betteR205etoolsMain = function () {
 					// If there are different types of options
 					let profIndex = await chooseProfsGroup(bg.toolProficiencies, "Tools");
 					backgroundTools = await handleProfs(bg.toolProficiencies[profIndex], "Tools")
-				}
-				else if (bg.toolProficiencies.length > 0) {
+				} else if (bg.toolProficiencies.length > 0) {
 					// Most common case
-					backgroundTools = await handleProfs(bg.toolProficiencies[0] , "Tools");
+					backgroundTools = await handleProfs(bg.toolProficiencies[0], "Tools");
 				}
 			}
 
 			// Import items
-			async function importItemsAndGetGold(itemlist) {
+			async function importItemsAndGetGold (itemlist) {
 				const allitemList = await Renderer.item.pBuildList();
 				let containedGold = 0;
 
@@ -1409,20 +1413,17 @@ const betteR205etoolsMain = function () {
 					// Returns a standardized object from a very unstandardized object
 					// Get the important variables
 					let iname = "";
-					if (typeof item !== 'object') {
+					if (typeof item !== "object") {
 						iname = item;
-					}
-					else if ('item' in item) {
+					} else if ("item" in item) {
 						iname = item.item;
-					}
-					else if ('special' in item) {
+					} else if ("special" in item) {
 						iname = item.special;
-					}
-					else if('equipclean' in item) {
+					} else if ("equipclean" in item) {
 						iname = item.equipclean;
 					}
 
-					if (item.containsValue) containedGold += item.containsValue/100;
+					if (item.containsValue) containedGold += item.containsValue / 100;
 
 					// Make the input object
 					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
@@ -1435,9 +1436,9 @@ const betteR205etoolsMain = function () {
 				const y = x.map(it => ({subItem: JSON.stringify(it), count: 1}));
 
 				const allItems = {
-					name: 'All Items',
+					name: "All Items",
 					_subItems: [...y],
-					data: {}
+					data: {},
 				};
 
 				importItem(character, allItems, null);
@@ -1445,11 +1446,11 @@ const betteR205etoolsMain = function () {
 				return containedGold;
 			}
 
-			async function  chooseItemsFromBackground (itemChoices) {
+			async function chooseItemsFromBackground (itemChoices) {
 				return new Promise((resolve, reject) => {
 					// Deal with the equipmenttype case specifically
 					let equiptmp = null;
-					Object.entries(itemChoices).forEach(([key,value]) => {
+					Object.entries(itemChoices).forEach(([key, value]) => {
 						if (value[0]?.equipmentType) {
 							switch (value[0].equipmentType) {
 								case "setGaming":
@@ -1465,14 +1466,14 @@ const betteR205etoolsMain = function () {
 							value[0].equipclean = equiptmp;
 						}
 					});
-					
+
 					// Make the menu
 					const $dialog = $(`
 							<div title="Items Import">
 								<label class="flex">
 									<span>Which item would you like to import?</span>
 									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
-								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipclean || value[0]).split("|")[0].toTitleCase()}</option>`)}
+								   ${Object.entries(itemChoices).map(([key, value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipclean || value[0]).split("|")[0].toTitleCase()}</option>`)}
 									 </select>
 								</label>
 							</div>
@@ -1487,8 +1488,8 @@ const betteR205etoolsMain = function () {
 								click: function () {
 									$(this).dialog("close");
 									$dialog.remove();
-									reject(`User cancelled the prompt`);
-								}
+									reject(new Error(`User cancelled the prompt`));
+								},
 							},
 							{
 								text: "OK",
@@ -1497,14 +1498,14 @@ const betteR205etoolsMain = function () {
 									$(this).dialog("close");
 									$dialog.remove();
 									resolve(selected);
-								}
-							}
-						]
+								},
+							},
+						],
 					})
 				});
 			}
 
-		    let startingGold = 0;
+			let startingGold = 0;
 
 			if (bg.startingEquipment) {
 				for (const equip of bg.startingEquipment) {
@@ -1512,11 +1513,10 @@ const betteR205etoolsMain = function () {
 					if (equip._) {
 						// The _ property means will always be imported
 						startingGold += await importItemsAndGetGold(equip._);
-					}
-					else {
+					} else {
 						// Otherwise there is a choice of what to import
 						const itemchoicefrombackgorund = await chooseItemsFromBackground(equip);
-                		startingGold += await importItemsAndGetGold(equip[itemchoicefrombackgorund]);
+						startingGold += await importItemsAndGetGold(equip[itemchoicefrombackgorund]);
 					}
 				}
 			}
@@ -1536,14 +1536,14 @@ const betteR205etoolsMain = function () {
 				}
 			}
 
-			// Fill the rows 
+			// Fill the rows
 			if (traits !== null && traits.entries?.length) {
 				for (let i = 0; i < traits.entries.length; i++) {
 					ent = traits.entries[i];
 					// This seems to be the best way to parse the information with some room for errors
 					// It seems like the schema is based on on the website, which is why colLabels is where the identifier is
-					if (ent.colLabels && ent.colLabels.length == 2 && ent.rows) {
-						switch(ent.colLabels[1]){
+					if (ent.colLabels && ent.colLabels.length === 2 && ent.rows) {
+						switch (ent.colLabels[1]) {
 							case "Personality Trait":
 								ptrait = ent.rows.map(r => r[1]);
 								break;
@@ -1564,7 +1564,6 @@ const betteR205etoolsMain = function () {
 			if (ptrait != null) {
 				traits = await d20plus.backgrounds.traitMenu(ptrait, ideal, bond, flaw);
 			}
-			
 
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
@@ -1607,15 +1606,13 @@ const betteR205etoolsMain = function () {
 				});
 
 				// Add flavor traits
-				const {personalityTraits, ideals, bonds, flaws} = traits || {}; //Got some help from Giddy with this one
+				const {personalityTraits, ideals, bonds, flaws} = traits || {}; // Got some help from Giddy with this one
 				// Only add the trait if the trait exists
-				if (personalityTraits?.length == 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
-				if (personalityTraits?.length == 2) attrs.addOrUpdate(`personality_traits`, personalityTraits[0] + "\n" + personalityTraits[1]);
-				if (ideals?.length == 1) attrs.addOrUpdate(`ideals`, ideals[0]);
-				if (bonds?.length == 1) attrs.addOrUpdate(`bonds`, bonds[0]);
-				if (flaws?.length == 1) attrs.addOrUpdate(`flaws`, flaws[0]);
-				
-
+				if (personalityTraits?.length === 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
+				if (personalityTraits?.length === 2) attrs.addOrUpdate(`personality_traits`, `${personalityTraits[0]}\n${personalityTraits[1]}`);
+				if (ideals?.length === 1) attrs.addOrUpdate(`ideals`, ideals[0]);
+				if (bonds?.length === 1) attrs.addOrUpdate(`bonds`, bonds[0]);
+				if (flaws?.length === 1) attrs.addOrUpdate(`flaws`, flaws[0]);
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
 				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
@@ -1629,6 +1626,7 @@ const betteR205etoolsMain = function () {
 					attrs.addOrUpdate(`repeating_skill_${rowId}_proficiency`, "proficient");
 				});
 			} else {
+				// eslint-disable-next-line no-console
 				console.warn(`Background import is not supported for ${d20plus.sheet} character sheet`);
 			}
 
@@ -1718,6 +1716,7 @@ const betteR205etoolsMain = function () {
 					});
 				});
 			} else {
+				// eslint-disable-next-line no-console
 				console.warn(`Race import is not supported for ${d20plus.sheet} character sheet`);
 			}
 
@@ -1734,17 +1733,18 @@ const betteR205etoolsMain = function () {
 			const attrs = new CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
 
-			if (d20plus.sheet == "ogl") {
+			if (d20plus.sheet === "ogl") {
 				attrs.add(`repeating_traits_${fRowId}_name`, optionalFeature.name);
 				attrs.add(`repeating_traits_${fRowId}_source`, Parser.optFeatureTypeToFull(optionalFeature.featureType));
 				attrs.add(`repeating_traits_${fRowId}_source_type`, optionalFeature.name);
 				attrs.add(`repeating_traits_${fRowId}_description`, optionalFeatureText);
 				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-			} else if (d20plus.sheet == "shaped") {
+			} else if (d20plus.sheet === "shaped") {
 				attrs.add(`repeating_classfeature_${fRowId}_name`, optionalFeature.name);
 				attrs.add(`repeating_classfeature_${fRowId}_content`, optionalFeatureText);
 				attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
 			} else {
+				// eslint-disable-next-line no-console
 				console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
 			}
 
@@ -1911,8 +1911,8 @@ const betteR205etoolsMain = function () {
 				"Choose Variant/Optional Feature Sources to Exclude",
 				{
 					note: "Choosing to exclude a source will prevent its features from being added to your sheet.",
-					displayFormatter: (it => Parser.sourceJsonToFull(it)),
-				}
+					displayFormatter: it => Parser.sourceJsonToFull(it),
+				},
 			);
 
 			for (let i = 0; i < maxLevel; i++) {
@@ -1949,8 +1949,7 @@ const betteR205etoolsMain = function () {
 					let className = "CUSTOM";
 					if (isSupportedClass) {
 						className = clss.name.toUpperCase();
-						if (clss.name === "Ranger (Revised)")
-							className = "RANGERUA";
+						if (clss.name === "Ranger (Revised)") { className = "RANGERUA"; }
 					}
 
 					const fRowId = attrs.findOrGenerateRepeatingRowId("repeating_class_$0_name", className);
@@ -1984,21 +1983,21 @@ const betteR205etoolsMain = function () {
 
 					attrs.notifySheetWorkers();
 				} else {
+					// eslint-disable-next-line no-console
 					console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
 				}
 			}
 
 			function importClassFeature (attrs, clss, level, feature) {
-				if (d20plus.sheet == "ogl") {
+				if (d20plus.sheet === "ogl") {
 					const fRowId = d20plus.ut.generateRowId();
 					attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
 					attrs.add(`repeating_traits_${fRowId}_source`, "Class");
 					attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
 					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-				} else if (d20plus.sheet == "shaped") {
-					if (shapedSheetPreFilledFeatures.includes(feature.name))
-						return;
+				} else if (d20plus.sheet === "shaped") {
+					if (shapedSheetPreFilledFeatures.includes(feature.name)) { return; }
 
 					const fRowId = d20plus.ut.generateRowId();
 					attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${clss.name} ${level})`);
@@ -2011,7 +2010,8 @@ const betteR205etoolsMain = function () {
 		}
 
 		function importSubclass (character, data) {
-			if (d20plus.sheet != "ogl" && d20plus.sheet != "shaped") {
+			if (d20plus.sheet !== "ogl" && d20plus.sheet !== "shaped") {
+				// eslint-disable-next-line no-console
 				console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
 				return;
 			}
@@ -2052,6 +2052,7 @@ const betteR205etoolsMain = function () {
 							}
 						}
 					} catch (e) {
+						// eslint-disable-next-line no-console
 						console.error("Failed to find feature");
 						// in case something goes _really_ wrong, reset
 						feature = featureCpy;
@@ -2067,7 +2068,7 @@ const betteR205etoolsMain = function () {
 							} else return true;
 						});
 						importSubclassFeature(attrs, sc, feature.level,
-								{name: feature.name, type: feature.type, entries: baseFeatures});
+							{name: feature.name, type: feature.type, entries: baseFeatures});
 						subFeatures.forEach(sf => {
 							importSubclassFeature(attrs, sc, feature.level, sf);
 						})
@@ -2086,13 +2087,13 @@ const betteR205etoolsMain = function () {
 
 				const fRowId = d20plus.ut.generateRowId();
 
-				if (d20plus.sheet == "ogl") {
+				if (d20plus.sheet === "ogl") {
 					attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
 					attrs.add(`repeating_traits_${fRowId}_source`, "Class");
 					attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.className} (${sc.name} ${level})`);
 					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
 					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-				} else if (d20plus.sheet == "shaped") {
+				} else if (d20plus.sheet === "shaped") {
 					attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${sc.name} ${level})`);
 					attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
 					attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
@@ -2118,7 +2119,7 @@ const betteR205etoolsMain = function () {
 			}
 
 			function getCleanText (entries) {
-				if (typeof entries == "string") {
+				if (typeof entries === "string") {
 					return d20plus.importer.getCleanText(renderer.render(entries));
 				} else {
 					const renderStack = [];
@@ -2127,7 +2128,7 @@ const betteR205etoolsMain = function () {
 				}
 			}
 
-			if (d20plus.sheet == "ogl") {
+			if (d20plus.sheet === "ogl") {
 				const makeSpellTrait = function (level, rowId, propName, content) {
 					const attrName = `repeating_spell-${level}_${rowId}_${propName}`;
 					attrs.add(attrName, content);
@@ -2187,7 +2188,7 @@ const betteR205etoolsMain = function () {
 					makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(Renderer.psionic.getBodyText(data, renderer))}`);
 					noComponents(level, rowId, false);
 				}
-			} else if (d20plus.sheet == "shaped") {
+			} else if (d20plus.sheet === "shaped") {
 				const makeSpellTrait = function (level, rowId, propName, content) {
 					const attrName = `repeating_spell${level}_${rowId}_${propName}`;
 					attrs.add(attrName, content);
@@ -2252,7 +2253,7 @@ const betteR205etoolsMain = function () {
 								const costStr = getCostStr(sm.cost);
 								const content = `${modeContent}\n${getCleanText(sm.entries)}`;
 								makeSpellTrait(smLevel, rowId, "spell_level", shapedSpellLevel(smLevel));
-								makeSpellTrait(smLevel, rowId, "name", `${m.name} (${sm.name})` + (sm.cost.min < sm.cost.max ? ` (${costStr} psi)` : ""));
+								makeSpellTrait(smLevel, rowId, "name", `${m.name} (${sm.name})${sm.cost.min < sm.cost.max ? ` (${costStr} psi)` : ""}`);
 								makeSpellTrait(smLevel, rowId, "content", content);
 								makeSpellTrait(smLevel, rowId, "content_toggle", "1");
 								makeSpellTrait(smLevel, rowId, "casting_time", inferCastingTime(content));
@@ -2293,6 +2294,7 @@ const betteR205etoolsMain = function () {
 					makeSpellTrait(level, rowId, "duration", inferDuration(talentContent));
 				}
 			} else {
+				// eslint-disable-next-line no-console
 				console.warn(`Psionic ability import is not supported for ${d20plus.sheet} character sheet`);
 			}
 
@@ -2300,8 +2302,7 @@ const betteR205etoolsMain = function () {
 		}
 
 		function importItem (character, data, event) {
-			if (d20plus.sheet == "ogl") {
-
+			if (d20plus.sheet === "ogl") {
 				// for packs, etc
 				if (data._subItems) {
 					const queue = [];
@@ -2309,7 +2310,7 @@ const betteR205etoolsMain = function () {
 						function makeProp (rowId, propName, content) {
 							character.model.attribs.create({
 								"name": `repeating_inventory_${rowId}_${propName}`,
-								"current": content
+								"current": content,
 							}).save();
 						}
 
@@ -2322,7 +2323,6 @@ const betteR205etoolsMain = function () {
 							if (w) makeProp(rowId, "itemweight", w);
 							makeProp(rowId, "itemcontent", siD.content || Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
 							makeProp(rowId, "itemcount", String(si.count));
-
 						} else {
 							queue.push(si.subItem);
 						}
@@ -2343,30 +2343,29 @@ const betteR205etoolsMain = function () {
 			d20plus.importer.doFakeDrop(event, character, data, null);
 		}
 
-		async function importSpells(character, data, event) {
-
-			const importCriticalData = function (){
-				//give it time to update the sheet
+		async function importSpells (character, data, event) {
+			const importCriticalData = function () {
+				// give it time to update the sheet
 				setTimeout(() => {
 					const rowID = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name)
 
-					//crit damage
+					// crit damage
 					if (data.data.Crit && rowID) {
 						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_dmgcustcrit`, data.data.Crit)
 						const critID = d20plus.importer.findAttrId(character.model, `repeating_attack_${rowID}_rollbase_crit`);
-						const newCrit = character.model.attribs.get(critID).get("current").replace(/\{\{crit1\=\[\[\d\d?d\d\d?\]\]\}\}/g, '{{crit1=[[@{dmgcustcrit}]]}}');
+						const newCrit = character.model.attribs.get(critID).get("current").replace(/{{crit1=\[\[\d\d?d\d\d?]]}}/g, "{{crit1=[[@{dmgcustcrit}]]}}");
 						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_rollbase_crit`, newCrit)
 					}
 
-					//crit range
+					// crit range
 					if (data.data["Crit Range"] && rowID) d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_atkcritrange`, data.data["Crit Range"])
-				},1000)
+				}, 1000)
 			}
 
-			//this is working fine for spells.
+			// this is working fine for spells.
 			d20plus.importer.doFakeDrop(event, character, data, null);
 
-			//adding critical info that is missing.
+			// adding critical info that is missing.
 			if (data.data.Crit || data.data["Crit Range"]) importCriticalData()
 		}
 
@@ -2396,6 +2395,8 @@ const betteR205etoolsMain = function () {
 		}
 
 		d20.Campaign.characters.models.each(function (v, i) {
+			/* eslint-disable */
+
 			// region BEGIN ROLL20 CODE
 			v.view.compendiumDragOver = function (e, t) {
 				if (this.popoutWindow) return
@@ -2502,6 +2503,8 @@ const betteR205etoolsMain = function () {
 					}
 				})
 			}
+
+			/* eslint-enable */
 		});
 	};
 
@@ -2515,38 +2518,38 @@ const betteR205etoolsMain = function () {
 
 	// Import dialog showing names of monsters failed to import
 	d20plus.addImportError = function (name) {
-		var $span = $("#import-errors");
-		if ($span.text() == "0") {
+		let $span = $("#import-errors");
+		if ($span.text() === "0") {
 			$span.text(name);
 		} else {
-			$span.text($span.text() + ", " + name);
+			$span.text(`${$span.text()}, ${name}`);
 		}
 	};
 
 	// Get NPC size from chr
 	d20plus.getSizeString = function (chr) {
 		const result = Parser.sizeAbvToFull(chr);
-		return result ? result : "(Unknown Size)";
+		return result || "(Unknown Size)";
 	};
 
 	// Create editable HP variable and autocalculate + or -
 	d20plus.hpAllowEdit = function () {
 		$("#initiativewindow").on(window.mousedowntype, ".hp.editable", function () {
 			if ($(this).find("input").length > 0) return void $(this).find("input").focus();
-			var val = $.trim($(this).text());
+			let val = $.trim($(this).text());
 			const $span = $(this);
 			$span.html(`<input type='text' value='${val}'/>`);
 			const $ipt = $(this).find("input");
 			$ipt[0].focus();
 		});
 		$("#initiativewindow").on("keydown", ".hp.editable", function (event) {
-			if (event.which == 13) {
+			if (event.which === 13) {
 				const $span = $(this);
 				const $ipt = $span.find("input");
 				if (!$ipt.length) return;
 
-				var el, token, id, char, hp,
-					val = $.trim($ipt.val());
+				let el; let token; let id; let char; let hp;
+				let val = $.trim($ipt.val());
 
 				// roll20 token modification supports plus/minus for a single integer; mimic this
 				const m = /^((\d+)?([+-]))?(\d+)$/.exec(val);
@@ -2555,6 +2558,7 @@ const betteR205etoolsMain = function () {
 					if (m[3]) {
 						op = m[3] === "+" ? "ADD" : "SUB";
 					}
+					// eslint-disable-next-line no-eval
 					const base = m[2] ? eval(m[0]) : null;
 					const mod = Number(m[4]);
 
@@ -2568,10 +2572,9 @@ const betteR205etoolsMain = function () {
 					}) : null;
 					let total;
 					// char.attribs doesn't exist for generico tokens, in this case stick stuff in an appropriate bar
-					if (!char.attribs || npc && npc.get("current") == "1") {
+					if (!char.attribs || (npc && `${npc.get("current")}` === "1")) {
 						const hpBar = d20plus.getCfgHpBarNumber();
 						if (hpBar) {
-							total;
 							if (base !== null) {
 								total = base;
 							} else if (op) {
@@ -2588,7 +2591,6 @@ const betteR205etoolsMain = function () {
 							return a.get("name").toLowerCase() === "hp";
 						});
 						if (hp) {
-							total;
 							if (base !== null) {
 								total = base;
 							} else if (op) {
@@ -2599,7 +2601,6 @@ const betteR205etoolsMain = function () {
 							}
 							hp.syncedSave({current: total});
 						} else {
-							total;
 							if (base !== null) {
 								total = base;
 							} else if (op) {
@@ -2619,7 +2620,7 @@ const betteR205etoolsMain = function () {
 		});
 	};
 
-// Change character sheet formulas
+	// Change character sheet formulas
 	d20plus.setSheet = function () {
 		d20plus.ut.log("Switched Character Sheet Template");
 		d20plus.sheet = "ogl";
@@ -2642,13 +2643,13 @@ const betteR205etoolsMain = function () {
 			d20.textchat.incoming(false, ({
 				who: "system",
 				type: "system",
-				content: `<span style="color: red;">5etoolsR20: no character sheet selected! Exiting...</span>`
+				content: `<span style="color: red;">5etoolsR20: no character sheet selected! Exiting...</span>`,
 			}));
 			throw new Error("No character sheet selected!");
 		}
 		if (d20.journal.customSheets.layouthtml.indexOf("shaped_d20") > 0) d20plus.sheet = "shaped";
 		if (d20.journal.customSheets.layouthtml.indexOf("DnD5e_Character_Sheet") > 0) d20plus.sheet = "community";
-		d20plus.ut.log("Switched Character Sheet Template to " + d20plus.sheet);
+		d20plus.ut.log(`Switched Character Sheet Template to ${d20plus.sheet}`);
 	};
 
 	// Return Initiative Tracker template with formulas
@@ -2660,14 +2661,14 @@ const betteR205etoolsMain = function () {
 		}
 
 		d20.Campaign.initiativewindow.rebuildInitiativeList = function () {
-			var html = d20plus.initiativeTemplate;
-			var columnsAdded = [];
+			let html = d20plus.initiativeTemplate;
+			let columnsAdded = [];
 			$(".tracker-header-extra-columns").empty();
 
 			const cols = [
 				d20plus.cfg.get("interface", "trackerCol1"),
 				d20plus.cfg.get("interface", "trackerCol2"),
-				d20plus.cfg.get("interface", "trackerCol3")
+				d20plus.cfg.get("interface", "trackerCol3"),
 			];
 
 			const headerStack = [];
@@ -2680,7 +2681,7 @@ const betteR205etoolsMain = function () {
 							<$!crAttr.get("current")$>
 						<$ } $>
 					<$ } $>
-				</span>`
+				</span>`,
 			];
 			cols.forEach((c, i) => {
 				switch (c) {
@@ -2738,6 +2739,7 @@ const betteR205etoolsMain = function () {
 				}
 			});
 
+			// eslint-disable-next-line no-console
 			console.log("use custom tracker val was ", d20plus.cfg.get("interface", "customTracker"))
 			if (d20plus.cfg.get("interface", "customTracker")) {
 				$(`.init-header`).show();
@@ -2760,16 +2762,15 @@ const betteR205etoolsMain = function () {
 			$("#tmpl_initiativecharacter").replaceWith(html);
 
 			// Hack to catch errors, part 1
-			const startTime = (new Date).getTime();
+			const startTime = (new Date()).getTime();
 
-			var results = d20plus.turnOrderCachedFunction.apply(this, []);
+			let results = d20plus.turnOrderCachedFunction.apply(this, []);
 			setTimeout(function () {
 				$(".initmacrobutton").unbind("click");
 				$(".initmacrobutton").bind("click", function () {
-					console.log("Macro button clicked");
 					tokenid = $(this).parent().parent().data("tokenid");
-					var token, char;
-					var page = d20.Campaign.activePage();
+					let token, char;
+					let page = d20.Campaign.activePage();
 					if (page) token = page.thegraphics.get(tokenid);
 					if (token) char = token.character;
 					if (char) {
@@ -2787,7 +2788,7 @@ const betteR205etoolsMain = function () {
 			}
 			d20plus.initErrorHandler = function (event) {
 				// if we see an error within 250 msec of trying to override the initiative window...
-				if (((new Date).getTime() - startTime) < 250) {
+				if (((new Date()).getTime() - startTime) < 250) {
 					d20plus.ut.log("ERROR: failed to populate custom initiative tracker, restoring default...");
 					// restore the default functionality
 					$("#tmpl_initiativecharacter").replaceWith(d20plus.turnOrderCachedTemplate);
@@ -2823,10 +2824,10 @@ const betteR205etoolsMain = function () {
 		return {
 			name: p.name.toLowerCase(),
 			order: (p.order || "none").toLowerCase(),
-			source: Parser.sourceJsonToAbv(p.source).toLowerCase()
+			source: Parser.sourceJsonToAbv(p.source).toLowerCase(),
 		};
 	};
-// Import Psionics button was clicked
+	// Import Psionics button was clicked
 	d20plus.psionics.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-psionics-url-player").val() : $("#import-psionics-url").val();
@@ -2844,8 +2845,8 @@ const betteR205etoolsMain = function () {
 						forcePlayer,
 						listItemBuilder: d20plus.psionics._listItemBuilder,
 						listIndex: d20plus.psionics._listCols,
-						listIndexConverter: d20plus.psionics._listIndexConverter
-					}
+						listIndexConverter: d20plus.psionics._listIndexConverter,
+					},
 				);
 			});
 		}
@@ -2865,8 +2866,8 @@ const betteR205etoolsMain = function () {
 			tags: d20plus.importer.getTagString([
 				Parser.psiTypeToFull(data.type),
 				data.order || "orderless",
-				Parser.sourceJsonToFull(data.source)
-				], "psionic")
+				Parser.sourceJsonToFull(data.source),
+			], "psionic"),
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_PSIONICS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -2874,9 +2875,9 @@ const betteR205etoolsMain = function () {
 				const [noteContents, gmNotes] = d20plus.psionics._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+			},
 		});
 	};
 
@@ -2901,8 +2902,8 @@ const betteR205etoolsMain = function () {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Psionics"
-			}
+				"Category": "Psionics",
+			},
 		};
 		const gmNotes = JSON.stringify(r20json);
 
@@ -2917,7 +2918,7 @@ const betteR205etoolsMain = function () {
 		return [noteContents, gmNotes];
 	};
 
-// Import Races button was clicked
+	// Import Races button was clicked
 	d20plus.races.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-races-url-player").val() : $("#import-races-url").val();
@@ -2926,10 +2927,10 @@ const betteR205etoolsMain = function () {
 
 			DataUtil.loadJSON(url).then(async (data) => {
 				const toImport = MiscUtil.copy(data.race);
-				if (data.subrace){
+				if (data.subrace) {
 					const allraces = await DataUtil.loadJSON(RACE_DATA_URL);
-					//this does not handle homebrew parent races in "subrace" block
-					//i found none in the existing homebrew at the time of doing this, so propably won't be such an issue
+					// this does not handle homebrew parent races in "subrace" block
+					// i found none in the existing homebrew at the time of doing this, so propably won't be such an issue
 					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))
 				}
 				d20plus.importer.addBrewMeta(data._meta);
@@ -2938,8 +2939,8 @@ const betteR205etoolsMain = function () {
 					Renderer.race.mergeSubraces(toImport),
 					handoutBuilder,
 					{
-						forcePlayer
-					}
+						forcePlayer,
+					},
 				);
 			});
 		}
@@ -2958,8 +2959,8 @@ const betteR205etoolsMain = function () {
 			name: name,
 			tags: d20plus.importer.getTagString([
 				(data.size || [SZ_VARIES]).map(sz => Parser.sizeAbvToFull(sz)).join("/"),
-				Parser.sourceJsonToFull(data.source)
-			], "race")
+				Parser.sourceJsonToFull(data.source),
+			], "race"),
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RACES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -2967,9 +2968,9 @@ const betteR205etoolsMain = function () {
 				const [noteContents, gmNotes] = d20plus.races._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+			},
 		});
 	};
 
@@ -3002,8 +3003,8 @@ const betteR205etoolsMain = function () {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Races"
-			}
+				"Category": "Races",
+			},
 		};
 		const gmNotes = JSON.stringify(r20json);
 		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
@@ -3011,7 +3012,7 @@ const betteR205etoolsMain = function () {
 		return [noteContents, gmNotes];
 	};
 
-	//copied from ../lib/render.js for small changes
+	// copied from ../lib/render.js for small changes
 	d20plus.races.adoptSubraces = function (allRaces, subraces, keepOriginalSubraces = true) {
 		const nxtData = [];
 
@@ -3020,6 +3021,7 @@ const betteR205etoolsMain = function () {
 
 			const _baseRace = allRaces.find(r => r.name === sr.race.name && r.source === sr.race.source);
 			if (!_baseRace) {
+				// eslint-disable-next-line no-console
 				console.warn(`${sr.race.name} parent race not found! Contact homebrew maintainer as it is probably a wrong entry`);
 				return;
 			}
@@ -3046,7 +3048,6 @@ const betteR205etoolsMain = function () {
 		return nxtData;
 	}
 
-
 	d20plus.optionalfeatures.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-optionalfeatures-url-player").val() : $("#import-optionalfeatures-url").val();
@@ -3060,8 +3061,8 @@ const betteR205etoolsMain = function () {
 					data.optionalfeature,
 					handoutBuilder,
 					{
-						forcePlayer
-					}
+						forcePlayer,
+					},
 				);
 			});
 		}
@@ -3079,8 +3080,8 @@ const betteR205etoolsMain = function () {
 		d20.Campaign.handouts.create({
 			name: name,
 			tags: d20plus.importer.getTagString([
-				Parser.sourceJsonToFull(data.source)
-			], "optionalfeature")
+				Parser.sourceJsonToFull(data.source),
+			], "optionalfeature"),
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OPT_FEATURES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -3088,9 +3089,9 @@ const betteR205etoolsMain = function () {
 				const [noteContents, gmNotes] = d20plus.optionalfeatures._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+			},
 		});
 	};
 
@@ -3117,8 +3118,8 @@ const betteR205etoolsMain = function () {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Optional Features"
-			}
+				"Category": "Optional Features",
+			},
 		};
 		const gmNotes = JSON.stringify(r20json);
 		const noteContents = `${prereqs ? `<p><i>Prerequisite: ${prereqs}.</i></p>` : ""}${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
@@ -3137,9 +3138,8 @@ const betteR205etoolsMain = function () {
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 		DataUtil.loadJSON(url)
 			.then(data => {
-
 				function isPart (e) {
-					return typeof e === "string" || typeof e === "object" && (e.type !== "entries");
+					return typeof e === "string" || (typeof e === "object" && (e.type !== "entries"));
 				}
 
 				// open progress window
@@ -3150,8 +3150,8 @@ const betteR205etoolsMain = function () {
 				// FIXME(5etools) this selects the source based on the select dropdown, which can be wrong
 				// get metadata
 				const adMeta = data.adventure
-					? data.adventure[0] :
-					adventureMetadata.adventure.find(a => a.id.toLowerCase() === $("#import-adventures-url").data("id").toLowerCase());
+					? data.adventure[0]
+					: adventureMetadata.adventure.find(a => a.id.toLowerCase() === $("#import-adventures-url").data("id").toLowerCase());
 
 				const addQueue = [];
 				const sections = JSON.parse(JSON.stringify(data.adventureData ? data.adventureData[0].data : data.data));
@@ -3188,7 +3188,7 @@ const betteR205etoolsMain = function () {
 									dir: chapterDir,
 									type: "entries",
 									name: `Text ${textIndex++}`,
-									entries: tempStack
+									entries: tempStack,
 								});
 								tempStack = [];
 							}
@@ -3205,7 +3205,7 @@ const betteR205etoolsMain = function () {
 				const $stsRemain = $("#import-remaining");
 				const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 
-				////////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// /////////////////////////////////////////////////////////////////////////////////////////////////////
 				Renderer.get().setBaseUrl(BASE_SITE_URL);
 				// pre-import tags
 				const tags = {};
@@ -3236,8 +3236,8 @@ const betteR205etoolsMain = function () {
 							callback: doItemImport,
 							listItemBuilder: d20plus.monsters._listItemBuilder,
 							listIndex: d20plus.monsters._listCols,
-							listIndexConverter: d20plus.monsters._listIndexConverter
-						}
+							listIndexConverter: d20plus.monsters._listIndexConverter,
+						},
 					);
 				}
 
@@ -3262,8 +3262,8 @@ const betteR205etoolsMain = function () {
 							callback: doMainImport,
 							listItemBuilder: d20plus.items._listItemBuilder,
 							listIndex: d20plus.items._listCols,
-							listIndexConverter: d20plus.items._listIndexConverter
-						}
+							listIndexConverter: d20plus.items._listIndexConverter,
+						},
 					);
 				}
 
@@ -3278,13 +3278,14 @@ const betteR205etoolsMain = function () {
 							cachedCount--;
 							if (cachedCount <= 0) callback(tmp);
 						} catch (x) {
+							// eslint-disable-next-line no-console
 							console.log(x);
 							cachedCount--;
 							if (cachedCount <= 0) callback(tmp);
 						}
 					});
 				}
-				////////////////////////////////////////////////////////////////////////////////////////////////////////
+				/// /////////////////////////////////////////////////////////////////////////////////////////////////////
 				function doMainImport () {
 					// pass in any created handouts/characters to use for links in the renderer
 					renderer.setRoll20Ids(RETURNED_IDS);
@@ -3321,7 +3322,7 @@ const betteR205etoolsMain = function () {
 						const folder = d20plus.journal.makeDirTree(entry.dir);
 
 						d20.Campaign.handouts.create({
-							name: entry.name
+							name: entry.name,
 						}, {
 							success: function (handout) {
 								const renderStack = [];
@@ -3332,9 +3333,9 @@ const betteR205etoolsMain = function () {
 								lastId = handout.id;
 								lastName = entry.name;
 								handout.updateBlobs({notes: rendered});
-								handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+								handout.save({notes: (new Date()).getTime(), inplayerjournals: ""});
 								d20.journal.addItemToFolderStructure(handout.id, folder.id);
-							}
+							},
 						});
 					}, interval);
 				}
@@ -3707,7 +3708,6 @@ To import from third-party sources, either individually select one available in 
 </div>
 `;
 
-
 	d20plus.settingsHtmlPtOptfeatures = `
 <div class="importer-section" data-import-group="optionalfeature">
 <h4>Optional Feature (Invocations, etc.) Importing</h4>
@@ -3757,80 +3757,80 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
 			s: ".no-shrink",
-			r: "flex-shrink: 0;"
+			r: "flex-shrink: 0;",
 		},
 		{
 			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.tracker-col,#initiativewindow ul li span.initmacro",
-			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;display: block;"
+			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;display: block;",
 		},
 		{
 			s: "#initiativewindow ul li span.editable input",
-			r: "width: 100%; box-sizing: border-box;height: 100%;"
+			r: "width: 100%; box-sizing: border-box;height: 100%;",
 		},
 		{
 			s: "#initiativewindow div.header",
-			r: "height: 30px;"
+			r: "height: 30px;",
 		},
 		{
 			s: "#initiativewindow div.header span",
-			r: "cursor: default;font-size: 15px;font-weight: bold;text-align: right;float: right;width: 10%;min-height: 20px;padding: 5px;"
+			r: "cursor: default;font-size: 15px;font-weight: bold;text-align: right;float: right;width: 10%;min-height: 20px;padding: 5px;",
 		},
 		{
 			s: ".ui-dialog-buttonpane span.difficulty",
-			r: "display: inline-block;padding: 5px 4px 6px;margin: .5em .4em .5em 0;font-size: 18px;"
+			r: "display: inline-block;padding: 5px 4px 6px;margin: .5em .4em .5em 0;font-size: 18px;",
 		},
 		{
 			s: ".ui-dialog-buttonpane.buttonpane-absolute-position",
-			r: "position: absolute;bottom: 0;box-sizing: border-box;width: 100%;"
+			r: "position: absolute;bottom: 0;box-sizing: border-box;width: 100%;",
 		},
 		{
 			s: ".ui-dialog.dialog-collapsed .ui-dialog-buttonpane",
-			r: "position: initial;"
+			r: "position: initial;",
 		},
 		{
 			s: ".token .cr,.header .cr",
-			r: "display: none!important;"
+			r: "display: none!important;",
 		},
 		{
 			s: "li.handout.compendium-item .namecontainer",
-			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);"
+			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);",
 		},
 		{
 			s: ".bind-drop-locations:active",
-			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);"
+			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);",
 		},
 		{
 			s: "del.userscript-hidden",
-			r: "display: none;"
+			r: "display: none;",
 		},
 		{
 			s: ".importer-section",
-			r: "display: none;"
+			r: "display: none;",
 		},
 		{
 			s: ".userscript-rd__h",
-			r: "font-weight: bold;"
+			r: "font-weight: bold;",
 		},
 		{
 			s: ".userscript-rd__h--0",
-			r: "font-weight: bold; font-size: 1.5em;"
+			r: "font-weight: bold; font-size: 1.5em;",
 		},
 		{
 			s: ".userscript-rd__h--2",
-			r: "font-weight: bold; font-size: 1.3em;"
+			r: "font-weight: bold; font-size: 1.3em;",
 		},
 		{
 			s: ".userscript-rd__h--3, .userscript-rd__h--4",
-			r: "font-style: italic"
+			r: "font-style: italic",
 		},
 		{
 			s: ".userscript-rd__b-inset--readaloud",
-			r: "background: #cbd6c688 !important"
+			r: "background: #cbd6c688 !important",
 		},
 		// "No character sheet" message
 		{
 			s: ".ve-nosheet__body",
-			r: "overflow: hidden !important;"
+			r: "overflow: hidden !important;",
 		},
 		{
 			s: ".ve-nosheet__overlay",
@@ -3845,18 +3845,18 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				width: 100vw;
 				height: 100vh;
 				color: white;
-				font-family: monospace;`
+				font-family: monospace;`,
 		},
 		{
 			s: ".ve-nosheet__title",
-			r: "font-size: 72px;"
+			r: "font-size: 72px;",
 		},
 		{
 			s: ".ve-nosheet__btn-close",
 			r: `position: absolute;
 				top: 8px;
 				right: 8px;
-				font-size: 16px;`
+				font-size: 16px;`,
 		},
 	]);
 
@@ -3898,7 +3898,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				const $lst = $win.find(`.list`);
 				let tokenList;
 
-				const dataStack = (await Promise.all(toLoad.map(async url => await DataUtil.loadJSON(url)))).flat();
+				const dataStack = (await Promise.all(toLoad.map(url => DataUtil.loadJSON(url)))).flat();
 
 				$lst.empty();
 				let toShow = [];
@@ -3918,7 +3918,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 				let tmp = "";
-				toShow.forEach((m, i)  => {
+				toShow.forEach((m, i) => {
 					m.__pType = Parser.monTypeToFullObj(m.type).asText;
 
 					tmp += `
@@ -3935,7 +3935,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				tmp = null;
 
 				tokenList = new List("shapeshiftbuild-list", {
-					valueNames: ["name", "type", "cr", "source"]
+					valueNames: ["name", "type", "cr", "source"],
 				});
 
 				d20plus.importer.addListFilter($fltr, toShow, tokenList, d20plus.monsters._listIndexConverter);
@@ -3959,7 +3959,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						}
 					}
 
-					console.log("Assembling creature list");
 					if (tokenList) {
 						$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
 
@@ -3985,7 +3984,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						alert("Created table!")
 					}
 				});
-			}
+			},
 		},
 		{
 			name: "Pauper's Character Vault",
@@ -4029,7 +4028,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					char.attribs = rawChar.attribs.toJSON();
 					const out = {
 						char,
-						blobs: {}
+						blobs: {},
 					};
 					blobCount = 3;
 					const onBlobsReady = () => d20plus.ut.saveAsJson(char.name.replace(/[^0-9A-Za-z -_()[\]{}]/, "_"), out);
@@ -4068,6 +4067,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 							if (!json.char) {
 								window.alert("Failed to import character! See the log for details.");
+								// eslint-disable-next-line no-console
 								console.error(`No "char" attribute found in parsed JSON!`);
 								return;
 							}
@@ -4083,7 +4083,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 							d20.Campaign.characters.create(
 								{
 									...char,
-									id: newId
+									id: newId,
 								},
 								{
 									success: function (character) {
@@ -4101,18 +4101,20 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 												character.updateBlobs({
 													bio: blobs.bio || "",
 													gmnotes: blobs.gmnotes || "",
-													defaulttoken: blobs.defaulttoken || ""
+													defaulttoken: blobs.defaulttoken || "",
 												});
 											}
 											alert("Done!")
 										} catch (e) {
 											window.alert("Failed to import character! See the log for details.");
+											// eslint-disable-next-line no-console
 											console.error(e);
 										}
-									}
-								}
+									},
+								},
 							);
 						} catch (e) {
+							// eslint-disable-next-line no-console
 							console.error(e);
 							window.alert("Failed to load file! See the log for details.")
 						}
@@ -4123,7 +4125,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 
 					$iptFile.click();
 				});
-			}
+			},
 		},
 		{
 			name: "Wild Shape Builder",
@@ -4174,7 +4176,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						$selChar.append(`<option value="${it.id}">${it.name}</option>`)
 					});
 
-
 				const $fltr = $win.find(`.filter`);
 				$fltr.off("keydown").off("keyup");
 				$win.find(`button`).off("click");
@@ -4205,7 +4206,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				toShow = toShow.sort((a, b) => SortUtil.ascSort(a.name, b.name));
 
 				let tmp = "";
-				toShow.forEach((m, i)  => {
+				toShow.forEach((m, i) => {
 					m.__pType = Parser.monTypeToFullObj(m.type).asText;
 
 					tmp += `
@@ -4222,7 +4223,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 				tmp = null;
 
 				tokenList = new List("wildformbuild-list", {
-					valueNames: ["name", "type", "cr", "source"]
+					valueNames: ["name", "type", "cr", "source"],
 				});
 
 				d20plus.importer.addListFilter($fltr, toShow, tokenList, d20plus.monsters._listIndexConverter);
@@ -4243,9 +4244,9 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 					allSel.filter(it => it).forEach(sel => {
 						sel = $.extend(true, {}, sel);
 
-						sel.wis = (d20Character.attribs.toJSON().find(x => x.name === "wisdom")|| {}).current || 10;
-						sel.int = (d20Character.attribs.toJSON().find(x => x.name === "intelligence")|| {}).current || 10;
-						sel.cha = (d20Character.attribs.toJSON().find(x => x.name === "charisma")|| {}).current || 10;
+						sel.wis = (d20Character.attribs.toJSON().find(x => x.name === "wisdom") || {}).current || 10;
+						sel.int = (d20Character.attribs.toJSON().find(x => x.name === "intelligence") || {}).current || 10;
+						sel.cha = (d20Character.attribs.toJSON().find(x => x.name === "charisma") || {}).current || 10;
 
 						const attribsSkills = {
 							acrobatics_bonus: "acrobatics",
@@ -4269,7 +4270,7 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						const attribsSaves = {
 							npc_int_save: "int",
 							npc_wis_save: "wis",
-							npc_cha_save: "cha"
+							npc_cha_save: "cha",
 						};
 						sel.skill = sel.skill || {};
 						sel.save = sel.save || {};
@@ -4321,8 +4322,8 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 								},
 								charOptions: {
 									inplayerjournals: d20Character.attributes.inplayerjournals,
-									controlledby: d20Character.attributes.controlledby
-								}
+									controlledby: d20Character.attributes.controlledby,
+								},
 							};
 
 							d20plus.monsters.handoutBuilder(sel, true, false, `Wild Forms - ${d20Character.attributes.name}`, {}, options);
@@ -4332,9 +4333,8 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 						else doBuild({total: 0});
 					});
 				});
-
-			}
-		}
+			},
+		},
 	]);
 
 	d20plus.initiativeHeaders = `<div class="header init-header">
@@ -4384,23 +4384,23 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 	d20plus.actionMacroAbilityCheck = "@{selected|wtype} &{template:simple}{{always=1}}?{Ability?|STR,{{rname=Strength&#125;&#125;{{mod=@{strength_mod}&#125;&#125; {{r1=[[1d20+@{strength_mod}]]&#125;&#125;{{r2=[[1d20+@{strength_mod}]]&#125;&#125;|DEX,{{rname=Dexterity&#125;&#125;{{mod=@{dexterity_mod}&#125;&#125; {{r1=[[1d20+@{dexterity_mod}]]&#125;&#125;{{r2=[[1d20+@{dexterity_mod}]]&#125;&#125;|CON,{{rname=Constitution&#125;&#125;{{mod=@{constitution_mod}&#125;&#125; {{r1=[[1d20+@{constitution_mod}]]&#125;&#125;{{r2=[[1d20+@{constitution_mod}]]&#125;&#125;|INT,{{rname=Intelligence&#125;&#125;{{mod=@{intelligence_mod}&#125;&#125; {{r1=[[1d20+@{intelligence_mod}]]&#125;&#125;{{r2=[[1d20+@{intelligence_mod}]]&#125;&#125;|WIS,{{rname=Wisdom&#125;&#125;{{mod=@{wisdom_mod}&#125;&#125; {{r1=[[1d20+@{wisdom_mod}]]&#125;&#125;{{r2=[[1d20+@{wisdom_mod}]]&#125;&#125;|CHA,{{rname=Charisma&#125;&#125;{{mod=@{charisma_mod}&#125;&#125; {{r1=[[1d20+@{charisma_mod}]]&#125;&#125;{{r2=[[1d20+@{charisma_mod}]]&#125;&#125;}{{charname=@{character_name}}} ";
 
 	d20plus.actionMacroTrait = function (index) {
-		return "@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npctrait_$" + index + "_name}}} {{description=@{selected|repeating_npctrait_$" + index + "_desc} }}";
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npctrait_$${index}_name}}} {{description=@{selected|repeating_npctrait_$${index}_desc} }}`;
 	};
 
 	d20plus.actionMacroAction = function (baseAction, index) {
-		return "%{selected|" + baseAction + "_$" + index + "_npc_action}";
+		return `%{selected|${baseAction}_$${index}_npc_action}`;
 	};
 
 	d20plus.actionMacroReaction = function (index) {
-		return "@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$" + index + "_name}}} {{description=@{selected|repeating_npcreaction_$" + index + "_desc} }} ";
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$${index}_name}}} {{description=@{selected|repeating_npcreaction_$${index}_desc} }} `;
 	};
 
 	d20plus.actionMacroLegendary = function (tokenactiontext) {
-		return "@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r" + tokenactiontext + "}} ";
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r${tokenactiontext}}} `;
 	}
 
 	d20plus.actionMacroMythic = function (tokenactiontext) {
-		return "@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Mythic Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} mythic actions, choosing from the options below. Only one mythic option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent mythic actions at the start of its turn.\n\r" + tokenactiontext + "}} ";
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Mythic Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} mythic actions, choosing from the options below. Only one mythic option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent mythic actions at the start of its turn.\n\r${tokenactiontext}}} `;
 	}
 };
 

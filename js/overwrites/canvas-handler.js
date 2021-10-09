@@ -1,5 +1,4 @@
 function initCanvasHandlerOverwrite () {
-
 	/**
 	 * Dumb variable names copy-pasted from uglified code
 	 * @param c x co-ord
@@ -13,16 +12,16 @@ function initCanvasHandlerOverwrite () {
 
 		const hx = d20.canvas_overlay.activeHexGrid.GetHexAt({
 			X: c,
-			Y: u
+			Y: u,
 		});
 
 		let minDist = 1000000;
 		let minPoint = [c, u];
 
-		function checkDist(x1, y1) {
+		function checkDist (x1, y1) {
 			const dist = getEuclidDist(x1, y1, c, u);
 			if (dist < minDist) {
-				minDist =  dist;
+				minDist = dist;
 				minPoint = [x1, y1];
 			}
 		}
@@ -34,7 +33,9 @@ function initCanvasHandlerOverwrite () {
 		return minPoint;
 	}
 
-	const canvasHandlerDown = function(e) {
+	const canvasHandlerDown = function (e) {
+		/* eslint-disable */
+
 		// BEGIN MOD
 		var cnv = d20.engine.canvas;
 		var wrp = $("#editor-wrapper");
@@ -353,10 +354,13 @@ function initCanvasHandlerOverwrite () {
 		// BEGIN MOD
 		$finalCanvas.hasClass("hasfocus") || $finalCanvas.focus();
 		// END MOD
+
+		/* eslint-enable */
 	}
 
+	const canvasHandlerMove = function (e) {
+		/* eslint-disable */
 
-	const canvasHandlerMove = function(e) {
 		// BEGIN MOD
 		var cnv = d20.engine.canvas;
 		var wrp = $("#editor-wrapper");
@@ -494,6 +498,8 @@ function initCanvasHandlerOverwrite () {
 				})
 			}
 		}
+
+		/* eslint-enable */
 	}
 
 	d20plus.overwrites.canvasHandlerDown = canvasHandlerDown

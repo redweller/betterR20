@@ -79,7 +79,7 @@ function baseToolUnlock () {
 				// init list library
 				const unlockList = new List("token-unlocker-list-container", {
 					valueNames: ["name"],
-					listClass: "unlock-list"
+					listClass: "unlock-list",
 				});
 
 				$cbAll.prop("checked", false);
@@ -117,7 +117,7 @@ function baseToolUnlock () {
 			}
 
 			populateList();
-		}
+		},
 	})
 }
 

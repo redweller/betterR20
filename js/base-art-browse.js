@@ -16,7 +16,7 @@ function d20plusArtBrowser () {
 				autoOpen: false,
 				resizable: true,
 				width: 1,
-				height: 1
+				height: 1,
 			})
 			// bind droppable, so that elements dropped back onto the browser don't get caught by the canvas behind
 			.droppable({
@@ -27,7 +27,7 @@ function d20plusArtBrowser () {
 					event.stopPropagation();
 					event.originalEvent.dropHandled = true;
 					d20plus.ut.log(`Dropped back onto art browser!`);
-				}
+				},
 			});
 
 		async function doInit () {
@@ -35,7 +35,7 @@ function d20plusArtBrowser () {
 			const $mainPane = $(`<div class="artr__main"/>`).appendTo($win);
 			const $loadings = [
 				$(`<div class="artr__side__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($sidebar),
-				$(`<div class="artr__main__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($mainPane)
+				$(`<div class="artr__main__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($mainPane),
 			];
 
 			const start = (new Date()).getTime();
@@ -231,7 +231,7 @@ function d20plusArtBrowser () {
 
 						const $itemTop = $(`
 							<div class="artr__item__top artr__item__top--quart">
-								${[...new Array(4)].map((_, i) => `<div class="atr__item__quart">${it._sample[i] ? `<img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample[i]}.jpg">` : ""}</div>`).join("")}								
+								${[...new Array(4)].map((_, i) => `<div class="atr__item__quart">${it._sample[i] ? `<img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample[i]}.jpg">` : ""}</div>`).join("")}
 							</div>
 						`).appendTo($item);
 
@@ -246,7 +246,7 @@ function d20plusArtBrowser () {
 								const file = await pGetJson(`${GH_PATH}${it._key}.json`);
 								const toAdd = file.data.map((it, i) => ({
 									name: `${file.set} \u2014 ${file.artist} (${i})`,
-									url: it.uri
+									url: it.uri,
 								}));
 								d20plus.art.addToHandout(toAdd);
 								alert(`Added ${file.data.length} image${file.data.length === 1 ? "" : "s"} to the External Art list.`);
@@ -337,7 +337,7 @@ function d20plusArtBrowser () {
 						revert: true,
 						revertDuration: 0,
 						helper: "clone",
-						appendTo: "body"
+						appendTo: "body",
 					});
 				});
 			}
@@ -359,9 +359,9 @@ function d20plusArtBrowser () {
 					position: {
 						my: "left top",
 						at: "left+75 top+15",
-						collision: "none"
-					}
-				}
+						collision: "none",
+					},
+				},
 			).dialog("open");
 
 			if (firstClick) {
@@ -377,7 +377,7 @@ function d20plusArtBrowser () {
 			d20.textchat.incoming(false, ({
 				who: "system",
 				type: "system",
-				content: `<span id="${uid}" class="hacker-chat inline-block ${isError ? "is-error" : ""}">${str}</span>`
+				content: `<span id="${uid}" class="hacker-chat inline-block ${isError ? "is-error" : ""}">${str}</span>`,
 			}));
 			return uid;
 		}
@@ -406,7 +406,7 @@ function d20plusArtBrowser () {
 						lastContentType = h;
 					}
 				};
-				oReq.onload = function() {
+				oReq.onload = function () {
 					const arrayBuffer = oReq.response;
 					resolve({buff: arrayBuffer, contentType: lastContentType});
 				};
@@ -429,8 +429,8 @@ function d20plusArtBrowser () {
 				handleCancel(chatId);
 				$btnStop.remove();
 			});
-		try { $btnStop[0].scrollIntoView() }
-		catch (e) { console.error(e) }
+		// eslint-disable-next-line no-console
+		try { $btnStop[0].scrollIntoView() } catch (e) { console.error(e) }
 
 		if (isCancelled) return handleCancel(chatId);
 
@@ -441,6 +441,7 @@ function d20plusArtBrowser () {
 
 			const getWrappedPromise = dataItem => {
 				const pAjax = pAjaxLoad(dataItem.uri);
+				// eslint-disable-next-line no-async-promise-executor
 				const p = new Promise(async resolve => {
 					try {
 						const data = await pAjax;
@@ -472,7 +473,7 @@ function d20plusArtBrowser () {
 
 			if (isCancelled) return handleCancel(chatId);
 
-			zip.generateAsync({type:"blob"})
+			zip.generateAsync({type: "blob"})
 				.then((content) => {
 					if (isCancelled) return handleCancel(chatId);
 
@@ -483,6 +484,7 @@ function d20plusArtBrowser () {
 				});
 		} catch (e) {
 			doUpdateIdChat(chatId, `Download failed! Error was: ${e.message}<br>Check the log for more information.`, true);
+			// eslint-disable-next-line no-console
 			console.error(e);
 		}
 	};

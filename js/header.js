@@ -5,8 +5,8 @@ CONFIG_HANDOUT = "betteR20-config";
 // BASE_SITE_URL = "https://5e.tools/";
 BASE_SITE_URL = "https://5etools-mirror-1.github.io/";
 
-SITE_JS_URL = BASE_SITE_URL + "js/";
-DATA_URL = BASE_SITE_URL + "data/";
+SITE_JS_URL = `${BASE_SITE_URL}js/`;
+DATA_URL = `${BASE_SITE_URL}data/`;
 
 SCRIPT_EXTENSIONS = [];
 
@@ -21,9 +21,9 @@ CONFIG_OPTIONS = {
 		showCustomArtPreview: {
 			name: "Show Custom Art Previews",
 			default: true,
-			_type: "boolean"
-		}
-	}
+			_type: "boolean",
+		},
+	},
 };
 
 addConfigOptions = function (category, options) {
@@ -34,7 +34,7 @@ addConfigOptions = function (category, options) {
 OBJECT_DEFINE_PROPERTY = Object.defineProperty;
 ACCOUNT_ORIGINAL_PERMS = {
 	largefeats: false,
-	xlfeats: false
+	xlfeats: false,
 };
 Object.defineProperty = function (obj, prop, vals) {
 	try {
@@ -44,9 +44,8 @@ Object.defineProperty = function (obj, prop, vals) {
 		}
 		OBJECT_DEFINE_PROPERTY(obj, prop, vals);
 	} catch (e) {
-		console.log("failed to define property:");
-		console.log(e);
-		console.log(obj, prop, vals);
+		// eslint-disable-next-line no-console
+		console.log("failed to define property:", e, obj, prop, vals);
 	}
 };
 
@@ -55,7 +54,7 @@ FINAL_CANVAS_MOUSEMOVE_LIST = [];
 FINAL_CANVAS_MOUSEDOWN = null;
 FINAL_CANVAS_MOUSEMOVE = null;
 EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
-EventTarget.prototype.addEventListener = function(type, listener, options, ...others) {
+EventTarget.prototype.addEventListener = function (type, listener, options, ...others) {
 	if (typeof d20 !== "undefined") {
 		if (type === "mousedown" && this === d20.engine.final_canvas) FINAL_CANVAS_MOUSEDOWN = listener;
 		if (type === "mousemove" && this === d20.engine.final_canvas) FINAL_CANVAS_MOUSEMOVE = listener;

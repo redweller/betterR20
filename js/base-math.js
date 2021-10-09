@@ -7,9 +7,9 @@ function baseMath () {
 			 * @param a Vector to normalise
 			 */
 			normalize (out, a) {
-				const x = a[0],
-					y = a[1];
-				let len = x*x + y*y;
+				const x = a[0];
+				const y = a[1];
+				let len = x * x + y * y;
 				if (len > 0) {
 					len = 1 / Math.sqrt(len);
 					out[0] = a[0] * len;
@@ -39,15 +39,15 @@ function baseMath () {
 			 * @returns {vec2} out
 			 */
 			rotate (out, a, b, c) {
-				//Translate point to the origin
-				let p0 = a[0] - b[0],
-					p1 = a[1] - b[1],
-					sinC = Math.sin(c),
-					cosC = Math.cos(c);
+				// Translate point to the origin
+				let p0 = a[0] - b[0];
+				let p1 = a[1] - b[1];
+				let sinC = Math.sin(c);
+				let cosC = Math.cos(c);
 
-				//perform rotation and translate to correct position
-				out[0] = p0*cosC - p1*sinC + b[0];
-				out[1] = p0*sinC + p1*cosC + b[1];
+				// perform rotation and translate to correct position
+				out[0] = p0 * cosC - p1 * sinC + b[0];
+				out[1] = p0 * sinC + p1 * cosC + b[1];
 				return out;
 			},
 
@@ -116,9 +116,9 @@ function baseMath () {
 			 * @returns {Number} length of a
 			 */
 			len (a) {
-				const x = a[0], y = a[1];
+				const x = a[0]; const y = a[1];
 				return Math.sqrt(x * x + y * y);
-			}
+			},
 		},
 
 		/**
@@ -172,7 +172,7 @@ function baseMath () {
 				}
 			}
 			return true;
-		}
+		},
 	};
 }
 

@@ -14,8 +14,8 @@ function d20plusBackgrounds () {
 					data.background,
 					handoutBuilder,
 					{
-						forcePlayer
-					}
+						forcePlayer,
+					},
 				);
 			});
 		}
@@ -33,8 +33,8 @@ function d20plusBackgrounds () {
 		d20.Campaign.handouts.create({
 			name: name,
 			tags: d20plus.importer.getTagString([
-				Parser.sourceJsonToFull(data.source)
-			], "background")
+				Parser.sourceJsonToFull(data.source),
+			], "background"),
 		}, {
 			success: function (handout) {
 				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BACKGROUNDS](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
@@ -42,9 +42,9 @@ function d20plusBackgrounds () {
 				const [noteContents, gmNotes] = d20plus.backgrounds._getHandoutData(data);
 
 				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-				handout.save({notes: (new Date).getTime(), inplayerjournals: inJournals});
+				handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
 				d20.journal.addItemToFolderStructure(handout.id, folder.id);
-			}
+			},
 		});
 	};
 
@@ -70,8 +70,8 @@ function d20plusBackgrounds () {
 			"name": data.name,
 			"Vetoolscontent": data,
 			"data": {
-				"Category": "Backgrounds"
-			}
+				"Category": "Backgrounds",
+			},
 		};
 		const gmNotes = JSON.stringify(r20json);
 		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
@@ -81,7 +81,7 @@ function d20plusBackgrounds () {
 
 	// The popup menu for choosing traits, ideals, bonds and flaws
 	// Needs to be its own thing due to having a choose randomly button
-	d20plus.backgrounds.traitMenu = async function(ptrait, ideal, bond, flaw) {
+	d20plus.backgrounds.traitMenu = async function (ptrait, ideal, bond, flaw) {
 		// Arguments to send
 		const ptraitargs = {
 			countMin: 0,
@@ -91,19 +91,19 @@ function d20plusBackgrounds () {
 			countMin: 0,
 			countMax: 1,
 		}
-		
+
 		// Call the menu
 		const pt = await d20plus.ui.chooseCheckboxList(ptrait, "Personality Trait", ptraitargs);
 		const id = await d20plus.ui.chooseCheckboxList(ideal, "Ideal", args);
 		const bd = await d20plus.ui.chooseCheckboxList(bond, "Bond", args);
 		const fl = await d20plus.ui.chooseCheckboxList(flaw, "Flaw", args);
 
-		//Return
+		// Return
 		return {
 			"personalityTraits": pt,
 			"ideals": id,
-			"bonds":bd,
-			"flaws":fl
+			"bonds": bd,
+			"flaws": fl,
 		}
 	};
 }

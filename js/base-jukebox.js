@@ -106,6 +106,7 @@ function baseJukebox () {
 				for (const trackId of rawPlaylist.i) {
 					const track = d20plus.jukebox.getTrackById(trackId);
 					if (!track) {
+						// eslint-disable-next-line no-console
 						console.warn(`Tried to get track id ${trackId} but the query returned a falsy value. Skipping`);
 						continue;
 					}
@@ -129,6 +130,7 @@ function baseJukebox () {
 
 				const track = d20plus.jukebox.getTrackById(fsItem);
 				if (!track) {
+					// eslint-disable-next-line no-console
 					console.warn(`Tried to get track id ${fsItem} but the query returned a falsy value. Skipping`);
 					continue;
 				}
@@ -180,7 +182,7 @@ function baseJukebox () {
 			fs = fs.concat(tracks, playlists);
 
 			d20.Campaign.save({
-				jukeboxfolder: JSON.stringify(fs)
+				jukeboxfolder: JSON.stringify(fs),
 			});
 		},
 
@@ -193,7 +195,7 @@ function baseJukebox () {
 				id: window.generateUUID(),
 				n: name,
 				s: mode,
-				i: trackIds || []
+				i: trackIds || [],
 			};
 		},
 
@@ -201,9 +203,9 @@ function baseJukebox () {
 			const $jukebox = $("#jukebox");
 			const serializable = $jukebox.find("#jukeboxfolderroot").nestable("serialize");
 			serializable && d20.Campaign.save({
-				jukeboxfolder: JSON.stringify(serializable)
+				jukeboxfolder: JSON.stringify(serializable),
 			});
-		}
+		},
 	};
 }
 

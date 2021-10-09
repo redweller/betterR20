@@ -49,7 +49,7 @@ function d20plusEngine () {
 			// show dynamic lighting/etc page settings
 			$("#tmpl_pagesettings").replaceWith(d20plus.templates.templatePageSettings);
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
-				var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
+				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
 			});
 		}
@@ -81,13 +81,13 @@ function d20plusEngine () {
 	d20plus.engine.enhancePageSelector = () => {
 		d20plus.ut.log("Enhancing page selector");
 
-		var updatePageOrder = function () {
+		let updatePageOrder = function () {
 			d20plus.ut.log("Saving page order...");
-			var pos = 0;
+			let pos = 0;
 			$("#page-toolbar .pages .chooseablepage").each(function () {
-				var page = d20.Campaign.pages.get($(this).attr("data-pageid"));
+				let page = d20.Campaign.pages.get($(this).attr("data-pageid"));
 				page && page.save({
-					placement: pos
+					placement: pos,
 				});
 				pos++;
 			});
@@ -106,19 +106,19 @@ function d20plusEngine () {
 				stop: function () {
 					updatePageOrder()
 				},
-				distance: 15
+				distance: 15,
 			}).addTouch();
 			$("#page-toolbar .playerbookmark").draggable("destroy");
 			$("#page-toolbar .playerbookmark").draggable({
 				revert: "invalid",
 				appendTo: "#page-toolbar",
-				helper: "original"
+				helper: "original",
 			}).addTouch();
 			$("#page-toolbar .playerspecificbookmark").draggable("destroy");
 			$("#page-toolbar .playerspecificbookmark").draggable({
 				revert: "invalid",
 				appendTo: "#page-toolbar",
-				helper: "original"
+				helper: "original",
 			}).addTouch();
 		}
 
@@ -168,7 +168,7 @@ function d20plusEngine () {
 					},
 					stop: function () {
 						$("#journalfolderroot").removeClass("externaldrag")
-					}
+					},
 				});
 			}
 		});
@@ -205,7 +205,7 @@ function d20plusEngine () {
 					const atbs = charMaybe.attribs.toJSON();
 					const npcAtbMaybe = atbs.find(it => it.name === "npc");
 
-					if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+					if (npcAtbMaybe && Number(npcAtbMaybe.current) === 1) {
 						return 1;
 					} else {
 						return 2;
@@ -218,6 +218,8 @@ function d20plusEngine () {
 			lastAnimUid: null,
 			lastSceneUid: null,
 		};
+
+		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
@@ -924,11 +926,13 @@ function d20plusEngine () {
 		};
 		// END ROLL20 CODE
 
+		/* eslint-enable */
+
 		function getRollableTokenUpdate (imgUrl, curSide) {
 			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
 			const toSave = {
 				currentSide: curSide,
-				imgsrc: imgUrl
+				imgsrc: imgUrl,
 			};
 			if (m) {
 				toSave.width = 70 * Number(m[1]);
@@ -967,11 +971,13 @@ function d20plusEngine () {
 								const toSave = {
 									sides: toSaveSides,
 									width: nxtSize,
-									height: nxtSize
+									height: nxtSize,
 								};
+								// eslint-disable-next-line no-console
 								console.log(`Updating token:`, toSave);
 								it.model.save(toSave);
 							} else {
+								// eslint-disable-next-line no-console
 								console.warn("Token had no side data!")
 							}
 						});
@@ -982,8 +988,8 @@ function d20plusEngine () {
 					Cancel: function () {
 						dialog.off();
 						dialog.dialog("destroy").remove();
-					}
-				}
+					},
+				},
 			});
 		}
 
@@ -991,6 +997,8 @@ function d20plusEngine () {
 		d20.token_editor.closeContextMenu = i;
 		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};
+
+	/* eslint-disable */
 
 	d20plus.engine._getSelectedToMove = () => {
 		const n = [];
@@ -1071,6 +1079,8 @@ function d20plusEngine () {
 		}
 	};
 
+	/* eslint-enable */
+
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);
 
@@ -1119,7 +1129,7 @@ function d20plusEngine () {
 				d20plus.engine._tokenHover = {
 					pt: pt,
 					text: gmNotes,
-					id: hoverTarget.model.id
+					id: hoverTarget.model.id,
 				};
 			} else {
 				if (d20plus.engine._tokenHover) d20.engine.redrawScreenNextTick();
@@ -1130,6 +1140,8 @@ function d20plusEngine () {
 
 	d20plus.engine.enhanceMarkdown = () => {
 		const OUT_STRIKE = "<span style='text-decoration: line-through'>$1</span>";
+
+		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
 		window.Markdown.parse = function(e) {
@@ -1163,6 +1175,8 @@ function d20plusEngine () {
 				})
 		};
 		// END ROLL20 CODE
+
+		/* eslint-enable */
 
 		// after a short delay, replace any old content in the chat
 		setTimeout(() => {
@@ -1218,7 +1232,7 @@ function d20plusEngine () {
 					const $prependTarget = $(`.ui-dialog-title:textEquals(transmogrifier)`).first().parent().parent().find(`.ui-dialog-content`);
 					$(`<button id="#vetools-transmog-alpha" class="btn btn default" style="margin-bottom: 5px;">Sort Items Alphabetically</button>`).on("click", () => {
 						// coped from a bookmarklet
-						$('iframe').contents().find('.objects').each((c,e)=>{ let $e=$(e); $e.children().sort( (a,b)=>{ let name1=$(a).find(".name").text().toLowerCase(), name2=$(b).find(".name").text().toLowerCase(), comp = name1.localeCompare(name2); return comp; }) .each((i,c)=>$e.append(c)); });
+						$("iframe").contents().find(".objects").each((c, e) => { let $e = $(e); $e.children().sort((a, b) => { let name1 = $(a).find(".name").text().toLowerCase(); let name2 = $(b).find(".name").text().toLowerCase(); let comp = name1.localeCompare(name2); return comp; }).each((i, c) => $e.append(c)); });
 					}).prependTo($prependTarget);
 				}
 			}, 35);

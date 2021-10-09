@@ -6,7 +6,7 @@ function baseQpi () {
 				_ (...args) {
 					qpi._log(...args)
 				},
-				works: 1
+				works: 1,
 			},
 
 			// Campaign: { // FIXME this overwrites the window's campaign, which breaks stuff
@@ -27,8 +27,9 @@ function baseQpi () {
 							if (!seenMessages.has(e.id)) {
 								seenMessages.add(e.id);
 
-								var t = e.val();
+								let t = e.val();
 								if (t) {
+									// eslint-disable-next-line no-console
 									if (window.DEBUG) console.log("CHAT: ", t);
 
 									qpi._on_chatHandlers.forEach(fn => fn(t));
@@ -45,14 +46,15 @@ function baseQpi () {
 							qpi._on_chatHandlers.push(fn);
 							break;
 						default:
+							// eslint-disable-next-line no-console
 							console.error("Unhandled message type: ", evtType, "with args", fn, others)
 							break;
 					}
 				},
 				works: 0.01,
 				notes: [
-					`"chat:message" is the only available event.`
-				]
+					`"chat:message" is the only available event.`,
+				],
 			},
 
 			createObj: {
@@ -64,17 +66,17 @@ function baseQpi () {
 							obj.scaleY = obj.scaleY || 1;
 							obj.path = obj.path || obj._path
 							return page.thepaths.create(obj)
-							break;
 						}
 						default:
+							// eslint-disable-next-line no-console
 							console.error("Unhandled object type: ", objType, "with args", obj, others)
 							break;
 					}
 				},
 				works: 0.01,
 				notes: [
-					`Only supports "path" obects.`
-				]
+					`Only supports "path" obects.`,
+				],
 			},
 
 			sendChat: { // TODO lift code from doChatInput
@@ -85,7 +87,7 @@ function baseQpi () {
 						content: input,
 						playerid: window.currentPlayer.id,
 						avatar: null,
-						inlinerolls: []
+						inlinerolls: [],
 					};
 
 					const key = d20.textchat.chatref.push().key();
@@ -97,8 +99,8 @@ function baseQpi () {
 					`input: String only.`,
 					`callback: Unimplemented.`,
 					`options: Unimplemented.`,
-					`Messages are always sent with the player ID of the QPI user.`
-				]
+					`Messages are always sent with the player ID of the QPI user.`,
+				],
 			},
 
 			// findObjs: {
@@ -251,8 +253,9 @@ function baseQpi () {
 		},
 
 		_log (...args) {
+			// eslint-disable-next-line no-console
 			console.log("%cQPI > ", "color: #ff00ff; font-size: large", ...args);
-		}
+		},
 	};
 	window.qpi = qpi;
 
