@@ -147,12 +147,11 @@ function baseUi () {
 		return new Promise((resolve, reject) => {
 			// Ensure count, countMin, and countMax don't mess up
 			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
-			if ((Number.isInteger(count) && Number.isInteger(countMin)) 
-			|| (Number.isInteger(count) && Number.isInteger(countMax)) 
-			|| (count == null && (Number.isInteger(countMin) ^ Number.isInteger(countMax))) 
+			if ((Number.isInteger(count) && Number.isInteger(countMin))
+			|| (Number.isInteger(count) && Number.isInteger(countMax))
+			|| (count == null && (Number.isInteger(countMin) ^ Number.isInteger(countMax)))
 			|| (countMin > countMax)) {
-				console.log("count is mutually exclusive with countMin and countMax, and countMin and countMax require each other.");
-				reject("Bad arguments")
+				reject(new Error("Bad arguments--count is mutually exclusive with countMin and countMax, and countMin and countMax require each other."))
 			}
 			const useRange = Number.isInteger(countMin) && countMax;
 
@@ -211,8 +210,7 @@ function baseUi () {
 								$(this).dialog("close");
 								$dialog.remove();
 								resolve(selected);
-							}
-							else if (!useRange && (selected.length === count || count == null)) {
+							} else if (!useRange && (selected.length === count || count == null)) {
 								$(this).dialog("close");
 								$dialog.remove();
 								resolve(selected);

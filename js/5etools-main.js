@@ -1419,8 +1419,7 @@ const betteR205etoolsMain = function () {
 						iname = item.item;
 					} else if ("special" in item) {
 						iname = item.special;
-					}
-					else if('equipclean' in item) {
+					} else if ("equipclean" in item) {
 						iname = item.equipclean;
 					}
 
@@ -1451,7 +1450,7 @@ const betteR205etoolsMain = function () {
 				return new Promise((resolve, reject) => {
 					// Deal with the equipmenttype case specifically
 					let equiptmp = null;
-					Object.entries(itemChoices).forEach(([key,value]) => {
+					Object.entries(itemChoices).forEach(([key, value]) => {
 						if (value[0]?.equipmentType) {
 							switch (value[0].equipmentType) {
 								case "setGaming":
@@ -1474,7 +1473,7 @@ const betteR205etoolsMain = function () {
 								<label class="flex">
 									<span>Which item would you like to import?</span>
 									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
-								   ${Object.entries(itemChoices).map(([key,value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipclean || value[0]).split("|")[0].toTitleCase()}</option>`)}
+								   ${Object.entries(itemChoices).map(([key, value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipclean || value[0]).split("|")[0].toTitleCase()}</option>`)}
 									 </select>
 								</label>
 							</div>
@@ -1543,8 +1542,8 @@ const betteR205etoolsMain = function () {
 					ent = traits.entries[i];
 					// This seems to be the best way to parse the information with some room for errors
 					// It seems like the schema is based on on the website, which is why colLabels is where the identifier is
-					if (ent.colLabels && ent.colLabels.length == 2 && ent.rows) {
-						switch(ent.colLabels[1]){
+					if (ent.colLabels && ent.colLabels.length === 2 && ent.rows) {
+						switch (ent.colLabels[1]) {
 							case "Personality Trait":
 								ptrait = ent.rows.map(r => r[1]);
 								break;
@@ -1565,7 +1564,6 @@ const betteR205etoolsMain = function () {
 			if (ptrait != null) {
 				traits = await d20plus.backgrounds.traitMenu(ptrait, ideal, bond, flaw);
 			}
-
 
 			// Update Sheet
 			const attrs = new CharacterAttributesProxy(character);
@@ -1608,15 +1606,13 @@ const betteR205etoolsMain = function () {
 				});
 
 				// Add flavor traits
-				const {personalityTraits, ideals, bonds, flaws} = traits || {}; //Got some help from Giddy with this one
+				const {personalityTraits, ideals, bonds, flaws} = traits || {}; // Got some help from Giddy with this one
 				// Only add the trait if the trait exists
-				if (personalityTraits?.length == 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
-				if (personalityTraits?.length == 2) attrs.addOrUpdate(`personality_traits`, personalityTraits[0] + "\n" + personalityTraits[1]);
-				if (ideals?.length == 1) attrs.addOrUpdate(`ideals`, ideals[0]);
-				if (bonds?.length == 1) attrs.addOrUpdate(`bonds`, bonds[0]);
-				if (flaws?.length == 1) attrs.addOrUpdate(`flaws`, flaws[0]);
-
-
+				if (personalityTraits?.length === 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
+				if (personalityTraits?.length === 2) attrs.addOrUpdate(`personality_traits`, `${personalityTraits[0]}\n${personalityTraits[1]}`);
+				if (ideals?.length === 1) attrs.addOrUpdate(`ideals`, ideals[0]);
+				if (bonds?.length === 1) attrs.addOrUpdate(`bonds`, bonds[0]);
+				if (flaws?.length === 1) attrs.addOrUpdate(`flaws`, flaws[0]);
 			} else if (d20plus.sheet === "shaped") {
 				attrs.addOrUpdate("background", bg.name);
 				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
