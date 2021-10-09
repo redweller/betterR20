@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.26.1
+// @version      1.26.2
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -32,8 +32,8 @@ CONFIG_HANDOUT = "betteR20-config";
 // BASE_SITE_URL = "https://5e.tools/";
 BASE_SITE_URL = "https://5etools-mirror-1.github.io/";
 
-SITE_JS_URL = BASE_SITE_URL + "js/";
-DATA_URL = BASE_SITE_URL + "data/";
+SITE_JS_URL = `${BASE_SITE_URL}js/`;
+DATA_URL = `${BASE_SITE_URL}data/`;
 
 SCRIPT_EXTENSIONS = [];
 
@@ -48,9 +48,9 @@ CONFIG_OPTIONS = {
 		showCustomArtPreview: {
 			name: "Show Custom Art Previews",
 			default: true,
-			_type: "boolean"
-		}
-	}
+			_type: "boolean",
+		},
+	},
 };
 
 addConfigOptions = function (category, options) {
@@ -61,7 +61,7 @@ addConfigOptions = function (category, options) {
 OBJECT_DEFINE_PROPERTY = Object.defineProperty;
 ACCOUNT_ORIGINAL_PERMS = {
 	largefeats: false,
-	xlfeats: false
+	xlfeats: false,
 };
 Object.defineProperty = function (obj, prop, vals) {
 	try {
@@ -71,9 +71,8 @@ Object.defineProperty = function (obj, prop, vals) {
 		}
 		OBJECT_DEFINE_PROPERTY(obj, prop, vals);
 	} catch (e) {
-		console.log("failed to define property:");
-		console.log(e);
-		console.log(obj, prop, vals);
+		// eslint-disable-next-line no-console
+		console.log("failed to define property:", e, obj, prop, vals);
 	}
 };
 
@@ -82,7 +81,7 @@ FINAL_CANVAS_MOUSEMOVE_LIST = [];
 FINAL_CANVAS_MOUSEDOWN = null;
 FINAL_CANVAS_MOUSEMOVE = null;
 EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
-EventTarget.prototype.addEventListener = function(type, listener, options, ...others) {
+EventTarget.prototype.addEventListener = function (type, listener, options, ...others) {
 	if (typeof d20 !== "undefined") {
 		if (type === "mousedown" && this === d20.engine.final_canvas) FINAL_CANVAS_MOUSEDOWN = listener;
 		if (type === "mousemove" && this === d20.engine.final_canvas) FINAL_CANVAS_MOUSEMOVE = listener;
@@ -98,10 +97,12 @@ function baseUtil () {
 	d20plus.ut = {};
 
 	d20plus.ut.log = (...args) => {
+		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
 	};
 
 	d20plus.ut.error = (...args) => {
+		// eslint-disable-next-line no-console
 		console.error("%cD20Plus > ", "color: #b93032; font-size: large", ...args);
 	};
 
@@ -115,8 +116,8 @@ function baseUtil () {
 				playerid: window.currentPlayer.id,
 				id: d20plus.ut.generateRowId(),
 				target: window.currentPlayer.id,
-				avatar: "https://i.imgur.com/bBhudno.png"
-			}
+				avatar: "https://i.imgur.com/bBhudno.png",
+			},
 		);
 	};
 
@@ -125,24 +126,13 @@ function baseUtil () {
 		return b < a ? 1 : -1;
 	};
 
-	d20plus.ut.disable3dDice = () => {
-		d20plus.ut.log("Disabling 3D dice");
-		const $cb3dDice = $(`#enable3ddice`);
-		$cb3dDice.prop("checked", false).attr("disabled", true);
-		$cb3dDice.closest("p").after(`<p><i>3D dice are incompatible with betteR20. We apologise for any inconvenience caused.</i></p>`);
-
-		$(`#autoroll`).prop("checked", false).attr("disabled", true);;
-
-		d20.tddice.canRoll3D = () => false;
-	};
-
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
 		function cmpVersions (a, b) {
 			const regExStrip0 = /(\.0+)+$/;
-			const segmentsA = a.replace(regExStrip0, '').split('.');
-			const segmentsB = b.replace(regExStrip0, '').split('.');
+			const segmentsA = a.replace(regExStrip0, "").split(".");
+			const segmentsB = b.replace(regExStrip0, "").split(".");
 			const l = Math.min(segmentsA.length, segmentsB.length);
 
 			for (let i = 0; i < l; i++) {
@@ -173,7 +163,7 @@ function baseUtil () {
 			},
 			error: () => {
 				d20plus.ut.log("Failed to check version");
-			}
+			},
 		})
 	};
 
@@ -214,7 +204,7 @@ function baseUtil () {
 			type: "system",
 			content: `<span class="hacker-chat">
 				${message}
-			</span>`
+			</span>`,
 		}));
 	};
 
@@ -225,14 +215,14 @@ function baseUtil () {
 			const index = sheet.cssRules.length;
 			try {
 				if ("insertRule" in sheet) {
-					sheet.insertRule(selector + "{" + rules + "}", index);
+					sheet.insertRule(`${selector}{${rules}}`, index);
 				} else if ("addRule" in sheet) {
 					sheet.addRule(selector, rules, index);
 				}
 			} catch (e) {
 				if ((!selector && selector.startsWith("-webkit-"))) {
-					console.error(e);
-					console.error(`Selector was "${selector}"; rules were "${rules}"`);
+					// eslint-disable-next-line no-console
+					console.error(`Selector was "${selector}"; rules were "${rules}"`, e);
 				}
 			}
 		});
@@ -241,7 +231,7 @@ function baseUtil () {
 	d20plus.ut.addAllCss = () => {
 		d20plus.ut.log("Adding CSS");
 
-		const targetSheet =  [...window.document.styleSheets]
+		const targetSheet = [...window.document.styleSheets]
 			.filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
 			.find(it => it.href.includes("app.css"));
 
@@ -259,7 +249,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.getAntiCacheSuffix = () => {
-		return "?" + (new Date()).getTime();
+		return `?${(new Date()).getTime()}`;
 	};
 
 	d20plus.ut.generateRowId = () => {
@@ -306,7 +296,7 @@ function baseUtil () {
 		}
 
 		while (true) {
-			const res =  prompt(promptText, d20plus.ut._lastInput || "E.g. 1-5, 8, 11-13");
+			const res = prompt(promptText, d20plus.ut._lastInput || "E.g. 1-5, 8, 11-13");
 			if (res && res.trim()) {
 				d20plus.ut._lastInput = res;
 				const clean = res.replace(/\s*/g, "");
@@ -391,7 +381,7 @@ function baseUtil () {
 		return null;
 	};
 
-	d20plus.ut._BYTE_UNITS = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {
 		let i = -1;
 		do {
@@ -402,7 +392,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.sanitizeFilename = function (str) {
-		return str.trim().replace(/[^\w\-]/g, "_");
+		return str.trim().replace(/[^-\w]/g, "_");
 	};
 
 	d20plus.ut.saveAsJson = function (filename, data) {
@@ -412,134 +402,134 @@ function baseUtil () {
 
 	// based on:
 	/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js */
-	d20plus.ut.saveAs = function() {
+	d20plus.ut.saveAs = (function () {
 		const view = window;
-		var
-			doc = view.document
+		let
+			doc = view.document;
 			// only get URL when necessary in case Blob.js hasn't overridden it yet
-			, get_URL = function() {
-				return view.URL || view.webkitURL || view;
-			}
-			, save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a")
-			, can_use_save_link = "download" in save_link
-			, click = function(node) {
-				var event = new MouseEvent("click");
-				node.dispatchEvent(event);
-			}
-			, is_safari = /constructor/i.test(view.HTMLElement) || view.safari
-			, is_chrome_ios =/CriOS\/[\d]+/.test(navigator.userAgent)
-			, setImmediate = view.setImmediate || view.setTimeout
-			, throw_outside = function(ex) {
-				setImmediate(function() {
-					throw ex;
-				}, 0);
-			}
-			, force_saveable_type = "application/octet-stream"
-			// the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
-			, arbitrary_revoke_timeout = 1000 * 40 // in ms
-			, revoke = function(file) {
-				var revoker = function() {
-					if (typeof file === "string") { // file is an object URL
-						get_URL().revokeObjectURL(file);
-					} else { // file is a File
-						file.remove();
-					}
-				};
-				setTimeout(revoker, arbitrary_revoke_timeout);
-			}
-			, dispatch = function(filesaver, event_types, event) {
-				event_types = [].concat(event_types);
-				var i = event_types.length;
-				while (i--) {
-					var listener = filesaver["on" + event_types[i]];
-					if (typeof listener === "function") {
-						try {
-							listener.call(filesaver, event || filesaver);
-						} catch (ex) {
-							throw_outside(ex);
-						}
+		let get_URL = function () {
+			return view.URL || view.webkitURL || view;
+		};
+		let save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a");
+		let can_use_save_link = "download" in save_link;
+		let click = function (node) {
+			let event = new MouseEvent("click");
+			node.dispatchEvent(event);
+		};
+		let is_safari = /constructor/i.test(view.HTMLElement) || view.safari;
+		let is_chrome_ios = /CriOS\/[\d]+/.test(navigator.userAgent);
+		let setImmediate = view.setImmediate || view.setTimeout;
+		let throw_outside = function (ex) {
+			setImmediate(function () {
+				throw ex;
+			}, 0);
+		};
+		let force_saveable_type = "application/octet-stream";
+		// the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
+		let arbitrary_revoke_timeout = 1000 * 40; // in ms
+		let revoke = function (file) {
+			let revoker = function () {
+				if (typeof file === "string") { // file is an object URL
+					get_URL().revokeObjectURL(file);
+				} else { // file is a File
+					file.remove();
+				}
+			};
+			setTimeout(revoker, arbitrary_revoke_timeout);
+		};
+		let dispatch = function (filesaver, event_types, event) {
+			event_types = [].concat(event_types);
+			let i = event_types.length;
+			while (i--) {
+				let listener = filesaver[`on${event_types[i]}`];
+				if (typeof listener === "function") {
+					try {
+						listener.call(filesaver, event || filesaver);
+					} catch (ex) {
+						throw_outside(ex);
 					}
 				}
 			}
-			, auto_bom = function(blob) {
-				// prepend BOM for UTF-8 XML and text/* types (including HTML)
-				// note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
-				if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
-					return new Blob([String.fromCharCode(0xFEFF), blob], {type: blob.type});
-				}
-				return blob;
+		};
+		let auto_bom = function (blob) {
+			// prepend BOM for UTF-8 XML and text/* types (including HTML)
+			// note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
+			if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
+				return new Blob([String.fromCharCode(0xFEFF), blob], {type: blob.type});
 			}
-			, FileSaver = function(blob, name, no_auto_bom) {
-				if (!no_auto_bom) {
-					blob = auto_bom(blob);
-				}
-				// First try a.download, then web filesystem, then object URLs
-				var
-					filesaver = this
-					, type = blob.type
-					, force = type === force_saveable_type
-					, object_url
-					, dispatch_all = function() {
-						dispatch(filesaver, "writestart progress write writeend".split(" "));
-					}
-					// on any filesys errors revert to saving with object URLs
-					, fs_error = function() {
-						if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
-							// Safari doesn't allow downloading of blob urls
-							var reader = new FileReader();
-							reader.onloadend = function() {
-								var url = is_chrome_ios ? reader.result : reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;');
-								var popup = view.open(url, '_blank');
-								if(!popup) view.location.href = url;
-								url=undefined; // release reference before dispatching
-								filesaver.readyState = filesaver.DONE;
-								dispatch_all();
-							};
-							reader.readAsDataURL(blob);
-							filesaver.readyState = filesaver.INIT;
-							return;
-						}
-						// don't create more object URLs than needed
-						if (!object_url) {
-							object_url = get_URL().createObjectURL(blob);
-						}
-						if (force) {
-							view.location.href = object_url;
-						} else {
-							var opened = view.open(object_url, "_blank");
-							if (!opened) {
-								// Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
-								view.location.href = object_url;
-							}
-						}
+			return blob;
+		};
+		let FileSaver = function (blob, name, no_auto_bom) {
+			if (!no_auto_bom) {
+				blob = auto_bom(blob);
+			}
+			// First try a.download, then web filesystem, then object URLs
+			let
+				filesaver = this;
+			let type = blob.type;
+			let force = type === force_saveable_type;
+			let object_url;
+			let dispatch_all = function () {
+				dispatch(filesaver, "writestart progress write writeend".split(" "));
+			};
+			// on any filesys errors revert to saving with object URLs
+			let fs_error = function () {
+				if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
+					// Safari doesn't allow downloading of blob urls
+					let reader = new FileReader();
+					reader.onloadend = function () {
+						let url = is_chrome_ios ? reader.result : reader.result.replace(/^data:[^;]*;/, "data:attachment/file;");
+						let popup = view.open(url, "_blank");
+						if (!popup) view.location.href = url;
+						url = undefined; // release reference before dispatching
 						filesaver.readyState = filesaver.DONE;
 						dispatch_all();
-						revoke(object_url);
 					};
-				filesaver.readyState = filesaver.INIT;
-
-				if (can_use_save_link) {
-					object_url = get_URL().createObjectURL(blob);
-					setImmediate(function() {
-						save_link.href = object_url;
-						save_link.download = name;
-						click(save_link);
-						dispatch_all();
-						revoke(object_url);
-						filesaver.readyState = filesaver.DONE;
-					}, 0);
+					reader.readAsDataURL(blob);
+					filesaver.readyState = filesaver.INIT;
 					return;
 				}
-
-				fs_error();
-			}
-			, FS_proto = FileSaver.prototype
-			, saveAs = function(blob, name, no_auto_bom) {
-				return new FileSaver(blob, name || blob.name || "download", no_auto_bom);
+				// don't create more object URLs than needed
+				if (!object_url) {
+					object_url = get_URL().createObjectURL(blob);
+				}
+				if (force) {
+					view.location.href = object_url;
+				} else {
+					let opened = view.open(object_url, "_blank");
+					if (!opened) {
+						// Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
+						view.location.href = object_url;
+					}
+				}
+				filesaver.readyState = filesaver.DONE;
+				dispatch_all();
+				revoke(object_url);
 			};
+			filesaver.readyState = filesaver.INIT;
+
+			if (can_use_save_link) {
+				object_url = get_URL().createObjectURL(blob);
+				setImmediate(function () {
+					save_link.href = object_url;
+					save_link.download = name;
+					click(save_link);
+					dispatch_all();
+					revoke(object_url);
+					filesaver.readyState = filesaver.DONE;
+				}, 0);
+				return;
+			}
+
+			fs_error();
+		};
+		let FS_proto = FileSaver.prototype;
+		let saveAs = function (blob, name, no_auto_bom) {
+			return new FileSaver(blob, name || blob.name || "download", no_auto_bom);
+		};
 		// IE 10+ (native saveAs)
 		if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) {
-			return function(blob, name, no_auto_bom) {
+			return function (blob, name, no_auto_bom) {
 				name = name || blob.name || "download";
 
 				if (!no_auto_bom) {
@@ -548,7 +538,7 @@ function baseUtil () {
 				return navigator.msSaveOrOpenBlob(blob, name);
 			};
 		}
-		FS_proto.abort = function(){};
+		FS_proto.abort = function () {};
 		FS_proto.readyState = FS_proto.INIT = 0;
 		FS_proto.WRITING = 1;
 		FS_proto.DONE = 2;
@@ -562,7 +552,7 @@ function baseUtil () {
 									null;
 
 		return saveAs;
-	}();
+	}());
 
 	d20plus.ut.promiseDelay = function (delay) {
 		return new Promise(resolve => {
@@ -578,7 +568,7 @@ function baseUtil () {
 			case "objects": return "Objects & Tokens";
 			case "foreground": return "Foreground";
 			case "gmlayer": return "GM Info Overlay";
-			case "walls":  return "Dynamic Lighting";
+			case "walls": return "Dynamic Lighting";
 			case "weather": return "Weather Exclusions";
 		}
 	};
@@ -607,8 +597,8 @@ function baseUtil () {
 	};
 
 	/**
-	 * Assumes any other lists have been searched using the same term
-	 */
+	* Assumes any other lists have been searched using the same term
+	*/
 	d20plus.ut.getSearchTermAndReset = (list, ...otherLists) => {
 		let lastSearch = null;
 		if (list.searched) {
@@ -714,6 +704,7 @@ function baseJsLoad () {
 		// sanity check
 		if (js instanceof Promise) throw new Error(`Promise was passed instead of text! This is a bug.`);
 		try {
+			// eslint-disable-next-line no-eval
 			window.eval(js);
 			d20plus.ut.log(`JS [${name}] Loaded`);
 		} catch (e) {
@@ -736,18 +727,20 @@ function baseJsLoad () {
 					},
 					error: function (resp, qq, pp) {
 						if (resp && resp.status >= 400 && retries-- > 0) {
+							// eslint-disable-next-line no-console
 							console.error(resp, qq, pp);
 							d20plus.ut.log(`Error loading ${name}; retrying`);
 							setTimeout(() => {
 								reject(new Error(`Loading "${name}" failed (status ${resp.status}): ${resp} ${qq} ${pp}`));
 							}, 500);
 						} else {
+							// eslint-disable-next-line no-console
 							console.error(resp, qq, pp);
 							setTimeout(() => {
 								reject(new Error(`Loading "${name}" failed (status ${resp.status}): ${resp} ${qq} ${pp}`));
 							}, 500);
 						}
-					}
+					},
 				});
 			})
 		}
@@ -756,7 +749,9 @@ function baseJsLoad () {
 		do {
 			try {
 				data = await pFetchData();
-			} catch (e) {} // error handling is done as part of data fetching
+			} catch (e) {
+				// error handling is done as part of data fetching
+			}
 		} while (!data && --retries > 0);
 
 		if (data) return data;
@@ -801,7 +796,7 @@ function baseQpi () {
 				_ (...args) {
 					qpi._log(...args)
 				},
-				works: 1
+				works: 1,
 			},
 
 			// Campaign: { // FIXME this overwrites the window's campaign, which breaks stuff
@@ -822,8 +817,9 @@ function baseQpi () {
 							if (!seenMessages.has(e.id)) {
 								seenMessages.add(e.id);
 
-								var t = e.val();
+								let t = e.val();
 								if (t) {
+									// eslint-disable-next-line no-console
 									if (window.DEBUG) console.log("CHAT: ", t);
 
 									qpi._on_chatHandlers.forEach(fn => fn(t));
@@ -840,14 +836,15 @@ function baseQpi () {
 							qpi._on_chatHandlers.push(fn);
 							break;
 						default:
+							// eslint-disable-next-line no-console
 							console.error("Unhandled message type: ", evtType, "with args", fn, others)
 							break;
 					}
 				},
 				works: 0.01,
 				notes: [
-					`"chat:message" is the only available event.`
-				]
+					`"chat:message" is the only available event.`,
+				],
 			},
 
 			createObj: {
@@ -859,17 +856,17 @@ function baseQpi () {
 							obj.scaleY = obj.scaleY || 1;
 							obj.path = obj.path || obj._path
 							return page.thepaths.create(obj)
-							break;
 						}
 						default:
+							// eslint-disable-next-line no-console
 							console.error("Unhandled object type: ", objType, "with args", obj, others)
 							break;
 					}
 				},
 				works: 0.01,
 				notes: [
-					`Only supports "path" obects.`
-				]
+					`Only supports "path" obects.`,
+				],
 			},
 
 			sendChat: { // TODO lift code from doChatInput
@@ -880,7 +877,7 @@ function baseQpi () {
 						content: input,
 						playerid: window.currentPlayer.id,
 						avatar: null,
-						inlinerolls: []
+						inlinerolls: [],
 					};
 
 					const key = d20.textchat.chatref.push().key();
@@ -892,8 +889,8 @@ function baseQpi () {
 					`input: String only.`,
 					`callback: Unimplemented.`,
 					`options: Unimplemented.`,
-					`Messages are always sent with the player ID of the QPI user.`
-				]
+					`Messages are always sent with the player ID of the QPI user.`,
+				],
 			},
 
 			// findObjs: {
@@ -1046,8 +1043,9 @@ function baseQpi () {
 		},
 
 		_log (...args) {
+			// eslint-disable-next-line no-console
 			console.log("%cQPI > ", "color: #ff00ff; font-size: large", ...args);
-		}
+		},
 	};
 	window.qpi = qpi;
 
@@ -1169,6 +1167,7 @@ function baseJukebox () {
 				for (const trackId of rawPlaylist.i) {
 					const track = d20plus.jukebox.getTrackById(trackId);
 					if (!track) {
+						// eslint-disable-next-line no-console
 						console.warn(`Tried to get track id ${trackId} but the query returned a falsy value. Skipping`);
 						continue;
 					}
@@ -1192,6 +1191,7 @@ function baseJukebox () {
 
 				const track = d20plus.jukebox.getTrackById(fsItem);
 				if (!track) {
+					// eslint-disable-next-line no-console
 					console.warn(`Tried to get track id ${fsItem} but the query returned a falsy value. Skipping`);
 					continue;
 				}
@@ -1243,7 +1243,7 @@ function baseJukebox () {
 			fs = fs.concat(tracks, playlists);
 
 			d20.Campaign.save({
-				jukeboxfolder: JSON.stringify(fs)
+				jukeboxfolder: JSON.stringify(fs),
 			});
 		},
 
@@ -1256,7 +1256,7 @@ function baseJukebox () {
 				id: window.generateUUID(),
 				n: name,
 				s: mode,
-				i: trackIds || []
+				i: trackIds || [],
 			};
 		},
 
@@ -1264,9 +1264,9 @@ function baseJukebox () {
 			const $jukebox = $("#jukebox");
 			const serializable = $jukebox.find("#jukeboxfolderroot").nestable("serialize");
 			serializable && d20.Campaign.save({
-				jukeboxfolder: JSON.stringify(serializable)
+				jukeboxfolder: JSON.stringify(serializable),
 			});
-		}
+		},
 	};
 }
 
@@ -1282,9 +1282,9 @@ function baseMath () {
 			 * @param a Vector to normalise
 			 */
 			normalize (out, a) {
-				const x = a[0],
-					y = a[1];
-				let len = x*x + y*y;
+				const x = a[0];
+				const y = a[1];
+				let len = x * x + y * y;
 				if (len > 0) {
 					len = 1 / Math.sqrt(len);
 					out[0] = a[0] * len;
@@ -1314,15 +1314,15 @@ function baseMath () {
 			 * @returns {vec2} out
 			 */
 			rotate (out, a, b, c) {
-				//Translate point to the origin
-				let p0 = a[0] - b[0],
-					p1 = a[1] - b[1],
-					sinC = Math.sin(c),
-					cosC = Math.cos(c);
+				// Translate point to the origin
+				let p0 = a[0] - b[0];
+				let p1 = a[1] - b[1];
+				let sinC = Math.sin(c);
+				let cosC = Math.cos(c);
 
-				//perform rotation and translate to correct position
-				out[0] = p0*cosC - p1*sinC + b[0];
-				out[1] = p0*sinC + p1*cosC + b[1];
+				// perform rotation and translate to correct position
+				out[0] = p0 * cosC - p1 * sinC + b[0];
+				out[1] = p0 * sinC + p1 * cosC + b[1];
 				return out;
 			},
 
@@ -1391,9 +1391,9 @@ function baseMath () {
 			 * @returns {Number} length of a
 			 */
 			len (a) {
-				const x = a[0], y = a[1];
+				const x = a[0]; const y = a[1];
 				return Math.sqrt(x * x + y * y);
-			}
+			},
 		},
 
 		/**
@@ -1447,14 +1447,14 @@ function baseMath () {
 				}
 			}
 			return true;
-		}
+		},
 	};
 }
 
 SCRIPT_EXTENSIONS.push(baseMath);
 
 
-function baseConfig() {
+function baseConfig () {
 	d20plus.cfg = {current: {}};
 
 	d20plus.cfg.pLoadConfigFailed = false;
@@ -1482,6 +1482,7 @@ function baseConfig() {
 						d20plus.ut.log(d20plus.cfg.current);
 						resolve();
 					} catch (e) {
+						// eslint-disable-next-line no-console
 						console.error(e);
 						if (!d20plus.cfg.pLoadConfigFailed) {
 							// prevent infinite loops
@@ -1520,7 +1521,7 @@ function baseConfig() {
 		return new Promise(resolve => {
 			d20.Campaign.handouts.create({
 				name: CONFIG_HANDOUT,
-				archived: true
+				archived: true,
 			}, {
 				success: function (handout) {
 					notecontents = "The GM notes contain config options saved between sessions. If you want to wipe your saved settings, delete this handout and reload roll20. If you want to edit your settings, click the \"Edit Config\" button in the <b>Settings</b> (cog) panel.";
@@ -1530,10 +1531,10 @@ function baseConfig() {
 					const gmnotes = JSON.stringify(d20plus.cfg.getDefaultConfig());
 
 					handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-					handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
+					handout.save({notes: (new Date()).getTime(), inplayerjournals: ""});
 
 					resolve();
-				}
+				},
 			});
 		});
 	};
@@ -1609,7 +1610,7 @@ function baseConfig() {
 		return {
 			min: it.__sliderMin,
 			max: it.__sliderMax,
-			step: it.__sliderStep
+			step: it.__sliderStep,
 		}
 	};
 
@@ -1695,9 +1696,8 @@ function baseConfig() {
 			if (!window.is_gm) sortedKeys = sortedKeys.filter(k => CONFIG_OPTIONS[k]._player);
 
 			const tabList = sortedKeys.map(k => CONFIG_OPTIONS[k]._name);
-			const contentList = sortedKeys.map(k => makeTab(k));
 
-			function makeTab (cfgK) {
+			const makeTab = (cfgK) => {
 				const cfgGroup = CONFIG_OPTIONS[cfgK];
 				configFields[cfgK] = {};
 
@@ -1899,10 +1899,12 @@ function baseConfig() {
 				return content;
 			}
 
+			const contentList = sortedKeys.map(k => makeTab(k));
+
 			d20plus.cfg.makeTabPane(
 				appendTo,
 				tabList,
-				contentList
+				contentList,
 			);
 
 			const saveButton = $(`#configsave`);
@@ -1917,24 +1919,24 @@ function baseConfig() {
 				}
 
 				if (window.is_gm) {
-					let handout = d20plus.cfg.getConfigHandout();
-					if (!handout) {
-						d20plus.cfg.pMakeDefaultConfig(doSave);
-					} else {
-						doSave();
-					}
-
-					function doSave () {
+					const doSave = () => {
 						_updateLoadedConfig();
 
 						const gmnotes = JSON.stringify(d20plus.cfg.current).replace(/%/g, "%25");
 						handout.updateBlobs({gmnotes: gmnotes});
-						handout.save({notes: (new Date).getTime()});
+						handout.save({notes: (new Date()).getTime()});
 
 						d20plus.ut.log("Saved config");
 
 						d20plus.cfg.baseHandleConfigChange();
 						if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+					};
+
+					let handout = d20plus.cfg.getConfigHandout();
+					if (!handout) {
+						d20plus.cfg.pMakeDefaultConfig(doSave);
+					} else {
+						doSave();
 					}
 				} else {
 					_updateLoadedConfig();
@@ -2007,7 +2009,7 @@ function baseConfig() {
 SCRIPT_EXTENSIONS.push(baseConfig);
 
 
-function baseTool() {
+function baseTool () {
 	d20plus.tool = {};
 
 	/**
@@ -2114,7 +2116,7 @@ function baseTool() {
 					// init list library
 					const delList = new List("delete-list-container", {
 						valueNames: ["name"],
-						listClass: "deletelist"
+						listClass: "deletelist",
 					});
 
 					$cbAll.prop("checked", false);
@@ -2137,7 +2139,7 @@ function baseTool() {
 						}
 					});
 				}
-			}
+			},
 		},
 		{
 			name: "SVG Draw",
@@ -2161,13 +2163,13 @@ function baseTool() {
 			},
 			openFn: () => {
 				// adapted from `d20.engine.finishCurrentPolygon`
-				function addShape(path, pathStroke, strokeWidth) {
+				function addShape (path, pathStroke, strokeWidth) {
 					let i = d20.engine.convertAbsolutePathStringtoFabric(path);
 					i = _.extend(i, {
 						strokeWidth: strokeWidth,
 						fill: "transparent",
 						stroke: pathStroke,
-						path: JSON.parse(i.path)
+						path: JSON.parse(i.path),
 					});
 					d20.Campaign.activePage().addPath(i);
 					d20.engine.redrawScreenNextTick();
@@ -2192,7 +2194,7 @@ function baseTool() {
 						addShape(it.d, it.stroke, strokeWidth)
 					});
 				});
-			}
+			},
 		},
 		{
 			name: "Multi-Whisper",
@@ -2256,7 +2258,7 @@ function baseTool() {
 						})
 					});
 
-					const $btnClear =  $(`<button class="btn msg-clear">Clear</button>`).on("click", function () {
+					const $btnClear = $(`<button class="btn msg-clear">Clear</button>`).on("click", function () {
 						$(this).closest(`.wrp-message`).find(`.message`).val("");
 					});
 
@@ -2280,7 +2282,7 @@ function baseTool() {
 				});
 
 				$btnClearAll.on("click", () => $pnlMessages.find(`button.msg-clear`).click());
-			}
+			},
 		},
 		{
 			name: "Table Importer Expanded",
@@ -2324,7 +2326,7 @@ function baseTool() {
 						// Creates the table, with data for the full table
 						const r20t = d20.Campaign.rollabletables.create({
 							name: t.name.replace(/\s+/g, "-"),
-							id: d20plus.ut.generateRowId()
+							id: d20plus.ut.generateRowId(),
 						});
 
 						labels = t.colLabels;
@@ -2337,11 +2339,11 @@ function baseTool() {
 							// Create the return value
 							const out = {
 								id: d20plus.ut.generateRowId(),
-								name: ""
+								name: "",
 							};
 
 							// Set the name
-							for (col = 0; col < tlen; col++) {
+							for (let col = 0; col < tlen; col++) {
 								// Add a seperator for cases of multiple columns
 								if (out.name.length > 0) {
 									out.name += " | "
@@ -2349,7 +2351,7 @@ function baseTool() {
 								// Add each column to out.name
 								if (col !== dplace) {
 									// Get rid of ugly notation
-									clean = i[col].replace(/\{@[\w\d]* (.*)\}/, "$1");
+									clean = i[col].replace(/\{@[\w\d]* (.*)}/, "$1");
 									out.name += clean;
 								}
 							}
@@ -2357,7 +2359,7 @@ function baseTool() {
 							// Set the weight
 							if (dplace !== -1) {
 								weight = i[dplace];
-								dash = weight.indexOf("–"); //Note: – is different from -
+								dash = weight.indexOf("–"); // Note: – is different from -
 
 								// If the weight is a range
 								if (dash !== -1) {
@@ -2366,14 +2368,10 @@ function baseTool() {
 									high = parseInt(weight.substring(dash + 1));
 									if (high === 0) high = 100;
 									out.weight = high - low + 1;
-								}
-								// If the weight is a signle value
-								else {
+								} else { // If the weight is a single value
 									out.weight = 1;
 								}
-							}
-							// If the weight is unlisted
-							else {
+							} else { // If the weight is unlisted
 								out.weight = 1;
 							}
 
@@ -2382,7 +2380,6 @@ function baseTool() {
 						}));
 						r20t.tableitems.forEach(it => it.save());
 					}
-
 
 					// Official tables
 					const $lst = $win.find(`.list`);
@@ -2401,7 +2398,7 @@ function baseTool() {
 					tmp = null;
 
 					const tableList = new List("table-list-expanded", {
-						valueNames: ["name", "source"]
+						valueNames: ["name", "source"],
 					});
 
 					$btnImport.on("click", () => {
@@ -2413,7 +2410,7 @@ function baseTool() {
 						sel.forEach(t => createTable(t));
 					});
 				});
-			}
+			},
 		},
 		{
 			name: "Table Importer",
@@ -2461,13 +2458,13 @@ function baseTool() {
 						const r20t = d20.Campaign.rollabletables.create({
 							name: t.name.replace(/\s+/g, "-"),
 							showplayers: t.isShown,
-							id: d20plus.ut.generateRowId()
+							id: d20plus.ut.generateRowId(),
 						});
 
 						r20t.tableitems.reset(t.items.map(i => {
 							const out = {
 								id: d20plus.ut.generateRowId(),
-								name: i.row
+								name: i.row,
 							};
 							if (i.weight !== undefined) out.weight = i.weight;
 							if (i.avatar) out.avatar = i.avatar;
@@ -2485,6 +2482,7 @@ function baseTool() {
 							try {
 								getFromPaste($iptClip.val());
 							} catch (e) {
+								// eslint-disable-next-line no-console
 								console.error(e);
 								window.alert(e.message);
 								error = true;
@@ -2518,7 +2516,7 @@ function baseTool() {
 								tbl.items.push({
 									row,
 									weight,
-									avatar
+									avatar,
 								})
 							} else if (line.startsWith("!import-table")) {
 								if (tbl) {
@@ -2527,7 +2525,7 @@ function baseTool() {
 								const [junk, tblName, showHide] = line.split("--").map(it => it.trim());
 								tbl = {
 									name: tblName,
-									isShown: (showHide || "").toLowerCase() === "show"
+									isShown: (showHide || "").toLowerCase() === "show",
 								};
 								tbl.items = [];
 							} else if (line.trim()) {
@@ -2558,7 +2556,7 @@ function baseTool() {
 					tmp = null;
 
 					const tableList = new List("table-list", {
-						valueNames: ["name", "source"]
+						valueNames: ["name", "source"],
 					});
 
 					$btnImport.on("click", () => {
@@ -2570,7 +2568,7 @@ function baseTool() {
 						sel.forEach(t => createTable(t));
 					});
 				});
-			}
+			},
 		},
 		{
 			name: "Token Avatar URL Fixer",
@@ -2593,7 +2591,6 @@ function baseTool() {
 				});
 			},
 			openFn: () => {
-
 				function replaceAll (str, search, replacement) {
 					return str.split(search).join(replacement);
 				}
@@ -2660,7 +2657,7 @@ function baseTool() {
 					});
 					window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
 				});
-			}
+			},
 		},
 		{
 			name: "Mass-Delete Pages",
@@ -2685,8 +2682,8 @@ function baseTool() {
 			},
 			openFn: () => {
 				function deletePage (model, pageList) {
-					if ($("#page-toolbar .availablepage[data-pageid=" + model.id + "]").remove()) {
-						var n = d20.Campaign.getPageIndex(model.id);
+					if ($(`#page-toolbar .availablepage[data-pageid=${model.id}]`).remove()) {
+						let n = d20.Campaign.getPageIndex(model.id);
 						if (model.thegraphics) {
 							model.thegraphics.massdelete = true;
 							model.thegraphics.backboneFirebase.reference.set(null);
@@ -2701,14 +2698,14 @@ function baseTool() {
 						}
 						let i = d20.Campaign.get("playerspecificpages");
 						let o = false;
-						_.each(i, function(e, n) {
+						_.each(i, function (e, n) {
 							if (e === model.id) {
 								delete i[n];
 								o = true;
 							}
 						});
 						o && d20.Campaign.save({
-							playerspecificpages: i
+							playerspecificpages: i,
 						});
 						model.destroy();
 						d20.Campaign.activePageIndex > n && (d20.Campaign.activePageIndex -= 1);
@@ -2734,7 +2731,7 @@ function baseTool() {
 				});
 
 				const pageList = new List("del-pages-list", {
-					valueNames: ["name", "page-id"]
+					valueNames: ["name", "page-id"],
 				});
 
 				const $cbAll = $win.find(`.select-all`).off("click").click(() => {
@@ -2757,7 +2754,7 @@ function baseTool() {
 					});
 					$cbAll.prop("checked", false);
 				});
-			}
+			},
 		},
 		{
 			name: "Quantum Token Entangler",
@@ -2807,14 +2804,14 @@ function baseTool() {
 					"scaleX",
 					"scaleY",
 					"fliph",
-					"flipv"
+					"flipv",
 				];
 				const SYNCABLE_ATTRS_PATH = [
 					"rotation",
 					"top",
 					"left",
 					"scaleX",
-					"scaleY"
+					"scaleY",
 				];
 
 				$win.data("VE_DO_ENTANGLE", (master) => {
@@ -2841,11 +2838,11 @@ function baseTool() {
 										slave.save();
 										return true;
 									} else {
-										console.warn(`Cound not find entangled token with ID "${id}", removing...`);
+										// eslint-disable-next-line no-console
+										console.warn(`Could not find entangled token with ID "${id}", removing...`);
 										anyUpdates = true;
 									}
 								});
-
 							}
 						}
 
@@ -2862,7 +2859,8 @@ function baseTool() {
 										slave.save();
 										return true;
 									} else {
-										console.warn(`Cound not find entangled path with ID "${id}", removing...`);
+										// eslint-disable-next-line no-console
+										console.warn(`Could not find entangled path with ID "${id}", removing...`);
 										anyUpdates = true;
 									}
 								});
@@ -2882,7 +2880,7 @@ function baseTool() {
 							.forEach(model => {
 								const PROPS = {
 									thegraphics: "entangledImages",
-									thepaths: "entangledPaths"
+									thepaths: "entangledPaths",
 								};
 								Object.keys(PROPS).forEach(prop => {
 									Object.values(PROPS).forEach(attrK => {
@@ -2895,6 +2893,7 @@ function baseTool() {
 								});
 							});
 					} else {
+						// eslint-disable-next-line no-console
 						console.log("Pages uninitialised, waiting...");
 						setTimeout(runInitial, 1000);
 					}
@@ -2991,8 +2990,8 @@ function baseTool() {
 						entity.save();
 						alert(`${count} entangle${count === 1 ? "" : "s"} cleared.`);
 					});
-			}
-		}
+			},
+		},
 	];
 
 	d20plus.tool.get = (toolId) => {
@@ -3017,10 +3016,8 @@ function baseTool() {
 				}).appendTo($wrp);
 				$toolsList.append($wrp);
 			} catch (e) {
-				console.error(`Failed to initialise tool "${t.name}"`);
-				setTimeout(() => {
-					throw e;
-				}, 1);
+				// eslint-disable-next-line no-console
+				console.error(`Failed to initialise tool "${t.name}"`, e);
 			}
 		});
 
@@ -3146,7 +3143,7 @@ function baseToolModule () {
 			});
 			$(`#d20plus-module-importer-progress`).dialog({
 				autoOpen: false,
-				resizable: false
+				resizable: false,
 			});
 			$("#d20plus-module-importer-5etools").dialog({
 				autoOpen: false,
@@ -3221,7 +3218,7 @@ function baseToolModule () {
 				maps: [],
 				playlists: [],
 				tracks: [],
-				rolltables: []
+				rolltables: [],
 			});
 
 			let selected = getFreshSelected();
@@ -3266,13 +3263,13 @@ function baseToolModule () {
 					const moduleData = data[prop] || [];
 					moduleData.sort((a, b) => SortUtil.ascSortLower(
 						(a.attributes && a.attributes.name) || a.name || a.title || "",
-						(b.attributes && a.attributes.name) || a.name || b.title || ""
+						(b.attributes && a.attributes.name) || a.name || b.title || "",
 					));
 
 					$lst.empty();
 					moduleData.forEach((m, i) => {
-						const img = lastDataType === "maps" ? m.attributes.thumbnail :
-							(lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
+						const img = lastDataType === "maps" ? m.attributes.thumbnail
+							: (lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
 
 						$lst.append(`
 									<label class="import-cb-label ${img ? `import-cb-label--img` : ""}" data-listid="${i}">
@@ -3284,7 +3281,7 @@ function baseToolModule () {
 					});
 
 					const entryList = new List("module-importer-list", {
-						valueNames: ["name"]
+						valueNames: ["name"],
 					});
 
 					$cbAll.prop("disabled", false).off("click").click(() => {
@@ -3376,7 +3373,7 @@ function baseToolModule () {
 						playlists: 0,
 						tracks: 0,
 						maps: mapTimeout,
-						rolltables: handoutTimeout
+						rolltables: handoutTimeout,
 					};
 
 					const addToJournal = (originalId, itId) => {
@@ -3438,12 +3435,12 @@ function baseToolModule () {
 												success: function (handout) {
 													handout.updateBlobs({
 														notes: entry.blobNotes,
-														gmnotes: entry.blobGmNotes
+														gmnotes: entry.blobGmNotes,
 													});
 
 													addToJournal(entry.attributes.id, handout.id);
-												}
-											}
+												},
+											},
 										);
 										break;
 									}
@@ -3461,18 +3458,19 @@ function baseToolModule () {
 													character.updateBlobs({
 														bio: entry.blobBio,
 														gmnotes: entry.blobGmNotes,
-														defaulttoken: entry.blobDefaultToken
+														defaulttoken: entry.blobDefaultToken,
 													});
 
 													addToJournal(entry.attributes.id, character.id);
-												}
-											}
+												},
+											},
 										);
 										break;
 									}
 									default: throw new Error(`Unhandled data type: ${prop}`);
 								}
 							} catch (e) {
+								// eslint-disable-next-line no-console
 								console.error(e);
 
 								errCount++;
@@ -3523,7 +3521,7 @@ function baseToolModule () {
 					tmp = null;
 
 					const list5etools = new List("module-importer-list-5etools", {
-						valueNames: ["name"]
+						valueNames: ["name"],
 					});
 
 					$btnLoad.on("click", () => {
@@ -3541,11 +3539,13 @@ function baseToolModule () {
 							})
 							.catch(e => {
 								$wrpDataLoadingMessage.html("");
+								// eslint-disable-next-line no-console
 								console.error(e);
 								alert(`Failed to load data! See the console for more information.`);
 							});
 					});
 				}).catch(e => {
+					// eslint-disable-next-line no-console
 					console.error(e);
 					alert(`Failed to load data! See the console for more information.`);
 				});
@@ -3571,7 +3571,7 @@ function baseToolModule () {
 									<span class="name col-5 readable">${t.name}</span>
 									<span class="version col-1 readable" style="text-align: center;">${t.version || ""}</span>
 									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? MiscUtil.dateToStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
-									<span class="size col-1 readable" style="text-align: right;">${ t.size ? d20plus.ut.getReadableFileSizeString(t.size) : ""}</span>
+									<span class="size col-1 readable" style="text-align: right;">${t.size ? d20plus.ut.getReadableFileSizeString(t.size) : ""}</span>
 									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
 								</label>
 							`;
@@ -3580,7 +3580,7 @@ function baseToolModule () {
 					tmp = null;
 
 					const list5etools = new List("module-importer-list-5etools", {
-						valueNames: ["name"]
+						valueNames: ["name"],
 					});
 
 					$btnLoad.on("click", () => {
@@ -3599,11 +3599,13 @@ function baseToolModule () {
 							})
 							.catch(e => {
 								$wrpDataLoadingMessage.html("");
+								// eslint-disable-next-line no-console
 								console.error(e);
 								alert(`Failed to load data! See the console for more information.`);
 							});
 					});
 				}).catch(e => {
+					// eslint-disable-next-line no-console
 					console.error(e);
 					alert(`Failed to load data! See the console for more information.`);
 				});
@@ -3614,7 +3616,7 @@ function baseToolModule () {
 			$btnLoadFile.off("click").click(async () => {
 				const data = await DataUtil.pUserUpload();
 				// Due to the new util functon, need to account for data being an array
-				data.forEach(d => handleLoadedData(d));
+				data.jsons.forEach(d => handleLoadedData(d));
 			});
 
 			const $winExportP1 = $("#d20plus-module-importer-select-exports-p1");
@@ -3643,11 +3645,13 @@ function baseToolModule () {
 
 					const catsToExport = new Set(CATS.filter(it => isCatSelected(it)));
 
+					// eslint-disable-next-line no-console
 					console.log("Exporting journal...");
 					const journal = d20plus.journal.getExportableJournal();
 
 					let maps;
 					if (catsToExport.has("maps")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting maps..."); // shoutouts to Stormy
 						maps = await Promise.all(d20.Campaign.pages.models.map(async map => {
 							const getOut = () => {
@@ -3655,7 +3659,7 @@ function baseToolModule () {
 									attributes: map.attributes,
 									graphics: (map.thegraphics || []).map(g => g.attributes),
 									text: (map.thetexts || []).map(t => t.attributes),
-									paths: (map.thepaths || []).map(p => p.attributes)
+									paths: (map.thepaths || []).map(p => p.attributes),
 								};
 							};
 
@@ -3673,33 +3677,37 @@ function baseToolModule () {
 
 					let rolltables;
 					if (catsToExport.has("rolltables")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting rolltables...");
 						rolltables = d20.Campaign.rollabletables.models.map(rolltable => ({
 							attributes: rolltable.attributes,
-							tableitems: (rolltable.tableitems.models || []).map(tableitem => tableitem.attributes)
+							tableitems: (rolltable.tableitems.models || []).map(tableitem => tableitem.attributes),
 						}));
 					}
 
 					let decks;
 					if (catsToExport.has("decks")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting decks...");
 						decks = d20.Campaign.decks.models.map(deck => {
 							if (deck.name && deck.name.toLowerCase() === "playing cards") return;
 							return {
 								attributes: deck.attributes,
-								cards: (deck.cards.models || []).map(card => card.attributes)
+								cards: (deck.cards.models || []).map(card => card.attributes),
 							};
 						}).filter(it => it);
 					}
 
 					let playlists;
 					if (catsToExport.has("playlists")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting jukebox playlists...");
 						playlists = d20plus.jukebox.getExportablePlaylists();
 					}
 
 					let tracks;
 					if (catsToExport.has("tracks")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting jukebox tracks...");
 						tracks = d20plus.jukebox.getExportableTracks();
 					}
@@ -3717,6 +3725,7 @@ function baseToolModule () {
 					let characters;
 					if (catsToExport.has("characters")) {
 						anyBlobs = true;
+						// eslint-disable-next-line no-console
 						console.log("Exporting characters...");
 						characters = d20.Campaign.characters.models.map(character => {
 							const out = {
@@ -3736,12 +3745,13 @@ function baseToolModule () {
 					let handouts;
 					if (catsToExport.has("handouts")) {
 						anyBlobs = true;
+						// eslint-disable-next-line no-console
 						console.log("Exporting handouts...");
 						handouts = d20.Campaign.handouts.models.map(handout => {
 							if (handout.attributes.name === ART_HANDOUT || handout.attributes.name === CONFIG_HANDOUT) return;
 
 							const out = {
-								attributes: handout.attributes
+								attributes: handout.attributes,
 							};
 							blobCount += 2;
 							handout._getLatestBlob("notes", (data) => handleBlob(out, "blobNotes", data));
@@ -3750,10 +3760,13 @@ function baseToolModule () {
 						}).filter(it => it);
 					}
 
+					// eslint-disable-next-line no-console
 					if (anyBlobs) console.log("Waiting for blobs...");
 					onBlobsReady = () => {
+						// eslint-disable-next-line no-console
 						if (anyBlobs) console.log("Blobs are ready!");
 
+						// eslint-disable-next-line no-console
 						console.log("Preparing payload");
 
 						const payload = {
@@ -3768,9 +3781,10 @@ function baseToolModule () {
 						if (playlists) payload.playlists = playlists;
 						if (tracks) payload.tracks = tracks;
 
-						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^\w\-]/g, "_");
+						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^-\w]/g, "_");
 						const data = JSON.stringify(payload, null, "\t");
 
+						// eslint-disable-next-line no-console
 						console.log("Saving");
 						const blob = new Blob([data], {type: "application/json"});
 						d20plus.ut.saveAs(blob, `${filename}.json`);
@@ -3778,13 +3792,12 @@ function baseToolModule () {
 					if (!anyBlobs || blobCount === 0) onBlobsReady();
 				});
 
-
 				// TODO
 				/*
 				macro
 				 */
 			});
-		}
+		},
 	})
 }
 
@@ -3872,7 +3885,7 @@ function baseToolUnlock () {
 				// init list library
 				const unlockList = new List("token-unlocker-list-container", {
 					valueNames: ["name"],
-					listClass: "unlock-list"
+					listClass: "unlock-list",
 				});
 
 				$cbAll.prop("checked", false);
@@ -3910,7 +3923,7 @@ function baseToolUnlock () {
 			}
 
 			populateList();
-		}
+		},
 	})
 }
 
@@ -4044,7 +4057,7 @@ function baseToolAnimator () {
 					_hasRun: this._hasRun,
 					_offset: this._offset,
 					_progress: this._progress,
-					_snapshotDiff: this._snapshotDiff
+					_snapshotDiff: this._snapshotDiff,
 				};
 				const out = {};
 				Object.entries(rawOut).forEach(([k, v]) => {
@@ -4078,7 +4091,11 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, x, y, z
+					startTime,
+					duration,
+					x,
+					y,
+					z,
 				})
 			};
 
@@ -4096,7 +4113,7 @@ function baseToolAnimator () {
 						total += pow * Number(val);
 						pow = pow * 10;
 					} else {
-						stack += statuses[i] + ",";
+						stack += `${statuses[i]},`;
 					}
 				}
 
@@ -4204,7 +4221,7 @@ function baseToolAnimator () {
 					// based on "d20.clipboard.doCopy"
 					const graphic = token.view.graphic;
 					const attrs = {
-						...MiscUtil.copy(graphic)
+						...MiscUtil.copy(graphic),
 					};
 
 					const modelattrs = {};
@@ -4216,13 +4233,13 @@ function baseToolAnimator () {
 						attrs,
 						modelattrs,
 						oldid: token.id,
-						groupwith: ""
+						groupwith: "",
 					};
 
 					// based on "d20.clipboard.doPaste"
 					let childToken;
 					const page = d20.Campaign.pages.models.find(model => model.thegraphics.models.find(it => it.id === token.id));
-					if ("image" === cpy.type) {
+					if (cpy.type === "image") {
 						attrs.imgsrc = attrs.src;
 						childToken = page.addImage(attrs, true, false, false, false, true);
 						if (cpy.modelattrs && cpy.modelattrs.represents) {
@@ -4231,7 +4248,7 @@ function baseToolAnimator () {
 							if (char) {
 								const updateBarN = (n) => {
 									const prop = `bar${n}_link`;
-									if ("" !== cpy.modelattrs[prop] && (-1 !== cpy.modelattrs[prop].indexOf("sheetattr_"))) {
+									if (cpy.modelattrs[prop] !== "" && (cpy.modelattrs[prop].indexOf("sheetattr_") !== -1)) {
 										const l = cpy.modelattrs[prop].split("sheetattr_")[1];
 										setTimeout(() => char.updateTokensByName(l), 0.5);
 									} else {
@@ -4260,7 +4277,8 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, childAnimation
+					startTime,
+					childAnimation,
 				})
 			};
 		},
@@ -4271,7 +4289,9 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, degrees
+					startTime,
+					duration,
+					degrees,
 				})
 			};
 		},
@@ -4311,7 +4331,7 @@ function baseToolAnimator () {
 				if (alpha >= startTime) {
 					if (this._snapshotDiff == null) {
 						this._snapshotDiff = {
-							degrees: (degrees || 0) - Number(token.attributes.rotation || 0)
+							degrees: (degrees || 0) - Number(token.attributes.rotation || 0),
 						};
 					}
 
@@ -4342,7 +4362,9 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, isHorizontal, isVertical
+					startTime,
+					isHorizontal,
+					isVertical,
 				})
 			};
 		},
@@ -4389,7 +4411,10 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, scaleFactorX, scaleFactorY
+					startTime,
+					duration,
+					scaleFactorX,
+					scaleFactorY,
 				})
 			};
 		},
@@ -4499,7 +4524,8 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, layer
+					startTime,
+					layer,
 				})
 			};
 		},
@@ -4510,7 +4536,9 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, prop, value
+					startTime,
+					prop,
+					value,
 				})
 			};
 		},
@@ -4526,6 +4554,7 @@ function baseToolAnimator () {
 
 					if (prop != null) {
 						const curNum = Number(token.attributes[prop]);
+						// eslint-disable-next-line no-eval
 						token.attributes[prop] = (isNaN(curNum) ? 0 : curNum) + eval(value);
 					}
 
@@ -4564,7 +4593,11 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, duration, lightRadius, dimStart, degrees
+					startTime,
+					duration,
+					lightRadius,
+					dimStart,
+					degrees,
 				})
 			};
 		},
@@ -4655,7 +4688,8 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, macroName
+					startTime,
+					macroName,
 				})
 			};
 		},
@@ -4685,39 +4719,40 @@ function baseToolAnimator () {
 			this.serialize = () => {
 				return cleanNulls({
 					...this._serialize(),
-					startTime, animation
+					startTime,
+					animation,
 				})
 			};
-		}
+		},
 		// endregion animations
 	};
 
-	function Command (line, error, cons = null, parsed = null) {
+	function Command (line, error, Cons = null, parsed = null) {
 		this.line = line;
 		this.error = error;
-		this.isRunnable = !!cons;
+		this.isRunnable = !!Cons;
 		this.parsed = parsed;
 
 		this.getInstance = function () {
-			return new cons();
+			return new Cons();
 		};
 	}
 
-	Command.errInvalidArgCount = function (line, ...counts) { return new Command(line, `Invalid argument count; expected ${counts.joinConjunct(", ", " or ")}`)};
-	Command.errPropNum = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a number`)};
-	Command.errPropBool = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a boolean`)};
-	Command.errPropLayer = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a layer (valid layers are: ${d20plus.ut.LAYERS.joinConjunct(", ", " or ")})`)};
-	Command.errPropToken = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a token property`)};
-	Command.errValNeg = function (line, prop, val) { return new Command(line, `${prop} "${val}" was negative`)};
+	Command.errInvalidArgCount = function (line, ...counts) { return new Command(line, `Invalid argument count; expected ${counts.joinConjunct(", ", " or ")}`) };
+	Command.errPropNum = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a number`) };
+	Command.errPropBool = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a boolean`) };
+	Command.errPropLayer = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a layer (valid layers are: ${d20plus.ut.LAYERS.joinConjunct(", ", " or ")})`) };
+	Command.errPropToken = function (line, prop, val) { return new Command(line, `${prop} "${val}" was not a token property`) };
+	Command.errValNeg = function (line, prop, val) { return new Command(line, `${prop} "${val}" was negative`) };
 
-	Command.errStartNum = function (line, val) { return Command.errPropNum(line, "start time", val)};
-	Command.errStartNeg = function (line, val) { return Command.errValNeg(line, "start time", val)};
-	Command.errDurationNum = function (line, val) { return Command.errPropNum(line, "duration", val)};
-	Command.errDurationNeg = function (line, val) { return Command.errValNeg(line, "duration", val)};
+	Command.errStartNum = function (line, val) { return Command.errPropNum(line, "start time", val) };
+	Command.errStartNeg = function (line, val) { return Command.errValNeg(line, "start time", val) };
+	Command.errDurationNum = function (line, val) { return Command.errPropNum(line, "duration", val) };
+	Command.errDurationNeg = function (line, val) { return Command.errValNeg(line, "duration", val) };
 
 	Command.fromString = function (line) {
 		const cleanLine = line
-			.split("/\/\//g")[0] // handle comments
+			.split(/\/\//g)[0] // handle comments
 			.trim();
 		const tokens = cleanLine.split(/ +/g).filter(Boolean);
 		if (!tokens.length) return new Command(line);
@@ -4752,8 +4787,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							x: nX,
 							y: nY,
-							z: nZ
-						}
+							z: nZ,
+						},
 					);
 				} else {
 					return new Command(
@@ -4766,8 +4801,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							x: nX,
 							y: nY,
-							z: nZ
-						}
+							z: nZ,
+						},
 					);
 				}
 			}
@@ -4794,8 +4829,8 @@ function baseToolAnimator () {
 							_type: "Rotate",
 							start: nStart,
 							duration: nDuration,
-							degrees: nRot
-						}
+							degrees: nRot,
+						},
 					);
 				} else {
 					return new Command(
@@ -4806,8 +4841,8 @@ function baseToolAnimator () {
 							_type: "RotateExact",
 							start: nStart,
 							duration: nDuration,
-							degrees: nRot
-						}
+							degrees: nRot,
+						},
 					);
 				}
 			}
@@ -4827,8 +4862,8 @@ function baseToolAnimator () {
 					{
 						_type: "Copy",
 						start: nStart,
-						animation: childAnim
-					}
+						animation: childAnim,
+					},
 				);
 			}
 
@@ -4853,8 +4888,8 @@ function baseToolAnimator () {
 							_type: "Flip",
 							start: nStart,
 							flipH: flipH,
-							flipV: flipV
-						}
+							flipV: flipV,
+						},
 					);
 				} else {
 					return new Command(
@@ -4865,8 +4900,8 @@ function baseToolAnimator () {
 							_type: "FlipExact",
 							start: nStart,
 							flipH: flipH,
-							flipV: flipV
-						}
+							flipV: flipV,
+						},
 					);
 				}
 			}
@@ -4898,8 +4933,8 @@ function baseToolAnimator () {
 							start: nStart,
 							duration: nDuration,
 							scaleX: nScaleX,
-							scaleY: nScaleY
-						}
+							scaleY: nScaleY,
+						},
 					);
 				} else {
 					return new Command(
@@ -4911,8 +4946,8 @@ function baseToolAnimator () {
 							start: nStart,
 							duration: nDuration,
 							scaleX: nScaleX,
-							scaleY: nScaleY
-						}
+							scaleY: nScaleY,
+						},
 					);
 				}
 			}
@@ -4933,8 +4968,8 @@ function baseToolAnimator () {
 					{
 						_type: "Layer",
 						start: nStart,
-						layer: layer
-					}
+						layer: layer,
+					},
 				);
 			}
 
@@ -4966,8 +5001,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							lightRadius: nLightRadius,
 							dimStart: nDimStart,
-							degrees: nDegrees
-						}
+							degrees: nDegrees,
+						},
 					);
 				} else {
 					return new Command(
@@ -4980,8 +5015,8 @@ function baseToolAnimator () {
 							duration: nDuration,
 							lightRadius: nLightRadius,
 							dimStart: nDimStart,
-							degrees: nDegrees
-						}
+							degrees: nDegrees,
+						},
 					);
 				}
 			}
@@ -4997,6 +5032,7 @@ function baseToolAnimator () {
 				if (prop != null && !d20plus.anim.VALID_PROP_TOKEN.has(prop)) return Command.errPropToken(line, "prop", prop);
 				let val = "";
 				if (tokens.length > 2) val = tokens.slice(2, tokens.length).join(" "); // combine trailing tokens
+				// eslint-disable-next-line no-console
 				try { val = JSON.parse(val); } catch (ignored) { console.warn(`Failed to parse "${val}" as JSON, treating as raw string...`) }
 
 				if (op === "propSum") {
@@ -5008,8 +5044,8 @@ function baseToolAnimator () {
 							_type: "SumProperty",
 							start: nStart,
 							prop: prop,
-							value: val
-						}
+							value: val,
+						},
 					);
 				} else {
 					return new Command(
@@ -5020,8 +5056,8 @@ function baseToolAnimator () {
 							_type: "SetProperty",
 							start: nStart,
 							prop: prop,
-							value: val
-						}
+							value: val,
+						},
 					);
 				}
 			}
@@ -5042,8 +5078,8 @@ function baseToolAnimator () {
 					{
 						_type: "TriggerMacro",
 						start: nStart,
-						macro: macro
-					}
+						macro: macro,
+					},
 				);
 			}
 
@@ -5063,8 +5099,8 @@ function baseToolAnimator () {
 					{
 						_type: "TriggerAnimation",
 						start: nStart,
-						animation: animation
-					}
+						animation: animation,
+					},
 				);
 			}
 		}
@@ -5295,7 +5331,7 @@ function baseToolAnimator () {
 		_getUidItems (fromObj) {
 			return Object.entries(fromObj).map(([k, v]) => ({
 				uid: k,
-				name: v.name
+				name: v.name,
 			}))
 		},
 
@@ -5340,7 +5376,7 @@ function baseToolAnimator () {
 							click: function () {
 								$(this).dialog("close");
 								$dialog.remove();
-							}
+							},
 						},
 						{
 							text: "OK",
@@ -5351,9 +5387,9 @@ function baseToolAnimator () {
 
 								if (~selected) resolve(selected);
 								else resolve(null);
-							}
-						}
-					]
+							},
+						},
+					],
 				});
 			});
 		},
@@ -5363,7 +5399,7 @@ function baseToolAnimator () {
 				this.getAnimations.bind(this),
 				`No animations available! Use the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Animation",
-				defaultSelUid
+				defaultSelUid,
 			);
 		},
 
@@ -5372,7 +5408,7 @@ function baseToolAnimator () {
 				this.getScenes.bind(this),
 				`No scenes available! Use Edit Scenes in the Token Animator tool to define some first. See <a href="https://wiki.5e.tools/index.php/Feature:_Animator" target="_blank">the Wiki for help.</a>`,
 				"Select Scene",
-				defaultSelUid
+				defaultSelUid,
 			);
 		},
 
@@ -5399,7 +5435,7 @@ function baseToolAnimator () {
 			Object.entries(this._anims).forEach(([k, v]) => {
 				saveableAnims[k] = {
 					...v,
-					lines: [...(v.lines || [])].map(it => typeof it === "string" ? it : it.line)
+					lines: [...(v.lines || [])].map(it => typeof it === "string" ? it : it.line),
 				}
 			});
 
@@ -5455,6 +5491,7 @@ function baseToolAnimator () {
 				data = await DataUtil.pUserUpload();
 			} catch (e) {
 				d20plus.ut.chatLog("File was not valid JSON!");
+				// eslint-disable-next-line no-console
 				console.error(e);
 				return;
 			}
@@ -5482,6 +5519,7 @@ function baseToolAnimator () {
 				});
 
 				if (messages.length) {
+					// eslint-disable-next-line no-console
 					console.log(messages.join("\n"));
 					return d20plus.ut.chatLog(messages.join("\n"))
 				}
@@ -5531,7 +5569,7 @@ function baseToolAnimator () {
 					this._shared_getNextName.bind(this, this._anims),
 					this._edit_getValidationMessage.bind(this),
 					this._main_addAnim.bind(this),
-					"uid", "name", "lines" // required properties
+					"uid", "name", "lines", // required properties
 				);
 			});
 
@@ -5574,7 +5612,7 @@ function baseToolAnimator () {
 				const out = {
 					animations: this._anim_list.items
 						.filter(it => $(it.elm).find(`input`).prop("checked"))
-						.map(it => this._main_getExportableAnim(this._anims[it.values().uid]))
+						.map(it => this._main_getExportableAnim(this._anims[it.values().uid])),
 				};
 				d20plus.ut.saveAsJson("animations", out);
 			});
@@ -5607,7 +5645,7 @@ function baseToolAnimator () {
 			Object.values(this._anims).forEach(anim => this._$list.append(this._main_getListItem(anim)));
 
 			this._anim_list = new List("token-animator-list-container", {
-				valueNames: ["name", "uid"]
+				valueNames: ["name", "uid"],
 			});
 		},
 
@@ -5627,7 +5665,7 @@ function baseToolAnimator () {
 			return {
 				uid: this._main_getNextId(),
 				name: this._shared_getNextName(this._anims, "new_animation"),
-				lines: []
+				lines: [],
 			}
 		},
 
@@ -5679,6 +5717,7 @@ function baseToolAnimator () {
 		},
 
 		_scene_addScene (scene) {
+			// eslint-disable-next-line no-console
 			if (scene == null) return console.error(`Scene was null!`);
 
 			const lastSearch = d20plus.ut.getSearchTermAndReset(this._scene_list);
@@ -5736,8 +5775,8 @@ function baseToolAnimator () {
 			this._scene_list = new List("token-animator-scene-list-container", {
 				valueNames: [
 					"name",
-					"uid"
-				]
+					"uid",
+				],
 			});
 		},
 
@@ -5766,14 +5805,14 @@ function baseToolAnimator () {
 					this._shared_getNextName.bind(this, this._scenes),
 					this._scene_getValidationMessage.bind(this),
 					this._scene_addScene.bind(this),
-					"uid", "name", "anims" // required properties
+					"uid", "name", "anims", // required properties
 				);
 			});
 
 			this._scene_$btnExport.click(() => {
 				const out = {
 					scenes: this._scene_getSelected()
-						.map(it => this._scenes[it.values().uid])
+						.map(it => this._scenes[it.values().uid]),
 				};
 				d20plus.ut.saveAsJson("scenes", out);
 			});
@@ -5799,7 +5838,7 @@ function baseToolAnimator () {
 			return {
 				uid: this._scene_getNextId(),
 				name: this._shared_getNextName(this._scenes, "new_scene"),
-				anims: []
+				anims: [],
 				/*
 				Anims array structure:
 				[
@@ -5868,14 +5907,14 @@ function baseToolAnimator () {
 				height: 600,
 				close: () => {
 					setTimeout(() => $winEditor.remove())
-				}
+				},
 			});
 		},
 
 		_scene_$getEditorRow (editorOptions, scene, animMeta) {
 			if (!animMeta) {
 				animMeta = {
-					offset: 0
+					offset: 0,
 				};
 				scene.anims.push(animMeta);
 			}
@@ -5899,7 +5938,7 @@ function baseToolAnimator () {
 									.map(it => ({
 										id: it.id,
 										name: it.attributes.name || "(Unnamed)",
-										imgsrc: it.attributes.imgsrc
+										imgsrc: it.attributes.imgsrc,
 									}))
 									.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
 								tokens.forEach(it => {
@@ -5915,10 +5954,10 @@ function baseToolAnimator () {
 												<span title="${it.name}" class="anm-scene__wrp-token-name-inner">${it.name}</span>
 											</div>
 										</div>`.click(() => {
-										$wrpTokens.find(`.anm-scene__wrp-token`).removeClass(`anm-scene__wrp-token--active`);
-										$wrpToken.addClass(`anm-scene__wrp-token--active`);
-										lastSelectedTokenId = it.id;
-									}).appendTo($wrpTokens);
+		$wrpTokens.find(`.anm-scene__wrp-token`).removeClass(`anm-scene__wrp-token--active`);
+		$wrpToken.addClass(`anm-scene__wrp-token--active`);
+		lastSelectedTokenId = it.id;
+	}).appendTo($wrpTokens);
 								});
 							} else $wrpTokens.append("There are no tokens on this page!");
 						});
@@ -5946,7 +5985,7 @@ function baseToolAnimator () {
 								click: function () {
 									$(this).dialog("close");
 									$dialog.remove();
-								}
+								},
 							},
 							{
 								text: "OK",
@@ -5959,11 +5998,11 @@ function baseToolAnimator () {
 										$wrpToken.html(getTokenPart());
 										$wrpTokenName.html(getTokenNamePart());
 									}
-								}
-							}
+								},
+							},
 						],
 						width: 640,
-						height: 480
+						height: 480,
 					});
 				});
 			const getTokenPart = () => {
@@ -6052,14 +6091,14 @@ function baseToolAnimator () {
 			const pageH = d20.Campaign.activePage().attributes.height * 70;
 
 			const outOfBounds = d20.Campaign.activePage().thegraphics.models.filter(tokenModel => {
-				return tokenModel.view.graphic.scaleX < 0.01 ||
-					tokenModel.view.graphic.scaleX > 50.0 ||
-					tokenModel.view.graphic.scaleY < 0.01 ||
-					tokenModel.view.graphic.scaleY > 50.0 ||
-					tokenModel.attributes.left < 0 ||
-					tokenModel.attributes.left > pageW ||
-					tokenModel.attributes.top < 0 ||
-					tokenModel.attributes.top > pageH;
+				return tokenModel.view.graphic.scaleX < 0.01
+					|| tokenModel.view.graphic.scaleX > 50.0
+					|| tokenModel.view.graphic.scaleY < 0.01
+					|| tokenModel.view.graphic.scaleY > 50.0
+					|| tokenModel.attributes.left < 0
+					|| tokenModel.attributes.left > pageW
+					|| tokenModel.attributes.top < 0
+					|| tokenModel.attributes.top > pageH;
 			});
 
 			outOfBounds.forEach(token => {
@@ -6081,7 +6120,7 @@ function baseToolAnimator () {
 					"page",
 					"tokenName",
 					"_tokenId",
-				]
+				],
 			});
 		},
 
@@ -6165,7 +6204,7 @@ function baseToolAnimator () {
 						tokenMeta.token.attributes.name,
 						d20plus.anim.animatorTool.getAnimation(animUid).name,
 						tokenId,
-						animUid
+						animUid,
 					)
 				});
 			});
@@ -6178,8 +6217,8 @@ function baseToolAnimator () {
 					"tokenName",
 					"animName",
 					"_tokenId",
-					"_animUid"
-				]
+					"_animUid",
+				],
 			});
 		},
 
@@ -6229,7 +6268,7 @@ function baseToolAnimator () {
 				height: 600,
 				close: () => {
 					setTimeout(() => $winEditor.remove())
-				}
+				},
 			});
 
 			const $iptName = $winEditor.find(`[name="ipt-name"]`).disableSpellcheck();
@@ -6279,7 +6318,7 @@ function baseToolAnimator () {
 
 					return {
 						text,
-						className: `anm-edit__gui-row-name--${clean}`
+						className: `anm-edit__gui-row-name--${clean}`,
 					}
 				};
 
@@ -6341,7 +6380,7 @@ function baseToolAnimator () {
 										click: function () {
 											$(this).dialog("close");
 											$dialog.remove();
-										}
+										},
 									},
 									{
 										text: "OK",
@@ -6352,9 +6391,9 @@ function baseToolAnimator () {
 
 											if (~selected) resolve((d20plus.anim.animatorTool.getAnimation(selected) || {}).name);
 											else resolve(null);
-										}
-									}
-								]
+										},
+									},
+								],
 							});
 						});
 
@@ -6368,7 +6407,7 @@ function baseToolAnimator () {
 					});
 			};
 
-			const gui_$getWrapped = (it, width, bold) =>  $$`<div class="col-${width} flex-vh-center ${bold ? "bold" : ""}">${it}</div>`;
+			const gui_$getWrapped = (it, width, bold) => $$`<div class="col-${width} flex-vh-center ${bold ? "bold" : ""}">${it}</div>`;
 
 			const gui_doAddRow = (myLines, line) => {
 				const parsed = line.parsed;
@@ -6587,8 +6626,7 @@ function baseToolAnimator () {
 						const doUpdate = () => {
 							baseMeta.doUpdate();
 							parsed.prop = $selProp.val();
-							try { parsed.value = JSON.parse($iptVal().trim()); }
-							catch (ignored) { parsed.value = $iptVal.val(); }
+							try { parsed.value = JSON.parse($iptVal().trim()); } catch (ignored) { parsed.value = $iptVal.val(); }
 							line.line = d20plus.anim.lineFromParsed(parsed);
 							parsed._type = $selMode.val();
 							baseMeta.$dispName.text(parsed._type);
@@ -6669,8 +6707,8 @@ function baseToolAnimator () {
 
 				myLines.forEach(line => {
 					if (line.error) {
-						console.error(`Failed to create GUI row from line "${line.line}"!`);
-						console.error(line.error)
+						// eslint-disable-next-line no-console
+						console.error(`Failed to create GUI row from line "${line.line}"!`, line.error);
 					} else gui_doAddRow(myLines, line);
 				});
 			};
@@ -6681,7 +6719,7 @@ function baseToolAnimator () {
 					const toValidate = {
 						uid: anim.uid, // pass out UID, so the validator can ignore our old data when checking duplicate names
 						name: $iptName.val(),
-						lines: $iptLines.val().split("\n")
+						lines: $iptLines.val().split("\n"),
 					};
 					return this._edit_getValidationMessage(toValidate);
 				}
@@ -6750,7 +6788,7 @@ function baseToolAnimator () {
 								click: function () {
 									$(this).dialog("close");
 									$dialog.remove();
-								}
+								},
 							},
 							{
 								text: "OK",
@@ -6763,9 +6801,9 @@ function baseToolAnimator () {
 										resolve(_KEYS[ix]);
 										lastSelCommand = String(ix);
 									} else resolve(null);
-								}
-							}
-						]
+								},
+							},
+						],
 					});
 				});
 
@@ -6847,7 +6885,7 @@ function baseToolAnimator () {
 	}
 
 	d20plus.anim.animator = {
-	   /*
+		/*
 		_tracker: {
 			tokenId: {
 				token: {...}, // Roll20 token
@@ -6876,11 +6914,11 @@ function baseToolAnimator () {
 			const queue = d20plus.anim.animatorTool.getAnimQueue(anim, options.offset || 0);
 
 			this._tracker[token.id] = this._tracker[token.id] || {token, active: {}};
-			const time = (new Date).getTime();
+			const time = (new Date()).getTime();
 			this._tracker[token.id].active[animUid] = {
 				queue,
 				start: time,
-				lastTick: time
+				lastTick: time,
 			};
 		},
 
@@ -6937,7 +6975,7 @@ function baseToolAnimator () {
 				Object.entries(tokenMeta.active).forEach(([animUid, state]) => {
 					saveableTokenMeta.active[animUid] = {
 						queue: state.queue.map(it => it.serialize()),
-						lastAlpha: state.lastAlpha
+						lastAlpha: state.lastAlpha,
 					};
 				});
 
@@ -6945,7 +6983,7 @@ function baseToolAnimator () {
 			});
 
 			Campaign.save({
-				bR20tool__anim_running: toSave
+				bR20tool__anim_running: toSave,
 			});
 		},
 
@@ -6960,6 +6998,7 @@ function baseToolAnimator () {
 			Object.entries(saved).forEach(([tokenId, savedTokenMeta]) => {
 				// load real token
 				const token = d20plus.ut.getTokenById(tokenId);
+				// eslint-disable-next-line no-console
 				if (!token) return console.log(`Token ${tokenId} not found!`);
 				const tokenMeta = {};
 				tokenMeta.token = token;
@@ -6967,12 +7006,13 @@ function baseToolAnimator () {
 				const active = {};
 				Object.entries(savedTokenMeta.active).forEach(([animUid, savedState]) => {
 					const anim = d20plus.anim.animatorTool.getAnimation(animUid);
+					// eslint-disable-next-line no-console
 					if (!anim) return console.log(`Animation ${animUid} not found!`);
 
 					active[animUid] = {
 						queue: savedState.queue.map(it => d20plus.anim.deserialize(it)),
 						start: time - savedState.lastAlpha,
-						lastTick: time
+						lastTick: time,
 					}
 				});
 
@@ -7014,7 +7054,7 @@ function baseToolAnimator () {
 								tokenMeta.token,
 								alpha,
 								delta,
-								instance.queue
+								instance.queue,
 							) || anyModification;
 
 							if (instance.queue[i].hasRun()) {
@@ -7118,7 +7158,7 @@ function baseToolAnimator () {
 		"adv_fow_view_distance",
 		"groupwith",
 		"sides", // pipe-separated list of `escape`d image URLs
-		"currentSide"
+		"currentSide",
 	];
 	d20plus.anim.VALID_PROP_TOKEN = new Set(d20plus.anim._PROP_TOKEN);
 
@@ -7185,7 +7225,7 @@ function d20plusArt () {
 			// init list library
 			const artList = new List("art-list-container", {
 				valueNames: ["name"],
-				listClass: "artlist"
+				listClass: "artlist",
 			});
 
 			const $btnAdd = $(`#art-list-add-btn`);
@@ -7219,32 +7259,30 @@ function d20plusArt () {
 					const massUrls = $iptUrls.val();
 					const spl = massUrls.split("\n").map(s => s.trim()).filter(s => s);
 					if (!spl.length) return;
-					else {
-						const delim = "---";
-						const toAdd = [];
-						for (const s of spl) {
-							if (!s.includes(delim)) {
+					const delim = "---";
+					const toAdd = [];
+					for (const s of spl) {
+						if (!s.includes(delim)) {
+							alert(`Badly formatted line: ${s}`);
+							return;
+						} else {
+							const parts = s.split(delim);
+							if (parts.length !== 2) {
 								alert(`Badly formatted line: ${s}`);
 								return;
 							} else {
-								const parts = s.split(delim);
-								if (parts.length !== 2) {
-									alert(`Badly formatted line: ${s}`);
-									return;
-								} else {
-									toAdd.push({
-										name: parts[0],
-										url: parts[1]
-									});
-								}
+								toAdd.push({
+									name: parts[0],
+									url: parts[1],
+								});
 							}
 						}
-						toAdd.forEach(a => {
-							$artList.append(getArtLi(a.name, a.url));
-						});
-						refreshCustomArtList();
-						$("#d20plus-artmassadd").dialog("close");
 					}
+					toAdd.forEach(a => {
+						$artList.append(getArtLi(a.name, a.url));
+					});
+					refreshCustomArtList();
+					$("#d20plus-artmassadd").dialog("close");
 				});
 			});
 
@@ -7288,8 +7326,8 @@ function d20plusArt () {
 				return $liArt;
 			}
 
-			function deleteCustomArt (name) {			
-				artList.remove('name', name)
+			function deleteCustomArt (name) {
+				artList.remove("name", name)
 				d20plus.art.custom.splice(d20plus.art.custom.findIndex(i => i.name === name), 1);
 				makeDraggables();
 				d20plus.art.saveToHandout();
@@ -7302,7 +7340,7 @@ function d20plusArt () {
 					const $ele = $(i.elm);
 					custom.push({
 						name: $ele.find(`.name`).text(),
-						url: $ele.find(`.url`).text()
+						url: $ele.find(`.url`).text(),
 					});
 				});
 				d20plus.art.custom = custom;
@@ -7316,7 +7354,7 @@ function d20plusArt () {
 					revert: true,
 					revertDuration: 0,
 					helper: "clone",
-					appendTo: "body"
+					appendTo: "body",
 				})
 			}
 		},
@@ -7326,20 +7364,20 @@ function d20plusArt () {
 			if (!handout) {
 				d20.Campaign.handouts.create({
 					name: ART_HANDOUT,
-					archived: true
+					archived: true,
 				}, {
 					success: function (handout) {
 						notecontents = "This handout is used to store custom art URLs.";
 
 						const gmnotes = JSON.stringify(d20plus.art.custom);
 						handout.updateBlobs({notes: notecontents, gmnotes: gmnotes});
-						handout.save({notes: (new Date).getTime(), inplayerjournals: ""});
-					}
+						handout.save({notes: (new Date()).getTime(), inplayerjournals: ""});
+					},
 				});
 			} else {
 				const gmnotes = JSON.stringify(d20plus.art.custom);
 				handout.updateBlobs({gmnotes: gmnotes});
-				handout.save({notes: (new Date).getTime()});
+				handout.save({notes: (new Date()).getTime()});
 			}
 		},
 
@@ -7360,7 +7398,7 @@ function d20plusArt () {
 			// 	name: "Phoenix",
 			// 	url: "http://www.discgolfbirmingham.com/wordpress/wp-content/uploads/2014/04/phoenix-rising.jpg"
 			// }
-		]
+		],
 	};
 
 	d20plus.art.getArtHandout = () => {
@@ -7381,6 +7419,7 @@ function d20plusArt () {
 						d20plus.art.custom = JSON.parse(decoded);
 						resolve();
 					} catch (e) {
+						// eslint-disable-next-line no-console
 						console.error(e);
 						resolve();
 					}
@@ -7437,7 +7476,7 @@ function d20plusArt () {
 				revert: true,
 				revertDuration: 0,
 				helper: "clone",
-				appendTo: "body"
+				appendTo: "body",
 			}).addTouch();
 		});
 	};
@@ -7516,7 +7555,7 @@ function d20plusArt () {
 							avatar: url,
 							id: d20plus.ut.generateRowId(),
 							name,
-							placement: 99
+							placement: 99,
 						});
 						toSaveAll.push(toSave);
 					}
@@ -7529,7 +7568,7 @@ function d20plusArt () {
 
 			$dialog.dialog({
 				width: 800,
-				height: 650
+				height: 650,
 			});
 		});
 	};
@@ -7564,7 +7603,7 @@ function d20plusArtBrowser () {
 				autoOpen: false,
 				resizable: true,
 				width: 1,
-				height: 1
+				height: 1,
 			})
 			// bind droppable, so that elements dropped back onto the browser don't get caught by the canvas behind
 			.droppable({
@@ -7575,7 +7614,7 @@ function d20plusArtBrowser () {
 					event.stopPropagation();
 					event.originalEvent.dropHandled = true;
 					d20plus.ut.log(`Dropped back onto art browser!`);
-				}
+				},
 			});
 
 		async function doInit () {
@@ -7583,7 +7622,7 @@ function d20plusArtBrowser () {
 			const $mainPane = $(`<div class="artr__main"/>`).appendTo($win);
 			const $loadings = [
 				$(`<div class="artr__side__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($sidebar),
-				$(`<div class="artr__main__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($mainPane)
+				$(`<div class="artr__main__loading" title="Caching repository data, this may take some time">Loading...</div>`).appendTo($mainPane),
 			];
 
 			const start = (new Date()).getTime();
@@ -7779,7 +7818,7 @@ function d20plusArtBrowser () {
 
 						const $itemTop = $(`
 							<div class="artr__item__top artr__item__top--quart">
-								${[...new Array(4)].map((_, i) => `<div class="atr__item__quart">${it._sample[i] ? `<img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample[i]}.jpg">` : ""}</div>`).join("")}								
+								${[...new Array(4)].map((_, i) => `<div class="atr__item__quart">${it._sample[i] ? `<img class="artr__item__thumbnail" src="${GH_PATH}${it._key}--thumb-${it._sample[i]}.jpg">` : ""}</div>`).join("")}
 							</div>
 						`).appendTo($item);
 
@@ -7794,7 +7833,7 @@ function d20plusArtBrowser () {
 								const file = await pGetJson(`${GH_PATH}${it._key}.json`);
 								const toAdd = file.data.map((it, i) => ({
 									name: `${file.set} \u2014 ${file.artist} (${i})`,
-									url: it.uri
+									url: it.uri,
 								}));
 								d20plus.art.addToHandout(toAdd);
 								alert(`Added ${file.data.length} image${file.data.length === 1 ? "" : "s"} to the External Art list.`);
@@ -7885,7 +7924,7 @@ function d20plusArtBrowser () {
 						revert: true,
 						revertDuration: 0,
 						helper: "clone",
-						appendTo: "body"
+						appendTo: "body",
 					});
 				});
 			}
@@ -7907,9 +7946,9 @@ function d20plusArtBrowser () {
 					position: {
 						my: "left top",
 						at: "left+75 top+15",
-						collision: "none"
-					}
-				}
+						collision: "none",
+					},
+				},
 			).dialog("open");
 
 			if (firstClick) {
@@ -7925,7 +7964,7 @@ function d20plusArtBrowser () {
 			d20.textchat.incoming(false, ({
 				who: "system",
 				type: "system",
-				content: `<span id="${uid}" class="hacker-chat inline-block ${isError ? "is-error" : ""}">${str}</span>`
+				content: `<span id="${uid}" class="hacker-chat inline-block ${isError ? "is-error" : ""}">${str}</span>`,
 			}));
 			return uid;
 		}
@@ -7954,7 +7993,7 @@ function d20plusArtBrowser () {
 						lastContentType = h;
 					}
 				};
-				oReq.onload = function() {
+				oReq.onload = function () {
 					const arrayBuffer = oReq.response;
 					resolve({buff: arrayBuffer, contentType: lastContentType});
 				};
@@ -7977,8 +8016,8 @@ function d20plusArtBrowser () {
 				handleCancel(chatId);
 				$btnStop.remove();
 			});
-		try { $btnStop[0].scrollIntoView() }
-		catch (e) { console.error(e) }
+		// eslint-disable-next-line no-console
+		try { $btnStop[0].scrollIntoView() } catch (e) { console.error(e) }
 
 		if (isCancelled) return handleCancel(chatId);
 
@@ -7989,6 +8028,7 @@ function d20plusArtBrowser () {
 
 			const getWrappedPromise = dataItem => {
 				const pAjax = pAjaxLoad(dataItem.uri);
+				// eslint-disable-next-line no-async-promise-executor
 				const p = new Promise(async resolve => {
 					try {
 						const data = await pAjax;
@@ -8020,7 +8060,7 @@ function d20plusArtBrowser () {
 
 			if (isCancelled) return handleCancel(chatId);
 
-			zip.generateAsync({type:"blob"})
+			zip.generateAsync({type: "blob"})
 				.then((content) => {
 					if (isCancelled) return handleCancel(chatId);
 
@@ -8031,6 +8071,7 @@ function d20plusArtBrowser () {
 				});
 		} catch (e) {
 			doUpdateIdChat(chatId, `Download failed! Error was: ${e.message}<br>Check the log for more information.`, true);
+			// eslint-disable-next-line no-console
 			console.error(e);
 		}
 	};
@@ -8045,7 +8086,7 @@ function d20plusArtBrowser () {
 SCRIPT_EXTENSIONS.push(d20plusArtBrowser);
 
 
-function initOverwrites() {
+function initOverwrites () {
 	d20plus.overwrites = {};
 }
 
@@ -8053,7 +8094,6 @@ SCRIPT_EXTENSIONS.push(initOverwrites);
 
 
 function initCanvasHandlerOverwrite () {
-
 	/**
 	 * Dumb variable names copy-pasted from uglified code
 	 * @param c x co-ord
@@ -8067,16 +8107,16 @@ function initCanvasHandlerOverwrite () {
 
 		const hx = d20.canvas_overlay.activeHexGrid.GetHexAt({
 			X: c,
-			Y: u
+			Y: u,
 		});
 
 		let minDist = 1000000;
 		let minPoint = [c, u];
 
-		function checkDist(x1, y1) {
+		function checkDist (x1, y1) {
 			const dist = getEuclidDist(x1, y1, c, u);
 			if (dist < minDist) {
-				minDist =  dist;
+				minDist = dist;
 				minPoint = [x1, y1];
 			}
 		}
@@ -8088,7 +8128,9 @@ function initCanvasHandlerOverwrite () {
 		return minPoint;
 	}
 
-	const canvasHandlerDown = function(e) {
+	const canvasHandlerDown = function (e) {
+		/* eslint-disable */
+
 		// BEGIN MOD
 		var cnv = d20.engine.canvas;
 		var wrp = $("#editor-wrapper");
@@ -8407,10 +8449,13 @@ function initCanvasHandlerOverwrite () {
 		// BEGIN MOD
 		$finalCanvas.hasClass("hasfocus") || $finalCanvas.focus();
 		// END MOD
+
+		/* eslint-enable */
 	}
 
+	const canvasHandlerMove = function (e) {
+		/* eslint-disable */
 
-	const canvasHandlerMove = function(e) {
 		// BEGIN MOD
 		var cnv = d20.engine.canvas;
 		var wrp = $("#editor-wrapper");
@@ -8548,6 +8593,8 @@ function initCanvasHandlerOverwrite () {
 				})
 			}
 		}
+
+		/* eslint-enable */
 	}
 
 	d20plus.overwrites.canvasHandlerDown = canvasHandlerDown
@@ -8607,7 +8654,7 @@ function d20plusEngine () {
 			// show dynamic lighting/etc page settings
 			$("#tmpl_pagesettings").replaceWith(d20plus.templates.templatePageSettings);
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
-				var e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
+				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
 			});
 		}
@@ -8639,13 +8686,13 @@ function d20plusEngine () {
 	d20plus.engine.enhancePageSelector = () => {
 		d20plus.ut.log("Enhancing page selector");
 
-		var updatePageOrder = function () {
+		let updatePageOrder = function () {
 			d20plus.ut.log("Saving page order...");
-			var pos = 0;
+			let pos = 0;
 			$("#page-toolbar .pages .chooseablepage").each(function () {
-				var page = d20.Campaign.pages.get($(this).attr("data-pageid"));
+				let page = d20.Campaign.pages.get($(this).attr("data-pageid"));
 				page && page.save({
-					placement: pos
+					placement: pos,
 				});
 				pos++;
 			});
@@ -8664,19 +8711,19 @@ function d20plusEngine () {
 				stop: function () {
 					updatePageOrder()
 				},
-				distance: 15
+				distance: 15,
 			}).addTouch();
 			$("#page-toolbar .playerbookmark").draggable("destroy");
 			$("#page-toolbar .playerbookmark").draggable({
 				revert: "invalid",
 				appendTo: "#page-toolbar",
-				helper: "original"
+				helper: "original",
 			}).addTouch();
 			$("#page-toolbar .playerspecificbookmark").draggable("destroy");
 			$("#page-toolbar .playerspecificbookmark").draggable({
 				revert: "invalid",
 				appendTo: "#page-toolbar",
-				helper: "original"
+				helper: "original",
 			}).addTouch();
 		}
 
@@ -8726,7 +8773,7 @@ function d20plusEngine () {
 					},
 					stop: function () {
 						$("#journalfolderroot").removeClass("externaldrag")
-					}
+					},
 				});
 			}
 		});
@@ -8763,7 +8810,7 @@ function d20plusEngine () {
 					const atbs = charMaybe.attribs.toJSON();
 					const npcAtbMaybe = atbs.find(it => it.name === "npc");
 
-					if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+					if (npcAtbMaybe && Number(npcAtbMaybe.current) === 1) {
 						return 1;
 					} else {
 						return 2;
@@ -8776,6 +8823,8 @@ function d20plusEngine () {
 			lastAnimUid: null,
 			lastSceneUid: null,
 		};
+
+		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
@@ -9482,11 +9531,13 @@ function d20plusEngine () {
 		};
 		// END ROLL20 CODE
 
+		/* eslint-enable */
+
 		function getRollableTokenUpdate (imgUrl, curSide) {
 			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
 			const toSave = {
 				currentSide: curSide,
-				imgsrc: imgUrl
+				imgsrc: imgUrl,
 			};
 			if (m) {
 				toSave.width = 70 * Number(m[1]);
@@ -9525,11 +9576,13 @@ function d20plusEngine () {
 								const toSave = {
 									sides: toSaveSides,
 									width: nxtSize,
-									height: nxtSize
+									height: nxtSize,
 								};
+								// eslint-disable-next-line no-console
 								console.log(`Updating token:`, toSave);
 								it.model.save(toSave);
 							} else {
+								// eslint-disable-next-line no-console
 								console.warn("Token had no side data!")
 							}
 						});
@@ -9540,8 +9593,8 @@ function d20plusEngine () {
 					Cancel: function () {
 						dialog.off();
 						dialog.dialog("destroy").remove();
-					}
-				}
+					},
+				},
 			});
 		}
 
@@ -9549,6 +9602,8 @@ function d20plusEngine () {
 		d20.token_editor.closeContextMenu = i;
 		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};
+
+	/* eslint-disable */
 
 	d20plus.engine._getSelectedToMove = () => {
 		const n = [];
@@ -9629,6 +9684,8 @@ function d20plusEngine () {
 		}
 	};
 
+	/* eslint-enable */
+
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);
 
@@ -9677,7 +9734,7 @@ function d20plusEngine () {
 				d20plus.engine._tokenHover = {
 					pt: pt,
 					text: gmNotes,
-					id: hoverTarget.model.id
+					id: hoverTarget.model.id,
 				};
 			} else {
 				if (d20plus.engine._tokenHover) d20.engine.redrawScreenNextTick();
@@ -9688,6 +9745,8 @@ function d20plusEngine () {
 
 	d20plus.engine.enhanceMarkdown = () => {
 		const OUT_STRIKE = "<span style='text-decoration: line-through'>$1</span>";
+
+		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
 		window.Markdown.parse = function(e) {
@@ -9721,6 +9780,8 @@ function d20plusEngine () {
 				})
 		};
 		// END ROLL20 CODE
+
+		/* eslint-enable */
 
 		// after a short delay, replace any old content in the chat
 		setTimeout(() => {
@@ -9776,7 +9837,7 @@ function d20plusEngine () {
 					const $prependTarget = $(`.ui-dialog-title:textEquals(transmogrifier)`).first().parent().parent().find(`.ui-dialog-content`);
 					$(`<button id="#vetools-transmog-alpha" class="btn btn default" style="margin-bottom: 5px;">Sort Items Alphabetically</button>`).on("click", () => {
 						// coped from a bookmarklet
-						$('iframe').contents().find('.objects').each((c,e)=>{ let $e=$(e); $e.children().sort( (a,b)=>{ let name1=$(a).find(".name").text().toLowerCase(), name2=$(b).find(".name").text().toLowerCase(), comp = name1.localeCompare(name2); return comp; }) .each((i,c)=>$e.append(c)); });
+						$("iframe").contents().find(".objects").each((c, e) => { let $e = $(e); $e.children().sort((a, b) => { let name1 = $(a).find(".name").text().toLowerCase(); let name2 = $(b).find(".name").text().toLowerCase(); let comp = name1.localeCompare(name2); return comp; }).each((i, c) => $e.append(c)); });
 					}).prependTo($prependTarget);
 				}
 			}, 35);
@@ -9947,7 +10008,7 @@ function baseWeather () {
 					"weatherIntensity1",
 					"weatherTint1",
 					"weatherTintColor1",
-					"weatherEffect1"
+					"weatherEffect1",
 				];
 				props.forEach(handleProp);
 
@@ -9975,22 +10036,22 @@ function baseWeather () {
 								$(this).dialog("close");
 								$dialog.remove();
 								doSaveValues();
-							}
+							},
 						},
 						{
 							text: "Apply",
 							click: function () {
 								doSaveValues();
-							}
+							},
 						},
 						{
 							text: "Cancel",
 							click: function () {
 								$(this).dialog("close");
 								$dialog.remove();
-							}
-						}
-					]
+							},
+						},
+					],
 				});
 			}
 
@@ -10017,12 +10078,12 @@ function baseWeather () {
 		const tmp = []; // temp vector
 		// cache images
 		const IMAGES = {
-			"Rain": new Image,
-			"Snow": new Image,
-			"Fog": new Image,
-			"Waves": new Image,
-			"Ripples": new Image,
-			"Blood Rain": new Image
+			"Rain": new Image(),
+			"Snow": new Image(),
+			"Fog": new Image(),
+			"Waves": new Image(),
+			"Ripples": new Image(),
+			"Blood Rain": new Image(),
 		};
 		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
 		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
@@ -10031,7 +10092,7 @@ function baseWeather () {
 		IMAGES.Ripples.src = "https://i.imgur.com/fFCr0yx.png";
 		IMAGES["Blood Rain"].src = "https://i.imgur.com/SP2aoeq.png";
 		const SFX = {
-			lightning: []
+			lightning: [],
 		};
 
 		// FIXME find a better way of handling this; `clip` is super-slow
@@ -10074,7 +10135,7 @@ function baseWeather () {
 		const ctx = cv.getContext("2d");
 
 		const CTX = {
-			_hasWarned: new Set()
+			_hasWarned: new Set(),
 		};
 
 		function ofX (x) { // offset X
@@ -10107,10 +10168,10 @@ function baseWeather () {
 					return IMAGES[imageName];
 				case "Custom (see below)":
 					if (!IMAGES["Custom"] || (
-						(IMAGES["Custom"].src !== page.get("bR20cfg_weatherTypeCustom1") && IMAGES["Custom"]._errorSrc == null) ||
-						(IMAGES["Custom"]._errorSrc != null && IMAGES["Custom"]._errorSrc !== page.get("bR20cfg_weatherTypeCustom1")))
+						(IMAGES["Custom"].src !== page.get("bR20cfg_weatherTypeCustom1") && IMAGES["Custom"]._errorSrc == null)
+						|| (IMAGES["Custom"]._errorSrc != null && IMAGES["Custom"]._errorSrc !== page.get("bR20cfg_weatherTypeCustom1")))
 					) {
-						IMAGES["Custom"] = new Image;
+						IMAGES["Custom"] = new Image();
 						IMAGES["Custom"]._errorSrc = null;
 						IMAGES["Custom"].onerror = () => {
 							if (IMAGES["Custom"]._errorSrc == null) {
@@ -10184,7 +10245,7 @@ function baseWeather () {
 		function handleSvgCoord (coords, obj, basesXY, center, angle) {
 			const vec = [
 				ofX(coords[0] * obj.scaleX) + basesXY[0],
-				ofY(coords[1] * obj.scaleY) + basesXY[1]
+				ofY(coords[1] * obj.scaleY) + basesXY[1],
 			];
 			d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
 			if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
@@ -10223,8 +10284,8 @@ function baseWeather () {
 
 					// draw weather
 					if (
-						hasImage &&
-						!(scaledW <= 0 || scaledH <= 0) // sanity check
+						hasImage
+						&& !(scaledW <= 0 || scaledH <= 0) // sanity check
 					) {
 						// mask weather
 						const doMaskStep = () => {
@@ -10269,6 +10330,7 @@ function baseWeather () {
 											default:
 												if (!CTX._hasWarned.has(op)) {
 													CTX._hasWarned.add(op);
+													// eslint-disable-next-line no-console
 													console.error(`UNHANDLED OP!: ${op}`);
 												}
 										}
@@ -10279,7 +10341,7 @@ function baseWeather () {
 							}
 
 							// draw final weather mask
-							//// change drawing mode
+							/// / change drawing mode
 							ctx.globalCompositeOperation = "destination-out";
 							ctx.drawImage(cvBuf, 0, 0);
 
@@ -10292,7 +10354,7 @@ function baseWeather () {
 								ctx.drawImage(cvBuf, 0, 0);
 							}
 
-							//// reset drawing mode
+							/// / reset drawing mode
 							ctx.globalCompositeOperation = "source-over";
 						};
 
@@ -10307,20 +10369,20 @@ function baseWeather () {
 						const boundingBox = [
 							[
 								-1.5 * w,
-								-1.5 * h
+								-1.5 * h,
 							],
 							[
 								-1.5 * w,
-								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
 							],
 							[
 								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
-								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
 							],
 							[
 								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
-								-1.5 * h
-							]
+								-1.5 * h,
+							],
 						];
 						const BASE_OFFSET_X = -w / 2;
 						const BASE_OFFSET_Y = -h / 2;
@@ -10334,10 +10396,10 @@ function baseWeather () {
 							pt00,
 							pt01,
 							pt10,
-							pt11
+							pt11,
 						].map(pt => [
 							(pt[0] * w) + BASE_OFFSET_X - d20.engine.currentCanvasOffset[0],
-							(pt[1] * h) + BASE_OFFSET_Y - d20.engine.currentCanvasOffset[1]
+							(pt[1] * h) + BASE_OFFSET_Y - d20.engine.currentCanvasOffset[1],
 						]);
 						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
 
@@ -10376,13 +10438,11 @@ function baseWeather () {
 						const timeOffsetX = Math.ceil(speedFactor * accum);
 						const timeOffsetY = Math.ceil(speedFactor * accum);
 
-						//// rotate coord space
+						/// / rotate coord space
 						ctx.rotate(rot);
 
 						// draw base image
-						doDraw(0, 0);
-
-						function doDraw (offsetX, offsetY) {
+						const doDraw = (offsetX, offsetY) => {
 							const xPos = BASE_OFFSET_X + timeOffsetX + offsetX - d20.engine.currentCanvasOffset[0];
 							const yPos = BASE_OFFSET_Y + timeOffsetY + offsetY - d20.engine.currentCanvasOffset[1];
 							ctx.drawImage(
@@ -10390,7 +10450,7 @@ function baseWeather () {
 								xPos,
 								yPos,
 								w,
-								h
+								h,
 							);
 
 							if (intensity) {
@@ -10400,16 +10460,16 @@ function baseWeather () {
 									xPos + offsetIntensity,
 									yPos + offsetIntensity,
 									w,
-									h
+									h,
 								);
 							}
 						}
 
-						function inBounds (nextPts) {
+						const inBounds = (nextPts) => {
 							return lineIntersectsBounds(nextPts, boundingBox);
 						}
 
-						function moveXDir (pt, i, isAdd) {
+						const moveXDir = (pt, i, isAdd) => {
 							if (i % 2) d20plus.math.vec2.sub(tmp, basePts[3], basePts[1]);
 							else d20plus.math.vec2.sub(tmp, basePts[2], basePts[0]);
 
@@ -10417,7 +10477,7 @@ function baseWeather () {
 							else d20plus.math.vec2.sub(pt, pt, tmp);
 						}
 
-						function moveYDir (pt, i, isAdd) {
+						const moveYDir = (pt, i, isAdd) => {
 							if (i > 1) d20plus.math.vec2.sub(tmp, basePts[3], basePts[2]);
 							else d20plus.math.vec2.sub(tmp, basePts[1], basePts[0]);
 
@@ -10439,7 +10499,7 @@ function baseWeather () {
 								let subNxtPts, subMoves;
 								subNxtPts = copyPoints(nxtPts);
 								subMoves = 0;
-								while(subMoves <= maxMoves[1]) {
+								while (subMoves <= maxMoves[1]) {
 									subNxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 									subMoves++;
 									if (inBounds(subNxtPts)) doDraw(xDir * moves * w, dir * (subMoves * h));
@@ -10455,7 +10515,7 @@ function baseWeather () {
 								let subNxtPts, subMoves;
 								subNxtPts = copyPoints(nxtPts);
 								subMoves = 0;
-								while(subMoves <= maxMoves[1]) {
+								while (subMoves <= maxMoves[1]) {
 									subNxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 									subMoves++;
 									if (lineIntersectsBounds(subNxtPts, boundingBox)) doDraw(dir * (subMoves * w), yDir * moves * h);
@@ -10471,7 +10531,7 @@ function baseWeather () {
 								let nxtPts, moves;
 								nxtPts = copyPoints(basePts);
 								moves = 0;
-								while(moves < maxMoves) {
+								while (moves < maxMoves) {
 									nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 									moves++;
 									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
@@ -10487,7 +10547,7 @@ function baseWeather () {
 								let nxtPts, moves;
 								nxtPts = copyPoints(basePts);
 								moves = 0;
-								while(moves < maxMoves) {
+								while (moves < maxMoves) {
 									nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 									moves++;
 									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
@@ -10498,6 +10558,8 @@ function baseWeather () {
 							handleY(-1); // y axis decreasing
 						};
 
+						doDraw(0, 0);
+
 						(() => {
 							// choose largest axis
 							const maxMoves = getMaxMoves();
@@ -10507,7 +10569,7 @@ function baseWeather () {
 									let nxtPts, moves;
 									nxtPts = copyPoints(basePts);
 									moves = 0;
-									while(moves < maxMoves[1]) {
+									while (moves < maxMoves[1]) {
 										nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 										moves++;
 										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
@@ -10523,7 +10585,7 @@ function baseWeather () {
 									let nxtPts, moves;
 									nxtPts = copyPoints(basePts);
 									moves = 0;
-									while(moves < maxMoves[1]) {
+									while (moves < maxMoves[1]) {
 										nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 										moves++;
 										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
@@ -10537,7 +10599,7 @@ function baseWeather () {
 							}
 						})();
 
-						//// revert coord space rotation
+						/// / revert coord space rotation
 						ctx.rotate(-rot);
 
 						if (clipMode === "EXCLUDE") doMaskStep(false);
@@ -10598,7 +10660,6 @@ function d20plusJournal () {
 				d20plus.journal.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
 			}
 
-
 			if ($(this).parent().hasClass("character")) {
 				$(`.Vetools-make-tokenactions`).show();
 			} else {
@@ -10606,105 +10667,105 @@ function d20plusJournal () {
 			}
 		});
 
-		var first = $("#journalitemmenu ul li").first();
+		let first = $("#journalitemmenu ul li").first();
 		// "Make Tokenactions" option
 		first.after(`<li class="Vetools-make-tokenactions" data-action-type="additem">Make Tokenactions</li>`);
 		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=additem]", function () {
-			var id = $currentItemTarget.attr("data-itemid");
-			var character = d20.Campaign.characters.get(id);
+			let id = $currentItemTarget.attr("data-itemid");
+			let character = d20.Campaign.characters.get(id);
 			d20plus.ut.log("Making Token Actions..");
 			if (character) {
-				var npc = character.attribs.find(function (a) {
-					return a.get("name").toLowerCase() == "npc";
+				let npc = character.attribs.find(function (a) {
+					return a.get("name").toLowerCase() === "npc";
 				});
-				var isNPC = npc ? parseInt(npc.get("current")) : 0;
+				let isNPC = npc ? parseInt(npc.get("current")) : 0;
 				if (isNPC) {
-					//Npc specific tokenactions
+					// Npc specific tokenactions
 					character.abilities.create({
 						name: "Perception",
 						istokenaction: true,
-						action: d20plus.actionMacroPerception
+						action: d20plus.actionMacroPerception,
 					});
 					character.abilities.create({
 						name: "DR/Immunities",
 						istokenaction: true,
-						action: d20plus.actionMacroDrImmunities
+						action: d20plus.actionMacroDrImmunities,
 					});
 					character.abilities.create({
 						name: "Stats",
 						istokenaction: true,
-						action: d20plus.actionMacroStats
+						action: d20plus.actionMacroStats,
 					});
 					character.abilities.create({
 						name: "Saves",
 						istokenaction: true,
-						action: d20plus.actionMacroSaves
+						action: d20plus.actionMacroSaves,
 					});
 					character.abilities.create({
 						name: "Skill-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroSkillCheck
+						action: d20plus.actionMacroSkillCheck,
 					});
 					character.abilities.create({
 						name: "Ability-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroAbilityCheck
+						action: d20plus.actionMacroAbilityCheck,
 					});
 				} else {
-					//player specific tokenactions
-					//@{selected|repeating_attack_$0_atkname}
+					// player specific tokenactions
+					// @{selected|repeating_attack_$0_atkname}
 					character.abilities.create({
 						name: "Attack 1",
 						istokenaction: true,
-						action: "%{selected|repeating_attack_$0_attack}"
+						action: "%{selected|repeating_attack_$0_attack}",
 					});
 					character.abilities.create({
 						name: "Attack 2",
 						istokenaction: true,
-						action: "%{selected|repeating_attack_$1_attack}"
+						action: "%{selected|repeating_attack_$1_attack}",
 					});
 					character.abilities.create({
 						name: "Attack 3",
 						istokenaction: true,
-						action: "%{selected|repeating_attack_$2_attack}"
+						action: "%{selected|repeating_attack_$2_attack}",
 					});
 					character.abilities.create({
 						name: "Tool 1",
 						istokenaction: true,
-						action: "%{selected|repeating_tool_$0_tool}"
+						action: "%{selected|repeating_tool_$0_tool}",
 					});
-					//" + character.get("name") + "
+					// " + character.get("name") + "
 					character.abilities.create({
 						name: "Whisper GM",
 						istokenaction: true,
-						action: "/w gm ?{Message to whisper the GM?}"
+						action: "/w gm ?{Message to whisper the GM?}",
 					});
 					character.abilities.create({
 						name: "Favorite Spells",
 						istokenaction: true,
-						action: "/w @{character_name} &{template:npcaction} {{rname=Favorite Spells}} {{description=Favorite Spells are the first spells in each level of your spellbook.\n\r[Cantrip](~selected|repeating_spell-cantrip_$0_spell)\n[1st Level](~selected|repeating_spell-1_$0_spell)\n\r[2nd Level](~selected|repeating_spell-2_$0_spell)\n\r[3rd Level](~selected|repeating_spell-3_$0_spell)\n\r[4th Level](~selected|repeating_spell-4_$0_spell)\n\r[5th Level](~selected|repeating_spell-5_$0_spell)}}"
+						action: "/w @{character_name} &{template:npcaction} {{rname=Favorite Spells}} {{description=Favorite Spells are the first spells in each level of your spellbook.\n\r[Cantrip](~selected|repeating_spell-cantrip_$0_spell)\n[1st Level](~selected|repeating_spell-1_$0_spell)\n\r[2nd Level](~selected|repeating_spell-2_$0_spell)\n\r[3rd Level](~selected|repeating_spell-3_$0_spell)\n\r[4th Level](~selected|repeating_spell-4_$0_spell)\n\r[5th Level](~selected|repeating_spell-5_$0_spell)}}",
 					});
 					character.abilities.create({
 						name: "Dual Attack",
 						istokenaction: false,
-						action: "%{selected|repeating_attack_$0_attack}\n\r%{selected|repeating_attack_$0_attack}"
+						action: "%{selected|repeating_attack_$0_attack}\n\r%{selected|repeating_attack_$0_attack}",
 					});
 					character.abilities.create({
 						name: "Saves",
 						istokenaction: true,
-						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Save|Strength, +@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Strength Save&#125;&#125 {{mod=@{selected|strength_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Dexterity, +@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Dexterity Save&#125;&#125 {{mod=@{selected|dexterity_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Constitution, +@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Constitution Save&#125;&#125 {{mod=@{selected|constitution_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Intelligence, +@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Intelligence Save&#125;&#125 {{mod=@{selected|intelligence_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Wisdom, +@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Wisdom Save&#125;&#125 {{mod=@{selected|wisdom_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Charisma, +@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Charisma Save&#125;&#125 {{mod=@{selected|charisma_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125;}@{selected|global_save_mod}@{selected|charname_output"
+						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Save|Strength, +@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Strength Save&#125;&#125 {{mod=@{selected|strength_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Dexterity, +@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Dexterity Save&#125;&#125 {{mod=@{selected|dexterity_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Constitution, +@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Constitution Save&#125;&#125 {{mod=@{selected|constitution_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Intelligence, +@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Intelligence Save&#125;&#125 {{mod=@{selected|intelligence_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Wisdom, +@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Wisdom Save&#125;&#125 {{mod=@{selected|wisdom_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Charisma, +@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Charisma Save&#125;&#125 {{mod=@{selected|charisma_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125;}@{selected|global_save_mod}@{selected|charname_output",
 					});
 					character.abilities.create({
 						name: "Skill-Check",
 						istokenaction: true,
-						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Ability|Acrobatics, +@{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Acrobatics&#125;&#125; {{mod=@{selected|acrobatics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Animal Handling, +@{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Animal Handling&#125;&#125; {{mod=@{selected|animal_handling_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Arcana, +@{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Arcana&#125;&#125; {{mod=@{selected|arcana_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Athletics, +@{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Athletics&#125;&#125; {{mod=@{selected|athletics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Deception, +@{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Deception&#125;&#125; {{mod=@{selected|deception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |History, +@{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=History&#125;&#125; {{mod=@{selected|history_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Insight, +@{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Insight&#125;&#125; {{mod=@{selected|insight_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Intimidation, +@{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Intimidation&#125;&#125; {{mod=@{selected|intimidation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Investigation, +@{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Investigation&#125;&#125; {{mod=@{selected|investigation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Medicine, +@{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Medicine&#125;&#125; {{mod=@{selected|medicine_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Nature, +@{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Nature&#125;&#125; {{mod=@{selected|nature_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Perception, +@{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Perception&#125;&#125; {{mod=@{selected|perception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Performance, +@{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Performance&#125;&#125; {{mod=@{selected|performance_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Persuasion, +@{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Persuasion&#125;&#125; {{mod=@{selected|persuasion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Religion, +@{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Religion&#125;&#125; {{mod=@{selected|religion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Sleight of Hand, +@{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Sleight of Hand&#125;&#125; {{mod=@{selected|sleight_of_hand_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Stealth, +@{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Stealth&#125;&#125; {{mod=@{selected|stealth_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Survival, +@{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Survival&#125;&#125; {{mod=@{selected|survival_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Strength, +@{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; {{rname=Strength&#125;&#125; {{mod=@{selected|strength_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; |Dexterity, +@{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; {{rname=Dexterity&#125;&#125; {{mod=@{selected|dexterity_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; |Constitution, +@{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; {{rname=Constitution&#125;&#125; {{mod=@{selected|constitution_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; |Intelligence, +@{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; {{rname=Intelligence&#125;&#125; {{mod=@{selected|intelligence_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; |Wisdom, +@{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; {{rname=Wisdom&#125;&#125; {{mod=@{selected|wisdom_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; |Charisma, +@{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; {{rname=Charisma&#125;&#125; {{mod=@{selected|charisma_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; } @{selected|global_skill_mod} @{selected|charname_output}"
+						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Ability|Acrobatics, +@{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Acrobatics&#125;&#125; {{mod=@{selected|acrobatics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Animal Handling, +@{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Animal Handling&#125;&#125; {{mod=@{selected|animal_handling_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Arcana, +@{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Arcana&#125;&#125; {{mod=@{selected|arcana_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Athletics, +@{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Athletics&#125;&#125; {{mod=@{selected|athletics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Deception, +@{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Deception&#125;&#125; {{mod=@{selected|deception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |History, +@{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=History&#125;&#125; {{mod=@{selected|history_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Insight, +@{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Insight&#125;&#125; {{mod=@{selected|insight_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Intimidation, +@{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Intimidation&#125;&#125; {{mod=@{selected|intimidation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Investigation, +@{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Investigation&#125;&#125; {{mod=@{selected|investigation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Medicine, +@{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Medicine&#125;&#125; {{mod=@{selected|medicine_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Nature, +@{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Nature&#125;&#125; {{mod=@{selected|nature_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Perception, +@{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Perception&#125;&#125; {{mod=@{selected|perception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Performance, +@{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Performance&#125;&#125; {{mod=@{selected|performance_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Persuasion, +@{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Persuasion&#125;&#125; {{mod=@{selected|persuasion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Religion, +@{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Religion&#125;&#125; {{mod=@{selected|religion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Sleight of Hand, +@{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Sleight of Hand&#125;&#125; {{mod=@{selected|sleight_of_hand_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Stealth, +@{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Stealth&#125;&#125; {{mod=@{selected|stealth_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Survival, +@{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Survival&#125;&#125; {{mod=@{selected|survival_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Strength, +@{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; {{rname=Strength&#125;&#125; {{mod=@{selected|strength_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; |Dexterity, +@{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; {{rname=Dexterity&#125;&#125; {{mod=@{selected|dexterity_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; |Constitution, +@{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; {{rname=Constitution&#125;&#125; {{mod=@{selected|constitution_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; |Intelligence, +@{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; {{rname=Intelligence&#125;&#125; {{mod=@{selected|intelligence_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; |Wisdom, +@{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; {{rname=Wisdom&#125;&#125; {{mod=@{selected|wisdom_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; |Charisma, +@{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; {{rname=Charisma&#125;&#125; {{mod=@{selected|charisma_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; } @{selected|global_skill_mod} @{selected|charname_output}",
 					});
 				}
-				//for everyone
+				// for everyone
 				character.abilities.create({
 					name: "Initiative",
 					istokenaction: true,
-					action: d20plus.actionMacroInit
+					action: d20plus.actionMacroInit,
 				});
 			}
 		});
@@ -10935,75 +10996,75 @@ function baseCss () {
 		// generic
 		{
 			s: ".inline-block, .display-inline-block",
-			r: "display: inline-block;"
+			r: "display: inline-block;",
 		},
 		{
 			s: ".bold",
-			r: "font-weight: bold;"
+			r: "font-weight: bold;",
 		},
 		{
 			s: ".italic",
-			r: "font-style: italic;"
+			r: "font-style: italic;",
 		},
 		{
 			s: ".clickable",
-			r: "cursor: pointer;"
+			r: "cursor: pointer;",
 		},
 		{
 			s: ".split",
-			r: "display: flex; justify-content: space-between;"
+			r: "display: flex; justify-content: space-between;",
 		},
 		{
 			s: ".relative",
-			r: "position: relative !important;"
+			r: "position: relative !important;",
 		},
 		{
 			s: ".flex",
-			r: "display: flex;"
+			r: "display: flex;",
 		},
 		{
 			s: ".flex-col",
-			r: "display: flex; flex-direction: column;"
+			r: "display: flex; flex-direction: column;",
 		},
 		{
 			s: ".flex-v-center",
-			r: "display: flex; align-items: center;"
+			r: "display: flex; align-items: center;",
 		},
 		{
 			s: ".flex-vh-center",
-			r: "display: flex; justify-content: center; align-items: center;"
+			r: "display: flex; justify-content: center; align-items: center;",
 		},
 		{
 			s: ".no-shrink",
-			r: "flex-shrink: 0;"
+			r: "flex-shrink: 0;",
 		},
 		{
 			s: ".flex-1",
-			r: "flex: 1"
+			r: "flex: 1",
 		},
 		{
 			s: ".full-width",
-			r: "width: 100%;"
+			r: "width: 100%;",
 		},
 		{
 			s: ".full-height",
-			r: "height: 100%;"
+			r: "height: 100%;",
 		},
 		{
 			s: ".text-center",
-			r: "text-align: center;"
+			r: "text-align: center;",
 		},
 		{
 			s: ".text-right",
-			r: "text-align: right;"
+			r: "text-align: right;",
 		},
 		{
 			s: ".is-error",
-			r: "color: #d60000;"
+			r: "color: #d60000;",
 		},
 		{
 			s: ".flex-label",
-			r: "display: inline-flex; align-items: center;"
+			r: "display: inline-flex; align-items: center;",
 		},
 		{
 			s: ".sel-xs",
@@ -11012,7 +11073,7 @@ function baseCss () {
 				line-height: 18px;
 				margin: 0;
 				padding: 0;
-			`
+			`,
 		},
 		{
 			s: ".btn-xs",
@@ -11021,7 +11082,7 @@ function baseCss () {
 				line-height: 18px;
 				margin: 0;
 				padding: 0 4px;
-			`
+			`,
 		},
 		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
 		// {
@@ -11031,298 +11092,298 @@ function baseCss () {
 		// ensure rightclick menu width doesn't break layout // FIXME might be fixing the symptoms and not the cause
 		{
 			s: ".actions_menu.d20contextmenu > ul > li",
-			r: "max-width: 100px;"
+			r: "max-width: 100px;",
 		},
 		// page view enhancement
 		{
 			s: "#page-toolbar",
-			r: "height: calc(90vh - 40px);"
+			r: "height: calc(90vh - 40px);",
 		},
 		{
 			s: "#page-toolbar .container",
-			r: "height: 100%; white-space: normal;"
+			r: "height: 100%; white-space: normal;",
 		},
 		{
 			s: "#page-toolbar .pages .availablepage",
-			r: "width: 100px; height: 100px;"
+			r: "width: 100px; height: 100px;",
 		},
 		{
 			s: "#page-toolbar .pages .availablepage img.pagethumb",
-			r: "max-width: 60px; max-height: 60px;"
+			r: "max-width: 60px; max-height: 60px;",
 		},
 		{
 			s: "#page-toolbar .pages .availablepage span",
-			r: "bottom: 1px;"
+			r: "bottom: 1px;",
 		},
 		{
 			s: "#page-toolbar",
-			r: "background: #a8aaad80;"
+			r: "background: #a8aaad80;",
 		},
 		// search
 		{
 			s: ".Vetoolsresult",
-			r: "background: #ff8080;"
+			r: "background: #ff8080;",
 		},
 		// config editor
 		{
 			s: "div.config-table-wrapper",
-			r: "min-height: 200px; width: 100%; height: 100%; max-height: 460px; overflow-y: auto; transform: translateZ(0);"
+			r: "min-height: 200px; width: 100%; height: 100%; max-height: 460px; overflow-y: auto; transform: translateZ(0);",
 		},
 		{
 			s: "table.config-table",
-			r: "width: 100%; table-layout: fixed;"
+			r: "width: 100%; table-layout: fixed;",
 		},
 		{
 			s: "table.config-table tbody tr:nth-child(odd)",
-			r: "background-color: #f8f8f8;"
+			r: "background-color: #f8f8f8;",
 		},
 		{
 			s: "table.config-table tbody td > *",
-			r: "vertical-align: middle; margin: 0;"
+			r: "vertical-align: middle; margin: 0;",
 		},
 		{
 			s: ".config-name",
-			r: "display: inline-block; line-height: 35px; width: 100%;"
+			r: "display: inline-block; line-height: 35px; width: 100%;",
 		},
 		// tool list
 		{
 			s: ".tools-list",
-			r: "max-height: 70vh;"
+			r: "max-height: 70vh;",
 		},
 		{
 			s: ".tool-row",
-			r: "min-height: 40px; display: flex; flex-direction: row; align-items: center;"
+			r: "min-height: 40px; display: flex; flex-direction: row; align-items: center;",
 		},
 		{
 			s: ".tool-row:nth-child(odd)",
-			r: "background-color: #f0f0f0;"
+			r: "background-color: #f0f0f0;",
 		},
 		{
 			s: ".tool-row > *",
-			r: "flex-shrink: 0;"
+			r: "flex-shrink: 0;",
 		},
 		// warning overlay
 		{
 			s: ".temp-warning",
-			r: "position: fixed; top: 12px; left: calc(50vw - 200px); z-index: 10000; width: 320px; background: transparent; color: red; font-weight: bold; font-size: 150%; font-variant: small-caps; border: 1px solid red; padding: 4px; text-align: center; border-radius: 4px;"
+			r: "position: fixed; top: 12px; left: calc(50vw - 200px); z-index: 10000; width: 320px; background: transparent; color: red; font-weight: bold; font-size: 150%; font-variant: small-caps; border: 1px solid red; padding: 4px; text-align: center; border-radius: 4px;",
 		},
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;"
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
 			s: "#drawingtools.line_splitter .currentselection:after",
-			r: "content: '✂️';"
+			r: "content: '✂️';",
 		},
 		// chat tag
 		{
 			s: ".userscript-hacker-chat",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);"
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
 		},
 		{
 			s: ".userscript-hacker-chat a",
-			r: "color: white;"
+			r: "color: white;",
 		},
 		{
 			s: ".withoutavatars .userscript-hacker-chat",
-			r: "margin-left: -15px; min-width: calc(100% + 30px);"
+			r: "margin-left: -15px; min-width: calc(100% + 30px);",
 		},
 		{
 			s: ".Ve-btn-chat",
-			r: "margin-top: 10px; margin-left: -35px;"
+			r: "margin-top: 10px; margin-left: -35px;",
 		},
 		{
 			s: ".withoutavatars .Ve-btn-chat",
-			r: "margin-left: -5px;"
+			r: "margin-left: -5px;",
 		},
 		// Bootstrap-alikes
 		{
 			s: ".col",
-			r: "display: inline-block;"
+			r: "display: inline-block;",
 		},
 		{
 			s: ".col-1",
-			r: "width: 8.333%;"
+			r: "width: 8.333%;",
 		},
 		{
 			s: ".col-2",
-			r: "width: 16.666%;"
+			r: "width: 16.666%;",
 		},
 		{
 			s: ".col-3",
-			r: "width: 25%;"
+			r: "width: 25%;",
 		},
 		{
 			s: ".col-4",
-			r: "width: 33.333%;"
+			r: "width: 33.333%;",
 		},
 		{
 			s: ".col-5",
-			r: "width: 41.667%;"
+			r: "width: 41.667%;",
 		},
 		{
 			s: ".col-6",
-			r: "width: 50%;"
+			r: "width: 50%;",
 		},
 		{
 			s: ".col-7",
-			r: "width: 58.333%;"
+			r: "width: 58.333%;",
 		},
 		{
 			s: ".col-8",
-			r: "width: 66.667%;"
+			r: "width: 66.667%;",
 		},
 		{
 			s: ".col-9",
-			r: "width: 75%;"
+			r: "width: 75%;",
 		},
 		{
 			s: ".col-10",
-			r: "width: 83.333%;"
+			r: "width: 83.333%;",
 		},
 		{
 			s: ".col-11",
-			r: "width: 91.667%;"
+			r: "width: 91.667%;",
 		},
 		{
 			s: ".col-12",
-			r: "width: 100%;"
+			r: "width: 100%;",
 		},
 		{
 			s: ".ib",
-			r: "display: inline-block;"
+			r: "display: inline-block;",
 		},
 		{
 			s: ".float-right",
-			r: "float: right;"
+			r: "float: right;",
 		},
 		{
 			s: ".my-0",
-			r: "margin-top: 0 !important; margin-bottom: 0 !important;"
+			r: "margin-top: 0 !important; margin-bottom: 0 !important;",
 		},
 		{
 			s: ".m-1",
-			r: "margin: 0.25rem !important;"
+			r: "margin: 0.25rem !important;",
 		},
 		{
 			s: ".mt-2",
-			r: "margin-top: 0.5rem !important;"
+			r: "margin-top: 0.5rem !important;",
 		},
 		{
 			s: ".mr-1",
-			r: "margin-right: 0.25rem !important;"
+			r: "margin-right: 0.25rem !important;",
 		},
 		{
 			s: ".ml-1",
-			r: "margin-left: 0.25rem !important;"
+			r: "margin-left: 0.25rem !important;",
 		},
 		{
 			s: ".mr-2",
-			r: "margin-right: 0.5rem !important;"
+			r: "margin-right: 0.5rem !important;",
 		},
 		{
 			s: ".ml-2",
-			r: "margin-left: 0.5rem !important;"
+			r: "margin-left: 0.5rem !important;",
 		},
 		{
 			s: ".mb-2",
-			r: "margin-bottom: 0.5rem !important;"
+			r: "margin-bottom: 0.5rem !important;",
 		},
 		{
 			s: ".mb-1",
-			r: "margin-bottom: 0.25rem !important;"
+			r: "margin-bottom: 0.25rem !important;",
 		},
 		{
 			s: ".p-2",
-			r: "padding: 0.5rem !important;"
+			r: "padding: 0.5rem !important;",
 		},
 		{
 			s: ".p-3",
-			r: "padding: 1rem !important;"
+			r: "padding: 1rem !important;",
 		},
 		{
 			s: ".split",
-			r: "display: flex; justify-content: space-between;"
+			r: "display: flex; justify-content: space-between;",
 		},
 		{
 			s: ".split--center",
-			r: "align-items: center;"
+			r: "align-items: center;",
 		},
 		// image rows
 		{
 			s: ".import-cb-label--img",
-			r: "display: flex; height: 64px; align-items: center; padding: 4px;"
+			r: "display: flex; height: 64px; align-items: center; padding: 4px;",
 		},
 		{
 			s: ".import-label__img",
-			r: "display: inline-block; width: 60px; height: 60px; padding: 0 5px;"
+			r: "display: inline-block; width: 60px; height: 60px; padding: 0 5px;",
 		},
 		// importer
 		{
 			s: ".import-cb-label",
-			r: "display: block; margin-right: -13px !important;"
+			r: "display: block; margin-right: -13px !important;",
 		},
 		{
 			s: ".import-cb-label span",
-			r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;"
+			r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;",
 		},
 		{
 			s: ".import-cb-label span.readable",
-			r: "letter-spacing: initial"
+			r: "letter-spacing: initial",
 		},
 		{
 			s: ".import-cb-label .source",
-			r: "width: calc(16.667% - 28px);'"
+			r: "width: calc(16.667% - 28px);'",
 		},
 		// horizontal toolbar
 		{
 			s: "#secondary-toolbar:hover",
-			r: "opacity: 1 !important;"
+			r: "opacity: 1 !important;",
 		},
 		// addon layer bar
 		{
 			s: "#floatinglayerbar ul",
-			r: "margin: 0; padding: 0;"
+			r: "margin: 0; padding: 0;",
 		},
 		{
 			s: "#floatinglayerbar li:hover, #floatinglayerbar li.activebutton",
-			r: "color: #333; background-color: #54C3E8; cursor: pointer;"
+			r: "color: #333; background-color: #54C3E8; cursor: pointer;",
 		},
 		{
 			s: "#floatinglayerbar li",
-			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;"
+			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
 		},
 		{
 			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.background li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;"
+			r: "background-color: #54C3E8; color: #333;",
 		},
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;"
+			r: "background-color: #54C3E8; color: #333;",
 		},
 		{
 			s: "#editinglayer.weather .currentselection:after",
-			r: "content: \"C\";"
+			r: "content: \"C\";",
 		},
 		{
 			s: "#editinglayer.foreground .currentselection:after",
-			r: "content: \"B\";"
+			r: "content: \"B\";",
 		},
 		{
 			s: "#editinglayer.background .currentselection:after",
-			r: "content: \"a\";"
+			r: "content: \"a\";",
 		},
 		// adjust the "Talking to Yourself" box
 		{
 			s: "#textchat-notifier",
-			r: "top: -5px; background-color: red; opacity: 0.5; color: white;"
+			r: "top: -5px; background-color: red; opacity: 0.5; color: white;",
 		},
 		{
 			s: "#textchat-notifier:after",
-			r: "content: '!'"
+			r: "content: '!'",
 		},
 		{
 			s: ".ctx__layer-icon",
@@ -11330,37 +11391,37 @@ function baseCss () {
 			display: inline-block;
 			width: 12px;
 			text-align: center;
-			`
+			`,
 		},
 		// fix the shitty undersized "fire" icon
 		{
 			s: ".choosewalls > .pictostwo",
-			r: "width: 15px; height: 17px; display: inline-block; text-align: center;"
+			r: "width: 15px; height: 17px; display: inline-block; text-align: center;",
 		},
 		{
 			s: "#editinglayer.walls > .pictos",
-			r: "width: 20px; height: 22px; display: inline-block; text-align: center; font-size: 0.9em;"
+			r: "width: 20px; height: 22px; display: inline-block; text-align: center; font-size: 0.9em;",
 		},
 		// weather config window
 		{
 			s: ".ui-dialog .wth__row",
-			r: "margin-bottom: 10px; align-items: center; padding: 0 0 5px; border-bottom: 1px solid #eee;"
+			r: "margin-bottom: 10px; align-items: center; padding: 0 0 5px; border-bottom: 1px solid #eee;",
 		},
 		{
 			s: ".wth__row select",
-			r: "margin-bottom: 0"
+			r: "margin-bottom: 0",
 		},
 		{
 			s: `.wth__row input[type="range"]`,
-			r: "width: calc(100% - 8px);"
+			r: "width: calc(100% - 8px);",
 		},
 		// context menu
 		{
 			s: `.ctx__divider`,
-			r: "width: calc(100% - 2px); border: 1px solid black;"
+			r: "width: calc(100% - 2px); border: 1px solid black;",
 		},
 		// sidebar fix
-		/*{
+		/* {
 			s: `#rightsidebar`,
 			r: `
 			    display: flex;
@@ -11398,23 +11459,23 @@ function baseCss () {
 				width: calc(100% - 8px) !important;
 				resize: vertical;
 			`
-		},*/
+		}, */
 		// Ensure page toolbar is displayed
 		{
 			s: `#page-toolbar`,
-			r: `display: block;`
+			r: `display: block;`,
 		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
 		{
 			s: ".player-hidden",
-			r: "display: none !important;"
+			r: "display: none !important;",
 		},
 		// Force-hide page toolbar
 		{
 			s: `#page-toolbar`,
-			r: `display: none;`
+			r: `display: none;`,
 		},
 	];
 
@@ -11424,20 +11485,20 @@ function baseCss () {
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
 			s: ".copied-tip",
-			r: "pointer-events: none; position: fixed; background: transparent; user-select: none; z-index: 100000; width: 80px; height: 24px; line-height: 24px;"
+			r: "pointer-events: none; position: fixed; background: transparent; user-select: none; z-index: 100000; width: 80px; height: 24px; line-height: 24px;",
 		},
 		{
 			s: ".copied-tip > span",
-			r: "display: inline-block; width: 100%; text-align: center;"
+			r: "display: inline-block; width: 100%; text-align: center;",
 		},
 		{
 			s: ".help",
-			r: "cursor: help; text-decoration: underline; text-decoration-style: dotted;"
+			r: "cursor: help; text-decoration: underline; text-decoration-style: dotted;",
 		},
 		{
 			s: ".help--subtle",
-			r: "cursor: help;"
-		}
+			r: "cursor: help;",
+		},
 	]);
 
 	// Art repo browser CSS
@@ -11445,209 +11506,209 @@ function baseCss () {
 		// full-width images search header
 		{
 			s: "#imagedialog .searchbox",
-			r: "width: calc(100% - 10px)"
+			r: "width: calc(100% - 10px)",
 		},
-		///////////////
+		/// ////////////
 		{
 			s: ".artr__win",
-			r: "display: flex; align-items: stretch; width: 100%; height: 100%; padding: 0 !important;"
+			r: "display: flex; align-items: stretch; width: 100%; height: 100%; padding: 0 !important;",
 		},
 		// fix box sizing
 		{
 			s: ".artr__win *",
-			r: "box-sizing: border-box;"
+			r: "box-sizing: border-box;",
 		},
 		// custom scrollbars
 		{
 			s: ".artr__win *::-webkit-scrollbar",
-			r: "width: 9px; height: 9px;"
+			r: "width: 9px; height: 9px;",
 		},
 		{
 			s: ".artr__win *::-webkit-scrollbar-track",
-			r: "background: transparent;"
+			r: "background: transparent;",
 		},
 		{
 			s: ".artr__win *::-webkit-scrollbar-thumb",
-			r: "background: #cbcbcb;"
+			r: "background: #cbcbcb;",
 		},
-		///////////////
+		/// ////////////
 		{
 			s: ".artr__side",
-			r: "width: 300px; height: 100%; border-right: 1px solid #ccc; background: #f8f8f8; position: relative; flex-shrink: 0; display: flex; flex-direction: column;"
+			r: "width: 300px; height: 100%; border-right: 1px solid #ccc; background: #f8f8f8; position: relative; flex-shrink: 0; display: flex; flex-direction: column;",
 		},
 		{
 			s: ".artr__side__head",
-			r: "flex-shrink: 0; font-weight: bold; margin-bottom: 7px; margin-bottom: 7px; border-bottom: 3px solid #ccc; background: white;"
+			r: "flex-shrink: 0; font-weight: bold; margin-bottom: 7px; margin-bottom: 7px; border-bottom: 3px solid #ccc; background: white;",
 		},
 		{
 			s: ".artr__side__head__title",
-			r: "font-size: 16px; font-weight: bold;"
+			r: "font-size: 16px; font-weight: bold;",
 		},
 		{
 			s: ".artr__side__body",
-			r: "flex-shrink: 0; overflow-y: auto; transform: translateZ(0);"
+			r: "flex-shrink: 0; overflow-y: auto; transform: translateZ(0);",
 		},
 		{
 			s: ".artr__side__tag_header",
-			r: "width: 100%; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; padding: 0 6px; cursor: pointer; margin-bottom: 10px;"
+			r: "width: 100%; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; padding: 0 6px; cursor: pointer; margin-bottom: 10px;",
 		},
 		{
 			s: ".artr__side__tag_grid",
-			r: "display: flex; width: 100%; flex-wrap: wrap; margin-bottom: 15px; background: #f0f0f0; border-radius: 5px;"
+			r: "display: flex; width: 100%; flex-wrap: wrap; margin-bottom: 15px; background: #f0f0f0; border-radius: 5px;",
 		},
 		{
 			s: ".artr__side__tag",
-			r: "padding: 2px 4px; margin: 2px 4px; font-size: 11px;"
+			r: "padding: 2px 4px; margin: 2px 4px; font-size: 11px;",
 		},
 		{
 			s: `.artr__side__tag[data-state="1"]`,
-			r: "background-image: linear-gradient(#fff, #337ab7);"
+			r: "background-image: linear-gradient(#fff, #337ab7);",
 		},
 		{
 			s: `.artr__side__tag[data-state="1"]:hover`,
-			r: "background-image: linear-gradient(rgb(#337ab7), rgb(#337ab7)); background-position: 0; transition: none;"
+			r: "background-image: linear-gradient(rgb(#337ab7), rgb(#337ab7)); background-position: 0; transition: none;",
 		},
 		{
 			s: `.artr__side__tag[data-state="2"]`,
-			r: "background-image: linear-gradient(#fff, #8a1a1b);"
+			r: "background-image: linear-gradient(#fff, #8a1a1b);",
 		},
 		{
 			s: `.artr__side__tag[data-state="2"]:hover`,
-			r: "background-image: linear-gradient(rgb(#8a1a1b), rgb(#8a1a1b)); background-position: 0; transition: none;"
+			r: "background-image: linear-gradient(rgb(#8a1a1b), rgb(#8a1a1b)); background-position: 0; transition: none;",
 		},
 		{
 			s: ".artr__main",
-			r: "width: 100%; height: 100%; display: flex; overflow-y: auto; flex-direction: column; position: relative;"
+			r: "width: 100%; height: 100%; display: flex; overflow-y: auto; flex-direction: column; position: relative;",
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;"
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
-			r: "width: 100%; margin-bottom: 2px;"
+			r: "width: 100%; margin-bottom: 2px;",
 		},
 		{
 			s: ".artr__crumb",
-			r: "border: 1px solid #ccc; border-radius: 5px; padding: 0 5px; display: inline-block; cursor: pointer; user-select: none;"
+			r: "border: 1px solid #ccc; border-radius: 5px; padding: 0 5px; display: inline-block; cursor: pointer; user-select: none;",
 		},
 		{
 			s: ".artr__crumb--sep",
-			r: "border: 0; cursor: default;"
+			r: "border: 0; cursor: default;",
 		},
 		{
 			s: ".artr__search",
-			r: "flex-shrink: 0; width: 100%; border-bottom: 1px solid #ccc; display: flex; flex-direction: column;"
+			r: "flex-shrink: 0; width: 100%; border-bottom: 1px solid #ccc; display: flex; flex-direction: column;",
 		},
 		{
 			s: ".artr__search__field",
-			r: "width: 100%; height: 26px;"
+			r: "width: 100%; height: 26px;",
 		},
 		{
 			s: ".artr__view",
-			r: "position: absolute; top: 64px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0); background-color: whitesmoke;"
+			r: "position: absolute; top: 64px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0); background-color: whitesmoke;",
 		},
 		{
 			s: ".artr__view_inner",
-			r: "display: flex; width: 100%; height: 100%; flex-wrap: wrap; align-content: flex-start;"
+			r: "display: flex; width: 100%; height: 100%; flex-wrap: wrap; align-content: flex-start;",
 		},
 		{
 			s: ".artr__no_results_wrp",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center;"
+			r: "width: 100%; height: 100%; display: flex; justify-content: center;",
 		},
 		{
 			s: ".artr__no_results",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;"
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;",
 		},
 		{
 			s: ".artr__no_results_headline",
-			r: "font-size: 125%; font-weight: bold;"
+			r: "font-size: 125%; font-weight: bold;",
 		},
 		{
 			s: ".artr__item",
-			r: "width: 180px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white; position: relative;"
+			r: "width: 180px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white; position: relative;",
 			// Using flex makes scrolling extremely sluggish
 			// display: flex; flex-direction: column; cursor: pointer; float: left;
 		},
 		{
 			s: ".artr__item__stats",
-			r: "position: absolute; left: 0; top: 0; display: none;"
+			r: "position: absolute; left: 0; top: 0; display: none;",
 		},
 		{
 			s: ".artr__item:hover .artr__item__stats",
-			r: "display: block;"
+			r: "display: block;",
 		},
 		{
 			s: ".artr__item__stats_item",
-			r: "color: grey; background: white; border-radius: 5px; margin: 4px 2px; padding: 0 2px; text-align: center; border: 1px solid #e0e0e0"
+			r: "color: grey; background: white; border-radius: 5px; margin: 4px 2px; padding: 0 2px; text-align: center; border: 1px solid #e0e0e0",
 		},
 		{
 			s: ".artr__item__menu",
-			r: "position: absolute; right: 0; top: 0; display: none;"
+			r: "position: absolute; right: 0; top: 0; display: none;",
 		},
 		{
 			s: ".artr__item:hover .artr__item__menu",
-			r: "display: block;"
+			r: "display: block;",
 		},
 		{
 			s: ".artr__item__menu_item",
-			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; border-radius: 5px; margin: 4px; padding: 2px; text-align: center; display: block; border: 1px solid #ccc; background: white;"
+			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; border-radius: 5px; margin: 4px; padding: 2px; text-align: center; display: block; border: 1px solid #ccc; background: white;",
 		},
 		{
 			s: ".artr__item--index",
-			r: "height: 240px;"
+			r: "height: 240px;",
 		},
 		{
 			s: ".artr__item--item",
-			r: "height: 180px;"
+			r: "height: 180px;",
 		},
 		{
 			s: ".artr__item:hover",
-			r: "box-shadow: 0 0 8px 0 rgba(38, 167, 242, 1); opacity: 0.95;"
+			r: "box-shadow: 0 0 8px 0 rgba(38, 167, 242, 1); opacity: 0.95;",
 		},
 		{
 			s: ".artr__item--back",
-			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; color: #888;"
+			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; color: #888;",
 		},
 		{
 			s: ".artr__item__top",
-			r: "width: 100%; height: 180px; flex-shrink: 0; margin: 0 auto; display: flex; align-items: center;"
+			r: "width: 100%; height: 180px; flex-shrink: 0; margin: 0 auto; display: flex; align-items: center;",
 		},
 		{
 			s: ".artr__item__top--quart",
-			r: "display: flex; flex-wrap: wrap;"
+			r: "display: flex; flex-wrap: wrap;",
 		},
 		{
 			s: ".artr__item__bottom",
-			r: "width: 100%; height: 60px; flex-shrink: 0;  border-top: 1px solid #ccc; background: #f8f8f8; display: flex; flex-direction: column; font-size: 12px; justify-content: space-evenly;"
+			r: "width: 100%; height: 60px; flex-shrink: 0;  border-top: 1px solid #ccc; background: #f8f8f8; display: flex; flex-direction: column; font-size: 12px; justify-content: space-evenly;",
 		},
 		{
 			s: ".artr__item__bottom__row",
-			r: "width: 100% height: 20px; flex-shrink: 0; padding: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+			r: "width: 100% height: 20px; flex-shrink: 0; padding: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
 		},
 		{
 			s: ".artr__item__thumbnail",
-			r: "max-width: 100%; max-height: 100%; display: block; margin: 0 auto;"
+			r: "max-width: 100%; max-height: 100%; display: block; margin: 0 auto;",
 		},
 		{
 			s: ".atr__item__quart",
-			r: "width: 50%; height: 50%; display: block; margin: 0;"
+			r: "width: 50%; height: 50%; display: block; margin: 0;",
 		},
 		{
 			s: ".atr__item__quart--more",
-			r: "display: flex; justify-content: center; align-items: center;"
+			r: "display: flex; justify-content: center; align-items: center;",
 		},
 		{
 			s: ".artr__item__full",
-			r: "width: 100%; height: 180px; margin: 0 auto; display: flex; align-items: center; padding: 3px;"
+			r: "width: 100%; height: 180px; margin: 0 auto; display: flex; align-items: center; padding: 3px;",
 		},
 		{
 			s: ".artr__wrp_big_img",
-			r: "position: fixed; top: 0; bottom: 0; right: 0; left: 0; background: #30303080; padding: 30px; display: flex; justify-content: center; align-items: center; z-index: 99999;"
+			r: "position: fixed; top: 0; bottom: 0; right: 0; left: 0; background: #30303080; padding: 30px; display: flex; justify-content: center; align-items: center; z-index: 99999;",
 		},
 		{
 			s: ".artr__big_img",
-			r: "display: block; max-width: 100%; max-height: 100%;"
+			r: "display: block; max-width: 100%; max-height: 100%;",
 		},
 	]);
 
@@ -11656,7 +11717,7 @@ function baseCss () {
 		// fix box sizing
 		{
 			s: ".anm__win *",
-			r: "box-sizing: border-box;"
+			r: "box-sizing: border-box;",
 		},
 		{
 			s: ".ui-dialog .anm__row",
@@ -11665,26 +11726,26 @@ function baseCss () {
     			align-items: center;
     			margin-bottom: 3px;
     			height: 20px;
-			`
+			`,
 		},
 		{
 			s: ".anm__row > div",
 			r: `
 				display: inline-flex;
-			`
+			`,
 		},
 		{
 			s: ".anm__row-btn",
 			r: `
 				padding: 0 6px;
-			`
+			`,
 		},
 		{
 			s: ".anm__row-wrp-cb",
 			r: `
 				justify-content: center;
 				align-items: center;
-			`
+			`,
 		},
 		{
 			s: ".anm__wrp-sel-all",
@@ -11693,26 +11754,26 @@ function baseCss () {
 				margin-bottom: 5px;
 				display: flex;
 				justify-content: space-between;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__ipt-lines-wrp",
 			r: `
 				flex-basis: 100%;
 				flex-shrink: 100;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui .anm-edit__gui-hidden",
 			r: `
 				display: none;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__text .anm-edit__gui-visible",
 			r: `
 				display: none;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__ipt-lines-wrp--gui",
@@ -11720,13 +11781,13 @@ function baseCss () {
 				overflow-y: auto;
 				display: flex;
 				flex-direction: column;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__ipt-lines-wrp--gui > *",
 			r: `
 				flex-shrink: 0;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__ipt-lines",
@@ -11735,7 +11796,7 @@ function baseCss () {
 				width: 100%;
 				height: 100%;
 				margin-bottom: 0;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row",
@@ -11744,13 +11805,13 @@ function baseCss () {
 				border: 1px solid #ccc;
 				border-radius: 3px;
 				margin-bottom: 3px;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row:nth-child(even)",
 			r: `
 				background: #f8f8f8;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name",
@@ -11763,70 +11824,70 @@ function baseCss () {
 				font-size: 16px;
 				display: inline-block;
 				min-width: 150px;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--Move",
 			r: `
 				background: #ff0004;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--Rotate",
 			r: `
 				background: #ff6c00;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--Copy",
 			r: `
 				background: #fff700;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--Flip",
 			r: `
 				background: #a3ff00;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--Scale",
 			r: `
 				background: #5eff00;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--Layer",
 			r: `
 				background: #00ff25;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--Lighting",
 			r: `
 				background: #00ffb6;
-			`
+			`,
 		},
 		{
 			s: [
 				".anm-edit__gui-row-name--SetProperty",
-				".anm-edit__gui-row-name--SumProperty"
+				".anm-edit__gui-row-name--SumProperty",
 			],
 			r: `
 				background: #006bff;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--TriggerMacro",
 			r: `
 				background: #0023ff;
-			`
+			`,
 		},
 		{
 			s: ".anm-edit__gui-row-name--TriggerAnimation",
 			r: `
 				background: #9800ff;
-			`
+			`,
 		},
 		{
 			s: ".anm-scene__wrp-tokens",
@@ -11836,7 +11897,7 @@ function baseCss () {
 				overflow-y: auto;
 				display: flex;
 				flex-wrap: wrap;
-			`
+			`,
 		},
 		{
 			s: ".anm-scene__wrp-token",
@@ -11849,20 +11910,20 @@ function baseCss () {
 				display: flex;
 				flex-direction: column;
 				padding: 3px;
-			`
+			`,
 		},
 		{
 			s: ".anm-scene__wrp-token--active",
 			r: `
 				background: #a0f0ff;
-			`
+			`,
 		},
 		{
 			s: ".anm-scene__wrp-token-name",
 			r: `
 				height: 20px;
 				overflow: hidden;
-			`
+			`,
 		},
 		{
 			s: ".anm-scene__wrp-token-name-inner",
@@ -11871,7 +11932,7 @@ function baseCss () {
 				overflow: hidden;
 				text-overflow: ellipsis;
 				white-space: nowrap;
-			`
+			`,
 		},
 		{
 			s: ".flex-row",
@@ -11880,7 +11941,7 @@ function baseCss () {
 			    float: left;
 				align-items: center;
 			    margin-bottom: 5px;
-			`
+			`,
 		},
 		{
 			s: ".pagedetails .flex-row input.units,.pagedetails .flex-row input.pixels",
@@ -11890,8 +11951,8 @@ function baseCss () {
 			    border: 1px solid;
 			    border-radius: 5px;
 			    margin: 0 2%;
-			`
-		}
+			`,
+		},
 	]);
 
 	// Jukebox CSS
@@ -11903,7 +11964,7 @@ function baseCss () {
     			text-overflow: ellipsis;
     			overflow: hidden;
     			min-width: 50px;
-			`
+			`,
 		},
 		{
 			s: ".jukebox-widget-slider",
@@ -11911,13 +11972,13 @@ function baseCss () {
     			margin: 10px;
     			display: inline-block;
     			flex: 15;
-			`
+			`,
 		},
 		{
 			s: ".jukebox-widget-button",
 			r: `
     			letter-spacing: -1px
-			`
+			`,
 		},
 	]);
 }
@@ -12009,7 +12070,7 @@ function baseUi () {
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
 				zIndex: 10600,
-				backgroundColor: "rgba(255,255,255,0.80)"
+				backgroundColor: "rgba(255,255,255,0.80)",
 			})
 			.appendTo($(`body`)).find(`ul`);
 
@@ -12061,35 +12122,54 @@ function baseUi () {
 	 *
 	 * @param dataArray options to choose from
 	 * @param dataTitle title for the window
-	 * @param messageCountIncomplete message when user does not choose correct number of choices
 	 * @param displayFormatter function to format dataArray for display
-	 * @param count exact number of  options the user must choose
+	 * @param count exact number of  options the user must, mutually exclusive with countMin and countMax
+	 * @param countMin lowest number of options the user must choose, requires countMax, mutually exclusive with count
+	 * @param countMax highest number of options the user must choose, requires countMax, mutually exclusive with count
+	 * @param additionalHTML additional html code, such as a button
 	 * @param note add a note at the bottom of the window
+	 * @param messageCountIncomplete message when user does not choose correct number of choices
 	 * @return {Promise}
 	 */
-	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, note = null, messageCountIncomplete = null} = {}) {
+	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
 		return new Promise((resolve, reject) => {
+			// Ensure count, countMin, and countMax don't mess up
+			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
+			if ((Number.isInteger(count) && Number.isInteger(countMin))
+			|| (Number.isInteger(count) && Number.isInteger(countMax))
+			|| (count == null && (Number.isInteger(countMin) ^ Number.isInteger(countMax)))
+			|| (countMin > countMax)) {
+				reject(new Error("Bad arguments--count is mutually exclusive with countMin and countMax, and countMin and countMax require each other."))
+			}
+			const useRange = Number.isInteger(countMin) && countMax;
+
+			// Generate the HTML
 			const $dialog = $(`
 				<div title="${dataTitle}">
-					${count != null ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
+					${Number.isInteger(count) ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
+					${Number.isInteger(countMax) ? `<div name="remain" class="bold">Remaining: ${countMax}, Minimum: ${countMin}</div>` : ""}
 					<div>
 						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
 					</div>
+					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
 					${note ? `<br><div class="italic">${note}</div>` : ""}
 				</div>
 			`).appendTo($("body"));
 			const $remain = $dialog.find(`[name="remain"]`);
 			const $cbChoices = $dialog.find(`input[type="checkbox"]`);
 
-			if (count != null) {
+			// Ensure the proper number of items is chosen
+			if (count != null || useRange) {
+				const targetCount = count || countMax;
+				const remainMin = countMax ? `, Minimum: ${countMin}` : "";
 				$cbChoices.on("change", function () {
 					const $e = $(this);
 					let selectedCount = getSelected().length;
-					if (selectedCount > count) {
+					if (selectedCount > targetCount) {
 						$e.prop("checked", false);
 						selectedCount--;
 					}
-					$remain.text(`Remaining: ${count - selectedCount}`);
+					$remain.text(`Remaining: ${targetCount - selectedCount}${remainMin}`);
 				});
 			}
 
@@ -12098,6 +12178,7 @@ function baseUi () {
 					.filter(it => it.selected).map(it => it.choice);
 			}
 
+			// Accept or reject selection
 			$dialog.dialog({
 				dialogClass: "no-close",
 				buttons: [
@@ -12106,23 +12187,27 @@ function baseUi () {
 						click: function () {
 							$(this).dialog("close");
 							$dialog.remove();
-							reject(`User cancelled the prompt`);
-						}
+							reject(new Error(`User cancelled the prompt`));
+						},
 					},
 					{
 						text: "OK",
 						click: function () {
 							const selected = getSelected();
-							if (selected.length === count || count == null) {
+							if (Number.isInteger(countMin) && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else if (!useRange && (selected.length === count || count == null)) {
 								$(this).dialog("close");
 								$dialog.remove();
 								resolve(selected);
 							} else {
 								alert(messageCountIncomplete ?? "Please select more options!");
 							}
-						}
-					}
-				]
+						},
+					},
+				],
 			})
 		});
 	};
@@ -12134,8 +12219,10 @@ SCRIPT_EXTENSIONS.push(baseUi);
 /**
  * All the modified minified based on parts of Roll20's `app.js`
  */
-function d20plusMod() {
+function d20plusMod () {
 	d20plus.mod = {};
+
+	/* eslint-disable */
 
 	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
 	// BEGIN ROLL20 CODE
@@ -12696,12 +12783,14 @@ function d20plusMod() {
 			}
 		}
 	};
+
+	/* eslint-enable */
 }
 
 SCRIPT_EXTENSIONS.push(d20plusMod);
 
 
-function initTemplates() {
+function initTemplates () {
 	d20plus.templates = {};
 }
 
@@ -13096,6 +13185,36 @@ function initTemplateTokenEditor () {
                         </div>
                     </div>
                 </div>
+                <hr>
+                <!-- Token Tooltip -->
+                <div class='tokendescription w-100'>
+                    <div class='w-100 d-inline-flex flex-wrap tokeneditor__container tokeneditor__tooltip-title'>
+                        <div class='flex-col'>
+                            <div class='tokeneditor__header w-100'>
+                                <h3 class='page_title text-capitalize'>Tooltip</h3>
+                            </div>
+                        </div>
+                        <div class='tokeneditor__container-tooltip tooltip_disable_box'>
+                            <div class='d-flex justify-content-center align-items-center'>
+                                <label class='sr-only' for='token-general-description-toggle'>show tooltip on token</label>
+                                <input class='show_tooltip' id='token-general-tooltip-toggle' type='checkbox' value='1'>
+                            </div>
+                            <h4 class='text-capitalize'>Show</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class='tokeneditor__row'>
+                    <div class='tokeneditor__container'>
+                        <div class='d-flex'>
+                            <textarea class='token-tooltip' id='token-general-description' maxlength='150' type='text'></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <small>
+                <span class='tooltip-count'>0</span>
+                /150
+                </small>
                 <hr>
                 <!-- Token Bar Options -->
                 <div class='tokenbaroptions w-100'>
@@ -14976,6 +15095,8 @@ SCRIPT_EXTENSIONS.push(baseTemplate);
 const betteR20Emoji = function () {
 	d20plus.chat = {};
 
+	/* eslint-disable */
+
 	// to dump the keys as one-per-line colon-fotmatted: `JSON.stringify(Object.keys(d20plus.chat.emojiIndex).sort(SortUtil.ascSortLower), null, 1).replace(/",/g, ":").replace(/"/g, ":").replace(/[ \[\]]/g, "").trim()`
 	d20plus.chat.emojiIndex = {
 		joy: !0,
@@ -16156,6 +16277,8 @@ const betteR20Emoji = function () {
 		"100": !0
 	};
 
+	/* eslint-enable */
+
 	addConfigOptions(
 		"interface", {
 			_name: "Interface",
@@ -16163,9 +16286,9 @@ const betteR20Emoji = function () {
 				name: "Add Emoji Replacement to Chat",
 				default: true,
 				_type: "boolean",
-				_player: true
-			}
-		}
+				_player: true,
+			},
+		},
 	);
 
 	d20plus.chat.enhanceChat = () => {
@@ -16196,19 +16319,21 @@ SCRIPT_EXTENSIONS.push(betteR20Emoji);
 function remoteLibre () {
 	d20plus.remoteLibre = {
 		getRemotePlaylists () {
-			return fetch('https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist')
+			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
 				.then(response => response.json())
 				.then(data => {
 					const promises = data.filter(file => file.download_url.toLowerCase().endsWith(".json"))
 						.map(file => d20plus.remoteLibre.downloadPlaylist(file.download_url));
 					return Promise.all(promises).then(res => d20plus.remoteLibre.processRemotePlaylists(res));
 				})
+				// eslint-disable-next-line no-console
 				.catch(error => console.error(error));
 		},
 
 		downloadPlaylist (url) {
 			return fetch(url)
 				.then(response => response.json())
+				// eslint-disable-next-line no-console
 				.catch(error => console.error("Error when fetching", url, error));
 		},
 
@@ -16223,7 +16348,7 @@ function remoteLibre () {
                 <p style="margin-top:15px">${t.title}</p>
                 <div class="br20-result" style="display: flex">
                     <audio class="audio" controls preload="none" style="flex: 35" src="${t.track_id}"></audio>
-                    
+
                     <button class="remote-track btn" data-id=${i} style="margin-top:auto;margin-bottom:auto;flex:1;font-size:15px;margin-left:10px;">
                         <span class="pictos">&amp;</span>
                     </button>
@@ -16335,25 +16460,25 @@ function jukeboxWidget () {
 
 			$(`<div id="masterVolume" style="margin:10px;display:inline-block;width:80%;"></div>`)
 				.insertAfter("#jukeboxwhatsplaying").slider({
-				slide: (e, ui) => {
-					if ($("#masterVolumeEnabled").prop("checked")) {
-						window.d20.jukebox.lastFolderStructure.forEach(playlist => {
+					slide: (e, ui) => {
+						if ($("#masterVolumeEnabled").prop("checked")) {
+							window.d20.jukebox.lastFolderStructure.forEach(playlist => {
 							// The track is outside a playlist
-							if (!playlist.i) {
-								changeTrackVolume(playlist, ui.value);
-							} else {
-								playlist.i.forEach(trackId => changeTrackVolume(trackId, ui.value))
-							}
-						});
-					}
-					$("#jbwMasterVolume").slider("value", ui.value);
-				},
-				value: 50,
-			});
+								if (!playlist.i) {
+									changeTrackVolume(playlist, ui.value);
+								} else {
+									playlist.i.forEach(trackId => changeTrackVolume(trackId, ui.value))
+								}
+							});
+						}
+						$("#jbwMasterVolume").slider("value", ui.value);
+					},
+					value: 50,
+				});
 			$("<h4>Master Volume</h4>").insertAfter("#jukeboxwhatsplaying").css("margin-left", "10px");
 			$(`<input type="checkbox" id="masterVolumeEnabled" style="position:relative;top:-11px;" title="Enable this to change the volume of all the tracks at the same time"/>`).insertAfter("#masterVolume").tooltip();
 
-			//TODO: Make the slider a separate component at some point
+			// TODO: Make the slider a separate component at some point
 			const slider = $(`<div id="jbwMasterVolume" class="jukebox-widget-slider"></div>`)
 				.slider({
 					slide: (e, ui) => {
@@ -16449,7 +16574,7 @@ function jukeboxWidget () {
 					}
 				}
 			});
-		}
+		},
 	};
 }
 
@@ -16460,7 +16585,7 @@ const betteR20Core = function () {
 	d20plus.Init = async () => {
 		const scriptName = `betteR20-core v${d20plus.version}`;
 		try {
-			d20plus.ut.log("Init (v" + d20plus.version + ")");
+			d20plus.ut.log(`Init (v${d20plus.version})`);
 			d20plus.ut.showLoadingMessage(scriptName);
 			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
@@ -16504,7 +16629,6 @@ const betteR20Core = function () {
 				d20plus.jukeboxWidget.init();
 			}
 			d20plus.engine.enhancePathWidths();
-			d20plus.ut.disable3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
@@ -16522,6 +16646,7 @@ const betteR20Core = function () {
 			d20plus.ut.log("All systems operational");
 			d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error(e);
 			alert(`${scriptName} failed to initialise! See the logs (CTRL-SHIFT-J) for more information.`)
 		}
@@ -16531,15 +16656,16 @@ const betteR20Core = function () {
 SCRIPT_EXTENSIONS.push(betteR20Core);
 
 
-if(unsafeWindow.d20plus) {
-  unsafeWindow.eval(`alert("An instance of betteR20 is already running! You may have two versions of betteR20 installed (e.g core and 5etools). Please only use one.");`);
-  unsafeWindow.eval(`alert("Your game may not launch. Please only run one instance of betteR20.");`);
-  throw new Error("");
+if (unsafeWindow.d20plus) {
+	unsafeWindow.eval(`alert("An instance of betteR20 is already running! You may have two versions of betteR20 installed (e.g core and 5etools). Please only use one.");`);
+	unsafeWindow.eval(`alert("Your game may not launch. Please only run one instance of betteR20.");`);
+	throw new Error("");
 }
 
 unsafeWindow.d20plus = {};
 
 const betteR20Base = function () {
+	/* eslint-disable */
 	CONSOLE_LOG = console.log;
 	console.log = (...args) => {
 		if (args.length === 1 && typeof args[0] === "string" && args[0].startsWith("Switch mode to ")) {
@@ -16548,41 +16674,41 @@ const betteR20Base = function () {
 		}
 		CONSOLE_LOG(...args);
 	};
-
+	/* eslint-enable */
 
 	addConfigOptions("token", {
-			"_name": "Tokens",
-			"massRollWhisperName": {
-				"name": "Whisper Token Name to Mass-Rolls",
-				"default": false,
-				"_type": "boolean"
-			}
-		}
+		"_name": "Tokens",
+		"massRollWhisperName": {
+			"name": "Whisper Token Name to Mass-Rolls",
+			"default": false,
+			"_type": "boolean",
+		},
+	},
 	);
 	addConfigOptions("canvas", {
-			"_name": "Canvas",
+		"_name": "Canvas",
+		"_player": true,
+		"gridSnap": {
+			"name": "Grid Snap",
+			"default": "1",
+			"_type": "_enum",
+			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
-			"gridSnap": {
-				"name": "Grid Snap",
-				"default": "1",
-				"_type": "_enum",
-				"__values": ["0.25", "0.5", "1"],
-				"_player": true
-			},
-			"scaleNamesStatuses": {
-				"name": "Scaled Names and Status Icons",
-				"default": true,
-				"_type": "boolean",
-				"_player": true
-			}
-		}
+		},
+		"scaleNamesStatuses": {
+			"name": "Scaled Names and Status Icons",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+	},
 	);
 	addConfigOptions("import", {
 		"_name": "Import",
 		"importIntervalMap": {
 			"name": "Rest Time between Each Map (msec)",
 			"default": 2500,
-			"_type": "integer"
+			"_type": "integer",
 		},
 	});
 	addConfigOptions("interface", {
@@ -16593,27 +16719,27 @@ const betteR20Base = function () {
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
-			"__sliderStep": 1
+			"__sliderStep": 1,
 		},
 		"quickLayerButtons": {
 			"name": "Add Quick Layer Buttons",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"quickInitButtons": {
 			"name": "Add Quick Initiative Sort Button",
 			"default": true,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 		"hideDefaultJournalSearch": {
 			"name": "Hide Default Journal Search Bar",
 			"default": false,
-			"_type": "boolean"
+			"_type": "boolean",
 		},
 	});
 };
@@ -16623,12 +16749,11 @@ const D20plus = function (version) {
 
 	// Window loaded
 	function doBootstrap () {
-        d20plus.ut.log("Waiting for enhancement suite...");
+		d20plus.ut.log("Waiting for enhancement suite...");
 
-        let timeWaitedForEnhancementSuiteMs = 0;
+		let timeWaitedForEnhancementSuiteMs = 0;
 
 		(function waitForEnhancementSuite () {
-
 			let hasRunInit = false;
 			if (window.d20 || window.enhancementSuiteEnabled) {
 				d20plus.ut.log("Bootstrapping...");
@@ -16647,7 +16772,7 @@ const D20plus = function (version) {
 				window.d20plus = d20plus;
 				d20plus.ut.log("Injected");
 			} else {
-				if(timeWaitedForEnhancementSuiteMs > 2 * 5000) {
+				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
 					alert("betteR20 requires the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
 					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {
@@ -16669,9 +16794,9 @@ const D20plus = function (version) {
 
 // if we are the topmost frame, inject
 if (window.top === window.self) {
-	function strip (str) {
-		return str.replace(/use strict/, "").substring(str.indexOf("\n") + 1, str.lastIndexOf("\n")) + "\n";
-	}
+	const strip = (str) => {
+		return `${str.replace(/use strict/, "").substring(str.indexOf("\n") + 1, str.lastIndexOf("\n"))}\n`;
+	};
 
 	let stack = "function (version) {\n";
 	stack += strip(betteR20Base.toString());
@@ -16682,7 +16807,7 @@ if (window.top === window.self) {
 	stack += strip(D20plus.toString());
 
 	stack += "\n}";
-	unsafeWindow.eval("(" + stack + ")('" + GM_info.script.version + "')");
+	unsafeWindow.eval(`(${stack})('${GM_info.script.version}')`);
 }
 
 
@@ -16805,9 +16930,9 @@ Parser.textToNumber = function (str) {
 	switch (str) {
 		case "zero": return 0;
 		case "one": case "a": case "an": return 1;
-		case "two": return 2;
-		case "three": return 3;
-		case "four": return 4;
+		case "two": case "double": return 2;
+		case "three": case "triple": return 3;
+		case "four": case "quadruple": return 4;
 		case "five": return 5;
 		case "six": return 6;
 		case "seven": return 7;
@@ -16960,11 +17085,7 @@ Parser.getSpeedString = (it) => {
 	const stack = [];
 	if (typeof it.speed === "object") {
 		let joiner = ", ";
-		procSpeed("walk");
-		procSpeed("burrow");
-		procSpeed("climb");
-		procSpeed("fly");
-		procSpeed("swim");
+		Parser.SPEED_MODES.forEach(mode => procSpeed(mode));
 		if (it.speed.choose) {
 			joiner = "; ";
 			stack.push(`${it.speed.choose.from.sort().joinConjunct(", ", " or ")} ${it.speed.choose.amount} ft.${it.speed.choose.note ? ` ${it.speed.choose.note}` : ""}`);
@@ -16974,6 +17095,8 @@ Parser.getSpeedString = (it) => {
 		return it.speed + (it.speed === "Varies" ? "" : " ft. ");
 	}
 };
+
+Parser.SPEED_MODES = ["walk", "burrow", "climb", "fly", "swim"];
 
 Parser.SPEED_TO_PROGRESSIVE = {
 	"walk": "walking",
@@ -17452,6 +17575,18 @@ Parser.coinAbvToFull = function (coin) {
 	return Parser._parse_aToB(Parser.COIN_ABV_TO_FULL, coin);
 };
 
+/**
+ * @param currency Object of the form `{pp: <n>, gp: <m>, ... }`.
+ * @param isDisplayEmpty If "empty" values (i.e., those which are 0) should be displayed.
+ */
+Parser.getDisplayCurrency = function (currency, {isDisplayEmpty = false} = {}) {
+	return [...Parser.COIN_ABVS]
+		.reverse()
+		.filter(abv => isDisplayEmpty ? currency[abv] != null : currency[abv])
+		.map(abv => `${currency[abv].toLocaleString()} ${abv}`)
+		.join(", ");
+};
+
 Parser.itemWeightToFull = function (item, isShortForm) {
 	if (item.weight) {
 		// Handle pure integers
@@ -17633,7 +17768,7 @@ Parser.spLevelToFull = function (level) {
 Parser.getArticle = function (str) {
 	str = `${str}`;
 	str = str.replace(/\d+/g, (...m) => Parser.numberToText(m[0]));
-	return /^[aeiou]/.test(str) ? "an" : "a";
+	return /^[aeiou]/i.test(str) ? "an" : "a";
 };
 
 Parser.spLevelToFullLevelText = function (level, dash) {
@@ -17971,16 +18106,16 @@ Parser.spSubclassesToFull = function (fromSubclassList, textOnly, subclassLookup
 			const byName = SortUtil.ascSort(a.class.name, b.class.name);
 			return byName || SortUtil.ascSort(a.subclass.name, b.subclass.name);
 		})
-		.map(c => Parser._spSubclassItem(c, textOnly, subclassLookup))
+		.map(c => Parser._spSubclassItem({fromSubclass: c, textOnly, subclassLookup}))
 		.join(", ") || "";
 };
 
-Parser._spSubclassItem = function (fromSubclass, textOnly, subclassLookup) {
+Parser._spSubclassItem = function ({fromSubclass, textOnly, subclassLookup}) {
 	const c = fromSubclass.class;
 	const sc = fromSubclass.subclass;
 	const text = `${sc.name}${sc.subSubclass ? ` (${sc.subSubclass})` : ""}`;
 	if (textOnly) return text;
-	const classPart = `<a href="${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}" title="Source: ${Parser.sourceJsonToFull(c.source)}">${c.name}</a>`;
+	const classPart = `<a href="${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}" title="Source: ${Parser.sourceJsonToFull(c.source)}${c.definedInSource ? ` From a class spell list defined in: ${Parser.sourceJsonToFull(c.definedInSource)}` : ""}">${c.name}</a>`;
 	const fromLookup = subclassLookup ? MiscUtil.get(subclassLookup, c.source, c.name, sc.source, sc.name) : null;
 	if (fromLookup) return `<a class="italic" href="${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}${HASH_PART_SEP}${UrlUtil.getClassesPageStatePart({subclass: {shortName: sc.name, source: sc.source}})}" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${text}</a> ${classPart}`;
 	else return `<span class="italic" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${text}</span> ${classPart}`;
@@ -18583,10 +18718,19 @@ Parser.spClassesToCurrentAndLegacy = function (fromClassList) {
  * all the legacy/superseded subclasses
  */
 Parser.spSubclassesToCurrentAndLegacyFull = function (sp, subclassLookup) {
-	const fromSubclass = Renderer.spell.getCombinedClasses(sp, "fromSubclass");
+	return Parser._spSubclassesToCurrentAndLegacyFull({sp, subclassLookup, prop: "fromSubclass"});
+};
+
+Parser.spVariantSubclassesToCurrentAndLegacyFull = function (sp, subclassLookup) {
+	return Parser._spSubclassesToCurrentAndLegacyFull({sp, subclassLookup, prop: "fromSubclassVariant"});
+};
+
+Parser._spSubclassesToCurrentAndLegacyFull = ({sp, subclassLookup, prop}) => {
+	const fromSubclass = Renderer.spell.getCombinedClasses(sp, prop);
 	if (!fromSubclass.length) return ["", ""];
 
-	const out = [[], []];
+	const current = [];
+	const legacy = [];
 	const curNames = new Set();
 	const toCheck = [];
 	fromSubclass
@@ -18595,6 +18739,7 @@ Parser.spSubclassesToCurrentAndLegacyFull = function (sp, subclassLookup) {
 				UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES]({name: c.class.name, source: c.class.source}),
 				"class",
 				c.class.source,
+				{isNoCount: true},
 			);
 			if (excludeClass) return false;
 
@@ -18603,8 +18748,11 @@ Parser.spSubclassesToCurrentAndLegacyFull = function (sp, subclassLookup) {
 				UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES]({name: (fromLookup || {}).name || c.subclass.name, source: c.subclass.source}),
 				"subclass",
 				c.subclass.source,
+				{isNoCount: true},
 			);
-			return !excludeSubclass;
+			if (excludeSubclass) return false;
+
+			return !Renderer.spell.isExcludedSubclassVariantSource({classDefinedInSource: c.class.definedInSource});
 		})
 		.sort((a, b) => {
 			const byName = SortUtil.ascSort(a.subclass.name, b.subclass.name);
@@ -18613,7 +18761,8 @@ Parser.spSubclassesToCurrentAndLegacyFull = function (sp, subclassLookup) {
 		.forEach(c => {
 			const nm = c.subclass.name;
 			const src = c.subclass.source;
-			const toAdd = Parser._spSubclassItem(c, false, subclassLookup);
+
+			const toAdd = Parser._spSubclassItem({fromSubclass: c, textOnly: false, subclassLookup});
 
 			const fromLookup = MiscUtil.get(
 				subclassLookup,
@@ -18624,38 +18773,39 @@ Parser.spSubclassesToCurrentAndLegacyFull = function (sp, subclassLookup) {
 			);
 
 			if (fromLookup && fromLookup.isReprinted) {
-				out[1].push(toAdd);
-			} else if (Parser.sourceJsonToFull(src).startsWith(UA_PREFIX) || Parser.sourceJsonToFull(src).startsWith(PS_PREFIX)) {
-				const cleanName = mapClassShortNameToMostRecent(nm.split("(")[0].trim().split(/v\d+/)[0].trim());
+				legacy.push(toAdd);
+			} else if (SourceUtil.isNonstandardSource(src)) {
+				const cleanName = Parser._spSubclassesToCurrentAndLegacyFull.mapClassShortNameToMostRecent(
+					nm.split("(")[0].trim().split(/v\d+/)[0].trim(),
+				);
 				toCheck.push({"name": cleanName, "ele": toAdd});
 			} else {
-				out[0].push(toAdd);
+				current.push(toAdd);
 				curNames.add(nm);
 			}
 		});
+
 	toCheck.forEach(n => {
 		if (curNames.has(n.name)) {
-			out[1].push(n.ele);
+			legacy.push(n.ele);
 		} else {
-			out[0].push(n.ele);
+			current.push(n.ele);
 		}
 	});
-	return [out[0].join(", "), out[1].join(", ")];
 
-	/**
-	 * Get the most recent iteration of a subclass name
-	 */
-	function mapClassShortNameToMostRecent (shortName) {
-		switch (shortName) {
-			case "Favored Soul":
-				return "Divine Soul";
-			case "Undying Light":
-				return "Celestial";
-			case "Deep Stalker":
-				return "Gloom Stalker";
-		}
-		return shortName;
+	return [current.join(", "), legacy.join(", ")];
+};
+
+/**
+ * Get the most recent iteration of a subclass name.
+ */
+Parser._spSubclassesToCurrentAndLegacyFull.mapClassShortNameToMostRecent = (shortName) => {
+	switch (shortName) {
+		case "Favored Soul": return "Divine Soul";
+		case "Undying Light": return "Celestial";
+		case "Deep Stalker": return "Gloom Stalker";
 	}
+	return shortName;
 };
 
 Parser.spVariantClassesToCurrentAndLegacy = function (fromVariantClassList) {
@@ -19072,6 +19222,7 @@ SRC_AitFR_AVT = "AitFR-AVT";
 SRC_AitFR_DN = "AitFR-DN";
 SRC_AitFR_FCD = "AitFR-FCD";
 SRC_WBtW = "WBtW";
+SRC_DoD = "DoD";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_HEROES_FEAST = "HF";
@@ -19163,6 +19314,7 @@ SRC_UA2021GL = `${SRC_UA_PREFIX}2021GothicLineages`;
 SRC_UA2021FF = `${SRC_UA_PREFIX}2021FolkOfTheFeywild`;
 SRC_UA2021DO = `${SRC_UA_PREFIX}2021DraconicOptions`;
 SRC_UA2021MoS = `${SRC_UA_PREFIX}2021MagesOfStrixhaven`;
+SRC_UA2021TotM = `${SRC_UA_PREFIX}2021TravelersOfTheMultiverse`;
 
 SRC_3PP_SUFFIX = " 3pp";
 
@@ -19247,6 +19399,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_AVT] = `${AitFR_NAME}: A Verdant Tomb`;
 Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_DN] = `${AitFR_NAME}: Deepest Night`;
 Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_FCD] = `${AitFR_NAME}: From Cyan Depths`;
 Parser.SOURCE_JSON_TO_FULL[SRC_WBtW] = `The Wild Beyond the Witchlight`;
+Parser.SOURCE_JSON_TO_FULL[SRC_DoD] = `Domains of Delight`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_HEROES_FEAST] = "Heroes' Feast";
@@ -19329,6 +19482,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_UA2021GL] = `${UA_PREFIX}2021 Gothic Lineages`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021FF] = `${UA_PREFIX}2021 Folk of the Feywild`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021DO] = `${UA_PREFIX}2021 Draconic Options`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021MoS] = `${UA_PREFIX}2021 Mages of Strixhaven`;
+Parser.SOURCE_JSON_TO_FULL[SRC_UA2021TotM] = `${UA_PREFIX}2021 Travelers of the Multiverse`;
 
 Parser.SOURCE_JSON_TO_ABV = {};
 Parser.SOURCE_JSON_TO_ABV[SRC_CoS] = "CoS";
@@ -19402,6 +19556,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_AVT] = "AitFR-AVT";
 Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_DN] = "AitFR-DN";
 Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_FCD] = "AitFR-FCD";
 Parser.SOURCE_JSON_TO_ABV[SRC_WBtW] = "WBtW";
+Parser.SOURCE_JSON_TO_ABV[SRC_DoD] = "DoD";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "Wild";
 Parser.SOURCE_JSON_TO_ABV[SRC_HEROES_FEAST] = "HF";
@@ -19484,6 +19639,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_UA2021GL] = "UA21GL";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021FF] = "UA21FF";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021DO] = "UA21DO";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021MoS] = "UA21MoS";
+Parser.SOURCE_JSON_TO_ABV[SRC_UA2021TotM] = "UA21TotM";
 
 Parser.SOURCE_JSON_TO_DATE = {};
 Parser.SOURCE_JSON_TO_DATE[SRC_CoS] = "2016-03-15";
@@ -19556,6 +19712,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_AVT] = "2021-07-14";
 Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_DN] = "2021-07-21";
 Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_FCD] = "2021-07-28";
 Parser.SOURCE_JSON_TO_DATE[SRC_WBtW] = "2021-09-21";
+Parser.SOURCE_JSON_TO_DATE[SRC_DoD] = "2021-09-21";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_HEROES_FEAST] = "2020-10-27";
@@ -19638,6 +19795,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_UA2021GL] = "2020-01-26";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021FF] = "2020-03-12";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021DO] = "2021-04-14";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021MoS] = "2021-06-08";
+Parser.SOURCE_JSON_TO_DATE[SRC_UA2021TotM] = "2021-10-08";
 
 Parser.SOURCES_ADVENTURES = new Set([
 	SRC_LMoP,
@@ -19705,6 +19863,7 @@ Parser.SOURCES_NON_STANDARD_WOTC = new Set([
 	SRC_AitFR_AVT,
 	SRC_AitFR_DN,
 	SRC_AitFR_FCD,
+	SRC_DoD,
 ]);
 // region Source categories
 
@@ -19768,6 +19927,7 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	SRC_MOT,
 	SRC_TCE,
 	SRC_VRGR,
+	SRC_DoD,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src.toLowerCase()] = src;
@@ -20018,7 +20178,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.137.1"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.139.0"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -20053,6 +20213,7 @@ VeCt = {
 	STORAGE_ROLLER_MACRO: "ROLLER_MACRO_STORAGE",
 	STORAGE_ENCOUNTER: "ENCOUNTER_STORAGE",
 	STORAGE_POINTBUY: "POINTBUY_STORAGE",
+	STORAGE_GLOBAL_COMPONENT_STATE: "GLOBAL_COMPONENT_STATE",
 
 	DUR_INLINE_NOTIFY: 500,
 
@@ -20258,20 +20419,24 @@ String.prototype.trimAnyChar = String.prototype.trimAnyChar || function (chars) 
 	return (start > 0 || end < this.length) ? this.substring(start, end) : this;
 };
 
-Array.prototype.joinConjunct = Array.prototype.joinConjunct || function (joiner, lastJoiner, nonOxford) {
-	if (this.length === 0) return "";
-	if (this.length === 1) return this[0];
-	if (this.length === 2) return this.join(lastJoiner);
-	else {
-		let outStr = "";
-		for (let i = 0; i < this.length; ++i) {
-			outStr += this[i];
-			if (i < this.length - 2) outStr += joiner;
-			else if (i === this.length - 2) outStr += `${(!nonOxford && this.length > 2 ? joiner.trim() : "")}${lastJoiner}`;
+Array.prototype.joinConjunct || Object.defineProperty(Array.prototype, "joinConjunct", {
+	enumerable: false,
+	writable: true,
+	value: function (joiner, lastJoiner, nonOxford) {
+		if (this.length === 0) return "";
+		if (this.length === 1) return this[0];
+		if (this.length === 2) return this.join(lastJoiner);
+		else {
+			let outStr = "";
+			for (let i = 0; i < this.length; ++i) {
+				outStr += this[i];
+				if (i < this.length - 2) outStr += joiner;
+				else if (i === this.length - 2) outStr += `${(!nonOxford && this.length > 2 ? joiner.trim() : "")}${lastJoiner}`;
+			}
+			return outStr;
 		}
-		return outStr;
-	}
-};
+	},
+});
 
 StrUtil = {
 	COMMAS_NOT_IN_PARENTHESES_REGEX: /,\s?(?![^(]*\))/g,
@@ -20541,7 +20706,7 @@ JqueryUtil = {
 		 * @return JQuery
 		 */
 		window.$$ = function (parts, ...args) {
-			if (parts instanceof jQuery) {
+			if (parts instanceof jQuery || parts instanceof HTMLElement) {
 				return (...passed) => {
 					const parts2 = [...passed[0]];
 					const args2 = passed.slice(1);
@@ -20646,7 +20811,9 @@ JqueryUtil = {
 		};
 	},
 
-	showCopiedEffect ($ele, text = "Copied!", bubble) {
+	showCopiedEffect (eleOr$Ele, text = "Copied!", bubble) {
+		const $ele = eleOr$Ele instanceof $ ? eleOr$Ele : $(eleOr$Ele);
+
 		const top = $(window).scrollTop();
 		const pos = $ele.offset();
 
@@ -20717,14 +20884,22 @@ JqueryUtil = {
 			JqueryUtil._ACTIVE_TOAST.splice(JqueryUtil._ACTIVE_TOAST.indexOf($toast), 1);
 		};
 
-		const $btnToastDismiss = $(`<button class="btn toast__btn-close"><span class="glyphicon glyphicon-remove"></span></button>`)
-			.click(() => doCleanup($toast));
+		const $btnToastDismiss = $(`<button class="btn toast__btn-close"><span class="glyphicon glyphicon-remove"></span></button>`);
 
 		const $toast = $$`
 		<div class="toast toast--type-${options.type}">
 			<div class="toast__wrp-content">${options.content}</div>
 			<div class="toast__wrp-control">${$btnToastDismiss}</div>
-		</div>`.prependTo($(`body`)).data("pos", 0);
+		</div>`
+			.prependTo(document.body)
+			.data("pos", 0)
+			.mousedown(evt => {
+				evt.preventDefault();
+			})
+			.click(evt => {
+				evt.preventDefault();
+				doCleanup($toast);
+			});
 
 		setTimeout(() => $toast.addClass(`toast--animate`), 5);
 		setTimeout(() => doCleanup($toast), 5000);
@@ -20757,12 +20932,15 @@ ElementUtil = {
 		html,
 		text,
 		ele,
+		children,
+		outer,
+
 		name,
 		title,
 		val,
-		children,
-		outer,
 		href,
+		type,
+		attrs,
 	}) {
 		ele = ele || (outer ? (new DOMParser()).parseFromString(outer, "text/html").body.childNodes[0] : document.createElement(tag));
 
@@ -20780,7 +20958,9 @@ ElementUtil = {
 		if (title != null) ele.setAttribute("title", title);
 		if (href != null) ele.setAttribute("href", href);
 		if (val != null) ele.setAttribute("value", val);
-		if (children) for (let i = 0, len = children.length; i < len; ++i) ele.append(children[i]);
+		if (type != null) ele.setAttribute("type", type);
+		if (attrs != null) { for (const k in attrs) { ele.setAttribute(k, attrs[k]); } }
+		if (children) for (let i = 0, len = children.length; i < len; ++i) if (children[i] != null) ele.append(children[i]);
 
 		ele.appends = ele.appends || ElementUtil._appends.bind(ele);
 		ele.appendTo = ele.appendTo || ElementUtil._appendTo.bind(ele);
@@ -20796,6 +20976,7 @@ ElementUtil = {
 		ele.attr = ele.attr || ElementUtil._attr.bind(ele);
 		ele.val = ele.val || ElementUtil._val.bind(ele);
 		ele.html = ele.html || ElementUtil._html.bind(ele);
+		ele.tooltip = ele.tooltip || ElementUtil._tooltip.bind(ele);
 		ele.onClick = ele.onClick || ElementUtil._onClick.bind(ele);
 		ele.onContextmenu = ele.onContextmenu || ElementUtil._onContextmenu.bind(ele);
 		ele.onChange = ele.onChange || ElementUtil._onChange.bind(ele);
@@ -20870,6 +21051,10 @@ ElementUtil = {
 		return this;
 	},
 
+	_tooltip (title) {
+		return this.attr("title", title);
+	},
+
 	_onClick (fn) { return ElementUtil._onX(this, "click", fn); },
 	_onContextmenu (fn) { return ElementUtil._onX(this, "contextmenu", fn); },
 	_onChange (fn) { return ElementUtil._onX(this, "change", fn); },
@@ -20936,19 +21121,6 @@ ElementUtil = {
 if (typeof window !== "undefined") window.e_ = ElementUtil.getOrModify;
 
 ObjUtil = {
-	mergeWith (source, target, fnMerge, options = {depth: 1}) {
-		if (!source || !target || typeof fnMerge !== "function") throw new Error("Must include a source, target and a fnMerge to handle merging");
-
-		const recursive = function (deepSource, deepTarget, depth = 1) {
-			if (depth > options.depth || !deepSource || !deepTarget) return;
-			for (let prop of Object.keys(deepSource)) {
-				deepTarget[prop] = fnMerge(deepSource[prop], deepTarget[prop], source, target);
-				recursive(source[prop], deepTarget[prop], depth + 1);
-			}
-		};
-		recursive(source, target, 1);
-	},
-
 	async pForEachDeep (source, pCallback, options = {depth: Infinity, callEachLevel: false}) {
 		const path = [];
 		const pDiveDeep = async function (val, path, depth = 0) {
@@ -21044,6 +21216,32 @@ MiscUtil = {
 			if (object == null) return object;
 		}
 		return delete object[path.last()];
+	},
+
+	merge (obj1, obj2) {
+		obj2 = MiscUtil.copy(obj2);
+
+		Object.entries(obj2)
+			.forEach(([k, v]) => {
+				if (obj1[k] == null) {
+					obj1[k] = v;
+					return;
+				}
+
+				if (
+					typeof obj1[k] === "object"
+					&& typeof v === "object"
+					&& !(obj1[k] instanceof Array)
+					&& !(v instanceof Array)
+				) {
+					MiscUtil.merge(obj1[k], v);
+					return;
+				}
+
+				obj1[k] = v;
+			});
+
+		return obj1;
 	},
 
 	mix: (superclass) => new MiscUtil._MixinBuilder(superclass),
@@ -22399,6 +22597,13 @@ SortUtil = {
 	ascSortBook (a, b) {
 		return SortUtil.ascSortDateString(b.published, a.published)
 			|| SortUtil.ascSortLower(a.name, b.name);
+	},
+
+	_ITEM_RARITY_ORDER: ["none", "common", "uncommon", "rare", "very rare", "legendary", "artifact", "varies", "unknown (magic)", "unknown"],
+	ascSortItemRarity (a, b) {
+		const ixA = SortUtil._ITEM_RARITY_ORDER.indexOf(a);
+		const ixB = SortUtil._ITEM_RARITY_ORDER.indexOf(b);
+		return (~ixA ? ixA : Number.MAX_SAFE_INTEGER) - (~ixB ? ixB : Number.MAX_SAFE_INTEGER);
 	},
 };
 
@@ -24640,7 +24845,7 @@ BrewUtil = {
 
 		$$($modalInner)`
 		<div class="mt-1"><i>A list of homebrew available in the public repository. Click a name to load the homebrew, or view the source directly.<br>
-		Contributions are welcome; see the <a href="https://github.com/TheGiddyLimit/homebrew/blob/master/README.md" target="_blank" rel="noopener noreferrer">README</a>, or stop by our <a href="https://discord.gg/nGvRCDs" target="_blank" rel="noopener noreferrer">Discord</a>.</i></div>
+		Contributions are welcome; see the <a href="https://github.com/TheGiddyLimit/homebrew/blob/master/README.md" target="_blank" rel="noopener noreferrer">README</a>, or stop by our <a href="https://discord.gg/5etools" target="_blank" rel="noopener noreferrer">Discord</a>.</i></div>
 		<hr class="hr-1">
 		<div class="flex-h-right mb-1">${$btnToggleDisplayNonPageBrews}${$btnAll}</div>
 		${$iptSearch}
@@ -26085,152 +26290,287 @@ CollectionUtil = {
 		for (let i = 0; i < length; i++) if (!CollectionUtil.deepEquals(a[i], b[i])) return false;
 		return true;
 	},
+
+	// region Find first <X>
+	dfs (obj, prop) {
+		if (obj instanceof Array) {
+			for (const child of obj) {
+				const n = CollectionUtil.dfs(child, prop);
+				if (n) return n;
+			}
+			return;
+		}
+
+		if (obj instanceof Object) {
+			if (obj[prop]) return obj[prop];
+
+			for (const child of Object.values(obj)) {
+				const n = CollectionUtil.dfs(child, prop);
+				if (n) return n;
+			}
+		}
+	},
+
+	bfs (obj, prop) {
+		if (obj instanceof Array) {
+			for (const child of obj) {
+				if (!(child instanceof Array) && child instanceof Object && child[prop]) return child[prop];
+			}
+
+			for (const child of obj) {
+				const n = CollectionUtil.bfs(child, prop);
+				if (n) return n;
+			}
+
+			return;
+		}
+
+		if (obj instanceof Object) {
+			if (obj[prop]) return obj[prop];
+
+			return CollectionUtil.bfs(Object.values(obj));
+		}
+	},
+	// endregion
 };
 
-Array.prototype.last = Array.prototype.last || function (arg) {
-	if (arg !== undefined) this[this.length - 1] = arg;
-	else return this[this.length - 1];
-};
+Array.prototype.last || Object.defineProperty(Array.prototype, "last", {
+	enumerable: false,
+	writable: true,
+	value: function (arg) {
+		if (arg !== undefined) this[this.length - 1] = arg;
+		else return this[this.length - 1];
+	},
+});
 
-Array.prototype.filterIndex = Array.prototype.filterIndex || function (fnCheck) {
-	const out = [];
-	this.forEach((it, i) => {
-		if (fnCheck(it)) out.push(i);
-	});
-	return out;
-};
+Array.prototype.filterIndex || Object.defineProperty(Array.prototype, "filterIndex", {
+	enumerable: false,
+	writable: true,
+	value: function (fnCheck) {
+		const out = [];
+		this.forEach((it, i) => {
+			if (fnCheck(it)) out.push(i);
+		});
+		return out;
+	},
+});
 
-Array.prototype.equals = Array.prototype.equals || function (array2) {
-	const array1 = this;
-	if (!array1 && !array2) return true;
-	else if ((!array1 && array2) || (array1 && !array2)) return false;
+Array.prototype.equals || Object.defineProperty(Array.prototype, "equals", {
+	enumerable: false,
+	writable: true,
+	value: function (array2) {
+		const array1 = this;
+		if (!array1 && !array2) return true;
+		else if ((!array1 && array2) || (array1 && !array2)) return false;
 
-	let temp = [];
-	if ((!array1[0]) || (!array2[0])) return false;
-	if (array1.length !== array2.length) return false;
-	let key;
-	// Put all the elements from array1 into a "tagged" array
-	for (let i = 0; i < array1.length; i++) {
-		key = `${(typeof array1[i])}~${array1[i]}`; // Use "typeof" so a number 1 isn't equal to a string "1".
-		if (temp[key]) temp[key]++;
-		else temp[key] = 1;
-	}
-	// Go through array2 - if same tag missing in "tagged" array, not equal
-	for (let i = 0; i < array2.length; i++) {
-		key = `${(typeof array2[i])}~${array2[i]}`;
-		if (temp[key]) {
-			if (temp[key] === 0) return false;
-			else temp[key]--;
-		} else return false;
-	}
-	return true;
-};
+		let temp = [];
+		if ((!array1[0]) || (!array2[0])) return false;
+		if (array1.length !== array2.length) return false;
+		let key;
+		// Put all the elements from array1 into a "tagged" array
+		for (let i = 0; i < array1.length; i++) {
+			key = `${(typeof array1[i])}~${array1[i]}`; // Use "typeof" so a number 1 isn't equal to a string "1".
+			if (temp[key]) temp[key]++;
+			else temp[key] = 1;
+		}
+		// Go through array2 - if same tag missing in "tagged" array, not equal
+		for (let i = 0; i < array2.length; i++) {
+			key = `${(typeof array2[i])}~${array2[i]}`;
+			if (temp[key]) {
+				if (temp[key] === 0) return false;
+				else temp[key]--;
+			} else return false;
+		}
+		return true;
+	},
+});
 
 // Alternate name due to clash with Foundry VTT
-Array.prototype.segregate = Array.prototype.segregate || function (fnIsValid) {
-	return this.reduce(([pass, fail], elem) => fnIsValid(elem) ? [[...pass, elem], fail] : [pass, [...fail, elem]], [[], []]);
-};
-Array.prototype.partition = Array.prototype.partition || Array.prototype.segregate;
+Array.prototype.segregate || Object.defineProperty(Array.prototype, "segregate", {
+	enumerable: false,
+	writable: true,
+	value: function (fnIsValid) {
+		return this.reduce(([pass, fail], elem) => fnIsValid(elem) ? [[...pass, elem], fail] : [pass, [...fail, elem]], [[], []]);
+	},
+});
 
-Array.prototype.getNext = Array.prototype.getNext || function (curVal) {
-	let ix = this.indexOf(curVal);
-	if (!~ix) throw new Error("Value was not in array!");
-	if (++ix >= this.length) ix = 0;
-	return this[ix];
-};
+Array.prototype.partition || Object.defineProperty(Array.prototype, "partition", {
+	enumerable: false,
+	writable: true,
+	value: Array.prototype.segregate,
+});
 
-Array.prototype.shuffle = Array.prototype.shuffle || function () {
-	for (let i = 0; i < 10000; ++i) this.sort(() => Math.random() - 0.5);
-	return this;
-};
+Array.prototype.getNext || Object.defineProperty(Array.prototype, "getNext", {
+	enumerable: false,
+	writable: true,
+	value: function (curVal) {
+		let ix = this.indexOf(curVal);
+		if (!~ix) throw new Error("Value was not in array!");
+		if (++ix >= this.length) ix = 0;
+		return this[ix];
+	},
+});
+
+Array.prototype.shuffle || Object.defineProperty(Array.prototype, "shuffle", {
+	enumerable: false,
+	writable: true,
+	value: function () {
+		for (let i = 0; i < 10000; ++i) this.sort(() => Math.random() - 0.5);
+		return this;
+	},
+});
 
 /** Map each array item to a k:v pair, then flatten them into one object. */
-Array.prototype.mergeMap = Array.prototype.mergeMap || function (fnMap) {
-	return this.map((...args) => fnMap(...args)).reduce((a, b) => Object.assign(a, b), {});
-};
+Array.prototype.mergeMap || Object.defineProperty(Array.prototype, "mergeMap", {
+	enumerable: false,
+	writable: true,
+	value: function (fnMap) {
+		return this.map((...args) => fnMap(...args)).reduce((a, b) => Object.assign(a, b), {});
+	},
+});
 
-Array.prototype.first = Array.prototype.first || function (fnMapFind) {
-	for (let i = 0, len = this.length; i < len; ++i) {
-		const result = fnMapFind(this[i], i, this);
-		if (result) return result;
-	}
-};
+Array.prototype.first || Object.defineProperty(Array.prototype, "first", {
+	enumerable: false,
+	writable: true,
+	value: function (fnMapFind) {
+		for (let i = 0, len = this.length; i < len; ++i) {
+			const result = fnMapFind(this[i], i, this);
+			if (result) return result;
+		}
+	},
+});
+
+Array.prototype.pMap || Object.defineProperty(Array.prototype, "pMap", {
+	enumerable: false,
+	writable: true,
+	value: async function (fnMap) {
+		return Promise.all(this.map((it, i) => fnMap(it, i, this)));
+	},
+});
 
 /** Map each item via an async function, awaiting for each to complete before starting the next. */
-Array.prototype.pSerialAwaitMap = Array.prototype.pSerialAwaitMap || async function (fnMap) {
-	const out = [];
-	for (let i = 0, len = this.length; i < len; ++i) out.push(await fnMap(this[i], i, this));
-	return out;
-};
+Array.prototype.pSerialAwaitMap || Object.defineProperty(Array.prototype, "pSerialAwaitMap", {
+	enumerable: false,
+	writable: true,
+	value: async function (fnMap) {
+		const out = [];
+		for (let i = 0, len = this.length; i < len; ++i) out.push(await fnMap(this[i], i, this));
+		return out;
+	},
+});
 
-Array.prototype.pSerialAwaitFind = Array.prototype.pSerialAwaitFind || async function (fnFind) {
-	for (let i = 0, len = this.length; i < len; ++i) if (await fnFind(this[i], i, this)) return this[i];
-};
+Array.prototype.pSerialAwaitFind || Object.defineProperty(Array.prototype, "pSerialAwaitFind", {
+	enumerable: false,
+	writable: true,
+	value: async function (fnFind) {
+		for (let i = 0, len = this.length; i < len; ++i) if (await fnFind(this[i], i, this)) return this[i];
+	},
+});
 
-Array.prototype.pSerialAwaitSome = Array.prototype.pSerialAwaitSome || async function (fnSome) {
-	for (let i = 0, len = this.length; i < len; ++i) if (await fnSome(this[i], i, this)) return true;
-	return false;
-};
+Array.prototype.pSerialAwaitSome || Object.defineProperty(Array.prototype, "pSerialAwaitSome", {
+	enumerable: false,
+	writable: true,
+	value: async function (fnSome) {
+		for (let i = 0, len = this.length; i < len; ++i) if (await fnSome(this[i], i, this)) return true;
+		return false;
+	},
+});
 
-Array.prototype.unique = Array.prototype.unique || function (fnGetProp) {
-	const seen = new Set();
-	return this.filter((...args) => {
-		const val = fnGetProp ? fnGetProp(...args) : args[0];
-		if (seen.has(val)) return false;
-		seen.add(val);
-		return true;
-	});
-};
+Array.prototype.unique || Object.defineProperty(Array.prototype, "unique", {
+	enumerable: false,
+	writable: true,
+	value: function (fnGetProp) {
+		const seen = new Set();
+		return this.filter((...args) => {
+			const val = fnGetProp ? fnGetProp(...args) : args[0];
+			if (seen.has(val)) return false;
+			seen.add(val);
+			return true;
+		});
+	},
+});
 
-Array.prototype.zip = Array.prototype.zip || function (otherArray) {
-	const out = [];
-	const len = Math.max(this.length, otherArray.length);
-	for (let i = 0; i < len; ++i) {
-		out.push([this[i], otherArray[i]]);
-	}
-	return out;
-};
+Array.prototype.zip || Object.defineProperty(Array.prototype, "zip", {
+	enumerable: false,
+	writable: true,
+	value: function (otherArray) {
+		const out = [];
+		const len = Math.max(this.length, otherArray.length);
+		for (let i = 0; i < len; ++i) {
+			out.push([this[i], otherArray[i]]);
+		}
+		return out;
+	},
+});
 
-Array.prototype.nextWrap = Array.prototype.nextWrap || function (item) {
-	const ix = this.indexOf(item);
-	if (~ix) {
-		if (ix + 1 < this.length) return this[ix + 1];
-		else return this[0];
-	} else return this.last();
-};
+Array.prototype.nextWrap || Object.defineProperty(Array.prototype, "nextWrap", {
+	enumerable: false,
+	writable: true,
+	value: function (item) {
+		const ix = this.indexOf(item);
+		if (~ix) {
+			if (ix + 1 < this.length) return this[ix + 1];
+			else return this[0];
+		} else return this.last();
+	},
+});
 
-Array.prototype.prevWrap = Array.prototype.prevWrap || function (item) {
-	const ix = this.indexOf(item);
-	if (~ix) {
-		if (ix - 1 >= 0) return this[ix - 1];
-		else return this.last();
-	} else return this[0];
-};
+Array.prototype.prevWrap || Object.defineProperty(Array.prototype, "prevWrap", {
+	enumerable: false,
+	writable: true,
+	value: function (item) {
+		const ix = this.indexOf(item);
+		if (~ix) {
+			if (ix - 1 >= 0) return this[ix - 1];
+			else return this.last();
+		} else return this[0];
+	},
+});
 
-Array.prototype.findLast = Array.prototype.findLast || function (fn) {
-	for (let i = this.length - 1; i >= 0; --i) if (fn(this[i])) return this[i];
-};
+Array.prototype.findLast || Object.defineProperty(Array.prototype, "findLast", {
+	enumerable: false,
+	writable: true,
+	value: function (fn) {
+		for (let i = this.length - 1; i >= 0; --i) if (fn(this[i])) return this[i];
+	},
+});
 
-Array.prototype.findLastIndex = Array.prototype.findLastIndex || function (fn) {
-	for (let i = this.length - 1; i >= 0; --i) if (fn(this[i])) return i;
-	return -1;
-};
+Array.prototype.findLastIndex || Object.defineProperty(Array.prototype, "findLastIndex", {
+	enumerable: false,
+	writable: true,
+	value: function (fn) {
+		for (let i = this.length - 1; i >= 0; --i) if (fn(this[i])) return i;
+		return -1;
+	},
+});
 
-Array.prototype.sum = Array.prototype.sum || function () {
-	let tmp = 0;
-	const len = this.length;
-	for (let i = 0; i < len; ++i) tmp += this[i];
-	return tmp;
-};
+Array.prototype.sum || Object.defineProperty(Array.prototype, "sum", {
+	enumerable: false,
+	writable: true,
+	value: function () {
+		let tmp = 0;
+		const len = this.length;
+		for (let i = 0; i < len; ++i) tmp += this[i];
+		return tmp;
+	},
+});
 
-Array.prototype.mean = Array.prototype.mean || function () {
-	return this.sum() / this.length;
-};
+Array.prototype.mean || Object.defineProperty(Array.prototype, "mean", {
+	enumerable: false,
+	writable: true,
+	value: function () {
+		return this.sum() / this.length;
+	},
+});
 
-Array.prototype.meanAbsoluteDeviation = Array.prototype.meanAbsoluteDeviation || function () {
-	const mean = this.mean();
-	return (this.map(num => Math.abs(num - mean)) || []).mean();
-};
+Array.prototype.meanAbsoluteDeviation || Object.defineProperty(Array.prototype, "meanAbsoluteDeviation", {
+	enumerable: false,
+	writable: true,
+	value: function () {
+		const mean = this.mean();
+		return (this.map(num => Math.abs(num - mean)) || []).mean();
+	},
+});
 
 // OVERLAY VIEW ========================================================================================================
 /**
@@ -26601,6 +26941,14 @@ ExtensionUtil = {
 		}
 	},
 
+	pDoSendStatsPreloaded ({page, entity, isTemp, options}) {
+		ExtensionUtil._doSend("entity", {page, entity, isTemp, options});
+	},
+
+	pDoSendCurrency ({currency}) {
+		ExtensionUtil._doSend("currency", {currency});
+	},
+
 	doSendRoll (data) { ExtensionUtil._doSend("roll", data); },
 };
 if (typeof window !== "undefined") window.addEventListener("rivet.active", () => ExtensionUtil.ACTIVE = true);
@@ -26830,7 +27178,7 @@ class ProxyBase {
 				if (!(prop in object)) return true;
 				const prevValue = object[prop];
 				delete object[prop];
-				if (this.__hooksAll[hookProp]) this.__hooksAll[hookProp].forEach(hook => hook(prop, undefined, prevValue));
+				this._doFireHooksAll(hookProp, prop, undefined, prevValue);
 				if (this.__hooks[hookProp] && this.__hooks[hookProp][prop]) this.__hooks[hookProp][prop].forEach(hook => hook(prop, undefined, prevValue));
 				return true;
 			},
@@ -26841,7 +27189,7 @@ class ProxyBase {
 		if (object[prop] === value) return true;
 		const prevValue = object[prop];
 		object[prop] = value;
-		if (this.__hooksAll[hookProp]) this.__hooksAll[hookProp].forEach(hook => hook(prop, value, prevValue));
+		this._doFireHooksAll(hookProp, prop, value, prevValue);
 		if (this.__hooks[hookProp] && this.__hooks[hookProp][prop]) this.__hooks[hookProp][prop].forEach(hook => hook(prop, value, prevValue));
 		return true;
 	}
@@ -26854,6 +27202,16 @@ class ProxyBase {
 		if (this.__hooksAll[hookProp]) for (const hook of this.__hooksAll[hookProp]) await hook(prop, value, prevValue);
 		if (this.__hooks[hookProp] && this.__hooks[hookProp][prop]) for (const hook of this.__hooks[hookProp][prop]) await hook(prop, value, prevValue);
 		return true;
+	}
+
+	_doFireHooksAll (hookProp, prop, value, prevValue) {
+		if (this.__hooksAll[hookProp]) this.__hooksAll[hookProp].forEach(hook => hook(prop, undefined, prevValue));
+	}
+
+	// ...Not to be confused with...
+
+	_doFireAllHooks (hookProp) {
+		if (this.__hooks[hookProp]) Object.entries(this.__hooks[hookProp]).forEach(([prop, hk]) => hk(prop));
 	}
 
 	/**
@@ -26936,28 +27294,31 @@ class ProxyBase {
 	_proxyAssign (hookProp, proxyProp, underProp, toObj, isOverwrite) {
 		const oldKeys = Object.keys(this[proxyProp]);
 		const nuKeys = new Set(Object.keys(toObj));
-		const dirtyKeys = new Set();
+		const dirtyKeyValues = {};
 
 		if (isOverwrite) {
 			oldKeys.forEach(k => {
 				if (!nuKeys.has(k) && this[underProp] !== undefined) {
+					const prevValue = this[proxyProp][k];
 					delete this[underProp][k];
-					dirtyKeys.add(k);
+					dirtyKeyValues[k] = prevValue;
 				}
 			});
 		}
 
 		nuKeys.forEach(k => {
 			if (!CollectionUtil.deepEquals(this[underProp][k], toObj[k])) {
+				const prevValue = this[proxyProp][k];
 				this[underProp][k] = toObj[k];
-				dirtyKeys.add(k);
+				dirtyKeyValues[k] = prevValue;
 			}
 		});
 
-		dirtyKeys.forEach(k => {
-			if (this.__hooksAll[hookProp]) this.__hooksAll[hookProp].forEach(hk => hk(k, this[underProp][k]));
-			if (this.__hooks[hookProp] && this.__hooks[hookProp][k]) this.__hooks[hookProp][k].forEach(hk => hk(k, this[underProp][k]));
-		});
+		Object.entries(dirtyKeyValues)
+			.forEach(([k, prevValue]) => {
+				this._doFireHooksAll(hookProp, k, this[underProp][k], prevValue);
+				if (this.__hooks[hookProp] && this.__hooks[hookProp][k]) this.__hooks[hookProp][k].forEach(hk => hk(k, this[underProp][k], prevValue));
+			});
 	}
 
 	_proxyAssignSimple (hookProp, toObj, isOverwrite) {
@@ -27721,15 +28082,7 @@ class TabUiUtilBase {
 				return renderTabMetas_standard(it, i);
 			}).filter(Boolean);
 
-			if ($parent) {
-				$$`<div class="flex-col w-100 h-100">
-					${$dispTabTitle}
-					<div class="flex w-100 h-100 min-h-0">
-						<div class="flex-col h-100 pt-2">${tabMetasOut.map(it => it.$btnTab)}</div>
-						<div class="flex-col w-100 h-100 min-w-0">${tabMetasOut.map(it => it.$wrpTab).filter(Boolean)}</div>
-					</div>
-				</div>`.appendTo($parent);
-			}
+			if ($parent) obj.__renderTabs_addToParent({$dispTabTitle, $parent, tabMetasOut});
 
 			const hkActiveTab = () => {
 				tabMetasOut.forEach(it => {
@@ -27754,6 +28107,17 @@ class TabUiUtilBase {
 			};
 
 			return tabMetasOut;
+		};
+
+		obj.__renderTabs_addToParent = function ({$dispTabTitle, $parent, tabMetasOut}) {
+			const hasBorder = tabMetasOut.some(it => it.hasBorder);
+			$$`<div class="flex-col w-100 h-100">
+				${$dispTabTitle}
+				<div class="flex-col w-100 h-100 min-h-0">
+					<div class="flex ${hasBorder ? `ui-tab__wrp-tab-heads--border` : ""}">${tabMetasOut.map(it => it.$btnTab)}</div>
+					<div class="flex w-100 h-100 min-h-0">${tabMetasOut.map(it => it.$wrpTab).filter(Boolean)}</div>
+				</div>
+			</div>`.appendTo($parent);
 		};
 
 		obj._resetTabs = function ({tabGroup = TabUiUtilBase._DEFAULT_TAB_GROUP} = {}) {
@@ -27876,6 +28240,16 @@ class TabUiUtilSide extends TabUiUtilBase {
 			return $(`<div class="flex-col w-100 h-100 ui-tab-side__wrp-tab px-3 py-2 overflow-y-auto"></div>`);
 		};
 
+		obj.__renderTabs_addToParent = function ({$dispTabTitle, $parent, tabMetasOut}) {
+			$$`<div class="flex-col w-100 h-100">
+				${$dispTabTitle}
+				<div class="flex w-100 h-100 min-h-0">
+					<div class="flex-col h-100 pt-2">${tabMetasOut.map(it => it.$btnTab)}</div>
+					<div class="flex-col w-100 h-100 min-w-0">${tabMetasOut.map(it => it.$wrpTab).filter(Boolean)}</div>
+				</div>
+			</div>`.appendTo($parent);
+		};
+
 		obj.__renderTypedTabMeta = function ({tabMeta, ixTab}) {
 			switch (tabMeta.type) {
 				case "buttons": return obj.__renderTypedTabMeta_buttons({tabMeta, ixTab});
@@ -27885,7 +28259,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 
 		obj.__renderTypedTabMeta_buttons = function ({tabMeta, ixTab}) {
 			const $btns = tabMeta.buttons.map((meta, j) => {
-				const $btn = $(`<button class="btn btn-primary btn-sm" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
+				const $btn = $(`<button class="btn ${meta.type ? `btn-${meta.type}` : "btn-primary"} btn-sm" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
 					.click(evt => meta.pFnClick(evt, $btn));
 
 				if (j === tabMeta.buttons.length - 1) $btn.addClass(`br-0 btr-0 bbr-0`);
@@ -30200,6 +30574,56 @@ const MixinComponentHistory = compClass => class extends compClass {
 	}
 };
 
+// region Globally-linked state components
+const MixinComponentGlobalState = compClass => class extends compClass {
+	constructor () {
+		super(...arguments);
+
+		// Point our proxy at the singleton `__stateGlobal` object
+		this._stateGlobal = this._getProxy("stateGlobal", MixinComponentGlobalState._Singleton.__stateGlobal);
+
+		// Load the singleton's state, then fire all our hooks once it's ready
+		MixinComponentGlobalState._Singleton._pLoadState()
+			.then(() => {
+				this._doFireHooksAll("stateGlobal");
+				this._doFireAllHooks("stateGlobal");
+				this._addHookAll("stateGlobal", MixinComponentGlobalState._Singleton._pSaveStateDebounced);
+			});
+	}
+
+	get __stateGlobal () { return MixinComponentGlobalState._Singleton.__stateGlobal; }
+
+	_addHookGlobal (prop, hook) {
+		return this._addHook("stateGlobal", prop, hook);
+	}
+};
+
+MixinComponentGlobalState._Singleton = class {
+	static async _pSaveState () {
+		return StorageUtil.pSet(VeCt.STORAGE_GLOBAL_COMPONENT_STATE, MiscUtil.copy(MixinComponentGlobalState._Singleton.__stateGlobal));
+	}
+
+	static async _pLoadState () {
+		if (MixinComponentGlobalState._Singleton._pLoadingState) return MixinComponentGlobalState._Singleton._pLoadingState;
+		return MixinComponentGlobalState._Singleton._pLoadingState = MixinComponentGlobalState._Singleton._pLoadState_();
+	}
+
+	static async _pLoadState_ () {
+		Object.assign(MixinComponentGlobalState._Singleton.__stateGlobal, (await StorageUtil.pGet(VeCt.STORAGE_GLOBAL_COMPONENT_STATE)) || {});
+	}
+
+	static _getDefaultStateGlobal () {
+		return {
+			isUseSpellPoints: false,
+		};
+	}
+}
+MixinComponentGlobalState._Singleton.__stateGlobal = {...MixinComponentGlobalState._Singleton._getDefaultStateGlobal()};
+MixinComponentGlobalState._Singleton._pSaveStateDebounced = MiscUtil.debounce(MixinComponentGlobalState._Singleton._pSaveState.bind(MixinComponentGlobalState._Singleton), 100);
+MixinComponentGlobalState._Singleton._pLoadingState = null;
+
+// endregion
+
 class ComponentUiUtil {
 	static trackHook (hooks, prop, hook) {
 		hooks[prop] = hooks[prop] || [];
@@ -31154,11 +31578,38 @@ class ComponentUiUtil {
 	 * @param opts.propCurMin
 	 * @param [opts.propCurMax]
 	 * @param [opts.fnDisplay] Value display function.
+	 * @param [opts.fnDisplayTooltip]
+	 * @param [opts.sparseValues]
 	 */
 	static $getSliderRange (comp, opts) {
 		opts = opts || {};
 		const slider = new ComponentUiUtil.RangeSlider({comp, ...opts});
 		return slider.$get();
+	}
+
+	static $getSliderNumber (
+		comp,
+		prop,
+		{
+			min,
+			max,
+			step,
+			$ele,
+			asMeta,
+		} = {},
+	) {
+		const $slider = ($ele || $(`<input type="range">`))
+			.change(() => comp._state[prop] = Number($slider.val()));
+
+		if (min != null) $slider.attr("min", min);
+		if (max != null) $slider.attr("max", max);
+		if (step != null) $slider.attr("step", step);
+
+		const hk = () => $slider.val(comp._state[prop]);
+		comp._addHookBase(prop, hk);
+		hk();
+
+		return asMeta ? ({$slider, unhook: () => comp._removeHookBase(prop, hk)}) : $slider;
 	}
 }
 ComponentUiUtil.RangeSlider = class {
@@ -31170,6 +31621,8 @@ ComponentUiUtil.RangeSlider = class {
 			propCurMin,
 			propCurMax,
 			fnDisplay,
+			fnDisplayTooltip,
+			sparseValues,
 		},
 	) {
 		this._comp = comp;
@@ -31178,6 +31631,8 @@ ComponentUiUtil.RangeSlider = class {
 		this._propCurMin = propCurMin;
 		this._propCurMax = propCurMax;
 		this._fnDisplay = fnDisplay;
+		this._fnDisplayTooltip = fnDisplayTooltip;
+		this._sparseValues = sparseValues;
 
 		this._isSingle = !this._propCurMax;
 
@@ -31286,49 +31741,66 @@ ComponentUiUtil.RangeSlider = class {
 
 		// region Hooks
 		const hkChangeValue = () => {
-			const min = this._compCpy._state[this._propMin]; const max = this._compCpy._state[this._propMax];
-
 			const curMin = this._compCpy._state[this._propCurMin];
-			const pctMin = ((curMin - min) / (max - min)) * 100;
+			const pctMin = this._getLeftPositionPercentage({value: curMin});
 			this._thumbLow.style.left = `calc(${pctMin}% - ${this.constructor._W_THUMB_PX / 2}px)`;
 			const toDisplayLeft = this._fnDisplay ? `${this._fnDisplay(curMin)}`.qq() : curMin;
-			if (!this._isSingle) dispValueLeft.html(toDisplayLeft);
+			const toDisplayLeftTooltip = this._fnDisplayTooltip ? `${this._fnDisplayTooltip(curMin)}`.qq() : null;
+			if (!this._isSingle) {
+				dispValueLeft
+					.html(toDisplayLeft)
+					.tooltip(toDisplayLeftTooltip);
+			}
 
 			if (!this._isSingle) {
 				this._dispTrackInner.style.left = `${pctMin}%`;
 
 				const curMax = this._compCpy._state[this._propCurMax];
-				const pctMax = ((curMax - min) / (max - min)) * 100;
+				const pctMax = this._getLeftPositionPercentage({value: curMax});
 				this._dispTrackInner.style.right = `${100 - pctMax}%`;
 				this._thumbHigh.style.left = `calc(${pctMax}% - ${this.constructor._W_THUMB_PX / 2}px)`;
-				dispValueRight.html(this._fnDisplay ? `${this._fnDisplay(curMax)}`.qq() : curMax);
+				dispValueRight
+					.html(this._fnDisplay ? `${this._fnDisplay(curMax)}`.qq() : curMax)
+					.tooltip(this._fnDisplayTooltip ? `${this._fnDisplayTooltip(curMax)}`.qq() : null);
 			} else {
-				dispValueRight.html(toDisplayLeft);
+				dispValueRight
+					.html(toDisplayLeft)
+					.tooltip(toDisplayLeftTooltip);
 			}
 		};
 
 		const hkChangeLimit = () => {
 			const pips = [];
 
-			const numPips = this._compCpy._state[this._propMax] - this._compCpy._state[this._propMin];
-			let pipIncrement = 1;
-			// Cap the number of pips
-			if (numPips > ComponentUiUtil.RangeSlider._MAX_PIPS) pipIncrement = Math.ceil(numPips / ComponentUiUtil.RangeSlider._MAX_PIPS);
+			if (!this._sparseValues) {
+				const numPips = this._compCpy._state[this._propMax] - this._compCpy._state[this._propMin];
+				let pipIncrement = 1;
+				// Cap the number of pips
+				if (numPips > ComponentUiUtil.RangeSlider._MAX_PIPS) pipIncrement = Math.ceil(numPips / ComponentUiUtil.RangeSlider._MAX_PIPS);
 
-			let i, len;
-			for (
-				i = this._compCpy._state[this._propMin], len = this._compCpy._state[this._propMax] + 1;
-				i < len;
-				i += pipIncrement
-			) {
-				pips.push(this._getWrpPip({
-					isMajor: i === this._compCpy._state[this._propMin] || i === (len - 1),
-					value: i,
-				}));
+				let i, len;
+				for (
+					i = this._compCpy._state[this._propMin], len = this._compCpy._state[this._propMax] + 1;
+					i < len;
+					i += pipIncrement
+				) {
+					pips.push(this._getWrpPip({
+						isMajor: i === this._compCpy._state[this._propMin] || i === (len - 1),
+						value: i,
+					}));
+				}
+
+				// Ensure the last pip is always rendered, even if we're reducing pips
+				if (i !== this._compCpy._state[this._propMax]) pips.push(this._getWrpPip({isMajor: true, value: this._compCpy._state[this._propMax]}));
+			} else {
+				const len = this._sparseValues.length;
+				this._sparseValues.forEach((val, i) => {
+					pips.push(this._getWrpPip({
+						isMajor: i === 0 || i === (len - 1),
+						value: val,
+					}));
+				})
 			}
-
-			// Ensure the last pip is always rendered, even if we're reducing pips
-			if (i !== this._compCpy._state[this._propMax]) pips.push(this._getWrpPip({isMajor: true, value: this._compCpy._state[this._propMax]}));
 
 			wrpPips.empty();
 			e_({
@@ -31389,10 +31861,7 @@ ComponentUiUtil.RangeSlider = class {
 	}
 
 	_getWrpPip ({isMajor, value} = {}) {
-		const min = this._compCpy._state[this._propMin]; const max = this._compCpy._state[this._propMax];
-		const pctValue = ((value - min) / (max - min)) * 100;
-		const posLeft = `${pctValue}%`;
-		const styleLeft = `left: ${posLeft};`;
+		const style = this._getWrpPip_getStyle({value});
 
 		const pip = e_({
 			tag: "div",
@@ -31403,6 +31872,7 @@ ComponentUiUtil.RangeSlider = class {
 			tag: "div",
 			clazz: "absolute ui-slidr__pip-label flex-vh-center ve-small no-wrap",
 			html: isMajor ? this._fnDisplay ? `${this._fnDisplay(value)}`.qq() : value : "",
+			title: isMajor && this._fnDisplayTooltip ? `${this._fnDisplayTooltip(value)}`.qq() : null,
 		});
 
 		return e_({
@@ -31412,8 +31882,23 @@ ComponentUiUtil.RangeSlider = class {
 				pip,
 				dispLabel,
 			],
-			style: styleLeft,
+			style,
 		});
+	}
+
+	_getWrpPip_getStyle ({value}) {
+		return `left: ${this._getLeftPositionPercentage({value})}%`;
+	}
+
+	_getLeftPositionPercentage ({value}) {
+		if (this._sparseValues) {
+			const ix = this._sparseValues.sort(SortUtil.ascSort).indexOf(value);
+			if (!~ix) throw new Error(`Value "${value}" was not in the list of sparse values!`);
+			return (ix / (this._sparseValues.length - 1)) * 100;
+		}
+
+		const min = this._compCpy._state[this._propMin]; const max = this._compCpy._state[this._propMax];
+		return ((value - min) / (max - min)) * 100;
 	}
 
 	/**
@@ -31428,9 +31913,16 @@ ComponentUiUtil.RangeSlider = class {
 	 * ```
 	 */
 	_getRelativeValue (evt, {trackOriginX, trackWidth}) {
+		const xEvt = EventUtil.getClientX(evt) - trackOriginX;
+
+		if (this._sparseValues) {
+			const ixMax = this._sparseValues.length - 1;
+			const rawVal = Math.round((xEvt / trackWidth) * ixMax);
+			return this._sparseValues[Math.min(ixMax, Math.max(0, rawVal))];
+		}
+
 		const min = this._compCpy._state[this._propMin]; const max = this._compCpy._state[this._propMax];
 
-		const xEvt = EventUtil.getClientX(evt) - trackOriginX;
 		const rawVal = min
 			+ Math.round(
 				(xEvt / trackWidth) * (max - min),
@@ -31495,7 +31987,7 @@ ComponentUiUtil.RangeSlider = class {
 		};
 		// endregion
 
-		this._handleMouseMove(evt)
+		this._handleMouseMove(evt);
 	}
 
 	_handleMouseUp () {
