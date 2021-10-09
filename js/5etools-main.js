@@ -2391,7 +2391,7 @@ const betteR205etoolsMain = function () {
 								$.ajax({
 									url: "/compendium/compendium/getPages",
 									data: {
-										bookName: COMPENDIUM_BOOK_NAME,
+										bookName: d20.compendium.shortName,
 										pages: [t],
 										sharedCompendium: campaign_id
 									},
