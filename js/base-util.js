@@ -31,6 +31,18 @@ function baseUtil () {
 		return b < a ? 1 : -1;
 	};
 
+	d20plus.ut.fix3dDice = () => {
+        Object.defineProperty(Array.prototype, 'filter', {
+            enumerable: false,
+            value: Array.prototype.filter
+        });
+
+        Object.defineProperty(Array.prototype, 'map', {
+            enumerable: false,
+            value: Array.prototype.map
+        });
+    };
+	
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
