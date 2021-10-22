@@ -248,10 +248,6 @@ function d20plusMonsters () {
 			renderer.setBaseUrl(BASE_SITE_URL);
 
 			let fluff;
-			let variant;
-            if (data.variant) {
-                   variant = data.variant;
-            }
 			if (data.fluff) fluff = data.fluff;
 			else if (monsterFluffData[data.source]) {
 				fluff = (monsterFluffData[data.source].monsterFluff || [])
