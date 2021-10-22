@@ -248,6 +248,10 @@ function d20plusMonsters () {
 			renderer.setBaseUrl(BASE_SITE_URL);
 
 			let fluff;
+			let variant;
+            if (data.variant) {
+                   variant = data.variant;
+            }
 			if (data.fluff) fluff = data.fluff;
 			else if (monsterFluffData[data.source]) {
 				fluff = (monsterFluffData[data.source].monsterFluff || [])
@@ -1111,6 +1115,27 @@ function d20plusMonsters () {
 										const offsetIndex = data.spellcasting ? 1 + i : i;
 										character.abilities.create({
 											name: `Trait${offsetIndex}: ${v.name}`,
+											istokenaction: true,
+											action: d20plus.actionMacroTrait(offsetIndex),
+										});
+									}
+
+									let text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
+									character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: text});
+								});
+							}
+							if (data.variant && d20plus.cfg.getOrDefault("import", "importVariants")) {
+								$.each(data.variant, function (i, v) {
+									let newRowId = d20plus.ut.generateRowId();
+									character.attribs.create({
+										name: `repeating_npctrait_${newRowId}_name`,
+										current: d20plus.importer.getCleanText(renderer.render('Variant : '+v.name)),
+									});
+
+									if (d20plus.cfg.getOrDefault("import", "importVariants")) {
+										const offsetIndex = data.spellcasting ? 1 + i : i;
+										character.abilities.create({
+											name: `${offsetIndex}: ${v.name}`,
 											istokenaction: true,
 											action: d20plus.actionMacroTrait(offsetIndex),
 										});

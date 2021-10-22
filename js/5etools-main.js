@@ -296,6 +296,11 @@ const betteR205etoolsMain = function () {
 			"_type": "_enum",
 			"__values": ["Bio", "GM Notes"],
 		},
+		"importVariants": {
+			"name": "Import Creature Variants...",
+			"default": true,
+			"_type": "boolean",
+		},
 		"importCharAvatar": {
 			"name": "Set Character Avatar As...",
 			"default": "Portrait (where available)",
