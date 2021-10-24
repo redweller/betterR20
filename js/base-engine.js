@@ -10,13 +10,18 @@ function d20plusEngine () {
 		// rebind buttons with new setMode
 		const $drawTools = $("#drawingtools");
 		const $rect = $drawTools.find(".chooserect");
+		const $ellipse = $drawTools.find(".choosecircle");
 		const $path = $drawTools.find(".choosepath");
 		const $poly = $drawTools.find(".choosepolygon");
 		$drawTools.unbind(clicktype).bind(clicktype, function () {
-			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
+			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("ellipse") ? setMode("ellipse") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
 		});
 		$rect.unbind(clicktype).bind(clicktype, () => {
 			setMode("rect");
+			return false;
+		});
+		$ellipse.unbind(clicktype).bind(clicktype, () => {
+			setMode("ellipse");
 			return false;
 		});
 		$path.unbind(clicktype).bind(clicktype, () => {
@@ -28,6 +33,7 @@ function d20plusEngine () {
 			return false;
 		});
 		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
+		$("#ellipse").unbind(clicktype).bind(clicktype, () => setMode("ellipse"));
 		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
 
 		if (!$(`#fxtools`).length) {

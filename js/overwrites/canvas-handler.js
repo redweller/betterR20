@@ -163,6 +163,26 @@ function initCanvasHandlerOverwrite () {
 					h.stroke = $("#path_strokecolor").val(),
 					d20.engine.drawshape.start = [i + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], n + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
 					d20.engine.redrawScreenNextTick()
+			} else if (d20.engine.leftMouseIsDown && "ellipse" == d20.engine.mode) {
+				var u = parseInt($("#path_width").val(), 10)
+					, h = d20.engine.drawshape.shape = {
+					strokewidth: u,
+					x: 0,
+					y: 0,
+					width: 10,
+					height: 10,
+					type: "circle"
+				};
+				s = r,
+					c = a;
+				0 != d20.engine.snapTo && e.shiftKey && (s = d20.engine.snapToIncrement(s, d20.engine.snapTo),
+					c = d20.engine.snapToIncrement(c, d20.engine.snapTo)),
+					h.x = s,
+					h.y = c,
+					h.fill = $("#path_fillcolor").val(),
+					h.stroke = $("#path_strokecolor").val(),
+					d20.engine.drawshape.start = [i + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], n + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
+					d20.engine.redrawScreenNextTick()
 			} else if (d20.engine.leftMouseIsDown && "polygon" == d20.engine.mode) {
 				if (d20.engine.drawshape.shape) h = d20.engine.drawshape.shape;
 				else {
@@ -339,7 +359,7 @@ function initCanvasHandlerOverwrite () {
 				d20.engine.redrawScreenNextTick(!0)
 		}
 
-		const g = ["select", "path", "text", "fxtools", "measure", "fxtools", "rect"];
+		const g = ["select", "path", "text", "fxtools", "measure", "rect", "ellipse"];
 		d20.engine.rightMouseIsDown && g.includes(d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" === d20.engine.mode ? (d20.engine.pan.beginPos = [wrp.scrollLeft(), wrp.scrollTop()],
 			d20.engine.pan.panXY = [i, n],
 			d20.engine.pan.panning = !0,
@@ -461,6 +481,15 @@ function initCanvasHandlerOverwrite () {
 							d20.engine.fx.lastMoveBroadcast = a) : d20.fx.moveFx(d20.engine.fx.current, n, o, !0)
 					}
 				} else if (d20.engine.leftMouseIsDown && "rect" == d20.engine.mode) {
+					var s = (t + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
+						, c = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
+					0 != d20.engine.snapTo && e.shiftKey && (s = d20.engine.snapToIncrement(s, d20.engine.snapTo),
+						c = d20.engine.snapToIncrement(c, d20.engine.snapTo));
+					var u = d20.engine.drawshape.shape;
+					u.width = s,
+						u.height = c,
+						d20.engine.redrawScreenNextTick()
+				} else if (d20.engine.leftMouseIsDown && "ellipse" == d20.engine.mode) {
 					var s = (t + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
 						, c = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
 					0 != d20.engine.snapTo && e.shiftKey && (s = d20.engine.snapToIncrement(s, d20.engine.snapTo),
