@@ -67,6 +67,8 @@ function d20plusMod () {
 			$("#floatingtoolbar").trigger("blur");
 		}
 		// END MOD
+		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
+		d20.engine.redrawScreenNextTick()
 	};
 	// END ROLL20 CODE
 
