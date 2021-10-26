@@ -3,10 +3,10 @@ const betteR205etools = function () {
 	d20plus.Init = async function () {
 		const scriptName = `betteR20-5etools v${d20plus.version}`;
 		try {
-			d20plus.ut.log("Init (v" + d20plus.version + ")");
+			d20plus.ut.log(`Init (v${d20plus.version})`);
 			d20plus.ut.showLoadingMessage(scriptName);
 
-			d20plus.ut.checkVersion("5etools");
+			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 
 			d20plus.template.swapTemplates();
@@ -30,6 +30,8 @@ const betteR205etools = function () {
 
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
+
+			d20plus.cfg5e.updateBaseSiteUrl();
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
@@ -62,7 +64,6 @@ const betteR205etools = function () {
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.addLineCutterTool();
 			d20plus.engine.enhancePathWidths();
-			d20plus.ut.disable3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
@@ -81,6 +82,7 @@ const betteR205etools = function () {
 			d20plus.ut.log("All systems operational");
 			d20plus.ut.chatTag(`betteR20-5etools v${d20plus.version}`);
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error(e);
 			alert(`${scriptName} failed to initialise! See the logs (CTRL-SHIFT-J) for more information.`)
 		}

@@ -1,4 +1,4 @@
-function baseTool() {
+function baseTool () {
 	d20plus.tool = {};
 
 	/**
@@ -132,7 +132,7 @@ function baseTool() {
 					// init list library
 					const delList = new List("delete-list-container", {
 						valueNames: ["name"],
-						listClass: "deletelist"
+						listClass: "deletelist",
 					});
 
 					$cbAll.prop("checked", false);
@@ -155,7 +155,7 @@ function baseTool() {
 						}
 					});
 				}
-			}
+			},
 		},
 		{
 			name: "SVG Draw",
@@ -179,13 +179,13 @@ function baseTool() {
 			},
 			openFn: () => {
 				// adapted from `d20.engine.finishCurrentPolygon`
-				function addShape(path, pathStroke, strokeWidth) {
+				function addShape (path, pathStroke, strokeWidth) {
 					let i = d20.engine.convertAbsolutePathStringtoFabric(path);
 					i = _.extend(i, {
 						strokeWidth: strokeWidth,
 						fill: "transparent",
 						stroke: pathStroke,
-						path: JSON.parse(i.path)
+						path: JSON.parse(i.path),
 					});
 					d20.Campaign.activePage().addPath(i);
 					d20.engine.redrawScreenNextTick();
@@ -210,7 +210,7 @@ function baseTool() {
 						addShape(it.d, it.stroke, strokeWidth)
 					});
 				});
-			}
+			},
 		},
 		{
 			name: "Multi-Whisper",
@@ -274,7 +274,7 @@ function baseTool() {
 						})
 					});
 
-					const $btnClear =  $(`<button class="btn msg-clear">Clear</button>`).on("click", function () {
+					const $btnClear = $(`<button class="btn msg-clear">Clear</button>`).on("click", function () {
 						$(this).closest(`.wrp-message`).find(`.message`).val("");
 					});
 
@@ -284,7 +284,7 @@ function baseTool() {
 									${players.map((pp, ii) => `<label style="margin-right: 10px; ${pp.online || ` display: none;`}" data-online="${pp.online}" class="display-inline-block">${pp.displayname} <input data-player-id="${pp.id}" type="checkbox" ${i === ii ? `checked="true"` : ""}></label>`).join("")}
 								</div>
 								<textarea style="display: block; width: 95%;" placeholder="Enter whisper" class="message"></textarea>
-							</div>						
+							</div>
 						`).append($btnSend).append($btnClear).append(`<hr>`));
 				});
 
@@ -298,7 +298,7 @@ function baseTool() {
 				});
 
 				$btnClearAll.on("click", () => $pnlMessages.find(`button.msg-clear`).click());
-			}
+			},
 		},
 		{
 			name: "Table Importer Expanded",
@@ -312,7 +312,7 @@ function baseTool() {
 				<br>
 				<button class="btn start-import">Import</button>
 				</div>
-				
+
 				<div id="d20plus-expanded-clipboard" title="Paste from Clipboard"/>
 				`,
 			dialogFn: () => {
@@ -342,7 +342,7 @@ function baseTool() {
 						// Creates the table, with data for the full table
 						const r20t = d20.Campaign.rollabletables.create({
 							name: t.name.replace(/\s+/g, "-"),
-							id: d20plus.ut.generateRowId()
+							id: d20plus.ut.generateRowId(),
 						});
 
 						labels = t.colLabels;
@@ -355,11 +355,11 @@ function baseTool() {
 							// Create the return value
 							const out = {
 								id: d20plus.ut.generateRowId(),
-								name: ""
+								name: "",
 							};
 
 							// Set the name
-							for (col = 0; col < tlen; col++) {
+							for (let col = 0; col < tlen; col++) {
 								// Add a seperator for cases of multiple columns
 								if (out.name.length > 0) {
 									out.name += " | "
@@ -367,7 +367,7 @@ function baseTool() {
 								// Add each column to out.name
 								if (col !== dplace) {
 									// Get rid of ugly notation
-									clean = i[col].replace(/\{@[\w\d]* (.*)\}/, "$1");
+									clean = i[col].replace(/\{@[\w\d]* (.*)}/, "$1");
 									out.name += clean;
 								}
 							}
@@ -375,7 +375,7 @@ function baseTool() {
 							// Set the weight
 							if (dplace !== -1) {
 								weight = i[dplace];
-								dash = weight.indexOf("–"); //Note: – is different from -
+								dash = weight.indexOf("–"); // Note: – is different from -
 
 								// If the weight is a range
 								if (dash !== -1) {
@@ -384,14 +384,10 @@ function baseTool() {
 									high = parseInt(weight.substring(dash + 1));
 									if (high === 0) high = 100;
 									out.weight = high - low + 1;
-								}
-								// If the weight is a signle value
-								else {
+								} else { // If the weight is a single value
 									out.weight = 1;
 								}
-							}
-							// If the weight is unlisted
-							else {
+							} else { // If the weight is unlisted
 								out.weight = 1;
 							}
 
@@ -400,7 +396,6 @@ function baseTool() {
 						}));
 						r20t.tableitems.forEach(it => it.save());
 					}
-
 
 					// Official tables
 					const $lst = $win.find(`.list`);
@@ -419,7 +414,7 @@ function baseTool() {
 					tmp = null;
 
 					const tableList = new List("table-list-expanded", {
-						valueNames: ["name", "source"]
+						valueNames: ["name", "source"],
 					});
 
 					$btnImport.on("click", () => {
@@ -431,7 +426,7 @@ function baseTool() {
 						sel.forEach(t => createTable(t));
 					});
 				});
-			}
+			},
 		},
 		{
 			name: "Table Importer",
@@ -449,7 +444,7 @@ function baseTool() {
 				<br>
 				<button class="btn start-import">Import</button>
 				</div>
-				
+
 				<div id="d20plus-tables-clipboard" title="Paste from Clipboard"/>
 				`,
 			dialogFn: () => {
@@ -479,13 +474,13 @@ function baseTool() {
 						const r20t = d20.Campaign.rollabletables.create({
 							name: t.name.replace(/\s+/g, "-"),
 							showplayers: t.isShown,
-							id: d20plus.ut.generateRowId()
+							id: d20plus.ut.generateRowId(),
 						});
 
 						r20t.tableitems.reset(t.items.map(i => {
 							const out = {
 								id: d20plus.ut.generateRowId(),
-								name: i.row
+								name: i.row,
 							};
 							if (i.weight !== undefined) out.weight = i.weight;
 							if (i.avatar) out.avatar = i.avatar;
@@ -503,6 +498,7 @@ function baseTool() {
 							try {
 								getFromPaste($iptClip.val());
 							} catch (e) {
+								// eslint-disable-next-line no-console
 								console.error(e);
 								window.alert(e.message);
 								error = true;
@@ -536,7 +532,7 @@ function baseTool() {
 								tbl.items.push({
 									row,
 									weight,
-									avatar
+									avatar,
 								})
 							} else if (line.startsWith("!import-table")) {
 								if (tbl) {
@@ -545,7 +541,7 @@ function baseTool() {
 								const [junk, tblName, showHide] = line.split("--").map(it => it.trim());
 								tbl = {
 									name: tblName,
-									isShown: (showHide || "").toLowerCase() === "show"
+									isShown: (showHide || "").toLowerCase() === "show",
 								};
 								tbl.items = [];
 							} else if (line.trim()) {
@@ -576,7 +572,7 @@ function baseTool() {
 					tmp = null;
 
 					const tableList = new List("table-list", {
-						valueNames: ["name", "source"]
+						valueNames: ["name", "source"],
 					});
 
 					$btnImport.on("click", () => {
@@ -588,7 +584,7 @@ function baseTool() {
 						sel.forEach(t => createTable(t));
 					});
 				});
-			}
+			},
 		},
 		{
 			name: "Token Avatar URL Fixer",
@@ -597,8 +593,8 @@ function baseTool() {
 				<div id="d20plus-avatar-fixer" title="Better20 - Avatar Fixer">
 				<p><b>Warning:</b> this thing doesn't really work.</p>
 				<p>Current URLs (view only): <select class="view-only"></select></p>
-				<p><label>Replace:<br><input name="search" value="https://5etools.com/"></label></p>
-				<p><label>With:<br><input name="replace" value="https://thegiddylimit.github.io/"></label></p>
+				<p><label>Replace:<br><input name="search" value="https://5e.tools/"></label></p>
+				<p><label>With:<br><input name="replace" value="https://5etools-mirror-1.github.io/"></label></p>
 				<p><button class="btn">Go!</button></p>
 				</div>
 				`,
@@ -611,9 +607,6 @@ function baseTool() {
 				});
 			},
 			openFn: () => {
-				// FIXME this doesn't work, because it saves a nonsensical blob (imgsrc) instead of defaulttoken
-				// see the working code in `initArtFromUrlButtons` for how this _should_ be done
-
 				function replaceAll (str, search, replacement) {
 					return str.split(search).join(replacement);
 				}
@@ -652,6 +645,7 @@ function baseTool() {
 						}
 						if (realC.get("defaulttoken")) {
 							realC._getLatestBlob("defaulttoken", (bl) => {
+								bl = bl && bl.trim() ? JSON.parse(bl) : {};
 								if (bl && bl.imgsrc && bl.imgsrc.includes(search)) {
 									count++;
 									realC.updateBlobs({imgsrc: replaceAll(bl.imgsrc, search, replace)});
@@ -659,13 +653,27 @@ function baseTool() {
 								}
 							});
 						}
+
 						if (toSave) {
 							realC.save();
+						}
+
+						for (const page of d20.Campaign.pages.models) {
+							if (page.thegraphics && page.thegraphics.models) {
+								for (const token of page.thegraphics.models) {
+									const tokenImgsrc = token.get("imgsrc");
+									if (tokenImgsrc.includes(search)) {
+										token.set("imgsrc", tokenImgsrc.replace(search, replace));
+										token.save();
+										count++;
+									}
+								}
+							}
 						}
 					});
 					window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
 				});
-			}
+			},
 		},
 		{
 			name: "Mass-Delete Pages",
@@ -690,8 +698,8 @@ function baseTool() {
 			},
 			openFn: () => {
 				function deletePage (model, pageList) {
-					if ($("#page-toolbar .availablepage[data-pageid=" + model.id + "]").remove()) {
-						var n = d20.Campaign.getPageIndex(model.id);
+					if ($(`#page-toolbar .availablepage[data-pageid=${model.id}]`).remove()) {
+						let n = d20.Campaign.getPageIndex(model.id);
 						if (model.thegraphics) {
 							model.thegraphics.massdelete = true;
 							model.thegraphics.backboneFirebase.reference.set(null);
@@ -706,14 +714,14 @@ function baseTool() {
 						}
 						let i = d20.Campaign.get("playerspecificpages");
 						let o = false;
-						_.each(i, function(e, n) {
+						_.each(i, function (e, n) {
 							if (e === model.id) {
 								delete i[n];
 								o = true;
 							}
 						});
 						o && d20.Campaign.save({
-							playerspecificpages: i
+							playerspecificpages: i,
 						});
 						model.destroy();
 						d20.Campaign.activePageIndex > n && (d20.Campaign.activePageIndex -= 1);
@@ -739,7 +747,7 @@ function baseTool() {
 				});
 
 				const pageList = new List("del-pages-list", {
-					valueNames: ["name", "page-id"]
+					valueNames: ["name", "page-id"],
 				});
 
 				const $cbAll = $win.find(`.select-all`).off("click").click(() => {
@@ -762,7 +770,7 @@ function baseTool() {
 					});
 					$cbAll.prop("checked", false);
 				});
-			}
+			},
 		},
 		{
 			name: "Quantum Token Entangler",
@@ -774,14 +782,14 @@ function baseTool() {
 					You can learn Token IDs by rightclicking a token -> "Advanced" -> "View Token ID."</i></p>
 					<hr>
 					<input id="token-entangle-id-1" placeholder="Master ID">
-					Type: 
+					Type:
 					<select id="token-entangle-type-1">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
 					</select>
 					<br>
 					<input id="token-entangle-id-2" placeholder="Slave ID">
-					Type:  
+					Type:
 					<select id="token-entangle-type-2">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
@@ -790,7 +798,7 @@ function baseTool() {
 					<button class="btn btn-default" id="token-entangle-go">Entangle</button>
 					<hr>
 					<input id="token-clear-entangles" placeholder="ID to Clear">
-					Type:  
+					Type:
 					<select id="token-clear-type">
 						<option value="0">Token</option>
 						<option value="1">Path</option>
@@ -812,14 +820,14 @@ function baseTool() {
 					"scaleX",
 					"scaleY",
 					"fliph",
-					"flipv"
+					"flipv",
 				];
 				const SYNCABLE_ATTRS_PATH = [
 					"rotation",
 					"top",
 					"left",
 					"scaleX",
-					"scaleY"
+					"scaleY",
 				];
 
 				$win.data("VE_DO_ENTANGLE", (master) => {
@@ -846,11 +854,11 @@ function baseTool() {
 										slave.save();
 										return true;
 									} else {
-										console.warn(`Cound not find entangled token with ID "${id}", removing...`);
+										// eslint-disable-next-line no-console
+										console.warn(`Could not find entangled token with ID "${id}", removing...`);
 										anyUpdates = true;
 									}
 								});
-
 							}
 						}
 
@@ -867,7 +875,8 @@ function baseTool() {
 										slave.save();
 										return true;
 									} else {
-										console.warn(`Cound not find entangled path with ID "${id}", removing...`);
+										// eslint-disable-next-line no-console
+										console.warn(`Could not find entangled path with ID "${id}", removing...`);
 										anyUpdates = true;
 									}
 								});
@@ -887,7 +896,7 @@ function baseTool() {
 							.forEach(model => {
 								const PROPS = {
 									thegraphics: "entangledImages",
-									thepaths: "entangledPaths"
+									thepaths: "entangledPaths",
 								};
 								Object.keys(PROPS).forEach(prop => {
 									Object.values(PROPS).forEach(attrK => {
@@ -900,6 +909,7 @@ function baseTool() {
 								});
 							});
 					} else {
+						// eslint-disable-next-line no-console
 						console.log("Pages uninitialised, waiting...");
 						setTimeout(runInitial, 1000);
 					}
@@ -996,8 +1006,8 @@ function baseTool() {
 						entity.save();
 						alert(`${count} entangle${count === 1 ? "" : "s"} cleared.`);
 					});
-			}
-		}
+			},
+		},
 	];
 
 	d20plus.tool.get = (toolId) => {
@@ -1022,10 +1032,8 @@ function baseTool() {
 				}).appendTo($wrp);
 				$toolsList.append($wrp);
 			} catch (e) {
-				console.error(`Failed to initialise tool "${t.name}"`);
-				setTimeout(() => {
-					throw e;
-				}, 1);
+				// eslint-disable-next-line no-console
+				console.error(`Failed to initialise tool "${t.name}"`, e);
 			}
 		});
 

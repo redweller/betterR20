@@ -18,8 +18,7 @@
 				}
 			],
 			"hp": {
-				"average": 80,
-				"formula": "80d1"
+				"average": 80
 			},
 			"speed": {
 				"walk": 30
@@ -81,8 +80,7 @@
 				}
 			],
 			"hp": {
-				"average": 50,
-				"formula": "50d1"
+				"average": 50
 			},
 			"speed": {
 				"walk": 30
@@ -144,8 +142,7 @@
 				}
 			],
 			"hp": {
-				"average": 40,
-				"formula": "40d1"
+				"average": 40
 			},
 			"speed": {
 				"walk": 30
@@ -207,8 +204,7 @@
 				}
 			],
 			"hp": {
-				"average": 25,
-				"formula": "25d1"
+				"average": 25
 			},
 			"speed": {
 				"walk": 30
@@ -270,8 +266,7 @@
 				}
 			],
 			"hp": {
-				"average": 20,
-				"formula": "20d1"
+				"average": 20
 			},
 			"speed": {
 				"walk": 30

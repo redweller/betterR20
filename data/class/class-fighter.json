@@ -660,7 +660,7 @@
 						"{@filter 3rd|spells|level=3|subclass=Fighter: Eldritch Knight}",
 						"{@filter 4th|spells|level=4|subclass=Fighter: Eldritch Knight}"
 					],
-					"rows": [
+					"rowsSpellProgression": [
 						[
 							0,
 							0,
@@ -963,16 +963,16 @@
 			"page": 28,
 			"additionalSpells": [
 				{
-					"innate": {
+					"known": {
 						"3": [
-							"prestidigitation"
+							"prestidigitation#c"
 						]
 					}
 				},
 				{
-					"innate": {
+					"known": {
 						"3": [
-							"druidcraft"
+							"druidcraft#c"
 						]
 					}
 				}

@@ -1,4 +1,4 @@
-function initOverwrites() {
+function initOverwrites () {
 	d20plus.overwrites = {};
 }
 

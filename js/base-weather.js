@@ -111,7 +111,7 @@ function baseWeather () {
 					"weatherIntensity1",
 					"weatherTint1",
 					"weatherTintColor1",
-					"weatherEffect1"
+					"weatherEffect1",
 				];
 				props.forEach(handleProp);
 
@@ -139,22 +139,22 @@ function baseWeather () {
 								$(this).dialog("close");
 								$dialog.remove();
 								doSaveValues();
-							}
+							},
 						},
 						{
 							text: "Apply",
 							click: function () {
 								doSaveValues();
-							}
+							},
 						},
 						{
 							text: "Cancel",
 							click: function () {
 								$(this).dialog("close");
 								$dialog.remove();
-							}
-						}
-					]
+							},
+						},
+					],
 				});
 			}
 
@@ -181,12 +181,12 @@ function baseWeather () {
 		const tmp = []; // temp vector
 		// cache images
 		const IMAGES = {
-			"Rain": new Image,
-			"Snow": new Image,
-			"Fog": new Image,
-			"Waves": new Image,
-			"Ripples": new Image,
-			"Blood Rain": new Image
+			"Rain": new Image(),
+			"Snow": new Image(),
+			"Fog": new Image(),
+			"Waves": new Image(),
+			"Ripples": new Image(),
+			"Blood Rain": new Image(),
 		};
 		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
 		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
@@ -195,7 +195,7 @@ function baseWeather () {
 		IMAGES.Ripples.src = "https://i.imgur.com/fFCr0yx.png";
 		IMAGES["Blood Rain"].src = "https://i.imgur.com/SP2aoeq.png";
 		const SFX = {
-			lightning: []
+			lightning: [],
 		};
 
 		// FIXME find a better way of handling this; `clip` is super-slow
@@ -238,7 +238,7 @@ function baseWeather () {
 		const ctx = cv.getContext("2d");
 
 		const CTX = {
-			_hasWarned: new Set()
+			_hasWarned: new Set(),
 		};
 
 		function ofX (x) { // offset X
@@ -271,10 +271,10 @@ function baseWeather () {
 					return IMAGES[imageName];
 				case "Custom (see below)":
 					if (!IMAGES["Custom"] || (
-						(IMAGES["Custom"].src !== page.get("bR20cfg_weatherTypeCustom1") && IMAGES["Custom"]._errorSrc == null) ||
-						(IMAGES["Custom"]._errorSrc != null && IMAGES["Custom"]._errorSrc !== page.get("bR20cfg_weatherTypeCustom1")))
+						(IMAGES["Custom"].src !== page.get("bR20cfg_weatherTypeCustom1") && IMAGES["Custom"]._errorSrc == null)
+						|| (IMAGES["Custom"]._errorSrc != null && IMAGES["Custom"]._errorSrc !== page.get("bR20cfg_weatherTypeCustom1")))
 					) {
-						IMAGES["Custom"] = new Image;
+						IMAGES["Custom"] = new Image();
 						IMAGES["Custom"]._errorSrc = null;
 						IMAGES["Custom"].onerror = () => {
 							if (IMAGES["Custom"]._errorSrc == null) {
@@ -348,7 +348,7 @@ function baseWeather () {
 		function handleSvgCoord (coords, obj, basesXY, center, angle) {
 			const vec = [
 				ofX(coords[0] * obj.scaleX) + basesXY[0],
-				ofY(coords[1] * obj.scaleY) + basesXY[1]
+				ofY(coords[1] * obj.scaleY) + basesXY[1],
 			];
 			d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
 			if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
@@ -387,8 +387,8 @@ function baseWeather () {
 
 					// draw weather
 					if (
-						hasImage &&
-						!(scaledW <= 0 || scaledH <= 0) // sanity check
+						hasImage
+						&& !(scaledW <= 0 || scaledH <= 0) // sanity check
 					) {
 						// mask weather
 						const doMaskStep = () => {
@@ -433,6 +433,7 @@ function baseWeather () {
 											default:
 												if (!CTX._hasWarned.has(op)) {
 													CTX._hasWarned.add(op);
+													// eslint-disable-next-line no-console
 													console.error(`UNHANDLED OP!: ${op}`);
 												}
 										}
@@ -443,7 +444,7 @@ function baseWeather () {
 							}
 
 							// draw final weather mask
-							//// change drawing mode
+							/// / change drawing mode
 							ctx.globalCompositeOperation = "destination-out";
 							ctx.drawImage(cvBuf, 0, 0);
 
@@ -456,7 +457,7 @@ function baseWeather () {
 								ctx.drawImage(cvBuf, 0, 0);
 							}
 
-							//// reset drawing mode
+							/// / reset drawing mode
 							ctx.globalCompositeOperation = "source-over";
 						};
 
@@ -471,20 +472,20 @@ function baseWeather () {
 						const boundingBox = [
 							[
 								-1.5 * w,
-								-1.5 * h
+								-1.5 * h,
 							],
 							[
 								-1.5 * w,
-								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
 							],
 							[
 								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
-								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1]
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
 							],
 							[
 								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
-								-1.5 * h
-							]
+								-1.5 * h,
+							],
 						];
 						const BASE_OFFSET_X = -w / 2;
 						const BASE_OFFSET_Y = -h / 2;
@@ -498,10 +499,10 @@ function baseWeather () {
 							pt00,
 							pt01,
 							pt10,
-							pt11
+							pt11,
 						].map(pt => [
 							(pt[0] * w) + BASE_OFFSET_X - d20.engine.currentCanvasOffset[0],
-							(pt[1] * h) + BASE_OFFSET_Y - d20.engine.currentCanvasOffset[1]
+							(pt[1] * h) + BASE_OFFSET_Y - d20.engine.currentCanvasOffset[1],
 						]);
 						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
 
@@ -540,13 +541,11 @@ function baseWeather () {
 						const timeOffsetX = Math.ceil(speedFactor * accum);
 						const timeOffsetY = Math.ceil(speedFactor * accum);
 
-						//// rotate coord space
+						/// / rotate coord space
 						ctx.rotate(rot);
 
 						// draw base image
-						doDraw(0, 0);
-
-						function doDraw (offsetX, offsetY) {
+						const doDraw = (offsetX, offsetY) => {
 							const xPos = BASE_OFFSET_X + timeOffsetX + offsetX - d20.engine.currentCanvasOffset[0];
 							const yPos = BASE_OFFSET_Y + timeOffsetY + offsetY - d20.engine.currentCanvasOffset[1];
 							ctx.drawImage(
@@ -554,7 +553,7 @@ function baseWeather () {
 								xPos,
 								yPos,
 								w,
-								h
+								h,
 							);
 
 							if (intensity) {
@@ -564,16 +563,16 @@ function baseWeather () {
 									xPos + offsetIntensity,
 									yPos + offsetIntensity,
 									w,
-									h
+									h,
 								);
 							}
 						}
 
-						function inBounds (nextPts) {
+						const inBounds = (nextPts) => {
 							return lineIntersectsBounds(nextPts, boundingBox);
 						}
 
-						function moveXDir (pt, i, isAdd) {
+						const moveXDir = (pt, i, isAdd) => {
 							if (i % 2) d20plus.math.vec2.sub(tmp, basePts[3], basePts[1]);
 							else d20plus.math.vec2.sub(tmp, basePts[2], basePts[0]);
 
@@ -581,7 +580,7 @@ function baseWeather () {
 							else d20plus.math.vec2.sub(pt, pt, tmp);
 						}
 
-						function moveYDir (pt, i, isAdd) {
+						const moveYDir = (pt, i, isAdd) => {
 							if (i > 1) d20plus.math.vec2.sub(tmp, basePts[3], basePts[2]);
 							else d20plus.math.vec2.sub(tmp, basePts[1], basePts[0]);
 
@@ -603,7 +602,7 @@ function baseWeather () {
 								let subNxtPts, subMoves;
 								subNxtPts = copyPoints(nxtPts);
 								subMoves = 0;
-								while(subMoves <= maxMoves[1]) {
+								while (subMoves <= maxMoves[1]) {
 									subNxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 									subMoves++;
 									if (inBounds(subNxtPts)) doDraw(xDir * moves * w, dir * (subMoves * h));
@@ -619,7 +618,7 @@ function baseWeather () {
 								let subNxtPts, subMoves;
 								subNxtPts = copyPoints(nxtPts);
 								subMoves = 0;
-								while(subMoves <= maxMoves[1]) {
+								while (subMoves <= maxMoves[1]) {
 									subNxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 									subMoves++;
 									if (lineIntersectsBounds(subNxtPts, boundingBox)) doDraw(dir * (subMoves * w), yDir * moves * h);
@@ -635,7 +634,7 @@ function baseWeather () {
 								let nxtPts, moves;
 								nxtPts = copyPoints(basePts);
 								moves = 0;
-								while(moves < maxMoves) {
+								while (moves < maxMoves) {
 									nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 									moves++;
 									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
@@ -651,7 +650,7 @@ function baseWeather () {
 								let nxtPts, moves;
 								nxtPts = copyPoints(basePts);
 								moves = 0;
-								while(moves < maxMoves) {
+								while (moves < maxMoves) {
 									nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 									moves++;
 									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
@@ -662,6 +661,8 @@ function baseWeather () {
 							handleY(-1); // y axis decreasing
 						};
 
+						doDraw(0, 0);
+
 						(() => {
 							// choose largest axis
 							const maxMoves = getMaxMoves();
@@ -671,7 +672,7 @@ function baseWeather () {
 									let nxtPts, moves;
 									nxtPts = copyPoints(basePts);
 									moves = 0;
-									while(moves < maxMoves[1]) {
+									while (moves < maxMoves[1]) {
 										nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
 										moves++;
 										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
@@ -687,7 +688,7 @@ function baseWeather () {
 									let nxtPts, moves;
 									nxtPts = copyPoints(basePts);
 									moves = 0;
-									while(moves < maxMoves[1]) {
+									while (moves < maxMoves[1]) {
 										nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
 										moves++;
 										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
@@ -701,7 +702,7 @@ function baseWeather () {
 							}
 						})();
 
-						//// revert coord space rotation
+						/// / revert coord space rotation
 						ctx.rotate(-rot);
 
 						if (clipMode === "EXCLUDE") doMaskStep(false);

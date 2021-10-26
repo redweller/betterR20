@@ -2289,8 +2289,7 @@
 							"spells": [
 								"{@spell chain lightning}",
 								"{@spell circle of death}",
-								"{@spell create undead}",
-								"{@spell scrying}"
+								"{@spell create undead}"
 							]
 						},
 						"7": {
@@ -2394,6 +2393,9 @@
 			],
 			"senseTags": [
 				"U"
+			],
+			"actionTags": [
+				"Breath Weapon"
 			],
 			"languageTags": [
 				"C",
@@ -3357,7 +3359,8 @@
 				"U"
 			],
 			"actionTags": [
-				"Multiattack"
+				"Multiattack",
+				"Shapechanger"
 			],
 			"languageTags": [
 				"TP",
@@ -3675,7 +3678,8 @@
 				"U"
 			],
 			"actionTags": [
-				"Multiattack"
+				"Multiattack",
+				"Shapechanger"
 			],
 			"languageTags": [
 				"TP",

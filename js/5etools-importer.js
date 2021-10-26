@@ -106,7 +106,7 @@ function d20plusImporter () {
 		}).each((i, e) => {
 			const txt = $(e).text();
 			// TODO get text, compare against existing handout/character names, and link them using this:
-            //   `http://journal.roll20.net/${id.type}/${id.roll20Id}`;
+			//   `http://journal.roll20.net/${id.type}/${id.roll20Id}`;
 		});
 	};
 
@@ -120,13 +120,16 @@ function d20plusImporter () {
 
 		// Clean out any lingering values
 		if (e.$currentDropTarget) {
-			e.$currentDropTarget.find("*[accept]").each(function() {
+			e.$currentDropTarget.find("*[accept]").each(function () {
 				$(this).val(undefined);
 			});
 		} else {
+			// eslint-disable-next-line no-console
 			console.error(`Could not find current drop target!`);
 			return;
 		}
+
+		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
 		const r = _.clone(o.data);
@@ -146,6 +149,8 @@ function d20plusImporter () {
 					e.saveSheetValues(this, "compendium"))
 			})
 		// END ROLL20 CODE
+
+		/* eslint-enable */
 
 		// reset the drag UI
 		characterView.activeDrop = false;
@@ -195,22 +200,22 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.getSetAvatarImage = async function (character, avatar, portraitUrl) {
-		var tokensize = 1;
+		let tokensize = 1;
 		if (character.size === "L") tokensize = 2;
 		if (character.size === "H") tokensize = 3;
 		if (character.size === "G") tokensize = 4;
-		var lightradius = null;
+		let lightradius = null;
 		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max(...character.senses.match(/\d+/g));
-		var lightmin = 0;
+		let lightmin = 0;
 		if (character.senses && character.senses.toLowerCase().match(/(blindsight|tremorsense|truesight)/)) lightmin = lightradius;
 		const nameSuffix = d20plus.cfg.get("import", "namesuffix");
-		var defaulttoken = {
+		let defaulttoken = {
 			represents: character.id,
 			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
 			imgsrc: avatar,
 			width: 70 * tokensize,
 			height: 70 * tokensize,
-			compact_bar: d20plus.cfg.getOrDefault("token", "isCompactBars") ? "compact" : "standard"
+			compact_bar: d20plus.cfg.getOrDefault("token", "isCompactBars") ? "compact" : "standard",
 		};
 		if (!d20plus.cfg.get("import", "skipSenses")) {
 			defaulttoken.light_hassight = true;
@@ -233,13 +238,13 @@ function d20plusImporter () {
 			await new Promise(resolve => {
 				$.ajax({
 					url: portraitUrl,
-					type: 'HEAD',
+					type: "HEAD",
 					error: function () {
 						d20plus.ut.error(`Could not access portrait URL "${portraitUrl}"`);
 						outPortraitUrl = avatar;
 						resolve()
 					},
-					success: () => resolve()
+					success: () => resolve(),
 				});
 			});
 		}
@@ -252,9 +257,9 @@ function d20plusImporter () {
 	d20plus.importer._baseAddAction = function (character, baseAction, name, actionText, prefix, index, expand) {
 		if (d20plus.cfg.getOrDefault("import", "tokenactions") && expand) {
 			character.abilities.create({
-				name: prefix + index + ": " + name,
+				name: `${prefix + index}: ${name}`,
 				istokenaction: true,
-				action: d20plus.actionMacroAction(baseAction, index)
+				action: d20plus.actionMacroAction(baseAction, index),
 			}).save();
 		}
 
@@ -296,7 +301,7 @@ function d20plusImporter () {
 				damageType = (damageSearches[2] != null) ? damageSearches[2].trim() : "";
 				damageSearches = damageRegex.exec(actionText);
 				if (damageSearches) {
-					onHit += " plus " + damageSearches[0];
+					onHit += ` plus ${damageSearches[0]}`;
 					damage2 = damageSearches[1];
 					damageType2 = (damageSearches[2] != null) ? damageSearches[2].trim() : "";
 				}
@@ -309,44 +314,44 @@ function d20plusImporter () {
 			// is it a simple attack (just 1 damage type)?
 			const match_simple_atk = atkDescSimpleRegex.exec(actionText);
 			if (match_simple_atk != null) {
-				//if yes, then only display special effects, if any
+				// if yes, then only display special effects, if any
 				actionDesc = match_simple_atk[3].trim();
 			} else {
-				//if not, simply cut everything before "Hit:" so there are no details lost.
+				// if not, simply cut everything before "Hit:" so there are no details lost.
 				const matchCompleteAtk = atkDescComplexRegex.exec(actionText);
 				if (matchCompleteAtk != null) actionDesc = matchCompleteAtk[1].trim();
 			}
-			const toHitRange = "+" + toHit + ", " + rangeType + " " + attackRange + ", " + attackTarget + ".";
+			const toHitRange = `+${toHit}, ${rangeType} ${attackRange}, ${attackTarget}.`;
 			const damageFlags = `{{damage=1}} {{dmg1flag=1}}${damage2 ? ` {{dmg2flag=1}}` : ""}`;
-			character.attribs.create({name: baseAction + "_" + newRowId + "_name", current: name}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_flag", current: "on"}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_npc_options-flag", current: "0"}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_display_flag", current: "{{attack=1}}"}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_options", current: "{{attack=1}}"}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_tohit", current: toHit}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_damage", current: damage}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_name`, current: name}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_flag`, current: "on"}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_npc_options-flag`, current: "0"}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_display_flag`, current: "{{attack=1}}"}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_options`, current: "{{attack=1}}"}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_tohit`, current: toHit}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_damage`, current: damage}).save();
 			// TODO this might not be necessary on Shaped sheets?
 			const critDamage = (damage || "").trim().replace(/[-+]\s*\d+$/, "").trim(); // replace any trailing modifiers e.g. "+5"
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_crit", current: critDamage}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_damagetype", current: damageType}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_crit`, current: critDamage}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_damagetype`, current: damageType}).save();
 			if (damage2) {
-				character.attribs.create({name: baseAction + "_" + newRowId + "_attack_damage2", current: damage2}).save();
-				character.attribs.create({name: baseAction + "_" + newRowId + "_attack_crit2", current: damage2}).save();
-				character.attribs.create({name: baseAction + "_" + newRowId + "_attack_damagetype2", current: damageType2}).save();
+				character.attribs.create({name: `${baseAction}_${newRowId}_attack_damage2`, current: damage2}).save();
+				character.attribs.create({name: `${baseAction}_${newRowId}_attack_crit2`, current: damage2}).save();
+				character.attribs.create({name: `${baseAction}_${newRowId}_attack_damagetype2`, current: damageType2}).save();
 			}
-			character.attribs.create({name: baseAction + "_" + newRowId + "_name_display", current: name}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_rollbase", current: rollBase}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_type", current: attackType}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_type_display", current: attackType + attackType2}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_tohitrange", current: toHitRange}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_range", current: attackRange}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_target", current: attackTarget}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_damage_flag", current: damageFlags}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_onhit", current: onHit}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_name_display`, current: name}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_rollbase`, current: rollBase}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_type`, current: attackType}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_type_display`, current: attackType + attackType2}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_tohitrange`, current: toHitRange}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_range`, current: attackRange}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_target`, current: attackTarget}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_damage_flag`, current: damageFlags}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_onhit`, current: onHit}).save();
 
 			const descriptionFlag = Math.max(Math.ceil(actionText.length / 57), 1);
-			character.attribs.create({name: baseAction + "_" + newRowId + "_description", current: actionDesc}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_description_flag", current: descriptionFlag}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_description`, current: actionDesc}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_description_flag`, current: descriptionFlag}).save();
 
 			// hidden = a single space
 			const descVisFlag = d20plus.cfg.getOrDefault("import", "hideActionDescs") ? " " : "@{description}";
@@ -355,15 +360,15 @@ function d20plusImporter () {
 
 		function handleOtherAction () {
 			const rollBase = d20plus.importer.rollbase(false); // macro
-			character.attribs.create({name: baseAction + "_" + newRowId + "_name", current: name}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_npc_options-flag", current: "0"}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_description", current: actionDesc}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_tohitrange", current: "+0"}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_onhit", current: ""}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_damage_flag", current: ""}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_crit", current: ""}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_attack_crit2", current: ""}).save();
-			character.attribs.create({name: baseAction + "_" + newRowId + "_rollbase", current: rollBase}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_name`, current: name}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_npc_options-flag`, current: "0"}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_description`, current: actionDesc}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_tohitrange`, current: "+0"}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_onhit`, current: ""}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_damage_flag`, current: ""}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_crit`, current: ""}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_attack_crit2`, current: ""}).save();
+			character.attribs.create({name: `${baseAction}_${newRowId}_rollbase`, current: rollBase}).save();
 		}
 
 		// attack parsing
@@ -397,10 +402,10 @@ function d20plusImporter () {
 	d20plus.importer.findOrGenerateRepeatingRowId = function (character, namePattern, current) {
 		const [namePrefix, nameSuffix] = namePattern.split(/\$\d?/);
 		const attr = character.attribs.toJSON()
-			.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current == current);
-		return attr ?
-			attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1") :
-			d20plus.ut.generateRowId();
+			.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current === current);
+		return attr
+			? attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1")
+			: d20plus.ut.generateRowId();
 	}
 
 	d20plus.importer.addOrUpdateAttr = function (character, attrName, value) {
@@ -411,7 +416,7 @@ function d20plusImporter () {
 		} else {
 			const it = character.attribs.create({
 				"name": attrName,
-				"current": value
+				"current": value,
 			});
 			it.save();
 		}
@@ -435,6 +440,7 @@ function d20plusImporter () {
 	};
 
 	d20plus.importer.bindFakeCompendiumDraggable = function ($ele) {
+		/* eslint-disable */
 		$ele.draggable({
 			// region BEGIN ROLL20 CODE
 			revert: !0,
@@ -444,40 +450,42 @@ function d20plusImporter () {
 			appendTo: "body",
 			scroll: !1,
 			iframeFix: !0,
-			start() {
+			start () {
 				$(".characterdialog iframe").css("pointer-events", "none"),
-					$(".characterdialog .charsheet-compendium-drop-target").show()
+				$(".characterdialog .charsheet-compendium-drop-target").show()
 			},
-			drag(e) {
-				let t, i = 0;
+			drag (e) {
+				let t; let i = 0;
 				const n = [];
-				$(".characterdialog[data-characterid]").each((e,o)=>{
-						const r = d20.Campaign.characters.get($(o).data("characterid"));
-						if (r && r.view.dragOver) {
-							const e = parseInt(r.view.$el.parent().css("z-index"));
-							n.push(r),
-							e > i && (t = r.id,
-								i = e)
-						}
+				$(".characterdialog[data-characterid]").each((e, o) => {
+					const r = d20.Campaign.characters.get($(o).data("characterid"));
+					if (r && r.view.dragOver) {
+						const e = parseInt(r.view.$el.parent().css("z-index"));
+						n.push(r),
+						e > i && (t = r.id,
+						i = e)
 					}
+				},
 				);
-				n.forEach(i=>{
-						if (i.id === t) {
-							const t = i.view.$el.offset();
-							i.view.compendiumDragOver(e.pageX - t.left, e.pageY - t.top),
-								i.view.activeDrop = !0
-						} else
-							i.view.activeDrop = !1,
-								i.view.compendiumDragOver()
+				n.forEach(i => {
+					if (i.id === t) {
+						const t = i.view.$el.offset();
+						i.view.compendiumDragOver(e.pageX - t.left, e.pageY - t.top),
+						i.view.activeDrop = !0
+					} else {
+						i.view.activeDrop = !1,
+						i.view.compendiumDragOver()
 					}
+				},
 				)
 			},
-			stop() {
+			stop () {
 				$(".characterdialog iframe").css("pointer-events", "auto"),
-					$(".characterdialog .charsheet-compendium-drop-target").hide()
+				$(".characterdialog .charsheet-compendium-drop-target").hide()
 			},
 			// endregion END ROLL20 CODE
 		});
+		/* eslint-enable */
 	};
 
 	d20plus.importer.getTagString = function (data, prefix) {
@@ -492,7 +500,6 @@ function d20plusImporter () {
 		} else {
 			return `@{wtype}&{template:npcatk} ${isAttack ? `{{attack=1}}` : ""} @{damage_flag} @{npc_name_flag} {{rname=[@{name}](~repeating_npcaction_npc_dmg)}} {{rnamec=[@{name}](~repeating_npcaction_npc_crit)}} {{type=[Attack](~repeating_npcaction_npc_dmg)}} {{typec=[Attack](~repeating_npcaction_npc_crit)}} {{r1=[[@{d20}+(@{attack_tohit}+0)]]}} @{rtype}+(@{attack_tohit}+0)]]}} {{description=@{show_desc}}} @{charname_output}`;
 		}
-
 	};
 
 	d20plus.importer.getDesiredRollType = function () {
@@ -667,7 +674,7 @@ function d20plusImporter () {
 
 			const inner = options.listItemBuilder
 				? options.listItemBuilder(it)
-				:  `<span class="name col-10">${it.name}</span><span class="source" title="${Parser.sourceJsonToFull(it.source)}">${Parser.sourceJsonToAbv(it.source)}</span>`;
+				: `<span class="name col-10">${it.name}</span><span class="source" title="${Parser.sourceJsonToFull(it.source)}">${Parser.sourceJsonToAbv(it.source)}</span>`;
 
 			$list.append(`
 			<label class="import-cb-label" data-listid="${i}">
@@ -679,7 +686,7 @@ function d20plusImporter () {
 
 		// init list library
 		const importList = new List("import-list", {
-			valueNames: options.listIndex || ["name"]
+			valueNames: options.listIndex || ["name"],
 		});
 
 		// reset the UI and add handlers
@@ -757,6 +764,7 @@ function d20plusImporter () {
 				$selGroupBy.val(savedSelection);
 			}
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error("Failed to set group from saved!");
 		}
 
@@ -823,7 +831,7 @@ function d20plusImporter () {
 					workerFn();
 				}, interval);
 
-				function workerFn() {
+				function workerFn () {
 					if (!importQueue.length) {
 						handleWorkerComplete();
 						return;
@@ -854,7 +862,7 @@ function d20plusImporter () {
 					}
 				}
 
-				function handleWorkerComplete() {
+				function handleWorkerComplete () {
 					if (worker) clearInterval(worker);
 
 					if (cancelWorker) {
@@ -880,7 +888,7 @@ function d20plusImporter () {
 					}
 
 					$btnCancel.off();
-					$btnCancel.on("click", () => $btnCancel.closest('.ui-dialog-content').dialog('close'));
+					$btnCancel.on("click", () => $btnCancel.closest(".ui-dialog-content").dialog("close"));
 
 					$btnCancel.first().text("OK");
 					$remainingText.empty();

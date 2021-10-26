@@ -2653,8 +2653,10 @@
 				"SD"
 			],
 			"actionTags": [
+				"Breath Weapon",
 				"Frightful Presence",
-				"Multiattack"
+				"Multiattack",
+				"Shapechanger"
 			],
 			"languageTags": [
 				"C",
@@ -3371,6 +3373,7 @@
 				"SD"
 			],
 			"actionTags": [
+				"Breath Weapon",
 				"Frightful Presence",
 				"Multiattack"
 			],
@@ -6053,6 +6056,25 @@
 				"Giant"
 			],
 			"cr": "7",
+			"spellcasting": [
+				{
+					"name": "Innate Spellcasting",
+					"headerEntries": [
+						"The giant's innate spellcasting ability is Wisdom. It can innately cast the following spells, requiring no material components:"
+					],
+					"daily": {
+						"3e": [
+							"{@spell meld into stone}",
+							"{@spell stone shape}"
+						],
+						"1e": [
+							"{@spell stoneskin}",
+							"{@spell time stop}"
+						]
+					},
+					"ability": "wis"
+				}
+			],
 			"trait": [
 				{
 					"name": "Stone Camouflage",
@@ -6063,9 +6085,7 @@
 				{
 					"name": "Olach Morrah",
 					"entries": [
-						"The giant meditates for 1 hour, during which time it can do nothing else. At the end of the hour, provided the giant's meditation has been uninterrupted, it becomes {@condition petrified} for 8 hours. At the end of this time, the giant is no longer {@condition petrified} and gains tremorsense out to a range of 30 feet, as well as a measure of innate spellcasting ability based on Wisdom. For the next 24 hours, it can innately cast the following spells, requiring no material components:",
-						"3/day: meld into stone, stone shape",
-						"1/day: stoneskin, time stop"
+						"The giant meditates for 1 hour, during which time it can do nothing else. At the end of the hour, provided the giant's meditation has been uninterrupted, it becomes {@condition petrified} for 8 hours. At the end of this time, the giant is no longer petrified and gains tremorsense out to a range of 30 feet, as well as a measure of innate spellcasting ability for the next 24 hours."
 					]
 				}
 			],

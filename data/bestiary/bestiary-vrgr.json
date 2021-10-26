@@ -2971,7 +2971,7 @@
 				{
 					"name": "Stirge Telepathy",
 					"entries": [
-						"The strigoi can magically command any stirge within 120 feet of it, using a limited form of telepathy."
+						"The strigoi can magically command any {@creature stirge} within 120 feet of it, using a limited form of telepathy."
 					]
 				}
 			],
@@ -2997,7 +2997,7 @@
 				{
 					"name": "Ravenous Children (1/Day)",
 					"entries": [
-						"The strigoi magically summons {@dice 1d4 + 2} stirges (see their entry in the Monster Manual) in unoccupied spaces it can see within 30 feet of it. The stirges are under the strigoi's control and act immediately after the strigoi in the initiative order. The stirges disappear after 1 hour, when the strigoi dies, or when the strigoi dismisses them (no action required)."
+						"The strigoi magically summons {@dice 1d4 + 2} {@creature stirge||stirges} (see their entry in the Monster Manual) in unoccupied spaces it can see within 30 feet of it. The stirges are under the strigoi's control and act immediately after the strigoi in the initiative order. The stirges disappear after 1 hour, when the strigoi dies, or when the strigoi dismisses them (no action required)."
 					]
 				}
 			],
@@ -3461,7 +3461,7 @@
 								{
 									"name": "Alien Mind",
 									"entries": [
-										"If a creature tries to read the Bagman's thoughts, that creature must succeed on a DC {@dc 8} Intelligence saving throw or be {@condition stunned} for 1 minute. The {@condition stunned} creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+										"If a creature tries to read the Bagman's thoughts, that creature must succeed on a {@dc 8} Intelligence saving throw or be {@condition stunned} for 1 minute. The {@condition stunned} creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 									]
 								}
 							]
@@ -3471,7 +3471,9 @@
 			},
 			"hasToken": true,
 			"traitTags": [
-				"Amorphous"
+				"Amorphous",
+				"Keen Senses",
+				"Regeneration"
 			],
 			"hasFluff": true,
 			"hasFluffImages": true

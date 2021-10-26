@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.25.0";
+const SCRIPT_VERSION = "1.26.2";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -11,18 +11,27 @@ const matchString = `
 // @match        https://app.roll20.net/editor/?*
 `;
 
+// We have to block certain analytics scripts from running. Whenever they and betteR20 are
+// running, the analytics scripts manage to somehow crash the entire website.
+const analyticsBlocking = `
+// @grant        GM_webRequest
+// @webRequest   [{"selector": { "include": "*://www.google-analytics.com/analytics.js" },  "action": "cancel"}]
+// @webRequest   [{"selector": { "include": "*://cdn.userleap.com/shim.js?*" },  "action": "cancel"}]
+`;
+
 const HEADER_CORE = `// ==UserScript==
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5e.tools/script/betteR20-core.user.js
-// @downloadURL  https://get.5e.tools/script/betteR20-core.user.js
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 ${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start
+${analyticsBlocking}
 // ==/UserScript==
 `;
 
@@ -31,13 +40,14 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://get.5e.tools/script/betteR20-5etools.user.js
-// @downloadURL  https://get.5e.tools/script/betteR20-5etools.user.js
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
 ${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start
+${analyticsBlocking}
 // ==/UserScript==
 `;
 
@@ -196,6 +206,7 @@ const SCRIPTS = {
 			"base-jukebox-widget",
 
 			"5etools-bootstrap",
+			"5etools-config",
 			"5etools-main",
 			"5etools-importer",
 			"5etools-monsters",
@@ -227,5 +238,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	);
 	fs.writeFileSync(filename, fullScript);
 });
+
+fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
 
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);

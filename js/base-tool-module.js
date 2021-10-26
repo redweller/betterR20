@@ -105,7 +105,7 @@ function baseToolModule () {
 			});
 			$(`#d20plus-module-importer-progress`).dialog({
 				autoOpen: false,
-				resizable: false
+				resizable: false,
 			});
 			$("#d20plus-module-importer-5etools").dialog({
 				autoOpen: false,
@@ -180,7 +180,7 @@ function baseToolModule () {
 				maps: [],
 				playlists: [],
 				tracks: [],
-				rolltables: []
+				rolltables: [],
 			});
 
 			let selected = getFreshSelected();
@@ -225,13 +225,13 @@ function baseToolModule () {
 					const moduleData = data[prop] || [];
 					moduleData.sort((a, b) => SortUtil.ascSortLower(
 						(a.attributes && a.attributes.name) || a.name || a.title || "",
-						(b.attributes && a.attributes.name) || a.name || b.title || ""
+						(b.attributes && a.attributes.name) || a.name || b.title || "",
 					));
 
 					$lst.empty();
 					moduleData.forEach((m, i) => {
-						const img = lastDataType === "maps" ? m.attributes.thumbnail :
-							(lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
+						const img = lastDataType === "maps" ? m.attributes.thumbnail
+							: (lastDataType === "characters" || lastDataType === "handouts" || lastDataType === "decks") ? m.attributes.avatar : "";
 
 						$lst.append(`
 									<label class="import-cb-label ${img ? `import-cb-label--img` : ""}" data-listid="${i}">
@@ -243,7 +243,7 @@ function baseToolModule () {
 					});
 
 					const entryList = new List("module-importer-list", {
-						valueNames: ["name"]
+						valueNames: ["name"],
 					});
 
 					$cbAll.prop("disabled", false).off("click").click(() => {
@@ -335,7 +335,7 @@ function baseToolModule () {
 						playlists: 0,
 						tracks: 0,
 						maps: mapTimeout,
-						rolltables: handoutTimeout
+						rolltables: handoutTimeout,
 					};
 
 					const addToJournal = (originalId, itId) => {
@@ -397,12 +397,12 @@ function baseToolModule () {
 												success: function (handout) {
 													handout.updateBlobs({
 														notes: entry.blobNotes,
-														gmnotes: entry.blobGmNotes
+														gmnotes: entry.blobGmNotes,
 													});
 
 													addToJournal(entry.attributes.id, handout.id);
-												}
-											}
+												},
+											},
 										);
 										break;
 									}
@@ -420,18 +420,19 @@ function baseToolModule () {
 													character.updateBlobs({
 														bio: entry.blobBio,
 														gmnotes: entry.blobGmNotes,
-														defaulttoken: entry.blobDefaultToken
+														defaulttoken: entry.blobDefaultToken,
 													});
 
 													addToJournal(entry.attributes.id, character.id);
-												}
-											}
+												},
+											},
 										);
 										break;
 									}
 									default: throw new Error(`Unhandled data type: ${prop}`);
 								}
 							} catch (e) {
+								// eslint-disable-next-line no-console
 								console.error(e);
 
 								errCount++;
@@ -482,7 +483,7 @@ function baseToolModule () {
 					tmp = null;
 
 					const list5etools = new List("module-importer-list-5etools", {
-						valueNames: ["name"]
+						valueNames: ["name"],
 					});
 
 					$btnLoad.on("click", () => {
@@ -500,11 +501,13 @@ function baseToolModule () {
 							})
 							.catch(e => {
 								$wrpDataLoadingMessage.html("");
+								// eslint-disable-next-line no-console
 								console.error(e);
 								alert(`Failed to load data! See the console for more information.`);
 							});
 					});
 				}).catch(e => {
+					// eslint-disable-next-line no-console
 					console.error(e);
 					alert(`Failed to load data! See the console for more information.`);
 				});
@@ -530,7 +533,7 @@ function baseToolModule () {
 									<span class="name col-5 readable">${t.name}</span>
 									<span class="version col-1 readable" style="text-align: center;">${t.version || ""}</span>
 									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? MiscUtil.dateToStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
-									<span class="size col-1 readable" style="text-align: right;">${ t.size ? d20plus.ut.getReadableFileSizeString(t.size) : ""}</span>
+									<span class="size col-1 readable" style="text-align: right;">${t.size ? d20plus.ut.getReadableFileSizeString(t.size) : ""}</span>
 									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
 								</label>
 							`;
@@ -539,7 +542,7 @@ function baseToolModule () {
 					tmp = null;
 
 					const list5etools = new List("module-importer-list-5etools", {
-						valueNames: ["name"]
+						valueNames: ["name"],
 					});
 
 					$btnLoad.on("click", () => {
@@ -558,11 +561,13 @@ function baseToolModule () {
 							})
 							.catch(e => {
 								$wrpDataLoadingMessage.html("");
+								// eslint-disable-next-line no-console
 								console.error(e);
 								alert(`Failed to load data! See the console for more information.`);
 							});
 					});
 				}).catch(e => {
+					// eslint-disable-next-line no-console
 					console.error(e);
 					alert(`Failed to load data! See the console for more information.`);
 				});
@@ -573,7 +578,7 @@ function baseToolModule () {
 			$btnLoadFile.off("click").click(async () => {
 				const data = await DataUtil.pUserUpload();
 				// Due to the new util functon, need to account for data being an array
-				data.forEach(d => handleLoadedData(d));
+				data.jsons.forEach(d => handleLoadedData(d));
 			});
 
 			const $winExportP1 = $("#d20plus-module-importer-select-exports-p1");
@@ -602,11 +607,13 @@ function baseToolModule () {
 
 					const catsToExport = new Set(CATS.filter(it => isCatSelected(it)));
 
+					// eslint-disable-next-line no-console
 					console.log("Exporting journal...");
 					const journal = d20plus.journal.getExportableJournal();
 
 					let maps;
 					if (catsToExport.has("maps")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting maps..."); // shoutouts to Stormy
 						maps = await Promise.all(d20.Campaign.pages.models.map(async map => {
 							const getOut = () => {
@@ -614,7 +621,7 @@ function baseToolModule () {
 									attributes: map.attributes,
 									graphics: (map.thegraphics || []).map(g => g.attributes),
 									text: (map.thetexts || []).map(t => t.attributes),
-									paths: (map.thepaths || []).map(p => p.attributes)
+									paths: (map.thepaths || []).map(p => p.attributes),
 								};
 							};
 
@@ -632,33 +639,37 @@ function baseToolModule () {
 
 					let rolltables;
 					if (catsToExport.has("rolltables")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting rolltables...");
 						rolltables = d20.Campaign.rollabletables.models.map(rolltable => ({
 							attributes: rolltable.attributes,
-							tableitems: (rolltable.tableitems.models || []).map(tableitem => tableitem.attributes)
+							tableitems: (rolltable.tableitems.models || []).map(tableitem => tableitem.attributes),
 						}));
 					}
 
 					let decks;
 					if (catsToExport.has("decks")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting decks...");
 						decks = d20.Campaign.decks.models.map(deck => {
 							if (deck.name && deck.name.toLowerCase() === "playing cards") return;
 							return {
 								attributes: deck.attributes,
-								cards: (deck.cards.models || []).map(card => card.attributes)
+								cards: (deck.cards.models || []).map(card => card.attributes),
 							};
 						}).filter(it => it);
 					}
 
 					let playlists;
 					if (catsToExport.has("playlists")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting jukebox playlists...");
 						playlists = d20plus.jukebox.getExportablePlaylists();
 					}
 
 					let tracks;
 					if (catsToExport.has("tracks")) {
+						// eslint-disable-next-line no-console
 						console.log("Exporting jukebox tracks...");
 						tracks = d20plus.jukebox.getExportableTracks();
 					}
@@ -676,6 +687,7 @@ function baseToolModule () {
 					let characters;
 					if (catsToExport.has("characters")) {
 						anyBlobs = true;
+						// eslint-disable-next-line no-console
 						console.log("Exporting characters...");
 						characters = d20.Campaign.characters.models.map(character => {
 							const out = {
@@ -695,12 +707,13 @@ function baseToolModule () {
 					let handouts;
 					if (catsToExport.has("handouts")) {
 						anyBlobs = true;
+						// eslint-disable-next-line no-console
 						console.log("Exporting handouts...");
 						handouts = d20.Campaign.handouts.models.map(handout => {
 							if (handout.attributes.name === ART_HANDOUT || handout.attributes.name === CONFIG_HANDOUT) return;
 
 							const out = {
-								attributes: handout.attributes
+								attributes: handout.attributes,
 							};
 							blobCount += 2;
 							handout._getLatestBlob("notes", (data) => handleBlob(out, "blobNotes", data));
@@ -709,10 +722,13 @@ function baseToolModule () {
 						}).filter(it => it);
 					}
 
+					// eslint-disable-next-line no-console
 					if (anyBlobs) console.log("Waiting for blobs...");
 					onBlobsReady = () => {
+						// eslint-disable-next-line no-console
 						if (anyBlobs) console.log("Blobs are ready!");
 
+						// eslint-disable-next-line no-console
 						console.log("Preparing payload");
 
 						const payload = {
@@ -727,9 +743,10 @@ function baseToolModule () {
 						if (playlists) payload.playlists = playlists;
 						if (tracks) payload.tracks = tracks;
 
-						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^\w\-]/g, "_");
+						const filename = document.title.replace(/\|\s*Roll20$/i, "").trim().replace(/[^-\w]/g, "_");
 						const data = JSON.stringify(payload, null, "\t");
 
+						// eslint-disable-next-line no-console
 						console.log("Saving");
 						const blob = new Blob([data], {type: "application/json"});
 						d20plus.ut.saveAs(blob, `${filename}.json`);
@@ -737,13 +754,12 @@ function baseToolModule () {
 					if (!anyBlobs || blobCount === 0) onBlobsReady();
 				});
 
-
 				// TODO
 				/*
 				macro
 				 */
 			});
-		}
+		},
 	})
 }
 

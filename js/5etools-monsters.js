@@ -17,7 +17,7 @@ function d20plusMonsters () {
 			name: m.name.toLowerCase(),
 			type: m.__pType.toLowerCase(),
 			cr: m.cr === undefined ? "unknown" : (m.cr.cr || m.cr).toLowerCase(),
-			source: Parser.sourceJsonToAbv(m.source).toLowerCase()
+			source: Parser.sourceJsonToAbv(m.source).toLowerCase(),
 		};
 	};
 	d20plus.monsters._doScale = (doImport, origImportQueue) => {
@@ -76,7 +76,7 @@ function d20plusMonsters () {
 		$lst.append(temp);
 
 		list = new List("monster-import-cr-scale-list", {
-			valueNames: ["name", "src"]
+			valueNames: ["name", "src"],
 		});
 
 		d20plus.importer.addListFilter($fltr, origImportQueue, list, d20plus.monsters._listIndexConverter);
@@ -130,6 +130,7 @@ function d20plusMonsters () {
 							}));
 						} else {
 							if (rename) applyRename(queueCopy[ix], rename);
+							// eslint-disable-next-line no-console
 							console.log(`Skipping scaling creature ${m.name} from ${Parser.sourceJsonToAbv(m.source)} -- old CR matched new CR`)
 						}
 					} else {
@@ -166,8 +167,8 @@ function d20plusMonsters () {
 							listItemBuilder: d20plus.monsters._listItemBuilder,
 							listIndex: d20plus.monsters._listCols,
 							listIndexConverter: d20plus.monsters._listIndexConverter,
-							nextStep: d20plus.monsters._doScale
-						}
+							nextStep: d20plus.monsters._doScale,
+						},
 					);
 				};
 
@@ -214,8 +215,8 @@ function d20plusMonsters () {
 					listItemBuilder: d20plus.monsters._listItemBuilder,
 					listIndex: d20plus.monsters._listCols,
 					listIndexConverter: d20plus.monsters._listIndexConverter,
-					nextStep: d20plus.monsters._doScale
-				}
+					nextStep: d20plus.monsters._doScale,
+				},
 			);
 		}
 	};
@@ -270,9 +271,9 @@ function d20plusMonsters () {
 						Parser.sourceJsonToFull(data.source),
 						Parser.sizeAbvToFull(data.size),
 						...(data.environment || []),
-						data.isNPC ? "npc" : undefined
+						data.isNPC ? "npc" : undefined,
 					], "creature"),
-					...options.charOptions
+					...options.charOptions,
 				},
 				{
 					success: function (character) {
@@ -292,27 +293,27 @@ function d20plusMonsters () {
 							})() : null;
 							$.ajax({
 								url: avatar,
-								type: 'HEAD',
+								type: "HEAD",
 								error: function () {
 									d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`, firstFluffImage);
 								},
 								success: function () {
 									d20plus.importer.getSetAvatarImage(character, `${avatar}${d20plus.ut.getAntiCacheSuffix()}`, firstFluffImage);
-								}
+								},
 							});
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
-							var ac = parsedAc.match(/^\d+/);
-							var actype = /\(([^)]+)\)/.exec(parsedAc);
-							var hp = data.hp.average ?? "";
-							var hpformula = data.hp.formula;
-							var passive = data.passive != null ? data.passive : "";
-							var passiveStr = passive !== "" ? "passive Perception " + passive : "";
-							var senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : "";
-							var sensesStr = senses !== "" ? senses + ", " + passiveStr : passiveStr;
-							var size = d20plus.getSizeString(data.size || "");
-							var alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
-							var cr = data.cr ? (data.cr.cr || data.cr) : "";
-							var xp = Parser.crToXpNumber(cr) || 0;
+							let ac = parsedAc.match(/^\d+/);
+							let actype = /\(([^)]+)\)/.exec(parsedAc);
+							let hp = data.hp.average ?? "";
+							let hpformula = data.hp.formula;
+							let passive = data.passive != null ? data.passive : "";
+							let passiveStr = passive !== "" ? `passive Perception ${passive}` : "";
+							let senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : "";
+							let sensesStr = senses !== "" ? `${senses}, ${passiveStr}` : passiveStr;
+							let size = d20plus.getSizeString(data.size || "");
+							let alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
+							let cr = data.cr ? (data.cr.cr || data.cr) : "";
+							let xp = Parser.crToXpNumber(cr) || 0;
 							character.attribs.create({name: "npc", current: 1});
 							character.attribs.create({name: "npc_toggle", current: 1});
 							character.attribs.create({name: "npc_options-flag", current: 0});
@@ -325,17 +326,17 @@ function d20plusMonsters () {
 							character.attribs.create({name: "rtype", current: d20plus.importer.getDesiredRollType()});
 							character.attribs.create({
 								name: "advantagetoggle",
-								current: d20plus.importer.getDesiredAdvantageToggle()
+								current: d20plus.importer.getDesiredAdvantageToggle(),
 							});
 							character.attribs.create({
 								name: "whispertoggle",
-								current: d20plus.importer.getDesiredWhisperToggle()
+								current: d20plus.importer.getDesiredWhisperToggle(),
 							});
 							character.attribs.create({name: "dtype", current: d20plus.importer.getDesiredDamageType()});
 							character.attribs.create({name: "npc_name", current: data._displayName || data.name});
 							character.attribs.create({name: "npc_size", current: size});
 							character.attribs.create({name: "type", current: type});
-							character.attribs.create({name: "npc_type", current: size + " " + type + ", " + alignment});
+							character.attribs.create({name: "npc_type", current: `${size} ${type}, ${alignment}`});
 							character.attribs.create({name: "npc_alignment", current: alignment});
 							character.attribs.create({name: "npc_ac", current: ac != null ? ac[0] : ""});
 							character.attribs.create({name: "npc_actype", current: actype != null ? actype[1] || "" : ""});
@@ -351,26 +352,30 @@ function d20plusMonsters () {
 							data.npc_speed = parsedSpeed;
 							if (d20plus.sheet === "shaped") {
 								data.npc_speed = data.npc_speed.toLowerCase();
-								var match = data.npc_speed.match(/^\s*(\d+)\s?(ft\.?|m\.?)/);
+								let match = data.npc_speed.match(/^\s*(\d+)\s?(ft\.?|m\.?)/);
 								if (match && match[1]) {
-									data.speed = match[1] + ' ' + match[2];
-									character.attribs.create({name: "speed", current: match[1] + ' ' + match[2]});
+									data.speed = `${match[1]} ${match[2]}`;
+									character.attribs.create({name: "speed", current: `${match[1]} ${match[2]}`});
 								}
 								data.npc_speed = parsedSpeed;
-								var regex = /(burrow|climb|fly|swim)\s+(\d+)\s?(ft\.?|m\.?)/g;
-								var speeds = void 0;
-								while ((speeds = regex.exec(data.npc_speed)) !== null) character.attribs.create({
-									name: "speed_" + speeds[1],
-									current: speeds[2] + ' ' + speeds[3]
-								});
-								if (data.npc_speed && data.npc_speed.includes('hover')) character.attribs.create({
-									name: "speed_fly_hover",
-									current: 1
-								});
-								data.npc_speed = '';
+								let regex = /(burrow|climb|fly|swim)\s+(\d+)\s?(ft\.?|m\.?)/g;
+								let speeds = void 0;
+								while ((speeds = regex.exec(data.npc_speed)) !== null) {
+									character.attribs.create({
+										name: `speed_${speeds[1]}`,
+										current: `${speeds[2]} ${speeds[3]}`,
+									});
+								}
+								if (data.npc_speed && data.npc_speed.includes("hover")) {
+									character.attribs.create({
+										name: "speed_fly_hover",
+										current: 1,
+									});
+								}
+								data.npc_speed = "";
 							}
 
-							function calcMod (score) {
+							const calcMod = (score) => {
 								return Math.floor((Number(score) - 10) / 2);
 							}
 
@@ -417,7 +422,7 @@ function d20plusMonsters () {
 							character.attribs.create({name: "passive", current: passive});
 							character.attribs.create({
 								name: "npc_languages",
-								current: data.languages != null ? data.languages instanceof Array ? data.languages.join(", ") : data.languages : ""
+								current: data.languages != null ? data.languages instanceof Array ? data.languages.join(", ") : data.languages : "",
 							});
 							const moCn = cr.cr || cr;
 							character.attribs.create({name: "npc_challenge", current: moCn});
@@ -431,61 +436,61 @@ function d20plusMonsters () {
 							character.attribs.create({name: "npc_xp", current: xp});
 							character.attribs.create({
 								name: "npc_vulnerabilities",
-								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.vulnerable)) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.vulnerable)) : "",
 							});
 							character.attribs.create({
 								name: "damage_vulnerabilities",
-								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.vulnerable)) : ""
+								current: data.vulnerable != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.vulnerable)) : "",
 							});
 							character.attribs.create({
 								name: "npc_resistances",
-								current: data.resist != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.resist)) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.resist)) : "",
 							});
 							character.attribs.create({
 								name: "damage_resistances",
-								current: data.resist != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.resist)) : ""
+								current: data.resist != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.resist)) : "",
 							});
 							character.attribs.create({name: "npc_immunities", current: data.immune != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.immune)) : ""});
 							character.attribs.create({
 								name: "damage_immunities",
-								current: data.immune != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.immune)) : ""
+								current: data.immune != null ? d20plus.importer.getCleanText(Parser.getFullImmRes(data.immune)) : "",
 							});
 							character.attribs.create({
 								name: "npc_condition_immunities",
-								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.getFullCondImm(data.conditionImmune)) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.getFullCondImm(data.conditionImmune)) : "",
 							});
 							character.attribs.create({
 								name: "damage_condition_immunities",
-								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.getFullCondImm(data.conditionImmune)) : ""
+								current: data.conditionImmune != null ? d20plus.importer.getCleanText(Parser.getFullCondImm(data.conditionImmune)) : "",
 							});
 							character.attribs.create({name: "npc_senses", current: sensesStr});
 							if (d20plus.cfg.getOrDefault("import", "dexTiebreaker")) {
 								character.attribs.create({
 									name: "init_tiebreaker",
-									current: "@{dexterity}/100"
+									current: "@{dexterity}/100",
 								});
 							}
 
 							// add Tokenaction Macros
 							if (d20plus.cfg.getOrDefault("import", "tokenactionsSkills")) {
 								if (d20plus.sheet === "shaped") {
-
+									// Do nothing (room for future expansion!)
 								} else {
 									character.abilities.create({
 										name: "Skill-Check",
 										istokenaction: true,
-										action: d20plus.actionMacroSkillCheck
+										action: d20plus.actionMacroSkillCheck,
 									});
 								}
 							}
 							if (d20plus.cfg.getOrDefault("import", "tokenactionsPerception")) {
 								if (d20plus.sheet === "shaped") {
-
+									// Do nothing (room for future expansion!)
 								} else {
 									character.abilities.create({
 										name: "Perception",
 										istokenaction: true,
-										action: d20plus.actionMacroPerception
+										action: d20plus.actionMacroPerception,
 									});
 								}
 							}
@@ -494,13 +499,13 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Saving Throws",
 										istokenaction: true,
-										action: `%{${character.id}|shaped_saving_throw_query}`
+										action: `%{${character.id}|shaped_saving_throw_query}`,
 									});
 								} else {
 									character.abilities.create({
 										name: "Saves",
 										istokenaction: true,
-										action: d20plus.actionMacroSaves
+										action: d20plus.actionMacroSaves,
 									});
 								}
 							}
@@ -509,13 +514,13 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Init",
 										istokenaction: true,
-										action: `%{${character.id}|shaped_initiative}`
+										action: `%{${character.id}|shaped_initiative}`,
 									});
 								} else {
 									character.abilities.create({
 										name: "Init",
 										istokenaction: true,
-										action: d20plus.actionMacroInit
+										action: d20plus.actionMacroInit,
 									});
 								}
 							}
@@ -524,29 +529,29 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Ability Checks",
 										istokenaction: true,
-										action: `%{${character.id}|shaped_ability_checks_query}`
+										action: `%{${character.id}|shaped_ability_checks_query}`,
 									});
 								} else {
 									character.abilities.create({
 										name: "Ability-Check",
 										istokenaction: true,
-										action: d20plus.actionMacroAbilityCheck
+										action: d20plus.actionMacroAbilityCheck,
 									});
 								}
 							}
 							if (d20plus.cfg.getOrDefault("import", "tokenactionsOther")) {
 								if (d20plus.sheet === "shaped") {
-
+									// Do nothing (room for future expansion!)
 								} else {
 									character.abilities.create({
 										name: "DR/Immunities",
 										istokenaction: true,
-										action: d20plus.actionMacroDrImmunities
+										action: d20plus.actionMacroDrImmunities,
 									});
 									character.abilities.create({
 										name: "Stats",
 										istokenaction: true,
-										action: d20plus.actionMacroStats
+										action: d20plus.actionMacroStats,
 									});
 								}
 							}
@@ -555,39 +560,39 @@ function d20plusMonsters () {
 								character.attribs.create({name: "npc_saving_flag", current: "1337"}); // value doesn't matter
 								Object.keys(data.save).forEach(k => {
 									character.attribs.create({
-										name: "npc_" + k + "_save_flag",
-										current: Number(data.save[k]) != 0 ? 1 : 0
+										name: `npc_${k}_save_flag`,
+										current: Number(data.save[k]) !== 0 ? 1 : 0,
 									});
 									// save the values in case someone wants to edit them later
 									character.attribs.create({
-										name: "npc_" + k + "_save_base",
-										current: Number(data.save[k])
+										name: `npc_${k}_save_base`,
+										current: Number(data.save[k]),
 									});
 									character.attribs.create({
-										name: "npc_" + k + "_save",
-										current: Number(data.save[k])
+										name: `npc_${k}_save`,
+										current: Number(data.save[k]),
 									});
 								});
 							}
 							if (data.skill != null) {
 								const skills = data.skill;
 								const skillsString = Object.keys(skills).map(function (k) {
-									return k.uppercaseFirst() + ' ' + skills[k];
-								}).join(', ');
+									return `${k.uppercaseFirst()} ${skills[k]}`;
+								}).join(", ");
 								character.attribs.create({name: "npc_skills_flag", current: "1337"}); // value doesn't matter
 								// character.attribs.create({name: "npc_skills", current: skillsString}); // no longer used
 
 								// Shaped Sheet currently doesn't correctly load NPC Skills
 								// This adds a visual representation as a Trait for reference
 								if (d20plus.sheet === "shaped") {
-									var newRowId = d20plus.ut.generateRowId();
+									let newRowId = d20plus.ut.generateRowId();
 									character.attribs.create({
-										name: "repeating_npctrait_" + newRowId + "_name",
-										current: "NPC Skills"
+										name: `repeating_npctrait_${newRowId}_name`,
+										current: "NPC Skills",
 									});
 									character.attribs.create({
-										name: "repeating_npctrait_" + newRowId + "_desc",
-										current: skillsString
+										name: `repeating_npctrait_${newRowId}_desc`,
+										current: skillsString,
 									});
 								}
 
@@ -595,16 +600,16 @@ function d20plusMonsters () {
 									if (k !== "other") {
 										const cleanSkill = $.trim(k).toLowerCase().replace(/ /g, "_");
 										character.attribs.create({
-											name: "npc_" + cleanSkill + "_base",
-											current: String(Number(v))
+											name: `npc_${cleanSkill}_base`,
+											current: String(Number(v)),
 										});
 										character.attribs.create({
-											name: "npc_" + cleanSkill,
-											current: Number(v)
+											name: `npc_${cleanSkill}`,
+											current: Number(v),
 										});
 										character.attribs.create({
-											name: "npc_" + cleanSkill + "_flag",
-											current: Number(v) != 0 ? 1 : 0
+											name: `npc_${cleanSkill}_flag`,
+											current: Number(v) !== 0 ? 1 : 0,
 										});
 									}
 								});
@@ -634,28 +639,34 @@ function d20plusMonsters () {
 									if (spellToHit == null && spHit) spellToHit = spHit[1];
 								}
 
-								function setAttrib (k, v) {
+								const setAttrib = (k, v) => {
 									d20plus.importer.addOrUpdateAttr(character, k, v);
-								}
+								};
 
-								function addInlineRollers (text) {
+								const addInlineRollers = (text) => {
 									if (!text) return text;
 									return text.replace(RollerUtil.DICE_REGEX, (match) => {
 										return `[[${match}]]`;
 									});
-								}
+								};
 
 								// the basics
 								setAttrib("npcspellcastingflag", "1");
+								// eslint-disable-next-line no-console
 								if (spellAbility != null) setAttrib("spellcasting_ability", `@{${spellAbility}_mod}+`); else console.warn("No spellAbility!");
 								// spell_attack_mod -- never used?
 								setTimeout(() => {
+									// eslint-disable-next-line no-console
 									if (spellToHit != null) setAttrib("spell_attack_bonus", Number(spellToHit)); else console.warn("No spellToHit!");
+									// eslint-disable-next-line no-console
 									if (spellDc != null) setAttrib("spell_save_dc", Number(spellDc)); else console.warn("No spellDc!");
 									if (casterLevel != null) {
 										setAttrib("caster_level", casterLevel);
 										setAttrib("level", Number(casterLevel));
-									} else console.warn("No casterLevel!");
+									} else {
+										// eslint-disable-next-line no-console
+										console.warn("No casterLevel!");
+									}
 								}, spAbilsDelayMs);
 
 								// spell slots
@@ -671,9 +682,9 @@ function d20plusMonsters () {
 									}, spAbilsDelayMs);
 								}
 
-								//this is just for 12 monsters in the whole bestiary that actually have this property and break the importer.
-								//I do not think that it is very important but i can be wrong.
-								for (let spc of data.spellcasting){
+								// this is just for 12 monsters in the whole bestiary that actually have this property and break the importer.
+								// I do not think that it is very important but i can be wrong.
+								for (let spc of data.spellcasting) {
 									delete spc.displayAs;
 								}
 
@@ -753,7 +764,8 @@ function d20plusMonsters () {
 									});
 								}, spAbilsDelayMs);
 
-								function addSpell3 (data, VeSp, index, addMacroIndex) {
+								const addSpell3 = (data, VeSp, index, addMacroIndex) => {
+									// eslint-disable-next-line no-console
 									console.log("Adding spell: ", data.name);
 									// prepare data
 									data.content = addInlineRollers(data.content);
@@ -786,179 +798,164 @@ function d20plusMonsters () {
 
 									// largely stolen from `update_attack_from_spell`
 									function update_attack_from_spell (lvl, spellid, attackid, newattack) {
-										const v = getAttrs(["repeating_spell-" + lvl + "_" + spellid + "_spellname",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellrange",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelltarget",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellattack",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellcritrange",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelldamage2",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit2",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellhealing",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellsave",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellhldie",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellhldietype",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelllevel",
-											"repeating_spell-" + lvl + "_" + spellid + "_includedesc",
-											"repeating_spell-" + lvl + "_" + spellid + "_spelldescription",
-											"repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels",
-											"repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression",
-											"repeating_spell-" + lvl + "_" + spellid + "_innate",
-											"repeating_spell-" + lvl + "_" + spellid + "_spell_ability",
+										const v = getAttrs([`repeating_spell-${lvl}_${spellid}_spellname`,
+											`repeating_spell-${lvl}_${spellid}_spellrange`,
+											`repeating_spell-${lvl}_${spellid}_spelltarget`,
+											`repeating_spell-${lvl}_${spellid}_spellattack`,
+											`repeating_spell-${lvl}_${spellid}_spellcritrange`,
+											`repeating_spell-${lvl}_${spellid}_spelldamage`,
+											`repeating_spell-${lvl}_${spellid}_spellcustcrit`,
+											`repeating_spell-${lvl}_${spellid}_spelldamage2`,
+											`repeating_spell-${lvl}_${spellid}_spellcustcrit2`,
+											`repeating_spell-${lvl}_${spellid}_spelldamagetype`,
+											`repeating_spell-${lvl}_${spellid}_spelldamagetype2`,
+											`repeating_spell-${lvl}_${spellid}_spellhealing`,
+											`repeating_spell-${lvl}_${spellid}_spelldmgmod`,
+											`repeating_spell-${lvl}_${spellid}_spellsave`,
+											`repeating_spell-${lvl}_${spellid}_spellsavesuccess`,
+											`repeating_spell-${lvl}_${spellid}_spellhldie`,
+											`repeating_spell-${lvl}_${spellid}_spellhldietype`,
+											`repeating_spell-${lvl}_${spellid}_spellhlbonus`,
+											`repeating_spell-${lvl}_${spellid}_spelllevel`,
+											`repeating_spell-${lvl}_${spellid}_includedesc`,
+											`repeating_spell-${lvl}_${spellid}_spelldescription`,
+											`repeating_spell-${lvl}_${spellid}_spellathigherlevels`,
+											`repeating_spell-${lvl}_${spellid}_spell_damage_progression`,
+											`repeating_spell-${lvl}_${spellid}_innate`,
+											`repeating_spell-${lvl}_${spellid}_spell_ability`,
 											"spellcasting_ability"]);
 
-										var update = {};
-										var description = "";
-										var spellAbility = v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"] != "spell" ? v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"].slice(0, -1) : "spell";
-										update["repeating_attack_" + attackid + "_atkattr_base"] = spellAbility;
+										let update = {};
+										let description = "";
+										let spellAbility = v[`repeating_spell-${lvl}_${spellid}_spell_ability`] !== "spell" ? v[`repeating_spell-${lvl}_${spellid}_spell_ability`].slice(0, -1) : "spell";
+										update[`repeating_attack_${attackid}_atkattr_base`] = spellAbility;
 
-										if(newattack) {
-											update["repeating_attack_" + attackid + "_options-flag"] = "0";
-											update["repeating_attack_" + attackid + "_spellid"] = spellid;
-											update["repeating_attack_" + attackid + "_spelllevel"] = lvl;
-										}
-
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"] == "spell") {
-											update["repeating_attack_" + attackid + "_savedc"] = "(@{spell_save_dc})";
-										} else if (v["repeating_spell-" + lvl + "_" + spellid + "_spell_ability"]) {
-											update["repeating_attack_" + attackid + "_savedc"] = "(" + spellAbility + "+8+@{spell_dc_mod}+@{pb})";
+										if (newattack) {
+											update[`repeating_attack_${attackid}_options-flag`] = "0";
+											update[`repeating_attack_${attackid}_spellid`] = spellid;
+											update[`repeating_attack_${attackid}_spelllevel`] = lvl;
 										}
 
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellname"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellname"] != "") {
-											update["repeating_attack_" + attackid + "_atkname"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellname"];
-										}
-										if(!v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] || v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] === "None") {
-											update["repeating_attack_" + attackid + "_atkflag"] = "0";
-										}
-										else {
-											update["repeating_attack_" + attackid + "_atkflag"] = "{{attack=1}}";
-											description = description + v["repeating_spell-" + lvl + "_" + spellid + "_spellattack"] + " Spell Attack. ";
+										if (v[`repeating_spell-${lvl}_${spellid}_spell_ability`] === "spell") {
+											update[`repeating_attack_${attackid}_savedc`] = "(@{spell_save_dc})";
+										} else if (v[`repeating_spell-${lvl}_${spellid}_spell_ability`]) {
+											update[`repeating_attack_${attackid}_savedc`] = `(${spellAbility}+8+@{spell_dc_mod}+@{pb})`;
 										}
 
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellcritrange"]) {
-											update["repeating_attack_" + attackid + "_atkcritrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellcritrange"];
+										if (v[`repeating_spell-${lvl}_${spellid}_spellname`] && v[`repeating_spell-${lvl}_${spellid}_spellname`] !== "") {
+											update[`repeating_attack_${attackid}_atkname`] = v[`repeating_spell-${lvl}_${spellid}_spellname`];
+										}
+										if (!v[`repeating_spell-${lvl}_${spellid}_spellattack`] || v[`repeating_spell-${lvl}_${spellid}_spellattack`] === "None") {
+											update[`repeating_attack_${attackid}_atkflag`] = "0";
+										} else {
+											update[`repeating_attack_${attackid}_atkflag`] = "{{attack=1}}";
+											description = `${description + v[`repeating_spell-${lvl}_${spellid}_spellattack`]} Spell Attack. `;
 										}
 
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] && v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] != "") {
-											update["repeating_attack_" + attackid + "_dmgflag"] = "{{damage=1}} {{dmg1flag=1}}";
-											if(v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] && v["repeating_spell-" + lvl + "_" + spellid + "_spell_damage_progression"] === "Cantrip Dice") {
-												update["repeating_attack_" + attackid + "_dmgbase"] = "[[round((@{level} + 1) / 6 + 0.5)]]" + v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"].substring(1);
+										if (v[`repeating_spell-${lvl}_${spellid}_spellcritrange`]) {
+											update[`repeating_attack_${attackid}_atkcritrange`] = v[`repeating_spell-${lvl}_${spellid}_spellcritrange`];
+										}
+
+										if (v[`repeating_spell-${lvl}_${spellid}_spelldamage`] && v[`repeating_spell-${lvl}_${spellid}_spelldamage`] !== "") {
+											update[`repeating_attack_${attackid}_dmgflag`] = "{{damage=1}} {{dmg1flag=1}}";
+											if (v[`repeating_spell-${lvl}_${spellid}_spell_damage_progression`] && v[`repeating_spell-${lvl}_${spellid}_spell_damage_progression`] === "Cantrip Dice") {
+												update[`repeating_attack_${attackid}_dmgbase`] = `[[round((@{level} + 1) / 6 + 0.5)]]${v[`repeating_spell-${lvl}_${spellid}_spelldamage`].substring(1)}`;
+											} else {
+												update[`repeating_attack_${attackid}_dmgbase`] = v[`repeating_spell-${lvl}_${spellid}_spelldamage`];
+												update[`repeating_attack_${attackid}_dmgcustcrit`] = v[`repeating_spell-${lvl}_${spellid}_spellcustcrit`] || "";
 											}
-											else {
-												update["repeating_attack_" + attackid + "_dmgbase"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"];
-												update["repeating_attack_" + attackid + "_dmgcustcrit"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit"] || "";
+										} else {
+											update[`repeating_attack_${attackid}_dmgflag`] = "0"
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spelldmgmod`] && v[`repeating_spell-${lvl}_${spellid}_spelldmgmod`] === "Yes") {
+											update[`repeating_attack_${attackid}_dmgattr`] = spellAbility;
+										} else {
+											update[`repeating_attack_${attackid}_dmgattr`] = "0";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spelldamagetype`]) {
+											update[`repeating_attack_${attackid}_dmgtype`] = v[`repeating_spell-${lvl}_${spellid}_spelldamagetype`];
+										} else {
+											update[`repeating_attack_${attackid}_dmgtype`] = "";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spelldamage2`]) {
+											update[`repeating_attack_${attackid}_dmg2base`] = v[`repeating_spell-${lvl}_${spellid}_spelldamage2`];
+											update[`repeating_attack_${attackid}_dmg2attr`] = 0;
+											update[`repeating_attack_${attackid}_dmg2flag`] = "{{damage=1}} {{dmg2flag=1}}";
+											update[`repeating_attack_${attackid}_dmg2custcrit`] = v[`repeating_spell-${lvl}_${spellid}_spellcustcrit2`] || "";
+										} else {
+											update[`repeating_attack_${attackid}_dmg2base`] = "";
+											update[`repeating_attack_${attackid}_dmg2attr`] = 0;
+											update[`repeating_attack_${attackid}_dmg2flag`] = "0";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spelldamagetype2`]) {
+											update[`repeating_attack_${attackid}_dmg2type`] = v[`repeating_spell-${lvl}_${spellid}_spelldamagetype2`];
+										} else {
+											update[`repeating_attack_${attackid}_dmg2type`] = "";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spellrange`]) {
+											update[`repeating_attack_${attackid}_atkrange`] = v[`repeating_spell-${lvl}_${spellid}_spellrange`];
+										} else {
+											update[`repeating_attack_${attackid}_atkrange`] = "";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spellrange`]) {
+											update[`repeating_attack_${attackid}_atkrange`] = v[`repeating_spell-${lvl}_${spellid}_spellrange`];
+										} else {
+											update[`repeating_attack_${attackid}_atkrange`] = "";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spellsave`]) {
+											update[`repeating_attack_${attackid}_saveflag`] = "{{save=1}} {{saveattr=@{saveattr}}} {{savedesc=@{saveeffect}}} {{savedc=[[[[@{savedc}]][SAVE]]]}}";
+											update[`repeating_attack_${attackid}_saveattr`] = v[`repeating_spell-${lvl}_${spellid}_spellsave`];
+										} else {
+											update[`repeating_attack_${attackid}_saveflag`] = "0";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spellsavesuccess`]) {
+											update[`repeating_attack_${attackid}_saveeffect`] = v[`repeating_spell-${lvl}_${spellid}_spellsavesuccess`];
+										} else {
+											update[`repeating_attack_${attackid}_saveeffect`] = "";
+										}
+										if (v[`repeating_spell-${lvl}_${spellid}_spellhldie`] && v[`repeating_spell-${lvl}_${spellid}_spellhldie`] !== "" && v[`repeating_spell-${lvl}_${spellid}_spellhldietype`] && v[`repeating_spell-${lvl}_${spellid}_spellhldietype`] !== "") {
+											let bonus = "";
+											let spelllevel = v[`repeating_spell-${lvl}_${spellid}_spelllevel`];
+											let query = "?{Cast at what level?";
+											for (let i = 0; i < 10 - spelllevel; i++) {
+												query = `${query}|Level ${parseInt(i, 10) + parseInt(spelllevel, 10)},${i}`;
 											}
-										}
-										else {
-											update["repeating_attack_" + attackid + "_dmgflag"] = "0"
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod"] && v["repeating_spell-" + lvl + "_" + spellid + "_spelldmgmod"] === "Yes") {
-											update["repeating_attack_" + attackid + "_dmgattr"] = spellAbility;
-										}
-										else {
-											update["repeating_attack_" + attackid + "_dmgattr"] = "0";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype"]) {
-											update["repeating_attack_" + attackid + "_dmgtype"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype"];
-										}
-										else {
-											update["repeating_attack_" + attackid + "_dmgtype"] = "";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"]) {
-											update["repeating_attack_" + attackid + "_dmg2base"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"];
-											update["repeating_attack_" + attackid + "_dmg2attr"] = 0;
-											update["repeating_attack_" + attackid + "_dmg2flag"] = "{{damage=1}} {{dmg2flag=1}}";
-											update["repeating_attack_" + attackid + "_dmg2custcrit"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellcustcrit2"] || "";
-										}
-										else {
-											update["repeating_attack_" + attackid + "_dmg2base"] = "";
-											update["repeating_attack_" + attackid + "_dmg2attr"] = 0;
-											update["repeating_attack_" + attackid + "_dmg2flag"] = "0";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2"]) {
-											update["repeating_attack_" + attackid + "_dmg2type"] = v["repeating_spell-" + lvl + "_" + spellid + "_spelldamagetype2"];
-										}
-										else {
-											update["repeating_attack_" + attackid + "_dmg2type"] = "";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"]) {
-											update["repeating_attack_" + attackid + "_atkrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"];
-										}
-										else {
-											update["repeating_attack_" + attackid + "_atkrange"] = "";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"]) {
-											update["repeating_attack_" + attackid + "_atkrange"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellrange"];
-										}
-										else {
-											update["repeating_attack_" + attackid + "_atkrange"] = "";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellsave"]) {
-											update["repeating_attack_" + attackid + "_saveflag"] = "{{save=1}} {{saveattr=@{saveattr}}} {{savedesc=@{saveeffect}}} {{savedc=[[[[@{savedc}]][SAVE]]]}}";
-											update["repeating_attack_" + attackid + "_saveattr"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellsave"];
-										}
-										else {
-											update["repeating_attack_" + attackid + "_saveflag"] = "0";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess"]) {
-											update["repeating_attack_" + attackid + "_saveeffect"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellsavesuccess"];
-										}
-										else {
-											update["repeating_attack_" + attackid + "_saveeffect"] = "";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] != "" && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] != "") {
-											var bonus = "";
-											var spelllevel = v["repeating_spell-" + lvl + "_" + spellid + "_spelllevel"];
-											var query = "?{Cast at what level?";
-											for(i = 0; i < 10-spelllevel; i++) {
-												query = query + "|Level " + (parseInt(i, 10) + parseInt(spelllevel, 10)) + "," + i;
+											query = `${query}}`;
+											if (v[`repeating_spell-${lvl}_${spellid}_spellhlbonus`] && v[`repeating_spell-${lvl}_${spellid}_spellhlbonus`] !== "") {
+												bonus = `+(${v[`repeating_spell-${lvl}_${spellid}_spellhlbonus`]}*${query})`;
 											}
-											query = query + "}";
-											if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] != "") {
-												bonus = "+(" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhlbonus"] + "*" + query + ")";
-											}
-											update["repeating_attack_" + attackid + "_hldmg"] = "{{hldmg=[[(" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhldie"] + "*" + query + ")" + v["repeating_spell-" + lvl + "_" + spellid + "_spellhldietype"] + bonus + "]]}}";
+											update[`repeating_attack_${attackid}_hldmg`] = `{{hldmg=[[(${v[`repeating_spell-${lvl}_${spellid}_spellhldie`]}*${query})${v[`repeating_spell-${lvl}_${spellid}_spellhldietype`]}${bonus}]]}}`;
+										} else {
+											update[`repeating_attack_${attackid}_hldmg`] = "";
 										}
-										else {
-											update["repeating_attack_" + attackid + "_hldmg"] = "";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"] != "") {
-											if(!v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] || v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage"] === "") {
-												update["repeating_attack_" + attackid + "_dmgbase"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"];
-												update["repeating_attack_" + attackid + "_dmgflag"] = "{{damage=1}} {{dmg1flag=1}}";
-												update["repeating_attack_" + attackid + "_dmgtype"] = "Healing";
-											}
-											else if(!v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"] || v["repeating_spell-" + lvl + "_" + spellid + "_spelldamage2"] === "") {
-												update["repeating_attack_" + attackid + "_dmg2base"] = v["repeating_spell-" + lvl + "_" + spellid + "_spellhealing"];
-												update["repeating_attack_" + attackid + "_dmg2flag"] = "{{damage=1}} {{dmg2flag=1}}";
-												update["repeating_attack_" + attackid + "_dmg2type"] = "Healing";
+										if (v[`repeating_spell-${lvl}_${spellid}_spellhealing`] && v[`repeating_spell-${lvl}_${spellid}_spellhealing`] !== "") {
+											if (!v[`repeating_spell-${lvl}_${spellid}_spelldamage`] || v[`repeating_spell-${lvl}_${spellid}_spelldamage`] === "") {
+												update[`repeating_attack_${attackid}_dmgbase`] = v[`repeating_spell-${lvl}_${spellid}_spellhealing`];
+												update[`repeating_attack_${attackid}_dmgflag`] = "{{damage=1}} {{dmg1flag=1}}";
+												update[`repeating_attack_${attackid}_dmgtype`] = "Healing";
+											} else if (!v[`repeating_spell-${lvl}_${spellid}_spelldamage2`] || v[`repeating_spell-${lvl}_${spellid}_spelldamage2`] === "") {
+												update[`repeating_attack_${attackid}_dmg2base`] = v[`repeating_spell-${lvl}_${spellid}_spellhealing`];
+												update[`repeating_attack_${attackid}_dmg2flag`] = "{{damage=1}} {{dmg2flag=1}}";
+												update[`repeating_attack_${attackid}_dmg2type`] = "Healing";
 											}
 										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_innate"]) {
-											update["repeating_attack_" + attackid + "_spell_innate"] = v["repeating_spell-" + lvl + "_" + spellid + "_innate"];
+										if (v[`repeating_spell-${lvl}_${spellid}_innate`]) {
+											update[`repeating_attack_${attackid}_spell_innate`] = v[`repeating_spell-${lvl}_${spellid}_innate`];
+										} else {
+											update[`repeating_attack_${attackid}_spell_innate`] = "";
 										}
-										else {
-											update["repeating_attack_" + attackid + "_spell_innate"] = "";
+										if (v[`repeating_spell-${lvl}_${spellid}_spelltarget`]) {
+											description = `${description + v[`repeating_spell-${lvl}_${spellid}_spelltarget`]}. `;
 										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_spelltarget"]) {
-											description = description + v["repeating_spell-" + lvl + "_" + spellid + "_spelltarget"] + ". ";
-										}
-										if(v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] && v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] === "on") {
-											description = v["repeating_spell-" + lvl + "_" + spellid + "_spelldescription"];
-											if(v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"] && v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"] != "") {
-												description = description + "\n\nAt Higher Levels: " + v["repeating_spell-" + lvl + "_" + spellid + "_spellathigherlevels"];
+										if (v[`repeating_spell-${lvl}_${spellid}_includedesc`] && v[`repeating_spell-${lvl}_${spellid}_includedesc`] === "on") {
+											description = v[`repeating_spell-${lvl}_${spellid}_spelldescription`];
+											if (v[`repeating_spell-${lvl}_${spellid}_spellathigherlevels`] && v[`repeating_spell-${lvl}_${spellid}_spellathigherlevels`] !== "") {
+												description = `${description}\n\nAt Higher Levels: ${v[`repeating_spell-${lvl}_${spellid}_spellathigherlevels`]}`;
 											}
-										}
-										else if(v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] && v["repeating_spell-" + lvl + "_" + spellid + "_includedesc"] === "off") {
+										} else if (v[`repeating_spell-${lvl}_${spellid}_includedesc`] && v[`repeating_spell-${lvl}_${spellid}_includedesc`] === "off") {
 											description = "";
 										}
-										update["repeating_attack_" + attackid + "_atk_desc"] = description;
+										update[`repeating_attack_${attackid}_atk_desc`] = description;
 
 										// TODO are these necessary?
 										// var callback = function() {update_attacks(attackid, "spell")};
@@ -968,10 +965,10 @@ function d20plusMonsters () {
 
 									// largely stolen from `create_attack_from_spell`
 									function create_attack_from_spell (lvl, spellid, character_id) {
-										var update = {};
-										var newrowid = d20plus.ut.generateRowId();
-										update["repeating_spell-" + lvl + "_" + spellid + "_spellattackid"] = newrowid;
-										update["repeating_spell-" + lvl + "_" + spellid + "_rollcontent"] = "%{" + character_id + "|repeating_attack_" + newrowid + "_attack}";
+										let update = {};
+										let newrowid = d20plus.ut.generateRowId();
+										update[`repeating_spell-${lvl}_${spellid}_spellattackid`] = newrowid;
+										update[`repeating_spell-${lvl}_${spellid}_rollcontent`] = `%{${character_id}|repeating_attack_${newrowid}_attack}`;
 										setAttrs(update, update_attack_from_spell(lvl, spellid, newrowid, true));
 									}
 
@@ -982,58 +979,57 @@ function d20plusMonsters () {
 										const id = d20plus.ut.generateRowId();
 
 										/* eslint-disable block-spacing, no-extra-semi */
-										var lvl = page.data["Level"] && page.data["Level"] > 0 ? page.data["Level"] : "cantrip";
-										update["repeating_spell-" + lvl + "_" + id + "_spelllevel"] = lvl;
-										if(page.data["spellcasting_ability"]) {
-											update["repeating_spell-" + lvl + "_" + id + "_spell_ability"] = page.data["spellcasting_ability"];
+										let lvl = page.data["Level"] && page.data["Level"] > 0 ? page.data["Level"] : "cantrip";
+										update[`repeating_spell-${lvl}_${id}_spelllevel`] = lvl;
+										if (page.data["spellcasting_ability"]) {
+											update[`repeating_spell-${lvl}_${id}_spell_ability`] = page.data["spellcasting_ability"];
 										} else {
-											update["repeating_spell-" + lvl + "_" + id + "_spell_ability"] = "spell";
+											update[`repeating_spell-${lvl}_${id}_spell_ability`] = "spell";
 										}
-										if(page.name) {update["repeating_spell-" + lvl + "_" + id + "_spellname"] = page.name};
-										if(page.data["Ritual"]) {update["repeating_spell-" + lvl + "_" + id + "_spellritual"] = "{{ritual=1}}"};
-										if(page.data["School"]) {update["repeating_spell-" + lvl + "_" + id + "_spellschool"] = page.data["School"].toLowerCase()};
-										if(page.data["Casting Time"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcastingtime"] = page.data["Casting Time"]};
-										if(page.data["Range"]) {update["repeating_spell-" + lvl + "_" + id + "_spellrange"] = page.data["Range"]};
-										if(page.data["Target"]) {update["repeating_spell-" + lvl + "_" + id + "_spelltarget"] = page.data["Target"]};
-										if(page.data["Components"]) {
-											if(page.data["Components"].toLowerCase().indexOf("v") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_v"] = "0"};
-											if(page.data["Components"].toLowerCase().indexOf("s") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_s"] = "0"};
-											if(page.data["Components"].toLowerCase().indexOf("m") === -1) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_m"] = "0"};
+										if (page.name) {update[`repeating_spell-${lvl}_${id}_spellname`] = page.name};
+										if (page.data["Ritual"]) {update[`repeating_spell-${lvl}_${id}_spellritual`] = "{{ritual=1}}"};
+										if (page.data["School"]) {update[`repeating_spell-${lvl}_${id}_spellschool`] = page.data["School"].toLowerCase()};
+										if (page.data["Casting Time"]) {update[`repeating_spell-${lvl}_${id}_spellcastingtime`] = page.data["Casting Time"]};
+										if (page.data["Range"]) {update[`repeating_spell-${lvl}_${id}_spellrange`] = page.data["Range"]};
+										if (page.data["Target"]) {update[`repeating_spell-${lvl}_${id}_spelltarget`] = page.data["Target"]};
+										if (page.data["Components"]) {
+											if (page.data["Components"].toLowerCase().indexOf("v") === -1) {update[`repeating_spell-${lvl}_${id}_spellcomp_v`] = "0"};
+											if (page.data["Components"].toLowerCase().indexOf("s") === -1) {update[`repeating_spell-${lvl}_${id}_spellcomp_s`] = "0"};
+											if (page.data["Components"].toLowerCase().indexOf("m") === -1) {update[`repeating_spell-${lvl}_${id}_spellcomp_m`] = "0"};
 										};
-										if(page.data["Material"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcomp_materials"] = page.data["Material"]};
-										if(page.data["Concentration"]) {update["repeating_spell-" + lvl + "_" + id + "_spellconcentration"] = "{{concentration=1}}"};
-										if(page.data["Duration"]) {update["repeating_spell-" + lvl + "_" + id + "_spellduration"] = page.data["Duration"]};
-										if(page.data["Damage"] || page.data["Healing"]) {
-											update["repeating_spell-" + lvl + "_" + id + "_spelloutput"] = "ATTACK";
-											callbacks.push( function() {create_attack_from_spell(lvl, id, character.id);} );
-										}
-										else if(page.data["Higher Spell Slot Desc"] && page.data["Higher Spell Slot Desc"] != "") {
-											var spelllevel = "?{Cast at what level?";
-											for(i = 0; i < 10-lvl; i++) {
-												spelllevel = spelllevel + "|Level " + (parseInt(i, 10) + parseInt(lvl, 10)) + "," + (parseInt(i, 10) + parseInt(lvl, 10));
+										if (page.data["Material"]) {update[`repeating_spell-${lvl}_${id}_spellcomp_materials`] = page.data["Material"]};
+										if (page.data["Concentration"]) {update[`repeating_spell-${lvl}_${id}_spellconcentration`] = "{{concentration=1}}"};
+										if (page.data["Duration"]) {update[`repeating_spell-${lvl}_${id}_spellduration`] = page.data["Duration"]};
+										if (page.data["Damage"] || page.data["Healing"]) {
+											update[`repeating_spell-${lvl}_${id}_spelloutput`] = "ATTACK";
+											callbacks.push(function () {create_attack_from_spell(lvl, id, character.id);});
+										} else if (page.data["Higher Spell Slot Desc"] && page.data["Higher Spell Slot Desc"] !== "") {
+											let spelllevel = "?{Cast at what level?";
+											for (let i = 0; i < 10 - lvl; i++) {
+												spelllevel = `${spelllevel}|Level ${parseInt(i, 10) + parseInt(lvl, 10)},${parseInt(i, 10) + parseInt(lvl, 10)}`;
 											}
-											spelllevel = spelllevel + "}";
-											update["repeating_spell-" + lvl + "_" + id + "_rollcontent"] = "@{wtype}&{template:spell} {{level=@{spellschool} " + spelllevel + "}} {{name=@{spellname}}} {{castingtime=@{spellcastingtime}}} {{range=@{spellrange}}} {{target=@{spelltarget}}} @{spellcomp_v} @{spellcomp_s} @{spellcomp_m} {{material=@{spellcomp_materials}}} {{duration=@{spellduration}}} {{description=@{spelldescription}}} {{athigherlevels=@{spellathigherlevels}}} @{spellritual} {{innate=@{innate}}} @{spellconcentration} @{charname_output}";
+											spelllevel = `${spelllevel}}`;
+											update[`repeating_spell-${lvl}_${id}_rollcontent`] = `@{wtype}&{template:spell} {{level=@{spellschool} ${spelllevel}}} {{name=@{spellname}}} {{castingtime=@{spellcastingtime}}} {{range=@{spellrange}}} {{target=@{spelltarget}}} @{spellcomp_v} @{spellcomp_s} @{spellcomp_m} {{material=@{spellcomp_materials}}} {{duration=@{spellduration}}} {{description=@{spelldescription}}} {{athigherlevels=@{spellathigherlevels}}} @{spellritual} {{innate=@{innate}}} @{spellconcentration} @{charname_output}`;
 										};
-										if(page.data["Spell Attack"]) {update["repeating_spell-" + lvl + "_" + id + "_spellattack"] = page.data["Spell Attack"]};
-										if(page.data["Crit Range"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcritrange"] = page.data["Crit Range"]};
-										if(page.data["Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage"] = page.data["Damage"]};
-										if(page.data["Crit"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcustcrit"] = page.data["Crit"]};
-										if(page.data["Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype"] = page.data["Damage Type"]};
-										if(page.data["Secondary Damage"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamage2"] = page.data["Secondary Damage"]};
-										if(page.data["Secondary Crit"]) {update["repeating_spell-" + lvl + "_" + id + "_spellcustcrit2"] = page.data["Secondary Crit"]};
-										if(page.data["Secondary Damage Type"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldamagetype2"] = page.data["Secondary Damage Type"]};
-										if(page.data["Healing"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhealing"] = page.data["Healing"];};
-										if(page.data["Add Casting Modifier"]) {update["repeating_spell-" + lvl + "_" + id + "_spelldmgmod"] = page.data["Add Casting Modifier"]};
-										if(page.data["Save"]) {update["repeating_spell-" + lvl + "_" + id + "_spellsave"] = page.data["Save"]};
-										if(page.data["Save Success"]) {update["repeating_spell-" + lvl + "_" + id + "_spellsavesuccess"] = page.data["Save Success"]};
-										if(page.data["Higher Spell Slot Dice"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhldie"] = page.data["Higher Spell Slot Dice"]};
-										if(page.data["Higher Spell Slot Die"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhldietype"] = page.data["Higher Spell Slot Die"]};
-										if(page.data["Higher Spell Slot Bonus"]) {update["repeating_spell-" + lvl + "_" + id + "_spellhlbonus"] = page.data["Higher Spell Slot Bonus"]};
-										if(page.data["Higher Spell Slot Desc"]) {update["repeating_spell-" + lvl + "_" + id + "_spellathigherlevels"] = page.data["Higher Spell Slot Desc"]};
-										if(page.data["data-Cantrip Scaling"] && lvl == "cantrip") {update["repeating_spell-" + lvl + "_" + id + "_spell_damage_progression"] = "Cantrip " + page.data["data-Cantrip Scaling"].charAt(0).toUpperCase() + page.data["data-Cantrip Scaling"].slice(1);};
-										if(page.data["data-description"]) { update["repeating_spell-" + lvl + "_" + id + "_spelldescription"] = page.data["data-description"]};
-										update["repeating_spell-" + lvl + "_" + id + "_options-flag"] = "0";
+										if (page.data["Spell Attack"]) {update[`repeating_spell-${lvl}_${id}_spellattack`] = page.data["Spell Attack"]};
+										if (page.data["Crit Range"]) {update[`repeating_spell-${lvl}_${id}_spellcritrange`] = page.data["Crit Range"]};
+										if (page.data["Damage"]) {update[`repeating_spell-${lvl}_${id}_spelldamage`] = page.data["Damage"]};
+										if (page.data["Crit"]) {update[`repeating_spell-${lvl}_${id}_spellcustcrit`] = page.data["Crit"]};
+										if (page.data["Damage Type"]) {update[`repeating_spell-${lvl}_${id}_spelldamagetype`] = page.data["Damage Type"]};
+										if (page.data["Secondary Damage"]) {update[`repeating_spell-${lvl}_${id}_spelldamage2`] = page.data["Secondary Damage"]};
+										if (page.data["Secondary Crit"]) {update[`repeating_spell-${lvl}_${id}_spellcustcrit2`] = page.data["Secondary Crit"]};
+										if (page.data["Secondary Damage Type"]) {update[`repeating_spell-${lvl}_${id}_spelldamagetype2`] = page.data["Secondary Damage Type"]};
+										if (page.data["Healing"]) {update[`repeating_spell-${lvl}_${id}_spellhealing`] = page.data["Healing"];};
+										if (page.data["Add Casting Modifier"]) {update[`repeating_spell-${lvl}_${id}_spelldmgmod`] = page.data["Add Casting Modifier"]};
+										if (page.data["Save"]) {update[`repeating_spell-${lvl}_${id}_spellsave`] = page.data["Save"]};
+										if (page.data["Save Success"]) {update[`repeating_spell-${lvl}_${id}_spellsavesuccess`] = page.data["Save Success"]};
+										if (page.data["Higher Spell Slot Dice"]) {update[`repeating_spell-${lvl}_${id}_spellhldie`] = page.data["Higher Spell Slot Dice"]};
+										if (page.data["Higher Spell Slot Die"]) {update[`repeating_spell-${lvl}_${id}_spellhldietype`] = page.data["Higher Spell Slot Die"]};
+										if (page.data["Higher Spell Slot Bonus"]) {update[`repeating_spell-${lvl}_${id}_spellhlbonus`] = page.data["Higher Spell Slot Bonus"]};
+										if (page.data["Higher Spell Slot Desc"]) {update[`repeating_spell-${lvl}_${id}_spellathigherlevels`] = page.data["Higher Spell Slot Desc"]};
+										if (page.data["data-Cantrip Scaling"] && lvl === "cantrip") {update[`repeating_spell-${lvl}_${id}_spell_damage_progression`] = `Cantrip ${page.data["data-Cantrip Scaling"].charAt(0).toUpperCase()}${page.data["data-Cantrip Scaling"].slice(1)}`;};
+										if (page.data["data-description"]) { update[`repeating_spell-${lvl}_${id}_spelldescription`] = page.data["data-description"]};
+										update[`repeating_spell-${lvl}_${id}_options-flag`] = "0";
 
 										// custom writing:
 										setAttrs(update, callbacks);
@@ -1049,7 +1045,7 @@ function d20plusMonsters () {
 												character.abilities.create({
 													name: "Spells",
 													istokenaction: true,
-													action: `%{${character.id}|shaped_spells}`
+													action: `%{${character.id}|shaped_spells}`,
 												}).save();
 											} else {
 												// collect name and identifier for all the character's spells
@@ -1096,7 +1092,7 @@ function d20plusMonsters () {
 												character.abilities.create({
 													name: "Spells",
 													istokenaction: true,
-													action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`
+													action: `/w gm @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Spellcasting}} {{description=${tokenActionStack.join("")}}}`,
 												}).save();
 											}
 										}
@@ -1105,23 +1101,23 @@ function d20plusMonsters () {
 							}
 							if (data.trait) {
 								$.each(data.trait, function (i, v) {
-									var newRowId = d20plus.ut.generateRowId();
+									let newRowId = d20plus.ut.generateRowId();
 									character.attribs.create({
-										name: "repeating_npctrait_" + newRowId + "_name",
-										current: d20plus.importer.getCleanText(renderer.render(v.name))
+										name: `repeating_npctrait_${newRowId}_name`,
+										current: d20plus.importer.getCleanText(renderer.render(v.name)),
 									});
 
 									if (d20plus.cfg.getOrDefault("import", "tokenactionsTraits")) {
 										const offsetIndex = data.spellcasting ? 1 + i : i;
 										character.abilities.create({
-											name: "Trait" + offsetIndex + ": " + v.name,
+											name: `Trait${offsetIndex}: ${v.name}`,
 											istokenaction: true,
-											action: d20plus.actionMacroTrait(offsetIndex)
+											action: d20plus.actionMacroTrait(offsetIndex),
 										});
 									}
 
-									var text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
-									character.attribs.create({name: "repeating_npctrait_" + newRowId + "_desc", current: text});
+									let text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
+									character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: text});
 								});
 							}
 							if (data.action) {
@@ -1159,7 +1155,7 @@ function d20plusMonsters () {
 											const partName = /^\d+\.\s*[^.]+/.exec(it.name);
 											packedOthers.push({
 												name: partName,
-												text: it.entry ? `${it.entry}` : it.entries.map(it => `${it}`).join("\n")
+												text: it.entry ? `${it.entry}` : it.entries.map(it => `${it}`).join("\n"),
 											});
 										});
 
@@ -1193,34 +1189,34 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Reactions",
 										istokenaction: true,
-										action: `%{${character.id}|shaped_reactions}`
+										action: `%{${character.id}|shaped_reactions}`,
 									});
 								}
 
 								$.each(data.reaction, function (i, v) {
-									var newRowId = d20plus.ut.generateRowId();
+									let newRowId = d20plus.ut.generateRowId();
 									let text = "";
 									character.attribs.create({
-										name: "repeating_npcreaction_" + newRowId + "_name",
-										current: d20plus.importer.getCleanText(renderer.render(v.name))
+										name: `repeating_npcreaction_${newRowId}_name`,
+										current: d20plus.importer.getCleanText(renderer.render(v.name)),
 									});
 
 									if (d20plus.cfg.getOrDefault("import", "tokenactions") && d20plus.sheet !== "shaped") {
 										character.abilities.create({
-											name: "Reaction: " + v.name,
+											name: `Reaction: ${v.name}`,
 											istokenaction: true,
-											action: d20plus.actionMacroReaction(i)
+											action: d20plus.actionMacroReaction(i),
 										});
 									}
 
 									text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
 									character.attribs.create({
-										name: "repeating_npcreaction_" + newRowId + "_desc",
-										current: text
+										name: `repeating_npcreaction_${newRowId}_desc`,
+										current: text,
 									});
 									character.attribs.create({
-										name: "repeating_npcreaction_" + newRowId + "_description",
-										current: text
+										name: `repeating_npcreaction_${newRowId}_description`,
+										current: text,
 									});
 								});
 							}
@@ -1233,7 +1229,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
-										action: `%{${character.id}|shaped_legendaryactions}`
+										action: `%{${character.id}|shaped_legendaryactions}`,
 									});
 								}
 
@@ -1245,7 +1241,7 @@ function d20plusMonsters () {
 									d20plus.importer.addLegendaryAction(character, name, text, i);
 
 									if (d20plus.cfg.getOrDefault("import", "tokenactions") && !d20plus.cfg.getOrDefault("import", "tokenactionsExpanded") && d20plus.sheet !== "shaped") {
-										tokenactiontext += "[" + name + "](~selected|repeating_npcaction-l_$" + i + "_npc_action)\n\r";
+										tokenactiontext += `[${name}](~selected|repeating_npcaction-l_$${i}_npc_action)\n\r`;
 									}
 								});
 
@@ -1253,7 +1249,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
-										action: d20plus.actionMacroLegendary(tokenactiontext)
+										action: d20plus.actionMacroLegendary(tokenactiontext),
 									});
 								}
 							}
@@ -1269,7 +1265,7 @@ function d20plusMonsters () {
 									d20plus.importer.addMythicAction(character, name, text, i);
 
 									if (d20plus.cfg.getOrDefault("import", "tokenactions") && !d20plus.cfg.getOrDefault("import", "tokenactionsExpanded") && d20plus.sheet !== "shaped") {
-										tokenactiontext += "[" + name + "](~selected|repeating_npcaction-m_$" + i + "_npc_action)\n\r";
+										tokenactiontext += `[${name}](~selected|repeating_npcaction-m_$${i}_npc_action)\n\r`;
 									}
 								});
 
@@ -1277,7 +1273,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Mythic Actions",
 										istokenaction: true,
-										action: d20plus.actionMacroMythic(tokenactiontext)
+										action: d20plus.actionMacroMythic(tokenactiontext),
 									});
 								}
 							}
@@ -1291,7 +1287,7 @@ function d20plusMonsters () {
 								character.abilities.create({
 									name: "Actions",
 									istokenaction: true,
-									action: `%{${character.id}|shaped_actions}`
+									action: `%{${character.id}|shaped_actions}`,
 								});
 
 								// TODO lair action creation is unimplemented
@@ -1309,20 +1305,20 @@ function d20plusMonsters () {
 							if (renderFluff) {
 								setTimeout(() => {
 									const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
-									let k = fluffAs === "Bio"? "bio" : "gmnotes";
+									let k = fluffAs === "Bio" ? "bio" : "gmnotes";
 									character.updateBlobs({
-										[k]: Markdown.parse(renderFluff)
+										[k]: Markdown.parse(renderFluff),
 									});
 									character.save({
-										[k]: (new Date).getTime()
+										[k]: (new Date()).getTime(),
 									});
 								}, 500);
 							}
 						} catch (e) {
-							d20plus.ut.log("Error loading [" + name + "]");
+							d20plus.ut.log(`Error loading [${name}]`);
 							d20plus.addImportError(name);
-							console.log(data);
-							console.log(e);
+							// eslint-disable-next-line no-console
+							console.log(data, e);
 						}
 						/* end OGL Sheet */
 						d20.journal.addItemToFolderStructure(character.id, folder.id);
@@ -1330,7 +1326,7 @@ function d20plusMonsters () {
 						if (options.charFunction) {
 							options.charFunction(character);
 						}
-					}
+					},
 				});
 		};
 
@@ -1341,6 +1337,7 @@ function d20plusMonsters () {
 			DataUtil.loadJSON(fluffUrl).then((data) => {
 				monsterFluffData[src] = data;
 			}).catch(e => {
+				// eslint-disable-next-line no-console
 				console.error(e);
 				monsterFluffData[src] = {monster: []};
 			}).then(doBuild);

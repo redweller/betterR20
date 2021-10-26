@@ -1104,6 +1104,9 @@
 				"type": "internal",
 				"path": "bestiary/archdruid.mp3"
 			},
+			"actionTags": [
+				"Shapechanger"
+			],
 			"languageTags": [
 				"DU",
 				"X"
@@ -2821,6 +2824,9 @@
 			"otherSources": [
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
@@ -2829,6 +2835,7 @@
 				"C",
 				"N"
 			],
+			"alignmentPrefix": "typically ",
 			"ac": [
 				14
 			],
@@ -3966,7 +3973,8 @@
 				"Keen Senses"
 			],
 			"actionTags": [
-				"Multiattack"
+				"Multiattack",
+				"Shapechanger"
 			],
 			"languageTags": [
 				"C",
@@ -4294,6 +4302,11 @@
 			"name": "Darkling",
 			"source": "VGM",
 			"page": 134,
+			"otherSources": [
+				{
+					"source": "WBtW"
+				}
+			],
 			"size": "S",
 			"type": "fey",
 			"alignment": [
@@ -4400,6 +4413,11 @@
 			"name": "Darkling Elder",
 			"source": "VGM",
 			"page": 134,
+			"otherSources": [
+				{
+					"source": "WBtW"
+				}
+			],
 			"size": "M",
 			"type": "fey",
 			"alignment": [
@@ -10039,6 +10057,11 @@
 			"name": "Korred",
 			"source": "VGM",
 			"page": 168,
+			"otherSources": [
+				{
+					"source": "WBtW"
+				}
+			],
 			"size": "S",
 			"type": "fey",
 			"alignment": [
@@ -12295,6 +12318,7 @@
 				"B"
 			],
 			"actionTags": [
+				"Breath Weapon",
 				"Swallow",
 				"Tentacles"
 			],
@@ -13285,6 +13309,11 @@
 			"name": "Quickling",
 			"source": "VGM",
 			"page": 187,
+			"otherSources": [
+				{
+					"source": "WBtW"
+				}
+			],
 			"size": "T",
 			"type": "fey",
 			"alignment": [
@@ -13487,6 +13516,9 @@
 				},
 				{
 					"source": "IMR"
+				},
+				{
+					"source": "WBtW"
 				}
 			],
 			"size": "S",
