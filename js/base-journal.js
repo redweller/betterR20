@@ -257,6 +257,7 @@ function d20plusJournal () {
 				return it.n && it.n === p;
 			});
 			if (!existing) return false;
+			if (!doDelete) return true;
 			curDir = existing;
 			if (i === parts.length - 1) {
 				d20plus.journal.recursiveRemoveDirById(lastId, false);
