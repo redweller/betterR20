@@ -3,6 +3,7 @@ function baseToolUnlock () {
 		toolId: "UNLOCKER",
 		name: "Token Unlocker",
 		desc: "Unlock previously-locked tokens",
+		mode: true,
 		html: `
 			<div id="d20plus-token-unlocker" title="Better20 - Token Unlocker">
 				<p>
