@@ -136,6 +136,7 @@ function d20plusJournal () {
 
 	/**
 	 * Takes a path made up of strings and arrays of strings, and turns it into one flat array of strings
+	 * Note that paths must be of the form ["folder", "subfolder", "subsubfolder", etc]
 	 */
 	d20plus.journal.getCleanPath = function (...path) {
 		const clean = [];

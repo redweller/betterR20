@@ -15,7 +15,7 @@ function baseTool () {
 			html: `
 				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
-				<label style="font-weight: bold">Root Only <input type="radio" name="cb-mode" class="cb-shallow cb-mode" checked=""></label>
+				<label style="font-weight: bold">Root Only <input type="radio" name="cb-mode" class="cb-shallow cb-mode"></label>
 				<label style="font-weight: bold">All Items <input type="radio" name="cb-mode" class="cb-deep cb-mode"></label>
 				<label style="font-weight: bold">All Items and Folders<input type="radio" name="cb-mode" class="cb-folder cb-mode"></label>
 				<label style="font-weight: bold">Rollable Tables <input type="radio" name="cb-mode" class="cb-tables cb-mode"></label>
@@ -54,7 +54,9 @@ function baseTool () {
 				// When a a different box gets checked, populate the list
 				$cbMode.off("change").on("change", () => populateList());
 
+				// Don't even ask why populateList needs to be called twice
 				$cbShallow.prop("checked", true);
+				populateList();
 
 				function populateList () {
 					// collect a list of all journal items
@@ -127,7 +129,7 @@ function baseTool () {
 						if (character) return {type: "characters", id: itId, name: character.get("name"), path: path, archived: character.attributes.archived};
 
 						// If both are empty, check if item is a folder and return a folder type
-						if (d20plus.journal.checkDirExistsByPath(path)) return {type: "folder", id: itId, name: "", path:path, archived: false, folder: true}
+						if (d20plus.journal.checkDirExistsByPath(path.split(" / "))) return {type: "folder", id: itId, name: "", path:path, archived: false, folder: true}
 					}
 
 					function getJournalItems () {
@@ -205,7 +207,7 @@ function baseTool () {
 							$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 							sel.forEach(toDel => {
 								// If the item is a folder, use the folder deletion functon
-								if (toDel.folder) d20plus.journal.removeDirByPath(toDel.path);
+								if (toDel.folder) d20plus.journal.removeDirByPath(toDel.path.split(" / "));
 
 								// Otherwise delete through d20 object
 								else d20.Campaign[toDel.type].get(toDel.id).destroy();
