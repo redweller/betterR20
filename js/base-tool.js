@@ -15,10 +15,10 @@ function baseTool () {
 			html: `
 				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
-				<label style="font-weight: bold">Root Only <input type="radio" name="cb-mode" class="cb-shallow cb-mode"></label>
-				<label style="font-weight: bold">All Items <input type="radio" name="cb-mode" class="cb-deep cb-mode"></label>
-				<label style="font-weight: bold">All Items and Folders<input type="radio" name="cb-mode" class="cb-folder cb-mode"></label>
-				<label style="font-weight: bold">Rollable Tables <input type="radio" name="cb-mode" class="cb-tables cb-mode"></label>
+				<label class="bold">Root Only <input type="radio" name="cb-mode" class="cb-shallow cb-mode"></label>
+				<label class="bold">All Items <input type="radio" name="cb-mode" class="cb-deep cb-mode"></label>
+				<label class="bold">All Items and Folders<input type="radio" name="cb-mode" class="cb-folder cb-mode"></label>
+				<label class="bold">Rollable Tables <input type="radio" name="cb-mode" class="cb-tables cb-mode"></label>
 				<hr>
 				<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
 				<div id="delete-list-container">
