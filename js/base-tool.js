@@ -8,7 +8,7 @@ function baseTool () {
 	 * Each tool should have:
 	 *  - `name` List display name.
 	 *  - `desc` List display description.
-	 *  - `mode` Whether it runs in both base and 5eTools mode or base only, values are true for both, false for 5etools only
+	 *  - `mode` Whether it runs in both base and 5eTools mode or base only
 	 *  - `html` The html created when the button is clicked
 	 *  - `dialogFn` Function called to initialize dialog.
 	 *  - `openFn` Function called when tool is opened.
@@ -17,7 +17,7 @@ function baseTool () {
 		{
 			name: "Journal Cleaner",
 			desc: "Quickly select and delete journal items, especially useful for cleaning up loose items after deleting a folder.",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
@@ -139,7 +139,7 @@ function baseTool () {
 		{
 			name: "SVG Draw",
 			desc: "Paste SVG data as text to automatically draw the paths.",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-svgdraw" title="Better20 - SVG Drawing Tool">
 				<p>Paste SVG data as text to automatically draw any included &lt;path&gt;s. Draws to the current layer, in the top-left corner, with no scaling. Takes colour information from &quot;stroke&quot; attributes.</p>
@@ -195,7 +195,7 @@ function baseTool () {
 		{
 			name: "Multi-Whisper",
 			desc: "Send whispers to multiple players ",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-whispers" title="Better20 - Multi-Whisper Tool">
 				<div>
@@ -284,7 +284,7 @@ function baseTool () {
 		{
 			name: "Table Importer Expanded",
 			desc: "Import TableExport data from an expanded list",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-expanded" title="Table Importer Expanded">
 					<div id="table-list-expanded">
@@ -413,7 +413,7 @@ function baseTool () {
 		{
 			name: "Table Importer",
 			desc: "Import TableExport data",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-tables" title="Better20 - Table Importer">
 					<div>
@@ -572,7 +572,7 @@ function baseTool () {
 		{
 			name: "Token Avatar URL Fixer",
 			desc: "Change the root URL for tokens en-masse.",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-avatar-fixer" title="Better20 - Avatar Fixer">
 				<p><b>Warning:</b> this thing doesn't really work.</p>
@@ -662,7 +662,7 @@ function baseTool () {
 		{
 			name: "Mass-Delete Pages",
 			desc: "Quickly delete multiple pages.",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-mass-page-delete" title="Better20 - Mass-Delete Pages">
 					<div id="del-pages-list">
@@ -760,7 +760,7 @@ function baseTool () {
 		{
 			name: "Quantum Token Entangler",
 			desc: "Connect tokens between pages, linking their positions.",
-			mode: true,
+			mode: "base",
 			html: `
 				<div id="d20plus-token-entangle" title="Better20 - Quantum Token Entangler">
 					<p><i>Please note that this feature is highly experimental.
@@ -997,7 +997,7 @@ function baseTool () {
 		{
 			name: "Shapeshifter Token Builder",
 			desc: "Build a rollable table and related token to represent a shapeshifting creature.",
-			mode: false,
+			mode: "5etools",
 			html: `
 				<div id="d20plus-shapeshiftbuild" title="Better20 - Shapeshifter Token Builder">
 					<div id="shapeshiftbuild-list">
@@ -1123,7 +1123,7 @@ function baseTool () {
 		{
 			name: "Wild Shape Builder",
 			desc: "Build a character sheet to represent a character in Wild Shape.",
-			mode: false,
+			mode: "5etools",
 			html: `
 				<div id="d20plus-wildformbuild" title="Better20 - Wild Shape Character Builder">
 					<div id="wildformbuild-list">
@@ -1340,7 +1340,7 @@ function baseTool () {
 		const $tools = $(`#d20-tools-list`);
 		const $toolsList = $tools.find(`.tools-list`);
 		d20plus.tool.tools.sort((a, b) => SortUtil.ascSortLower(a.name || "", b.name || ""))
-			.filter(it => it.mode || d20plus.tool.mode) // This filter checks if the tool should be allowed for the script mode you're running
+			.filter(it => it.mode === "base" || d20plus.tool.mode) // This filter checks if the tool should be allowed for the script mode you're running
 			.forEach(t => {
 			$body.append(t.html); // add HTML
 			try {
