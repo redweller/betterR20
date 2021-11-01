@@ -1121,15 +1121,15 @@ function d20plusMonsters () {
 								});
 							}
 							if (data.variant && d20plus.cfg.getOrDefault("import", "importVariants")) {
-								$.each(data.variant, function (i, v) {
-									let newRowId = d20plus.ut.generateRowId();
+								data.variant.forEach((v, i) => {
+									const newRowId = d20plus.ut.generateRowId();
 									character.attribs.create({
 										name: `repeating_npctrait_${newRowId}_name`,
 										current: d20plus.importer.getCleanText(renderer.render('Variant : '+v.name)),
 									});
 
 									if (d20plus.cfg.getOrDefault("import", "importVariants")) {
-										const offsetIndex = data.spellcasting ? 1 + i : i;
+										offsetIndex = (data.spellcasting?.length || 0)+ i;
 										character.abilities.create({
 											name: `${offsetIndex}: ${v.name}`,
 											istokenaction: true,
@@ -1137,7 +1137,7 @@ function d20plusMonsters () {
 										});
 									}
 
-									let text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
+									const text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
 									character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: text});
 								});
 							}
