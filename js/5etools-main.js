@@ -3860,9 +3860,6 @@ To restore this functionality, press the "Bind Drag-n-Drop" button.<br>
 		},
 	]);
 
-	// Allow the tools menu to show all tools, not just base tools
-	d20plus.tool.mode = true;
-
 	d20plus.initiativeHeaders = `<div class="header init-header">
 <span class="ui-button-text initmacro init-sheet-header"></span>
 <span class="initiative init-init-header" alt="Initiative" title="Initiative">Init</span>
