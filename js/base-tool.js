@@ -749,7 +749,6 @@ function baseTool () {
 		{
 			name: "Quantum Token Entangler",
 			desc: "Connect tokens between pages, linking their positions.",
-			mode: "base",
 			html: `
 				<div id="d20plus-token-entangle" title="Better20 - Quantum Token Entangler">
 					<p><i>Please note that this feature is highly experimental.
@@ -982,7 +981,7 @@ function baseTool () {
 						alert(`${count} entangle${count === 1 ? "" : "s"} cleared.`);
 					});
 			},
-		},		
+		},
 	];
 
 	d20plus.tool.get = (toolId) => {
@@ -993,8 +992,7 @@ function baseTool () {
 		const $body = $(`body`);
 		const $tools = $(`#d20-tools-list`);
 		const $toolsList = $tools.find(`.tools-list`);
-		d20plus.tool.tools.sort((a, b) => SortUtil.ascSortLower(a.name || "", b.name || ""))
-			.forEach(t => {
+		d20plus.tool.tools.sort((a, b) => SortUtil.ascSortLower(a.name || "", b.name || "")).forEach(t => {
 			$body.append(t.html); // add HTML
 			try {
 				t.dialogFn(); // init window
