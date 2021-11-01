@@ -1129,7 +1129,7 @@ function d20plusMonsters () {
 									});
 
 									if (d20plus.cfg.getOrDefault("import", "importVariants")) {
-										offsetIndex = (data.spellcasting?.length || 0)+ i;
+										const offsetIndex = (data.spellcasting?.length || 0)+ i;
 										character.abilities.create({
 											name: `${offsetIndex}: ${v.name}`,
 											istokenaction: true,
