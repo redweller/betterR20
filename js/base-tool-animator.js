@@ -1177,7 +1177,6 @@ function baseToolAnimator () {
 	d20plus.anim.animatorTool = {
 		name: "Token Animator",
 		desc: "Manage token animations",
-		mode: "base",
 		html: `
 			<div id="d20plus-token-animator" title="Better20 - Token Animator" class="anm__win">
 				<div class="split mb-2">

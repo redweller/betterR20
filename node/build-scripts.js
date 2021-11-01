@@ -216,6 +216,7 @@ const SCRIPTS = {
 			"5etools-items",
 			"5etools-feats",
 			"5etools-objects",
+			"5etools-tool",
 
 			"base"
 		]
