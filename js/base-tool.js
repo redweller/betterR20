@@ -134,16 +134,16 @@ function baseTool () {
 
 					function getJournalItems () {
 						// For the root only option
-						if ($cbShallow.prop("checked")) return getRootJournalItems().filter(it => it);
+						if ($cbShallow.prop("checked")) return getRootJournalItems().filter(Boolean);
 
 						// For the all files option
-						if ($cbDeep.prop("checked")) return getAllJournalItems().filter(it => it);
+						if ($cbDeep.prop("checked")) return getAllJournalItems().filter(Boolean);
 
 						// For the all files and folder option
-						if ($cbFolder.prop("checked")) return getFolderJournalItems().filter(it => it);
+						if ($cbFolder.prop("checked")) return getFolderJournalItems().filter(Boolean);
 
 						// For the get rollable tables option
-						if ($cbTables.prop("checked")) return getRollableTables().filter(it => it);
+						if ($cbTables.prop("checked")) return getRollableTables().filter(Boolean);
 					}
 
 					// Allow for deleting tables as well
@@ -179,9 +179,9 @@ function baseTool () {
 							<label class="import-cb-label" data-listid="${i}">
 								<input type="checkbox">
 								<span class="name readable">${it.path ? `${it.path} / ` : ""}${it.name}</span>
-								${it.archived ? "<span class=\"name readable\">(archived)</span>" : ""}
-								${it.table ? "<span class=\"name readable\">(table)</span>" : ""}
-								${it.folder ? "<span class=\"name readable\">(folder)</span>" : ""}
+								${it.archived ? `<span class="name readable">(archived)</span>` : ""}
+								${it.table ? `<span class="name readable">(table)</span>` : ""}
+								${it.folder ? `<span class="name readable">(folder)</span>` : ""}
 							</label>
 						`);
 					});
