@@ -16,7 +16,10 @@ function baseTool () {
 			html: `
 				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
-				<label style="font-weight: bold">Root Only <input type="checkbox" class="cb-deep" checked></label>
+				<label class="bold">Root Only <input type="radio" name="cb-mode" class="cb-shallow cb-mode"></label>
+				<label class="bold">All Items <input type="radio" name="cb-mode" class="cb-deep cb-mode"></label>
+				<label class="bold">All Items and Folders<input type="radio" name="cb-mode" class="cb-folder cb-mode"></label>
+				<label class="bold">Rollable Tables <input type="radio" name="cb-mode" class="cb-tables cb-mode"></label>
 				<hr>
 				<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
 				<div id="delete-list-container">
@@ -37,14 +40,23 @@ function baseTool () {
 			openFn: () => {
 				const $win = $("#d20plus-quickdelete");
 				$win.dialog("open");
+
+				// Create a variable for each box
+				const $cbMode = $win.find(".cb-mode");
+				const $cbShallow = $win.find(`.cb-shallow`);
 				const $cbDeep = $win.find(`.cb-deep`);
+				const $cbTables = $win.find(`.cb-tables`);
+				const $cbFolder = $win.find(`.cb-folder`);
 
 				const $cbAll = $("#deletelist-selectall").unbind("click");
 
 				const $btnDel = $(`#quickdelete-btn-submit`).off("click");
 
-				$cbDeep.off("change").on("change", () => populateList());
+				// When a a different box gets checked, populate the list
+				$cbMode.off("change").on("change", () => populateList());
 
+				// Don't even ask why populateList needs to be called twice
+				$cbShallow.prop("checked", true);
 				populateList();
 
 				function populateList () {
@@ -65,6 +77,36 @@ function baseTool () {
 						return out.map(it => getItemFromId(it.id, it.path.join(" / ")));
 					}
 
+					function getFolderJournalItems () {
+						// Similar to get all Journal Items, but lists folders as well
+						const out = [];
+
+						// Go through the directory structure recursively
+						function recurse (entry, pos, isRoot) {
+							// I property is list of children, only folders have it
+							if (entry.i) {
+								// Add the folder name to the path
+								if (!isRoot) pos.push(entry.n);
+
+								// This adds directory names to out
+								if (!isRoot) out.push({id: entry, path: MiscUtil.copy(pos)});
+
+								// Run through the directory on each of the children
+								entry.i.forEach(nxt => recurse(nxt, pos));
+
+								// Remove the folder from the path when done
+								pos.pop();
+							} 
+							// Only triggers for non-folders, adds non-folders to list
+							else out.push({id: entry, path: MiscUtil.copy(pos)});
+						}
+
+						// Get the directory structure and start traversal through it
+						const root = {i: d20plus.ut.getJournalFolderObj()};
+						recurse(root, [], true);
+						return out.map(it => getItemFromId(it.id, it.path.join(" / ")));
+					}
+
 					function getRootJournalItems () {
 						const rootItems = [];
 						const journal = d20plus.ut.getJournalFolderObj();
@@ -76,20 +118,60 @@ function baseTool () {
 					}
 
 					function getItemFromId (itId, path = "") {
+						// Get handout object, undefined if item is not a handout
 						const handout = d20.Campaign.handouts.get(itId);
 						if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return null; // skip 5etools handouts
+
+						// Get character object, undefined if item is not a character
 						const character = d20.Campaign.characters.get(itId);
+
+						// Return based on which object isn't empty
 						if (handout) return {type: "handouts", id: itId, name: handout.get("name"), path: path, archived: handout.attributes.archived};
 						if (character) return {type: "characters", id: itId, name: character.get("name"), path: path, archived: character.attributes.archived};
+
+						// If both are empty, check if item is a folder and return a folder type
+						if (d20plus.journal.checkDirExistsByPath(path.split(" / "))) return {type: "folder", id: itId, name: "", path:path, archived: false, folder: true}
 					}
 
 					function getJournalItems () {
-						if ($cbDeep.prop("checked")) return getRootJournalItems().filter(it => it);
-						else return getAllJournalItems().filter(it => it);
+						// For the root only option
+						if ($cbShallow.prop("checked")) return getRootJournalItems().filter(Boolean);
+
+						// For the all files option
+						if ($cbDeep.prop("checked")) return getAllJournalItems().filter(Boolean);
+
+						// For the all files and folder option
+						if ($cbFolder.prop("checked")) return getFolderJournalItems().filter(Boolean);
+
+						// For the get rollable tables option
+						if ($cbTables.prop("checked")) return getRollableTables().filter(Boolean);
 					}
 
-					const journalItems = getJournalItems();
+					// Allow for deleting tables as well
+					function getRollableTables() {
+						let tItems = [];
+						if ($cbTables.prop("checked")) {
+							// Get a tableobject from the d20 thing and loop through it
+							const tableObject = d20.Campaign.rollabletables;
+							for (i = 0; i < tableObject.length; i++) {
+								// If it looks confusing, it is. Just trust that I got the objects properly
+								const tAttr = tableObject.at(i).attributes;
+								const tObj = {
+									name: tAttr.name,
+									id: tAttr.id,
+									type: "rollabletables",
+									table: true
+								};
+								tItems.push(tObj);
+							}
+						}
+						return tItems;
+					}
 
+					// Populate different lists based on which box is checked
+					const journalItems = getJournalItems();		
+
+					// Display found items
 					const $delList = $win.find(`.list`);
 					$delList.empty();
 
@@ -98,7 +180,9 @@ function baseTool () {
 							<label class="import-cb-label" data-listid="${i}">
 								<input type="checkbox">
 								<span class="name readable">${it.path ? `${it.path} / ` : ""}${it.name}</span>
-								${it.archived ? "<span class=\"name readable\">(archived)</span>" : ""}
+								${it.archived ? `<span class="name readable">(archived)</span>` : ""}
+								${it.table ? `<span class="name readable">(table)</span>` : ""}
+								${it.folder ? `<span class="name readable">(folder)</span>` : ""}
 							</label>
 						`);
 					});
@@ -123,7 +207,11 @@ function baseTool () {
 							$win.dialog("close");
 							$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 							sel.forEach(toDel => {
-								d20.Campaign[toDel.type].get(toDel.id).destroy();
+								// If the item is a folder, use the folder deletion functon
+								if (toDel.folder) d20plus.journal.removeDirByPath(toDel.path.split(" / "));
+
+								// Otherwise delete through d20 object
+								else d20.Campaign[toDel.type].get(toDel.id).destroy();
 							});
 							$("#journalfolderroot").trigger("change");
 						}
