@@ -457,6 +457,20 @@ Updated
                             <p class='description'>Adds Light to the whole Page, good for a sunny day or well lit room or GMs who don't want to place a bunch of torches. Previously called "Global Illumination".</p>
                         </div>
                     </div>
+                    <div class='row-fluid clearfix daylight_slider_row' style='display: none;'>
+                        <div class='span2' style='float:left'>
+                            <label class='distance'>Brightness</label>
+                        </div>
+                        <div class='span8 dyn_fog_switch' style='float:right'>
+                            <div class='form-group'>
+                                <div class='input-group flex-group'>
+                                    <img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
+                                    <input class='dyn_fog_daylight_slider flex-item' max='1' min='0.05' step='0.05' type='range' value='1'>
+                                    <img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <hr>
                 <div class='update_on_drop_mode'>
