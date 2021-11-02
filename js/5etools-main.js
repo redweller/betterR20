@@ -908,6 +908,7 @@ const betteR205etoolsMain = function () {
 
 			$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
 			$("#mysettings > .content a#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
+			$("#mysettings > .content a#button-monsters-load-file").on(window.mousedowntype, d20plus.monsters.buttonFile);
 			$("#mysettings > .content a#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
 			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 
@@ -3510,10 +3511,11 @@ Errors: <b id="import-errors">0</b>
 <input type="text" id="import-monster-url">
 <p><a class="btn" href="#" id="button-monsters-load">Import Monsters</a></p>
 <p><a class="btn" href="#" id="button-monsters-load-all" title="Standard sources only; no third-party or UA">Import Monsters From All Sources</a></p>
+<p><a class="btn" href="#" id="button-monsters-load-file" title="5eTools JSON formats only">Import Monsters From File</a></p>
 <p>
 WARNING: Importing huge numbers of character sheets slows the game down. We recommend you import them as needed.<br>
 The "Import Monsters From All Sources" button presents a list containing monsters from official sources only.<br>
-To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Monsters."
+To import from third-party sources, either individually select one available in the list, enter a custom URL, or upload a custom file, and "Import Monsters."
 </p>
 </div>
 `;

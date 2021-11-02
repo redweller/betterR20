@@ -221,6 +221,31 @@ function d20plusMonsters () {
 		}
 	};
 
+	d20plus.monsters.buttonFile = async function () {
+		// Get data from file
+		const data = await DataUtil.pUserUpload();
+
+		// Get the relevant information from the JSON
+		const monsterdata = data.jsons[0].monster;
+
+		if (monsterdata) {
+			// Create an import list from the JSON
+			// The only relevant part here is the second argument, the rest is stolen from other showImportList calls
+			d20plus.importer.showImportList(
+				"monster",
+				monsterdata,
+				d20plus.monsters.handoutBuilder,
+				{
+					groupOptions: d20plus.monsters._groupOptions,
+					listItemBuilder: d20plus.monsters._listItemBuilder,
+					listIndex: d20plus.monsters._listCols,
+					listIndexConverter: d20plus.monsters._listIndexConverter,
+					nextStep: d20plus.monsters._doScale,
+				},
+			);
+		}
+	};
+
 	d20plus.monsters.formMonsterUrl = function (fileName) {
 		return d20plus.formSrcUrl(MONSTER_DATA_DIR, fileName);
 	};
