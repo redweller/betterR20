@@ -5,6 +5,7 @@ function baseTool () {
 	 * Each tool should have:
 	 *  - `name` List display name.
 	 *  - `desc` List display description.
+	 *  - `html` The html created when the button is clicked
 	 *  - `dialogFn` Function called to initialize dialog.
 	 *  - `openFn` Function called when tool is opened.
 	 */
