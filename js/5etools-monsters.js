@@ -1145,6 +1145,27 @@ function d20plusMonsters () {
 									character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: text});
 								});
 							}
+							if (data.variant && d20plus.cfg.getOrDefault("import", "importVariants")) {
+								data.variant.forEach((v, i) => {
+									const newRowId = d20plus.ut.generateRowId();
+									character.attribs.create({
+										name: `repeating_npctrait_${newRowId}_name`,
+										current: d20plus.importer.getCleanText(renderer.render('Variant : '+v.name)),
+									});
+
+									if (d20plus.cfg.getOrDefault("import", "importVariants")) {
+										const offsetIndex = (data.spellcasting?.length || 0)+ i;
+										character.abilities.create({
+											name: `${offsetIndex}: ${v.name}`,
+											istokenaction: true,
+											action: d20plus.actionMacroTrait(offsetIndex),
+										});
+									}
+
+									const text = d20plus.importer.getCleanText(renderer.render({entries: v.entries}, 1));
+									character.attribs.create({name: `repeating_npctrait_${newRowId}_desc`, current: text});
+								});
+							}
 							if (data.action) {
 								let offset = 0;
 
