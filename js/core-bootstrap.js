@@ -46,6 +46,7 @@ const betteR20Core = function () {
 				d20plus.jukeboxWidget.init();
 			}
 			d20plus.engine.enhancePathWidths();
+			d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
