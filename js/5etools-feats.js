@@ -83,6 +83,29 @@ function d20plusFeats () {
 
 		return [noteContents, gmNotes];
 	};
+
+	d20plus.feats.importFeat = function (character, data) {
+		const featName = data.name;
+		const featText = data.Vetoolscontent;
+		const attrs = new d20plus.importer.CharacterAttributesProxy(character);
+		const rowId = d20plus.ut.generateRowId();
+
+		if (d20plus.sheet === "ogl") {
+			attrs.add(`repeating_traits_${rowId}_options-flag`, "0");
+			attrs.add(`repeating_traits_${rowId}_name`, featName);
+			attrs.add(`repeating_traits_${rowId}_description`, featText);
+			attrs.add(`repeating_traits_${rowId}_source`, "Feat");
+		} else if (d20plus.sheet === "shaped") {
+			attrs.add(`repeating_feat_${rowId}_name`, featName);
+			attrs.add(`repeating_feat_${rowId}_content`, featText);
+			attrs.add(`repeating_feat_${rowId}_content_toggle`, "1");
+		} else {
+			// eslint-disable-next-line no-console
+			console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
+		}
+
+		attrs.notifySheetWorkers();
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusFeats);

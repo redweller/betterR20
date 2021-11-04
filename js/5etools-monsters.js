@@ -221,8 +221,49 @@ function d20plusMonsters () {
 		}
 	};
 
+	d20plus.monsters.buttonFile = async function () {
+		// Get data from file
+		const data = await DataUtil.pUserUpload();
+
+		// Get the relevant information from the JSON
+		const monsterdata = data.jsons[0].monster;
+
+		if (monsterdata) {
+			// Create an import list from the JSON
+			// The only relevant part here is the second argument, the rest is stolen from other showImportList calls
+			d20plus.importer.showImportList(
+				"monster",
+				monsterdata,
+				d20plus.monsters.handoutBuilder,
+				{
+					groupOptions: d20plus.monsters._groupOptions,
+					listItemBuilder: d20plus.monsters._listItemBuilder,
+					listIndex: d20plus.monsters._listCols,
+					listIndexConverter: d20plus.monsters._listIndexConverter,
+					nextStep: d20plus.monsters._doScale,
+				},
+			);
+		}
+	};
+
 	d20plus.monsters.formMonsterUrl = function (fileName) {
 		return d20plus.formSrcUrl(MONSTER_DATA_DIR, fileName);
+	};
+
+	// Import dialog showing names of monsters failed to import
+	d20plus.monsters.addImportError = function (name) {
+		let $span = $("#import-errors");
+		if ($span.text() === "0") {
+			$span.text(name);
+		} else {
+			$span.text(`${$span.text()}, ${name}`);
+		}
+	};
+
+	// Get NPC size from chr
+	d20plus.monsters.getSizeString = function (chr) {
+		const result = Parser.sizeAbvToFull(chr);
+		return result || "(Unknown Size)";
 	};
 
 	// Create monster character from js data object
@@ -310,7 +351,7 @@ function d20plusMonsters () {
 							let passiveStr = passive !== "" ? `passive Perception ${passive}` : "";
 							let senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : "";
 							let sensesStr = senses !== "" ? `${senses}, ${passiveStr}` : passiveStr;
-							let size = d20plus.getSizeString(data.size || "");
+							let size = d20plus.monsters.getSizeString(data.size || "");
 							let alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
 							let cr = data.cr ? (data.cr.cr || data.cr) : "";
 							let xp = Parser.crToXpNumber(cr) || 0;
@@ -1337,7 +1378,7 @@ function d20plusMonsters () {
 							}
 						} catch (e) {
 							d20plus.ut.log(`Error loading [${name}]`);
-							d20plus.addImportError(name);
+							d20plus.monsters.addImportError(name);
 							// eslint-disable-next-line no-console
 							console.log(data, e);
 						}

@@ -201,8 +201,12 @@
 					]
 				}
 			],
+			"damageInflict": [
+				"radiant",
+				"necrotic",
+				"cold"
+			],
 			"miscTags": [
-				"HL",
 				"SGT"
 			],
 			"classes": {

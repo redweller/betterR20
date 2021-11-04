@@ -11,22 +11,29 @@ function d20plusMod () {
 	d20plus.mod.setMode = function (e) {
 		d20plus.ut.log("Setting mode " + e);
 		// BEGIN MOD
-		// "text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+		// "text" === e || "rect" === e || "ellipse" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
 		// END MOD
 		"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
 			$("#floatingtoolbar li").removeClass("activebutton"),
 			$("#" + e).addClass("activebutton"),
-		"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
-		"rect" == e && ($("#drawingtools").addClass("activebutton"),
-			$("#drawingtools").removeClass("text path polygon line_splitter").addClass("rect")),
-		"text" == e && ($("#drawingtools").addClass("activebutton"),
-			$("#drawingtools").removeClass("rect path polygon line_splitter").addClass("text")),
-		"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon line_splitter").addClass("path"),
-			"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path line_splitter").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+		"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton");
+
+		const drawingTools = ["rect", "ellipse", "text", "path", "polygon", "line_splitter"];
+		if (drawingTools.includes(e)) {
+			if ("ellipse" == e) $('#drawingtools span.subicon').addClass('fas fa-circle');
+			else $('#drawingtools span.subicon').removeClass('fas fa-circle');
+			$("#drawingtools").addClass("activebutton").removeClass("text rect ellipse path polygon line_splitter");
+			"rect" == e && $("#drawingtools").addClass("rect");
+			"ellipse" == e && $("#drawingtools").addClass("ellipse");
+			"text" == e && $("#drawingtools").addClass("activebutton").removeClass("rect ellipse path polygon line_splitter").addClass("text");
+			"path" == e && $("#drawingtools").addClass("path");
+			"polygon" == e && $("#drawingtools").addClass("polygon");
 			// BEGIN MOD (also line_splitter added to above removeClass calls
-		"line_splitter" == e && ($("#drawingtools").addClass("activebutton"),
-			$("#drawingtools").removeClass("rect path polygon text").addClass("line_splitter")),
+			"line_splitter" == e && $("#drawingtools").addClass("line_splitter");
 			// END MOD
+		}
+		"polygon" != e && d20.engine.finishCurrentPolygon();
+
 		"pan" !== e && "select" !== e && d20.engine.unselect(),
 			"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
 				d20.token_editor.removeRadialMenu(),
@@ -51,11 +58,11 @@ function d20plusMod () {
 		}),
 			d20.engine.endMeasure()),
 			d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
-		if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e) {
+		if ("text" == e || "path" == e || "rect" == e || "ellipse" == e || "polygon" == e || "fxtools" == e) {
 			$("#secondary-toolbar").show();
 			$("#secondary-toolbar .mode").hide();
 			$("#secondary-toolbar ." + e).show();
-			("path" == e || "rect" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
+			("path" == e || "rect" == e || "ellipse" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
 				$("#path_fillcolor").val("transparent").trigger("change-silent")),
 				d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
 				d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
@@ -67,6 +74,8 @@ function d20plusMod () {
 			$("#floatingtoolbar").trigger("blur");
 		}
 		// END MOD
+		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
+		d20.engine.redrawScreenNextTick()
 	};
 	// END ROLL20 CODE
 

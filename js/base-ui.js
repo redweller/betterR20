@@ -65,7 +65,6 @@ function baseUi () {
 		$wrpSettings.append(d20plus.settingsHtmlPtFooter);
 
 		$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
-		$("#button-manage-qpi").on(window.mousedowntype, qpi._openManager);
 		d20plus.tool.addTools();
 	};
 

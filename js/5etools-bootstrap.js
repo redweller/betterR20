@@ -64,6 +64,7 @@ const betteR205etools = function () {
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.addLineCutterTool();
 			d20plus.engine.enhancePathWidths();
+			d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
@@ -74,7 +75,7 @@ const betteR205etools = function () {
 			// apply config
 			if (window.is_gm) {
 				d20plus.cfg.baseHandleConfigChange();
-				d20plus.handleConfigChange();
+				d20plus.cfg5e.handleConfigChange();
 			} else {
 				d20plus.cfg.startPlayerConfigHandler();
 			}

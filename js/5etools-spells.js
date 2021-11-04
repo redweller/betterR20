@@ -226,6 +226,32 @@ function d20plusSpells () {
 			default: return 0;
 		}
 	};
+
+	d20plus.spells.importSpells = async function (character, data, event) {
+		const importCriticalData = function () {
+			// give it time to update the sheet
+			setTimeout(() => {
+				const rowID = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name)
+
+				// crit damage
+				if (data.data.Crit && rowID) {
+					d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_dmgcustcrit`, data.data.Crit)
+					const critID = d20plus.importer.findAttrId(character.model, `repeating_attack_${rowID}_rollbase_crit`);
+					const newCrit = character.model.attribs.get(critID).get("current").replace(/{{crit1=\[\[\d\d?d\d\d?]]}}/g, "{{crit1=[[@{dmgcustcrit}]]}}");
+					d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_rollbase_crit`, newCrit)
+				}
+
+				// crit range
+				if (data.data["Crit Range"] && rowID) d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_atkcritrange`, data.data["Crit Range"])
+			}, 1000)
+		}
+
+		// this is working fine for spells.
+		d20plus.importer.doFakeDrop(event, character, data, null);
+
+		// adding critical info that is missing.
+		if (data.data.Crit || data.data["Crit Range"]) importCriticalData()
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusSpells);

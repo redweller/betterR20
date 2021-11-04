@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.26.2
+// @version      1.27.0
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -126,6 +126,18 @@ function baseUtil () {
 		return b < a ? 1 : -1;
 	};
 
+	d20plus.ut.fix3dDice = () => {
+        Object.defineProperty(Array.prototype, 'filter', {
+            enumerable: false,
+            value: Array.prototype.filter
+        });
+
+        Object.defineProperty(Array.prototype, 'map', {
+            enumerable: false,
+            value: Array.prototype.map
+        });
+    };
+	
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
@@ -2016,6 +2028,7 @@ function baseTool () {
 	 * Each tool should have:
 	 *  - `name` List display name.
 	 *  - `desc` List display description.
+	 *  - `html` The html created when the button is clicked
 	 *  - `dialogFn` Function called to initialize dialog.
 	 *  - `openFn` Function called when tool is opened.
 	 */
@@ -2026,7 +2039,10 @@ function baseTool () {
 			html: `
 				<div id="d20plus-quickdelete" title="BetteR20 - Journal Root Cleaner">
 				<p>A list of characters and handouts in the journal folder root, which allows them to be quickly deleted.</p>
-				<label style="font-weight: bold">Root Only <input type="checkbox" class="cb-deep" checked></label>
+				<label class="bold">Root Only <input type="radio" name="cb-mode" class="cb-shallow cb-mode"></label>
+				<label class="bold">All Items <input type="radio" name="cb-mode" class="cb-deep cb-mode"></label>
+				<label class="bold">All Items and Folders<input type="radio" name="cb-mode" class="cb-folder cb-mode"></label>
+				<label class="bold">Rollable Tables <input type="radio" name="cb-mode" class="cb-tables cb-mode"></label>
 				<hr>
 				<p style="display: flex; justify-content: space-between"><label><input type="checkbox" title="Select all" id="deletelist-selectall"> Select All</label> <a class="btn" href="#" id="quickdelete-btn-submit">Delete Selected</a></p>
 				<div id="delete-list-container">
@@ -2047,14 +2063,23 @@ function baseTool () {
 			openFn: () => {
 				const $win = $("#d20plus-quickdelete");
 				$win.dialog("open");
+
+				// Create a variable for each box
+				const $cbMode = $win.find(".cb-mode");
+				const $cbShallow = $win.find(`.cb-shallow`);
 				const $cbDeep = $win.find(`.cb-deep`);
+				const $cbTables = $win.find(`.cb-tables`);
+				const $cbFolder = $win.find(`.cb-folder`);
 
 				const $cbAll = $("#deletelist-selectall").unbind("click");
 
 				const $btnDel = $(`#quickdelete-btn-submit`).off("click");
 
-				$cbDeep.off("change").on("change", () => populateList());
+				// When a a different box gets checked, populate the list
+				$cbMode.off("change").on("change", () => populateList());
 
+				// Don't even ask why populateList needs to be called twice
+				$cbShallow.prop("checked", true);
 				populateList();
 
 				function populateList () {
@@ -2075,6 +2100,36 @@ function baseTool () {
 						return out.map(it => getItemFromId(it.id, it.path.join(" / ")));
 					}
 
+					function getFolderJournalItems () {
+						// Similar to get all Journal Items, but lists folders as well
+						const out = [];
+
+						// Go through the directory structure recursively
+						function recurse (entry, pos, isRoot) {
+							// I property is list of children, only folders have it
+							if (entry.i) {
+								// Add the folder name to the path
+								if (!isRoot) pos.push(entry.n);
+
+								// This adds directory names to out
+								if (!isRoot) out.push({id: entry, path: MiscUtil.copy(pos)});
+
+								// Run through the directory on each of the children
+								entry.i.forEach(nxt => recurse(nxt, pos));
+
+								// Remove the folder from the path when done
+								pos.pop();
+							} 
+							// Only triggers for non-folders, adds non-folders to list
+							else out.push({id: entry, path: MiscUtil.copy(pos)});
+						}
+
+						// Get the directory structure and start traversal through it
+						const root = {i: d20plus.ut.getJournalFolderObj()};
+						recurse(root, [], true);
+						return out.map(it => getItemFromId(it.id, it.path.join(" / ")));
+					}
+
 					function getRootJournalItems () {
 						const rootItems = [];
 						const journal = d20plus.ut.getJournalFolderObj();
@@ -2086,20 +2141,60 @@ function baseTool () {
 					}
 
 					function getItemFromId (itId, path = "") {
+						// Get handout object, undefined if item is not a handout
 						const handout = d20.Campaign.handouts.get(itId);
 						if (handout && (handout.get("name") === CONFIG_HANDOUT || handout.get("name") === ART_HANDOUT)) return null; // skip 5etools handouts
+
+						// Get character object, undefined if item is not a character
 						const character = d20.Campaign.characters.get(itId);
+
+						// Return based on which object isn't empty
 						if (handout) return {type: "handouts", id: itId, name: handout.get("name"), path: path, archived: handout.attributes.archived};
 						if (character) return {type: "characters", id: itId, name: character.get("name"), path: path, archived: character.attributes.archived};
+
+						// If both are empty, check if item is a folder and return a folder type
+						if (d20plus.journal.checkDirExistsByPath(path.split(" / "))) return {type: "folder", id: itId, name: "", path:path, archived: false, folder: true}
 					}
 
 					function getJournalItems () {
-						if ($cbDeep.prop("checked")) return getRootJournalItems().filter(it => it);
-						else return getAllJournalItems().filter(it => it);
+						// For the root only option
+						if ($cbShallow.prop("checked")) return getRootJournalItems().filter(Boolean);
+
+						// For the all files option
+						if ($cbDeep.prop("checked")) return getAllJournalItems().filter(Boolean);
+
+						// For the all files and folder option
+						if ($cbFolder.prop("checked")) return getFolderJournalItems().filter(Boolean);
+
+						// For the get rollable tables option
+						if ($cbTables.prop("checked")) return getRollableTables().filter(Boolean);
 					}
 
-					const journalItems = getJournalItems();
+					// Allow for deleting tables as well
+					function getRollableTables() {
+						let tItems = [];
+						if ($cbTables.prop("checked")) {
+							// Get a tableobject from the d20 thing and loop through it
+							const tableObject = d20.Campaign.rollabletables;
+							for (i = 0; i < tableObject.length; i++) {
+								// If it looks confusing, it is. Just trust that I got the objects properly
+								const tAttr = tableObject.at(i).attributes;
+								const tObj = {
+									name: tAttr.name,
+									id: tAttr.id,
+									type: "rollabletables",
+									table: true
+								};
+								tItems.push(tObj);
+							}
+						}
+						return tItems;
+					}
 
+					// Populate different lists based on which box is checked
+					const journalItems = getJournalItems();		
+
+					// Display found items
 					const $delList = $win.find(`.list`);
 					$delList.empty();
 
@@ -2108,7 +2203,9 @@ function baseTool () {
 							<label class="import-cb-label" data-listid="${i}">
 								<input type="checkbox">
 								<span class="name readable">${it.path ? `${it.path} / ` : ""}${it.name}</span>
-								${it.archived ? "<span class=\"name readable\">(archived)</span>" : ""}
+								${it.archived ? `<span class="name readable">(archived)</span>` : ""}
+								${it.table ? `<span class="name readable">(table)</span>` : ""}
+								${it.folder ? `<span class="name readable">(folder)</span>` : ""}
 							</label>
 						`);
 					});
@@ -2133,7 +2230,11 @@ function baseTool () {
 							$win.dialog("close");
 							$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 							sel.forEach(toDel => {
-								d20.Campaign[toDel.type].get(toDel.id).destroy();
+								// If the item is a folder, use the folder deletion functon
+								if (toDel.folder) d20plus.journal.removeDirByPath(toDel.path.split(" / "));
+
+								// Otherwise delete through d20 object
+								else d20.Campaign[toDel.type].get(toDel.id).destroy();
 							});
 							$("#journalfolderroot").trigger("change");
 						}
@@ -3511,7 +3612,7 @@ function baseToolModule () {
 									<input type="radio" name="map-5etools">
 									<span class="name col-5 readable">${t.name}</span>
 									<span class="version col-1 readable" style="text-align: center;">${t.version || ""}</span>
-									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? MiscUtil.dateToStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
+									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? DatetimeUtil.getDateStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
 									<span class="size col-1 readable" style="text-align: right;">${d20plus.ut.getReadableFileSizeString(t.size)}</span>
 									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
 								</label>
@@ -3570,7 +3671,7 @@ function baseToolModule () {
 									<input type="radio" name="map-5etools">
 									<span class="name col-5 readable">${t.name}</span>
 									<span class="version col-1 readable" style="text-align: center;">${t.version || ""}</span>
-									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? MiscUtil.dateToStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
+									<span class="lat-modified col-2 readable" style="text-align: center;">${t.dateLastModified ? DatetimeUtil.getDateStr(new Date(t.dateLastModified * 1000), true) : ""}</span>
 									<span class="size col-1 readable" style="text-align: right;">${t.size ? d20plus.ut.getReadableFileSizeString(t.size) : ""}</span>
 									<span title="${Parser.sourceJsonToFull(t.id)}" class="source readable" style="text-align: right;">SRC[${Parser.sourceJsonToAbv(t.id)}]</span>
 								</label>
@@ -8258,6 +8359,26 @@ function initCanvasHandlerOverwrite () {
 					h.stroke = $("#path_strokecolor").val(),
 					d20.engine.drawshape.start = [i + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], n + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
 					d20.engine.redrawScreenNextTick()
+			} else if (d20.engine.leftMouseIsDown && "ellipse" == d20.engine.mode) {
+				var u = parseInt($("#path_width").val(), 10)
+					, h = d20.engine.drawshape.shape = {
+					strokewidth: u,
+					x: 0,
+					y: 0,
+					width: 10,
+					height: 10,
+					type: "circle"
+				};
+				s = r,
+					c = a;
+				0 != d20.engine.snapTo && e.shiftKey && (s = d20.engine.snapToIncrement(s, d20.engine.snapTo),
+					c = d20.engine.snapToIncrement(c, d20.engine.snapTo)),
+					h.x = s,
+					h.y = c,
+					h.fill = $("#path_fillcolor").val(),
+					h.stroke = $("#path_strokecolor").val(),
+					d20.engine.drawshape.start = [i + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0], n + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1]],
+					d20.engine.redrawScreenNextTick()
 			} else if (d20.engine.leftMouseIsDown && "polygon" == d20.engine.mode) {
 				if (d20.engine.drawshape.shape) h = d20.engine.drawshape.shape;
 				else {
@@ -8434,7 +8555,7 @@ function initCanvasHandlerOverwrite () {
 				d20.engine.redrawScreenNextTick(!0)
 		}
 
-		const g = ["select", "path", "text", "fxtools", "measure", "fxtools", "rect"];
+		const g = ["select", "path", "text", "fxtools", "measure", "rect", "ellipse"];
 		d20.engine.rightMouseIsDown && g.includes(d20.engine.mode) || d20.engine.leftMouseIsDown && "pan" === d20.engine.mode ? (d20.engine.pan.beginPos = [wrp.scrollLeft(), wrp.scrollTop()],
 			d20.engine.pan.panXY = [i, n],
 			d20.engine.pan.panning = !0,
@@ -8564,6 +8685,15 @@ function initCanvasHandlerOverwrite () {
 					u.width = s,
 						u.height = c,
 						d20.engine.redrawScreenNextTick()
+				} else if (d20.engine.leftMouseIsDown && "ellipse" == d20.engine.mode) {
+					var s = (t + d20.engine.currentCanvasOffset[0] - d20.engine.paddingOffset[0] - d20.engine.drawshape.start[0]) / d20.engine.canvasZoom
+						, c = (i + d20.engine.currentCanvasOffset[1] - d20.engine.paddingOffset[1] - d20.engine.drawshape.start[1]) / d20.engine.canvasZoom;
+					0 != d20.engine.snapTo && e.shiftKey && (s = d20.engine.snapToIncrement(s, d20.engine.snapTo),
+						c = d20.engine.snapToIncrement(c, d20.engine.snapTo));
+					var u = d20.engine.drawshape.shape;
+					u.width = s,
+						u.height = c,
+						d20.engine.redrawScreenNextTick()
 				}
 			} else
 				d20.engine.fog.down[2] = n,
@@ -8615,13 +8745,18 @@ function d20plusEngine () {
 		// rebind buttons with new setMode
 		const $drawTools = $("#drawingtools");
 		const $rect = $drawTools.find(".chooserect");
+		const $ellipse = $drawTools.find(".choosecircle");
 		const $path = $drawTools.find(".choosepath");
 		const $poly = $drawTools.find(".choosepolygon");
 		$drawTools.unbind(clicktype).bind(clicktype, function () {
-			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
+			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("ellipse") ? setMode("ellipse") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
 		});
 		$rect.unbind(clicktype).bind(clicktype, () => {
 			setMode("rect");
+			return false;
+		});
+		$ellipse.unbind(clicktype).bind(clicktype, () => {
+			setMode("ellipse");
 			return false;
 		});
 		$path.unbind(clicktype).bind(clicktype, () => {
@@ -8633,6 +8768,7 @@ function d20plusEngine () {
 			return false;
 		});
 		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
+		$("#ellipse").unbind(clicktype).bind(clicktype, () => setMode("ellipse"));
 		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
 
 		if (!$(`#fxtools`).length) {
@@ -10784,6 +10920,7 @@ function d20plusJournal () {
 
 	/**
 	 * Takes a path made up of strings and arrays of strings, and turns it into one flat array of strings
+	 * Note that paths must be of the form ["folder", "subfolder", "subsubfolder", etc]
 	 */
 	d20plus.journal.getCleanPath = function (...path) {
 		const clean = [];
@@ -10905,6 +11042,7 @@ function d20plusJournal () {
 				return it.n && it.n === p;
 			});
 			if (!existing) return false;
+			if (!doDelete) return true;
 			curDir = existing;
 			if (i === parts.length - 1) {
 				d20plus.journal.recursiveRemoveDirById(lastId, false);
@@ -12053,7 +12191,6 @@ function baseUi () {
 		$wrpSettings.append(d20plus.settingsHtmlPtFooter);
 
 		$("#mysettings > .content a#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
-		$("#button-manage-qpi").on(window.mousedowntype, qpi._openManager);
 		d20plus.tool.addTools();
 	};
 
@@ -12229,22 +12366,29 @@ function d20plusMod () {
 	d20plus.mod.setMode = function (e) {
 		d20plus.ut.log("Setting mode " + e);
 		// BEGIN MOD
-		// "text" === e || "rect" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+		// "text" === e || "rect" === e || "ellipse" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
 		// END MOD
 		"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
 			$("#floatingtoolbar li").removeClass("activebutton"),
 			$("#" + e).addClass("activebutton"),
-		"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton"),
-		"rect" == e && ($("#drawingtools").addClass("activebutton"),
-			$("#drawingtools").removeClass("text path polygon line_splitter").addClass("rect")),
-		"text" == e && ($("#drawingtools").addClass("activebutton"),
-			$("#drawingtools").removeClass("rect path polygon line_splitter").addClass("text")),
-		"path" == e && $("#drawingtools").addClass("activebutton").removeClass("text rect polygon line_splitter").addClass("path"),
-			"polygon" == e ? $("#drawingtools").addClass("activebutton").removeClass("text rect path line_splitter").addClass("polygon") : d20.engine.finishCurrentPolygon(),
+		"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton");
+
+		const drawingTools = ["rect", "ellipse", "text", "path", "polygon", "line_splitter"];
+		if (drawingTools.includes(e)) {
+			if ("ellipse" == e) $('#drawingtools span.subicon').addClass('fas fa-circle');
+			else $('#drawingtools span.subicon').removeClass('fas fa-circle');
+			$("#drawingtools").addClass("activebutton").removeClass("text rect ellipse path polygon line_splitter");
+			"rect" == e && $("#drawingtools").addClass("rect");
+			"ellipse" == e && $("#drawingtools").addClass("ellipse");
+			"text" == e && $("#drawingtools").addClass("activebutton").removeClass("rect ellipse path polygon line_splitter").addClass("text");
+			"path" == e && $("#drawingtools").addClass("path");
+			"polygon" == e && $("#drawingtools").addClass("polygon");
 			// BEGIN MOD (also line_splitter added to above removeClass calls
-		"line_splitter" == e && ($("#drawingtools").addClass("activebutton"),
-			$("#drawingtools").removeClass("rect path polygon text").addClass("line_splitter")),
+			"line_splitter" == e && $("#drawingtools").addClass("line_splitter");
 			// END MOD
+		}
+		"polygon" != e && d20.engine.finishCurrentPolygon();
+
 		"pan" !== e && "select" !== e && d20.engine.unselect(),
 			"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
 				d20.token_editor.removeRadialMenu(),
@@ -12269,11 +12413,11 @@ function d20plusMod () {
 		}),
 			d20.engine.endMeasure()),
 			d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
-		if ("text" == e || "path" == e || "rect" == e || "polygon" == e || "fxtools" == e) {
+		if ("text" == e || "path" == e || "rect" == e || "ellipse" == e || "polygon" == e || "fxtools" == e) {
 			$("#secondary-toolbar").show();
 			$("#secondary-toolbar .mode").hide();
 			$("#secondary-toolbar ." + e).show();
-			("path" == e || "rect" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
+			("path" == e || "rect" == e || "ellipse" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
 				$("#path_fillcolor").val("transparent").trigger("change-silent")),
 				d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
 				d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
@@ -12285,6 +12429,8 @@ function d20plusMod () {
 			$("#floatingtoolbar").trigger("blur");
 		}
 		// END MOD
+		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
+		d20.engine.redrawScreenNextTick()
 	};
 	// END ROLL20 CODE
 
@@ -14341,6 +14487,20 @@ Updated
                             <p class='description'>Adds Light to the whole Page, good for a sunny day or well lit room or GMs who don't want to place a bunch of torches. Previously called "Global Illumination".</p>
                         </div>
                     </div>
+                    <div class='row-fluid clearfix daylight_slider_row' style='display: none;'>
+                        <div class='span2' style='float:left'>
+                            <label class='distance'>Brightness</label>
+                        </div>
+                        <div class='span8 dyn_fog_switch' style='float:right'>
+                            <div class='form-group'>
+                                <div class='input-group flex-group'>
+                                    <img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
+                                    <input class='dyn_fog_daylight_slider flex-item' max='1' min='0.05' step='0.05' type='range' value='1'>
+                                    <img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <hr>
                 <div class='update_on_drop_mode'>
@@ -14409,12 +14569,11 @@ const baseTemplate = function () {
 	d20plus.settingsHtmlPtFooter = `<p>
 			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
-			<p>
-			For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
+      <p>
+			<a class="btn btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; width: calc(100% - 22px);">Open Tools List</a>
 			</p>
 			<p>
-			<a class="btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; margin-right: 7px;">Open Tools List</a>
-			<a class="btn" href="#" id="button-manage-qpi" style="margin-top: 3px;" title="It's like the Roll20 API, but even less useful">Manage QPI Scripts</a>
+			For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
 			</p>
 			<style id="dynamicStyle"></style>
 		`;
@@ -16629,6 +16788,7 @@ const betteR20Core = function () {
 				d20plus.jukeboxWidget.init();
 			}
 			d20plus.engine.enhancePathWidths();
+			d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
@@ -18535,7 +18695,8 @@ Parser.weightToFull = function (lbs, isSmallUnit) {
 	].filter(Boolean).join(", ");
 };
 
-Parser.ITEM_RARITIES = ["none", "common", "uncommon", "rare", "very rare", "legendary", "artifact", "unknown", "unknown (magic)", "other"];
+Parser.RARITIES = ["common", "uncommon", "rare", "very rare", "legendary", "artifact"];
+Parser.ITEM_RARITIES = ["none", ...Parser.RARITIES, "unknown", "unknown (magic)", "other"];
 
 Parser.CAT_ID_CREATURE = 1;
 Parser.CAT_ID_SPELL = 2;
@@ -19166,6 +19327,7 @@ SRC_RoTOS = "RoTOS";
 SRC_SCAG = "SCAG";
 SRC_SKT = "SKT";
 SRC_ToA = "ToA";
+SRC_TLK = "TLK";
 SRC_ToD = "ToD";
 SRC_TTP = "TTP";
 SRC_TYP = "TftYP";
@@ -19185,6 +19347,7 @@ SRC_WDMM = "WDMM";
 SRC_GGR = "GGR";
 SRC_KKW = "KKW";
 SRC_LLK = "LLK";
+SRC_AZfyT = "AZfyT";
 SRC_GoS = "GoS";
 SRC_AI = "AI";
 SRC_OoW = "OoW";
@@ -19216,6 +19379,9 @@ SRC_IDRotF = "IDRotF";
 SRC_TCE = "TCE";
 SRC_VRGR = "VRGR";
 SRC_HoL = "HoL";
+SRC_XMtS = "XMtS";
+SRC_RtG = "RtG";
+SRC_AitFR = "AitFR";
 SRC_AitFR_ISF = "AitFR-ISF";
 SRC_AitFR_THP = "AitFR-THP";
 SRC_AitFR_AVT = "AitFR-AVT";
@@ -19223,6 +19389,8 @@ SRC_AitFR_DN = "AitFR-DN";
 SRC_AitFR_FCD = "AitFR-FCD";
 SRC_WBtW = "WBtW";
 SRC_DoD = "DoD";
+SRC_MaBJoV = "MaBJoV";
+SRC_FTD = "FTD";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_HEROES_FEAST = "HF";
@@ -19343,6 +19511,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_RoTOS] = "The Rise of Tiamat Online Supplement";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCAG] = "Sword Coast Adventurer's Guide";
 Parser.SOURCE_JSON_TO_FULL[SRC_SKT] = "Storm King's Thunder";
 Parser.SOURCE_JSON_TO_FULL[SRC_ToA] = "Tomb of Annihilation";
+Parser.SOURCE_JSON_TO_FULL[SRC_TLK] = "The Lost Kenku";
 Parser.SOURCE_JSON_TO_FULL[SRC_ToD] = "Tyranny of Dragons";
 Parser.SOURCE_JSON_TO_FULL[SRC_TTP] = "The Tortle Package";
 Parser.SOURCE_JSON_TO_FULL[SRC_TYP] = TftYP_NAME;
@@ -19362,6 +19531,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_WDMM] = "Waterdeep: Dungeon of the Mad Mage";
 Parser.SOURCE_JSON_TO_FULL[SRC_GGR] = "Guildmasters' Guide to Ravnica";
 Parser.SOURCE_JSON_TO_FULL[SRC_KKW] = "Krenko's Way";
 Parser.SOURCE_JSON_TO_FULL[SRC_LLK] = "Lost Laboratory of Kwalish";
+Parser.SOURCE_JSON_TO_FULL[SRC_AZfyT] = "A Zib for your Thoughts";
 Parser.SOURCE_JSON_TO_FULL[SRC_GoS] = "Ghosts of Saltmarsh";
 Parser.SOURCE_JSON_TO_FULL[SRC_AI] = "Acquisitions Incorporated";
 Parser.SOURCE_JSON_TO_FULL[SRC_OoW] = "The Orrery of the Wanderer";
@@ -19393,6 +19563,8 @@ Parser.SOURCE_JSON_TO_FULL[SRC_IDRotF] = "Icewind Dale: Rime of the Frostmaiden"
 Parser.SOURCE_JSON_TO_FULL[SRC_TCE] = "Tasha's Cauldron of Everything";
 Parser.SOURCE_JSON_TO_FULL[SRC_VRGR] = "Van Richten's Guide to Ravenloft";
 Parser.SOURCE_JSON_TO_FULL[SRC_HoL] = "The House of Lament";
+Parser.SOURCE_JSON_TO_FULL[SRC_RtG] = "Return to Glory";
+Parser.SOURCE_JSON_TO_FULL[SRC_AitFR] = AitFR_NAME;
 Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_ISF] = `${AitFR_NAME}: In Scarlet Flames`;
 Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_THP] = `${AitFR_NAME}: The Hidden Page`;
 Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_AVT] = `${AitFR_NAME}: A Verdant Tomb`;
@@ -19400,6 +19572,8 @@ Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_DN] = `${AitFR_NAME}: Deepest Night`;
 Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_FCD] = `${AitFR_NAME}: From Cyan Depths`;
 Parser.SOURCE_JSON_TO_FULL[SRC_WBtW] = `The Wild Beyond the Witchlight`;
 Parser.SOURCE_JSON_TO_FULL[SRC_DoD] = `Domains of Delight`;
+Parser.SOURCE_JSON_TO_FULL[SRC_MaBJoV] = `Minsc and Boo's Journal of Villainy`;
+Parser.SOURCE_JSON_TO_FULL[SRC_FTD] = `Fizban's Treasury of Dragons`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_HEROES_FEAST] = "Heroes' Feast";
@@ -19413,6 +19587,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_PSK] = `${PS_PREFIX}Kaladesh`;
 Parser.SOURCE_JSON_TO_FULL[SRC_PSZ] = `${PS_PREFIX}Zendikar`;
 Parser.SOURCE_JSON_TO_FULL[SRC_PSX] = `${PS_PREFIX}Ixalan`;
 Parser.SOURCE_JSON_TO_FULL[SRC_PSD] = `${PS_PREFIX}Dominaria`;
+Parser.SOURCE_JSON_TO_FULL[SRC_XMtS] = `X Marks the Spot`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UAA] = `${UA_PREFIX}Artificer`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UAEAG] = `${UA_PREFIX}Eladrin and Gith`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UAEBB] = `${UA_PREFIX}Eberron`;
@@ -19500,6 +19675,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_RoTOS] = "RoTOS";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCAG] = "SCAG";
 Parser.SOURCE_JSON_TO_ABV[SRC_SKT] = "SKT";
 Parser.SOURCE_JSON_TO_ABV[SRC_ToA] = "ToA";
+Parser.SOURCE_JSON_TO_ABV[SRC_TLK] = "TLK";
 Parser.SOURCE_JSON_TO_ABV[SRC_ToD] = "ToD";
 Parser.SOURCE_JSON_TO_ABV[SRC_TTP] = "TTP";
 Parser.SOURCE_JSON_TO_ABV[SRC_TYP] = "TftYP";
@@ -19519,6 +19695,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_WDMM] = "WDMM";
 Parser.SOURCE_JSON_TO_ABV[SRC_GGR] = "GGR";
 Parser.SOURCE_JSON_TO_ABV[SRC_KKW] = "KKW";
 Parser.SOURCE_JSON_TO_ABV[SRC_LLK] = "LLK";
+Parser.SOURCE_JSON_TO_ABV[SRC_AZfyT] = "AZfyT";
 Parser.SOURCE_JSON_TO_ABV[SRC_GoS] = "GoS";
 Parser.SOURCE_JSON_TO_ABV[SRC_AI] = "AI";
 Parser.SOURCE_JSON_TO_ABV[SRC_OoW] = "OoW";
@@ -19550,6 +19727,8 @@ Parser.SOURCE_JSON_TO_ABV[SRC_IDRotF] = "IDRotF";
 Parser.SOURCE_JSON_TO_ABV[SRC_TCE] = "TCE";
 Parser.SOURCE_JSON_TO_ABV[SRC_VRGR] = "VRGR";
 Parser.SOURCE_JSON_TO_ABV[SRC_HoL] = "HoL";
+Parser.SOURCE_JSON_TO_ABV[SRC_RtG] = "RtG";
+Parser.SOURCE_JSON_TO_ABV[SRC_AitFR] = "AitFR";
 Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_ISF] = "AitFR-ISF";
 Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_THP] = "AitFR-THP";
 Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_AVT] = "AitFR-AVT";
@@ -19557,6 +19736,8 @@ Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_DN] = "AitFR-DN";
 Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_FCD] = "AitFR-FCD";
 Parser.SOURCE_JSON_TO_ABV[SRC_WBtW] = "WBtW";
 Parser.SOURCE_JSON_TO_ABV[SRC_DoD] = "DoD";
+Parser.SOURCE_JSON_TO_ABV[SRC_MaBJoV] = "MaBJoV";
+Parser.SOURCE_JSON_TO_ABV[SRC_FTD] = "FTD";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "Wild";
 Parser.SOURCE_JSON_TO_ABV[SRC_HEROES_FEAST] = "HF";
@@ -19570,6 +19751,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_PSK] = "PSK";
 Parser.SOURCE_JSON_TO_ABV[SRC_PSZ] = "PSZ";
 Parser.SOURCE_JSON_TO_ABV[SRC_PSX] = "PSX";
 Parser.SOURCE_JSON_TO_ABV[SRC_PSD] = "PSD";
+Parser.SOURCE_JSON_TO_ABV[SRC_XMtS] = "XMtS";
 Parser.SOURCE_JSON_TO_ABV[SRC_UAA] = "UAA";
 Parser.SOURCE_JSON_TO_ABV[SRC_UAEAG] = "UAEaG";
 Parser.SOURCE_JSON_TO_ABV[SRC_UAEBB] = "UAEB";
@@ -19657,6 +19839,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_RoTOS] = "2014-11-04";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCAG] = "2015-11-03";
 Parser.SOURCE_JSON_TO_DATE[SRC_SKT] = "2016-09-06";
 Parser.SOURCE_JSON_TO_DATE[SRC_ToA] = "2017-09-19";
+Parser.SOURCE_JSON_TO_DATE[SRC_TLK] = "2017-11-28";
 Parser.SOURCE_JSON_TO_DATE[SRC_ToD] = "2019-10-22";
 Parser.SOURCE_JSON_TO_DATE[SRC_TTP] = "2017-09-19";
 Parser.SOURCE_JSON_TO_DATE[SRC_TYP] = "2017-04-04";
@@ -19676,6 +19859,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_WDMM] = "2018-11-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_GGR] = "2018-11-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_KKW] = "2018-11-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_LLK] = "2018-11-10";
+Parser.SOURCE_JSON_TO_DATE[SRC_AZfyT] = "2019-03-05";
 Parser.SOURCE_JSON_TO_DATE[SRC_GoS] = "2019-05-21";
 Parser.SOURCE_JSON_TO_DATE[SRC_AI] = "2019-06-18";
 Parser.SOURCE_JSON_TO_DATE[SRC_OoW] = "2019-06-18";
@@ -19706,6 +19890,8 @@ Parser.SOURCE_JSON_TO_DATE[SRC_IDRotF] = "2020-09-15";
 Parser.SOURCE_JSON_TO_DATE[SRC_TCE] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_VRGR] = "2021-05-18";
 Parser.SOURCE_JSON_TO_DATE[SRC_HoL] = "2021-05-18";
+Parser.SOURCE_JSON_TO_DATE[SRC_RtG] = "2021-05-21";
+Parser.SOURCE_JSON_TO_DATE[SRC_AitFR] = "2021-06-30";
 Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_ISF] = "2021-06-30";
 Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_THP] = "2021-07-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_AVT] = "2021-07-14";
@@ -19713,6 +19899,8 @@ Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_DN] = "2021-07-21";
 Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_FCD] = "2021-07-28";
 Parser.SOURCE_JSON_TO_DATE[SRC_WBtW] = "2021-09-21";
 Parser.SOURCE_JSON_TO_DATE[SRC_DoD] = "2021-09-21";
+Parser.SOURCE_JSON_TO_DATE[SRC_MaBJoV] = "2021-10-05";
+Parser.SOURCE_JSON_TO_DATE[SRC_FTD] = "2021-11-26";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_HEROES_FEAST] = "2020-10-27";
@@ -19726,6 +19914,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_PSK] = "2017-02-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_PSZ] = "2016-04-27";
 Parser.SOURCE_JSON_TO_DATE[SRC_PSX] = "2018-01-09";
 Parser.SOURCE_JSON_TO_DATE[SRC_PSD] = "2018-07-31";
+Parser.SOURCE_JSON_TO_DATE[SRC_XMtS] = "2017-12-11";
 Parser.SOURCE_JSON_TO_DATE[SRC_UAEBB] = "2015-02-02";
 Parser.SOURCE_JSON_TO_DATE[SRC_UAA] = "2017-01-09";
 Parser.SOURCE_JSON_TO_DATE[SRC_UAEAG] = "2017-09-11";
@@ -19815,11 +20004,13 @@ Parser.SOURCES_ADVENTURES = new Set([
 	SRC_TYP_ToH,
 	SRC_TYP_WPM,
 	SRC_ToA,
+	SRC_TLK,
 	SRC_TTP,
 	SRC_WDH,
 	SRC_LLK,
 	SRC_WDMM,
 	SRC_KKW,
+	SRC_AZfyT,
 	SRC_GoS,
 	SRC_HftT,
 	SRC_OoW,
@@ -19839,6 +20030,9 @@ Parser.SOURCES_ADVENTURES = new Set([
 	SRC_IDRotF,
 	SRC_CM,
 	SRC_HoL,
+	SRC_XMtS,
+	SRC_RtG,
+	SRC_AitFR,
 	SRC_AitFR_ISF,
 	SRC_AitFR_THP,
 	SRC_AitFR_AVT,
@@ -19852,18 +20046,24 @@ Parser.SOURCES_CORE_SUPPLEMENTS = new Set(Object.keys(Parser.SOURCE_JSON_TO_FULL
 Parser.SOURCES_NON_STANDARD_WOTC = new Set([
 	SRC_OGA,
 	SRC_LLK,
+	SRC_AZfyT,
 	SRC_LR,
+	SRC_TLK,
 	SRC_TTP,
 	SRC_AWM,
 	SRC_IMR,
 	SRC_SADS,
 	SRC_MFF,
+	SRC_XMtS,
+	SRC_RtG,
+	SRC_AitFR,
 	SRC_AitFR_ISF,
 	SRC_AitFR_THP,
 	SRC_AitFR_AVT,
 	SRC_AitFR_DN,
 	SRC_AitFR_FCD,
 	SRC_DoD,
+	SRC_MaBJoV,
 ]);
 // region Source categories
 
@@ -19881,6 +20081,7 @@ Parser.SOURCES_VANILLA = new Set([
 	SRC_MFF,
 	SRC_SADS,
 	SRC_TCE,
+	SRC_FTD,
 	SRC_SCREEN,
 	SRC_SCREEN_WILDERNESS_KIT,
 ]);
@@ -19907,6 +20108,8 @@ Parser.SOURCES_NON_FR = new Set([
 	SRC_EGW_FS,
 	SRC_EGW_US,
 	SRC_MOT,
+	SRC_XMtS,
+	SRC_AZfyT,
 ]);
 
 // endregion
@@ -19917,6 +20120,7 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	SRC_DMG,
 	SRC_SCAG,
 	SRC_VGM,
+	SRC_OGA,
 	SRC_XGE,
 	SRC_MTF,
 	SRC_GGR,
@@ -19928,6 +20132,8 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	SRC_TCE,
 	SRC_VRGR,
 	SRC_DoD,
+	SRC_MaBJoV,
+	SRC_FTD,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src.toLowerCase()] = src;
@@ -19949,11 +20155,13 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	SRC_TYP_ToH,
 	SRC_TYP_WPM,
 	SRC_ToA,
+	SRC_TLK,
 	SRC_TTP,
 	SRC_WDH,
 	SRC_LLK,
 	SRC_WDMM,
 	SRC_KKW,
+	SRC_AZfyT,
 	SRC_GoS,
 	SRC_HftT,
 	SRC_OoW,
@@ -19973,6 +20181,8 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	SRC_IDRotF,
 	SRC_CM,
 	SRC_HoL,
+	SRC_XMtS,
+	SRC_RtG,
 	SRC_AitFR_ISF,
 	SRC_AitFR_THP,
 	SRC_AitFR_AVT,
@@ -20178,7 +20388,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.139.0"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.141.2"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -21374,15 +21584,6 @@ MiscUtil = {
 				} else errInvalid();
 			} else return null;
 		}
-	},
-
-	MONTH_NAMES: [
-		"January", "February", "March", "April", "May", "June",
-		"July", "August", "September", "October", "November", "December",
-	],
-	dateToStr (date, short) {
-		const month = MiscUtil.MONTH_NAMES[date.getMonth()];
-		return `${short ? month.substring(0, 3) : month} ${Parser.getOrdinalForm(date.getDate())}, ${date.getFullYear()}`;
 	},
 
 	findCommonPrefix (strArr) {
@@ -22589,6 +22790,7 @@ SortUtil = {
 
 	ascSortAdventure (a, b) {
 		return SortUtil.ascSortDateString(b.published, a.published)
+			|| SortUtil.ascSortLower(a.parentSource || "", b.parentSource || "")
 			|| SortUtil.ascSortLower(a.storyline, b.storyline)
 			|| SortUtil.ascSort(a.level?.start ?? 20, b.level?.start ?? 20)
 			|| SortUtil.ascSortLower(a.name, b.name);
@@ -22596,6 +22798,7 @@ SortUtil = {
 
 	ascSortBook (a, b) {
 		return SortUtil.ascSortDateString(b.published, a.published)
+			|| SortUtil.ascSortLower(a.parentSource || "", b.parentSource || "")
 			|| SortUtil.ascSortLower(a.name, b.name);
 	},
 
@@ -24928,8 +25131,8 @@ BrewUtil = {
 			it._brewInternalSources = (nameIndex[it.name]) || [];
 			it._brewCat = BrewUtil._pRenderBrewScreen_getDisplayCat(BrewUtil.dirToProp(it._cat));
 
-			const timestampAdded = it._brewAdded ? MiscUtil.dateToStr(new Date(it._brewAdded * 1000), true) : "";
-			const timestampModified = it._brewModified ? MiscUtil.dateToStr(new Date(it._brewModified * 1000), true) : "";
+			const timestampAdded = it._brewAdded ? DatetimeUtil.getDateStr(new Date(it._brewAdded * 1000), true) : "";
+			const timestampModified = it._brewModified ? DatetimeUtil.getDateStr(new Date(it._brewModified * 1000), true) : "";
 
 			const $btnAdd = $(`<span class="col-4 bold manbrew__load_from_url pl-0 clickable"></span>`)
 				.text(it._brewName)
@@ -26950,6 +27153,8 @@ ExtensionUtil = {
 	},
 
 	doSendRoll (data) { ExtensionUtil._doSend("roll", data); },
+
+	pDoSend ({type, data}) { ExtensionUtil._doSend(type, data); },
 };
 if (typeof window !== "undefined") window.addEventListener("rivet.active", () => ExtensionUtil.ACTIVE = true);
 
@@ -26988,6 +27193,66 @@ VeLock = function () {
 	};
 }
 BrewUtil._lockHandleBrewJson = new VeLock();
+
+// DATETIME ============================================================================================================
+DatetimeUtil = {
+	getDateStr (date, short) {
+		const month = DatetimeUtil._MONTHS[date.getMonth()];
+		return `${short ? month.substring(0, 3) : month} ${Parser.getOrdinalForm(date.getDate())}, ${date.getFullYear()}`;
+	},
+
+	getDatetimeStr ({date, isPlainText = false} = {}) {
+		date = date ?? new Date();
+		const monthName = DatetimeUtil._MONTHS[date.getMonth()];
+		return `${date.getDate()} ${!isPlainText ? `<span title="${monthName}">` : ""}${monthName.substring(0, 3)}.${!isPlainText ? `</span>` : ""} ${date.getFullYear()}, ${DatetimeUtil._getPad2(date.getHours())}:${DatetimeUtil._getPad2(date.getMinutes())}:${DatetimeUtil._getPad2(date.getSeconds())}`;
+	},
+
+	_getPad2 (num) { return `${num}`.padStart(2, "0"); },
+
+	getIntervalStr (millis) {
+		if (millis < 0 || isNaN(millis)) return "(Unknown interval)";
+
+		const s = number => (number !== 1) ? "s" : "";
+
+		const stack = [];
+
+		let numSecs = Math.floor(millis / 1000);
+
+		const numYears = Math.floor(numSecs / DatetimeUtil._SECS_PER_YEAR);
+		if (numYears) {
+			stack.push(`${numYears} year${s(numYears)}`);
+			numSecs = numSecs - (numYears * DatetimeUtil._SECS_PER_YEAR);
+		}
+
+		const numDays = Math.floor(numSecs / DatetimeUtil._SECS_PER_DAY);
+		if (numDays) {
+			stack.push(`${numDays} day${s(numDays)}`);
+			numSecs = numSecs - (numDays * DatetimeUtil._SECS_PER_DAY);
+		}
+
+		const numHours = Math.floor(numSecs / DatetimeUtil._SECS_PER_HOUR);
+		if (numHours) {
+			stack.push(`${numHours} hour${s(numHours)}`);
+			numSecs = numSecs - (numHours * DatetimeUtil._SECS_PER_HOUR);
+		}
+
+		const numMinutes = Math.floor(numSecs / DatetimeUtil._SECS_PER_MINUTE);
+		if (numMinutes) {
+			stack.push(`${numMinutes} minute${s(numMinutes)}`);
+			numSecs = numSecs - (numMinutes * DatetimeUtil._SECS_PER_MINUTE);
+		}
+
+		if (numSecs) stack.push(`${numSecs} second${s(numSecs)}`);
+		else if (!stack.length) stack.push("less than a second"); // avoid adding this if there's already info
+
+		return stack.join(", ");
+	},
+}
+DatetimeUtil._MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+DatetimeUtil._SECS_PER_YEAR = 31536000;
+DatetimeUtil._SECS_PER_DAY = 86400;
+DatetimeUtil._SECS_PER_HOUR = 3600;
+DatetimeUtil._SECS_PER_MINUTE = 60;
 
 // MISC WEBPAGE ONLOADS ================================================================================================
 if (!IS_VTT && typeof window !== "undefined") {
@@ -29340,15 +29605,32 @@ class InputUiUtil {
 	 * @param [opts.autocomplete] Array of autocomplete strings. REQUIRES INCLUSION OF THE TYPEAHEAD LIBRARY.
 	 * @param [opts.isCode] If the text is code.
 	 * @param [opts.isSkippable] If the prompt is skippable.
+	 * @param [opts.fnIsValid] A function which checks if the current input is valid, and prevents the user from
+	 *        submitting the value if it is.
+	 * @param [opts.$elePost] Element to add below the input.
+	 * @param [opts.cbPostRender] Callback to call after rendering the modal
 	 * @return {Promise<String>} A promise which resolves to the string if the user entered one, or null otherwise.
 	 */
 	static pGetUserString (opts) {
 		opts = opts || {};
+
+		const propValue = "text";
+		const comp = BaseComponent.fromObject({
+			[propValue]: opts.default || "",
+			isValid: true,
+		});
+
 		return new Promise(resolve => {
-			const $iptStr = $(`<input class="form-control mb-2" type="text">`)
-				.val(opts.default)
+			const $iptStr = ComponentUiUtil.$getIptStr(
+				comp,
+				propValue,
+				{
+					html: `<input class="form-control mb-2" type="text">`,
+					autocomplete: opts.autocomplete,
+				},
+			)
 				.keydown(async evt => {
-					if (evt.key === "Escape") { $iptStr.blur(); return; }
+					if (evt.key === "Escape") return; // Already handled
 
 					if (opts.autocomplete) {
 						// prevent double-binding the return key if we have autocomplete enabled
@@ -29356,13 +29638,26 @@ class InputUiUtil {
 						if ($modalInner.find(`.typeahead.dropdown-menu`).is(":visible")) return;
 					}
 					// return key
-					if (evt.which === 13) doClose(true);
+					if (evt.key === "Enter") doClose(true);
 					evt.stopPropagation();
 				});
 			if (opts.isCode) $iptStr.addClass("code");
-			if (opts.autocomplete && opts.autocomplete.length) $iptStr.typeahead({source: opts.autocomplete});
+
+			if (opts.fnIsValid) {
+				const hkText = () => comp._state.isValid = !comp._state.text.trim() || !!opts.fnIsValid(comp._state.text);
+				comp._addHookBase(propValue, hkText)
+				hkText();
+
+				const hkIsValid = () => $iptStr.toggleClass("form-control--error", !comp._state.isValid);
+				comp._addHookBase("isValid", hkIsValid)
+				hkIsValid();
+			}
+
 			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
+				.click(() => {
+					if (!comp._state.isValid) return JqueryUtil.doToast({content: `Please enter valid input!`, type: "warning"});
+					return doClose(true);
+				});
 			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
 				.click(() => doClose(false));
 			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
@@ -29378,9 +29673,18 @@ class InputUiUtil {
 				},
 			});
 			$iptStr.appendTo($modalInner);
+			if (opts.$elePost) opts.$elePost.appendTo($modalInner);
 			$$`<div class="flex-v-center flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
 			$iptStr.focus();
 			$iptStr.select();
+
+			if (opts.cbPostRender) {
+				opts.cbPostRender({
+					comp,
+					$iptStr,
+					propValue,
+				});
+			}
 		});
 	}
 

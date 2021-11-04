@@ -473,7 +473,7 @@ function baseConfig () {
 						d20plus.ut.log("Saved config");
 
 						d20plus.cfg.baseHandleConfigChange();
-						if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+						if (d20plus.cfg5e) d20plus.cfg5e.handleConfigChange();
 					};
 
 					let handout = d20plus.cfg.getConfigHandout();
@@ -486,7 +486,7 @@ function baseConfig () {
 					_updateLoadedConfig();
 					StorageUtil.pSet(`Veconfig`, d20plus.cfg.current);
 					d20plus.cfg.baseHandleConfigChange();
-					if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+					if (d20plus.cfg5e) d20plus.cfg5e.handleConfigChange();
 				}
 			});
 		}
