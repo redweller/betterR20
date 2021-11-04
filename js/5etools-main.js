@@ -531,26 +531,6 @@ const betteR205etoolsMain = function () {
 		}));
 	};
 
-	d20plus.handleConfigChange = function (isSyncingPlayer) {
-		if (!isSyncingPlayer) d20plus.ut.log("Applying config");
-		if (window.is_gm) {
-			d20plus.setInitiativeShrink(d20plus.cfg.get("interface", "minifyTracker"));
-			d20.Campaign.initiativewindow.rebuildInitiativeList();
-			d20plus.updateDifficulty();
-			if (d20plus.art.refreshList) d20plus.art.refreshList();
-		}
-	};
-
-	// get the user config'd token HP bar
-	d20plus.getCfgHpBarNumber = function () {
-		const bars = [
-			d20plus.cfg.get("token", "bar1"),
-			d20plus.cfg.get("token", "bar2"),
-			d20plus.cfg.get("token", "bar3"),
-		];
-		return bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
-	};
-
 	// Bind Graphics Add on page
 	d20plus.bindGraphics = function (page) {
 		d20plus.ut.log("Bind Graphics");
@@ -674,7 +654,7 @@ const betteR205etoolsMain = function () {
 		if ($iptHp.length) {
 			let toBind;
 			if (!token.character || (npcFlag && `${npcFlag.get("current")}` === "1")) {
-				const hpBar = d20plus.getCfgHpBarNumber();
+				const hpBar = d20plus.cfg5e.getCfgHpBarNumber();
 				// and a HP bar chosen
 				if (hpBar) {
 					$iptHp.text(token.attributes[`bar${hpBar}_value`])
@@ -684,7 +664,7 @@ const betteR205etoolsMain = function () {
 					const $initToken = getInitTrackerToken();
 					if (!$initToken.length) return;
 					const $iptHp = $initToken.find(`.hp.editable`);
-					const hpBar = d20plus.getCfgHpBarNumber();
+					const hpBar = d20plus.cfg5e.getCfgHpBarNumber();
 
 					if ($iptHp && hpBar) {
 						if (changes.changes[`bar${hpBar}_value`]) {
@@ -1148,497 +1128,6 @@ const betteR205etoolsMain = function () {
 			d20plus.importer.bindFakeCompendiumDraggable($(e));
 		});
 
-		class CharacterAttributesProxy {
-			constructor (character) {
-				this.character = character;
-				this._changedAttrs = [];
-			}
-
-			findByName (attrName) {
-				return this.character.model.attribs.toJSON()
-					.find(a => a.name === attrName) || {};
-			}
-
-			findOrGenerateRepeatingRowId (namePattern, current) {
-				const [namePrefix, nameSuffix] = namePattern.split(/\$\d?/);
-				const attr = this.character.model.attribs.toJSON()
-					.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current === current);
-				return attr
-					? attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1")
-					: d20plus.ut.generateRowId();
-			}
-
-			add (name, current, max) {
-				this.character.model.attribs.create({
-					name: name,
-					current: current,
-					...(max == null ? {} : {max: max}),
-				}).save();
-				this._changedAttrs.push(name);
-			}
-
-			addOrUpdate (name, current, max) {
-				const id = this.findByName(name).id;
-				if (id) {
-					this.character.model.attribs.get(id).set({
-						current: current,
-						...(max == null ? {} : {max: max}),
-					}).save();
-					this._changedAttrs.push(name);
-				} else {
-					this.add(name, current, max);
-				}
-			}
-
-			notifySheetWorkers () {
-				d20.journal.notifyWorkersOfAttrChanges(this.character.model.id, this._changedAttrs);
-				this._changedAttrs = [];
-			}
-		}
-
-		function importFeat (character, data) {
-			const featName = data.name;
-			const featText = data.Vetoolscontent;
-			const attrs = new CharacterAttributesProxy(character);
-			const rowId = d20plus.ut.generateRowId();
-
-			if (d20plus.sheet === "ogl") {
-				attrs.add(`repeating_traits_${rowId}_options-flag`, "0");
-				attrs.add(`repeating_traits_${rowId}_name`, featName);
-				attrs.add(`repeating_traits_${rowId}_description`, featText);
-				attrs.add(`repeating_traits_${rowId}_source`, "Feat");
-			} else if (d20plus.sheet === "shaped") {
-				attrs.add(`repeating_feat_${rowId}_name`, featName);
-				attrs.add(`repeating_feat_${rowId}_content`, featText);
-				attrs.add(`repeating_feat_${rowId}_content_toggle`, "1");
-			} else {
-				// eslint-disable-next-line no-console
-				console.warn(`Feat import is not supported for ${d20plus.sheet} character sheet`);
-			}
-
-			attrs.notifySheetWorkers();
-		}
-
-		async function importBackground (character, data) {
-			const bg = data.Vetoolscontent;
-
-			const renderer = new Renderer();
-			renderer.setBaseUrl(BASE_SITE_URL);
-			const renderStack = [];
-			let feature = {};
-			bg.entries.forEach(e => {
-				if (e.name && e.name.includes("Feature:")) {
-					feature = JSON.parse(JSON.stringify(e));
-					feature.name = feature.name.replace("Feature:", "").trim();
-				}
-			});
-			if (feature) renderer.recursiveRender({entries: feature.entries}, renderStack);
-			feature.text = renderStack.length ? d20plus.importer.getCleanText(renderStack.join("")) : "";
-
-			// Add skills
-
-			async function chooseSkillsGroup (options) {
-				return new Promise((resolve, reject) => {
-					const $dialog = $(`
-						<div title="Choose Skills">
-							<div>
-								${options.map((it, i) => `<label class="split"><input name="skill-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${it}</span></label>`).join("")}
-							</div>
-						</div>
-					`).appendTo($("body"));
-					const $rdOpt = $dialog.find(`input[type="radio"]`);
-
-					$dialog.dialog({
-						dialogClass: "no-close",
-						buttons: [
-							{
-								text: "Cancel",
-								click: function () {
-									$(this).dialog("close");
-									$dialog.remove();
-									reject(new Error(`User cancelled the prompt`));
-								},
-							},
-							{
-								text: "OK",
-								click: function () {
-									const selected = $rdOpt.filter((i, e) => $(e).prop("checked"))
-										.map((i, e) => $(e).data("ix")).get()[0];
-									$(this).dialog("close");
-									$dialog.remove();
-									resolve(selected);
-								},
-							},
-						],
-					})
-				});
-			}
-
-			const skills = [];
-
-			async function handleSkillsItem (item) {
-				Object.keys(item).forEach(k => {
-					if (k !== "choose") skills.push(k);
-				});
-
-				if (item.choose) {
-					const choose = item.choose;
-					const sansExisting = choose.from.filter(it => !skills.includes(it));
-					const count = choose.count || 1;
-					const chosenSkills = await d20plus.ui.chooseCheckboxList(
-						sansExisting,
-						"Choose Skills",
-						{
-							count,
-							displayFormatter: it => it.toTitleCase(),
-							messageCountIncomplete: `Please select ${count} skill${count === 1 ? "" : "s"}`,
-						},
-					);
-					chosenSkills.forEach(it => skills.push(it));
-				}
-			}
-
-			if (bg.skillProficiencies && bg.skillProficiencies.length) {
-				if (bg.skillProficiencies.length > 1) {
-					const options = bg.skillProficiencies.map(item => Renderer.background.getSkillSummary([item], true, []))
-					const chosenIndex = await chooseSkillsGroup(options);
-					await handleSkillsItem(bg.skillProficiencies[chosenIndex]);
-				} else {
-					await handleSkillsItem(bg.skillProficiencies[0]);
-				}
-			}
-
-			// Add Proficiencies (mainly language and tool, but extendable)
-			// Skills are still done Giddy's way so I don't need to mess with his code (and I couldn't easily convert his code to my method)
-			// Note: Doing this mostly stealing from Giddy's code
-
-			async function chooseProfsGroup (options, profType) {
-				// For when there are two separate ways to choose languages
-				return new Promise((resolve, reject) => {
-					const $dialog = $(`
-						<div title="Choose ${profType}">
-							<div>
-								${options.map((it, i) => `<label class="split"><input name="prof-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${
-		// Format it nicely
-		Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).map(a => a.toTitleCase()).join(", ")
-	}</span></label>`).join("")}
-							</div>
-						</div>
-					`).appendTo($("body"));
-					const $rdOpt = $dialog.find(`input[type="radio"]`);
-
-					$dialog.dialog({
-						dialogClass: "no-close",
-						buttons: [
-							{
-								text: "Cancel",
-								click: function () {
-									$(this).dialog("close");
-									$dialog.remove();
-									reject(new Error(`User cancelled the prompt`));
-								},
-							},
-							{
-								text: "OK",
-								click: function () {
-									const selected = $rdOpt.filter((i, e) => $(e).prop("checked"))
-										.map((i, e) => $(e).data("ix")).get()[0];
-									$(this).dialog("close");
-									$dialog.remove();
-									resolve(selected);
-								},
-							},
-						],
-					})
-				});
-			}
-
-			async function handleProfs (profs, profType) {
-				// Handle the language options, let user choose if needed
-				// Handles most edge cases I think
-				const ret = []
-				for (const [key, value] of Object.entries(profs)) {
-					// Loop must be in this form -- Thanks for figuring this out Giddy
-					if (key === "choose") {
-						// If choice is needed, call popup function
-						let numChoice = 1;
-						if (value.count) numChoice = value.count;
-						const choice = await d20plus.ui.chooseCheckboxList(
-							value.from,
-							`Choose ${profType}`,
-							{
-								count: numChoice,
-								displayFormatter: it => it.toTitleCase(),
-								messageCountIncomplete: `Please select ${numChoice} language${numChoice === 1 ? "" : "s"}`,
-							},
-						);
-						choice.forEach(c => ret.push(c));
-					} else if (key === "anyStandard") {
-						// If any language is available, add any
-						for (let i = 0; i < value; i++) ret.push("any");
-					} else if (value) {
-						// If no choice is needed, add the proficiency normally
-						ret.push(key);
-					}
-				}
-				return ret;
-			}
-
-			// Get data for language proficiencies specifically
-			let backgroundLanguages = [];
-			if (bg.languageProficiencies && bg.languageProficiencies.length) {
-				if (bg.languageProficiencies.length > 1) {
-					// See Clan Crafter for an example
-					let profIndex = await chooseProfsGroup(bg.languageProficiencies, "Languages");
-					backgroundLanguages = await handleProfs(bg.languageProficiencies[profIndex], "Languages");
-				} else if (bg.languageProficiencies.length > 0) {
-					// Most common case
-					backgroundLanguages = await handleProfs(bg.languageProficiencies[0], "Languages");
-				}
-			}
-
-			// Tool Proficiencies
-			let backgroundTools = [];
-			if (bg.toolProficiencies && bg.toolProficiencies.length) {
-				if (bg.toolProficiencies.length > 1) {
-					// If there are different types of options
-					let profIndex = await chooseProfsGroup(bg.toolProficiencies, "Tools");
-					backgroundTools = await handleProfs(bg.toolProficiencies[profIndex], "Tools")
-				} else if (bg.toolProficiencies.length > 0) {
-					// Most common case
-					backgroundTools = await handleProfs(bg.toolProficiencies[0], "Tools");
-				}
-			}
-
-			// Import items
-			async function importItemsAndGetGold (itemlist) {
-				const allitemList = await Renderer.item.pBuildList();
-				let containedGold = 0;
-
-				const x = Object.values(itemlist).map(function (item) {
-					// Returns a standardized object from a very unstandardized object
-					// Get the important variables
-					let iname = "";
-					if (typeof item !== "object") {
-						iname = item;
-					} else if ("item" in item) {
-						iname = item.item;
-					} else if ("special" in item) {
-						iname = item.special;
-					} else if ("equipclean" in item) {
-						iname = item.equipclean;
-					}
-
-					if (item.containsValue) containedGold += item.containsValue / 100;
-
-					// Make the input object
-					const pareseditem = {"name": iname.split("|")[0].toTitleCase()};
-					const it = allitemList.find(pareseditem) || pareseditem;
-					// Create item data in the format importItem likes,
-					//   then call the importItem function usually used to import items
-					return JSON.parse(d20plus.items._getHandoutData(it)[1])
-				});
-
-				const y = x.map(it => ({subItem: JSON.stringify(it), count: 1}));
-
-				const allItems = {
-					name: "All Items",
-					_subItems: [...y],
-					data: {},
-				};
-
-				importItem(character, allItems, null);
-
-				return containedGold;
-			}
-
-			async function chooseItemsFromBackground (itemChoices) {
-				return new Promise((resolve, reject) => {
-					// Deal with the equipmenttype case specifically
-					let equiptmp = null;
-					Object.entries(itemChoices).forEach(([key, value]) => {
-						if (value[0]?.equipmentType) {
-							switch (value[0].equipmentType) {
-								case "setGaming":
-									equiptmp = "Gaming Set";
-									break;
-								case "instrumentMusical":
-									equiptmp = "Instrument";
-									break;
-								case "toolArtisan":
-									equiptmp = "Artisan's Tools";
-									break;
-							}
-							value[0].equipclean = equiptmp;
-						}
-					});
-
-					// Make the menu
-					const $dialog = $(`
-							<div title="Items Import">
-								<label class="flex">
-									<span>Which item would you like to import?</span>
-									 <select title="Note: this does not include homebrew. For homebrew subclasses, use the dedicated subclass importer." style="width: 250px;">
-								   ${Object.entries(itemChoices).map(([key, value]) => `<option value="${key}">${(value[0].item || value[0].special || value[0].equipclean || value[0]).split("|")[0].toTitleCase()}</option>`)}
-									 </select>
-								</label>
-							</div>
-						`).appendTo($("body"));
-					const $selStrat = $dialog.find(`select`);
-
-					$dialog.dialog({
-						dialogClass: "no-close",
-						buttons: [
-							{
-								text: "Cancel",
-								click: function () {
-									$(this).dialog("close");
-									$dialog.remove();
-									reject(new Error(`User cancelled the prompt`));
-								},
-							},
-							{
-								text: "OK",
-								click: function () {
-									const selected = $selStrat.val();
-									$(this).dialog("close");
-									$dialog.remove();
-									resolve(selected);
-								},
-							},
-						],
-					})
-				});
-			}
-
-			let startingGold = 0;
-
-			if (bg.startingEquipment) {
-				for (const equip of bg.startingEquipment) {
-					// Loop because there can be any number of objects and in any order
-					if (equip._) {
-						// The _ property means will always be imported
-						startingGold += await importItemsAndGetGold(equip._);
-					} else {
-						// Otherwise there is a choice of what to import
-						const itemchoicefrombackgorund = await chooseItemsFromBackground(equip);
-						startingGold += await importItemsAndGetGold(equip[itemchoicefrombackgorund]);
-					}
-				}
-			}
-
-			// Choose and import personallity traits/ideals/bonds/flaws.
-			let traits = null;
-			let ptrait = null; // Personallity trait
-			let ideal = null;
-			let bond = null;
-			let flaw = null;
-			// Get the JSON for all the tables
-			if (bg.entries) {
-				for (const ent of bg.entries) {
-					if (ent.name && ent.name === "Suggested Characteristics") {
-						traits = ent;
-					}
-				}
-			}
-
-			// Fill the rows
-			if (traits !== null && traits.entries?.length) {
-				for (let i = 0; i < traits.entries.length; i++) {
-					ent = traits.entries[i];
-					// This seems to be the best way to parse the information with some room for errors
-					// It seems like the schema is based on on the website, which is why colLabels is where the identifier is
-					if (ent.colLabels && ent.colLabels.length === 2 && ent.rows) {
-						switch (ent.colLabels[1]) {
-							case "Personality Trait":
-								ptrait = ent.rows.map(r => r[1]);
-								break;
-							case "Ideal":
-								ideal = ent.rows.map(r => r[1]);
-								break;
-							case "Bond":
-								bond = ent.rows.map(r => r[1]);
-								break;
-							case "Flaw":
-								flaw = ent.rows.map(r => r[1]);
-								break;
-						}
-					}
-				}
-			}
-
-			if (ptrait != null) {
-				traits = await d20plus.backgrounds.traitMenu(ptrait, ideal, bond, flaw);
-			}
-
-			// Update Sheet
-			const attrs = new CharacterAttributesProxy(character);
-			const fRowId = d20plus.ut.generateRowId();
-
-			if (d20plus.sheet === "ogl") {
-				attrs.addOrUpdate("background", bg.name);
-				attrs.addOrUpdate("gp", startingGold);
-
-				attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
-				attrs.add(`repeating_traits_${fRowId}_source`, "Background");
-				attrs.add(`repeating_traits_${fRowId}_source_type`, bg.name);
-				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-				if (feature.text) {
-					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
-				}
-
-				skills.map(s => s.toLowerCase().replace(/ /g, "_")).forEach(s => {
-					attrs.addOrUpdate(`${s}_prof`, `(@{pb}*@{${s}_type})`);
-				});
-
-				backgroundLanguages.map(l => l.toTitleCase()).forEach(l => {
-					const lRowId = d20plus.ut.generateRowId();
-					attrs.add(`repeating_proficiencies_${lRowId}_name`, l);
-					attrs.add(`repeating_proficiencies_${lRowId}_options-flag`, "0");
-				});
-
-				backgroundTools.map(t => t.toTitleCase()).forEach(t => {
-					const tRowID = d20plus.ut.generateRowId();
-					attrs.add(`repeating_tool_${tRowID}_toolname`, t);
-					attrs.add(`repeating_tool_${tRowID}_toolbonus_base`, "@{pb}");
-					attrs.add(`repeating_tool_${tRowID}_options-flag`, "0");
-					// All Tools assume the query option
-					// The long strings are annoying but they are also necessary
-					attrs.add(`repeating_tool_${tRowID}_toolattr`, "QUERY");
-					attrs.add(`repeating_tool_${tRowID}_toolbonus`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}+0+@{pb}");
-					attrs.add(`repeating_tool_${tRowID}_toolroll`, "@{wtype}&{template:simple} {{rname=@{toolname}}} {{mod=@{toolbonus}}} {{r1=[[@{d20}+@{toolbonus}[Mods]@{pbd_safe}]]}} {{always=1}} {{r2=[[@{d20}+@{toolbonus}[Mods]@{pbd_safe}]]}} {{global=@{global_skill_mod}}} @{charname_output}");
-					attrs.add(`repeating_tool_${tRowID}_toolattr_base`, "?{Attribute?|Strength,@{strength_mod}|Dexterity,@{dexterity_mod}|Constitution,@{constitution_mod}|Intelligence,@{intelligence_mod}|Wisdom,@{wisdom_mod}|Charisma,@{charisma_mod}}");
-					attrs.add(`repeating_tool_${tRowID}_toolbonus_display`, "?");
-				});
-
-				// Add flavor traits
-				const {personalityTraits, ideals, bonds, flaws} = traits || {}; // Got some help from Giddy with this one
-				// Only add the trait if the trait exists
-				if (personalityTraits?.length === 1) attrs.addOrUpdate(`personality_traits`, personalityTraits[0]);
-				if (personalityTraits?.length === 2) attrs.addOrUpdate(`personality_traits`, `${personalityTraits[0]}\n${personalityTraits[1]}`);
-				if (ideals?.length === 1) attrs.addOrUpdate(`ideals`, ideals[0]);
-				if (bonds?.length === 1) attrs.addOrUpdate(`bonds`, bonds[0]);
-				if (flaws?.length === 1) attrs.addOrUpdate(`flaws`, flaws[0]);
-			} else if (d20plus.sheet === "shaped") {
-				attrs.addOrUpdate("background", bg.name);
-				attrs.add(`repeating_trait_${fRowId}_name`, `${feature.name} (${bg.name})`);
-				if (feature.text) {
-					attrs.add(`repeating_trait_${fRowId}_content`, feature.text);
-					attrs.add(`repeating_trait_${fRowId}_content_toggle`, "1");
-				}
-
-				skills.map(s => s.toUpperCase().replace(/ /g, "")).forEach(s => {
-					const rowId = attrs.findOrGenerateRepeatingRowId("repeating_skill_$0_storage_name", s);
-					attrs.addOrUpdate(`repeating_skill_${rowId}_proficiency`, "proficient");
-				});
-			} else {
-				// eslint-disable-next-line no-console
-				console.warn(`Background import is not supported for ${d20plus.sheet} character sheet`);
-			}
-
-			attrs.notifySheetWorkers();
-		}
-
 		function importRace (character, data) {
 			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
@@ -1651,7 +1140,7 @@ const betteR205etoolsMain = function () {
 				e.text = d20plus.importer.getCleanText(renderStack.join(""));
 			});
 
-			const attrs = new CharacterAttributesProxy(character);
+			const attrs = new d20plus.importer.CharacterAttributesProxy(character);
 
 			if (d20plus.sheet === "ogl") {
 				attrs.addOrUpdate(`race`, race.name);
@@ -1736,7 +1225,7 @@ const betteR205etoolsMain = function () {
 			const rendered = renderer.render({entries: optionalFeature.entries});
 			const optionalFeatureText = d20plus.importer.getCleanText(rendered);
 
-			const attrs = new CharacterAttributesProxy(character);
+			const attrs = new d20plus.importer.CharacterAttributesProxy(character);
 			const fRowId = d20plus.ut.generateRowId();
 
 			if (d20plus.sheet === "ogl") {
@@ -1757,363 +1246,11 @@ const betteR205etoolsMain = function () {
 			attrs.notifySheetWorkers();
 		}
 
-		async function importClass (character, data) {
-			let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-			if (!levels) return;
-
-			const maxLevel = Math.max(...levels);
-
-			const clss = data.Vetoolscontent;
-			const renderer = Renderer.get().setBaseUrl(BASE_SITE_URL);
-			const shapedSheetPreFilledFeaturesByClass = {
-				"Artificer": [
-					"Magic Item Analysis",
-					"Tool Expertise",
-					"Wondrous Invention",
-					"Infuse Magic",
-					"Superior Attunement",
-					"Mechanical Servant",
-					"Soul of Artifice",
-				],
-				"Barbarian": [
-					"Rage",
-					"Unarmored Defense",
-					"Reckless Attack",
-					"Danger Sense",
-					"Extra Attack",
-					"Fast Movement",
-					"Feral Instinct",
-					"Brutal Critical",
-					"Relentless Rage",
-					"Persistent Rage",
-					"Indomitable Might",
-					"Primal Champion",
-				],
-				"Bard": [
-					"Bardic Inspiration",
-					"Jack of All Trades",
-					"Song of Rest",
-					"Expertise",
-					"Countercharm",
-					"Magical Secrets",
-					"Superior Inspiration",
-				],
-				"Cleric": [
-					"Channel Divinity",
-					"Turn Undead",
-					"Divine Intervention",
-				],
-				"Druid": [
-					"Druidic",
-					"Wild Shape",
-					"Timeless Body",
-					"Beast Spells",
-					"Archdruid",
-				],
-				"Fighter": [
-					"Fighting Style",
-					"Second Wind",
-					"Action Surge",
-					"Extra Attack",
-					"Indomitable",
-				],
-				"Monk": [
-					"Unarmored Defense",
-					"Martial Arts",
-					"Ki",
-					"Flurry of Blows",
-					"Patient Defense",
-					"Step of the Wind",
-					"Unarmored Movement",
-					"Deflect Missiles",
-					"Slow Fall",
-					"Extra Attack",
-					"Stunning Strike",
-					"Ki-Empowered Strikes",
-					"Evasion",
-					"Stillness of Mind",
-					"Purity of Body",
-					"Tongue of the Sun and Moon",
-					"Diamond Soul",
-					"Timeless Body",
-					"Empty Body",
-					"Perfect Soul",
-				],
-				"Paladin": [
-					"Divine Sense",
-					"Lay on Hands",
-					"Fighting Style",
-					"Divine Smite",
-					"Divine Health",
-					"Channel Divinity",
-					"Extra Attack",
-					"Aura of Protection",
-					"Aura of Courage",
-					"Improved Divine Smite",
-					"Cleansing Touch",
-				],
-				"Ranger": [
-					"Favored Enemy",
-					"Natural Explorer",
-					"Fighting Style",
-					"Primeval Awareness",
-					"Land’s Stride",
-					"Hide in Plain Sight",
-					"Vanish",
-					"Feral Senses",
-					"Foe Slayer",
-				],
-				"Ranger (Revised)": [ // "Ranger UA (2016)"
-					"Favored Enemy",
-					"Natural Explorer",
-					"Fighting Style",
-					"Primeval Awareness",
-					"Greater Favored Enemy",
-					"Fleet of Foot",
-					"Hide in Plain Sight",
-					"Vanish",
-					"Feral Senses",
-					"Foe Slayer",
-				],
-				"Rogue": [
-					"Expertise",
-					"Sneak Attack",
-					"Thieves' Cant",
-					"Cunning Action",
-					"Uncanny Dodge",
-					"Evasion",
-					"Reliable Talent",
-					"Blindsense",
-					"Slippery Mind",
-					"Elusive",
-					"Stroke of Luck",
-				],
-				"Sorcerer": [
-					"Sorcery Points",
-					"Flexible Casting",
-					"Metamagic",
-					"Sorcerous Restoration",
-				],
-				"Warlock": [
-					"Eldritch Invocations",
-					"Pact Boon",
-					"Mystic Arcanum",
-					"Eldritch Master",
-				],
-				"Wizard": [
-					"Arcane Recovery",
-					"Spell Mastery",
-					"Signature Spells",
-				],
-			};
-			const shapedSheetPreFilledFeatures = shapedSheetPreFilledFeaturesByClass[clss.name] || [];
-
-			const attrs = new CharacterAttributesProxy(character);
-
-			importClassGeneral(attrs, clss, maxLevel);
-
-			let featureSourceBlacklist = await d20plus.ui.chooseCheckboxList(
-				[SRC_TCE, SRC_UACFV],
-				"Choose Variant/Optional Feature Sources to Exclude",
-				{
-					note: "Choosing to exclude a source will prevent its features from being added to your sheet.",
-					displayFormatter: it => Parser.sourceJsonToFull(it),
-				},
-			);
-
-			for (let i = 0; i < maxLevel; i++) {
-				const level = i + 1;
-				if (!levels.has(level)) continue;
-
-				const lvlFeatureList = clss.classFeatures[i];
-				for (let j = 0; j < lvlFeatureList.length; j++) {
-					const feature = lvlFeatureList[j];
-					// don't add "you gain a subclass feature" or ASI's
-					if (
-						!feature.gainSubclassFeature
-						&& feature.name !== "Ability Score Improvement"
-						&& (!feature.isClassFeatureVariant || !featureSourceBlacklist.includes(feature.source))
-					) {
-						const renderStack = [];
-						renderer.recursiveRender({entries: feature.entries}, renderStack);
-						feature.text = d20plus.importer.getCleanText(renderStack.join(""));
-						importClassFeature(attrs, clss, level, feature);
-					}
-				}
-			}
-
-			function importClassGeneral (attrs, clss, maxLevel) {
-				if (d20plus.sheet === "ogl") {
-					setTimeout(() => {
-						attrs.addOrUpdate("pb", d20plus.getProfBonusFromLevel(Number(maxLevel)));
-						attrs.addOrUpdate("class", clss.name);
-						attrs.addOrUpdate("level", maxLevel);
-						attrs.addOrUpdate("base_level", String(maxLevel));
-					}, 500);
-				} else if (d20plus.sheet === "shaped") {
-					const isSupportedClass = clss.source === "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
-					let className = "CUSTOM";
-					if (isSupportedClass) {
-						className = clss.name.toUpperCase();
-						if (clss.name === "Ranger (Revised)") { className = "RANGERUA"; }
-					}
-
-					const fRowId = attrs.findOrGenerateRepeatingRowId("repeating_class_$0_name", className);
-					attrs.addOrUpdate(`repeating_class_${fRowId}_name`, className);
-					attrs.addOrUpdate(`repeating_class_${fRowId}_level`, maxLevel);
-					if (!isSupportedClass) {
-						attrs.addOrUpdate(`repeating_class_${fRowId}_hd`, `d${clss.hd.faces}`);
-						attrs.addOrUpdate(`repeating_class_${fRowId}_custom_class_toggle`, "1");
-						attrs.addOrUpdate(`repeating_class_${fRowId}_custom_name`, clss.name);
-					}
-
-					if (!isSupportedClass && clss.name === "Mystic") {
-						const classResourcesForLevel = clss.classTableGroups[0].rows[maxLevel - 1];
-						const [talentsKnown, disciplinesKnown, psiPoints, psiLimit] = classResourcesForLevel;
-
-						attrs.addOrUpdate("spell_points_name", "PSI");
-						attrs.addOrUpdate("show_spells", "1");
-						attrs.addOrUpdate("spell_points_toggle", "1");
-						attrs.addOrUpdate("spell_ability", "INTELLIGENCE");
-						attrs.addOrUpdate("spell_points_limit", psiLimit);
-						attrs.addOrUpdate("spell_points", psiPoints, psiPoints);
-						// talentsKnown, disciplinesKnown;	// unused
-
-						for (let i = 1; i <= 7; i++) {
-							attrs.addOrUpdate(`spell_level_${i}_cost`, i);
-						}
-						for (let i = 0; i <= psiLimit; i++) {
-							attrs.addOrUpdate(`spell_level_filter_${i}`, "1");
-						}
-					}
-
-					attrs.notifySheetWorkers();
-				} else {
-					// eslint-disable-next-line no-console
-					console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
-				}
-			}
-
-			function importClassFeature (attrs, clss, level, feature) {
-				if (d20plus.sheet === "ogl") {
-					const fRowId = d20plus.ut.generateRowId();
-					attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
-					attrs.add(`repeating_traits_${fRowId}_source`, "Class");
-					attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
-					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
-					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-				} else if (d20plus.sheet === "shaped") {
-					if (shapedSheetPreFilledFeatures.includes(feature.name)) { return; }
-
-					const fRowId = d20plus.ut.generateRowId();
-					attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${clss.name} ${level})`);
-					attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
-					attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-				}
-
-				attrs.notifySheetWorkers();
-			}
-		}
-
-		function importSubclass (character, data) {
-			if (d20plus.sheet !== "ogl" && d20plus.sheet !== "shaped") {
-				// eslint-disable-next-line no-console
-				console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
-				return;
-			}
-
-			const attrs = new CharacterAttributesProxy(character);
-			const sc = data.Vetoolscontent;
-
-			const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
-			if (!levels || !levels.size) return;
-
-			const renderer = new Renderer();
-			renderer.setBaseUrl(BASE_SITE_URL);
-			let firstFeatures = true;
-			for (let i = 0; i < sc.subclassFeatures.length; i++) {
-				const lvlFeatureList = sc.subclassFeatures[i];
-				for (let j = 0; j < lvlFeatureList.length; j++) {
-					const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
-					let feature = lvlFeatureList[j];
-
-					if (!levels.has(feature.level)) continue;
-
-					try {
-						while (!feature.name || (feature[0] && !feature[0].name)) {
-							if (feature.entries && feature.entries.name) {
-								feature = feature.entries;
-								continue;
-							} else if (feature.entries[0] && feature.entries[0].name) {
-								feature = feature.entries[0];
-								continue;
-							} else {
-								feature = feature.entries;
-							}
-
-							if (!feature) {
-								// in case something goes wrong, reset break the loop
-								feature = featureCpy;
-								break;
-							}
-						}
-					} catch (e) {
-						// eslint-disable-next-line no-console
-						console.error("Failed to find feature");
-						// in case something goes _really_ wrong, reset
-						feature = featureCpy;
-					}
-
-					// for the first batch of subclass features, try to split them up
-					if (firstFeatures && feature.name && feature.entries) {
-						const subFeatures = [];
-						const baseFeatures = feature.entries.filter(f => {
-							if (f.name && f.type === "entries") {
-								subFeatures.push(f);
-								return false;
-							} else return true;
-						});
-						importSubclassFeature(attrs, sc, feature.level,
-							{name: feature.name, type: feature.type, entries: baseFeatures});
-						subFeatures.forEach(sf => {
-							importSubclassFeature(attrs, sc, feature.level, sf);
-						})
-					} else {
-						importSubclassFeature(attrs, sc, feature.level, feature);
-					}
-
-					firstFeatures = false;
-				}
-			}
-
-			function importSubclassFeature (attrs, sc, level, feature) {
-				const renderStack = [];
-				renderer.recursiveRender({entries: feature.entries}, renderStack);
-				feature.text = d20plus.importer.getCleanText(renderStack.join(""));
-
-				const fRowId = d20plus.ut.generateRowId();
-
-				if (d20plus.sheet === "ogl") {
-					attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
-					attrs.add(`repeating_traits_${fRowId}_source`, "Class");
-					attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.className} (${sc.name} ${level})`);
-					attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
-					attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-				} else if (d20plus.sheet === "shaped") {
-					attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${sc.name} ${level})`);
-					attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
-					attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-				}
-
-				attrs.notifySheetWorkers();
-			}
-		}
-
 		function importPsionicAbility (character, data) {
 			const renderer = new Renderer();
 			renderer.setBaseUrl(BASE_SITE_URL);
 
-			const attrs = new CharacterAttributesProxy(character);
+			const attrs = new d20plus.importer.CharacterAttributesProxy(character);
 			data = data.Vetoolscontent;
 			if (!data) {
 				alert("Missing data. Please re-import Psionics.");
@@ -2307,94 +1444,26 @@ const betteR205etoolsMain = function () {
 			attrs.notifySheetWorkers();
 		}
 
-		function importItem (character, data, event) {
-			if (d20plus.sheet === "ogl") {
-				// for packs, etc
-				if (data._subItems) {
-					const queue = [];
-					data._subItems.forEach(si => {
-						function makeProp (rowId, propName, content) {
-							character.model.attribs.create({
-								"name": `repeating_inventory_${rowId}_${propName}`,
-								"current": content,
-							}).save();
-						}
-
-						if (si.count) {
-							const rowId = d20plus.ut.generateRowId();
-							const siD = typeof si.subItem === "string" ? JSON.parse(si.subItem) : si.subItem;
-
-							makeProp(rowId, "itemname", siD.name);
-							const w = (siD.data || {}).Weight;
-							if (w) makeProp(rowId, "itemweight", w);
-							makeProp(rowId, "itemcontent", siD.content || Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
-							makeProp(rowId, "itemcount", String(si.count));
-						} else {
-							queue.push(si.subItem);
-						}
-					});
-
-					const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
-					queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
-						setTimeout(() => {
-							d20plus.importer.doFakeDrop(event, character, item, null);
-						}, (ix + 1) * interval);
-					});
-
-					return;
-				}
-			}
-
-			// Fallback to native drag-n-drop
-			d20plus.importer.doFakeDrop(event, character, data, null);
-		}
-
-		async function importSpells (character, data, event) {
-			const importCriticalData = function () {
-				// give it time to update the sheet
-				setTimeout(() => {
-					const rowID = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name)
-
-					// crit damage
-					if (data.data.Crit && rowID) {
-						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_dmgcustcrit`, data.data.Crit)
-						const critID = d20plus.importer.findAttrId(character.model, `repeating_attack_${rowID}_rollbase_crit`);
-						const newCrit = character.model.attribs.get(critID).get("current").replace(/{{crit1=\[\[\d\d?d\d\d?]]}}/g, "{{crit1=[[@{dmgcustcrit}]]}}");
-						d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_rollbase_crit`, newCrit)
-					}
-
-					// crit range
-					if (data.data["Crit Range"] && rowID) d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_atkcritrange`, data.data["Crit Range"])
-				}, 1000)
-			}
-
-			// this is working fine for spells.
-			d20plus.importer.doFakeDrop(event, character, data, null);
-
-			// adding critical info that is missing.
-			if (data.data.Crit || data.data["Crit Range"]) importCriticalData()
-		}
-
 		function importData (character, data, event) {
 			// TODO remove feature import workarounds below when roll20 and sheets supports their drag-n-drop properly
 			if (data.data.Category === "Feats") {
-				importFeat(character, data);
+				d20plus.feats.importFeat(character, data);
 			} else if (data.data.Category === "Backgrounds") {
-				importBackground(character, data);
+				d20plus.backgrounds.importBackground(character, data);
 			} else if (data.data.Category === "Races") {
 				importRace(character, data);
 			} else if (data.data.Category === "Optional Features") {
 				importOptionalFeature(character, data);
 			} else if (data.data.Category === "Classes") {
-				importClass(character, data);
+				d20plus.classes.importClass(character, data);
 			} else if (data.data.Category === "Subclasses") {
-				importSubclass(character, data);
+				d20plus.subclasses.importSubclass(character, data);
 			} else if (data.data.Category === "Psionics") {
 				importPsionicAbility(character, data);
 			} else if (data.data.Category === "Items") {
-				importItem(character, data, event);
+				d20plus.items.importItem(character, data, event);
 			} else if (data.data.Category === "Spells") {
-				importSpells(character, data, event);
+				d20plus.spells.importSpells(character, data, event);
 			} else {
 				d20plus.importer.doFakeDrop(event, character, data, null);
 			}
@@ -2514,30 +1583,6 @@ const betteR205etoolsMain = function () {
 		});
 	};
 
-	d20plus.getProfBonusFromLevel = function (level) {
-		if (level < 5) return "2";
-		if (level < 9) return "3";
-		if (level < 13) return "4";
-		if (level < 17) return "5";
-		return "6";
-	};
-
-	// Import dialog showing names of monsters failed to import
-	d20plus.addImportError = function (name) {
-		let $span = $("#import-errors");
-		if ($span.text() === "0") {
-			$span.text(name);
-		} else {
-			$span.text(`${$span.text()}, ${name}`);
-		}
-	};
-
-	// Get NPC size from chr
-	d20plus.getSizeString = function (chr) {
-		const result = Parser.sizeAbvToFull(chr);
-		return result || "(Unknown Size)";
-	};
-
 	// Create editable HP variable and autocalculate + or -
 	d20plus.hpAllowEdit = function () {
 		$("#initiativewindow").on(window.mousedowntype, ".hp.editable", function () {
@@ -2579,7 +1624,7 @@ const betteR205etoolsMain = function () {
 					let total;
 					// char.attribs doesn't exist for generico tokens, in this case stick stuff in an appropriate bar
 					if (!char.attribs || (npc && `${npc.get("current")}` === "1")) {
-						const hpBar = d20plus.getCfgHpBarNumber();
+						const hpBar = d20plus.cfg5e.getCfgHpBarNumber();
 						if (hpBar) {
 							if (base !== null) {
 								total = base;
@@ -2692,7 +1737,7 @@ const betteR205etoolsMain = function () {
 			cols.forEach((c, i) => {
 				switch (c) {
 					case "HP": {
-						const hpBar = d20plus.getCfgHpBarNumber();
+						const hpBar = d20plus.cfg5e.getCfgHpBarNumber();
 						replaceStack.push(`
 							<span class='hp editable tracker-col' alt='HP' title='HP'>
 								<$ if(npc && npc.get("current") == "1") { $>
