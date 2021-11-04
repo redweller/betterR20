@@ -1157,6 +1157,54 @@ function d20plusImporter () {
 			}
 		});
 	};
+
+	d20plus.importer.CharacterAttributesProxy = class {
+		constructor (character) {
+			this.character = character;
+			this._changedAttrs = [];
+		}
+
+		findByName (attrName) {
+			return this.character.model.attribs.toJSON()
+				.find(a => a.name === attrName) || {};
+		}
+
+		findOrGenerateRepeatingRowId (namePattern, current) {
+			const [namePrefix, nameSuffix] = namePattern.split(/\$\d?/);
+			const attr = this.character.model.attribs.toJSON()
+				.find(a => a.name.startsWith(namePrefix) && a.name.endsWith(nameSuffix) && a.current === current);
+			return attr
+				? attr.name.replace(RegExp(`^${namePrefix}(.*)${nameSuffix}$`), "$1")
+				: d20plus.ut.generateRowId();
+		}
+
+		add (name, current, max) {
+			this.character.model.attribs.create({
+				name: name,
+				current: current,
+				...(max == null ? {} : {max: max}),
+			}).save();
+			this._changedAttrs.push(name);
+		}
+
+		addOrUpdate (name, current, max) {
+			const id = this.findByName(name).id;
+			if (id) {
+				this.character.model.attribs.get(id).set({
+					current: current,
+					...(max == null ? {} : {max: max}),
+				}).save();
+				this._changedAttrs.push(name);
+			} else {
+				this.add(name, current, max);
+			}
+		}
+
+		notifySheetWorkers () {
+			d20.journal.notifyWorkersOfAttrChanges(this.character.model.id, this._changedAttrs);
+			this._changedAttrs = [];
+		}
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusImporter);

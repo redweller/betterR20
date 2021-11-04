@@ -29,6 +29,26 @@ function tools5eConfig () {
 		OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
 		RACE_DATA_URL = `${DATA_URL}races.json`;
 	};
+
+	d20plus.cfg5e.handleConfigChange = function (isSyncingPlayer) {
+		if (!isSyncingPlayer) d20plus.ut.log("Applying config");
+		if (window.is_gm) {
+			d20plus.setInitiativeShrink(d20plus.cfg.get("interface", "minifyTracker"));
+			d20.Campaign.initiativewindow.rebuildInitiativeList();
+			d20plus.updateDifficulty();
+			if (d20plus.art.refreshList) d20plus.art.refreshList();
+		}
+	};
+
+	// get the user config'd token HP bar
+	d20plus.cfg5e.getCfgHpBarNumber = function () {
+		const bars = [
+			d20plus.cfg.get("token", "bar1"),
+			d20plus.cfg.get("token", "bar2"),
+			d20plus.cfg.get("token", "bar3"),
+		];
+		return bars[0] === "npc_hpbase" ? 1 : bars[1] === "npc_hpbase" ? 2 : bars[2] === "npc_hpbase" ? 3 : null;
+	};
 }
 
 SCRIPT_EXTENSIONS.push(tools5eConfig);

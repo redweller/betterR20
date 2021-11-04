@@ -250,6 +250,22 @@ function d20plusMonsters () {
 		return d20plus.formSrcUrl(MONSTER_DATA_DIR, fileName);
 	};
 
+	// Import dialog showing names of monsters failed to import
+	d20plus.monsters.addImportError = function (name) {
+		let $span = $("#import-errors");
+		if ($span.text() === "0") {
+			$span.text(name);
+		} else {
+			$span.text(`${$span.text()}, ${name}`);
+		}
+	};
+
+	// Get NPC size from chr
+	d20plus.monsters.getSizeString = function (chr) {
+		const result = Parser.sizeAbvToFull(chr);
+		return result || "(Unknown Size)";
+	};
+
 	// Create monster character from js data object
 	d20plus.monsters.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		const doBuild = () => {
@@ -335,7 +351,7 @@ function d20plusMonsters () {
 							let passiveStr = passive !== "" ? `passive Perception ${passive}` : "";
 							let senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : "";
 							let sensesStr = senses !== "" ? `${senses}, ${passiveStr}` : passiveStr;
-							let size = d20plus.getSizeString(data.size || "");
+							let size = d20plus.monsters.getSizeString(data.size || "");
 							let alignment = data.alignment ? Parser.alignmentListToFull(data.alignment).toLowerCase() : "(Unknown Alignment)";
 							let cr = data.cr ? (data.cr.cr || data.cr) : "";
 							let xp = Parser.crToXpNumber(cr) || 0;
@@ -1362,7 +1378,7 @@ function d20plusMonsters () {
 							}
 						} catch (e) {
 							d20plus.ut.log(`Error loading [${name}]`);
-							d20plus.addImportError(name);
+							d20plus.monsters.addImportError(name);
 							// eslint-disable-next-line no-console
 							console.log(data, e);
 						}

@@ -217,6 +217,10 @@ const SCRIPTS = {
 			"5etools-feats",
 			"5etools-objects",
 			"5etools-tool",
+			"5etools-races",
+			"5etools-psionics",
+			"5etools-optional-features",
+			"5etools-adventures",
 
 			"base"
 		]
