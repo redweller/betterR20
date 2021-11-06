@@ -11,7 +11,7 @@ function d20plusSpells () {
 		<span class="name col-3" title="name">${it.name}</span>
 		<span class="class col-3" title="class">${((it.classes || {}).fromClassList || (it.classes || {}).fromClassListVariant || []).map(c => `CLS[${c.name}]`).join(", ")}</span>
 		<span class="level col-1" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
-		<span class="school col-1" title="school">${Parser.spSchoolAbvToFull(it.school)}</span>
+		<span class="school col-2" title="school">${Parser.spSchoolAbvToFull(it.school)}</span>
 		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-1">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.spells._listIndexConverter = (sp) => {
 		return {
