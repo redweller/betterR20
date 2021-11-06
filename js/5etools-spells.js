@@ -6,17 +6,19 @@ function d20plusSpells () {
 	};
 
 	d20plus.spells._groupOptions = ["Level", "Spell Points", "Alphabetical", "Source"];
-	d20plus.spells._listCols = ["name", "class", "level", "source"];
+	d20plus.spells._listCols = ["name", "class", "level", "school", "source"];
 	d20plus.spells._listItemBuilder = (it) => `
-		<span class="name col-4" title="name">${it.name}</span>
+		<span class="name col-3" title="name">${it.name}</span>
 		<span class="class col-3" title="class">${((it.classes || {}).fromClassList || (it.classes || {}).fromClassListVariant || []).map(c => `CLS[${c.name}]`).join(", ")}</span>
-		<span class="level col-3" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
-		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span class="level col-1" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
+		<span class="school col-1" title="school">${Parser.spSchoolAbvToFull(it.school)}</span>
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-1">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.spells._listIndexConverter = (sp) => {
 		return {
 			name: sp.name.toLowerCase(),
 			class: ((sp.classes || {}).fromClassList || (sp.classes || {}).fromClassListVariant || []).map(c => c.name.toLowerCase()),
 			level: Parser.spLevelToFull(sp.level).toLowerCase(),
+			school: sp.school.toLowerCase(),
 			source: Parser.sourceJsonToAbv(sp.source).toLowerCase(),
 		};
 	};
