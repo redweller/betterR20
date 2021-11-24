@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.27.0
+// @version      1.28.0
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -34,6 +34,7 @@ BASE_SITE_URL = "https://5etools-mirror-1.github.io/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;
+DATA_URL_MODULES = `https://raw.githubusercontent.com/5etools-mirror-1/roll20-module/master`;
 
 SCRIPT_EXTENSIONS = [];
 
@@ -1941,7 +1942,7 @@ function baseConfig () {
 						d20plus.ut.log("Saved config");
 
 						d20plus.cfg.baseHandleConfigChange();
-						if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+						if (d20plus.cfg5e) d20plus.cfg5e.handleConfigChange();
 					};
 
 					let handout = d20plus.cfg.getConfigHandout();
@@ -1954,7 +1955,7 @@ function baseConfig () {
 					_updateLoadedConfig();
 					StorageUtil.pSet(`Veconfig`, d20plus.cfg.current);
 					d20plus.cfg.baseHandleConfigChange();
-					if (d20plus.handleConfigChange) d20plus.handleConfigChange();
+					if (d20plus.cfg5e) d20plus.cfg5e.handleConfigChange();
 				}
 			});
 		}
@@ -3602,7 +3603,7 @@ function baseToolModule () {
 				$win5etools.dialog("open");
 				const $btnLoad = $win5etools.find(`.load`).off("click");
 
-				DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-index.json`).then(data => {
+				DataUtil.loadJSON(`${DATA_URL_MODULES}/roll20-module-index.json`).then(data => {
 					const $lst = $win5etools.find(`.list`);
 					const modules = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
 					let tmp = "";
@@ -3633,7 +3634,7 @@ function baseToolModule () {
 						$win5etools.dialog("close");
 						$win.dialog("open");
 						$wrpDataLoadingMessage.html("<i>Loading...</i>");
-						DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-${sel.id.toLowerCase()}.json`)
+						DataUtil.loadJSON(`${DATA_URL_MODULES}/roll20-module-${sel.id.toLowerCase()}.json`)
 							.then(moduleFile => {
 								$wrpDataLoadingMessage.html("");
 								return handleLoadedData(moduleFile);
@@ -12266,9 +12267,12 @@ function baseUi () {
 	 * @param additionalHTML additional html code, such as a button
 	 * @param note add a note at the bottom of the window
 	 * @param messageCountIncomplete message when user does not choose correct number of choices
+	 * @param random show button for random choices
+	 * @param randomMax Enforce max random choices
+	 * @param totallyRandom select randomly number of items between countMin and countMax. Requires count to be null. This has higher priority than randomMax
 	 * @return {Promise}
 	 */
-	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
+	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null , random = null, randomMax = null, totallyRandom = null} = {}) {
 		return new Promise((resolve, reject) => {
 			// Ensure count, countMin, and countMax don't mess up
 			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
@@ -12327,6 +12331,43 @@ function baseUi () {
 							reject(new Error(`User cancelled the prompt`));
 						},
 					},
+					(random?{
+						text: "Choose randomly",
+						click: function () {
+							document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+							var alreadySelected=[];
+							if (count != null){
+								for (var i=0;i<count;i++){
+									var randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+									while(alreadySelected.includes(randomSelection)){
+										randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+									}
+									alreadySelected.push(randomSelection);
+									var chkbx=document.querySelector("[data-choice=\""+randomSelection+"\"]");
+									chkbx.checked=true;
+								}
+							}else{
+								if (totallyRandom){
+									var loops=Math.floor(Math.random() * (countMax - countMin + 1) + countMin);
+								}else{
+									var loops=randomMax?countMax:countMin;
+								}
+								
+								for (var i=0;i<loops;i++){
+									var randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+									if (randomMax){
+										while(alreadySelected.includes(randomSelection)){
+											randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+										}
+									}
+									alreadySelected.push(randomSelection);
+									var chkbx=document.querySelector("[data-choice=\""+randomSelection+"\"]");
+									chkbx.checked=true;
+								}
+							}
+							
+						},
+					}:null),
 					{
 						text: "OK",
 						click: function () {
@@ -12344,7 +12385,84 @@ function baseUi () {
 							}
 						},
 					},
-				],
+				].filter(Boolean),
+			})
+		});
+	};
+
+	/**
+	 * Prompt the user to choose from a list of radios. Radio button allow exactly one choice. 
+	 *
+	 * @param dataArray options to choose from
+	 * @param dataTitle title for the window
+	 * @param displayFormatter function to format dataArray for display
+	 * @param random show button for random choices
+	 * @param additionalHTML additional html code, such as a button
+	 * @param note add a note at the bottom of the window
+	 * @param messageCountIncomplete message when user does not choose correct number of choices
+	 * @return {Promise}
+	 */
+	 d20plus.ui.chooseRadioList = async function (dataArray, dataTitle, {displayFormatter = null, random = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
+		return new Promise((resolve, reject) => {
+
+
+			// Generate the HTML
+			const $dialog = $(`
+				<div title="${dataTitle}">
+					<div>
+						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="radio" name="`+dataTitle+`"></label>`).join("")}
+					</div>
+					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
+					${note ? `<br><div class="italic">${note}</div>` : ""}
+				</div>
+			`).appendTo($("body"));
+			const $remain = $dialog.find(`[name="remain"]`);
+			const $cbChoices = $dialog.find(`input[type="radio"]`);
+
+
+			function getSelected () {
+				return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
+					.filter(it => it.selected).map(it => it.choice);
+			}
+
+			// Accept or reject selection
+			$dialog.dialog({
+				dialogClass: "no-close",
+				buttons: [
+					{
+						text: "Cancel",
+						click: function () {
+							$(this).dialog("close");
+							$dialog.remove();
+							reject(new Error(`User cancelled the prompt`));
+						},
+					},
+					(random?{
+						text: "Choose randomly",
+						click: function () {
+							const randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+							const radio=document.querySelector("[data-choice=\""+randomSelection+"\"]");
+							radio.checked=true;
+						},
+					}:null),
+					{
+						text: "OK",
+						click: function () {
+							const selected = getSelected();
+							if (selected.length == 1) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else if (!useRange && (selected.length === count || count == null)) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else {
+								alert(messageCountIncomplete ?? "Please an option!");
+							}
+						},
+					},
+				].filter(Boolean),
 			})
 		});
 	};
