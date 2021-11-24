@@ -7,6 +7,7 @@ BASE_SITE_URL = "https://5etools-mirror-1.github.io/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;
+DATA_URL_MODULES = `https://raw.githubusercontent.com/5etools-mirror-1/roll20-module/master`;
 
 SCRIPT_EXTENSIONS = [];
 
