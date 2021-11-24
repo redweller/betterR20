@@ -226,7 +226,7 @@ function d20plusMonsters () {
 		const data = await DataUtil.pUserUpload();
 
 		// Get the relevant information from the JSON
-		const monsterdata = data.jsons[0].monster;
+		const monsterdata = data.jsons[0].monster ? data.jsons[0].monster : data.jsons[0];
 
 		if (monsterdata) {
 			// Create an import list from the JSON
