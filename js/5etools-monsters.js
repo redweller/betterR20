@@ -5,17 +5,19 @@ function d20plusMonsters () {
 	};
 
 	d20plus.monsters._groupOptions = ["Type", "Type (with tags)", "CR", "CR → Type", "Alphabetical", "Source"];
-	d20plus.monsters._listCols = ["name", "type", "cr", "source"];
+	d20plus.monsters._listCols = ["name", "type", "environment", "cr", "source"];
 	d20plus.monsters._listItemBuilder = (it) => `
-		<span class="name col-4" title="name">${it.name}</span>
-		<span class="type col-4" title="type">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
-		<span class="cr col-2" title="cr">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
-		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span class="name col-3" title="name">${it.name}</span>
+		<span class="type col-2" title="type">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
+		<span class="environment col-3" title="environment">${(it.environment || []).map(c => `ENV[${c.uppercaseFirst()}]`).join(", ")}</span>
+		<span class="cr col-1" title="cr">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-1">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.monsters._listIndexConverter = (m) => {
 		m.__pType = m.__pType || Parser.monTypeToFullObj(m.type).type; // only filter using primary type
 		return {
 			name: m.name.toLowerCase(),
 			type: m.__pType.toLowerCase(),
+			environment: (m.environment || []).map(c => c.toLowerCase()),
 			cr: m.cr === undefined ? "unknown" : (m.cr.cr || m.cr).toLowerCase(),
 			source: Parser.sourceJsonToAbv(m.source).toLowerCase(),
 		};
