@@ -6,17 +6,19 @@ function d20plusSpells () {
 	};
 
 	d20plus.spells._groupOptions = ["Level", "Spell Points", "Alphabetical", "Source"];
-	d20plus.spells._listCols = ["name", "class", "level", "source"];
+	d20plus.spells._listCols = ["name", "class", "level", "school", "source"];
 	d20plus.spells._listItemBuilder = (it) => `
-		<span class="name col-4" title="name">${it.name}</span>
+		<span class="name col-3" title="name">${it.name}</span>
 		<span class="class col-3" title="class">${((it.classes || {}).fromClassList || (it.classes || {}).fromClassListVariant || []).map(c => `CLS[${c.name}]`).join(", ")}</span>
-		<span class="level col-3" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
-		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-2">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
+		<span class="level col-1" title="level">LVL[${Parser.spLevelToFull(it.level)}]</span>
+		<span class="school col-2" title="school">${Parser.spSchoolAbvToFull(it.school)}</span>
+		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-1">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.spells._listIndexConverter = (sp) => {
 		return {
 			name: sp.name.toLowerCase(),
 			class: ((sp.classes || {}).fromClassList || (sp.classes || {}).fromClassListVariant || []).map(c => c.name.toLowerCase()),
 			level: Parser.spLevelToFull(sp.level).toLowerCase(),
+			school: sp.school.toLowerCase(),
 			source: Parser.sourceJsonToAbv(sp.source).toLowerCase(),
 		};
 	};
@@ -225,6 +227,32 @@ function d20plusSpells () {
 			case 0:
 			default: return 0;
 		}
+	};
+
+	d20plus.spells.importSpells = async function (character, data, event) {
+		const importCriticalData = function () {
+			// give it time to update the sheet
+			setTimeout(() => {
+				const rowID = d20plus.importer.findOrGenerateRepeatingRowId(character.model, "repeating_attack_$0_atkname", data.name)
+
+				// crit damage
+				if (data.data.Crit && rowID) {
+					d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_dmgcustcrit`, data.data.Crit)
+					const critID = d20plus.importer.findAttrId(character.model, `repeating_attack_${rowID}_rollbase_crit`);
+					const newCrit = character.model.attribs.get(critID).get("current").replace(/{{crit1=\[\[\d\d?d\d\d?]]}}/g, "{{crit1=[[@{dmgcustcrit}]]}}");
+					d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_rollbase_crit`, newCrit)
+				}
+
+				// crit range
+				if (data.data["Crit Range"] && rowID) d20plus.importer.addOrUpdateAttr(character.model, `repeating_attack_${rowID}_atkcritrange`, data.data["Crit Range"])
+			}, 1000)
+		}
+
+		// this is working fine for spells.
+		d20plus.importer.doFakeDrop(event, character, data, null);
+
+		// adding critical info that is missing.
+		if (data.data.Crit || data.data["Crit Range"]) importCriticalData()
 	};
 }
 

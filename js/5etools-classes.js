@@ -224,6 +224,272 @@ function d20plusClass () {
 		return [noteContents, gmNotes];
 	};
 
+	d20plus.classes.getProfBonusFromLevel = function (level) {
+		if (level < 5) return "2";
+		if (level < 9) return "3";
+		if (level < 13) return "4";
+		if (level < 17) return "5";
+		return "6";
+	};
+
+	d20plus.classes.importClass = async function (character, data) {
+		let levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+		if (!levels) return;
+
+		const maxLevel = Math.max(...levels);
+
+		const clss = data.Vetoolscontent;
+		const renderer = Renderer.get().setBaseUrl(BASE_SITE_URL);
+		const shapedSheetPreFilledFeaturesByClass = {
+			"Artificer": [
+				"Magic Item Analysis",
+				"Tool Expertise",
+				"Wondrous Invention",
+				"Infuse Magic",
+				"Superior Attunement",
+				"Mechanical Servant",
+				"Soul of Artifice",
+			],
+			"Barbarian": [
+				"Rage",
+				"Unarmored Defense",
+				"Reckless Attack",
+				"Danger Sense",
+				"Extra Attack",
+				"Fast Movement",
+				"Feral Instinct",
+				"Brutal Critical",
+				"Relentless Rage",
+				"Persistent Rage",
+				"Indomitable Might",
+				"Primal Champion",
+			],
+			"Bard": [
+				"Bardic Inspiration",
+				"Jack of All Trades",
+				"Song of Rest",
+				"Expertise",
+				"Countercharm",
+				"Magical Secrets",
+				"Superior Inspiration",
+			],
+			"Cleric": [
+				"Channel Divinity",
+				"Turn Undead",
+				"Divine Intervention",
+			],
+			"Druid": [
+				"Druidic",
+				"Wild Shape",
+				"Timeless Body",
+				"Beast Spells",
+				"Archdruid",
+			],
+			"Fighter": [
+				"Fighting Style",
+				"Second Wind",
+				"Action Surge",
+				"Extra Attack",
+				"Indomitable",
+			],
+			"Monk": [
+				"Unarmored Defense",
+				"Martial Arts",
+				"Ki",
+				"Flurry of Blows",
+				"Patient Defense",
+				"Step of the Wind",
+				"Unarmored Movement",
+				"Deflect Missiles",
+				"Slow Fall",
+				"Extra Attack",
+				"Stunning Strike",
+				"Ki-Empowered Strikes",
+				"Evasion",
+				"Stillness of Mind",
+				"Purity of Body",
+				"Tongue of the Sun and Moon",
+				"Diamond Soul",
+				"Timeless Body",
+				"Empty Body",
+				"Perfect Soul",
+			],
+			"Paladin": [
+				"Divine Sense",
+				"Lay on Hands",
+				"Fighting Style",
+				"Divine Smite",
+				"Divine Health",
+				"Channel Divinity",
+				"Extra Attack",
+				"Aura of Protection",
+				"Aura of Courage",
+				"Improved Divine Smite",
+				"Cleansing Touch",
+			],
+			"Ranger": [
+				"Favored Enemy",
+				"Natural Explorer",
+				"Fighting Style",
+				"Primeval Awareness",
+				"Land’s Stride",
+				"Hide in Plain Sight",
+				"Vanish",
+				"Feral Senses",
+				"Foe Slayer",
+			],
+			"Ranger (Revised)": [ // "Ranger UA (2016)"
+				"Favored Enemy",
+				"Natural Explorer",
+				"Fighting Style",
+				"Primeval Awareness",
+				"Greater Favored Enemy",
+				"Fleet of Foot",
+				"Hide in Plain Sight",
+				"Vanish",
+				"Feral Senses",
+				"Foe Slayer",
+			],
+			"Rogue": [
+				"Expertise",
+				"Sneak Attack",
+				"Thieves' Cant",
+				"Cunning Action",
+				"Uncanny Dodge",
+				"Evasion",
+				"Reliable Talent",
+				"Blindsense",
+				"Slippery Mind",
+				"Elusive",
+				"Stroke of Luck",
+			],
+			"Sorcerer": [
+				"Sorcery Points",
+				"Flexible Casting",
+				"Metamagic",
+				"Sorcerous Restoration",
+			],
+			"Warlock": [
+				"Eldritch Invocations",
+				"Pact Boon",
+				"Mystic Arcanum",
+				"Eldritch Master",
+			],
+			"Wizard": [
+				"Arcane Recovery",
+				"Spell Mastery",
+				"Signature Spells",
+			],
+		};
+		const shapedSheetPreFilledFeatures = shapedSheetPreFilledFeaturesByClass[clss.name] || [];
+
+		const attrs = new d20plus.importer.CharacterAttributesProxy(character);
+
+		importClassGeneral(attrs, clss, maxLevel);
+
+		let featureSourceBlacklist = await d20plus.ui.chooseCheckboxList(
+			[SRC_TCE, SRC_UACFV],
+			"Choose Variant/Optional Feature Sources to Exclude",
+			{
+				note: "Choosing to exclude a source will prevent its features from being added to your sheet.",
+				displayFormatter: it => Parser.sourceJsonToFull(it),
+			},
+		);
+
+		for (let i = 0; i < maxLevel; i++) {
+			const level = i + 1;
+			if (!levels.has(level)) continue;
+
+			const lvlFeatureList = clss.classFeatures[i];
+			for (let j = 0; j < lvlFeatureList.length; j++) {
+				const feature = lvlFeatureList[j];
+				// don't add "you gain a subclass feature" or ASI's
+				if (
+					!feature.gainSubclassFeature
+					&& feature.name !== "Ability Score Improvement"
+					&& (!feature.isClassFeatureVariant || !featureSourceBlacklist.includes(feature.source))
+				) {
+					const renderStack = [];
+					renderer.recursiveRender({entries: feature.entries}, renderStack);
+					feature.text = d20plus.importer.getCleanText(renderStack.join(""));
+					importClassFeature(attrs, clss, level, feature);
+				}
+			}
+		}
+
+		function importClassGeneral (attrs, clss, maxLevel) {
+			if (d20plus.sheet === "ogl") {
+				setTimeout(() => {
+					attrs.addOrUpdate("pb", d20plus.classes.getProfBonusFromLevel(Number(maxLevel)));
+					attrs.addOrUpdate("class", clss.name);
+					attrs.addOrUpdate("level", maxLevel);
+					attrs.addOrUpdate("base_level", String(maxLevel));
+				}, 500);
+			} else if (d20plus.sheet === "shaped") {
+				const isSupportedClass = clss.source === "PHB" || ["Artificer", "Ranger (Revised)"].includes(clss.name);
+				let className = "CUSTOM";
+				if (isSupportedClass) {
+					className = clss.name.toUpperCase();
+					if (clss.name === "Ranger (Revised)") { className = "RANGERUA"; }
+				}
+
+				const fRowId = attrs.findOrGenerateRepeatingRowId("repeating_class_$0_name", className);
+				attrs.addOrUpdate(`repeating_class_${fRowId}_name`, className);
+				attrs.addOrUpdate(`repeating_class_${fRowId}_level`, maxLevel);
+				if (!isSupportedClass) {
+					attrs.addOrUpdate(`repeating_class_${fRowId}_hd`, `d${clss.hd.faces}`);
+					attrs.addOrUpdate(`repeating_class_${fRowId}_custom_class_toggle`, "1");
+					attrs.addOrUpdate(`repeating_class_${fRowId}_custom_name`, clss.name);
+				}
+
+				if (!isSupportedClass && clss.name === "Mystic") {
+					const classResourcesForLevel = clss.classTableGroups[0].rows[maxLevel - 1];
+					const [talentsKnown, disciplinesKnown, psiPoints, psiLimit] = classResourcesForLevel;
+
+					attrs.addOrUpdate("spell_points_name", "PSI");
+					attrs.addOrUpdate("show_spells", "1");
+					attrs.addOrUpdate("spell_points_toggle", "1");
+					attrs.addOrUpdate("spell_ability", "INTELLIGENCE");
+					attrs.addOrUpdate("spell_points_limit", psiLimit);
+					attrs.addOrUpdate("spell_points", psiPoints, psiPoints);
+					// talentsKnown, disciplinesKnown;	// unused
+
+					for (let i = 1; i <= 7; i++) {
+						attrs.addOrUpdate(`spell_level_${i}_cost`, i);
+					}
+					for (let i = 0; i <= psiLimit; i++) {
+						attrs.addOrUpdate(`spell_level_filter_${i}`, "1");
+					}
+				}
+
+				attrs.notifySheetWorkers();
+			} else {
+				// eslint-disable-next-line no-console
+				console.warn(`Class import is not supported for ${d20plus.sheet} character sheet`);
+			}
+		}
+
+		function importClassFeature (attrs, clss, level, feature) {
+			if (d20plus.sheet === "ogl") {
+				const fRowId = d20plus.ut.generateRowId();
+				attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
+				attrs.add(`repeating_traits_${fRowId}_source`, "Class");
+				attrs.add(`repeating_traits_${fRowId}_source_type`, `${clss.name} ${level}`);
+				attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
+				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+			} else if (d20plus.sheet === "shaped") {
+				if (shapedSheetPreFilledFeatures.includes(feature.name)) { return; }
+
+				const fRowId = d20plus.ut.generateRowId();
+				attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${clss.name} ${level})`);
+				attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
+				attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+			}
+
+			attrs.notifySheetWorkers();
+		}
+	};
+
 	/// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	d20plus.subclasses._groupOptions = ["Class", "Alphabetical", "Source"];
@@ -389,6 +655,100 @@ function d20plusClass () {
 		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
+	};
+
+	d20plus.subclasses.importSubclass = function (character, data) {
+		if (d20plus.sheet !== "ogl" && d20plus.sheet !== "shaped") {
+			// eslint-disable-next-line no-console
+			console.warn(`Subclass import is not supported for ${d20plus.sheet} character sheet`);
+			return;
+		}
+
+		const attrs = new d20plus.importer.CharacterAttributesProxy(character);
+		const sc = data.Vetoolscontent;
+
+		const levels = d20plus.ut.getNumberRange("What levels?", 1, 20);
+		if (!levels || !levels.size) return;
+
+		const renderer = new Renderer();
+		renderer.setBaseUrl(BASE_SITE_URL);
+		let firstFeatures = true;
+		for (let i = 0; i < sc.subclassFeatures.length; i++) {
+			const lvlFeatureList = sc.subclassFeatures[i];
+			for (let j = 0; j < lvlFeatureList.length; j++) {
+				const featureCpy = JSON.parse(JSON.stringify(lvlFeatureList[j]));
+				let feature = lvlFeatureList[j];
+
+				if (!levels.has(feature.level)) continue;
+
+				try {
+					while (!feature.name || (feature[0] && !feature[0].name)) {
+						if (feature.entries && feature.entries.name) {
+							feature = feature.entries;
+							continue;
+						} else if (feature.entries[0] && feature.entries[0].name) {
+							feature = feature.entries[0];
+							continue;
+						} else {
+							feature = feature.entries;
+						}
+
+						if (!feature) {
+							// in case something goes wrong, reset break the loop
+							feature = featureCpy;
+							break;
+						}
+					}
+				} catch (e) {
+					// eslint-disable-next-line no-console
+					console.error("Failed to find feature");
+					// in case something goes _really_ wrong, reset
+					feature = featureCpy;
+				}
+
+				// for the first batch of subclass features, try to split them up
+				if (firstFeatures && feature.name && feature.entries) {
+					const subFeatures = [];
+					const baseFeatures = feature.entries.filter(f => {
+						if (f.name && f.type === "entries") {
+							subFeatures.push(f);
+							return false;
+						} else return true;
+					});
+					importSubclassFeature(attrs, sc, feature.level,
+						{name: feature.name, type: feature.type, entries: baseFeatures});
+					subFeatures.forEach(sf => {
+						importSubclassFeature(attrs, sc, feature.level, sf);
+					})
+				} else {
+					importSubclassFeature(attrs, sc, feature.level, feature);
+				}
+
+				firstFeatures = false;
+			}
+		}
+
+		function importSubclassFeature (attrs, sc, level, feature) {
+			const renderStack = [];
+			renderer.recursiveRender({entries: feature.entries}, renderStack);
+			feature.text = d20plus.importer.getCleanText(renderStack.join(""));
+
+			const fRowId = d20plus.ut.generateRowId();
+
+			if (d20plus.sheet === "ogl") {
+				attrs.add(`repeating_traits_${fRowId}_name`, feature.name);
+				attrs.add(`repeating_traits_${fRowId}_source`, "Class");
+				attrs.add(`repeating_traits_${fRowId}_source_type`, `${sc.className} (${sc.name} ${level})`);
+				attrs.add(`repeating_traits_${fRowId}_description`, feature.text);
+				attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+			} else if (d20plus.sheet === "shaped") {
+				attrs.add(`repeating_classfeature_${fRowId}_name`, `${feature.name} (${sc.name} ${level})`);
+				attrs.add(`repeating_classfeature_${fRowId}_content`, feature.text);
+				attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+			}
+
+			attrs.notifySheetWorkers();
+		}
 	};
 }
 

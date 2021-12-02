@@ -140,9 +140,12 @@ function baseUi () {
 	 * @param additionalHTML additional html code, such as a button
 	 * @param note add a note at the bottom of the window
 	 * @param messageCountIncomplete message when user does not choose correct number of choices
+	 * @param random show button for random choices
+	 * @param randomMax Enforce max random choices
+	 * @param totallyRandom select randomly number of items between countMin and countMax. Requires count to be null. This has higher priority than randomMax
 	 * @return {Promise}
 	 */
-	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
+	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null , random = null, randomMax = null, totallyRandom = null} = {}) {
 		return new Promise((resolve, reject) => {
 			// Ensure count, countMin, and countMax don't mess up
 			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
@@ -201,6 +204,43 @@ function baseUi () {
 							reject(new Error(`User cancelled the prompt`));
 						},
 					},
+					(random?{
+						text: "Choose randomly",
+						click: function () {
+							document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+							var alreadySelected=[];
+							if (count != null){
+								for (var i=0;i<count;i++){
+									var randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+									while(alreadySelected.includes(randomSelection)){
+										randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+									}
+									alreadySelected.push(randomSelection);
+									var chkbx=document.querySelector("[data-choice=\""+randomSelection+"\"]");
+									chkbx.checked=true;
+								}
+							}else{
+								if (totallyRandom){
+									var loops=Math.floor(Math.random() * (countMax - countMin + 1) + countMin);
+								}else{
+									var loops=randomMax?countMax:countMin;
+								}
+								
+								for (var i=0;i<loops;i++){
+									var randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+									if (randomMax){
+										while(alreadySelected.includes(randomSelection)){
+											randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+										}
+									}
+									alreadySelected.push(randomSelection);
+									var chkbx=document.querySelector("[data-choice=\""+randomSelection+"\"]");
+									chkbx.checked=true;
+								}
+							}
+							
+						},
+					}:null),
 					{
 						text: "OK",
 						click: function () {
@@ -218,7 +258,84 @@ function baseUi () {
 							}
 						},
 					},
-				],
+				].filter(Boolean),
+			})
+		});
+	};
+
+	/**
+	 * Prompt the user to choose from a list of radios. Radio button allow exactly one choice. 
+	 *
+	 * @param dataArray options to choose from
+	 * @param dataTitle title for the window
+	 * @param displayFormatter function to format dataArray for display
+	 * @param random show button for random choices
+	 * @param additionalHTML additional html code, such as a button
+	 * @param note add a note at the bottom of the window
+	 * @param messageCountIncomplete message when user does not choose correct number of choices
+	 * @return {Promise}
+	 */
+	 d20plus.ui.chooseRadioList = async function (dataArray, dataTitle, {displayFormatter = null, random = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
+		return new Promise((resolve, reject) => {
+
+
+			// Generate the HTML
+			const $dialog = $(`
+				<div title="${dataTitle}">
+					<div>
+						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="radio" name="`+dataTitle+`"></label>`).join("")}
+					</div>
+					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
+					${note ? `<br><div class="italic">${note}</div>` : ""}
+				</div>
+			`).appendTo($("body"));
+			const $remain = $dialog.find(`[name="remain"]`);
+			const $cbChoices = $dialog.find(`input[type="radio"]`);
+
+
+			function getSelected () {
+				return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
+					.filter(it => it.selected).map(it => it.choice);
+			}
+
+			// Accept or reject selection
+			$dialog.dialog({
+				dialogClass: "no-close",
+				buttons: [
+					{
+						text: "Cancel",
+						click: function () {
+							$(this).dialog("close");
+							$dialog.remove();
+							reject(new Error(`User cancelled the prompt`));
+						},
+					},
+					(random?{
+						text: "Choose randomly",
+						click: function () {
+							const randomSelection=dataArray[Math.floor(Math.random()*dataArray.length)];
+							const radio=document.querySelector("[data-choice=\""+randomSelection+"\"]");
+							radio.checked=true;
+						},
+					}:null),
+					{
+						text: "OK",
+						click: function () {
+							const selected = getSelected();
+							if (selected.length == 1) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else if (!useRange && (selected.length === count || count == null)) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else {
+								alert(messageCountIncomplete ?? "Please an option!");
+							}
+						},
+					},
+				].filter(Boolean),
 			})
 		});
 	};

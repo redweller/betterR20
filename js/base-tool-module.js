@@ -463,7 +463,7 @@ function baseToolModule () {
 				$win5etools.dialog("open");
 				const $btnLoad = $win5etools.find(`.load`).off("click");
 
-				DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-index.json`).then(data => {
+				DataUtil.loadJSON(`${DATA_URL_MODULES}/roll20-module-index.json`).then(data => {
 					const $lst = $win5etools.find(`.list`);
 					const modules = data.map.sort((a, b) => SortUtil.ascSortLower(a.name, b.name));
 					let tmp = "";
@@ -494,7 +494,7 @@ function baseToolModule () {
 						$win5etools.dialog("close");
 						$win.dialog("open");
 						$wrpDataLoadingMessage.html("<i>Loading...</i>");
-						DataUtil.loadJSON(`${DATA_URL}roll20-module/roll20-module-${sel.id.toLowerCase()}.json`)
+						DataUtil.loadJSON(`${DATA_URL_MODULES}/roll20-module-${sel.id.toLowerCase()}.json`)
 							.then(moduleFile => {
 								$wrpDataLoadingMessage.html("");
 								return handleLoadedData(moduleFile);

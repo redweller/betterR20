@@ -291,6 +291,50 @@ function d20plusItems () {
 		if (Renderer.item.propertyMap[property]) return Renderer.item.propertyMap[property].name;
 		return "n/a";
 	};
+	
+	d20plus.items.importItem = function (character, data, event) {
+		if (d20plus.sheet === "ogl") {
+			// for packs, etc
+			if (data._subItems) {
+				const queue = [];
+				data._subItems.forEach(si => {
+					function makeProp (rowId, propName, content) {
+						character.model.attribs.create({
+							"name": `repeating_inventory_${rowId}_${propName}`,
+							"current": content,
+						}).save();
+					}
+					
+					if (si.count) {
+						const rowId = d20plus.ut.generateRowId();
+						const siD = typeof si.subItem === "string" ? JSON.parse(si.subItem) : si.subItem;
+						
+						makeProp(rowId, "itemname", siD.name);
+						const w = (siD.data || {}).Weight;
+						if (w) makeProp(rowId, "itemweight", w);
+						makeProp(rowId, "itemcontent", siD.content || Object.entries(siD.data).map(([k, v]) => `${k}: ${v}`).join(", "));
+						makeProp(rowId, "itemcount", String(si.count));
+					} else {
+						queue.push(si.subItem);
+					}
+				});
+				
+				const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
+				queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
+					setTimeout(() => {
+						d20plus.importer.doFakeDrop(event, character, item, null);
+					}, (ix + 1) * interval);
+				});
+				
+				return;
+			}
+		}
+		
+		// Fallback to native drag-n-drop
+		d20plus.importer.doFakeDrop(event, character, data, null);
+	};
+
+
 }
 
 SCRIPT_EXTENSIONS.push(d20plusItems);
