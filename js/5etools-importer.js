@@ -131,23 +131,17 @@ function d20plusImporter () {
 
 		/* eslint-disable */
 
+		const d = !!o.data ? o : JSON.parse(o[0]);
 		// BEGIN ROLL20 CODE
-		const r = _.clone(o.data);
-		r.Name = o.name,
-			r.data = o.data,
-			r.data = JSON.stringify(r.data),
-			r.uniqueName = t,
-			r.Content = o.content,
-			r.dropSubhead = n,
-			e.$currentDropTarget.find("*[accept]").each(function() {
-				const t = $(this)
-					, i = t.attr("accept");
-				r[i] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") || "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() === r[i] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-					const e = $(this);
-					e.val() !== r[i] && e.text() !== r[i] || e.prop("selected", !0)
-				}) : $(this).val(r[i]),
-					e.saveSheetValues(this, "compendium"))
-			})
+		const g = _.clone(d.data);
+		g.Name = d.name, g.data = JSON.stringify(d.data), g.uniqueName = t, g.Content = d.content, g.dropSubhead = n,
+		e.$currentDropTarget.find("*[accept]").each(function() {
+			const v = $(this), C = v.attr("accept");
+			g[C] && (v[0].tagName.toLowerCase() === "input" && v.attr("type") === "checkbox" || v[0].tagName.toLowerCase() === "input" && v.attr("type") === "radio" ? v.val() === g[C] ? v.prop("checked", !0) : v.prop("checked", !1) : v[0].tagName.toLowerCase() === "select" ? v.find("option").each(function() {
+				const E = $(this);
+				(E.val() === g[C] || E.text() === g[C]) && E.prop("selected", !0)
+			}) : $(this).val(g[C]), e.saveSheetValues(this, "compendium"))
+		})
 		// END ROLL20 CODE
 
 		/* eslint-enable */
