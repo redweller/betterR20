@@ -50,6 +50,15 @@ function d20plusEngine () {
 				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
 			}
 
+			// add light placement tool
+			if (!$(`#placelight`).length) {
+				const $torchMode = $(`<li class="placelight" tip="Place Light"><img id="placelighticon" src="/images/editor/torch.png" width="20" height="20"></li>`);
+				$torchMode.on("click", () => {
+					d20plus.setMode("placelight");
+				});
+				$(`#measure`).after($torchMode);
+			}
+
 			// ensure tokens have editable sight
 			$("#tmpl_tokeneditor").replaceWith(d20plus.templates.templateTokenEditor);
 			// show dynamic lighting/etc page settings
