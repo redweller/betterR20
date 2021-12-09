@@ -20,10 +20,10 @@ function baseQpi () {
 				_preInit () {
 					qpi._on_chatHandlers = [];
 					const seenMessages = new Set();
-					d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
+					d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
 					const handleChat = (e) => {
 						if (!d20.textchat.chatstartingup) {
-							e.id = e.key();
+							e.id = e.key;
 							if (!seenMessages.has(e.id)) {
 								seenMessages.add(e.id);
 
@@ -90,7 +90,7 @@ function baseQpi () {
 						inlinerolls: [],
 					};
 
-					const key = d20.textchat.chatref.push().key();
+					const key = d20.textchat.chatref.push().key;
 					d20.textchat.chatref.child(key).setWithPriority(message, Firebase.ServerValue.TIMESTAMP)
 				},
 				works: 0.01,
