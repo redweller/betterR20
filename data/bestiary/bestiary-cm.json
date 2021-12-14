@@ -2401,7 +2401,6 @@
 			"miscTags": [
 				"MW"
 			],
-			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2530,6 +2529,9 @@
 			],
 			"miscTags": [
 				"AOE"
+			],
+			"conditionInflictSpell": [
+				"incapacitated"
 			],
 			"hasToken": true,
 			"hasFluff": true,

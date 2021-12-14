@@ -483,7 +483,9 @@
 		},
 		{
 			"name": "Clawfoot",
-			"group": "Dinosaurs",
+			"group": [
+				"Dinosaurs"
+			],
 			"source": "ERLW",
 			"page": 289,
 			"otherSources": [
@@ -1165,7 +1167,9 @@
 		},
 		{
 			"name": "Expeditious Messenger",
-			"group": "Homunculi",
+			"group": [
+				"Homunculi"
+			],
 			"source": "ERLW",
 			"page": 293,
 			"size": "T",
@@ -1248,7 +1252,9 @@
 		},
 		{
 			"name": "Fastieth",
-			"group": "Dinosaurs",
+			"group": [
+				"Dinosaurs"
+			],
 			"source": "ERLW",
 			"page": 289,
 			"size": "M",
@@ -1318,7 +1324,9 @@
 		},
 		{
 			"name": "Hashalaq Quori",
-			"group": "Quori",
+			"group": [
+				"Quori"
+			],
 			"source": "ERLW",
 			"page": 305,
 			"size": "M",
@@ -1643,11 +1651,69 @@
 			],
 			"hasToken": true,
 			"hasFluff": true,
-			"hasFluffImages": true
+			"hasFluffImages": true,
+			"_versions": [
+				{
+					"name": "Inspired (Quori Vessel; Hashalaq)",
+					"source": "EGW",
+					"_mod": {
+						"_": {
+							"mode": "addSpells",
+							"daily": {
+								"3e": [
+									"{@spell suggestion}"
+								]
+							}
+						}
+					},
+					"variant": null
+				},
+				{
+					"name": "Inspired (Quori Vessel; Kalaraq)",
+					"source": "EGW",
+					"_mod": {
+						"_": {
+							"mode": "addSpells",
+							"daily": {
+								"3e": [
+									"{@spell arcane eye}"
+								]
+							}
+						},
+						"trait": {
+							"mode": "appendArr",
+							"items": {
+								"name": "All Around Vision",
+								"entries": [
+									"The Inspired can't be surprised."
+								]
+							}
+						}
+					},
+					"variant": null
+				},
+				{
+					"name": "Inspired (Quori Vessel; Tsucora)",
+					"source": "EGW",
+					"_mod": {
+						"_": {
+							"mode": "addSpells",
+							"daily": {
+								"1e": [
+									"{@spell fear}"
+								]
+							}
+						}
+					},
+					"variant": null
+				}
+			]
 		},
 		{
 			"name": "Iron Defender",
-			"group": "Homunculi",
+			"group": [
+				"Homunculi"
+			],
 			"source": "ERLW",
 			"page": 293,
 			"size": "M",
@@ -1741,7 +1807,9 @@
 		},
 		{
 			"name": "Kalaraq Quori",
-			"group": "Quori",
+			"group": [
+				"Quori"
+			],
 			"source": "ERLW",
 			"page": 306,
 			"size": "M",
@@ -4064,13 +4132,18 @@
 				"RCH",
 				"RW"
 			],
+			"conditionInflict": [
+				"prone"
+			],
 			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
 		{
 			"name": "Tsucora Quori",
-			"group": "Quori",
+			"group": [
+				"Quori"
+			],
 			"source": "ERLW",
 			"page": 307,
 			"size": "M",
@@ -5324,6 +5397,9 @@
 				"MW",
 				"RW",
 				"THW"
+			],
+			"conditionInflict": [
+				"prone"
 			],
 			"hasToken": true,
 			"hasFluff": true,

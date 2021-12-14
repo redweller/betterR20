@@ -2677,6 +2677,10 @@
 				"MW",
 				"RCH"
 			],
+			"conditionInflict": [
+				"frightened",
+				"prone"
+			],
 			"conditionInflictLegendary": [
 				"blinded",
 				"prone",
@@ -2814,6 +2818,9 @@
 				"RCH",
 				"RW",
 				"THW"
+			],
+			"conditionInflict": [
+				"restrained"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -3130,6 +3137,9 @@
 				"MW",
 				"RCH",
 				"RW"
+			],
+			"conditionInflict": [
+				"deafened"
 			],
 			"hasToken": true,
 			"hasFluff": true
@@ -6148,6 +6158,9 @@
 				"RW"
 			],
 			"conditionInflict": [
+				"prone"
+			],
+			"conditionInflictSpell": [
 				"prone"
 			],
 			"hasToken": true,

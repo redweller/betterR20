@@ -2991,6 +2991,10 @@
 				"MW",
 				"RCH"
 			],
+			"conditionInflict": [
+				"grappled",
+				"restrained"
+			],
 			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true

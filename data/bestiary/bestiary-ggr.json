@@ -2909,7 +2909,18 @@
 			],
 			"hasToken": true,
 			"hasFluff": true,
-			"hasFluffImages": true
+			"hasFluffImages": true,
+			"_versions": [
+				{
+					"name": "Winged Felidar",
+					"source": "GGR",
+					"speed": {
+						"walk": 40,
+						"fly": 40
+					},
+					"variant": null
+				}
+			]
 		},
 		{
 			"name": "Firefist",
@@ -5664,7 +5675,19 @@
 			],
 			"hasToken": true,
 			"hasFluff": true,
-			"hasFluffImages": true
+			"hasFluffImages": true,
+			"_versions": [
+				{
+					"name": "Winged Kraul Warrior",
+					"source": "GGR",
+					"speed": {
+						"walk": 30,
+						"climb": 30,
+						"fly": 40
+					},
+					"variant": null
+				}
+			]
 		},
 		{
 			"name": "Lawmage",
@@ -7358,6 +7381,9 @@
 			],
 			"miscTags": [
 				"MW"
+			],
+			"conditionInflict": [
+				"stunned"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -9508,6 +9534,10 @@
 				"AOE",
 				"MW"
 			],
+			"conditionInflict": [
+				"grappled",
+				"restrained"
+			],
 			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
@@ -9629,6 +9659,10 @@
 			],
 			"miscTags": [
 				"MW"
+			],
+			"conditionInflict": [
+				"petrified",
+				"restrained"
 			],
 			"hasToken": true,
 			"hasFluff": true,

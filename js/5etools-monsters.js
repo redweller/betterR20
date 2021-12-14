@@ -329,7 +329,7 @@ function d20plusMonsters () {
 							character.size = data.size;
 							character.name = data._displayName || data.name;
 							character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
-							character.hp = data.hp.average || 0;
+							character.hp = data.hp.average || data.hp.special || 0;
 							const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? (() => {
 								const firstImage = fluff.images[0] || {};
 								return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
@@ -347,7 +347,7 @@ function d20plusMonsters () {
 							const parsedAc = typeof data.ac === "string" ? data.ac : $(`<div>${Parser.acToFull(data.ac)}</div>`).text();
 							let ac = parsedAc.match(/^\d+/);
 							let actype = /\(([^)]+)\)/.exec(parsedAc);
-							let hp = data.hp.average ?? "";
+							let hp = data.hp.average ?? data.hp.special ?? "";
 							let hpformula = data.hp.formula;
 							let passive = data.passive != null ? data.passive : "";
 							let passiveStr = passive !== "" ? `passive Perception ${passive}` : "";

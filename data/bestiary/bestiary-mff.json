@@ -532,6 +532,9 @@
 			"miscTags": [
 				"MW"
 			],
+			"conditionInflict": [
+				"frightened"
+			],
 			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true

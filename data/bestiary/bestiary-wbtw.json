@@ -510,6 +510,8 @@
 				"MW"
 			],
 			"conditionInflict": [
+				"blinded",
+				"grappled",
 				"restrained"
 			],
 			"hasToken": true,
@@ -2903,6 +2905,9 @@
 				"MW",
 				"RW",
 				"THW"
+			],
+			"conditionInflict": [
+				"unconscious"
 			],
 			"hasToken": true,
 			"hasFluff": true,

@@ -4382,6 +4382,10 @@
 					]
 				}
 			],
+			"conditionInflict": [
+				"petrified",
+				"restrained"
+			],
 			"hasToken": true
 		},
 		{
