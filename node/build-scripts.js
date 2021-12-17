@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.28.0";
+const SCRIPT_VERSION = "1.28.1";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -15,7 +15,7 @@ const matchString = `
 // running, the analytics scripts manage to somehow crash the entire website.
 const analyticsBlocking = `
 // @grant        GM_webRequest
-// @webRequest   [{"selector": { "include": "*://www.google-analytics.com/analytics.js" },  "action": "cancel"}]
+// @webRequest   [{"selector": { "include": "*://www.google-analytics.com/analytics.js" },  "action": "cancel"}]1
 // @webRequest   [{"selector": { "include": "*://cdn.userleap.com/shim.js?*" },  "action": "cancel"}]
 `;
 

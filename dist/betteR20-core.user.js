@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.28.05-dev
+// @version      1.28.1
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -19161,6 +19161,14 @@ Parser.bookOrdinalToAbv = (ordinal, preNoSuff) => {
 	}
 };
 
+Parser.IMAGE_TYPE_TO_FULL = {
+	"map": "Map",
+	"mapPlayer": "Map (Player)",
+};
+Parser.imageTypeToFull = function (imageType) {
+	return Parser._parse_aToB(Parser.IMAGE_TYPE_TO_FULL, imageType, "Other");
+};
+
 Parser.nameToTokenName = function (name) {
 	return name
 		.toAscii()
@@ -23453,6 +23461,17 @@ DataUtil = {
 			};
 		},
 
+		getNormalizedUid (uid, tag) {
+			const {name, source} = DataUtil.generic.unpackUid(uid, tag, {isLower: true});
+			return [name, source].join("|");
+		},
+
+		getUid (ent) {
+			const {name, source} = ent;
+			if (!name || !source) throw new Error(`Entity did not have a name and source!`);
+			return [name, source].join("|").toLowerCase();
+		},
+
 		async _pMergeCopy (impl, page, entryList, entry, options) {
 			if (!entry._copy) return;
 
@@ -24088,9 +24107,10 @@ DataUtil = {
 	},
 
 	proxy: {
-		getVersions (prop, ent) {
-			return (DataUtil[prop]?.getVersions || DataUtil.generic.getVersions)(ent);
-		},
+		getVersions (prop, ent) { return (DataUtil[prop]?.getVersions || DataUtil.generic.getVersions)(ent); },
+		unpackUid (prop, uid, tag, opts) { return (DataUtil[prop]?.unpackUid || DataUtil.generic.unpackUid)(uid, tag, opts); },
+		getNormalizedUid (prop, uid, tag, opts) { return (DataUtil[prop]?.getNormalizedUid || DataUtil.generic.getNormalizedUid)(uid, tag, opts); },
+		getUid (prop, ent) { return (DataUtil[prop]?.getUid || DataUtil.generic.getUid)(ent); },
 	},
 
 	monster: {
@@ -26902,23 +26922,20 @@ CollectionUtil = {
 	},
 
 	deepEquals (a, b) {
-		if (CollectionUtil._eq_sameValueZeroEqual(a, b)) return true;
+		if (Object.is(a, b)) return true;
 		if (a && b && typeof a === "object" && typeof b === "object") {
 			if (CollectionUtil._eq_isPlainObject(a) && CollectionUtil._eq_isPlainObject(b)) return CollectionUtil._eq_areObjectsEqual(a, b);
-			const arrayA = Array.isArray(a);
-			const arrayB = Array.isArray(b);
-			if (arrayA || arrayB) return arrayA === arrayB && CollectionUtil._eq_areArraysEqual(a, b);
-			const setA = a instanceof Set;
-			const setB = b instanceof Set;
-			if (setA || setB) return setA === setB && CollectionUtil.setEq(a, b);
+			const isArrayA = Array.isArray(a);
+			const isArrayB = Array.isArray(b);
+			if (isArrayA || isArrayB) return isArrayA === isArrayB && CollectionUtil._eq_areArraysEqual(a, b);
+			const isSetA = a instanceof Set;
+			const isSetB = b instanceof Set;
+			if (isSetA || isSetB) return isSetA === isSetB && CollectionUtil.setEq(a, b);
 			return CollectionUtil._eq_areObjectsEqual(a, b);
 		}
 		return false;
 	},
 
-	// This handles the NaN != NaN case; ignore linter complaints
-	// eslint-disable-next-line no-self-compare
-	_eq_sameValueZeroEqual: (a, b) => a === b || (a !== a && b !== b),
 	_eq_isPlainObject: (value) => value.constructor === Object || value.constructor == null,
 	_eq_areObjectsEqual (a, b) {
 		const keysA = Object.keys(a);
@@ -28091,6 +28108,7 @@ class UiUtil {
 
 	static getEntriesAsText (entryArray) {
 		if (!entryArray || !entryArray.length) return "";
+		if (!(entryArray instanceof Array)) return UiUtil.getEntriesAsText([entryArray]);
 
 		return entryArray
 			.map(it => {
