@@ -61,7 +61,7 @@ function d20plusFeats () {
 		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
 		const prerequisite = Renderer.utils.getPrerequisiteHtml(data.prerequisite);
-		Renderer.feat.mergeAbilityIncrease(data);
+		Renderer.feat.initFullEntries(data);
 
 		const renderStack = [];
 		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 2});
