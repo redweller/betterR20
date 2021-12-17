@@ -267,6 +267,9 @@
 			"conditionInflict": [
 				"charmed"
 			],
+			"affectsCreatureType": [
+				"beast"
+			],
 			"miscTags": [
 				"SGT"
 			],
@@ -565,6 +568,20 @@
 			"savingThrow": [
 				"wisdom"
 			],
+			"affectsCreatureType": [
+				"aberration",
+				"beast",
+				"celestial",
+				"dragon",
+				"elemental",
+				"fey",
+				"fiend",
+				"giant",
+				"humanoid",
+				"monstrosity",
+				"ooze",
+				"plant"
+			],
 			"miscTags": [
 				"SGT"
 			],
@@ -675,6 +692,9 @@
 						"You touch adult humanoids willing to be bonded together in marriage. For the next 7 days, each target gains a +2 bonus to AC while they are within 30 feet of each other. A creature can benefit from this rite again only if widowed."
 					]
 				}
+			],
+			"affectsCreatureType": [
+				"humanoid"
 			],
 			"miscTags": [
 				"MAC"
@@ -2244,6 +2264,12 @@
 			"name": "Find Greater Steed",
 			"source": "XGE",
 			"page": 156,
+			"additionalSources": [
+				{
+					"source": "FTD",
+					"page": 190
+				}
+			],
 			"level": 4,
 			"school": "C",
 			"time": [
@@ -2273,7 +2299,16 @@
 				"You control the mount in combat. While the mount is within 1 mile of you, you can communicate with it telepathically. While mounted on it, you can make any spell you cast that targets only you also target the mount.",
 				"The mount disappears temporarily when it drops to 0 hit points or when you dismiss it as an action. Casting this spell again re-summons the bonded mount, with all its hit points restored and any conditions removed.",
 				"You can't have more than one mount bonded by this spell or {@spell find steed} at the same time. As an action, you can release a mount from its bond, causing it to disappear permanently.",
-				"Whenever the mount disappears, it leaves behind any objects it was wearing or carrying."
+				"Whenever the mount disappears, it leaves behind any objects it was wearing or carrying.",
+				{
+					"type": "inset",
+					"source": "FTD",
+					"page": 190,
+					"name": "Dragonnel Steeds",
+					"entries": [
+						"With the DM's permission, a paladin can summon a spirit in the form of a {@creature dragonnel|ftd} using the find greater steed spell, which appears in {@i Xanathar's Guide to Everything}."
+					]
+				}
 			],
 			"miscTags": [
 				"PRM",
@@ -2686,6 +2721,20 @@
 						"When you cast this spell using a spell slot of 3rd level or higher, the healing increases by {@scaledice 1d6|2-9|1d6} for each slot level above 2nd."
 					]
 				}
+			],
+			"affectsCreatureType": [
+				"aberration",
+				"beast",
+				"celestial",
+				"dragon",
+				"elemental",
+				"fey",
+				"fiend",
+				"giant",
+				"humanoid",
+				"monstrosity",
+				"ooze",
+				"plant"
 			],
 			"miscTags": [
 				"HL",
@@ -5432,6 +5481,9 @@
 				},
 				"A creature that can see the sensor (such as one using {@spell see invisibility} or {@sense truesight}) sees a translucent image of the tormented humanoid whose soul you caged."
 			],
+			"affectsCreatureType": [
+				"humanoid"
+			],
 			"miscTags": [
 				"HL"
 			],
@@ -5885,6 +5937,13 @@
 			],
 			"savingThrow": [
 				"charisma"
+			],
+			"affectsCreatureType": [
+				"celestial",
+				"elemental",
+				"fey",
+				"fiend",
+				"undead"
 			],
 			"miscTags": [
 				"HL",

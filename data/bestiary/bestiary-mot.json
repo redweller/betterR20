@@ -254,7 +254,9 @@
 		},
 		{
 			"name": "Alseid",
-			"group": "Nymph",
+			"group": [
+				"Nymph"
+			],
 			"source": "MOT",
 			"page": 235,
 			"size": "M",
@@ -471,7 +473,10 @@
 								"The anvilwrought can serve another creature as a familiar, forming a magical, telepathic bond with its willing master. While the two are bonded, the master can sense what the anvilwrought senses, as long as they are within 1 mile of each other."
 							]
 						}
-					]
+					],
+					"_version": {
+						"addHeadersAs": "trait"
+					}
 				}
 			],
 			"traitTags": [
@@ -2871,8 +2876,12 @@
 				"RCH"
 			],
 			"conditionInflict": [
+				"grappled",
 				"petrified",
 				"restrained"
+			],
+			"conditionInflictLegendary": [
+				"poisoned"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -2989,7 +2998,9 @@
 		},
 		{
 			"name": "Lampad",
-			"group": "Nymph",
+			"group": [
+				"Nymph"
+			],
 			"source": "MOT",
 			"page": 235,
 			"size": "M",
@@ -3421,7 +3432,9 @@
 		},
 		{
 			"name": "Naiad",
-			"group": "Nymph",
+			"group": [
+				"Nymph"
+			],
 			"source": "MOT",
 			"page": 236,
 			"otherSources": [
@@ -3905,7 +3918,9 @@
 		},
 		{
 			"name": "Oread",
-			"group": "Nymph",
+			"group": [
+				"Nymph"
+			],
 			"source": "MOT",
 			"page": 237,
 			"size": "M",

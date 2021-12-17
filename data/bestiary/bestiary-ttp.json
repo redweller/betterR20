@@ -302,6 +302,10 @@
 				"MW",
 				"RCH"
 			],
+			"conditionInflict": [
+				"paralyzed",
+				"poisoned"
+			],
 			"hasToken": true
 		},
 		{

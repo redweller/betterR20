@@ -385,6 +385,9 @@
 				"petrified",
 				"restrained"
 			],
+			"conditionInflictLegendary": [
+				"poisoned"
+			],
 			"hasFluff": true
 		},
 		{

@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.28.0
+// @version      1.28.05-dev
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -823,10 +823,10 @@ function baseQpi () {
 				_preInit () {
 					qpi._on_chatHandlers = [];
 					const seenMessages = new Set();
-					d20.textchat.chatref = d20.textchat.shoutref.parent().child("chat");
+					d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
 					const handleChat = (e) => {
 						if (!d20.textchat.chatstartingup) {
-							e.id = e.key();
+							e.id = e.key;
 							if (!seenMessages.has(e.id)) {
 								seenMessages.add(e.id);
 
@@ -893,7 +893,7 @@ function baseQpi () {
 						inlinerolls: [],
 					};
 
-					const key = d20.textchat.chatref.push().key();
+					const key = d20.textchat.chatref.push().key;
 					d20.textchat.chatref.child(key).setWithPriority(message, Firebase.ServerValue.TIMESTAMP)
 				},
 				works: 0.01,
@@ -8784,6 +8784,15 @@ function d20plusEngine () {
 			// add lighting layer tool
 			if (!$(`#editinglayer .choosewalls`).length) {
 				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+			}
+
+			// add light placement tool
+			if (!$(`#placelight`).length) {
+				const $torchMode = $(`<li class="placelight" tip="Place Light"><img id="placelighticon" src="/images/editor/torch.png" width="20" height="20"></li>`);
+				$torchMode.on("click", () => {
+					d20plus.setMode("placelight");
+				});
+				$(`#measure`).after($torchMode);
 			}
 
 			// ensure tokens have editable sight
@@ -17340,39 +17349,35 @@ Parser.getAbilityModifier = function (abilityScore) {
 	return `${modifier}`;
 };
 
-Parser.getSpeedString = (it) => {
-	if (it.speed == null) return "\u2014";
+Parser.getSpeedString = (ent, {isMetric = false} = {}) => {
+	if (ent.speed == null) return "\u2014";
 
-	function procSpeed (propName) {
-		function addSpeed (s) {
-			stack.push(`${propName === "walk" ? "" : `${propName} `}${getVal(s)} ft.${getCond(s)}`);
-		}
-
-		if (it.speed[propName] || propName === "walk") addSpeed(it.speed[propName] || 0);
-		if (it.speed.alternate && it.speed.alternate[propName]) it.speed.alternate[propName].forEach(addSpeed);
-	}
-
-	function getVal (speedProp) {
-		return speedProp.number != null ? speedProp.number : speedProp;
-	}
-
-	function getCond (speedProp) {
-		return speedProp.condition ? ` ${Renderer.get().render(speedProp.condition)}` : "";
-	}
-
-	const stack = [];
-	if (typeof it.speed === "object") {
+	const unit = isMetric ? Parser.metric.getMetricUnit({originalUnit: "ft.", isShortForm: true}) : "ft.";
+	if (typeof ent.speed === "object") {
+		const stack = [];
 		let joiner = ", ";
-		Parser.SPEED_MODES.forEach(mode => procSpeed(mode));
-		if (it.speed.choose) {
+		Parser.SPEED_MODES.forEach(mode => Parser._getSpeedString_addSpeedMode({ent, prop: mode, stack, isMetric, unit}));
+		if (ent.speed.choose) {
 			joiner = "; ";
-			stack.push(`${it.speed.choose.from.sort().joinConjunct(", ", " or ")} ${it.speed.choose.amount} ft.${it.speed.choose.note ? ` ${it.speed.choose.note}` : ""}`);
+			stack.push(`${ent.speed.choose.from.sort().joinConjunct(", ", " or ")} ${ent.speed.choose.amount} ${unit}${ent.speed.choose.note ? ` ${ent.speed.choose.note}` : ""}`);
 		}
-		return stack.join(joiner) + (it.speed.note ? ` ${it.speed.note}` : "");
-	} else {
-		return it.speed + (it.speed === "Varies" ? "" : " ft. ");
+		return stack.join(joiner) + (ent.speed.note ? ` ${ent.speed.note}` : "");
 	}
+
+	return (isMetric ? Parser.metric.getMetricNumber({originalValue: ent.speed, originalUnit: UNT_FEET}) : ent.speed)
+		+ (ent.speed === "Varies" ? "" : ` ${unit} `);
 };
+Parser._getSpeedString_addSpeedMode = ({ent, prop, stack, isMetric, unit}) => {
+	const addSpeed = (s) => stack.push(`${prop === "walk" ? "" : `${prop} `}${Parser._getSpeedString_getVal({propSpeed: s, isMetric})} ${unit}${Parser._getSpeedString_getCondition({propSpeed: s})}`);
+
+	if (ent.speed[prop] || prop === "walk") addSpeed(ent.speed[prop] || 0);
+	if (ent.speed.alternate && ent.speed.alternate[prop]) ent.speed.alternate[prop].forEach(addSpeed);
+};
+Parser._getSpeedString_getVal = ({propSpeed, isMetric}) => {
+	const num = propSpeed.number != null ? propSpeed.number : propSpeed;
+	return isMetric ? Parser.metric.getMetricNumber({originalValue: num, originalUnit: UNT_FEET}) : num;
+};
+Parser._getSpeedString_getCondition = ({propSpeed}) => propSpeed.condition ? ` ${Renderer.get().render(propSpeed.condition)}` : "";
 
 Parser.SPEED_MODES = ["walk", "burrow", "climb", "fly", "swim"];
 
@@ -17402,7 +17407,7 @@ Parser.raceCreatureTypesToFull = function (creatureTypes) {
 				.map(sub => Parser.monTypeToFullObj(sub).asText.toTitleCase())
 				.joinConjunct(", ", " or ");
 		})
-		.joinConjunct(hasSubOptions ? "; " : ", ", " and ")
+		.joinConjunct(hasSubOptions ? "; " : ", ", " and ");
 };
 
 Parser.crToXp = function (cr, {isDouble = false} = {}) {
@@ -17885,10 +17890,10 @@ Parser.itemWeightToFull = function (item, isShortForm) {
 			case 12: vulgarGlyph = "¾"; break;
 			case 14: vulgarGlyph = "⅞"; break;
 		}
-		if (vulgarGlyph) return `${integerPart || ""}${vulgarGlyph} lb.${(item.weightNote ? ` ${item.weightNote}` : "")}`
+		if (vulgarGlyph) return `${integerPart || ""}${vulgarGlyph} lb.${(item.weightNote ? ` ${item.weightNote}` : "")}`;
 
 		// Fall back on decimal pounds or ounces
-		return `${item.weight < 1 ? item.weight * 16 : item.weight} ${item.weight < 1 ? "oz" : "lb"}.${(item.weightNote ? ` ${item.weightNote}` : "")}`
+		return `${item.weight < 1 ? item.weight * 16 : item.weight} ${item.weight < 1 ? "oz" : "lb"}.${(item.weightNote ? ` ${item.weightNote}` : "")}`;
 	}
 	if (item.weightMult) return isShortForm ? `×${item.weightMult}` : `base weight ×${item.weightMult}`;
 	return "";
@@ -17902,7 +17907,7 @@ Parser.ITEM_RECHARGE_TO_FULL = {
 	dusk: "Dusk",
 	midnight: "Midnight",
 	special: "Special",
-}
+};
 Parser.itemRechargeToFull = function (recharge) {
 	return Parser._parse_aToB(Parser.ITEM_RECHARGE_TO_FULL, recharge);
 };
@@ -18203,7 +18208,7 @@ Parser.spRangeToShortHtml._renderArea = function (range) {
 	return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(RNG_SELF)} help-subtle" title="Self"></span> ${size.amount}<span class="ve-small">-${Parser.getSingletonUnit(size.type, true)}</span> ${Parser.spRangeToShortHtml._getAreaStyleString(range)}`;
 };
 Parser.spRangeToShortHtml._getAreaStyleString = function (range) {
-	return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(range.type)} help-subtle" title="${Parser.spRangeTypeToFull(range.type)}"></span>`
+	return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(range.type)} help-subtle" title="${Parser.spRangeTypeToFull(range.type)}"></span>`;
 };
 
 Parser.spRangeToFull = function (range) {
@@ -18289,12 +18294,15 @@ Parser.DIST_TYPES = [
 	{type: RNG_UNLIMITED, hasAmount: false},
 ];
 
-Parser.spComponentsToFull = function (comp, level) {
+Parser.spComponentsToFull = function (comp, level, {isPlainText = false} = {}) {
 	if (!comp) return "None";
 	const out = [];
 	if (comp.v) out.push("V");
 	if (comp.s) out.push("S");
-	if (comp.m != null) out.push(`M${comp.m !== true ? ` (${comp.m.text != null ? comp.m.text : comp.m})` : ""}`);
+	if (comp.m != null) {
+		const fnRender = isPlainText ? Renderer.stripTags.bind(Renderer) : Renderer.get().render.bind(Renderer.get());
+		out.push(`M${comp.m !== true ? ` (${fnRender(comp.m.text != null ? comp.m.text : comp.m)})` : ""}`);
+	}
 	if (comp.r) out.push(`R (${level} gp)`);
 	return out.join(", ") || "None";
 };
@@ -18349,23 +18357,23 @@ Parser.DURATION_AMOUNT_TYPES = [
 	"year",
 ];
 
-Parser.spClassesToFull = function (sp, isTextOnly, subclassLookup = {}) {
+Parser.spClassesToFull = function (sp, {isTextOnly = false, subclassLookup = {}} = {}) {
 	const fromSubclassList = Renderer.spell.getCombinedClasses(sp, "fromSubclass");
-	const fromSubclasses = Parser.spSubclassesToFull(fromSubclassList, isTextOnly, subclassLookup);
+	const fromSubclasses = Parser.spSubclassesToFull(fromSubclassList, {isTextOnly, subclassLookup});
 	const fromClassList = Renderer.spell.getCombinedClasses(sp, "fromClassList");
-	return `${Parser.spMainClassesToFull(fromClassList, isTextOnly)}${fromSubclasses ? `, ${fromSubclasses}` : ""}`
+	return `${Parser.spMainClassesToFull(fromClassList, {isTextOnly})}${fromSubclasses ? `, ${fromSubclasses}` : ""}`;
 };
 
-Parser.spMainClassesToFull = function (fromClassList, textOnly = false) {
+Parser.spMainClassesToFull = function (fromClassList, {isTextOnly = false} = {}) {
 	return fromClassList
 		.map(c => ({hash: UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c), c}))
 		.filter(it => !ExcludeUtil.isInitialised || !ExcludeUtil.isExcluded(it.hash, "class", it.c.source))
 		.sort((a, b) => SortUtil.ascSort(a.c.name, b.c.name))
-		.map(it => textOnly ? it.c.name : `<a title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}" href="${UrlUtil.PG_CLASSES}#${it.hash}">${it.c.name}</a>`)
+		.map(it => isTextOnly ? it.c.name : `<a title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}" href="${UrlUtil.PG_CLASSES}#${it.hash}">${it.c.name}</a>`)
 		.join(", ") || "";
 };
 
-Parser.spSubclassesToFull = function (fromSubclassList, textOnly, subclassLookup = {}) {
+Parser.spSubclassesToFull = function (fromSubclassList, {isTextOnly = false, subclassLookup = {}} = {}) {
 	return fromSubclassList
 		.filter(mt => {
 			if (!ExcludeUtil.isInitialised) return true;
@@ -18384,15 +18392,15 @@ Parser.spSubclassesToFull = function (fromSubclassList, textOnly, subclassLookup
 			const byName = SortUtil.ascSort(a.class.name, b.class.name);
 			return byName || SortUtil.ascSort(a.subclass.name, b.subclass.name);
 		})
-		.map(c => Parser._spSubclassItem({fromSubclass: c, textOnly, subclassLookup}))
+		.map(c => Parser._spSubclassItem({fromSubclass: c, isTextOnly, subclassLookup}))
 		.join(", ") || "";
 };
 
-Parser._spSubclassItem = function ({fromSubclass, textOnly, subclassLookup}) {
+Parser._spSubclassItem = function ({fromSubclass, isTextOnly, subclassLookup}) {
 	const c = fromSubclass.class;
 	const sc = fromSubclass.subclass;
 	const text = `${sc.name}${sc.subSubclass ? ` (${sc.subSubclass})` : ""}`;
-	if (textOnly) return text;
+	if (isTextOnly) return text;
 	const classPart = `<a href="${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}" title="Source: ${Parser.sourceJsonToFull(c.source)}${c.definedInSource ? ` From a class spell list defined in: ${Parser.sourceJsonToFull(c.definedInSource)}` : ""}">${c.name}</a>`;
 	const fromLookup = subclassLookup ? MiscUtil.get(subclassLookup, c.source, c.name, sc.source, sc.name) : null;
 	if (fromLookup) return `<a class="italic" href="${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}${HASH_PART_SEP}${UrlUtil.getClassesPageStatePart({subclass: {shortName: sc.name, source: sc.source}})}" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${text}</a> ${classPart}`;
@@ -19041,7 +19049,7 @@ Parser._spSubclassesToCurrentAndLegacyFull = ({sp, subclassLookup, prop}) => {
 			const nm = c.subclass.name;
 			const src = c.subclass.source;
 
-			const toAdd = Parser._spSubclassItem({fromSubclass: c, textOnly: false, subclassLookup});
+			const toAdd = Parser._spSubclassItem({fromSubclass: c, isTextOnly: false, subclassLookup});
 
 			const fromLookup = MiscUtil.get(
 				subclassLookup,
@@ -19095,7 +19103,7 @@ Parser.spVariantClassesToCurrentAndLegacy = function (fromVariantClassList) {
 		else current.push(cls);
 	});
 	return [current, legacy];
-}
+};
 
 Parser.attackTypeToFull = function (attackType) {
 	return Parser._parse_aToB(Parser.ATK_TYPE_TO_FULL, attackType);
@@ -19210,7 +19218,7 @@ Parser.SP_TIME_TO_SHORT = {
 	[Parser.SP_TM_ROUND]: "Rnd.",
 	[Parser.SP_TM_MINS]: "Min.",
 	[Parser.SP_TM_HRS]: "Hr.",
-}
+};
 Parser.spTimeUnitToShort = function (timeUnit) {
 	return Parser._parse_aToB(Parser.SP_TIME_TO_SHORT, timeUnit);
 };
@@ -19509,10 +19517,23 @@ SRC_WBtW = "WBtW";
 SRC_DoD = "DoD";
 SRC_MaBJoV = "MaBJoV";
 SRC_FTD = "FTD";
+SRC_SCC = "SCC";
+SRC_SCC_CK = "SCC-CK";
+SRC_SCC_HfMT = "SCC-HfMT";
+SRC_SCC_TMM = "SCC-TMM";
+SRC_SCC_ARiR = "SCC-ARiR";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_HEROES_FEAST = "HF";
 SRC_CM = "CM";
+SRC_NRH = "NRH";
+SRC_NRH_TCMC = "NRH-TCMC";
+SRC_NRH_AVitW = "NRH-AVitW";
+SRC_NRH_ASS = "NRH-ASS"; // lmao
+SRC_NRH_CoI = "NRH-CoI";
+SRC_NRH_TLT = "NRH-TLT";
+SRC_NRH_AWoL = "NRH-AWoL";
+SRC_NRH_AT = "NRH-AT";
 
 SRC_AL_PREFIX = "AL";
 
@@ -19612,6 +19633,7 @@ UA_PREFIX = "Unearthed Arcana: ";
 UA_PREFIX_SHORT = "UA: ";
 TftYP_NAME = "Tales from the Yawning Portal";
 AitFR_NAME = "Adventures in the Forgotten Realms";
+NRH_NAME = "NERDS Restoring Harmony";
 
 Parser.SOURCE_JSON_TO_FULL = {};
 Parser.SOURCE_JSON_TO_FULL[SRC_CoS] = "Curse of Strahd";
@@ -19692,10 +19714,23 @@ Parser.SOURCE_JSON_TO_FULL[SRC_WBtW] = `The Wild Beyond the Witchlight`;
 Parser.SOURCE_JSON_TO_FULL[SRC_DoD] = `Domains of Delight`;
 Parser.SOURCE_JSON_TO_FULL[SRC_MaBJoV] = `Minsc and Boo's Journal of Villainy`;
 Parser.SOURCE_JSON_TO_FULL[SRC_FTD] = `Fizban's Treasury of Dragons`;
+Parser.SOURCE_JSON_TO_FULL[SRC_SCC] = `Strixhaven: A Curriculum of Chaos`;
+Parser.SOURCE_JSON_TO_FULL[SRC_SCC_CK] = `Campus Kerfuffle`;
+Parser.SOURCE_JSON_TO_FULL[SRC_SCC_HfMT] = `Hunt for Mage Tower`;
+Parser.SOURCE_JSON_TO_FULL[SRC_SCC_TMM] = `The Magister's Masquerade`;
+Parser.SOURCE_JSON_TO_FULL[SRC_SCC_ARiR] = `A Reckoning in Ruins`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_HEROES_FEAST] = "Heroes' Feast";
 Parser.SOURCE_JSON_TO_FULL[SRC_CM] = "Candlekeep Mysteries";
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH] = NRH_NAME;
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH_TCMC] = `${NRH_NAME}: The Candy Mountain Caper`;
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH_AVitW] = `${NRH_NAME}: A Voice in the Wilderness`;
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH_ASS] = `${NRH_NAME}: A Sticky Situation`;
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH_CoI] = `${NRH_NAME}: Circus of Illusions`;
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH_TLT] = `${NRH_NAME}: The Lost Tomb`;
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH_AWoL] = `${NRH_NAME}: A Web of Lies`;
+Parser.SOURCE_JSON_TO_FULL[SRC_NRH_AT] = `${NRH_NAME}: Adventure Together`;
 Parser.SOURCE_JSON_TO_FULL[SRC_ALCoS] = `${AL_PREFIX}Curse of Strahd`;
 Parser.SOURCE_JSON_TO_FULL[SRC_ALEE] = `${AL_PREFIX}Elemental Evil`;
 Parser.SOURCE_JSON_TO_FULL[SRC_ALRoD] = `${AL_PREFIX}Rage of Demons`;
@@ -19856,10 +19891,23 @@ Parser.SOURCE_JSON_TO_ABV[SRC_WBtW] = "WBtW";
 Parser.SOURCE_JSON_TO_ABV[SRC_DoD] = "DoD";
 Parser.SOURCE_JSON_TO_ABV[SRC_MaBJoV] = "MaBJoV";
 Parser.SOURCE_JSON_TO_ABV[SRC_FTD] = "FTD";
+Parser.SOURCE_JSON_TO_ABV[SRC_SCC] = "SCC";
+Parser.SOURCE_JSON_TO_ABV[SRC_SCC_CK] = "SCC-CK";
+Parser.SOURCE_JSON_TO_ABV[SRC_SCC_HfMT] = "SCC-HfMT";
+Parser.SOURCE_JSON_TO_ABV[SRC_SCC_TMM] = "SCC-TMM";
+Parser.SOURCE_JSON_TO_ABV[SRC_SCC_ARiR] = "SCC-ARiR";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "Wild";
 Parser.SOURCE_JSON_TO_ABV[SRC_HEROES_FEAST] = "HF";
 Parser.SOURCE_JSON_TO_ABV[SRC_CM] = "CM";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH] = "NRH";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH_TCMC] = "NRH-TCMC";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH_AVitW] = "NRH-AVitW";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH_ASS] = "NRH-ASS";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH_CoI] = "NRH-CoI";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH_TLT] = "NRH-TLT";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH_AWoL] = "NRH-AWoL";
+Parser.SOURCE_JSON_TO_ABV[SRC_NRH_AT] = "NRH-AT";
 Parser.SOURCE_JSON_TO_ABV[SRC_ALCoS] = "ALCoS";
 Parser.SOURCE_JSON_TO_ABV[SRC_ALEE] = "ALEE";
 Parser.SOURCE_JSON_TO_ABV[SRC_ALRoD] = "ALRoD";
@@ -20019,10 +20067,23 @@ Parser.SOURCE_JSON_TO_DATE[SRC_WBtW] = "2021-09-21";
 Parser.SOURCE_JSON_TO_DATE[SRC_DoD] = "2021-09-21";
 Parser.SOURCE_JSON_TO_DATE[SRC_MaBJoV] = "2021-10-05";
 Parser.SOURCE_JSON_TO_DATE[SRC_FTD] = "2021-11-26";
+Parser.SOURCE_JSON_TO_DATE[SRC_SCC] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[SRC_SCC_CK] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[SRC_SCC_HfMT] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[SRC_SCC_TMM] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[SRC_SCC_ARiR] = "2021-12-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_HEROES_FEAST] = "2020-10-27";
 Parser.SOURCE_JSON_TO_DATE[SRC_CM] = "2021-03-16";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH_TCMC] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH_AVitW] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH_ASS] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH_CoI] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH_TLT] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH_AWoL] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[SRC_NRH_AT] = "2021-09-01";
 Parser.SOURCE_JSON_TO_DATE[SRC_ALCoS] = "2016-03-15";
 Parser.SOURCE_JSON_TO_DATE[SRC_ALEE] = "2015-04-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_ALRoD] = "2015-09-15";
@@ -20157,6 +20218,18 @@ Parser.SOURCES_ADVENTURES = new Set([
 	SRC_AitFR_DN,
 	SRC_AitFR_FCD,
 	SRC_WBtW,
+	SRC_NRH,
+	SRC_NRH_TCMC,
+	SRC_NRH_AVitW,
+	SRC_NRH_ASS,
+	SRC_NRH_CoI,
+	SRC_NRH_TLT,
+	SRC_NRH_AWoL,
+	SRC_NRH_AT,
+	SRC_SCC_CK,
+	SRC_SCC_HfMT,
+	SRC_SCC_TMM,
+	SRC_SCC_ARiR,
 
 	SRC_AWM,
 ]);
@@ -20182,6 +20255,14 @@ Parser.SOURCES_NON_STANDARD_WOTC = new Set([
 	SRC_AitFR_FCD,
 	SRC_DoD,
 	SRC_MaBJoV,
+	SRC_NRH,
+	SRC_NRH_TCMC,
+	SRC_NRH_AVitW,
+	SRC_NRH_ASS,
+	SRC_NRH_CoI,
+	SRC_NRH_TLT,
+	SRC_NRH_AWoL,
+	SRC_NRH_AT,
 ]);
 // region Source categories
 
@@ -20228,6 +20309,11 @@ Parser.SOURCES_NON_FR = new Set([
 	SRC_MOT,
 	SRC_XMtS,
 	SRC_AZfyT,
+	SRC_SCC,
+	SRC_SCC_CK,
+	SRC_SCC_HfMT,
+	SRC_SCC_TMM,
+	SRC_SCC_ARiR,
 ]);
 
 // endregion
@@ -20252,6 +20338,7 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	SRC_DoD,
 	SRC_MaBJoV,
 	SRC_FTD,
+	SRC_SCC,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src.toLowerCase()] = src;
@@ -20307,6 +20394,18 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	SRC_AitFR_DN,
 	SRC_AitFR_FCD,
 	SRC_WBtW,
+	SRC_NRH,
+	SRC_NRH_TCMC,
+	SRC_NRH_AVitW,
+	SRC_NRH_ASS,
+	SRC_NRH_CoI,
+	SRC_NRH_TLT,
+	SRC_NRH_AWoL,
+	SRC_NRH_AT,
+	SRC_SCC_CK,
+	SRC_SCC_HfMT,
+	SRC_SCC_TMM,
+	SRC_SCC_ARiR,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
@@ -20492,6 +20591,37 @@ Parser.NUMBERS_ONES = ["", "one", "two", "three", "four", "five", "six", "seven"
 Parser.NUMBERS_TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 Parser.NUMBERS_TEENS = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
 
+// region Metric conversion
+Parser.metric = {
+	// See MPMB's breakdown: https://old.reddit.com/r/dndnext/comments/6gkuec
+	MILES_TO_KILOMETRES: 1.6,
+	FEET_TO_METRES: 0.3, // 5 ft = 1.5 m
+	POUNDS_TO_KILOGRAMS: 0.5, // 2 lb = 1 kg
+
+	getMetricNumber ({originalValue, originalUnit}) {
+		if (isNaN(originalValue)) return originalValue;
+		originalValue = Number(originalValue);
+		if (!originalValue) return originalValue;
+
+		switch (originalUnit) {
+			case "mi.": case "mi": case UNT_MILES: return originalValue * Parser.metric.MILES_TO_KILOMETRES;
+			case "ft.": case "ft": case UNT_FEET: return originalValue * Parser.metric.FEET_TO_METRES;
+			case "lb.": case "lb": case "lbs": return originalValue * Parser.metric.POUNDS_TO_KILOGRAMS;
+			default: return originalValue;
+		}
+	},
+
+	getMetricUnit ({originalUnit, isShortForm = false, isPlural = true}) {
+		switch (originalUnit) {
+			case "mi.": case "mi": case UNT_MILES: return isShortForm ? "km" : `kilometre${isPlural ? "s" : ""}`;
+			case "ft.": case "ft": case UNT_FEET: return isShortForm ? "m" : `meter${isPlural ? "s" : ""}`;
+			case "lb.": case "lb": case "lbs": return isShortForm ? "kg" : `kilogram${isPlural ? "s" : ""}`;
+			default: return originalUnit;
+		}
+	},
+};
+// endregion
+
 }).toString());
 
 
@@ -20506,7 +20636,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.141.2"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.145.1"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -20720,10 +20850,10 @@ String.prototype.toUrlified = String.prototype.toUrlified || function () {
 
 String.prototype.toChunks = String.prototype.toChunks || function (size) {
 	// https://stackoverflow.com/a/29202760/5987433
-	const numChunks = Math.ceil(this.length / size)
-	const chunks = new Array(numChunks)
+	const numChunks = Math.ceil(this.length / size);
+	const chunks = new Array(numChunks);
 	for (let i = 0, o = 0; i < numChunks; ++i, o += size) chunks[i] = this.substr(o, size);
-	return chunks
+	return chunks;
 };
 
 String.prototype.toAscii = String.prototype.toAscii || function () {
@@ -20776,7 +20906,7 @@ StrUtil = {
 	// Certain minor words should be left lowercase unless they are the first or last words in the string
 	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over"],
 	// Certain words such as initialisms or acronyms should be left uppercase
-	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc"],
+	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc", "Tpk"],
 
 	padNumber: (n, len, padder) => {
 		return String(n).padStart(len, padder);
@@ -20930,7 +21060,7 @@ CurrencyUtil = {
 				return {
 					...it,
 					normalizedMult: 1 / it.mult,
-				}
+				};
 			})
 			.sort((a, b) => SortUtil.ascSort(a.normalizedMult, b.normalizedMult));
 
@@ -21055,7 +21185,7 @@ JqueryUtil = {
 						return `<${arg.tag()} data-r="true"></${arg.tag()}>`;
 					} else if (arg instanceof HTMLElement) {
 						return handleArg($(arg));
-					} else return arg
+					} else return arg;
 				};
 
 				const raw = parts.reduce((html, p) => {
@@ -21121,7 +21251,7 @@ JqueryUtil = {
 			remove: function (o) {
 				if (o.handler) o.handler();
 			},
-		}
+		};
 	},
 
 	addSelectors () {
@@ -21424,7 +21554,7 @@ ElementUtil = {
 		while (child !== parent) {
 			if (!child.parentElement) return null;
 
-			const ix = [...child.parentElement.children].indexOf(child)
+			const ix = [...child.parentElement.children].indexOf(child);
 			if (!~ix) return null;
 
 			path.push(ix);
@@ -21444,7 +21574,7 @@ ElementUtil = {
 		return parent;
 	},
 	// endregion
-}
+};
 
 if (typeof window !== "undefined") window.e_ = ElementUtil.getOrModify;
 
@@ -22163,6 +22293,18 @@ EventUtil = {
 	},
 
 	noModifierKeys (evt) { return !evt.ctrlKey && !evt.altKey && !evt.metaKey; },
+
+	getKeyIgnoreCapsLock (evt) {
+		if (!evt.key) return null;
+		if (evt.key.length !== 1) return evt.key;
+		const isCaps = (evt.originalEvent || evt).getModifierState("CapsLock");
+		if (!isCaps) return evt.key;
+		const asciiCode = evt.key.charCodeAt(0);
+		const isUpperCase = asciiCode >= 65 && asciiCode <= 90;
+		const isLowerCase = asciiCode >= 97 && asciiCode <= 122;
+		if (!isUpperCase && !isLowerCase) return evt.key;
+		return isUpperCase ? evt.key.toLowerCase() : evt.key.toUpperCase();
+	},
 };
 
 if (typeof window !== "undefined") window.addEventListener("load", EventUtil.init);
@@ -22212,10 +22354,10 @@ ContextUtil = {
 
 		this._userData = null;
 
-		this.remove = function () { if (this._$ele) this._$ele.remove(); }
+		this.remove = function () { if (this._$ele) this._$ele.remove(); };
 
-		this.width = function () { return this._$ele ? this._$ele.width() : undefined; }
-		this.height = function () { return this._$ele ? this._$ele.height() : undefined; }
+		this.width = function () { return this._$ele ? this._$ele.width() : undefined; };
+		this.height = function () { return this._$ele ? this._$ele.height() : undefined; };
 
 		this.pOpen = function (evt, userData) {
 			this._initLazy();
@@ -22235,8 +22377,8 @@ ContextUtil = {
 				.showVe();
 
 			return this._pResult;
-		}
-		this.close = function () { if (this._$ele) this._$ele.hideVe(); }
+		};
+		this.close = function () { if (this._$ele) this._$ele.hideVe(); };
 
 		this._initLazy = function () {
 			if (this._$ele) return;
@@ -22279,7 +22421,7 @@ ContextUtil = {
 			// opening menu would pass the side of the page
 			if (posMouse + szMenu > szWin && szMenu < posMouse) position -= szMenu;
 			return position;
-		}
+		};
 	},
 
 	/**
@@ -22365,7 +22507,7 @@ UrlUtil = {
 			if (out[k].length === 1 && out[k] === HASH_SUB_NONE) out[k] = [];
 			return out;
 		} else {
-			throw new Error(`Badly formatted subhash ${subHash}`)
+			throw new Error(`Badly formatted subhash ${subHash}`);
 		}
 	},
 
@@ -22407,7 +22549,7 @@ UrlUtil = {
 				await MiscUtil.pCopyTextToClipboard(parts.join(HASH_PART_SEP));
 				JqueryUtil.showCopiedEffect($btn);
 			})
-			.title("Get Link to Filters (SHIFT adds List)")
+			.title("Get Link to Filters (SHIFT adds List)");
 	},
 
 	mini: {
@@ -22457,7 +22599,7 @@ UrlUtil = {
 							hash: `${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](cls)}${HASH_PART_SEP}${UrlUtil.getClassesPageStatePart({feature: {ixLevel: ixLvl, ixFeature: ixFeature}})}`,
 							entry: feature,
 							level: ixLvl + 1,
-						})
+						});
 					});
 			});
 
@@ -22909,6 +23051,7 @@ SortUtil = {
 	ascSortAdventure (a, b) {
 		return SortUtil.ascSortDateString(b.published, a.published)
 			|| SortUtil.ascSortLower(a.parentSource || "", b.parentSource || "")
+			|| SortUtil.ascSort(a.publishedOrder ?? 0, b.publishedOrder ?? 0)
 			|| SortUtil.ascSortLower(a.storyline, b.storyline)
 			|| SortUtil.ascSort(a.level?.start ?? 20, b.level?.start ?? 20)
 			|| SortUtil.ascSortLower(a.name, b.name);
@@ -22969,7 +23112,7 @@ DataUtil = {
 		try {
 			data = await DataUtil._pLoad(procUrl);
 		} catch (e) {
-			setTimeout(() => { throw e; })
+			setTimeout(() => { throw e; });
 		}
 
 		// Fallback to the un-processed URL
@@ -23091,7 +23234,7 @@ DataUtil = {
 	},
 
 	userDownload (filename, data, {fileType = null, isSipAdditionalMetadata = false, propVersion = "siteVersion", valVersion = VERSION_NUMBER} = {}) {
-		filename = `${filename}.json`
+		filename = `${filename}.json`;
 		if (isSipAdditionalMetadata || data instanceof Array) return DataUtil._userDownload(filename, JSON.stringify(data, null, "\t"), "text/json");
 
 		data = {[propVersion]: valVersion, ...data};
@@ -23180,6 +23323,8 @@ DataUtil = {
 				obj.forEach(it => DataUtil.__cleanJsonObject(it));
 			} else {
 				Object.entries(obj).forEach(([k, v]) => {
+					if (k === "_versions" || k === "_version") return;
+					// TODO(Future) use "__" prefix for temp data, instead of "_"
 					if ((k.startsWith("_") && k !== "_") || k === "customHashId") delete obj[k];
 					else DataUtil.__cleanJsonObject(v);
 				});
@@ -23281,6 +23426,7 @@ DataUtil = {
 			hasFluff: true,
 			hasFluffImages: true,
 			hasToken: true,
+			_versions: true,
 		},
 
 		_walker_replaceTxt: null,
@@ -23324,7 +23470,12 @@ DataUtil = {
 			if (DataUtil.dbg.isTrackCopied) it.dbg_isCopied = true;
 			// Handle recursive copy
 			if (it._copy) await DataUtil.generic._pMergeCopy(impl, page, entryList, it, options);
-			return DataUtil.generic._pApplyCopy(impl, MiscUtil.copy(it), entry, options);
+
+			// Preload traits, if required
+			const traitData = entry._copy?._trait
+				? (await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/bestiary/traits.json`))
+				: null;
+			return DataUtil.generic._applyCopy(impl, MiscUtil.copy(it), entry, traitData, options);
 		},
 
 		_pMergeCopy_search (impl, page, entryList, entry, options) {
@@ -23336,7 +23487,7 @@ DataUtil = {
 			});
 		},
 
-		async _pApplyCopy (impl, copyFrom, copyTo, options = {}) {
+		_applyCopy (impl, copyFrom, copyTo, traitData, options = {}) {
 			if (options.doKeepCopy) copyTo.__copy = MiscUtil.copy(copyFrom);
 
 			// convert everything to arrays
@@ -23346,6 +23497,8 @@ DataUtil = {
 				});
 			}
 
+			const msgPtFailed = `Failed to apply _copy to "${copyTo.name}" ("${copyTo.source}").`;
+
 			const copyMeta = copyTo._copy || {};
 
 			if (copyMeta._mod) normaliseMods(copyMeta);
@@ -23353,9 +23506,8 @@ DataUtil = {
 			// fetch and apply any external traits -- append them to existing copy mods where available
 			let racials = null;
 			if (copyMeta._trait) {
-				const traitData = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/bestiary/traits.json`);
 				racials = traitData.trait.find(t => t.name.toLowerCase() === copyMeta._trait.name.toLowerCase() && t.source.toLowerCase() === copyMeta._trait.source.toLowerCase());
-				if (!racials) throw new Error(`Could not find traits to apply with name "${copyMeta._trait.name}" and source "${copyMeta._trait.source}"`);
+				if (!racials) throw new Error(`${msgPtFailed} Could not find traits to apply with name "${copyMeta._trait.name}" and source "${copyMeta._trait.source}"`);
 				racials = MiscUtil.copy(racials);
 
 				if (racials.apply._mod) {
@@ -23378,8 +23530,8 @@ DataUtil = {
 			Object.keys(copyFrom).forEach(k => {
 				if (copyTo[k] === null) return delete copyTo[k];
 				if (copyTo[k] == null) {
-					if (DataUtil.generic._MERGE_REQUIRES_PRESERVE_BASE[k] || impl._MERGE_REQUIRES_PRESERVE[k]) {
-						if (copyTo._copy._preserve && copyTo._copy._preserve[k]) copyTo[k] = copyFrom[k];
+					if (DataUtil.generic._MERGE_REQUIRES_PRESERVE_BASE[k] || impl?._MERGE_REQUIRES_PRESERVE[k]) {
+						if (copyTo._copy._preserve?.["*"] || copyTo._copy._preserve?.[k]) copyTo[k] = copyFrom[k];
 					} else copyTo[k] = copyFrom[k];
 				}
 			});
@@ -23456,12 +23608,12 @@ DataUtil = {
 
 			function doMod_prependArr (modInfo, prop) {
 				doEnsureArray(modInfo, "items");
-				copyTo[prop] = copyTo[prop] ? modInfo.items.concat(copyTo[prop]) : modInfo.items
+				copyTo[prop] = copyTo[prop] ? modInfo.items.concat(copyTo[prop]) : modInfo.items;
 			}
 
 			function doMod_appendArr (modInfo, prop) {
 				doEnsureArray(modInfo, "items");
-				copyTo[prop] = copyTo[prop] ? copyTo[prop].concat(modInfo.items) : modInfo.items
+				copyTo[prop] = copyTo[prop] ? copyTo[prop].concat(modInfo.items) : modInfo.items;
 			}
 
 			function doMod_appendIfNotExistsArr (modInfo, prop) {
@@ -23474,7 +23626,7 @@ DataUtil = {
 				doEnsureArray(modInfo, "items");
 
 				if (!copyTo[prop]) {
-					if (isThrow) throw new Error(`Could not find "${prop}" array`);
+					if (isThrow) throw new Error(`${msgPtFailed} Could not find "${prop}" array`);
 					return false;
 				}
 
@@ -23491,7 +23643,7 @@ DataUtil = {
 				if (~ixOld) {
 					copyTo[prop].splice(ixOld, 1, ...modInfo.items);
 					return true;
-				} else if (isThrow) throw new Error(`Could not find "${prop}" item with name "${modInfo.replace}" to replace`);
+				} else if (isThrow) throw new Error(`${msgPtFailed} Could not find "${prop}" item with name "${modInfo.replace}" to replace`);
 				return false;
 			}
 
@@ -23502,7 +23654,7 @@ DataUtil = {
 
 			function doMod_insertArr (modInfo, prop) {
 				doEnsureArray(modInfo, "items");
-				if (!copyTo[prop]) throw new Error(`Could not find "${prop}" array`);
+				if (!copyTo[prop]) throw new Error(`${msgPtFailed} Could not find "${prop}" array`);
 				copyTo[prop].splice(modInfo.index, 0, ...modInfo.items);
 			}
 
@@ -23513,7 +23665,7 @@ DataUtil = {
 						const ixOld = copyTo[prop].findIndex(it => it.name === nameToRemove);
 						if (~ixOld) copyTo[prop].splice(ixOld, 1);
 						else {
-							if (!modInfo.force) throw new Error(`Could not find "${prop}" item with name "${nameToRemove}" to remove`);
+							if (!modInfo.force) throw new Error(`${msgPtFailed} Could not find "${prop}" item with name "${nameToRemove}" to remove`);
 						}
 					});
 				} else if (modInfo.items) {
@@ -23521,9 +23673,9 @@ DataUtil = {
 					modInfo.items.forEach(itemToRemove => {
 						const ixOld = copyTo[prop].findIndex(it => it === itemToRemove);
 						if (~ixOld) copyTo[prop].splice(ixOld, 1);
-						else throw new Error(`Could not find "${prop}" item "${itemToRemove}" to remove`);
+						else throw new Error(`${msgPtFailed} Could not find "${prop}" item "${itemToRemove}" to remove`);
 					});
-				} else throw new Error(`One of "names" or "items" must be provided!`)
+				} else throw new Error(`${msgPtFailed} One of "names" or "items" must be provided!`);
 			}
 
 			function doMod_calculateProp (modInfo, prop) {
@@ -23532,7 +23684,7 @@ DataUtil = {
 					switch (m[1]) {
 						case "prof_bonus": return Parser.crToPb(copyTo.cr);
 						case "dex_mod": return Parser.getAbilityModNumber(copyTo.dex);
-						default: throw new Error(`Unknown variable "${m[1]}"`);
+						default: throw new Error(`${msgPtFailed} Unknown variable "${m[1]}"`);
 					}
 				});
 				// eslint-disable-next-line no-eval
@@ -23628,7 +23780,7 @@ DataUtil = {
 			}
 
 			function doMod_addSpells (modInfo) {
-				if (!copyTo.spellcasting) throw new Error(`Creature did not have a spellcasting property!`);
+				if (!copyTo.spellcasting) throw new Error(`${msgPtFailed} Creature did not have a spellcasting property!`);
 
 				// TODO could accept a "position" or "name" parameter should spells need to be added to other spellcasting traits
 				const spellcasting = copyTo.spellcasting[0];
@@ -23647,7 +23799,7 @@ DataUtil = {
 								else {
 									if (typeof spellCategoryOld[kk] === "object") {
 										if (spellCategoryOld[kk] instanceof Array) spellCategoryOld[kk] = spellCategoryOld[kk].concat(spellCategoryNu[kk]).sort(SortUtil.ascSortLower);
-										else throw new Error(`Object at key ${kk} not an array!`);
+										else throw new Error(`${msgPtFailed} Object at key ${kk} not an array!`);
 									} else spellCategoryOld[kk] = spellCategoryNu[kk];
 								}
 							});
@@ -23655,29 +23807,32 @@ DataUtil = {
 					});
 				}
 
-				if (modInfo.will) {
-					modInfo.will.forEach(sp => (modInfo.will = modInfo.will || []).push(sp));
-				}
+				["constant", "will", "ritual"].forEach(prop => {
+					if (!modInfo[prop]) return;
+					modInfo[prop].forEach(sp => (spellcasting[prop] = spellcasting[prop] || []).push(sp));
+				});
 
-				if (modInfo.daily) {
+				["rest", "daily", "weekly", "yearly"].forEach(prop => {
+					if (!modInfo[prop]) return;
+
 					for (let i = 1; i <= 9; ++i) {
 						const e = `${i}e`;
 
-						spellcasting.daily = spellcasting.daily || {};
+						spellcasting[prop] = spellcasting[prop] || {};
 
-						if (modInfo.daily[i]) {
-							modInfo.daily[i].forEach(sp => (spellcasting.daily[i] = spellcasting.daily[i] || []).push(sp));
+						if (modInfo[prop][i]) {
+							modInfo[prop][i].forEach(sp => (spellcasting[prop][i] = spellcasting[prop][i] || []).push(sp));
 						}
 
-						if (modInfo.daily[e]) {
-							modInfo.daily[e].forEach(sp => (spellcasting.daily[e] = spellcasting.daily[e] || []).push(sp));
+						if (modInfo[prop][e]) {
+							modInfo[prop][e].forEach(sp => (spellcasting[prop][e] = spellcasting[prop][e] || []).push(sp));
 						}
 					}
-				}
+				});
 			}
 
 			function doMod_replaceSpells (modInfo) {
-				if (!copyTo.spellcasting) throw new Error(`Creature did not have a spellcasting property!`);
+				if (!copyTo.spellcasting) throw new Error(`${msgPtFailed} Creature did not have a spellcasting property!`);
 
 				// TODO could accept a "position" or "name" parameter should spells need to be added to other spellcasting traits
 				const spellcasting = copyTo.spellcasting[0];
@@ -23689,7 +23844,7 @@ DataUtil = {
 					if (~ix) {
 						curSpells[k].splice(ix, 1, ...replaceMeta.with);
 						curSpells[k].sort(SortUtil.ascSortLower);
-					} else throw new Error(`Could not find spell "${replaceMeta.replace}" to replace`);
+					} else throw new Error(`${msgPtFailed} Could not find spell "${replaceMeta.replace}" to replace`);
 				};
 
 				if (modInfo.spells) {
@@ -23721,7 +23876,7 @@ DataUtil = {
 
 			function doMod_scalarAddHit (modInfo, prop) {
 				if (!copyTo[prop]) return;
-				copyTo[prop] = JSON.parse(JSON.stringify(copyTo[prop]).replace(/{@hit ([-+]?\d+)}/g, (m0, m1) => `{@hit ${Number(m1) + modInfo.scalar}}`))
+				copyTo[prop] = JSON.parse(JSON.stringify(copyTo[prop]).replace(/{@hit ([-+]?\d+)}/g, (m0, m1) => `{@hit ${Number(m1) + modInfo.scalar}}`));
 			}
 
 			function doMod_scalarAddDc (modInfo, prop) {
@@ -23732,8 +23887,8 @@ DataUtil = {
 			function doMod_maxSize (modInfo) {
 				const ixCur = Parser.SIZE_ABVS.indexOf(copyTo.size);
 				const ixMax = Parser.SIZE_ABVS.indexOf(modInfo.max);
-				if (ixCur < 0 || ixMax < 0) throw new Error(`Unhandled size!`);
-				copyTo.size = Parser.SIZE_ABVS[Math.min(ixCur, ixMax)]
+				if (ixCur < 0 || ixMax < 0) throw new Error(`${msgPtFailed} Unhandled size!`);
+				copyTo.size = Parser.SIZE_ABVS[Math.min(ixCur, ixMax)];
 			}
 
 			function doMod_scalarMultXp (modInfo) {
@@ -23757,7 +23912,7 @@ DataUtil = {
 						if (typeof modInfo === "string") {
 							switch (modInfo) {
 								case "remove": return delete copyTo[prop];
-								default: throw new Error(`Unhandled mode: ${modInfo}`);
+								default: throw new Error(`${msgPtFailed} Unhandled mode: ${modInfo}`);
 							}
 						} else {
 							switch (modInfo.mode) {
@@ -23787,7 +23942,7 @@ DataUtil = {
 								case "maxSize": return doMod_maxSize(modInfo);
 								case "scalarMultXp": return doMod_scalarMultXp(modInfo);
 								// endregion
-								default: throw new Error(`Unhandled mode: ${modInfo.mode}`);
+								default: throw new Error(`${msgPtFailed} Unhandled mode: ${modInfo.mode}`);
 							}
 						}
 					});
@@ -23814,16 +23969,16 @@ DataUtil = {
 										return Renderer.monster.getShortName(copyTo, parts[0] === "title_short_name");
 									}
 									case "spell_dc": {
-										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`Unknown ability score "${parts[1]}"`);
+										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`${msgPtFailed} Unknown ability score "${parts[1]}"`);
 										return 8 + Parser.getAbilityModNumber(Number(copyTo[parts[1]])) + Parser.crToPb(copyTo.cr);
 									}
 									case "to_hit": {
-										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`Unknown ability score "${parts[1]}"`);
+										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`${msgPtFailed} Unknown ability score "${parts[1]}"`);
 										const total = Parser.crToPb(copyTo.cr) + Parser.getAbilityModNumber(Number(copyTo[parts[1]]));
 										return total >= 0 ? `+${total}` : total;
 									}
 									case "damage_mod": {
-										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`Unknown ability score "${parts[1]}"`);
+										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`${msgPtFailed} Unknown ability score "${parts[1]}"`);
 										const total = Parser.getAbilityModNumber(Number(copyTo[parts[1]]));
 										return total === 0 ? "" : total > 0 ? ` +${total}` : ` ${total}`;
 									}
@@ -23852,6 +24007,90 @@ DataUtil = {
 			// cleanup
 			delete copyTo._copy;
 		},
+
+		getVersions (parent) {
+			if (!parent?._versions?.length) return [];
+
+			return parent._versions
+				.map(ver => {
+					if (ver._template && ver._implementations?.length) return DataUtil.generic._getVersions_template({ver});
+					return DataUtil.generic._getVersions_basic({ver});
+				})
+				.flat()
+				.map(ver => DataUtil.generic._getVersion({parentEntity: parent, version: ver}));
+		},
+
+		_getVersions_template ({ver}) {
+			return ver._implementations
+				.map(impl => {
+					let cpyTemplate = MiscUtil.copy(ver._template);
+					const cpyImpl = MiscUtil.copy(impl);
+
+					DataUtil.generic._getVersions_mutExpandCopy({ent: cpyTemplate});
+
+					if (cpyImpl._variables) {
+						cpyTemplate = MiscUtil.getWalker()
+							.walk(
+								cpyTemplate,
+								{
+									string: str => str.replace(/{{([^}]+)}}/g, (...m) => cpyImpl._variables[m[1]]),
+								},
+							);
+						delete cpyImpl._variables;
+					}
+
+					Object.assign(cpyTemplate, cpyImpl);
+
+					return cpyTemplate;
+				});
+		},
+
+		_getVersions_basic ({ver}) {
+			const cpyVer = MiscUtil.copy(ver);
+			DataUtil.generic._getVersions_mutExpandCopy({ent: cpyVer});
+			return cpyVer;
+		},
+
+		_getVersions_mutExpandCopy ({ent}) {
+			// Tweak the data structure to match what `_applyCopy` expects
+			ent._copy = {
+				_mod: ent._mod,
+				_preserve: {"*": true},
+			};
+			delete ent._mod;
+		},
+
+		_getVersion ({parentEntity, version}) {
+			const additionalData = {
+				_versionBase_isVersion: true,
+				_versionBase_name: parentEntity.name,
+				_versionBase_source: parentEntity.source,
+				_versionBase_hasToken: parentEntity.hasToken,
+				_versionBase_hasFluff: parentEntity.hasFluff,
+				_versionBase_hasFluffImages: parentEntity.hasFluffImages,
+			};
+			const cpyParentEntity = MiscUtil.copy(parentEntity);
+
+			delete cpyParentEntity._versions;
+			delete cpyParentEntity.hasToken;
+			delete cpyParentEntity.hasFluff;
+			delete cpyParentEntity.hasFluffImages;
+
+			DataUtil.generic._applyCopy(
+				null,
+				cpyParentEntity,
+				version,
+				null,
+			);
+			Object.assign(version, additionalData);
+			return version;
+		},
+	},
+
+	proxy: {
+		getVersions (prop, ent) {
+			return (DataUtil[prop]?.getVersions || DataUtil.generic.getVersions)(ent);
+		},
 	},
 
 	monster: {
@@ -23866,6 +24105,65 @@ DataUtil = {
 		_mergeCache: {},
 		async pMergeCopy (monList, mon, options) {
 			return DataUtil.generic._pMergeCopy(DataUtil.monster, UrlUtil.PG_BESTIARY, monList, mon, options);
+		},
+
+		getVersions (mon) {
+			const additionalVersionData = DataUtil.monster._getAdditionalVersionsData(mon);
+			if (additionalVersionData.length) {
+				mon = MiscUtil.copy(mon);
+				(mon._versions = mon._versions || []).push(...additionalVersionData);
+			}
+			return DataUtil.generic.getVersions(mon);
+		},
+
+		_getAdditionalVersionsData (mon) {
+			if (!mon.variant) return [];
+
+			return mon.variant
+				.filter(it => it._version)
+				.map(it => {
+					const toAdd = {
+						name: it._version.name || it.name,
+						source: it._version.source || it.source || mon.source,
+						variant: null,
+					};
+
+					if (it._version.addAs) {
+						const cpy = MiscUtil.copy(it);
+						delete cpy._version;
+						delete cpy.type;
+						delete cpy.source;
+						delete cpy.page;
+
+						toAdd._mod = {
+							[it._version.addAs]: {
+								mode: "appendArr",
+								items: cpy,
+							},
+						};
+
+						return toAdd;
+					}
+
+					if (it._version.addHeadersAs) {
+						const cpy = MiscUtil.copy(it);
+						cpy.entries = cpy.entries.filter(it => it.name && it.entries);
+						cpy.entries.forEach(cpyEnt => {
+							delete cpyEnt.type;
+							delete cpyEnt.source;
+						});
+
+						toAdd._mod = {
+							[it._version.addHeadersAs]: {
+								mode: "appendArr",
+								items: cpy.entries,
+							},
+						};
+
+						return toAdd;
+					}
+				})
+				.filter(Boolean);
 		},
 
 		async pPreloadMeta () {
@@ -23916,7 +24214,7 @@ DataUtil = {
 				if (data.spell?.length) spell = data.spell.find(sp => UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_SPELLS](sp) === hash);
 				if (!spell) spell = await Renderer.hover.pCacheAndGetHash(UrlUtil.PG_SPELLS, hash);
 				if (!spell) {
-					setTimeout(() => { throw new Error(`Could not load "${mon.name} (${mon.source})" "summonedBySpell" "${mon.summonedBySpell}"`); })
+					setTimeout(() => { throw new Error(`Could not load "${mon.name} (${mon.source})" "summonedBySpell" "${mon.summonedBySpell}"`); });
 					continue;
 				}
 				mon._summonedBySpell_levelBase = spell.level;
@@ -24050,6 +24348,7 @@ DataUtil = {
 				DataUtil.race._pIsLoadings[isAddBaseRaces] = (async () => {
 					const rawRaceData = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/races.json`);
 					const raceData = Renderer.race.mergeSubraces(rawRaceData.race, {isAddBaseRaces});
+					raceData.forEach(it => it.__prop = "race");
 					DataUtil.race._loadCache[isAddBaseRaces] = {race: raceData};
 				})();
 			}
@@ -24139,7 +24438,7 @@ DataUtil = {
 			let [name, className, classSource, level, source, displayText] = uid.split("|").map(it => it.trim());
 			classSource = classSource || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
 			source = source || classSource;
-			level = Number(level)
+			level = Number(level);
 			return {
 				name,
 				className,
@@ -24178,7 +24477,7 @@ DataUtil = {
 			classSource = classSource || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
 			subclassSource = subclassSource || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
 			source = source || subclassSource;
-			level = Number(level)
+			level = Number(level);
 			return {
 				name,
 				className,
@@ -24610,7 +24909,7 @@ RollerUtil = {
 	},
 
 	rollOnArray (array) {
-		return array[RollerUtil.randomise(array.length) - 1]
+		return array[RollerUtil.randomise(array.length) - 1];
 	},
 
 	/**
@@ -24778,7 +25077,7 @@ StorageUtil = {
 
 	syncSet (key, value) {
 		StorageUtil._getSyncStorage().setItem(key, JSON.stringify(value));
-		StorageUtil._syncTrackKey(key)
+		StorageUtil._syncTrackKey(key);
 	},
 
 	syncRemove (key) {
@@ -24790,7 +25089,7 @@ StorageUtil = {
 	syncSetForPage (key, value) { StorageUtil.syncSet(`${key}_${UrlUtil.getCurrentPage()}`, value); },
 
 	isSyncFake () {
-		return !!StorageUtil._getSyncStorage().isSyncFake
+		return !!StorageUtil._getSyncStorage().isSyncFake;
 	},
 
 	_syncTrackKey (key, isRemove) {
@@ -24890,7 +25189,7 @@ SessionStorageUtil = {
 	},
 
 	isFake () {
-		return SessionStorageUtil.getStorage().isSyncFake
+		return SessionStorageUtil.getStorage().isSyncFake;
 	},
 
 	setForPage: (key, value) => {
@@ -24912,7 +25211,7 @@ SessionStorageUtil = {
 	},
 
 	removeForPage: (key) => {
-		SessionStorageUtil.remove(`${key}_${UrlUtil.getCurrentPage()}`)
+		SessionStorageUtil.remove(`${key}_${UrlUtil.getCurrentPage()}`);
 	},
 
 	remove (key) {
@@ -24990,7 +25289,7 @@ BrewUtil = {
 					});
 					delete cls.subclasses;
 				}
-			})
+			});
 		}
 
 		if (hasOldSubclasses) {
@@ -25112,11 +25411,11 @@ BrewUtil = {
 		if (opts.isModal) {
 			$$($appendTo)`
 			${$brewList}
-			${$wrpBtns.addClass("mb-2")}`
+			${$wrpBtns.addClass("mb-2")}`;
 		} else {
 			$$($appendTo)`
 			${$wrpBtns.addClass("mb-3")}
-			${$brewList}`
+			${$brewList}`;
 		}
 
 		BrewUtil.addBrewRemote = async ($ele, jsonUrl, doUnescape) => {
@@ -25146,7 +25445,7 @@ BrewUtil = {
 			.keydown(evt => {
 				switch (evt.which) {
 					case 13: { // enter
-						return $wrpRows.find(`.lst__row`).first().find(`.manbrew__load_from_url`).click()
+						return $wrpRows.find(`.lst__row`).first().find(`.manbrew__load_from_url`).click();
 					}
 					case 40: { // down
 						const firstItem = list.visibleItems[0];
@@ -25217,8 +25516,8 @@ BrewUtil = {
 						path,
 						name: path.slice(path.indexOf("/") + 1),
 						_cat: BrewUtil.dirToProp(dir),
-					})
-				})
+					});
+				});
 		});
 
 		dataList.forEach(it => {
@@ -25270,7 +25569,7 @@ BrewUtil = {
 			$row.keydown(evt => {
 				switch (evt.which) {
 					case 13: { // enter
-						return $btnAdd.click()
+						return $btnAdd.click();
 					}
 					case 38: { // up
 						const ixCur = list.visibleItems.indexOf(listItem);
@@ -25373,7 +25672,7 @@ BrewUtil = {
 			const cat = BrewUtil.homebrew[k];
 			const pDeleteFn = BrewUtil._getPDeleteFunction(k);
 			const toDel = [];
-			cat.filter(it => isMatchingSource(it.source)).forEach(it => toDel.push(it.uniqueId));
+			cat.filter(it => isMatchingSource(it.source || it.inherits?.source)).forEach(it => toDel.push(it.uniqueId));
 			await Promise.all(toDel.map(async uId => pDeleteFn(uId)));
 		}));
 		if (BrewUtil._lists) BrewUtil._lists.forEach(l => l.update());
@@ -25747,7 +26046,7 @@ BrewUtil = {
 	},
 
 	async _pDoRemove (arrName, uniqueId, {isChild} = {}) {
-		const index = BrewUtil.homebrew[arrName].findIndex(it => isChild ? it.parentUniqueId : it.uniqueId === uniqueId)
+		const index = BrewUtil.homebrew[arrName].findIndex(it => isChild ? it.parentUniqueId : it.uniqueId === uniqueId);
 		if (!~index) return;
 
 		const toRemove = BrewUtil.homebrew[arrName][index];
@@ -25774,8 +26073,6 @@ BrewUtil = {
 			case "hazard":
 			case "deity":
 			case "item":
-			case "baseitem":
-			case "variant":
 			case "itemType":
 			case "itemProperty":
 			case "itemFluff":
@@ -25805,6 +26102,8 @@ BrewUtil = {
 			case "charoptionFluff":
 			case "recipe":
 				return BrewUtil._pPDeleteGenericBrew.bind(BrewUtil, category);
+			case "baseitem": return BrewUtil._pPDeleteBaseItemBrew.bind(BrewUtil);
+			case "variant": return BrewUtil._pPDeleteMagicVariantBrew.bind(BrewUtil);
 			case "race": return BrewUtil._pDeleteRaceBrew.bind(BrewUtil);
 			case "subclass": return BrewUtil._pDeleteSubclassBrew.bind(BrewUtil);
 			case "adventure":
@@ -25852,6 +26151,32 @@ BrewUtil = {
 
 		allAttachedRaces.forEach(attachedRace => {
 			BrewUtil._lists.forEach(l => l.removeItemByData("uniqueId", attachedRace.uniqueId));
+		});
+	},
+
+	async _pPDeleteBaseItemBrew (uniqueId) {
+		const removed = await BrewUtil._pDoRemove("baseitem", uniqueId);
+		if (!removed) return;
+		if (typeof itemsPage === "undefined" || !BrewUtil._lists) return;
+
+		const allVariants = itemsPage.getSpecificVariantsByBaseItemBrewUid(uniqueId);
+		if (!allVariants.length) return;
+
+		allVariants.forEach(({uniqueId}) => {
+			BrewUtil._lists.forEach(l => l.removeItemByData("uniqueId", uniqueId));
+		});
+	},
+
+	async _pPDeleteMagicVariantBrew (uniqueId) {
+		const removed = await BrewUtil._pDoRemove("variant", uniqueId);
+		if (!removed) return;
+		if (typeof itemsPage === "undefined" || !BrewUtil._lists) return;
+
+		const allVariants = itemsPage.getSpecificVariantsByGenericVariantBrewUid(uniqueId);
+		if (!allVariants.length) return;
+
+		allVariants.forEach(({uniqueId}) => {
+			BrewUtil._lists.forEach(l => l.removeItemByData("uniqueId", uniqueId));
 		});
 	},
 
@@ -26213,7 +26538,7 @@ BrewUtil = {
 		if (!source) return "";
 		source = source.toLowerCase();
 		const color = BrewUtil.sourceJsonToColor(source);
-		if (color) return `color: #${color}; border-color: #${color}; text-decoration-color: #${color};`
+		if (color) return `color: #${color}; border-color: #${color}; text-decoration-color: #${color};`;
 		return "";
 	},
 
@@ -26286,9 +26611,9 @@ BrewUtil = {
 
 					if (arbiter.pFnPreProcBrew) {
 						const toProc = await arbiter.pFnPreProcBrew.bind(arbiter)(BrewUtil.homebrew);
-						await indexer.pAddToIndex(arbiter, toProc)
+						await indexer.pAddToIndex(arbiter, toProc);
 					} else {
-						await indexer.pAddToIndex(arbiter, BrewUtil.homebrew)
+						await indexer.pAddToIndex(arbiter, BrewUtil.homebrew);
 					}
 				}
 			}
@@ -26335,7 +26660,7 @@ BrewUtil = {
 						.filter(([prop]) => prop === altProp);
 					for (const tuple of filteredAltIndexes) {
 						const [prop, pGetIndex] = tuple;
-						await indexer.pAddToIndex(ti, BrewUtil.homebrew, {alt: ti.alternateIndexes[prop]})
+						await indexer.pAddToIndex(ti, BrewUtil.homebrew, {alt: ti.alternateIndexes[prop]});
 					}
 				}
 			}
@@ -26959,7 +27284,7 @@ function BookModeView (opts) {
 			: $$`<div class="bkmv__scroller h-100 overflow-y-auto ${isFlex ? "flex" : ""}">${this.isHideContentOnNoneShown ? null : $wrpContent}</div>`;
 		this._$wrpRenderedContent.appendTo(this._$wrpBook);
 
-		const numShown = await this.popTblGetNumShown($wrpContent, $dispName, $wrpControlsToPass);
+		const numShown = await this.popTblGetNumShown({$wrpContent, $dispName, $wrpControls: $wrpControlsToPass});
 
 		if (numShown) {
 			if (this.isHideContentOnNoneShown) this._$wrpRenderedContent.append($wrpContent);
@@ -27010,7 +27335,7 @@ function BookModeView (opts) {
 			const injectPrintCss = (cols) => {
 				$(`#bkmv__print-style`).remove();
 				$(`<style media="print" id="bkmv__print-style">.bkmv__wrp { column-count: ${cols}; }</style>`)
-					.appendTo($(document.body))
+					.appendTo($(document.body));
 			};
 
 			const lastColumns = StorageUtil.syncGetForPage(BookModeView._BOOK_VIEW_COLUMNS_K);
@@ -27086,11 +27411,11 @@ ExcludeUtil = {
 			try {
 				await StorageUtil.pRemove(VeCt.STORAGE_EXCLUDES);
 			} catch (e) {
-				setTimeout(() => { throw e });
+				setTimeout(() => { throw e; });
 			}
 			ExcludeUtil._excludes = null;
 			window.location.hash = "";
-			setTimeout(() => { throw e });
+			setTimeout(() => { throw e; });
 		}
 		ExcludeUtil.isInitialised = true;
 	},
@@ -27222,7 +27547,7 @@ EncounterUtil = {
 			const largestCount = encounter.l.items.sort((a, b) => SortUtil.ascSort(Number(b.c), Number(a.c)))[0];
 			const name = (UrlUtil.decodeHash(largestCount.h)[0] || "(Unnamed)").toTitleCase();
 			return `Encounter with ${name} ×${largestCount.c}`;
-		} else return "(Unnamed Encounter)"
+		} else return "(Unnamed Encounter)";
 	},
 };
 EncounterUtil.SUB_HASH_PREFIX = "encounter";
@@ -27284,9 +27609,9 @@ TokenUtil = {
 			.css({
 				opacity: (32 - ele.scrollTop) / 32,
 				top: -ele.scrollTop,
-			})
+			});
 	},
-}
+};
 
 // LOCKS ===============================================================================================================
 VeLock = function () {
@@ -27299,7 +27624,7 @@ VeLock = function () {
 		this._lockMeta = {
 			lock,
 			unlock,
-		}
+		};
 	};
 
 	this.unlock = () => {
@@ -27309,7 +27634,7 @@ VeLock = function () {
 			lockMeta.unlock();
 		}
 	};
-}
+};
 BrewUtil._lockHandleBrewJson = new VeLock();
 
 // DATETIME ============================================================================================================
@@ -27365,7 +27690,7 @@ DatetimeUtil = {
 
 		return stack.join(", ");
 	},
-}
+};
 DatetimeUtil._MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 DatetimeUtil._SECS_PER_YEAR = 31536000;
 DatetimeUtil._SECS_PER_DAY = 86400;
@@ -27378,10 +27703,8 @@ if (!IS_VTT && typeof window !== "undefined") {
 		$(document.body)
 			.on("click", `[data-packed-dice]`, evt => {
 				Renderer.dice.pRollerClickUseData(evt, evt.currentTarget);
-			})
-			.on("click", `[data-rd-data-embed-header]`, evt => {
-				Renderer.events.handleClick_dataEmbedHeader(evt, evt.currentTarget);
 			});
+		Renderer.events.bindGeneric();
 	});
 
 	if (location.origin === VeCt.LOC_ORIGIN_CANCER) {
@@ -27419,7 +27742,7 @@ if (!IS_VTT && typeof window !== "undefined") {
 				if (isPadded) return;
 				isPadded = true;
 				// Pad the bottom of the page so the adhesive unit doesn't overlap the content
-				$(`.view-col-group--cancer`).append(`<div class="w-100 no-shrink" style="height: 110px;"></div>`)
+				$(`.view-col-group--cancer`).append(`<div class="w-100 no-shrink" style="height: 110px;"></div>`);
 			}, 300);
 			ivsCancer.push(ivPad);
 		});
@@ -27487,7 +27810,7 @@ _Donate = {
 		const mode = modes[pos];
 		$e.css(mode);
 		$e.text(`${mode.width}*${mode.height}`);
-		$e.data("pos", (pos + 1) % modes.length)
+		$e.data("pos", (pos + 1) % modes.length);
 	},
 	// endregion
 };
@@ -27573,7 +27896,7 @@ class ProxyBase {
 		const prevValue = object[prop];
 		object[prop] = value;
 		this._doFireHooksAll(hookProp, prop, value, prevValue);
-		if (this.__hooks[hookProp] && this.__hooks[hookProp][prop]) this.__hooks[hookProp][prop].forEach(hook => hook(prop, value, prevValue));
+		this._doFireHooks(hookProp, prop, value, prevValue);
 		return true;
 	}
 
@@ -27585,6 +27908,10 @@ class ProxyBase {
 		if (this.__hooksAll[hookProp]) for (const hook of this.__hooksAll[hookProp]) await hook(prop, value, prevValue);
 		if (this.__hooks[hookProp] && this.__hooks[hookProp][prop]) for (const hook of this.__hooks[hookProp][prop]) await hook(prop, value, prevValue);
 		return true;
+	}
+
+	_doFireHooks (hookProp, prop, value, prevValue) {
+		if (this.__hooks[hookProp] && this.__hooks[hookProp][prop]) this.__hooks[hookProp][prop].forEach(hook => hook(prop, value, prevValue));
 	}
 
 	_doFireHooksAll (hookProp, prop, value, prevValue) {
@@ -27616,7 +27943,7 @@ class ProxyBase {
 
 	_addHookAll (hookProp, hook) {
 		ProxyBase._addHookAll_to(this.__hooksAll, hookProp, hook);
-		if (this.__hooksAllTmp) ProxyBase._addHookAll_to(this.__hooksAllTmp, hookProp, hook)
+		if (this.__hooksAllTmp) ProxyBase._addHookAll_to(this.__hooksAllTmp, hookProp, hook);
 	}
 
 	static _addHookAll_to (obj, hookProp, hook) {
@@ -27718,7 +28045,7 @@ class UiUtil {
 	 * @param [opts.min] Min allowed return value.
 	 * @param [opts.fallbackOnNaN] Return value if not a number.
 	 */
-	static strToInt (string, fallbackEmpty = 0, opts) { return UiUtil._strToNumber(string, fallbackEmpty, opts, true) }
+	static strToInt (string, fallbackEmpty = 0, opts) { return UiUtil._strToNumber(string, fallbackEmpty, opts, true); }
 
 	/**
 	 * @param string String to parse.
@@ -27728,7 +28055,7 @@ class UiUtil {
 	 * @param [opts.min] Min allowed return value.
 	 * @param [opts.fallbackOnNaN] Return value if not a number.
 	 */
-	static strToNumber (string, fallbackEmpty = 0, opts) { return UiUtil._strToNumber(string, fallbackEmpty, opts, false) }
+	static strToNumber (string, fallbackEmpty = 0, opts) { return UiUtil._strToNumber(string, fallbackEmpty, opts, false); }
 
 	static _strToNumber (string, fallbackEmpty = 0, opts, isInt) {
 		opts = opts || {};
@@ -27764,39 +28091,37 @@ class UiUtil {
 
 	static getEntriesAsText (entryArray) {
 		if (!entryArray || !entryArray.length) return "";
-		const lines = JSON.stringify(entryArray, null, 2)
-			.replace(/^\s*\[/, "").replace(/]\s*$/, "")
-			.split("\n")
-			.filter(it => it.trim())
+
+		return entryArray
 			.map(it => {
-				const trim = it.replace(/^\s\s/, "");
-				const mQuotes = /^"(.*?)",?$/.exec(trim);
-				if (mQuotes) return mQuotes[1]; // if string, strip quotes
-				else return `  ${trim}`; // if object, indent
-			});
+				if (typeof it === "string" || typeof it === "number") return it;
 
-		let out = "";
-		const len = lines.length;
-		for (let i = 0; i < len; ++i) {
-			out += lines[i];
-
-			if (i < len - 1) {
-				out += "\n";
-				if (!lines[i].startsWith("  ")) out += "\n";
-			}
-		}
-		return out;
+				return JSON.stringify(it, null, 2)
+					.split("\n")
+					.map(it => `  ${it}`) // Indent non-string content
+				;
+			})
+			.flat()
+			.join("\n");
 	}
 
 	static getTextAsEntries (text) {
 		try {
-			const lines = [];
-			text.split("\n").filter(it => it.trim()).forEach(it => {
-				if (/^\s/.exec(it)) lines.push(it); // keep indented lines as-is
-				else lines.push(`"${it.replace(/"/g, `\\"`)}",`); // wrap strings
-			});
-			if (lines.length) lines[lines.length - 1] = lines.last().replace(/^(.*?),?$/, "$1"); // remove trailing comma
-			return JSON.parse(`[${lines.join("")}]`);
+			const lines = text
+				.split("\n")
+				.filter(it => it.trim())
+				.map(it => {
+					if (/^\s/.exec(it)) return it; // keep indented lines as-is
+					return `"${it.replace(/"/g, `\\"`)}",`; // wrap strings
+				})
+				.map(it => {
+					if (/[}\]]$/.test(it.trim())) return `${it},`; // Add trailing commas to closing `}`/`]`
+					return it;
+				});
+			const json = `[\n${lines.join("")}\n]`
+				// remove trailing commas
+				.replace(/(.*?)(,)(:?\s*]|\s*})/g, "$1$3");
+			return JSON.parse(json);
 		} catch (e) {
 			const lines = text.split("\n").filter(it => it.trim());
 			const slice = lines.join(" \\ ").substring(0, 30);
@@ -27931,7 +28256,7 @@ class UiUtil {
 
 				modalFooter,
 			].filter(Boolean),
-		}).appendTo(opts.isFullscreenModal ? overlayBlind : wrpOverlay)
+		}).appendTo(opts.isFullscreenModal ? overlayBlind : wrpOverlay);
 
 		wrpOverlay
 			.addEventListener("mouseup", evt => {
@@ -28224,7 +28549,7 @@ class ListUiUtil {
 				it.data.cbSel.checked = false;
 				it.ele.classList.remove("list-multi-selected");
 			}
-		})
+		});
 	}
 
 	static _getCb (item, opts) { return opts.fnGetCb ? opts.fnGetCb(item) : item.data.cbSel; }
@@ -28294,7 +28619,7 @@ class ListUiUtil {
 		elePreviewWrp.dataset.dataType = isFluff ? "fluff" : "stats";
 
 		if (!evt.shiftKey) {
-			Renderer.hover.$getHoverContent_stats(page, entity).appendTo(elePreviewWrpInner);
+			Renderer.hover.$getHoverContent_stats(page, entity, {isStatic: true}).appendTo(elePreviewWrpInner);
 			return;
 		}
 
@@ -28336,7 +28661,7 @@ class ListUiUtil {
 					const isSure = await InputUiUtil.pGetUserBoolean({
 						title: "Are You Sure?",
 						htmlDescription: `You are about to expand ${list.visibleItems.length} rows. This may seriously degrade performance.<br>Are you sure you want to continue?`,
-					})
+					});
 					if (!isSure) return;
 				}
 
@@ -28393,7 +28718,7 @@ class ProfUiUtil {
 			$ele: $btnCycle,
 			setState,
 			getState: () => state,
-		}
+		};
 	}
 }
 ProfUiUtil.PROF_TO_FULL = {
@@ -28578,25 +28903,42 @@ TabUiUtilBase.TabMeta = class {
 		this.type = type;
 		this.buttons = buttons;
 	}
-}
+};
 
 class TabUiUtil extends TabUiUtilBase {
 	static decorate (obj) {
 		super.decorate(obj);
 
 		obj.__$getBtnTab = function ({tabMeta, _propProxy, propActive, ixTab}) {
-			return $(`<button class="btn btn-default ui-tab__btn-tab-head">${tabMeta.name.qq()}</button>`)
+			return $(`<button class="btn btn-default ui-tab__btn-tab-head ${tabMeta.isHeadHidden ? "ve-hidden" : ""}">${tabMeta.name.qq()}</button>`)
 				.click(() => obj[_propProxy][propActive] = ixTab);
 		};
 
 		obj.__$getWrpTab = function ({tabMeta}) {
-			return $(`<div class="ui-tab__wrp-tab-body flex-col ve-hidden ${tabMeta.hasBorder ? "ui-tab__wrp-tab-body--border" : ""} ${tabMeta.hasBackground ? "ui-tab__wrp-tab-body--background" : ""}"></div>`)
+			return $(`<div class="ui-tab__wrp-tab-body flex-col ve-hidden ${tabMeta.hasBorder ? "ui-tab__wrp-tab-body--border" : ""} ${tabMeta.hasBackground ? "ui-tab__wrp-tab-body--background" : ""}"></div>`);
 		};
 
 		obj.__renderTypedTabMeta = function ({tabMeta, ixTab}) {
 			switch (tabMeta.type) {
+				case "buttons": return obj.__renderTypedTabMeta_buttons({tabMeta, ixTab});
 				default: throw new Error(`Unhandled tab type "${tabMeta.type}"`);
 			}
+		};
+
+		obj.__renderTypedTabMeta_buttons = function ({tabMeta, ixTab}) {
+			const $btns = tabMeta.buttons.map((meta, j) => {
+				const $btn = $(`<button class="btn ui-tab__btn-tab-head ${meta.type ? `btn-${meta.type}` : "btn-primary"}" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
+					.click(evt => meta.pFnClick(evt, $btn));
+				return $btn;
+			});
+
+			const $btnTab = $$`<div class="btn-group flex-v-right flex-h-right ml-2 w-100">${$btns}</div>`;
+
+			return {
+				...tabMeta,
+				ix: ixTab,
+				$btnTab,
+			};
 		};
 
 		obj.__$getDispTabTitle = function () { return null; };
@@ -28607,8 +28949,9 @@ TabUiUtil.TabMeta = class extends TabUiUtilBase.TabMeta {
 		super(opts);
 		this.hasBorder = opts.hasBorder;
 		this.hasBackground = opts.hasBackground;
+		this.isHeadHidden = opts.isHeadHidden;
 	}
-}
+};
 
 class TabUiUtilSide extends TabUiUtilBase {
 	static decorate (obj) {
@@ -28944,7 +29287,7 @@ class SearchWidget {
 
 	get $wrpSearch () {
 		if (!this._$rendered) this._render();
-		return this._$rendered
+		return this._$rendered;
 	}
 
 	__showMsgInputRequired () {
@@ -28953,7 +29296,7 @@ class SearchWidget {
 	}
 
 	__showMsgWait () {
-		this._$wrpResults.empty().append(SearchWidget.getSearchLoading())
+		this._$wrpResults.empty().append(SearchWidget.getSearchLoading());
 	}
 
 	__showMsgNoResults () {
@@ -28974,12 +29317,12 @@ class SearchWidget {
 					return {
 						toProcess: filtered.slice(0, UiUtil.SEARCH_RESULTS_CAP),
 						resultCount: filtered.length,
-					}
+					};
 				} else {
 					return {
 						toProcess: results.slice(0, UiUtil.SEARCH_RESULTS_CAP),
 						resultCount: results.length,
-					}
+					};
 				}
 			} else {
 				// If the user has entered a search and we found nothing, return no results
@@ -28996,12 +29339,12 @@ class SearchWidget {
 					return {
 						toProcess: filtered.slice(0, UiUtil.SEARCH_RESULTS_CAP),
 						resultCount: filtered.length,
-					}
+					};
 				} else {
 					return {
 						toProcess: Object.values(index.documentStore.docs).slice(0, UiUtil.SEARCH_RESULTS_CAP).map(it => ({doc: it})),
 						resultCount: Object.values(index.documentStore.docs).length,
-					}
+					};
 				}
 			}
 		})();
@@ -29245,7 +29588,7 @@ class SearchWidget {
 
 	static async __pLoadItemIndex (isBasicIndex) {
 		const dataSource = async () => {
-			const allItems = await Renderer.item.pBuildList({isBlacklistVariants: true});
+			const allItems = await Renderer.item.pBuildList();
 			return {
 				item: allItems.filter(it => {
 					if (it.type === "GV") return false;
@@ -29469,6 +29812,7 @@ class InputUiUtil {
 	 * @param [opts.isGlobal] If the stored setting is global when "remember" options are passed.
 	 * @param [opts.fnRemember] Custom function to run when saving the "yes and remember" option.
 	 * @param [opts.isSkippable] If the prompt is skippable.
+	 * @param [opts.isAlert] If this prompt is just a notification/alert.
 	 * @return {Promise} A promise which resolves to true/false if the user chose, or null otherwise.
 	 */
 	static async pGetUserBoolean (opts) {
@@ -29495,7 +29839,7 @@ class InputUiUtil {
 			const $btnTrue = $(`<button class="btn btn-primary flex-v-center mr-3"><span class="glyphicon glyphicon-ok mr-2"></span><span>${opts.textYes || "OK"}</span></button>`)
 				.click(() => doClose(true, true));
 
-			const $btnFalse = $(`<button class="btn btn-default btn-sm flex-v-center"><span class="glyphicon glyphicon-remove mr-2"></span><span>${opts.textNo || "Cancel"}</span></button>`)
+			const $btnFalse = opts.isAlert ? null : $(`<button class="btn btn-default btn-sm flex-v-center"><span class="glyphicon glyphicon-remove mr-2"></span><span>${opts.textNo || "Cancel"}</span></button>`)
 				.click(() => doClose(true, false));
 
 			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default btn-sm ml-3"><span class="glyphicon glyphicon-forward"></span><span>${opts.textSkip || "Skip"}</span></button>`)
@@ -29565,7 +29909,7 @@ class InputUiUtil {
 						const out = {extraState: opts.fnGetExtraState()};
 						if (opts.isResolveItem) out.item = opts.values[ix];
 						else out.ix = ix;
-						resolve(out)
+						resolve(out);
 					} else resolve(opts.isResolveItem ? opts.values[ix] : ix);
 				},
 			});
@@ -29627,7 +29971,7 @@ class InputUiUtil {
 			$wrpList.addClass(`mb-1`);
 
 			const hkIsAcceptable = () => $btnOk.attr("disabled", !comp._state[propIsAcceptable]);
-			comp._addHookBase(propIsAcceptable, hkIsAcceptable)
+			comp._addHookBase(propIsAcceptable, hkIsAcceptable);
 			hkIsAcceptable();
 
 			const {$modalInner, doClose} = UiUtil.getShowModal({
@@ -29646,7 +29990,7 @@ class InputUiUtil {
 					else if (opts.values) resolve(ixs.map(ix => opts.values[ix]));
 					else if (opts.valueGroups) {
 						const allValues = opts.valueGroups.map(it => it.values).flat();
-						resolve(ixs.map(ix => allValues[ix]))
+						resolve(ixs.map(ix => allValues[ix]));
 					}
 				},
 			});
@@ -29763,11 +30107,11 @@ class InputUiUtil {
 
 			if (opts.fnIsValid) {
 				const hkText = () => comp._state.isValid = !comp._state.text.trim() || !!opts.fnIsValid(comp._state.text);
-				comp._addHookBase(propValue, hkText)
+				comp._addHookBase(propValue, hkText);
 				hkText();
 
 				const hkIsValid = () => $iptStr.toggleClass("form-control--error", !comp._state.isValid);
-				comp._addHookBase("isValid", hkIsValid)
+				comp._addHookBase("isValid", hkIsValid);
 				hkIsValid();
 			}
 
@@ -29978,7 +30322,7 @@ class InputUiUtil {
 					.css({
 						width: (CONTROLS_RADIUS * 2) + BTN_STEP_SIZE + BORDER_PAD,
 						height: (CONTROLS_RADIUS * 2) + BTN_STEP_SIZE + BORDER_PAD,
-					})
+					});
 			})() : null;
 
 			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
@@ -30212,7 +30556,7 @@ class DragReorderUiUtil {
 	static $getDragPad2 ($fnGetRow, $parent, parent) {
 		const {swapRowPositions, $children, $getChildren} = parent;
 		const nxtOpts = {$parent, swapRowPositions, $children, $getChildren};
-		return this.$getDragPadOpts($fnGetRow, nxtOpts)
+		return this.$getDragPadOpts($fnGetRow, nxtOpts);
 	}
 }
 
@@ -30408,7 +30752,17 @@ class BaseComponent extends ProxyBase {
 		this._proxyAssign("state", "_state", "__state", toState, true);
 	}
 
-	_getState () { return MiscUtil.copy(this.__state) }
+	_setStateValue (prop, value, {isForceTriggerHooks = true} = {}) {
+		if (this._state[prop] === value && !isForceTriggerHooks) return value;
+		// If the value is new, hooks will be run automatically
+		if (this._state[prop] !== value) return this._state[prop] = value;
+
+		this._doFireHooksAll("state", prop, value, value);
+		this._doFireHooks("state", prop, value, value);
+		return value;
+	}
+
+	_getState () { return MiscUtil.copy(this.__state); }
 
 	getPod () {
 		this.__pod = this.__pod || {
@@ -30627,7 +30981,7 @@ class BaseComponent extends ProxyBase {
 		this.__locks[lockName] = {
 			lock,
 			unlock,
-		}
+		};
 	}
 
 	async _pGate (lockName) {
@@ -30896,7 +31250,7 @@ class CompLayer extends ProxyBase {
 		return {
 			name: this._name,
 			data: MiscUtil.copy(this.__data),
-		}
+		};
 	}
 
 	static fromSavedState (component, savedState) { return new CompLayer(component, savedState.name, savedState.data); }
@@ -30952,7 +31306,7 @@ const MixinComponentHistory = compClass => class extends compClass {
 	_histAddExcludedProperties (stateCopy) {
 		Object.entries(this._state).forEach(([k, v]) => {
 			if (this._histPropBlacklist.has(k)) return stateCopy[k] = v;
-			if (this._histPropWhitelist && !this._histPropWhitelist.has(k)) stateCopy[k] = v
+			if (this._histPropWhitelist && !this._histPropWhitelist.has(k)) stateCopy[k] = v;
 		});
 	}
 
@@ -31039,7 +31393,7 @@ MixinComponentGlobalState._Singleton = class {
 			isUseSpellPoints: false,
 		};
 	}
-}
+};
 MixinComponentGlobalState._Singleton.__stateGlobal = {...MixinComponentGlobalState._Singleton._getDefaultStateGlobal()};
 MixinComponentGlobalState._Singleton._pSaveStateDebounced = MiscUtil.debounce(MixinComponentGlobalState._Singleton._pSaveState.bind(MixinComponentGlobalState._Singleton), 100);
 MixinComponentGlobalState._Singleton._pLoadingState = null;
@@ -31220,7 +31574,7 @@ class ComponentUiUtil {
 				$decorRight = ComponentUiUtil._$getDecor(component, prop, $ipt, opts.decorationRight, "right", opts);
 			}
 
-			out.$wrp = $$`<div class="relative w-100">${$ipt}${$decorLeft}${$decorRight}</div>`
+			out.$wrp = $$`<div class="relative w-100">${$ipt}${$decorLeft}${$decorRight}</div>`;
 		}
 
 		return out;
@@ -31355,7 +31709,7 @@ class ComponentUiUtil {
 		component._addHook(stateName, prop, hk);
 		hk();
 
-		return btn
+		return btn;
 	}
 
 	/**
@@ -31568,7 +31922,7 @@ class ComponentUiUtil {
 			if (comp._state[prop] == null) $iptDisplay.addClass("italic").addClass("ve-muted").val(opts.displayNullAs || "\u2014");
 			else $iptDisplay.removeClass("italic").removeClass("ve-muted").val(opts.fnDisplay ? opts.fnDisplay(comp._state[prop]) : comp._state[prop]);
 
-			metaOptions.forEach(it => it.$ele.removeClass("active"))
+			metaOptions.forEach(it => it.$ele.removeClass("active"));
 			const metaActive = metaOptions.find(it => it.value == null ? comp._state[prop] == null : it.value === comp._state[prop]);
 			if (metaActive) metaActive.$ele.addClass("active");
 		};
@@ -31603,9 +31957,10 @@ class ComponentUiUtil {
 	 * @param [opts.displayNullAs] If null values are allowed, display them as this string.
 	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and the select.
 	 * @param [opts.propProxy] Proxy prop.
+	 * @param [opts.isSetIndexes] If the index of the selected item should be set as state, rather than the item itself.
 	 */
-	static $getSelEnum (component, prop, {values, $ele, html, isAllowNull, fnDisplay, displayNullAs, asMeta, propProxy = "state"} = {}) {
-		const _propProxy = `_${propProxy}`
+	static $getSelEnum (component, prop, {values, $ele, html, isAllowNull, fnDisplay, displayNullAs, asMeta, propProxy = "state", isSetIndexes = false} = {}) {
+		const _propProxy = `_${propProxy}`;
 
 		let values_;
 
@@ -31615,12 +31970,32 @@ class ComponentUiUtil {
 
 		$sel.change(() => {
 			const ix = Number($sel.val());
-			if (~ix) component[_propProxy][prop] = values_[ix];
-			else {
-				if (isAllowNull) component[_propProxy][prop] = null;
-				else component[_propProxy][prop] = values_[0];
-			}
+			if (~ix) return void (component[_propProxy][prop] = isSetIndexes ? ix : values_[ix]);
+
+			if (isAllowNull) return void (component[_propProxy][prop] = null);
+			component[_propProxy][prop] = isSetIndexes ? 0 : values_[0];
 		});
+
+		// If the new value list doesn't contain our current value, reset our current value
+		const setValues_handleResetOnMissing = ({isResetOnMissing, nxtValues}) => {
+			if (!isResetOnMissing) return;
+
+			if (component[_propProxy][prop] == null) return;
+
+			if (isSetIndexes) {
+				if (component[_propProxy][prop] >= 0 && component[_propProxy][prop] < nxtValues.length) {
+					if (isAllowNull) return component[_propProxy][prop] = null;
+					return component[_propProxy][prop] = 0;
+				}
+
+				return;
+			}
+
+			if (!nxtValues.includes(component[_propProxy][prop])) {
+				if (isAllowNull) return component[_propProxy][prop] = null;
+				return component[_propProxy][prop] = nxtValues[0];
+			}
+		};
 
 		const setValues = (nxtValues, {isResetOnMissing = false} = {}) => {
 			if (CollectionUtil.deepEquals(values_, nxtValues)) return;
@@ -31630,18 +32005,18 @@ class ComponentUiUtil {
 			if (isAllowNull) { const opt = document.createElement("option"); opt.value = "-1"; opt.text = displayNullAs || "\u2014"; $sel.append(opt); }
 			values_.forEach((it, i) => { const opt = document.createElement("option"); opt.value = `${i}`; opt.text = fnDisplay ? fnDisplay(it) : it; $sel.append(opt); });
 
-			if (isResetOnMissing) {
-				// If the new value list doesn't contain our current value, reset our current value
-				if (component[_propProxy][prop] != null && !nxtValues.includes(component[_propProxy][prop])) {
-					if (isAllowNull) return component[_propProxy][prop] = null;
-					else return component[_propProxy][prop] = nxtValues[0];
-				}
-			}
+			setValues_handleResetOnMissing({isResetOnMissing, nxtValues});
 
 			hook();
 		};
 
 		const hook = () => {
+			if (isSetIndexes) {
+				const ix = component[_propProxy][prop] == null ? -1 : component[_propProxy][prop];
+				$sel.val(`${ix}`);
+				return;
+			}
+
 			const searchFor = component[_propProxy][prop] === undefined ? null : component[_propProxy][prop];
 			// Null handling is done in change handler
 			const ix = values_.indexOf(searchFor);
@@ -31813,6 +32188,8 @@ class ComponentUiUtil {
 	 * @param [opts.fnDisplay] Function which takes a value and returns display text.
 	 * @param [opts.required] Values which are required.
 	 * @param [opts.ixsRequired] Indexes of values which are required.
+	 * @param [opts.isSearchable] If a search input should be created.
+	 * @param [opts.fnGetSearchText] Function which takes a value and returns search text.
 	 */
 	static getMetaWrpMultipleChoice (comp, prop, opts) {
 		opts = opts || {};
@@ -31821,6 +32198,7 @@ class ComponentUiUtil {
 		const rowMetas = [];
 		const $eles = [];
 		const ixsSelectionOrder = [];
+		const $elesSearchable = {};
 
 		const propIsAcceptable = this.getMetaWrpMultipleChoice_getPropIsAcceptable(prop);
 		const propPulse = this.getMetaWrpMultipleChoice_getPropPulse(prop);
@@ -31841,7 +32219,7 @@ class ComponentUiUtil {
 				const $wrpName = $$`<div class="split-v-center py-1">
 					<div class="flex-v-center"><span class="mr-2">‒</span><span>${group.name}</span></div>
 					${opts.valueGroupSplitControlsLookup?.[group.name]}
-				</div>`
+				</div>`;
 				$eles.push($wrpName);
 			}
 
@@ -31919,10 +32297,16 @@ class ComponentUiUtil {
 					},
 				});
 
-				$eles.push($$`<label class="flex-v-center py-1 stripe-even">
+				const $ele = $$`<label class="flex-v-center py-1 stripe-even">
 					<div class="col-1 flex-vh-center">${$cb}</div>
 					<div class="col-11 flex-v-center">${displayValue}</div>
-				</label>`);
+				</label>`;
+				$eles.push($ele);
+
+				if (opts.isSearchable) {
+					const searchText = `${opts.fnGetSearchText ? opts.fnGetSearchText(v, ixValueFrozen) : v}`.toLowerCase().trim();
+					($elesSearchable[searchText] = $elesSearchable[searchText] || []).push($ele);
+				}
 
 				ixValue++;
 			});
@@ -31934,10 +32318,29 @@ class ComponentUiUtil {
 
 		comp.__state[propIxMax] = ixValue;
 
+		let $iptSearch;
+		if (opts.isSearchable) {
+			const compSub = BaseComponent.fromObject({search: ""});
+			$iptSearch = ComponentUiUtil.$getIptStr(compSub, "search");
+			const hkSearch = () => {
+				const cleanSearch = compSub._state.search.trim().toLowerCase();
+				if (!cleanSearch) {
+					Object.values($elesSearchable).forEach($eles => $eles.forEach($ele => $ele.removeClass("ve-hidden")));
+					return;
+				}
+
+				Object.entries($elesSearchable)
+					.forEach(([searchText, $eles]) => $eles.forEach($ele => $ele.toggleVe(searchText.includes(cleanSearch))));
+			};
+			compSub._addHookBase("search", hkSearch);
+			hkSearch();
+		}
+
 		// Always return this as a "meta" object
 		const unhook = () => rowMetas.forEach(it => it.unhook());
 		return {
 			$ele: $$`<div class="flex-col w-100 overflow-y-auto">${$eles}</div>`,
+			$iptSearch,
 			rowMetas, // Return this to allow for creating custom UI
 			propIsAcceptable,
 			propPulse,
@@ -32221,7 +32624,7 @@ ComponentUiUtil.RangeSlider = class {
 						isMajor: i === 0 || i === (len - 1),
 						value: val,
 					}));
-				})
+				});
 			}
 
 			wrpPips.empty();
@@ -32373,7 +32776,7 @@ ComponentUiUtil.RangeSlider = class {
 		// Move the closest slider to this pip's location
 		const distToMin = Math.abs(this._compCpy._state[this._propCurMin] - value);
 		const distToMax = Math.abs(this._compCpy._state[this._propCurMax] - value);
-		return {distToMin, distToMax}
+		return {distToMin, distToMax};
 	}
 
 	_handleClick (evt, value) {
@@ -32466,7 +32869,7 @@ ComponentUiUtil.RangeSlider = class {
 			}
 		});
 	}
-}
+};
 ComponentUiUtil.RangeSlider._isInit = false;
 ComponentUiUtil.RangeSlider._ALL_SLIDERS = new Set();
 ComponentUiUtil.RangeSlider._W_THUMB_PX = 16;

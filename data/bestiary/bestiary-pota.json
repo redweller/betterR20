@@ -3088,6 +3088,9 @@
 				"MW",
 				"RCH"
 			],
+			"conditionInflict": [
+				"exhaustion"
+			],
 			"conditionInflictLegendary": [
 				"prone"
 			],
