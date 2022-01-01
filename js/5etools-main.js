@@ -866,6 +866,10 @@ const betteR205etoolsMain = function () {
 		}
 
 		const $body = $("body");
+
+		// Text for force external request warning
+		const ferWarning = `<div><b style="color:red">WARNING: You are currently force fetching data from an external source, rather than the script's inbuilt data. This takes more time and is more demanding on the site. Do not use this feature unless necessary.</b></div>`
+
 		if (window.is_gm) {
 			const $wrpSettings = $(`#betteR20-settings`);
 
@@ -886,6 +890,11 @@ const betteR205etoolsMain = function () {
 			$wrpSettings.append($ptAdventures);
 			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get("MODULES").openFn());
 			$wrpSettings.append(d20plus.settingsHtmlPtImportFooter);
+
+			// Give a warning if the user is forcing an external request, useful to prevent users forgetting about it and to help with support
+			if (d20plus.importer.forceExternalRequests) {
+				$wrpSettings.append(ferWarning);
+			}
 
 			$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
 			$("#mysettings > .content a#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
@@ -964,6 +973,11 @@ const betteR205etoolsMain = function () {
 		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
 		$appTo.append(d20plus.settingsHtmlPtOptfeaturesPlayer);
 
+		// Give a warning if the user is forcing an external request, useful to prevent users forgetting about it and to help with support
+		if (d20plus.importer.forceExternalRequests) {
+			$appTo.append(ferWarning);
+		}
+		
 		$winPlayer.dialog({
 			autoOpen: false,
 			resizable: true,

@@ -30,7 +30,7 @@ function d20plusClass () {
 
 			const officialClassUrls = Object.values(classDataUrls).map(v => d20plus.formSrcUrl(CLASS_DATA_DIR, v));
 
-			DataUtil.loadJSON(url).then(async (data) => {
+			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then(async (data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				await d20plus.importer.pAddBrew(data);
 

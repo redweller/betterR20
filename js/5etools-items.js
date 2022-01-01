@@ -30,7 +30,7 @@ function d20plusItems () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
-			if (url.trim() === `${DATA_URL}items.json`) {
+			if (url.trim() === `${DATA_URL}items.json` && !d20plus.importer.forceExternalRequests) {
 				Renderer.item.pBuildList(
 					{
 						fnCallback: itemList => {
@@ -103,7 +103,7 @@ function d20plusItems () {
 					});
 			} else {
 				// for non-standard URLs, do a generic import
-				DataUtil.loadJSON(url).then((data) => {
+				DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then((data) => {
 					(data.itemProperty || []).forEach(p => Renderer.item._addProperty(p));
 					(data.itemType || []).forEach(t => Renderer.item._addType(t));
 					d20plus.importer.addBrewMeta(data._meta);

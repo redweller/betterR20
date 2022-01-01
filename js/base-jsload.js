@@ -43,6 +43,7 @@ function baseJsLoad () {
 
 			const cleanPathName = xUrl.pathname.replace(/^\//, "");
 			// If forceExternal is set to true as a parameter, load from chosen url rather than built in data
+			console.log("test: " + forceExternal);
 			if (!forceExternal && JSON_DATA[cleanPathName]) {
 				const out = JSON_DATA[cleanPathName];
 				await DataUtil.pDoMetaMerge(cleanPathName, out);

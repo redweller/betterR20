@@ -30,7 +30,7 @@ function d20plusSpells () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
-			DataUtil.loadJSON(url).then((data) => {
+			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				if (data.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(data.roll20Spell);
 				d20plus.importer.showImportList(
