@@ -138,9 +138,9 @@ function baseToolTable() {
             if (line.startsWith("!import-table-item")) {
                 if (!tbl) {
                     valid = false;
-                    error =  "No !import-table statement found";
+                    error = "No !import-table statement found";
                 }
-            } 
+            }
             // Check to see if current line imports a table
             else if (line.startsWith("!import-table")) {
                 if (tbl) {
@@ -148,7 +148,7 @@ function baseToolTable() {
                     error = "No blank line found between tables"
                 }
                 tbl = true;
-            } 
+            }
             // Check to ensure against invalid line
             else if (line.trim()) {
                 valid = false;
@@ -212,7 +212,10 @@ function baseToolTable() {
             <div>
             <button class="btn create-table">Create a Table</button> <i>The first line is the table name, the rest are items.</i>
             </div>
-            <br>
+            <div>
+            <button class="btn load-url">Import Tables from URL</button> <input type="text" id="import-table-url" value="${DATA_URL}generated/gendata-tables.json">
+            </div>
+            <hr style="margin: 4px;">
             <div id="table-list">
                 <input type="search" class="search" placeholder="Search tables...">
                 <div class="list" style="transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;"><i>Loading...</i></div>
@@ -251,8 +254,14 @@ function baseToolTable() {
             const $btnImport = $win.find(`.start-import`).off("click");
             const $btnClipboard = $win.find(`.paste-te`).off("click");
             const $btnCreate = $win.find(`.create-table`).off("click");
+            const $btnURL = $win.find(`.load-url`).off("click");
 
-            const url = `${DATA_URL}generated/gendata-tables.json`;
+            let tableList = new List("table-list", {
+                valueNames: ["name", "source"],
+            });
+            let tables = null;
+
+            let url = $("#import-table-url").val();
 
             DataUtil.loadJSON(url).then((data) => {
 
@@ -267,7 +276,7 @@ function baseToolTable() {
                     style="display: block; width: 600px; height: 340px;"/>`).appendTo($wrpClip);
                     const $btnCheck = $(`<button class="btn" style="margin-right: 5px;">Check if Valid</button>`).on("click", () => {
                         const [valid, error] = validatePaste($iptClip.val());
-                        if (valid){
+                        if (valid) {
                             window.alert("Looking good!");
                         }
                         else {
@@ -304,9 +313,38 @@ function baseToolTable() {
                     $wrpClip.dialog("open");
                 });
 
+                // Allows you to import from other urls such as ${DATA_URL}tables.json
+                $btnURL.on("click", () => {
+                    url = $("#import-table-url").val();
+                    if (!url || !url.trim()) return;
+
+                    // Load url from box
+                    DataUtil.loadJSON(url).then((newdata) => {
+                        // Overwrite the stored data with new, replaced data
+                        const $lst = $win.find(`.list`);
+                        tables = newdata.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+                        let tmp = "";
+                        tables.forEach((t, i) => {
+                            tmp += `
+                                <label class="import-cb-label" data-listid="${i}">
+                                    <input type="checkbox">
+                                    <span class="name col-10">${t.name}</span>
+                                    <span title="${t.source ? Parser.sourceJsonToFull(t.source) : "Unknown Source"}" class="source">SRC[${t.source ? Parser.sourceJsonToAbv(t.source) : "UNK"}]</span>
+                                </label>
+                            `;
+                        });
+                        $lst.html(tmp);
+                        tmp = null;
+
+                        tableList = new List("table-list", {
+                            valueNames: ["name", "source"],
+                        });
+                    });
+                })
+
                 // Official tables
                 const $lst = $win.find(`.list`);
-                const tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
+                tables = data.table.sort((a, b) => SortUtil.ascSort(a.name, b.name));
                 let tmp = "";
                 tables.forEach((t, i) => {
                     tmp += `
@@ -320,7 +358,7 @@ function baseToolTable() {
                 $lst.html(tmp);
                 tmp = null;
 
-                const tableList = new List("table-list", {
+                tableList = new List("table-list", {
                     valueNames: ["name", "source"],
                 });
 
