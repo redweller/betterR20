@@ -18,7 +18,7 @@ function baseToolTable() {
             id: d20plus.ut.generateRowId(),
         });
 
-        labels = t.colLabels;
+        const labels = t.colLabels;
         // Gets the index of the first column labeled with a dice roll
         // For example, finds the d100 column
         const dplace = labels.findIndex(l => /d[0-9]+/.test(l));
@@ -47,14 +47,14 @@ function baseToolTable() {
 
             // Set the weight
             if (dplace !== -1) {
-                weight = i[dplace];
-                dash = weight.indexOf("–"); // Note: – is different from -
+                const weight = i[dplace];
+                const dash = weight.indexOf("–"); // Note: – is different from -
 
                 // If the weight is a range
                 if (dash !== -1) {
                     // Get the two numbers in the range, subtract them, add 1
-                    low = parseInt(weight.substring(0, dash));
-                    high = parseInt(weight.substring(dash + 1));
+                    const low = parseInt(weight.substring(0, dash));
+                    const high = parseInt(weight.substring(dash + 1));
                     if (high === 0) high = 100;
                     out.weight = high - low + 1;
                 } else { // If the weight is a single value
@@ -94,7 +94,7 @@ function baseToolTable() {
     // Note that due to the simplicity of the format, hiding from players, weight, and avatars can't be configured
     function createCreateFormat(t) {
         // Split the input into lines
-        lines = t.split("\n");
+        const lines = t.split("\n");
 
         // Ensure there's a table name and at least one element
         if (lines.length < 2) {
