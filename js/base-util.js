@@ -113,7 +113,7 @@ function baseUtil () {
 		d20plus.ut.sendHackerChat(`
 			${isStreamer ? "" : `
 			<br>
-			Need help? Visit our <a href="${wikiUrl}">wiki</a> or Join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
+			Need help? Visit our <a href="${wikiUrl}">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
 			<br>
 			<br>
 			<span title="You'd think this would be obvious.">
