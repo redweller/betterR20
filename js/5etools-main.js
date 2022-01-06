@@ -887,13 +887,13 @@ const betteR205etoolsMain = function () {
 			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get("MODULES").openFn());
 			$wrpSettings.append(d20plus.settingsHtmlPtImportFooter);
 
-			$("#mysettings > .content a#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
-			$("#mysettings > .content a#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
-			$("#mysettings > .content a#button-monsters-load-file").on(window.mousedowntype, d20plus.monsters.buttonFile);
-			$("#mysettings > .content a#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
-			$("#mysettings > .content a#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
+			$("#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
+			$("#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
+			$("#button-monsters-load-file").on(window.mousedowntype, d20plus.monsters.buttonFile);
+			$("#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
+			$("#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 
-			$("#mysettings > .content a#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+			$("#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
 
 			d20plus.setTurnOrderTemplate();
