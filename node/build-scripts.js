@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.28.1";
+const SCRIPT_VERSION = "1.28.1.1-dev";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -15,12 +15,27 @@ const matchString = `
 // running, the analytics scripts manage to somehow crash the entire website.
 const analyticsBlocking = `
 // @grant        GM_webRequest
-// @webRequest   [{"selector": { "include": "*://www.google-analytics.com/analytics.js" },  "action": "cancel"}]1
+// @webRequest   [{"selector": { "include": "*://www.google-analytics.com/analytics.js" },  "action": "cancel"}]
 // @webRequest   [{"selector": { "include": "*://cdn.userleap.com/shim.js?*" },  "action": "cancel"}]
 `;
 
+const HEADER_META = `// ==UserScript==
+// @name         betteR20-meta
+// @namespace    https://5e.tools/
+// @license      MIT (https://opensource.org/licenses/MIT)
+// @version      ${SCRIPT_VERSION}
+// @description  Enhance your Roll20 experience
+// @author       TheGiddyLimit
+// @grant        unsafeWindow
+// @run-at       document-start
+// ==/UserScript==
+`;
+
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-meta.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-meta.js
+
 const HEADER_CORE = `// ==UserScript==
-// @name         betteR20-core
+// @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
@@ -36,7 +51,7 @@ ${analyticsBlocking}
 `;
 
 const HEADER_5ETOOLS = `// ==UserScript==
-// @name         betteR20-5etools
+// @name         betteR20-5etools-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
@@ -244,6 +259,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	fs.writeFileSync(filename, fullScript);
 });
 
+fs.writeFileSync(`${BUILD_DIR}/betteR20-meta.js`, `${HEADER_META}`);
 fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
 
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);
