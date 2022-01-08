@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.28.2";
+const SCRIPT_VERSION = "1.28.1";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -24,7 +24,7 @@ const HEADER_CORE = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://raw.githubusercontent.com/oldewyrm/betterR20/auto-update/dist/betteR20-core.user.meta
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
@@ -40,7 +40,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://raw.githubusercontent.com/oldewyrm/betterR20/auto-update/dist/betteR20-5etools.user.meta
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
@@ -233,7 +233,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	const libJson = LIB_JSON[k];
 
 	const filename = `${BUILD_DIR}/betteR20-${k}.user.js`;
-	const metaFilename = `${BUILD_DIR}/betteR20-${k}.user.meta`;
+	const metaFilename = `${BUILD_DIR}/betteR20-${k}.meta.js`;
 	const fullScript = joinParts(
 		v.header,
 		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString(),
