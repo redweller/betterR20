@@ -3945,10 +3945,6 @@
 					}
 				}
 			],
-			"proficiencyTags": [
-				"Skill Proficiency",
-				"Tool Proficiency"
-			],
 			"skillToolLanguageProficiencies": [
 				{
 					"choose": [
@@ -4717,10 +4713,6 @@
 			"name": "Skilled",
 			"source": "PHB",
 			"page": 170,
-			"proficiencyTags": [
-				"Skill Proficiency",
-				"Tool Proficiency"
-			],
 			"skillToolLanguageProficiencies": [
 				{
 					"choose": [

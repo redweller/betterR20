@@ -11628,167 +11628,6 @@
 			"hasFluffImages": true
 		},
 		{
-			"source": "PHB",
-			"raceName": "Dragonborn",
-			"raceSource": "PHB",
-			"page": 32,
-			"srd": true,
-			"hasFluff": true,
-			"hasFluffImages": true,
-			"_versions": [
-				{
-					"_template": {
-						"name": "Dragonborn ({{color}})",
-						"source": "PHB",
-						"_mod": {
-							"entries": [
-								{
-									"mode": "removeArr",
-									"names": "Draconic Ancestry"
-								},
-								{
-									"mode": "replaceArr",
-									"replace": "Breath Weapon",
-									"items": {
-										"type": "entries",
-										"name": "Breath Weapon",
-										"entries": [
-											"You can use your action to exhale destructive energy in a {{area}}.",
-											"When you use your breath weapon, each creature in the area of the exhalation must make a {{savingThrow}} saving throw. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes {@damage 2d6} {{damageType}} damage on a failed save, and half as much damage on a successful one. The damage increases to {@damage 3d6} at 6th level, {@damage 4d6} at 11th level, and {@damage 5d6} at 16th level.",
-											"After you use your breath weapon, you can't use it again until you complete a short or long rest."
-										]
-									}
-								},
-								{
-									"mode": "replaceArr",
-									"replace": "Damage Resistance",
-									"items": {
-										"type": "entries",
-										"name": "Damage Resistance",
-										"entries": [
-											"You have resistance to {{damageType}} damage."
-										]
-									}
-								}
-							]
-						}
-					},
-					"_implementations": [
-						{
-							"_variables": {
-								"color": "Black",
-								"damageType": "acid",
-								"area": "5-foot-wide, 30-foot-long line",
-								"savingThrow": "Dexterity"
-							},
-							"resist": [
-								"acid"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Blue",
-								"damageType": "lightning",
-								"area": "5-foot-wide, 30-foot-long line",
-								"savingThrow": "Dexterity"
-							},
-							"resist": [
-								"lightning"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Brass",
-								"damageType": "fire",
-								"area": "5-foot-wide, 30-foot-long line",
-								"savingThrow": "Dexterity"
-							},
-							"resist": [
-								"fire"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Bronze",
-								"damageType": "lightning",
-								"area": "5-foot-wide, 30-foot-long line",
-								"savingThrow": "Dexterity"
-							},
-							"resist": [
-								"lightning"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Copper",
-								"damageType": "acid",
-								"area": "5-foot-wide, 30-foot-long line",
-								"savingThrow": "Dexterity"
-							},
-							"resist": [
-								"acid"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Gold",
-								"damageType": "fire",
-								"area": "15-foot cone",
-								"savingThrow": "Dexterity"
-							},
-							"resist": [
-								"fire"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Green",
-								"damageType": "poison",
-								"area": "15-foot cone",
-								"savingThrow": "Constitution"
-							},
-							"resist": [
-								"poison"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Red",
-								"damageType": "fire",
-								"area": "15-foot cone",
-								"savingThrow": "Dexterity"
-							},
-							"resist": [
-								"fire"
-							]
-						},
-						{
-							"_variables": {
-								"color": "Silver",
-								"damageType": "cold",
-								"area": "15-foot cone",
-								"savingThrow": "Constitution"
-							},
-							"resist": [
-								"cold"
-							]
-						},
-						{
-							"_variables": {
-								"color": "White",
-								"damageType": "cold",
-								"area": "15-foot cone",
-								"savingThrow": "Constitution"
-							},
-							"resist": [
-								"cold"
-							]
-						}
-					]
-				}
-			]
-		},
-		{
 			"name": "Draconblood",
 			"source": "EGW",
 			"raceName": "Dragonborn",
@@ -12239,6 +12078,167 @@
 								"area": "15-foot cone",
 								"savingThrow": "Constitution"
 							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"source": "PHB",
+			"raceName": "Dragonborn",
+			"raceSource": "PHB",
+			"page": 32,
+			"srd": true,
+			"hasFluff": true,
+			"hasFluffImages": true,
+			"_versions": [
+				{
+					"_template": {
+						"name": "Dragonborn ({{color}})",
+						"source": "PHB",
+						"_mod": {
+							"entries": [
+								{
+									"mode": "removeArr",
+									"names": "Draconic Ancestry"
+								},
+								{
+									"mode": "replaceArr",
+									"replace": "Breath Weapon",
+									"items": {
+										"type": "entries",
+										"name": "Breath Weapon",
+										"entries": [
+											"You can use your action to exhale destructive energy in a {{area}}.",
+											"When you use your breath weapon, each creature in the area of the exhalation must make a {{savingThrow}} saving throw. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes {@damage 2d6} {{damageType}} damage on a failed save, and half as much damage on a successful one. The damage increases to {@damage 3d6} at 6th level, {@damage 4d6} at 11th level, and {@damage 5d6} at 16th level.",
+											"After you use your breath weapon, you can't use it again until you complete a short or long rest."
+										]
+									}
+								},
+								{
+									"mode": "replaceArr",
+									"replace": "Damage Resistance",
+									"items": {
+										"type": "entries",
+										"name": "Damage Resistance",
+										"entries": [
+											"You have resistance to {{damageType}} damage."
+										]
+									}
+								}
+							]
+						}
+					},
+					"_implementations": [
+						{
+							"_variables": {
+								"color": "Black",
+								"damageType": "acid",
+								"area": "5-foot-wide, 30-foot-long line",
+								"savingThrow": "Dexterity"
+							},
+							"resist": [
+								"acid"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Blue",
+								"damageType": "lightning",
+								"area": "5-foot-wide, 30-foot-long line",
+								"savingThrow": "Dexterity"
+							},
+							"resist": [
+								"lightning"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Brass",
+								"damageType": "fire",
+								"area": "5-foot-wide, 30-foot-long line",
+								"savingThrow": "Dexterity"
+							},
+							"resist": [
+								"fire"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Bronze",
+								"damageType": "lightning",
+								"area": "5-foot-wide, 30-foot-long line",
+								"savingThrow": "Dexterity"
+							},
+							"resist": [
+								"lightning"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Copper",
+								"damageType": "acid",
+								"area": "5-foot-wide, 30-foot-long line",
+								"savingThrow": "Dexterity"
+							},
+							"resist": [
+								"acid"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Gold",
+								"damageType": "fire",
+								"area": "15-foot cone",
+								"savingThrow": "Dexterity"
+							},
+							"resist": [
+								"fire"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Green",
+								"damageType": "poison",
+								"area": "15-foot cone",
+								"savingThrow": "Constitution"
+							},
+							"resist": [
+								"poison"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Red",
+								"damageType": "fire",
+								"area": "15-foot cone",
+								"savingThrow": "Dexterity"
+							},
+							"resist": [
+								"fire"
+							]
+						},
+						{
+							"_variables": {
+								"color": "Silver",
+								"damageType": "cold",
+								"area": "15-foot cone",
+								"savingThrow": "Constitution"
+							},
+							"resist": [
+								"cold"
+							]
+						},
+						{
+							"_variables": {
+								"color": "White",
+								"damageType": "cold",
+								"area": "15-foot cone",
+								"savingThrow": "Constitution"
+							},
+							"resist": [
+								"cold"
+							]
 						}
 					]
 				}
@@ -14911,15 +14911,6 @@
 			]
 		},
 		{
-			"source": "PHB",
-			"raceName": "Half-Elf",
-			"raceSource": "PHB",
-			"page": 38,
-			"srd": true,
-			"hasFluff": true,
-			"hasFluffImages": true
-		},
-		{
 			"name": "Variant; Aquatic Elf Descent",
 			"source": "SCAG",
 			"raceName": "Half-Elf",
@@ -15641,6 +15632,15 @@
 			]
 		},
 		{
+			"source": "PHB",
+			"raceName": "Half-Elf",
+			"raceSource": "PHB",
+			"page": 38,
+			"srd": true,
+			"hasFluff": true,
+			"hasFluffImages": true
+		},
+		{
 			"name": "Ghostwise",
 			"source": "SCAG",
 			"raceName": "Halfling",
@@ -15998,26 +15998,6 @@
 						"You have advantage on saving throws against poison, and you have resistance against poison damage."
 					],
 					"type": "entries"
-				}
-			],
-			"hasFluff": true,
-			"hasFluffImages": true
-		},
-		{
-			"source": "PHB",
-			"raceName": "Human",
-			"raceSource": "PHB",
-			"page": 29,
-			"srd": true,
-			"basicRules": true,
-			"ability": [
-				{
-					"str": 1,
-					"dex": 1,
-					"con": 1,
-					"int": 1,
-					"wis": 1,
-					"cha": 1
 				}
 			],
 			"hasFluff": true,
@@ -16818,6 +16798,26 @@
 					"type": "entries"
 				}
 			]
+		},
+		{
+			"source": "PHB",
+			"raceName": "Human",
+			"raceSource": "PHB",
+			"page": 29,
+			"srd": true,
+			"basicRules": true,
+			"ability": [
+				{
+					"str": 1,
+					"dex": 1,
+					"con": 1,
+					"int": 1,
+					"wis": 1,
+					"cha": 1
+				}
+			],
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gavony",
@@ -17639,15 +17639,6 @@
 					]
 				}
 			]
-		},
-		{
-			"source": "PHB",
-			"raceName": "Tiefling",
-			"raceSource": "PHB",
-			"page": 42,
-			"srd": true,
-			"hasFluff": true,
-			"hasFluffImages": true
 		},
 		{
 			"name": "Abyssal",
@@ -18914,6 +18905,15 @@
 			"overwrite": {
 				"ability": true
 			}
+		},
+		{
+			"source": "PHB",
+			"raceName": "Tiefling",
+			"raceSource": "PHB",
+			"page": 42,
+			"srd": true,
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Envoy",
