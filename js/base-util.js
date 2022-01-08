@@ -66,6 +66,8 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
+		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
 			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
 			success: (data) => {
@@ -75,10 +77,13 @@ function baseUtil () {
 					const cmp = cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
-							const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
-							const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
-							d20plus.ut.sendHackerChat(`<br>A newer version of betteR20 is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
-							d20plus.ut.sendHackerChat(`For help and support, see our <a href="${wikiUrl}">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.`);
+							if (!isStreamer) {
+								const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
+								const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
+								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
+							} else {
+								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br><br>`);
+							}
 						}, 1000);
 					}
 				}
