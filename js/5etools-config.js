@@ -127,11 +127,6 @@ function tools5eConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
-		"allSourcesIncludeHomebrew": {
-			"name": `Include Homebrew in "Import Monsters From All Sources" List (Warning: Slow)`,
-			"default": false,
-			"_type": "boolean",
-		},
 		"importIntervalHandout": {
 			"name": "Rest Time between Each Handout (msec)",
 			"default": 100,
