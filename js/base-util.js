@@ -1,10 +1,11 @@
 function baseUtil () {
-	//const wikiUrl = "https://wiki.5e.tools/index.php/BetteR20_FAQ"; // I'll be back ...
-	const wikiUrl = "https://web.archive.org/web/20210826155610/https://wiki.5e.tools/index.php/BetteR20_FAQ";
 	const vttesUrl = "https://justas-d.github.io/roll20-enhancement-suite/";
 	let shownHardDickWarning = false;
 
 	d20plus.ut = {};
+
+	// d20plus.ut.WIKI_URL = "https://wiki.5e.tools"; // I'll be back ...
+	d20plus.ut.WIKI_URL = "https://web.archive.org/web/20210826155610/https://wiki.5e.tools";
 
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
@@ -47,7 +48,7 @@ function baseUtil () {
             value: Array.prototype.map
         });
     };
-	
+
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
@@ -118,7 +119,7 @@ function baseUtil () {
 		d20plus.ut.sendHackerChat(`
 			${isStreamer ? "" : `
 			<br>
-			Need help? Visit our <a href="${wikiUrl}">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
+			Need help? Visit our <a href="${d20plus.ut.WIKI_URL}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
 			<br>
 			<br>
 			<span title="You'd think this would be obvious.">
