@@ -868,7 +868,7 @@ const betteR205etoolsMain = function () {
 		const $body = $("body");
 
 		// Text for force external request warning
-		const ferWarning = `<div><b style="color:red">WARNING: You are currently force fetching data from an external source, rather than the script's inbuilt data. This takes more time and is more demanding on the site. Do not use this feature unless necessary.</b></div>`
+		const ferWarning = `<div><b style="color:red">WARNING: You are currently fetching data from an external source, rather than the script's inbuilt data. External data may not be compatible with your current script version. Do not use this feature unless necessary.</b></div>`
 
 		if (window.is_gm) {
 			const $wrpSettings = $(`#betteR20-settings`);

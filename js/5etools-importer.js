@@ -1,10 +1,11 @@
 function d20plusImporter () {
 	d20plus.importer = {};
+	d20plus.debug = {};
 
 	d20plus.importer._playerImports = {};
 
 	// Setting this variable to true will grab data from the site, rather than the script's storage
-	d20plus.importer.forceExternalRequests = false;
+	d20plus.debug.forceExternalRequests = false;
 
 	d20plus.importer.storePlayerImport = function (id, data) {
 		d20plus.importer._playerImports[id] = data;
