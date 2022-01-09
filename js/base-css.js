@@ -348,6 +348,15 @@ function baseCss () {
 			s: ".import-cb-label .source",
 			r: "width: calc(16.667% - 28px);'",
 		},
+		// Table importer
+		{
+			s: ".table-import-search",
+			r: "transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;",
+		},
+		{
+			s: ".table-import-textarea",
+			r: "display: block; width: 600px; height: 340px;",
+		},
 		// horizontal toolbar
 		{
 			s: "#secondary-toolbar:hover",
