@@ -24,7 +24,7 @@ const HEADER_CORE = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
@@ -40,7 +40,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
@@ -233,6 +233,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	const libJson = LIB_JSON[k];
 
 	const filename = `${BUILD_DIR}/betteR20-${k}.user.js`;
+	const metaFilename = `${BUILD_DIR}/betteR20-${k}.meta.js`;
 	const fullScript = joinParts(
 		v.header,
 		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString(),
@@ -242,6 +243,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true))
 	);
 	fs.writeFileSync(filename, fullScript);
+	fs.writeFileSync(metaFilename, v.header);
 });
 
 fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
