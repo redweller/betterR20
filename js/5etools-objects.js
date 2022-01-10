@@ -6,11 +6,7 @@ function d20plusObjects () {
 		const url = $("#import-objects-url").val();
 
 		if (url && url.trim()) {
-			const args = {
-				"isForceExternal" : d20plus.debug.forceExternalRequests
-			};
-
-			DataUtil.loadJSON(url, args).then((data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"object",

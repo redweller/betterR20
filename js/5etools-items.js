@@ -103,11 +103,7 @@ function d20plusItems () {
 					});
 			} else {
 				// for non-standard URLs, do a generic import
-				const args = {
-					"isForceExternal" : d20plus.debug.forceExternalRequests
-				};
-
-				DataUtil.loadJSON(url, args).then((data) => {
+				DataUtil.loadJSON(url).then((data) => {
 					(data.itemProperty || []).forEach(p => Renderer.item._addProperty(p));
 					(data.itemType || []).forEach(t => Renderer.item._addType(t));
 					d20plus.importer.addBrewMeta(data._meta);

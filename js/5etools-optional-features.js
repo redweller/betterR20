@@ -7,11 +7,8 @@ function d20plusOptionalFeatures () {
 
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.optionalfeatures.playerImportBuilder : d20plus.optionalfeatures.handoutBuilder;
-			const args = {
-				"isForceExternal" : d20plus.debug.forceExternalRequests
-			};
 
-			DataUtil.loadJSON(url, args).then((data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"optionalfeature",

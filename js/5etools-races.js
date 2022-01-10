@@ -7,11 +7,8 @@ function d20plusRaces () {
 		const url = playerMode ? $("#import-races-url-player").val() : $("#import-races-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
-			const args = {
-				"isForceExternal" : d20plus.debug.forceExternalRequests
-			};
 
-			DataUtil.loadJSON(url, args).then(async (data) => {
+			DataUtil.loadJSON(url).then(async (data) => {
 				const toImport = MiscUtil.copy(data.race);
 				if (data.subrace) {
 					const allraces = await DataUtil.loadJSON(RACE_DATA_URL, args);

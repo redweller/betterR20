@@ -29,11 +29,8 @@ function d20plusSpells () {
 		const url = playerMode ? $("#import-spell-url-player").val() : $("#import-spell-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
-			const args = {
-				"isForceExternal" : d20plus.debug.forceExternalRequests
-			};
 
-			DataUtil.loadJSON(url, args).then((data) => {
+			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				if (data.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(data.roll20Spell);
 				d20plus.importer.showImportList(

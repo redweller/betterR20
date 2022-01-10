@@ -38,12 +38,12 @@ function baseJsLoad () {
 
 		// Monkey patch JSON loading
 		const cached = DataUtil.loadJSON;
-		DataUtil.loadJSON = async (url, {isForceExternal=false} = {}, ...others) => {
+		DataUtil.loadJSON = async (url, ...others) => {
 			const xUrl = new URL(url);
 
 			const cleanPathName = xUrl.pathname.replace(/^\//, "");
-			// If isForceExternal is set to true as a parameter, load from chosen url rather than built in data
-			if (!isForceExternal && JSON_DATA[cleanPathName]) {
+			// If d20plus.debug.forceExternalRequests is set to true as a parameter, load from chosen url rather than built in data
+			if (!d20plus.debug?.forceExternalRequests && JSON_DATA[cleanPathName]) {
 				const out = JSON_DATA[cleanPathName];
 				await DataUtil.pDoMetaMerge(cleanPathName, out);
 				return out;
