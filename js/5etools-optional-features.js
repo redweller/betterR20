@@ -4,10 +4,14 @@ function d20plusOptionalFeatures () {
     d20plus.optionalfeatures.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-optionalfeatures-url-player").val() : $("#import-optionalfeatures-url").val();
+
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.optionalfeatures.playerImportBuilder : d20plus.optionalfeatures.handoutBuilder;
+			const args = {
+				"isForceExternal" : d20plus.debug.forceExternalRequests
+			};
 
-			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then((data) => {
+			DataUtil.loadJSON(url, args).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"optionalfeature",

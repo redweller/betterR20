@@ -6,8 +6,11 @@ function d20plusBackgrounds () {
 		const url = playerMode ? $("#import-backgrounds-url-player").val() : $("#import-backgrounds-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.backgrounds.playerImportBuilder : d20plus.backgrounds.handoutBuilder;
+			const args = {
+				"isForceExternal" : d20plus.debug.forceExternalRequests
+			};
 
-			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then((data) => {
+			DataUtil.loadJSON(url, args).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"background",

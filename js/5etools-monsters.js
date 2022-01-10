@@ -157,7 +157,11 @@ function d20plusMonsters () {
 	d20plus.monsters.button = function () {
 		const url = $("#import-monster-url").val();
 		if (url && url.trim()) {
-			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then(async data => {
+			const args = {
+				"isForceExternal" : d20plus.debug.forceExternalRequests
+			};
+
+			DataUtil.loadJSON(url, args).then(async data => {
 				const doShowList = () => {
 					d20plus.importer.addBrewMeta(data._meta);
 					d20plus.importer.showImportList(

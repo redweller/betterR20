@@ -7,11 +7,14 @@ function d20plusRaces () {
 		const url = playerMode ? $("#import-races-url-player").val() : $("#import-races-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.races.playerImportBuilder : d20plus.races.handoutBuilder;
+			const args = {
+				"isForceExternal" : d20plus.debug.forceExternalRequests
+			};
 
-			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then(async (data) => {
+			DataUtil.loadJSON(url, args).then(async (data) => {
 				const toImport = MiscUtil.copy(data.race);
 				if (data.subrace) {
-					const allraces = await DataUtil.loadJSON(RACE_DATA_URL);
+					const allraces = await DataUtil.loadJSON(RACE_DATA_URL, args);
 					// this does not handle homebrew parent races in "subrace" block
 					// i found none in the existing homebrew at the time of doing this, so propably won't be such an issue
 					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))

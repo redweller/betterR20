@@ -7,8 +7,11 @@ function d20plusFeats () {
 		const url = playerMode ? $("#import-feats-url-player").val() : $("#import-feats-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
+			const args = {
+				"isForceExternal" : d20plus.debug.forceExternalRequests
+			};
 
-			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then((data) => {
+			DataUtil.loadJSON(url, args).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"feat",

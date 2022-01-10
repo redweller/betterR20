@@ -20,8 +20,11 @@ function d20plusPsionics () {
 		const url = playerMode ? $("#import-psionics-url-player").val() : $("#import-psionics-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.psionics.playerImportBuilder : d20plus.psionics.handoutBuilder;
+            const args = {
+                "isForceExternal" : d20plus.debug.forceExternalRequests
+            };
 
-			DataUtil.loadJSON(url, d20plus.importer.forceExternalRequests).then((data) => {
+			DataUtil.loadJSON(url, args).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);
 				d20plus.importer.showImportList(
 					"psionic",

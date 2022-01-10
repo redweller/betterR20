@@ -38,7 +38,7 @@ function baseJsLoad () {
 
 		// Monkey patch JSON loading
 		const cached = DataUtil.loadJSON;
-		DataUtil.loadJSON = async (url, isForceExternal=false, ...others) => {
+		DataUtil.loadJSON = async (url, {isForceExternal=false} = {}, ...others) => {
 			const xUrl = new URL(url);
 
 			const cleanPathName = xUrl.pathname.replace(/^\//, "");
