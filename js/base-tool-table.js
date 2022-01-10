@@ -39,7 +39,7 @@ function baseToolTable() {
 				// Add each column to out.name
 				if (col !== dplace) {
 					// Get rid of ugly notation
-					const clean = i[col].replace(/\{@[\w\d]* (.*)}/, "$1");
+					const clean = Renderer.stripTags(i[col]);
 					out.name += clean;
 				}
 			}
@@ -47,13 +47,13 @@ function baseToolTable() {
 			// Set the weight
 			if (dplace !== -1) {
 				const weight = i[dplace];
-				const dash = weight.indexOf("–"); // Note: – is different from -
+				const dash = weight.indexOf("\u2013"); // Note: – is different from -
 				
 				// If the weight is a range
-				if (dash !== -1) {
+				if (~dash) {
 					// Get the two numbers in the range, subtract them, add 1
 					const low = parseInt(weight.substring(0, dash));
-					const high = parseInt(weight.substring(dash + 1));
+					let high = parseInt(weight.substring(dash + 1));
 					if (high === 0) high = 100;
 					out.weight = high - low + 1;
 				} else { // If the weight is a single value
@@ -220,7 +220,7 @@ function baseToolTable() {
 		<hr style="margin: 4px;">
 		<div id="table-list">
 		<input type="search" class="search" placeholder="Search tables...">
-		<div class="list imp-table-list"><i>Loading...</i></div>
+		<div class="list table-import-search"><i>Loading...</i></div>
 		</div>
 		<br>
 		<button class="btn start-import">Import</button>
