@@ -82,7 +82,7 @@ function baseToolTable() {
 				id: d20plus.ut.generateRowId(),
 				name: i.row,
 			};
-			if (i.weight !== undefined) out.weight = i.weight;
+			if (i.weight != null) out.weight = i.weight;
 			if (i.avatar) out.avatar = i.avatar;
 			return out;
 		}));
@@ -98,7 +98,7 @@ function baseToolTable() {
 		
 		// Ensure there's a table name and at least one element
 		if (lines.length < 2) {
-			return [false, "Must contain table name and at least one element"];
+			return "Must contain table name and at least one element";
 		}
 		
 		// Create table object, using lines[0] as the name
@@ -119,7 +119,7 @@ function baseToolTable() {
 		
 		r20t.tableitems.forEach(it => it.save());
 
-		return [true, null];
+		return null;
 	}
 	
 	// Simplified version of getFromPaste which checks if the paste is valid
@@ -130,7 +130,7 @@ function baseToolTable() {
 		
 		paste.split("\n").forEach(line => parseLine(line.trim()));
 		parseLine(""); // ensure trailing newline
-		return [valid, error];
+		return error;
 		
 		function parseLine(line) {
 			// Check to see if already invalid
@@ -165,16 +165,17 @@ function baseToolTable() {
 	
 	function getFromPaste(paste) {
 		const tables = [];
+		let error = null;
 		let tbl = null;
 		
 		paste.split("\n").forEach(line => parseLine(line.trim()));
 		parseLine(""); // ensure trailing newline
-		return tables;
+		return {"tables":tables};
 		
 		function parseLine(line) {
 			if (line.startsWith("!import-table-item")) {
 				if (!tbl) {
-					throw new Error("No !import-table statement found");
+					return  {"error": "No !import-table statement found"};
 				}
 				const [junk, tblName, row, weight, avatar] = line.split("--").map(it => it.trim());
 				tbl.items.push({
@@ -184,7 +185,7 @@ function baseToolTable() {
 				})
 			} else if (line.startsWith("!import-table")) {
 				if (tbl) {
-					throw new Error("No blank line found between tables")
+					return {"error": "No blank line found between tables"};
 				}
 				const [junk, tblName, showHide] = line.split("--").map(it => it.trim());
 				tbl = {
@@ -193,7 +194,7 @@ function baseToolTable() {
 				};
 				tbl.items = [];
 			} else if (line.trim()) {
-				throw new Error("Non-empty line which didn't match !import-table or !import-table-item")
+				error = {"error":"Non-empty line which didn't match !import-table or !import-table-item"};
 			} else {
 				if (tbl) {
 					tables.push(tbl);
@@ -275,10 +276,10 @@ function baseToolTable() {
 !import-table-item --Table-Name --Item One --1 --
 !import-table-item --Table-Name --Item Two --1 --
 !import-table-item --Table-Name --Item Three (weighted more heavily) --5 --" 
-					class="table-import-textarea`).appendTo($wrpClip);
+					class="table-import-textarea">`).appendTo($wrpClip);
 					const $btnCheck = $(`<button class="btn" style="margin-right: 5px;">Check if Valid</button>`).on("click", () => {
-						const [valid, error] = validatePaste($iptClip.val());
-						if (valid) {
+						const error = validatePaste($iptClip.val());
+						if (!error) {
 							window.alert("Looking good!");
 						}
 						else {
@@ -286,12 +287,14 @@ function baseToolTable() {
 						}
 					}).appendTo($wrpClip);
 					const $btnImport = $(`<button class="btn">Import</button>`).on("click", () => {
-						const [valid, error] = validatePaste($iptClip.val());
-						if (valid) {
+						const error = validatePaste($iptClip.val());
+						if (!error) {
 							$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
 							const ts = getFromPaste($iptClip.val());
-							ts.forEach(t => createR20Format(t));
-							window.alert("Import complete");
+							if (ts.tables) {
+								ts.tables.forEach(t => createR20Format(t));
+								window.alert("Import complete");
+							}
 						}
 						else {
 							window.alert(error);
@@ -308,8 +311,8 @@ function baseToolTable() {
 					
 					const $btnImport = $(`<button class="btn">Import</button>`).on("click", () => {
 						$("a.ui-tabs-anchor[href='#deckstables']").trigger("click");
-						const [valid, error] = createCreateFormat($iptClip.val());
-						if (valid) {
+						const error = createCreateFormat($iptClip.val());
+						if (!error) {
 							window.alert("Import complete");
 						}
 						else {
