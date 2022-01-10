@@ -11,7 +11,7 @@ function d20plusRaces () {
 			DataUtil.loadJSON(url).then(async (data) => {
 				const toImport = MiscUtil.copy(data.race);
 				if (data.subrace) {
-					const allraces = await DataUtil.loadJSON(RACE_DATA_URL, args);
+					const allraces = await DataUtil.loadJSON(RACE_DATA_URL);
 					// this does not handle homebrew parent races in "subrace" block
 					// i found none in the existing homebrew at the time of doing this, so propably won't be such an issue
 					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))

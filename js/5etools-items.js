@@ -30,7 +30,7 @@ function d20plusItems () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
-			if (url.trim() === `${DATA_URL}items.json` && !d20plus.importer.forceExternalRequests) {
+			if (url.trim() === `${DATA_URL}items.json`) {
 				Renderer.item.pBuildList(
 					{
 						fnCallback: itemList => {
