@@ -1,0 +1,47 @@
+[
+	{
+		"ver": "1.25.0",
+		"date": "2021-08-10",
+		"txt": "- Removed custom rulers. **This functionality is moving to VTTES!** (thanks @ Justas)\n- Added handling for homebrew subraces (thanks @ Mertang)\n- Added critical damage import step to Spell Importer (thanks @ Mertang)\n- Fixed Creature Importer failing to add bonus actions (thanks @ Mertang)\n- Updated Creature Importer to handle multiple reaction macros (thanks @ Mertang)\n- Fixed Feat and Optional Feature importers crashing when attempting to build prerequisite text (thanks @ Mertang)"
+	},
+	{
+		"ver": "1.25.1",
+		"date": "2021-09-05",
+		"txt": "- Fixed Roll20's analytics scripts somehow crashing betteR20 (thanks @ Justas)\n- Updated UDL template to include \"Nocturnal\" option (thanks @ Darkpulsar)\n- Fixed some backgrounds crashing on import (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.26.0",
+		"date": "2021-09-12",
+		"txt": "- Switched to GitHub URLs (instead of get.5e.tools) for update/version checks (thanks @ oldewyrm)\n- Added config option to set base site URL (thanks @ oldewyrm)\n- Removed journal \"Duplicate\" option, as VTTES includes this functionality (thanks @ oldewyrm)"
+	},
+	{
+		"ver": "1.26.1",
+		"date": "2021-09-25",
+		"txt": "- Improved Token Avatar URL Fixer tool to also replace URLs in tokens in the active scene (thanks @ asd5a)\n- Fixed last update's version check changes checking against the wrong URL (thanks @ oldewyrm)\n- (Updated to latest data files, including WBtW and AitFR content)"
+	},
+	{
+		"ver": "1.26.2",
+		"date": "2021-10-09",
+		"txt": "- Improved Background Importer, allowing you to select personality traits/ideals/bonds/flaws (thanks @ darthbeep)\n- Fixed issue which prevented 3d dice from displaying correct results with the script active, and re-enabled 3d dice (thanks @ Ken)\n- Fixed compendium imports (thanks @ oldewyrm)\n- Fixed Module Importer \"from file\" upload (thanks @ darthbeep)\n- Updated token editor to match most recent Roll20 version (thanks @ oldewyrm)\n- Added missing `/` to config site URLs (thanks @ Werring)"
+	},
+	{
+		"ver": "1.27.0",
+		"date": "2021-11-02",
+		"txt": "- Added option to import creatures from file (thanks @ darthbeep)\n- Journal Cleaner tool can now delete rollable tables and folders (thanks @ darthbeep)\n- Creature variant text is now imported to the creature's traits (thanks @ Ralakos)\n- Fixed 3D dice _even better_ this time (thanks @ Ken)\n- Fixed torch tool; fixed circle tool; fixed brightness slider (thanks @ oldewyrm)\n- Fixed Base Site URL config being sensitive to presence/absence of trailing slash (thanks @ oldewyrm)\n- Removed \"Pauper's Character Vault\" tool, as the functionality exists in VTTES (thanks @ darthbeep)\n- Removed \"QPI\" button, as it was a failed experiment (thanks @ darthbeep)\n"
+	},
+	{
+		"ver": "1.28.0",
+		"date": "2021-11-24",
+		"txt": "- Background characteristics may now be randomised during import (thanks @ Ralakos)\n- Added \"spell school\" as filterable field to Spell Importer list; added \"environment\" as filterable field to Creature Importer (thanks @ oldewyrm)\n- Added support for 5etools Bestiary \"sublist\" files to the \"Import Monsters from File\" flow (thanks @ cantbudgeit)"
+	},
+	{
+		"ver": "1.28.1",
+		"date": "2021-12-17",
+		"txt": "- Fixed loading issues (thanks @ Ken/oldewyrm)\n- Fixed light tool not showing up in all cases (thanks @ oldewyrm)\n- Fixed drag-and-drop (thanks @ oldewyrm)\n"
+	},
+	{
+		"ver": "1.28.2",
+		"date": "2022-01-09",
+		"txt": "- Fixed Roll20 layout changes preventing buttons from being added to the Settings tab (thanks @ darthbeep)\n- Optimized Tampermonkey use to avoid downloading the entire script when checking for updates (thanks @ oldewyrm)\n- Fixed missing images/fluff/stats when importing Objects (thanks @ darthbeep)\n- Tweaked \"welcome\" text and updated wiki links [currently to archived versions of the old wiki, but this may change as the new wiki is filled out] (thanks @ oldewyrm)\n- (Updated to latest data files)"
+	}
+]
