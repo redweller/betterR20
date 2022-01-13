@@ -124,37 +124,33 @@ function baseToolTable() {
 	
 	// Simplified version of getFromPaste which checks if the paste is valid
 	function validatePaste(paste) {
-		let valid = true;
 		let error = null;
 		let tbl = false;
-		
-		paste.split("\n").forEach(line => parseLine(line.trim()));
-		parseLine(""); // ensure trailing newline
+
+		// Check for minimum number of rows
+		if (paste.split("\n").length < 2) {
+			return "Must contain content";
+		}
+
+		for (const line of paste.split("\n").map(it => it.trim())) {
+			error = parseLine(line);
+			if (error) break;
+		}
 		return error;
 		
 		function parseLine(line) {
-			// Check to see if already invalid
-			if (!valid) return;
-			
 			// Check to see if current line imports an item
 			if (line.startsWith("!import-table-item")) {
-				if (!tbl) {
-					valid = false;
-					error = "No !import-table statement found";
-				}
+				if (!tbl) return "No !import-table statement found";
 			}
 			// Check to see if current line imports a table
 			else if (line.startsWith("!import-table")) {
-				if (tbl) {
-					valid = false;
-					error = "No blank line found between tables"
-				}
+				if (tbl) return "No blank line found between tables";
 				tbl = true;
 			}
 			// Check to ensure against invalid line
 			else if (line.trim()) {
-				valid = false;
-				error = "Non-empty line which didn't match !import-table or !import-table-item";
+				return "Non-empty line which didn't match !import-table or !import-table-item";
 			}
 			// Allow multiple tables
 			else {
@@ -194,7 +190,7 @@ function baseToolTable() {
 				};
 				tbl.items = [];
 			} else if (line.trim()) {
-				error = {"error":"Non-empty line which didn't match !import-table or !import-table-item"};
+				return {"error":"Non-empty line which didn't match !import-table or !import-table-item"};
 			} else {
 				if (tbl) {
 					tables.push(tbl);
@@ -283,7 +279,7 @@ function baseToolTable() {
 							window.alert("Looking good!");
 						}
 						else {
-							window.alert(error);
+							window.alert(`Invalid table: ${error}`);
 						}
 					}).appendTo($wrpClip);
 					const $btnImport = $(`<button class="btn">Import</button>`).on("click", () => {
@@ -297,7 +293,7 @@ function baseToolTable() {
 							}
 						}
 						else {
-							window.alert(error);
+							window.alert(`Import failed: ${error}`);
 						}
 					}).appendTo($wrpClip);
 					
@@ -316,7 +312,7 @@ function baseToolTable() {
 							window.alert("Import complete");
 						}
 						else {
-							window.alert("Import failed: " + error);
+							window.alert(`Import failed: ${error}`);
 						}
 						
 					}).appendTo($wrpClip);
