@@ -45,7 +45,7 @@ function baseToolTable() {
 			}
 			
 			// Set the weight
-			if (dplace !== -1) {
+			if (~dplace) {
 				const weight = i[dplace];
 				const dash = weight.indexOf("\u2013"); // Note: – is different from -
 				
@@ -126,13 +126,14 @@ function baseToolTable() {
 	function validatePaste(paste) {
 		let error = null;
 		let tbl = false;
+		const lines = paste.split("\n");
 
 		// Check for minimum number of rows
-		if (paste.split("\n").length < 2) {
+		if (lines.length < 2) {
 			return "Must contain content";
 		}
 
-		for (const line of paste.split("\n").map(it => it.trim())) {
+		for (const line of lines.map(it => it.trim())) {
 			error = parseLine(line);
 			if (error) break;
 		}
@@ -161,7 +162,6 @@ function baseToolTable() {
 	
 	function getFromPaste(paste) {
 		const tables = [];
-		let error = null;
 		let tbl = null;
 		
 		paste.split("\n").forEach(line => parseLine(line.trim()));
