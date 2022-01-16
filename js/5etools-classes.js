@@ -27,7 +27,6 @@ function d20plusClass () {
 		const url = playerMode ? $("#import-classes-url-player").val() : $("#import-classes-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
-
 			const officialClassUrls = Object.values(classDataUrls).map(v => d20plus.formSrcUrl(CLASS_DATA_DIR, v));
 
 			DataUtil.loadJSON(url).then(async (data) => {

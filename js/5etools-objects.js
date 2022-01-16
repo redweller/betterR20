@@ -4,6 +4,7 @@ function d20plusObjects () {
 	// Import Object button was clicked
 	d20plus.objects.button = function () {
 		const url = $("#import-objects-url").val();
+
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then((data) => {
 				d20plus.importer.addBrewMeta(data._meta);

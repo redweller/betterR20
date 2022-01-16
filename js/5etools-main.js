@@ -566,6 +566,7 @@ const betteR205etoolsMain = function () {
 		}
 
 		const $body = $("body");
+
 		if (window.is_gm) {
 			const $wrpSettings = $(`#betteR20-settings`);
 
@@ -663,7 +664,7 @@ const betteR205etoolsMain = function () {
 		$appTo.append(d20plus.settingsHtmlPtSubclassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
 		$appTo.append(d20plus.settingsHtmlPtOptfeaturesPlayer);
-
+		
 		$winPlayer.dialog({
 			autoOpen: false,
 			resizable: true,

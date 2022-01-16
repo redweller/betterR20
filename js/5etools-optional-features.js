@@ -4,6 +4,7 @@ function d20plusOptionalFeatures () {
     d20plus.optionalfeatures.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-optionalfeatures-url-player").val() : $("#import-optionalfeatures-url").val();
+
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.optionalfeatures.playerImportBuilder : d20plus.optionalfeatures.handoutBuilder;
 

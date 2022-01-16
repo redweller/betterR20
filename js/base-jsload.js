@@ -42,7 +42,8 @@ function baseJsLoad () {
 			const xUrl = new URL(url);
 
 			const cleanPathName = xUrl.pathname.replace(/^\//, "");
-			if (JSON_DATA[cleanPathName]) {
+			// If d20plus.debug.forceExternalRequests is set to true as a parameter, load from chosen url rather than built in data
+			if (!d20plus.debug?.forceExternalRequests && JSON_DATA[cleanPathName]) {
 				const out = JSON_DATA[cleanPathName];
 				await DataUtil.pDoMetaMerge(cleanPathName, out);
 				return out;
