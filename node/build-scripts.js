@@ -187,6 +187,7 @@ const SCRIPTS = {
 			"base-tool-module",
 			"base-tool-unlock",
 			"base-tool-animator",
+			"base-tool-table",
 			"base-art",
 			"base-art-browse",
 			"overwrites/base",
