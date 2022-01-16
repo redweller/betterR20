@@ -100,17 +100,17 @@ function d20plusRaces () {
 		const nxtData = [];
 
 		subraces.forEach(sr => {
-			if (!sr.race || !sr.race.name || !sr.race.source) throw new Error(`Subrace was missing parent race!`);
+			if (!sr.raceName || !sr.raceSource) throw new Error(`Subrace was missing parent "raceName" and/or "raceSource"!`);
 
-			const _baseRace = allRaces.find(r => r.name === sr.race.name && r.source === sr.race.source);
+			const _baseRace = allRaces.find(r => r.name === sr.raceName && r.source === sr.raceSource);
 			if (!_baseRace) {
 				// eslint-disable-next-line no-console
-				console.warn(`${sr.race.name} parent race not found! Contact homebrew maintainer as it is probably a wrong entry`);
+				console.warn(`${sr.raceName} parent race not found! Contact homebrew maintainer as it is probably a wrong entry`);
 				return;
 			}
 
 			// Attempt to graft multiple subraces from the same data set onto the same base race copy
-			let baseRace = nxtData.find(r => r.name === sr.race.name && r.source === sr.race.source);
+			let baseRace = nxtData.find(r => r.name === sr.raceName && r.source === sr.raceSource);
 			if (!baseRace) {
 				// copy and remove base-race-specific data
 				baseRace = MiscUtil.copy(_baseRace);
