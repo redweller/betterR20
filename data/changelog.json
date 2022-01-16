@@ -43,5 +43,10 @@
 		"ver": "1.28.2",
 		"date": "2022-01-09",
 		"txt": "- Fixed Roll20 layout changes preventing buttons from being added to the Settings tab (thanks @ darthbeep)\n- Optimized Tampermonkey use to avoid downloading the entire script when checking for updates (thanks @ oldewyrm)\n- Fixed missing images/fluff/stats when importing Objects (thanks @ darthbeep)\n- Tweaked \"welcome\" text and updated wiki links [currently to archived versions of the old wiki, but this may change as the new wiki is filled out] (thanks @ oldewyrm)\n- (Updated to latest data files)"
+	},
+	{
+		"ver": "1.29.0",
+		"date": "2022-01-16",
+		"txt": "- Merged various table import tools into a new single tool combining and expanding on the functionality of the old, and allowing import from user-specified URLs (thanks @ darthbeep)\n- Fixed race import (thanks @ oldewyrm)\n"
 	}
 ]
