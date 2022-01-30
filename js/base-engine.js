@@ -1260,24 +1260,32 @@ function d20plusEngine () {
 		d20plus.mod.editingLayerOnclick();
 		if (window.is_gm) {
 			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
-			$(`#floatingtoolbar .choosemap`).after(`
-				<li class="choosebackground">
-					<span class="pictos">a</span>
-					Background
-				</li>
-			`);
-			$(`#floatingtoolbar .chooseobjects`).after(`
-				<li class="chooseforeground">
-					<span class="pictos">B</span>
-					Foreground
-				</li>
-			`);
-			$(`#floatingtoolbar .choosewalls`).after(`
-				<li class="chooseweather">
-					<span class="pictos">C</span>
-					Weather Exclusions
-				</li>
-			`);
+			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
+				$(`#floatingtoolbar .choosemap`).after(`
+					<li class="choosebackground">
+						<span class="pictos">a</span>
+						Background
+					</li>
+				`);
+			}
+			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
+				$(`#floatingtoolbar .chooseobjects`).after(`
+					<li class="chooseforeground">
+						<span class="pictos">B</span>
+						Foreground
+					</li>
+				`);
+			}
+			
+			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
+				$(`#floatingtoolbar .choosewalls`).after(`
+					<li class="chooseweather">
+						<span class="pictos">C</span>
+						Weather Exclusions
+					</li>
+				`);
+			}
+			
 		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
