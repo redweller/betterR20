@@ -14,6 +14,7 @@ const betteR205etoolsMain = function () {
 	BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
 	OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
 	RACE_DATA_URL = `${DATA_URL}races.json`;
+	DEITY_DATA_URL = `${DATA_URL}deities.json`;
 
 	// the GitHub API has a 60 requests/hour limit per IP which we quickly hit if the user refreshes their Roll20 a couple of times
 	// embed shitty OAth2 details here to enable 5k/hour requests per IP (sending them with requests to the API relaxes the limit)
@@ -107,6 +108,9 @@ const betteR205etoolsMain = function () {
 			"source",
 			"entries",
 		],
+		"deity": [
+			"name",
+		]
 	};
 
 	let spellDataUrls = {};
@@ -583,6 +587,7 @@ const betteR205etoolsMain = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtSubclasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtBackgrounds);
 			$wrpSettings.append(d20plus.settingsHtmlPtOptfeatures);
+			$wrpSettings.append(d20plus.settingsHtmlPtDeities);
 			const $ptAdventures = $(d20plus.settingsHtmlPtAdventures);
 			$wrpSettings.append($ptAdventures);
 			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get("MODULES").openFn());
@@ -593,6 +598,7 @@ const betteR205etoolsMain = function () {
 			$("#button-monsters-load-file").on(window.mousedowntype, d20plus.monsters.buttonFile);
 			$("#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
 			$("#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
+			$("#button-deities-load").on(window.mousedowntype, d20plus.deities.button);
 
 			$("#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 			$("#initiativewindow .characterlist").before(d20plus.initiativeHeaders);
@@ -607,6 +613,7 @@ const betteR205etoolsMain = function () {
 
 			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", ["monster"]);
 			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, ["object"]);
+			populateBasicDropdown("#button-deities-select", "#import-deities-url", DEITY_DATA_URL, ["deity"]);
 
 			const populateAdventuresDropdown = () => {
 				const defaultAdvUrl = d20plus.formSrcUrl(ADVENTURE_DATA_DIR, "adventure-lmop.json");
@@ -801,6 +808,7 @@ const betteR205etoolsMain = function () {
 				d20.journal.addFolderToFolderStructure("Backgrounds");
 				d20.journal.addFolderToFolderStructure("Races");
 				d20.journal.addFolderToFolderStructure("Optional Features");
+				d20.journal.addFolderToFolderStructure("Deities");
 				d20.journal.refreshJournalList();
 				journalFolder = d20.Campaign.get("journalfolder");
 			}
@@ -819,6 +827,7 @@ const betteR205etoolsMain = function () {
 		addClasses("Backgrounds");
 		addClasses("Races");
 		addClasses("Optional Features");
+		addClasses("Deities");
 
 		// ~~if player,~~ force-enable dragging
 		$(`.Vetools-draggable`).each((i, e) => {
@@ -1379,6 +1388,7 @@ Errors: <b id="import-errors">0</b>
 <option value="adventure">Adventures</option>
 <option value="background">Backgrounds</option>
 <option value="class">Classes</option>
+<option value="deity">Deities</option>
 <option value="feat">Feats</option>
 <option value="item">Items</option>
 <option value="monster">Monsters</option>
@@ -1645,6 +1655,16 @@ To import from third-party sources, either individually select one available in 
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 <p>
 </p>
+</div>
+`;
+
+	d20plus.settingsHtmlPtDeities = `
+<div class="importer-section" data-import-group="deity">
+<h4>Deity Importing</h4>
+<label for="import-deities-url">Deity Data URL:</label>
+<select id="button-deities-select"><!-- populate with JS--></select>
+<input type="text" id="import-deities-url">
+<a class="btn" href="#" id="button-deities-load">Import Deities</a>
 </div>
 `;
 

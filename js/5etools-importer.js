@@ -1085,6 +1085,19 @@ function d20plusImporter () {
 				}
 				return folderName;
 			}
+			case "deity": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
 			default:
 				throw new Error(`Unknown import type '${dataType}'`);
 		}

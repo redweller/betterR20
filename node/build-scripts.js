@@ -222,6 +222,7 @@ const SCRIPTS = {
 			"5etools-psionics",
 			"5etools-optional-features",
 			"5etools-adventures",
+			"5etools-deities",
 
 			"base"
 		]
