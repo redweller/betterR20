@@ -395,7 +395,7 @@
 									"name": "Antimagic Eye",
 									"type": "entries",
 									"entries": [
-										"Astral sailors claim that insanity awaits anyone who gazes into the eye of an astral dreadnought. What one sees reflected in that starry void is the sudden, terrifying realization of one's own mortality. Spellcasters have cause to fear the eye more than others, since it emits a continuous antimagic field. The dreadnought can shut off the effect by simply closing its eye, though it seldom has reason to do so."
+										"Astral sailors claim that insanity awaits anyone who gazes into the eye of an astral dreadnought. What one sees reflected in that starry void is the sudden, terrifying realization of one's own mortality. Spellcasters have cause to fear the eye more than others, since it emits a continuous {@spell antimagic field}. The dreadnought can shut off the effect by simply closing its eye, though it seldom has reason to do so."
 									]
 								},
 								{

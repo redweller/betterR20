@@ -260,7 +260,7 @@
 				{
 					"name": "Void",
 					"entries": [
-						"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d8 + 3}) slashing damage or 8 ({@damage 1d10 + 3}) slashing damage if used with two hands, plus 9 ({@damage 3d6}) necrotic damage. A creature reduced to 0 hit points from damage dealt by the sword Void dies and can't be revived by any means short of a wish spell."
+						"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d8 + 3}) slashing damage or 8 ({@damage 1d10 + 3}) slashing damage if used with two hands, plus 9 ({@damage 3d6}) necrotic damage. A creature reduced to 0 hit points from damage dealt by the sword Void dies and can't be revived by any means short of a {@spell wish} spell."
 					]
 				}
 			],
@@ -492,7 +492,7 @@
 				{
 					"name": "Fear and Weakness Gaze {@recharge 5}",
 					"entries": [
-						"Baalzebul activates a gaze attack and triggers two effects on everyone within 50 feet of him. The first requires a {@dc 21} Charisma saving throw; failure means the target is {@condition frightened} of Baalzebul as per the fear spell. The second effect requires another {@dc 21} Charisma saving throw. Failure means the target suffers the effects of the ray of enfeeblement spell. Both effects last one minute."
+						"Baalzebul activates a gaze attack and triggers two effects on everyone within 50 feet of him. The first requires a {@dc 21} Charisma saving throw; failure means the target is {@condition frightened} of Baalzebul as per the {@spell fear} spell. The second effect requires another {@dc 21} Charisma saving throw. Failure means the target suffers the effects of the {@spell ray of enfeeblement} spell. Both effects last one minute."
 					]
 				},
 				{
@@ -870,13 +870,13 @@
 				{
 					"name": "Claw",
 					"entries": [
-						"{@atk mw} {@hit 16} to hit, reach 5 ft., one target. {@h}22 ({@damage 3d8 + 9}) slashing damage plus 7 ({@damage 2d6}) necrotic damage. If the target is a creature, it must succeed on a {@dc 21} Constitution saving throw or have its hit point maximum reduced by an amount equal to the damage taken. The target dies if this attack reduces its hit point maximum to 0. The reduction lasts until removed by the greater restoration spell or other magic."
+						"{@atk mw} {@hit 16} to hit, reach 5 ft., one target. {@h}22 ({@damage 3d8 + 9}) slashing damage plus 7 ({@damage 2d6}) necrotic damage. If the target is a creature, it must succeed on a {@dc 21} Constitution saving throw or have its hit point maximum reduced by an amount equal to the damage taken. The target dies if this attack reduces its hit point maximum to 0. The reduction lasts until removed by the {@spell greater restoration} spell or other magic."
 					]
 				},
 				{
 					"name": "Bite",
 					"entries": [
-						"{@atk mw} {@hit 16} to hit, reach 5 ft., one target. {@h}25 ({@damage 3d10 + 9}) piercing damage plus 7 ({@damage 2d6}) necrotic damage. If the target is a creature, it must succeed on a {@dc 21} Constitution saving throw or have its hit point maximum reduced by an amount equal to the damage taken. The target dies if this attack reduces its hit point maximum to 0. The reduction lasts until removed by the greater restoration spell or other magic. Large or smaller creatures damaged by this attack are {@condition grappled} (escape {@dc 20}) and the ravager cannot make another Bite attack until this grapple ends."
+						"{@atk mw} {@hit 16} to hit, reach 5 ft., one target. {@h}25 ({@damage 3d10 + 9}) piercing damage plus 7 ({@damage 2d6}) necrotic damage. If the target is a creature, it must succeed on a {@dc 21} Constitution saving throw or have its hit point maximum reduced by an amount equal to the damage taken. The target dies if this attack reduces its hit point maximum to 0. The reduction lasts until removed by the {@spell greater restoration} spell or other magic. Large or smaller creatures damaged by this attack are {@condition grappled} (escape {@dc 20}) and the ravager cannot make another Bite attack until this grapple ends."
 					]
 				},
 				{
@@ -1067,7 +1067,7 @@
 				{
 					"name": "Claw",
 					"entries": [
-						"{@atk mw} {@hit 13} to hit, reach 5 ft., one target. {@h}16 ({@damage 2d8 + 7}) slashing damage. If the target is a creature, it must succeed on a {@dc 19} Constitution saving throw or have its hit point maximum reduced by an amount equal to the damage taken. The target dies if this attack reduces its hit point maximum to 0. The reduction lasts until removed by the greater restoration spell or other magic."
+						"{@atk mw} {@hit 13} to hit, reach 5 ft., one target. {@h}16 ({@damage 2d8 + 7}) slashing damage. If the target is a creature, it must succeed on a {@dc 19} Constitution saving throw or have its hit point maximum reduced by an amount equal to the damage taken. The target dies if this attack reduces its hit point maximum to 0. The reduction lasts until removed by the {@spell greater restoration} spell or other magic."
 					]
 				}
 			],
@@ -2228,7 +2228,7 @@
 				{
 					"name": "Create Thrall",
 					"entries": [
-						"Darien touches an {@condition incapacitated} humanoid. That creature is then {@condition charmed} by her until a remove curse spell is cast on it, the {@condition charmed} condition is removed from it, or she uses this feature again. Darien can communicate telepathically with the {@condition charmed} creature as long as the two of them are on the same plane of existence."
+						"Darien touches an {@condition incapacitated} humanoid. That creature is then {@condition charmed} by her until a {@spell remove curse} spell is cast on it, the {@condition charmed} condition is removed from it, or she uses this feature again. Darien can communicate telepathically with the {@condition charmed} creature as long as the two of them are on the same plane of existence."
 					]
 				},
 				{
@@ -3263,13 +3263,13 @@
 					"name": "Staff of Power",
 					"entries": [
 						"A magic quarterstaff that grants a +2 bonus to attack and damage rolls made with it. While held it grants a +2 bonus to armor class, saving throws, and spell attack rolls (all factored into Edwin's statistics). The staff has 20 charges for the following properties. The staff regains {@dice 2d8 + 4} expended charges daily at dawn.",
-						"While holding this staff, Edwin can use an action to expend 1 or more of its Charges to cast one of the following Spells from it, using his spell save DC and spell attack bonus: cone of cold (5 charges), fireball (5th-level version, 5 charges), globe of invulnerability (6 charges), hold monster (5 charges), levitate (2 charges), lightning bolt (5th-level version, 5 charges), magic missile (1 charge), ray of enfeeblement (1 charge), or wall of force (5 charges)."
+						"While holding this staff, Edwin can use an action to expend 1 or more of its Charges to cast one of the following Spells from it, using his spell save DC and spell attack bonus: {@spell cone of cold} (5 charges), {@spell fireball} (5th-level version, 5 charges), {@spell globe of invulnerability} (6 charges), {@spell hold monster} (5 charges), {@spell levitate} (2 charges), {@spell lightning bolt} (5th-level version, 5 charges), {@spell magic missile} (1 charge), {@spell ray of enfeeblement} (1 charge), or {@spell wall of force} (5 charges)."
 					]
 				},
 				{
 					"name": "Contingency",
 					"entries": [
-						"Edwin has a contingency spell trigger if he is {@condition incapacitated}, {@condition paralyzed} or {@condition stunned}. When this occurs, a 6th level dispel magic targets himself. He also has a clone body stored in a cavern one mile beneath the city of Baldur's Gate."
+						"Edwin has a {@spell contingency} spell trigger if he is {@condition incapacitated}, {@condition paralyzed} or {@condition stunned}. When this occurs, a 6th level {@spell dispel magic} targets himself. He also has a clone body stored in a cavern one mile beneath the city of Baldur's Gate."
 					]
 				},
 				{
@@ -3657,7 +3657,7 @@
 				{
 					"name": "Staff of the Woodlands",
 					"entries": [
-						"This staff can be wielded as a magic quarterstaff that grants a +2 bonus to attack and damage rolls made with it and grants Faldorn a +2 bonus to spell attack rolls (already factored into Faldorn's attacks). The staff has 10 charges. It regains {@dice 1d6 + 4} expended charges daily at dawn. Faldorn can use an action to expend 1 or more of the staff's charges to cast one of the following spells from it, with a spell save DC of 14: animal friendship (1 charge), awaken (5 charges), barkskin (2 charges), locate animals or plants (2 charges), speak with animals (1 charge), speak with plants (3 charges), or wall of thorns (6 charges). Faldorn can use an action to cast the pass without trace spell without using any charges."
+						"This staff can be wielded as a magic quarterstaff that grants a +2 bonus to attack and damage rolls made with it and grants Faldorn a +2 bonus to spell attack rolls (already factored into Faldorn's attacks). The staff has 10 charges. It regains {@dice 1d6 + 4} expended charges daily at dawn. Faldorn can use an action to expend 1 or more of the staff's charges to cast one of the following spells from it, with a spell save DC of 14: {@spell animal friendship} (1 charge), {@spell awaken} (5 charges), {@spell barkskin} (2 charges), {@spell locate animals or plants} (2 charges), {@spell speak with animals} (1 charge), {@spell speak with plants} (3 charges), or {@spell wall of thorns} (6 charges). Faldorn can use an action to cast the {@spell pass without trace} spell without using any charges."
 					]
 				}
 			],
@@ -4663,7 +4663,7 @@
 				{
 					"name": "Tenser's Transformation (Costs 3 Actions)",
 					"entries": [
-						"Jon Irenicus casts tenser's transformation. He gains 50 temporary hit points. He gains advantage on his attack rolls with his rod of lordly might. When he hits a target with his rod of lordly might, that target takes an extra {@damage 2d12} force damage. He gains proficiency in Strength and Constitution saving throws. He can use his multiattack"
+						"Jon Irenicus casts {@spell tenser's transformation|XGE}. He gains 50 temporary hit points. He gains advantage on his attack rolls with his rod of lordly might. When he hits a target with his rod of lordly might, that target takes an extra {@damage 2d12} force damage. He gains proficiency in Strength and Constitution saving throws. He can use his multiattack"
 					]
 				}
 			],
@@ -6223,7 +6223,7 @@
 				{
 					"name": "Spell Disruption",
 					"entries": [
-						"When Pazuzu casts dispel magic, he automatically dispels any spell of 6th level or lower on the target."
+						"When Pazuzu casts {@spell dispel magic}, he automatically dispels any spell of 6th level or lower on the target."
 					]
 				}
 			],
@@ -6269,7 +6269,7 @@
 				{
 					"name": "Disruption",
 					"entries": [
-						"Pazuzu casts dispel magic."
+						"Pazuzu casts {@spell dispel magic}."
 					]
 				}
 			],
@@ -7089,7 +7089,7 @@
 				{
 					"name": "Long Sword",
 					"entries": [
-						"{@atk mw} {@hit 10} to hit, reach 5 ft., one target. {@h}9 ({@damage 1d8 + 5}) slashing damage or 10 ({@dice 1d10 + 5}) if wielded in two hands. If the target is a creature, it must succeed on a {@dc 16} Constitution saving throw or be cursed by Bhaal. The cursed target can't regain hit points. The curse lasts until removed by the remove curse spell or other magic."
+						"{@atk mw} {@hit 10} to hit, reach 5 ft., one target. {@h}9 ({@damage 1d8 + 5}) slashing damage or 10 ({@dice 1d10 + 5}) if wielded in two hands. If the target is a creature, it must succeed on a {@dc 16} Constitution saving throw or be cursed by Bhaal. The cursed target can't regain hit points. The curse lasts until removed by the {@spell remove curse} spell or other magic."
 					]
 				},
 				{
@@ -9141,7 +9141,7 @@
 				{
 					"name": "Lethargic Song (Humanoid form only)",
 					"entries": [
-						"The wolfwere plays a magical melody on an instrument. Every humanoid within 200 ft. of the wolfwere that can hear the melody must succeed on a {@dc 13} Wisdom saving throw or be slowed for 10 minutes. A creature can repeat the saving throw at the end of each of its turns. If a creature's saving throw is successful, the effect ends on it. A target that successfully saves is immune to this wolfwere's melody for the next 24 hours."
+						"The wolfwere plays a magical melody on an instrument. Every humanoid within 200 ft. of the wolfwere that can hear the melody must succeed on a {@dc 13} Wisdom saving throw or be {@spell slow||slowed} for 10 minutes. A creature can repeat the saving throw at the end of each of its turns. If a creature's saving throw is successful, the effect ends on it. A target that successfully saves is immune to this wolfwere's melody for the next 24 hours."
 					]
 				}
 			],
@@ -9280,7 +9280,7 @@
 				{
 					"name": "Lethargic Song (Humanoid form only)",
 					"entries": [
-						"The wolfwere plays a magical melody on an instrument. Every humanoid within 200 ft. of the wolfwere that can hear the melody must succeed on a {@dc 16} Wisdom saving throw or be slowed for 10 minutes. A creature can repeat the saving throw at the end of each of its turns. If a creature's saving throw is successful, the effect ends on it. A target that successfully saves is immune to this wolfwere's melody for the next 24 hours."
+						"The wolfwere plays a magical melody on an instrument. Every humanoid within 200 ft. of the wolfwere that can hear the melody must succeed on a {@dc 16} Wisdom saving throw or be {@spell slow||slowed} for 10 minutes. A creature can repeat the saving throw at the end of each of its turns. If a creature's saving throw is successful, the effect ends on it. A target that successfully saves is immune to this wolfwere's melody for the next 24 hours."
 					]
 				}
 			],

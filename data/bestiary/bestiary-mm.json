@@ -7135,7 +7135,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The armor is {@condition incapacitated} while in the area of an antimagic field. If targeted by dispel magic, the armor must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
+						"The armor is {@condition incapacitated} while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the armor must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
 					]
 				},
 				{
@@ -10445,7 +10445,7 @@
 								{
 									"type": "item",
 									"name": "Disintegration Ray:",
-									"entry": "{@spell chain lightning} (primary target takes 6d8 lightning damage; two secondary targets within 30 feet of the primary target take 3d8 lightning damage each), eyebite (sickened effect; 1 minute)"
+									"entry": "{@spell chain lightning} (primary target takes 6d8 lightning damage; two secondary targets within 30 feet of the primary target take 3d8 lightning damage each), {@spell eyebite} (sickened effect; 1 minute)"
 								},
 								{
 									"type": "item",
@@ -14687,7 +14687,7 @@
 				{
 					"name": "Sense Magic",
 					"entries": [
-						"The chuul senses magic within 120 feet of it at will. This trait otherwise works like the detect magic spell but isn't itself magical."
+						"The chuul senses magic within 120 feet of it at will. This trait otherwise works like the {@spell detect magic} spell but isn't itself magical."
 					]
 				}
 			],
@@ -24341,7 +24341,7 @@
 				{
 					"name": "Rejuvenation",
 					"entries": [
-						"If the flameskull is destroyed, it regains all its hit points in 1 hour unless holy water is sprinkled on its remains or a dispel magic or {@spell remove curse} spell is cast on them."
+						"If the flameskull is destroyed, it regains all its hit points in 1 hour unless holy water is sprinkled on its remains or a {@spell dispel magic} or {@spell remove curse} spell is cast on them."
 					]
 				}
 			],
@@ -24889,7 +24889,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The sword is {@condition incapacitated} while in the area of an antimagic field. If targeted by dispel magic, the sword must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
+						"The sword is {@condition incapacitated} while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the sword must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
 					]
 				},
 				{
@@ -38151,7 +38151,6 @@
 			],
 			"conditionInflict": [
 				"grappled",
-				"invisible",
 				"restrained"
 			],
 			"hasToken": true,
@@ -38345,9 +38344,6 @@
 			"miscTags": [
 				"MW"
 			],
-			"conditionInflict": [
-				"invisible"
-			],
 			"conditionInflictSpell": [
 				"paralyzed"
 			],
@@ -38492,9 +38488,6 @@
 			],
 			"miscTags": [
 				"MW"
-			],
-			"conditionInflict": [
-				"invisible"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -38664,8 +38657,7 @@
 				"RCH"
 			],
 			"conditionInflict": [
-				"grappled",
-				"invisible"
+				"grappled"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -38882,7 +38874,7 @@
 				{
 					"name": "Hellish Rejuvenation",
 					"entries": [
-						"A lemure that dies in the Nine Hells comes back to life with all its hit points in {@dice 1d10} days unless it is killed by a good-aligned creature with a bless spell cast on that creature or its remains are sprinkled with holy water."
+						"A lemure that dies in the Nine Hells comes back to life with all its hit points in {@dice 1d10} days unless it is killed by a good-aligned creature with a {@spell bless} spell cast on that creature or its remains are sprinkled with holy water."
 					]
 				}
 			],
@@ -51337,7 +51329,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The rug is {@condition incapacitated} while in the area of an antimagic field. If targeted by dispel magic, the rug must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
+						"The rug is {@condition incapacitated} while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the rug must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
 					]
 				},
 				{

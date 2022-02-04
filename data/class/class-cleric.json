@@ -444,7 +444,10 @@
 					"classFeature": "Divine Domain|Cleric||1",
 					"gainSubclassFeature": true
 				},
-				"Channel Divinity (1/rest)|Cleric||2",
+				{
+					"classFeature": "Channel Divinity|Cleric||2",
+					"tableDisplayName": "Channel Divinity (1/rest)"
+				},
 				"Channel Divinity: Harness Divine Power|Cleric||2|UAClassFeatureVariants",
 				"Channel Divinity: Harness Divine Power|Cleric||2|TCE",
 				{
@@ -455,7 +458,10 @@
 				"Proficiency Versatility|Cleric||4|UAClassFeatureVariants",
 				"Cantrip Versatility|Cleric||4|TCE",
 				"Destroy Undead (CR 1/2)|Cleric||5",
-				"Channel Divinity (2/rest)|Cleric||6",
+				{
+					"classFeature": "Channel Divinity|Cleric||6",
+					"tableDisplayName": "Channel Divinity (2/rest)"
+				},
 				{
 					"classFeature": "Divine Domain feature|Cleric||6",
 					"gainSubclassFeature": true
@@ -479,7 +485,10 @@
 					"classFeature": "Divine Domain feature|Cleric||17",
 					"gainSubclassFeature": true
 				},
-				"Channel Divinity (3/rest)|Cleric||18",
+				{
+					"classFeature": "Channel Divinity|Cleric||18",
+					"tableDisplayName": "Channel Divinity (3/rest)"
+				},
 				"Ability Score Improvement|Cleric||19",
 				"Proficiency Versatility|Cleric||19|UAClassFeatureVariants",
 				"Divine Intervention Improvement|Cleric||20"
@@ -2075,7 +2084,7 @@
 			]
 		},
 		{
-			"name": "Channel Divinity (1/rest)",
+			"name": "Channel Divinity",
 			"source": "PHB",
 			"page": 56,
 			"srd": true,
@@ -2102,6 +2111,9 @@
 			"classSource": "PHB",
 			"level": 2,
 			"isClassFeatureVariant": true,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"{@i 2nd-level cleric {@variantrule optional class features|tce|optional feature}}",
 				"You can expend a use of your Channel Divinity to fuel your spells. As a bonus action, you touch your holy symbol, utter a prayer, and regain one expended spell slot, the level of which can be no higher than half your proficiency bonus (rounded up). The number of times you can use this feature is based on the level you've reached in this class: 2nd level, once; 6th level, twice; and 18th level, thrice. You regain all expended uses when you finish a long rest."
@@ -2115,6 +2127,9 @@
 			"classSource": "PHB",
 			"level": 2,
 			"isClassFeatureVariant": true,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"{@i 2nd-level cleric feature (enhances Channel Divinity)}",
 				"You can expend a use of your Channel Divinity to fuel your spells. As a bonus action, you touch your holy symbol, utter a prayer, and regain one expended 1st-level spell slot."
@@ -2143,6 +2158,9 @@
 			"classSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"As an action, you present your holy symbol and speak a prayer censuring the undead. Each undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.",
 				"A turned creature must spend its turns trying to move as far away from you as it can, and it can't willingly move to a space within 30 feet of you. It also can't take reactions. For its action, it can use only the {@action Dash} action or try to escape from an effect that prevents it from moving. If there's nowhere to move, the creature can use the {@action Dodge} action."
@@ -2203,7 +2221,7 @@
 			]
 		},
 		{
-			"name": "Channel Divinity (2/rest)",
+			"name": "Channel Divinity",
 			"source": "PHB",
 			"page": 56,
 			"srd": true,
@@ -2406,7 +2424,7 @@
 			]
 		},
 		{
-			"name": "Channel Divinity (3/rest)",
+			"name": "Channel Divinity",
 			"source": "PHB",
 			"page": 56,
 			"srd": true,
@@ -2555,6 +2573,9 @@
 			"subclassSource": "DMG",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, the cleric can use Channel Divinity to destroy another creature's life force by touch.",
 				"When the cleric hits a creature with a melee attack, the cleric can use Channel Divinity to deal extra necrotic damage to the target. The damage equals 5 + twice his or her cleric level."
@@ -2711,6 +2732,9 @@
 			"subclassSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to tap into a divine well of knowledge. As an action, you choose one skill or tool. For 10 minutes, you have proficiency with the chosen skill or tool."
 			]
@@ -2725,6 +2749,9 @@
 			"subclassSource": "PHB",
 			"level": 6,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"At 6th level, you can use your Channel Divinity to read a creature's thoughts. You can then use your access to the creature's mind to command it.",
 				"As an action, choose one creature that you can see within 60 feet of you. That creature must make a Wisdom saving throw. If the creature succeeds on the saving throw, you can't use this feature on it again until you finish a long rest.",
@@ -2919,6 +2946,9 @@
 			"subclassSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to heal the badly injured.",
 				"As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum. You can't use this feature on an undead or a construct."
@@ -3099,6 +3129,9 @@
 			"subclassSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to harness sunlight, banishing darkness and dealing radiant damage to your foes.",
 				"As an action, you present your holy symbol, and any magical darkness within 30 feet of you is dispelled. Additionally, each hostile creature within 30 feet of you must make a Constitution saving throw. A creature takes radiant damage equal to {@dice 2d10} + your cleric level on a failed saving throw, and half as much damage on a successful one. A creature that has total cover from you is not affected."
@@ -3272,6 +3305,9 @@
 			"subclassSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to charm animals and plants.",
 				"As an action, you present your holy symbol and invoke the name of your deity. Each beast or plant creature that can see you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is {@condition charmed} by you for 1 minute or until it takes damage. While it is {@condition charmed} by you, it is friendly to you and other creatures you designate."
@@ -3446,6 +3482,9 @@
 			"subclassSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to wield the power of the storm with unchecked ferocity.",
 				"When you roll lightning or thunder damage, you can use your Channel Divinity to deal maximum damage, instead of rolling."
@@ -3601,6 +3640,9 @@
 			"subclassSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to create an illusory duplicate of yourself.",
 				"As an action, you create a perfect illusion of yourself that lasts for 1 minute, or until you lose your concentration (as if you were concentrating on a spell). The illusion appears in an unoccupied space that you can see within 30 feet of you. As a bonus action on your turn, you can move the illusion up to 30 feet to a space you can see, but it must remain within 120 feet of you.",
@@ -3617,6 +3659,9 @@
 			"subclassSource": "PHB",
 			"level": 6,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 6th level, you can use your Channel Divinity to vanish.",
 				"As an action, you become {@condition invisible} until the end of your next turn. You become visible if you attack or cast a spell."
@@ -3776,6 +3821,9 @@
 			"subclassSource": "PHB",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to strike with supernatural accuracy. When you make an attack roll, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the attack hits or misses."
 			]
@@ -3790,6 +3838,9 @@
 			"subclassSource": "PHB",
 			"level": 6,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"At 6th level, when a creature within 30 feet of you makes an attack roll, you can use your reaction to grant that creature a +10 bonus to the roll, using your Channel Divinity. You make this choice after you see the roll, but before the DM says whether the attack hits or misses."
 			]
@@ -3932,6 +3983,9 @@
 			"subclassSource": "PSA",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to create an illusory duplicate of yourself.",
 				"As an action, you create a perfect illusion of yourself that lasts for 1 minute, or until you lose your concentration (as if you were concentrating on a spell). The illusion appears in an unoccupied space that you can see within 30 feet of you. As a bonus action on your turn, you can move the illusion up to 30 feet to a space you can see, but it must remain within 120 feet of you.",
@@ -3948,6 +4002,9 @@
 			"subclassSource": "PSA",
 			"level": 6,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 6th level, you can use your Channel Divinity to vanish. As an action, you become {@condition invisible} until the end of your next turn. You become visible if you attack or cast a spell."
 			]
@@ -4178,6 +4235,9 @@
 			"subclassSource": "PSA",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to heal the badly injured.",
 				"As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum. You can't use this feature on an undead or a construct."
@@ -4352,6 +4412,9 @@
 			"subclassSource": "PSA",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"At 2nd level, you can use your Channel Divinity to enhance your physical might. When you make an attack roll, ability check, or saving throw using Strength, you can use your Channel Divinity to gain a +10 bonus to the roll. You make this choice after you see the roll, but before the DM says whether the roll succeeds or fails."
 			]
@@ -4526,6 +4589,9 @@
 			"subclassSource": "PSA",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to channel your zeal into unchecked ferocity.",
 				"When you roll fire or thunder damage, you can use your Channel Divinity to deal maximum damage instead of rolling."
@@ -4684,6 +4750,9 @@
 			"subclassSource": "SCAG",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to abjure otherworldly creatures.",
 				"As an action, you present your holy symbol, and one celestial, elemental, fey, or fiend of your choice that is within 30 feet of you must make a Wisdom saving throw, provided that the creature can see or hear you. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage.",
@@ -4920,6 +4989,9 @@
 			"subclassSource": "TCE",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to exert an intimidating presence over others.",
 				"As an action, you present your holy symbol, and each creature of your choice that can see or hear you within 30 feet of you must succeed on a Wisdom saving throw or be {@condition charmed} by you until the end of your next turn or until the {@condition charmed} creature takes any damage. You can also cause any of the {@condition charmed} creatures to drop what they are holding when they fail the saving throw."
@@ -5170,6 +5242,9 @@
 			"subclassSource": "TCE",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"{@i 2nd-level Peace Domain feature}",
 				"You can use your Channel Divinity to make your very presence a soothing balm. As an action, you can move up to your speed, without provoking opportunity attacks, and when you move within 5 feet of any other creature during this action, you can restore a number of hit points to that creature equal to {@dice 2d6} + your Wisdom modifier (minimum of 1 hit point). A creature can receive this healing only once whenever you take this action."
@@ -5406,6 +5481,9 @@
 			"subclassSource": "TCE",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"{@i 2nd-level Twilight Domain feature}",
 				"You can use your Channel Divinity to refresh your allies with soothing twilight.",
@@ -5629,6 +5707,9 @@
 			"subclassSource": "UA2020SubclassesPt2",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"{@i 2nd-level Love Domain feature}",
 				"You can use your Channel Divinity to overwhelm a creature with a flash of short-lived but intense admiration for you, driving them to rash action in your defense.",
@@ -5853,6 +5934,9 @@
 			"subclassSource": "UA2020SubclassesPt2",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"{@i 2nd-level Unity Domain feature}",
 				"You can use your Channel Divinity to protect your allies through the strength of your shared bonds.",
@@ -6040,6 +6124,9 @@
 			"subclassSource": "UAClericDivineDomains",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to create simple items.",
 				"Starting at the beginning of a short rest, you conduct a ritual to your deity that grants you the ability to craft a finished item that is at least part metal. The item is completed at the end of the rest.",
@@ -6241,6 +6328,9 @@
 			"subclassSource": "UAClericDivineDomains",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to mark another creature's life force for termination.",
 				"As an action, you touch a creature. The next time that creature takes damage from a spell or an attack from you or an ally, it is vulnerable to that spell or attack's damage. If the source of damage has multiple damage types, the creature is vulnerable to all of them. The vulnerability applies only to the first time that source inflicts damage, and then ends.",
@@ -6416,6 +6506,9 @@
 			"subclassSource": "UAClericDivineDomains",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to cloak your allies in radiant armor.",
 				"As an action, you channel blessed energy into an ally that you can see within 30 feet of you. The first time that ally is hit by an attack within the next minute, the attacker takes radiant damage equal to {@dice 2d10} + your cleric level."
@@ -6612,6 +6705,9 @@
 			"subclassSource": "UAClericDruidWizard",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"{@i 2nd-level Twilight Domain feature}",
 				"You can use your Channel Divinity to refresh your allies with soothing twilight.",
@@ -6822,6 +6918,9 @@
 			"subclassSource": "UAModernMagic",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to call on the city for aid. As an action, you present your holy symbol, and any city utility within 30 feet of you either works perfectly or shuts down entirely for 1 minute (your choice).",
 				"Additionally, each hostile creature within 30 feet of you must make a Charisma saving throw. On a failed save, the creature is knocked {@condition prone} or {@condition restrained} (your choice) by hazards such as entangling wires, high-pressure water erupting from fire hydrants, pavement collapsing to unseen potholes, and so on. A {@condition restrained} creature can escape by making a successful Strength ({@skill Athletics}) or Dexterity ({@skill Acrobatics}) check against your spell save DC.",
@@ -6998,6 +7097,9 @@
 			"subclassSource": "UAOrderDomain",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to exert an intimidating presence over others.",
 				"As an action, you present your holy symbol, and each creature of your choice that can see or hear you within 30 feet of you must succeed on a Wisdom saving throw or be {@condition charmed} by you until the end of your next turn or until the {@condition charmed} creature takes any damage. You can also cause any of the {@condition charmed} creatures to fall {@condition prone} when they fail the saving throw."
@@ -7173,6 +7275,9 @@
 			"subclassSource": "XGE",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to create simple items.",
 				"You conduct an hour-long ritual that crafts a nonmagical item that must include some metal: a simple or martial weapon, a suit of armor, ten pieces of ammunition, a set of tools, or another metal object (see chapter 5, \"Equipment,\" in the Player's Handbook for examples of these items). The creation is completed at the end of the hour, coalescing in an unoccupied space of your choice on a surface within 5 feet of you.",
@@ -7362,6 +7467,9 @@
 			"subclassSource": "XGE",
 			"level": 2,
 			"header": 2,
+			"consumes": {
+				"name": "Channel Divinity"
+			},
 			"entries": [
 				"Starting at 2nd level, you can use your Channel Divinity to mark another creature's life force for termination.",
 				"As an action, you choose one creature you can see within 30 feet of you, cursing it until the end of your next turn. The next time you or an ally of yours hits the cursed creature with an attack, the creature has vulnerability to all of that attack's damage, and then the curse ends."

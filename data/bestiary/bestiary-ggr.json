@@ -1170,7 +1170,7 @@
 				{
 					"name": "Blood Witch Dance",
 					"entries": [
-						"The witch can use a bonus action to control the movement of one creature cursed by its hex spell that it can see within 30 feet of it. The creature must succeed on a {@dc 15} Charisma saving throw or use its reaction to move up to 30 feet in a direction of the witch's choice."
+						"The witch can use a bonus action to control the movement of one creature cursed by its {@spell hex} spell that it can see within 30 feet of it. The creature must succeed on a {@dc 15} Charisma saving throw or use its reaction to move up to 30 feet in a direction of the witch's choice."
 					]
 				},
 				{
@@ -3709,13 +3709,13 @@
 				{
 					"name": "Galvanic Overcast {@recharge 5}",
 					"entries": [
-						"When the blastseeker casts lightning bolt or thunderwave, it can roll a die. On an odd number, the blastseeker takes 9 ({@damage 2d8}) force damage. On an even number, the spell also deals 9 ({@damage 2d8}) lightning damage to each target that fails its saving throw."
+						"When the blastseeker casts {@spell lightning bolt} or thunderwave, it can roll a die. On an odd number, the blastseeker takes 9 ({@damage 2d8}) force damage. On an even number, the spell also deals 9 ({@damage 2d8}) lightning damage to each target that fails its saving throw."
 					]
 				},
 				{
 					"name": "Heart of the Storm",
 					"entries": [
-						"When the blastseeker casts lightning bolt or thunderwave, all other creatures within 10 feet of the blastseeker each take 3 lightning damage."
+						"When the blastseeker casts {@spell lightning bolt} or thunderwave, all other creatures within 10 feet of the blastseeker each take 3 lightning damage."
 					]
 				},
 				{
@@ -9489,13 +9489,13 @@
 				{
 					"name": "Voice of Order",
 					"entries": [
-						"Trostani casts dispel magic."
+						"Trostani casts {@spell dispel magic}."
 					]
 				},
 				{
 					"name": "Chorus of the Conclave (Costs 2 Actions)",
 					"entries": [
-						"Trostani casts suggestion. This counts as one of her daily uses of the spell."
+						"Trostani casts {@spell suggestion}. This counts as one of her daily uses of the spell."
 					]
 				},
 				{
@@ -10040,7 +10040,7 @@
 				{
 					"name": "Enlarge (Costs 2 Actions)",
 					"entries": [
-						"Zegana casts enlarge/reduce on herself, using the enlarge option, without expending a spell slot."
+						"Zegana casts {@spell enlarge/reduce} on herself, using the enlarge option, without expending a spell slot."
 					]
 				},
 				{

@@ -859,7 +859,7 @@
 				{
 					"name": "Pact of Suffering",
 					"entries": [
-						"Using a 10-minute long ritual, the titan can forge a magical bond with a willing creature it touches throughout the ritual. The creature becomes bound by the pact until it dies, the titan dies, or the pact is broken by a wish spell.",
+						"Using a 10-minute long ritual, the titan can forge a magical bond with a willing creature it touches throughout the ritual. The creature becomes bound by the pact until it dies, the titan dies, or the pact is broken by a {@spell wish} spell.",
 						"The titan chooses one spell from the necromancy or enchantment school that is 8th level or lower. The bound creature can cast that spell using this pact, requiring no material components and using Intelligence as the spellcasting ability. When it casts the spell, the creature takes 21 ({@damage 6d6}) psychic damage, which can't break the creature's concentration on a spell. Once the bound creature casts the spell in this way, it can't do so again until it finishes a long rest."
 					]
 				}
@@ -1778,7 +1778,7 @@
 				{
 					"name": "Voice from the Past (1/Day)",
 					"entries": [
-						"The professor can cast the contact other plane spell to contact a long-dead spirit, using Intelligence as the spellcasting ability."
+						"The professor can cast the {@spell contact other plane} spell to contact a long-dead spirit, using Intelligence as the spellcasting ability."
 					]
 				}
 			],
@@ -1899,7 +1899,7 @@
 				{
 					"name": "Voice from the Past (1/Day)",
 					"entries": [
-						"The professor can cast the contact other plane spell to contact a long-dead spirit, using Intelligence as the spellcasting ability."
+						"The professor can cast the {@spell contact other plane} spell to contact a long-dead spirit, using Intelligence as the spellcasting ability."
 					]
 				}
 			],
@@ -5368,7 +5368,7 @@
 				{
 					"name": "Essence Transfer (1/Day)",
 					"entries": [
-						"The professor can cast the animate dead spell, using Wisdom as the spellcasting ability."
+						"The professor can cast the {@spell animate dead} spell, using Wisdom as the spellcasting ability."
 					]
 				}
 			],

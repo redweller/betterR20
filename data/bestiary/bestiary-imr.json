@@ -136,7 +136,7 @@
 				{
 					"name": "Insanity Gaze",
 					"entries": [
-						"The target suffers the effect of the confusion spell without making a saving throw. The effect lasts until the start of the ettin's next turn. The ettin doesn't need to concentrate on the spell."
+						"The target suffers the effect of the {@spell confusion} spell without making a saving throw. The effect lasts until the start of the ettin's next turn. The ettin doesn't need to concentrate on the spell."
 					]
 				}
 			],
@@ -598,7 +598,7 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"Lynx's crystal eye is a magically shrunken crystal ball of true seeing. One of her teeth is a refashioned ring of mind shielding, while another has been magicked to place her under a permanent Nystul's magic aura spell, concealing the magic of these items and hiding her true nature from magic or features that can detect undead."
+						"Lynx's crystal eye is a magically shrunken crystal ball of true seeing. One of her teeth is a refashioned ring of mind shielding, while another has been magicked to place her under a permanent {@spell Nystul's magic aura} spell, concealing the magic of these items and hiding her true nature from magic or features that can detect undead."
 					]
 				},
 				{

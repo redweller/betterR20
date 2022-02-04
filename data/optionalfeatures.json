@@ -367,6 +367,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You use abjuration magic to try to temporarily banish your target to a harmless location in the Feywild. If the arrow hits a creature, the target must also succeed on a Charisma saving throw or be banished. While banished in this way, its speed is 0, and it is {@condition incapacitated}. At the end of its next turn, the target reappears in the space it vacated or in the nearest unoccupied space if that space is occupied.",
 				"After you reach 18th level in this class, a target also takes {@damage 2d6} force damage when the arrow hits it."
@@ -379,6 +382,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You use abjuration magic to try to temporarily banish your target to a harmless location in the Feywild. The creature hit by the arrow must also succeed on a Charisma saving throw or be banished. While banished in this way, the target's speed is 0, and it is {@condition incapacitated}. At the end of its next turn, the target reappears in the space it vacated or in the nearest unoccupied space if that space is occupied.",
 				"After you reach 18th level in this class, a target also takes {@damage 2d6} force damage when the arrow hits it."
@@ -412,6 +418,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"Your enchantment magic causes this arrow to temporarily beguile its target. Choose one of your allies within 30 feet of the target. If the arrow hits the target, the target can't attack the chosen ally or include that ally in a harmful area of effect until the end of your next turn. The target ignores this effect if it is immune to the {@condition charmed} condition. This effect also ends if the chosen ally deals any damage to the target."
 			]
@@ -423,6 +432,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"Your enchantment magic causes this arrow to temporarily beguile its target. The creature hit by the arrow takes an extra {@damage 2d6} psychic damage, and choose one of your allies within 30 feet of the target. The target must succeed on a Wisdom saving throw, or it is {@condition charmed} by the chosen ally until the start of your next turn. This effect ends early if the chosen ally attacks the {@condition charmed} target, deals damage to it, or forces it to make a saving throw.",
 				"The psychic damage increases to {@damage 4d6} when you reach 18th level in this class."
@@ -767,6 +779,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You weave necromantic magic into your arrow. If a creature is hit by the arrow, any bludgeoning, piercing, or slashing damage dealt by the creature's attacks is halved until the end of your next turn."
 			]
@@ -778,6 +793,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You weave necromantic magic into your arrow. If your arrow hits a creature, the target takes an extra {@damage 2d6} necrotic damage and must make a Constitution saving throw. On a failed save, the damage of the target's attacks is halved until the next turn.",
 				"The necrotic damage increases to {@damage 4d6} when you reach 18th level with this class."
@@ -806,6 +824,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You imbue your arrow with a blast of force energy drawn from the school of evocation. If you hit a creature with this arrow, each creature within 10 feet of it takes {@damage 2d6} force damage."
 			]
@@ -817,6 +838,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You imbue your arrow with a blast of force energy drawn from the school of evocation. If the arrow hits a creature, the target and each creature within 10 feet of it takes {@damage 2d6} force damage.",
 				"The force damage increases to {@damage 4d6} when you reach 18th level with this class."
@@ -829,6 +853,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You imbue your arrow with force energy drawn from the school of evocation. The energy detonates after your attack. Immediately after the arrow hits the creature, the target and all other creatures within 10 feet of it take {@damage 2d6} force damage each.",
 				"The force damage increases to {@damage 4d6} when you reach 18th level in this class."
@@ -864,6 +891,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell's full force. To do so, you spend 1 sorcery point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell."
 			]
@@ -1174,6 +1204,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You use abjuration magic to weave a charm that disrupts your enemy's magic. A creature hit by this arrow suffers disadvantage on the next attack roll it makes before the end of your next turn."
 			]
@@ -1262,6 +1295,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell.",
 				"When you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet."
@@ -1565,6 +1601,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you cast a spell that deals a type of damage from the following list, you can spend 1 sorcery point to change that damage type to one of the other listed types: acid, cold, fire, lightning, thunder."
 			]
@@ -1577,6 +1616,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls.",
 				"You can use Empowered Spell even if you have already used a different Metamagic option during the casting of the spell."
@@ -1589,6 +1631,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You weave necromantic magic into your arrow. The creature hit by the arrow takes an extra {@damage 2d6} necrotic damage. The target must also succeed on a Constitution saving throw, or the damage dealt by its weapon attacks is halved until the start of your next turn.",
 				"The necrotic damage increases to {@damage 4d6} when you reach 18th level in this class."
@@ -1786,6 +1831,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you cast a spell that has a duration of 1 minute or longer, you can spend 1 sorcery point to double its duration, to a maximum duration of 24 hours."
 			]
@@ -2418,6 +2466,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"When this arrow strikes its target, conjuration magic creates grasping, thorny brambles that wrap around the target. The target hit by the arrow takes a -10 penalty to speed, and it takes {@damage 2d6} slashing damage if it moves 1 foot or more without teleporting. The target or any creature that can touch it can use its action to try to remove the brambles, which requires a successful DC 10 Strength check. Otherwise, the brambles last for 1 minute."
 			]
@@ -2429,6 +2480,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"When this arrow strikes its target, conjuration magic creates grasping, thorny brambles that wrap around the target. If the arrow hits a creature, the target takes an extra {@damage 2d6} poison damage, its speed is reduced by 10 feet, and it takes {@damage 2d6} slashing damage the first time on each turn it moves 1 foot or more without teleporting. The target or any creature that can reach it can use its action to remove the brambles with a successful Strength ({@skill Athletics}) check against your Arcane Shot save DC. Otherwise, the brambles last for 1 minute or until you use this option again.",
 				"The poison and slashing damage both increase to {@damage 4d6} when you reach 18th level in this class."
@@ -2441,6 +2495,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"When this arrow strikes its target, conjuration magic creates grasping, poisonous brambles, which wrap around the target. The creature hit by the arrow takes an extra {@damage 2d6} poison damage, its speed is reduced by 10 feet, and it takes {@damage 2d6} slashing damage the first time on each turn it moves 1 foot or more without teleporting. The target or any creature that can reach it can use its action to remove the brambles with a successful Strength ({@skill Athletics}) check against your Arcane Shot save DC. Otherwise, the brambles last for 1 minute or until you use this option again.",
 				"The poison damage and slashing damage both increase to {@damage 4d6} when you reach 18th level in this class."
@@ -2512,6 +2569,10 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points",
+				"amount": 3
+			},
 			"entries": [
 				"When you cast a spell that forces a creature to make a saving throw to resist its effects, you can spend 3 sorcery points to give one target of the spell disadvantage on its first saving throw made against the spell."
 			]
@@ -3116,6 +3177,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"Your enchantment magic causes this arrow to temporarily beguile its target. Choose one of your allies within 30 feet of the target. If the arrow hits a creature, the target takes an extra {@damage 2d6} psychic damage, and it must succeed on a Wisdom saving throw or it can't attack the chosen ally or include that ally in a harmful area of effect until the start of your next turn. This effect ends early if the chosen ally deals any damage to the target.",
 				"The psychic damage increases to {@damage 4d6} when you reach 18th level in this class."
@@ -3487,6 +3551,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You use transmutation magic to transform your arrow into an ethereal dart that passes through its targets. When you attack with this arrow, it fires forward in a line that is 1 foot wide and 30 feet long. You make a separate attack using your Arcane Arrow against each creature in that line."
 			]
@@ -3498,6 +3565,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You use transmutation magic to transform your arrow into an ethereal dart that passes through its targets. You use transmutation magic to give your arrow an ethereal quality. When you use this option, you don't make an attack roll for the attack. Instead, the arrow fires forward in a line that is 1 foot wide and 30 feet long, before disappearing. The arrow passes harmlessly through objects, ignoring cover. Each creature in that line must make a Dexterity saving throw. On a failed save, a target takes damage as if it were hit by the arrow, plus an extra {@damage 1d6} piercing damage. On a successful save, a target takes half as much damage.",
 				"The piercing damage increases to {@damage 2d6} when you reach 18th level in this class."
@@ -3510,6 +3580,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You use transmutation magic to give your arrow an ethereal quality. When you use this option, you don't make an attack roll for the attack. Instead, the arrow shoots forward in a line, which is 1 foot wide and 30 feet long, before disappearing. The arrow passes harmlessly through objects, ignoring cover. Each creature in that line must make a Dexterity saving throw. On a failed save, a creature takes damage as if it were hit by the arrow, plus an extra {@damage 1d6} piercing damage. On a successful save, a target takes half as much damage.",
 				"The piercing damage increases to {@damage 2d6} when you reach 18th level in this class."
@@ -3656,6 +3729,10 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points",
+				"amount": 2
+			},
 			"entries": [
 				"When you cast a spell that has a casting time of 1 action, you can spend 2 sorcery points to change the casting time to 1 bonus action for this casting."
 			]
@@ -4818,6 +4895,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"Using divination magic, you grant your arrow the ability to seek out your target, allowing the arrow to curve and twist its path in search of its prey. As an action, choose one creature you have seen in the past minute, and make a ranged attack against it, using the Arcane Arrow. The arrow flies around corners if necessary, and this attack ignores three-quarters cover, half cover, and disadvantage caused by the target being out of sight or being at long range. The attack automatically misses if the target is out of the weapon's range or if there is no path large enough for the arrow to travel to the target. If the arrow hits its target, you know it, but you don't learn the target's location unless it's within your line of sight."
 			]
@@ -4829,6 +4909,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"Using divination magic, you grant your arrow the ability to seek out your target, allowing the arrow to curve and twist its path in search of its prey. When you use this option, you don't make an attack roll for the attack. Instead, choose one creature you have seen in the past minute. The arrow flies toward that creature, moving around corners if necessary and ignoring three-quarters cover and half cover. If the target is within the weapon's range and there is a path large enough for the arrow to travel to the target, the target must make a Dexterity saving throw. On a failed save, it takes damage as if it were hit by the arrow, plus an extra {@damage 1d6} force damage, and you learn the target's current location. On a successful save, the target takes half as much damage, and you don't learn its location.",
 				"The force damage increases to {@damage 2d6} when you reach 18th level in this class."
@@ -4841,6 +4924,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"Using divination magic, you grant your arrow the ability to seek out a target. When you use this option, you don't make an attack roll for the attack. Instead, choose one creature you have seen in the past minute. The arrow flies toward that creature, moving around corners if necessary and ignoring three-quarters cover and half cover. If the target is within the weapon's range and there is a path large enough for the arrow to travel to the target, the target must make a Dexterity saving throw. Otherwise, the arrow disappears after traveling as far as it can. On a failed save, the target takes damage as if it were hit by the arrow, plus an extra {@damage 1d6} force damage, and you learn the target's current location. On a successful save, the target takes half as much damage, and you don't learn its location.",
 				"The force damage increases to {@damage 2d6} when you reach 18th level in this class."
@@ -4854,6 +4940,10 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points",
+				"amount": 2
+			},
 			"entries": [
 				"If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the {@dice d20}, and you must use the new roll.",
 				"You can use Seeking Spell even if you have already used a different Metamagic option during the casting of the spell."
@@ -4867,6 +4957,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you cast a spell that requires you to make a spell attack roll or that forces a target to make a Dexterity saving throw, you can spend 1 sorcery point to ignore the effects of half- and three-quarters cover against targets of the spell."
 			]
@@ -4878,6 +4971,9 @@
 			"featureType": [
 				"AS:V1-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You weave illusion magic into your arrow, causing it to occlude your foe's vision with grasping shadows. Until the end of your next turn, the target hit by the arrow can't see more than 30 feet away."
 			]
@@ -4889,6 +4985,9 @@
 			"featureType": [
 				"AS:V2-UA"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You weave illusion magic into your arrow, causing it to occlude your foe's vision with grasping shadows. If the arrow hits a creature, the target takes an extra {@damage 2d6} psychic damage, and it must succeed on a Wisdom saving throw or be unable to see anything farther than 5 feet away until the start of your next turn.",
 				"The psychic damage increases to {@damage 4d6} when you reach 18th level in this class."
@@ -4901,6 +5000,9 @@
 			"featureType": [
 				"AS"
 			],
+			"consumes": {
+				"name": "Arcane Shot"
+			},
 			"entries": [
 				"You weave illusion magic into your arrow, causing it to occlude your foe's vision with shadows. The creature hit by the arrow takes an extra {@damage 2d6} psychic damage, and it must succeed on a Wisdom saving throw or be unable to see anything farther than 5 feet away until the start of your next turn.",
 				"The psychic damage increases to {@damage 4d6} when you reach 18th level in this class."
@@ -5211,6 +5313,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you cast a spell, you can spend 1 sorcery point to cast it without any somatic or verbal components."
 			]
@@ -5511,6 +5616,9 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"When you cast a spell that deals a type of damage from the following list, you can spend 1 sorcery point to change that damage type to one of the other listed types: acid, cold, fire, lightning, poison, thunder."
 			]
@@ -5636,6 +5744,10 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points",
+				"amount": 1
+			},
 			"entries": [
 				"When you cast a spell that targets only one creature and doesn't have a range of self, you can spend a number of sorcery points equal to the spell's level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip).",
 				"To be eligible, a spell must be incapable of targeting more than one creature at the spell's current level. For example, {@spell magic missile} and {@spell scorching ray} aren't eligible, but {@spell ray of frost} and {@spell chromatic orb} are."
@@ -5777,6 +5889,10 @@
 			"featureType": [
 				"MM"
 			],
+			"consumes": {
+				"name": "Sorcery Points",
+				"amount": 2
+			},
 			"entries": [
 				"If you make an attack roll for a spell and miss, you can spend 2 sorcery points to reroll the attack roll. You must use the result of the second roll.",
 				"You can use Unerring Spell even if you have already used a different Metamagic option during the casting of the spell."

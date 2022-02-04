@@ -1316,7 +1316,7 @@
 												],
 												[
 													"3",
-													"A geas spell forces an ancient dragon turtle to carry a lich's tower."
+													"A {@spell geas} spell forces an ancient dragon turtle to carry a lich's tower."
 												],
 												[
 													"4",
@@ -2291,7 +2291,7 @@
 												],
 												[
 													"6",
-													"An orphaned deep dragon wyrmling is cared for by a giant constrictor snake that is the recipient of a druid's awaken spell."
+													"An orphaned deep dragon wyrmling is cared for by a giant constrictor snake that is the recipient of a druid's {@spell awaken} spell."
 												]
 											]
 										}
@@ -4561,7 +4561,7 @@
 												],
 												[
 													"3",
-													"A topaz dragon wyrmling has developed a taste for crab meat and persistently hunts a giant crab that always manages to evade the wyrmling. (The crab might have been the recipient of a druid's awaken spell.)"
+													"A topaz dragon wyrmling has developed a taste for crab meat and persistently hunts a giant crab that always manages to evade the wyrmling. (The crab might have been the recipient of a druid's {@spell awaken} spell.)"
 												],
 												[
 													"4",

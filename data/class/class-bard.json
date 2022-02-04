@@ -2324,7 +2324,7 @@
 			"header": 2,
 			"entries": [
 				"{@i 6th-level College of Spirits feature}",
-				"You can channel spirits to gain insights into magic. You can conduct an hour-long ritual channeling spirits (which can be done during a short or long rest) using your Spiritual Focus. You can conduct the ritual with a number of creatures equal to your proficiency bonus (including yourself). At the end of the ritual, you temporarily learn {@filter one spell of your choice from any class|spells|school=d;n|level=1;2;3;4;5;6}.",
+				"You can channel spirits to gain insights into magic. You can conduct an hour-long ritual channeling spirits (which can be done during a short or long rest) using your Spiritual Focus. You can conduct the ritual with a number of creatures equal to your proficiency bonus (including yourself). At the end of the ritual, you temporarily learn {@filter one spell of your choice from any class|spells|school=d;n|level=0;1;2;3;4;5;6}.",
 				"The spell you choose must be of a level equal to the number of creatures that conducted the ritual or less, the spell must of a level you can cast, and it must be in the school of divination or necromancy. The chosen spell counts as a bard spell for you but doesn't count against the number of bard spells you know.",
 				"Once you perform the ritual, you can't do so again until you start a long rest, and you know the chosen spell until you start a long rest."
 			]
@@ -3152,7 +3152,7 @@
 			"header": 2,
 			"entries": [
 				"{@i 6th-level College of Spirits feature}",
-				"Spirits provide you with supernatural insights. You can conduct an hour-long ritual channeling spirits (which can be done during a short or long rest) using your Spiritual Focus. You can conduct the ritual with a number of willing creatures equal to your proficiency bonus (including yourself). At the end of the ritual, you temporarily learn {@filter one spell of your choice from any class|spells|school=d;n|level=1;2;3;4;5;6}.",
+				"Spirits provide you with supernatural insights. You can conduct an hour-long ritual channeling spirits (which can be done during a short or long rest) using your Spiritual Focus. You can conduct the ritual with a number of willing creatures equal to your proficiency bonus (including yourself). At the end of the ritual, you temporarily learn {@filter one spell of your choice from any class|spells|school=d;n|level=0;1;2;3;4;5;6}.",
 				"The spell you choose must be of a level equal to the number of creatures that conducted the ritual or less, the spell must be of a level you can cast, and it must be in the school of divination or necromancy. The chosen spell counts as a bard spell for you but doesn't count against the number of bard spells you know.",
 				"Once you perform the ritual, you can't do so again until you start a long rest, and you know the chosen spell until you start a long rest."
 			]

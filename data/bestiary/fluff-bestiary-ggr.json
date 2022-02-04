@@ -1367,7 +1367,7 @@
 												],
 												[
 													"3",
-													"Innate Spellcasting. The horror's innate spellcasting ability is Charisma (spell save DC 13 for flying horror, DC 16 for shadow horror, and DC 17 for skittering horror). It can innately cast the following spells, requiring no material components: 3/day: darkness 1/day each: fear (shadow horror and skittering horror only), phantasmal killer (skittering horror only)"
+													"Innate Spellcasting. The horror's innate spellcasting ability is Charisma (spell save DC 13 for flying horror, DC 16 for shadow horror, and DC 17 for skittering horror). It can innately cast the following spells, requiring no material components: 3/day: {@spell darkness} 1/day each: {@spell fear} (shadow horror and skittering horror only), {@spell phantasmal killer} (skittering horror only)"
 												],
 												[
 													"4",
@@ -2723,7 +2723,7 @@
 												],
 												[
 													"3",
-													"Innate Spellcasting. The horror's innate spellcasting ability is Charisma (spell save DC 13 for flying horror, DC 16 for shadow horror, and DC 17 for skittering horror). It can innately cast the following spells, requiring no material components: 3/day: darkness 1/day each: fear (shadow horror and skittering horror only), phantasmal killer (skittering horror only)"
+													"Innate Spellcasting. The horror's innate spellcasting ability is Charisma (spell save DC 13 for flying horror, DC 16 for shadow horror, and DC 17 for skittering horror). It can innately cast the following spells, requiring no material components: 3/day: {@spell darkness} 1/day each: {@spell fear} (shadow horror and skittering horror only), {@spell phantasmal killer} (skittering horror only)"
 												],
 												[
 													"4",
@@ -2917,7 +2917,7 @@
 												],
 												[
 													"3",
-													"Innate Spellcasting. The horror's innate spellcasting ability is Charisma (spell save DC 13 for flying horror, DC 16 for shadow horror, and DC 17 for skittering horror). It can innately cast the following spells, requiring no material components: 3/day: darkness 1/day each: fear (shadow horror and skittering horror only), phantasmal killer (skittering horror only)"
+													"Innate Spellcasting. The horror's innate spellcasting ability is Charisma (spell save DC 13 for flying horror, DC 16 for shadow horror, and DC 17 for skittering horror). It can innately cast the following spells, requiring no material components: 3/day: {@spell darkness} 1/day each: {@spell fear} (shadow horror and skittering horror only), {@spell phantasmal killer} (skittering horror only)"
 												],
 												[
 													"4",
