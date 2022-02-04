@@ -40,7 +40,8 @@ function d20plusObjects () {
 					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OBJECTS](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
 
 					try {
-						const avatar = data.tokenUrl || `${IMG_URL}objects/tokens/${source}/${name}.png`;
+						const tokenUrl = `${IMG_URL}objects/tokens/${source}/${name}.png`;
+						const avatar = data.tokenUrl || Parser.nameToTokenName(tokenUrl);
 						character.size = data.size;
 						character.name = name;
 						character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
