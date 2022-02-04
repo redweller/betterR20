@@ -1259,6 +1259,7 @@ function d20plusEngine () {
 
 		d20plus.mod.editingLayerOnclick();
 		if (window.is_gm) {
+			// Add layers to layer dropdown
 			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
 			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
 				$(`#floatingtoolbar .choosemap`).after(`
