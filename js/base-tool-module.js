@@ -369,7 +369,6 @@ function baseToolModule () {
 								switch (prop) {
 									case "maps": {
 										const map = d20.Campaign.pages.create(entry.attributes);
-										map.fullyLoadPage();
 										entry.graphics.forEach(it => map.thegraphics.create(it));
 										entry.paths.forEach(it => map.thepaths.create(it));
 										entry.text.forEach(it => map.thetexts.create(it));

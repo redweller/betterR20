@@ -232,6 +232,10 @@ const betteR205etoolsMain = function () {
 		d20plus.ut.log("Bind Graphics");
 		try {
 			if (page.get("archived") === false) {
+				// Roll20 creates thegraphics and similar variables on page load, not page creation
+				if (!page.thegraphics) {
+					page.fullyLoadPage();
+				}
 				page.thegraphics.on("add", function (e) {
 					let character = e.character;
 					if (character) {
