@@ -1,6 +1,11 @@
 function d20plusDeities () {
 	d20plus.deities = {};
 
+	// Get the name + title from a deity
+	d20plus.deities._getFullName = function (data) {
+		return `${data.name}${data.title ? `, ${data.title.toTitleCase()}` : ""}`;
+	}
+
 	// Import Object button was clicked
 	d20plus.deities.button = function () {
 		const url = $("#import-deities-url").val();
@@ -26,13 +31,13 @@ function d20plusDeities () {
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
 		d20.Campaign.handouts.create({
-			name: `${data.name}${data.title ? `, ${data.title.toTitleCase()}` : ""}`,
+			name: d20plus.deities._getFullName(data),
 			tags: d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source),
 			], "deity"),
 		}, {
 			success: function (handout) {
-				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DEITIES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DEITIES](data)] = {name: d20plus.deities._getFullName(data), source: data.source, type: "handout", roll20Id: handout.id};
 
 				const [noteContents, gmNotes] = d20plus.deities._getHandoutData(data);
 
@@ -58,7 +63,7 @@ function d20plusDeities () {
 
         // Add GM notes
 		const r20json = {
-			"name": data.name,
+			"name": d20plus.deities._getFullName(data),
 			"Vetoolscontent": data,
 			"data": {
 				"Category": "Deities",

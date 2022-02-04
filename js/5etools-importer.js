@@ -917,7 +917,7 @@ function d20plusImporter () {
 						folderName = it.cr ? (it.cr.cr || it.cr) : "Unknown";
 						break;
 					case "Alphabetical":
-						folderName = it.name[0].uppercaseFirst();
+						folderName = d20plus.deities._getFullName(it)[0].uppercaseFirst();
 						break;
 					case "Type (with tags)":
 						folderName = Parser.monTypeToFullObj(it.type).asText.uppercaseFirst();
