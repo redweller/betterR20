@@ -321,7 +321,8 @@ function d20plusMonsters () {
 						try {
 							const type = Parser.monTypeToFullObj(data.type).asText;
 							const source = Parser.sourceJsonToAbv(data.source);
-							const avatar = data.tokenUrl || `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`;
+							const tokenUrl = `${IMG_URL}${source}/${name.replace(/"/g, "")}.png`
+							const avatar = data.tokenUrl || Parser.nameToTokenName(tokenUrl);
 							character.size = data.size;
 							character.name = data._displayName || data.name;
 							character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
