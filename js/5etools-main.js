@@ -110,6 +110,8 @@ const betteR205etoolsMain = function () {
 		],
 		"deity": [
 			"name",
+			"source",
+			"pantheon"
 		]
 	};
 
@@ -827,7 +829,6 @@ const betteR205etoolsMain = function () {
 		addClasses("Backgrounds");
 		addClasses("Races");
 		addClasses("Optional Features");
-		addClasses("Deities");
 
 		// ~~if player,~~ force-enable dragging
 		$(`.Vetools-draggable`).each((i, e) => {

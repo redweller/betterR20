@@ -25,9 +25,8 @@ function d20plusDeities () {
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
-		const name = data.name;
 		d20.Campaign.handouts.create({
-			name: name,
+			name: `${data.name}${data.title ? `, ${data.title.toTitleCase()}` : ""}`,
 			tags: d20plus.importer.getTagString([
 				Parser.sourceJsonToFull(data.source),
 			], "deity"),
@@ -56,7 +55,6 @@ function d20plusDeities () {
 		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 1});
 
 		const rendered = renderStack.join("");
-		const prereqs = Renderer.utils.getPrerequisiteHtml(data.prerequisites);
 
         // Add GM notes
 		const r20json = {
@@ -67,7 +65,7 @@ function d20plusDeities () {
 			},
 		};
 		const gmNotes = JSON.stringify(r20json);
-		const noteContents = `${prereqs ? `<p><i>Prerequisite: ${prereqs}.</i></p>` : ""}${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
+		const noteContents = `${rendered}\n\n<del class="hidden">${gmNotes}</del>`;
 
 		return [noteContents, gmNotes];
 	};
