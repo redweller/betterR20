@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.29.0
+// @version      1.30.0
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -1523,6 +1523,24 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": true,
+		},
+		"showBackground": {
+			"name": "Include the Background layer (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showForeground": {
+			"name": "Include the Foreground layer (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showWeather": {
+			"name": "Include the Weather layer and settings (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
 		},
 	},
 	);
@@ -9803,25 +9821,34 @@ function d20plusEngine () {
 
 		d20plus.mod.editingLayerOnclick();
 		if (window.is_gm) {
+			// Add layers to layer dropdown
 			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
-			$(`#floatingtoolbar .choosemap`).after(`
-				<li class="choosebackground">
-					<span class="pictos">a</span>
-					Background
-				</li>
-			`);
-			$(`#floatingtoolbar .chooseobjects`).after(`
-				<li class="chooseforeground">
-					<span class="pictos">B</span>
-					Foreground
-				</li>
-			`);
-			$(`#floatingtoolbar .choosewalls`).after(`
-				<li class="chooseweather">
-					<span class="pictos">C</span>
-					Weather Exclusions
-				</li>
-			`);
+			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
+				$(`#floatingtoolbar .choosemap`).after(`
+					<li class="choosebackground">
+						<span class="pictos">a</span>
+						Background
+					</li>
+				`);
+			}
+			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
+				$(`#floatingtoolbar .chooseobjects`).after(`
+					<li class="chooseforeground">
+						<span class="pictos">B</span>
+						Foreground
+					</li>
+				`);
+			}
+			
+			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
+				$(`#floatingtoolbar .choosewalls`).after(`
+					<li class="chooseweather">
+						<span class="pictos">C</span>
+						Weather Exclusions
+					</li>
+				`);
+			}
+			
 		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
@@ -12048,13 +12075,21 @@ function baseUi () {
 			.appendTo($(`body`)).find(`ul`);
 
 		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
+
+		// Add layers to second side bar
 		$(`<li title="Map" class="choosemap"><span class="pictos" style="padding: 0 3px;">@</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
-		$(`<li title="Background" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
+			$(`<li title="Background" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
+		}
 		$(`<li title="Objects & Tokens" class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
-		$(`<li title="Foreground" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
+			$(`<li title="Foreground" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
+		}
 		$(`<li title="GM Info Overlay" class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
 		$(`<li title="Dynamic Lighting" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
-		$(`<li title="Weather Exclusions" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
+			$(`<li title="Weather Exclusions" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
+		}
 
 		$("body").on("click", "#editinglayer li", function () {
 			$("#floatinglayerbar").removeClass("map")
@@ -17127,16 +17162,26 @@ Parser.getSpeedString = (ent, {isMetric = false} = {}) => {
 		+ (ent.speed === "Varies" ? "" : ` ${unit} `);
 };
 Parser._getSpeedString_addSpeedMode = ({ent, prop, stack, isMetric, unit}) => {
-	const addSpeed = (s) => stack.push(`${prop === "walk" ? "" : `${prop} `}${Parser._getSpeedString_getVal({propSpeed: s, isMetric})} ${unit}${Parser._getSpeedString_getCondition({propSpeed: s})}`);
-
-	if (ent.speed[prop] || prop === "walk") addSpeed(ent.speed[prop] || 0);
-	if (ent.speed.alternate && ent.speed.alternate[prop]) ent.speed.alternate[prop].forEach(addSpeed);
+	if (ent.speed[prop] || prop === "walk") Parser._getSpeedString_addSpeed({prop, speed: ent.speed[prop] || 0, isMetric, unit, stack});
+	if (ent.speed.alternate && ent.speed.alternate[prop]) ent.speed.alternate[prop].forEach(speed => Parser._getSpeedString_addSpeed({prop, speed, isMetric, unit, stack}));
 };
-Parser._getSpeedString_getVal = ({propSpeed, isMetric}) => {
-	const num = propSpeed.number != null ? propSpeed.number : propSpeed;
+Parser._getSpeedString_addSpeed = ({prop, speed, isMetric, unit, stack}) => {
+	const ptName = prop === "walk" ? "" : `${prop} `;
+	const ptValue = Parser._getSpeedString_getVal({prop, speed, isMetric});
+	const ptUnit = speed === true ? "" : ` ${unit}`;
+	const ptCondition = Parser._getSpeedString_getCondition({speed});
+	stack.push([ptName, ptValue, ptUnit, ptCondition].join(""));
+};
+Parser._getSpeedString_getVal = ({prop, speed, isMetric}) => {
+	if (speed === true && prop !== "walk") return "equal to your walking speed";
+
+	const num = speed === true
+		? 0
+		: speed.number != null ? speed.number : speed;
+
 	return isMetric ? Parser.metric.getMetricNumber({originalValue: num, originalUnit: UNT_FEET}) : num;
 };
-Parser._getSpeedString_getCondition = ({propSpeed}) => propSpeed.condition ? ` ${Renderer.get().render(propSpeed.condition)}` : "";
+Parser._getSpeedString_getCondition = ({speed}) => speed.condition ? ` ${Renderer.get().render(speed.condition)}` : "";
 
 Parser.SPEED_MODES = ["walk", "burrow", "climb", "fly", "swim"];
 
@@ -17326,23 +17371,6 @@ Parser.LANGUAGES_ALL = [
 	...Parser.LANGUAGES_EXOTIC,
 	...Parser.LANGUAGES_SECRET,
 ].sort();
-
-Parser.dragonColorToFull = function (c) {
-	return Parser._parse_aToB(Parser.DRAGON_COLOR_TO_FULL, c);
-};
-
-Parser.DRAGON_COLOR_TO_FULL = {
-	B: "black",
-	U: "blue",
-	G: "green",
-	R: "red",
-	W: "white",
-	A: "brass",
-	Z: "bronze",
-	C: "copper",
-	O: "gold",
-	S: "silver",
-};
 
 Parser.acToFull = function (ac, renderer) {
 	if (typeof ac === "string") return ac; // handle classic format
@@ -19294,6 +19322,7 @@ SRC_SCC_CK = "SCC-CK";
 SRC_SCC_HfMT = "SCC-HfMT";
 SRC_SCC_TMM = "SCC-TMM";
 SRC_SCC_ARiR = "SCC-ARiR";
+SRC_MPMM = "MPMM";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
@@ -19492,6 +19521,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_SCC_CK] = `Campus Kerfuffle`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCC_HfMT] = `Hunt for Mage Tower`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCC_TMM] = `The Magister's Masquerade`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCC_ARiR] = `A Reckoning in Ruins`;
+Parser.SOURCE_JSON_TO_FULL[SRC_MPMM] = `Mordenkainen Presents: Monsters of the Multiverse`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
@@ -19670,6 +19700,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_SCC_CK] = "SCC-CK";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCC_HfMT] = "SCC-HfMT";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCC_TMM] = "SCC-TMM";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCC_ARiR] = "SCC-ARiR";
+Parser.SOURCE_JSON_TO_ABV[SRC_MPMM] = "MPMM";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_DUNGEON_KIT] = "ScDun";
@@ -19847,6 +19878,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_SCC_CK] = "2021-12-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCC_HfMT] = "2021-12-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCC_TMM] = "2021-12-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCC_ARiR] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[SRC_MPMM] = "2022-01-25";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
@@ -20057,6 +20089,7 @@ Parser.SOURCES_VANILLA = new Set([
 	SRC_SADS,
 	SRC_TCE,
 	SRC_FTD,
+	SRC_MPMM,
 	SRC_SCREEN,
 	SRC_SCREEN_WILDERNESS_KIT,
 	SRC_SCREEN_DUNGEON_KIT,
@@ -20116,6 +20149,7 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	SRC_MaBJoV,
 	SRC_FTD,
 	SRC_SCC,
+	SRC_MPMM,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src.toLowerCase()] = src;
@@ -20228,6 +20262,33 @@ Parser.getTagSource = function (tag, source) {
 
 	if (!Parser.TAG_TO_DEFAULT_SOURCE[tag]) throw new Error(`Unhandled tag "${tag}"`);
 	return Parser.TAG_TO_DEFAULT_SOURCE[tag];
+};
+
+Parser.PROP_TO_DISPLAY_NAME = {
+	"variantrule": "Variant Rule",
+	"optionalfeature": "Optional Feature",
+	"variant": "Magic Item Variant",
+	"classFeature": "Class Feature",
+	"subclassFeature": "Subclass Feature",
+	"baseitem": "Item (Base)",
+	"item": "Item",
+	"itemGroup": "Item Group",
+	"legendaryGroup": "Legendary Group",
+	"adventure": "Adventure",
+	"adventureData": "Adventure Text",
+	"book": "Book",
+	"bookData": "Book Text",
+	"itemProperty": "Item Property",
+	"itemEntry": "Item Entry",
+	"monsterFluff": "Monster Fluff",
+	"itemFluff": "Item Fluff",
+	"makebrewCreatureTrait": "Homebrew Builder Creature Trait",
+	"charoption": "Other Character Creation Option",
+	"vehicleUpgrade": "Vehicle Upgrade",
+};
+Parser.getPropDisplayName = function (prop) {
+	if (Parser.PROP_TO_DISPLAY_NAME[prop]) return Parser.PROP_TO_DISPLAY_NAME[prop];
+	return prop.uppercaseFirst();
 };
 
 Parser.ITEM_TYPE_JSON_TO_ABV = {
@@ -20375,17 +20436,20 @@ Parser.metric = {
 	FEET_TO_METRES: 0.3, // 5 ft = 1.5 m
 	POUNDS_TO_KILOGRAMS: 0.5, // 2 lb = 1 kg
 
-	getMetricNumber ({originalValue, originalUnit}) {
+	getMetricNumber ({originalValue, originalUnit, toFixed = null}) {
 		if (isNaN(originalValue)) return originalValue;
 		originalValue = Number(originalValue);
 		if (!originalValue) return originalValue;
 
+		let out = null;
 		switch (originalUnit) {
-			case "mi.": case "mi": case UNT_MILES: return originalValue * Parser.metric.MILES_TO_KILOMETRES;
-			case "ft.": case "ft": case UNT_FEET: return originalValue * Parser.metric.FEET_TO_METRES;
-			case "lb.": case "lb": case "lbs": return originalValue * Parser.metric.POUNDS_TO_KILOGRAMS;
+			case "mi.": case "mi": case UNT_MILES: out = originalValue * Parser.metric.MILES_TO_KILOMETRES; break;
+			case "ft.": case "ft": case UNT_FEET: out = originalValue * Parser.metric.FEET_TO_METRES; break;
+			case "lb.": case "lb": case "lbs": out = originalValue * Parser.metric.POUNDS_TO_KILOGRAMS; break;
 			default: return originalValue;
 		}
+		if (toFixed != null) return Number(out.toFixed(toFixed));
+		return out;
 	},
 
 	getMetricUnit ({originalUnit, isShortForm = false, isPlural = true}) {
@@ -20413,7 +20477,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.147.13"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.149.0"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -20458,6 +20522,8 @@ VeCt = {
 	SYM_UI_SKIP: Symbol("uiSkip"),
 
 	SYM_WALKER_BREAK: Symbol("walkerBreak"),
+
+	SYM_UTIL_TIMEOUT: Symbol("timeout"),
 
 	LOC_ORIGIN_CANCER: "https://5e.tools",
 
@@ -20758,7 +20824,7 @@ CleanUtil.STR_REPLACEMENTS = {
 };
 CleanUtil.SHARED_REPLACEMENTS_REGEX = new RegExp(Object.keys(CleanUtil.SHARED_REPLACEMENTS).join("|"), "g");
 CleanUtil.STR_REPLACEMENTS_REGEX = new RegExp(Object.keys(CleanUtil.STR_REPLACEMENTS).join("|"), "g");
-CleanUtil._SOFT_HYPHEN_REMOVE_REGEX = /\u00AD/g;
+CleanUtil._SOFT_HYPHEN_REMOVE_REGEX = /\u00AD *\r?\n?\r?/g;
 CleanUtil._ELLIPSIS_COLLAPSE_REGEX = /\s*(\.\s*\.\s*\.)/g;
 CleanUtil._DASH_COLLAPSE_REGEX = /[ ]*([\u2014\u2013])[ ]*/g;
 CleanUtil._TAG_DASH_EXPAND_REGEX = /({@[a-zA-Z])([\u2014\u2013])/g;
@@ -22366,7 +22432,7 @@ UrlUtil = {
 			(cls.classFeatures || []).forEach((lvlFeatureList, ixLvl) => {
 				lvlFeatureList
 					// don't add "you gain a subclass feature" or ASI's
-					.filter(feature => !feature.gainSubclassFeature
+					.filter(feature => (!feature.gainSubclassFeature || feature.gainSubclassFeatureHasContent)
 						&& feature.name !== "Ability Score Improvement"
 						&& feature.name !== "Proficiency Versatility")
 					.forEach((feature, ixFeature) => {
@@ -22525,7 +22591,42 @@ UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_LANGUAGES] = (it) => UrlUtil.encodeForHas
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CHAR_CREATION_OPTIONS] = (it) => UrlUtil.encodeForHash([it.name, it.source]);
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES] = (it) => `${UrlUtil.encodeForHash([it.name, it.source])}${it._scaleFactor ? `${HASH_PART_SEP}${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}${it._scaleFactor}` : ""}`;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASS_SUBCLASS_FEATURES] = (it) => (it.__prop === "subclassFeature" || it.subclassSource) ? UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"](it) : UrlUtil.URL_TO_HASH_BUILDER["classFeature"](it);
+
 // region Fake pages (props)
+UrlUtil.URL_TO_HASH_BUILDER["monster"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BESTIARY];
+UrlUtil.URL_TO_HASH_BUILDER["spell"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_SPELLS];
+UrlUtil.URL_TO_HASH_BUILDER["background"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BACKGROUNDS];
+UrlUtil.URL_TO_HASH_BUILDER["item"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS];
+UrlUtil.URL_TO_HASH_BUILDER["itemGroup"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS];
+UrlUtil.URL_TO_HASH_BUILDER["baseitem"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS];
+UrlUtil.URL_TO_HASH_BUILDER["variant"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS];
+UrlUtil.URL_TO_HASH_BUILDER["class"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES];
+UrlUtil.URL_TO_HASH_BUILDER["condition"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CONDITIONS_DISEASES];
+UrlUtil.URL_TO_HASH_BUILDER["disease"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CONDITIONS_DISEASES];
+UrlUtil.URL_TO_HASH_BUILDER["status"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CONDITIONS_DISEASES];
+UrlUtil.URL_TO_HASH_BUILDER["feat"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_FEATS];
+UrlUtil.URL_TO_HASH_BUILDER["optionalfeature"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OPT_FEATURES];
+UrlUtil.URL_TO_HASH_BUILDER["psionic"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_PSIONICS];
+UrlUtil.URL_TO_HASH_BUILDER["race"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RACES];
+UrlUtil.URL_TO_HASH_BUILDER["reward"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_REWARDS];
+UrlUtil.URL_TO_HASH_BUILDER["variantrule"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_VARIANTRULES];
+UrlUtil.URL_TO_HASH_BUILDER["adventure"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ADVENTURES];
+UrlUtil.URL_TO_HASH_BUILDER["book"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BOOKS];
+UrlUtil.URL_TO_HASH_BUILDER["deity"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DEITIES];
+UrlUtil.URL_TO_HASH_BUILDER["cult"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CULTS_BOONS];
+UrlUtil.URL_TO_HASH_BUILDER["boon"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CULTS_BOONS];
+UrlUtil.URL_TO_HASH_BUILDER["object"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OBJECTS];
+UrlUtil.URL_TO_HASH_BUILDER["trap"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_TRAPS_HAZARDS];
+UrlUtil.URL_TO_HASH_BUILDER["hazard"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_TRAPS_HAZARDS];
+UrlUtil.URL_TO_HASH_BUILDER["table"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_TABLES];
+UrlUtil.URL_TO_HASH_BUILDER["tableGroup"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_TABLES];
+UrlUtil.URL_TO_HASH_BUILDER["vehicle"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_VEHICLES];
+UrlUtil.URL_TO_HASH_BUILDER["vehicleUpgrade"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_VEHICLES];
+UrlUtil.URL_TO_HASH_BUILDER["action"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ACTIONS];
+UrlUtil.URL_TO_HASH_BUILDER["language"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_LANGUAGES];
+UrlUtil.URL_TO_HASH_BUILDER["charoption"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CHAR_CREATION_OPTIONS];
+UrlUtil.URL_TO_HASH_BUILDER["recipe"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES];
+
 UrlUtil.URL_TO_HASH_BUILDER["subclass"] = it => {
 	const hashParts = [
 		UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES]({name: it.className, source: it.classSource}),
@@ -22745,8 +22846,8 @@ SortUtil = {
 		if (a.sort == null && b.sort != null) return 1;
 
 		if (!a.name && !b.name) return 0;
-		const aClean = a.name.toLowerCase().trim();
-		const bClean = b.name.toLowerCase().trim();
+		const aClean = Renderer.stripTags(a.name).toLowerCase().trim();
+		const bClean = Renderer.stripTags(b.name).toLowerCase().trim();
 
 		const isOnlyA = a.name.endsWith(" Only)");
 		const isOnlyB = b.name.endsWith(" Only)");
@@ -22791,46 +22892,67 @@ SortUtil = {
 		return aSpecial && bSpecial ? 0 : aSpecial ? 1 : bSpecial ? -1 : Parser.ABIL_ABVS.indexOf(a) - Parser.ABIL_ABVS.indexOf(b);
 	},
 
+	ascSortSize (a, b) { return Parser.SIZE_ABVS.indexOf(a) - Parser.SIZE_ABVS.indexOf(b); },
+
 	initBtnSortHandlers ($wrpBtnsSort, list) {
-		let $dispCaretInitial = null;
-		const $dispCarets = [];
+		let dispCaretInitial = null;
 
-		$wrpBtnsSort.find(".sort").each((i, e) => {
-			const $btnSort = $(e);
-			const $dispCaret = SortUtil._initBtnSortHandlers_getAddCaret($btnSort);
+		const dispCarets = [...$wrpBtnsSort[0].querySelectorAll(".sort")]
+			.map(btnSort => {
+				const dispCaret = e_({
+					tag: "span",
+					clazz: "lst__caret",
+				})
+					.appendTo(btnSort);
 
-			$dispCarets.push($dispCaret);
+				const btnSortField = btnSort.dataset.sort;
 
-			if ($btnSort.data("sort") === list.sortBy) $dispCaretInitial = $dispCaret;
+				if (btnSortField === list.sortBy) dispCaretInitial = dispCaret;
 
-			$btnSort.click(evt => {
-				evt.stopPropagation();
-				const direction = list.sortDir === "asc" ? "desc" : "asc";
-				SortUtil._initBtnSortHandlers_showCaret({$dispCarets, $dispCaret, direction});
-				list.sort($btnSort.data("sort"), direction);
+				e_({
+					ele: btnSort,
+					click: evt => {
+						evt.stopPropagation();
+						const direction = list.sortDir === "asc" ? "desc" : "asc";
+						SortUtil._initBtnSortHandlers_showCaret({dispCarets, dispCaret, direction});
+						list.sort(btnSortField, direction);
+					},
+				});
+
+				return dispCaret;
 			});
-		});
 
-		$dispCaretInitial = $dispCaretInitial || $dispCarets[0]; // Fall back on displaying the first caret
+		dispCaretInitial = dispCaretInitial || dispCarets[0]; // Fall back on displaying the first caret
 
-		SortUtil._initBtnSortHandlers_showCaret({$dispCaret: $dispCaretInitial, $dispCarets, direction: list.sortDir});
-	},
-
-	_initBtnSortHandlers_getAddCaret ($btnSort) {
-		const $existing = $btnSort.find(`.lst__caret`);
-		if ($existing.length) return $existing;
-		return $(`<span class="lst__caret"></span>`).appendTo($btnSort);
+		SortUtil._initBtnSortHandlers_showCaret({dispCaret: dispCaretInitial, dispCarets, direction: list.sortDir});
 	},
 
 	_initBtnSortHandlers_showCaret (
 		{
-			$dispCaret,
-			$dispCarets,
+			dispCaret,
+			dispCarets,
 			direction,
 		},
 	) {
-		$dispCarets.forEach($it => $it.removeClass("lst__caret--active"));
-		$dispCaret.addClass("lst__caret--active").toggleClass("lst__caret--reverse", direction === "asc");
+		dispCarets.forEach($it => $it.removeClass("lst__caret--active"));
+		dispCaret.addClass("lst__caret--active").toggleClass("lst__caret--reverse", direction === "asc");
+	},
+
+	/** Add more list sort on-clicks to existing sort buttons. */
+	initBtnSortHandlersAdditional ($wrpBtnsSort, list) {
+		[...$wrpBtnsSort[0].querySelectorAll(".sort")]
+			.map(btnSort => {
+				const btnSortField = btnSort.dataset.sort;
+
+				e_({
+					ele: btnSort,
+					click: evt => {
+						evt.stopPropagation();
+						const direction = list.sortDir === "asc" ? "desc" : "asc";
+						list.sort(btnSortField, direction);
+					},
+				});
+			});
 	},
 
 	ascSortAdventure (a, b) {
@@ -22889,6 +23011,18 @@ DataUtil = {
 		return DataUtil._loaded[url];
 	},
 
+	_mutAddProps (data) {
+		if (data && typeof data === "object") {
+			for (const k in data) {
+				if (data[k] instanceof Array) {
+					for (let i = 0, len = data[k].length; i < len; ++i) {
+						data[k][i].__prop = k;
+					}
+				}
+			}
+		}
+	},
+
 	async loadJSON (url, ...otherData) {
 		const procUrl = UrlUtil.link(url);
 
@@ -22912,6 +23046,7 @@ DataUtil = {
 	},
 
 	async pDoMetaMerge (ident, data, options) {
+		DataUtil._mutAddProps(data);
 		DataUtil._merging[ident] = DataUtil._merging[ident] || DataUtil._pDoMetaMerge(ident, data, options);
 		await DataUtil._merging[ident];
 		return DataUtil._merged[ident];
@@ -23018,9 +23153,9 @@ DataUtil = {
 		return `${toCsv(headers)}\n${rows.map(r => toCsv(r)).join("\n")}`;
 	},
 
-	userDownload (filename, data, {fileType = null, isSipAdditionalMetadata = false, propVersion = "siteVersion", valVersion = VERSION_NUMBER} = {}) {
+	userDownload (filename, data, {fileType = null, isSkipAdditionalMetadata = false, propVersion = "siteVersion", valVersion = VERSION_NUMBER} = {}) {
 		filename = `${filename}.json`;
-		if (isSipAdditionalMetadata || data instanceof Array) return DataUtil._userDownload(filename, JSON.stringify(data, null, "\t"), "text/json");
+		if (isSkipAdditionalMetadata || data instanceof Array) return DataUtil._userDownload(filename, JSON.stringify(data, null, "\t"), "text/json");
 
 		data = {[propVersion]: valVersion, ...data};
 		if (fileType != null) data = {fileType, ...data};
@@ -23208,6 +23343,7 @@ DataUtil = {
 			page: true,
 			otherSources: true,
 			srd: true,
+			basicRules: true,
 			hasFluff: true,
 			hasFluffImages: true,
 			hasToken: true,
@@ -24141,17 +24277,21 @@ DataUtil = {
 		async loadJSON ({isAddBaseRaces = false} = {}) {
 			if (!DataUtil.race._pIsLoadings[isAddBaseRaces]) {
 				DataUtil.race._pIsLoadings[isAddBaseRaces] = (async () => {
-					const rawRaceData = DataUtil.race._getPostProcessedSiteJson(await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/races.json`));
-					const raceData = Renderer.race.mergeSubraces(rawRaceData.race, {isAddBaseRaces});
-					raceData.forEach(it => it.__prop = "race");
-					DataUtil.race._loadCache[isAddBaseRaces] = {race: raceData};
+					DataUtil.race._loadCache[isAddBaseRaces] = DataUtil.race.getPostProcessedSiteJson(
+						await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/races.json`),
+						{isAddBaseRaces},
+					);
 				})();
 			}
 			await DataUtil.race._pIsLoadings[isAddBaseRaces];
 			return DataUtil.race._loadCache[isAddBaseRaces];
 		},
 
-		_getPostProcessedSiteJson (rawRaceData) {
+		async loadRawJSON () {
+			return DataUtil.loadJSON(`${Renderer.get().baseUrl}data/races.json`);
+		},
+
+		getPostProcessedSiteJson (rawRaceData, {isAddBaseRaces = false} = {}) {
 			rawRaceData = MiscUtil.copy(rawRaceData);
 			(rawRaceData.subrace || []).forEach(sr => {
 				const r = rawRaceData.race.find(it => it.name === sr.raceName && it.source === sr.raceSource);
@@ -24162,14 +24302,42 @@ DataUtil = {
 				(r.subraces = r.subraces || []).push(sr);
 			});
 			delete rawRaceData.subrace;
-			return rawRaceData;
+			const raceData = Renderer.race.mergeSubraces(rawRaceData.race, {isAddBaseRaces});
+			raceData.forEach(it => it.__prop = "race");
+			return {race: raceData};
 		},
 
 		async loadBrew ({isAddBaseRaces = true} = {}) {
+			const rawSite = await DataUtil.race.loadRawJSON();
 			const brew = await BrewUtil.pAddBrewData();
-			let fromBrew = MiscUtil.copy(brew.race || []);
-			fromBrew = Renderer.race.mergeSubraces(fromBrew, {isAddBaseRaces});
-			return {race: fromBrew};
+			return DataUtil.race.getPostProcessedBrewJson(rawSite, brew, {isAddBaseRaces});
+		},
+
+		getPostProcessedBrewJson (rawSite, brew, {isAddBaseRaces = false} = {}) {
+			rawSite = MiscUtil.copy(rawSite);
+			brew = MiscUtil.copy(brew);
+
+			const rawSiteUsed = [];
+			(brew.subrace || []).forEach(sr => {
+				const rSite = rawSite.race.find(it => it.name === sr.raceName && it.source === sr.raceSource);
+				const rBrew = (brew.race || []).find(it => it.name === sr.raceName && it.source === sr.raceSource);
+				if (!rSite && !rBrew) return JqueryUtil.doToast({content: `Failed to find race "${sr.raceName}" (${sr.raceSource})`, type: "danger"});
+				const rTgt = rSite || rBrew;
+				const cpySr = MiscUtil.copy(sr);
+				delete cpySr.raceName;
+				delete cpySr.raceSource;
+				(rTgt.subraces = rTgt.subraces || []).push(sr);
+				if (rSite && !rawSiteUsed.includes(rSite)) rawSiteUsed.push(rSite);
+			});
+			delete brew.subrace;
+
+			const raceDataBrew = Renderer.race.mergeSubraces(brew.race || [], {isAddBaseRaces});
+			// Never add base races from site races when building brew race list
+			const raceDataSite = Renderer.race.mergeSubraces(rawSiteUsed, {isAddBaseRaces: false});
+
+			const out = [...raceDataBrew, ...raceDataSite];
+			out.forEach(it => it.__prop = "race");
+			return {race: out};
 		},
 	},
 
@@ -24337,7 +24505,7 @@ DataUtil = {
 			const byLevel = {}; // Build a map of `level: [classFeature]`
 			for (const classFeatureRef of (cls.classFeatures || [])) {
 				const uid = classFeatureRef.classFeature ? classFeatureRef.classFeature : classFeatureRef;
-				const {name, className, classSource, level, source} = DataUtil.class.unpackUidClassFeature(uid);
+				const {name, className, classSource, level, source, displayText} = DataUtil.class.unpackUidClassFeature(uid);
 				if (!name || !className || !level || isNaN(level)) continue; // skip over broken links
 
 				if (source === SRC_5ETOOLS_TMP) continue; // Skip over temp/nonexistent links
@@ -24354,7 +24522,11 @@ DataUtil = {
 					continue;
 				}
 
+				if (displayText) classFeature._displayName = displayText;
+				if (classFeatureRef.tableDisplayName) classFeature._displayNameTable = classFeatureRef.tableDisplayName;
+
 				if (classFeatureRef.gainSubclassFeature) classFeature.gainSubclassFeature = true;
+				if (classFeatureRef.gainSubclassFeatureHasContent) classFeature.gainSubclassFeatureHasContent = true;
 
 				if (cls.otherSources && cls.source === classFeature.source) classFeature.otherSources = MiscUtil.copy(cls.otherSources);
 
@@ -24384,8 +24556,11 @@ DataUtil = {
 
 			for (const subclassFeatureRef of (sc.subclassFeatures || [])) {
 				const uid = subclassFeatureRef.subclassFeature ? subclassFeatureRef.subclassFeature : subclassFeatureRef;
-				const {name, className, classSource, subclassShortName, subclassSource, level, source} = DataUtil.class.unpackUidSubclassFeature(uid);
+				const {name, className, classSource, subclassShortName, subclassSource, level, source, displayText} = DataUtil.class.unpackUidSubclassFeature(uid);
 				if (!name || !className || !subclassShortName || !level || isNaN(level)) continue; // skip over broken links
+
+				if (source === SRC_5ETOOLS_TMP) continue; // Skip over temp/nonexistent links
+
 				const hash = UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"]({name, className, classSource, subclassShortName, subclassSource, level, source});
 
 				// Skip blacklisted
@@ -24397,6 +24572,8 @@ DataUtil = {
 					JqueryUtil.doToast({type: "danger", content: `Failed to find <code>subclassFeature</code> <code>${uid}</code>`});
 					continue;
 				}
+
+				if (displayText) subclassFeature._displayName = displayText;
 
 				if (sc.otherSources && sc.source === subclassFeature.source) subclassFeature.otherSources = MiscUtil.copy(sc.otherSources);
 
@@ -25459,11 +25636,12 @@ BrewUtil = {
 			});
 	},
 
+	_ALLOWED_BREW_UNDER_PROPS: new Set(["__prop"]),
 	async _pCleanSaveBrew () {
 		const cpy = MiscUtil.copy(BrewUtil.homebrew || {});
 		BrewUtil._STORABLE.forEach(prop => {
 			(cpy[prop] || []).forEach(ent => {
-				Object.keys(ent).filter(k => k.startsWith("_")).forEach(k => delete ent[k]);
+				Object.keys(ent).filter(k => !BrewUtil._ALLOWED_BREW_UNDER_PROPS.has(k) && k.startsWith("_")).forEach(k => delete ent[k]);
 			});
 		});
 		await StorageUtil.pSet(VeCt.STORAGE_HOMEBREW, cpy);
@@ -25576,7 +25754,7 @@ BrewUtil = {
 						.map(it => mapCategoryEntry(cat, it))
 						.sort((a, b) => SortUtil.ascSort(a.name, b.name))
 						.forEach((it, i) => {
-							const dispCat = BrewUtil._pRenderBrewScreen_getDisplayCat(cat, true);
+							const dispCat = BrewUtil._pRenderBrewScreen_getDisplayCat(cat, {isManager: true});
 
 							const eleLi = document.createElement("div");
 							eleLi.className = "lst__row ve-flex-col px-0";
@@ -25642,8 +25820,8 @@ BrewUtil = {
 		if (!BrewUtil.homebrew) return;
 
 		const $iptSearch = $(`<input type="search" class="search manbrew__search form-control" placeholder="Search active homebrew...">`);
-		const $wrpList = $(`<div class="list-display-only brew-list brew-list--target manbrew__list ve-flex-col w-100 mb-3"></div>`);
-		const $wrpListGroup = $(`<div class="list-display-only brew-list brew-list--groups no-shrink ve-flex-col w-100" style="height: initial;"></div>`);
+		const $wrpList = $(`<div class="list-display-only smooth-scroll overflow-y-auto h-100 brew-list brew-list--target manbrew__list ve-flex-col w-100 mb-3"></div>`);
+		const $wrpListGroup = $(`<div class="list-display-only smooth-scroll overflow-y-auto brew-list brew-list--groups no-shrink ve-flex-col w-100" style="height: initial;"></div>`);
 
 		const list = new List({
 			$iptSearch,
@@ -25812,28 +25990,14 @@ BrewUtil = {
 		}
 	},
 
-	_pRenderBrewScreen_getDisplayCat (cat, isManager) {
-		switch (cat) {
-			case "variantrule": return "Variant Rule";
-			case "legendaryGroup": return "Legendary Group";
-			case "optionalfeature": return "Optional Feature";
-			case "adventure": return isManager ? "Adventure Contents/Info" : "Adventure";
-			case "adventureData": return "Adventure Text";
-			case "book": return isManager ? "Book Contents/Info" : "Book";
-			case "bookData": return "Book Text";
-			case "itemProperty": return "Item Property";
-			case "itemEntry": return "Item Entry";
-			case "baseitem": return "Base Item";
-			case "variant": return "Magic Item Variant";
-			case "itemGroup": return "Item Group";
-			case "monsterFluff": return "Monster Fluff";
-			case "itemFluff": return "Item Fluff";
-			case "makebrewCreatureTrait": return "Homebrew Builder Creature Trait";
-			case "classFeature": return "Class Feature";
-			case "subclassFeature": return "Subclass Feature";
-			case "charoption": return "Other Character Creation Option";
-			default: return cat.uppercaseFirst();
+	_pRenderBrewScreen_getDisplayCat (prop, {isManager = false} = {}) {
+		if (isManager) {
+			switch (prop) {
+				case "adventure": return "Adventure Contents/Info";
+				case "book": return "Book Contents/Info";
+			}
 		}
+		return Parser.getPropDisplayName(prop);
 	},
 
 	handleLoadbrewClick: async (ele) => {
@@ -26045,7 +26209,7 @@ BrewUtil = {
 		obj.uniqueId = CryptUtil.md5(JSON.stringify(obj));
 	},
 
-	_DIRS: ["action", "adventure", "background", "book", "boon", "charoption", "class", "condition", "creature", "cult", "deity", "disease", "feat", "hazard", "item", "language", "magicvariant", "makebrew", "object", "optionalfeature", "psionic", "race", "recipe", "reward", "spell", "spellFluff", /* "status", */ "subclass", "subrace", "table", "trap", "variantrule", "vehicle", "classFeature", "subclassFeature"],
+	_DIRS: ["action", "adventure", "background", "book", "boon", "charoption", "class", "condition", "creature", "cult", "deity", "disease", "feat", "hazard", "item", "language", "magicvariant", "makebrew", "object", "optionalfeature", "psionic", "race", "recipe", "reward", "spell", /* "status", */ "subclass", "subrace", "table", "trap", "variantrule", "vehicle", "classFeature", "subclassFeature"],
 	_STORABLE: ["class", "subclass", "classFeature", "subclassFeature", "spell", "spellFluff", "monster", "legendaryGroup", "monsterFluff", "background", "feat", "optionalfeature", "race", "raceFluff", "subrace", "deity", "item", "baseitem", "variant", "itemProperty", "itemType", "itemFluff", "itemGroup", "itemEntry", "psionic", "reward", "object", "trap", "hazard", "variantrule", "condition", "disease", "status", "adventure", "adventureData", "book", "bookData", "table", "tableGroup", "vehicle", "vehicleUpgrade", "action", "cult", "boon", "language", "languageScript", "makebrewCreatureTrait", "charoption", "charoptionFluff", "recipe"],
 	async pDoHandleBrewJson (json, page, pFuncRefresh) {
 		page = BrewUtil._PAGE || page;
@@ -26114,16 +26278,16 @@ BrewUtil = {
 			// in development mode, replace any existing brew
 			const existingLookup = {};
 			homebrew[prop].forEach(it => {
-				const brewHash = BrewUtil._getDevBrewHash(page, prop, it);
+				const brewHash = BrewUtil._getDevBrewHash(prop, it);
 				existingLookup[brewHash] = it.uniqueId;
 			});
 
 			const pDeleteFn = BrewUtil._getPDeleteFunction(prop);
 			for (const entity of json[prop]) {
-				const brewHash = BrewUtil._getDevBrewHash(page, prop, entity);
+				const brewHash = BrewUtil._getDevBrewHash(prop, entity);
 				if (existingLookup[brewHash] && entity.uniqueId !== existingLookup[brewHash]) {
 					if (isLocalPreload) {
-						const ixExisting = homebrew[prop].findIndex(ex => BrewUtil._getDevBrewHash(page, prop, ex) === brewHash);
+						const ixExisting = homebrew[prop].findIndex(ex => BrewUtil._getDevBrewHash(prop, ex) === brewHash);
 						if (~ixExisting) homebrew[prop].splice(ixExisting, 1);
 					} else {
 						await pDeleteFn(existingLookup[brewHash]);
@@ -26244,13 +26408,16 @@ BrewUtil = {
 		}
 	},
 
-	_getDevBrewHash (page, prop, it) {
-		return UrlUtil.URL_TO_HASH_BUILDER[page]
-			? UrlUtil.URL_TO_HASH_BUILDER[page](it)
-			: UrlUtil.URL_TO_HASH_BUILDER[prop]
-				? UrlUtil.URL_TO_HASH_BUILDER[prop](it)
-				// Handle magic variants
-				: `${it.inherits && it.inherits.source ? it.inherits.source : it.source}__${it.name}`;
+	_getDevBrewHash (prop, it) {
+		if (UrlUtil.URL_TO_HASH_BUILDER[prop]) return UrlUtil.URL_TO_HASH_BUILDER[prop](it);
+		// Handle magic variants; subraces; etc
+		const name = it.name;
+		const source = it.inherits?.source ?? it.source;
+		if (name || source) return `${source}__${name}`;
+		// Item properties
+		if (it.abbreviation) return it.abbreviation;
+		// As a last resort, randomise the ID. We prefer accidentally duplicating to accidentally deleting.
+		return CryptUtil.uid();
 	},
 
 	makeBrewButton: (id) => {
@@ -27226,7 +27393,7 @@ ExcludeUtil = {
 	},
 
 	getList () {
-		return ExcludeUtil._excludes || [];
+		return MiscUtil.copy(ExcludeUtil._excludes || []);
 	},
 
 	async pSetList (toSet) {
@@ -27248,7 +27415,7 @@ ExcludeUtil = {
 		opts = opts || {};
 
 		source = source.source || source;
-		const out = !!ExcludeUtil._excludes.find(row => (row.source === "*" || row.source === source) && (row.category === "*" || row.category === category) && (row.hash === "*" || row.hash === hash));
+		const out = !!ExcludeUtil._excludes.find(row => (row.source === "*" || (row.source || "").toLowerCase() === (source || "").toLowerCase()) && (row.category === "*" || row.category === category) && (row.hash === "*" || row.hash === hash));
 		if (out && !opts.isNoCount) ++ExcludeUtil._excludeCount;
 		return out;
 	},
@@ -27256,34 +27423,12 @@ ExcludeUtil = {
 	isAllContentExcluded (list) { return (!list.length && ExcludeUtil._excludeCount) || (list.length > 0 && list.length === ExcludeUtil._excludeCount); },
 	getAllContentBlacklistedHtml () { return `<div class="initial-message">(All content <a href="blacklist.html">blacklisted</a>)</div>`; },
 
-	addExclude (displayName, hash, category, source) {
-		if (!ExcludeUtil._excludes.find(row => row.source === source && row.category === category && row.hash === hash)) {
-			ExcludeUtil._excludes.push({displayName, hash, category, source});
-			ExcludeUtil.pSave();
-			return true;
-		}
-		return false;
-	},
-
-	removeExclude (hash, category, source) {
-		const ix = ExcludeUtil._excludes.findIndex(row => row.source === source && row.category === category && row.hash === hash);
-		if (~ix) {
-			ExcludeUtil._excludes.splice(ix, 1);
-			ExcludeUtil.pSave();
-		}
-	},
-
 	async _pSave () {
 		return StorageUtil.pSet(VeCt.STORAGE_EXCLUDES, ExcludeUtil._excludes);
 	},
 
 	// The throttled version, available post-initialisation
 	async pSave () { /* no-op */ },
-
-	resetExcludes () {
-		ExcludeUtil._excludes = [];
-		ExcludeUtil.pSave();
-	},
 };
 
 // ENCOUNTERS ==========================================================================================================
@@ -27368,7 +27513,7 @@ ExtensionUtil = {
 	},
 
 	async pDoSendStats (evt, ele) {
-		const $parent = $(ele).closest(`th.rnd-name`);
+		const $parent = $(ele).closest(`[data-page]`);
 		const page = $parent.attr("data-page");
 		const source = $parent.attr("data-source");
 		const hash = $parent.attr("data-hash");
@@ -31493,7 +31638,7 @@ class ComponentUiUtil {
 
 		const activeClass = opts.activeClass || "active";
 		const stateName = opts.stateName || "state";
-		const stateProp = opts.stateProp || "_state";
+		const stateProp = opts.stateProp || `_${stateName}`;
 
 		const btn = (ele ? e_({ele}) : e_({
 			ele: ele,
@@ -31551,10 +31696,15 @@ class ComponentUiUtil {
 	 * @param [opts.$ele] Element to use.
 	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and the input.
 	 * @param [opts.displayNullAsIndeterminate]
+	 * @param [opts.stateName] State name.
+	 * @param [opts.stateProp] State prop.
 	 * @return {JQuery}
 	 */
 	static $getCbBool (component, prop, opts) {
 		opts = opts || {};
+
+		const stateName = opts.stateName || "state";
+		const stateProp = opts.stateProp || `_${stateName}`;
 
 		const cb = e_({
 			tag: "input",
@@ -31563,20 +31713,20 @@ class ComponentUiUtil {
 				if (evt.key === "Escape") cb.blur();
 			},
 			change: () => {
-				component._state[prop] = cb.checked;
+				component[stateProp][prop] = cb.checked;
 			},
 		});
 
 		const hook = () => {
-			cb.checked = !!component._state[prop];
-			if (opts.displayNullAsIndeterminate) cb.indeterminate = component._state[prop] == null;
+			cb.checked = !!component[stateProp][prop];
+			if (opts.displayNullAsIndeterminate) cb.indeterminate = component[stateProp][prop] == null;
 		};
-		component._addHookBase(prop, hook);
+		component._addHook(stateName, prop, hook);
 		hook();
 
 		const $cb = $(cb);
 
-		return opts.asMeta ? ({$cb, unhook: () => component._removeHookBase(prop, hook)}) : $cb;
+		return opts.asMeta ? ({$cb, unhook: () => component._removeHook(stateName, prop, hook)}) : $cb;
 	}
 
 	/**
@@ -31899,7 +32049,7 @@ class ComponentUiUtil {
 
 		let $btnAdd;
 		if (opts.isFreeText) {
-			$btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add">+</button>`)
+			$btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ml-auto">+</button>`)
 				.click(async () => {
 					const input = await InputUiUtil.pGetUserString();
 					if (input == null || input === VeCt.SYM_UI_SKIP) return;
@@ -31925,12 +32075,13 @@ class ComponentUiUtil {
 
 				const $btnRemove = $(`<button class="btn btn-danger ui-pick__btn-remove text-center">×</button>`)
 					.click(() => this._state[k] = false);
-				$$`<div class="ve-flex mx-1 mb-1 ui-pick__disp-pill"><div class="px-1 ui-pick__disp-text ve-flex-v-center">${opts.fnDisplay ? opts.fnDisplay(k) : k}</div>${$btnRemove}</div>`.appendTo($parent);
+				const txt = `${opts.fnDisplay ? opts.fnDisplay(k) : k}`;
+				$$`<div class="ve-flex mx-1 mb-1 ui-pick__disp-pill max-w-100 min-w-0"><div class="px-1 ui-pick__disp-text ve-flex-v-center text-clip-ellipsis" title="${txt.qq()}">${txt}</div>${$btnRemove}</div>`.appendTo($parent);
 			});
 		};
 
-		const $wrpPills = $(`<div class="ve-flex ve-flex-wrap w-100"></div>`);
-		const $wrp = $$`<div class="ve-flex-v-center">${$btnAdd}${$wrpPills}</div>`;
+		const $wrpPills = $(`<div class="ve-flex ve-flex-wrap max-w-100 min-w-0"></div>`);
+		const $wrp = $$`<div class="ve-flex-v-center w-100">${$btnAdd}${$wrpPills}</div>`;
 		pickComp._addHookAll("state", () => {
 			component._state[prop] = Object.keys(pickComp._state).filter(k => pickComp._state[k]);
 			pickComp.render($wrpPills);
@@ -32060,6 +32211,9 @@ class ComponentUiUtil {
 				const $cb = isRequired
 					? $(`<input type="checkbox" disabled checked title="This option is required.">`)
 					: ComponentUiUtil.$getCbBool(comp, propIsActive);
+
+				if (isRequired) comp._state[propIsActive] = true;
+
 				if (!isRequired) {
 					hk = () => {
 						// region Selection order
