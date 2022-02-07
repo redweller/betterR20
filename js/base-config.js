@@ -28,6 +28,24 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"showBackground": {
+			"name": "Include the Background layer (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showForeground": {
+			"name": "Include the Foreground layer (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showWeather": {
+			"name": "Include the Weather layer and settings (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
 	},
 	);
 	addConfigOptions("import", {
