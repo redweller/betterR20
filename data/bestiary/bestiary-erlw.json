@@ -1951,7 +1951,7 @@
 				{
 					"name": "Mind Seed (1/Day)",
 					"entries": [
-						"The quori touches one humanoid, which must succeed on a {@dc 21} Intelligence saving throw or be cursed. The curse lasts until it's removed by a remove curse or greater restoration spell.",
+						"The quori touches one humanoid, which must succeed on a {@dc 21} Intelligence saving throw or be cursed. The curse lasts until it's removed by a remove curse or {@spell greater restoration} spell.",
 						"The cursed target suffers 1 level of {@condition exhaustion} every 24 hours, and finishing a long rest doesn't reduce its {@condition exhaustion}. If the cursed target reaches {@condition exhaustion} level 6, it doesn't die; it instead becomes a thrall under the quori's control, and all its {@condition exhaustion} is removed. Only the {@spell wish} spell can free the thrall from this control."
 					]
 				},
@@ -3040,7 +3040,7 @@
 				{
 					"name": "Attack",
 					"entries": [
-						"Mordakhesh makes one weapon attack or casts chromatic orb."
+						"Mordakhesh makes one weapon attack or casts {@spell chromatic orb}."
 					]
 				},
 				{
@@ -3408,7 +3408,7 @@
 				{
 					"name": "End Magic (Costs 2 Actions)",
 					"entries": [
-						"Rak Tulkhesh casts dispel magic."
+						"Rak Tulkhesh casts {@spell dispel magic}."
 					]
 				},
 				{
@@ -3706,7 +3706,7 @@
 				{
 					"name": "Arcane Cataclysm (Recharges after a Long Rest)",
 					"entries": [
-						"Sul Khatesh conjures orbs of magical energy that plummet to the ground at three different points she can see within 1 mile of her. Each creature in a 40-foot-radius sphere centered on each point must make a {@dc 26} Dexterity saving throw, taking 71 ({@damage 11d12}) force damage on a failed save or half as much damage on a successful one. A creature in the area of more than one arcane burst is affected only once. The area of each arcane burst then acts as an antimagic field for 1 hour. Sul Khatesh and spells she casts are unaffected by these fields."
+						"Sul Khatesh conjures orbs of magical energy that plummet to the ground at three different points she can see within 1 mile of her. Each creature in a 40-foot-radius sphere centered on each point must make a {@dc 26} Dexterity saving throw, taking 71 ({@damage 11d12}) force damage on a failed save or half as much damage on a successful one. A creature in the area of more than one arcane burst is affected only once. The area of each arcane burst then acts as an {@spell antimagic field} for 1 hour. Sul Khatesh and spells she casts are unaffected by these fields."
 					]
 				},
 				{

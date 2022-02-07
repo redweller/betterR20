@@ -415,7 +415,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The hut is {@condition incapacitated} while the magic gem that animates it is in the area of an antimagic field. If targeted by dispel magic, the hut must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
+						"The hut is {@condition incapacitated} while the magic gem that animates it is in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the hut must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
 					]
 				},
 				{
@@ -764,7 +764,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The broom is {@condition incapacitated} while in the area of an antimagic field. If targeted by dispel magic, the broom must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
+						"The broom is {@condition incapacitated} while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the broom must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
 					]
 				},
 				{
@@ -1358,7 +1358,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The portrait is {@condition incapacitated} while in the area of an antimagic field. If targeted by dispel magic, the portrait must succeed on a Constitution saving throw against the caster's spell save DC or become {@condition unconscious} for 1 minute."
+						"The portrait is {@condition incapacitated} while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the portrait must succeed on a Constitution saving throw against the caster's spell save DC or become {@condition unconscious} for 1 minute."
 					]
 				},
 				{
@@ -2097,7 +2097,7 @@
 				{
 					"name": "Curse (Recharges after a Long Rest)",
 					"entries": [
-						"Madam Eva targets one creature that she can see within 30 feet of her. The target must succeed on a {@dc 17} Wisdom saving throw or be cursed. While cursed, the target is {@condition blinded} and {@condition deafened}. The curse lasts until ended with a greater restoration spell, a {@spell remove curse} spell, or similar magic. When the curse ends, Madam Eva takes {@dice 5d6} psychic damage."
+						"Madam Eva targets one creature that she can see within 30 feet of her. The target must succeed on a {@dc 17} Wisdom saving throw or be cursed. While cursed, the target is {@condition blinded} and {@condition deafened}. The curse lasts until ended with a {@spell greater restoration} spell, a {@spell remove curse} spell, or similar magic. When the curse ends, Madam Eva takes {@dice 5d6} psychic damage."
 					]
 				},
 				{
@@ -3806,7 +3806,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The armor is {@condition incapacitated} while in the area of an antimagic field. If targeted by dispel magic, the armor must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
+						"The armor is {@condition incapacitated} while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the armor must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
 					]
 				},
 				{

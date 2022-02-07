@@ -1153,13 +1153,56 @@
 			]
 		},
 		{
+			"name": "Rot Grub",
+			"source": "VGM",
+			"page": 208,
+			"otherSources": [
+				{
+					"source": "MPMM",
+					"page": 237
+				}
+			],
+			"entries": [
+				"Rot grubs are finger-sized maggots that eat living and dead creatures, although they can survive on vegetation. They infest corpses and piles of decaying matter and attack anyone that disturbs them. After burrowing into a creature, rot grubs instinctively chew their way toward vital parts.",
+				"Rot grubs recoil from flames, and fire is the main weapon against rot grubs once they're inside a body. Magic that neutralizes poison can also stop them before they kill their host.",
+				{
+					"type": "entries",
+					"name": "Single Rot Grub",
+					"page": 237,
+					"entries": [
+						"Rot grubs pose a threat both singly and as a swarm. See the {@creature swarm of rot grubs|MPMM|stat block} for the mechanics of a swarm of rot grubs. A single rot grub has no stat block.",
+						"Any creature that comes into contact with a single rot grub must succeed on a {@dc 10} Constitution saving throw or be {@condition poisoned}, as the rot grub burrows into the creature. The {@condition poisoned} creature takes 3 ({@damage 1d6}) poison damage at the end of each of its turns. Whenever the {@condition poisoned} creature takes fire damage, the creature can repeat the saving throw, ending the effect on itself on a success. If the {@condition poisoned} creature ends its turn with 0 hit points, it dies, as the rot grub kills it."
+					]
+				}
+			]
+		},
+		{
 			"name": "Russet Mold",
 			"source": "VGM",
 			"page": 196,
+			"otherSources": [
+				{
+					"source": "MPMM",
+					"page": 252
+				}
+			],
 			"entries": [
-				"The fungus known as russet mold is reddish-brown in color and found only in places that are dark, warm, and wet. Russet mold that spreads out across a metal object can be mistaken for natural rust, and a successful DC 15 Intelligence ({@skill Nature}) or Wisdom ({@skill Survival}) check is required to identify it accurately by sight in such a case.",
-				"Any creature that comes within 5 feet of russet mold must make a DC 13 Constitution saving throw as the mold emits a puff of spores. On a failed save, the creature becomes {@condition poisoned}. While {@condition poisoned} in this way, the creature takes 7 ({@dice 2d6}) poison damage at the start of each of its turns, sprouting mold as it takes damage. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Any magic that neutralizes poison or cures disease kills the infestation. A creature reduced to 0 hit points by the mold's poison damage dies. If the dead creature is a beast, a giant, or a humanoid, one or more newborn {@creature Vegepygmy|vgm|vegepygmies} emerge from its body 24 hours later: one newborn from a Small corpse, two from a Medium corpse, four from a Large corpse, eight from a Huge corpse, or sixteen from a Gargantuan corpse.",
-				"Russet mold can be hard to kill, since weapons and most types of damage do it no harm. Effects that deal acid, necrotic, or radiant damage kill 1 square foot of russet mold per 1 damage dealt. A pound of salt, a gallon of alcohol, or a magical effect that cures disease kills russet mold in a square area that is 10 feet on a side. Sunlight kills any russet mold in the light's area."
+				"Few know for sure where russet mold came from. One historical account tells of adventurers in a mountain range discovering russet mold and vegepygmies in a peculiar metal dungeon full of strange life. Another story says that explorers found russet mold in a crater left by a falling star, with vegepygmies infesting the forest nearby.",
+				"The mold is found only in places that are dark, warm, and wet. Russet mold that spreads out across a metal object can be mistaken for rust, and a successful {@dc 15} Intelligence ({@skill Nature}) or Wisdom ({@skill Survival}) check is required to identify it.",
+				{
+					"type": "entries",
+					"name": "Effects of the Mold",
+					"entries": [
+						"Any creature that comes within 5 feet of russet mold must make a {@dc 13} Constitution saving throw as the mold emits a puff of spores. On a failed save, the creature is {@condition poisoned}. While {@condition poisoned} in this way, the creature takes 7 ({@damage 2d6}) poison damage at the start of each of its turns. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. Any magic that neutralizes poison or cures disease kills the infestation. A creature reduced to 0 hit points by the mold dies. If the dead creature is a Beast, a Giant, or a Humanoid, one or more vegepygmies emerge from its body 24 hours later: one from a Small corpse, two from a Medium corpse, four from a Large corpse, eight from a Huge corpse, or sixteen from a Gargantuan corpse."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Destroying the Mold",
+					"entries": [
+						"Russet mold can be hard to kill, since weapons and most types of damage do it no harm. Effects that deal acid, necrotic, or radiant damage kill 1 square foot of russet mold per 1 damage dealt. A pound of salt, a gallon of alcohol, or magic that cures disease kills russet mold in a square area that is 10 feet on a side. Sunlight kills any russet mold in the light's area."
+					]
+				}
 			]
 		},
 		{

@@ -104,6 +104,60 @@
 			]
 		},
 		{
+			"name": "Aarakocra",
+			"source": "MPMM",
+			"entries": [
+				"A winged people who originated on the Elemental Plane of Air, aarakocra soar through the sky wherever they wander. The first aarakocra served the Wind Dukes of Aaqa\u2014mighty beings of air\u2014and were imbued with a measure of their masters' power over winds. Their descendants still command echoes of that power.",
+				"From below, aarakocra look like large birds and thus are sometimes called birdfolk. Only when they roost on a branch or walk across the ground is their Humanoid nature clear. Standing upright, aarakocra are typically about 5 feet tall, and they have long, narrow legs that taper to sharp talons. Feathers cover their bodies\u2014usually red, orange, yellow, brown, or gray. Their heads are also avian, often resembling those of parrots or eagles."
+			]
+		},
+		{
+			"name": "Aasimar",
+			"source": "MPMM",
+			"entries": [
+				"Whether descended from a celestial being or infused with heavenly power, aasimar are mortals who carry a spark of the Upper Planes within their souls. They can fan that spark to bring light, ease wounds, and unleash the fury of the heavens.",
+				"Aasimar can arise among any population of mortals. They resemble their parents, but they live for up to 160 years and often have features that hint at their celestial heritage. These often begin subtle and become more obvious when the aasimar gains the ability to reveal their full celestial nature. The Aasimar Celestial Features table has examples you can choose or use as inspiration to create your own.",
+				{
+					"type": "table",
+					"caption": "Aasimar Celestial Features",
+					"colLabels": [
+						"d6",
+						"Celestial Feature"
+					],
+					"colStyles": [
+						"col-1 text-center",
+						"col-11"
+					],
+					"rows": [
+						[
+							"1",
+							"A dusting of metallic, white, or charcoal freckles"
+						],
+						[
+							"2",
+							"Metallic, luminous, or dark eyes"
+						],
+						[
+							"3",
+							"Starkly colored hair"
+						],
+						[
+							"4",
+							"An unusual hue tinting your shadow"
+						],
+						[
+							"5",
+							"A ghostly halo crowning your head"
+						],
+						[
+							"6",
+							"Rainbows gleaming on your skin"
+						]
+					]
+				}
+			]
+		},
+		{
 			"name": "Aasimar",
 			"source": "VGM",
 			"entries": [
@@ -498,6 +552,14 @@
 		},
 		{
 			"name": "Bugbear",
+			"source": "MPMM",
+			"entries": [
+				"Neither bugs nor bears, bugbears are the hulking cousins of goblins and hobgoblins. With roots in the Feywild, early bugbears resided in hidden places, in hard-to-reach and shadowed spaces. Long ago and from out of the corner of your eye, they came to the Material Plane, urged to spread throughout the multiverse by the conquering god Maglubiyet. Centuries later, they still bear a fey gift for lurking just out of sight, and many of them have sneaked away from that god's influence.",
+				"They are long of limb and covered in coarse hair, with wedge-shaped ears and pointed teeth. Despite their formidable build, bugbears are quiet skulkers, thanks to a fey magic that allows them to hide in spaces seemingly too small for them."
+			]
+		},
+		{
+			"name": "Bugbear",
 			"source": "VGM",
 			"monstrous": true,
 			"images": [
@@ -698,6 +760,13 @@
 		},
 		{
 			"name": "Centaur",
+			"source": "MPMM",
+			"entries": [
+				"Centaurs gallop throughout the multiverse and trace their origins to many different realms. The centaurs presented here hail from the Feywild and mystically resonate with the natural world. From the waist up, they resemble elves, displaying all the elf varieties of skin tone. From the waist down, they have the bodies of horses."
+			]
+		},
+		{
+			"name": "Centaur",
 			"source": "UACentaursMinotaurs",
 			"entries": [
 				{
@@ -801,6 +870,24 @@
 						"path": "races/ERLW/Changeling 001.png"
 					}
 				}
+			]
+		},
+		{
+			"name": "Changeling",
+			"source": "MPMM",
+			"entries": [
+				"With ever-changing appearances, changelings reside in many societies undetected. Each changeling can supernaturally adopt any face they like. For some changelings, a new face is only a disguise. For other changelings, a new face may reveal an aspect of their soul.",
+				"The first changelings in the multiverse appeared in the Feywild, and the wondrous, mutable essence of that plane lingers in changelings today\u2014even in those changelings who have never set foot in the fey realm. Each changeling decides how to use their shape-shifting ability, channeling either the peril or the joy of the Feywild. Sometimes they adopt new forms for the sake of mischief or malice, and other times they don a new identity to right wrongs or delight the downtrodden.",
+				"In their true form, changelings appear faded, their features almost devoid of detail. It is rare to see a changeling in that form, for a typical changeling changes their shape the way others might change clothes. A casual shape\u2014one created on the spur of the moment, with no depth or history\u2014is called a mask. A mask can be used to express a mood or to serve a specific purpose and then might never be used again. However, many changelings develop identities that have more depth, crafting whole personas complete with histories and beliefs. A changeling adventurer might have personas for many situations, including negotiation, investigation, and combat.",
+				"Personas can be shared by multiple changelings; a community might be home to three healer changelings, with whoever is on duty adopting the persona of Andrea, the gentle physician. Personas can even be passed down through a family, allowing a younger changeling to take advantage of contacts established by the persona's previous users."
+			]
+		},
+		{
+			"name": "Deep Gnome",
+			"source": "MPMM",
+			"entries": [
+				"Deep gnomes, or svirfneblin, are natives of the Underdark and are suffused with that subterranean realm's magic. They can supernaturally camouflage themselves, and their svirfneblin magic renders them difficult to locate. These abilities have enabled them to survive for generations among the perils of the Underdark.",
+				"Like other gnomes, deep gnomes can live for centuries, up to 500 years."
 			]
 		},
 		{
@@ -1241,6 +1328,14 @@
 			]
 		},
 		{
+			"name": "Duergar",
+			"source": "MPMM",
+			"entries": [
+				"Duergar are dwarves whose ancestors were transformed by centuries living in the deepest places of the Underdark. That chthonic realm is saturated with strange magical energy, and over generations, early duergar absorbed traces of it. They were further altered when mind flayers and other Aberrations invaded and performed horrific experiments on them. Fueled by Underdark magic, those experiments left early duergar with psionic powers, which have been passed down to their descendants. In time, they liberated themselves from their aberrant tyrants and forged a new life for themselves in the Underdark and beyond.",
+				"Like other dwarves, duergar typically have a life span of 350 years."
+			]
+		},
+		{
 			"name": "Dwarf",
 			"source": "PHB",
 			"entries": [
@@ -1439,6 +1534,44 @@
 					}
 				}
 			}
+		},
+		{
+			"name": "Eladrin",
+			"source": "MPMM",
+			"entries": [
+				"Eladrin are elves of the Feywild, a realm of perilous beauty and boundless magic. Using that magic, eladrin can step from one place to another ing the blink of an eye, and each eladrin resonates with emotions captured in the Feywild in the form of seasons\u2014affinities that affect the eladrin's mood and appearance. An eladrin's season can change, though some remain in one season forever. Choose your season or roll on the Eladrin Seasons table. Your Trance trait lets you change your season.",
+				"Like other elves, eladrin can live to be over 750 years old.",
+				{
+					"type": "table",
+					"caption": "Eladrin Seasons",
+					"colLabels": [
+						"d4",
+						"Season"
+					],
+					"colStyles": [
+						"col-2 text-center",
+						"col-10"
+					],
+					"rows": [
+						[
+							1,
+							"Autumn: peace and goodwill, when summer's harvest is shared with all."
+						],
+						[
+							2,
+							"Winter: contemplation and dolor, when the vibrant energy of the world slumbers."
+						],
+						[
+							3,
+							"Spring: cheerfulness and celebration, marked by merriment and hope as winter's sorrow passes."
+						],
+						[
+							4,
+							"Summer: boldness and aggression, a time of unfettered energy and calls to action."
+						]
+					]
+				}
+			]
 		},
 		{
 			"name": "Elf",
@@ -2099,6 +2232,60 @@
 		},
 		{
 			"name": "Fairy",
+			"source": "MPMM",
+			"entries": [
+				"The Feywild is home to many fantastic peoples, including fairies. Fairies are a wee folk, but not nearly as much so as their pixie and sprite friends. The first fairies spoke Elvish, Goblin, or Sylvan, and encounters with human visitors prompted many of them to learn Common as well.",
+				"Infused with the magic of the Feywild, most fairies look like Small elves with insectile wings, but each fairy has a special physical characteristic that sets the fairy apart. For your fairy, roll on the Fey Characteristics table or choose an option from it. You're also free to come up with your own characteristic if none of the suggestions below fit your character.",
+				{
+					"type": "table",
+					"caption": "Fey Characteristics",
+					"colLabels": [
+						"d8",
+						"Characteristic"
+					],
+					"colStyles": [
+						"col-1 text-center",
+						"col-11"
+					],
+					"rows": [
+						[
+							"1",
+							"Your wings are like those of a bird."
+						],
+						[
+							"2",
+							"You have shimmering, multicolored skin."
+						],
+						[
+							"3",
+							"You have exceptionally large ears."
+						],
+						[
+							"4",
+							"A glittering mist constantly surrounds you."
+						],
+						[
+							"5",
+							"You have a small spectral horn on your forehead, like a little unicorn horn."
+						],
+						[
+							"6",
+							"Your legs are insectile."
+						],
+						[
+							"7",
+							"You smell like fresh brownies."
+						],
+						[
+							"8",
+							"A noticeable, harmless chill surrounds you."
+						]
+					]
+				}
+			]
+		},
+		{
+			"name": "Fairy",
 			"source": "UA2021FolkOfTheFeywild",
 			"entries": [
 				"The Feywild is home to many fantastic peoples, including fairies. Fairies are a wee folk, but not nearly as much so as their pixie and sprite friends.",
@@ -2212,6 +2399,15 @@
 						"path": "races/WBtW/Fairy.png"
 					}
 				}
+			]
+		},
+		{
+			"name": "Firbolg",
+			"source": "MPMM",
+			"entries": [
+				"Distant cousins of giants, the first firbolgs wandered the primeval forests of the multiverse, and the magic of those forests entwined itself with the firbolgs' souls. Centuries later, that magic still thrums inside a firbolg, even one who has never lived under the boughs of a great forest.",
+				"A firbolg's magic is an obscuring sort, which allowed their ancestors to pass through a forest without disturbing it. So deep is the connection between a firbolg and the wild places of the world that they can communicate with flora and fauna.",
+				"Firbolgs can live up to 500 years."
 			]
 		},
 		{
@@ -2410,6 +2606,14 @@
 			]
 		},
 		{
+			"name": "Genasi",
+			"source": "MPMM",
+			"entries": [
+				"Tracing their ancestry to the genies of the Elemental Planes, each genasi can tap into the power of one of the elements. Air, earth, fire, and water\u2014these are the four pillars of the Material Plane and the four types of genasi. Some genasi are direct descendants of a genie, while others were born to non-genasi parents who lived near a place suffused by a genie's magic.",
+				"A typical genasi has a life span of 120 years."
+			]
+		},
+		{
 			"name": "Genasi (Air)",
 			"source": "EEPC",
 			"_copy": {
@@ -2432,6 +2636,14 @@
 						}
 					}
 				}
+			}
+		},
+		{
+			"name": "Genasi (Air)",
+			"source": "MPMM",
+			"_copy": {
+				"name": "Genasi",
+				"source": "MPMM"
 			}
 		},
 		{
@@ -2460,6 +2672,14 @@
 			}
 		},
 		{
+			"name": "Genasi (Earth)",
+			"source": "MPMM",
+			"_copy": {
+				"name": "Genasi",
+				"source": "MPMM"
+			}
+		},
+		{
 			"name": "Genasi (Fire)",
 			"source": "EEPC",
 			"_copy": {
@@ -2485,6 +2705,14 @@
 			}
 		},
 		{
+			"name": "Genasi (Fire)",
+			"source": "MPMM",
+			"_copy": {
+				"name": "Genasi",
+				"source": "MPMM"
+			}
+		},
+		{
 			"name": "Genasi (Water)",
 			"source": "EEPC",
 			"_copy": {
@@ -2507,6 +2735,14 @@
 						}
 					}
 				}
+			}
+		},
+		{
+			"name": "Genasi (Water)",
+			"source": "MPMM",
+			"_copy": {
+				"name": "Genasi",
+				"source": "MPMM"
 			}
 		},
 		{
@@ -2590,6 +2826,23 @@
 					}
 				}
 			}
+		},
+		{
+			"name": "Githyanki",
+			"source": "MPMM",
+			"entries": [
+				"Once members of a people who escaped servitude to mind flayers, githyanki split from their cousins, githzerai, and fled to the Astral Plane. In that timeless, silvery realm, githyanki honed their psionic powers and built a great city called Tu'narath. They have since spread throughout the multiverse, starting in outposts outside the Astral Plane, called creches, where time passes and their children can reach adulthood.",
+				"A lanky people with skin tones of yellows, greens, and browns, githyanki complement their physical prowess with psionic might, instilled in them by mind flayers and cultivated over eons in the Astral Plane. Now all githyanki can use their psychic bond with that plane to access splinters of knowledge left behind by beings who travel, live, and die among the silver astral clouds.",
+				"Githyanki who reside in the Astral Plane can live indefinitely."
+			]
+		},
+		{
+			"name": "Githzerai",
+			"source": "MPMM",
+			"entries": [
+				"Githzerai migrated to the Everchanging Chaos of Limbo after the ancient schism that split their ancestors from their cousins, githyanki. Limbo is a roiling maelstrom of matter and energy, collapsing and reforming without purpose or direction, until a creature exerts deliberate will to stabilize it. Through their potent psionic power, githzerai carved a home for themselves amid the chaos. As the ages passed, githzerai explorers ranged out to other planes and worlds of the multiverse.",
+				"Githzerai are generally slender, with speckled skin in shades of yellow, green, or brown. Eons of cultivating their mental powers within the endless chaos of Limbo have imbued githzerai with the ability to shape psionic energy to protect themselves and probe minds."
+			]
 		},
 		{
 			"name": "Gnome",
@@ -2887,6 +3140,13 @@
 		},
 		{
 			"name": "Goblin",
+			"source": "MPMM",
+			"entries": [
+				"A subterranean folk, goblins can be found in every corner of the multiverse, often beside their bugbear and hobgoblin kin. Long before the god Maglubiyet conquered them, early goblins served in the court of the Queen of Air and Darkness, one of the Feywild's archfey. Goblins thrived in her dangerous domain thanks to a special boon from her\u2014a supernatural knack for finding the weak spots in foes larger than themselves and for getting out of trouble. Goblins brought this fey boon with them to worlds across the Material Plane, even if they don't remember the fey realm they inhabited before Maglubiyet's rise. Now many goblins pursue their own destinies, escaping the plots of both archfey and gods."
+			]
+		},
+		{
+			"name": "Goblin",
 			"source": "VGM",
 			"monstrous": true,
 			"images": [
@@ -3016,6 +3276,13 @@
 					}
 				}
 			}
+		},
+		{
+			"name": "Goliath",
+			"source": "MPMM",
+			"entries": [
+				"The first goliaths lived on the highest mountain peaks\u2014far above the tree line, where the air is thin and frigid winds howl. Distantly related to giants and infused with the supernatural essence of their ancestors' mountainous home, goliaths stand between 7 and 8 feet tall and have a wide array of skin tones resembling different types of stone."
+			]
 		},
 		{
 			"name": "Goliath",
@@ -3466,6 +3733,14 @@
 		},
 		{
 			"name": "Harengon",
+			"source": "MPMM",
+			"entries": [
+				"Harengons originated in the Feywild, where they spoke Sylvan and embodied the spirit of freedom and travel. In time, these rabbitfolk hopped into other worlds, bringing the fey realm's exuberance with them and learning new languages as they went.",
+				"Harengons are bipedal, with the characteristic long feet of the rabbits they resemble and fur in a variety of colors. They share the keen senses and powerful legs of leporine creatures and are full of energy, like a wound-up spring. Harengons are blessed with a little fey luck, and they often find themselves a few fortunate feet away from dangers during adventures."
+			]
+		},
+		{
+			"name": "Harengon",
 			"source": "WBtW",
 			"entries": [
 				"Harengons originated in the Feywild, where they spoke Sylvan and embodied the spirit of freedom and travel. In time, these rabbitfolk hopped into other worlds, bringing the fey realm's exuberance with them and learning new languages as they went.",
@@ -3628,6 +3903,15 @@
 						"path": "races/VRGR/Hexblood.png"
 					}
 				}
+			]
+		},
+		{
+			"name": "Hobgoblin",
+			"source": "MPMM",
+			"entries": [
+				"Hobgoblins trace their origins to the ancient courts of the Feywild, where they first appeared with their goblin and bugbear kin. Many of them were driven from the Feywild by the conquering god Maglubiyet, who marshaled them as soldiers, but the fey realm left its mark; wherever they are in the multiverse, they continue to channel an aspect of the Feywild's rule of reciprocity, which creates a mystical bond between the giver and the receiver of a gift.",
+				"On some worlds, such bonds lead hobgoblins to form communities with deep ties to one another. In Eberron and the Forgotten Realms, vast hobgoblin legions have emerged, with ranks of devoted soldiers famed for their unity.",
+				"Hobgoblins are generally taller than their goblin cousins but not quite as big as bugbears. They have curved, pointed ears and noses that turn bright red or blue during displays of emotion."
 			]
 		},
 		{
@@ -4112,6 +4396,14 @@
 		},
 		{
 			"name": "Kenku",
+			"source": "MPMM",
+			"entries": [
+				"Feathered folk who resemble ravens, kenku are blessed with keen observation and supernaturally accurate memories. None of them can remember the origin of the first kenku, however, and they often joke that there are as many kenku origin stories as there are kenku. Some of them paint their genesis as a curse, being a flightless bird people doomed to mimic other people's creations. Other kenku recite cryptic but beautiful poems about their advent being a blessed event in which they were sent into the multiverse to observe and catalog its many wonders.",
+				"Whatever their true origin, kenku are most often found in the Shadowfell and the Material Plane, and they tend to have the coloration typical of ravens."
+			]
+		},
+		{
+			"name": "Kenku",
 			"source": "VGM",
 			"entries": [
 				{
@@ -4245,6 +4537,14 @@
 						"path": "races/PSA/Khenra2.webp"
 					}
 				}
+			]
+		},
+		{
+			"name": "Kobold",
+			"source": "MPMM",
+			"entries": [
+				"Some of the smallest draconic creatures in the multiverse, kobolds display their draconic ancestry in the glint of their scales and in their roars. Legends tell of the first kobolds emerging from the Underdark near the lairs of the earliest dragons. In some lands, kobolds serve chromatic or metallic dragons\u2014even worshiping them as divine beings. In other places, kobolds know too well how dangerous those dragons can be and help others defend against draconic destruction.",
+				"Whatever their relationship to dragons, kobold scales tend to be rust colored, although the occasional kobold sports a scale color more akin to that of a chromatic or a metallic dragon. A kobold's cry can express a range of emotion: anger, resolve, elation, fear, and more. Regardless of the emotion expressed, their cry resonates with draconic power."
 			]
 		},
 		{
@@ -4407,6 +4707,14 @@
 					},
 					"title": "Leonin matrons lead the prides of Oreskos, protecting the plains from interlopers"
 				}
+			]
+		},
+		{
+			"name": "Lizardfolk",
+			"source": "MPMM",
+			"entries": [
+				"The saurian lizardfolk are thought by some sages to be distant cousins of dragonborn and kobolds. Despite their resemblance to those other scaled folk, however, lizardfolk are their own people and have lived on the worlds of the Material Plane since the worlds' creation. Gifted by the gods with remarkable physical defenses and a mystical connection to the natural world, lizardfolk can survive with just their wits in situations that would be deadly for other folk. Because of that fact, many lizardfolk myths state that their people were placed by the gods in the Material Plane to guard its natural wonders.",
+				"Lizardfolk have colorful scales and exhibit a wide array of scale patterns. Their individual facial features are as varied as those of lizards."
 			]
 		},
 		{
@@ -5033,6 +5341,15 @@
 			]
 		},
 		{
+			"name": "Minotaur",
+			"source": "MPMM",
+			"entries": [
+				"Minotaurs are barrel-chested humanoids with heads resembling those of bulls. Blessed with a supernaturally strong sense of direction, minotaurs make great navigators. Some sages believe minotaurs were first created by the Lady of Pain to patrol the magical mazes that she uses to trap her foes.",
+				"Minotaur horns range in size from about 1 foot long to easily three times that length. Minotaurs often carve their horns to sharpen their edges, etch symbols of power into them, or sheathe them in bronze to prevent them from shattering during battle.",
+				"Thick hair extends down minotaurs' necks and powerful backs, and some have long patches of hair on their chins and cheeks. Their legs end in heavy, cloven hooves, and they have long, tufted tails."
+			]
+		},
+		{
 			"name": "Minotaur (Amonkhet)",
 			"source": "PSA",
 			"entries": [
@@ -5116,6 +5433,14 @@
 						"path": "races/PSA/Naga2.webp"
 					}
 				}
+			]
+		},
+		{
+			"name": "Orc",
+			"source": "MPMM",
+			"entries": [
+				"Orcs trace their creation to the one-eyed god Gruumsh, an unstoppable warrior and powerful leader. The divine qualities of Gruumsh resonate within orcs, granting them a reflection of his toughness and tenacity that can't be matched, and the god equipped his children to be able to live above or below ground.",
+				"On some worlds, such as Eberron, orcs were among the first defenders of the natural order from the encroachments of Fiends and other extraplanar threats. Gruumsh's blessings have made orcs tireless guardians and mighty allies wherever they are found, even when they turn their devotion to other gods."
 			]
 		},
 		{
@@ -5551,6 +5876,31 @@
 			]
 		},
 		{
+			"name": "Satyr",
+			"source": "MPMM",
+			"entries": [
+				"Originating in the Feywild\u2014a realm of pure emotion-satyrs thrive on the energy of merriment. They resemble elves but have goatlike legs, cloven hooves, and ram or goat horns. The magic of the fey realm has given them an innate ability to perform, to delight, and to resist magical intrusion. While they're usually found in the Feywild, satyrs do wander to other planes of existence, most often to the Material Plane. There they seek to bring a bit of their home plane's splendor to other worlds."
+			]
+		},
+		{
+			"name": "Sea Elf",
+			"source": "MPMM",
+			"entries": [
+				"Sea elves fell in love with the wild beauty of the ocean in the earliest days of the multiverse. While other elves traveled from realm to realm, sea elves navigated the currents and explored the waters of many worlds. Today these elves can be found wherever oceans exist, as well as in the Elemental Plane of Water.",
+				"Like other elves, sea elves can live to be over 750 years old."
+			]
+		},
+		{
+			"name": "Shadar-Kai",
+			"source": "MPMM",
+			"entries": [
+				"Shadar-kai are the elves of the Shadowfell, originally drawn to that dread realm by the Raven Queen. Over the centuries, some of them have continued to serve her, while others have ventured into the Material Plane to forge their own destinies.",
+				"Once shadar-kai were Fey like the rest of their elven kin; now they exist in a state between life and death, thanks to being transformed by the Shadowfell's grim energy.",
+				"Shadar-kai have ashen skin tones, and while they're in the Shadowfell, they also become wizened, reflecting the somber nature of that gloomy plane.",
+				"Like other elves, shadar-kai can live to be over 750 years old."
+			]
+		},
+		{
 			"name": "Shifter",
 			"source": "ERLW",
 			"entries": [
@@ -5617,6 +5967,61 @@
 						"type": "internal",
 						"path": "races/ERLW/Shifter 001.png"
 					}
+				}
+			]
+		},
+		{
+			"name": "Shifter",
+			"source": "MPMM",
+			"entries": [
+				"Shifters are sometimes called weretouched, as they are descendants of people who contracted full or partial lycanthropy. Humanoids with a bestial aspect, shifters can't fully change shape, but they can temporarily enhance their animalistic features by entering a state they call shifting.",
+				"Shifters are similar to humans in height and build but are typically more lithe and flexible. Their facial features have a bestial cast, often with large eyes and pointed ears; most shifters also have prominent canine teeth. They grow fur-like hair on nearly every part of their bodies. While a shifter's appearance might remind an onlooker of an animal, they remain clearly identifiable as shifters even when at their most feral.",
+				"Most shifters resemble a particular kind of lycanthrope. You can choose the kind of lycanthrope in your past, or you can determine it randomly by rolling on the Lycanthrope Ancestor table. The table also provides a suggestion for the Shifting option you might have as a result of your ancestry.",
+				{
+					"type": "table",
+					"caption": "Lycanthrope Ancestor",
+					"colLabels": [
+						"d6",
+						"Ancestor",
+						"Suggested Shifting Option"
+					],
+					"colStyles": [
+						"col-1 text-center",
+						"col-5 text-center",
+						"col-6 text-center"
+					],
+					"rows": [
+						[
+							"1",
+							"Werebear",
+							"Beasthide"
+						],
+						[
+							"2",
+							"Wereboar",
+							"Beasthide"
+						],
+						[
+							"3",
+							"Wererat",
+							"Swiftstride"
+						],
+						[
+							"4",
+							"Weretiger",
+							"Swiftstride"
+						],
+						[
+							"5",
+							"Werewolf (wolflike)",
+							"Longtooth"
+						],
+						[
+							"6",
+							"Werewolf (doglike)",
+							"Wildhunt"
+						]
+					]
 				}
 			]
 		},
@@ -5798,6 +6203,14 @@
 						}
 					]
 				}
+			]
+		},
+		{
+			"name": "Tabaxi",
+			"source": "MPMM",
+			"entries": [
+				"Created by the Cat Lord\u2014a divine being of the Upper Planes\u2014to blend the qualities of humanoids and cats, tabaxi are a varied people in both attitude and appearance. In some lands, tabaxi live like the cats they resemble, naturally curious and at home in playful environments. In other places, tabaxi live as other folk do, not exhibiting the feline behavior the Cat Lord intended.",
+				"Tabaxi's appearance is as varied as their attitudes. Some tabaxi have features or patterning in their fur like tigers, jaguars, or other big cats, while others have appearances more like a house cat. Still others have unique patterns or might style their fur to their preferences\u2014or might even be hairless!"
 			]
 		},
 		{
@@ -6331,6 +6744,14 @@
 		},
 		{
 			"name": "Tortle",
+			"source": "MPMM",
+			"entries": [
+				"Tortles have a saying: \"We wear our homes on our backs.\" These turtle folk live on many worlds, most often journeying up and down coasts, along waterways, and across the sea. Tortles don't have a unified story of how they were created, but they all have a sense of being mystically connected to the natural world. Carrying their shelter on their backs gives tortles a special feeling of security wherever they go, for even if they visit a far, unknown country, they have a place to lay their heads.",
+				"Tortles exhibit the same range of coloration and patterns found among turtles, and many tortles enjoy adorning their shells in distinctive ways."
+			]
+		},
+		{
+			"name": "Tortle",
 			"source": "TTP",
 			"entries": [
 				{
@@ -6499,6 +6920,14 @@
 						"path": "races/MOT/Triton 2.png"
 					}
 				}
+			]
+		},
+		{
+			"name": "Triton",
+			"source": "MPMM",
+			"entries": [
+				"Originally from the Elemental Plane of Water, many tritons entered the Material Plane centuries ago in response to the growing threat of evil elementals. Those tritons spread across the worlds' oceans, protecting the surface from terrors in the deep. Over time, triton have extended their stewardship over the sea floor to the ocean's surface.",
+				"Tritons have webbed hands and feet, small fins on their calves, and coloration that favors blues and greens."
 			]
 		},
 		{
@@ -7063,6 +7492,14 @@
 						"path": "races/ERLW/Warforged 001.png"
 					}
 				}
+			]
+		},
+		{
+			"name": "Yuan-Ti",
+			"source": "MPMM",
+			"entries": [
+				"Yuan-ti were originally humans who transformed themselves into serpent folk through ancient rituals. Most yuan-ti were corrupted into monsters by those rites, but some yuan-ti instead became a new people who mix characteristics of humans and snakes.",
+				"Blessed with resistance to magical and poisonous effects by the rituals that created them, each of these yuan-ti manifests their serpentine heritage in a variety of ways: a forked tongue, snake eyes, a snakelike nose, or some other ophidian characteristic. However a yuan-ti looks, they have the power to pursue great good or evil in the multiverse."
 			]
 		},
 		{

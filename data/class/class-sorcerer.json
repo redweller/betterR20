@@ -66,6 +66,19 @@
 				15,
 				15
 			],
+			"optionalfeatureProgression": [
+				{
+					"name": "Metamagic",
+					"featureType": [
+						"MM"
+					],
+					"progression": {
+						"3": 2,
+						"10": 3,
+						"17": 4
+					}
+				}
+			],
 			"startingProficiencies": {
 				"weapons": [
 					"{@item dagger|phb|daggers}",
@@ -1625,11 +1638,8 @@
 			"entries": [
 				"At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects.",
 				{
-					"type": "entries",
-					"name": "Sorcery Points",
-					"entries": [
-						"You have 2 sorcery points, and you gain one additional point every time you level up, to a maximum of 20 at level 20. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest."
-					]
+					"type": "refClassFeature",
+					"classFeature": "Sorcery Points|Sorcerer||2"
 				},
 				{
 					"type": "refClassFeature",
@@ -1660,6 +1670,19 @@
 					"type": "refClassFeature",
 					"classFeature": "Sorcerous Fortitude|Sorcerer|UAClassFeatureVariants|2"
 				}
+			]
+		},
+		{
+			"name": "Sorcery Points",
+			"source": "PHB",
+			"page": 99,
+			"srd": true,
+			"className": "Sorcerer",
+			"classSource": "PHB",
+			"level": 2,
+			"header": 1,
+			"entries": [
+				"You have 2 sorcery points, and you gain one additional point every time you level up, to a maximum of 20 at level 20. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest."
 			]
 		},
 		{
@@ -2041,6 +2064,9 @@
 			"classSource": "UAClassFeatureVariants",
 			"level": 2,
 			"isClassFeatureVariant": true,
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"As an action, you can spend any number of sorcery points to roll a {@dice d4} for each point expended. You gain a number of temporary hit points equal to the total rolled."
 			]
@@ -2917,6 +2943,9 @@
 			"subclassSource": "TCE",
 			"level": 6,
 			"header": 2,
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"{@i 6th-level Clockwork Soul feature}",
 				"You can tap into the grand equation of existence to imbue a creature with a shimmering shield of order. As an action, you can expend 1 to 5 sorcery points to create a magical ward around yourself or another creature you can see within 30 feet of you. The ward lasts until you finish a long rest or until you use this feature again.",
@@ -3285,6 +3314,9 @@
 			"subclassSource": "UA2020SubclassesPt2",
 			"level": 6,
 			"header": 2,
+			"consumes": {
+				"name": "Sorcery Points"
+			},
 			"entries": [
 				"{@i 6th-level Clockwork Soul feature}",
 				"You can imbue a creature with a shimmering shield of order. As an action, you can expend 1 to 5 sorcery points to create a magical ward around yourself or another creature you can see within 30 feet of you. The ward lasts until you finish a long rest or until you use this feature again.",

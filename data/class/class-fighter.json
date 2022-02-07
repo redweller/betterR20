@@ -14,6 +14,17 @@
 				"str",
 				"con"
 			],
+			"optionalfeatureProgression": [
+				{
+					"name": "Fighting Style",
+					"featureType": [
+						"FS:F"
+					],
+					"progression": {
+						"1": 1
+					}
+				}
+			],
 			"startingProficiencies": {
 				"armor": [
 					"light",
@@ -470,6 +481,20 @@
 			"className": "Fighter",
 			"classSource": "PHB",
 			"page": 73,
+			"optionalfeatureProgression": [
+				{
+					"name": "Maneuvers",
+					"featureType": [
+						"MV:B"
+					],
+					"progression": {
+						"3": 3,
+						"7": 4,
+						"10": 5,
+						"15": 6
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Battle Master|Fighter||Battle Master||3",
 				"Additional Maneuvers|Fighter||Battle Master||7",
@@ -492,6 +517,17 @@
 			"page": 72,
 			"srd": true,
 			"basicRules": true,
+			"optionalfeatureProgression": [
+				{
+					"name": "Fighting Style",
+					"featureType": [
+						"FS:F"
+					],
+					"progression": {
+						"10": 1
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Champion|Fighter||Champion||3",
 				"Remarkable Athlete|Fighter||Champion||7",
@@ -865,6 +901,21 @@
 			"classSource": "PHB",
 			"page": 1,
 			"isReprinted": true,
+			"optionalfeatureProgression": [
+				{
+					"name": "Arcane Shots",
+					"featureType": [
+						"AS:V1-UA"
+					],
+					"progression": {
+						"3": 2,
+						"7": 3,
+						"10": 4,
+						"15": 5,
+						"18": 6
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Arcane Archer|Fighter||Arcane Archer (UA)|UAFighter|3",
 				"Conjure Arrows|Fighter||Arcane Archer (UA)|UAFighter|7",
@@ -930,6 +981,21 @@
 			"classSource": "PHB",
 			"page": 2,
 			"isReprinted": true,
+			"optionalfeatureProgression": [
+				{
+					"name": "Arcane Shots",
+					"featureType": [
+						"AS:V2-UA"
+					],
+					"progression": {
+						"3": 2,
+						"7": 3,
+						"10": 4,
+						"15": 5,
+						"18": 6
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Arcane Archer v2|Fighter||Arcane Archer v2 (UA)|UARevisedSubclasses|3",
 				"Curving Shot|Fighter||Arcane Archer v2 (UA)|UARevisedSubclasses|7",
@@ -976,6 +1042,21 @@
 						"3": [
 							"druidcraft#c"
 						]
+					}
+				}
+			],
+			"optionalfeatureProgression": [
+				{
+					"name": "Arcane Shots",
+					"featureType": [
+						"AS"
+					],
+					"progression": {
+						"3": 2,
+						"7": 3,
+						"10": 4,
+						"15": 5,
+						"18": 6
 					}
 				}
 			],
@@ -1027,6 +1108,17 @@
 			"className": "Fighter",
 			"classSource": "PHB",
 			"page": 2,
+			"optionalfeatureProgression": [
+				{
+					"name": "Fighting Style",
+					"featureType": [
+						"FS:F"
+					],
+					"progression": {
+						"10": 1
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Brute|Fighter||Brute (UA)|UAThreeSubclasses|3",
 				"Brutish Durability|Fighter||Brute (UA)|UAThreeSubclasses|7",
@@ -1043,6 +1135,20 @@
 			"classSource": "PHB",
 			"page": 1,
 			"isReprinted": true,
+			"optionalfeatureProgression": [
+				{
+					"name": "Runes",
+					"featureType": [
+						"RN"
+					],
+					"progression": {
+						"3": 2,
+						"7": 3,
+						"10": 4,
+						"15": 5
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Rune Knight|Fighter||Rune Knight (UA)|UAFighterRangerRogue|3",
 				"Defensive Runes|Fighter||Rune Knight (UA)|UAFighterRangerRogue|7",
@@ -1121,6 +1227,20 @@
 			"className": "Fighter",
 			"classSource": "PHB",
 			"page": 44,
+			"optionalfeatureProgression": [
+				{
+					"name": "Runes",
+					"featureType": [
+						"RN"
+					],
+					"progression": {
+						"3": 2,
+						"7": 3,
+						"10": 4,
+						"15": 5
+					}
+				}
+			],
 			"subclassFeatures": [
 				"Rune Knight|Fighter||Rune Knight|TCE|3",
 				"Runic Shield|Fighter||Rune Knight|TCE|7",
@@ -4645,7 +4765,7 @@
 			"entries": [
 				"The maneuvers are presented in alphabetical order.",
 				{
-					"type": "options",
+					"type": "entries",
 					"entries": [
 						{
 							"type": "refOptionalfeature",
@@ -5509,6 +5629,9 @@
 			"subclassShortName": "Psi Warrior",
 			"subclassSource": "TCE",
 			"level": 3,
+			"consumes": {
+				"name": "Psionic Energy Dice"
+			},
 			"entries": [
 				"When you or another creature you can see within 30 feet of you takes damage, you can use your reaction to expend one Psionic Energy die, roll the die, and reduce the damage taken by the number rolled plus your Intelligence modifier (minimum reduction of 1), as you create a momentary shield of telekinetic force."
 			]
@@ -5522,6 +5645,9 @@
 			"subclassShortName": "Psi Warrior",
 			"subclassSource": "TCE",
 			"level": 3,
+			"consumes": {
+				"name": "Psionic Energy Dice"
+			},
 			"entries": [
 				"You can propel your weapons with psionic force. Once on each of your turns, immediately after you hit a target within 30 feet of you with an attack and deal damage to it with a weapon, you can expend one Psionic Energy die, rolling it and dealing force damage to the target equal to the number rolled plus your Intelligence modifier."
 			]

@@ -14,6 +14,9 @@
 			"name": "Abjurer",
 			"source": "VGM",
 			"page": 209,
+			"reprintedAs": [
+				"Abjurer Wizard|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -175,6 +178,9 @@
 			"name": "Alhoon",
 			"source": "VGM",
 			"page": 172,
+			"reprintedAs": [
+				"Alhoon|MPMM"
+			],
 			"size": "M",
 			"type": "undead",
 			"alignment": [
@@ -417,6 +423,9 @@
 				{
 					"source": "MOT"
 				}
+			],
+			"reprintedAs": [
+				"Annis Hag|MPMM"
 			],
 			"size": "L",
 			"type": "fey",
@@ -1100,6 +1109,9 @@
 					"source": "ERLW"
 				}
 			],
+			"reprintedAs": [
+				"Apprentice Wizard|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -1209,6 +1221,9 @@
 				{
 					"source": "MOT"
 				}
+			],
+			"reprintedAs": [
+				"Archdruid|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -1409,6 +1424,9 @@
 					"source": "MOT"
 				}
 			],
+			"reprintedAs": [
+				"Archer|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -1508,6 +1526,9 @@
 			"name": "Aurochs",
 			"source": "VGM",
 			"page": 207,
+			"reprintedAs": [
+				"Aurochs|MPMM"
+			],
 			"size": "L",
 			"type": "beast",
 			"alignment": [
@@ -1581,6 +1602,9 @@
 			"name": "Babau",
 			"source": "VGM",
 			"page": 136,
+			"reprintedAs": [
+				"Babau|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "fiend",
@@ -1724,6 +1748,9 @@
 			"name": "Banderhobb",
 			"source": "VGM",
 			"page": 122,
+			"reprintedAs": [
+				"Banderhobb|MPMM"
+			],
 			"size": "L",
 			"type": "monstrosity",
 			"alignment": [
@@ -1855,6 +1882,9 @@
 				{
 					"source": "SDW"
 				}
+			],
+			"reprintedAs": [
+				"Bard|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -1998,6 +2028,9 @@
 					"source": "TftYP"
 				}
 			],
+			"reprintedAs": [
+				"Barghest|MPMM"
+			],
 			"size": "L",
 			"type": {
 				"type": "fiend",
@@ -2104,7 +2137,7 @@
 				{
 					"name": "Fire Banishment",
 					"entries": [
-						"When the barghest starts its turn engulfed in flames that are at least 10 feet high or wide, it must succeed on a {@dc 15} Charisma saving throw or be instantly banished to Gehenna. Instantaneous bursts of flame (such as a red dragon's breath or a fireball spell) don't have this effect on the barghest."
+						"When the barghest starts its turn engulfed in flames that are at least 10 feet high or wide, it must succeed on a {@dc 15} Charisma saving throw or be instantly banished to Gehenna. Instantaneous bursts of flame (such as a red dragon's breath or a {@spell fireball} spell) don't have this effect on the barghest."
 					]
 				},
 				{
@@ -2179,6 +2212,9 @@
 			"name": "Bheur Hag",
 			"source": "VGM",
 			"page": 160,
+			"reprintedAs": [
+				"Bheur Hag|MPMM"
+			],
 			"size": "M",
 			"type": "fey",
 			"alignment": [
@@ -2843,6 +2879,9 @@
 			"name": "Black Guard Drake",
 			"source": "VGM",
 			"page": 158,
+			"reprintedAs": [
+				"Guard Drake|MPMM"
+			],
 			"size": "M",
 			"type": "dragon",
 			"alignment": [
@@ -2961,6 +3000,9 @@
 				{
 					"source": "MOT"
 				}
+			],
+			"reprintedAs": [
+				"Blackguard|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -3112,6 +3154,9 @@
 			"name": "Blue Guard Drake",
 			"source": "VGM",
 			"page": 158,
+			"reprintedAs": [
+				"Guard Drake|MPMM"
+			],
 			"size": "M",
 			"type": "dragon",
 			"alignment": [
@@ -3213,6 +3258,9 @@
 				{
 					"source": "GoS"
 				}
+			],
+			"reprintedAs": [
+				"Bodak|MPMM"
 			],
 			"size": "M",
 			"type": "undead",
@@ -3358,6 +3406,9 @@
 				{
 					"source": "WBtW"
 				}
+			],
+			"reprintedAs": [
+				"Boggle|MPMM"
 			],
 			"size": "S",
 			"type": "fey",
@@ -3661,6 +3712,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Brontosaurus|MPMM"
+			],
 			"size": "G",
 			"type": "beast",
 			"alignment": [
@@ -3735,6 +3789,9 @@
 				{
 					"source": "MOT"
 				}
+			],
+			"reprintedAs": [
+				"Catoblepas|MPMM"
 			],
 			"size": "L",
 			"type": "monstrosity",
@@ -3828,6 +3885,9 @@
 			"name": "Cave Fisher",
 			"source": "VGM",
 			"page": 130,
+			"reprintedAs": [
+				"Cave Fisher|MPMM"
+			],
 			"size": "M",
 			"type": "monstrosity",
 			"alignment": [
@@ -3948,6 +4008,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Champion|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -4059,6 +4122,9 @@
 			"name": "Chitine",
 			"source": "VGM",
 			"page": 131,
+			"reprintedAs": [
+				"Chitine|MPMM"
+			],
 			"size": "S",
 			"type": "monstrosity",
 			"alignment": [
@@ -4177,6 +4243,9 @@
 			"name": "Choldrith",
 			"source": "VGM",
 			"page": 132,
+			"reprintedAs": [
+				"Choldrith|MPMM"
+			],
 			"size": "M",
 			"type": "monstrosity",
 			"alignment": [
@@ -4345,6 +4414,9 @@
 			"name": "Cloud Giant Smiling One",
 			"source": "VGM",
 			"page": 146,
+			"reprintedAs": [
+				"Cloud Giant Smiling One|MPMM"
+			],
 			"size": "H",
 			"type": {
 				"type": "giant",
@@ -4535,6 +4607,9 @@
 				{
 					"source": "TftYP"
 				}
+			],
+			"reprintedAs": [
+				"Conjurer Wizard|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -4750,6 +4825,9 @@
 			"name": "Cranium Rat",
 			"source": "VGM",
 			"page": 133,
+			"reprintedAs": [
+				"Cranium Rat|MPMM"
+			],
 			"size": "T",
 			"type": "beast",
 			"alignment": [
@@ -4838,6 +4916,9 @@
 				{
 					"source": "WBtW"
 				}
+			],
+			"reprintedAs": [
+				"Darkling|MPMM"
 			],
 			"size": "S",
 			"type": "fey",
@@ -4949,6 +5030,9 @@
 				{
 					"source": "WBtW"
 				}
+			],
+			"reprintedAs": [
+				"Darkling Elder|MPMM"
 			],
 			"size": "M",
 			"type": "fey",
@@ -5064,6 +5148,9 @@
 			],
 			"source": "VGM",
 			"page": 124,
+			"reprintedAs": [
+				"Death Kiss|MPMM"
+			],
 			"size": "L",
 			"type": "aberration",
 			"alignment": [
@@ -5184,6 +5271,9 @@
 			"name": "Deep Rothé",
 			"source": "VGM",
 			"page": 208,
+			"reprintedAs": [
+				"Deep Rothé|MPMM"
+			],
 			"size": "M",
 			"type": "beast",
 			"alignment": [
@@ -5274,6 +5364,9 @@
 				{
 					"source": "GoS"
 				}
+			],
+			"reprintedAs": [
+				"Deep Scion|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -5420,6 +5513,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Deinonychus|MPMM"
+			],
 			"size": "M",
 			"type": "beast",
 			"alignment": [
@@ -5511,6 +5607,9 @@
 			"name": "Devourer",
 			"source": "VGM",
 			"page": 138,
+			"reprintedAs": [
+				"Devourer|MPMM"
+			],
 			"size": "L",
 			"type": "fiend",
 			"alignment": [
@@ -5625,6 +5724,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Dimetrodon|MPMM"
+			],
 			"size": "M",
 			"type": "beast",
 			"alignment": [
@@ -5686,6 +5788,9 @@
 			"name": "Diviner",
 			"source": "VGM",
 			"page": 213,
+			"reprintedAs": [
+				"Diviner Wizard|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -5859,6 +5964,9 @@
 					"source": "GoS"
 				}
 			],
+			"reprintedAs": [
+				"Dolphin|MPMM"
+			],
 			"size": "M",
 			"type": "beast",
 			"alignment": [
@@ -5944,6 +6052,9 @@
 			"name": "Draegloth",
 			"source": "VGM",
 			"page": 141,
+			"reprintedAs": [
+				"Draegloth|MPMM"
+			],
 			"size": "L",
 			"type": {
 				"type": "fiend",
@@ -6088,6 +6199,9 @@
 			"name": "Elder Brain",
 			"source": "VGM",
 			"page": 173,
+			"reprintedAs": [
+				"Elder Brain|MPMM"
+			],
 			"size": "L",
 			"type": "aberration",
 			"alignment": [
@@ -6291,6 +6405,9 @@
 					"source": "TftYP"
 				}
 			],
+			"reprintedAs": [
+				"Enchanter Wizard|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -6451,6 +6568,9 @@
 					"source": "ERLW"
 				}
 			],
+			"reprintedAs": [
+				"Evoker Wizard|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -6604,6 +6724,9 @@
 			"name": "Fire Giant Dreadnought",
 			"source": "VGM",
 			"page": 147,
+			"reprintedAs": [
+				"Fire Giant Dreadnought|MPMM"
+			],
 			"size": "H",
 			"type": {
 				"type": "giant",
@@ -6726,6 +6849,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Firenewt Warlock of Imix|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -6875,6 +7001,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Firenewt Warrior|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -6991,6 +7120,9 @@
 					"source": "SLW"
 				}
 			],
+			"reprintedAs": [
+				"Flail Snail|MPMM"
+			],
 			"size": "L",
 			"type": "elemental",
 			"alignment": [
@@ -7064,7 +7196,7 @@
 				{
 					"name": "Flail Tentacles",
 					"entries": [
-						"The flail snail has five flail tentacles. Whenever the snail takes 10 damage or more on a single turn, one of its tentacles dies. If even one tentacle remains, the snail regrows all dead ones within {@dice 1d4} days. If all its tentacles die, the snail retracts into its shell, gaining total cover, and it begins wailing, a sound that can be heard for 600 feet, stopping only when it dies {@dice 5d6} minutes later. Healing magic that restores limbs, such as the regenerate spell, can halt this dying process."
+						"The flail snail has five flail tentacles. Whenever the snail takes 10 damage or more on a single turn, one of its tentacles dies. If even one tentacle remains, the snail regrows all dead ones within {@dice 1d4} days. If all its tentacles die, the snail retracts into its shell, gaining total cover, and it begins wailing, a sound that can be heard for 600 feet, stopping only when it dies {@dice 5d6} minutes later. Healing magic that restores limbs, such as the {@spell regenerate} spell, can halt this dying process."
 					]
 				}
 			],
@@ -7129,6 +7261,9 @@
 			"name": "Flind",
 			"source": "VGM",
 			"page": 153,
+			"reprintedAs": [
+				"Flind|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -7264,6 +7399,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Froghemoth|MPMM"
+			],
 			"size": "H",
 			"type": "monstrosity",
 			"alignment": [
@@ -7390,6 +7528,9 @@
 			"name": "Frost Giant Everlasting One",
 			"source": "VGM",
 			"page": 148,
+			"reprintedAs": [
+				"Frost Giant Everlasting One|MPMM"
+			],
 			"size": "H",
 			"type": {
 				"type": "giant",
@@ -7525,6 +7666,9 @@
 			],
 			"source": "VGM",
 			"page": 125,
+			"reprintedAs": [
+				"Gauth|MPMM"
+			],
 			"size": "M",
 			"type": "aberration",
 			"alignment": [
@@ -7694,6 +7838,9 @@
 					"source": "WDH"
 				}
 			],
+			"reprintedAs": [
+				"Gazer|MPMM"
+			],
 			"size": "T",
 			"type": "aberration",
 			"alignment": [
@@ -7854,6 +8001,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Giant Strider|MPMM"
+			],
 			"size": "L",
 			"type": "monstrosity",
 			"alignment": [
@@ -7915,7 +8065,7 @@
 			],
 			"soundClip": {
 				"type": "internal",
-				"path": "bestiary/giant-stider.mp3"
+				"path": "bestiary/giant-strider.mp3"
 			},
 			"traitTags": [
 				"Damage Absorption"
@@ -7943,6 +8093,9 @@
 				{
 					"source": "IMR"
 				}
+			],
+			"reprintedAs": [
+				"Girallon|MPMM"
 			],
 			"size": "L",
 			"type": "monstrosity",
@@ -8042,6 +8195,9 @@
 			"name": "Gnoll Flesh Gnawer",
 			"source": "VGM",
 			"page": 154,
+			"reprintedAs": [
+				"Gnoll Flesh Gnawer|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -8155,6 +8311,9 @@
 			"name": "Gnoll Hunter",
 			"source": "VGM",
 			"page": 154,
+			"reprintedAs": [
+				"Gnoll Hunter|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -8271,6 +8430,9 @@
 			"name": "Gnoll Witherling",
 			"source": "VGM",
 			"page": 155,
+			"reprintedAs": [
+				"Gnoll Witherling|MPMM"
+			],
 			"size": "M",
 			"type": "undead",
 			"alignment": [
@@ -8387,6 +8549,9 @@
 			"name": "Green Guard Drake",
 			"source": "VGM",
 			"page": 158,
+			"reprintedAs": [
+				"Guard Drake|MPMM"
+			],
 			"size": "M",
 			"type": "dragon",
 			"alignment": [
@@ -8496,6 +8661,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Grung|MPMM"
 			],
 			"size": "S",
 			"type": {
@@ -8767,6 +8935,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Grung Elite Warrior|MPMM"
 			],
 			"size": "S",
 			"type": {
@@ -9052,6 +9223,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Grung Wildling|MPMM"
 			],
 			"size": "S",
 			"type": {
@@ -9373,6 +9547,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Hadrosaurus|MPMM"
+			],
 			"size": "L",
 			"type": "beast",
 			"alignment": [
@@ -9433,6 +9610,9 @@
 			"name": "Hobgoblin Devastator",
 			"source": "VGM",
 			"page": 161,
+			"reprintedAs": [
+				"Hobgoblin Devastator|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -9581,6 +9761,9 @@
 			"name": "Hobgoblin Iron Shadow",
 			"source": "VGM",
 			"page": 162,
+			"reprintedAs": [
+				"Hobgoblin Iron Shadow|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -10045,6 +10228,9 @@
 					"source": "TftYP"
 				}
 			],
+			"reprintedAs": [
+				"Illusionist Wizard|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -10188,6 +10374,9 @@
 			"name": "Ki-rin",
 			"source": "VGM",
 			"page": 163,
+			"reprintedAs": [
+				"Ki-rin|MPMM"
+			],
 			"size": "H",
 			"type": "celestial",
 			"alignment": [
@@ -10396,7 +10585,7 @@
 				{
 					"name": "Smite",
 					"entries": [
-						"The ki-rin makes a hoof attack or casts sacred flame."
+						"The ki-rin makes a hoof attack or casts {@spell sacred flame}."
 					]
 				},
 				{
@@ -10463,6 +10652,9 @@
 				{
 					"source": "SLW"
 				}
+			],
+			"reprintedAs": [
+				"Kobold Dragonshield|MPMM"
 			],
 			"size": "S",
 			"type": {
@@ -10593,6 +10785,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Kobold Inventor|MPMM"
 			],
 			"size": "S",
 			"type": {
@@ -10769,6 +10964,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Kobold Scale Sorcerer|MPMM"
+			],
 			"size": "S",
 			"type": {
 				"type": "humanoid",
@@ -10925,6 +11123,9 @@
 				{
 					"source": "WBtW"
 				}
+			],
+			"reprintedAs": [
+				"Korred|MPMM"
 			],
 			"size": "S",
 			"type": "fey",
@@ -11104,6 +11305,9 @@
 					"source": "LR"
 				}
 			],
+			"reprintedAs": [
+				"Kraken Priest|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -11243,6 +11447,9 @@
 					"source": "MOT"
 				}
 			],
+			"reprintedAs": [
+				"Leucrotta|MPMM"
+			],
 			"size": "L",
 			"type": "monstrosity",
 			"alignment": [
@@ -11377,6 +11584,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Martial Arts Adept|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -11508,6 +11718,9 @@
 				{
 					"source": "MOT"
 				}
+			],
+			"reprintedAs": [
+				"Master Thief|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -11642,6 +11855,9 @@
 					"source": "GoS"
 				}
 			],
+			"reprintedAs": [
+				"Maw Demon|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "fiend",
@@ -11746,6 +11962,9 @@
 				{
 					"source": "CM"
 				}
+			],
+			"reprintedAs": [
+				"Meenlock|MPMM"
 			],
 			"size": "S",
 			"type": "fey",
@@ -12038,6 +12257,9 @@
 			"name": "Mindwitness",
 			"source": "VGM",
 			"page": 176,
+			"reprintedAs": [
+				"Mindwitness|MPMM"
+			],
 			"size": "L",
 			"type": "aberration",
 			"alignment": [
@@ -12209,6 +12431,9 @@
 			"name": "Morkoth",
 			"source": "VGM",
 			"page": 177,
+			"reprintedAs": [
+				"Morkoth|MPMM"
+			],
 			"size": "M",
 			"type": "aberration",
 			"alignment": [
@@ -12433,6 +12658,9 @@
 			"name": "Mouth of Grolantor",
 			"source": "VGM",
 			"page": 149,
+			"reprintedAs": [
+				"Mouth of Grolantor|MPMM"
+			],
 			"size": "H",
 			"type": {
 				"type": "giant",
@@ -12540,6 +12768,9 @@
 				{
 					"source": "DIP"
 				}
+			],
+			"reprintedAs": [
+				"Necromancer Wizard|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -12695,6 +12926,9 @@
 			"name": "Neogi",
 			"source": "VGM",
 			"page": 180,
+			"reprintedAs": [
+				"Neogi|MPMM"
+			],
 			"size": "S",
 			"type": "aberration",
 			"alignment": [
@@ -12819,6 +13053,9 @@
 			"name": "Neogi Hatchling",
 			"source": "VGM",
 			"page": 179,
+			"reprintedAs": [
+				"Neogi Hatchling|MPMM"
+			],
 			"size": "T",
 			"type": "aberration",
 			"alignment": [
@@ -12901,6 +13138,9 @@
 			"name": "Neogi Master",
 			"source": "VGM",
 			"page": 180,
+			"reprintedAs": [
+				"Neogi Master|MPMM"
+			],
 			"size": "M",
 			"type": "aberration",
 			"alignment": [
@@ -13082,6 +13322,9 @@
 					"source": "WDMM"
 				}
 			],
+			"reprintedAs": [
+				"Neothelid|MPMM"
+			],
 			"size": "G",
 			"type": "aberration",
 			"alignment": [
@@ -13142,7 +13385,7 @@
 				{
 					"name": "Creature Sense",
 					"entries": [
-						"The neothelid is aware of the presence of creatures within 1 mile of it that have an Intelligence score of 4 or higher. It knows the distance and direction to each creature, as well as each creature's Intelligence score, but can't sense anything else about it. A creature protected by a mind blank spell, a nondetection spell, or similar magic can't be perceived in this manner."
+						"The neothelid is aware of the presence of creatures within 1 mile of it that have an Intelligence score of 4 or higher. It knows the distance and direction to each creature, as well as each creature's Intelligence score, but can't sense anything else about it. A creature protected by a {@spell mind blank} spell, a {@spell nondetection} spell, or similar magic can't be perceived in this manner."
 					]
 				},
 				{
@@ -13214,6 +13457,9 @@
 			"name": "Nilbog",
 			"source": "VGM",
 			"page": 182,
+			"reprintedAs": [
+				"Nilbog|MPMM"
+			],
 			"size": "S",
 			"type": {
 				"type": "humanoid",
@@ -14019,6 +14265,9 @@
 					"source": "PotA"
 				}
 			],
+			"reprintedAs": [
+				"Ox|MPMM"
+			],
 			"size": "L",
 			"type": "beast",
 			"alignment": [
@@ -14094,6 +14343,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Quetzalcoatlus|MPMM"
 			],
 			"size": "H",
 			"type": "beast",
@@ -14179,6 +14431,9 @@
 				{
 					"source": "WBtW"
 				}
+			],
+			"reprintedAs": [
+				"Quickling|MPMM"
 			],
 			"size": "T",
 			"type": "fey",
@@ -14278,6 +14533,9 @@
 			"name": "Red Guard Drake",
 			"source": "VGM",
 			"page": 158,
+			"reprintedAs": [
+				"Guard Drake|MPMM"
+			],
 			"size": "M",
 			"type": "dragon",
 			"alignment": [
@@ -14386,6 +14644,9 @@
 				{
 					"source": "WBtW"
 				}
+			],
+			"reprintedAs": [
+				"Redcap|MPMM"
 			],
 			"size": "S",
 			"type": "fey",
@@ -14588,6 +14849,9 @@
 			"name": "Sea Spawn",
 			"source": "VGM",
 			"page": 189,
+			"reprintedAs": [
+				"Sea Spawn|MPMM"
+			],
 			"size": "M",
 			"type": "humanoid",
 			"alignment": [
@@ -14713,6 +14977,9 @@
 			"name": "Shadow Mastiff",
 			"source": "VGM",
 			"page": 190,
+			"reprintedAs": [
+				"Shadow Mastiff Alpha|MPMM"
+			],
 			"size": "M",
 			"type": "monstrosity",
 			"alignment": [
@@ -14869,6 +15136,9 @@
 			"name": "Shoosuva",
 			"source": "VGM",
 			"page": 137,
+			"reprintedAs": [
+				"Shoosuva|MPMM"
+			],
 			"size": "L",
 			"type": {
 				"type": "fiend",
@@ -15019,6 +15289,9 @@
 				{
 					"source": "MOT"
 				}
+			],
+			"reprintedAs": [
+				"Slithering Tracker|MPMM"
 			],
 			"size": "M",
 			"type": "ooze",
@@ -15178,6 +15451,9 @@
 			"name": "Spawn of Kyuss",
 			"source": "VGM",
 			"page": 192,
+			"reprintedAs": [
+				"Spawn of Kyuss|MPMM"
+			],
 			"size": "M",
 			"type": "undead",
 			"alignment": [
@@ -15297,6 +15573,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Stegosaurus|MPMM"
+			],
 			"size": "H",
 			"type": "beast",
 			"alignment": [
@@ -15356,6 +15635,9 @@
 			"name": "Stench Kow",
 			"source": "VGM",
 			"page": 208,
+			"reprintedAs": [
+				"Stench Kow|MPMM"
+			],
 			"size": "L",
 			"type": "beast",
 			"alignment": [
@@ -15435,6 +15717,9 @@
 			"name": "Stone Giant Dreamwalker",
 			"source": "VGM",
 			"page": 150,
+			"reprintedAs": [
+				"Stone Giant Dreamwalker|MPMM"
+			],
 			"size": "H",
 			"type": {
 				"type": "giant",
@@ -15568,6 +15853,9 @@
 					"source": "GoS"
 				}
 			],
+			"reprintedAs": [
+				"Storm Giant Quintessent|MPMM"
+			],
 			"size": "H",
 			"type": {
 				"type": "giant",
@@ -15680,7 +15968,7 @@
 				{
 					"name": "One with the Storm (3 Actions)",
 					"entries": [
-						"The giant vanishes, dispersing itself into the storm surrounding its lair. The giant can end this effect at the start of any of its turns, becoming a giant once more and appearing in any location it chooses within its lair. While dispersed, the giant can't take any actions other than lair actions, and it can't be targeted by attacks, spells, or other effects. The giant can't use this ability outside its lair, nor can it use this ability if another creature is using a control weather spell or similar magic to quell the storm."
+						"The giant vanishes, dispersing itself into the storm surrounding its lair. The giant can end this effect at the start of any of its turns, becoming a giant once more and appearing in any location it chooses within its lair. While dispersed, the giant can't take any actions other than lair actions, and it can't be targeted by attacks, spells, or other effects. The giant can't use this ability outside its lair, nor can it use this ability if another creature is using a {@spell control weather} spell or similar magic to quell the storm."
 					]
 				}
 			],
@@ -15729,6 +16017,9 @@
 			"name": "Swarm of Cranium Rats",
 			"source": "VGM",
 			"page": 133,
+			"reprintedAs": [
+				"Swarm of Cranium Rats|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "beast",
@@ -15866,6 +16157,9 @@
 					"source": "GoS"
 				}
 			],
+			"reprintedAs": [
+				"Swarm of Rot Grubs|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "beast",
@@ -15966,6 +16260,9 @@
 				{
 					"source": "SDW"
 				}
+			],
+			"reprintedAs": [
+				"Swashbuckler|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -16077,6 +16374,9 @@
 			"name": "Tanarukk",
 			"source": "VGM",
 			"page": 186,
+			"reprintedAs": [
+				"Tanarukk|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "fiend",
@@ -16214,6 +16514,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Thorny Vegepygmy|MPMM"
+			],
 			"size": "M",
 			"type": "plant",
 			"alignment": [
@@ -16309,6 +16612,9 @@
 			"name": "Tlincalli",
 			"source": "VGM",
 			"page": 193,
+			"reprintedAs": [
+				"Tlincalli|MPMM"
+			],
 			"size": "L",
 			"type": "monstrosity",
 			"alignment": [
@@ -16418,6 +16724,9 @@
 				{
 					"source": "TftYP"
 				}
+			],
+			"reprintedAs": [
+				"Transmuter Wizard|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -16574,6 +16883,9 @@
 					"source": "IMR"
 				}
 			],
+			"reprintedAs": [
+				"Trapper|MPMM"
+			],
 			"size": "L",
 			"type": "monstrosity",
 			"alignment": [
@@ -16669,6 +16981,9 @@
 					"source": "WDMM"
 				}
 			],
+			"reprintedAs": [
+				"Ulitharid|MPMM"
+			],
 			"size": "L",
 			"type": "aberration",
 			"alignment": [
@@ -16747,7 +17062,7 @@
 				{
 					"name": "Creature Sense",
 					"entries": [
-						"The ulitharid is aware of the presence of creatures within 2 miles of it that have an Intelligence score of 4 or higher. It knows the distance and direction to each creature, as well as each creature's intelligence score, but can't sense anything else about it. A creature protected by a mind blank spell, a nondetection spell, or similar magic can't be perceived in this manner."
+						"The ulitharid is aware of the presence of creatures within 2 miles of it that have an Intelligence score of 4 or higher. It knows the distance and direction to each creature, as well as each creature's intelligence score, but can't sense anything else about it. A creature protected by a {@spell mind blank} spell, a {@spell nondetection} spell, or similar magic can't be perceived in this manner."
 					]
 				},
 				{
@@ -16837,6 +17152,9 @@
 			"name": "Vargouille",
 			"source": "VGM",
 			"page": 195,
+			"reprintedAs": [
+				"Vargouille|MPMM"
+			],
 			"size": "T",
 			"type": "fiend",
 			"alignment": [
@@ -16941,6 +17259,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Vegepygmy|MPMM"
 			],
 			"size": "S",
 			"type": "plant",
@@ -17050,6 +17371,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Vegepygmy Chief|MPMM"
 			],
 			"size": "S",
 			"type": "plant",
@@ -17183,6 +17507,9 @@
 					"source": "ToA"
 				}
 			],
+			"reprintedAs": [
+				"Velociraptor|MPMM"
+			],
 			"size": "T",
 			"type": "beast",
 			"alignment": [
@@ -17283,6 +17610,9 @@
 				{
 					"source": "MOT"
 				}
+			],
+			"reprintedAs": [
+				"War Priest|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -17446,6 +17776,9 @@
 			"name": "Warlock of the Archfey",
 			"source": "VGM",
 			"page": 219,
+			"reprintedAs": [
+				"Warlock of the Archfey|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -17612,6 +17945,9 @@
 				{
 					"source": "IMR"
 				}
+			],
+			"reprintedAs": [
+				"Warlock of the Fiend|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -17788,6 +18124,9 @@
 					"source": "IMR"
 				}
 			],
+			"reprintedAs": [
+				"Warlock of the Great Old One|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -17961,6 +18300,9 @@
 					"source": "IMR"
 				}
 			],
+			"reprintedAs": [
+				"Warlord|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "humanoid",
@@ -18094,6 +18436,9 @@
 			"name": "White Guard Drake",
 			"source": "VGM",
 			"page": 158,
+			"reprintedAs": [
+				"Guard Drake|MPMM"
+			],
 			"size": "M",
 			"type": "dragon",
 			"alignment": [
@@ -18196,6 +18541,9 @@
 				{
 					"source": "SDW"
 				}
+			],
+			"reprintedAs": [
+				"Wood Woad|MPMM"
 			],
 			"size": "M",
 			"type": "plant",
@@ -18323,6 +18671,9 @@
 			"name": "Xvart",
 			"source": "VGM",
 			"page": 200,
+			"reprintedAs": [
+				"Xvart|MPMM"
+			],
 			"size": "S",
 			"type": {
 				"type": "humanoid",
@@ -18542,6 +18893,9 @@
 			"name": "Xvart Warlock of Raxivort",
 			"source": "VGM",
 			"page": 200,
+			"reprintedAs": [
+				"Xvart Warlock of Raxivort|MPMM"
+			],
 			"size": "S",
 			"type": {
 				"type": "humanoid",
@@ -18688,6 +19042,9 @@
 			"name": "Yeth Hound",
 			"source": "VGM",
 			"page": 201,
+			"reprintedAs": [
+				"Yeth Hound|MPMM"
+			],
 			"size": "L",
 			"type": "fey",
 			"alignment": [
@@ -18819,6 +19176,9 @@
 			"name": "Yuan-ti Anathema",
 			"source": "VGM",
 			"page": 202,
+			"reprintedAs": [
+				"Yuan-ti Anathema|MPMM"
+			],
 			"size": "H",
 			"type": {
 				"type": "monstrosity",
@@ -19057,6 +19417,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Yuan-ti Broodguard|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -19566,6 +19929,9 @@
 			"name": "Yuan-ti Mind Whisperer",
 			"source": "VGM",
 			"page": 204,
+			"reprintedAs": [
+				"Yuan-ti Mind Whisperer|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "monstrosity",
@@ -19792,6 +20158,9 @@
 				{
 					"source": "ToA"
 				}
+			],
+			"reprintedAs": [
+				"Yuan-ti Nightmare Speaker|MPMM"
 			],
 			"size": "M",
 			"type": {
@@ -20027,6 +20396,9 @@
 			"name": "Yuan-ti Pit Master",
 			"source": "VGM",
 			"page": 206,
+			"reprintedAs": [
+				"Yuan-ti Pit Master|MPMM"
+			],
 			"size": "M",
 			"type": {
 				"type": "monstrosity",

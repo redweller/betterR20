@@ -108,6 +108,15 @@
 						8,
 						8
 					]
+				},
+				{
+					"name": "Pact Boon",
+					"featureType": [
+						"PB"
+					],
+					"progression": {
+						"3": 1
+					}
 				}
 			],
 			"startingProficiencies": {

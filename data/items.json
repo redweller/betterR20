@@ -797,6 +797,7 @@
 			"page": 47,
 			"type": "OTH",
 			"rarity": "unknown",
+			"weight": 8,
 			"entries": [
 				"The stilts take 1 minute to put on or remove. They increase the height of any humanoid wearing them by 2 to 5 feet. Each stilt weighs 8 pounds and is 1 foot long when fully collapsed."
 			]
@@ -948,6 +949,21 @@
 				"gaseous form",
 				"magic weapon",
 				"polymorph"
+			]
+		},
+		{
+			"name": "Alchemist's Doom",
+			"source": "SCC",
+			"page": 179,
+			"_copy": {
+				"name": "Alchemist's Fire (flask)",
+				"source": "PHB"
+			},
+			"type": "G",
+			"rarity": "unknown",
+			"value": null,
+			"entries": [
+				"This sticky, adhesive fluid ignites when exposed to air. As an action, you can throw this flask up to 20 feet, shattering it on impact. Make a ranged attack against a creature or object, treating the alchemist's fire as an improvised weapon. On a hit, the target takes 7 ({@dice 2d6}) fire damage at the start of each of its turns. A creature can end this damage by using its action to make a DC 10 Dexterity check to extinguish the flames."
 			]
 		},
 		{
@@ -6385,6 +6401,17 @@
 			"type": "$",
 			"rarity": "none",
 			"value": 25000
+		},
+		{
+			"name": "Catapult Munition",
+			"source": "SCC",
+			"page": 174,
+			"type": "G",
+			"rarity": "unknown",
+			"entries": [
+				"A catapult munition roughly the size and weight of a cannonball.",
+				"The munition can be thrown up to 30 feet and explodes on impact. Any creature within a 15-foot-radius sphere centered on the point of impact must make a DC 14 Dexterity saving throw, taking 35 ({@damage 10d6}) fire damage on a failed save, or half as much damage on a successful one. In addition, each object in that area that isn't being worn or carried takes 35 ({@damage 10d6}) fire damage."
+			]
 		},
 		{
 			"name": "Cauldron of Plenty",
@@ -16828,6 +16855,10 @@
 				{
 					"source": "BGDIA",
 					"page": 224
+				},
+				{
+					"source": "MPMM",
+					"page": 190
 				}
 			],
 			"rarity": "legendary",
@@ -16841,9 +16872,9 @@
 			],
 			"wondrous": true,
 			"entries": [
-				"A {@creature narzugon|MTF} binds a nightmare to its service with infernal tack, which consists of a bridle, bit, reins, saddle, stirrups, and spurs. A {@creature nightmare} equipped with infernal tack must serve whoever wears the spurs until the wearer dies or the tack is removed.",
-				"You can use an action to call a {@creature nightmare} equipped with infernal tack by clashing the spurs together or scraping them through blood. The nightmare appears at the start of your next turn, within 20 feet of you. It acts as your ally and takes its turn on your initiative count. It remains for 1 day, until you or it dies, or until you dismiss it as an action. If the nightmare dies, it reforms in the Nine Hells within 24 hours, after which you can summon it again.",
-				"The tack doesn't conjure a nightmare from thin air; one must first be subdued so the tack can be placed on it. No nightmare accepts this forced servitude willingly, but some eventually form strong loyalties to their masters and become true partners in evil."
+				"A rider binds a {@creature nightmare} to its service with infernal tack, which consists of a bridle, bit, reins, saddle, and stirrups, along with spurs that are worn by the rider. A nightmare equipped with infernal tack must serve whoever wears the spurs until the wearer dies or the tack is removed.",
+				"You can use an action to call a nightmare equipped with infernal tack by clashing the spurs together or scraping them through blood. The nightmare appears at the start of your next turn, within 20 feet of you. It acts as your ally and takes its turn on your initiative count. It remains for 1 day, until you or it dies, or until you dismiss it as an action. If the nightmare dies, it reforms in the Nine Hells within 24 hours, after which you can summon it again.",
+				"The tack doesn't conjure a nightmare; one must first be subdued so the tack can be placed on it. No nightmare accepts this forced servitude willingly, but some eventually form strong loyalties to their masters and become true partners in evil."
 			]
 		},
 		{
@@ -21367,6 +21398,16 @@
 			"rarity": "uncommon",
 			"entries": [
 				"White dust swirls constantly within this pale gray potion. When you drink the potion, it cures you of mummy rot."
+			]
+		},
+		{
+			"name": "Murgaxor's Elixir of Life",
+			"source": "SCC",
+			"page": 179,
+			"type": "G",
+			"rarity": "unknown",
+			"entries": [
+				"Whoever drinks this concoction gains advantage on death saving throws for 24 hours."
 			]
 		},
 		{

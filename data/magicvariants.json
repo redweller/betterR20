@@ -626,7 +626,10 @@
 			"type": "GV",
 			"requires": [
 				{
-					"armor": true
+					"type": "HA"
+				},
+				{
+					"type": "MA"
 				}
 			],
 			"inherits": {

@@ -2602,6 +2602,9 @@
 			"classSource": "PHB",
 			"level": 2,
 			"isClassFeatureVariant": true,
+			"consumes": {
+				"name": "Wild Shape"
+			},
 			"entries": [
 				"{@i 2nd-level druid {@variantrule optional class features|tce|optional feature}}",
 				"You gain the ability to summon a spirit that assumes an animal form: as an action, you can expend a use of your Wild Shape feature to cast the {@spell find familiar} spell, without material components.",
@@ -2616,6 +2619,9 @@
 			"classSource": "PHB",
 			"level": 2,
 			"isClassFeatureVariant": true,
+			"consumes": {
+				"name": "Wild Shape"
+			},
 			"entries": [
 				"{@i 2nd-level druid feature (enhances Wild Shape)}",
 				"You gain the ability to summon a spirit that assumes an animal form: as an action, you can expend a use of your Wild Shape feature to cast the {@spell find familiar} spell, without material components.",
@@ -3422,6 +3428,10 @@
 			"subclassSource": "PHB",
 			"level": 10,
 			"header": 2,
+			"consumes": {
+				"name": "Wild Shape",
+				"amount": 2
+			},
 			"entries": [
 				"At 10th level, you can expend two uses of Wild Shape at the same time to transform into an {@creature air elemental}, an {@creature earth elemental}, a {@creature fire elemental}, or a {@creature water elemental}."
 			]
@@ -3560,6 +3570,9 @@
 			"subclassSource": "TCE",
 			"level": 2,
 			"header": 1,
+			"consumes": {
+				"name": "Wild Shape"
+			},
 			"entries": [
 				"At 2nd level, you gain the ability to channel magic into your spores. As an action, you can expend a use of your Wild Shape feature to awaken those spores, rather than transforming into a beast form, and you gain 4 temporary hit points for each level you have in this class. While this feature is active, you gain the following benefits:",
 				{
@@ -3731,6 +3744,9 @@
 			"subclassSource": "TCE",
 			"level": 2,
 			"header": 1,
+			"consumes": {
+				"name": "Wild Shape"
+			},
 			"entries": [
 				"{@i 2nd-level Circle of the Stars feature}",
 				"As a bonus action, you can expend a use of your Wild Shape feature to take on a starry form, rather than transforming into a beast.",
@@ -3903,6 +3919,9 @@
 			"subclassSource": "TCE",
 			"level": 2,
 			"header": 1,
+			"consumes": {
+				"name": "Wild Shape"
+			},
 			"entries": [
 				"{@i 2nd-level Circle of Wildfire feature}",
 				"You can summon the primal spirit bound to your soul. As an action, you can expend one use of your Wild Shape feature to summon your wildfire spirit, rather than assuming a beast form.",
@@ -4047,6 +4066,9 @@
 			"subclassSource": "UA2020SubclassesPt3",
 			"level": 2,
 			"header": 1,
+			"consumes": {
+				"name": "Wild Shape"
+			},
 			"entries": [
 				"{@i 2nd-level Circle of the Stars feature}",
 				"You gain the ability to harness constellations' power to alter your form. As an action, you can expend a use of your Wild Shape feature to take on a starry form rather than transforming into a beast.",
@@ -4215,6 +4237,9 @@
 			"subclassSource": "UAClericDruidWizard",
 			"level": 2,
 			"header": 1,
+			"consumes": {
+				"name": "Wild Shape"
+			},
 			"entries": [
 				"{@i 2nd-level Circle of Wildfire feature}",
 				"You can summon the primal spirit bound to your soul. As an action, you can expend one use of your Wild Shape feature to summon your {@creature wildfire spirit|UAClericDruidWizard}, rather than assuming a beast form.",

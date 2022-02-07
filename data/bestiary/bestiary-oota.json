@@ -311,7 +311,18 @@
 			"page": 96,
 			"_copy": {
 				"name": "Giant Badger",
-				"source": "MM"
+				"source": "MM",
+				"_mod": {
+					"trait": {
+						"mode": "appendArr",
+						"items": {
+							"name": "Tunneler",
+							"entries": [
+								"When the badger burrows, it leaves tunnels behind."
+							]
+						}
+					}
+				}
 			},
 			"ac": [
 				{
@@ -1702,7 +1713,7 @@
 						"items": {
 							"name": "Wretched",
 							"entries": [
-								"Gash has disadvantage on Wisdom checks and Wisdom saving throws because of the physical and mental abuse he has suffered. A lesser restoration spell rids him of these effects."
+								"Gash has disadvantage on Wisdom checks and Wisdom saving throws because of the physical and mental abuse he has suffered. A {@spell lesser restoration} spell rids him of these effects."
 							]
 						}
 					}
@@ -2943,7 +2954,7 @@
 				{
 					"name": "Armor of Shadows (Recharges after a Short or Long Rest)",
 					"entries": [
-						"Narrak casts mage armor on himself"
+						"Narrak casts {@spell mage armor} on himself"
 					]
 				},
 				{

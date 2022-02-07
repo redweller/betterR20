@@ -1869,7 +1869,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The staff is {@condition incapacitated} while in the area of an antimagic field. If targeted by dispel magic, the staff must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
+						"The staff is {@condition incapacitated} while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the staff must succeed on a Constitution saving throw against the caster's spell save DC or fall {@condition unconscious} for 1 minute."
 					]
 				},
 				{
@@ -1963,7 +1963,7 @@
 				{
 					"name": "Feather Fall",
 					"entries": [
-						"The rider wears a magic ring with which it can cast the feather fall spell on itself once as a reaction to falling. After the spell is cast, the ring becomes nonmagical."
+						"The rider wears a magic ring with which it can cast the {@spell feather fall} spell on itself once as a reaction to falling. After the spell is cast, the ring becomes nonmagical."
 					]
 				}
 			],
@@ -5259,7 +5259,7 @@
 						"items": {
 							"name": "Special Equipment",
 							"entries": [
-								"Nar'l carries a vial containing three doses of eyescratch, a contact poison. A creature that comes into contact with the poison must succeed on a {@dc 14} Constitution saving throw or be {@condition poisoned} for 1 hour and {@condition blinded} while {@condition poisoned} in this way. A lesser restoration spell or similar magic ends the effect."
+								"Nar'l carries a vial containing three doses of eyescratch, a contact poison. A creature that comes into contact with the poison must succeed on a {@dc 14} Constitution saving throw or be {@condition poisoned} for 1 hour and {@condition blinded} while {@condition poisoned} in this way. A {@spell lesser restoration} spell or similar magic ends the effect."
 							]
 						}
 					}
@@ -5400,7 +5400,7 @@
 				{
 					"name": "Repairable",
 					"entries": [
-						"As long as it has at least 1 hit point remaining, the nimblewright regains 1 hit point when a mending spell is cast on it."
+						"As long as it has at least 1 hit point remaining, the nimblewright regains 1 hit point when a {@spell mending} spell is cast on it."
 					]
 				},
 				{
@@ -6134,7 +6134,7 @@
 				{
 					"name": "Arcane Ward",
 					"entries": [
-						"Remallia has a magical ward that has 30 hit points. Whenever she takes damage, the ward takes the damage instead. If the ward is reduced to 0 hit points, Remallia takes any remaining damage. When Remallia casts an abjuration spell of 1st level or higher, the ward regains a number of hit points equal to twice the level of the spell. This applies to any of the following spells she casts: alarm. mage armor, shield, arcane lock, counterspell, dispel magic, banishment, stoneskin, globe of invulnerability and symbol"
+						"Remallia has a magical ward that has 30 hit points. Whenever she takes damage, the ward takes the damage instead. If the ward is reduced to 0 hit points, Remallia takes any remaining damage. When Remallia casts an abjuration spell of 1st level or higher, the ward regains a number of hit points equal to twice the level of the spell. This applies to any of the following spells she casts: {@spell alarm}. mage armor, shield, arcane lock, counterspell, {@spell dispel magic}, banishment, stoneskin, globe of invulnerability and symbol"
 					]
 				}
 			],

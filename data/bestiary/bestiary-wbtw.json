@@ -1364,7 +1364,7 @@
 				{
 					"name": "Petrifying Breath {@recharge 5}",
 					"entries": [
-						"Envy exhales petrifying gas in a 30-foot cone. Each creature in that area must succeed on a {@dc 13} Constitution saving throw. On a failed save, a target begins to turn to stone and is {@condition restrained}. The {@condition restrained} target must repeat the saving throw at the end of its next turn. On a success, the effect ends on the target. On a failure, the target is {@condition petrified} until freed by the greater restoration spell or other magic."
+						"Envy exhales petrifying gas in a 30-foot cone. Each creature in that area must succeed on a {@dc 13} Constitution saving throw. On a failed save, a target begins to turn to stone and is {@condition restrained}. The {@condition restrained} target must repeat the saving throw at the end of its next turn. On a success, the effect ends on the target. On a failure, the target is {@condition petrified} until freed by the {@spell greater restoration} spell or other magic."
 					]
 				}
 			],
@@ -3527,7 +3527,7 @@
 				{
 					"name": "Levitate",
 					"entries": [
-						"While wearing boots of levitation, Molliver casts levitate (self only)."
+						"While wearing boots of levitation, Molliver casts {@spell levitate} (self only)."
 					]
 				}
 			],
@@ -4029,7 +4029,7 @@
 				{
 					"name": "Moon Ray (Gleam Only; 3/Day)",
 					"entries": [
-						"{@atk rs} {@hit 5} to hit, range 60 ft., one creature. {@h}12 ({@damage 2d8 + 3}) radiant damage, and the target must succeed on a {@dc 13} Wisdom saving throw or be transformed into a bat for 1 minute, as though affected by a polymorph spell. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+						"{@atk rs} {@hit 5} to hit, range 60 ft., one creature. {@h}12 ({@damage 2d8 + 3}) radiant damage, and the target must succeed on a {@dc 13} Wisdom saving throw or be transformed into a bat for 1 minute, as though affected by a {@spell polymorph} spell. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 					]
 				},
 				{
@@ -4709,7 +4709,7 @@
 				{
 					"name": "Revivify (Recharges at the Next Dawn)",
 					"entries": [
-						"While holding Steel, Strongheart casts revivify."
+						"While holding Steel, Strongheart casts {@spell revivify}."
 					]
 				}
 			],
@@ -4945,7 +4945,7 @@
 				{
 					"name": "Antimagic Susceptibility",
 					"entries": [
-						"The tin soldier is incapacitated while in the area of an antimagic field. If targeted by dispel magic, the tin soldier must succeed on a Constitution saving throw against the caster's spell save DC or fall unconscious for 1 minute."
+						"The tin soldier is incapacitated while in the area of an {@spell antimagic field}. If targeted by {@spell dispel magic}, the tin soldier must succeed on a Constitution saving throw against the caster's spell save DC or fall unconscious for 1 minute."
 					]
 				},
 				{
