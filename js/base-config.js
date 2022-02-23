@@ -269,6 +269,82 @@ function baseConfig () {
 		d20plus.cfg.current[group][key] = val;
 	};
 
+	d20plus.cfg.getWikiSummary = () => {
+		const getDefaultValue = (group, key, setting) => {
+			switch (setting.type) {
+				case "_SHEET_ATTRIBUTE_PC": return Object.values(PC_SHEET_ATTRIBUTES).find(it => it.ogl === setting.default)?.name ?? setting.default;
+				case "_SHEET_ATTRIBUTE": return Object.values(NPC_SHEET_ATTRIBUTES).find(it => it.ogl === setting.default)?.name ?? setting.default;
+
+				default: return setting.default;
+			}
+		};
+
+		const getOptions = (group, key, setting) => {
+			switch (setting._type) {
+				case "_enum": return d20plus.cfg.getCfgEnumVals(group, key, setting);
+
+				case "_SHEET_ATTRIBUTE_PC": return Object.values(PC_SHEET_ATTRIBUTES).map(it => it.name);
+				case "_SHEET_ATTRIBUTE": return Object.values(NPC_SHEET_ATTRIBUTES).map(it => it.name);
+
+				case "_FORMULA": return d20plus.formulas._options;
+				case "_WHISPERMODE": return d20plus.whisperModes;
+
+				case "_ADVANTAGEMODE": return d20plus.advantageModes;
+				case "_DAMAGEMODE": return d20plus.damageModes;
+
+				case "_slider": {
+					const sliderMeta = d20plus.cfg.getCfgSliderVals(group, key);
+					return [sliderMeta.min, sliderMeta.max];
+				}
+
+				default: return null;
+			}
+		};
+
+		return Object.entries(CONFIG_OPTIONS)
+			.map(([group, groupMeta]) => {
+				return {
+					groupName: groupMeta._name,
+					settings: Object.entries(groupMeta)
+						.map(([key, setting]) => {
+							if (key.startsWith("_")) return null;
+
+							const options = getOptions(group, key, setting);
+
+							return {
+								name: setting.name,
+								isPlayerEditable: !!setting._player,
+								default: getDefaultValue(group, key, setting),
+								options,
+							};
+						})
+						.filter(Boolean),
+				};
+			});
+	};
+
+	d20plus.cfg.getWikiSummaryMarkdown = () => {
+		return d20plus.cfg.getWikiSummary()
+			.map(group => {
+				let markdown = `## ${group.groupName}\n`;
+				markdown += "TODO: Add description\n\n### Settings\n\n";
+
+				group.settings
+					.forEach(setting => {
+						markdown += `- **${setting.name}**${(!setting.default && setting.default !== false) ? "" : ` *(default: ${setting.default})*`}\n`;
+
+						if (setting.options) {
+							markdown += "	Possible options are:\n";
+							setting.options.forEach(option => markdown += `	- ${option}\n`);
+						}
+						markdown += "\n";
+					});
+
+				return markdown.replaceAll(/((&quot;)|")/g, "`");
+			})
+			.join("");
+	};
+
 	d20plus.cfg.makeTabPane = ($addTo, headers, content) => {
 		if (headers.length !== content.length) throw new Error("Tab header and content length were not equal!");
 
