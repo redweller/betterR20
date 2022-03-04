@@ -78,7 +78,7 @@ function baseUi () {
 				width: 30,
 				position: "absolute",
 				left: 20,
-				top: $wrpBtnsMain.height() + 45,
+				top: $wrpBtnsMain.height() + 90,
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
 				zIndex: 10600,
