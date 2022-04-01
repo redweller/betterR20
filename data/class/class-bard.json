@@ -1922,17 +1922,17 @@
 					"items": [
 						{
 							"type": "item",
-							"name": "Ability Check.",
+							"name": "Ability Check",
 							"entry": "When the creature rolls the Bardic Inspiration die to add it to an ability check, the creature can roll the Bardic Inspiration die again and choose which roll to use, as the mote pops and emits colorful, harmless sparks for a moment."
 						},
 						{
 							"type": "item",
-							"name": "Attack Roll.",
+							"name": "Attack Roll",
 							"entry": "Immediately after the creature rolls the Bardic Inspiration die to add it to an attack roll against a target, the mote thunderously shatters. The target and each creature of your choice that you can see within 5 feet of it must succeed on a Constitution saving throw against your spell save DC or take thunder damage equal to the number rolled on the Bardic Inspiration die."
 						},
 						{
 							"type": "item",
-							"name": "Saving Throw.",
+							"name": "Saving Throw",
 							"entry": "Immediately after the creature rolls the Bardic Inspiration die and adds it to a saving throw, the mote vanishes with the sound of soft music, causing the creature to gain temporary hit points equal to the number rolled on the Bardic Inspiration die plus your Charisma modifier (minimum of 1 temporary hit point)."
 						}
 					]

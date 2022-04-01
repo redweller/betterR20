@@ -1430,7 +1430,7 @@
 												},
 												{
 													"type": "item",
-													"name": "Clan Names",
+													"name": "Clan Names:",
 													"entry": "Balderk, Battlehammer, Brawnanvil, Dankil, Fireforge, Frostbeard, Gorunn, Holderhek, Ironfist, Loderr, Lutgehr, Rumnaheim, Strakeln, Torunn, Ungart"
 												}
 											]
@@ -1741,22 +1741,26 @@
 												{
 													"type": "item",
 													"name": "Autumn",
-													"entry": "is the season of peace and goodwill, when summer's harvest is shared with all."
+													"entry": "is the season of peace and goodwill, when summer's harvest is shared with all.",
+													"nameDot": false
 												},
 												{
 													"type": "item",
 													"name": "Winter",
-													"entry": "is the season of contemplation and dolor, when the vibrant energy of the world slumbers."
+													"entry": "is the season of contemplation and dolor, when the vibrant energy of the world slumbers.",
+													"nameDot": false
 												},
 												{
 													"type": "item",
 													"name": "Spring",
-													"entry": "is the season of cheerfulness and celebration, marked by merriment as winter's sorrow passes."
+													"entry": "is the season of cheerfulness and celebration, marked by merriment as winter's sorrow passes.",
+													"nameDot": false
 												},
 												{
 													"type": "item",
 													"name": "Summer",
-													"entry": "is the season of boldness and aggression, a time of unfettered energy."
+													"entry": "is the season of boldness and aggression, a time of unfettered energy.",
+													"nameDot": false
 												}
 											]
 										},
@@ -4395,6 +4399,14 @@
 			]
 		},
 		{
+			"name": "Kender",
+			"source": "UA2022HeroesOfKrynn",
+			"entries": [
+				"Native to the world of Krynn, Kender are diminutive Humanoids that look like humans with pointed ears and diverse appearances. Kender have a supernatural curiosity that drives them on to adventures big and small. This curiosity is said to be connected to the whimsical magic of the Feywild, that some believe kender have a high affinity for. Due to their curiosity, many kender have found themselves falling through gates and portals to other planes and worlds.",
+				"Unknown to most mortals, a magical phenomenon surrounds a kender. Spurred by their curiosity and love for trinkets, curios, and keepsakes, a kender's pouches or pockets will be magically filled with these objects. No one knows where these objects come from, not even the kender. This has led many kender to be mislabeled as thieves when they fish these items out of their pockets."
+			]
+		},
+		{
 			"name": "Kenku",
 			"source": "MPMM",
 			"entries": [
@@ -5254,12 +5266,12 @@
 									"items": [
 										{
 											"type": "item",
-											"name": "Female Names",
+											"name": "Female Names:",
 											"entry": "Bozzri, Dhazdoro, Erinimachis, Ghalantzo, Halafoti, Kerania, Mitévra, Philoprodis, Tavromiki, Ypoudoris"
 										},
 										{
 											"type": "item",
-											"name": "Male Names",
+											"name": "Male Names:",
 											"entry": "Bamvros, Fotiyinos, Halafotios, Keranios, Menetavro, Nikavros, Prodos, Rhordon, Tavrostenes, Thyrogog"
 										}
 									]

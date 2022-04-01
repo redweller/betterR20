@@ -108,10 +108,35 @@
 			"hasToken": true
 		},
 		{
+			"name": "Asha Vandree",
+			"isNpc": true,
+			"isNamedCreature": true,
+			"source": "OotA",
+			"page": 9,
+			"_copy": {
+				"name": "Priest",
+				"source": "MM",
+				"_trait": {
+					"name": "Drow",
+					"source": "PHB"
+				},
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "the priest",
+						"with": "Asha",
+						"flags": "i"
+					}
+				}
+			}
+		},
+		{
 			"name": "Awakened Zurkhwood",
 			"source": "OotA",
 			"page": 230,
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "plant",
 			"alignment": [
 				"U"
@@ -213,7 +238,9 @@
 			"name": "Bridesmaid of Zuggtmoy",
 			"source": "OotA",
 			"page": 230,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "plant",
 			"alignment": [
 				"C",
@@ -349,7 +376,9 @@
 			"name": "Chamberlain of Zuggtmoy",
 			"source": "OotA",
 			"page": 230,
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "plant",
 			"alignment": [
 				"C",
@@ -449,7 +478,9 @@
 			"name": "Chuul Spore Servant",
 			"source": "OotA",
 			"page": 228,
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "plant",
 			"alignment": [
 				"U"
@@ -528,7 +559,9 @@
 			"isNpc": true,
 			"source": "OotA",
 			"page": 82,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -695,7 +728,9 @@
 			"isNpc": true,
 			"source": "OotA",
 			"page": 231,
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -1001,7 +1036,9 @@
 			"name": "Drow Spore Servant",
 			"source": "OotA",
 			"page": 229,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "plant",
 			"alignment": [
 				"U"
@@ -1118,7 +1155,9 @@
 			"name": "Duergar Darkhaft",
 			"source": "OotA",
 			"page": 226,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -1257,7 +1296,9 @@
 			"name": "Duergar Keeper of the Flame",
 			"source": "OotA",
 			"page": 226,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -1427,7 +1468,9 @@
 			"name": "Duergar Spore Servant",
 			"source": "OotA",
 			"page": 229,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "plant",
 			"alignment": [
 				"U"
@@ -1522,7 +1565,9 @@
 			"name": "Emerald Enclave Scout",
 			"source": "OotA",
 			"page": 130,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -1757,7 +1802,9 @@
 			"name": "Giant Riding Lizard",
 			"source": "OotA",
 			"page": 131,
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "beast",
 			"alignment": [
 				"U"
@@ -1834,13 +1881,16 @@
 							"items": {
 								"name": "Camouflage",
 								"entries": [
-									"The octopus has advantage on Dexterity (Stealth) checks."
+									"The octopus has advantage on Dexterity ({@skill Stealth}) checks."
 								]
 							}
 						},
 						{
 							"mode": "removeArr",
-							"names": "Hold Breath"
+							"names": [
+								"Hold Breath",
+								"Water Breathing"
+							]
 						}
 					]
 				}
@@ -1901,7 +1951,9 @@
 			"isNpc": true,
 			"source": "OotA",
 			"page": 232,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -2030,10 +2082,51 @@
 			"hasToken": true
 		},
 		{
+			"name": "Hanne Hallen",
+			"isNpc": true,
+			"isNamedCreature": true,
+			"source": "OotA",
+			"page": 171,
+			"_copy": {
+				"name": "Drow",
+				"source": "MM",
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "the drow",
+						"with": "Hanne",
+						"flags": "i"
+					}
+				}
+			},
+			"ac": [
+				12,
+				{
+					"ac": 15,
+					"condition": "with {@spell mage armor}",
+					"braces": true
+				}
+			],
+			"int": 17,
+			"skill": {
+				"perception": "+2",
+				"stealth": "+4",
+				"arcana": "+5",
+				"investigation": "+5"
+			},
+			"languages": [
+				"Elvish",
+				"Undercommon",
+				"Common"
+			]
+		},
+		{
 			"name": "Hook Horror Spore Servant",
 			"source": "OotA",
 			"page": 68,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "plant",
 			"alignment": [
 				"U"
@@ -2139,7 +2232,9 @@
 				"name": "Basilisk",
 				"source": "MM"
 			},
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"ac": [
 				{
 					"ac": 11,
@@ -2177,7 +2272,9 @@
 				"name": "Hook Horror",
 				"source": "MM"
 			},
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"ac": [
 				{
 					"ac": 10,
@@ -2204,7 +2301,9 @@
 			"name": "Ixitxachitl",
 			"source": "OotA",
 			"page": 225,
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -2279,7 +2378,9 @@
 			"name": "Ixitxachitl Cleric",
 			"source": "OotA",
 			"page": 225,
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -2465,7 +2566,9 @@
 					}
 				}
 			},
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"ac": [
 				{
 					"ac": 13,
@@ -2598,7 +2701,9 @@
 			"name": "Lords' Alliance Guard",
 			"source": "OotA",
 			"page": 131,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -2671,7 +2776,9 @@
 			"name": "Lords' Alliance Spy",
 			"source": "OotA",
 			"page": 131,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -2799,37 +2906,37 @@
 									"items": [
 										{
 											"type": "item",
-											"name": "1. Charm Ray.",
+											"name": "1. Charm Ray",
 											"style": "italic",
 											"entry": "The targeted creature must succeed on a {@dc 16} Wisdom saving throw or be {@condition charmed} by the beholder for 1 hour, or until the beholder harms the creature."
 										},
 										{
 											"type": "item",
-											"name": "2. Paralyzing Ray.",
+											"name": "2. Paralyzing Ray",
 											"style": "italic",
 											"entry": "The targeted creature must succeed on a {@dc 16} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 										},
 										{
 											"type": "item",
-											"name": "3. Fear Ray.",
+											"name": "3. Fear Ray",
 											"style": "italic",
 											"entry": "The targeted creature must succeed on a {@dc 16} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 										},
 										{
 											"type": "item",
-											"name": "4. Slowing Ray.",
+											"name": "4. Slowing Ray",
 											"style": "italic",
 											"entry": "The targeted creature must succeed on a {@dc 16} Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn, not both. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 										},
 										{
 											"type": "item",
-											"name": "5. Enervation Ray.",
+											"name": "5. Enervation Ray",
 											"style": "italic",
 											"entry": "The targeted creature must make a {@dc 16} Constitution saving throw, taking 36 ({@damage 8d8}) necrotic damage on a failed save, or half as much damage on a successful one."
 										},
 										{
 											"type": "item",
-											"name": "6. Telekinetic Ray.",
+											"name": "6. Telekinetic Ray",
 											"style": "italic",
 											"entries": [
 												"If the target is a creature, it must succeed on a {@dc 16} Strength saving throw or the beholder moves it up to 30 feet in any direction. It is {@condition restrained} by the ray's telekinetic grip until the start of the beholder's next turn or until the beholder is {@condition incapacitated}.",
@@ -2851,11 +2958,36 @@
 			"hasToken": true
 		},
 		{
+			"name": "Mev Flintknapper",
+			"isNpc": true,
+			"isNamedCreature": true,
+			"source": "OotA",
+			"page": 103,
+			"_copy": {
+				"name": "Priest",
+				"source": "MM",
+				"_trait": {
+					"name": "Deep Gnome",
+					"source": "DMG"
+				},
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "the veteran",
+						"with": "Mev",
+						"flags": "i"
+					}
+				}
+			}
+		},
+		{
 			"name": "Narrak",
 			"isNpc": true,
 			"source": "OotA",
 			"page": 232,
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -3089,6 +3221,151 @@
 			"hasToken": true
 		},
 		{
+			"name": "Quenthel Baenre",
+			"isNpc": true,
+			"isNamedCreature": true,
+			"source": "OotA",
+			"page": 204,
+			"_copy": {
+				"name": "Drow Priestess of Lolth",
+				"source": "MM",
+				"_trait": {
+					"name": "Drow",
+					"source": "PHB"
+				},
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "the drow",
+						"with": "Quenthel",
+						"flags": "i"
+					},
+					"trait": {
+						"mode": "appendArr",
+						"items": {
+							"name": "Special Equipment",
+							"entries": [
+								"Quenthel wields a {@item tentacle rod}."
+							]
+						}
+					},
+					"action": {
+						"mode": "appendArr",
+						"items": {
+							"name": "Throne Activation",
+							"entries": [
+								"While seated on her throne, Quenthel can use an action on her turn to cast {@spell disintegrate} (save DC 19). A target that fails its saving throw takes {@dice 10d6 + 40} force damage. If this damage reduces the target to 0 hit points, it is disintegrated."
+							]
+						}
+					}
+				}
+			},
+			"ac": [
+				{
+					"ac": 19,
+					"from": [
+						"{@item +3 scale mail}"
+					]
+				}
+			],
+			"hp": {
+				"average": 132,
+				"formula": "24d8 + 24"
+			},
+			"int": 18,
+			"wis": 20,
+			"save": {
+				"con": "+8",
+				"wis": "+12",
+				"cha": "+11"
+			},
+			"skill": {
+				"insight": "+12",
+				"perception": "+12",
+				"religion": "+11",
+				"stealth": "+9"
+			},
+			"cr": "22",
+			"spellcasting": [
+				{
+					"name": "Innate Spellcasting",
+					"headerEntries": [
+						"Quenthel's spellcasting ability is Charisma (spell save {@dc 19}). She can innately cast the following spells, requiring no material components:"
+					],
+					"will": [
+						"{@spell dancing lights}"
+					],
+					"daily": {
+						"1e": [
+							"{@spell darkness}",
+							"{@spell faerie fire}",
+							"{@spell levitate} (self only)"
+						]
+					},
+					"ability": "cha"
+				},
+				{
+					"name": "Spellcasting",
+					"headerEntries": [
+						"Quenthel is a 20th-level spellcaster. Her spellcasting ability is Wisdom (save {@dc 20}, {@hit 12} to hit with spell attacks). The drow has the following cleric spells prepared:"
+					],
+					"will": [
+						"Any {@filter cleric spell up to 9th level|spells|level=0;1;2;3;4;5;6;7;8;9|class=cleric}."
+					],
+					"spells": {
+						"0": {
+							"spells": [
+								"{@spell guidance}",
+								"{@spell poison spray}",
+								"{@spell resistance}",
+								"{@spell spare the dying}",
+								"{@spell thaumaturgy}"
+							]
+						},
+						"1": {
+							"slots": 4,
+							"spells": [
+								"{@spell animal friendship}",
+								"{@spell cure wounds}",
+								"{@spell detect poison and disease}",
+								"{@spell ray of sickness}"
+							]
+						},
+						"2": {
+							"slots": 3,
+							"spells": [
+								"{@spell lesser restoration}",
+								"{@spell protection from poison}",
+								"{@spell web}"
+							]
+						},
+						"3": {
+							"slots": 3,
+							"spells": [
+								"{@spell conjure animals} (2 giant spiders)",
+								"{@spell dispel magic}"
+							]
+						},
+						"4": {
+							"slots": 3,
+							"spells": [
+								"{@spell divination}",
+								"{@spell freedom of movement}"
+							]
+						},
+						"5": {
+							"slots": 2,
+							"spells": [
+								"{@spell insect plague}",
+								"{@spell mass cure wounds}"
+							]
+						}
+					},
+					"ability": "wis"
+				}
+			]
+		},
+		{
 			"name": "Regenerating Black Pudding",
 			"source": "OotA",
 			"page": 211,
@@ -3203,7 +3480,7 @@
 			"hasToken": true
 		},
 		{
-			"name": "Shedrak",
+			"name": "Shedrak of the Eyes",
 			"isNpc": true,
 			"source": "OotA",
 			"page": 176,
@@ -3449,11 +3726,26 @@
 			"hasToken": true
 		},
 		{
+			"name": "Svirfneblin Wererat",
+			"source": "OotA",
+			"page": 97,
+			"_copy": {
+				"name": "Wererat",
+				"source": "MM",
+				"_trait": {
+					"name": "Deep Gnome",
+					"source": "DMG"
+				}
+			}
+		},
+		{
 			"name": "The Pudding King",
 			"isNpc": true,
 			"source": "OotA",
 			"page": 233,
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -3700,7 +3992,9 @@
 			"name": "Troglodyte Champion of Laogzed",
 			"source": "OotA",
 			"page": 229,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -3846,7 +4140,9 @@
 			"name": "Vampiric Ixitxachitl",
 			"source": "OotA",
 			"page": 226,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -3920,7 +4216,9 @@
 			"name": "Vampiric Ixitxachitl Cleric",
 			"source": "OotA",
 			"page": 226,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -4076,7 +4374,9 @@
 			"name": "Veteran of the Gauntlet",
 			"source": "OotA",
 			"page": 130,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -4163,6 +4463,53 @@
 			"hasToken": true
 		},
 		{
+			"name": "Viln Tirin",
+			"isNpc": true,
+			"isNamedCreature": true,
+			"source": "OotA",
+			"page": 202,
+			"_copy": {
+				"name": "Bandit Captain",
+				"source": "MM",
+				"_trait": {
+					"name": "Drow",
+					"source": "PHB"
+				},
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "the captain",
+						"with": "Viln",
+						"flags": "i"
+					},
+					"trait": {
+						"mode": "appendArr",
+						"items": {
+							"name": "Special Equipment",
+							"entries": [
+								"Viln carries a {@item scimitar of speed} and can make one attack with it as a bonus action on her turn. Viln also carries four daggers coated with {@item purple worm poison}. The poison on a dagger's blade is good for one hit only, whether the poison takes effect or not."
+							]
+						}
+					},
+					"action": {
+						"mode": "replaceArr",
+						"replace": "Scimitar",
+						"items": {
+							"name": "Scimitar",
+							"entries": [
+								"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. {@h}8 ({@damage 1d6 + 5}) slashing damage."
+							]
+						}
+					}
+				}
+			},
+			"alignment": [
+				"C",
+				"E"
+			],
+			"cr": "5"
+		},
+		{
 			"name": "Vizeran DeVir",
 			"isNpc": true,
 			"source": "OotA",
@@ -4242,7 +4589,9 @@
 			"isNamedCreature": true,
 			"source": "OotA",
 			"page": 233,
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -4357,7 +4706,9 @@
 				"name": "Basilisk",
 				"source": "MM"
 			},
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"ac": [
 				{
 					"ac": 13,
@@ -4419,7 +4770,9 @@
 					}
 				}
 			},
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"ac": [
 				{
 					"ac": 11,
@@ -4471,7 +4824,9 @@
 			"name": "Zhentarim Thug",
 			"source": "OotA",
 			"page": 131,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [

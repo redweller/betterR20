@@ -19,7 +19,9 @@
 					"page": 209
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -141,6 +143,7 @@
 				"incapacitated",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -153,7 +156,9 @@
 					"page": 212
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -256,6 +261,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -268,7 +274,9 @@
 					"page": 218
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "ooze",
 			"alignment": [
 				"L",
@@ -433,6 +441,7 @@
 				"incapacitated",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -445,7 +454,9 @@
 					"page": 202
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -551,6 +562,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -563,7 +575,9 @@
 					"page": 172
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "undead",
 				"tags": [
@@ -687,8 +701,7 @@
 				{
 					"name": "Multiattack",
 					"entries": [
-						"The alhoon makes two Chilling Grasp or Arcane",
-						"Bolt attacks."
+						"The alhoon makes two Chilling Grasp or Arcane Bolt attacks."
 					]
 				},
 				{
@@ -756,6 +769,7 @@
 				"incapacitated",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -768,7 +782,9 @@
 					"page": 130
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -856,7 +872,7 @@
 				{
 					"name": "False Appearance",
 					"entries": [
-						"If the alkilith is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the alkilith move or act, that creature must succeed on a {@dc 18} Intelligence (Investigation) check to discern that the alkilith isn't ordinary slime or fungus."
+						"If the alkilith is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the alkilith move or act, that creature must succeed on a {@dc 18} Intelligence ({@skill Investigation}) check to discern that the alkilith isn't ordinary slime or fungus."
 					]
 				},
 				{
@@ -931,6 +947,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -943,7 +960,9 @@
 					"page": 116
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"N",
@@ -1079,6 +1098,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -1091,7 +1111,9 @@
 					"page": 164
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -1189,7 +1211,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the amnizu's darkvision."
+						"Magical darkness doesn't impede the amnizu's {@sense darkvision}."
 					]
 				},
 				{
@@ -1290,6 +1312,7 @@
 				"charmed",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -1302,7 +1325,9 @@
 					"page": 231
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -1405,6 +1430,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -1417,7 +1443,9 @@
 					"page": 159
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -1540,6 +1568,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -1552,7 +1581,9 @@
 					"page": 209
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -1632,6 +1663,7 @@
 			"damageTags": [
 				"O"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -1644,7 +1676,9 @@
 					"page": 210
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -1779,6 +1813,7 @@
 				"charmed",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -1791,7 +1826,9 @@
 					"page": 210
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -1877,6 +1914,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -1889,7 +1927,9 @@
 					"page": 131
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -2014,6 +2054,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2026,7 +2067,9 @@
 					"page": 117
 				}
 			],
-			"size": "G",
+			"size": [
+				"G"
+			],
 			"type": {
 				"type": "monstrosity",
 				"tags": [
@@ -2199,6 +2242,7 @@
 			"conditionInflict": [
 				"incapacitated"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2211,7 +2255,9 @@
 					"page": 207
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -2246,7 +2292,7 @@
 			"cr": "2",
 			"action": [
 				{
-					"name": "Core",
+					"name": "Gore",
 					"entries": [
 						"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. {@h}14 ({@damage 2d8 + 5}) piercing damage. If the aurochs moved at least 20 feet straight toward the target immediately before the hit, the target takes an extra 9 ({@damage 2d8}) piercing damage, and the target must succeed on a {@dc 15} Strength saving throw or be knocked {@condition prone} if it is a creature."
 					]
@@ -2270,6 +2316,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2282,7 +2329,9 @@
 					"page": 195
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fey",
 				"tags": [
@@ -2392,7 +2441,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Fey Step (Recharge 4-6)",
+					"name": "Fey Step {@recharge 4}",
 					"entries": [
 						"The eladrin teleports, along with any equipment it is wearing or carrying, up to 30 feet to an unoccupied space it can see."
 					]
@@ -2443,6 +2492,7 @@
 			"conditionInflictSpell": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2455,7 +2505,9 @@
 					"page": 136
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -2584,6 +2636,7 @@
 			"conditionInflictSpell": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2597,7 +2650,9 @@
 					"page": 170
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -2803,6 +2858,7 @@
 				"charmed",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2815,7 +2871,9 @@
 					"page": 119
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -2953,6 +3011,7 @@
 			"conditionInflictLegendary": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -2965,7 +3024,9 @@
 					"page": 122
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -3054,7 +3115,7 @@
 				{
 					"name": "Shadow Stealth",
 					"entries": [
-						"While in dim light or darkness, the banderhobb takes the Hide action."
+						"While in dim light or darkness, the banderhobb takes the {@action Hide} action."
 					]
 				}
 			],
@@ -3088,6 +3149,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -3101,7 +3163,9 @@
 					"page": 143
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -3229,7 +3293,7 @@
 					]
 				},
 				{
-					"name": "Core",
+					"name": "Gore",
 					"entries": [
 						"{@atk mw} {@hit 17} to hit, reach 10 ft., one target. {@h}17 ({@damage 2d6 + 10}) piercing damage. If Baphomet moved at least 10 feet straight toward the target immediately before the hit, the target takes an extra 16 ({@damage 3d10}) piercing damage. If the target is a creature, it must succeed on a {@dc 25} Strength saving throw or be pushed up to 10 feet away and knocked {@condition prone}."
 					]
@@ -3258,7 +3322,7 @@
 				{
 					"name": "Charge (Costs 2 Actions)",
 					"entries": [
-						"Baphomet moves up to his speed without provoking opportunity attacks, then makes a Gore attack."
+						"Baphomet moves up to his speed without provoking {@action opportunity attack||opportunity attacks}, then makes a Gore attack."
 					]
 				}
 			],
@@ -3296,6 +3360,7 @@
 			"conditionInflictSpell": [
 				"charmed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -3308,7 +3373,9 @@
 					"page": 211
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -3435,6 +3502,7 @@
 				"invisible",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -3447,7 +3515,9 @@
 					"page": 123
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "fiend",
 			"alignment": [
 				"N",
@@ -3549,7 +3619,7 @@
 				{
 					"name": "Soul Feeding",
 					"entries": [
-						"The barghest can feed on the corpse of a Fey or Humanoid it killed within the past 10 minutes. This feeding takes at least 1 minute, and it destroys the corpse. The victim's soul is trapped in the barghest for 24 hours, after which time it is digested and the person is incapable of being revived. If the barghest dies before the soul is digested, the soul is released. While a soul is trapped in the barghest, any magic that tries to restore the soul to life has a 50 percent chance of failing and being wasted."
+						"The barghest can feed on the corpse of a Fey or Humanoid it killed within the past 10 minutes. This feeding takes at least 1 minute, and it destroys the corpse. The victim's soul is trapped in the barghest for 24 hours, after which time it is digested and the person is incapable of being revived. If the barghest dies before the soul is digested, the soul is released. While a soul is trapped in the barghest, any magic that tries to restore the soul to life has a {@chance 50} chance of failing and being wasted."
 					]
 				}
 			],
@@ -3618,6 +3688,7 @@
 			"conditionInflictSpell": [
 				"charmed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -3630,7 +3701,9 @@
 					"page": 120
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "aberration",
 			"alignment": [
 				"N",
@@ -3750,6 +3823,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -3762,7 +3836,9 @@
 					"page": 160
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -3918,6 +3994,7 @@
 			"conditionInflictSpell": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -3930,7 +4007,9 @@
 					"page": 160
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -4006,7 +4085,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the abishai's darkvision."
+						"Magical darkness doesn't impede the abishai's {@sense darkvision}."
 					]
 				},
 				{
@@ -4046,7 +4125,7 @@
 				{
 					"name": "Shadow Stealth",
 					"entries": [
-						"While in dim light or darkness, the abishai takes the Hide action."
+						"While in dim light or darkness, the abishai takes the {@action Hide} action."
 					]
 				}
 			],
@@ -4080,6 +4159,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4092,7 +4172,9 @@
 					"page": 211
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -4236,6 +4318,7 @@
 			"conditionInflictSpell": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4248,7 +4331,9 @@
 					"page": 161
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -4347,7 +4432,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the abishai's darkvision."
+						"Magical darkness doesn't impede the abishai's {@sense darkvision}."
 					]
 				},
 				{
@@ -4419,6 +4504,7 @@
 				"charmed",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4431,7 +4517,9 @@
 					"page": 127
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"C",
@@ -4568,6 +4656,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4580,7 +4669,9 @@
 					"page": 128
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -4636,14 +4727,14 @@
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "Slippery Oil.",
+									"name": "Slippery Oil",
 									"type": "item",
 									"entries": [
 										"Any non-boggle creature that enters the puddle or starts its turn there must succeed on a {@dc 11} Dexterity saving throw or fall {@condition prone}."
 									]
 								},
 								{
-									"name": "Sticky Oil.",
+									"name": "Sticky Oil",
 									"type": "item",
 									"entries": [
 										"Any non-boggle creature that enters the puddle or starts its turn there must succeed on a {@dc 11} Strength saving throw or be {@condition restrained}. On its turn, a creature can use an action to try to extricate itself, ending the effect and moving into the nearest unoccupied space of its choice with a successful {@dc 11} Strength check."
@@ -4667,14 +4758,14 @@
 									"name": "Slippery Oil",
 									"type": "item",
 									"entries": [
-										"The boggle has advantage on Dexterity (Acrobatics) checks made to escape bonds and end grapples, and it can move through openings large enough for a Tiny creature without squeezing."
+										"The boggle has advantage on Dexterity ({@skill Acrobatics}) checks made to escape bonds and end grapples, and it can move through openings large enough for a Tiny creature without squeezing."
 									]
 								},
 								{
 									"name": "Sticky Oil",
 									"type": "item",
 									"entries": [
-										"The boggle has advantage on Strength (Athletics) checks made to grapple and any ability check made to maintain a hold on another creature, a surface, or an object. The boggle can also climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+										"The boggle has advantage on Strength ({@skill Athletics}) checks made to grapple and any ability check made to maintain a hold on another creature, a surface, or an object. The boggle can also climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
 									]
 								}
 							]
@@ -4714,6 +4805,7 @@
 				"prone",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4726,7 +4818,9 @@
 					"page": 121
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "undead",
 			"alignment": [
 				"C",
@@ -4821,7 +4915,7 @@
 				{
 					"name": "Shadow Stealth",
 					"entries": [
-						"While in dim light or darkness, the boneclaw takes the Hide action."
+						"While in dim light or darkness, the boneclaw takes the {@action Hide} action."
 					]
 				}
 			],
@@ -4865,6 +4959,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4877,7 +4972,9 @@
 					"page": 139
 				}
 			],
-			"size": "C",
+			"size": [
+				"G"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -4945,6 +5042,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4957,7 +5055,9 @@
 					"page": 131
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -5061,6 +5161,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5073,7 +5174,9 @@
 					"page": 122
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "construct",
 			"alignment": [
 				"L",
@@ -5205,6 +5308,7 @@
 			"conditionInflict": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5217,7 +5321,9 @@
 					"page": 247
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -5367,6 +5473,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5379,7 +5486,9 @@
 					"page": 129
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -5457,6 +5566,7 @@
 				"poisoned",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5469,7 +5579,9 @@
 					"page": 130
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -5569,6 +5681,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5581,7 +5694,9 @@
 					"page": 212
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -5614,7 +5729,7 @@
 			"skill": {
 				"athletics": "+9",
 				"intimidation": "+5",
-				"perception": "-t-6"
+				"perception": "+6"
 			},
 			"passive": 16,
 			"languages": [
@@ -5681,6 +5796,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5693,7 +5809,9 @@
 					"page": 131
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -5744,7 +5862,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the chitine has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the chitine has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				},
 				{
@@ -5804,6 +5922,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5816,7 +5935,9 @@
 					"page": 123
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -5869,7 +5990,7 @@
 					]
 				},
 				{
-					"name": "Spicier Climb",
+					"name": "Spider Climb",
 					"entries": [
 						"The choker can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
 					]
@@ -5919,6 +6040,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -5931,7 +6053,9 @@
 					"page": 132
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "monstrosity",
 				"tags": [
@@ -6014,7 +6138,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the choldrith has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the choldrith has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				},
 				{
@@ -6089,6 +6213,7 @@
 			"conditionInflictSpell": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -6101,7 +6226,9 @@
 					"page": 125
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "construct",
 			"alignment": [
 				"U"
@@ -6150,7 +6277,7 @@
 				{
 					"name": "Earth Armor",
 					"entries": [
-						"The clockwork doesn't provoke opportunity attacks when it burrows."
+						"The clockwork doesn't provoke {@action opportunity attack||opportunity attacks} when it burrows."
 					]
 				},
 				{
@@ -6206,6 +6333,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -6218,7 +6346,9 @@
 					"page": 125
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "construct",
 			"alignment": [
 				"U"
@@ -6285,21 +6415,21 @@
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1-2: Confusion.",
+									"name": "1\u20132: Confusion",
 									"type": "item",
 									"entries": [
-										"On its next turn, the target must use its action to make one weapon attack against a random creature it can see within 30 feet of it, using whatever weapon it has in hand and moving beforehand if necessary to get in range. If it's holding no weapon, it makes an unarmed strike. If no creature is visible within 30 feet, it takes the Dash action, moving toward the nearest creature."
+										"On its next turn, the target must use its action to make one weapon attack against a random creature it can see within 30 feet of it, using whatever weapon it has in hand and moving beforehand if necessary to get in range. If it's holding no weapon, it makes an unarmed strike. If no creature is visible within 30 feet, it takes the {@action Dash} action, moving toward the nearest creature."
 									]
 								},
 								{
-									"name": "3-4: Paralysis.",
+									"name": "3\u20134: Paralysis",
 									"type": "item",
 									"entries": [
 										"The target is {@condition paralyzed} until the end of its next turn."
 									]
 								},
 								{
-									"name": "5-6: Poison.",
+									"name": "5\u20136: Poison",
 									"type": "item",
 									"entries": [
 										"The target takes 13 ({@damage 3d8}) poison damage."
@@ -6339,6 +6469,7 @@
 			"conditionInflict": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -6351,7 +6482,9 @@
 					"page": 126
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "construct",
 			"alignment": [
 				"U"
@@ -6479,6 +6612,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -6491,7 +6625,9 @@
 					"page": 126
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "construct",
 			"alignment": [
 				"U"
@@ -6594,6 +6730,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -6606,7 +6743,9 @@
 					"page": 146
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -6720,7 +6859,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Cloud Step (Recharge 4-6)",
+					"name": "Cloud Step {@recharge 4}",
 					"entries": [
 						"The giant teleports, along with any equipment it is wearing or carrying, up to 60 feet to an unoccupied space it can see."
 					]
@@ -6753,6 +6892,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -6765,7 +6905,9 @@
 					"page": 212
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -6880,6 +7022,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -6892,7 +7035,9 @@
 					"page": 127
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "plant",
 			"alignment": [
 				"C",
@@ -6934,7 +7079,7 @@
 					]
 				},
 				{
-					"name": "Spicier Climb",
+					"name": "Spider Climb",
 					"entries": [
 						"The corpse flower can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
 					]
@@ -7007,6 +7152,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7019,7 +7165,9 @@
 					"page": 133
 				}
 			],
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"type": "aberration",
 			"alignment": [
 				"U"
@@ -7093,6 +7241,7 @@
 				"AOE",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7105,7 +7254,9 @@
 					"page": 134
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -7159,7 +7310,7 @@
 				{
 					"name": "Light Sensitivity",
 					"entries": [
-						"While in bright light, the darkling has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+						"While in bright light, the darkling has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -7205,6 +7356,7 @@
 			"conditionInflict": [
 				"blinded"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7217,7 +7369,9 @@
 					"page": 134
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -7322,6 +7476,7 @@
 			"conditionInflict": [
 				"blinded"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7334,7 +7489,9 @@
 					"page": 124
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "aberration",
 				"tags": [
@@ -7452,6 +7609,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7464,7 +7622,9 @@
 					"page": 128
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "undead",
 				"tags": [
@@ -7614,6 +7774,7 @@
 				"blinded",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7626,7 +7787,9 @@
 					"page": 129
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "undead",
 				"tags": [
@@ -7719,7 +7882,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the deathlock's darkvision."
+						"Magical darkness doesn't impede the deathlock's {@sense darkvision}."
 					]
 				},
 				{
@@ -7787,6 +7950,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7799,7 +7963,9 @@
 					"page": 129
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "undead",
 				"tags": [
@@ -7886,7 +8052,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the deathlock has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the deathlock has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				},
 				{
@@ -7943,6 +8109,7 @@
 				"frightened",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -7955,7 +8122,9 @@
 					"page": 208
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -7990,21 +8159,21 @@
 				{
 					"name": "Beast of Burden",
 					"entries": [
-						"The rothe is considered to be one size larger for the purpose of determining its carrying capacity."
+						"The rothé is considered to be one size larger for the purpose of determining its carrying capacity."
 					]
 				}
 			],
 			"action": [
 				{
-					"name": "Core",
+					"name": "Gore",
 					"entries": [
-						"{@atk mw} {@hit 6} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d6 + 4}) piercing damage. If the roth£ moved at least 20 feet straight toward the target immediately before the hit, the target takes an extra 7 ({@damage 2d6}) piercing damage."
+						"{@atk mw} {@hit 6} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d6 + 4}) piercing damage. If the rothé moved at least 20 feet straight toward the target immediately before the hit, the target takes an extra 7 ({@damage 2d6}) piercing damage."
 					]
 				},
 				{
 					"name": "Dancing Lights",
 					"entries": [
-						"The rothe casts {@spell dancing lights}, requiring no spell components and using Wisdom as the spellcasting ability."
+						"The rothé casts {@spell dancing lights}, requiring no spell components and using Wisdom as the spellcasting ability."
 					]
 				}
 			],
@@ -8024,6 +8193,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -8036,7 +8206,9 @@
 					"page": 135
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -8163,6 +8335,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -8175,7 +8348,9 @@
 					"page": 139
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -8264,6 +8439,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -8277,7 +8453,9 @@
 					"page": 144
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -8420,21 +8598,21 @@
 							"items": [
 								{
 									"type": "item",
-									"name": "1\u20132 Beguiling Gaze",
+									"name": "1\u20132: Beguiling Gaze",
 									"entries": [
 										"The target is {@condition stunned} until the start of Demogorgon's next turn or until Demogorgon is no longer within line of sight."
 									]
 								},
 								{
 									"type": "item",
-									"name": "3\u20134 Confusing Gaze",
+									"name": "3\u20134: Confusing Gaze",
 									"entries": [
 										"The target suffers the effect of the {@spell confusion} spell without making a saving throw. The effect lasts until the start of Demogorgon's next turn. Demogorgon doesn't need to concentrate on the spell."
 									]
 								},
 								{
 									"type": "item",
-									"name": "5\u20136 Hypnotic Gaze",
+									"name": "5\u20136: Hypnotic Gaze",
 									"entries": [
 										"The target is {@condition charmed} by Demogorgon until the start of Demogorgon's next turn. Demogorgon chooses how the {@condition charmed} target uses its action, reaction, and movement."
 									]
@@ -8503,6 +8681,7 @@
 				"frightened",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -8515,7 +8694,9 @@
 					"page": 158
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -8613,6 +8794,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -8625,7 +8807,9 @@
 					"page": 159
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": {
 				"type": "aberration",
 				"tags": [
@@ -8749,6 +8933,7 @@
 				"invisible",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -8761,7 +8946,9 @@
 					"page": 138
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "undead",
 			"alignment": [
 				"C",
@@ -8871,6 +9058,7 @@
 			"conditionInflict": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -8883,7 +9071,9 @@
 					"page": 248
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -9032,6 +9222,7 @@
 			"conditionInflictSpell": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -9044,7 +9235,9 @@
 					"page": 139
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -9103,6 +9296,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -9115,7 +9309,9 @@
 					"page": 243
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -9240,6 +9436,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -9252,7 +9449,9 @@
 					"page": 213
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -9374,6 +9573,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -9386,7 +9586,9 @@
 					"page": 208
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "beast",
 			"alignment": [
 				"U"
@@ -9457,13 +9659,16 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
 			"name": "Dolphin Delighter",
 			"source": "MPMM",
 			"page": 97,
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -9585,7 +9790,9 @@
 					"page": 141
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -9720,6 +9927,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -9732,7 +9940,9 @@
 					"page": 182
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -9917,6 +10127,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -9929,7 +10140,9 @@
 					"page": 183
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -10078,6 +10291,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -10090,7 +10304,9 @@
 					"page": 184
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -10252,6 +10468,7 @@
 				"poisoned",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -10264,7 +10481,9 @@
 					"page": 184
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -10388,7 +10607,8 @@
 				{
 					"name": "Spectral Dagger (Recharges after a Short or Long Rest)",
 					"entries": [
-						"The drow conjures a floating, spectral dagger within 60 feet of itself. The drow can make a melee spell attack ({@hit 10} to hit) against one creature within 5 feet of the dagger. On a hit, the target takes 9 ({@damage 1d8 + 5}) force damage. The dagger lasts for 1 minute. As a bonus action on later turns, the drow can move the dagger up to 20 feet and repeat the attack against one creature within 5 feet of the dagger."
+						"The drow conjures a floating, spectral dagger within 60 feet of itself. The drow can make a melee spell attack ({@hit 10} to hit) against one creature within 5 feet of the dagger. On a hit, the target takes 9 ({@damage 1d8 + 5}) force damage.",
+						"The dagger lasts for 1 minute. As a bonus action on later turns, the drow can move the dagger up to 20 feet and repeat the attack against one creature within 5 feet of the dagger."
 					]
 				}
 			],
@@ -10438,6 +10658,7 @@
 			"conditionInflictSpell": [
 				"deafened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -10450,7 +10671,9 @@
 					"page": 186
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -10673,6 +10896,7 @@
 				"paralyzed",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -10685,7 +10909,9 @@
 					"page": 187
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -10851,6 +11077,7 @@
 				"poisoned",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -10863,7 +11090,9 @@
 					"page": 188
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -10960,7 +11189,7 @@
 				{
 					"name": "Multiattack",
 					"entries": [
-						"The duergar makes two Iron Fist attacks and two Stomping Foot attacks. After one of the attacks, the duergar can move up to its speed without provoking opportunity attacks. It can replace one of the attacks with a use of Flame Jet."
+						"The duergar makes two Iron Fist attacks and two Stomping Foot attacks. After one of the attacks, the duergar can move up to its speed without provoking {@action opportunity attack||opportunity attacks}. It can replace one of the attacks with a use of Flame Jet."
 					]
 				},
 				{
@@ -11019,6 +11248,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11031,7 +11261,9 @@
 					"page": 188
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "construct",
 				"tags": [
@@ -11145,6 +11377,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11157,7 +11390,9 @@
 					"page": 189
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -11280,6 +11515,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11292,7 +11528,9 @@
 					"page": 189
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -11423,6 +11661,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11435,7 +11674,9 @@
 					"page": 190
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "construct",
 				"tags": [
@@ -11542,6 +11783,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11554,7 +11796,9 @@
 					"page": 190
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -11657,6 +11901,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11669,7 +11914,9 @@
 					"page": 191
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -11743,7 +11990,7 @@
 				{
 					"name": "Shortsword",
 					"entries": [
-						"{@atk mw} {@hit 6} to hit, reach 5 ft., one target. {@h}7 (1 {@dice d6 + 4}) piercing damage, or 11 ({@damage 2d6 + 4}) piercing damage while under the effect of Enlarge."
+						"{@atk mw} {@hit 6} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d6 + 4}) piercing damage, or 11 ({@damage 2d6 + 4}) piercing damage while under the effect of Enlarge."
 					]
 				},
 				{
@@ -11799,6 +12046,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11811,7 +12059,9 @@
 					"page": 192
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -11951,6 +12201,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -11963,7 +12214,9 @@
 					"page": 193
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -12078,6 +12331,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -12090,7 +12344,9 @@
 					"page": 132
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -12253,6 +12509,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -12265,7 +12522,9 @@
 					"page": 202
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -12364,6 +12623,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -12376,7 +12636,9 @@
 					"page": 194
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"A"
@@ -12513,6 +12775,7 @@
 				"frightened",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -12525,7 +12788,9 @@
 					"page": 173
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "aberration",
 				"tags": [
@@ -12727,6 +12992,7 @@
 				"charmed",
 				"incapacitated"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -12739,7 +13005,9 @@
 					"page": 219
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "ooze",
 			"alignment": [
 				"L",
@@ -12905,6 +13173,7 @@
 				"paralyzed",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -12917,7 +13186,9 @@
 					"page": 200
 				}
 			],
-			"size": "G",
+			"size": [
+				"G"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -12989,7 +13260,7 @@
 				{
 					"name": "Flyby",
 					"entries": [
-						"The tempest doesn't provoke opportunity attacks when it flies out of an enemy's reach."
+						"The tempest doesn't provoke {@action opportunity attack||opportunity attacks} when it flies out of an enemy's reach."
 					]
 				},
 				{
@@ -13001,7 +13272,7 @@
 				{
 					"name": "Living Storm",
 					"entries": [
-						"The tempest is always at the center of a storm {@dice 1d6 + 4} miles in diameter. Heavy precipitation in the form of either rain or snow falls there, causing the area to be lightly obscured. Heavy rain also extinguishes open flames and imposes disadvantage on Wisdom (Perception) checks that rely on hearing. In addition, strong winds swirl in the area covered by the storm. The winds impose disadvantage on ranged attack rolls. They also extinguish open flames and disperse fog."
+						"The tempest is always at the center of a storm {@dice 1d6 + 4} miles in diameter. Heavy precipitation in the form of either rain or snow falls there, causing the area to be lightly obscured. Heavy rain also extinguishes open flames and imposes disadvantage on Wisdom ({@skill Perception}) checks that rely on hearing. In addition, strong winds swirl in the area covered by the storm. The winds impose disadvantage on ranged attack rolls. They also extinguish open flames and disperse fog."
 					]
 				},
 				{
@@ -13045,7 +13316,7 @@
 					]
 				},
 				{
-					"name": "Screaming Cale (Costs 3 Actions)",
+					"name": "Screaming Gale (Costs 3 Actions)",
 					"entries": [
 						"The tempest releases a blast of thunder and wind in a line that is 300 feet long and 20 feet wide. Objects in that area take 22 ({@damage 4d10}) thunder damage. Each creature there must succeed on a {@dc 21} Dexterity saving throw or take 22 ({@damage 4d10}) thunder damage and be flung up to 60 feet in a direction away from the line. If a thrown target collides with an immovable object (such as a wall or floor) or another creature, the target takes 3 ({@damage 1d6}) bludgeoning damage for every 10 feet it was thrown before impact. If the target collides with another creature, that other creature must succeed on a {@dc 19} Dexterity saving throw or take the same impact damage and be knocked {@condition prone}."
 					]
@@ -13087,6 +13358,7 @@
 				"prone",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13099,7 +13371,9 @@
 					"page": 213
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -13208,6 +13482,7 @@
 				"invisible",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13220,7 +13495,9 @@
 					"page": 214
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -13291,13 +13568,13 @@
 				{
 					"name": "Multiattack",
 					"entries": [
-						"The diviner makes three Arcane Burst attacks."
+						"The evoker makes three Arcane Burst attacks."
 					]
 				},
 				{
 					"name": "Arcane Burst",
 					"entries": [
-						"{@atk ms,rs} {@hit 7} to hit, reach 5 ft. or range 120 ft., one target. {@h}20 ({@damage 3d10 + 4}) force damage."
+						"{@atk ms,rs} {@hit 7} to hit, reach 5 ft. or range 120 ft., one target. {@h}20 ({@damage 3d10 + 3}) force damage."
 					]
 				},
 				{
@@ -13329,6 +13606,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13341,7 +13619,9 @@
 					"page": 238
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -13428,6 +13708,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13440,7 +13721,9 @@
 					"page": 203
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -13556,6 +13839,7 @@
 				"AOE",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13568,7 +13852,9 @@
 					"page": 147
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "giant",
 			"alignment": [
 				"L",
@@ -13674,6 +13960,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13686,7 +13973,9 @@
 					"page": 143
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N",
@@ -13748,7 +14037,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the firenewt's darkvision."
+						"Magical darkness doesn't impede the firenewt's {@sense darkvision}."
 					]
 				},
 				{
@@ -13804,6 +14093,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13816,7 +14106,9 @@
 					"page": 142
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -13907,6 +14199,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -13919,7 +14212,9 @@
 					"page": 144
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "elemental",
 			"alignment": [
 				"U"
@@ -14021,6 +14316,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -14033,7 +14329,9 @@
 					"page": 153
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -14111,12 +14409,6 @@
 					]
 				},
 				{
-					"name": "Aura of Blood Thirst",
-					"entries": [
-						"If the flind isn't {@condition incapacitated}, any creature with the Rampage trait can make a Bite attack as a bonus action while within 10 feet of the flind."
-					]
-				},
-				{
 					"name": "Flail of Paralysis",
 					"entries": [
 						"{@atk mw} {@hit 9} to hit, reach 10 ft., one target. {@h}10 ({@damage 1d10 + 5}) bludgeoning damage, and the target must succeed on a {@dc 16} Constitution saving throw or be {@condition paralyzed} until the end of its next turn."
@@ -14163,6 +14455,7 @@
 			"conditionInflict": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -14176,7 +14469,9 @@
 					"page": 146
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -14378,6 +14673,7 @@
 				"incapacitated",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -14390,7 +14686,9 @@
 					"page": 145
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -14508,6 +14806,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -14520,7 +14819,9 @@
 					"page": 148
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -14572,7 +14873,7 @@
 				{
 					"name": "Extra Heads",
 					"entries": [
-						"The giant has a 25 percent chance of having more than one head. If it has more than one, it has advantage on Wisdom (Perception) checks and on saving throws against being {@condition blinded}, {@condition charmed}, {@condition deafened}, {@condition frightened}, {@condition stunned}, or knocked {@condition unconscious}."
+						"The giant has a {@chance 25} chance of having more than one head. If it has more than one, it has advantage on Wisdom ({@skill Perception}) checks and on saving throws against being {@condition blinded}, {@condition charmed}, {@condition deafened}, {@condition frightened}, {@condition stunned}, or knocked {@condition unconscious}."
 					]
 				},
 				{
@@ -14646,6 +14947,7 @@
 				"RCH",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -14658,7 +14960,9 @@
 					"page": 223
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "elemental",
 			"alignment": [
 				"U"
@@ -14770,6 +15074,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -14782,7 +15087,9 @@
 					"page": 125
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "aberration",
 				"tags": [
@@ -14865,48 +15172,48 @@
 				{
 					"name": "Eye Rays",
 					"entries": [
-						"The gauth shoots three of the following magical eye rays at random (roll three d6s, and reroll duplicates), targeting one to three creatures it can see within 120 feet of it:",
+						"The gauth shoots three of the following magical eye rays at random (roll three {@dice d6}s, and reroll duplicates), targeting one to three creatures it can see within 120 feet of it:",
 						{
 							"type": "list",
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1: Devour Magic Ray.",
+									"name": "1: Devour Magic Ray",
 									"entries": [
 										"The target must succeed on a {@dc 14} Dexterity saving throw or have one of its magic items lose all magical properties until the start of the gauth's next turn. If the object is a charged item, it also loses {@dice 1d4} charges. Determine the affected item randomly, ignoring single-use items such as potions and scrolls."
 									],
 									"type": "item"
 								},
 								{
-									"name": "2: Enervation Ray.",
+									"name": "2: Enervation Ray",
 									"entries": [
 										"The target must make a {@dc 14} Constitution saving throw, taking 18 ({@damage 4d8}) necrotic damage on a failed save, or half as much damage on a successful one."
 									],
 									"type": "item"
 								},
 								{
-									"name": "3: Fire Ray.",
+									"name": "3: Fire Ray",
 									"entries": [
 										"The target must succeed on a {@dc 14} Dexterity saving throw or take 22 ({@damage 4d10}) fire damage."
 									],
 									"type": "item"
 								},
 								{
-									"name": "4: Paralyzing Ray.",
+									"name": "4: Paralyzing Ray",
 									"entries": [
 										"The target must succeed on a {@dc 14} Constitution saving throw or be {@condition paralyzed} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 									],
 									"type": "item"
 								},
 								{
-									"name": "5: Pushing Ray.",
+									"name": "5: Pushing Ray",
 									"entries": [
 										"The target must succeed on a {@dc 14} Strength saving throw or be pushed up to 15 feet away from the gauth and have its speed halved until the start of the gauth's next turn."
 									],
 									"type": "item"
 								},
 								{
-									"name": "6: Sleep Ray.",
+									"name": "6: Sleep Ray",
 									"entries": [
 										"The target must succeed on a {@dc 14} Wisdom saving throw or fall asleep and remain {@condition unconscious} for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on Constructs and Undead."
 									],
@@ -14949,6 +15256,7 @@
 				"stunned",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -14961,7 +15269,9 @@
 					"page": 126
 				}
 			],
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"type": {
 				"type": "aberration",
 				"tags": [
@@ -15013,7 +15323,7 @@
 				{
 					"name": "Mimicry",
 					"entries": [
-						"The gazer can mimic simple sounds of speech it has heard, in any language. A creature that hears the sounds can tell they are imitations with a successful {@dc 10} Wisdom (Insight) check."
+						"The gazer can mimic simple sounds of speech it has heard, in any language. A creature that hears the sounds can tell they are imitations with a successful {@dc 10} Wisdom ({@skill Insight}) check."
 					]
 				}
 			],
@@ -15027,34 +15337,34 @@
 				{
 					"name": "Eye Rays",
 					"entries": [
-						"The gazer shoots two of the following magical eye rays at random (roll two d4s, and reroll duplicates), choosing one or two targets it can see within 60 feet of it:",
+						"The gazer shoots two of the following magical eye rays at random (roll two {@dice d4}s, and reroll duplicates), choosing one or two targets it can see within 60 feet of it:",
 						{
 							"type": "list",
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1: Dazing Ray.",
+									"name": "1: Dazing Ray",
 									"entries": [
 										"The targeted creature must succeed on a {@dc 12} Wisdom saving throw or be {@condition charmed} until the start of the gazer's next turn. While the target is {@condition charmed} in this way, its speed is halved, and it has disadvantage on attack rolls."
 									],
 									"type": "item"
 								},
 								{
-									"name": "2: Fear Ray.",
+									"name": "2: Fear Ray",
 									"entries": [
 										"The targeted creature must succeed on a {@dc 12} Wisdom saving throw or be {@condition frightened} until the start of the gazer's next turn."
 									],
 									"type": "item"
 								},
 								{
-									"name": "3: Frost Ray.",
+									"name": "3: Frost Ray",
 									"entries": [
 										"The target must succeed on a {@dc 12} Dexterity saving throw or take 10 ({@damage 3d6}) cold damage."
 									],
 									"type": "item"
 								},
 								{
-									"name": "4: Telekinetic Ray.",
+									"name": "4: Telekinetic Ray",
 									"entries": [
 										"If the target is a creature that is Medium or smaller, it must succeed on a {@dc 12} Strength saving throw or be moved up to 30 feet directly away from the gazer. If the target is a Tiny object that isn't being worn or carried, the gazer moves it up to 30 feet in any direction. The gazer can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a container."
 									],
@@ -15113,6 +15423,7 @@
 				"charmed",
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15126,7 +15437,9 @@
 					"page": 173
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -15359,6 +15672,7 @@
 				"incapacitated",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15371,7 +15685,9 @@
 					"page": 143
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "elemental",
 			"alignment": [
 				"U"
@@ -15444,6 +15760,7 @@
 				"AOE",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15456,7 +15773,9 @@
 					"page": 204
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -15559,6 +15878,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15571,7 +15891,9 @@
 					"page": 152
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -15651,6 +15973,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15663,7 +15986,9 @@
 					"page": 205
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -15759,7 +16084,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Astral Step (Recharge 4-6)",
+					"name": "Astral Step {@recharge 4}",
 					"entries": [
 						"The githyanki teleports, along with any equipment it is wearing or carrying, up to 30 feet to an unoccupied space it can see."
 					]
@@ -15795,6 +16120,7 @@
 				"invisible",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15807,7 +16133,9 @@
 					"page": 205
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -15891,7 +16219,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Astral Step (Recharge 4-6)",
+					"name": "Astral Step {@recharge 4}",
 					"entries": [
 						"The githyanki teleports, along with any equipment it is wearing or carrying, up to 30 feet to an unoccupied space it can see."
 					]
@@ -15940,6 +16268,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15952,7 +16281,9 @@
 					"page": 206
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -16106,6 +16437,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -16118,7 +16450,9 @@
 					"page": 207
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -16275,6 +16609,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -16287,7 +16622,9 @@
 					"page": 208
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -16417,6 +16754,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -16429,7 +16767,9 @@
 					"page": 154
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -16490,7 +16830,7 @@
 				{
 					"name": "Sudden Rush",
 					"entries": [
-						"Until the end of the turn, the gnoll's speed increases by 60 feet and it doesn't provoke opportunity attacks."
+						"Until the end of the turn, the gnoll's speed increases by 60 feet and it doesn't provoke {@action opportunity attack||opportunity attacks}."
 					]
 				}
 			],
@@ -16527,6 +16867,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -16539,7 +16880,9 @@
 					"page": 154
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -16641,6 +16984,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -16653,7 +16997,9 @@
 					"page": 155
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"C",
@@ -16767,6 +17113,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -16779,7 +17126,9 @@
 					"page": 209
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -16873,6 +17222,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -16886,7 +17236,9 @@
 					"page": 149
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -17031,7 +17383,7 @@
 			],
 			"reaction": [
 				{
-					"name": "Negate Spell (Recharge 5-6)",
+					"name": "Negate Spell {@recharge 5}",
 					"entries": [
 						"Graz'zt tries to interrupt a spell he sees a creature casting within 60 feet of him. If the spell is 3rd level or lower, the spell fails and has no effect. If the spell is 4th level or higher, Graz'zt makes a Charisma check against a DC of 10 + the spell's level. On a success, the spell fails and has no effect."
 					]
@@ -17090,6 +17442,7 @@
 				"invisible",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -17102,7 +17455,9 @@
 					"page": 162
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -17205,7 +17560,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the abishai's darkvision."
+						"Magical darkness doesn't impede the abishai's {@sense darkvision}."
 					]
 				},
 				{
@@ -17265,6 +17620,7 @@
 				"charmed",
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -17277,7 +17633,9 @@
 					"page": 156
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -17367,7 +17725,7 @@
 							]
 						},
 						{
-							"name": "Cold Grung",
+							"name": "Gold Grung",
 							"type": "entries",
 							"entries": [
 								"The creature is {@condition charmed} by the grung and can speak Grung."
@@ -17431,6 +17789,7 @@
 				"frightened",
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"_versions": [
 				{
@@ -17547,7 +17906,9 @@
 					"page": 157
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -17649,7 +18010,7 @@
 							]
 						},
 						{
-							"name": "Cold Grung",
+							"name": "Gold Grung",
 							"type": "entries",
 							"entries": [
 								"The creature is {@condition charmed} by the grung and can speak Grung."
@@ -17715,6 +18076,7 @@
 				"poisoned",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"_versions": [
 				{
@@ -17831,7 +18193,9 @@
 					"page": 157
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -17954,7 +18318,7 @@
 							]
 						},
 						{
-							"name": "Cold Grung",
+							"name": "Gold Grung",
 							"type": "entries",
 							"entries": [
 								"The creature is {@condition charmed} by the grung and can speak Grung."
@@ -18019,6 +18383,7 @@
 				"frightened",
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"_versions": [
 				{
@@ -18135,7 +18500,9 @@
 					"page": 91
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "dragon",
 			"alignment": [
 				"U"
@@ -18267,6 +18634,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"_versions": [
 				{
@@ -18364,7 +18732,9 @@
 					"page": 140
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -18422,6 +18792,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -18434,7 +18805,9 @@
 					"page": 165
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "construct",
 			"alignment": [
 				"L",
@@ -18538,21 +18911,21 @@
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1-2: Bonemelt Sprayer.",
+									"name": "1\u20132: Bonemelt Sprayer",
 									"type": "item",
 									"entries": [
 										"The hellfire engine spews acidic flame in a 60-foot cone. Each creature in the cone must make a {@dc 20} Dexterity saving throw, taking 11 ({@damage 2d10}) fire damage plus 18 ({@damage 4d8}) acid damage on a failed save, or half as much damage on a successful one. Creatures that fail the saving throw are drenched in burning acid and take 5 ({@damage 1d10}) fire damage plus 9 ({@damage 2d8}) acid damage at the end of their turns. An affected creature or another creature within 5 feet of it can take an action to scrape off the burning fuel."
 									]
 								},
 								{
-									"name": "3-4: Lightning Flail.",
+									"name": "3\u20134: Lightning Flail",
 									"type": "item",
 									"entries": [
-										"Melee Weapon Attack: {@hit 10} to hit, reach 15 ft., one creature. {@h}18 ({@damage 3d8 + 5}) bludgeoning damage plus 22 ({@damage 5d8}) lightning damage. Up to three other creatures of the hellfire engine's choice that it can see within 30 feet of the target must each make a {@dc 20} Dexterity saving throw, taking 22 ({@damage 5d8}) lightning damage on a failed save, or half as much damage on a successful one."
+										"{@atk mw} {@hit 10} to hit, reach 15 ft., one creature. {@h}18 ({@damage 3d8 + 5}) bludgeoning damage plus 22 ({@damage 5d8}) lightning damage. Up to three other creatures of the hellfire engine's choice that it can see within 30 feet of the target must each make a {@dc 20} Dexterity saving throw, taking 22 ({@damage 5d8}) lightning damage on a failed save, or half as much damage on a successful one."
 									]
 								},
 								{
-									"name": "5-6: Thunder Cannon.",
+									"name": "5\u20136: Thunder Cannon",
 									"type": "item",
 									"entries": [
 										"The hellfire engine targets a point within 120 feet of it that it can see. Each creature within 30 feet of that point must make a {@dc 20} Dexterity saving throw, taking 27 ({@damage 5d10}) bludgeoning damage plus 19 ({@damage 3d12}) thunder damage on a failed save, or half as much damage on a successful one.",
@@ -18594,6 +18967,7 @@
 				"prone",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -18606,7 +18980,9 @@
 					"page": 161
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fey",
 				"tags": [
@@ -18731,6 +19107,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -18743,7 +19120,9 @@
 					"page": 162
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fey",
 				"tags": [
@@ -18836,7 +19215,7 @@
 				{
 					"name": "Dart",
 					"entries": [
-						"Ranged Weapon Attack. {@hit 5} to hit, range 20/60 ft., one target. {@h}5 ({@damage 1d4 + 3}) piercing damage."
+						"{@atk rw} {@hit 5} to hit, range 20/60 ft., one target. {@h}5 ({@damage 1d4 + 3}) piercing damage."
 					]
 				},
 				{
@@ -18875,6 +19254,7 @@
 			"conditionInflictSpell": [
 				"charmed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -18887,7 +19267,9 @@
 					"page": 210
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "fiend",
 			"alignment": [
 				"C",
@@ -19005,6 +19387,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -19017,7 +19400,9 @@
 					"page": 232
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -19122,6 +19507,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -19135,7 +19521,9 @@
 					"page": 175
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -19365,6 +19753,7 @@
 				"invisible",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -19377,7 +19766,9 @@
 					"page": 249
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -19559,6 +19950,7 @@
 				"frightened",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -19571,7 +19963,9 @@
 					"page": 214
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -19678,6 +20072,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -19691,7 +20086,9 @@
 					"page": 151
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -19903,6 +20300,7 @@
 				"poisoned",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -19915,7 +20313,9 @@
 					"page": 163
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "celestial",
 			"alignment": [
 				"L",
@@ -20046,7 +20446,7 @@
 				{
 					"name": "Move",
 					"entries": [
-						"The ki-rin moves up to half its speed without provoking opportunity attacks."
+						"The ki-rin moves up to half its speed without provoking {@action opportunity attack||opportunity attacks}."
 					]
 				},
 				{
@@ -20096,6 +20496,7 @@
 			"conditionInflictSpell": [
 				"incapacitated"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -20108,7 +20509,9 @@
 					"page": 165
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "dragon",
 			"alignment": [
 				"A"
@@ -20224,6 +20627,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -20236,7 +20640,9 @@
 					"page": 166
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -20302,56 +20708,56 @@
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1: Acid.",
+									"name": "1: Acid",
 									"entries": [
-										"The kobold hurls a {@item acid (vial)|PHB|flask of acid}. Ranged Weapon Attack: {@hit 4} to hit, range 5/20 ft., one target. {@h}7 ({@damage 2d6}) acid damage."
+										"The kobold hurls a {@item acid (vial)|PHB|flask of acid}. {@atk rw} {@hit 4} to hit, range 5/20 ft., one target. {@h}7 ({@damage 2d6}) acid damage."
 									],
 									"type": "item"
 								},
 								{
-									"name": "2: Alchemist's Fire.",
+									"name": "2: Alchemist's Fire",
 									"entries": [
-										"The kobold throws a {@item Alchemist's Fire (flask)|PHB|flask of alchemist's fire}. Ranged Weapon Attack: {@hit 4} to hit, range 5/20 ft., one target. {@h}2 ({@damage 1d4}) fire damage at the start of each of the target's turns. The target can end this damage by using its action to make a {@dc 10} Dexterity check to extinguish the flames."
+										"The kobold throws a {@item Alchemist's Fire (flask)|PHB|flask of alchemist's fire}. {@atk rw} {@hit 4} to hit, range 5/20 ft., one target. {@h}2 ({@damage 1d4}) fire damage at the start of each of the target's turns. The target can end this damage by using its action to make a {@dc 10} Dexterity check to extinguish the flames."
 									],
 									"type": "item"
 								},
 								{
-									"name": "3: Basket of Centipedes.",
+									"name": "3: Basket of Centipedes",
 									"entries": [
 										"The kobold throws a small basket into a 5-foot-square space within 20 feet of it. A {@creature Swarm of Centipedes||swarm of insects (centipedes)} with 11 hit points emerges from the basket and rolls initiative. At the end of each of the swarm's turns, there's a {@chance 50|50 percent} chance that the swarm disperses."
 									],
 									"type": "item"
 								},
 								{
-									"name": "4: Green Slime Pot.",
+									"name": "4: Green Slime Pot",
 									"entries": [
-										"The kobold throws a clay pot full of green slime at the target, and it breaks open on impact. Ranged Weapon Attack: {@hit 4} to hit, range 5/20 ft., one target. {@h}5 ({@damage 1d10}) acid damage, and the target is covered in slime until a creature uses its action to scrape or wash the slime off. A target covered in the slime takes 5 ({@damage 1d10}) acid damage at the start of each of its turns."
+										"The kobold throws a clay pot full of green slime at the target, and it breaks open on impact. {@atk rw} {@hit 4} to hit, range 5/20 ft., one target. {@h}5 ({@damage 1d10}) acid damage, and the target is covered in slime until a creature uses its action to scrape or wash the slime off. A target covered in the slime takes 5 ({@damage 1d10}) acid damage at the start of each of its turns."
 									],
 									"type": "item"
 								},
 								{
-									"name": "5: Rot Grub Pot.",
+									"name": "5: Rot Grub Pot",
 									"entries": [
 										"The kobold throws a clay pot into a 5-foot-square space within 20 feet of it, and it breaks open on impact. A {@creature swarm of rot grubs|MPMM} (in this book) emerges from the shattered pot and remains a hazard in that square."
 									],
 									"type": "item"
 								},
 								{
-									"name": "6: Scorpion on a Stick.",
+									"name": "6: Scorpion on a Stick",
 									"entries": [
-										"The kobold makes a melee attack with a {@creature scorpion} tied to the end of a 5-foot-long pole. Melee Weapon Attack: {@hit 4} to hit, reach 5 ft., one target. {@h}1 piercing damage, and the target must make a {@dc 9} Constitution saving throw, taking 4 ({@damage 1d8}) poison damage on a failed save, or half as much damage on a successful one."
+										"The kobold makes a melee attack with a {@creature scorpion} tied to the end of a 5-foot-long pole. {@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}1 piercing damage, and the target must make a {@dc 9} Constitution saving throw, taking 4 ({@damage 1d8}) poison damage on a failed save, or half as much damage on a successful one."
 									],
 									"type": "item"
 								},
 								{
-									"name": "7: Skunk in a Cage.",
+									"name": "7: Skunk in a Cage",
 									"entries": [
 										"The kobold releases a skunk into an unoccupied space within 5 feet of it. The skunk has a walking speed of 20 feet, AC 10, 1 hit point, and no effective attacks. It rolls initiative and, on its turn, uses its action to spray musk at a random creature within 5 feet of it. The target must succeed on a {@dc 9} Constitution saving throw, or it retches and is {@condition incapacitated} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. A creature that doesn't need to breathe or is immune to poison automatically succeeds on the saving throw. Once the skunk has sprayed its musk, it can't do so again until it finishes a short or long rest."
 									],
 									"type": "item"
 								},
 								{
-									"name": "8: Wasp Nest in a Bag.",
+									"name": "8: Wasp Nest in a Bag",
 									"entries": [
 										"The kobold throws a small bag into a 5-foot-square space within 20 feet of it. A {@creature Swarm of Wasps||swarm of insects (wasps)} with 11 hit points emerges from the bag and rolls initiative. At the end of each of the swarm's turns, there's a {@chance 50|50 percent} chance that the swarm disperses."
 									],
@@ -20400,6 +20806,7 @@
 			"conditionInflict": [
 				"incapacitated"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -20412,7 +20819,9 @@
 					"page": 167
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -20542,6 +20951,7 @@
 			"conditionInflictSpell": [
 				"charmed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -20554,7 +20964,9 @@
 					"page": 168
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -20636,7 +21048,7 @@
 				{
 					"name": "Stone Camouflage",
 					"entries": [
-						"The korred has advantage on Dexterity (Stealth) checks made to hide in rocky terrain."
+						"The korred has advantage on Dexterity ({@skill Stealth}) checks made to hide in rocky terrain."
 					]
 				}
 			],
@@ -20704,6 +21116,7 @@
 			"conditionInflictSpell": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -20716,7 +21129,9 @@
 					"page": 215
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -20841,6 +21256,7 @@
 				"prone",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -20853,7 +21269,9 @@
 					"page": 212
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -20965,6 +21383,7 @@
 				"RCH",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -20977,7 +21396,9 @@
 					"page": 169
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -21022,7 +21443,7 @@
 				{
 					"name": "Mimicry",
 					"entries": [
-						"The leucrotta can mimic Beast sounds and Humanoid voices. A creature that hears the sounds can tell they are imitations only with a successful {@dc 14} Wisdom (Insight) check."
+						"The leucrotta can mimic Beast sounds and Humanoid voices. A creature that hears the sounds can tell they are imitations only with a successful {@dc 14} Wisdom ({@skill Insight}) check."
 					]
 				},
 				{
@@ -21056,7 +21477,7 @@
 				{
 					"name": "Kicking Retreat",
 					"entries": [
-						"Immediately after the leucrotta makes a Hooves attack, it takes the Disengage action."
+						"Immediately after the leucrotta makes a Hooves attack, it takes the {@action Disengage} action."
 					]
 				}
 			],
@@ -21088,6 +21509,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21100,7 +21522,9 @@
 					"page": 198
 				}
 			],
-			"size": "G",
+			"size": [
+				"G"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -21253,6 +21677,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21265,7 +21690,9 @@
 					"page": 232
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -21378,6 +21805,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21390,7 +21818,9 @@
 					"page": 233
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -21502,6 +21932,7 @@
 				"frightened",
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21514,7 +21945,9 @@
 					"page": 238
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -21601,6 +22034,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21613,7 +22047,9 @@
 					"page": 216
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -21667,19 +22103,23 @@
 				{
 					"name": "Unarmed Strike",
 					"entries": [
-						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d8 + 3}) bludgeoning damage. Once per turn, the adept can cause one of the following additional effects (choose one or roll a {@dice d4}):"
-					]
-				},
-				{
-					"name": "1-2",
-					"entries": [
-						"Knock Down. The target must succeed on a {@dc 13} Dexterity saving throw or be knocked {@condition prone}."
-					]
-				},
-				{
-					"name": "3-4",
-					"entries": [
-						"Push. The target must succeed on a {@dc 13} Strength saving throw or be pushed up to 10 feet directly away from the adept."
+						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d8 + 3}) bludgeoning damage. Once per turn, the adept can cause one of the following additional effects (choose one or roll a {@dice d4}):",
+						{
+							"type": "list",
+							"style": "list-hang-notitle",
+							"items": [
+								{
+									"type": "item",
+									"name": "1\u20132: Knock Down.",
+									"entry": "The target must succeed on a {@dc 13} Dexterity saving throw or be knocked {@condition prone}."
+								},
+								{
+									"type": "item",
+									"name": "3\u20134: Push.",
+									"entry": "The target must succeed on a {@dc 13} Strength saving throw or be pushed up to 10 feet directly away from the adept."
+								}
+							]
+						}
 					]
 				},
 				{
@@ -21723,6 +22163,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21735,7 +22176,9 @@
 					"page": 213
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "construct",
 				"tags": [
@@ -21894,6 +22337,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21906,7 +22350,9 @@
 					"page": 216
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -21980,7 +22426,7 @@
 				{
 					"name": "Cunning Action",
 					"entries": [
-						"The thief takes the Dash, Disengage, or Hide action."
+						"The thief takes the {@action Dash}, {@action Disengage}, or {@action Hide} action."
 					]
 				}
 			],
@@ -22016,6 +22462,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -22028,7 +22475,9 @@
 					"page": 133
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -22169,6 +22618,7 @@
 			"conditionInflict": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -22181,7 +22631,9 @@
 					"page": 137
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -22274,6 +22726,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -22286,7 +22739,9 @@
 					"page": 214
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -22338,7 +22793,7 @@
 					"name": "Shadow Teleport {@recharge 5}",
 					"entries": [
 						"The meazel, any equipment it is wearing or carrying, and any creature it is grappling teleport to an unoccupied space within 500 feet of it, provided that the starting space and the destination are in dim light or darkness. The destination must be a place the meazel has seen before, but it need not be within line of sight. If the destination space is occupied, the teleportation leads to the nearest unoccupied space.",
-						"Any other creature the meazel teleports becomes cursed for 1 hour or until the curse is ended by remove curse or greater restoration. Until this curse ends, every Undead and every creature native to the Shadowfell within 300 feet of the cursed creature can sense it, which prevents that creature from hiding from them."
+						"Any other creature the meazel teleports becomes cursed for 1 hour or until the curse is ended by {@spell remove curse} or {@spell greater restoration}. Until this curse ends, every Undead and every creature native to the Shadowfell within 300 feet of the cursed creature can sense it, which prevents that creature from hiding from them."
 					]
 				}
 			],
@@ -22346,7 +22801,7 @@
 				{
 					"name": "Shadow Stealth",
 					"entries": [
-						"While in dim light or darkness, the meazel takes the Hide action."
+						"While in dim light or darkness, the meazel takes the {@action Hide} action."
 					]
 				}
 			],
@@ -22381,6 +22836,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -22393,7 +22849,9 @@
 					"page": 170
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "fey",
 			"alignment": [
 				"N",
@@ -22447,7 +22905,7 @@
 				{
 					"name": "Light Sensitivity",
 					"entries": [
-						"While in bright light, the meenlock has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+						"While in bright light, the meenlock has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -22461,7 +22919,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Shadow Teleport (Recharge 5-6)",
+					"name": "Shadow Teleport {@recharge 5}",
 					"entries": [
 						"The meenlock teleports to an unoccupied space within 30 feet of it, provided that both the space it's teleporting from and its destination are in dim light or darkness. The destination need not be within line of sight."
 					]
@@ -22495,6 +22953,7 @@
 				"frightened",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -22507,7 +22966,9 @@
 					"page": 166
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -22573,7 +23034,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the merregon's darkvision."
+						"Magical darkness doesn't impede the merregon's {@sense darkvision}."
 					]
 				},
 				{
@@ -22640,6 +23101,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -22652,7 +23114,9 @@
 					"page": 250
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -22822,6 +23286,7 @@
 			"conditionInflictSpell": [
 				"charmed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -22834,7 +23299,9 @@
 					"page": 176
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "aberration",
 			"alignment": [
 				"L",
@@ -22923,42 +23390,42 @@
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1: Aversion Ray.",
+									"name": "1: Aversion Ray",
 									"entries": [
 										"The targeted creature must make a {@dc 13} Charisma saving throw. On a failed save, the target has disadvantage on attack rolls for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 									],
 									"type": "item"
 								},
 								{
-									"name": "2: Fear Ray.",
+									"name": "2: Fear Ray",
 									"entries": [
 										"The targeted creature must succeed on a {@dc 13} Wisdom saving throw or be {@condition frightened} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 									],
 									"type": "item"
 								},
 								{
-									"name": "3: Psychic Ray.",
+									"name": "3: Psychic Ray",
 									"entries": [
 										"The target must succeed on a {@dc 13} Intelligence saving throw or take T1 ({@damage 6d8}) psychic damage."
 									],
 									"type": "item"
 								},
 								{
-									"name": "4: Slowing Ray.",
+									"name": "4: Slowing Ray",
 									"entries": [
 										"The targeted creature must make a {@dc 13} Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn but not both. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 									],
 									"type": "item"
 								},
 								{
-									"name": "5: Stunning Ray.",
+									"name": "5: Stunning Ray",
 									"entries": [
 										"The targeted creature must succeed on a {@dc 13} Constitution saving throw or be {@condition stunned} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 									],
 									"type": "item"
 								},
 								{
-									"name": "6: Telekinetic Ray.",
+									"name": "6: Telekinetic Ray",
 									"entries": [
 										"If the target is a creature, it must make a {@dc 13} Strength saving throw. On a failed save, the mindwitness moves it up to 30 feet in any direction, and it is {@condition restrained} by the ray's telekinetic grip until the start of the mindwitness's next turn or until the mindwitness is {@condition incapacitated}.",
 										"If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is telekinetically moved up to 30 feet in any direction. The mindwitness can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or a container."
@@ -23003,6 +23470,7 @@
 				"restrained",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -23016,7 +23484,9 @@
 					"page": 177
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -23158,7 +23628,7 @@
 				{
 					"name": "Breath of Despair {@recharge 5}",
 					"entries": [
-						"Moloch exhales in a 30-foot cube. Each creature in that area must succeed on a {@dc 21} Wisdom saving throw or take 27 ({@damage 5d10}) psychic damage, drop whatever it is holding, and become {@condition frightened} of Moloch for 1 minute. While {@condition frightened} in this way, a creature must take the Dash action and move away from Moloch by the safest available route on each of its turns, unless there is nowhere to move, in which case it needn't take the Dash action. If the creature ends its turn in a location where it doesn't have line of sight to Moloch, the creature can repeat the saving throw, ending the effect on itself on a success."
+						"Moloch exhales in a 30-foot cube. Each creature in that area must succeed on a {@dc 21} Wisdom saving throw or take 27 ({@damage 5d10}) psychic damage, drop whatever it is holding, and become {@condition frightened} of Moloch for 1 minute. While {@condition frightened} in this way, a creature must take the {@action Dash} action and move away from Moloch by the safest available route on each of its turns, unless there is nowhere to move, in which case it needn't take the {@action Dash} action. If the creature ends its turn in a location where it doesn't have line of sight to Moloch, the creature can repeat the saving throw, ending the effect on itself on a success."
 					]
 				},
 				{
@@ -23224,6 +23694,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -23236,7 +23707,9 @@
 					"page": 134
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -23383,7 +23856,7 @@
 				{
 					"name": "Move",
 					"entries": [
-						"The molydeus moves without provoking opportunity attacks."
+						"The molydeus moves without provoking {@action opportunity attack||opportunity attacks}."
 					]
 				},
 				{
@@ -23403,7 +23876,7 @@
 							"name": "Summon Demon (1/Day)",
 							"type": "entries",
 							"entries": [
-								"As an action, the molydeus has a {@chance 50|50 percent} chance of summoning its choice of 1 {@dice d6} {@creature babau|MPMM|babaus}, 1 {@dice d4} {@creature chasme||chasmes}, or one {@creature marilith}. A summoned demon appears in an unoccupied space within 60 feet of the molydeus, acts as an ally of the molydeus, and can't summon other demons. It remains for 1 minute, until it or the molydeus dies, or until the molydeus dismisses it as an action."
+								"As an action, the molydeus has a {@chance 50|50 percent} chance of summoning its choice of {@dice 1d6} {@creature babau|MPMM|babaus}, {@dice 1d4} {@creature chasme||chasmes}, or one {@creature marilith}. A summoned demon appears in an unoccupied space within 60 feet of the molydeus, acts as an ally of the molydeus, and can't summon other demons. It remains for 1 minute, until it or the molydeus dies, or until the molydeus dismisses it as an action."
 							]
 						}
 					],
@@ -23443,6 +23916,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -23455,7 +23929,9 @@
 					"page": 177
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -23560,7 +24036,7 @@
 				{
 					"name": "Hypnosis",
 					"entries": [
-						"The morkoth projects a 30-foot cone of magical energy. Each creature in that area must make a {@dc 17} Wisdom saving throw. On a failed save, the creature is {@condition charmed} by the morkoth for 1 minute. While {@condition charmed} in this way, the target tries to get as close to the morkoth as possible, using its actions to Dash until it is within 5 feet of the morkoth. A {@condition charmed} target can repeat the saving throw at the end of each of its turns and whenever it takes damage, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature has advantage on saving throws against the morkoth's Hypnosis for 24 hours."
+						"The morkoth projects a 30-foot cone of magical energy. Each creature in that area must make a {@dc 17} Wisdom saving throw. On a failed save, the creature is {@condition charmed} by the morkoth for 1 minute. While {@condition charmed} in this way, the target tries to get as close to the morkoth as possible, using its actions to {@action Dash} until it is within 5 feet of the morkoth. A {@condition charmed} target can repeat the saving throw at the end of each of its turns and whenever it takes damage, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature has advantage on saving throws against the morkoth's Hypnosis for 24 hours."
 					]
 				}
 			],
@@ -23613,6 +24089,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -23625,7 +24102,9 @@
 					"page": 149
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "giant",
 				"tags": [
@@ -23681,22 +24160,22 @@
 							"items": [
 								{
 									"type": "item",
-									"name": "1-3:",
+									"name": "1\u20133:",
 									"entry": "The giant makes three Fist attacks against one random creature within reach. If no creatures are within reach, the giant flies into a rage and gains advantage on all attack rolls until the end of its next turn."
 								},
 								{
 									"type": "item",
-									"name": "4-5:",
+									"name": "4\u20135:",
 									"entry": "The giant makes one Fist attack against each creature within reach. If no creatures are within reach, the giant makes one Fist attack against itself."
 								},
 								{
 									"type": "item",
-									"name": "6-7:",
+									"name": "6\u20137:",
 									"entry": "The giant makes one Bite attack against one random creature within reach. If no other creatures are within reach, its eyes glaze over and it is {@condition stunned} until the start of its next turn."
 								},
 								{
 									"type": "item",
-									"name": "8-10:",
+									"name": "8\u201310:",
 									"entry": "The giant makes one Bite attack and two Fist attacks against one random creature within reach. If no creatures are within reach, the giant flies into a rage and gains advantage on all attack rolls until the end of its next turn."
 								}
 							]
@@ -23737,6 +24216,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -23749,7 +24229,9 @@
 					"page": 135
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -23895,6 +24377,7 @@
 				"AOE",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -23907,7 +24390,9 @@
 					"page": 215
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "monstrosity",
 				"tags": [
@@ -24018,15 +24503,9 @@
 					]
 				},
 				{
-					"name": "Paralysis (Recharge 6)",
+					"name": "Paralysis {@recharge 6}",
 					"entries": [
-						"The nagpa forces each creature within 30 feet of it to make a {@dc 20} Wisdom saving throw, excluding"
-					]
-				},
-				{
-					"name": "Undead and Constructs",
-					"entries": [
-						"On a failed save, a target is {@condition paralyzed} for 1 minute. A {@condition paralyzed} target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+						"The nagpa forces each creature within 30 feet of it to make a {@dc 20} Wisdom saving throw, excluding Undead and Constructs. On a failed save, a target is {@condition paralyzed} for 1 minute. A {@condition paralyzed} target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 					]
 				}
 			],
@@ -24068,6 +24547,7 @@
 				"charmed",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24080,7 +24560,9 @@
 					"page": 167
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -24230,6 +24712,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24242,7 +24725,9 @@
 					"page": 217
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -24362,6 +24847,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24374,7 +24860,9 @@
 					"page": 180
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "aberration",
 			"alignment": [
 				"L",
@@ -24493,6 +24981,7 @@
 				"charmed",
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24505,7 +24994,9 @@
 					"page": 179
 				}
 			],
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"type": "aberration",
 			"alignment": [
 				"L",
@@ -24580,6 +25071,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24592,7 +25084,9 @@
 					"page": 180
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "aberration",
 				"tags": [
@@ -24674,7 +25168,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the neogi's darkvision."
+						"Magical darkness doesn't impede the neogi's {@sense darkvision}."
 					]
 				},
 				{
@@ -24764,6 +25258,7 @@
 				"blinded",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24776,7 +25271,9 @@
 					"page": 181
 				}
 			],
-			"size": "G",
+			"size": [
+				"G"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -24900,6 +25397,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24912,7 +25410,9 @@
 					"page": 216
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "undead",
 			"alignment": [
 				"C",
@@ -25041,6 +25541,7 @@
 				"frightened",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25053,7 +25554,9 @@
 					"page": 182
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": {
 				"type": "fey",
 				"tags": [
@@ -25139,7 +25642,7 @@
 				{
 					"name": "Nimble Escape",
 					"entries": [
-						"The nilbog takes the Disengage or Hide action."
+						"The nilbog takes the {@action Disengage} or {@action Hide} action."
 					]
 				}
 			],
@@ -25181,6 +25684,7 @@
 				"incapacitated",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25193,7 +25697,9 @@
 					"page": 168
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -25291,6 +25797,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25303,7 +25810,9 @@
 					"page": 217
 				}
 			],
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"type": "ooze",
 			"alignment": [
 				"L",
@@ -25366,7 +25875,7 @@
 				{
 					"name": "Pseudopod",
 					"entries": [
-						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}5 (1 {@dice d4 + 3}) bludgeoning damage plus 2 (1 {@dice d4}) psychic damage."
+						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}5 ({@damage 1d4 + 3}) bludgeoning damage plus 2 ({@damage 1d4}) psychic damage."
 					]
 				}
 			],
@@ -25388,6 +25897,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25400,7 +25910,9 @@
 					"page": 220
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -25495,6 +26007,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25507,7 +26020,9 @@
 					"page": 220
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -25582,6 +26097,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25594,7 +26110,9 @@
 					"page": 221
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -25679,6 +26197,7 @@
 				"stunned",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25691,7 +26210,9 @@
 					"page": 221
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -25766,6 +26287,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25778,7 +26300,9 @@
 					"page": 251
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -25899,7 +26423,7 @@
 				{
 					"name": "Corrupted Healing {@recharge}",
 					"entries": [
-						"The oinoloth touches one willing creature within 5 feet of it. The target regains all its hit points. In addition, the oinoloth can end one disease on the target or remove one of the following conditions from it: {@condition blinded}, {@condition deafened}, {@condition paralyzed}, or {@condition poisoned}. The target then gains 1 level of {@condition exhaustion}, and its hit point maximum is reduced by 7 ({@dice 2d6}). This reduction can be removed only by a wish spell or by casting greater restoration on the target three times within the same hour. The target dies if its hit point maximum is reduced to 0."
+						"The oinoloth touches one willing creature within 5 feet of it. The target regains all its hit points. In addition, the oinoloth can end one disease on the target or remove one of the following conditions from it: {@condition blinded}, {@condition deafened}, {@condition paralyzed}, or {@condition poisoned}. The target then gains 1 level of {@condition exhaustion}, and its hit point maximum is reduced by 7 ({@dice 2d6}). This reduction can be removed only by a {@spell wish} spell or by casting {@spell greater restoration} on the target three times within the same hour. The target dies if its hit point maximum is reduced to 0."
 					]
 				},
 				{
@@ -25911,7 +26435,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Bringer of Plagues (Recharge 5-6)",
+					"name": "Bringer of Plagues {@recharge 5}",
 					"entries": [
 						"The oinoloth blights the area in a 30-foot-radius sphere centered on itself. The blight lasts for 24 hours. While the area is blighted, all normal plants there wither and die.",
 						"Furthermore, when a creature moves into the blighted area or starts its turn there, that creature must make a {@dc 16} Constitution saving throw. On a failed save, the creature takes 14 ({@damage 4d6}) poison damage and is {@condition poisoned}. On a successful save, the creature is immune to the oinoloth's Bringer of Plagues for the next 24 hours.",
@@ -25959,6 +26483,7 @@
 				"invisible",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25972,7 +26497,9 @@
 					"page": 153
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -26207,6 +26734,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -26219,7 +26747,9 @@
 					"page": 169
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -26410,6 +26940,7 @@
 				"poisoned",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -26422,7 +26953,9 @@
 					"page": 208
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -26460,7 +26993,7 @@
 			],
 			"action": [
 				{
-					"name": "Core",
+					"name": "Gore",
 					"entries": [
 						"{@atk mw} {@hit 6} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d6 + 4}) piercing damage. If the ox moved at least 20 feet straight toward the target immediately before the hit, the target takes an extra 7 ({@damage 2d6}) piercing damage."
 					]
@@ -26480,6 +27013,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -26492,7 +27026,9 @@
 					"page": 199
 				}
 			],
-			"size": "G",
+			"size": [
+				"G"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -26568,7 +27104,7 @@
 				{
 					"name": "Flyby",
 					"entries": [
-						"The phoenix doesn't provoke opportunity attacks when it flies out of an enemy's reach."
+						"The phoenix doesn't provoke {@action opportunity attack||opportunity attacks} when it flies out of an enemy's reach."
 					]
 				},
 				{
@@ -26658,6 +27194,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -26670,7 +27207,9 @@
 					"page": 140
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -26711,7 +27250,7 @@
 				{
 					"name": "Flyby",
 					"entries": [
-						"The quetzalcoatlus doesn't provoke an opportunity attack when it flies out of an enemy's reach."
+						"The quetzalcoatlus doesn't provoke an {@action opportunity attack} when it flies out of an enemy's reach."
 					]
 				}
 			],
@@ -26742,6 +27281,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -26754,7 +27294,9 @@
 					"page": 187
 				}
 			],
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -26845,6 +27387,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -26857,7 +27400,9 @@
 					"page": 160
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -26934,7 +27479,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the abishai's darkvision."
+						"Magical darkness doesn't impede the abishai's {@sense darkvision}."
 					]
 				},
 				{
@@ -27018,6 +27563,7 @@
 				"charmed",
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27030,7 +27576,9 @@
 					"page": 188
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "fey",
 			"alignment": [
 				"C",
@@ -27075,7 +27623,7 @@
 				{
 					"name": "Iron Boots",
 					"entries": [
-						"The redcap has disadvantage on Dexterity (Stealth) checks."
+						"The redcap has disadvantage on Dexterity ({@skill Stealth}) checks."
 					]
 				},
 				{
@@ -27134,6 +27682,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27146,7 +27695,9 @@
 					"page": 222
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "construct",
 			"alignment": [
 				"L",
@@ -27303,6 +27854,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27315,7 +27867,9 @@
 					"page": 244
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -27413,6 +27967,7 @@
 				"AOE",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27425,7 +27980,9 @@
 					"page": 136
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -27512,6 +28069,7 @@
 				"poisoned",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27524,7 +28082,9 @@
 					"page": 194
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "construct",
 			"alignment": [
 				{
@@ -27659,6 +28219,7 @@
 				"RCH",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27671,7 +28232,9 @@
 					"page": 189
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -27738,21 +28301,21 @@
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1-2: Bite.",
+									"name": "1\u20132: Bite",
 									"type": "item",
 									"entries": [
 										"{@atk mw} {@hit 4} to hit, reach 5 ft., one target. {@h}4 ({@damage 1d4 + 2}) piercing damage."
 									]
 								},
 								{
-									"name": "3-4: Poison Quills.",
+									"name": "3\u20134: Poison Quills",
 									"type": "item",
 									"entries": [
 										"{@atk mw} {@hit 4} to hit, reach 5 ft., one creature. {@h}3 ({@damage 1d6}) poison damage, and the target must succeed on a {@dc 12} Constitution saving throw or be {@condition poisoned} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 									]
 								},
 								{
-									"name": "5-6: Tentacle.",
+									"name": "5\u20136: Tentacle",
 									"type": "item",
 									"entries": [
 										"{@atk mw} {@hit 4} to hit, reach 10 ft., one target. {@h}5 ({@damage 1d6 + 2}) bludgeoning damage, and the target is {@condition grappled} (escape {@dc 12}) if it is a Medium or smaller creature. Until this grapple ends, the sea spawn can't use this tentacle on another target."
@@ -27795,6 +28358,7 @@
 				"grappled",
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27807,7 +28371,9 @@
 					"page": 224
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -27913,7 +28479,7 @@
 			],
 			"reaction": [
 				{
-					"name": "Misty Escape (Recharge 6)",
+					"name": "Misty Escape {@recharge 6}",
 					"entries": [
 						"When the shadar-kai takes damage, it turns {@condition invisible} and teleports, along with any equipment it is wearing or carrying, up to 60 feet to an unoccupied space it can see. It remains {@condition invisible} until the start of its next turn or until it attacks or casts a spell."
 					]
@@ -27952,6 +28518,7 @@
 			"conditionInflictSpell": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -27964,7 +28531,9 @@
 					"page": 225
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -28043,21 +28612,21 @@
 							"style": "list-hang-notitle",
 							"items": [
 								{
-									"name": "1-2: Decay.",
+									"name": "1\u20132: Decay",
 									"type": "item",
 									"entries": [
 										"The target takes 22 ({@damage 4d10}) necrotic damage."
 									]
 								},
 								{
-									"name": "3-4: Grapple.",
+									"name": "3\u20134: Grapple",
 									"type": "item",
 									"entries": [
 										"The target is {@condition grappled} (escape {@dc 14}) if it is a Medium or smaller creature. Until the grapple ends, the target is {@condition restrained}, and the shadar-kai can't grapple another target."
 									]
 								},
 								{
-									"name": "5-6: Topple.",
+									"name": "5\u20136: Topple",
 									"type": "item",
 									"entries": [
 										"The target is knocked {@condition prone}."
@@ -28111,6 +28680,7 @@
 				"prone",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -28123,7 +28693,9 @@
 					"page": 226
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -28282,6 +28854,7 @@
 			"conditionInflict": [
 				"exhaustion"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -28294,7 +28867,118 @@
 					"page": 190
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
+			"type": "monstrosity",
+			"alignment": [
+				"N",
+				"E"
+			],
+			"alignmentPrefix": "Typically ",
+			"ac": [
+				12
+			],
+			"hp": {
+				"average": 33,
+				"formula": "6d8 + 6"
+			},
+			"speed": {
+				"walk": 40
+			},
+			"str": 16,
+			"dex": 14,
+			"con": 13,
+			"int": 5,
+			"wis": 12,
+			"cha": 5,
+			"skill": {
+				"perception": "+5",
+				"stealth": "+6"
+			},
+			"senses": [
+				"darkvision 60 ft."
+			],
+			"passive": 15,
+			"resist": [
+				{
+					"resist": [
+						"bludgeoning",
+						"piercing",
+						"slashing"
+					],
+					"note": "from nonmagical attacks while in dim light or darkness",
+					"cond": true
+				}
+			],
+			"cr": "2",
+			"trait": [
+				{
+					"name": "Ethereal Awareness",
+					"entries": [
+						"The shadow mastiff can see ethereal creatures and objects."
+					]
+				},
+				{
+					"name": "Sunlight Weakness",
+					"entries": [
+						"While in bright light created by sunlight, the shadow mastiff has disadvantage on attack rolls, ability checks, and saving throws."
+					]
+				}
+			],
+			"action": [
+				{
+					"name": "Bite",
+					"entries": [
+						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}10 ({@damage 2d6 + 3}) piercing damage. If the target is a creature, it must succeed on a {@dc 13} Strength saving throw or be knocked {@condition prone}."
+					]
+				}
+			],
+			"bonus": [
+				{
+					"name": "Shadow Blend",
+					"entries": [
+						"While in dim light or darkness, the shadow mastiff becomes {@condition invisible}, along with anything it is wearing or carrying. The invisibility lasts until the shadow mastiff uses a bonus action to end it or until the shadow mastiff attacks, is in bright light, or is {@condition incapacitated}."
+					]
+				}
+			],
+			"environment": [
+				"forest",
+				"hill",
+				"swamp"
+			],
+			"soundClip": {
+				"type": "internal",
+				"path": "bestiary/shadow-mastiff.mp3"
+			},
+			"senseTags": [
+				"D"
+			],
+			"damageTags": [
+				"P"
+			],
+			"miscTags": [
+				"MW"
+			],
+			"conditionInflict": [
+				"prone"
+			],
+			"hasToken": true,
+			"hasFluff": true
+		},
+		{
+			"name": "Shadow Mastiff Alpha",
+			"source": "MPMM",
+			"page": 215,
+			"otherSources": [
+				{
+					"source": "VGM",
+					"page": 190
+				}
+			],
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -28395,112 +29079,7 @@
 				"frightened",
 				"prone"
 			],
-			"hasFluff": true
-		},
-		{
-			"name": "Shadow Mastiff Alpha",
-			"source": "MPMM",
-			"page": 215,
-			"otherSources": [
-				{
-					"source": "VGM",
-					"page": 190
-				}
-			],
-			"size": "M",
-			"type": "monstrosity",
-			"alignment": [
-				"N",
-				"E"
-			],
-			"alignmentPrefix": "Typically ",
-			"ac": [
-				12
-			],
-			"hp": {
-				"average": 33,
-				"formula": "6d8 + 6"
-			},
-			"speed": {
-				"walk": 40
-			},
-			"str": 16,
-			"dex": 14,
-			"con": 13,
-			"int": 5,
-			"wis": 12,
-			"cha": 5,
-			"skill": {
-				"perception": "+5",
-				"stealth": "+6"
-			},
-			"senses": [
-				"darkvision 60 ft."
-			],
-			"passive": 15,
-			"resist": [
-				{
-					"resist": [
-						"bludgeoning",
-						"piercing",
-						"slashing"
-					],
-					"note": "from nonmagical attacks while in dim light or darkness",
-					"cond": true
-				}
-			],
-			"cr": "2",
-			"trait": [
-				{
-					"name": "Ethereal Awareness",
-					"entries": [
-						"The shadow mastiff can see ethereal creatures and objects."
-					]
-				},
-				{
-					"name": "Sunlight Weakness",
-					"entries": [
-						"While in bright light created by sunlight, the shadow mastiff has disadvantage on attack rolls, ability checks, and saving throws."
-					]
-				}
-			],
-			"action": [
-				{
-					"name": "Bite",
-					"entries": [
-						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}10 ({@damage 2d6 + 3}) piercing damage. If the target is a creature, it must succeed on a {@dc 13} Strength saving throw or be knocked {@condition prone}."
-					]
-				}
-			],
-			"bonus": [
-				{
-					"name": "Shadow Blend",
-					"entries": [
-						"While in dim light or darkness, the shadow mastiff becomes {@condition invisible}, along with anything it is wearing or carrying. The invisibility lasts until the shadow mastiff uses a bonus action to end it or until the shadow mastiff attacks, is in bright light, or is {@condition incapacitated}."
-					]
-				}
-			],
-			"environment": [
-				"forest",
-				"hill",
-				"swamp"
-			],
-			"soundClip": {
-				"type": "internal",
-				"path": "bestiary/shadow-mastiff.mp3"
-			},
-			"senseTags": [
-				"D"
-			],
-			"damageTags": [
-				"P"
-			],
-			"miscTags": [
-				"MW"
-			],
-			"conditionInflict": [
-				"prone"
-			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -28513,7 +29092,9 @@
 					"page": 137
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -28634,6 +29215,7 @@
 				"paralyzed",
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -28646,7 +29228,9 @@
 					"page": 137
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -28827,83 +29411,83 @@
 							],
 							"rows": [
 								[
-									"01-05",
+									"01\u201305",
 									"The color of the target's hair, eyes, and skin becomes blue, red, yellow, or patterned."
 								],
 								[
-									"06-10",
+									"06\u201310",
 									"The target's eyes push out of its head at the end of stalks."
 								],
 								[
-									"11-15",
+									"11\u201315",
 									"The target's hands grow claws, which can be used as daggers."
 								],
 								[
-									"16-20",
+									"16\u201320",
 									"One of the target's legs grows longer than the other, reducing its walking speed by 10 feet."
 								],
 								[
-									"21-25",
+									"21\u201325",
 									"The target's eyes become beacons, filling a 15- foot cone with dim light when they are open."
 								],
 								[
-									"26-30",
+									"26\u201330",
 									"A pair of wings, either feathered or leathery, sprout from the target's back, granting it a flying speed of 30 feet."
 								],
 								[
-									"31-35",
+									"31\u201335",
 									"The target's ears tear free from its head and scurry away; the target is {@condition deafened}."
 								],
 								[
-									"36-40",
+									"36\u201340",
 									"Two of the target's teeth turn into short tusks."
 								],
 								[
-									"41-45",
+									"41\u201345",
 									"The target's skin develops bark-like scales, granting it a +1 bonus to AC but reducing its Charisma score by 2 (to a minimum of 1)."
 								],
 								[
-									"46-50",
+									"46\u201350",
 									"The target's arms and legs switch places, preventing the target from moving unless it crawls."
 								],
 								[
-									"51-55",
+									"51\u201355",
 									"The target's arms become tentacles with fingers on the ends, increasing its reach by 5 feet."
 								],
 								[
-									"56-60",
+									"56\u201360",
 									"The target's legs grow incredibly long and springy, increasing its walking speed by 10 feet."
 								],
 								[
-									"61-65",
+									"61\u201365",
 									"The target grows a long, thin tail, which it can use as a whip."
 								],
 								[
-									"66-70",
+									"66\u201370",
 									"The target's entire eyes turn black, and it gains {@sense darkvision} out to a range of 120 feet."
 								],
 								[
-									"71-75",
+									"71\u201375",
 									"The target swells, tripling its weight."
 								],
 								[
-									"76-80",
+									"76\u201380",
 									"The target becomes thin and skeletal, halving its weight."
 								],
 								[
-									"81-85",
+									"81\u201385",
 									"The target's head triples in size."
 								],
 								[
-									"86-90",
+									"86\u201390",
 									"The target's ears become wings, giving it a flying speed of 5 feet."
 								],
 								[
-									"91-95",
+									"91\u201395",
 									"The target's body becomes unusually brittle, causing the target to have vulnerability to bludgeoning, piercing, and slashing damage."
 								],
 								[
-									"96-00",
+									"96\u201300",
 									"The target grows another head, causing it to have advantage on saving throws against being {@condition charmed}, {@condition frightened}, or {@condition stunned}."
 								]
 							]
@@ -28954,6 +29538,7 @@
 				"paralyzed",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -28966,7 +29551,9 @@
 					"page": 227
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -29074,6 +29661,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -29086,7 +29674,9 @@
 					"page": 230
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "undead",
 				"tags": [
@@ -29239,7 +29829,7 @@
 				{
 					"name": "Move",
 					"entries": [
-						"The skull lord moves up to its speed without provoking opportunity attacks."
+						"The skull lord moves up to its speed without provoking {@action opportunity attack||opportunity attacks}."
 					]
 				},
 				{
@@ -29280,6 +29870,7 @@
 			"conditionInflictSpell": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -29292,7 +29883,9 @@
 					"page": 191
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "ooze",
 			"alignment": [
 				"C",
@@ -29359,7 +29952,7 @@
 				{
 					"name": "False Appearance",
 					"entries": [
-						"If the slithering tracker is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the slithering tracker move or act, that creature must succeed on a {@dc 18} Intelligence (Investigation) check to discern that the slithering tracker isn't a puddle."
+						"If the slithering tracker is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the slithering tracker move or act, that creature must succeed on a {@dc 18} Intelligence ({@skill Investigation}) check to discern that the slithering tracker isn't a puddle."
 					]
 				},
 				{
@@ -29394,7 +29987,7 @@
 				{
 					"name": "Watery Stealth",
 					"entries": [
-						"If underwater, the slithering tracker takes the Hide action, and it makes the Dexterity (Stealth) check with advantage."
+						"If underwater, the slithering tracker takes the {@action Hide} action, and it makes the Dexterity ({@skill Stealth}) check with advantage."
 					]
 				}
 			],
@@ -29427,6 +30020,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -29439,7 +30033,9 @@
 					"page": 192
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"C",
@@ -29549,6 +30145,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -29561,7 +30158,9 @@
 					"page": 244
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -29692,6 +30291,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -29704,7 +30304,9 @@
 					"page": 196
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fey",
 				"tags": [
@@ -29810,7 +30412,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Fey Step (Recharge 4-6)",
+					"name": "Fey Step {@recharge 4}",
 					"entries": [
 						"The eladrin teleports, along with any equipment it is wearing or carrying, up to 30 feet to an unoccupied space it can see."
 					]
@@ -29855,6 +30457,7 @@
 				"incapacitated",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -29867,7 +30470,9 @@
 					"page": 234
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "aberration",
 			"alignment": [
 				"N",
@@ -29937,6 +30542,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -29949,7 +30555,9 @@
 					"page": 234
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -30061,6 +30669,7 @@
 				"prone",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30073,7 +30682,9 @@
 					"page": 235
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -30255,6 +30866,7 @@
 			"conditionInflictSpell": [
 				"charmed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30267,7 +30879,9 @@
 					"page": 236
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "aberration",
 			"alignment": [
 				"C",
@@ -30322,7 +30936,7 @@
 				{
 					"name": "Ambusher",
 					"entries": [
-						"The mangier has advantage on initiative rolls."
+						"The mangler has advantage on initiative rolls."
 					]
 				}
 			],
@@ -30330,7 +30944,7 @@
 				{
 					"name": "Multiattack",
 					"entries": [
-						"The mangier makes two Claw attacks."
+						"The mangler makes two Claw attacks."
 					]
 				},
 				{
@@ -30342,7 +30956,7 @@
 				{
 					"name": "Flurry of Claws {@recharge 5}",
 					"entries": [
-						"The mangier makes six Claw attacks. Either before or after these attacks, it can move up to its speed without provoking opportunity attacks."
+						"The mangler makes six Claw attacks. Either before or after these attacks, it can move up to its speed without provoking {@action opportunity attack||opportunity attacks}."
 					]
 				}
 			],
@@ -30350,7 +30964,7 @@
 				{
 					"name": "Shadow Stealth",
 					"entries": [
-						"While in dim light or darkness, the mangier takes the Hide action."
+						"While in dim light or darkness, the mangler takes the {@action Hide} action."
 					]
 				}
 			],
@@ -30377,6 +30991,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30389,7 +31004,9 @@
 					"page": 236
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "aberration",
 			"alignment": [
 				"N",
@@ -30459,7 +31076,7 @@
 				{
 					"name": "Out-Of-Phase Movement",
 					"entries": [
-						"The seer can move through other creatures and objects as if they were difficult terrain, and its movement doesn't provoke opportunity attacks.",
+						"The seer can move through other creatures and objects as if they were difficult terrain, and its movement doesn't provoke {@action opportunity attack||opportunity attacks}.",
 						"Each creature it moves through takes 5 ({@damage 1d10}) psychic damage; no creature can take this damage more than once per turn.",
 						"The seer takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
@@ -30531,6 +31148,7 @@
 			"conditionInflict": [
 				"incapacitated"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30543,7 +31161,9 @@
 					"page": 239
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "construct",
 			"alignment": [
 				"L",
@@ -30702,6 +31322,7 @@
 			"conditionInflict": [
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30714,7 +31335,9 @@
 					"page": 140
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -30740,7 +31363,7 @@
 				"walk": 40
 			},
 			"str": 20,
-			"dex": 0,
+			"dex": 9,
 			"con": 17,
 			"int": 2,
 			"wis": 11,
@@ -30770,6 +31393,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30782,7 +31406,9 @@
 					"page": 208
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -30828,7 +31454,7 @@
 			],
 			"action": [
 				{
-					"name": "Core",
+					"name": "Gore",
 					"entries": [
 						"{@atk mw} {@hit 6} to hit, reach 5 ft., one target. {@h}7 ({@damage 1d6 + 4}) piercing damage. If the stench kow moved at least 20 feet straight toward the target immediately before the hit, the target takes an extra 7 ({@damage 2d6}) piercing damage."
 					]
@@ -30854,6 +31480,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30866,7 +31493,9 @@
 					"page": 240
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "construct",
 			"alignment": [
 				"L",
@@ -30916,13 +31545,13 @@
 				{
 					"name": "Cunning Opportunist",
 					"entries": [
-						"The stone cursed has advantage on the attack rolls of opportunity attacks."
+						"The stone cursed has advantage on the attack rolls of {@action opportunity attack||opportunity attacks}."
 					]
 				},
 				{
 					"name": "False Appearance",
 					"entries": [
-						"If the stone cursed is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the stone cursed move or act, that creature must succeed on a {@dc 18} Intelligence (Investigation) check to discern that the stone cursed isn't a statue."
+						"If the stone cursed is motionless at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the stone cursed move or act, that creature must succeed on a {@dc 18} Intelligence ({@skill Investigation}) check to discern that the stone cursed isn't a statue."
 					]
 				},
 				{
@@ -30965,6 +31594,7 @@
 				"petrified",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -30977,7 +31607,9 @@
 					"page": 150
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -31057,7 +31689,7 @@
 				{
 					"name": "Petrifying Touch",
 					"entries": [
-						"The giant touches one Medium or smaller creature within 10 feet of it that is {@condition charmed} by it. The target must make a {@dc 17} Constitution saving throw. On a failed save, the target becomes {@condition petrified}, and the giant can adhere the target to its stony body. {@spell Greater restoration} spells and other magic that can undo petrification have no effect on a {@condition petrified} creature adhered to the giant unless the giant is dead, in which case the magic works normally, freeing the {@condition petrified} creature as well as ending the {@condition petrified} condition on it."
+						"The giant touches one Medium or smaller creature within 10 feet of it that is {@condition charmed} by it. The target must make a {@dc 17} Constitution saving throw. On a failed save, the target becomes {@condition petrified}, and the giant can adhere the target to its stony body. {@spell greater restoration} spells and other magic that can undo petrification have no effect on a {@condition petrified} creature adhered to the giant unless the giant is dead, in which case the magic works normally, freeing the {@condition petrified} creature as well as ending the {@condition petrified} condition on it."
 					]
 				}
 			],
@@ -31093,6 +31725,7 @@
 				"petrified",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -31105,7 +31738,9 @@
 					"page": 151
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -31261,6 +31896,7 @@
 				"MW",
 				"RCH"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -31273,7 +31909,9 @@
 					"page": 196
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fey",
 				"tags": [
@@ -31359,7 +31997,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Fey Step (Recharge 4-6)",
+					"name": "Fey Step {@recharge 4}",
 					"entries": [
 						"The eladrin teleports, along with any equipment it is wearing or carrying, up to 30 feet to an unoccupied space it can see."
 					]
@@ -31409,6 +32047,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -31421,7 +32060,9 @@
 					"page": 133
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "aberration",
 				"swarmSize": "T"
@@ -31550,6 +32191,7 @@
 				"charmed",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -31562,7 +32204,9 @@
 					"page": 208
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "beast",
 				"swarmSize": "T"
@@ -31645,6 +32289,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -31657,7 +32302,9 @@
 					"page": 217
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -31753,6 +32400,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -31765,7 +32413,9 @@
 					"page": 241
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"L",
@@ -31904,6 +32554,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -31916,7 +32567,9 @@
 					"page": 241
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"L",
@@ -32027,6 +32680,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -32039,7 +32693,9 @@
 					"page": 186
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -32164,6 +32820,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -32176,7 +32833,9 @@
 					"page": 197
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "plant",
 			"alignment": [
 				"N"
@@ -32264,6 +32923,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -32277,7 +32937,9 @@
 					"page": 179
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -32418,7 +33080,7 @@
 				{
 					"name": "Frightful Word",
 					"entries": [
-						"Titivilus targets one creature he can see within 10 feet of him. The target must succeed on a {@dc 21} Wisdom saving throw or become {@condition frightened} of him for 1 minute. While {@condition frightened} in this way, the target must take the Dash action and move away from Titivilus by the safest available route on each of its turns, unless there is nowhere to move, in which case it needn't take the Dash action. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+						"Titivilus targets one creature he can see within 10 feet of him. The target must succeed on a {@dc 21} Wisdom saving throw or become {@condition frightened} of him for 1 minute. While {@condition frightened} in this way, the target must take the {@action Dash} action and move away from Titivilus by the safest available route on each of its turns, unless there is nowhere to move, in which case it needn't take the {@action Dash} action. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
 					]
 				},
 				{
@@ -32492,6 +33154,7 @@
 				"incapacitated",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -32504,7 +33167,9 @@
 					"page": 193
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N"
@@ -32601,6 +33266,7 @@
 				"poisoned",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -32613,7 +33279,9 @@
 					"page": 242
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -32707,6 +33375,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -32719,7 +33388,9 @@
 					"page": 242
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -32838,6 +33509,7 @@
 			"conditionInflictSpell": [
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -32850,7 +33522,9 @@
 					"page": 218
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -32930,22 +33604,22 @@
 							"items": [
 								{
 									"type": "item",
-									"name": "Darkvision.",
-									"entry": "The transmuter has darkvision out to a range of 60 feet."
+									"name": "Darkvision",
+									"entry": "The transmuter has {@sense darkvision} out to a range of 60 feet."
 								},
 								{
 									"type": "item",
-									"name": "Resilience.",
+									"name": "Resilience",
 									"entry": "The transmuter has proficiency in Constitution saving throws. "
 								},
 								{
 									"type": "item",
-									"name": "Resistance.",
+									"name": "Resistance",
 									"entry": "Resistance. The transmuter has resistance to acid, cold, fire, lightning, or thunder damage (transmuter's choice whenever choosing this benefit)."
 								},
 								{
 									"type": "item",
-									"name": "Speed.",
+									"name": "Speed",
 									"entry": "The transmuter's walking speed is increased by 10 feet."
 								}
 							]
@@ -32994,6 +33668,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33006,7 +33681,9 @@
 					"page": 194
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -33046,7 +33723,7 @@
 				{
 					"name": "False Appearance",
 					"entries": [
-						"If the trapper is motionless on a floor, wall, or ceiling at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the trapper move or act, that creature must succeed on a {@dc 18} Intelligence (Investigation) check to discern that the trapper isn't part of the floor, wall, or ceiling."
+						"If the trapper is motionless on a floor, wall, or ceiling at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the trapper move or act, that creature must succeed on a {@dc 18} Intelligence ({@skill Investigation}) check to discern that the trapper isn't part of the floor, wall, or ceiling."
 					]
 				},
 				{
@@ -33088,6 +33765,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33100,7 +33778,9 @@
 					"page": 175
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "aberration",
 				"tags": [
@@ -33264,6 +33944,7 @@
 				"restrained",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33276,7 +33957,9 @@
 					"page": 246
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "undead",
 			"alignment": [
 				"C",
@@ -33411,6 +34094,7 @@
 				"N",
 				"R"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33423,7 +34107,9 @@
 					"page": 195
 				}
 			],
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"type": "fiend",
 			"alignment": [
 				"C",
@@ -33516,6 +34202,7 @@
 				"frightened",
 				"stunned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33528,7 +34215,9 @@
 					"page": 196
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "plant",
 			"alignment": [
 				"N"
@@ -33625,6 +34314,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33637,7 +34327,9 @@
 					"page": 197
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "plant",
 			"alignment": [
 				"N"
@@ -33754,6 +34446,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33766,7 +34459,9 @@
 					"page": 140
 				}
 			],
-			"size": "T",
+			"size": [
+				"T"
+			],
 			"type": {
 				"type": "beast",
 				"tags": [
@@ -33851,6 +34546,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33863,7 +34559,9 @@
 					"page": 245
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "giant",
 			"alignment": [
 				"C",
@@ -33981,6 +34679,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -33993,7 +34692,9 @@
 					"page": 218
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid",
 				"tags": [
@@ -34121,6 +34822,7 @@
 				"paralyzed",
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -34133,7 +34835,9 @@
 					"page": 219
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -34267,6 +34971,7 @@
 				"paralyzed",
 				"unconscious"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -34279,7 +34984,9 @@
 					"page": 219
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -34426,6 +35133,7 @@
 				"AOE",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -34438,7 +35146,9 @@
 					"page": 220
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "humanoid",
 			"alignment": [
 				"A"
@@ -34579,6 +35289,7 @@
 				"charmed",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -34591,7 +35302,9 @@
 					"page": 220
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "humanoid"
 			},
@@ -34714,6 +35427,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -34726,7 +35440,9 @@
 					"page": 139
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -34886,6 +35602,7 @@
 			"conditionInflict": [
 				"poisoned"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -34898,7 +35615,9 @@
 					"page": 203
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -34998,6 +35717,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35010,7 +35730,9 @@
 					"page": 163
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -35081,7 +35803,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the abishai's darkvision."
+						"Magical darkness doesn't impede the abishai's {@sense darkvision}."
 					]
 				},
 				{
@@ -35127,7 +35849,7 @@
 				{
 					"name": "Vicious Reprisal",
 					"entries": [
-						"In response to taking damage, the abishai makes one Bite attack against a random creature within 5 feet of it. If no creature is within reach, the abishai moves up to half its speed toward an enemy it can see, without provoking opportunity attacks."
+						"In response to taking damage, the abishai makes one Bite attack against a random creature within 5 feet of it. If no creature is within reach, the abishai moves up to half its speed toward an enemy it can see, without provoking {@action opportunity attack||opportunity attacks}."
 					]
 				}
 			],
@@ -35163,6 +35885,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35175,7 +35898,9 @@
 					"page": 197
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "fey",
 				"tags": [
@@ -35273,7 +35998,7 @@
 			],
 			"bonus": [
 				{
-					"name": "Fey Step (Recharge 4-6)",
+					"name": "Fey Step {@recharge 4}",
 					"entries": [
 						"The eladrin teleports, along with any equipment it is wearing or carrying, up to 30 feet to an unoccupied space it can see."
 					]
@@ -35325,6 +36050,7 @@
 			"conditionInflictSpell": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35337,7 +36063,9 @@
 					"page": 198
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "plant",
 			"alignment": [
 				"L",
@@ -35433,7 +36161,8 @@
 				"path": "bestiary/wood-woad.mp3"
 			},
 			"traitTags": [
-				"Regeneration"
+				"Regeneration",
+				"Tree Stride"
 			],
 			"senseTags": [
 				"D"
@@ -35450,6 +36179,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35462,7 +36192,9 @@
 					"page": 233
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -35542,6 +36274,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35554,7 +36287,9 @@
 					"page": 200
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -35611,7 +36346,7 @@
 				{
 					"name": "Sling",
 					"entries": [
-						"{@atk rw} {@hit 4} to hit, range 30/120 ft., one target. {@h}4 (1 {@dice d4 + 2}) bludgeoning damage."
+						"{@atk rw} {@hit 4} to hit, range 30/120 ft., one target. {@h}4 ({@damage 1d4 + 2}) bludgeoning damage."
 					]
 				}
 			],
@@ -35619,7 +36354,7 @@
 				{
 					"name": "Low Cunning",
 					"entries": [
-						"The xvart takes the Disengage action."
+						"The xvart takes the {@action Disengage} action."
 					]
 				}
 			],
@@ -35645,6 +36380,7 @@
 				"RNG",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35657,7 +36393,9 @@
 					"page": 200
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"C",
@@ -35752,7 +36490,7 @@
 				{
 					"name": "Low Cunning",
 					"entries": [
-						"The xvart takes the Disengage action."
+						"The xvart takes the {@action Disengage} action."
 					]
 				}
 			],
@@ -35783,6 +36521,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35795,7 +36534,9 @@
 					"page": 252
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -35978,6 +36719,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -35991,7 +36733,9 @@
 					"page": 155
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -36120,21 +36864,21 @@
 							"items": [
 								{
 									"type": "item",
-									"name": "Confusion.",
+									"name": "Confusion",
 									"entries": [
 										"The target must succeed on a {@dc 17} Wisdom saving throw or be affected by the confusion spell until the start of Yeenoghu's next turn."
 									]
 								},
 								{
 									"type": "item",
-									"name": "Force.",
+									"name": "Force",
 									"entries": [
 										"The target takes an extra 13 ({@damage 2d12}) force damage."
 									]
 								},
 								{
 									"type": "item",
-									"name": "Paralysis.",
+									"name": "Paralysis",
 									"entries": [
 										"The target must succeed on a {@dc 17} Constitution saving throw or be {@condition paralyzed} until the start of Yeenoghu's next turn."
 									]
@@ -36216,6 +36960,7 @@
 				"frightened",
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -36228,7 +36973,9 @@
 					"page": 201
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": "fey",
 			"alignment": [
 				"N",
@@ -36344,6 +37091,7 @@
 			"conditionInflict": [
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -36356,7 +37104,9 @@
 					"page": 211
 				}
 			],
-			"size": "S",
+			"size": [
+				"S"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"U"
@@ -36443,6 +37193,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -36455,7 +37206,9 @@
 					"page": 202
 				}
 			],
-			"size": "H",
+			"size": [
+				"H"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -36636,6 +37389,7 @@
 				"frightened",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -36648,7 +37402,9 @@
 					"page": 203
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": "monstrosity",
 			"alignment": [
 				"N",
@@ -36760,6 +37516,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -36772,7 +37529,9 @@
 					"page": 204
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "monstrosity",
 				"tags": [
@@ -36858,7 +37617,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the yuan-ti's darkvision."
+						"Magical darkness doesn't impede the yuan-ti's {@sense darkvision}."
 					]
 				},
 				{
@@ -36884,13 +37643,13 @@
 				{
 					"name": "Bite",
 					"entries": [
-						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}5 (1 {@dice d4 + 3}) piercing damage plus 7 ({@damage 2d6}) poison damage."
+						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}5 ({@damage 1d4 + 3}) piercing damage plus 7 ({@damage 2d6}) poison damage."
 					]
 				},
 				{
 					"name": "Scimitar (Yuan-ti Form Only)",
 					"entries": [
-						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}6 (ld6 + 3) slashing damage."
+						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}6 ({@damage 1d6 + 3}) slashing damage."
 					]
 				},
 				{
@@ -36947,6 +37706,7 @@
 				"charmed",
 				"incapacitated"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -36959,7 +37719,9 @@
 					"page": 205
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "monstrosity",
 				"tags": [
@@ -37045,7 +37807,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the yuan-ti's darkvision."
+						"Magical darkness doesn't impede the yuan-ti's {@sense darkvision}."
 					]
 				},
 				{
@@ -37071,7 +37833,7 @@
 				{
 					"name": "Scimitar (Yuan-ti Form Only)",
 					"entries": [
-						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}6 (1 {@dice d6 + 3}) slashing damage."
+						"{@atk mw} {@hit 5} to hit, reach 5 ft., one target. {@h}6 ({@damage 1d6 + 3}) slashing damage."
 					]
 				},
 				{
@@ -37142,6 +37904,7 @@
 				"charmed",
 				"frightened"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -37154,7 +37917,9 @@
 					"page": 206
 				}
 			],
-			"size": "M",
+			"size": [
+				"M"
+			],
 			"type": {
 				"type": "monstrosity",
 				"tags": [
@@ -37240,7 +38005,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede the yuan-ti's darkvision."
+						"Magical darkness doesn't impede the yuan-ti's {@sense darkvision}."
 					]
 				},
 				{
@@ -37327,6 +38092,7 @@
 				"invisible",
 				"paralyzed"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -37339,7 +38105,9 @@
 					"page": 201
 				}
 			],
-			"size": "G",
+			"size": [
+				"G"
+			],
 			"type": "elemental",
 			"alignment": [
 				"N"
@@ -37531,6 +38299,7 @@
 				"prone",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -37544,7 +38313,9 @@
 					"page": 180
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -37648,7 +38419,7 @@
 				{
 					"name": "Devil's Sight",
 					"entries": [
-						"Magical darkness doesn't impede Zariel's darkvision."
+						"Magical darkness doesn't impede Zariel's {@sense darkvision}."
 					]
 				},
 				{
@@ -37758,6 +38529,7 @@
 			"conditionInflictSpell": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -37771,7 +38543,9 @@
 					"page": 157
 				}
 			],
-			"size": "L",
+			"size": [
+				"L"
+			],
 			"type": {
 				"type": "fiend",
 				"tags": [
@@ -37892,7 +38666,7 @@
 				{
 					"name": "Pseudopod",
 					"entries": [
-						"{@atk mw} 4{@hit -13} to hit, reach 10 ft., one target. {@h}15 ({@dice 2d8} 4- 6) force damage plus 9 ({@damage 2d8}) poison damage."
+						"{@atk mw} {@hit +13} to hit, reach 10 ft., one target. {@h}15 ({@damage 2d8 + 6}) force damage plus 9 ({@damage 2d8}) poison damage."
 					]
 				}
 			],
@@ -37904,7 +38678,7 @@
 					]
 				},
 				{
-					"name": "Mind Control Spores (Recharge 5-6)",
+					"name": "Mind Control Spores {@recharge 5}",
 					"entries": [
 						"Zuggtmoy releases spores that burst out in a cloud that fills a 20-foot-radius sphere centered on her, and it lingers for 1 minute. Humanoids and Beasts in the cloud when it appears, or that enter it later, must make a {@dc 19} Wisdom saving throw. On a successful save, a creature can't be infected by these spores for 24 hours. On a failed save, the creature is infected with a disease called the influence of Zuggtmoy for 24 hours. While infected in this way, the creature is {@condition charmed} by her and can't be reinfected by these spores."
 					]
@@ -37964,6 +38738,7 @@
 			"conditionInflictSpell": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		}
 	]

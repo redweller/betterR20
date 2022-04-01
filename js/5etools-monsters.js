@@ -260,7 +260,7 @@ function d20plusMonsters () {
 
 	// Get NPC size from chr
 	d20plus.monsters.getSizeString = function (chr) {
-		const result = Parser.sizeAbvToFull(chr);
+		const result = Renderer.utils.getRenderedSize(chr);
 		return result || "(Unknown Size)";
 	};
 
@@ -308,7 +308,7 @@ function d20plusMonsters () {
 						...pType.tags,
 						`cr ${(data.cr ? (data.cr.cr || data.cr) : "").replace(/\//g, " over ")}` || "unknown cr",
 						Parser.sourceJsonToFull(data.source),
-						Parser.sizeAbvToFull(data.size),
+						Renderer.utils.getRenderedSize(data.size),
 						...(data.environment || []),
 						data.isNPC ? "npc" : undefined,
 					], "creature"),

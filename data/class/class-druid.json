@@ -3262,7 +3262,7 @@
 			"header": 2,
 			"entries": [
 				"Starting at 6th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.",
-				"In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the {@spell entangle} spell."
+				"In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such as those created by the {@spell entangle} spell."
 			]
 		},
 		{
@@ -3794,12 +3794,12 @@
 					"items": [
 						{
 							"type": "item",
-							"name": "Weal (even).",
+							"name": "Weal (even)",
 							"entry": "Whenever a creature you can see within 30 feet of you is about to make an attack roll, a saving throw, or an ability check, you can use your reaction to roll a {@dice d6} and add the number rolled to the total."
 						},
 						{
 							"type": "item",
-							"name": "Woe (odd).",
+							"name": "Woe (odd)",
 							"entry": "Whenever a creature you can see within 30 feet of you is about to make an attack roll, a saving throw, or an ability check, you can use your reaction to roll a {@dice d6} and subtract the number rolled from the total."
 						}
 					]
