@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.30.0
+// @version      1.30.1
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -1763,6 +1763,82 @@ function baseConfig () {
 	d20plus.cfg.setCfgVal = (group, key, val) => {
 		if (d20plus.cfg.current[group] === undefined) d20plus.cfg.current[group] = {};
 		d20plus.cfg.current[group][key] = val;
+	};
+
+	d20plus.cfg.getWikiSummary = () => {
+		const getDefaultValue = (group, key, setting) => {
+			switch (setting.type) {
+				case "_SHEET_ATTRIBUTE_PC": return Object.values(PC_SHEET_ATTRIBUTES).find(it => it.ogl === setting.default)?.name ?? setting.default;
+				case "_SHEET_ATTRIBUTE": return Object.values(NPC_SHEET_ATTRIBUTES).find(it => it.ogl === setting.default)?.name ?? setting.default;
+
+				default: return setting.default;
+			}
+		};
+
+		const getOptions = (group, key, setting) => {
+			switch (setting._type) {
+				case "_enum": return d20plus.cfg.getCfgEnumVals(group, key, setting);
+
+				case "_SHEET_ATTRIBUTE_PC": return Object.values(PC_SHEET_ATTRIBUTES).map(it => it.name);
+				case "_SHEET_ATTRIBUTE": return Object.values(NPC_SHEET_ATTRIBUTES).map(it => it.name);
+
+				case "_FORMULA": return d20plus.formulas._options;
+				case "_WHISPERMODE": return d20plus.whisperModes;
+
+				case "_ADVANTAGEMODE": return d20plus.advantageModes;
+				case "_DAMAGEMODE": return d20plus.damageModes;
+
+				case "_slider": {
+					const sliderMeta = d20plus.cfg.getCfgSliderVals(group, key);
+					return [sliderMeta.min, sliderMeta.max];
+				}
+
+				default: return null;
+			}
+		};
+
+		return Object.entries(CONFIG_OPTIONS)
+			.map(([group, groupMeta]) => {
+				return {
+					groupName: groupMeta._name,
+					settings: Object.entries(groupMeta)
+						.map(([key, setting]) => {
+							if (key.startsWith("_")) return null;
+
+							const options = getOptions(group, key, setting);
+
+							return {
+								name: setting.name,
+								isPlayerEditable: !!setting._player,
+								default: getDefaultValue(group, key, setting),
+								options,
+							};
+						})
+						.filter(Boolean),
+				};
+			});
+	};
+
+	d20plus.cfg.getWikiSummaryMarkdown = () => {
+		return d20plus.cfg.getWikiSummary()
+			.map(group => {
+				let markdown = `## ${group.groupName}\n`;
+				markdown += "TODO: Add description\n\n### Settings\n\n";
+
+				group.settings
+					.forEach(setting => {
+						markdown += `- **${setting.name}**${(!setting.default && setting.default !== false) ? "" : ` *(default: ${setting.default})*`}\n`;
+
+						if (setting.options) {
+							markdown += "	Possible options are:\n";
+							setting.options.forEach(option => markdown += `	- ${option}\n`);
+						}
+						markdown += "\n";
+					});
+
+				return markdown.replaceAll(/((&quot;)|")/g, "`");
+			})
+			.join("");
 	};
 
 	d20plus.cfg.makeTabPane = ($addTo, headers, content) => {
@@ -12066,7 +12142,7 @@ function baseUi () {
 				width: 30,
 				position: "absolute",
 				left: 20,
-				top: $wrpBtnsMain.height() + 45,
+				top: $wrpBtnsMain.height() + 90,
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
 				zIndex: 10600,
@@ -17699,6 +17775,13 @@ Parser.itemRechargeToFull = function (recharge) {
 	return Parser._parse_aToB(Parser.ITEM_RECHARGE_TO_FULL, recharge);
 };
 
+Parser.ITEM_MISC_TAG_TO_FULL = {
+	"CF/W": "Creates Food/Water",
+};
+Parser.itemMiscTagToFull = function (type) {
+	return Parser._parse_aToB(Parser.ITEM_MISC_TAG_TO_FULL, type);
+};
+
 Parser._decimalSeparator = (0.1).toLocaleString().substring(1, 2);
 Parser._numberCleanRegexp = Parser._decimalSeparator === "." ? new RegExp(/[\s,]*/g, "g") : new RegExp(/[\s.]*/g, "g");
 Parser._costSplitRegexp = Parser._decimalSeparator === "." ? new RegExp(/(\d+(\.\d+)?)([csegp]p)/) : new RegExp(/(\d+(,\d+)?)([csegp]p)/);
@@ -18525,6 +18608,7 @@ Parser.CHAR_OPTIONAL_FEATURE_TYPE_TO_FULL = {
 	"OF": "Optional Feature",
 	"DG": "Dark Gift",
 	"RF:B": "Replacement Feature: Background",
+	"CS": "Character Secret", // Specific to IDRotF (rules on page 14)
 };
 
 Parser.charCreationOptionTypeToFull = function (type) {
@@ -19323,6 +19407,7 @@ SRC_SCC_HfMT = "SCC-HfMT";
 SRC_SCC_TMM = "SCC-TMM";
 SRC_SCC_ARiR = "SCC-ARiR";
 SRC_MPMM = "MPMM";
+SRC_CRCotN = "CRCotN";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
@@ -19424,6 +19509,7 @@ SRC_UA2021FF = `${SRC_UA_PREFIX}2021FolkOfTheFeywild`;
 SRC_UA2021DO = `${SRC_UA_PREFIX}2021DraconicOptions`;
 SRC_UA2021MoS = `${SRC_UA_PREFIX}2021MagesOfStrixhaven`;
 SRC_UA2021TotM = `${SRC_UA_PREFIX}2021TravelersOfTheMultiverse`;
+SRC_UA2022HoK = `${SRC_UA_PREFIX}2022HeroesOfKrynn`;
 
 SRC_3PP_SUFFIX = " 3pp";
 
@@ -19522,6 +19608,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_SCC_HfMT] = `Hunt for Mage Tower`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCC_TMM] = `The Magister's Masquerade`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCC_ARiR] = `A Reckoning in Ruins`;
 Parser.SOURCE_JSON_TO_FULL[SRC_MPMM] = `Mordenkainen Presents: Monsters of the Multiverse`;
+Parser.SOURCE_JSON_TO_FULL[SRC_CRCotN] = `Critical Role: Call of the Netherdeep`;
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
@@ -19615,6 +19702,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_UA2021FF] = `${UA_PREFIX}2021 Folk of the Feywild
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021DO] = `${UA_PREFIX}2021 Draconic Options`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021MoS] = `${UA_PREFIX}2021 Mages of Strixhaven`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021TotM] = `${UA_PREFIX}2021 Travelers of the Multiverse`;
+Parser.SOURCE_JSON_TO_FULL[SRC_UA2022HoK] = `${UA_PREFIX}2022 Heroes of Krynn`;
 
 Parser.SOURCE_JSON_TO_ABV = {};
 Parser.SOURCE_JSON_TO_ABV[SRC_CoS] = "CoS";
@@ -19701,6 +19789,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_SCC_HfMT] = "SCC-HfMT";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCC_TMM] = "SCC-TMM";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCC_ARiR] = "SCC-ARiR";
 Parser.SOURCE_JSON_TO_ABV[SRC_MPMM] = "MPMM";
+Parser.SOURCE_JSON_TO_ABV[SRC_CRCotN] = "CRCotN";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_DUNGEON_KIT] = "ScDun";
@@ -19794,6 +19883,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_UA2021FF] = "UA21FF";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021DO] = "UA21DO";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021MoS] = "UA21MoS";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021TotM] = "UA21TotM";
+Parser.SOURCE_JSON_TO_ABV[SRC_UA2022HoK] = "UA22HoK";
 
 Parser.SOURCE_JSON_TO_DATE = {};
 Parser.SOURCE_JSON_TO_DATE[SRC_CoS] = "2016-03-15";
@@ -19879,6 +19969,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_SCC_HfMT] = "2021-12-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCC_TMM] = "2021-12-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCC_ARiR] = "2021-12-07";
 Parser.SOURCE_JSON_TO_DATE[SRC_MPMM] = "2022-01-25";
+Parser.SOURCE_JSON_TO_DATE[SRC_CRCotN] = "2022-03-15";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
@@ -19972,6 +20063,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_UA2021FF] = "2020-03-12";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021DO] = "2021-04-14";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021MoS] = "2021-06-08";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021TotM] = "2021-10-08";
+Parser.SOURCE_JSON_TO_DATE[SRC_UA2022HoK] = "2022-03-08";
 
 Parser.SOURCES_ADVENTURES = new Set([
 	SRC_LMoP,
@@ -20124,6 +20216,7 @@ Parser.SOURCES_NON_FR = new Set([
 	SRC_SCC_HfMT,
 	SRC_SCC_TMM,
 	SRC_SCC_ARiR,
+	SRC_CRCotN,
 ]);
 
 // endregion
@@ -20217,6 +20310,13 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	SRC_SCC_HfMT,
 	SRC_SCC_TMM,
 	SRC_SCC_ARiR,
+	SRC_PSA,
+	SRC_PSI,
+	SRC_PSK,
+	SRC_PSZ,
+	SRC_PSX,
+	SRC_PSD,
+	SRC_CRCotN,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
@@ -20226,6 +20326,7 @@ Parser.TAG_TO_DEFAULT_SOURCE = {
 	"spell": SRC_PHB,
 	"item": SRC_DMG,
 	"class": SRC_PHB,
+	"subclass": SRC_PHB,
 	"creature": SRC_MM,
 	"condition": SRC_PHB,
 	"disease": SRC_DMG,
@@ -20262,6 +20363,20 @@ Parser.getTagSource = function (tag, source) {
 
 	if (!Parser.TAG_TO_DEFAULT_SOURCE[tag]) throw new Error(`Unhandled tag "${tag}"`);
 	return Parser.TAG_TO_DEFAULT_SOURCE[tag];
+};
+
+Parser.PROP_TO_TAG = {
+	"monster": "creature",
+	"optionalfeature": "optfeature",
+	"tableGroup": "table",
+	"vehicleUpgrade": "vehupgrade",
+	"baseitem": "item",
+	"itemGroup": "item",
+	"variant": "item",
+};
+Parser.getPropTag = function (prop) {
+	if (Parser.PROP_TO_TAG[prop]) return Parser.PROP_TO_TAG[prop];
+	return prop;
 };
 
 Parser.PROP_TO_DISPLAY_NAME = {
@@ -20477,7 +20592,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.149.0"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.152.1"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -20536,7 +20651,10 @@ VeCt = {
 	LEVEL_MAX: 20,
 
 	ENTDATA_TABLE_INCLUDE: "tableInclude",
-	ENTDATA_ITEM_MERGED_ENTRY_TAG: "item.mergedEntryTag",
+	ENTDATA_ITEM_MERGED_ENTRY_TAG: "item__mergedEntryTag",
+
+	DRAG_TYPE_IMPORT: "ve-Import",
+	DRAG_TYPE_LOOT: "ve-Loot",
 };
 
 // STRING ==============================================================================================================
@@ -20555,7 +20673,7 @@ String.prototype.lowercaseFirst = String.prototype.lowercaseFirst || function ()
 };
 
 String.prototype.toTitleCase = String.prototype.toTitleCase || function () {
-	let str = this.replace(/([^\W_]+[^\s-/]*) */g, m0 => m0.charAt(0).toUpperCase() + m0.substr(1).toLowerCase());
+	let str = this.replace(/([^\W_]+[^-\u2014\s/]*) */g, m0 => m0.charAt(0).toUpperCase() + m0.substr(1).toLowerCase());
 
 	// Require space surrounded, as title-case requires a full word on either side
 	StrUtil._TITLE_LOWER_WORDS_RE = StrUtil._TITLE_LOWER_WORDS_RE || StrUtil.TITLE_LOWER_WORDS.map(it => new RegExp(`\\s${it}\\s`, "gi"));
@@ -20749,7 +20867,7 @@ StrUtil = {
 		return string.uppercaseFirst();
 	},
 	// Certain minor words should be left lowercase unless they are the first or last words in the string
-	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over"],
+	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over", "von"],
 	// Certain words such as initialisms or acronyms should be left uppercase
 	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc", "Tpk"],
 
@@ -20831,6 +20949,16 @@ CleanUtil._TAG_DASH_EXPAND_REGEX = /({@[a-zA-Z])([\u2014\u2013])/g;
 
 // SOURCES =============================================================================================================
 SourceUtil = {
+	ADV_BOOK_GROUPS: [
+		{group: "core", displayName: "Core"},
+		{group: "supplement", displayName: "Supplements"},
+		{group: "setting", displayName: "Settings"},
+		{group: "supplement-alt", displayName: "Extras"},
+		{group: "homebrew", displayName: "Homebrew"},
+		{group: "screen", displayName: "Screens"},
+		{group: "other", displayName: "Miscellaneous"},
+	],
+
 	_subclassReprintLookup: {},
 	async pInitSubclassReprintLookup () {
 		SourceUtil._subclassReprintLookup = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/generated/gendata-subclass-lookup.json`);
@@ -22125,16 +22253,22 @@ MiscUtil = {
 EventUtil = {
 	_mouseX: 0,
 	_mouseY: 0,
+	_isUsingTouch: false,
 
 	init () {
 		document.addEventListener("mousemove", evt => {
 			EventUtil._mouseX = evt.clientX;
 			EventUtil._mouseY = evt.clientY;
 		});
+		document.addEventListener("touchstart", () => {
+			EventUtil._isUsingTouch = true;
+		});
 	},
 
 	getClientX (evt) { return evt.touches && evt.touches.length ? evt.touches[0].clientX : evt.clientX; },
 	getClientY (evt) { return evt.touches && evt.touches.length ? evt.touches[0].clientY : evt.clientY; },
+
+	isUsingTouch () { return !!EventUtil._isUsingTouch; },
 
 	isInInput (evt) {
 		return evt.target.nodeName === "INPUT" || evt.target.nodeName === "TEXTAREA"
@@ -22235,7 +22369,7 @@ ContextUtil = {
 			const $elesAction = this._actions.map(it => {
 				if (it == null) return $(`<div class="my-1 w-100 ui-ctx__divider"></div>`);
 
-				const $row = $$`<div class="py-1 px-5 ui-ctx__row ${it.isDisabled ? "disabled" : ""} ${it.style || ""}">${it.text}</div>`
+				const $btnAction = $(`<div class="w-100 min-w-0 ui-ctx__btn py-1 pl-5 ${it.fnActionAlt ? "" : "pr-5"}" ${it.isDisabled ? "disabled" : ""}>${it.text}</div>`)
 					.click(async evt => {
 						if (it.isDisabled) return;
 
@@ -22247,9 +22381,23 @@ ContextUtil = {
 						const result = await it.fnAction(evt, this._userData);
 						if (this._resolveResult) this._resolveResult(result);
 					});
-				if (it.title) $row.title(it.title);
+				if (it.title) $btnAction.title(it.title);
 
-				return $row;
+				const $btnActionAlt = it.fnActionAlt ? $(`<div class="ui-ctx__btn ml-1 bl-1 py-1 px-4" ${it.isDisabled ? "disabled" : ""}>${it.textAlt ?? `<span class="glyphicon glyphicon-cog"></span>`}</div>`)
+					.click(async evt => {
+						if (it.isDisabled) return;
+
+						evt.preventDefault();
+						evt.stopPropagation();
+
+						this.close();
+
+						const result = await it.fnActionAlt(evt, this._userData);
+						if (this._resolveResult) this._resolveResult(result);
+					}) : null;
+				if (it.titleAlt && $btnActionAlt) $btnActionAlt.title(it.titleAlt);
+
+				return $$`<div class="ui-ctx__row ve-flex-v-center ${it.style || ""}">${$btnAction}${$btnActionAlt}</div>`;
 			});
 
 			this._$ele = $$`<div class="ve-flex-col ui-ctx__wrp py-2">${$elesAction}</div>`
@@ -22280,6 +22428,9 @@ ContextUtil = {
 	 * @param [opts.isDisabled] If this action is disabled.
 	 * @param [opts.title] Help (title) text.
 	 * @param [opts.style] Additional CSS classes to add (e.g. `ctx-danger`).
+	 * @param [opts.fnActionAlt] Alternate action, which can be accessed by clicking a secondary "settings"-esque button.
+	 * @param [opts.textAlt] Text for the alt-action button
+	 * @param [opts.titleAlt] Title for the alt-action button
 	 */
 	Action: function (text, fnAction, opts) {
 		opts = opts || {};
@@ -22290,6 +22441,10 @@ ContextUtil = {
 		this.isDisabled = opts.isDisabled;
 		this.title = opts.title;
 		this.style = opts.style;
+
+		this.fnActionAlt = opts.fnActionAlt;
+		this.textAlt = opts.textAlt;
+		this.titleAlt = opts.titleAlt;
 	},
 };
 
@@ -22386,6 +22541,12 @@ UrlUtil = {
 			.on("click", async evt => {
 				let url = window.location.href;
 
+				if (evt.ctrlKey) {
+					await MiscUtil.pCopyTextToClipboard(filterBox.getFilterTag());
+					JqueryUtil.showCopiedEffect($btn);
+					return;
+				}
+
 				const parts = filterBox.getSubHashes({isAddSearchTerm: true});
 				parts.unshift(url);
 
@@ -22398,7 +22559,7 @@ UrlUtil = {
 				await MiscUtil.pCopyTextToClipboard(parts.join(HASH_PART_SEP));
 				JqueryUtil.showCopiedEffect($btn);
 			})
-			.title("Get Link to Filters (SHIFT adds List)");
+			.title("Get link to filters (shift adds list; CTRL copies @filter tag)");
 	},
 
 	mini: {
@@ -22562,6 +22723,7 @@ UrlUtil.PG_CHAR_CREATION_OPTIONS = "charcreationoptions.html";
 UrlUtil.PG_RECIPES = "recipes.html";
 UrlUtil.PG_CLASS_SUBCLASS_FEATURES = "classfeatures.html";
 UrlUtil.PG_MAPS = "maps.html";
+UrlUtil.PG_SEARCH = "search.html";
 
 UrlUtil.URL_TO_HASH_BUILDER = {};
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BESTIARY] = (it) => UrlUtil.encodeForHash([it.name, it.source]);
@@ -22608,10 +22770,13 @@ UrlUtil.URL_TO_HASH_BUILDER["feat"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_FEA
 UrlUtil.URL_TO_HASH_BUILDER["optionalfeature"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OPT_FEATURES];
 UrlUtil.URL_TO_HASH_BUILDER["psionic"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_PSIONICS];
 UrlUtil.URL_TO_HASH_BUILDER["race"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RACES];
+UrlUtil.URL_TO_HASH_BUILDER["subrace"] = (it) => UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RACES]({name: `${it.name} (${it.raceName})`, source: it.source});
 UrlUtil.URL_TO_HASH_BUILDER["reward"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_REWARDS];
 UrlUtil.URL_TO_HASH_BUILDER["variantrule"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_VARIANTRULES];
 UrlUtil.URL_TO_HASH_BUILDER["adventure"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ADVENTURES];
+UrlUtil.URL_TO_HASH_BUILDER["adventureData"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ADVENTURES];
 UrlUtil.URL_TO_HASH_BUILDER["book"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BOOKS];
+UrlUtil.URL_TO_HASH_BUILDER["bookData"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BOOKS];
 UrlUtil.URL_TO_HASH_BUILDER["deity"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DEITIES];
 UrlUtil.URL_TO_HASH_BUILDER["cult"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CULTS_BOONS];
 UrlUtil.URL_TO_HASH_BUILDER["boon"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CULTS_BOONS];
@@ -22953,6 +23118,14 @@ SortUtil = {
 					},
 				});
 			});
+	},
+
+	ascSortSourceGroup (a, b) {
+		const grpA = a.group || "other";
+		const grpB = b.group || "other";
+		const ixA = SourceUtil.ADV_BOOK_GROUPS.findIndex(it => it.group === grpA);
+		const ixB = SourceUtil.ADV_BOOK_GROUPS.findIndex(it => it.group === grpB);
+		return SortUtil.ascSort(ixA, ixB);
 	},
 
 	ascSortAdventure (a, b) {
@@ -23372,6 +23545,15 @@ DataUtil = {
 				displayText,
 				others,
 			};
+		},
+
+		packUid (ent, tag) {
+			// <name>|<source>
+			const sourceDefault = Parser.getTagSource(tag);
+			return [
+				ent.name,
+				(ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
 		},
 
 		getNormalizedUid (uid, tag) {
@@ -23817,10 +23999,17 @@ DataUtil = {
 			}
 
 			function doMod_maxSize (modInfo) {
-				const ixCur = Parser.SIZE_ABVS.indexOf(copyTo.size);
+				const sizes = [...copyTo.size].sort(SortUtil.ascSortSize);
+
+				const ixsCur = sizes.map(it => Parser.SIZE_ABVS.indexOf(it));
 				const ixMax = Parser.SIZE_ABVS.indexOf(modInfo.max);
-				if (ixCur < 0 || ixMax < 0) throw new Error(`${msgPtFailed} Unhandled size!`);
-				copyTo.size = Parser.SIZE_ABVS[Math.min(ixCur, ixMax)];
+
+				if (!~ixMax || ixsCur.some(ix => !~ix)) throw new Error(`${msgPtFailed} Unhandled size!`);
+
+				const ixsNxt = ixsCur.filter(ix => ix <= ixMax);
+				if (!ixsNxt.length) ixsNxt.push(ixMax);
+
+				copyTo.size = ixsNxt.map(ix => Parser.SIZE_ABVS[ix]);
 			}
 
 			function doMod_scalarMultXp (modInfo) {
@@ -24404,6 +24593,17 @@ DataUtil = {
 			return DataUtil.class._loadedRawJson;
 		},
 
+		packUidSubclass (it) {
+			// <name>|<className>|<classSource>|<source>
+			const sourceDefault = Parser.getTagSource("subclass");
+			return [
+				it.name,
+				it.className,
+				(it.classSource || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.classSource,
+				(it.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.source,
+			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+		},
+
 		/**
 		 * @param uid
 		 * @param [opts]
@@ -24679,6 +24879,16 @@ DataUtil = {
 		},
 
 		getDataUrl () { return `${Renderer.get().baseUrl}data/deities.json`; },
+
+		packUidDeity (it) {
+			// <name>|<pantheon>|<source>
+			const sourceDefault = Parser.getTagSource("deity");
+			return [
+				it.name,
+				(it.pantheon || "").toLowerCase() === "forgotten realms" ? "" : it.pantheon,
+				(it.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.source,
+			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+		},
 	},
 
 	table: {
@@ -25274,6 +25484,15 @@ BrewUtil = {
 				isMigration = true;
 				sr.raceName = sr.race.name;
 				sr.raceSource = sr.race.source || sr.source || SRC_PHB;
+			});
+		}
+		// endregion
+
+		// region Creature (monster)
+		// 2022-03-22
+		if (homebrew.monster) {
+			homebrew.monster.forEach(mon => {
+				if (typeof mon.size === "string") mon.size = [mon.size];
 			});
 		}
 		// endregion
@@ -26210,7 +26429,7 @@ BrewUtil = {
 	},
 
 	_DIRS: ["action", "adventure", "background", "book", "boon", "charoption", "class", "condition", "creature", "cult", "deity", "disease", "feat", "hazard", "item", "language", "magicvariant", "makebrew", "object", "optionalfeature", "psionic", "race", "recipe", "reward", "spell", /* "status", */ "subclass", "subrace", "table", "trap", "variantrule", "vehicle", "classFeature", "subclassFeature"],
-	_STORABLE: ["class", "subclass", "classFeature", "subclassFeature", "spell", "spellFluff", "monster", "legendaryGroup", "monsterFluff", "background", "feat", "optionalfeature", "race", "raceFluff", "subrace", "deity", "item", "baseitem", "variant", "itemProperty", "itemType", "itemFluff", "itemGroup", "itemEntry", "psionic", "reward", "object", "trap", "hazard", "variantrule", "condition", "disease", "status", "adventure", "adventureData", "book", "bookData", "table", "tableGroup", "vehicle", "vehicleUpgrade", "action", "cult", "boon", "language", "languageScript", "makebrewCreatureTrait", "charoption", "charoptionFluff", "recipe"],
+	_STORABLE: ["class", "subclass", "classFeature", "subclassFeature", "spell", "spellFluff", "monster", "legendaryGroup", "monsterFluff", "background", "backgroundFeature", "feat", "optionalfeature", "race", "raceFeature", "raceFluff", "subrace", "deity", "item", "baseitem", "variant", "itemProperty", "itemType", "itemFluff", "itemGroup", "itemEntry", "psionic", "reward", "object", "trap", "hazard", "variantrule", "condition", "disease", "status", "adventure", "adventureData", "book", "bookData", "table", "tableGroup", "vehicle", "vehicleUpgrade", "vehicleWeapon", "action", "cult", "boon", "language", "languageScript", "makebrewCreatureTrait", "charoption", "charoptionFluff", "recipe", "psionicDisciplineFocus", "psionicDisciplineActive"],
 	async pDoHandleBrewJson (json, page, pFuncRefresh) {
 		page = BrewUtil._PAGE || page;
 		await BrewUtil._lockHandleBrewJson.pLock();
@@ -26380,14 +26599,6 @@ BrewUtil = {
 				case UrlUtil.PG_MAKE_BREW:
 					if (BrewUtil._pHandleBrew) await BrewUtil._pHandleBrew(MiscUtil.copy(toAdd));
 					break;
-				case UrlUtil.PG_MANAGE_BREW:
-				case UrlUtil.PG_DEMO_RENDER:
-				case UrlUtil.PG_MAPS:
-				case VeCt.PG_NONE:
-					// No-op
-					break;
-				default:
-					throw new Error(`No homebrew add function defined for category ${page}`);
 			}
 
 			if (pFuncRefresh) await pFuncRefresh();
@@ -26395,7 +26606,7 @@ BrewUtil = {
 			if (BrewUtil._filterBox && BrewUtil._sourceFilter) {
 				const cur = BrewUtil._filterBox.getValues();
 				if (cur.Source) {
-					const toSet = JSON.parse(JSON.stringify(cur.Source));
+					const toSet = MiscUtil.copy(cur.Source);
 
 					if (toSet._totals.yes || toSet._totals.no) {
 						if (page === UrlUtil.PG_CLASSES) toSet["Core"] = 1;
@@ -26513,7 +26724,7 @@ BrewUtil = {
 		if (!source) return "";
 		source = source.toLowerCase();
 		const color = BrewUtil.sourceJsonToColor(source);
-		if (color) return `color: #${color}; border-color: #${color}; text-decoration-color: #${color};`;
+		if (color) return `color: #${color} !important; border-color: #${color} !important; text-decoration-color: #${color} !important;`;
 		return "";
 	},
 
@@ -27290,7 +27501,7 @@ function BookModeView (opts) {
 		this._$body.css("overflow", "hidden");
 		this._$body.addClass("bkmv-active");
 
-		const $btnClose = $(`<span class="delete-icon glyphicon glyphicon-remove"></span>`)
+		const $btnClose = $(`<button class="btn btn-xs btn-danger br-0 bt-0 bb-0 btl-0 bbl-0 h-20p" title="Close"><span class="glyphicon glyphicon-remove"></span></button>`)
 			.click(() => this._doHashTeardown());
 		const $dispName = $(`<div></div>`); // pass this to the content function to allow it to set a main header
 		$$`<div class="bkmv__spacer-name split-v-center no-shrink">${$dispName}${$btnClose}</div>`.appendTo(this._$wrpBook);
@@ -27414,8 +27625,8 @@ ExcludeUtil = {
 		if (!source) throw new Error(`Entity had no source!`);
 		opts = opts || {};
 
-		source = source.source || source;
-		const out = !!ExcludeUtil._excludes.find(row => (row.source === "*" || (row.source || "").toLowerCase() === (source || "").toLowerCase()) && (row.category === "*" || row.category === category) && (row.hash === "*" || row.hash === hash));
+		source = (source.source || source || "").toLowerCase();
+		const out = !!ExcludeUtil._excludes.find(row => (row.source === "*" || (row.source || "").toLowerCase() === source) && (row.category === "*" || row.category === category) && (row.hash === "*" || row.hash === hash));
 		if (out && !opts.isNoCount) ++ExcludeUtil._excludeCount;
 		return out;
 	},
@@ -27513,12 +27724,7 @@ ExtensionUtil = {
 	},
 
 	async pDoSendStats (evt, ele) {
-		const $parent = $(ele).closest(`[data-page]`);
-		const page = $parent.attr("data-page");
-		const source = $parent.attr("data-source");
-		const hash = $parent.attr("data-hash");
-		const rawExtensionData = $parent.attr("data-extension");
-		const extensionData = rawExtensionData ? JSON.parse(rawExtensionData) : null;
+		const {page, source, hash, extensionData} = ExtensionUtil._getElementData({ele});
 
 		if (page && source && hash) {
 			let toSend = await Renderer.hover.pCacheAndGet(page, source, hash);
@@ -27535,6 +27741,28 @@ ExtensionUtil = {
 
 			ExtensionUtil._doSend("entity", {page, entity: toSend, isTemp: !!evt.shiftKey});
 		}
+	},
+
+	async doDragStart (evt, ele) {
+		const {page, source, hash} = ExtensionUtil._getElementData({ele});
+		const meta = {
+			type: VeCt.DRAG_TYPE_IMPORT,
+			page,
+			source,
+			hash,
+		};
+		evt.dataTransfer.setData("application/json", JSON.stringify(meta));
+	},
+
+	_getElementData ({ele}) {
+		const $parent = $(ele).closest(`[data-page]`);
+		const page = $parent.attr("data-page");
+		const source = $parent.attr("data-source");
+		const hash = $parent.attr("data-hash");
+		const rawExtensionData = $parent.attr("data-extension");
+		const extensionData = rawExtensionData ? JSON.parse(rawExtensionData) : null;
+
+		return {page, source, hash, extensionData};
 	},
 
 	pDoSendStatsPreloaded ({page, entity, isTemp, options}) {
@@ -28826,7 +29054,7 @@ class TabUiUtilBase {
 			obj[_propProxy][propActive] = ixActiveTab;
 		};
 
-		obj._getActiveTab = function ({propProxy = TabUiUtilBase._DEFAULT_PROP_PROXY, tabGroup = TabUiUtilBase._DEFAULT_TAB_GROUP}) {
+		obj._getActiveTab = function ({propProxy = TabUiUtilBase._DEFAULT_PROP_PROXY, tabGroup = TabUiUtilBase._DEFAULT_TAB_GROUP} = {}) {
 			const tabState = obj.__tabState[tabGroup];
 			const ixActiveTab = obj._getIxActiveTab({propProxy, tabGroup});
 			return tabState.tabMetasOut[ixActiveTab];
@@ -28888,6 +29116,7 @@ class TabUiUtil extends TabUiUtilBase {
 			return {
 				...tabMeta,
 				ix: ixTab,
+				$btns,
 				$btnTab,
 			};
 		};
@@ -29422,7 +29651,18 @@ class SearchWidget {
 	}
 
 	static async pGetUserLegendaryGroupSearch () {
-		await SearchWidget.pLoadCustomIndex("entity_LegendaryGroups", `${Renderer.get().baseUrl}data/bestiary/legendarygroups.json`, "legendaryGroup", Parser.CAT_ID_LEGENDARY_GROUP, "legendaryGroup", "legendary groups");
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_LegendaryGroups",
+			errorName: "legendary groups",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/bestiary/legendarygroups.json`,
+					prop: "legendaryGroup",
+					catId: Parser.CAT_ID_LEGENDARY_GROUP,
+					page: "legendaryGroup",
+				}),
+			],
+		});
 
 		return SearchWidget.pGetUserEntitySearch(
 			"Select Legendary Group",
@@ -29440,7 +29680,18 @@ class SearchWidget {
 
 	static async pGetUserFeatSearch () {
 		// FIXME convert to be more like spell/creature search instead of running custom indexes
-		await SearchWidget.pLoadCustomIndex("entity_Feats", `${Renderer.get().baseUrl}data/feats.json`, "feat", Parser.CAT_ID_FEAT, UrlUtil.PG_FEATS, "feats");
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_Feats",
+			errorName: "feats",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/feats.json`,
+					prop: "feat",
+					catId: Parser.CAT_ID_FEAT,
+					page: UrlUtil.PG_FEATS,
+				}),
+			],
+		});
 
 		return SearchWidget.pGetUserEntitySearch(
 			"Select Feat",
@@ -29458,7 +29709,18 @@ class SearchWidget {
 
 	static async pGetUserBackgroundSearch () {
 		// FIXME convert to be more like spell/creature search instead of running custom indexes
-		await SearchWidget.pLoadCustomIndex("entity_Backgrounds", `${Renderer.get().baseUrl}data/backgrounds.json`, "background", Parser.CAT_ID_BACKGROUND, UrlUtil.PG_BACKGROUNDS, "backgrounds");
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_Backgrounds",
+			errorName: "backgrounds",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/backgrounds.json`,
+					prop: "background",
+					catId: Parser.CAT_ID_BACKGROUND,
+					page: UrlUtil.PG_BACKGROUNDS,
+				}),
+			],
+		});
 
 		return SearchWidget.pGetUserEntitySearch(
 			"Select Background",
@@ -29479,7 +29741,18 @@ class SearchWidget {
 		const dataSource = () => {
 			return DataUtil.race.loadJSON();
 		};
-		await SearchWidget.pLoadCustomIndex("entity_Races", dataSource, "race", Parser.CAT_ID_RACE, UrlUtil.PG_RACES, "races");
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_Races",
+			errorName: "races",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource,
+					prop: "race",
+					catId: Parser.CAT_ID_RACE,
+					page: UrlUtil.PG_RACES,
+				}),
+			],
+		});
 
 		return SearchWidget.pGetUserEntitySearch(
 			"Select Race",
@@ -29497,7 +29770,18 @@ class SearchWidget {
 
 	static async pGetUserOptionalFeatureSearch () {
 		// FIXME convert to be more like spell/creature search instead of running custom indexes
-		await SearchWidget.pLoadCustomIndex("entity_OptionalFeatures", `${Renderer.get().baseUrl}data/optionalfeatures.json`, "optionalfeature", Parser.CAT_ID_OPTIONAL_FEATURE_OTHER, UrlUtil.PG_OPT_FEATURES, "optional features");
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_OptionalFeatures",
+			errorName: "optional features",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/optionalfeatures.json`,
+					prop: "background",
+					catId: Parser.CAT_ID_OPTIONAL_FEATURE_OTHER,
+					page: UrlUtil.PG_OPT_FEATURES,
+				}),
+			],
+		});
 
 		return SearchWidget.pGetUserEntitySearch(
 			"Select Optional Feature",
@@ -29514,8 +29798,57 @@ class SearchWidget {
 	}
 
 	static async pGetUserAdventureSearch (opts) {
-		await SearchWidget.pLoadCustomIndex("entity_Adventures", `${Renderer.get().baseUrl}data/adventures.json`, "adventure", Parser.CAT_ID_ADVENTURE, UrlUtil.PG_ADVENTURE, "adventures");
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_Adventures",
+			errorName: "adventures",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/adventures.json`,
+					prop: "adventure",
+					catId: Parser.CAT_ID_ADVENTURE,
+					page: UrlUtil.PG_ADVENTURE,
+				}),
+			],
+		});
 		return SearchWidget.pGetUserEntitySearch("Select Adventure", "entity_Adventures", opts);
+	}
+
+	static async pGetUserBookSearch (opts) {
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_Books",
+			errorName: "books",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/books.json`,
+					prop: "book",
+					catId: Parser.CAT_ID_BOOK,
+					page: UrlUtil.PG_BOOK,
+				}),
+			],
+		});
+		return SearchWidget.pGetUserEntitySearch("Select Book", "entity_Books", opts);
+	}
+
+	static async pGetUserAdventureBookSearch (opts) {
+		await SearchWidget.pLoadCustomIndex({
+			contentIndexName: "entity_AdventuresBooks",
+			errorName: "adventures/books",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/adventures.json`,
+					prop: "adventure",
+					catId: Parser.CAT_ID_ADVENTURE,
+					page: UrlUtil.PG_ADVENTURE,
+				}),
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource: `${Renderer.get().baseUrl}data/books.json`,
+					prop: "book",
+					catId: Parser.CAT_ID_BOOK,
+					page: UrlUtil.PG_BOOK,
+				}),
+			],
+		});
+		return SearchWidget.pGetUserEntitySearch("Select Adventure or Book", "entity_AdventuresBooks", opts);
 	}
 
 	static async pGetUserCreatureSearch () {
@@ -29550,7 +29883,19 @@ class SearchWidget {
 			};
 		};
 		const indexName = isBasicIndex == null ? "entity_Items" : isBasicIndex ? "entity_ItemsBasic" : "entity_ItemsMagic";
-		return SearchWidget.pLoadCustomIndex(indexName, dataSource, "item", Parser.CAT_ID_ITEM, UrlUtil.PG_ITEMS, "items");
+
+		return SearchWidget.pLoadCustomIndex({
+			contentIndexName: indexName,
+			errorName: "items",
+			customIndexSubSpecs: [
+				new SearchWidget.CustomIndexSubSpec({
+					dataSource,
+					prop: "item",
+					catId: Parser.CAT_ID_ITEM,
+					page: UrlUtil.PG_ITEMS,
+				}),
+			],
+		});
 	}
 
 	static async __pGetUserItemSearch (isBasicIndex) {
@@ -29622,13 +29967,22 @@ class SearchWidget {
 	}
 
 	// region custom search indexes
-	static async pLoadCustomIndex (contentIndexName, dataSource, jsonProp, catId, page, errorName) {
+	static CustomIndexSubSpec = class {
+		constructor ({dataSource, prop, catId, page}) {
+			this.dataSource = dataSource;
+			this.prop = prop;
+			this.catId = catId;
+			this.page = page;
+		}
+	};
+
+	static async pLoadCustomIndex ({contentIndexName, customIndexSubSpecs, errorName}) {
 		if (SearchWidget.P_LOADING_INDICES[contentIndexName]) await SearchWidget.P_LOADING_INDICES[contentIndexName];
 		else {
 			const doClose = SearchWidget._showLoadingModal();
 
 			try {
-				SearchWidget.P_LOADING_INDICES[contentIndexName] = (SearchWidget.CONTENT_INDICES[contentIndexName] = await SearchWidget._pGetIndex(dataSource, jsonProp, catId, page));
+				SearchWidget.P_LOADING_INDICES[contentIndexName] = (SearchWidget.CONTENT_INDICES[contentIndexName] = await SearchWidget._pGetIndex(customIndexSubSpecs));
 				SearchWidget.P_LOADING_INDICES[contentIndexName] = null;
 			} catch (e) {
 				JqueryUtil.doToast({type: "danger", content: `Could not load ${errorName}! ${VeCt.STR_SEE_CONSOLE}`});
@@ -29639,28 +29993,33 @@ class SearchWidget {
 		}
 	}
 
-	static async _pGetIndex (dataSource, prop, catId, page) {
+	static async _pGetIndex (customIndexSubSpecs) {
 		const index = elasticlunr(function () {
 			this.addField("n");
 			this.addField("s");
 			this.setRef("id");
 		});
 
-		const [featJson, homebrew] = await Promise.all([
-			typeof dataSource === "string" ? DataUtil.loadJSON(dataSource) : dataSource(),
-			BrewUtil.pAddBrewData(),
-		]);
+		let id = 0;
+		for (const subSpec of customIndexSubSpecs) {
+			const [json, homebrew] = await Promise.all([
+				typeof subSpec.dataSource === "string"
+					? DataUtil.loadJSON(subSpec.dataSource)
+					: subSpec.dataSource(),
+				BrewUtil.pAddBrewData(),
+			]);
 
-		featJson[prop].concat(homebrew[prop] || []).forEach((it, i) => index.addDoc({
-			id: i,
-			c: catId,
-			cf: Parser.pageCategoryToFull(catId),
-			h: 1,
-			n: it.name,
-			p: it.page,
-			s: it.source,
-			u: UrlUtil.URL_TO_HASH_BUILDER[page](it),
-		}));
+			json[subSpec.prop].concat(homebrew[subSpec.prop] || []).forEach(it => index.addDoc({
+				id: id++,
+				c: subSpec.catId,
+				cf: Parser.pageCategoryToFull(subSpec.catId),
+				h: 1,
+				n: it.name,
+				p: subSpec.page,
+				s: it.source,
+				u: UrlUtil.URL_TO_HASH_BUILDER[subSpec.page](it),
+			}));
+		}
 
 		return index;
 	}

@@ -301,5 +301,10 @@
 		"ver": "1.30.0",
 		"date": "2022-02-07",
 		"txt": "- Deities are now importable as journal entries (thanks @ darthbeep)\n- Added config options to hide foreground/background/weather layers (thanks @ darthbeep) \n- Fixed Module Importer failing to import maps (thanks @ darthbeep)\n- Fixed Creature/Object Importer failing to find tokens for entities with names containing non-ASCII characters (thanks @ darthbeep)\n- (Updated to latest data files)"
+	},
+	{
+		"ver": "1.30.1",
+		"date": "2022-04-02",
+		"txt": "- Fixed \"layer\" buttons overlapping \"night mode\" button (thanks @ Lyra)\n- (Updated to latest data files; added support for latest data changes) (thanks @ darthbeep)"
 	}
 ]
