@@ -1,4 +1,9 @@
 {
+	"_meta": {
+		"internalCopies": [
+			"itemFluff"
+		]
+	},
 	"itemFluff": [
 		{
 			"name": "Akmon, Hammer of Purphoros",
@@ -885,6 +890,30 @@
 			]
 		},
 		{
+			"name": "Danoth's Visor (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Danoth's Visor",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Danoth's Visor (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Danoth's Visor",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Danoth's Visor (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Danoth's Visor",
+				"source": "EGW"
+			}
+		},
+		{
 			"name": "Dawnbringer",
 			"source": "OotA",
 			"images": [
@@ -1222,6 +1251,19 @@
 					"href": {
 						"type": "internal",
 						"path": "items/DMG/Dwarven Thrower.jpg"
+					}
+				}
+			]
+		},
+		{
+			"name": "Earring of Message",
+			"source": "CRCotN",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/CRCotN/Earring of Message.webp"
 					}
 				}
 			]
@@ -1630,6 +1672,30 @@
 			]
 		},
 		{
+			"name": "Grimoire Infinitus (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Grimoire Infinitus",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Grimoire Infinitus (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Grimoire Infinitus",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Grimoire Infinitus (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Grimoire Infinitus",
+				"source": "EGW"
+			}
+		},
+		{
 			"name": "Grovelthrash",
 			"source": "EGW",
 			"images": [
@@ -1641,6 +1707,30 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Grovelthrash (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Grovelthrash",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Grovelthrash (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Grovelthrash",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Grovelthrash (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Grovelthrash",
+				"source": "EGW"
+			}
 		},
 		{
 			"name": "Gruul Guild Signet",
@@ -1962,6 +2052,30 @@
 			]
 		},
 		{
+			"name": "Infiltrator's Key (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Infiltrator's Key",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Infiltrator's Key (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Infiltrator's Key",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Infiltrator's Key (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Infiltrator's Key",
+				"source": "EGW"
+			}
+		},
+		{
 			"name": "Instrument of the Bards, Anstruth Harp",
 			"source": "DMG",
 			"images": [
@@ -2131,6 +2245,19 @@
 			]
 		},
 		{
+			"name": "Jewel of Three Prayers",
+			"source": "CRCotN",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/CRCotN/Jewel of Three Prayers.webp"
+					}
+				}
+			]
+		},
+		{
 			"name": "Keoghtom's Ointment",
 			"source": "DMG",
 			"images": [
@@ -2181,6 +2308,30 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Lash of Shadows (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Lash of Shadows",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Lash of Shadows (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Lash of Shadows",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Lash of Shadows (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Lash of Shadows",
+				"source": "EGW"
+			}
 		},
 		{
 			"name": "Living Loot Satchel",
@@ -2298,6 +2449,30 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Mace of the Black Crown (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Mace of the Black Crown",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Mace of the Black Crown (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Mace of the Black Crown",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Mace of the Black Crown (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Mace of the Black Crown",
+				"source": "EGW"
+			}
 		},
 		{
 			"name": "Mantle of Spell Resistance",
@@ -2451,6 +2626,19 @@
 					"href": {
 						"type": "internal",
 						"path": "items/BGDIA/Matalotok.png"
+					}
+				}
+			]
+		},
+		{
+			"name": "Medal of the Maze",
+			"source": "CRCotN",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/CRCotN/Medal of the Maze.jpg"
 					}
 				}
 			]
@@ -2885,6 +3073,19 @@
 			]
 		},
 		{
+			"name": "Potion of Water Breathing",
+			"source": "DMG",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/DMG/Potion of Water Breathing.webp"
+					}
+				}
+			]
+		},
+		{
 			"name": "Prosthetic Limb",
 			"source": "TCE",
 			"images": [
@@ -3127,6 +3328,19 @@
 					"href": {
 						"type": "internal",
 						"path": "items/DMG/Ring of Protection.png"
+					}
+				}
+			]
+		},
+		{
+			"name": "Ring of Red Fury",
+			"source": "CRCotN",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/CRCotN/Ring of Red Fury.webp"
 					}
 				}
 			]
@@ -3405,6 +3619,32 @@
 			]
 		},
 		{
+			"name": "Ruidium Shield",
+			"source": "CRCotN",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/CRCotN/Ruidium Shield.webp"
+					}
+				}
+			]
+		},
+		{
+			"name": "Ruidium Weapon",
+			"source": "CRCotN",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/CRCotN/Ruidium Weapon.webp"
+					}
+				}
+			]
+		},
+		{
 			"name": "Ruin's Wake",
 			"source": "EGW",
 			"images": [
@@ -3416,6 +3656,30 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Ruin's Wake (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Ruin's Wake",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Ruin's Wake (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Ruin's Wake",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Ruin's Wake (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Ruin's Wake",
+				"source": "EGW"
+			}
 		},
 		{
 			"name": "Saint Markovia's Thighbone",
@@ -4587,6 +4851,30 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Wreath of the Prism (Awakened)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Wreath of the Prism",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Wreath of the Prism (Dormant)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Wreath of the Prism",
+				"source": "EGW"
+			}
+		},
+		{
+			"name": "Wreath of the Prism (Exalted)",
+			"source": "EGW",
+			"_copy": {
+				"name": "Wreath of the Prism",
+				"source": "EGW"
+			}
 		},
 		{
 			"name": "Wyrmskull Throne",

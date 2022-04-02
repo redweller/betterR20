@@ -41,7 +41,7 @@ function d20plusRaces () {
 		d20.Campaign.handouts.create({
 			name: name,
 			tags: d20plus.importer.getTagString([
-				(data.size || [SZ_VARIES]).map(sz => Parser.sizeAbvToFull(sz)).join("/"),
+				(data.size || [SZ_VARIES]).map(sz => Renderer.utils.getRenderedSize(sz)).join("/"),
 				Parser.sourceJsonToFull(data.source),
 			], "race"),
 		}, {
@@ -75,7 +75,7 @@ function d20plusRaces () {
 		<h3>${data.name}</h3>
 		<p>
 			<strong>Ability Scores:</strong> ${ability.asText}<br>
-			<strong>Size:</strong> ${(data.size || [SZ_VARIES]).map(sz => Parser.sizeAbvToFull(sz)).join("/")}<br>
+			<strong>Size:</strong> ${(data.size || [SZ_VARIES]).map(sz => Renderer.utils.getRenderedSize(sz)).join("/")}<br>
 			<strong>Speed:</strong> ${Parser.getSpeedString(data)}<br>
 		</p>
 	`);
