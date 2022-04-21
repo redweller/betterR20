@@ -17,6 +17,7 @@ const analyticsBlocking = `
 // @grant        GM_webRequest
 // @webRequest   [{"selector": { "include": "*://www.google-analytics.com/analytics.js" },  "action": "cancel"}]
 // @webRequest   [{"selector": { "include": "*://cdn.userleap.com/shim.js?*" },  "action": "cancel"}]
+// @webRequest   [{"selector": { "include": "*://analytics.tiktok.com/*" },  "action": "cancel"}]
 `;
 
 const HEADER_CORE = `// ==UserScript==
