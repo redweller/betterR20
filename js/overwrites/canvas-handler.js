@@ -134,7 +134,8 @@ function initCanvasHandlerOverwrite () {
 					fill: $("#font-color").val(),
 					text: "",
 					left: r,
-					top: a
+					top: a,
+					stroke: $('#font-stroke').val()
 				}
 					, t = d20.Campaign.activePage().addText(e);
 				$("body").on("mouseup.create_text_editor", () => {
