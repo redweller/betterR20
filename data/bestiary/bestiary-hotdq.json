@@ -241,6 +241,13 @@
 			"damageTags": [
 				"P"
 			],
+			"damageTagsSpell": [
+				"C",
+				"F",
+				"L",
+				"O",
+				"T"
+			],
 			"spellcastingTags": [
 				"CW"
 			],
@@ -398,6 +405,11 @@
 			],
 			"damageTags": [
 				"P"
+			],
+			"damageTagsSpell": [
+				"L",
+				"O",
+				"T"
 			],
 			"spellcastingTags": [
 				"CW",
@@ -779,7 +791,7 @@
 				{
 					"ac": 16,
 					"from": [
-						"{@item studded leather armor|phb}",
+						"{@item studded leather armor|phb|studded leather}",
 						"{@item shield|phb}"
 					]
 				}
@@ -916,6 +928,12 @@
 				"P",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F",
+				"L",
+				"O",
+				"T"
+			],
 			"spellcastingTags": [
 				"CW"
 			],
@@ -1048,6 +1066,11 @@
 			],
 			"damageTags": [
 				"B"
+			],
+			"damageTagsSpell": [
+				"N",
+				"O",
+				"R"
 			],
 			"spellcastingTags": [
 				"CC"
@@ -1299,6 +1322,9 @@
 			"damageTags": [
 				"P"
 			],
+			"damageTagsSpell": [
+				"C"
+			],
 			"spellcastingTags": [
 				"CW"
 			],
@@ -1544,7 +1570,7 @@
 				{
 					"ac": 15,
 					"from": [
-						"{@item studded leather armor|phb}",
+						"{@item studded leather armor|phb|studded leather}",
 						"{@item shield|phb}"
 					]
 				}
@@ -1679,6 +1705,11 @@
 			"damageTags": [
 				"I",
 				"P"
+			],
+			"damageTagsSpell": [
+				"I",
+				"P",
+				"T"
 			],
 			"spellcastingTags": [
 				"CD"
@@ -1873,6 +1904,16 @@
 			],
 			"damageTags": [
 				"B"
+			],
+			"damageTagsSpell": [
+				"A",
+				"C",
+				"F",
+				"I",
+				"L",
+				"O",
+				"T",
+				"Y"
 			],
 			"spellcastingTags": [
 				"CW"
@@ -2246,6 +2287,11 @@
 			],
 			"damageTags": [
 				"C",
+				"P"
+			],
+			"damageTagsSpell": [
+				"N",
+				"O",
 				"P"
 			],
 			"spellcastingTags": [

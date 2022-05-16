@@ -51,7 +51,7 @@
 						"items": {
 							"type": "entries",
 							"entries": [
-								"It takes six months of steady eating for a young kruthik to reach adult size. The natural life span of an adult kruthik is roughly seven years.",
+								"It takes six months of steady eating for a {@creature young kruthik|MPMM} to reach adult size. The natural life span of an adult kruthik is roughly seven years.",
 								"Adult kruthiks grow spiky protrusions on their legs and can fling these dagger-sized spikes at enemies beyond the reach of their claws."
 							]
 						}
@@ -3906,7 +3906,7 @@
 			"source": "MPMM",
 			"entries": [
 				"Skull lords have claimed vast regions of the Shadowfell as their dominion. From these blighted lands, they wage war against their rivals, commanding hordes of the undying in a bid to establish dominance. Yet skull lords always prove to be their own worst enemies; each is a combined being born from three hateful individuals, and they constantly plot against themselves.",
-				"Infighting and treachery brought skull lords into existence. The first of them appeared in the aftermath of Veena's bid to conquer the world of Greyhawk, after the vampire Kas betrayed Veena and took his eye and hand. In the confusion resulting from this turn of events, Veena's warlords turned against each other, and his plans were dashed. In a rage, Veena gathered up his generals and captains and bound them in groups of three, fusing them into abominations cursed to fight among themselves for all time. Since the first skull lords were exiled into the shadows, others have arisen, typically created from other leaders who betrayed their masters."
+				"Infighting and treachery brought skull lords into existence. The first of them appeared in the aftermath of Veena's bid to conquer the world of Greyhawk, after the vampire Kas betrayed Vecna and took his eye and hand. In the confusion resulting from this turn of events, Veena's warlords turned against each other, and his plans were dashed. In a rage, Vecna gathered up his generals and captains and bound them in groups of three, fusing them into abominations cursed to fight among themselves for all time. Since the first skull lords were exiled into the shadows, others have arisen, typically created from other leaders who betrayed their masters."
 			]
 		},
 		{
@@ -4564,7 +4564,7 @@
 					"type": "section",
 					"name": "Trolls",
 					"entries": [
-						"Trolls that are nearly obliterated but survive and regenerate from mere scraps of flesh can display bi zarre features. Radically transformed trolls like the rot trolls, spirit trolls, and venom trolls that follow are especially likely to arise when trolls regenerate in the presence of magical emanations, planar energy, disease, or death on a vast scale, or if their bodies were damaged by elemental forces. These unusual forms can also be produced and shaped by the ritual magic of evil spellcasters or by trolls' own practices, as is the case for dire trolls.",
+						"Trolls that are nearly obliterated but survive and regenerate from mere scraps of flesh can display bizarre features. Radically transformed trolls like the rot trolls, spirit trolls, and venom trolls that follow are especially likely to arise when trolls regenerate in the presence of magical emanations, planar energy, disease, or death on a vast scale, or if their bodies were damaged by elemental forces. These unusual forms can also be produced and shaped by the ritual magic of evil spellcasters or by trolls' own practices, as is the case for dire trolls.",
 						{
 							"type": "entries",
 							"name": "Vaprak the Destroyer",

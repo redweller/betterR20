@@ -136,6 +136,9 @@
 			"damageTags": [
 				"O"
 			],
+			"damageTagsSpell": [
+				"L"
+			],
 			"miscTags": [
 				"AOE"
 			],
@@ -1041,7 +1044,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The allip can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
+						"The allip can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
 				},
 				{
@@ -1298,6 +1301,9 @@
 				"N",
 				"O",
 				"S",
+				"Y"
+			],
+			"damageTagsSpell": [
 				"Y"
 			],
 			"miscTags": [
@@ -1662,6 +1668,9 @@
 			],
 			"damageTags": [
 				"O"
+			],
+			"damageTagsSpell": [
+				"F"
 			],
 			"hasToken": true,
 			"hasFluff": true
@@ -2630,6 +2639,9 @@
 				"A",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -2849,6 +2861,12 @@
 			"damageTags": [
 				"N",
 				"O"
+			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"P",
+				"S"
 			],
 			"miscTags": [
 				"MW",
@@ -3682,6 +3700,9 @@
 				"P",
 				"S"
 			],
+			"damageTagsSpell": [
+				"O"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -3932,7 +3953,7 @@
 				{
 					"name": "Ice Walk",
 					"entries": [
-						"The hag can move across and climb icy surfaces without needing to make an ability check, and difficult terrain composed of ice or snow doesn't cost the hag extra moment."
+						"The hag can move across and climb icy surfaces without needing to make an ability check, and {@quickref difficult terrain||3} composed of ice or snow doesn't cost the hag extra moment."
 					]
 				}
 			],
@@ -3981,6 +4002,10 @@
 				"GI"
 			],
 			"damageTags": [
+				"B",
+				"C"
+			],
+			"damageTagsSpell": [
 				"B",
 				"C"
 			],
@@ -4721,7 +4746,7 @@
 				{
 					"name": "Oil Puddle",
 					"entries": [
-						"The boggle creates a puddle of nonflammable oil. The puddle is 1 inch deep and covers the ground in the boggle's space. The puddle is difficult terrain for all creatures except boggles and lasts for 1 hour. The oil has one of the following additional effects of the boggle's choice:",
+						"The boggle creates a puddle of nonflammable oil. The puddle is 1 inch deep and covers the ground in the boggle's space. The puddle is {@quickref difficult terrain||3} for all creatures except boggles and lasts for 1 hour. The oil has one of the following additional effects of the boggle's choice:",
 						{
 							"type": "list",
 							"style": "list-hang-notitle",
@@ -7019,6 +7044,9 @@
 			"damageTags": [
 				"O"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"conditionInflictSpell": [
 				"restrained"
 			],
@@ -7767,6 +7795,10 @@
 			"damageTags": [
 				"N"
 			],
+			"damageTagsSpell": [
+				"A",
+				"C"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -7940,6 +7972,9 @@
 			],
 			"damageTags": [
 				"N"
+			],
+			"damageTagsSpell": [
+				"O"
 			],
 			"miscTags": [
 				"MW"
@@ -8666,6 +8701,9 @@
 				"B",
 				"N",
 				"O"
+			],
+			"damageTagsSpell": [
+				"Y"
 			],
 			"miscTags": [
 				"MW",
@@ -9567,6 +9605,9 @@
 				"R",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"L"
+			],
 			"miscTags": [
 				"AOE"
 			],
@@ -10115,6 +10156,10 @@
 				"I",
 				"P"
 			],
+			"damageTagsSpell": [
+				"O",
+				"P"
+			],
 			"miscTags": [
 				"MW",
 				"RW"
@@ -10284,6 +10329,10 @@
 				"I",
 				"O",
 				"S"
+			],
+			"damageTagsSpell": [
+				"F",
+				"O"
 			],
 			"miscTags": [
 				"MW"
@@ -10878,6 +10927,9 @@
 				"F",
 				"R",
 				"Y"
+			],
+			"damageTagsSpell": [
+				"S"
 			],
 			"miscTags": [
 				"AOE",
@@ -12444,7 +12496,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The dybbuk can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
+						"The dybbuk can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
 				},
 				{
@@ -12502,6 +12554,10 @@
 			"damageTags": [
 				"N",
 				"O"
+			],
+			"damageTagsSpell": [
+				"O",
+				"Y"
 			],
 			"miscTags": [
 				"MW"
@@ -12713,7 +12769,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The eidolon can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object other than a {@creature sacred statue|MPMM}."
+						"The eidolon can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object other than a {@creature sacred statue|MPMM}."
 					]
 				},
 				{
@@ -13155,6 +13211,9 @@
 			"damageTags": [
 				"B",
 				"Y"
+			],
+			"damageTagsSpell": [
+				"O"
 			],
 			"spellcastingTags": [
 				"P"
@@ -13599,6 +13658,11 @@
 			],
 			"damageTags": [
 				"O"
+			],
+			"damageTagsSpell": [
+				"B",
+				"C",
+				"L"
 			],
 			"miscTags": [
 				"AOE"
@@ -14532,7 +14596,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "that is nonmagical"
+					"note": "that is nonmagical",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -14656,6 +14721,15 @@
 			],
 			"damageTags": [
 				"O",
+				"Y"
+			],
+			"damageTagsLegendary": [
+				"Y"
+			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S",
 				"Y"
 			],
 			"miscTags": [
@@ -15656,6 +15730,15 @@
 				"I",
 				"O"
 			],
+			"damageTagsLegendary": [
+				"C"
+			],
+			"damageTagsSpell": [
+				"B",
+				"C",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -16110,6 +16193,10 @@
 				"S",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"F",
+				"O"
+			],
 			"spellcastingTags": [
 				"P"
 			],
@@ -16427,6 +16514,10 @@
 			"damageTags": [
 				"S",
 				"Y"
+			],
+			"damageTagsSpell": [
+				"B",
+				"O"
 			],
 			"spellcastingTags": [
 				"P"
@@ -17610,6 +17701,11 @@
 				"I",
 				"O"
 			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -18372,6 +18468,9 @@
 				"I",
 				"P"
 			],
+			"damageTagsSpell": [
+				"P"
+			],
 			"miscTags": [
 				"MW",
 				"RNG",
@@ -19101,6 +19200,10 @@
 				"B",
 				"O"
 			],
+			"damageTagsSpell": [
+				"F",
+				"L"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -19740,6 +19843,13 @@
 				"O",
 				"T"
 			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"L",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -19942,6 +20052,9 @@
 				"O",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"B"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -20067,6 +20180,9 @@
 				"X"
 			],
 			"damageTags": [
+				"Y"
+			],
+			"damageTagsSpell": [
 				"Y"
 			],
 			"conditionInflictSpell": [
@@ -20282,6 +20398,9 @@
 			"damageTags": [
 				"A",
 				"I"
+			],
+			"damageTagsLegendary": [
+				"F"
 			],
 			"miscTags": [
 				"MW",
@@ -21105,6 +21224,9 @@
 			"damageTags": [
 				"B"
 			],
+			"damageTagsSpell": [
+				"B"
+			],
 			"miscTags": [
 				"MW",
 				"RW"
@@ -21247,6 +21369,9 @@
 			"damageTags": [
 				"L",
 				"T"
+			],
+			"damageTagsSpell": [
+				"B"
 			],
 			"conditionInflict": [
 				"frightened",
@@ -23274,6 +23399,9 @@
 			"damageTags": [
 				"F"
 			],
+			"damageTagsSpell": [
+				"B"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -23406,7 +23534,7 @@
 								{
 									"name": "3: Psychic Ray",
 									"entries": [
-										"The target must succeed on a {@dc 13} Intelligence saving throw or take T1 ({@damage 6d8}) psychic damage."
+										"The target must succeed on a {@dc 13} Intelligence saving throw or take 27 ({@damage 6d8}) psychic damage."
 									],
 									"type": "item"
 								},
@@ -23686,6 +23814,12 @@
 				"T",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -23909,6 +24043,9 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"L"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -24078,6 +24215,10 @@
 				"B",
 				"S",
 				"Y"
+			],
+			"damageTagsSpell": [
+				"L",
+				"O"
 			],
 			"miscTags": [
 				"AOE",
@@ -24535,6 +24676,11 @@
 				"B",
 				"N"
 			],
+			"damageTagsSpell": [
+				"F",
+				"O",
+				"Y"
+			],
 			"miscTags": [
 				"AOE",
 				"MW"
@@ -24843,6 +24989,11 @@
 			],
 			"damageTags": [
 				"N"
+			],
+			"damageTagsSpell": [
+				"F",
+				"N",
+				"O"
 			],
 			"conditionInflictSpell": [
 				"restrained"
@@ -25247,6 +25398,11 @@
 				"N",
 				"P"
 			],
+			"damageTagsSpell": [
+				"A",
+				"C",
+				"O"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -25381,6 +25537,9 @@
 			"damageTags": [
 				"A",
 				"B",
+				"Y"
+			],
+			"damageTagsSpell": [
 				"Y"
 			],
 			"spellcastingTags": [
@@ -26194,8 +26353,7 @@
 			],
 			"conditionInflict": [
 				"prone",
-				"stunned",
-				"unconscious"
+				"stunned"
 			],
 			"hasToken": true,
 			"hasFluff": true
@@ -26472,6 +26630,9 @@
 				"N",
 				"S"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"miscTags": [
 				"AOE",
 				"MW"
@@ -26728,6 +26889,9 @@
 				"I",
 				"N",
 				"O"
+			],
+			"damageTagsSpell": [
+				"N"
 			],
 			"miscTags": [
 				"AOE",
@@ -27844,6 +28008,9 @@
 				"O",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -28845,6 +29012,9 @@
 				"P",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"N"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -29330,7 +29500,7 @@
 				{
 					"name": "Contamination",
 					"entries": [
-						"The sibriex emits an aura of corruption 30 feet in every direction. Vegetation withers in the aura, and the ground in the aura is difficult terrain for other creatures. Any creature that starts its turn in the aura must succeed on a {@dc 20} Constitution saving throw or take 14 ({@damage 4d6}) poison damage. A creature that succeeds on the save is immune to this sibriex's Contamination for 24 hours."
+						"The sibriex emits an aura of corruption 30 feet in every direction. Vegetation withers in the aura, and the ground in the aura is {@quickref difficult terrain||3} for other creatures. Any creature that starts its turn in the aura must succeed on a {@dc 20} Constitution saving throw or take 14 ({@damage 4d6}) poison damage. A creature that succeeds on the save is immune to this sibriex's Contamination for 24 hours."
 					]
 				},
 				{
@@ -29524,6 +29694,9 @@
 				"A",
 				"I",
 				"O"
+			],
+			"damageTagsSpell": [
+				"Y"
 			],
 			"miscTags": [
 				"MW",
@@ -29863,6 +30036,11 @@
 			"damageTags": [
 				"B",
 				"N"
+			],
+			"damageTagsSpell": [
+				"C",
+				"I",
+				"O"
 			],
 			"miscTags": [
 				"MW"
@@ -30228,7 +30406,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The troll can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
+						"The troll can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
 				},
 				{
@@ -31076,7 +31254,7 @@
 				{
 					"name": "Out-Of-Phase Movement",
 					"entries": [
-						"The seer can move through other creatures and objects as if they were difficult terrain, and its movement doesn't provoke {@action opportunity attack||opportunity attacks}.",
+						"The seer can move through other creatures and objects as if they were {@quickref difficult terrain||3}, and its movement doesn't provoke {@action opportunity attack||opportunity attacks}.",
 						"Each creature it moves through takes 5 ({@damage 1d10}) psychic damage; no creature can take this damage more than once per turn.",
 						"The seer takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
@@ -31314,6 +31492,9 @@
 				"L",
 				"O",
 				"T"
+			],
+			"damageTagsSpell": [
+				"O"
 			],
 			"miscTags": [
 				"AOE",
@@ -33140,6 +33321,11 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -33341,7 +33527,7 @@
 				{
 					"name": "Light Crossbow",
 					"entries": [
-						"{@atk rw} {@hit 2} to hit, range 80/320ft., one target. {@h}4 ({@damage 1d8}) piercing damage."
+						"{@atk rw} {@hit 2} to hit, range 80/320 ft., one target. {@h}4 ({@damage 1d8}) piercing damage."
 					]
 				},
 				{
@@ -33502,6 +33688,9 @@
 			],
 			"damageTags": [
 				"S"
+			],
+			"damageTagsSpell": [
+				"T"
 			],
 			"miscTags": [
 				"MW"
@@ -33664,6 +33853,9 @@
 			],
 			"damageTags": [
 				"A"
+			],
+			"damageTagsSpell": [
+				"F"
 			],
 			"conditionInflictSpell": [
 				"restrained"
@@ -33922,6 +34114,9 @@
 			],
 			"damageTags": [
 				"P",
+				"Y"
+			],
+			"damageTagsSpell": [
 				"Y"
 			],
 			"spellcastingTags": [
@@ -34811,6 +35006,10 @@
 				"B",
 				"R"
 			],
+			"damageTagsSpell": [
+				"F",
+				"R"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -34958,6 +35157,9 @@
 			"damageTags": [
 				"P",
 				"Y"
+			],
+			"damageTagsSpell": [
+				"O"
 			],
 			"spellcastingTags": [
 				"CL"
@@ -35125,6 +35327,11 @@
 				"B",
 				"F",
 				"N"
+			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S"
 			],
 			"spellcastingTags": [
 				"CL"
@@ -35561,7 +35768,7 @@
 				{
 					"name": "Undertow",
 					"entries": [
-						"If the wastrilith is underwater, it causes all water within 60 feet of it to be difficult terrain for other creatures until the start of its next turn."
+						"If the wastrilith is underwater, it causes all water within 60 feet of it to be {@quickref difficult terrain||3} for other creatures until the start of its next turn."
 					]
 				}
 			],
@@ -36515,6 +36722,9 @@
 				"I",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -36708,6 +36918,9 @@
 				"L",
 				"N",
 				"O"
+			],
+			"damageTagsSpell": [
+				"L"
 			],
 			"miscTags": [
 				"MW",
@@ -36944,6 +37157,9 @@
 				"A",
 				"O"
 			],
+			"damageTagsLegendary": [
+				"P"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -37156,7 +37372,7 @@
 				{
 					"name": "Tunneler",
 					"entries": [
-						"The kruthik can burrow through solid rock at half its burrowing speed and leaves a 2V2-foot-diameter tunnel in its wake."
+						"The kruthik can burrow through solid rock at half its burrowing speed and leaves a 2½-foot-diameter tunnel in its wake."
 					]
 				}
 			],
@@ -38219,7 +38435,7 @@
 				{
 					"name": "Earth-Shaking Movement",
 					"entries": [
-						"After moving at least 10 feet on the ground, the zaratan sends a shock wave through the ground in a 120-foot-radius circle centered on itself. That area becomes difficult terrain for 1 minute. Each creature on the ground that is concentrating must succeed on a {@dc 25} Constitution saving throw or the creature's concentration is broken. The shock wave deals 100 thunder damage to all structures in contact with the ground in the area. If a creature is near a structure that collapses, the creature might be buried; a creature within half the distance of the structure's height must make a {@dc 25} Dexterity saving throw. On a failed save, the creature takes 17 ({@damage 5d6}) bludgeoning damage, is knocked {@condition prone}, and is trapped in the rubble. A trapped creature is {@condition restrained}, requiring a successful {@dc 20} Strength ({@skill Athletics}) check as an action to escape. Another creature within 5 feet of the buried creature can use its action to clear rubble and grant advantage on the check. If three creatures use their actions in this way, the check is an automatic success. On a successful save, the creature takes half as much damage and doesn't fall {@condition prone} or become trapped."
+						"After moving at least 10 feet on the ground, the zaratan sends a shock wave through the ground in a 120-foot-radius circle centered on itself. That area becomes {@quickref difficult terrain||3} for 1 minute. Each creature on the ground that is concentrating must succeed on a {@dc 25} Constitution saving throw or the creature's concentration is broken. The shock wave deals 100 thunder damage to all structures in contact with the ground in the area. If a creature is near a structure that collapses, the creature might be buried; a creature within half the distance of the structure's height must make a {@dc 25} Dexterity saving throw. On a failed save, the creature takes 17 ({@damage 5d6}) bludgeoning damage, is knocked {@condition prone}, and is trapped in the rubble. A trapped creature is {@condition restrained}, requiring a successful {@dc 20} Strength ({@skill Athletics}) check as an action to escape. Another creature within 5 feet of the buried creature can use its action to clear rubble and grant advantage on the check. If three creatures use their actions in this way, the check is an automatic success. On a successful save, the creature takes half as much damage and doesn't fall {@condition prone} or become trapped."
 					]
 				}
 			],
@@ -38514,6 +38730,16 @@
 				"O",
 				"R"
 			],
+			"damageTagsLegendary": [
+				"F"
+			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"N",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -38726,6 +38952,9 @@
 			],
 			"damageTags": [
 				"I"
+			],
+			"damageTagsSpell": [
+				"O"
 			],
 			"miscTags": [
 				"AOE",
