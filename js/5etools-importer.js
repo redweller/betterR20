@@ -200,9 +200,11 @@ function d20plusImporter () {
 
 	d20plus.importer.getSetAvatarImage = async function (character, avatar, portraitUrl) {
 		let tokensize = 1;
-		if (character.size === "L") tokensize = 2;
-		if (character.size === "H") tokensize = 3;
-		if (character.size === "G") tokensize = 4;
+		if (character.size[0] === "T") tokensize = .572; // 40 (most tiny creature images have padding)
+		else if (character.size[0] === "S") tokensize = .572; // 40
+		else if (character.size[0] === "L") tokensize = 2;
+		else if (character.size[0] === "H") tokensize = 3;
+		else if (character.size[0] === "G") tokensize = 4;
 		let lightradius = null;
 		if (character.senses && character.senses.toLowerCase().match(/(darkvision|blindsight|tremorsense|truesight)/)) lightradius = Math.max(...character.senses.match(/\d+/g));
 		let lightmin = 0;
@@ -212,8 +214,8 @@ function d20plusImporter () {
 			represents: character.id,
 			name: `${character.name}${nameSuffix ? ` ${nameSuffix}` : ""}`,
 			imgsrc: avatar,
-			width: 70 * tokensize,
-			height: 70 * tokensize,
+			width: Math.floor(70 * tokensize),
+			height: Math.floor(70 * tokensize),
 			compact_bar: d20plus.cfg.getOrDefault("token", "isCompactBars") ? "compact" : "standard",
 		};
 		if (!d20plus.cfg.get("import", "skipSenses")) {
