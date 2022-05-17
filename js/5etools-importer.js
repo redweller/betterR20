@@ -137,7 +137,6 @@ function d20plusImporter () {
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
-		if (typeof o === "string") o = [o];
 		const d = !!o.data ? o : JSON.parse(o[0]);
 		const g = _.clone(d.data);
 		g.Name = d.name, g.data = JSON.stringify(d.data), g.uniqueName = t, g.Content = d.content, g.dropSubhead = n,
