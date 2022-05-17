@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.30.2";
+const SCRIPT_VERSION = "1.30.2-dev";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -37,7 +37,7 @@ ${analyticsBlocking}
 `;
 
 const HEADER_5ETOOLS = `// ==UserScript==
-// @name         betteR20-5etools
+// @name         betteR20-5etools-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
