@@ -891,7 +891,7 @@ const betteR205etoolsMain = function () {
 					},
 					out() {
 						e.dragOver = !1,
-							e.childWindow.d20.deactivateDrop()
+						e.childWindow.d20.deactivateDrop()
 					},
 					drop(t, i) {
 						const characterid = $(".characterdialog").has(t.target).attr("data-characterid");
@@ -934,37 +934,40 @@ const betteR205etoolsMain = function () {
 						// region BEGIN ROLL20 CODE
 						t.originalEvent.dropHandled = !0,
 						e.activeDrop && (e.dragOver = !1,
-							e.childWindow.d20.deactivateDrop(),
+						e.childWindow.d20.deactivateDrop(),
 						e.$currentDropTarget && window.wantsToReceiveDrop(this, t, ()=>{
-								const t = $(i.helper[0]).attr("data-pagename")
-									, n = $(i.helper[0]).attr("data-subhead");
+								const t = $(i.helper[0]).attr("data-pagename"),
+								n = $(i.helper[0]).attr("data-subhead"),
+								v = $(i.helper[0]).attr('data-expansionid');
 								$.ajax({
 									url: "/compendium/compendium/getPages",
 									data: {
 										bookName: d20.compendium.shortName,
 										pages: [t],
-										sharedCompendium: campaign_id
+										sharedCompendium: campaign_id,
+										expansionId: v,
+										dragDropRequest: !0
 									},
 									cache: !1,
 									dataType: "JSON"
 								}).done(i=>{
-										const o = JSON.parse(i[0])
-											, r = _.clone(o.data);
+										const o = JSON.parse(i[0]),
+										r = _.clone(o.data);
 										r.Name = o.name,
-											r.data = o.data,
-											r.data = JSON.stringify(r.data),
-											r.uniqueName = t,
-											r.Content = o.content,
-											r.dropSubhead = n,
-											e.$currentDropTarget.find("*[accept]").each(function() {
-												const t = $(this)
-													, i = t.attr("accept");
-												r[i] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") || "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() === r[i] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
-													const e = $(this);
-													e.val() !== r[i] && e.text() !== r[i] || e.prop("selected", !0)
-												}) : $(this).val(r[i]),
-													e.saveSheetValues(this, "compendium"))
-											})
+										r.data = o.data,
+										r.data = JSON.stringify(r.data),
+										r.uniqueName = t,
+										r.Content = o.content,
+										r.dropSubhead = n,
+										e.$currentDropTarget.find("*[accept]").each(function() {
+											const t = $(this),
+											i = t.attr("accept");
+											r[i] && ("input" === t[0].tagName.toLowerCase() && "checkbox" === t.attr("type") || "input" === t[0].tagName.toLowerCase() && "radio" === t.attr("type") ? t.val() === r[i] ? t.prop("checked", !0) : t.prop("checked", !1) : "select" === t[0].tagName.toLowerCase() ? t.find("option").each(function() {
+												const e = $(this);
+												e.val() !== r[i] && e.text() !== r[i] || e.prop("selected", !0)
+											}) : $(this).val(r[i]),
+												e.saveSheetValues(this, "compendium"))
+										})
 									}
 								)
 							}
