@@ -860,7 +860,7 @@ const betteR205etoolsMain = function () {
 			} else if (data.data.Category === "Spells") {
 				d20plus.spells.importSpells(character, data, event);
 			} else {
-				d20plus.importer.doFakeDrop(event, character, data, null);
+				d20plus.importer.doFakeDrop(event, character, data);
 			}
 		}
 

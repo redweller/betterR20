@@ -115,9 +115,9 @@ function d20plusImporter () {
 		});
 	};
 
-	d20plus.importer.doFakeDrop = function (event, characterView, fakeRoll20Json, outerI) {
+	d20plus.importer.doFakeDrop = function (event, characterView, fakeRoll20Json) {
 		const e = characterView; // AKA character.view
-		const o = fakeRoll20Json;
+		const o = (typeof fakeRoll20Json === "array") ? fakeRoll20Json[0] : fakeRoll20Json;
 
 		// The page/subheading area always undefined, since we're not coming from the compendium. Pass in some junk.
 		const t = d20plus.ut.generateRowId(); // `$(i.helper[0]).attr("data-pagename")` e.g. "Spells%3AFire%20Bolt"
@@ -136,10 +136,8 @@ function d20plusImporter () {
 
 		/* eslint-disable */
 
-		if (typeof o === "string") o = [o];
-		
 		// BEGIN ROLL20 CODE
-		const d = !!o.data ? o : JSON.parse(o[0]);
+		const d = !!o.data ? o : JSON.parse(o);
 		const g = _.clone(d.data);
 		g.Name = d.name, g.data = JSON.stringify(d.data), g.uniqueName = t, g.Content = d.content, g.dropSubhead = n,
 		e.$currentDropTarget.find("*[accept]").each(function() {
