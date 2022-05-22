@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.30.2
+// @version      1.30.3
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -8234,7 +8234,8 @@ function initCanvasHandlerOverwrite () {
 					fill: $("#font-color").val(),
 					text: "",
 					left: r,
-					top: a
+					top: a,
+					stroke: $('#font-stroke').val()
 				}
 					, t = d20.Campaign.activePage().addText(e);
 				$("body").on("mouseup.create_text_editor", () => {
@@ -18240,7 +18241,7 @@ Parser.spMainClassesToFull = function (fromClassList, {isTextOnly = false} = {})
 		.map(c => ({hash: UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c), c}))
 		.filter(it => !ExcludeUtil.isInitialised || !ExcludeUtil.isExcluded(it.hash, "class", it.c.source))
 		.sort((a, b) => SortUtil.ascSort(a.c.name, b.c.name))
-		.map(it => isTextOnly ? it.c.name : `<a title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}" href="${UrlUtil.PG_CLASSES}#${it.hash}">${it.c.name}</a>`)
+		.map(it => isTextOnly ? it.c.name : `<a title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}" href="${Renderer.get().baseUrl}${UrlUtil.PG_CLASSES}#${it.hash}">${it.c.name}</a>`)
 		.join(", ") || "";
 };
 
@@ -18272,9 +18273,9 @@ Parser._spSubclassItem = function ({fromSubclass, isTextOnly, subclassLookup}) {
 	const sc = fromSubclass.subclass;
 	const text = `${sc.name}${sc.subSubclass ? ` (${sc.subSubclass})` : ""}`;
 	if (isTextOnly) return text;
-	const classPart = `<a href="${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}" title="Source: ${Parser.sourceJsonToFull(c.source)}${c.definedInSource ? ` From a class spell list defined in: ${Parser.sourceJsonToFull(c.definedInSource)}` : ""}">${c.name}</a>`;
+	const classPart = `<a href="${Renderer.get().baseUrl}${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}" title="Source: ${Parser.sourceJsonToFull(c.source)}${c.definedInSource ? ` From a class spell list defined in: ${Parser.sourceJsonToFull(c.definedInSource)}` : ""}">${c.name}</a>`;
 	const fromLookup = subclassLookup ? MiscUtil.get(subclassLookup, c.source, c.name, sc.source, sc.name) : null;
-	if (fromLookup) return `<a class="italic" href="${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}${HASH_PART_SEP}${UrlUtil.getClassesPageStatePart({subclass: {shortName: sc.name, source: sc.source}})}" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${text}</a> ${classPart}`;
+	if (fromLookup) return `<a class="italic" href="${Renderer.get().baseUrl}${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}${HASH_PART_SEP}${UrlUtil.getClassesPageStatePart({subclass: {shortName: sc.name, source: sc.source}})}" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${text}</a> ${classPart}`;
 	else return `<span class="italic" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${text}</span> ${classPart}`;
 };
 
@@ -19439,6 +19440,7 @@ SRC_PSX = `${SRC_PS_PREFIX}X`;
 SRC_PSD = `${SRC_PS_PREFIX}D`;
 
 SRC_UA_PREFIX = "UA";
+SRC_MCVX_PREFIX = "MCV";
 
 SRC_UAA = `${SRC_UA_PREFIX}Artificer`;
 SRC_UAEAG = `${SRC_UA_PREFIX}EladrinAndGith`;
@@ -19511,6 +19513,8 @@ SRC_UA2021DO = `${SRC_UA_PREFIX}2021DraconicOptions`;
 SRC_UA2021MoS = `${SRC_UA_PREFIX}2021MagesOfStrixhaven`;
 SRC_UA2021TotM = `${SRC_UA_PREFIX}2021TravelersOfTheMultiverse`;
 SRC_UA2022HoK = `${SRC_UA_PREFIX}2022HeroesOfKrynn`;
+SRC_UA2022HoKR = `${SRC_UA_PREFIX}2022HeroesOfKrynnRevisited`;
+SRC_MCV1SC = `${SRC_MCVX_PREFIX}1SC`;
 
 SRC_3PP_SUFFIX = " 3pp";
 
@@ -19523,6 +19527,7 @@ UA_PREFIX_SHORT = "UA: ";
 TftYP_NAME = "Tales from the Yawning Portal";
 AitFR_NAME = "Adventures in the Forgotten Realms";
 NRH_NAME = "NERDS Restoring Harmony";
+MCVX_PREFIX = "Monster Compendium Volume ";
 
 Parser.SOURCE_JSON_TO_FULL = {};
 Parser.SOURCE_JSON_TO_FULL[SRC_CoS] = "Curse of Strahd";
@@ -19704,6 +19709,8 @@ Parser.SOURCE_JSON_TO_FULL[SRC_UA2021DO] = `${UA_PREFIX}2021 Draconic Options`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021MoS] = `${UA_PREFIX}2021 Mages of Strixhaven`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2021TotM] = `${UA_PREFIX}2021 Travelers of the Multiverse`;
 Parser.SOURCE_JSON_TO_FULL[SRC_UA2022HoK] = `${UA_PREFIX}2022 Heroes of Krynn`;
+Parser.SOURCE_JSON_TO_FULL[SRC_UA2022HoKR] = `${UA_PREFIX}2022 Heroes of Krynn Revisited`;
+Parser.SOURCE_JSON_TO_FULL[SRC_MCV1SC] = `${MCVX_PREFIX}1: Spelljammer Creatures`;
 
 Parser.SOURCE_JSON_TO_ABV = {};
 Parser.SOURCE_JSON_TO_ABV[SRC_CoS] = "CoS";
@@ -19885,6 +19892,8 @@ Parser.SOURCE_JSON_TO_ABV[SRC_UA2021DO] = "UA21DO";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021MoS] = "UA21MoS";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2021TotM] = "UA21TotM";
 Parser.SOURCE_JSON_TO_ABV[SRC_UA2022HoK] = "UA22HoK";
+Parser.SOURCE_JSON_TO_ABV[SRC_UA2022HoKR] = "UA22HoKR";
+Parser.SOURCE_JSON_TO_ABV[SRC_MCV1SC] = "MCV1SC";
 
 Parser.SOURCE_JSON_TO_DATE = {};
 Parser.SOURCE_JSON_TO_DATE[SRC_CoS] = "2016-03-15";
@@ -20065,6 +20074,8 @@ Parser.SOURCE_JSON_TO_DATE[SRC_UA2021DO] = "2021-04-14";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021MoS] = "2021-06-08";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2021TotM] = "2021-10-08";
 Parser.SOURCE_JSON_TO_DATE[SRC_UA2022HoK] = "2022-03-08";
+Parser.SOURCE_JSON_TO_DATE[SRC_UA2022HoKR] = "2022-04-25";
+Parser.SOURCE_JSON_TO_DATE[SRC_MCV1SC] = "2022-04-21";
 
 Parser.SOURCES_ADVENTURES = new Set([
 	SRC_LMoP,
@@ -20127,10 +20138,12 @@ Parser.SOURCES_ADVENTURES = new Set([
 	SRC_NRH_TLT,
 	SRC_NRH_AWoL,
 	SRC_NRH_AT,
+	SRC_SCC,
 	SRC_SCC_CK,
 	SRC_SCC_HfMT,
 	SRC_SCC_TMM,
 	SRC_SCC_ARiR,
+	SRC_CRCotN,
 
 	SRC_AWM,
 ]);
@@ -20355,6 +20368,7 @@ Parser.TAG_TO_DEFAULT_SOURCE = {
 	"charoption": SRC_MOT,
 	"recipe": SRC_HEROES_FEAST,
 	"itemEntry": SRC_DMG,
+	"quickref": SRC_PHB,
 };
 Parser.getTagSource = function (tag, source) {
 	if (source && source.trim()) return source;
@@ -20593,7 +20607,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.152.1"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.154.2"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -20897,21 +20911,49 @@ StrUtil = {
 };
 
 CleanUtil = {
-	getCleanJson (data, minify = false) {
+	getCleanJson (data, {isMinify = false, isFast = true} = {}) {
 		data = MiscUtil.copy(data);
-		data = MiscUtil.getWalker().walk(data, {string: (str) => CleanUtil.getCleanString(str)});
-		let str = minify ? JSON.stringify(data) : `${JSON.stringify(data, null, "\t")}\n`;
+		data = MiscUtil.getWalker().walk(data, {string: (str) => CleanUtil.getCleanString(str, {isFast})});
+		let str = isMinify ? JSON.stringify(data) : `${JSON.stringify(data, null, "\t")}\n`;
 		return str.replace(CleanUtil.STR_REPLACEMENTS_REGEX, (match) => CleanUtil.STR_REPLACEMENTS[match]);
 	},
 
-	getCleanString (str) {
-		return str
+	getCleanString (str, {isFast = true} = {}) {
+		str = str
 			.replace(CleanUtil.SHARED_REPLACEMENTS_REGEX, (match) => CleanUtil.SHARED_REPLACEMENTS[match])
 			.replace(CleanUtil._SOFT_HYPHEN_REMOVE_REGEX, "")
-			.replace(CleanUtil._ELLIPSIS_COLLAPSE_REGEX, "$1")
-			.replace(CleanUtil._DASH_COLLAPSE_REGEX, "$1")
-			.replace(CleanUtil._TAG_DASH_EXPAND_REGEX, "$1 $2")
 		;
+
+		if (isFast) return str;
+
+		const ptrStack = {_: ""};
+		CleanUtil._getCleanString_walkerStringHandler(ptrStack, 0, str);
+		return ptrStack._;
+	},
+
+	_getCleanString_walkerStringHandler (ptrStack, tagCount, str) {
+		const tagSplit = Renderer.splitByTags(str);
+		const len = tagSplit.length;
+		for (let i = 0; i < len; ++i) {
+			const s = tagSplit[i];
+			if (!s) continue;
+			if (s.startsWith("{@")) {
+				const [tag, text] = Renderer.splitFirstSpace(s.slice(1, -1));
+
+				ptrStack._ += `{${tag}${text.length ? " " : ""}`;
+				this._getCleanString_walkerStringHandler(ptrStack, tagCount + 1, text);
+				ptrStack._ += `}`;
+			} else {
+				// avoid tagging things wrapped in existing tags
+				if (tagCount) {
+					ptrStack._ += s;
+				} else {
+					ptrStack._ += s
+						.replace(CleanUtil._DASH_COLLAPSE_REGEX, "$1")
+						.replace(CleanUtil._ELLIPSIS_COLLAPSE_REGEX, "$1");
+				}
+			}
+		}
 	},
 };
 CleanUtil.SHARED_REPLACEMENTS = {
@@ -20946,7 +20988,6 @@ CleanUtil.STR_REPLACEMENTS_REGEX = new RegExp(Object.keys(CleanUtil.STR_REPLACEM
 CleanUtil._SOFT_HYPHEN_REMOVE_REGEX = /\u00AD *\r?\n?\r?/g;
 CleanUtil._ELLIPSIS_COLLAPSE_REGEX = /\s*(\.\s*\.\s*\.)/g;
 CleanUtil._DASH_COLLAPSE_REGEX = /[ ]*([\u2014\u2013])[ ]*/g;
-CleanUtil._TAG_DASH_EXPAND_REGEX = /({@[a-zA-Z])([\u2014\u2013])/g;
 
 // SOURCES =============================================================================================================
 SourceUtil = {
@@ -20988,7 +21029,7 @@ SourceUtil = {
 	},
 
 	isNonstandardSourceWotc (source) {
-		return source.startsWith(SRC_UA_PREFIX) || source.startsWith(SRC_PS_PREFIX) || source.startsWith(SRC_AL_PREFIX) || Parser.SOURCES_NON_STANDARD_WOTC.has(source);
+		return source.startsWith(SRC_UA_PREFIX) || source.startsWith(SRC_PS_PREFIX) || source.startsWith(SRC_AL_PREFIX) || source.startsWith(SRC_MCVX_PREFIX) || Parser.SOURCES_NON_STANDARD_WOTC.has(source);
 	},
 
 	getFilterGroup (source) {
@@ -21346,6 +21387,12 @@ JqueryUtil = {
 
 		JqueryUtil._ACTIVE_TOAST.push($toast);
 	},
+
+	isMobile () {
+		if (navigator?.userAgentData?.mobile) return true;
+		// Equivalent to `$width-screen-sm`
+		return window.matchMedia("(max-width: 768px)").matches;
+	},
 };
 
 if (typeof window !== "undefined") window.addEventListener("load", JqueryUtil.initEnhancements);
@@ -21642,13 +21689,37 @@ MiscUtil = {
 		return existing || MiscUtil.set(object, ...pathAndVal);
 	},
 
+	getThenSetCopy (object1, object2, ...path) {
+		const val = MiscUtil.get(object1, ...path);
+		return MiscUtil.set(object2, ...path, MiscUtil.copy(val, true));
+	},
+
 	delete (object, ...path) {
-		if (object == null) return null;
+		if (object == null) return object;
 		for (let i = 0; i < path.length - 1; ++i) {
 			object = object[path[i]];
 			if (object == null) return object;
 		}
 		return delete object[path.last()];
+	},
+
+	/** Delete a prop from a nested object, then all now-empty objects backwards from that point. */
+	deleteObjectPath (object, ...path) {
+		const stack = [object];
+
+		if (object == null) return object;
+		for (let i = 0; i < path.length - 1; ++i) {
+			object = object[path[i]];
+			stack.push(object);
+			if (object === undefined) return object;
+		}
+		const out = delete object[path.last()];
+
+		for (let i = path.length - 1; i > 0; --i) {
+			if (!Object.keys(stack[i]).length) delete stack[i - 1][path[i - 1]];
+		}
+
+		return out;
 	},
 
 	merge (obj1, obj2) {
@@ -22269,6 +22340,13 @@ EventUtil = {
 	getClientX (evt) { return evt.touches && evt.touches.length ? evt.touches[0].clientX : evt.clientX; },
 	getClientY (evt) { return evt.touches && evt.touches.length ? evt.touches[0].clientY : evt.clientY; },
 
+	getOffsetY (evt) {
+		if (!evt.touches?.length) return evt.offsetY;
+
+		const bounds = evt.target.getBoundingClientRect();
+		return evt.targetTouches[0].clientY - bounds.y;
+	},
+
 	isUsingTouch () { return !!EventUtil._isUsingTouch; },
 
 	isInInput (evt) {
@@ -22754,6 +22832,11 @@ UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_LANGUAGES] = (it) => UrlUtil.encodeForHas
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CHAR_CREATION_OPTIONS] = (it) => UrlUtil.encodeForHash([it.name, it.source]);
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES] = (it) => `${UrlUtil.encodeForHash([it.name, it.source])}${it._scaleFactor ? `${HASH_PART_SEP}${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}${it._scaleFactor}` : ""}`;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASS_SUBCLASS_FEATURES] = (it) => (it.__prop === "subclassFeature" || it.subclassSource) ? UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"](it) : UrlUtil.URL_TO_HASH_BUILDER["classFeature"](it);
+UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_QUICKREF] = ({name, ixChapter, ixHeader}) => {
+	const hashParts = ["bookref-quick", ixChapter, UrlUtil.encodeForHash(name.toLowerCase())];
+	if (ixHeader) hashParts.push(ixHeader);
+	return hashParts.join(HASH_PART_SEP);
+};
 
 // region Fake pages (props)
 UrlUtil.URL_TO_HASH_BUILDER["monster"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BESTIARY];
@@ -23562,10 +23645,12 @@ DataUtil = {
 			return [name, source].join("|");
 		},
 
-		getUid (ent) {
+		getUid (ent, {isMaintainCase = false} = {}) {
 			const {name, source} = ent;
 			if (!name || !source) throw new Error(`Entity did not have a name and source!`);
-			return [name, source].join("|").toLowerCase();
+			const out = [name, source].join("|");
+			if (isMaintainCase) return out;
+			return out.toLowerCase();
 		},
 
 		async _pMergeCopy (impl, page, entryList, entry, options) {
@@ -23770,7 +23855,7 @@ DataUtil = {
 			function doMod_insertArr (modInfo, prop) {
 				doEnsureArray(modInfo, "items");
 				if (!copyTo[prop]) throw new Error(`${msgPtFailed} Could not find "${prop}" array`);
-				copyTo[prop].splice(modInfo.index, 0, ...modInfo.items);
+				copyTo[prop].splice(~modInfo.index ? modInfo.index : copyTo[prop].length, 0, ...modInfo.items);
 			}
 
 			function doMod_removeArr (modInfo, prop) {
@@ -23996,7 +24081,7 @@ DataUtil = {
 
 			function doMod_scalarAddDc (modInfo, prop) {
 				if (!copyTo[prop]) return;
-				copyTo[prop] = JSON.parse(JSON.stringify(copyTo[prop]).replace(/{@dc (\d+)}/g, (m0, m1) => `{@dc ${Number(m1) + modInfo.scalar}}`));
+				copyTo[prop] = JSON.parse(JSON.stringify(copyTo[prop]).replace(/{@dc (\d+)(?:\|[^}]+)?}/g, (m0, m1) => `{@dc ${Number(m1) + modInfo.scalar}}`));
 			}
 
 			function doMod_maxSize (modInfo) {
@@ -24213,7 +24298,7 @@ DataUtil = {
 		getVersions (prop, ent) { return (DataUtil[prop]?.getVersions || DataUtil.generic.getVersions)(ent); },
 		unpackUid (prop, uid, tag, opts) { return (DataUtil[prop]?.unpackUid || DataUtil.generic.unpackUid)(uid, tag, opts); },
 		getNormalizedUid (prop, uid, tag, opts) { return (DataUtil[prop]?.getNormalizedUid || DataUtil.generic.getNormalizedUid)(uid, tag, opts); },
-		getUid (prop, ent) { return (DataUtil[prop]?.getUid || DataUtil.generic.getUid)(ent); },
+		getUid (prop, ent, opts) { return (DataUtil[prop]?.getUid || DataUtil.generic.getUid)(ent, opts); },
 	},
 
 	monster: {
@@ -24224,6 +24309,7 @@ DataUtil = {
 			altArt: true,
 			variant: true,
 			dragonCastingColor: true,
+			familiar: true,
 		},
 		_mergeCache: {},
 		async pMergeCopy (monList, mon, options) {
@@ -24443,6 +24529,16 @@ DataUtil = {
 		},
 
 		getDataUrl () { return `${Renderer.get().baseUrl}data/backgrounds.json`; },
+	},
+
+	backgroundFluff: {
+		_MERGE_REQUIRES_PRESERVE: {},
+		_mergeCache: {},
+		async pMergeCopy (flfList, flf, options) {
+			return DataUtil.generic._pMergeCopy(DataUtil.backgroundFluff, UrlUtil.PG_BACKGROUNDS, flfList, flf, options);
+		},
+
+		getDataUrl () { return `${Renderer.get().baseUrl}data/fluff-backgrounds.json`; },
 	},
 
 	optionalfeature: {
@@ -25050,6 +25146,28 @@ DataUtil = {
 		},
 	},
 
+	quickreference: {
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		unpackUid (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [name, source, ixChapter, ixHeader, displayText] = uid.split("|").map(it => it.trim());
+			source = source || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
+			ixChapter = Number(ixChapter || 0);
+			return {
+				name,
+				ixChapter,
+				ixHeader,
+				source,
+				displayText,
+			};
+		},
+	},
+
 	brew: {
 		_getCleanUrlRoot (urlRoot) {
 			if (urlRoot && urlRoot.trim()) {
@@ -25524,7 +25642,16 @@ BrewUtil = {
 
 		const page = BrewUtil._PAGE || UrlUtil.getCurrentPage();
 		const allData = await Promise.all(indexLocal.toImport.map(it => DataUtil.loadJSON(`homebrew/${it}`)));
-		for (const d of allData) await BrewUtil._pDoHandleBrewJson(d, page, {isLocalPreload: true, homebrew});
+		for (const d of allData) {
+			await BrewUtil._pDoHandleBrewJson(d, page, {isLocalPreload: true, homebrew});
+			await BrewUtil._pAddBrewBlacklistData(d);
+		}
+	},
+
+	/** Allow blacklists to be loaded alongside homebrew */
+	async _pAddBrewBlacklistData (json) {
+		if (!json.blacklist?.length) return;
+		await ExcludeUtil.pExtendList(json.blacklist);
 	},
 
 	/**
@@ -25542,7 +25669,7 @@ BrewUtil = {
 
 		await BrewUtil._pRenderBrewScreen_pRefreshBrewList($brewList);
 
-		const $btnLoadFromFile = $(`<button class="btn btn-default btn-sm mr-2">Upload File</button>`)
+		const $btnLoadFromFile = $(`<button class="btn btn-default btn-sm mr-2">Import File</button>`)
 			.click(async () => {
 				const {jsons, errors} = await DataUtil.pUserUpload({isMultiple: true});
 
@@ -25859,7 +25986,7 @@ BrewUtil = {
 	_ALLOWED_BREW_UNDER_PROPS: new Set(["__prop"]),
 	async _pCleanSaveBrew () {
 		const cpy = MiscUtil.copy(BrewUtil.homebrew || {});
-		BrewUtil._STORABLE.forEach(prop => {
+		BrewUtil._getStorableProps().forEach(prop => {
 			(cpy[prop] || []).forEach(ent => {
 				Object.keys(ent).filter(k => !BrewUtil._ALLOWED_BREW_UNDER_PROPS.has(k) && k.startsWith("_")).forEach(k => delete ent[k]);
 			});
@@ -26184,7 +26311,7 @@ BrewUtil = {
 				"makebrewCreatureTrait",
 			];
 			case UrlUtil.PG_MANAGE_BREW:
-			case UrlUtil.PG_DEMO_RENDER: return BrewUtil._STORABLE;
+			case UrlUtil.PG_DEMO_RENDER: return BrewUtil._getStorableProps();
 			case UrlUtil.PG_VEHICLES: return ["vehicle", "vehicleUpgrade"];
 			case UrlUtil.PG_ACTIONS: return ["action"];
 			case UrlUtil.PG_CULTS_BOONS: return ["cult", "boon"];
@@ -26198,7 +26325,7 @@ BrewUtil = {
 
 	dirToProp (dir) {
 		if (!dir) return "";
-		else if (BrewUtil._STORABLE.includes(dir)) return dir;
+		else if (BrewUtil._getStorableProps().includes(dir)) return dir;
 		else {
 			switch (dir) {
 				case "creature": return "monster";
@@ -26301,6 +26428,11 @@ BrewUtil = {
 			case "book": return BrewUtil._pDeleteGenericBookBrew.bind(BrewUtil, category);
 			case "adventureData":
 			case "bookData": return () => {}; // Do nothing, handled by deleting the associated book/adventure
+			case "backgroundFeature":
+			case "raceFeature":
+			case "vehicleWeapon":
+			case "psionicDisciplineFocus":
+			case "psionicDisciplineActive": return () => {}; // no-ops
 			default: throw new Error(`No homebrew delete function defined for category ${category}`);
 		}
 	},
@@ -26431,16 +26563,14 @@ BrewUtil = {
 
 	_DIRS: ["action", "adventure", "background", "book", "boon", "charoption", "class", "condition", "creature", "cult", "deity", "disease", "feat", "hazard", "item", "language", "magicvariant", "makebrew", "object", "optionalfeature", "psionic", "race", "recipe", "reward", "spell", /* "status", */ "subclass", "subrace", "table", "trap", "variantrule", "vehicle", "classFeature", "subclassFeature"],
 	_STORABLE: ["class", "subclass", "classFeature", "subclassFeature", "spell", "spellFluff", "monster", "legendaryGroup", "monsterFluff", "background", "backgroundFeature", "feat", "optionalfeature", "race", "raceFeature", "raceFluff", "subrace", "deity", "item", "baseitem", "variant", "itemProperty", "itemType", "itemFluff", "itemGroup", "itemEntry", "psionic", "reward", "object", "trap", "hazard", "variantrule", "condition", "disease", "status", "adventure", "adventureData", "book", "bookData", "table", "tableGroup", "vehicle", "vehicleUpgrade", "vehicleWeapon", "action", "cult", "boon", "language", "languageScript", "makebrewCreatureTrait", "charoption", "charoptionFluff", "recipe", "psionicDisciplineFocus", "psionicDisciplineActive"],
+	_getStorableProps () { return BrewUtil._STORABLE; },
 	async pDoHandleBrewJson (json, page, pFuncRefresh) {
 		page = BrewUtil._PAGE || page;
 		await BrewUtil._lockHandleBrewJson.pLock();
 		try {
 			await BrewUtil._pDoHandleBrewJson(json, page, {pFuncRefresh});
 
-			// Allow blacklists to be loaded alongside homebrew
-			if (json.blacklist && ExcludeUtil.isInitialised) {
-				await ExcludeUtil.pSetList(ExcludeUtil.getList().concat(json.blacklist || []));
-			}
+			await BrewUtil._pAddBrewBlacklistData(json);
 		} finally {
 			BrewUtil._lockHandleBrewJson.unlock();
 		}
@@ -26461,7 +26591,7 @@ BrewUtil = {
 		}
 
 		// prepare for storage
-		BrewUtil._STORABLE.forEach(storePrep);
+		BrewUtil._getStorableProps().forEach(storePrep);
 
 		const bookPairs = [
 			["adventure", "adventureData"],
@@ -26555,9 +26685,9 @@ BrewUtil = {
 
 		let sourcesToAdd = json._meta ? json._meta.sources : [];
 		const toAdd = {};
-		BrewUtil._STORABLE.filter(k => json[k] && (json[k] instanceof Array)).forEach(k => toAdd[k] = json[k]);
+		BrewUtil._getStorableProps().filter(k => json[k] && (json[k] instanceof Array)).forEach(k => toAdd[k] = json[k]);
 		sourcesToAdd = checkAndAddMetaGetNewSources(); // adding source(s) to Filter should happen in per-page addX functions
-		await Promise.all(BrewUtil._STORABLE.map(async k => toAdd[k] = await pCheckAndAdd(k))); // only add if unique ID not already present
+		await Promise.all(BrewUtil._getStorableProps().map(async k => toAdd[k] = await pCheckAndAdd(k))); // only add if unique ID not already present
 		// TODO ...run some `DataUtil[prop].mutateBrew(ent)` function for each thing here?
 		if (!isLocalPreload) BrewUtil._persistHomebrewDebounced(); // Debounce this for mass adds, e.g. "Add All"
 		StorageUtil.syncSet(VeCt.STORAGE_HOMEBREW_META, BrewUtil.homebrewMeta);
@@ -27122,33 +27252,43 @@ CollectionUtil = {
 	},
 
 	// region Find first <X>
-	dfs (obj, prop) {
+	dfs (obj, opts) {
+		const {prop = null, fnMatch = null} = opts;
+		if (!prop && !fnMatch) throw new Error(`One of "prop" or "fnMatch" must be specified!`);
+
 		if (obj instanceof Array) {
 			for (const child of obj) {
-				const n = CollectionUtil.dfs(child, prop);
+				const n = CollectionUtil.dfs(child, opts);
 				if (n) return n;
 			}
 			return;
 		}
 
 		if (obj instanceof Object) {
-			if (obj[prop]) return obj[prop];
+			if (prop && obj[prop]) return obj[prop];
+			if (fnMatch && fnMatch(obj)) return obj;
 
 			for (const child of Object.values(obj)) {
-				const n = CollectionUtil.dfs(child, prop);
+				const n = CollectionUtil.dfs(child, opts);
 				if (n) return n;
 			}
 		}
 	},
 
-	bfs (obj, prop) {
+	bfs (obj, opts) {
+		const {prop = null, fnMatch = null} = opts;
+		if (!prop && !fnMatch) throw new Error(`One of "prop" or "fnMatch" must be specified!`);
+
 		if (obj instanceof Array) {
 			for (const child of obj) {
-				if (!(child instanceof Array) && child instanceof Object && child[prop]) return child[prop];
+				if (!(child instanceof Array) && child instanceof Object) {
+					if (prop && child[prop]) return child[prop];
+					if (fnMatch && fnMatch(child)) return child;
+				}
 			}
 
 			for (const child of obj) {
-				const n = CollectionUtil.bfs(child, prop);
+				const n = CollectionUtil.bfs(child, opts);
 				if (n) return n;
 			}
 
@@ -27156,7 +27296,8 @@ CollectionUtil = {
 		}
 
 		if (obj instanceof Object) {
-			if (obj[prop]) return obj[prop];
+			if (prop && obj[prop]) return obj[prop];
+			if (fnMatch && fnMatch(obj)) return obj;
 
 			return CollectionUtil.bfs(Object.values(obj));
 		}
@@ -27581,8 +27722,21 @@ BookModeView._BOOK_VIEW_COLUMNS_K = "bookViewColumns";
 ExcludeUtil = {
 	isInitialised: false,
 	_excludes: null,
+	_cache_excludesLookup: null,
+	_lock: null,
 
-	async pInitialise () {
+	async pInitialise ({lockToken = null} = {}) {
+		try {
+			await ExcludeUtil._lock.pLock({token: lockToken});
+			await ExcludeUtil._pInitialise();
+		} finally {
+			ExcludeUtil._lock.unlock();
+		}
+	},
+
+	async _pInitialise () {
+		if (ExcludeUtil.isInitialised) return;
+
 		ExcludeUtil.pSave = MiscUtil.throttle(ExcludeUtil._pSave, 50);
 		try {
 			ExcludeUtil._excludes = await StorageUtil.pGet(VeCt.STORAGE_EXCLUDES) || [];
@@ -27610,7 +27764,64 @@ ExcludeUtil = {
 
 	async pSetList (toSet) {
 		ExcludeUtil._excludes = toSet;
+		ExcludeUtil._cache_excludesLookup = null;
 		await ExcludeUtil.pSave();
+	},
+
+	async pExtendList (toAdd) {
+		try {
+			const lockToken = await ExcludeUtil._lock.pLock();
+			await ExcludeUtil._pExtendList({toAdd, lockToken});
+		} finally {
+			ExcludeUtil._lock.unlock();
+		}
+	},
+
+	async _pExtendList ({toAdd, lockToken}) {
+		await ExcludeUtil.pInitialise({lockToken});
+		this._doBuildCache();
+
+		const out = MiscUtil.copy(ExcludeUtil._excludes || []);
+		MiscUtil.copy(toAdd || [])
+			.filter(({hash, category, source}) => {
+				if (!hash || !category || !source) return false;
+				const cacheUid = ExcludeUtil._getCacheUids(hash, category, source, true);
+				return !ExcludeUtil._cache_excludesLookup[cacheUid];
+			})
+			.forEach(it => out.push(it));
+
+		await ExcludeUtil.pSetList(out);
+	},
+
+	_doBuildCache () {
+		if (ExcludeUtil._cache_excludesLookup) return;
+		if (!ExcludeUtil._excludes) return;
+
+		ExcludeUtil._cache_excludesLookup = {};
+		ExcludeUtil._excludes.forEach(({source, category, hash}) => {
+			const cacheUid = ExcludeUtil._getCacheUids(hash, category, source, true);
+			ExcludeUtil._cache_excludesLookup[cacheUid] = true;
+		});
+	},
+
+	_getCacheUids (hash, category, source, isExact) {
+		hash = (hash || "").toLowerCase();
+		category = (category || "").toLowerCase();
+		source = (source.source || source || "").toLowerCase();
+
+		const exact = `${hash}__${category}__${source}`;
+		if (isExact) return [exact];
+
+		return [
+			`${hash}__${category}__${source}`,
+			`*__${category}__${source}`,
+			`${hash}__*__${source}`,
+			`${hash}__${category}__*`,
+			`*__*__${source}`,
+			`*__${category}__*`,
+			`${hash}__*__*`,
+			`*__*__*`,
+		];
 	},
 
 	_excludeCount: 0,
@@ -27626,10 +27837,25 @@ ExcludeUtil = {
 		if (!source) throw new Error(`Entity had no source!`);
 		opts = opts || {};
 
+		this._doBuildCache();
+
+		hash = (hash || "").toLowerCase();
+		category = (category || "").toLowerCase();
 		source = (source.source || source || "").toLowerCase();
-		const out = !!ExcludeUtil._excludes.find(row => (row.source === "*" || (row.source || "").toLowerCase() === source) && (row.category === "*" || row.category === category) && (row.hash === "*" || row.hash === hash));
-		if (out && !opts.isNoCount) ++ExcludeUtil._excludeCount;
-		return out;
+
+		const isExcluded = ExcludeUtil._isExcluded(hash, category, source);
+		if (!isExcluded) return isExcluded;
+
+		if (!opts.isNoCount) ++ExcludeUtil._excludeCount;
+
+		return isExcluded;
+	},
+
+	_isExcluded (hash, category, source) {
+		for (const cacheUid of ExcludeUtil._getCacheUids(hash, category, source)) {
+			if (ExcludeUtil._cache_excludesLookup[cacheUid]) return true;
+		}
+		return false;
 	},
 
 	isAllContentExcluded (list) { return (!list.length && ExcludeUtil._excludeCount) || (list.length > 0 && list.length === ExcludeUtil._excludeCount); },
@@ -27796,25 +28022,37 @@ TokenUtil = {
 VeLock = function () {
 	this._lockMeta = null;
 
-	this.pLock = async () => {
+	this.pLock = async ({token = null} = {}) => {
+		if (token != null && this._lockMeta?.token === token) {
+			++this._lockMeta.depth;
+			return token;
+		}
+
 		while (this._lockMeta) await this._lockMeta.lock;
 		let unlock = null;
 		const lock = new Promise(resolve => unlock = resolve);
 		this._lockMeta = {
 			lock,
 			unlock,
+			token: CryptUtil.uid(),
+			depth: 0,
 		};
+
+		return this._lockMeta.token;
 	};
 
 	this.unlock = () => {
+		if (!this._lockMeta) return;
+
+		if (this._lockMeta.depth > 0) return --this._lockMeta.depth;
+
 		const lockMeta = this._lockMeta;
-		if (lockMeta) {
-			this._lockMeta = null;
-			lockMeta.unlock();
-		}
+		this._lockMeta = null;
+		lockMeta.unlock();
 	};
 };
 BrewUtil._lockHandleBrewJson = new VeLock();
+ExcludeUtil._lock = new VeLock();
 
 // DATETIME ============================================================================================================
 DatetimeUtil = {
@@ -28346,9 +28584,13 @@ class UiUtil {
 		UiUtil._initModalMouseupHandlers();
 		if (document.activeElement) document.activeElement.blur(); // blur any active element as it will be behind the modal
 
+		let resolveModal;
+		const pResolveModal = new Promise(resolve => { resolveModal = resolve; });
+
 		// if the user closed the modal by clicking the "cancel" background, isDataEntered is false
 		const pHandleCloseClick = async (isDataEntered, ...args) => {
 			if (opts.cbClose) await opts.cbClose(isDataEntered, ...args);
+			resolveModal([isDataEntered, ...args]);
 
 			if (opts.isIndestructible) wrpOverlay.detach();
 			else wrpOverlay.remove();
@@ -28463,6 +28705,7 @@ class UiUtil {
 			$modalFooter: $(modalFooter),
 			doClose: pHandleCloseClick,
 			doTeardown,
+			pGetResolved: () => pResolveModal,
 		};
 
 		if (opts.isIndestructible || opts.isClosed) {
@@ -28585,8 +28828,8 @@ class UiUtil {
 				clearTimeout(timerTyping);
 				timerTyping = setTimeout(() => { fnKeyup(evt); }, UiUtil.TYPE_TIMEOUT_MS);
 			})
-			.on("keypress", (e) => {
-				if (fnKeypress) fnKeypress(e);
+			.on("keypress", evt => {
+				if (fnKeypress) fnKeypress(evt);
 			})
 			.on("keydown", evt => {
 				if (fnKeydown) fnKeydown(evt);
@@ -28594,7 +28837,12 @@ class UiUtil {
 			})
 			.on("click", () => {
 				if (fnClick) fnClick();
-			});
+			})
+			.on("instantKeyup", () => {
+				clearTimeout(timerTyping);
+				fnKeyup();
+			})
+		;
 	}
 
 	/** Brute-force select the input, in case something has delayed the rendering (e.g. a VTT application window) */
@@ -28766,17 +29014,17 @@ class ListUiUtil {
 		});
 	}
 
-	static bindPreviewButton (page, allData, item, btnShowHidePreview) {
+	static bindPreviewButton (page, allData, item, btnShowHidePreview, {$fnGetPreviewStats} = {}) {
 		btnShowHidePreview.addEventListener("click", evt => {
 			const entity = allData[item.ix];
 
 			const elePreviewWrp = this.getOrAddListItemPreviewLazy(item);
 
-			this.handleClickBtnShowHideListPreview(evt, page, entity, btnShowHidePreview, elePreviewWrp);
+			this.handleClickBtnShowHideListPreview(evt, page, entity, btnShowHidePreview, elePreviewWrp, {$fnGetPreviewStats});
 		});
 	}
 
-	static handleClickBtnShowHideListPreview (evt, page, entity, btnShowHidePreview, elePreviewWrp, nxtText = null) {
+	static handleClickBtnShowHideListPreview (evt, page, entity, btnShowHidePreview, elePreviewWrp, {nxtText = null, $fnGetPreviewStats} = {}) {
 		evt.stopPropagation();
 		evt.preventDefault();
 
@@ -28798,8 +29046,10 @@ class ListUiUtil {
 
 		elePreviewWrp.dataset.dataType = isFluff ? "fluff" : "stats";
 
-		if (!evt.shiftKey) {
-			Renderer.hover.$getHoverContent_stats(page, entity, {isStatic: true}).appendTo(elePreviewWrpInner);
+		const doAppendStatView = () => ($fnGetPreviewStats || Renderer.hover.$getHoverContent_stats)(page, entity, {isStatic: true}).appendTo(elePreviewWrpInner);
+
+		if (!evt.shiftKey || !UrlUtil.URL_TO_HASH_BUILDER[page]) {
+			doAppendStatView();
 			return;
 		}
 
@@ -28809,7 +29059,7 @@ class ListUiUtil {
 				//  loading the fluff.
 				if (elePreviewWrpInner.innerHTML) return;
 
-				if (!fluffEntity) return Renderer.hover.$getHoverContent_stats(page, entity).appendTo(elePreviewWrpInner);
+				if (!fluffEntity) return doAppendStatView();
 				Renderer.hover.$getHoverContent_fluff(page, fluffEntity).appendTo(elePreviewWrpInner);
 			});
 	}
@@ -28934,7 +29184,7 @@ class TabUiUtilBase {
 		};
 
 		/** Render a collection of tabs. */
-		obj._renderTabs = function (tabMetas, {$parent, propProxy = TabUiUtilBase._DEFAULT_PROP_PROXY, tabGroup = TabUiUtilBase._DEFAULT_TAB_GROUP, cbTabChange} = {}) {
+		obj._renderTabs = function (tabMetas, {$parent, propProxy = TabUiUtilBase._DEFAULT_PROP_PROXY, tabGroup = TabUiUtilBase._DEFAULT_TAB_GROUP, cbTabChange, additionalClassesWrpHeads} = {}) {
 			if (!tabMetas.length) throw new Error(`One or more tab meta must be specified!`);
 			obj._resetTabs({tabGroup});
 
@@ -28970,7 +29220,7 @@ class TabUiUtilBase {
 				return renderTabMetas_standard(it, i);
 			}).filter(Boolean);
 
-			if ($parent) obj.__renderTabs_addToParent({$dispTabTitle, $parent, tabMetasOut});
+			if ($parent) obj.__renderTabs_addToParent({$dispTabTitle, $parent, tabMetasOut, additionalClassesWrpHeads});
 
 			const hkActiveTab = () => {
 				tabMetasOut.forEach(it => {
@@ -28997,12 +29247,12 @@ class TabUiUtilBase {
 			return tabMetasOut;
 		};
 
-		obj.__renderTabs_addToParent = function ({$dispTabTitle, $parent, tabMetasOut}) {
+		obj.__renderTabs_addToParent = function ({$dispTabTitle, $parent, tabMetasOut, additionalClassesWrpHeads}) {
 			const hasBorder = tabMetasOut.some(it => it.hasBorder);
 			$$`<div class="ve-flex-col w-100 h-100">
 				${$dispTabTitle}
 				<div class="ve-flex-col w-100 h-100 min-h-0">
-					<div class="ve-flex ${hasBorder ? `ui-tab__wrp-tab-heads--border` : ""}">${tabMetasOut.map(it => it.$btnTab)}</div>
+					<div class="ve-flex ${hasBorder ? `ui-tab__wrp-tab-heads--border` : ""} ${additionalClassesWrpHeads || ""}">${tabMetasOut.map(it => it.$btnTab)}</div>
 					<div class="ve-flex w-100 h-100 min-h-0">${tabMetasOut.map(it => it.$wrpTab).filter(Boolean)}</div>
 				</div>
 			</div>`.appendTo($parent);
@@ -29259,7 +29509,7 @@ class SearchUiUtil {
 			if (
 				SearchUiUtil._isNoHoverCat(d.c)
 				|| fromDeepIndex(d)
-				|| ExcludeUtil.isExcluded(d.h, Parser.pageCategoryToProp(d.c), d.s, {isNoCount: true})
+				|| ExcludeUtil.isExcluded(d.u, Parser.pageCategoryToProp(d.c), d.s, {isNoCount: true})
 			) return;
 			d.cf = d.c === Parser.CAT_ID_CREATURE ? "Creature" : Parser.pageCategoryToFull(d.c);
 			if (isAlternate) d.cf = `alt_${d.cf}`;
@@ -29777,7 +30027,7 @@ class SearchWidget {
 			customIndexSubSpecs: [
 				new SearchWidget.CustomIndexSubSpec({
 					dataSource: `${Renderer.get().baseUrl}data/optionalfeatures.json`,
-					prop: "background",
+					prop: "optionalfeature",
 					catId: Parser.CAT_ID_OPTIONAL_FEATURE_OTHER,
 					page: UrlUtil.PG_OPT_FEATURES,
 				}),
@@ -29831,8 +30081,9 @@ class SearchWidget {
 	}
 
 	static async pGetUserAdventureBookSearch (opts) {
+		const contentIndexName = opts.contentIndexName || "entity_AdventuresBooks";
 		await SearchWidget.pLoadCustomIndex({
-			contentIndexName: "entity_AdventuresBooks",
+			contentIndexName,
 			errorName: "adventures/books",
 			customIndexSubSpecs: [
 				new SearchWidget.CustomIndexSubSpec({
@@ -29840,16 +30091,18 @@ class SearchWidget {
 					prop: "adventure",
 					catId: Parser.CAT_ID_ADVENTURE,
 					page: UrlUtil.PG_ADVENTURE,
+					pFnGetDocExtras: opts.pFnGetDocExtras,
 				}),
 				new SearchWidget.CustomIndexSubSpec({
 					dataSource: `${Renderer.get().baseUrl}data/books.json`,
 					prop: "book",
 					catId: Parser.CAT_ID_BOOK,
 					page: UrlUtil.PG_BOOK,
+					pFnGetDocExtras: opts.pFnGetDocExtras,
 				}),
 			],
 		});
-		return SearchWidget.pGetUserEntitySearch("Select Adventure or Book", "entity_AdventuresBooks", opts);
+		return SearchWidget.pGetUserEntitySearch("Select Adventure or Book", contentIndexName, opts);
 	}
 
 	static async pGetUserCreatureSearch () {
@@ -29969,11 +30222,12 @@ class SearchWidget {
 
 	// region custom search indexes
 	static CustomIndexSubSpec = class {
-		constructor ({dataSource, prop, catId, page}) {
+		constructor ({dataSource, prop, catId, page, pFnGetDocExtras}) {
 			this.dataSource = dataSource;
 			this.prop = prop;
 			this.catId = catId;
 			this.page = page;
+			this.pFnGetDocExtras = pFnGetDocExtras;
 		}
 	};
 
@@ -30010,16 +30264,21 @@ class SearchWidget {
 				BrewUtil.pAddBrewData(),
 			]);
 
-			json[subSpec.prop].concat(homebrew[subSpec.prop] || []).forEach(it => index.addDoc({
-				id: id++,
-				c: subSpec.catId,
-				cf: Parser.pageCategoryToFull(subSpec.catId),
-				h: 1,
-				n: it.name,
-				p: subSpec.page,
-				s: it.source,
-				u: UrlUtil.URL_TO_HASH_BUILDER[subSpec.page](it),
-			}));
+			await [...json[subSpec.prop], ...(homebrew[subSpec.prop] || [])]
+				.pSerialAwaitMap(async ent => {
+					const doc = {
+						id: id++,
+						c: subSpec.catId,
+						cf: Parser.pageCategoryToFull(subSpec.catId),
+						h: 1,
+						n: ent.name,
+						q: subSpec.page,
+						s: ent.source,
+						u: UrlUtil.URL_TO_HASH_BUILDER[subSpec.page](ent),
+					};
+					if (subSpec.pFnGetDocExtras) Object.assign(doc, await subSpec.pFnGetDocExtras({ent, doc, subSpec}));
+					index.addDoc(doc);
+				});
 		}
 
 		return index;
@@ -30037,6 +30296,10 @@ SearchWidget.CONTENT_INDICES = {};
 SearchWidget.P_LOADING_INDICES = {};
 
 class InputUiUtil {
+	static async _pGetShowModal (getShowModalOpts) {
+		return UiUtil.getShowModal(getShowModalOpts);
+	}
+
 	/**
 	 * @param opts Options.
 	 * @param opts.min Minimum value.
@@ -30061,54 +30324,58 @@ class InputUiUtil {
 			if (prev != null) defaultVal = prev;
 		}
 
-		return new Promise(resolve => {
-			const $iptNumber = $(`<input class="form-control mb-2 text-right" ${opts.min ? `min="${opts.min}"` : ""} ${opts.max ? `max="${opts.max}"` : ""}>`)
-				.keydown(evt => {
-					if (evt.key === "Escape") { $iptNumber.blur(); return; }
-					// return key
-					if (evt.which === 13) doClose(true);
-					evt.stopPropagation();
-				});
-			if (defaultVal !== undefined) $iptNumber.val(defaultVal);
-
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
-
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Enter a Number",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-
-					if (!isDataEntered) return resolve(null);
-					const raw = $iptNumber.val();
-					if (!raw.trim()) return resolve(null);
-					let num = UiUtil.strToInt(raw);
-					if (opts.min) num = Math.max(opts.min, num);
-					if (opts.max) num = Math.min(opts.max, num);
-					if (opts.int) num = Math.round(num);
-
-					if (opts.storageKey_default) {
-						opts.isGlobal_default
-							? StorageUtil.pSet(opts.storageKey_default, num)
-							: StorageUtil.pSetForPage(opts.storageKey_default, num);
-					}
-
-					resolve(num);
-				},
+		const $iptNumber = $(`<input class="form-control mb-2 text-right" ${opts.min ? `min="${opts.min}"` : ""} ${opts.max ? `max="${opts.max}"` : ""}>`)
+			.keydown(evt => {
+				if (evt.key === "Escape") { $iptNumber.blur(); return; }
+				// return key
+				if (evt.which === 13) doClose(true);
+				evt.stopPropagation();
 			});
+		if (defaultVal !== undefined) $iptNumber.val(defaultVal);
 
-			if (opts.$elePre) opts.$elePre.appendTo($modalInner);
-			$iptNumber.appendTo($modalInner);
-			if (opts.$elePost) opts.$elePost.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-			$iptNumber.focus();
-			$iptNumber.select();
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
+
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Enter a Number",
+			isMinHeight0: true,
 		});
+
+		if (opts.$elePre) opts.$elePre.appendTo($modalInner);
+		$iptNumber.appendTo($modalInner);
+		if (opts.$elePost) opts.$elePost.appendTo($modalInner);
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		$iptNumber.focus();
+		$iptNumber.select();
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+
+		if (!isDataEntered) return null;
+		const outRaw = $iptNumber.val();
+		if (!outRaw.trim()) return null;
+		let out = UiUtil.strToInt(outRaw);
+		if (opts.min) out = Math.max(opts.min, out);
+		if (opts.max) out = Math.min(opts.max, out);
+		if (opts.int) out = Math.round(out);
+
+		if (opts.storageKey_default) {
+			opts.isGlobal_default
+				? StorageUtil.pSet(opts.storageKey_default, out).then(null)
+				: StorageUtil.pSetForPage(opts.storageKey_default, out).then(null);
+		}
+
+		return out;
+		// endregion
 	}
 
 	/**
@@ -30134,45 +30401,49 @@ class InputUiUtil {
 			if (prev != null) return prev;
 		}
 
-		return new Promise(resolve => {
-			const $btnTrueRemember = opts.textYesRemember ? $(`<button class="btn btn-primary ve-flex-v-center mr-2"><span class="glyphicon glyphicon-ok mr-2"></span><span>${opts.textYesRemember}</span></button>`)
-				.click(() => {
-					doClose(true, true);
-					if (opts.fnRemember) {
-						opts.fnRemember(true);
-					} else {
-						opts.isGlobal
-							? StorageUtil.pSet(opts.storageKey, true)
-							: StorageUtil.pSetForPage(opts.storageKey, true);
-					}
-				}) : null;
+		const $btnTrueRemember = opts.textYesRemember ? $(`<button class="btn btn-primary ve-flex-v-center mr-2"><span class="glyphicon glyphicon-ok mr-2"></span><span>${opts.textYesRemember}</span></button>`)
+			.click(() => {
+				doClose(true, true);
+				if (opts.fnRemember) {
+					opts.fnRemember(true);
+				} else {
+					opts.isGlobal
+						? StorageUtil.pSet(opts.storageKey, true)
+						: StorageUtil.pSetForPage(opts.storageKey, true);
+				}
+			}) : null;
 
-			const $btnTrue = $(`<button class="btn btn-primary ve-flex-v-center mr-3"><span class="glyphicon glyphicon-ok mr-2"></span><span>${opts.textYes || "OK"}</span></button>`)
-				.click(() => doClose(true, true));
+		const $btnTrue = $(`<button class="btn btn-primary ve-flex-v-center mr-3"><span class="glyphicon glyphicon-ok mr-2"></span><span>${opts.textYes || "OK"}</span></button>`)
+			.click(() => doClose(true, true));
 
-			const $btnFalse = opts.isAlert ? null : $(`<button class="btn btn-default btn-sm ve-flex-v-center"><span class="glyphicon glyphicon-remove mr-2"></span><span>${opts.textNo || "Cancel"}</span></button>`)
-				.click(() => doClose(true, false));
+		const $btnFalse = opts.isAlert ? null : $(`<button class="btn btn-default btn-sm ve-flex-v-center"><span class="glyphicon glyphicon-remove mr-2"></span><span>${opts.textNo || "Cancel"}</span></button>`)
+			.click(() => doClose(true, false));
 
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default btn-sm ml-3"><span class="glyphicon glyphicon-forward"></span><span>${opts.textSkip || "Skip"}</span></button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default btn-sm ml-3"><span class="glyphicon glyphicon-forward"></span><span>${opts.textSkip || "Skip"}</span></button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
 
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Choose",
-				isMinHeight0: true,
-				cbClose: (isDataEntered, value) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-
-					if (!isDataEntered) return resolve(null);
-					if (value == null) throw new Error(`Callback must receive a value!`); // sanity check
-					resolve(value);
-				},
-			});
-
-			if (opts.htmlDescription && opts.htmlDescription.trim()) $$`<div class="ve-flex w-100 mb-1">${opts.htmlDescription}</div>`.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right py-1 px-1">${$btnTrueRemember}${$btnTrue}${$btnFalse}${$btnSkip}</div>`.appendTo($modalInner);
-			$btnTrue.focus();
-			$btnTrue.select();
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Choose",
+			isMinHeight0: true,
 		});
+
+		if (opts.htmlDescription && opts.htmlDescription.trim()) $$`<div class="ve-flex w-100 mb-1">${opts.htmlDescription}</div>`.appendTo($modalInner);
+		$$`<div class="ve-flex-v-center ve-flex-h-right py-1 px-1">${$btnTrueRemember}${$btnTrue}${$btnFalse}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		$btnTrue.focus();
+		$btnTrue.select();
+
+		// region Output
+		const [isDataEntered, out] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+
+		if (!isDataEntered) return null;
+		if (out == null) throw new Error(`Callback must receive a value!`); // sanity check
+		return out;
+		// endregion
 	}
 
 	/**
@@ -30189,46 +30460,52 @@ class InputUiUtil {
 	 * @param [opts.isSkippable] If the prompt is skippable.
 	 * @return {Promise} A promise which resolves to the index of the item the user selected (or an object if fnGetExtraState is passed), or null otherwise.
 	 */
-	static pGetUserEnum (opts) {
+	static async pGetUserEnum (opts) {
 		opts = opts || {};
-		return new Promise(resolve => {
-			const $selEnum = $(`<select class="form-control mb-2"><option value="-1" disabled>${opts.placeholder || "Select..."}</option></select>`);
 
-			if (opts.isAllowNull) $(`<option value="-1"></option>`).text(opts.fnDisplay ? opts.fnDisplay(null, -1) : "(None)").appendTo($selEnum);
+		const $selEnum = $(`<select class="form-control mb-2"><option value="-1" disabled>${opts.placeholder || "Select..."}</option></select>`);
 
-			opts.values.forEach((v, i) => $(`<option value="${i}"></option>`).text(opts.fnDisplay ? opts.fnDisplay(v, i) : v).appendTo($selEnum));
-			if (opts.default != null) $selEnum.val(opts.default);
-			else $selEnum[0].selectedIndex = 0;
+		if (opts.isAllowNull) $(`<option value="-1"></option>`).text(opts.fnDisplay ? opts.fnDisplay(null, -1) : "(None)").appendTo($selEnum);
 
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
+		opts.values.forEach((v, i) => $(`<option value="${i}"></option>`).text(opts.fnDisplay ? opts.fnDisplay(v, i) : v).appendTo($selEnum));
+		if (opts.default != null) $selEnum.val(opts.default);
+		else $selEnum[0].selectedIndex = 0;
 
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Select an Option",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
 
-					if (!isDataEntered) return resolve(null);
-					const ix = Number($selEnum.val());
-					if (!~ix) return resolve(null);
-					if (opts.fnGetExtraState) {
-						const out = {extraState: opts.fnGetExtraState()};
-						if (opts.isResolveItem) out.item = opts.values[ix];
-						else out.ix = ix;
-						resolve(out);
-					} else resolve(opts.isResolveItem ? opts.values[ix] : ix);
-				},
-			});
-			$selEnum.appendTo($modalInner);
-			if (opts.$elePost) opts.$elePost.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-			$selEnum.focus();
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Select an Option",
+			isMinHeight0: true,
 		});
+		$selEnum.appendTo($modalInner);
+		if (opts.$elePost) opts.$elePost.appendTo($modalInner);
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		$selEnum.focus();
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+
+		if (!isDataEntered) return null;
+		const ix = Number($selEnum.val());
+		if (!~ix) return null;
+		if (opts.fnGetExtraState) {
+			const out = {extraState: opts.fnGetExtraState()};
+			if (opts.isResolveItem) out.item = opts.values[ix];
+			else out.ix = ix;
+			return out;
+		}
+
+		return opts.isResolveItem ? opts.values[ix] : ix;
+		// endregion
 	}
 
 	/**
@@ -30248,68 +30525,76 @@ class InputUiUtil {
 	 * @param [opts.isSkippable] If the prompt is skippable.
 	 * @return {Promise} A promise which resolves to the indices of the items the user selected, or null otherwise.
 	 */
-	static pGetUserMultipleChoice (opts) {
-		return new Promise(resolve => {
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
+	static async pGetUserMultipleChoice (opts) {
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
 
-			const prop = "formData";
+		const prop = "formData";
 
-			const initialState = {};
-			if (opts.defaults) opts.defaults.forEach(ix => initialState[ComponentUiUtil.getMetaWrpMultipleChoice_getPropIsActive(prop, ix)] = true);
-			if (opts.required) {
-				opts.required.forEach(ix => {
-					initialState[ComponentUiUtil.getMetaWrpMultipleChoice_getPropIsActive(prop, ix)] = true; // "requires" implies "default"
-					initialState[ComponentUiUtil.getMetaWrpMultipleChoice_getPropIsRequired(prop, ix)] = true;
-				});
-			}
-
-			const comp = BaseComponent.fromObject(initialState);
-
-			let title = opts.title;
-			if (!title) {
-				if (opts.count != null) title = `Choose ${Parser.numberToText(opts.count).uppercaseFirst()}`;
-				else if (opts.min != null && opts.max != null) title = `Choose Between ${Parser.numberToText(opts.min).uppercaseFirst()} and ${Parser.numberToText(opts.max).uppercaseFirst()} Options`;
-				else if (opts.min != null) title = `Choose At Least ${Parser.numberToText(opts.min).uppercaseFirst()}`;
-				else title = `Choose At Most ${Parser.numberToText(opts.max).uppercaseFirst()}`;
-			}
-
-			const {$ele: $wrpList, propIsAcceptable} = ComponentUiUtil.getMetaWrpMultipleChoice(comp, prop, opts);
-			$wrpList.addClass(`mb-1`);
-
-			const hkIsAcceptable = () => $btnOk.attr("disabled", !comp._state[propIsAcceptable]);
-			comp._addHookBase(propIsAcceptable, hkIsAcceptable);
-			hkIsAcceptable();
-
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				...(opts.modalOpts || {}),
-				title,
-				isMinHeight0: true,
-				isUncappedHeight: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-
-					if (!isDataEntered) return resolve(null);
-
-					const ixs = ComponentUiUtil.getMetaWrpMultipleChoice_getSelectedIxs(comp, prop);
-
-					if (!opts.isResolveItems) resolve(ixs);
-					else if (opts.values) resolve(ixs.map(ix => opts.values[ix]));
-					else if (opts.valueGroups) {
-						const allValues = opts.valueGroups.map(it => it.values).flat();
-						resolve(ixs.map(ix => allValues[ix]));
-					}
-				},
+		const initialState = {};
+		if (opts.defaults) opts.defaults.forEach(ix => initialState[ComponentUiUtil.getMetaWrpMultipleChoice_getPropIsActive(prop, ix)] = true);
+		if (opts.required) {
+			opts.required.forEach(ix => {
+				initialState[ComponentUiUtil.getMetaWrpMultipleChoice_getPropIsActive(prop, ix)] = true; // "requires" implies "default"
+				initialState[ComponentUiUtil.getMetaWrpMultipleChoice_getPropIsRequired(prop, ix)] = true;
 			});
-			if (opts.htmlDescription) $modalInner.append(opts.htmlDescription);
-			$wrpList.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right no-shrink pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-			$wrpList.focus();
+		}
+
+		const comp = BaseComponent.fromObject(initialState);
+
+		let title = opts.title;
+		if (!title) {
+			if (opts.count != null) title = `Choose ${Parser.numberToText(opts.count).uppercaseFirst()}`;
+			else if (opts.min != null && opts.max != null) title = `Choose Between ${Parser.numberToText(opts.min).uppercaseFirst()} and ${Parser.numberToText(opts.max).uppercaseFirst()} Options`;
+			else if (opts.min != null) title = `Choose At Least ${Parser.numberToText(opts.min).uppercaseFirst()}`;
+			else title = `Choose At Most ${Parser.numberToText(opts.max).uppercaseFirst()}`;
+		}
+
+		const {$ele: $wrpList, propIsAcceptable} = ComponentUiUtil.getMetaWrpMultipleChoice(comp, prop, opts);
+		$wrpList.addClass(`mb-1`);
+
+		const hkIsAcceptable = () => $btnOk.attr("disabled", !comp._state[propIsAcceptable]);
+		comp._addHookBase(propIsAcceptable, hkIsAcceptable);
+		hkIsAcceptable();
+
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			...(opts.modalOpts || {}),
+			title,
+			isMinHeight0: true,
+			isUncappedHeight: true,
 		});
+		if (opts.htmlDescription) $modalInner.append(opts.htmlDescription);
+		$wrpList.appendTo($modalInner);
+		$$`<div class="ve-flex-v-center ve-flex-h-right no-shrink pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		$wrpList.focus();
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+
+		if (!isDataEntered) return null;
+
+		const ixs = ComponentUiUtil.getMetaWrpMultipleChoice_getSelectedIxs(comp, prop);
+
+		if (!opts.isResolveItems) return ixs;
+
+		if (opts.values) return ixs.map(ix => opts.values[ix]);
+
+		if (opts.valueGroups) {
+			const allValues = opts.valueGroups.map(it => it.values).flat();
+			return ixs.map(ix => allValues[ix]);
+		}
+
+		throw new Error(`Should never occur!`);
+		// endregion
 	}
 
 	/**
@@ -30322,53 +30607,55 @@ class InputUiUtil {
 	 * @param [opts.isSkippable] If the prompt is skippable.
 	 * @return {Promise<number>} A promise which resolves to the index of the item the user selected, or null otherwise.
 	 */
-	static pGetUserIcon (opts) {
+	static async pGetUserIcon (opts) {
 		opts = opts || {};
-		return new Promise(resolve => {
-			let lastIx = opts.default != null ? opts.default : -1;
-			const onclicks = [];
 
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Select an Option",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-					if (!isDataEntered) return resolve(null);
-					return resolve(~lastIx ? lastIx : null);
-				},
-			});
+		let lastIx = opts.default != null ? opts.default : -1;
+		const onclicks = [];
 
-			$$`<div class="ve-flex ve-flex-wrap ve-flex-h-center mb-2">${opts.values.map((v, i) => {
-				const $btn = $$`<div class="m-2 btn ${v.buttonClass || "btn-default"} ui__btn-xxl-square ve-flex-col ve-flex-h-center">
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Select an Option",
+			isMinHeight0: true,
+		});
+
+		$$`<div class="ve-flex ve-flex-wrap ve-flex-h-center mb-2">${opts.values.map((v, i) => {
+			const $btn = $$`<div class="m-2 btn ${v.buttonClass || "btn-default"} ui__btn-xxl-square ve-flex-col ve-flex-h-center">
 					${v.iconClass ? `<div class="ui-icn__wrp-icon ${v.iconClass} mb-1"></div>` : ""}
 					${v.iconContent ? v.iconContent : ""}
 					<div class="whitespace-normal w-100">${v.name}</div>
 				</div>`
-					.click(() => {
-						lastIx = i;
-						onclicks.forEach(it => it());
-					})
-					.toggleClass(v.buttonClassActive || "active", opts.default === i);
-				if (v.buttonClassActive && opts.default === i) {
-					$btn.removeClass("btn-default").addClass(v.buttonClassActive);
-				}
+				.click(() => {
+					lastIx = i;
+					onclicks.forEach(it => it());
+				})
+				.toggleClass(v.buttonClassActive || "active", opts.default === i);
+			if (v.buttonClassActive && opts.default === i) {
+				$btn.removeClass("btn-default").addClass(v.buttonClassActive);
+			}
 
-				onclicks.push(() => {
-					$btn.toggleClass(v.buttonClassActive || "active", lastIx === i);
-					if (v.buttonClassActive) $btn.toggleClass("btn-default", lastIx !== i);
-				});
-				return $btn;
-			})}</div>`.appendTo($modalInner);
+			onclicks.push(() => {
+				$btn.toggleClass(v.buttonClassActive || "active", lastIx === i);
+				if (v.buttonClassActive) $btn.toggleClass("btn-default", lastIx !== i);
+			});
+			return $btn;
+		})}</div>`.appendTo($modalInner);
 
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
 
-			$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-		});
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+		if (!isDataEntered) return null;
+		return ~lastIx ? lastIx : null;
+		// endregion
 	}
 
 	/**
@@ -30384,7 +30671,7 @@ class InputUiUtil {
 	 * @param [opts.cbPostRender] Callback to call after rendering the modal
 	 * @return {Promise<String>} A promise which resolves to the string if the user entered one, or null otherwise.
 	 */
-	static pGetUserString (opts) {
+	static async pGetUserString (opts) {
 		opts = opts || {};
 
 		const propValue = "text";
@@ -30393,72 +30680,76 @@ class InputUiUtil {
 			isValid: true,
 		});
 
-		return new Promise(resolve => {
-			const $iptStr = ComponentUiUtil.$getIptStr(
-				comp,
-				propValue,
-				{
-					html: `<input class="form-control mb-2" type="text">`,
-					autocomplete: opts.autocomplete,
-				},
-			)
-				.keydown(async evt => {
-					if (evt.key === "Escape") return; // Already handled
+		const $iptStr = ComponentUiUtil.$getIptStr(
+			comp,
+			propValue,
+			{
+				html: `<input class="form-control mb-2" type="text">`,
+				autocomplete: opts.autocomplete,
+			},
+		)
+			.keydown(async evt => {
+				if (evt.key === "Escape") return; // Already handled
 
-					if (opts.autocomplete) {
-						// prevent double-binding the return key if we have autocomplete enabled
-						await MiscUtil.pDelay(17); // arbitrary delay to allow dropdown to render (~1000/60, i.e. 1 60 FPS frame)
-						if ($modalInner.find(`.typeahead.dropdown-menu`).is(":visible")) return;
-					}
-					// return key
-					if (evt.key === "Enter") doClose(true);
-					evt.stopPropagation();
-				});
-			if (opts.isCode) $iptStr.addClass("code");
-
-			if (opts.fnIsValid) {
-				const hkText = () => comp._state.isValid = !comp._state.text.trim() || !!opts.fnIsValid(comp._state.text);
-				comp._addHookBase(propValue, hkText);
-				hkText();
-
-				const hkIsValid = () => $iptStr.toggleClass("form-control--error", !comp._state.isValid);
-				comp._addHookBase("isValid", hkIsValid);
-				hkIsValid();
-			}
-
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => {
-					if (!comp._state.isValid) return JqueryUtil.doToast({content: `Please enter valid input!`, type: "warning"});
-					return doClose(true);
-				});
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Enter Text",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-					if (!isDataEntered) return resolve(null);
-					const raw = $iptStr.val();
-					return resolve(raw);
-				},
+				if (opts.autocomplete) {
+					// prevent double-binding the return key if we have autocomplete enabled
+					await MiscUtil.pDelay(17); // arbitrary delay to allow dropdown to render (~1000/60, i.e. 1 60 FPS frame)
+					if ($modalInner.find(`.typeahead.dropdown-menu`).is(":visible")) return;
+				}
+				// return key
+				if (evt.key === "Enter") doClose(true);
+				evt.stopPropagation();
 			});
-			$iptStr.appendTo($modalInner);
-			if (opts.$elePost) opts.$elePost.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-			$iptStr.focus();
-			$iptStr.select();
+		if (opts.isCode) $iptStr.addClass("code");
 
-			if (opts.cbPostRender) {
-				opts.cbPostRender({
-					comp,
-					$iptStr,
-					propValue,
-				});
-			}
+		if (opts.fnIsValid) {
+			const hkText = () => comp._state.isValid = !comp._state.text.trim() || !!opts.fnIsValid(comp._state.text);
+			comp._addHookBase(propValue, hkText);
+			hkText();
+
+			const hkIsValid = () => $iptStr.toggleClass("form-control--error", !comp._state.isValid);
+			comp._addHookBase("isValid", hkIsValid);
+			hkIsValid();
+		}
+
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => {
+				if (!comp._state.isValid) return JqueryUtil.doToast({content: `Please enter valid input!`, type: "warning"});
+				return doClose(true);
+			});
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Enter Text",
+			isMinHeight0: true,
 		});
+		$iptStr.appendTo($modalInner);
+		if (opts.$elePost) opts.$elePost.appendTo($modalInner);
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		$iptStr.focus();
+		$iptStr.select();
+
+		if (opts.cbPostRender) {
+			opts.cbPostRender({
+				comp,
+				$iptStr,
+				propValue,
+			});
+		}
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+		if (!isDataEntered) return null;
+		const raw = $iptStr.val();
+		return raw;
+		// endregion
 	}
 
 	/**
@@ -30471,34 +30762,39 @@ class InputUiUtil {
 	 * @param [opts.isSkippable] If the prompt is skippable.
 	 * @return {Promise<String>} A promise which resolves to the string if the user entered one, or null otherwise.
 	 */
-	static pGetUserText (opts) {
+	static async pGetUserText (opts) {
 		opts = opts || {};
-		return new Promise(resolve => {
-			const $iptStr = $(`<textarea class="form-control mb-2 resize-vertical w-100" ${opts.disabled ? "disabled" : ""}></textarea>`)
-				.val(opts.default);
-			if (opts.isCode) $iptStr.addClass("code");
-			const $btnOk = $(`<button class="btn btn-primary mr-2">${opts.buttonText || "OK"}</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Enter Text",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-					if (!isDataEntered) return resolve(null);
-					const raw = $iptStr.val();
-					if (!raw.trim()) return resolve(null);
-					else return resolve(raw);
-				},
-			});
-			$iptStr.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-			$iptStr.focus();
-			$iptStr.select();
+
+		const $iptStr = $(`<textarea class="form-control mb-2 resize-vertical w-100" ${opts.disabled ? "disabled" : ""}></textarea>`)
+			.val(opts.default);
+		if (opts.isCode) $iptStr.addClass("code");
+		const $btnOk = $(`<button class="btn btn-primary mr-2">${opts.buttonText || "OK"}</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Enter Text",
+			isMinHeight0: true,
 		});
+		$iptStr.appendTo($modalInner);
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		$iptStr.focus();
+		$iptStr.select();
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+		if (!isDataEntered) return null;
+		const raw = $iptStr.val();
+		if (!raw.trim()) return null;
+		else return raw;
+		// endregion
 	}
 
 	/**
@@ -30508,32 +30804,37 @@ class InputUiUtil {
 	 * @param [opts.isSkippable] If the prompt is skippable.
 	 * @return {Promise<String>} A promise which resolves to the color if the user entered one, or null otherwise.
 	 */
-	static pGetUserColor (opts) {
+	static async pGetUserColor (opts) {
 		opts = opts || {};
-		return new Promise(resolve => {
-			const $iptRgb = $(`<input class="form-control mb-2" ${opts.default != null ? `value="${opts.default}"` : ""} type="color">`);
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Choose Color",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-					if (!isDataEntered) return resolve(null);
-					const raw = $iptRgb.val();
-					if (!raw.trim()) return resolve(null);
-					else return resolve(raw);
-				},
-			});
-			$iptRgb.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-			$iptRgb.focus();
-			$iptRgb.select();
+
+		const $iptRgb = $(`<input class="form-control mb-2" ${opts.default != null ? `value="${opts.default}"` : ""} type="color">`);
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Choose Color",
+			isMinHeight0: true,
 		});
+		$iptRgb.appendTo($modalInner);
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		$iptRgb.focus();
+		$iptRgb.select();
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+		if (!isDataEntered) return null;
+		const raw = $iptRgb.val();
+		if (!raw.trim()) return null;
+		else return raw;
+		// endregion
 	}
 
 	/**
@@ -30546,7 +30847,7 @@ class InputUiUtil {
 	 * @param [opts.isSkippable] If the prompt is skippable.
 	 * @returns {Promise<number>} A promise which resolves to the number of degrees if the user pressed "Enter," or null otherwise.
 	 */
-	static pGetUserDirection (opts) {
+	static async pGetUserDirection (opts) {
 		const X = 0;
 		const Y = 1;
 		const DEG_CIRCLE = 360;
@@ -30559,105 +30860,108 @@ class InputUiUtil {
 			return Math.atan2(p2[Y] - p1[Y], p2[X] - p1[X]) * 180 / Math.PI;
 		}
 
-		return new Promise(resolve => {
-			let active = false;
-			let curAngle = Math.min(DEG_CIRCLE, opts.default) || 0;
+		let active = false;
+		let curAngle = Math.min(DEG_CIRCLE, opts.default) || 0;
 
-			const $arm = $(`<div class="ui-dir__arm"></div>`);
-			const handleAngle = () => $arm.css({transform: `rotate(${curAngle + 180}deg)`});
+		const $arm = $(`<div class="ui-dir__arm"></div>`);
+		const handleAngle = () => $arm.css({transform: `rotate(${curAngle + 180}deg)`});
+		handleAngle();
+
+		const $pad = $$`<div class="ui-dir__face">${$arm}</div>`.on("mousedown touchstart", evt => {
+			active = true;
+			handleEvent(evt);
+		});
+
+		const $document = $(document);
+		const evtId = `ui_user_dir_${CryptUtil.uid()}`;
+		$document.on(`mousemove.${evtId} touchmove${evtId}`, evt => {
+			handleEvent(evt);
+		}).on(`mouseup.${evtId} touchend${evtId} touchcancel${evtId}`, evt => {
+			evt.preventDefault();
+			evt.stopPropagation();
+			active = false;
+		});
+		const handleEvent = (evt) => {
+			if (!active) return;
+
+			const coords = [EventUtil.getClientX(evt), EventUtil.getClientY(evt)];
+
+			const {top, left} = $pad.offset();
+			const center = [left + ($pad.width() / 2), top + ($pad.height() / 2)];
+			curAngle = getAngle(center, coords) + 90;
+			if (step !== DEG_CIRCLE) curAngle = Math.round(curAngle / stepDeg) * stepDeg;
+			else curAngle = Math.round(curAngle);
 			handleAngle();
+		};
 
-			const $pad = $$`<div class="ui-dir__face">${$arm}</div>`.on("mousedown touchstart", evt => {
-				active = true;
-				handleEvent(evt);
-			});
+		const BTN_STEP_SIZE = 26;
+		const BORDER_PAD = 16;
+		const CONTROLS_RADIUS = (92 + BTN_STEP_SIZE + BORDER_PAD) / 2;
+		const $padOuter = opts.stepButtons ? (() => {
+			const steps = opts.stepButtons;
+			const SEG_ANGLE = 360 / steps.length;
 
-			const $document = $(document);
-			const evtId = `ui_user_dir_${CryptUtil.uid()}`;
-			$document.on(`mousemove.${evtId} touchmove${evtId}`, evt => {
-				handleEvent(evt);
-			}).on(`mouseup.${evtId} touchend${evtId} touchcancel${evtId}`, evt => {
-				evt.preventDefault();
-				evt.stopPropagation();
-				active = false;
-			});
-			const handleEvent = (evt) => {
-				if (!active) return;
+			const $btns = [];
 
-				const coords = [EventUtil.getClientX(evt), EventUtil.getClientY(evt)];
+			for (let i = 0; i < steps.length; ++i) {
+				const theta = (SEG_ANGLE * i * (Math.PI / 180)) - (1.5708); // offset by -90 degrees
+				const x = CONTROLS_RADIUS * Math.cos(theta);
+				const y = CONTROLS_RADIUS * Math.sin(theta);
+				$btns.push(
+					$(`<button class="btn btn-default btn-xxs absolute">${steps[i]}</button>`)
+						.css({
+							top: y + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
+							left: x + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
+							width: BTN_STEP_SIZE,
+							height: BTN_STEP_SIZE,
+							zIndex: 1002,
+						})
+						.click(() => {
+							curAngle = SEG_ANGLE * i;
+							handleAngle();
+						}),
+				);
+			}
 
-				const {top, left} = $pad.offset();
-				const center = [left + ($pad.width() / 2), top + ($pad.height() / 2)];
-				curAngle = getAngle(center, coords) + 90;
-				if (step !== DEG_CIRCLE) curAngle = Math.round(curAngle / stepDeg) * stepDeg;
-				else curAngle = Math.round(curAngle);
-				handleAngle();
-			};
+			const $wrpInner = $$`<div class="ve-flex-vh-center relative">${$btns}${$pad}</div>`
+				.css({
+					width: CONTROLS_RADIUS * 2,
+					height: CONTROLS_RADIUS * 2,
+				});
 
-			const BTN_STEP_SIZE = 26;
-			const BORDER_PAD = 16;
-			const CONTROLS_RADIUS = (92 + BTN_STEP_SIZE + BORDER_PAD) / 2;
-			const $padOuter = opts.stepButtons ? (() => {
-				const steps = opts.stepButtons;
-				const SEG_ANGLE = 360 / steps.length;
+			return $$`<div class="ve-flex-vh-center">${$wrpInner}</div>`
+				.css({
+					width: (CONTROLS_RADIUS * 2) + BTN_STEP_SIZE + BORDER_PAD,
+					height: (CONTROLS_RADIUS * 2) + BTN_STEP_SIZE + BORDER_PAD,
+				});
+		})() : null;
 
-				const $btns = [];
-
-				for (let i = 0; i < steps.length; ++i) {
-					const theta = (SEG_ANGLE * i * (Math.PI / 180)) - (1.5708); // offset by -90 degrees
-					const x = CONTROLS_RADIUS * Math.cos(theta);
-					const y = CONTROLS_RADIUS * Math.sin(theta);
-					$btns.push(
-						$(`<button class="btn btn-default btn-xxs absolute">${steps[i]}</button>`)
-							.css({
-								top: y + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
-								left: x + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
-								width: BTN_STEP_SIZE,
-								height: BTN_STEP_SIZE,
-								zIndex: 1002,
-							})
-							.click(() => {
-								curAngle = SEG_ANGLE * i;
-								handleAngle();
-							}),
-					);
-				}
-
-				const $wrpInner = $$`<div class="ve-flex-vh-center relative">${$btns}${$pad}</div>`
-					.css({
-						width: CONTROLS_RADIUS * 2,
-						height: CONTROLS_RADIUS * 2,
-					});
-
-				return $$`<div class="ve-flex-vh-center">${$wrpInner}</div>`
-					.css({
-						width: (CONTROLS_RADIUS * 2) + BTN_STEP_SIZE + BORDER_PAD,
-						height: (CONTROLS_RADIUS * 2) + BTN_STEP_SIZE + BORDER_PAD,
-					});
-			})() : null;
-
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Select Direction",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-					$document.off(`mousemove.${evtId} touchmove${evtId} mouseup.${evtId} touchend${evtId} touchcancel${evtId}`);
-					if (!isDataEntered) return resolve(null);
-					if (curAngle < 0) curAngle += 360;
-					return resolve(curAngle); // TODO returning the step number is more useful if step is specified?
-				},
-			});
-			$$`<div class="ve-flex-vh-center mb-3">
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Select Direction",
+			isMinHeight0: true,
+		});
+		$$`<div class="ve-flex-vh-center mb-3">
 				${$padOuter || $pad}
 			</div>`.appendTo($modalInner);
-			$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
-		});
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+		$document.off(`mousemove.${evtId} touchmove${evtId} mouseup.${evtId} touchend${evtId} touchcancel${evtId}`);
+		if (!isDataEntered) return null;
+		if (curAngle < 0) curAngle += 360;
+		return curAngle; // TODO returning the step number is more useful if step is specified?
+		// endregion
 	}
 
 	/**
@@ -30667,68 +30971,72 @@ class InputUiUtil {
 	 * @param [opts.isSkippable] If the prompt is skippable.
 	 * @return {Promise<String>} A promise which resolves to a dice string if the user entered values, or null otherwise.
 	 */
-	static pGetUserDice (opts) {
+	static async pGetUserDice (opts) {
 		opts = opts || {};
-		return new Promise(resolve => {
-			const comp = BaseComponent.fromObject({
-				num: (opts.default && opts.default.num) || 1,
-				faces: (opts.default && opts.default.faces) || 6,
-				bonus: (opts.default && opts.default.bonus) || null,
-			});
 
-			comp.render = function ($parent) {
-				$parent.empty();
-
-				const $iptNum = ComponentUiUtil.$getIptInt(this, "num", 0, {$ele: $(`<input class="form-control input-xs form-control--minimal text-center mr-1">`)})
-					.appendTo($parent)
-					.keydown(evt => {
-						if (evt.key === "Escape") { $iptNum.blur(); return; }
-						// return key
-						if (evt.which === 13) doClose(true);
-						evt.stopPropagation();
-					});
-				const $selFaces = ComponentUiUtil.$getSelEnum(this, "faces", {values: Renderer.dice.DICE})
-					.addClass("mr-2").addClass("text-center").css("textAlignLast", "center");
-
-				const $iptBonus = $(`<input class="form-control input-xs form-control--minimal text-center">`)
-					.change(() => this._state.bonus = UiUtil.strToInt($iptBonus.val(), null, {fallbackOnNaN: null}))
-					.keydown(evt => {
-						if (evt.key === "Escape") { $iptBonus.blur(); return; }
-						// return key
-						if (evt.which === 13) doClose(true);
-						evt.stopPropagation();
-					});
-				const hook = () => $iptBonus.val(this._state.bonus != null ? UiUtil.intToBonus(this._state.bonus) : this._state.bonus);
-				comp._addHookBase("bonus", hook);
-				hook();
-
-				$$`<div class="ve-flex-vh-center">${$iptNum}<div class="mr-1">d</div>${$selFaces}${$iptBonus}</div>`.appendTo($parent);
-			};
-
-			comp.getAsString = function () {
-				return `${this._state.num}d${this._state.faces}${this._state.bonus ? UiUtil.intToBonus(this._state.bonus) : ""}`;
-			};
-
-			const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
-				.click(() => doClose(true));
-			const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
-				.click(() => doClose(false));
-			const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
-				.click(() => doClose(VeCt.SYM_UI_SKIP));
-			const {$modalInner, doClose} = UiUtil.getShowModal({
-				title: opts.title || "Enter Dice",
-				isMinHeight0: true,
-				cbClose: (isDataEntered) => {
-					if (typeof isDataEntered === "symbol") return resolve(isDataEntered);
-					if (!isDataEntered) return resolve(null);
-					return resolve(comp.getAsString());
-				},
-			});
-
-			comp.render($modalInner);
-
-			$$`<div class="ve-flex-v-center ve-flex-h-center pb-1 px-1">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+		const comp = BaseComponent.fromObject({
+			num: (opts.default && opts.default.num) || 1,
+			faces: (opts.default && opts.default.faces) || 6,
+			bonus: (opts.default && opts.default.bonus) || null,
 		});
+
+		comp.render = function ($parent) {
+			$parent.empty();
+
+			const $iptNum = ComponentUiUtil.$getIptInt(this, "num", 0, {$ele: $(`<input class="form-control input-xs form-control--minimal text-center mr-1">`)})
+				.appendTo($parent)
+				.keydown(evt => {
+					if (evt.key === "Escape") { $iptNum.blur(); return; }
+					// return key
+					if (evt.which === 13) doClose(true);
+					evt.stopPropagation();
+				});
+			const $selFaces = ComponentUiUtil.$getSelEnum(this, "faces", {values: Renderer.dice.DICE})
+				.addClass("mr-2").addClass("text-center").css("textAlignLast", "center");
+
+			const $iptBonus = $(`<input class="form-control input-xs form-control--minimal text-center">`)
+				.change(() => this._state.bonus = UiUtil.strToInt($iptBonus.val(), null, {fallbackOnNaN: null}))
+				.keydown(evt => {
+					if (evt.key === "Escape") { $iptBonus.blur(); return; }
+					// return key
+					if (evt.which === 13) doClose(true);
+					evt.stopPropagation();
+				});
+			const hook = () => $iptBonus.val(this._state.bonus != null ? UiUtil.intToBonus(this._state.bonus) : this._state.bonus);
+			comp._addHookBase("bonus", hook);
+			hook();
+
+			$$`<div class="ve-flex-vh-center">${$iptNum}<div class="mr-1">d</div>${$selFaces}${$iptBonus}</div>`.appendTo($parent);
+		};
+
+		comp.getAsString = function () {
+			return `${this._state.num}d${this._state.faces}${this._state.bonus ? UiUtil.intToBonus(this._state.bonus) : ""}`;
+		};
+
+		const $btnOk = $(`<button class="btn btn-primary mr-2">OK</button>`)
+			.click(() => doClose(true));
+		const $btnCancel = $(`<button class="btn btn-default">Cancel</button>`)
+			.click(() => doClose(false));
+		const $btnSkip = !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+			.click(() => doClose(VeCt.SYM_UI_SKIP));
+		const {$modalInner, doClose, pGetResolved, doAutoResize: doAutoResizeModal} = await InputUiUtil._pGetShowModal({
+			title: opts.title || "Enter Dice",
+			isMinHeight0: true,
+		});
+
+		comp.render($modalInner);
+
+		$$`<div class="ve-flex-v-center ve-flex-h-right pb-1 px-1 mt-2">${$btnOk}${$btnCancel}${$btnSkip}</div>`.appendTo($modalInner);
+
+		if (doAutoResizeModal) doAutoResizeModal();
+
+		// region Output
+		const [isDataEntered] = await pGetResolved();
+
+		if (typeof isDataEntered === "symbol") return isDataEntered;
+		if (!isDataEntered) return null;
+		return comp.getAsString();
+		// endregion
 	}
 }
 
