@@ -2,9 +2,9 @@
 	"_meta": {
 		"otherSources": {
 			"monster": {
-				"MM": "DC",
-				"MTF": "DC",
-				"VGM": "DC"
+				"MM": "DIP",
+				"MTF": "DIP",
+				"VGM": "DIP"
 			}
 		}
 	},
@@ -124,6 +124,10 @@
 			],
 			"damageTags": [
 				"S"
+			],
+			"damageTagsSpell": [
+				"L",
+				"T"
 			],
 			"spellcastingTags": [
 				"I"
@@ -259,7 +263,7 @@
 				{
 					"ac": 14,
 					"from": [
-						"{@item studded leather armor|phb}"
+						"{@item studded leather armor|phb|studded leather}"
 					]
 				}
 			],
@@ -559,6 +563,10 @@
 				"G"
 			],
 			"damageTags": [
+				"C",
+				"O"
+			],
+			"damageTagsSpell": [
 				"C",
 				"O"
 			],

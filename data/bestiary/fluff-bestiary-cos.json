@@ -201,6 +201,19 @@
 			]
 		},
 		{
+			"name": "Emil Toranescu",
+			"source": "CoS",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "bestiary/CoS/Emil Toranescu.png"
+					}
+				}
+			]
+		},
+		{
 			"name": "Ezmerelda d'Avenir",
 			"source": "CoS",
 			"entries": [

@@ -966,7 +966,7 @@
 			"rarity": "unknown",
 			"value": null,
 			"entries": [
-				"This sticky, adhesive fluid ignites when exposed to air. As an action, you can throw this flask up to 20 feet, shattering it on impact. Make a ranged attack against a creature or object, treating the alchemist's fire as an improvised weapon. On a hit, the target takes 7 ({@dice 2d6}) fire damage at the start of each of its turns. A creature can end this damage by using its action to make a DC 10 Dexterity check to extinguish the flames."
+				"This sticky, adhesive fluid ignites when exposed to air. As an action, you can throw this flask up to 20 feet, shattering it on impact. Make a ranged attack against a creature or object, treating the alchemist's doom as an improvised weapon. On a hit, the target takes 7 ({@dice 2d6}) fire damage at the start of each of its turns. A creature can end this damage by using its action to make a DC 10 Dexterity check to extinguish the flames."
 			]
 		},
 		{
@@ -1942,10 +1942,14 @@
 		{
 			"name": "Ascendant Dragon Vessel",
 			"source": "FTD",
-			"page": 27,
+			"_copy": {
+				"name": "Wakened Dragon Vessel",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
+				}
+			},
 			"rarity": "legendary",
-			"reqAttune": true,
-			"wondrous": true,
 			"entries": [
 				"This vessel can be a potion bottle, drinking horn, or other container meant to hold a liquid.",
 				"As a bonus action, if the vessel is empty, you can speak the command word to fill the vessel with one of the following (your choice): ale, olive oil, mead, wine, whiskey, a {@item potion of healing}, a {@item potion of greater healing}, a {@item potion of superior healing}, a {@item potion of supreme healing}, a {@item potion of climbing}, a {@item potion of fire breath}, a {@item potion of flying}, or a {@item potion of dragon's majesty|FTD}. Once this property is used, it can't be used until the next dawn. A potion you create in this way loses its magical properties if it isn't imbibed within 24 hours."
@@ -1954,26 +1958,14 @@
 		{
 			"name": "Ascendant Dragon-Touched Focus",
 			"source": "FTD",
-			"page": 26,
-			"rarity": "legendary",
-			"reqAttune": "by a spellcaster",
-			"reqAttuneTags": [
-				{
-					"spellcasting": true
+			"_copy": {
+				"name": "Wakened Dragon-Touched Focus",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
 				}
-			],
-			"wondrous": true,
-			"focus": [
-				"Artificer",
-				"Bard",
-				"Cleric",
-				"Druid",
-				"Paladin",
-				"Ranger",
-				"Sorcerer",
-				"Warlock",
-				"Wizard"
-			],
+			},
+			"rarity": "legendary",
 			"entries": [
 				"This wondrous item can be a scepter, an orb, an amulet, a crystal, or another finely crafted object. It typically incorporates imagery of dragons' wings, claws, teeth, or scales.",
 				"You have advantage on initiative rolls. While you are holding the focus, it can function as a spellcasting focus for all your spells.",
@@ -2039,16 +2031,14 @@
 		{
 			"name": "Ascendant Scaled Ornament",
 			"source": "FTD",
-			"page": 27,
-			"rarity": "legendary",
-			"reqAttune": true,
-			"wondrous": true,
-			"bonusAc": "+1",
-			"modifySpeed": {
-				"equal": {
-					"fly": "walk"
+			"_copy": {
+				"name": "Wakened Scaled Ornament",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
 				}
 			},
+			"rarity": "legendary",
 			"entries": [
 				"This ornament can be jewelry, a cloak, or another wearable accessory. It appears to be fashioned from a dragon's scale, tooth, or claw, or it incorporates images in those shapes.",
 				"You gain a +1 bonus to AC, and you can't be {@condition charmed} or {@condition frightened}. Moreover, each creature of your choice within 30 feet of you has advantage on saving throws it makes to avoid being {@condition charmed} or {@condition frightened} or to end those conditions on itself.",
@@ -5218,7 +5208,7 @@
 					"type": "list",
 					"items": [
 						"You have resistance to cold damage.",
-						"You ignore difficult terrain created by ice or snow.",
+						"You ignore {@quickref difficult terrain||3} created by ice or snow.",
 						"You can tolerate temperatures as low as -50 degrees Fahrenheit without any additional protection. If you wear heavy clothes, you can tolerate temperatures as low as -100 degrees Fahrenheit."
 					]
 				}
@@ -5925,9 +5915,10 @@
 			"weaponCategory": "simple",
 			"dmg1": "1d6",
 			"dmgType": "B",
+			"bonusWeapon": "+1",
 			"weapon": true,
 			"entries": [
-				"The head of this mace sheds bright light in a 5-foot-radius and dim light for an additional 5 feet. When you wield this mace, you can extinguish or ignite its light as an action."
+				"You have a +1 bonus to attack and damage rolls made with this magic weapon. The head of this mace sheds bright light in a 5-foot-radius and dim light for an additional 5 feet. When you wield this mace, you can extinguish or ignite its light as an action."
 			]
 		},
 		{
@@ -7005,7 +6996,7 @@
 						"You have resistance to poison damage.",
 						"You have a climbing speed equal to your walking speed.",
 						"You can move up, down, and across vertical surfaces and upside down along ceilings, while leaving your hands free.",
-						"You can't be caught in webs of any sort and can move through webs as if they were difficult terrain.",
+						"You can't be caught in webs of any sort and can move through webs as if they were {@quickref difficult terrain||3}.",
 						"You can use an action to cast the {@spell web} spell (save DC 13). The web created by the spell fills twice its normal area. Once used, this property of the cloak can't be used again until the next dawn."
 					]
 				}
@@ -7795,7 +7786,7 @@
 					"type": "entries",
 					"name": "Failing Matrix",
 					"entries": [
-						"Whenever the Crook of Rao 's Absolute Banishment property is used, or when its last charge is expended, roll on the Extraplanar Reversal table. Any creatures conjured as a result of this effect appear in random unoccupied spaces within 60 feet of you and are not under your control."
+						"Whenever the Crook of Rao's Absolute Banishment property is used, or when its last charge is expended, roll on the Extraplanar Reversal table. Any creatures conjured as a result of this effect appear in random unoccupied spaces within 60 feet of you and are not under your control."
 					]
 				},
 				{
@@ -8331,7 +8322,8 @@
 					"page": true,
 					"hasFluffImages": true
 				}
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Danoth's Visor (Dormant)",
@@ -8385,7 +8377,8 @@
 			},
 			"attachedSpells": [
 				"antimagic field"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dark Shard Amulet",
@@ -13592,6 +13585,8 @@
 			"rarity": "rare",
 			"reqAttune": true,
 			"wondrous": true,
+			"recharge": "dawn",
+			"charges": 3,
 			"entries": [
 				"This finely carved pipe blows odorless bubbles instead of smoke when used. The pipe has 3 charges, and it regains all spent charges daily at dawn. While you hold the pipe, you can expend charges to gain access to the following properties:",
 				{
@@ -13602,6 +13597,10 @@
 						"You can summon a {@creature steam mephit} as an action (3 charges). The mephit is friendly to you, obeys your verbal commands, and acts on its own turn in the initiative order. It disappears in a harmless puff of steam after 1 minute or if it ends its turn more than 60 feet from the pipe."
 					]
 				}
+			],
+			"attachedSpells": [
+				"fog cloud",
+				"misty step"
 			]
 		},
 		{
@@ -13799,7 +13798,7 @@
 							"items": [
 								"You have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks.",
 								"You can't be {@condition grappled} or {@condition restrained}.",
-								"You can move through creatures and solid objects as if they were difficult terrain. If you end your turn in a solid object, you take {@damage 1d10} force damage. If the effect ends while you are inside a solid object, you instead are shunted to the nearest unoccupied space, and you take {@damage 1d10} force damage for every 5 feet traveled."
+								"You can move through creatures and solid objects as if they were {@quickref difficult terrain||3}. If you end your turn in a solid object, you take {@damage 1d10} force damage. If the effect ends while you are inside a solid object, you instead are shunted to the nearest unoccupied space, and you take {@damage 1d10} force damage for every 5 feet traveled."
 							]
 						}
 					]
@@ -13824,7 +13823,7 @@
 					"items": [
 						"You have resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks.",
 						"You can't be {@condition grappled} or {@condition restrained}.",
-						"You can move through creatures and solid objects as if they were difficult terrain. If you end your turn in a solid object, you take {@damage 1d10} force damage. If the effect ends while you are inside a solid object, you instead are shunted to the nearest unoccupied space, and you take {@damage 1d10} force damage for every 5 feet traveled."
+						"You can move through creatures and solid objects as if they were {@quickref difficult terrain||3}. If you end your turn in a solid object, you take {@damage 1d10} force damage. If the effect ends while you are inside a solid object, you instead are shunted to the nearest unoccupied space, and you take {@damage 1d10} force damage for every 5 feet traveled."
 					]
 				},
 				{
@@ -14565,7 +14564,8 @@
 					"page": true,
 					"hasFluffImages": true
 				}
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Grimoire Infinitus (Dormant)",
@@ -14623,7 +14623,8 @@
 					"page": true,
 					"hasFluffImages": true
 				}
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Grovelthrash (Awakened)",
@@ -14662,7 +14663,8 @@
 				"equal": {
 					"burrow": "walk"
 				}
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Grovelthrash (Dormant)",
@@ -14762,7 +14764,8 @@
 				"earthquake",
 				"meld into stone",
 				"stone shape"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gruul Guild Signet",
@@ -16633,7 +16636,7 @@
 			"rarity": "very rare",
 			"wondrous": true,
 			"entries": [
-				"These iron horseshoes come in a set of four. While all four shoes are affixed to the hooves of a horse or similar creature, they allow the creature to move normally while floating 4 inches above the ground. This effect means the creature can cross or stand above nonsolid or unstable surfaces, such as water or lava. The creature leaves no tracks and ignores difficult terrain. In addition, the creature can move at normal speed for up to 12 hours a day without suffering {@condition exhaustion} from a forced march."
+				"These iron horseshoes come in a set of four. While all four shoes are affixed to the hooves of a horse or similar creature, they allow the creature to move normally while floating 4 inches above the ground. This effect means the creature can cross or stand above nonsolid or unstable surfaces, such as water or lava. The creature leaves no tracks and ignores {@quickref difficult terrain||3}. In addition, the creature can move at normal speed for up to 12 hours a day without suffering {@condition exhaustion} from a forced march."
 			],
 			"lootTables": [
 				"Magic Item Table D"
@@ -17148,7 +17151,8 @@
 				"invisibility",
 				"knock",
 				"pass without trace"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Infiltrator's Key (Dormant)",
@@ -17218,7 +17222,8 @@
 				"dimension door",
 				"gaseous form",
 				"mislead"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ingot of the Skold Rune",
@@ -19384,7 +19389,8 @@
 					"hasFluffImages": true
 				}
 			},
-			"bonusWeapon": "+2"
+			"bonusWeapon": "+2",
+			"hasFluffImages": true
 		},
 		{
 			"name": "Lash of Shadows (Dormant)",
@@ -19495,7 +19501,8 @@
 					"hasFluffImages": true
 				}
 			},
-			"bonusWeapon": "+3"
+			"bonusWeapon": "+3",
+			"hasFluffImages": true
 		},
 		{
 			"name": "Leather Golem Armor",
@@ -20496,7 +20503,8 @@
 					"hasFluffImages": true
 				}
 			},
-			"bonusWeapon": "+2"
+			"bonusWeapon": "+2",
+			"hasFluffImages": true
 		},
 		{
 			"name": "Mace of the Black Crown (Dormant)",
@@ -20592,7 +20600,8 @@
 					"hasFluffImages": true
 				}
 			},
-			"bonusWeapon": "+3"
+			"bonusWeapon": "+3",
+			"hasFluffImages": true
 		},
 		{
 			"name": "Macuahuitl",
@@ -21247,7 +21256,7 @@
 			"rarity": "common",
 			"wondrous": true,
 			"entries": [
-				"When you use an action to trace the edge of this medal, difficult terrain doesn't cost you extra movement for 1 hour. Once this property has been used, it can't be used again, and the medal becomes nonmagical."
+				"When you use an action to trace the edge of this medal, {@quickref difficult terrain||3} doesn't cost you extra movement for 1 hour. Once this property has been used, it can't be used again, and the medal becomes nonmagical."
 			]
 		},
 		{
@@ -26908,13 +26917,13 @@
 			"entries": [
 				"While wearing this ring, you have advantage on attack rolls against elementals from the Elemental Plane of Earth and they have disadvantage on attack rolls against you. In addition, you have access to properties based on the Elemental Plane of Earth.",
 				"The ring has 5 charges. It regains {@dice 1d4 + 1} expended charges daily at dawn. Spells cast from the ring have a save DC of 17.",
-				"You can expend 2 of the ring's charges to cast {@spell dominate monster} on an {@creature earth elemental}. In addition, you can move in difficult terrain that is composed of rubble, rocks, or dirt as if it were normal terrain. You can also speak and understand Terran.",
+				"You can expend 2 of the ring's charges to cast {@spell dominate monster} on an {@creature earth elemental}. In addition, you can move in {@quickref difficult terrain||3} that is composed of rubble, rocks, or dirt as if it were normal terrain. You can also speak and understand Terran.",
 				"If you help slay an {@creature earth elemental} while attuned to the ring, you gain access to the following additional properties:",
 				{
 					"type": "list",
 					"items": [
 						"You have resistance to acid damage.",
-						"You can move through solid earth or rock as if those areas were difficult terrain. If you end your turn there, you are shunted out to the nearest unoccupied space you last occupied.",
+						"You can move through solid earth or rock as if those areas were {@quickref difficult terrain||3}. If you end your turn there, you are shunted out to the nearest unoccupied space you last occupied.",
 						"You can cast the following spells from the ring, expending the necessary number of charges: {@spell stone shape} (2 charges), {@spell stoneskin} (3 charges), or {@spell wall of stone} (3 charges)."
 					]
 				}
@@ -27054,7 +27063,7 @@
 			"rarity": "rare",
 			"reqAttune": true,
 			"entries": [
-				"While you wear this ring, difficult terrain doesn't cost you extra movement. In addition, magic can neither reduce your speed nor cause you to be {@condition paralyzed} or {@condition restrained}."
+				"While you wear this ring, {@quickref difficult terrain||3} doesn't cost you extra movement. In addition, magic can neither reduce your speed nor cause you to be {@condition paralyzed} or {@condition restrained}."
 			],
 			"lootTables": [
 				"Magic Item Table G"
@@ -28421,7 +28430,8 @@
 					"hasFluffImages": true
 				}
 			},
-			"bonusWeapon": "+2"
+			"bonusWeapon": "+2",
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ruin's Wake (Dormant)",
@@ -28518,7 +28528,8 @@
 					"hasFluffImages": true
 				}
 			},
-			"bonusWeapon": "+3"
+			"bonusWeapon": "+3",
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ruinblade",
@@ -29418,7 +29429,7 @@
 								{
 									"type": "item",
 									"name": "Boots",
-									"entry": "The pair of boots is now a rare magic item that requires attunement. While wearing it, you ignore difficult terrain while walking, and you can walk on water."
+									"entry": "The pair of boots is now a rare magic item that requires attunement. While wearing it, you ignore {@quickref difficult terrain||3} while walking, and you can walk on water."
 								}
 							]
 						}
@@ -29899,7 +29910,7 @@
 								"You have {@sense darkvision} out to a range of 60 feet. If you already have {@sense darkvision}, being attuned to the rapier increases the range of your {@sense darkvision} by 60 feet.",
 								"You gain a +1 bonus to attack and damage rolls made with this magic weapon.",
 								"You can use an action to cause poison to coat the rapier's blade. The poison remains for 1 minute or until an attack using this weapon hits a creature. That creature must succeed on a DC 13 Constitution saving throw or become {@condition poisoned} for 1 hour. If the saving throw fails by 5 or more, the creature is also {@condition unconscious} while {@condition poisoned} in this way. The creature wakes up if it takes damage or if another creature uses its action to shake the creature awake.",
-								"While carrying the rapier, you can move up, down, and across vertical surfaces and upside down along ceilings, while leaving your hands free. You have a climbing speed equal to your walking speed. Additionally, you can't be caught in webs of any sort and can move through webs as if they were difficult terrain."
+								"While carrying the rapier, you can move up, down, and across vertical surfaces and upside down along ceilings, while leaving your hands free. You have a climbing speed equal to your walking speed. Additionally, you can't be caught in webs of any sort and can move through webs as if they were {@quickref difficult terrain||3}."
 							]
 						}
 					]
@@ -30778,6 +30789,7 @@
 			"wondrous": true,
 			"entries": [
 				"An amber spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"An amber spell gem can store up to 4th level spells. Spells cast from the spell gem have a save DC of 15 and an attack bonus of {@hit 9}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30799,6 +30811,7 @@
 			"wondrous": true,
 			"entries": [
 				"A bloodstone spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A bloodstone spell gem can store up to 3rd level spells. Spells cast from the spell gem have a save DC of 15 and an attack bonus of {@hit 7}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30820,6 +30833,7 @@
 			"wondrous": true,
 			"entries": [
 				"A diamond spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A diamond spell gem can store up to 9th level spells. Spells cast from the spell gem have a save DC of 19 and an attack bonus of {@hit 11}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30841,6 +30855,7 @@
 			"wondrous": true,
 			"entries": [
 				"A jade spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A jade spell gem can store up to 5th level spells. Spells cast from the spell gem have a save DC of 17 and an attack bonus of {@hit 9}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30862,6 +30877,7 @@
 			"wondrous": true,
 			"entries": [
 				"A lapis lazuli spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A lapis lazuli spell gem can store up to 1st level spells. Spells cast from the spell gem have a save DC of 13 and an attack bonus of {@hit 5}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30883,6 +30899,7 @@
 			"wondrous": true,
 			"entries": [
 				"An obsidian spell gem can contain one cantrip from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"An obsidian spell gem can only store cantrips. Cantrips cast from the spell gem have a save DC of 13 and an attack bonus of {@hit 5}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30904,6 +30921,7 @@
 			"wondrous": true,
 			"entries": [
 				"A quartz spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A quartz spell gem can store up to 2nd level spells. Spells cast from the spell gem have a save DC of 13 and an attack bonus of {@hit 5}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30925,6 +30943,7 @@
 			"wondrous": true,
 			"entries": [
 				"A ruby spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A ruby spell gem can store up to 8th level spells. Spells cast from the spell gem have a save DC of 18 and an attack bonus of {@hit 10}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30946,6 +30965,7 @@
 			"wondrous": true,
 			"entries": [
 				"A star ruby spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A star ruby spell gem can store up to 7th level spells. Spells cast from the spell gem have a save DC of 18 and an attack bonus of {@hit 10}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -30967,6 +30987,7 @@
 			"wondrous": true,
 			"entries": [
 				"A topaz spell gem can contain one spell from any class's spell list. You become aware of the spell when you learn the gem's properties. While holding the gem, you can cast the spell from it as an action if you know the spell or if the spell is on your class's spell list. Doing so doesn't require any components, and doesn't require attunement. The spell then disappears from the gem.",
+				"If the spell is of a higher level than you can normally cast, you must make an ability check using your spellcasting ability to determine whether you cast it successfully. The DC equals 10 + the spell's level. On a failed check, the spell disappears from the gem with no other effect.",
 				"A topaz spell gem can store up to 6th level spells. Spells cast from the spell gem have a save DC of 17 and an attack bonus of {@hit 10}.",
 				"You can imbue the gem with a spell if you're attuned to it and it's empty. To do so, you cast the spell while holding the gem. The spell is stored in the gem instead of having any effect. Casting the spell must require either 1 action or 1 minute or longer, and the spell's level must be no higher than the gem's maximum. If the spell belongs to the school of abjuration and requires material components that are consumed, you must provide them, but they can be worth half as much as normal.",
 				"Once imbued with a spell, the gem can't be imbued again until the next dawn.",
@@ -32622,10 +32643,14 @@
 		{
 			"name": "Stirring Dragon Vessel",
 			"source": "FTD",
-			"page": 27,
+			"_copy": {
+				"name": "Slumbering Dragon Vessel",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
+				}
+			},
 			"rarity": "rare",
-			"reqAttune": true,
-			"wondrous": true,
 			"entries": [
 				"This vessel can be a potion bottle, drinking horn, or other container meant to hold a liquid.",
 				"As a bonus action, if the vessel is empty, you can speak the command word to fill the vessel with one of the following (your choice): ale, olive oil, mead, a {@item potion of healing}, a {@item potion of greater healing}, a {@item potion of climbing}, or a {@item potion of fire breath}. Once this property is used, it can't be used until the next dawn. A potion you create in this way loses its magical properties if it isn't imbibed within 24 hours."
@@ -32634,26 +32659,14 @@
 		{
 			"name": "Stirring Dragon-Touched Focus",
 			"source": "FTD",
-			"page": 26,
-			"rarity": "rare",
-			"reqAttune": "by a spellcaster",
-			"reqAttuneTags": [
-				{
-					"spellcasting": true
+			"_copy": {
+				"name": "Slumbering Dragon-Touched Focus",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
 				}
-			],
-			"wondrous": true,
-			"focus": [
-				"Artificer",
-				"Bard",
-				"Cleric",
-				"Druid",
-				"Paladin",
-				"Ranger",
-				"Sorcerer",
-				"Warlock",
-				"Wizard"
-			],
+			},
+			"rarity": "rare",
 			"entries": [
 				"This wondrous item can be a scepter, an orb, an amulet, a crystal, or another finely crafted object. It typically incorporates imagery of dragons' wings, claws, teeth, or scales.",
 				"You have advantage on initiative rolls. While you are holding the focus, it can function as a spellcasting focus for all your spells.",
@@ -32690,16 +32703,14 @@
 		{
 			"name": "Stirring Scaled Ornament",
 			"source": "FTD",
-			"page": 27,
-			"rarity": "rare",
-			"reqAttune": true,
-			"wondrous": true,
-			"bonusAc": "+1",
-			"modifySpeed": {
-				"equal": {
-					"fly": "walk"
+			"_copy": {
+				"name": "Slumbering Scaled Ornament",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
 				}
 			},
+			"rarity": "rare",
 			"entries": [
 				"This ornament can be jewelry, a cloak, or another wearable accessory. It appears to be fashioned from a dragon's scale, tooth, or claw, or it incorporates images in those shapes.",
 				"You gain a +1 bonus to AC, and you can't be {@condition charmed} or {@condition frightened}. Moreover, each creature of your choice within 30 feet of you has advantage on saving throws it makes to avoid being {@condition charmed} or {@condition frightened} or to end those conditions on itself."
@@ -34811,7 +34822,7 @@
 						],
 						[
 							"43",
-							"Grass, moss, and flowers instantly grow in your footsteps. You are also unaffected by difficult terrain created by plants.",
+							"Grass, moss, and flowers instantly grow in your footsteps. You are also unaffected by {@quickref difficult terrain||3} created by plants.",
 							"Any harm that befalls a plant you can see (a woodcutter sawing down a tree, a gardener pulling weeds, and so forth) fills you with a sadness that imposes disadvantage on ability checks for 1 minute."
 						],
 						[
@@ -34861,7 +34872,7 @@
 						],
 						[
 							"53",
-							"As an action, you can become incorporeal for 10 minutes, allowing you to move through other creatures and objects as if they were difficult terrain. You take 5 ({@damage 1d10}) force damage if you end your turn inside an object. You can use this property once.",
+							"As an action, you can become incorporeal for 10 minutes, allowing you to move through other creatures and objects as if they were {@quickref difficult terrain||3}. You take 5 ({@damage 1d10}) force damage if you end your turn inside an object. You can use this property once.",
 							"Your senses diminish as if the world were faded around you, imposing disadvantage on Wisdom ({@skill Perception}) checks."
 						],
 						[
@@ -34921,8 +34932,8 @@
 						],
 						[
 							"65",
-							"As an action, you cause difficult terrain within 50 feet of you to become normal terrain. You can use this property three times.",
-							"Each time you move through difficult terrain, your speed is reduced by 10 feet until the end of your next turn."
+							"As an action, you cause {@quickref difficult terrain||3} within 50 feet of you to become normal terrain. You can use this property three times.",
+							"Each time you move through {@quickref difficult terrain||3}, your speed is reduced by 10 feet until the end of your next turn."
 						],
 						[
 							"66",
@@ -37320,7 +37331,6 @@
 			"baseItem": "sling|PHB",
 			"type": "R",
 			"rarity": "rare",
-			"value": 10,
 			"weaponCategory": "simple",
 			"property": [
 				"A"
@@ -37664,6 +37674,13 @@
 				"You gain a +1 bonus to attack and damage rolls made with this magic quarterstaff. While you hold it, you gain a +1 bonus to spell attack rolls.",
 				"This staff has 10 charges. While holding it, you can use an action to expend 1 or more of the staff's charges to cast one of the following spells from it, using your spell save DC: {@spell banishment} (4 charges), {@spell blink} (3 charges), {@spell misty step} (2 charges), {@spell passwall} (5 charges), or {@spell teleport} (7 charges).",
 				"The staff regains {@dice 1d6 + 4} expended charges daily at dawn. If you expend the last charge, roll a {@dice d20}. On a 1, the staff vanishes forever."
+			],
+			"attachedSpells": [
+				"banishment",
+				"blink",
+				"misty step",
+				"passwall",
+				"teleport"
 			]
 		},
 		{
@@ -37680,10 +37697,14 @@
 		{
 			"name": "Wakened Dragon Vessel",
 			"source": "FTD",
-			"page": 27,
+			"_copy": {
+				"name": "Stirring Dragon Vessel",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
+				}
+			},
 			"rarity": "very rare",
-			"reqAttune": true,
-			"wondrous": true,
 			"entries": [
 				"This vessel can be a potion bottle, drinking horn, or other container meant to hold a liquid.",
 				"As a bonus action, if the vessel is empty, you can speak the command word to fill the vessel with one of the following (your choice): ale, olive oil, mead, wine, a {@item potion of healing}, a {@item potion of greater healing}, a {@item potion of superior healing}, a {@item potion of climbing}, a {@item potion of fire breath}, or a {@item potion of flying}. Once this property is used, it can't be used until the next dawn. A potion you create in this way loses its magical properties if it isn't imbibed within 24 hours."
@@ -37692,26 +37713,14 @@
 		{
 			"name": "Wakened Dragon-Touched Focus",
 			"source": "FTD",
-			"page": 26,
-			"rarity": "very rare",
-			"reqAttune": "by a spellcaster",
-			"reqAttuneTags": [
-				{
-					"spellcasting": true
+			"_copy": {
+				"name": "Stirring Dragon-Touched Focus",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
 				}
-			],
-			"wondrous": true,
-			"focus": [
-				"Artificer",
-				"Bard",
-				"Cleric",
-				"Druid",
-				"Paladin",
-				"Ranger",
-				"Sorcerer",
-				"Warlock",
-				"Wizard"
-			],
+			},
+			"rarity": "very rare",
 			"entries": [
 				"This wondrous item can be a scepter, an orb, an amulet, a crystal, or another finely crafted object. It typically incorporates imagery of dragons' wings, claws, teeth, or scales.",
 				"You have advantage on initiative rolls. While you are holding the focus, it can function as a spellcasting focus for all your spells.",
@@ -37784,16 +37793,14 @@
 		{
 			"name": "Wakened Scaled Ornament",
 			"source": "FTD",
-			"page": 27,
-			"rarity": "very rare",
-			"reqAttune": true,
-			"wondrous": true,
-			"bonusAc": "+1",
-			"modifySpeed": {
-				"equal": {
-					"fly": "walk"
+			"_copy": {
+				"name": "Stirring Scaled Ornament",
+				"source": "FTD",
+				"_preserve": {
+					"page": true
 				}
 			},
+			"rarity": "very rare",
 			"entries": [
 				"This ornament can be jewelry, a cloak, or another wearable accessory. It appears to be fashioned from a dragon's scale, tooth, or claw, or it incorporates images in those shapes.",
 				"You gain a +1 bonus to AC, and you can't be {@condition charmed} or {@condition frightened}. Moreover, each creature of your choice within 30 feet of you has advantage on saving throws it makes to avoid being {@condition charmed} or {@condition frightened} or to end those conditions on itself.",
@@ -38414,7 +38421,7 @@
 						],
 						[
 							"63-65",
-							"An object of the DM 's choice disappears into the Ethereal Plane. The object must be neither worn nor carried, within 120 feet of the target, and no larger than 10 feet in any dimension."
+							"An object of the DM's choice disappears into the Ethereal Plane. The object must be neither worn nor carried, within 120 feet of the target, and no larger than 10 feet in any dimension."
 						],
 						[
 							"66-69",
@@ -38434,7 +38441,7 @@
 						],
 						[
 							"88-90",
-							"A stream of {@dice 1d4 × 10} gems, each worth 1 gp, shoots from the wand 's tip in a line 30 feet long and 5 feet wide. Each gem deals 1 bludgeoning damage, and the total damage of the gems is divided equally among all creatures in the line."
+							"A stream of {@dice 1d4 × 10} gems, each worth 1 gp, shoots from the wand's tip in a line 30 feet long and 5 feet wide. Each gem deals 1 bludgeoning damage, and the total damage of the gems is divided equally among all creatures in the line."
 						],
 						[
 							"91-95",
@@ -39730,7 +39737,8 @@
 					"page": true,
 					"hasFluffImages": true
 				}
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Wreath of the Prism (Dormant)",
@@ -39785,7 +39793,8 @@
 					"page": true,
 					"hasFluffImages": true
 				}
-			}
+			},
+			"hasFluffImages": true
 		},
 		{
 			"name": "Wukka Nut",

@@ -136,6 +136,9 @@
 			"damageTags": [
 				"O"
 			],
+			"damageTagsSpell": [
+				"L"
+			],
 			"miscTags": [
 				"AOE"
 			],
@@ -144,7 +147,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Adult Kruthik",
@@ -262,7 +266,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Adult Oblex",
@@ -442,7 +447,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Air Elemental Myrmidon",
@@ -563,7 +569,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Alhoon",
@@ -770,7 +777,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Alkilith",
@@ -948,7 +956,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Allip",
@@ -1041,7 +1050,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The allip can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
+						"The allip can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
 				},
 				{
@@ -1099,7 +1108,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Amnizu",
@@ -1300,6 +1310,9 @@
 				"S",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -1313,7 +1326,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Angry Sorrowsworn",
@@ -1431,7 +1445,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Annis Hag",
@@ -1569,7 +1584,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Apprentice Wizard",
@@ -1663,8 +1679,12 @@
 			"damageTags": [
 				"O"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Archdruid",
@@ -1814,7 +1834,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Archer",
@@ -1915,7 +1936,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Armanite",
@@ -2055,7 +2077,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Astral Dreadnought",
@@ -2243,7 +2266,8 @@
 				"incapacitated"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Aurochs",
@@ -2317,7 +2341,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Autumn Eladrin",
@@ -2493,7 +2518,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Babau",
@@ -2630,6 +2656,9 @@
 				"A",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -2637,7 +2666,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Bael",
@@ -2850,6 +2880,12 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -2859,7 +2895,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Balhannoth",
@@ -3012,7 +3049,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Banderhobb",
@@ -3150,7 +3188,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Baphomet",
@@ -3361,7 +3400,8 @@
 				"charmed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Bard",
@@ -3503,7 +3543,8 @@
 				"unconscious"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Barghest",
@@ -3682,6 +3723,9 @@
 				"P",
 				"S"
 			],
+			"damageTagsSpell": [
+				"O"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -3689,7 +3733,8 @@
 				"charmed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Berbalang",
@@ -3824,7 +3869,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Bheur Hag",
@@ -3932,7 +3978,7 @@
 				{
 					"name": "Ice Walk",
 					"entries": [
-						"The hag can move across and climb icy surfaces without needing to make an ability check, and difficult terrain composed of ice or snow doesn't cost the hag extra moment."
+						"The hag can move across and climb icy surfaces without needing to make an ability check, and {@quickref difficult terrain||3} composed of ice or snow doesn't cost the hag extra moment."
 					]
 				}
 			],
@@ -3984,6 +4030,10 @@
 				"B",
 				"C"
 			],
+			"damageTagsSpell": [
+				"B",
+				"C"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -3995,7 +4045,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Black Abishai",
@@ -4160,7 +4211,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Blackguard",
@@ -4319,7 +4371,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Blue Abishai",
@@ -4505,7 +4558,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Bodak",
@@ -4657,7 +4711,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Boggle",
@@ -4721,7 +4776,7 @@
 				{
 					"name": "Oil Puddle",
 					"entries": [
-						"The boggle creates a puddle of nonflammable oil. The puddle is 1 inch deep and covers the ground in the boggle's space. The puddle is difficult terrain for all creatures except boggles and lasts for 1 hour. The oil has one of the following additional effects of the boggle's choice:",
+						"The boggle creates a puddle of nonflammable oil. The puddle is 1 inch deep and covers the ground in the boggle's space. The puddle is {@quickref difficult terrain||3} for all creatures except boggles and lasts for 1 hour. The oil has one of the following additional effects of the boggle's choice:",
 						{
 							"type": "list",
 							"style": "list-hang-notitle",
@@ -4806,7 +4861,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Boneclaw",
@@ -4960,7 +5016,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Brontosaurus",
@@ -5162,7 +5219,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Cadaver Collector",
@@ -5309,7 +5367,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Canoloth",
@@ -5474,7 +5533,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Catoblepas",
@@ -5567,7 +5627,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Cave Fisher",
@@ -5682,7 +5743,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Champion",
@@ -5797,7 +5859,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Chitine",
@@ -5923,7 +5986,8 @@
 				"THW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Choker",
@@ -6041,7 +6105,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Choldrith",
@@ -6214,7 +6279,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Clockwork Bronze Scout",
@@ -6334,7 +6400,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Clockwork Iron Cobra",
@@ -6470,7 +6537,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Clockwork Oaken Bolter",
@@ -6613,7 +6681,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Clockwork Stone Defender",
@@ -6731,7 +6800,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Cloud Giant Smiling One",
@@ -6893,7 +6963,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Conjurer Wizard",
@@ -7019,11 +7090,15 @@
 			"damageTags": [
 				"O"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"conditionInflictSpell": [
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Corpse Flower",
@@ -7153,7 +7228,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Cranium Rat",
@@ -7242,7 +7318,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Darkling",
@@ -7357,7 +7434,8 @@
 				"blinded"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Darkling Elder",
@@ -7477,7 +7555,8 @@
 				"blinded"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Death Kiss",
@@ -7610,7 +7689,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Deathlock",
@@ -7767,6 +7847,10 @@
 			"damageTags": [
 				"N"
 			],
+			"damageTagsSpell": [
+				"A",
+				"C"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -7775,7 +7859,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Deathlock Mastermind",
@@ -7941,6 +8026,9 @@
 			"damageTags": [
 				"N"
 			],
+			"damageTagsSpell": [
+				"O"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -7951,7 +8039,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Deathlock Wight",
@@ -8110,7 +8199,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Deep Rothé",
@@ -8194,7 +8284,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Deep Scion",
@@ -8336,7 +8427,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Deinonychus",
@@ -8667,6 +8759,9 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -8682,7 +8777,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Derro",
@@ -8795,7 +8891,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Derro Savant",
@@ -8934,7 +9031,8 @@
 				"unconscious"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Devourer",
@@ -9059,7 +9157,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dhergoloth",
@@ -9223,7 +9322,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dimetrodon",
@@ -9437,7 +9537,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Diviner Wizard",
@@ -9567,6 +9668,9 @@
 				"R",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"L"
+			],
 			"miscTags": [
 				"AOE"
 			],
@@ -9574,7 +9678,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dolphin",
@@ -9660,7 +9765,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dolphin Delighter",
@@ -9778,7 +9884,8 @@
 			"conditionInflict": [
 				"blinded"
 			],
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Draegloth",
@@ -9928,7 +10035,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Drow Arachnomancer",
@@ -10115,6 +10223,10 @@
 				"I",
 				"P"
 			],
+			"damageTagsSpell": [
+				"O",
+				"P"
+			],
 			"miscTags": [
 				"MW",
 				"RW"
@@ -10128,7 +10240,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Drow Favored Consort",
@@ -10285,6 +10398,10 @@
 				"O",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F",
+				"O"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -10292,7 +10409,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Drow House Captain",
@@ -10469,7 +10587,8 @@
 				"unconscious"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Drow Inquisitor",
@@ -10659,7 +10778,8 @@
 				"deafened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Drow Matron Mother",
@@ -10879,6 +10999,9 @@
 				"R",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"S"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -10897,7 +11020,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Drow Shadowblade",
@@ -11078,7 +11202,8 @@
 				"unconscious"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Despot",
@@ -11249,7 +11374,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Hammerer",
@@ -11378,7 +11504,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Kavalrachni",
@@ -11516,7 +11643,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Mind Master",
@@ -11662,7 +11790,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Screamer",
@@ -11784,7 +11913,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Soulblade",
@@ -11902,7 +12032,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Stone Guard",
@@ -12047,7 +12178,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Warlord",
@@ -12202,7 +12334,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Duergar Xarrorn",
@@ -12332,7 +12465,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dybbuk",
@@ -12444,7 +12578,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The dybbuk can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
+						"The dybbuk can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
 				},
 				{
@@ -12503,6 +12637,10 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"O",
+				"Y"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -12510,7 +12648,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Earth Elemental Myrmidon",
@@ -12624,7 +12763,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Eidolon",
@@ -12713,7 +12853,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The eidolon can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object other than a {@creature sacred statue|MPMM}."
+						"The eidolon can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object other than a {@creature sacred statue|MPMM}."
 					]
 				},
 				{
@@ -12776,7 +12916,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Elder Brain",
@@ -12993,7 +13134,8 @@
 				"incapacitated"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Elder Oblex",
@@ -13156,6 +13298,9 @@
 				"B",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"O"
+			],
 			"spellcastingTags": [
 				"P"
 			],
@@ -13174,7 +13319,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Elder Tempest",
@@ -13359,7 +13505,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Enchanter Wizard",
@@ -13483,7 +13630,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Evoker Wizard",
@@ -13600,6 +13748,11 @@
 			"damageTags": [
 				"O"
 			],
+			"damageTagsSpell": [
+				"B",
+				"C",
+				"L"
+			],
 			"miscTags": [
 				"AOE"
 			],
@@ -13607,7 +13760,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Female Steeder",
@@ -13709,7 +13863,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Fire Elemental Myrmidon",
@@ -13840,7 +13995,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Fire Giant Dreadnought",
@@ -13961,7 +14117,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Firenewt Warlock of Imix",
@@ -14094,7 +14251,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Firenewt Warrior",
@@ -14200,7 +14358,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Flail Snail",
@@ -14317,7 +14476,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Flind",
@@ -14335,7 +14495,7 @@
 			"type": {
 				"type": "fiend",
 				"tags": [
-					"Gnoll"
+					"gnoll"
 				]
 			},
 			"alignment": [
@@ -14456,7 +14616,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Fraz-Urb'luu",
@@ -14532,7 +14693,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "that is nonmagical"
+					"note": "that is nonmagical",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -14658,6 +14820,15 @@
 				"O",
 				"Y"
 			],
+			"damageTagsLegendary": [
+				"Y"
+			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S",
+				"Y"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -14674,7 +14845,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Froghemoth",
@@ -14807,7 +14979,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Frost Giant Everlasting One",
@@ -14948,7 +15121,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Frost Salamander",
@@ -15075,7 +15249,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gauth",
@@ -15257,7 +15432,8 @@
 				"unconscious"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gazer",
@@ -15424,7 +15600,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Geryon",
@@ -15656,6 +15833,15 @@
 				"I",
 				"O"
 			],
+			"damageTagsLegendary": [
+				"C"
+			],
+			"damageTagsSpell": [
+				"B",
+				"C",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -15673,7 +15859,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Giant Strider",
@@ -15761,7 +15948,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Giff",
@@ -15879,7 +16067,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Girallon",
@@ -15974,7 +16163,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Githyanki Gish",
@@ -16110,6 +16300,10 @@
 				"S",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"F",
+				"O"
+			],
 			"spellcastingTags": [
 				"P"
 			],
@@ -16121,7 +16315,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Githyanki Kith'rak",
@@ -16269,7 +16464,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Githyanki Supreme Commander",
@@ -16428,6 +16624,10 @@
 				"S",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"B",
+				"O"
+			],
 			"spellcastingTags": [
 				"P"
 			],
@@ -16438,7 +16638,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Githzerai Anarch",
@@ -16610,7 +16811,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Githzerai Enlightened",
@@ -16755,7 +16957,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gnoll Flesh Gnawer",
@@ -16868,7 +17071,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gnoll Hunter",
@@ -16985,7 +17189,8 @@
 				"THW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gnoll Witherling",
@@ -17114,7 +17319,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gray Render",
@@ -17223,7 +17429,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Graz'zt",
@@ -17443,7 +17650,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Green Abishai",
@@ -17610,6 +17818,11 @@
 				"I",
 				"O"
 			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -17621,7 +17834,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Grung",
@@ -17894,7 +18108,8 @@
 					},
 					"variant": null
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Grung Elite Warrior",
@@ -18181,7 +18396,8 @@
 					},
 					"variant": null
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Grung Wildling",
@@ -18372,6 +18588,9 @@
 				"I",
 				"P"
 			],
+			"damageTagsSpell": [
+				"P"
+			],
 			"miscTags": [
 				"MW",
 				"RNG",
@@ -18488,7 +18707,8 @@
 					},
 					"variant": null
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Guard Drake",
@@ -18720,7 +18940,8 @@
 					],
 					"variant": null
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Hadrosaurus",
@@ -18968,7 +19189,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Hobgoblin Devastator",
@@ -19101,6 +19323,10 @@
 				"B",
 				"O"
 			],
+			"damageTagsSpell": [
+				"F",
+				"L"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -19108,7 +19334,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Hobgoblin Iron Shadow",
@@ -19255,7 +19482,8 @@
 				"charmed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Howler",
@@ -19388,7 +19616,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Hungry Sorrowsworn",
@@ -19508,7 +19737,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Hutijin",
@@ -19740,6 +19970,13 @@
 				"O",
 				"T"
 			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"L",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -19754,7 +19991,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Hydroloth",
@@ -19942,6 +20180,9 @@
 				"O",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"B"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -19951,7 +20192,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Illusionist Wizard",
@@ -20069,11 +20311,15 @@
 			"damageTags": [
 				"Y"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"conditionInflictSpell": [
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Juiblex",
@@ -20283,6 +20529,9 @@
 				"A",
 				"I"
 			],
+			"damageTagsLegendary": [
+				"F"
+			],
 			"miscTags": [
 				"MW",
 				"RCH",
@@ -20301,7 +20550,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ki-rin",
@@ -20497,7 +20747,8 @@
 				"incapacitated"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Kobold Dragonshield",
@@ -20628,7 +20879,8 @@
 				"THW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Kobold Inventor",
@@ -20807,7 +21059,8 @@
 				"incapacitated"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Kobold Scale Sorcerer",
@@ -20952,7 +21205,8 @@
 				"charmed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Korred",
@@ -21105,6 +21359,9 @@
 			"damageTags": [
 				"B"
 			],
+			"damageTagsSpell": [
+				"B"
+			],
 			"miscTags": [
 				"MW",
 				"RW"
@@ -21117,7 +21374,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Kraken Priest",
@@ -21248,6 +21506,9 @@
 				"L",
 				"T"
 			],
+			"damageTagsSpell": [
+				"B"
+			],
 			"conditionInflict": [
 				"frightened",
 				"prone"
@@ -21257,7 +21518,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Kruthik Hive Lord",
@@ -21384,7 +21646,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Leucrotta",
@@ -21510,7 +21773,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Leviathan",
@@ -21678,7 +21942,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Lonely Sorrowsworn",
@@ -21806,7 +22071,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Lost Sorrowsworn",
@@ -21933,7 +22199,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Male Steeder",
@@ -22035,7 +22302,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Martial Arts Adept",
@@ -22164,7 +22432,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Marut",
@@ -22338,7 +22607,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Master Thief",
@@ -22463,7 +22733,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Maurezhi",
@@ -22619,7 +22890,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Maw Demon",
@@ -22727,7 +22999,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Meazel",
@@ -22837,7 +23110,8 @@
 				"grappled"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Meenlock",
@@ -22954,7 +23228,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Merregon",
@@ -23102,7 +23377,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Merrenoloth",
@@ -23274,6 +23550,9 @@
 			"damageTags": [
 				"F"
 			],
+			"damageTagsSpell": [
+				"B"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -23287,7 +23566,8 @@
 				"charmed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Mindwitness",
@@ -23406,7 +23686,7 @@
 								{
 									"name": "3: Psychic Ray",
 									"entries": [
-										"The target must succeed on a {@dc 13} Intelligence saving throw or take T1 ({@damage 6d8}) psychic damage."
+										"The target must succeed on a {@dc 13} Intelligence saving throw or take 27 ({@damage 6d8}) psychic damage."
 									],
 									"type": "item"
 								},
@@ -23471,7 +23751,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Moloch",
@@ -23686,6 +23967,12 @@
 				"T",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -23695,7 +23982,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Molydeus",
@@ -23909,6 +24197,9 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"L"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -23917,7 +24208,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Morkoth",
@@ -24079,6 +24371,10 @@
 				"S",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"L",
+				"O"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -24090,7 +24386,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Mouth of Grolantor",
@@ -24217,7 +24514,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Nabassu",
@@ -24378,7 +24676,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Nagpa",
@@ -24535,6 +24834,11 @@
 				"B",
 				"N"
 			],
+			"damageTagsSpell": [
+				"F",
+				"O",
+				"Y"
+			],
 			"miscTags": [
 				"AOE",
 				"MW"
@@ -24548,7 +24852,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Narzugon",
@@ -24713,7 +25018,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Necromancer Wizard",
@@ -24844,11 +25150,17 @@
 			"damageTags": [
 				"N"
 			],
+			"damageTagsSpell": [
+				"F",
+				"N",
+				"O"
+			],
 			"conditionInflictSpell": [
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Neogi",
@@ -24982,7 +25294,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Neogi Hatchling",
@@ -25072,7 +25385,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Neogi Master",
@@ -25247,6 +25561,11 @@
 				"N",
 				"P"
 			],
+			"damageTagsSpell": [
+				"A",
+				"C",
+				"O"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -25259,7 +25578,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Neothelid",
@@ -25383,6 +25703,9 @@
 				"B",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"spellcastingTags": [
 				"P"
 			],
@@ -25398,7 +25721,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Nightwalker",
@@ -25542,7 +25866,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Nilbog",
@@ -25685,7 +26010,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Nupperibo",
@@ -25798,7 +26124,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Oblex Spawn",
@@ -25898,7 +26225,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ogre Battering Ram",
@@ -26008,7 +26336,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ogre Bolt Launcher",
@@ -26098,7 +26427,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ogre Chain Brute",
@@ -26194,11 +26524,11 @@
 			],
 			"conditionInflict": [
 				"prone",
-				"stunned",
-				"unconscious"
+				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ogre Howdah",
@@ -26288,7 +26618,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Oinoloth",
@@ -26472,6 +26803,9 @@
 				"N",
 				"S"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"miscTags": [
 				"AOE",
 				"MW"
@@ -26484,7 +26818,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Orcus",
@@ -26729,13 +27064,17 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"N"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Orthon",
@@ -26941,7 +27280,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ox",
@@ -27014,7 +27354,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Phoenix",
@@ -27195,7 +27536,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Quetzalcoatlus",
@@ -27388,7 +27730,8 @@
 				"THW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Red Abishai",
@@ -27564,7 +27907,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Redcap",
@@ -27683,7 +28027,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Retriever",
@@ -27844,6 +28189,9 @@
 				"O",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -27855,7 +28203,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Rot Troll",
@@ -27968,7 +28317,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Rutterkin",
@@ -28070,7 +28420,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Sacred Statue",
@@ -28220,7 +28571,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Sea Spawn",
@@ -28359,7 +28711,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shadar-kai Gloom Weaver",
@@ -28519,7 +28872,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shadar-kai Shadow Dancer",
@@ -28681,7 +29035,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shadar-kai Soul Monger",
@@ -28845,6 +29200,9 @@
 				"P",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"N"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -28855,7 +29213,8 @@
 				"exhaustion"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shadow Mastiff",
@@ -28964,7 +29323,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shadow Mastiff Alpha",
@@ -29080,7 +29440,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shoosuva",
@@ -29216,7 +29577,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Sibriex",
@@ -29330,7 +29692,7 @@
 				{
 					"name": "Contamination",
 					"entries": [
-						"The sibriex emits an aura of corruption 30 feet in every direction. Vegetation withers in the aura, and the ground in the aura is difficult terrain for other creatures. Any creature that starts its turn in the aura must succeed on a {@dc 20} Constitution saving throw or take 14 ({@damage 4d6}) poison damage. A creature that succeeds on the save is immune to this sibriex's Contamination for 24 hours."
+						"The sibriex emits an aura of corruption 30 feet in every direction. Vegetation withers in the aura, and the ground in the aura is {@quickref difficult terrain||3} for other creatures. Any creature that starts its turn in the aura must succeed on a {@dc 20} Constitution saving throw or take 14 ({@damage 4d6}) poison damage. A creature that succeeds on the save is immune to this sibriex's Contamination for 24 hours."
 					]
 				},
 				{
@@ -29525,6 +29887,9 @@
 				"I",
 				"O"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -29539,7 +29904,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Skulk",
@@ -29662,7 +30028,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Skull Lord",
@@ -29864,6 +30231,11 @@
 				"B",
 				"N"
 			],
+			"damageTagsSpell": [
+				"C",
+				"I",
+				"O"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -29871,7 +30243,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Slithering Tracker",
@@ -30021,7 +30394,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Spawn of Kyuss",
@@ -30146,7 +30520,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Spirit Troll",
@@ -30228,7 +30603,7 @@
 				{
 					"name": "Incorporeal Movement",
 					"entries": [
-						"The troll can move through other creatures and objects as if they were difficult terrain. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
+						"The troll can move through other creatures and objects as if they were {@quickref difficult terrain||3}. It takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
 				},
 				{
@@ -30292,7 +30667,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Spring Eladrin",
@@ -30458,7 +30834,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Star Spawn Grue",
@@ -30543,7 +30920,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Star Spawn Hulk",
@@ -30670,7 +31048,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Star Spawn Larva Mage",
@@ -30867,7 +31246,8 @@
 				"charmed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Star Spawn Mangler",
@@ -30992,7 +31372,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Star Spawn Seer",
@@ -31076,7 +31457,7 @@
 				{
 					"name": "Out-Of-Phase Movement",
 					"entries": [
-						"The seer can move through other creatures and objects as if they were difficult terrain, and its movement doesn't provoke {@action opportunity attack||opportunity attacks}.",
+						"The seer can move through other creatures and objects as if they were {@quickref difficult terrain||3}, and its movement doesn't provoke {@action opportunity attack||opportunity attacks}.",
 						"Each creature it moves through takes 5 ({@damage 1d10}) psychic damage; no creature can take this damage more than once per turn.",
 						"The seer takes 5 ({@damage 1d10}) force damage if it ends its turn inside an object."
 					]
@@ -31149,7 +31530,8 @@
 				"incapacitated"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Steel Predator",
@@ -31315,6 +31697,9 @@
 				"O",
 				"T"
 			],
+			"damageTagsSpell": [
+				"O"
+			],
 			"miscTags": [
 				"AOE",
 				"MW"
@@ -31323,7 +31708,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Stegosaurus",
@@ -31394,7 +31780,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Stench Kow",
@@ -31481,7 +31868,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Stone Cursed",
@@ -31595,7 +31983,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Stone Giant Dreamwalker",
@@ -31726,7 +32115,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Storm Giant Quintessent",
@@ -31897,7 +32287,8 @@
 				"RCH"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Summer Eladrin",
@@ -32048,7 +32439,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Swarm of Cranium Rats",
@@ -32192,7 +32584,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Swarm of Rot Grubs",
@@ -32290,7 +32683,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Swashbuckler",
@@ -32401,7 +32795,8 @@
 				"THW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Sword Wraith Commander",
@@ -32555,7 +32950,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Sword Wraith Warrior",
@@ -32681,7 +33077,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Tanarukk",
@@ -32821,7 +33218,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Thorny Vegepygmy",
@@ -32924,7 +33322,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Titivilus",
@@ -33140,6 +33539,11 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -33155,7 +33559,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Tlincalli",
@@ -33267,7 +33672,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Tortle",
@@ -33341,7 +33747,7 @@
 				{
 					"name": "Light Crossbow",
 					"entries": [
-						"{@atk rw} {@hit 2} to hit, range 80/320ft., one target. {@h}4 ({@damage 1d8}) piercing damage."
+						"{@atk rw} {@hit 2} to hit, range 80/320 ft., one target. {@h}4 ({@damage 1d8}) piercing damage."
 					]
 				},
 				{
@@ -33376,7 +33782,8 @@
 				"THW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Tortle Druid",
@@ -33503,6 +33910,9 @@
 			"damageTags": [
 				"S"
 			],
+			"damageTagsSpell": [
+				"T"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -33510,7 +33920,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Transmuter Wizard",
@@ -33665,11 +34076,15 @@
 			"damageTags": [
 				"A"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"conditionInflictSpell": [
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Trapper",
@@ -33766,7 +34181,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Ulitharid",
@@ -33924,6 +34340,9 @@
 				"P",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"Y"
+			],
 			"spellcastingTags": [
 				"P"
 			],
@@ -33945,7 +34364,8 @@
 				"unconscious"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Vampiric Mist",
@@ -34095,7 +34515,8 @@
 				"R"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Vargouille",
@@ -34203,7 +34624,8 @@
 				"stunned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Vegepygmy",
@@ -34315,7 +34737,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Vegepygmy Chief",
@@ -34447,7 +34870,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Velociraptor",
@@ -34680,7 +35104,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "War Priest",
@@ -34811,6 +35236,10 @@
 				"B",
 				"R"
 			],
+			"damageTagsSpell": [
+				"F",
+				"R"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -34823,7 +35252,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Warlock of the Archfey",
@@ -34959,6 +35389,9 @@
 				"P",
 				"Y"
 			],
+			"damageTagsSpell": [
+				"O"
+			],
 			"spellcastingTags": [
 				"CL"
 			],
@@ -34972,7 +35405,8 @@
 				"unconscious"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Warlock of the Fiend",
@@ -35126,6 +35560,11 @@
 				"F",
 				"N"
 			],
+			"damageTagsSpell": [
+				"B",
+				"P",
+				"S"
+			],
 			"spellcastingTags": [
 				"CL"
 			],
@@ -35134,7 +35573,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Warlock of the Great Old One",
@@ -35290,7 +35730,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Warlord",
@@ -35428,7 +35869,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Wastrilith",
@@ -35561,7 +36003,7 @@
 				{
 					"name": "Undertow",
 					"entries": [
-						"If the wastrilith is underwater, it causes all water within 60 feet of it to be difficult terrain for other creatures until the start of its next turn."
+						"If the wastrilith is underwater, it causes all water within 60 feet of it to be {@quickref difficult terrain||3} for other creatures until the start of its next turn."
 					]
 				}
 			],
@@ -35603,7 +36045,8 @@
 				"poisoned"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Water Elemental Myrmidon",
@@ -35718,7 +36161,8 @@
 				"THW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "White Abishai",
@@ -35886,7 +36330,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Winter Eladrin",
@@ -36051,7 +36496,8 @@
 				"prone"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Wood Woad",
@@ -36180,7 +36626,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Wretched Sorrowsworn",
@@ -36275,7 +36722,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Xvart",
@@ -36381,7 +36829,8 @@
 				"RW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Xvart Warlock of Raxivort",
@@ -36515,6 +36964,9 @@
 				"I",
 				"S"
 			],
+			"damageTagsSpell": [
+				"F"
+			],
 			"miscTags": [
 				"MW"
 			],
@@ -36522,7 +36974,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yagnoloth",
@@ -36709,6 +37162,9 @@
 				"N",
 				"O"
 			],
+			"damageTagsSpell": [
+				"L"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -36720,7 +37176,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yeenoghu",
@@ -36944,6 +37401,9 @@
 				"A",
 				"O"
 			],
+			"damageTagsLegendary": [
+				"P"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -36961,7 +37421,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yeth Hound",
@@ -37092,7 +37553,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Young Kruthik",
@@ -37156,7 +37618,7 @@
 				{
 					"name": "Tunneler",
 					"entries": [
-						"The kruthik can burrow through solid rock at half its burrowing speed and leaves a 2V2-foot-diameter tunnel in its wake."
+						"The kruthik can burrow through solid rock at half its burrowing speed and leaves a 2½-foot-diameter tunnel in its wake."
 					]
 				}
 			],
@@ -37194,7 +37656,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yuan-ti Anathema",
@@ -37390,7 +37853,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yuan-ti Broodguard",
@@ -37517,7 +37981,8 @@
 				"MW"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yuan-ti Mind Whisperer",
@@ -37707,7 +38172,8 @@
 				"incapacitated"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yuan-ti Nightmare Speaker",
@@ -37905,7 +38371,8 @@
 				"frightened"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Yuan-ti Pit Master",
@@ -38093,7 +38560,8 @@
 				"paralyzed"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Zaratan",
@@ -38219,7 +38687,7 @@
 				{
 					"name": "Earth-Shaking Movement",
 					"entries": [
-						"After moving at least 10 feet on the ground, the zaratan sends a shock wave through the ground in a 120-foot-radius circle centered on itself. That area becomes difficult terrain for 1 minute. Each creature on the ground that is concentrating must succeed on a {@dc 25} Constitution saving throw or the creature's concentration is broken. The shock wave deals 100 thunder damage to all structures in contact with the ground in the area. If a creature is near a structure that collapses, the creature might be buried; a creature within half the distance of the structure's height must make a {@dc 25} Dexterity saving throw. On a failed save, the creature takes 17 ({@damage 5d6}) bludgeoning damage, is knocked {@condition prone}, and is trapped in the rubble. A trapped creature is {@condition restrained}, requiring a successful {@dc 20} Strength ({@skill Athletics}) check as an action to escape. Another creature within 5 feet of the buried creature can use its action to clear rubble and grant advantage on the check. If three creatures use their actions in this way, the check is an automatic success. On a successful save, the creature takes half as much damage and doesn't fall {@condition prone} or become trapped."
+						"After moving at least 10 feet on the ground, the zaratan sends a shock wave through the ground in a 120-foot-radius circle centered on itself. That area becomes {@quickref difficult terrain||3} for 1 minute. Each creature on the ground that is concentrating must succeed on a {@dc 25} Constitution saving throw or the creature's concentration is broken. The shock wave deals 100 thunder damage to all structures in contact with the ground in the area. If a creature is near a structure that collapses, the creature might be buried; a creature within half the distance of the structure's height must make a {@dc 25} Dexterity saving throw. On a failed save, the creature takes 17 ({@damage 5d6}) bludgeoning damage, is knocked {@condition prone}, and is trapped in the rubble. A trapped creature is {@condition restrained}, requiring a successful {@dc 20} Strength ({@skill Athletics}) check as an action to escape. Another creature within 5 feet of the buried creature can use its action to clear rubble and grant advantage on the check. If three creatures use their actions in this way, the check is an automatic success. On a successful save, the creature takes half as much damage and doesn't fall {@condition prone} or become trapped."
 					]
 				}
 			],
@@ -38300,7 +38768,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Zariel",
@@ -38514,6 +38983,16 @@
 				"O",
 				"R"
 			],
+			"damageTagsLegendary": [
+				"F"
+			],
+			"damageTagsSpell": [
+				"B",
+				"F",
+				"N",
+				"P",
+				"S"
+			],
 			"miscTags": [
 				"MW",
 				"RCH"
@@ -38530,7 +39009,8 @@
 				"invisible"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Zuggtmoy",
@@ -38727,6 +39207,9 @@
 			"damageTags": [
 				"I"
 			],
+			"damageTagsSpell": [
+				"O"
+			],
 			"miscTags": [
 				"AOE",
 				"MW",
@@ -38739,7 +39222,8 @@
 				"restrained"
 			],
 			"hasToken": true,
-			"hasFluff": true
+			"hasFluff": true,
+			"hasFluffImages": true
 		}
 	]
 }
