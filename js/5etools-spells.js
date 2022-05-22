@@ -249,7 +249,7 @@ function d20plusSpells () {
 		}
 
 		// this is working fine for spells.
-		d20plus.importer.doFakeDrop(event, character, data, null);
+		d20plus.importer.doFakeDrop(event, character, data);
 
 		// adding critical info that is missing.
 		if (data.data.Crit || data.data["Crit Range"]) importCriticalData()

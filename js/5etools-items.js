@@ -322,7 +322,7 @@ function d20plusItems () {
 				const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 				queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
 					setTimeout(() => {
-						d20plus.importer.doFakeDrop(event, character, item, null);
+						d20plus.importer.doFakeDrop(event, character, item);
 					}, (ix + 1) * interval);
 				});
 				
@@ -331,7 +331,7 @@ function d20plusItems () {
 		}
 		
 		// Fallback to native drag-n-drop
-		d20plus.importer.doFakeDrop(event, character, data, null);
+		d20plus.importer.doFakeDrop(event, character, data);
 	};
 
 
