@@ -801,7 +801,7 @@ function d20plusImporter () {
 				let remaining = importQueue.length;
 
 				let interval;
-				if (dataType === "monster" || dataType === "object") {
+				if (dataType === "monster" || dataType === "object" || dataType === "vehicle") {
 					interval = d20plus.cfg.get("import", "importIntervalCharacter") || d20plus.cfg.getDefault("import", "importIntervalCharacter");
 				} else {
 					interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
@@ -1008,6 +1008,19 @@ function d20plusImporter () {
 				return folderName;
 			}
 			case "object": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
+			case "vehicle": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":
