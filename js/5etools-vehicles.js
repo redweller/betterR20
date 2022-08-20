@@ -1,5 +1,20 @@
 function d20plusVehicles () {
 	d20plus.vehicles = {};
+	
+	d20plus.vehicles.fluff = null;
+
+	d20plus.vehicles.loadFluff = function () {
+		// To prevent loading the fluff multiple times
+		if (d20plus.vehicles.fluff) return;
+
+		const fluffUrl = `${DATA_URL}fluff-vehicles.json`;
+		DataUtil.loadJSON(fluffUrl).then((data) => {
+			d20plus.vehicles.fluff = data.vehicleFluff;
+		}).catch(e => {
+			// eslint-disable-next-line no-console
+			console.error(e);
+		})
+	}
 
 	// Import Vehicle button was clicked
 	d20plus.vehicles.button = function () {
@@ -18,6 +33,9 @@ function d20plusVehicles () {
 	};
 
 	d20plus.vehicles.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
+		// First make sure the fluff is there
+		d20plus.vehicles.loadFluff();
+		
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Vehicles`, folderName);
 		const path = ["Vehicles", ...folderName, data.name];
@@ -47,14 +65,21 @@ function d20plusVehicles () {
 						character.name = name;
 						character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
 						character.hp = data.hp;
+
+						const fluff = d20plus.vehicles.fluff?.find(it => it.name === data.name && it.source === data.source);
+						const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? 
+						(() => {
+							const firstImage = fluff.images[0] || {};
+							return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
+						})() : null;
 						$.ajax({
 							url: avatar,
 							type: "HEAD",
 							error: function () {
-								d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`);
+								d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`, firstFluffImage);
 							},
 							success: function () {
-								d20plus.importer.getSetAvatarImage(character, avatar);
+								d20plus.importer.getSetAvatarImage(character, avatar, firstFluffImage);
 							},
 						});
 
@@ -153,20 +178,39 @@ function d20plusVehicles () {
 
 						character.view.updateSheetValues();
 
-						/*if (data.entries) {
-							const bio = renderer.render({type: "entries", entries: data.entries});
+						if (data.entries) {
+							const renderFluff = renderer.render({entries: data.entries}, 1);
+							if (renderFluff) {
+								setTimeout(() => {
+									const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
+									let k = fluffAs === "Bio" ? "bio" : "gmnotes";
+									character.updateBlobs({
+										[k]: Markdown.parse(renderFluff),
+									});
+									character.save({
+										[k]: (new Date()).getTime(),
+									});
+								}, 500);
+							}
+						}
 
-							setTimeout(() => {
-								const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
-								let k = fluffAs === "Bio" ? "bio" : "gmnotes";
-								character.updateBlobs({
-									[k]: Markdown.parse(bio),
-								});
-								character.save({
-									[k]: (new Date()).getTime(),
-								});
-							}, 500);
-						}*/
+						if (fluff && data.hasFluff) {
+							const depth = fluff.type === "section" ? -1 : 2;
+							if (fluff.type !== "section") renderer.setFirstSection(false);
+							const renderFluff = renderer.render({type: fluff.type, entries: fluff.entries || []}, depth);
+							if (renderFluff) {
+								setTimeout(() => {
+									const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
+									let k = fluffAs === "Bio" ? "bio" : "gmnotes";
+									character.updateBlobs({
+										[k]: Markdown.parse(renderFluff),
+									});
+									character.save({
+										[k]: (new Date()).getTime(),
+									});
+								}, 500);
+							}
+						}
 
 
 					} catch (e) {
