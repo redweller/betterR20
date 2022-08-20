@@ -395,6 +395,49 @@ function d20plusImporter () {
 		d20plus.importer._baseAddAction(character, "repeating_npcaction-m", name, actionText, "Mythic", index, expand);
 	};
 
+	d20plus.importer.addVehicleAction = function (character, name, actionText, index) {
+		const expand = d20plus.cfg.getOrDefault("import", "tokenactionsExpanded");
+		d20plus.importer._baseAddAction(character, "repeating_vehicleactions", name, actionText, "Vehicle", index, expand);
+	};
+
+	// Add individual weapons to the npc ship stat block
+	d20plus.importer._addVehicleWeapon = function (character, weapon, renderer, prefix) {
+		const newRowId = d20plus.ut.generateRowId();
+		let desc = "";
+		if (weapon.locomotion) {
+			const locEntries = Renderer.vehicle.ship.getLocomotionEntries(weapon.locomotion[0]);
+			desc = d20plus.importer.getCleanText(renderer.render(locEntries));
+		}
+		if (weapon.speed) {
+			const speedEntries = Renderer.vehicle.ship.getSpeedEntries(weapon.speed[0]);
+			desc = d20plus.importer.getCleanText(renderer.render(speedEntries));
+		}
+		else if (weapon.entries) {
+			desc = d20plus.importer.getCleanText(renderer.render({entries: weapon.entries}));
+		}
+
+		// Cost code stolen from Giddy
+		const cost = weapon.costs? weapon.costs.map(cost => {
+			return `${Parser.vehicleCostToFull(cost) || "\u2014"}${cost.note ? `  (${renderer.render(cost.note)})` : ""}`;
+		}).join(", ") : weapon.hpNote || "\u2014";
+
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_name`, current: `${prefix}${weapon.name}`});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_quantity`, current: weapon.count || 1});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_crew`, current: weapon.crew || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_actions`, current: "10"});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_ac`, current: weapon.ac || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_hp`, current: weapon.hp || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_hp--silent`, current: weapon.hp || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_cost`, current: cost});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_description`, current: desc});
+	};
+
+	d20plus.importer.addVehicleWeapons = function (character, wArray, renderer, prefix = null) {
+		wArray.forEach(w => {
+			d20plus.importer._addVehicleWeapon(character, w, renderer, prefix ? prefix + ": ": "");
+		});
+	}
+
 	d20plus.importer.findAttrId = function (character, attrName) {
 		const found = character.attribs.toJSON().find(a => a.name === attrName);
 		return found ? found.id : undefined;
