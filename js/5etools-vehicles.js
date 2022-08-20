@@ -3,7 +3,7 @@ function d20plusVehicles () {
 	
 	d20plus.vehicles.fluff = null;
 
-	d20plus.vehicles.loadFluff = function () {
+	d20plus.vehicles._loadFluff = function () {
 		// To prevent loading the fluff multiple times
 		if (d20plus.vehicles.fluff) return;
 
@@ -13,7 +13,62 @@ function d20plusVehicles () {
 		}).catch(e => {
 			// eslint-disable-next-line no-console
 			console.error(e);
-		})
+		});
+	}
+
+	// Given the action name and entries, add an action
+	d20plus.vehicles._addAction = function (character, renderer, actionName, entries, numActions) {
+		const name = d20plus.importer.getCleanText(renderer.render(actionName));
+		const text = d20plus.importer.getCleanText(renderer.render({entries: entries}, 1)).replace(/^\s*Hit:\s*/, "");
+		d20plus.importer.addVehicleAction(character, name, text, numActions);
+	}
+
+	// Sets the image, mostly stolen from Giddy
+	d20plus.vehicles._setFluffImage = function (character, data, fluff) {
+		const tokenUrl = `${IMG_URL}vehicles/tokens/${data.source}/${data.name}.png`;
+		const avatar = data.tokenUrl || Parser.nameToTokenName(tokenUrl);
+		console.log(avatar);
+		const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? 
+			(() => {
+			const firstImage = fluff.images[0] || {};
+			return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
+		})() : null;
+		$.ajax({
+			url: avatar,
+			type: "HEAD",
+			error: function () {
+				d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`, firstFluffImage);
+			},
+			success: function () {
+				d20plus.importer.getSetAvatarImage(character, avatar, firstFluffImage);
+			},
+		});
+	}
+
+	// Sets fluff text, mostly stolen from Giddy
+	d20plus.vehicles._setFluff = function (character, data, fluff, renderer) {
+		let renderFluff;
+		if (data.entries) {
+			renderFluff = renderer.render({entries: data.entries}, 1);
+		}
+		if (fluff && data.hasFluff) {
+			const depth = fluff.type === "section" ? -1 : 2;
+			if (fluff.type !== "section") renderer.setFirstSection(false);
+			renderFluff = renderer.render({type: fluff.type, entries: fluff.entries || []}, depth);
+		}
+
+		if (renderFluff) {
+			setTimeout(() => {
+				const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
+				let k = fluffAs === "Bio" ? "bio" : "gmnotes";
+				character.updateBlobs({
+					[k]: Markdown.parse(renderFluff),
+				});
+				character.save({
+					[k]: (new Date()).getTime(),
+				});
+			}, 500);
+		}
 	}
 
 	// Import Vehicle button was clicked
@@ -34,7 +89,7 @@ function d20plusVehicles () {
 
 	d20plus.vehicles.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// First make sure the fluff is there
-		d20plus.vehicles.loadFluff();
+		d20plus.vehicles._loadFluff();
 		
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Vehicles`, folderName);
@@ -59,29 +114,10 @@ function d20plusVehicles () {
 					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_VEHICLES](data)] = {name: data.name, source: data.source, type: "character", roll20Id: character.id};
 
 					try {
-						const tokenUrl = `${IMG_URL}vehicles/tokens/${source}/${name}.png`;
-						const avatar = data.tokenUrl || Parser.nameToTokenName(tokenUrl);
 						character.size = data.size || "L";
 						character.name = name;
 						character.senses = data.senses ? data.senses instanceof Array ? data.senses.join(", ") : data.senses : null;
 						character.hp = data.hp;
-
-						const fluff = d20plus.vehicles.fluff?.find(it => it.name === data.name && it.source === data.source);
-						const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? 
-						(() => {
-							const firstImage = fluff.images[0] || {};
-							return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
-						})() : null;
-						$.ajax({
-							url: avatar,
-							type: "HEAD",
-							error: function () {
-								d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`, firstFluffImage);
-							},
-							success: function () {
-								d20plus.importer.getSetAvatarImage(character, avatar, firstFluffImage);
-							},
-						});
 
 						const renderer = new Renderer();
 						renderer.setBaseUrl(BASE_SITE_URL);
@@ -104,6 +140,7 @@ function d20plusVehicles () {
 							current: d20plus.importer.getDesiredWhisperToggle(),
 						});
 
+						// Setting the basic vehicle variables
 						const achpContainer = data.vehicleType === "INFWAR" ? data.hp : (data.hull || data);
 						const acType = achpContainer.acFrom ? achpContainer.acFrom[0] : Parser.vehicleTypeToFull(data.vehicleType);
 						const crew = data.capCreature ? Renderer.vehicle.getInfwarCreatureCapacity(data) : Renderer.vehicle.getShipCreatureCapacity(data);
@@ -125,6 +162,7 @@ function d20plusVehicles () {
 						character.attribs.create({name: "vehicle_cost", current: Parser.vehicleCostToFull(data)});
 
 
+						// This adds weapons, or anything that might end up in the weapon catagory
 						if (data.weapon) d20plus.importer.addVehicleWeapons(character, data.weapon, renderer);
 						if (data.control) d20plus.importer.addVehicleWeapons(character, data.control, renderer, "Control");
 						if (data.movement) d20plus.importer.addVehicleWeapons(character, data.movement, renderer, "Movement");
@@ -132,85 +170,48 @@ function d20plusVehicles () {
 
 						let numActions = 0;
 
+						// Some ships (mostly UA) have an other catagory that contains an action explaining how that ship's actions work
 						if (data.other) {
-							const name = d20plus.importer.getCleanText(renderer.render(data.other[0].name));
-							const text = d20plus.importer.getCleanText(renderer.render({entries: data.other[0].entries}, 1)).replace(/^\s*Hit:\s*/, "");
-							d20plus.importer.addVehicleAction(character, name, text, numActions++);
+							d20plus.vehicles._addAction(character, renderer, data.other[0].name, data.other[0].entries, numActions++);
 						}
+						// Mostly GoS ships
 						if (data.action) {
 							const text = d20plus.importer.getCleanText(renderer.render(data.action[0], 1)).replace(/^\s*Hit:\s*/, "");
 							d20plus.importer.addVehicleAction(character, "Actions", text, numActions++);
 
 							data.action[1].items.forEach((a, i) => {
-								const name = d20plus.importer.getCleanText(renderer.render(a.name));
-
 								let actionEntries = [];
-								if (data.weapon && i < data.weapon.length) actionEntries = data.weapon[i].entries
+								if (data.weapon && i < data.weapon.length) actionEntries = data.weapon[i].entries;
 								actionEntries.push(a.entry);
-
-								const text = d20plus.importer.getCleanText(renderer.render({entries: actionEntries}, 1)).replace(/^\s*Hit:\s*/, "");
-								d20plus.importer.addVehicleAction(character, name, text, numActions++);
+								d20plus.vehicles._addAction(character, renderer, a.name, actionEntries, numActions++);
 							});
 						}
+						// Mostly DiA war machines
 						else if (data.actionStation) {
 							data.actionStation.forEach(a => {
-								const name = d20plus.importer.getCleanText(renderer.render(a.name));
-								const text = d20plus.importer.getCleanText(renderer.render({entries: a.entries}, 1)).replace(/^\s*Hit:\s*/, "");
-								d20plus.importer.addVehicleAction(character, name, text, numActions++);
+								d20plus.vehicles._addAction(character, renderer, a.name, a.entries, numActions++);
 							});
 						}
+						// Sort of a catch all but works especially well with spelljammer
 						else if (data.weapon) {
 							data.weapon.forEach(w => {
 								if (w.action) {
 									w.action.forEach(a => {
-										const name = d20plus.importer.getCleanText(renderer.render(a.name));
-										const text = d20plus.importer.getCleanText(renderer.render({entries: a.entries.concat(w.entries)}, 1)).replace(/^\s*Hit:\s*/, "");
-										d20plus.importer.addVehicleAction(character, name, text, numActions++);
+										d20plus.vehicles._addAction(character, renderer, a.name, a.entries.concat(w.entries), numActions++);
 									});
 								}
 								else if (w.entries) {
-									const name = d20plus.importer.getCleanText(renderer.render(w.name));
-									const text = d20plus.importer.getCleanText(renderer.render({entries: w.entries}, 1)).replace(/^\s*Hit:\s*/, "");
-									d20plus.importer.addVehicleAction(character, name, text, numActions++);
+									d20plus.vehicles._addAction(character, renderer, w.name, w.entries, numActions++);
 								}
 							});
 						}
 
 						character.view.updateSheetValues();
 
-						if (data.entries) {
-							const renderFluff = renderer.render({entries: data.entries}, 1);
-							if (renderFluff) {
-								setTimeout(() => {
-									const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
-									let k = fluffAs === "Bio" ? "bio" : "gmnotes";
-									character.updateBlobs({
-										[k]: Markdown.parse(renderFluff),
-									});
-									character.save({
-										[k]: (new Date()).getTime(),
-									});
-								}, 500);
-							}
-						}
-
-						if (fluff && data.hasFluff) {
-							const depth = fluff.type === "section" ? -1 : 2;
-							if (fluff.type !== "section") renderer.setFirstSection(false);
-							const renderFluff = renderer.render({type: fluff.type, entries: fluff.entries || []}, depth);
-							if (renderFluff) {
-								setTimeout(() => {
-									const fluffAs = d20plus.cfg.get("import", "importFluffAs") || d20plus.cfg.getDefault("import", "importFluffAs");
-									let k = fluffAs === "Bio" ? "bio" : "gmnotes";
-									character.updateBlobs({
-										[k]: Markdown.parse(renderFluff),
-									});
-									character.save({
-										[k]: (new Date()).getTime(),
-									});
-								}, 500);
-							}
-						}
+						// Deal with fluff and images here
+						const fluff = d20plus.vehicles.fluff?.find(it => it.name === data.name && it.source === data.source);
+						d20plus.vehicles._setFluffImage(character, data, fluff);
+						d20plus.vehicles._setFluff(character, data, fluff, renderer);
 
 
 					} catch (e) {

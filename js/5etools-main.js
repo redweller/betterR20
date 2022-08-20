@@ -82,11 +82,7 @@ const betteR205etoolsMain = function () {
 		"vehicle": [
 			"name",
 			"source",
-			"size",
 			"vehicleType",
-			"ac",
-			"hp",
-			"entries",
 		],
 		"class": [
 			"name",
