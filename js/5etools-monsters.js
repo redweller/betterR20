@@ -1353,10 +1353,10 @@ function d20plusMonsters () {
 								const legGroup = DataUtil.monster.getMetaGroup(data);
 								if (legGroup) {
 									if (legGroup.lairActions) {
-										renderFluff += renderer.render({entries: legGroup.lairActions, name: "Lair Actions"}, depth = 2);
+										renderFluff += renderer.render({entries: legGroup.lairActions, name: "Lair Actions"}, -1);
 									}
 									if (legGroup.regionalEffects) {
-										renderFluff += renderer.render({entries: legGroup.regionalEffects, name: "Regional Effects"}, depth = 2);
+										renderFluff += renderer.render({entries: legGroup.regionalEffects, name: "Regional Effects"}, -1);
 									}
 								}
 							}
