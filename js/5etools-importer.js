@@ -404,14 +404,18 @@ function d20plusImporter () {
 	d20plus.importer._addVehicleWeapon = function (character, weapon, renderer, prefix) {
 		const newRowId = d20plus.ut.generateRowId();
 		let desc = "";
+
+		// Locomotion mostly occurs in the movement section of UAOfShipsAndSea ships
 		if (weapon.locomotion) {
 			const locEntries = Renderer.vehicle.ship.getLocomotionEntries(weapon.locomotion[0]);
 			desc = d20plus.importer.getCleanText(renderer.render(locEntries));
 		}
-		if (weapon.speed) {
+		// Speed mostly occurs in the movement section of GoS ships
+		else if (weapon.speed) {
 			const speedEntries = Renderer.vehicle.ship.getSpeedEntries(weapon.speed[0]);
 			desc = d20plus.importer.getCleanText(renderer.render(speedEntries));
 		}
+		// This sets the description of non-movement weapons
 		else if (weapon.entries) {
 			desc = d20plus.importer.getCleanText(renderer.render({entries: weapon.entries}));
 		}
@@ -948,6 +952,16 @@ function d20plusImporter () {
 				doImport(importQueue);
 			}
 		});
+	};
+
+	// Import dialog showing names of monsters failed to import
+	d20plus.importer.addImportError = function (name) {
+		let $span = $("#import-errors");
+		if ($span.text() === "0") {
+			$span.text(name);
+		} else {
+			$span.text(`${$span.text()}, ${name}`);
+		}
 	};
 
 	d20plus.importer._getHandoutPath = function (dataType, it, groupBy) {

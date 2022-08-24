@@ -3,7 +3,7 @@ function d20plusVehicles () {
 	
 	d20plus.vehicles.fluff = null;
 
-	d20plus.vehicles._loadFluff = function () {
+	d20plus.vehicles._loadFluff = async function () {
 		// To prevent loading the fluff multiple times
 		if (d20plus.vehicles.fluff) return;
 
@@ -87,9 +87,9 @@ function d20plusVehicles () {
 		}
 	};
 
-	d20plus.vehicles.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
+	d20plus.vehicles.handoutBuilder = async function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// First make sure the fluff is there
-		d20plus.vehicles._loadFluff();
+		await d20plus.vehicles._loadFluff();
 		
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Vehicles`, folderName);
@@ -175,7 +175,7 @@ function d20plusVehicles () {
 							d20plus.vehicles._addAction(character, renderer, data.other[0].name, data.other[0].entries, numActions++);
 						}
 						// Mostly GoS ships
-						if (data.action) {
+						if (data.action && typeof data.action[0] === "string") {
 							const text = d20plus.importer.getCleanText(renderer.render(data.action[0], 1)).replace(/^\s*Hit:\s*/, "");
 							d20plus.importer.addVehicleAction(character, "Actions", text, numActions++);
 
@@ -186,7 +186,13 @@ function d20plusVehicles () {
 								d20plus.vehicles._addAction(character, renderer, a.name, actionEntries, numActions++);
 							});
 						}
-						// Mostly DiA war machines
+						// Litterally just the Stahlmaster
+						else if (data.action) {
+							data.action.forEach(a => {
+								d20plus.vehicles._addAction(character, renderer, a.name, a.entries, numActions++);
+							});
+						}
+						// Mostly BGDIA infernal war machines
 						else if (data.actionStation) {
 							data.actionStation.forEach(a => {
 								d20plus.vehicles._addAction(character, renderer, a.name, a.entries, numActions++);
@@ -216,7 +222,7 @@ function d20plusVehicles () {
 
 					} catch (e) {
 						d20plus.ut.log(`Error loading [${name}]`);
-						d20plus.monsters.addImportError(name);
+						d20plus.importer.addImportError(name);
 						// eslint-disable-next-line no-console
 						console.log(data, e);
 					}
