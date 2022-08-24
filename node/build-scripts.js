@@ -25,9 +25,9 @@ const HEADER_CORE = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
-// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
+// @updateURL    https://github.com/redweller/betterR20/raw/development/dist/betteR20-core.meta.js
+// @downloadURL  https://github.com/redweller/betterR20/raw/development/dist/betteR20-core.user.js
 // @author       TheGiddyLimit
 ${matchString}
 // @grant        unsafeWindow
