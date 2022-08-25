@@ -56,7 +56,7 @@ function d20plusObjects () {
 								d20plus.importer.getSetAvatarImage(character, avatar);
 							},
 						});
-						
+
 						const size = Parser.sizeAbvToFull(data.size);
 						character.attribs.create({name: "npc", current: 1});
 						character.attribs.create({name: "npc_toggle", current: 1});

@@ -291,7 +291,7 @@ function d20plusItems () {
 		if (Renderer.item.propertyMap[property]) return Renderer.item.propertyMap[property].name;
 		return "n/a";
 	};
-	
+
 	d20plus.items.importItem = function (character, data, event) {
 		if (d20plus.sheet === "ogl") {
 			// for packs, etc
@@ -304,11 +304,11 @@ function d20plusItems () {
 							"current": content,
 						}).save();
 					}
-					
+
 					if (si.count) {
 						const rowId = d20plus.ut.generateRowId();
 						const siD = typeof si.subItem === "string" ? JSON.parse(si.subItem) : si.subItem;
-						
+
 						makeProp(rowId, "itemname", siD.name);
 						const w = (siD.data || {}).Weight;
 						if (w) makeProp(rowId, "itemweight", w);
@@ -318,23 +318,21 @@ function d20plusItems () {
 						queue.push(si.subItem);
 					}
 				});
-				
+
 				const interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
 				queue.map(it => typeof it === "string" ? JSON.parse(it) : it).forEach((item, ix) => {
 					setTimeout(() => {
 						d20plus.importer.doFakeDrop(event, character, item);
 					}, (ix + 1) * interval);
 				});
-				
+
 				return;
 			}
 		}
-		
+
 		// Fallback to native drag-n-drop
 		d20plus.importer.doFakeDrop(event, character, data);
 	};
-
-
 }
 
 SCRIPT_EXTENSIONS.push(d20plusItems);

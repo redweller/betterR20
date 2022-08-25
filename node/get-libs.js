@@ -1,6 +1,6 @@
 const process = require("process");
 const fs = require("fs");
-const path = require('path')
+const path = require("path")
 
 if (!process.argv[2]) {
 	console.error(`Usage: node get-data.js <path_to_5etools_root>`);
@@ -28,5 +28,3 @@ async function main () {
 }
 
 main().then(() => console.log("Done!"));
-
-

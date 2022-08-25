@@ -297,9 +297,9 @@ function tools5eConfig () {
 	});
 
 	d20plus.cfg5e.updateBaseSiteUrl = () => {
-		if (!!d20plus.cfg.get("import", "baseSiteUrl")) {
+		if (d20plus.cfg.get("import", "baseSiteUrl")) {
 			BASE_SITE_URL = d20plus.cfg.get("import", "baseSiteUrl");
-			if (BASE_SITE_URL.slice(-1) != '/') BASE_SITE_URL += '/';
+			if (BASE_SITE_URL.slice(-1) !== "/") BASE_SITE_URL += "/";
 			d20plus.ut.log(`Base Site Url updated: ${BASE_SITE_URL}`);
 		} else {
 			d20plus.ut.log(`Using default Base Site Url: ${BASE_SITE_URL}`);

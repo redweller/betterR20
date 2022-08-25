@@ -96,7 +96,7 @@ function baseTool () {
 
 								// Remove the folder from the path when done
 								pos.pop();
-							} 
+							}
 							// Only triggers for non-folders, adds non-folders to list
 							else out.push({id: entry, path: MiscUtil.copy(pos)});
 						}
@@ -130,7 +130,7 @@ function baseTool () {
 						if (character) return {type: "characters", id: itId, name: character.get("name"), path: path, archived: character.attributes.archived};
 
 						// If both are empty, check if item is a folder and return a folder type
-						if (d20plus.journal.checkDirExistsByPath(path.split(" / "))) return {type: "folder", id: itId, name: "", path:path, archived: false, folder: true}
+						if (d20plus.journal.checkDirExistsByPath(path.split(" / "))) return {type: "folder", id: itId, name: "", path: path, archived: false, folder: true}
 					}
 
 					function getJournalItems () {
@@ -148,7 +148,7 @@ function baseTool () {
 					}
 
 					// Allow for deleting tables as well
-					function getRollableTables() {
+					function getRollableTables () {
 						let tItems = [];
 						if ($cbTables.prop("checked")) {
 							// Get a tableobject from the d20 thing and loop through it
@@ -160,7 +160,7 @@ function baseTool () {
 									name: tAttr.name,
 									id: tAttr.id,
 									type: "rollabletables",
-									table: true
+									table: true,
 								};
 								tItems.push(tObj);
 							}
@@ -169,7 +169,7 @@ function baseTool () {
 					}
 
 					// Populate different lists based on which box is checked
-					const journalItems = getJournalItems();		
+					const journalItems = getJournalItems();
 
 					// Display found items
 					const $delList = $win.find(`.list`);
