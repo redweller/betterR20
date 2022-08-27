@@ -1,7 +1,7 @@
 function d20plusAdventure () {
-    d20plus.adventures = {};
+	d20plus.adventures = {};
 
-    	// Import Adventures button was clicked
+	// Import Adventures button was clicked
 	d20plus.adventures.button = function () {
 		const url = $("#import-adventures-url").val();
 		if (url !== null) d20plus.adventures.load(url);

@@ -86,13 +86,13 @@ function d20plusBackgrounds () {
 		const ptraitargs = {
 			countMin: 1,
 			countMax: 2,
-			random:true,
-			totallyRandom:true,
+			random: true,
+			totallyRandom: true,
 		}
 		const args = {
 			countMin: 1,
 			countMax: 1,
-			random:true,
+			random: true,
 		}
 
 		// Call the menu
@@ -210,9 +210,9 @@ function d20plusBackgrounds () {
 					<div title="Choose ${profType}">
 						<div>
 							${options.map((it, i) => `<label class="split"><input name="prof-group" data-ix="${i}" type="radio" ${i === 0 ? `checked` : ""}> <span>${
-								// Format it nicely
-								Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).map(a => a.toTitleCase()).join(", ")
-							}</span></label>`).join("")}
+		// Format it nicely
+		Object.entries(it).map(a => a[0]).map(a => a === "anyStandard" ? "any" : a).map(a => a.toTitleCase()).join(", ")
+	}</span></label>`).join("")}
 						</div>
 					</div>
 				`).appendTo($("body"));

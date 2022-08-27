@@ -1277,7 +1277,7 @@ function d20plusEngine () {
 					</li>
 				`);
 			}
-			
+
 			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
 				$(`#floatingtoolbar .choosewalls`).after(`
 					<li class="chooseweather">
@@ -1286,7 +1286,6 @@ function d20plusEngine () {
 					</li>
 				`);
 			}
-			
 		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);

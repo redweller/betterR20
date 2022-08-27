@@ -111,8 +111,8 @@ const betteR205etoolsMain = function () {
 		"deity": [
 			"name",
 			"source",
-			"pantheon"
-		]
+			"pantheon",
+		],
 	};
 
 	let spellDataUrls = {};
@@ -677,7 +677,7 @@ const betteR205etoolsMain = function () {
 		$appTo.append(d20plus.settingsHtmlPtSubclassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
 		$appTo.append(d20plus.settingsHtmlPtOptfeaturesPlayer);
-		
+
 		$winPlayer.dialog({
 			autoOpen: false,
 			resizable: true,

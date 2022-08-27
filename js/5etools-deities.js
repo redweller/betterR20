@@ -22,7 +22,7 @@ function d20plusDeities () {
 		}
 	};
 
-    d20plus.deities.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
+	d20plus.deities.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Deities`, folderName);
 		const path = ["Deities", ...folderName, data.name];
@@ -48,20 +48,20 @@ function d20plusDeities () {
 		});
 	};
 
-    d20plus.deities._getHandoutData = function (data) {
+	d20plus.deities._getHandoutData = function (data) {
 		const renderer = new Renderer();
 
-        // Create the list of things to add to the entry
+		// Create the list of things to add to the entry
 		const renderStack = [];
 
-        // Add meta info
-        renderStack.push(Renderer.deity.getCompactRenderedString(data));
-        // Add flavor text
+		// Add meta info
+		renderStack.push(Renderer.deity.getCompactRenderedString(data));
+		// Add flavor text
 		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 1});
 
 		const rendered = renderStack.join("");
 
-        // Add GM notes
+		// Add GM notes
 		const r20json = {
 			"name": d20plus.deities._getFullName(data),
 			"Vetoolscontent": data,

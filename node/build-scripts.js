@@ -63,10 +63,9 @@ function joinParts (...parts) {
 function getDataDirPaths () {
 	const walkSync = (dir, filelist = []) => {
 		fs.readdirSync(dir).forEach(file => {
-
-			filelist = fs.statSync(dir + "/" + file).isDirectory()
-				? walkSync(dir + "/" + file, filelist)
-				: filelist.concat(dir +"/" + file);
+			filelist = fs.statSync(`${dir}/${file}`).isDirectory()
+				? walkSync(`${dir}/${file}`, filelist)
+				: filelist.concat(`${dir}/${file}`);
 		});
 		return filelist;
 	}
@@ -90,7 +89,7 @@ ${script}
 `;
 }
 
-if (!fs.existsSync(BUILD_DIR)){
+if (!fs.existsSync(BUILD_DIR)) {
 	fs.mkdirSync(BUILD_DIR);
 }
 
@@ -116,8 +115,8 @@ const LIB_SCRIPTS = {
 		"hist-port.js",
 		"render.js",
 		"render-dice.js",
-		"scalecreature.js"
-	]
+		"scalecreature.js",
+	],
 };
 
 const LIB_SCRIPTS_API = {
@@ -130,12 +129,12 @@ const LIB_SCRIPTS_API = {
 		"VecMath.js",
 		"matrixMath.js",
 		"PathMath.js",
-	]
+	],
 };
 
 const LIB_JSON = {
 	core: [],
-	"5etools": getDataDirPaths()
+	"5etools": getDataDirPaths(),
 };
 
 const SCRIPTS = {
@@ -172,8 +171,8 @@ const SCRIPTS = {
 
 			"core-bootstrap",
 
-			"base"
-		]
+			"base",
+		],
 	},
 	"5etools": {
 		header: HEADER_5ETOOLS,
@@ -225,9 +224,9 @@ const SCRIPTS = {
 			"5etools-adventures",
 			"5etools-deities",
 
-			"base"
-		]
-	}
+			"base",
+		],
+	},
 };
 
 Object.entries(SCRIPTS).forEach(([k, v]) => {
@@ -243,7 +242,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
 		...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString()),
 		...libScripts.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString())),
-		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true))
+		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true)),
 	);
 	fs.writeFileSync(filename, fullScript);
 	fs.writeFileSync(metaFilename, v.header);

@@ -117,7 +117,7 @@ function d20plusImporter () {
 
 	d20plus.importer.doFakeDrop = function (event, characterView, fakeRoll20Json) {
 		const e = characterView; // AKA character.view
-		const o = (typeof fakeRoll20Json === "array") ? fakeRoll20Json[0] : fakeRoll20Json;
+		const o = (Array.isArray(fakeRoll20Json)) ? fakeRoll20Json[0] : fakeRoll20Json;
 
 		// The page/subheading area always undefined, since we're not coming from the compendium. Pass in some junk.
 		const t = d20plus.ut.generateRowId(); // `$(i.helper[0]).attr("data-pagename")` e.g. "Spells%3AFire%20Bolt"
@@ -200,8 +200,8 @@ function d20plusImporter () {
 
 	d20plus.importer.getSetAvatarImage = async function (character, avatar, portraitUrl) {
 		let tokensize = 1;
-		if (character.size[0] === "T") tokensize = .572; // 40 (most tiny creature images have padding)
-		else if (character.size[0] === "S") tokensize = .572; // 40
+		if (character.size[0] === "T") tokensize = 0.572; // 40 (most tiny creature images have padding)
+		else if (character.size[0] === "S") tokensize = 0.572; // 40
 		else if (character.size[0] === "L") tokensize = 2;
 		else if (character.size[0] === "H") tokensize = 3;
 		else if (character.size[0] === "G") tokensize = 4;
