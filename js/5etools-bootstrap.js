@@ -35,6 +35,8 @@ const betteR205etools = function () {
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
+			if (window.is_gm) await d20plus.monsters.pLoadLegGroups();
+
 			d20plus.bindDropLocations();
 			d20plus.ui.addHtmlHeader();
 			d20plus.addCustomHTML();

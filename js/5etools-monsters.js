@@ -153,6 +153,15 @@ function d20plusMonsters () {
 			}
 		});
 	};
+	
+	/**
+	 * Preload a legendary group map so that monsters with legendary groups
+	 * (lair actions and regional effects) can get their data more efficiently
+	 */
+	d20plus.monsters.pLoadLegGroups = async function () {
+		await DataUtil.monster.pPreloadMeta();
+	}
+
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
 		const url = $("#import-monster-url").val();
@@ -1339,6 +1348,19 @@ function d20plusMonsters () {
 								}
 							}
 
+							// Load lair actions and regional effects
+							if (data.legendaryGroup) {
+								const legGroup = DataUtil.monster.getMetaGroup(data);
+								if (legGroup) {
+									if (legGroup.lairActions) {
+										renderFluff += renderer.render({entries: legGroup.lairActions, name: "Lair Actions"}, -1);
+									}
+									if (legGroup.regionalEffects) {
+										renderFluff += renderer.render({entries: legGroup.regionalEffects, name: "Regional Effects"}, -1);
+									}
+								}
+							}
+
 							// set show/hide NPC names in rolls
 							if (d20plus.cfg.has("import", "showNpcNames") && !d20plus.cfg.get("import", "showNpcNames")) {
 								character.attribs.create({name: "npc_name_flag", current: 0});
@@ -1350,15 +1372,6 @@ function d20plusMonsters () {
 									istokenaction: true,
 									action: `%{${character.id}|shaped_actions}`,
 								});
-
-								// TODO lair action creation is unimplemented
-								/*
-								character.abilities.create({
-									name: "Lair Actions",
-									istokenaction: true,
-									action: `%{${character.id}|shaped_lairactions}`
-								});
-								*/
 							}
 
 							character.view.updateSheetValues();
