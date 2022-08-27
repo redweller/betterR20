@@ -153,7 +153,7 @@ function d20plusMonsters () {
 			}
 		});
 	};
-	
+
 	/**
 	 * Preload a legendary group map so that monsters with legendary groups
 	 * (lair actions and regional effects) can get their data more efficiently

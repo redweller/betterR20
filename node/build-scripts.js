@@ -209,6 +209,7 @@ const SCRIPTS = {
 			"5etools-bootstrap",
 			"5etools-config",
 			"5etools-main",
+			"5etools-utils-brew-shim",
 			"5etools-importer",
 			"5etools-monsters",
 			"5etools-spells",
