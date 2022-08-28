@@ -30,7 +30,6 @@ function d20plusClass () {
 			const officialClassUrls = Object.values(classDataUrls).map(v => d20plus.formSrcUrl(CLASS_DATA_DIR, v));
 
 			DataUtil.loadJSON(url).then(async (data) => {
-				d20plus.importer.addBrewMeta(data._meta);
 				await d20plus.importer.pAddBrew(data);
 
 				if (!data.class) return;
@@ -512,7 +511,6 @@ function d20plusClass () {
 			const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
 			DataUtil.loadJSON(url).then(async (data) => {
-				d20plus.importer.addBrewMeta(data._meta);
 				await d20plus.importer.pAddBrew(data);
 
 				data = MiscUtil.copy(data);
