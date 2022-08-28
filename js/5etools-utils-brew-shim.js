@@ -47,11 +47,11 @@ function utilsBrewShim () {
 	}
 
 	class BrewUtil2 {
-		static hasSourceJson (source) { return !!this.getMetaLookup("_sources")[(source || "").toLowerCase()]; }
-		static sourceJsonToFull (source) { return this.getMetaLookup("_sources")[(source || "").toLowerCase()]?.full || source; }
-		static sourceJsonToSource (source) { return this.getMetaLookup("_sources")[(source || "").toLowerCase()]; }
-		static sourceJsonToAbv (source) { return this.getMetaLookup("_sources")[(source || "").toLowerCase()]?.abbreviation || source; }
-		static sourceJsonToDate (source) { return this.getMetaLookup("_sources")[(source || "").toLowerCase()]?.dateReleased || "1970-01-01"; }
+		static hasSourceJson (source) { return !!(this.getMetaLookup("_sources") || {})[(source || "").toLowerCase()]; }
+		static sourceJsonToFull (source) { return (this.getMetaLookup("_sources") || {})[(source || "").toLowerCase()]?.full || source; }
+		static sourceJsonToSource (source) { return (this.getMetaLookup("_sources") || {})[(source || "").toLowerCase()]; }
+		static sourceJsonToAbv (source) { return (this.getMetaLookup("_sources") || {})[(source || "").toLowerCase()]?.abbreviation || source; }
+		static sourceJsonToDate (source) { return (this.getMetaLookup("_sources") || {})[(source || "").toLowerCase()]?.dateReleased || "1970-01-01"; }
 
 		static sourceJsonToStyle (source) { return ""; }
 
