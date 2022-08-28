@@ -224,6 +224,7 @@ const SCRIPTS = {
 			"5etools-optional-features",
 			"5etools-adventures",
 			"5etools-deities",
+			"5etools-vehicles",
 
 			"base",
 		],

@@ -371,6 +371,53 @@ function d20plusImporter () {
 		d20plus.importer._baseAddAction(character, "repeating_npcaction-m", name, actionText, "Mythic", index, expand);
 	};
 
+	d20plus.importer.addVehicleAction = function (character, name, actionText, index) {
+		const expand = d20plus.cfg.getOrDefault("import", "tokenactionsExpanded");
+		d20plus.importer._baseAddAction(character, "repeating_vehicleactions", name, actionText, "Vehicle", index, expand);
+	};
+
+	// Add individual weapons to the npc ship stat block
+	d20plus.importer._addVehicleWeapon = function (character, weapon, renderer, prefix) {
+		const newRowId = d20plus.ut.generateRowId();
+		let desc = "";
+
+		// Locomotion mostly occurs in the movement section of UAOfShipsAndSea ships
+		if (weapon.locomotion) {
+			const locEntries = Renderer.vehicle.ship.getLocomotionEntries(weapon.locomotion[0]);
+			desc = d20plus.importer.getCleanText(renderer.render(locEntries));
+		}
+		// Speed mostly occurs in the movement section of GoS ships
+		else if (weapon.speed) {
+			const speedEntries = Renderer.vehicle.ship.getSpeedEntries(weapon.speed[0]);
+			desc = d20plus.importer.getCleanText(renderer.render(speedEntries));
+		}
+		// This sets the description of non-movement weapons
+		else if (weapon.entries) {
+			desc = d20plus.importer.getCleanText(renderer.render({entries: weapon.entries}));
+		}
+
+		// Cost code stolen from Giddy
+		const cost = weapon.costs? weapon.costs.map(cost => {
+			return `${Parser.vehicleCostToFull(cost) || "\u2014"}${cost.note ? `  (${renderer.render(cost.note)})` : ""}`;
+		}).join(", ") : weapon.hpNote || "\u2014";
+
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_name`, current: `${prefix}${weapon.name}`});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_quantity`, current: weapon.count || 1});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_crew`, current: weapon.crew || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_actions`, current: "10"});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_ac`, current: weapon.ac || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_hp`, current: weapon.hp || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_hp--silent`, current: weapon.hp || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_cost`, current: cost});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_description`, current: desc});
+	};
+
+	d20plus.importer.addVehicleWeapons = function (character, wArray, renderer, prefix = null) {
+		wArray.forEach(w => {
+			d20plus.importer._addVehicleWeapon(character, w, renderer, prefix ? prefix + ": ": "");
+		});
+	}
+
 	d20plus.importer.findAttrId = function (character, attrName) {
 		const found = character.attribs.toJSON().find(a => a.name === attrName);
 		return found ? found.id : undefined;
@@ -777,7 +824,7 @@ function d20plusImporter () {
 				let remaining = importQueue.length;
 
 				let interval;
-				if (dataType === "monster" || dataType === "object") {
+				if (dataType === "monster" || dataType === "object" || dataType === "vehicle") {
 					interval = d20plus.cfg.get("import", "importIntervalCharacter") || d20plus.cfg.getDefault("import", "importIntervalCharacter");
 				} else {
 					interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
@@ -883,6 +930,16 @@ function d20plusImporter () {
 		});
 	};
 
+	// Import dialog showing names of monsters failed to import
+	d20plus.importer.addImportError = function (name) {
+		let $span = $("#import-errors");
+		if ($span.text() === "0") {
+			$span.text(name);
+		} else {
+			$span.text(`${$span.text()}, ${name}`);
+		}
+	};
+
 	d20plus.importer._getHandoutPath = function (dataType, it, groupBy) {
 		switch (dataType) {
 			case "monster": {
@@ -984,6 +1041,19 @@ function d20plusImporter () {
 				return folderName;
 			}
 			case "object": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
+			case "vehicle": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":
