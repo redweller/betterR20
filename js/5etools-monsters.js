@@ -257,16 +257,6 @@ function d20plusMonsters () {
 		return d20plus.formSrcUrl(MONSTER_DATA_DIR, fileName);
 	};
 
-	// Import dialog showing names of monsters failed to import
-	d20plus.monsters.addImportError = function (name) {
-		let $span = $("#import-errors");
-		if ($span.text() === "0") {
-			$span.text(name);
-		} else {
-			$span.text(`${$span.text()}, ${name}`);
-		}
-	};
-
 	// Get NPC size from chr
 	d20plus.monsters.getSizeString = function (chr) {
 		const result = Renderer.utils.getRenderedSize(chr);
@@ -1390,7 +1380,7 @@ function d20plusMonsters () {
 							}
 						} catch (e) {
 							d20plus.ut.log(`Error loading [${name}]`);
-							d20plus.monsters.addImportError(name);
+							d20plus.importer.addImportError(name);
 							// eslint-disable-next-line no-console
 							console.log(data, e);
 						}
