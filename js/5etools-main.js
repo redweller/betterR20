@@ -1555,7 +1555,7 @@ To import from third-party sources, either individually select one available in 
 </div>
 `;
 
-d20plus.settingsHtmlPtVehicles = `
+	d20plus.settingsHtmlPtVehicles = `
 <div class="importer-section" data-import-group="vehicle">
 <h4>Vehicle Importing</h4>
 <label for="import-vehicles-url">Vehicle Data URL:</label>

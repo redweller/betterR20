@@ -397,7 +397,7 @@ function d20plusImporter () {
 		}
 
 		// Cost code stolen from Giddy
-		const cost = weapon.costs? weapon.costs.map(cost => {
+		const cost = weapon.costs ? weapon.costs.map(cost => {
 			return `${Parser.vehicleCostToFull(cost) || "\u2014"}${cost.note ? `  (${renderer.render(cost.note)})` : ""}`;
 		}).join(", ") : weapon.hpNote || "\u2014";
 
@@ -414,7 +414,7 @@ function d20plusImporter () {
 
 	d20plus.importer.addVehicleWeapons = function (character, wArray, renderer, prefix = null) {
 		wArray.forEach(w => {
-			d20plus.importer._addVehicleWeapon(character, w, renderer, prefix ? prefix + ": ": "");
+			d20plus.importer._addVehicleWeapon(character, w, renderer, prefix ? `${prefix}: ` : "");
 		});
 	}
 

@@ -1,6 +1,6 @@
 function d20plusVehicles () {
 	d20plus.vehicles = {};
-	
+
 	d20plus.vehicles.fluff = null;
 
 	d20plus.vehicles._loadFluff = async function () {
@@ -27,12 +27,11 @@ function d20plusVehicles () {
 	d20plus.vehicles._setFluffImage = function (character, data, fluff) {
 		const tokenUrl = `${IMG_URL}vehicles/tokens/${data.source}/${data.name}.png`;
 		const avatar = data.tokenUrl || Parser.nameToTokenName(tokenUrl);
-		console.log(avatar);
-		const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images ? 
-			(() => {
-			const firstImage = fluff.images[0] || {};
-			return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
-		})() : null;
+		const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images
+			? (() => {
+				const firstImage = fluff.images[0] || {};
+				return (firstImage.href || {}).type === "internal" ? `${BASE_SITE_URL}/img/${firstImage.href.path}` : (firstImage.href || {}).url;
+			})() : null;
 		$.ajax({
 			url: avatar,
 			type: "HEAD",
@@ -90,7 +89,7 @@ function d20plusVehicles () {
 	d20plus.vehicles.handoutBuilder = async function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
 		// First make sure the fluff is there
 		await d20plus.vehicles._loadFluff();
-		
+
 		// make dir
 		const folder = d20plus.journal.makeDirTree(`Vehicles`, folderName);
 		const path = ["Vehicles", ...folderName, data.name];
@@ -121,7 +120,7 @@ function d20plusVehicles () {
 
 						const renderer = new Renderer();
 						renderer.setBaseUrl(BASE_SITE_URL);
-						
+
 						character.attribs.create({name: "npc", current: 1});
 						character.attribs.create({name: "npc_options-flag", current: 0});
 						character.attribs.create({name: "is_vehicle", current: 1});
@@ -143,24 +142,27 @@ function d20plusVehicles () {
 						// Setting the basic vehicle variables
 						const achpContainer = data.vehicleType === "INFWAR" ? data.hp : (data.hull || data);
 						const acType = achpContainer.acFrom ? achpContainer.acFrom[0] : Parser.vehicleTypeToFull(data.vehicleType);
-						const crew = data.capCreature ? Renderer.vehicle.getInfwarCreatureCapacity(data) : Renderer.vehicle.getShipCreatureCapacity(data);
+						const crew = (data.capCreature ? data.capCreature : data.capCrew) || 0;
 						let speed = "\u2014";
 						if (data.speed) speed = Parser.getSpeedString(data);
 						else if (data.pace) speed = `${data.pace * 10} ft.`;
 						const keel = data.dimensions ? data.dimensions[0].split(" ")[0] : "";
 						const beam = data.dimensions ? data.dimensions[1].split(" ")[0] : "";
+						const tokenSize = data.vehicleType === "SPELLJAMMER"
+							? 4
+							: {"L": 2, "H": 3, "G": 4}[data.size] || 1;
 
 						character.attribs.create({name: "vehicle_ac", current: achpContainer.ac || ""});
 						character.attribs.create({name: "vehicle_actype", current: acType});
 						character.attribs.create({name: "vehicle_cargo", current: data.capCargo || ""});
-						character.attribs.create({name: "vehicle_hp", current: achpContainer.hp || ""});
+						character.attribs.create({name: "vehicle_hp", current: achpContainer.hp || 0, max: achpContainer.hp || 0});
 						character.attribs.create({name: "vehicle_crew", current: crew});
 						character.attribs.create({name: "vehicle_dt", current: achpContainer.dt || ""});
 						character.attribs.create({name: "vehicle_keel", current: keel});
 						character.attribs.create({name: "vehicle_beam", current: beam});
 						character.attribs.create({name: "vehicle_speed", current: speed});
 						character.attribs.create({name: "vehicle_cost", current: Parser.vehicleCostToFull(data)});
-
+						character.attribs.create({name: "token_size", current: tokenSize});
 
 						// This adds weapons, or anything that might end up in the weapon catagory
 						if (data.weapon) d20plus.importer.addVehicleWeapons(character, data.weapon, renderer);
@@ -218,8 +220,6 @@ function d20plusVehicles () {
 						const fluff = d20plus.vehicles.fluff?.find(it => it.name === data.name && it.source === data.source);
 						d20plus.vehicles._setFluffImage(character, data, fluff);
 						d20plus.vehicles._setFluff(character, data, fluff, renderer);
-
-
 					} catch (e) {
 						d20plus.ut.log(`Error loading [${name}]`);
 						d20plus.importer.addImportError(name);
@@ -228,7 +228,7 @@ function d20plusVehicles () {
 					}
 					d20.journal.addItemToFolderStructure(character.id, folder.id);
 				},
-			}
+			},
 		);
 	};
 }
