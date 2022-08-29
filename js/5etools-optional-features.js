@@ -1,7 +1,7 @@
 function d20plusOptionalFeatures () {
-    d20plus.optionalfeatures = {};
+	d20plus.optionalfeatures = {};
 
-    d20plus.optionalfeatures.button = function (forcePlayer) {
+	d20plus.optionalfeatures.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-optionalfeatures-url-player").val() : $("#import-optionalfeatures-url").val();
 
@@ -81,33 +81,33 @@ function d20plusOptionalFeatures () {
 		return [noteContents, gmNotes];
 	};
 
-    d20plus.optionalfeatures.importOptionalFeature = function (character, data) {
-        const optionalFeature = data.Vetoolscontent;
-        const renderer = new Renderer();
-        renderer.setBaseUrl(BASE_SITE_URL);
-        const rendered = renderer.render({entries: optionalFeature.entries});
-        const optionalFeatureText = d20plus.importer.getCleanText(rendered);
+	d20plus.optionalfeatures.importOptionalFeature = function (character, data) {
+		const optionalFeature = data.Vetoolscontent;
+		const renderer = new Renderer();
+		renderer.setBaseUrl(BASE_SITE_URL);
+		const rendered = renderer.render({entries: optionalFeature.entries});
+		const optionalFeatureText = d20plus.importer.getCleanText(rendered);
 
-        const attrs = new d20plus.importer.CharacterAttributesProxy(character);
-        const fRowId = d20plus.ut.generateRowId();
+		const attrs = new d20plus.importer.CharacterAttributesProxy(character);
+		const fRowId = d20plus.ut.generateRowId();
 
-        if (d20plus.sheet === "ogl") {
-            attrs.add(`repeating_traits_${fRowId}_name`, optionalFeature.name);
-            attrs.add(`repeating_traits_${fRowId}_source`, Parser.optFeatureTypeToFull(optionalFeature.featureType));
-            attrs.add(`repeating_traits_${fRowId}_source_type`, optionalFeature.name);
-            attrs.add(`repeating_traits_${fRowId}_description`, optionalFeatureText);
-            attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
-        } else if (d20plus.sheet === "shaped") {
-            attrs.add(`repeating_classfeature_${fRowId}_name`, optionalFeature.name);
-            attrs.add(`repeating_classfeature_${fRowId}_content`, optionalFeatureText);
-            attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
-        } else {
-            // eslint-disable-next-line no-console
-            console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
-        }
+		if (d20plus.sheet === "ogl") {
+			attrs.add(`repeating_traits_${fRowId}_name`, optionalFeature.name);
+			attrs.add(`repeating_traits_${fRowId}_source`, Parser.optFeatureTypeToFull(optionalFeature.featureType));
+			attrs.add(`repeating_traits_${fRowId}_source_type`, optionalFeature.name);
+			attrs.add(`repeating_traits_${fRowId}_description`, optionalFeatureText);
+			attrs.add(`repeating_traits_${fRowId}_options-flag`, "0");
+		} else if (d20plus.sheet === "shaped") {
+			attrs.add(`repeating_classfeature_${fRowId}_name`, optionalFeature.name);
+			attrs.add(`repeating_classfeature_${fRowId}_content`, optionalFeatureText);
+			attrs.add(`repeating_classfeature_${fRowId}_content_toggle`, "1");
+		} else {
+			// eslint-disable-next-line no-console
+			console.warn(`Optional feature (invocation, maneuver, or metamagic) import is not supported for ${d20plus.sheet} character sheet`);
+		}
 
-        attrs.notifySheetWorkers();
-    };
+		attrs.notifySheetWorkers();
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusOptionalFeatures);

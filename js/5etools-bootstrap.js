@@ -35,6 +35,8 @@ const betteR205etools = function () {
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
+			if (window.is_gm) await d20plus.monsters.pLoadLegGroups();
+
 			d20plus.bindDropLocations();
 			d20plus.ui.addHtmlHeader();
 			d20plus.addCustomHTML();
@@ -100,13 +102,6 @@ const betteR205etools = function () {
 
 	async function monkeyPatch5etoolsCode () {
 		IS_VTT = true; // global variable from 5etools' utils.js
-		BrewUtil._buildSourceCache = function () {
-			// no-op when building source cache; we'll handle this elsewhere
-			BrewUtil._sourceCache = BrewUtil._sourceCache || {};
-		};
-		// dummy values
-		BrewUtil.homebrew = {};
-		BrewUtil.homebrewMeta = {sources: []};
 
 		Renderer.get().setBaseUrl(BASE_SITE_URL);
 	}

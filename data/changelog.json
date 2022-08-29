@@ -316,5 +316,10 @@
 		"ver": "1.30.3",
 		"date": "2022-05-22",
 		"txt": "- Updated drag/drop handler to support latest compendium changes (thanks @ oldewyrm)\n- Fixed text tool failing to apply correct stroke\n- (Updated to latest data files; added support for latest data changes) (thanks @ oldewyrm)"
+	},
+	{
+		"ver": "1.31.0",
+		"date": "2022-08-28",
+		"txt": "- Added Vehicle importer (thanks @darthbeep)\n- Monster importer now adds lair actions and regional effects, where available, to sheet Bio & Info (thanks @darthbeep)\n- (Updated to latest data files; added support for latest data changes)"
 	}
 ]

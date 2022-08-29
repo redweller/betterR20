@@ -1,7 +1,7 @@
 function tools5eTool () {
-    // Add the array of tools that are 5e only to the tools array
-    d20plus.tool.tools = d20plus.tool.tools.concat([
-        {
+	// Add the array of tools that are 5e only to the tools array
+	d20plus.tool.tools = d20plus.tool.tools.concat([
+		{
 			name: "Shapeshifter Token Builder",
 			desc: "Build a rollable table and related token to represent a shapeshifting creature.",
 			html: `
@@ -333,8 +333,8 @@ function tools5eTool () {
 					});
 				});
 			},
-        }
-    ]);
+		},
+	]);
 }
 
 SCRIPT_EXTENSIONS.push(tools5eTool);

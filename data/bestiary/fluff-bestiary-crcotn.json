@@ -306,7 +306,7 @@
 											]
 										},
 										"Their journey has forced the tier 3 rivals to make decisions, sometimes out of grim necessity, that they might have not made earlier. All five suffer from ruidium corruption (see \"Ruidium \"in the introduction). When the characters encounter them, assume that the rivals have removed all levels of exhaustion from themselves through rest or magic, but the other effects of ruidium corruption remain.",
-										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the{@i Player's Handbook}).",
+										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the {@i Player's Handbook}).",
 										{
 											"type": "entries",
 											"name": "Useful Magic",
@@ -570,7 +570,7 @@
 											]
 										},
 										"Their journey has forced the tier 3 rivals to make decisions, sometimes out of grim necessity, that they might have not made earlier. All five suffer from ruidium corruption (see \"Ruidium \"in the introduction). When the characters encounter them, assume that the rivals have removed all levels of exhaustion from themselves through rest or magic, but the other effects of ruidium corruption remain.",
-										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the{@i Player's Handbook}).",
+										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the {@i Player's Handbook}).",
 										{
 											"type": "entries",
 											"name": "Useful Magic",
@@ -833,7 +833,7 @@
 											]
 										},
 										"Their journey has forced the tier 3 rivals to make decisions, sometimes out of grim necessity, that they might have not made earlier. All five suffer from ruidium corruption (see \"Ruidium \"in the introduction). When the characters encounter them, assume that the rivals have removed all levels of exhaustion from themselves through rest or magic, but the other effects of ruidium corruption remain.",
-										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the{@i Player's Handbook}).",
+										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the {@i Player's Handbook}).",
 										{
 											"type": "entries",
 											"name": "Useful Magic",
@@ -1094,7 +1094,7 @@
 											]
 										},
 										"Their journey has forced the tier 3 rivals to make decisions, sometimes out of grim necessity, that they might have not made earlier. All five suffer from ruidium corruption (see \"Ruidium \"in the introduction). When the characters encounter them, assume that the rivals have removed all levels of exhaustion from themselves through rest or magic, but the other effects of ruidium corruption remain.",
-										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the{@i Player's Handbook}).",
+										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the {@i Player's Handbook}).",
 										{
 											"type": "entries",
 											"name": "Useful Magic",
@@ -1356,7 +1356,7 @@
 											]
 										},
 										"Their journey has forced the tier 3 rivals to make decisions, sometimes out of grim necessity, that they might have not made earlier. All five suffer from ruidium corruption (see \"Ruidium \"in the introduction). When the characters encounter them, assume that the rivals have removed all levels of exhaustion from themselves through rest or magic, but the other effects of ruidium corruption remain.",
-										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the{@i Player's Handbook}).",
+										"If instead you want to weaken the rivals to make them less of a physical threat or reinforce the danger of ruidium corruption, you can give one or more of the rivals {@dice 1d4} levels of exhaustion each. In this case, you'll need to keep track of each rival's exhaustion level and the condition's corresponding effects (see \"Exhaustion \"in the {@i Player's Handbook}).",
 										{
 											"type": "entries",
 											"name": "Useful Magic",
@@ -1824,63 +1824,6 @@
 					"href": {
 						"type": "internal",
 						"path": "bestiary/CRCotN/Swarm of Sorrowfish.webp"
-					}
-				}
-			]
-		},
-		{
-			"name": "Sword Wraith Commander (Variant)",
-			"source": "CRCotN",
-			"entries": [
-				{
-					"type": "entries",
-					"entries": [
-						"Sword wraith commanders haunt battlefields, attacking anyone who questions their valor but looking kindly on those who sing their praises."
-					]
-				},
-				{
-					"type": "section",
-					"entries": [
-						{
-							"type": "entries",
-							"name": "Sword Wraiths",
-							"entries": [
-								"When glory-obsessed warriors die in battle without honor, they might haunt the site as sword wraiths."
-							]
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Sword Wraith Warrior (Variant)",
-			"source": "CRCotN",
-			"entries": [
-				{
-					"type": "entries",
-					"entries": [
-						"Sword wraith warriors are most often found on ancient battlefields where soldiers were hemmed in and slaughtered without quarter."
-					]
-				},
-				{
-					"type": "section",
-					"entries": [
-						{
-							"type": "entries",
-							"name": "Sword Wraiths",
-							"entries": [
-								"When glory-obsessed warriors die in battle without honor, they might haunt the site as sword wraiths."
-							]
-						}
-					]
-				}
-			],
-			"images": [
-				{
-					"type": "image",
-					"href": {
-						"type": "internal",
-						"path": "bestiary/CRCotN/Sword Wraith Warrior (Variant).webp"
 					}
 				}
 			]

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.30.3.0";
+const SCRIPT_VERSION = "1.31.0";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -25,9 +25,9 @@ const HEADER_CORE = `// ==UserScript==
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
-// @updateURL    https://github.com/redweller/betterR20/raw/development/dist/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/development/dist/betteR20-core.user.js
 // @author       TheGiddyLimit
 ${matchString}
 // @grant        unsafeWindow
@@ -63,10 +63,9 @@ function joinParts (...parts) {
 function getDataDirPaths () {
 	const walkSync = (dir, filelist = []) => {
 		fs.readdirSync(dir).forEach(file => {
-
-			filelist = fs.statSync(dir + "/" + file).isDirectory()
-				? walkSync(dir + "/" + file, filelist)
-				: filelist.concat(dir +"/" + file);
+			filelist = fs.statSync(`${dir}/${file}`).isDirectory()
+				? walkSync(`${dir}/${file}`, filelist)
+				: filelist.concat(`${dir}/${file}`);
 		});
 		return filelist;
 	}
@@ -90,7 +89,7 @@ ${script}
 `;
 }
 
-if (!fs.existsSync(BUILD_DIR)){
+if (!fs.existsSync(BUILD_DIR)) {
 	fs.mkdirSync(BUILD_DIR);
 }
 
@@ -116,8 +115,8 @@ const LIB_SCRIPTS = {
 		"hist-port.js",
 		"render.js",
 		"render-dice.js",
-		"scalecreature.js"
-	]
+		"scalecreature.js",
+	],
 };
 
 const LIB_SCRIPTS_API = {
@@ -130,12 +129,12 @@ const LIB_SCRIPTS_API = {
 		"VecMath.js",
 		"matrixMath.js",
 		"PathMath.js",
-	]
+	],
 };
 
 const LIB_JSON = {
 	core: [],
-	"5etools": getDataDirPaths()
+	"5etools": getDataDirPaths(),
 };
 
 const SCRIPTS = {
@@ -172,8 +171,8 @@ const SCRIPTS = {
 
 			"core-bootstrap",
 
-			"base"
-		]
+			"base",
+		],
 	},
 	"5etools": {
 		header: HEADER_5ETOOLS,
@@ -210,6 +209,7 @@ const SCRIPTS = {
 			"5etools-bootstrap",
 			"5etools-config",
 			"5etools-main",
+			"5etools-utils-brew-shim",
 			"5etools-importer",
 			"5etools-monsters",
 			"5etools-spells",
@@ -224,10 +224,11 @@ const SCRIPTS = {
 			"5etools-optional-features",
 			"5etools-adventures",
 			"5etools-deities",
+			"5etools-vehicles",
 
-			"base"
-		]
-	}
+			"base",
+		],
+	},
 };
 
 Object.entries(SCRIPTS).forEach(([k, v]) => {
@@ -243,7 +244,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
 		...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString()),
 		...libScripts.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString())),
-		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true))
+		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true)),
 	);
 	fs.writeFileSync(filename, fullScript);
 	fs.writeFileSync(metaFilename, v.header);

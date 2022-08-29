@@ -21,36 +21,12 @@ function d20plusImporter () {
 
 	d20plus.importer.addBrewMeta = function (meta) {
 		if (!meta) return;
-		BrewUtil._sourceCache = BrewUtil._sourceCache || {};
-		if (meta.sources) {
-			meta.sources.forEach(src => {
-				BrewUtil._sourceCache[src.json] = {abbreviation: src.abbreviation, full: src.full};
-			});
-		}
-		const cpy = MiscUtil.copy(meta);
-		delete cpy.sources;
-		Object.keys(cpy).forEach(k => {
-			BrewUtil.homebrewMeta[k] = BrewUtil.homebrewMeta[k] || {};
-			Object.assign(BrewUtil.homebrewMeta[k], cpy[k]);
-		});
+		d20plus.brewShim.addBrewMeta(meta);
 	};
 
 	d20plus.importer.pAddBrew = async function (data) {
 		if (!data) return;
-
-		const toAdd = {};
-		if (data._meta) toAdd._meta = data._meta;
-		BrewUtil._STORABLE
-			.filter(k => data[k] != null && data[k] instanceof Array)
-			.forEach(k => {
-				toAdd[k] = data[k].filter(it => {
-					if (it.source) return !Parser.SOURCE_JSON_TO_ABV[it.source];
-					if (it.inherits) return !Parser.SOURCE_JSON_TO_ABV[it.inherits.source];
-					return false;
-				});
-			});
-
-		await BrewUtil.pDoHandleBrewJson(toAdd, "NO_PAGE");
+		d20plus.brewShim.addBrew(data);
 	};
 
 	d20plus.importer.getCleanText = function (str) {
@@ -117,7 +93,7 @@ function d20plusImporter () {
 
 	d20plus.importer.doFakeDrop = function (event, characterView, fakeRoll20Json) {
 		const e = characterView; // AKA character.view
-		const o = (typeof fakeRoll20Json === "array") ? fakeRoll20Json[0] : fakeRoll20Json;
+		const o = (Array.isArray(fakeRoll20Json)) ? fakeRoll20Json[0] : fakeRoll20Json;
 
 		// The page/subheading area always undefined, since we're not coming from the compendium. Pass in some junk.
 		const t = d20plus.ut.generateRowId(); // `$(i.helper[0]).attr("data-pagename")` e.g. "Spells%3AFire%20Bolt"
@@ -200,8 +176,8 @@ function d20plusImporter () {
 
 	d20plus.importer.getSetAvatarImage = async function (character, avatar, portraitUrl) {
 		let tokensize = 1;
-		if (character.size[0] === "T") tokensize = .572; // 40 (most tiny creature images have padding)
-		else if (character.size[0] === "S") tokensize = .572; // 40
+		if (character.size[0] === "T") tokensize = 0.572; // 40 (most tiny creature images have padding)
+		else if (character.size[0] === "S") tokensize = 0.572; // 40
 		else if (character.size[0] === "L") tokensize = 2;
 		else if (character.size[0] === "H") tokensize = 3;
 		else if (character.size[0] === "G") tokensize = 4;
@@ -394,6 +370,53 @@ function d20plusImporter () {
 		const expand = d20plus.cfg.getOrDefault("import", "tokenactionsExpanded");
 		d20plus.importer._baseAddAction(character, "repeating_npcaction-m", name, actionText, "Mythic", index, expand);
 	};
+
+	d20plus.importer.addVehicleAction = function (character, name, actionText, index) {
+		const expand = d20plus.cfg.getOrDefault("import", "tokenactionsExpanded");
+		d20plus.importer._baseAddAction(character, "repeating_vehicleactions", name, actionText, "Vehicle", index, expand);
+	};
+
+	// Add individual weapons to the npc ship stat block
+	d20plus.importer._addVehicleWeapon = function (character, weapon, renderer, prefix) {
+		const newRowId = d20plus.ut.generateRowId();
+		let desc = "";
+
+		// Locomotion mostly occurs in the movement section of UAOfShipsAndSea ships
+		if (weapon.locomotion) {
+			const locEntries = Renderer.vehicle.ship.getLocomotionEntries(weapon.locomotion[0]);
+			desc = d20plus.importer.getCleanText(renderer.render(locEntries));
+		}
+		// Speed mostly occurs in the movement section of GoS ships
+		else if (weapon.speed) {
+			const speedEntries = Renderer.vehicle.ship.getSpeedEntries(weapon.speed[0]);
+			desc = d20plus.importer.getCleanText(renderer.render(speedEntries));
+		}
+		// This sets the description of non-movement weapons
+		else if (weapon.entries) {
+			desc = d20plus.importer.getCleanText(renderer.render({entries: weapon.entries}));
+		}
+
+		// Cost code stolen from Giddy
+		const cost = weapon.costs ? weapon.costs.map(cost => {
+			return `${Parser.vehicleCostToFull(cost) || "\u2014"}${cost.note ? `  (${renderer.render(cost.note)})` : ""}`;
+		}).join(", ") : weapon.hpNote || "\u2014";
+
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_name`, current: `${prefix}${weapon.name}`});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_quantity`, current: weapon.count || 1});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_crew`, current: weapon.crew || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_actions`, current: "10"});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_ac`, current: weapon.ac || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_hp`, current: weapon.hp || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_hp--silent`, current: weapon.hp || ""});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_cost`, current: cost});
+		character.attribs.create({name: `repeating_vehicleweapon_${newRowId}_description`, current: desc});
+	};
+
+	d20plus.importer.addVehicleWeapons = function (character, wArray, renderer, prefix = null) {
+		wArray.forEach(w => {
+			d20plus.importer._addVehicleWeapon(character, w, renderer, prefix ? `${prefix}: ` : "");
+		});
+	}
 
 	d20plus.importer.findAttrId = function (character, attrName) {
 		const found = character.attribs.toJSON().find(a => a.name === attrName);
@@ -801,7 +824,7 @@ function d20plusImporter () {
 				let remaining = importQueue.length;
 
 				let interval;
-				if (dataType === "monster" || dataType === "object") {
+				if (dataType === "monster" || dataType === "object" || dataType === "vehicle") {
 					interval = d20plus.cfg.get("import", "importIntervalCharacter") || d20plus.cfg.getDefault("import", "importIntervalCharacter");
 				} else {
 					interval = d20plus.cfg.get("import", "importIntervalHandout") || d20plus.cfg.getDefault("import", "importIntervalHandout");
@@ -907,6 +930,16 @@ function d20plusImporter () {
 		});
 	};
 
+	// Import dialog showing names of monsters failed to import
+	d20plus.importer.addImportError = function (name) {
+		let $span = $("#import-errors");
+		if ($span.text() === "0") {
+			$span.text(name);
+		} else {
+			$span.text(`${$span.text()}, ${name}`);
+		}
+	};
+
 	d20plus.importer._getHandoutPath = function (dataType, it, groupBy) {
 		switch (dataType) {
 			case "monster": {
@@ -1008,6 +1041,19 @@ function d20plusImporter () {
 				return folderName;
 			}
 			case "object": {
+				let folderName;
+				switch (groupBy) {
+					case "Source":
+						folderName = Parser.sourceJsonToFull(it.source);
+						break;
+					case "Alphabetical":
+					default:
+						folderName = it.name[0].uppercaseFirst();
+						break;
+				}
+				return folderName;
+			}
+			case "vehicle": {
 				let folderName;
 				switch (groupBy) {
 					case "Source":

@@ -56,7 +56,7 @@ function d20plusObjects () {
 								d20plus.importer.getSetAvatarImage(character, avatar);
 							},
 						});
-						
+
 						const size = Parser.sizeAbvToFull(data.size);
 						character.attribs.create({name: "npc", current: 1});
 						character.attribs.create({name: "npc_toggle", current: 1});
@@ -131,7 +131,7 @@ function d20plusObjects () {
 						}
 					} catch (e) {
 						d20plus.ut.log(`Error loading [${name}]`);
-						d20plus.monsters.addImportError(name);
+						d20plus.importer.addImportError(name);
 						// eslint-disable-next-line no-console
 						console.log(data, e);
 					}

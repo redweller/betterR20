@@ -11,6 +11,7 @@ const betteR205etoolsMain = function () {
 	FEAT_DATA_URL = `${DATA_URL}feats.json`;
 	PSIONIC_DATA_URL = `${DATA_URL}psionics.json`;
 	OBJECT_DATA_URL = `${DATA_URL}objects.json`;
+	VEHICLE_DATA_URL = `${DATA_URL}vehicles.json`;
 	BACKGROUND_DATA_URL = `${DATA_URL}backgrounds.json`;
 	OPT_FEATURE_DATA_URL = `${DATA_URL}optionalfeatures.json`;
 	RACE_DATA_URL = `${DATA_URL}races.json`;
@@ -78,6 +79,11 @@ const betteR205etoolsMain = function () {
 			"immune",
 			"entries",
 		],
+		"vehicle": [
+			"name",
+			"source",
+			"vehicleType",
+		],
 		"class": [
 			"name",
 			"source",
@@ -111,8 +117,8 @@ const betteR205etoolsMain = function () {
 		"deity": [
 			"name",
 			"source",
-			"pantheon"
-		]
+			"pantheon",
+		],
 	};
 
 	let spellDataUrls = {};
@@ -589,6 +595,7 @@ const betteR205etoolsMain = function () {
 			$wrpSettings.append(d20plus.settingsHtmlPtRaces);
 			$wrpSettings.append(d20plus.settingsHtmlPtFeats);
 			$wrpSettings.append(d20plus.settingsHtmlPtObjects);
+			$wrpSettings.append(d20plus.settingsHtmlPtVehicles);
 			$wrpSettings.append(d20plus.settingsHtmlPtClasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtSubclasses);
 			$wrpSettings.append(d20plus.settingsHtmlPtBackgrounds);
@@ -603,6 +610,7 @@ const betteR205etoolsMain = function () {
 			$("#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
 			$("#button-monsters-load-file").on(window.mousedowntype, d20plus.monsters.buttonFile);
 			$("#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
+			$("#import-vehicles-load").on(window.mousedowntype, d20plus.vehicles.button);
 			$("#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
 			$("#button-deities-load").on(window.mousedowntype, d20plus.deities.button);
 
@@ -619,6 +627,7 @@ const betteR205etoolsMain = function () {
 
 			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", ["monster"]);
 			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, ["object"]);
+			populateBasicDropdown("#button-vehicles-select", "#import-vehicles-url", VEHICLE_DATA_URL, ["vehicle"]);
 			populateBasicDropdown("#button-deities-select", "#import-deities-url", DEITY_DATA_URL, ["deity"]);
 
 			const populateAdventuresDropdown = () => {
@@ -677,7 +686,7 @@ const betteR205etoolsMain = function () {
 		$appTo.append(d20plus.settingsHtmlPtSubclassesPlayer);
 		$appTo.append(d20plus.settingsHtmlPtBackgroundsPlayer);
 		$appTo.append(d20plus.settingsHtmlPtOptfeaturesPlayer);
-		
+
 		$winPlayer.dialog({
 			autoOpen: false,
 			resizable: true,
@@ -1406,6 +1415,7 @@ Errors: <b id="import-errors">0</b>
 <option value="race">Races</option>
 <option value="spell">Spells</option>
 <option value="subclass">Subclasses</option>
+<option value="vehicle">Vehicles</option>
 </select>
 `;
 	d20plus.settingsHtmlSelectorPlayer = `
@@ -1542,6 +1552,16 @@ To import from third-party sources, either individually select one available in 
 <select id="button-objects-select"><!-- populate with JS--></select>
 <input type="text" id="import-objects-url">
 <a class="btn" href="#" id="import-objects-load">Import Objects</a>
+</div>
+`;
+
+	d20plus.settingsHtmlPtVehicles = `
+<div class="importer-section" data-import-group="vehicle">
+<h4>Vehicle Importing</h4>
+<label for="import-vehicles-url">Vehicle Data URL:</label>
+<select id="button-vehicles-select"><!-- populate with JS--></select>
+<input type="text" id="import-vehicles-url">
+<a class="btn" href="#" id="import-vehicles-load">Import Vehicles</a>
 </div>
 `;
 

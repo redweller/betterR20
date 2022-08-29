@@ -153,6 +153,15 @@ function d20plusMonsters () {
 			}
 		});
 	};
+
+	/**
+	 * Preload a legendary group map so that monsters with legendary groups
+	 * (lair actions and regional effects) can get their data more efficiently
+	 */
+	d20plus.monsters.pLoadLegGroups = async function () {
+		await DataUtil.monster.pPreloadMeta();
+	}
+
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
 		const url = $("#import-monster-url").val();
@@ -246,16 +255,6 @@ function d20plusMonsters () {
 
 	d20plus.monsters.formMonsterUrl = function (fileName) {
 		return d20plus.formSrcUrl(MONSTER_DATA_DIR, fileName);
-	};
-
-	// Import dialog showing names of monsters failed to import
-	d20plus.monsters.addImportError = function (name) {
-		let $span = $("#import-errors");
-		if ($span.text() === "0") {
-			$span.text(name);
-		} else {
-			$span.text(`${$span.text()}, ${name}`);
-		}
 	};
 
 	// Get NPC size from chr
@@ -1165,11 +1164,11 @@ function d20plusMonsters () {
 									const newRowId = d20plus.ut.generateRowId();
 									character.attribs.create({
 										name: `repeating_npctrait_${newRowId}_name`,
-										current: d20plus.importer.getCleanText(renderer.render('Variant : '+v.name)),
+										current: d20plus.importer.getCleanText(renderer.render(`Variant : ${v.name}`)),
 									});
 
 									if (d20plus.cfg.getOrDefault("import", "importVariants")) {
-										const offsetIndex = (data.spellcasting?.length || 0)+ i;
+										const offsetIndex = (data.spellcasting?.length || 0) + i;
 										character.abilities.create({
 											name: `${offsetIndex}: ${v.name}`,
 											istokenaction: true,
@@ -1339,6 +1338,19 @@ function d20plusMonsters () {
 								}
 							}
 
+							// Load lair actions and regional effects
+							if (data.legendaryGroup) {
+								const legGroup = DataUtil.monster.getMetaGroup(data);
+								if (legGroup) {
+									if (legGroup.lairActions) {
+										renderFluff += renderer.render({entries: legGroup.lairActions, name: "Lair Actions"}, -1);
+									}
+									if (legGroup.regionalEffects) {
+										renderFluff += renderer.render({entries: legGroup.regionalEffects, name: "Regional Effects"}, -1);
+									}
+								}
+							}
+
 							// set show/hide NPC names in rolls
 							if (d20plus.cfg.has("import", "showNpcNames") && !d20plus.cfg.get("import", "showNpcNames")) {
 								character.attribs.create({name: "npc_name_flag", current: 0});
@@ -1350,15 +1362,6 @@ function d20plusMonsters () {
 									istokenaction: true,
 									action: `%{${character.id}|shaped_actions}`,
 								});
-
-								// TODO lair action creation is unimplemented
-								/*
-								character.abilities.create({
-									name: "Lair Actions",
-									istokenaction: true,
-									action: `%{${character.id}|shaped_lairactions}`
-								});
-								*/
 							}
 
 							character.view.updateSheetValues();
@@ -1377,7 +1380,7 @@ function d20plusMonsters () {
 							}
 						} catch (e) {
 							d20plus.ut.log(`Error loading [${name}]`);
-							d20plus.monsters.addImportError(name);
+							d20plus.importer.addImportError(name);
 							// eslint-disable-next-line no-console
 							console.log(data, e);
 						}
