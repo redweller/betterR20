@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.10
+// @version      1.31.0.11
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -467,7 +467,7 @@ function baseUtil () {
 		// eslint-disable-next-line no-console
 		console.error("%cD20Plus > ", "color: #b93032; font-size: large", ...args);
 	};
-
+	// RB20 EXCLUDE START
 	d20plus.ut.localize = (str, substitutes) => {
 		if (substitutes) {
 			output = `${d20plus.ln.default[str]}`;
@@ -482,6 +482,8 @@ function baseUtil () {
 		}
 	}
 
+	window.__ = d20plus.ut.localize;
+
 	d20plus.ut.selectLocale = () => {
 		const lan = (typeof LANGUAGE !== "undefined" ? LANGUAGE : "en");
 		if ((lan === "en") || (!d20plus.ln[lan])) return;
@@ -491,7 +493,7 @@ function baseUtil () {
 			}
 		}
 	}
-
+	// RB20 EXCLUDE END
 	d20plus.ut.chatLog = (arg) => {
 		d20.textchat.incoming(
 			false,
@@ -1903,7 +1905,7 @@ function baseConfig () {
 	};
 
 	addConfigOptions("token", {
-		"_name": d20plus.ut.localize("cfg_tab_tokens"),
+		"_name": __("cfg_tab_tokens"),
 		"massRollWhisperName": {
 			"name": d20plus.ut.localize("cfg_option_whisper_name"),
 			"default": false,
@@ -17748,7 +17750,6 @@ const D20plus = function (version) {
 				})();
 
 				window.d20plus = d20plus;
-				window.__ = d20plus.ut.localize;
 				d20plus.ut.log("Injected");
 			} else {
 				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
