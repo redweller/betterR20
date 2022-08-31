@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.11
+// @version      1.31.0.12
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -96,157 +96,138 @@ function baseLanguage () {
 
 	d20plus.ln.en = {
 
-		cfg_tab_tokens: ["Tokens"],
-		cfg_tab_canvas: ["Canvas"],
-		cfg_tab_import: ["Import"],
-		cfg_tab_interface: ["Interface"],
-		cfg_tab_tweaks: ["Tweaks"],
-
-		cfg_option_whisper_name: ["Whisper Token Name to Mass-Rolls"],
-		cfg_option_quick_init_sort: ["Add Quick Initiative Sort Button"],
-		cfg_option_grid_snap: ["Grid Snap"],
-		cfg_option_scaled_names: ["Scaled Names and Status Icons"],
-		cfg_option_show_bg: ["Include the Background layer (reload to apply changes)"],
-		cfg_option_show_fg: ["Include the Foreground layer (reload to apply changes)"],
-		cfg_option_show_light: ["Include (force) light sources button (reload to apply changes)"],
-		cfg_option_show_weather: ["Include Weather layer and settings (reload to apply changes)"],
-		cfg_option_import_interval: ["Rest Time between Each Map (msec)"],
-		cfg_option_emoji: ["Add Emoji Replacement to Chat"],
-		cfg_option_art_previews: ["Show Custom Art Previews"],
-		cfg_option_toolbar_opac: ["Horizontal Toolbar Opacity"],
-		cfg_option_layer_panel: ["Add Quick Layer Buttons panel"],
-		cfg_option_layer_panel_position: ["-- Select left or right side to display this panel"],
-		cfg_option_streamer_tags: ["Streamer-Friendly Chat Tags"],
-		cfg_option_hide_r20search: ["Hide Default Journal Search Bar"],
-
-		cfg_option_player_size: ["Select size of Player List images"],
-		cfg_option_hide_dmswitch: ["Hide Roll20's Dark Mode switch"],
-		cfg_option_hide_help: ["Hide Help Button on floating toolbar"],
-		cfg_option_dm_tweaks: ["Enable background style fixes for default dark mode"],
-		cfg_option_assume_ogl: ["Always try rolling in OGL 5e (compatibility)"],
-		cfg_option_silent_chat: ["Don't show chat messages on load"],
-		cfg_option_modest_chat: ["Use default chat style for betteR20 system messages"],
-		cfg_option_select_jrnsearch: ["Select Journal search controls"],
-		cfg_option_select_artlib: ["Select Art Library controls"],
-		cfg_option_quick_init_clear: ["Add Quick Initiative tracker Clear Button"],
-		cfg_option_hide_linesplit: ["Hide Line Splitter (reload to apply changes)"],
-		cfg_option_log_players_in_chat: ["Show player connects messages"],
-		cfg_option_quick_menu: ["Enable quick actions as copies of the menu entries added to the bottom of right-click menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back."],
-		cfg_option_quick_2: ["-- Quick action 2"],
-		cfg_option_quick_3: ["-- Quick action 3"],
-
-		ui_bar_map: ["Map & Backdrop"],
-		ui_bar_obj: ["Objects & Tokens"],
-		ui_bar_bg: ["Background"],
-		ui_bar_fg: ["Foreground"],
-		ui_bar_we: ["Weather Exclusions"],
-		ui_bar_barriers: ["Dynamic Field of View"],
-		ui_bar_light_n_barriers: ["Dynamic Lighting"],
-
-		ui_cfg_property: ["Property"],
-		ui_cfg_value: ["Value"],
-		ui_cfg_save: ["Save"],
-
-		ui_dialog_title: ["Input value"],
-		ui_dialog_select: ["Select"],
-		ui_dialog_submit: ["Submit"],
-		ui_dialog_cancel: ["Cancel"],
-
-		menu_unlock: ["Unlock..."],
-		menu_take_card: ["Take Card"],
-		menu_flip_card: ["Flip Card"],
-
-		menu_edit_title: ["Edit"],
-		menu_edit_del: ["Delete"],
-		menu_edit_copy: ["Copy"],
-		menu_edit_paste: ["Paste"],
-		menu_edit_undo: ["Undo"],
-
-		menu_move_title: ["Move"],
-		menu_move_tofront: ["To Front"],
-		menu_move_forwone: ["Forward One"],
-		menu_move_backone: ["Back One"],
-		menu_move_toback: ["To Back"],
-
-		menu_layer_title: ["Layer"],
-		menu_layer_map: ["Map"],
-		menu_layer_bg: ["Background"],
-		menu_layer_obj: ["Tokens"],
-		menu_layer_fg: ["Foreground"],
-		menu_layer_gm: ["GM Hidden"],
-		menu_layer_barriers: ["Field of view"],
-		menu_layer_weather: ["Weather"],
-
-		menu_util_title: ["Utilities"],
-		menu_util_start: ["Start Scene"],
-		menu_util_animate: ["Animate"],
-		menu_util_flight: ["Set&nbsp;Flight&nbsp;Height"],
-		menu_util_light: ["Set&nbsp;Light"],
-
-		menu_adv_title: ["Advanced"],
-		menu_adv_grp: ["Group"],
-		menu_adv_ungrp: ["Ungroup"],
-		menu_adv_isdrv: ["Is Drawing"],
-		menu_adv_flh: ["Flip Horizontal"],
-		menu_adv_flv: ["Flip Vertical"],
-		menu_adv_dimens: ["Set Dimensions"],
-		menu_adv_align: ["Align to Grid"],
-		menu_adv_lock: ["Lock/Unlock"],
-		menu_adv_tokenid: ["View Token ID"],
-		menu_adv_pathid: ["View Path ID"],
-
-		menu_token_title: ["Token Tasks"],
-		menu_token_turn: ["Add Turn"],
-
-		menu_mass_menu: ["Mass Roll"],
-		menu_mass_init: ["Initiative"],
-		menu_mass_save: ["Saving Throw"],
-		menu_mass_skill: ["Skill Check"],
-
-		menu_multi_title: ["Multi-Sided"],
-		menu_multi_rnd: ["Random Side"],
-		menu_multi_select: ["Choose Side"],
-		menu_multi_size: ["Set Side Size"],
-
-		menu_quick_togm: ["Hide from layer"],
-		menu_quick_tofg: ["To visible layer"],
-		menu_quick_toback: ["Move behind"],
-		menu_quick_save: ["Roll save"],
-
-		stat_save_str: ["Strength"],
-		stat_save_dex: ["Dexterity"],
-		stat_save_con: ["Constitution"],
-		stat_save_int: ["Intelligence"],
-		stat_save_wis: ["Wisdom"],
-		stat_save_cha: ["Charisma"],
-
-		stat_ab_athl: ["Athletics"],
-		stat_ab_acrb: ["Acrobatics"],
-		stat_ab_sloh: ["Sleight of Hand"],
-		stat_ab_stel: ["Stealth"],
-		stat_ab_arcn: ["Arcana"],
-		stat_ab_hist: ["History"],
-		stat_ab_invs: ["Investigation"],
-		stat_ab_natr: ["Nature"],
-		stat_ab_relg: ["Religion"],
-		stat_ab_anih: ["Animal Handling"],
-		stat_ab_insg: ["Insight"],
-		stat_ab_medc: ["Medicine"],
-		stat_ab_perc: ["Perception"],
-		stat_ab_surv: ["Survival"],
-		stat_ab_decp: ["Deception"],
-		stat_ab_intm: ["Intimidation"],
-		stat_ab_perf: ["Performance"],
-		stat_ab_pers: ["Persuasion"],
-
-		stat_init: ["INITIATIVE"],
-
+		cfg_tab_tokens: [`Tokens`],
+		cfg_tab_canvas: [`Canvas`],
+		cfg_tab_import: [`Import`],
+		cfg_tab_interface: [`Interface`],
+		cfg_tab_chat: [`Chat`],
+		cfg_option_whisper_name: [`Whisper Token Name to Mass-Rolls`],
+		cfg_option_quick_init_sort: [`Add Quick Initiative Sort Button`],
+		cfg_option_grid_snap: [`Grid Snap`],
+		cfg_option_scaled_names: [`Scaled Names and Status Icons`],
+		cfg_option_show_bg: [`Include the Background layer (reload to apply changes)`],
+		cfg_option_show_fg: [`Include the Foreground layer (reload to apply changes)`],
+		cfg_option_show_light: [`Include (force) light sources button (reload to apply changes)`],
+		cfg_option_show_weather: [`Include Weather layer and settings (reload to apply changes)`],
+		cfg_option_import_interval: [`Rest Time between Each Map (msec)`],
+		cfg_option_emoji: [`Add Emoji Replacement to Chat`],
+		cfg_option_art_previews: [`Show Custom Art Previews`],
+		cfg_option_toolbar_opac: [`Horizontal Toolbar Opacity`],
+		cfg_option_layer_panel: [`Add Quick Layer Buttons panel`],
+		cfg_option_layer_panel_position: [`-- Select left or right side to display this panel`],
+		cfg_option_streamer_tags: [`Streamer-Friendly Chat Tags`],
+		cfg_option_hide_r20search: [`Hide Default Journal Search Bar`],
+		cfg_option_player_size: [`Select size of Player List images`],
+		cfg_option_hide_dmswitch: [`Hide Roll20's Dark Mode switch`],
+		cfg_option_hide_help: [`Hide Help Button on floating toolbar`],
+		cfg_option_dm_tweaks: [`Enable background style fixes for default dark mode`],
+		cfg_option_assume_ogl: [`Alternative mass rolls (only OGL 5e)`],
+		cfg_option_silent_chat: [`Don't show chat messages on load`],
+		cfg_option_modest_chat: [`Use default chat style for betteR20 system messages`],
+		cfg_option_select_jrnsearch: [`Select Journal search controls`],
+		cfg_option_select_artlib: [`Select Art Library controls`],
+		cfg_option_quick_init_clear: [`Add Quick Initiative tracker Clear Button`],
+		cfg_option_hide_linesplit: [`Hide Line Splitter (reload to apply changes)`],
+		cfg_option_log_players_in_chat: [`Show player connects messages`],
+		cfg_option_quick_menu: [`Enable quick actions as copies of the menu entries added to the bottom of right-click menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back.`],
+		cfg_option_quick_2: [`-- Quick action 2`],
+		cfg_option_quick_3: [`-- Quick action 3`],
+		ui_bar_map: [`Map & Backdrop`],
+		ui_bar_obj: [`Objects & Tokens`],
+		ui_bar_bg: [`Background`],
+		ui_bar_fg: [`Foreground`],
+		ui_bar_we: [`Weather Exclusions`],
+		ui_bar_barriers: [`Dynamic Field of View`],
+		ui_bar_light_n_barriers: [`Dynamic Lighting`],
+		ui_cfg_property: [`Property`],
+		ui_cfg_value: [`Value`],
+		ui_cfg_save: [`Save`],
+		ui_dialog_title: [`Input value`],
+		ui_dialog_select: [`Select`],
+		ui_dialog_submit: [`Submit`],
+		ui_dialog_cancel: [`Cancel`],
+		menu_unlock: [`Unlock...`],
+		menu_take_card: [`Take Card`],
+		menu_flip_card: [`Flip Card`],
+		menu_edit_title: [`Edit`],
+		menu_edit_del: [`Delete`],
+		menu_edit_copy: [`Copy`],
+		menu_edit_paste: [`Paste`],
+		menu_edit_undo: [`Undo`],
+		menu_move_title: [`Move`],
+		menu_move_tofront: [`To Front`],
+		menu_move_forwone: [`Forward One`],
+		menu_move_backone: [`Back One`],
+		menu_move_toback: [`To Back`],
+		menu_layer_title: [`Layer`],
+		menu_layer_map: [`Map`],
+		menu_layer_bg: [`Background`],
+		menu_layer_obj: [`Tokens`],
+		menu_layer_fg: [`Foreground`],
+		menu_layer_gm: [`GM Hidden`],
+		menu_layer_barriers: [`Field of view`],
+		menu_layer_weather: [`Weather`],
+		menu_util_title: [`Utilities`],
+		menu_util_start: [`Start Scene`],
+		menu_util_animate: [`Animate`],
+		menu_util_flight: [`Set&nbsp;Flight&nbsp;Height`],
+		menu_util_light: [`Set&nbsp;Light`],
+		menu_adv_title: [`Advanced`],
+		menu_adv_grp: [`Group`],
+		menu_adv_ungrp: [`Ungroup`],
+		menu_adv_isdrv: [`Is Drawing`],
+		menu_adv_flh: [`Flip Horizontal`],
+		menu_adv_flv: [`Flip Vertical`],
+		menu_adv_dimens: [`Set Dimensions`],
+		menu_adv_align: [`Align to Grid`],
+		menu_adv_lock: [`Lock/Unlock`],
+		menu_adv_tokenid: [`View Token ID`],
+		menu_adv_pathid: [`View Path ID`],
+		menu_token_title: [`Token Tasks`],
+		menu_token_turn: [`Add Turn`],
+		menu_mass_menu: [`Mass Roll`],
+		menu_mass_init: [`Initiative`],
+		menu_mass_save: [`Saving Throw`],
+		menu_mass_skill: [`Skill Check`],
+		menu_multi_title: [`Multi-Sided`],
+		menu_multi_rnd: [`Random Side`],
+		menu_multi_select: [`Choose Side`],
+		menu_multi_size: [`Set Side Size`],
+		menu_quick_togm: [`Hide from layer`],
+		menu_quick_tofg: [`To visible layer`],
+		menu_quick_toback: [`Move behind`],
+		menu_quick_save: [`Roll save`],
+		stat_save_str: [`Strength`],
+		stat_save_dex: [`Dexterity`],
+		stat_save_con: [`Constitution`],
+		stat_save_int: [`Intelligence`],
+		stat_save_wis: [`Wisdom`],
+		stat_save_cha: [`Charisma`],
+		stat_ab_athl: [`Athletics`],
+		stat_ab_acrb: [`Acrobatics`],
+		stat_ab_sloh: [`Sleight of Hand`],
+		stat_ab_stel: [`Stealth`],
+		stat_ab_arcn: [`Arcana`],
+		stat_ab_hist: [`History`],
+		stat_ab_invs: [`Investigation`],
+		stat_ab_natr: [`Nature`],
+		stat_ab_relg: [`Religion`],
+		stat_ab_anih: [`Animal Handling`],
+		stat_ab_insg: [`Insight`],
+		stat_ab_medc: [`Medicine`],
+		stat_ab_perc: [`Perception`],
+		stat_ab_surv: [`Survival`],
+		stat_ab_decp: [`Deception`],
+		stat_ab_intm: [`Intimidation`],
+		stat_ab_perf: [`Performance`],
+		stat_ab_pers: [`Persuasion`],
+		stat_init: [`INITIATIVE`],
 		msg_vtte_init: [`
-            VTT Enhancement Suite detected.
-            <br><br>
-            $0 initialised.
-            <br>
-        `],
+			VTT Enhancement Suite detected.
+			<br><br>
+			$0 initialised.
+			<br>
+		`],
 		msg_better20_help: [`
 			<br>
 			Need help? Visit our <a href="$0/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
@@ -260,185 +241,167 @@ function baseLanguage () {
 			</span>
 		`],
 		msg_b20_version_stream: [`<br>
-            A newer version of $0 is available.
-            <br><br>
-        `],
+									A newer version of $0 is available.
+									<br><br>
+								`],
 		msg_b20_version: [`<br>
-            A newer version of $0 is available.<br>
-            Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>
-        `],
+									A newer version of $0 is available.<br>
+									Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.
+									<br><br>
+								`],
 		msg_player_connected: [`connected`],
 	};
 
 	d20plus.ln.ru = {
 
-		cfg_tab_tokens: ["Токены"],
-		cfg_tab_canvas: ["Слои"],
-		cfg_tab_import: ["Импорт"],
-		cfg_tab_interface: ["Интерфейс"],
-		cfg_tab_tweaks: ["Дополнения"],
-
-		cfg_option_whisper_name: ["Шептать в чат имена при групповых бросках"],
-		cfg_option_quick_init_sort: ["Добавить кнопку быстрой сортировки Инициативы"],
-		cfg_option_grid_snap: ["Шаг \"прилипания\" к сетке"],
-		cfg_option_scaled_names: ["Масштабируемые имена и иконки статусов"],
-		cfg_option_show_bg: ["Включить слой Задний план (нужен перезапуск)"],
-		cfg_option_show_fg: ["Включить слой Передний план (нужен перезапуск)"],
-		cfg_option_show_light: ["Включить кнопку для источников света (нужен перезапуск)"],
-		cfg_option_show_weather: ["Включить слой и настройки Погоды (нужен перезапуск)"],
-		cfg_option_import_interval: ["Время ожидания перед каждой картой (при импорте)"],
-		cfg_option_emoji: ["Добавить в чат замену эмотиконов"],
-		cfg_option_art_previews: ["Использовать предпросмотр для библиотеки изображений"],
-		cfg_option_toolbar_opac: ["Прозрачность горизонтальной панели"],
-		cfg_option_layer_panel: ["Добавить панель Быстрого выбора слоя"],
-		cfg_option_layer_panel_position: ["-- Слева или справа отображать эту панель"],
-		cfg_option_streamer_tags: ["Обезличенные названия в чате (для стримеров)"],
-		cfg_option_hide_r20search: ["Спрятать дефолтную панель поиска в Журнале"],
-
-		cfg_option_player_size: ["Выберите размер списка игроков"],
-		cfg_option_hide_dmswitch: ["Спрятать переключатель темного режима от Roll20"],
-		cfg_option_hide_help: ["Спрятать кнопку Помощь на панели инструментов"],
-		cfg_option_dm_tweaks: ["Включить исправления стилей для темного режима"],
-		cfg_option_assume_ogl: ["Броски кубов для листа OGL 5e (если есть проблемы)"],
-		cfg_option_silent_chat: ["Не выводить в чат уведомления при загрузке"],
-		cfg_option_modest_chat: ["Использовать родной стиль чата для уведомлений betteR20"],
-		cfg_option_select_jrnsearch: ["Выберите тип строки поиска в Журнале"],
-		cfg_option_select_artlib: ["Выберите элементы управления для Библиотеки"],
-		cfg_option_quick_init_clear: ["Добавить кнопку быстрой очистки Трекера"],
-		cfg_option_hide_linesplit: ["Спрятать кнопку разрезания линий (нужен перезапуск)"],
-		cfg_option_log_players_in_chat: ["Выводить сообщения о подключении игроков"],
-		cfg_option_quick_menu: ["Включить быстрые действия, которые отображаются в самом низу меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда \"На слой ГМа\" и обратно"],
-		cfg_option_quick_2: ["-- Быстрое действие 2"],
-		cfg_option_quick_3: ["-- Быстрое действие 3"],
-
-		ui_bar_map: ["Карта и фон"],
-		ui_bar_obj: ["Объекты и токены"],
-		ui_bar_bg: ["Задний план"],
-		ui_bar_fg: ["Передний план"],
-		ui_bar_we: ["Исключения погоды"],
-		ui_bar_barriers: ["Динамические преграды"],
-		ui_bar_light_n_barriers: ["Динамическое освещение"],
-
-		ui_cfg_property: ["Свойство"],
-		ui_cfg_value: ["Значение"],
-		ui_cfg_save: ["Сохранить"],
-
-		ui_dialog_title: ["Введите значение"],
-		ui_dialog_select: ["Выберите"],
-		ui_dialog_submit: ["Подтвердить"],
-		ui_dialog_cancel: ["Отмена"],
-
-		menu_unlock: ["Снять блок..."],
-		menu_take_card: ["Взять карту"],
-		menu_flip_card: ["Перевернуть"],
-
-		menu_edit_title: ["Правка"],
-		menu_edit_del: ["Удалить"],
-		menu_edit_copy: ["Копировать"],
-		menu_edit_paste: ["Вставить"],
-		menu_edit_undo: ["Отмена"],
-
-		menu_move_title: ["Наложение"],
-		menu_move_tofront: ["Перед всеми"],
-		menu_move_forwone: ["На шаг вперед"],
-		menu_move_backone: ["На шаг назад"],
-		menu_move_toback: ["На задний план"],
-
-		menu_layer_title: ["Слой"],
-		menu_layer_map: ["Карта"],
-		menu_layer_bg: ["Задний"],
-		menu_layer_obj: ["Основной"],
-		menu_layer_fg: ["Передний"],
-		menu_layer_gm: ["Слой ГМа"],
-		menu_layer_barriers: ["Преграды"],
-		menu_layer_weather: ["Погода"],
-
-		menu_util_title: ["Утилиты"],
-		menu_util_start: ["Старт сцены"],
-		menu_util_animate: ["Анимировать"],
-		menu_util_flight: ["Высота полета"],
-		menu_util_light: ["Источник света"],
-
-		menu_adv_title: ["Свойства"],
-		menu_adv_grp: ["Группировка"],
-		menu_adv_ungrp: ["Разгруппировка"],
-		menu_adv_isdrv: ["Это рисунок"],
-		menu_adv_flh: ["Отразить гор."],
-		menu_adv_flv: ["Отразить верт."],
-		menu_adv_dimens: ["Размеры"],
-		menu_adv_align: ["Выровнять"],
-		menu_adv_lock: ["Блокировка"],
-		menu_adv_tokenid: ["ID токена"],
-		menu_adv_pathid: ["ID линии"],
-
-		menu_token_title: ["Действия"],
-		menu_token_turn: ["В трекер"],
-
-		menu_mass_menu: ["Кинуть кубы"],
-		menu_mass_init: ["Инициатива"],
-		menu_mass_save: ["Спасбросок"],
-		menu_mass_skill: ["Умения"],
-
-		menu_multi_title: ["Мультитокен"],
-		menu_multi_rnd: ["Случайно"],
-		menu_multi_select: ["Выбрать"],
-		menu_multi_size: ["Размер"],
-
-		menu_quick_togm: ["Спрятать токен"],
-		menu_quick_tofg: ["Вернуть на слой"],
-		menu_quick_toback: ["Уровень вниз"],
-		menu_quick_save: ["Спасброски"],
-
-		stat_save_str: ["Сила"],
-		stat_save_dex: ["Ловкость"],
-		stat_save_con: ["Телосложение"],
-		stat_save_int: ["Интеллект"],
-		stat_save_wis: ["Мудрость"],
-		stat_save_cha: ["Харизма"],
-
-		stat_ab_athl: ["Атлетика"],
-		stat_ab_acrb: ["Акробатика"],
-		stat_ab_sloh: ["Ловкость рук"],
-		stat_ab_stel: ["Скрытность"],
-		stat_ab_arcn: ["Магия"],
-		stat_ab_hist: ["История"],
-		stat_ab_invs: ["Расследование"],
-		stat_ab_natr: ["Природа"],
-		stat_ab_relg: ["Религия"],
-		stat_ab_anih: ["Уход за животными"],
-		stat_ab_insg: ["Проницательность"],
-		stat_ab_medc: ["Медицина"],
-		stat_ab_perc: ["Восприятие"],
-		stat_ab_surv: ["Выживание"],
-		stat_ab_decp: ["Обман"],
-		stat_ab_intm: ["Запугивание"],
-		stat_ab_perf: ["Выступление"],
-		stat_ab_pers: ["Убеждение"],
-
-		stat_init: ["ИНИЦИАТИВА"],
-
+		cfg_tab_tokens: [`Токены`],
+		cfg_tab_canvas: [`Слои`],
+		cfg_tab_import: [`Импорт`],
+		cfg_tab_interface: [`Интерфейс`],
+		cfg_tab_chat: [`Чат`],
+		cfg_option_whisper_name: [`Шептать в чат имена при групповых бросках`],
+		cfg_option_quick_init_sort: [`Добавить кнопку быстрой сортировки Инициативы`],
+		cfg_option_grid_snap: [`Шаг "прилипания" к сетке`],
+		cfg_option_scaled_names: [`Масштабируемые имена и иконки статусов`],
+		cfg_option_show_bg: [`Включить слой Задний план (нужен перезапуск)`],
+		cfg_option_show_fg: [`Включить слой Передний план (нужен перезапуск)`],
+		cfg_option_show_light: [`Включить кнопку для источников света (нужен перезапуск)`],
+		cfg_option_show_weather: [`Включить слой и настройки Погоды (нужен перезапуск)`],
+		cfg_option_import_interval: [`Время ожидания перед каждой картой (при импорте)`],
+		cfg_option_emoji: [`Добавить в чат замену эмотиконов`],
+		cfg_option_art_previews: [`Использовать предпросмотр для библиотеки изображений`],
+		cfg_option_toolbar_opac: [`Прозрачность горизонтальной панели`],
+		cfg_option_layer_panel: [`Добавить панель Быстрого выбора слоя`],
+		cfg_option_layer_panel_position: [`-- Слева или справа отображать эту панель`],
+		cfg_option_streamer_tags: [`Обезличенные названия в чате (для стримеров)`],
+		cfg_option_hide_r20search: [`Спрятать дефолтную панель поиска в Журнале`],
+		cfg_option_player_size: [`Выберите размер списка игроков`],
+		cfg_option_hide_dmswitch: [`Спрятать переключатель темного режима от Roll20`],
+		cfg_option_hide_help: [`Спрятать кнопку Помощь на панели инструментов`],
+		cfg_option_dm_tweaks: [`Включить исправления стилей для темного режима`],
+		cfg_option_assume_ogl: [`Альтернативные групповые броски (только лист OGL)`],
+		cfg_option_silent_chat: [`Не выводить в чат уведомления при загрузке`],
+		cfg_option_modest_chat: [`Использовать родной стиль чата для уведомлений betteR20`],
+		cfg_option_select_jrnsearch: [`Выберите тип строки поиска в Журнале`],
+		cfg_option_select_artlib: [`Выберите элементы управления для Библиотеки`],
+		cfg_option_quick_init_clear: [`Добавить кнопку быстрой очистки Трекера`],
+		cfg_option_hide_linesplit: [`Спрятать кнопку разрезания линий (нужен перезапуск)`],
+		cfg_option_log_players_in_chat: [`Выводить сообщения о подключении игроков`],
+		cfg_option_quick_menu: [`Включить быстрые действия, которые отображаются в самом низу меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда "На слой ГМа" и обратно`],
+		cfg_option_quick_2: [`-- Быстрое действие 2`],
+		cfg_option_quick_3: [`-- Быстрое действие 3`],
+		ui_bar_map: [`Карта и фон`],
+		ui_bar_obj: [`Объекты и токены`],
+		ui_bar_bg: [`Задний план`],
+		ui_bar_fg: [`Передний план`],
+		ui_bar_we: [`Исключения погоды`],
+		ui_bar_barriers: [`Динамические преграды`],
+		ui_bar_light_n_barriers: [`Динамическое освещение`],
+		ui_cfg_property: [`Свойство`],
+		ui_cfg_value: [`Значение`],
+		ui_cfg_save: [`Сохранить`],
+		ui_dialog_title: [`Введите значение`],
+		ui_dialog_select: [`Выберите`],
+		ui_dialog_submit: [`Подтвердить`],
+		ui_dialog_cancel: [`Отмена`],
+		menu_unlock: [`Снять блок...`],
+		menu_take_card: [`Взять карту`],
+		menu_flip_card: [`Перевернуть`],
+		menu_edit_title: [`Правка`],
+		menu_edit_del: [`Удалить`],
+		menu_edit_copy: [`Копировать`],
+		menu_edit_paste: [`Вставить`],
+		menu_edit_undo: [`Отмена`],
+		menu_move_title: [`Наложение`],
+		menu_move_tofront: [`Перед всеми`],
+		menu_move_forwone: [`На шаг вперед`],
+		menu_move_backone: [`На шаг назад`],
+		menu_move_toback: [`На задний план`],
+		menu_layer_title: [`Слой`],
+		menu_layer_map: [`Карта`],
+		menu_layer_bg: [`Задний`],
+		menu_layer_obj: [`Основной`],
+		menu_layer_fg: [`Передний`],
+		menu_layer_gm: [`Слой ГМа`],
+		menu_layer_barriers: [`Преграды`],
+		menu_layer_weather: [`Погода`],
+		menu_util_title: [`Утилиты`],
+		menu_util_start: [`Старт сцены`],
+		menu_util_animate: [`Анимировать`],
+		menu_util_flight: [`Высота полета`],
+		menu_util_light: [`Источник света`],
+		menu_adv_title: [`Свойства`],
+		menu_adv_grp: [`Группировка`],
+		menu_adv_ungrp: [`Разгруппировка`],
+		menu_adv_isdrv: [`Это рисунок`],
+		menu_adv_flh: [`Отразить гор.`],
+		menu_adv_flv: [`Отразить верт.`],
+		menu_adv_dimens: [`Размеры`],
+		menu_adv_align: [`Выровнять`],
+		menu_adv_lock: [`Блокировка`],
+		menu_adv_tokenid: [`ID токена`],
+		menu_adv_pathid: [`ID линии`],
+		menu_token_title: [`Действия`],
+		menu_token_turn: [`В трекер`],
+		menu_mass_menu: [`Кинуть кубы`],
+		menu_mass_init: [`Инициатива`],
+		menu_mass_save: [`Спасбросок`],
+		menu_mass_skill: [`Умения`],
+		menu_multi_title: [`Мультитокен`],
+		menu_multi_rnd: [`Случайно`],
+		menu_multi_select: [`Выбрать`],
+		menu_multi_size: [`Размер`],
+		menu_quick_togm: [`Спрятать токен`],
+		menu_quick_tofg: [`Вернуть на слой`],
+		menu_quick_toback: [`Уровень вниз`],
+		menu_quick_save: [`Спасброски`],
+		stat_save_str: [`Сила`],
+		stat_save_dex: [`Ловкость`],
+		stat_save_con: [`Телосложение`],
+		stat_save_int: [`Интеллект`],
+		stat_save_wis: [`Мудрость`],
+		stat_save_cha: [`Харизма`],
+		stat_ab_athl: [`Атлетика`],
+		stat_ab_acrb: [`Акробатика`],
+		stat_ab_sloh: [`Ловкость рук`],
+		stat_ab_stel: [`Скрытность`],
+		stat_ab_arcn: [`Магия`],
+		stat_ab_hist: [`История`],
+		stat_ab_invs: [`Расследование`],
+		stat_ab_natr: [`Природа`],
+		stat_ab_relg: [`Религия`],
+		stat_ab_anih: [`Уход за животными`],
+		stat_ab_insg: [`Проницательность`],
+		stat_ab_medc: [`Медицина`],
+		stat_ab_perc: [`Восприятие`],
+		stat_ab_surv: [`Выживание`],
+		stat_ab_decp: [`Обман`],
+		stat_ab_intm: [`Запугивание`],
+		stat_ab_perf: [`Выступление`],
+		stat_ab_pers: [`Убеждение`],
+		stat_init: [`ИНИЦИАТИВА`],
 		msg_vtte_init: [`
-            VTT Enhancement Suite обнаружен. $0 успешно инициализирован.
-            <br>
-        `],
+		VTT Enhancement Suite обнаружен. $0 успешно инициализирован.
+		<br>
+	`],
 		msg_better20_help: [`
-			Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ">вики</a> или зайдите в <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="Вроде, очевидно.">
-            Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.
-			<br>
-			<br>
-            Перед тем, как сообщить о баге на форумах Roll20, пожалуйста отключите данный скрипт и проверьте, сохраняется ли проблема.
-			</span>
-		`],
+		Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ">вики</a> или зайдите в <a href="https://discord.gg/nGvRCDs">Discord</a>.
+		<br>
+		<br>
+		<span title="Вроде, очевидно.">
+		Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.
+		<br>
+		<br>
+		Перед тем, как сообщить о баге на форумах Roll20, пожалуйста отключите данный скрипт и проверьте, сохраняется ли проблема.
+		</span>
+	`],
 		msg_b20_version_stream: [`<br>
-            $0 обновился, доступна новая версия.
-            <br><br>
-        `],
+		$0 обновился, доступна новая версия.
+		<br><br>
+	`],
 		msg_b20_version: [`<br>
-            $0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>
-        `],
+		$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>
+	`],
 		msg_player_connected: [`подключился`],
 	};
 
@@ -448,6 +411,7 @@ function baseLanguage () {
 }
 
 SCRIPT_EXTENSIONS.push(baseLanguage);
+
 
 function baseUtil () {
 	const vttesUrl = "https://justas-d.github.io/roll20-enhancement-suite/";
@@ -544,7 +508,7 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
 			url: `https://raw.githubusercontent.com/redweller/betterR20/development/dist/betteR20-version`,
@@ -583,7 +547,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		if (window.enhancementSuiteEnabled) {
 			d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
@@ -594,7 +558,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		d20plus.ut.sendHackerChat(`
 			${scriptName} initialising, please wait...<br><br>
@@ -603,7 +567,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
-		const defaultStyle = !!d20plus.cfg.get("tweaks", "modestSystemMessagesStyle");
+		const defaultStyle = !!d20plus.cfg.get("chat", "modestSystemMessagesStyle");
 		d20.textchat.incoming(false, ({
 			who: "system",
 			type: "system",
@@ -1866,229 +1830,117 @@ function baseConfig () {
 	d20plus.cfg.pLoadConfigFailed = false;
 
 	d20plus.cfg.quickActions = {
-		"delete": { ln: "menu_edit_del", condition: "window.is_gm" },
-		"copy": { ln: "menu_edit_copy", condition: "window.is_gm" },
-		"paste": { ln: "menu_edit_paste", condition: "" },
-		"undo": { ln: "menu_edit_undo", condition: "window.is_gm && !this.view" },
-		"tofront": { ln: "menu_move_tofront", condition: "this.view" },
-		"forward-one": { ln: "menu_move_forwone", condition: "this.view" },
-		"back-one": { ln: "menu_quick_toback", condition: "this.view" },
-		"toback": { ln: "menu_move_toback", condition: "this.view" },
-		"tolayer_map": { ln: "menu_layer_map", condition: "this.view" },
-		"tolayer_background": { ln: "menu_layer_bg", condition: "this.view" },
-		"tolayer_objects": { ln: "menu_layer_obj", condition: "this.view" },
-		"tolayer_foreground": { ln: "menu_quick_tofg", condition: "this.view" },
-		"tolayer_gmlayer": { ln: "menu_quick_togm", condition: "this.view" },
-		"tolayer_walls": { ln: "menu_layer_barriers", condition: "this.view" },
-		"tolayer_weather": { ln: "menu_layer_weather", condition: "this.view" },
-		"util-scenes": { ln: "menu_util_start", condition: "" },
-		"token-animate": { ln: "menu_util_animate", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"token-fly": { ln: "menu_util_flight", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"token-light": { ln: "menu_util_light", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"group": { ln: "menu_adv_grp", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"ungroup": { ln: "menu_adv_ungrp", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"toggledrawing": { ln: "menu_adv_isdrv", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"togglefliph": { ln: "menu_adv_flh", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"toggleflipv": { ln: "menu_adv_flv", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"setdimensions": { ln: "menu_adv_dimens", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"aligntogrid": { ln: "menu_adv_align", condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
-		"lock-token": { ln: "menu_adv_lock", condition: "this.view" },
-		"copy-tokenid": { ln: "menu_adv_tokenid", condition: "this.get && this.get(\"type\") == \"image\"" },
-		"copy-pathid": { ln: "menu_adv_pathid", condition: "this.get && this.get(\"type\") == \"path\"" },
-		"addturn": { ln: "menu_token_turn", condition: "this.get && this.get(\"type\") != \"path\"" },
-		"rollinit": { ln: "menu_mass_init", condition: "this.view && this.get(\"isdrawing\") === false && window.currentEditingLayer != \"map\"" },
-		"rollsaves": { ln: "menu_quick_save", condition: "this.view && this.get(\"isdrawing\") === false && window.currentEditingLayer != \"map\"" },
-		"rollskills": { ln: "menu_mass_skill", condition: "this.view && this.get(\"isdrawing\") === false && window.currentEditingLayer != \"map\"" },
-		"side_random": { ln: "menu_multi_rnd", condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"side_choose": { ln: "menu_multi_select", condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"rollertokenresize": { ln: "menu_multi_size", condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"delete": { ln: __("menu_edit_del"), condition: "window.is_gm" },
+		"copy": { ln: __("menu_edit_copy"), condition: "window.is_gm" },
+		"paste": { ln: __("menu_edit_paste"), condition: "" },
+		"undo": { ln: __("menu_edit_undo"), condition: "window.is_gm && !this.view" },
+		"tofront": { ln: __("menu_move_tofront"), condition: "this.view" },
+		"forward-one": { ln: __("menu_move_forwone"), condition: "this.view" },
+		"back-one": { ln: __("menu_quick_toback"), condition: "this.view" },
+		"toback": { ln: __("menu_move_toback"), condition: "this.view" },
+		"tolayer_map": { ln: __("menu_layer_map"), condition: "this.view" },
+		"tolayer_background": { ln: __("menu_layer_bg"), condition: "this.view" },
+		"tolayer_objects": { ln: __("menu_layer_obj"), condition: "this.view" },
+		"tolayer_foreground": { ln: __("menu_quick_tofg"), condition: "this.view" },
+		"tolayer_gmlayer": { ln: __("menu_quick_togm"), condition: "this.view" },
+		"tolayer_walls": { ln: __("menu_layer_barriers"), condition: "this.view" },
+		"tolayer_weather": { ln: __("menu_layer_weather"), condition: "this.view" },
+		"util-scenes": { ln: __("menu_util_start"), condition: "" },
+		"token-animate": { ln: __("menu_util_animate"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"token-fly": { ln: __("menu_util_flight"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"token-light": { ln: __("menu_util_light"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"group": { ln: __("menu_adv_grp"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"toggledrawing": { ln: __("menu_adv_isdrv"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
+		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view" },
+		"copy-tokenid": { ln: __("menu_adv_tokenid"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"copy-pathid": { ln: __("menu_adv_pathid"), condition: "this.get && this.get(\"type\") == \"path\"" },
+		"addturn": { ln: __("menu_token_turn"), condition: "this.get && this.get(\"type\") != \"path\"" },
+		"rollinit": { ln: __("menu_mass_init"), condition: "this.view && this.get(\"isdrawing\") === false && window.currentEditingLayer != \"map\"" },
+		"rollsaves": { ln: __("menu_quick_save"), condition: "this.view && this.get(\"isdrawing\") === false && window.currentEditingLayer != \"map\"" },
+		"rollskills": { ln: __("menu_mass_skill"), condition: "this.view && this.get(\"isdrawing\") === false && window.currentEditingLayer != \"map\"" },
+		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 	};
 
 	addConfigOptions("token", {
 		"_name": __("cfg_tab_tokens"),
 		"massRollWhisperName": {
-			"name": d20plus.ut.localize("cfg_option_whisper_name"),
+			"name": __("cfg_option_whisper_name"),
 			"default": false,
 			"_type": "boolean",
 		},
 		"massRollAssumesOGL": {
-			"name": d20plus.ut.localize("cfg_option_assume_ogl"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"quickInitButtons": {
-			"name": d20plus.ut.localize("cfg_option_quick_init_sort"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"quickInitButtonsClear": {
-			"name": d20plus.ut.localize("cfg_option_quick_init_clear"),
+			"name": __("cfg_option_assume_ogl"),
 			"default": true,
 			"_type": "boolean",
 		},
 	});
 	addConfigOptions("canvas", {
-		"_name": d20plus.ut.localize("cfg_tab_canvas"),
+		"_name": __("cfg_tab_canvas"),
 		"_player": true,
-		"gridSnap": {
-			"name": d20plus.ut.localize("cfg_option_grid_snap"),
-			"default": "1",
-			"_type": "_enum",
-			"__values": ["0.25", "0.5", "1"],
-			"_player": true,
-		},
-		"hideDarkModeSwitch": {
-			"name": d20plus.ut.localize("cfg_option_hide_dmswitch"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"scaleNamesStatuses": {
-			"name": d20plus.ut.localize("cfg_option_scaled_names"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"showBackground": {
-			"name": d20plus.ut.localize("cfg_option_show_bg"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showForeground": {
-			"name": d20plus.ut.localize("cfg_option_show_fg"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showLight": {
-			"name": d20plus.ut.localize("cfg_option_show_light"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showWeather": {
-			"name": d20plus.ut.localize("cfg_option_show_weather"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
-	});
-	addConfigOptions("import", {
-		"_name": d20plus.ut.localize("cfg_tab_import"),
-		"importIntervalMap": {
-			"name": d20plus.ut.localize("cfg_option_import_interval"),
-			"default": 2500,
-			"_type": "integer",
-		},
-	});
-	addConfigOptions("interface", {
-		"_name": d20plus.ut.localize("cfg_tab_interface"),
-		"_player": true,
-		"showCustomArtPreview": {
-			"name": d20plus.ut.localize("cfg_option_art_previews"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"toolbarOpacity": {
-			"name": d20plus.ut.localize("cfg_option_toolbar_opac"),
-			"default": 100,
-			"_type": "_slider",
-			"__sliderMin": 1,
-			"__sliderMax": 100,
-			"__sliderStep": 1,
-		},
 		"quickLayerButtons": {
-			"name": d20plus.ut.localize("cfg_option_layer_panel"),
+			"name": __("cfg_option_layer_panel"),
 			"default": true,
 			"_type": "boolean",
 		},
 		"quickLayerButtonsPosition": {
-			"name": d20plus.ut.localize("cfg_option_layer_panel_position"),
+			"name": __("cfg_option_layer_panel_position"),
 			"default": 1,
 			"_type": "_slider",
 			"__sliderMin": 0,
 			"__sliderMax": 1,
 			"__sliderStep": 1,
 		},
-		"streamerChatTag": {
-			"name": d20plus.ut.localize("cfg_option_streamer_tags"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-	});
-	addConfigOptions("tweaks", {
-		"_name": d20plus.ut.localize("cfg_tab_tweaks"),
-		"_player": true,
-		"playerPortraitSize": {
-			"name": d20plus.ut.localize("cfg_option_player_size"),
-			"default": 100,
-			"_type": "_slider",
-			"__sliderMin": 50,
-			"__sliderMax": 250,
-			"__sliderStep": 10,
-			"_player": true,
-		},
-		"enableDarkModeTweaks": {
-			"name": d20plus.ut.localize("cfg_option_dm_tweaks"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideHelpButton": {
-			"name": d20plus.ut.localize("cfg_option_hide_help"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideLineSplitter": {
-			"name": d20plus.ut.localize("cfg_option_hide_linesplit"),
-			"default": false,
-			"_type": "boolean",
-		},
-		"modestSystemMessagesStyle": {
-			"name": d20plus.ut.localize("cfg_option_modest_chat"),
+		"showBackground": {
+			"name": __("cfg_option_show_bg"),
 			"default": true,
 			"_type": "boolean",
+			"_player": false,
+		},
+		"showForeground": {
+			"name": __("cfg_option_show_fg"),
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showLight": {
+			"name": __("cfg_option_show_light"),
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showWeather": {
+			"name": __("cfg_option_show_weather"),
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"gridSnap": {
+			"name": __("cfg_option_grid_snap"),
+			"default": "1",
+			"_type": "_enum",
+			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
 		},
-		"suppressLoadingMessages": {
-			"name": d20plus.ut.localize("cfg_option_silent_chat"),
+		"scaleNamesStatuses": {
+			"name": __("cfg_option_scaled_names"),
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
-		"showPlayerConnects": {
-			"name": d20plus.ut.localize("cfg_option_log_players_in_chat"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"selectJournalSearchType": {
-			"name": d20plus.ut.localize("cfg_option_select_jrnsearch"),
-			"default": "roll20",
-			"_type": "_enum",
-			"__values": [
-				"Roll20",
-				"betteR20",
-			],
-		},
-		"selecArtLibraryType": {
-			"name": d20plus.ut.localize("cfg_option_select_artlib"),
-			"default": "roll20",
-			"_type": "_enum",
-			"__values": [
-				"Roll20",
-				"betteR20",
-			],
 		},
 		"enableQuickMenuItems": {
-			"name": d20plus.ut.localize("cfg_option_quick_menu"),
+			"name": __("cfg_option_quick_menu"),
 			"default": true,
 			"_type": "boolean",
 		},
 		"quickMenuItem2": {
-			"name": d20plus.ut.localize("cfg_option_quick_2"),
+			"name": __("cfg_option_quick_2"),
 			"default": "back-one",
 			"_type": "_enum",
 			"__values": (() => {
@@ -2098,7 +1950,7 @@ function baseConfig () {
 			})(),
 		},
 		"quickMenuItem3": {
-			"name": d20plus.ut.localize("cfg_option_quick_3"),
+			"name": __("cfg_option_quick_3"),
 			"default": "rollsaves",
 			"_type": "_enum",
 			"__values": (() => {
@@ -2106,6 +1958,112 @@ function baseConfig () {
 				for (const i in d20plus.cfg.quickActions) act_list.push(i);
 				return act_list;
 			})(),
+		},
+	});
+	addConfigOptions("import", {
+		"_name": __("cfg_tab_import"),
+		"importIntervalMap": {
+			"name": __("cfg_option_import_interval"),
+			"default": 2500,
+			"_type": "integer",
+		},
+	});
+	addConfigOptions("interface", {
+		"_name": __("cfg_tab_interface"),
+		"_player": true,
+		"showCustomArtPreview": {
+			"name": __("cfg_option_art_previews"),
+			"default": true,
+			"_type": "boolean",
+		},
+		"toolbarOpacity": {
+			"name": __("cfg_option_toolbar_opac"),
+			"default": 100,
+			"_type": "_slider",
+			"__sliderMin": 1,
+			"__sliderMax": 100,
+			"__sliderStep": 1,
+		},
+		"hideDarkModeSwitch": {
+			"name": __("cfg_option_hide_dmswitch"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"hideHelpButton": {
+			"name": __("cfg_option_hide_help"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"hideLineSplitter": {
+			"name": __("cfg_option_hide_linesplit"),
+			"default": false,
+			"_type": "boolean",
+		},
+		"selectJournalSearchType": {
+			"name": __("cfg_option_select_jrnsearch"),
+			"default": "roll20",
+			"_type": "_enum",
+			"__values": [
+				"Roll20",
+				"betteR20",
+			],
+		},
+		"selecArtLibraryType": {
+			"name": __("cfg_option_select_artlib"),
+			"default": "roll20",
+			"_type": "_enum",
+			"__values": [
+				"Roll20",
+				"betteR20",
+			],
+		},
+		"quickInitButtons": {
+			"name": __("cfg_option_quick_init_sort"),
+			"default": true,
+			"_type": "boolean",
+		},
+		"quickInitButtonsClear": {
+			"name": __("cfg_option_quick_init_clear"),
+			"default": true,
+			"_type": "boolean",
+		},
+	});
+	addConfigOptions("chat", {
+		"_name": __("cfg_tab_chat"),
+		"_player": true,
+		"playerPortraitSize": {
+			"name": __("cfg_option_player_size"),
+			"default": 100,
+			"_type": "_slider",
+			"__sliderMin": 50,
+			"__sliderMax": 250,
+			"__sliderStep": 10,
+			"_player": true,
+		},
+		"streamerChatTag": {
+			"name": __("cfg_option_streamer_tags"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"modestSystemMessagesStyle": {
+			"name": __("cfg_option_modest_chat"),
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"suppressLoadingMessages": {
+			"name": __("cfg_option_silent_chat"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showPlayerConnects": {
+			"name": __("cfg_option_log_players_in_chat"),
+			"default": true,
+			"_type": "boolean",
 		},
 	});
 
@@ -2705,7 +2663,7 @@ function baseConfig () {
 	*/
 
 	d20plus.cfg.PlayerImgCss = () => {
-		const setSize = d20plus.cfg.getOrDefault("tweaks", "playerPortraitSize");
+		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
 		const setFont = Math.round((setSize / 150) * 16);
 		const setCol = Math.round((setSize / 150) * 24);
 		const setLine = Math.round((setSize / 150) * 18);
@@ -2730,11 +2688,12 @@ function baseConfig () {
 			d20plus.cfg.dependentStyles.plTweak = $(`<style type="text/css"></style>`);
 			d20plus.cfg.dependentStyles.plTweak.appendTo("body");
 		}
+		/* in case I need this
 		if (d20plus.cfg.get("tweaks", "enableDarkModeTweaks")) {
 			d20plus.cfg.dependentStyles.dmTweak.appendTo("body");
 		} else {
 			d20plus.cfg.dependentStyles.dmTweak.remove();
-		}
+		} */
 		d20plus.cfg.dependentStyles.plTweak.html(d20plus.cfg.PlayerImgCss());
 	}
 
@@ -2764,7 +2723,7 @@ function baseConfig () {
 			d20plus.cfg.playerWatcher = new MutationObserver(playerListChange);
 		}
 
-		if (d20plus.cfg.getOrDefault("tweaks", "showPlayerConnects")) d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
+		if (d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
 		else d20plus.cfg.playerWatcher.disconnect();
 	}
 
@@ -2777,16 +2736,16 @@ function baseConfig () {
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
-		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
-		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("token", "quickInitButtons"));
-		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("token", "quickInitButtonsClear"));
-		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("canvas", "hideDarkModeSwitch"));
-		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("tweaks", "hideHelpButton"));
-		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("tweaks", "selectJournalSearchType") === "Roll20");
-		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("tweaks", "selectJournalSearchType") !== "Roll20");
-		$(`#journal > div.content > br`).toggle(d20plus.cfg.getOrDefault("tweaks", "selectJournalSearchType") !== "Roll20");
-		if (d20plus.cfg.getOrDefault("tweaks", "selecArtLibraryType") !== "Roll20") {
+		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
+		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
+		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
+		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtonsClear"));
+		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
+		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
+		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
+		$(`#journal > div.content > br`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
+		if (d20plus.cfg.getOrDefault("interface", "selecArtLibraryType") !== "Roll20") {
 			$(`#button-browse-external-art`).parent().parent().toggle(true);
 			$(`#button-add-external-art`).detach().appendTo($(`#button-browse-external-art`).parent());
 		} else {
@@ -12140,6 +12099,33 @@ function baseCss () {
 			s: ".actions_menu.d20contextmenu > ul > li[style]",
 			r: "display:none",
 		},
+		// Config & dark mode fixes
+		{
+			s: ".config-name",
+			r: "padding: 6px 0px; line-height: 21px;",
+		},
+		{
+			s: "#d20plus-configeditor .nav li:not(.active) > a",
+			r: "cursor: pointer;",
+		},
+		{
+			s: "#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: ".tool-row:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: "#floatinglayerbar li",
+			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
+		},
+		/*
+				#d20plus-configeditor .nav li:not(.active) > a {cursor: pointer;}
+				#floatinglayerbar li {background-color: var(--dark-surface2);border-color: var(--dark-surface1);}
+				.tool-row:nth-child(2n+1) {background-color: rgba(120, 120, 120, 0.2);}
+				#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1) {background-color: rgba(120, 120, 120, 0.2);}
+		*/
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
@@ -12294,15 +12280,7 @@ function baseCss () {
 		},
 	]);
 
-	// Fix art repo buttons CSS
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		{
-			s: "#imagedialog .searchbox p button",
-			r: "width: 100%; margin: 0px 5px !important;",
-		},
-	]);
-
-	// Minor tweaks
+	// Tweak OGL roll template styles
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
 			s: ".initiativedialog .ui-dialog-buttonset .ui-button",
@@ -12324,9 +12302,13 @@ function baseCss () {
 			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
 			r: "font-size: 12px;",
 		},
+	]);
+
+	// Fix art repo buttons CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
-			s: ".config-name",
-			r: "padding: 6px 0px; line-height: 21px;",
+			s: "#imagedialog .searchbox p button",
+			r: "width: 100%; margin: 0px 5px !important;",
 		},
 	]);
 
@@ -15635,21 +15617,21 @@ const baseTemplate = function () {
               </li>
             <$ } $>
 
-            ${d20plus.cfg.getOrDefault("tweaks", "enableQuickMenuItems") ? `<$ if(this.view && this.get("layer") != "gmlayer") { $>
+            ${d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems") ? `<$ if(this.view && this.get("layer") != "gmlayer") { $>
               <li data-action-type="tolayer_gmlayer">${__("menu_quick_togm")}</li>
             <$ } $>
             <$ if(this.view && this.get("layer") == "gmlayer") { $>
               <li data-action-type="tolayer_objects">${__("menu_quick_tofg")}</li>
             <$ } $>
 
-            ${d20plus.cfg.getOrDefault("tweaks", "quickMenuItem2") ? `
-              <$ if(${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("tweaks", "quickMenuItem2")].condition}) { $>
-                <li data-action-type='${d20plus.cfg.getOrDefault("tweaks", "quickMenuItem2")}'>${__(d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("tweaks", "quickMenuItem2")].ln)}</li>
+            ${d20plus.cfg.getOrDefault("canvas", "quickMenuItem2") ? `
+              <$ if(${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem2")].condition}) { $>
+                <li data-action-type='${d20plus.cfg.getOrDefault("canvas", "quickMenuItem2")}'>${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem2")].ln}</li>
               <$ } $>` : ``}
 
-            ${d20plus.cfg.getOrDefault("tweaks", "quickMenuItem3") ? `
-            <$ if(${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("tweaks", "quickMenuItem3")].condition}) { $>
-              <li data-action-type='${d20plus.cfg.getOrDefault("tweaks", "quickMenuItem3")}'>${__(d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("tweaks", "quickMenuItem3")].ln)}</li>
+            ${d20plus.cfg.getOrDefault("canvas", "quickMenuItem3") ? `
+            <$ if(${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem3")].condition}) { $>
+              <li data-action-type='${d20plus.cfg.getOrDefault("canvas", "quickMenuItem3")}'>${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem3")].ln}</li>
             <$ } $>` : ``}
               
             ` : ``}
@@ -17316,11 +17298,11 @@ const betteR20Emoji = function () {
 	/* eslint-enable */
 
 	addConfigOptions(
-		"interface", {
-			_name: d20plus.ut.localize('cfg_tab_interface'),
+		"chat", {
+			_name: __("cfg_tab_interface"),
 			_player: true,
 			emoji: {
-				name: d20plus.ut.localize('cfg_option_emoji'),
+				name: __("cfg_option_emoji"),
 				default: true,
 				_type: "boolean",
 				_player: true,
@@ -17333,7 +17315,7 @@ const betteR20Emoji = function () {
 		const tc = d20.textchat.$textarea;
 		$("#textchat-input").off("click", "button")
 		$("#textchat-input").on("click", "button", function () {
-			if (d20plus.cfg.getOrDefault("interface", "emoji")) {
+			if (d20plus.cfg.getOrDefault("chat", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					const clean = m1.replace(/:/g, "");
 					return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
@@ -17622,8 +17604,8 @@ const betteR20Core = function () {
 	d20plus.Init = async () => {
 		const scriptName = `betteR20-core v${d20plus.version}`;
 		try {
-			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.ut.selectLocale();
+			d20plus.ut.log(`Init (v${d20plus.version})`);// RB20 EXCLUDE START
+			d20plus.ut.selectLocale();// RB20 EXCLUDE END
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
 			await d20plus.js.pAddScripts();
@@ -17633,8 +17615,8 @@ const betteR20Core = function () {
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
-			const showChatMsgs = !d20plus.cfg.get("tweaks", "suppressLoadingMessages");
-			const showLineSpl = !d20plus.cfg.get("tweaks", "hideLineSplitter");
+			const showChatMsgs = !d20plus.cfg.get("chat", "suppressLoadingMessages");
+			const showLineSpl = !d20plus.cfg.get("interface", "hideLineSplitter");
 
 			if (showChatMsgs) {
 				d20plus.ut.showLoadingMessage(scriptName);
