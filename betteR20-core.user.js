@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.12
+// @version      1.31.0.13
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -117,7 +117,7 @@ function baseLanguage () {
 		cfg_option_layer_panel_position: [`-- Select left or right side to display this panel`],
 		cfg_option_streamer_tags: [`Streamer-Friendly Chat Tags`],
 		cfg_option_hide_r20search: [`Hide Default Journal Search Bar`],
-		cfg_option_player_size: [`Select size of Player List images`],
+		cfg_option_player_size: [`Set Player List size (0 - don't change)`],
 		cfg_option_hide_dmswitch: [`Hide Roll20's Dark Mode switch`],
 		cfg_option_hide_help: [`Hide Help Button on floating toolbar`],
 		cfg_option_dm_tweaks: [`Enable background style fixes for default dark mode`],
@@ -129,9 +129,11 @@ function baseLanguage () {
 		cfg_option_quick_init_clear: [`Add Quick Initiative tracker Clear Button`],
 		cfg_option_hide_linesplit: [`Hide Line Splitter (reload to apply changes)`],
 		cfg_option_log_players_in_chat: [`Show player connects messages`],
+		cfg_option_neat_menus: [`Reorganized canvas context menu (reload to apply changes)`],
 		cfg_option_quick_menu: [`Enable quick actions as copies of the menu entries added to the bottom of right-click menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back.`],
 		cfg_option_quick_2: [`-- Quick action 2`],
 		cfg_option_quick_3: [`-- Quick action 3`],
+		cfg_option_minify_tracker: [`Shrink Initiative Tracker Text`],
 		ui_bar_map: [`Map & Backdrop`],
 		ui_bar_obj: [`Objects & Tokens`],
 		ui_bar_bg: [`Background`],
@@ -147,6 +149,7 @@ function baseLanguage () {
 		ui_dialog_submit: [`Submit`],
 		ui_dialog_cancel: [`Cancel`],
 		menu_unlock: [`Unlock...`],
+		menu_card_title: [`Decks`],
 		menu_take_card: [`Take Card`],
 		menu_flip_card: [`Flip Card`],
 		menu_edit_title: [`Edit`],
@@ -174,18 +177,20 @@ function baseLanguage () {
 		menu_util_light: [`Set&nbsp;Light`],
 		menu_adv_title: [`Advanced`],
 		menu_adv_grp: [`Group`],
+		menu_adv_regrp: [`Reroup`],
 		menu_adv_ungrp: [`Ungroup`],
 		menu_adv_isdrv: [`Is Drawing`],
 		menu_adv_flh: [`Flip Horizontal`],
 		menu_adv_flv: [`Flip Vertical`],
 		menu_adv_dimens: [`Set Dimensions`],
 		menu_adv_align: [`Align to Grid`],
-		menu_adv_lock: [`Lock/Unlock`],
+		menu_adv_lock: [`Lock`],
+		menu_adv_unlock: [`Unlock`],
 		menu_adv_tokenid: [`View Token ID`],
 		menu_adv_pathid: [`View Path ID`],
 		menu_token_title: [`Token Tasks`],
 		menu_token_turn: [`Add Turn`],
-		menu_mass_menu: [`Mass Roll`],
+		menu_mass_title: [`Mass Roll`],
 		menu_mass_init: [`Initiative`],
 		menu_mass_save: [`Saving Throw`],
 		menu_mass_skill: [`Skill Check`],
@@ -270,12 +275,12 @@ function baseLanguage () {
 		cfg_option_import_interval: [`Время ожидания перед каждой картой (при импорте)`],
 		cfg_option_emoji: [`Добавить в чат замену эмотиконов`],
 		cfg_option_art_previews: [`Использовать предпросмотр для библиотеки изображений`],
-		cfg_option_toolbar_opac: [`Прозрачность горизонтальной панели`],
+		cfg_option_toolbar_opac: [`Прозрачность горизонтальной панели инструментов`],
 		cfg_option_layer_panel: [`Добавить панель Быстрого выбора слоя`],
 		cfg_option_layer_panel_position: [`-- Слева или справа отображать эту панель`],
 		cfg_option_streamer_tags: [`Обезличенные названия в чате (для стримеров)`],
 		cfg_option_hide_r20search: [`Спрятать дефолтную панель поиска в Журнале`],
-		cfg_option_player_size: [`Выберите размер списка игроков`],
+		cfg_option_player_size: [`Выберите размер списка игроков (0 - не менять)`],
 		cfg_option_hide_dmswitch: [`Спрятать переключатель темного режима от Roll20`],
 		cfg_option_hide_help: [`Спрятать кнопку Помощь на панели инструментов`],
 		cfg_option_dm_tweaks: [`Включить исправления стилей для темного режима`],
@@ -287,9 +292,11 @@ function baseLanguage () {
 		cfg_option_quick_init_clear: [`Добавить кнопку быстрой очистки Трекера`],
 		cfg_option_hide_linesplit: [`Спрятать кнопку разрезания линий (нужен перезапуск)`],
 		cfg_option_log_players_in_chat: [`Выводить сообщения о подключении игроков`],
+		cfg_option_neat_menus: [`Упорядоченное контекстное меню слоя (нужен перезапуск)`],
 		cfg_option_quick_menu: [`Включить быстрые действия, которые отображаются в самом низу меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда "На слой ГМа" и обратно`],
 		cfg_option_quick_2: [`-- Быстрое действие 2`],
 		cfg_option_quick_3: [`-- Быстрое действие 3`],
+		cfg_option_minify_tracker: [`Уменьшить размер элементов трекера инициативы`],
 		ui_bar_map: [`Карта и фон`],
 		ui_bar_obj: [`Объекты и токены`],
 		ui_bar_bg: [`Задний план`],
@@ -305,6 +312,7 @@ function baseLanguage () {
 		ui_dialog_submit: [`Подтвердить`],
 		ui_dialog_cancel: [`Отмена`],
 		menu_unlock: [`Снять блок...`],
+		menu_card_title: [`Колода`],
 		menu_take_card: [`Взять карту`],
 		menu_flip_card: [`Перевернуть`],
 		menu_edit_title: [`Правка`],
@@ -331,19 +339,21 @@ function baseLanguage () {
 		menu_util_flight: [`Высота полета`],
 		menu_util_light: [`Источник света`],
 		menu_adv_title: [`Свойства`],
-		menu_adv_grp: [`Группировка`],
+		menu_adv_grp: [`Группировать`],
 		menu_adv_ungrp: [`Разгруппировка`],
+		menu_adv_regrp: [`Перегруппиров.`],
 		menu_adv_isdrv: [`Это рисунок`],
 		menu_adv_flh: [`Отразить гор.`],
 		menu_adv_flv: [`Отразить верт.`],
 		menu_adv_dimens: [`Размеры`],
 		menu_adv_align: [`Выровнять`],
-		menu_adv_lock: [`Блокировка`],
+		menu_adv_lock: [`Блокировать`],
+		menu_adv_unlock: [`Разблокировать`],
 		menu_adv_tokenid: [`ID токена`],
 		menu_adv_pathid: [`ID линии`],
 		menu_token_title: [`Действия`],
 		menu_token_turn: [`В трекер`],
-		menu_mass_menu: [`Кинуть кубы`],
+		menu_mass_title: [`Кинуть кубы`],
 		menu_mass_init: [`Инициатива`],
 		menu_mass_save: [`Спасбросок`],
 		menu_mass_skill: [`Умения`],
@@ -964,6 +974,14 @@ function baseUtil () {
 			}
 		}
 	};
+
+	d20plus.ut.dynamicStyles = (slug) => {
+		if (!d20plus.css.dynamic) d20plus.css.dynamic = {};
+		if (!d20plus.css.dynamic[slug]) {
+			d20plus.css.dynamic[slug] = $("<style></style>").appendTo("body");
+		}
+		return d20plus.css.dynamic[slug];
+	}
 
 	/**
 	* Assumes any other lists have been searched using the same term
@@ -1934,6 +1952,11 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"enableNeatMenus": {
+			"name": __("cfg_option_neat_menus"),
+			"default": true,
+			"_type": "boolean",
+		},
 		"enableQuickMenuItems": {
 			"name": __("cfg_option_quick_menu"),
 			"default": true,
@@ -1979,6 +2002,7 @@ function baseConfig () {
 		"toolbarOpacity": {
 			"name": __("cfg_option_toolbar_opac"),
 			"default": 100,
+			"_player": true,
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
@@ -2000,6 +2024,7 @@ function baseConfig () {
 			"name": __("cfg_option_hide_linesplit"),
 			"default": false,
 			"_type": "boolean",
+			"_player": true,
 		},
 		"selectJournalSearchType": {
 			"name": __("cfg_option_select_jrnsearch"),
@@ -2029,17 +2054,23 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 		},
+		"minifyTracker": {
+			"name": __("cfg_option_minify_tracker"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
 	});
 	addConfigOptions("chat", {
 		"_name": __("cfg_tab_chat"),
 		"_player": true,
 		"playerPortraitSize": {
 			"name": __("cfg_option_player_size"),
-			"default": 100,
+			"default": 30,
 			"_type": "_slider",
-			"__sliderMin": 50,
+			"__sliderMin": 30,
 			"__sliderMax": 250,
-			"__sliderStep": 10,
+			"__sliderStep": 20,
 			"_player": true,
 		},
 		"streamerChatTag": {
@@ -2662,39 +2693,32 @@ function baseConfig () {
 	};
 	*/
 
-	d20plus.cfg.PlayerImgCss = () => {
+	d20plus.cfg.handlePlayerImgSize = () => {
 		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
-		const setFont = Math.round((setSize / 150) * 16);
-		const setCol = Math.round((setSize / 150) * 24);
-		const setLine = Math.round((setSize / 150) * 18);
-		return `
-			.player .playername {width: ${setSize}px; font-size: ${setFont}px;line-height:${setLine}px}
-			.player .video {width: ${setSize}px; height: ${setSize}px; }
-			.player .playercolor, .player .color_picker {width: ${setCol}px; height: ${setCol}px; }
-		`;
+		const dynamicStyle = d20plus.ut.dynamicStyles("players");
+		if (setSize === 30) {
+			dynamicStyle.html("");
+		} else {
+			const setFont = Math.round((setSize / 150) * 16);
+			const setCol = Math.round((setSize / 150) * 24);
+			const setLine = Math.round((setSize / 150) * 18);
+			const setStyle = `
+				#playerzone .player .playername {width: ${setSize}px !important; font-size: ${setFont}px !important;line-height:${setLine}px}
+				#playerzone .player .video {width: ${setSize}px; height: ${setSize}px; }
+				#playerzone .player .playercolor, .player .color_picker {width: ${setCol}px; height: ${setCol}px; }
+			`;
+			dynamicStyle.html(setStyle);
+		}
 	}
 
-	d20plus.cfg.HandleCssConfig = () => {
-		if (!d20plus.cfg.dependentStyles) {
-			const dmTweakContent = `
-				.r20es-dialog {color: black} 
-				#d20plus-configeditor .nav li:not(.active) > a {cursor: pointer;}
-				#floatinglayerbar li {background-color: var(--dark-surface2);border-color: var(--dark-surface1);}
-				.tool-row:nth-child(2n+1) {background-color: rgba(120, 120, 120, 0.2);}
-				#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1) {background-color: rgba(120, 120, 120, 0.2);}
-			`;
-			d20plus.cfg.dependentStyles = { plTweak: {}, dmTweak: {} };
-			d20plus.cfg.dependentStyles.dmTweak = $(`<style type="text/css">${dmTweakContent}</style>`);
-			d20plus.cfg.dependentStyles.plTweak = $(`<style type="text/css"></style>`);
-			d20plus.cfg.dependentStyles.plTweak.appendTo("body");
-		}
-		/* in case I need this
-		if (d20plus.cfg.get("tweaks", "enableDarkModeTweaks")) {
-			d20plus.cfg.dependentStyles.dmTweak.appendTo("body");
+	d20plus.cfg.handleInitiativeShrink = () => {
+		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
+		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
+		if (doShrink) {
+			dynamicStyle.html(d20plus.css.miniInitStyle);
 		} else {
-			d20plus.cfg.dependentStyles.dmTweak.remove();
-		} */
-		d20plus.cfg.dependentStyles.plTweak.html(d20plus.cfg.PlayerImgCss());
+			dynamicStyle.html("");
+		}
 	}
 
 	d20plus.cfg.HandlePlayerLog = () => {
@@ -2727,24 +2751,7 @@ function baseConfig () {
 		else d20plus.cfg.playerWatcher.disconnect();
 	}
 
-	d20plus.cfg.baseHandleConfigChange = () => {
-		// d20plus.cfg._handleWeatherConfigChange();
-		d20plus.cfg.HandleCssConfig();
-		d20plus.cfg.HandlePlayerLog();
-		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
-			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
-			$(`#secondary-toolbar`).css({opacity: v * 0.01});
-		}
-
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
-		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
-		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
-		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtonsClear"));
-		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
-		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
-		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
-		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
-		$(`#journal > div.content > br`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
+	d20plus.cfg.HandleArtLibraryButtons = () => {
 		if (d20plus.cfg.getOrDefault("interface", "selecArtLibraryType") !== "Roll20") {
 			$(`#button-browse-external-art`).parent().parent().toggle(true);
 			$(`#button-add-external-art`).detach().appendTo($(`#button-browse-external-art`).parent());
@@ -2752,6 +2759,35 @@ function baseConfig () {
 			$(`#button-browse-external-art`).parent().parent().toggle(false);
 			$(`#button-add-external-art`).detach().appendTo($(`.addlibraryfolder`).parent());
 		}
+	}
+
+	d20plus.cfg.baseHandleConfigChange = () => {
+		// d20plus.cfg._handleWeatherConfigChange();
+		d20plus.cfg.handlePlayerImgSize();
+		d20plus.cfg.handleInitiativeShrink();
+
+		if (window.is_gm) {
+			d20plus.cfg.HandlePlayerLog();
+			d20plus.cfg.HandleArtLibraryButtons();
+		}
+
+		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
+			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
+			$(`#secondary-toolbar`).css({opacity: v * 0.01});
+		}
+
+		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
+		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
+
+		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
+		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtonsClear"));
+
+		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
+		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+
+		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
+		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
+		$(`#journal > div.content > br`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
@@ -9401,7 +9437,11 @@ function d20plusEngine () {
 
 	d20plus.engine.addSelectedTokenCommands = () => {
 		d20plus.ut.log("Add token rightclick commands");
-		$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
+		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+			$("#tmpl_actions_menu").replaceWith(d20plus.template.generatedActionsMenu);
+		} else {
+			$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
+		}
 
 		const getTokenWhisperPart = () => d20plus.cfg.getOrDefault("token", "massRollWhisperName") ? "/w gm Rolling for @{selected|token_name}...\n" : "";
 
@@ -12805,6 +12845,53 @@ function baseCss () {
 			`,
 		},
 	]);
+
+	d20plus.css.miniInitStyle = `
+		#initiativewindow button.initmacrobutton {
+			padding: 1px 4px;
+		}
+
+		#initiativewindow input {
+			font-size: 8px;
+		}
+
+		#initiativewindow ul li span.name {
+			font-size: 13px;
+			padding-top: 0;
+			padding-left: 4px;
+			margin-top: -3px;
+		}
+
+		#initiativewindow ul li img {
+			min-height: 15px;
+			max-height: 15px;
+		}
+
+		#initiativewindow ul li {
+			min-height: 15px;
+		}
+
+		#initiativewindow div.header span.initiative,
+		#initiativewindow ul li span.initiative,
+		#initiativewindow ul li span.tracker-col,
+		#initiativewindow div.header span.tracker-col,
+		#initiativewindow div.header span.initmacro,
+		#initiativewindow ul li span.initmacro {
+			font-size: 10px;
+			font-weight: bold;
+			text-align: right;
+			float: right;
+			padding: 0 5px;
+			width: 7%;
+			min-height: 20px;
+			display: block;
+			overflow: hidden;
+		}
+
+		#initiativewindow ul li .controls {
+			padding: 0 3px;
+		}
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);
@@ -15473,173 +15560,296 @@ const baseTemplate = function () {
       `;
 
 		d20plus.template_actionsMenu = `
-      <script id='tmpl_actions_menu' type='text/html'>
-        <div class='actions_menu d20contextmenu'>
-          <ul>
+	  <script id='tmpl_actions_menu' type='text/html'>
+		  <div class='actions_menu d20contextmenu'>
+			  <ul>
+				  <$ if (Object.keys(this).length === 0) { $>
+					  <li data-action-type='unlock-tokens'>Unlock...</li>
+				  <$ } $>
+				  <$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
+					  <li class='head hasSub' data-action-type='takecard'>Take Card</li>
+					  <li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
+				  <$ } $>
+				  <$ if(window.is_gm) { $>
+					  <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
+						  <!-- BEGIN MOD -->
+						  <li class='head hasSub' data-menuname='massroll'>
+							  Mass Roll &raquo;
+							  <ul class='submenu' data-menuname='massroll'>
+								  <li class='head hasSub' data-action-type='rollinit'>Initiative</li>
+								  <li class='head hasSub' data-action-type='rollsaves'>Save</li>
+								  <li class='head hasSub' data-action-type='rollskills'>Skill</li>
+							  </ul>
+						  </li>
+						  <!-- END MOD -->
+						  <li class='head hasSub' data-action-type='addturn'>Add Turn</li>
+					  <$ } $>
+					  <!-- BEGIN MOD -->
+					  <!-- <li class='head'>Edit</li> -->
+					  <!-- END MOD -->
+					  <$ if(this.view) { $>
+						  <li data-action-type='delete'>Delete</li>
+						  <li data-action-type='copy'>Copy</li>
+					  <$ } $>
+					  <li data-action-type='paste'>Paste</li>
+					  <!-- BEGIN MOD -->
+					  <$ if(!this.view) { $>
+						  <li data-action-type='undo'>Undo</li>
+					  <$ } $>
+					  <!-- END MOD -->
 
-            <$ if (Object.keys(this).length === 0) { $>
-              <li data-action-type='unlock-tokens'>${__("menu_unlock")}</li>
-            <$ } $>
-            <$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
-              <li class='head hasSub' data-action-type='takecard'>${__("menu_take_card")}</li>
-              <li class='head hasSub' data-action-type='flipcard'>${__("menu_flip_card")}</li>
-            <$ } $>
+					  <!-- BEGIN MOD -->
+					  <$ if(this.view) { $>
+						  <li class='head hasSub' data-menuname='move'>
+						  Move &raquo;
+							  <ul class='submenu' data-menuname='move'>
+								  <li data-action-type='tofront'>To Front</li>
+								  <li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
+								  <li data-action-type='back-one'>Back One<!-- (B-B)--></li>
+								  <li data-action-type='toback'>To Back</li>
+							  </ul>
+						  </li>
+					  <$ } $>
 
-            <$ if(window.is_gm) { $>
-                            
-              <!-- BEGIN MOD -->
-              <li class='head hasSub' data-menuname='edit'>
-                ${__("menu_edit_title")}&nbsp;&raquo;
-                <ul class='submenu' data-menuname='edit'>
-                  <$ if(this.view) { $>
-                    <li data-action-type='delete'>${__("menu_edit_del")}</li>
-                    <li data-action-type='copy'>${__("menu_edit_copy")}</li>
-                  <$ } $>
-                  <li data-action-type='paste'>${__("menu_edit_paste")}</li>
-                  <$ if(!this.view) { $>
-                    <li data-action-type='undo'>${__("menu_edit_undo")}</li>
-                  <$ } $>
-                  </li>
-                </ul>
-              </li>
-              <!-- END MOD -->
+					  <li class='head hasSub' data-menuname='VeUtil'>
+						  Utilities &raquo;
+						  <ul class='submenu' data-menuname='VeUtil'>
+							  <li data-action-type='util-scenes'>Start Scene</li>
+							  <$ if(this.get && this.get("type") == "image") { $>
+								  <div class="ctx__divider"></div>
+								  <li data-action-type='token-animate'>Animate</li>
+								  <li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>
+								  <li data-action-type='token-light'>Set&nbsp;Light</li>
+							  <$ } $>
+						  </ul>
+					  </li>
+					  <!-- END MOD -->
 
-              <!-- BEGIN MOD -->
-              <$ if(this.view) { $>
-                <li class='head hasSub' data-menuname='move'>
-                  ${__("menu_move_title")}&nbsp;&raquo;
-                  <ul class='submenu' data-menuname='move'>
-                    <li data-action-type='tofront'>${__("menu_move_tofront")}</li>
-                    <li data-action-type='forward-one'>${__("menu_move_forwone")}<!-- (B-F)--></li>
-                    <li data-action-type='back-one'>${__("menu_move_backone")}<!-- (B-B)--></li>
-                    <li data-action-type='toback'>${__("menu_move_toback")}</li>
-                  </ul>
-                </li>
-              
-                <li class='head hasSub' data-menuname='positioning'>
-                ${__("menu_layer_title")}&nbsp;&raquo;
-                  <ul class='submenu' data-menuname='positioning'>
-                    <li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'><span class="pictos ctx__layer-icon">@</span> ${__("menu_layer_map")}</li>
-                    ${d20plus.cfg.getOrDefault("canvas", "showBackground") ? `<!-- BEGIN MOD -->
-                    <li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span> ${__("menu_layer_bg")}</li>
-                    <!-- END MOD -->` : ""}
-                    <li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'><span class="pictos ctx__layer-icon">b</span> ${__("menu_layer_obj")}</li>
-                    ${d20plus.cfg.getOrDefault("canvas", "showForeground") ? `<!-- BEGIN MOD -->
-                    <li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'><span class="pictos ctx__layer-icon">^</span> ${__("menu_layer_fg")}</li>
-                    <!-- END MOD -->` : ""}
-                    <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'><span class="pictos ctx__layer-icon">E</span> ${__("menu_layer_gm")}</li>
-                    <li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'><span class="pictostwo ctx__layer-icon">r</span> ${__("menu_layer_barriers")}</li>
-                    ${d20plus.cfg.getOrDefault("canvas", "showWeather") ? `<!-- BEGIN MOD -->
-                    <li data-action-type="tolayer_weather" class='<$ if(this && this.get && this.get("layer") == "weather") { $>active<$ } $>'><span class="pictos ctx__layer-icon">C</span> ${__("menu_layer_weather")}</li>
-                    <!-- END MOD -->` : ""}
-                  </ul>
-                </li>
-              <$ } $>
+					  <li class='head hasSub' data-menuname='advanced'>
+						  Advanced &raquo;
+						  <ul class='submenu' data-menuname='advanced'>
+							  <li data-action-type='group'>Group</li>
+							  <li data-action-type='ungroup'>Ungroup</li>
+							  <$ if(this.get && this.get("type") == "image") { $>
+								  <li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
+								  <li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
+								  <li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
+								  <li data-action-type='setdimensions'>Set Dimensions</li>
+								  <$ if(window.currentEditingLayer == "map") { $>
+									  <li data-action-type='aligntogrid'>Align to Grid</li>
+								  <$ } $>
+							  <$ } $>
 
-              <li class='head hasSub' data-menuname='VeUtil'>
-                ${__("menu_util_title")}&nbsp;&raquo;
-                <ul class='submenu' data-menuname='VeUtil'>
-                  <li data-action-type='util-scenes'>${__("menu_util_start")}</li>
-                  <$ if(this.get && this.get("type") == "image") { $>
-                    <div class="ctx__divider"></div>
-                    <li data-action-type='token-animate'>${__("menu_util_animate")}</li>
-                    <li data-action-type='token-fly'>${__("menu_util_flight")}</li>
-                    <li data-action-type='token-light'>${__("menu_util_light")}</li>
-                  <$ } $>
-                </ul>
-              </li>
-              <!-- END MOD -->
+							  <$ if(this.view) { $>
+								  <li data-action-type='lock-token'>Lock/Unlock Position</li>
+							  <$ } $>
 
-              <li class='head hasSub' data-menuname='advanced'>
-                ${__("menu_adv_title")}&nbsp;&raquo;
-                <ul class='submenu' data-menuname='advanced'>
-                  <li data-action-type='group'>${__("menu_adv_grp")}</li>
-                  <li data-action-type='ungroup'>${__("menu_adv_ungrp")}</li>
-                  <$ if(this.get && this.get("type") == "image") { $>
-                    <li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">${__("menu_adv_isdrv")}</li>
-                    <li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">${__("menu_adv_flh")}</li>
-                    <li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">${__("menu_adv_flv")}</li>
-                    <li data-action-type='setdimensions'>${__("menu_adv_dimens")}</li>
-                    <$ if(window.currentEditingLayer == "map") { $>
-                      <li data-action-type='aligntogrid'>${__("menu_adv_align")}</li>
-                    <$ } $>
-                  <$ } $>
+							  <$ if(this.get && this.get("type") == "image") { $>
+								  <li data-action-type='copy-tokenid'>View Token ID</li>
+							  <$ } $>
+							  <$ if(this.get && this.get("type") == "path") { $>
+								  <li data-action-type='copy-pathid'>View Path ID</li>
+							  <$ } $>
+						  </ul>
+					  </li>
 
-                  <$ if(this.view) { $>
-                    <li data-action-type='lock-token'>${__("menu_adv_lock")}</li>
-                  <$ } $>
+					  <li class='head hasSub' data-menuname='positioning'>
+						  Layer &raquo;
+						  <ul class='submenu' data-menuname='positioning'>
+							  <li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'><span class="pictos ctx__layer-icon">@</span> Map Layer</li>
+							  <!-- BEGIN MOD -->
+							  <li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'><span class="pictos ctx__layer-icon">a</span> Background Layer</li>
+							  <!-- END MOD -->
+							  <li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'><span class="pictos ctx__layer-icon">b</span> Token Layer</li>
+							  <!-- BEGIN MOD -->
+							  <li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'><span class="pictos ctx__layer-icon">B</span> Foreground Layer</li>
+							  <!-- END MOD -->
+							  <li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'><span class="pictos ctx__layer-icon">E</span> GM Layer</li>
+							  <li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'><span class="pictostwo ctx__layer-icon">r</span> Lighting Layer</li>
+							  <!-- BEGIN MOD -->
+							  <li data-action-type="tolayer_weather" class='<$ if(this && this.get && this.get("layer") == "weather") { $>active<$ } $>'><span class="pictos ctx__layer-icon">C</span> Weather Layer</li>
+							  <!-- END MOD -->
+						  </ul>
+					  </li>
+				  <$ } $>
 
-                  <$ if(this.get && this.get("type") == "image") { $>
-                    <li data-action-type='copy-tokenid'>${__("menu_adv_tokenid")}</li>
-                  <$ } $>
-                  <$ if(this.get && this.get("type") == "path") { $>
-                    <li data-action-type='copy-pathid'>${__("menu_adv_pathid")}</li>
-                  <$ } $>
-                </ul>
-              </li>
+				  <$ if(this.view && this.get && this.get("sides") !== "" && this.get("cardid") === "") { $>
+					  <li class='head hasSub' data-menuname='mutliside'>
+						  Multi-Sided &raquo;
+						  <ul class='submenu' data-menuname='multiside'>
+							  <li data-action-type='side_random'>Random Side</li>
+							  <li data-action-type='side_choose'>Choose Side</li>
+							  <li data-action-type='rollertokenresize'>Set Side Size</li>
+						  </ul>
+					  </li>
+				  <$ } $>
+			  </ul>
+		  </div>
+	  </script>
+	  `;
 
-              <$ if(this.get && this.get("type") != "path") { $>
-                <li id='b20_custom_token_items' class='head hasSub' data-menuname='tokens'>
-                 ${__("menu_token_title")}&nbsp;&raquo;
-                  <ul class='submenu' data-menuname='tokens'>
-                    <li data-action-type='addturn'>${__("menu_token_turn")}</li>
-                  </ul>
-                </li>
-              <$ } $>
+		d20plus.template_neat_actions = {
+			"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
+			"takecard": { ln: __("menu_take_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
+			"flipcard": { ln: __("menu_flip_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
+			"delete": { ln: __("menu_edit_del"), icon: "#", condition: "this.view" },
+			"copy": { ln: __("menu_edit_copy"), icon: "|", condition: "window.is_gm && this.view" },
+			"paste": { ln: __("menu_edit_paste"), icon: "W", condition: "window.is_gm && !this.view" },
+			"undo": { ln: __("menu_edit_undo"), icon: "1", condition: "window.is_gm" },
+			"tofront": { ln: __("menu_move_tofront"), condition: "this.view" },
+			"forward-one": { ln: __("menu_move_forwone"), condition: "this.view" },
+			"back-one": { ln: __("menu_move_backone"), condition: "this.view", quick: "menu_quick_toback"},
+			"toback": { ln: __("menu_move_toback"), condition: "this.view" },
+			"tolayer_map": { ln: __("menu_layer_map"), icon: "G", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"map\"" },
+			"tolayer_background": { ln: __("menu_layer_bg"), icon: "P", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showBackground\")", active: "this && this.get && this.get(\"layer\") == \"background\"" },
+			"tolayer_objects": { ln: __("menu_layer_obj"), icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"" },
+			"tolayer_foreground": { ln: __("menu_layer_fg"), icon: "^", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"", quick: "menu_quick_tofg"},
+			"tolayer_gmlayer": { ln: __("menu_layer_gm"), icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: "menu_quick_togm"},
+			"tolayer_walls": { ln: __("menu_layer_barriers"), icon: "r", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"walls\"" },
+			"tolayer_weather": { ln: __("menu_layer_weather"), icon: "C", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showWeather\")", active: "this && this.get && this.get(\"layer\") == \"weather\"" },
+			"util-scenes": { ln: __("menu_util_start"), condition: "" },
+			"token-animate": { ln: __("menu_util_animate"), condition: "this.get && this.get(\"type\") == \"image\"" },
+			"token-fly": { ln: __("menu_util_flight"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.attributes.statusmarkers.search(\"fluffy-wing@\")>-1" },
+			"token-light": { ln: __("menu_util_light"), condition: "this.get && this.get(\"type\") == \"image\"" },
+			"group": { ln: __("menu_adv_grp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && !(() => {for (const i of d20.engine.selected()) if (i._model.get(\"groupwith\")) return true; return false })())" },
+			"regroup": { ln: __("menu_adv_regrp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && (() => {for (const i of d20.engine.selected()) if (!i._model.get(\"groupwith\")) return true; return false })())", action: "group"},
+			"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.view && this.get(\"groupwith\")" },
+			"toggledrawing": { ln: __("menu_adv_isdrv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"isdrawing\")" },
+			"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
+			"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
+			"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
+			"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
+			"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
+			"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
+			"copy-tokenid": { ln: __("menu_adv_tokenid"), condition: "this.get && this.get(\"type\") == \"image\"" },
+			"copy-pathid": { ln: __("menu_adv_pathid"), condition: "this.get && this.get(\"type\") == \"path\"" },
+			"addturn": { ln: __("menu_token_turn"), condition: "this.get && this.get(\"type\") != \"path\"" },
+			"rollinit": { ln: __("menu_mass_init"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
+			"rollsaves": { ln: __("menu_mass_save"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: "menu_quick_save"},
+			"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
+			"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+			"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+			"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		};
 
-              ${d20plus.settingsHtmlHeader.search("5etools") > 0 || d20plus.cfg.getOrDefault("token", "massRollAssumesOGL") ? `
-                <$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
-                  <!-- BEGIN MOD -->
+		d20plus.template_neat_submenus = {
+			"edit": {
+				ln: __("menu_edit_title"),
+				subitems: [
+					"delete",
+					"copy",
+					"paste",
+					"undo",
+				] },
+			"move": {
+				ln: __("menu_move_title"),
+				subitems: [
+					"tofront",
+					"forward-one",
+					"back-one",
+					"toback",
+				] },
+			"layer": {
+				ln: __("menu_layer_title"),
+				subitems: [
+					"tolayer_map",
+					"tolayer_background",
+					"tolayer_objects",
+					"tolayer_foreground",
+					"tolayer_gmlayer",
+					"tolayer_walls",
+					"tolayer_weather",
+				] },
+			"util": {
+				ln: __("menu_util_title"),
+				subitems: [
+					"util-scenes",
+					"-",
+					"token-animate",
+					"token-fly",
+					"token-light",
+				] },
+			"adv": {
+				ln: __("menu_adv_title"),
+				subitems: [
+					"unlock-tokens",
+					"group",
+					"regroup",
+					"ungroup",
+					"lock-token",
+					"unlock-token",
+					"-",
+					"toggledrawing",
+					"togglefliph",
+					"toggleflipv",
+					"setdimensions",
+					"aligntogrid",
+					"copy-tokenid",
+					"copy-pathid",
+				] },
+			"token": {
+				ln: __("menu_token_title"),
+				subitems: [
+					"addturn",
+					"-",
+				] },
+			"mass": {
+				ln: __("menu_mass_title"),
+				subitems: [
+					"rollinit",
+					"rollsaves",
+					"rollskills",
+				] },
+			"multi": {
+				ln: __("menu_multi_title"),
+				subitems: [
+					"side_random",
+					"side_choose",
+					"-",
+					"rollertokenresize",
+				] },
+			"card": {
+				ln: __("menu_card_title"),
+				subitems: [
+					"takecard",
+					"flipcard",
+				] },
+		}
 
-                  <li class='head hasSub' data-menuname='massroll'>
-                  ${__("menu_mass_menu")}&nbsp;&raquo;
-                    <ul class='submenu' data-menuname='massroll'>
-                      <li data-action-type='rollinit'>${__("menu_mass_init")}</li>
-                      <li data-action-type='rollsaves'>${__("menu_mass_save")}</li>
-                      <li data-action-type='rollskills'>${__("menu_mass_skill")}</li>
-                    </ul>
-                  </li>
-                  <!-- END MOD -->
-
-                <$ } $>
-              ` : ``}
-
-            <$ } $>
-
-            <$ if(this.view && this.get && this.get("sides") !== "" && this.get("cardid") === "") { $>
-              <li class='head hasSub' data-menuname='mutliside'>
-              ${__("menu_multi_title")}&nbsp;&raquo;
-                <ul class='submenu' data-menuname='multiside'>
-                  <li data-action-type='side_random'>${__("menu_multi_rnd")}</li>
-                  <li data-action-type='side_choose'>${__("menu_multi_select")}</li>
-                  <li data-action-type='rollertokenresize'>${__("menu_multi_size")}</li>
-                </ul>
-              </li>
-            <$ } $>
-
-            ${d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems") ? `<$ if(this.view && this.get("layer") != "gmlayer") { $>
-              <li data-action-type="tolayer_gmlayer">${__("menu_quick_togm")}</li>
-            <$ } $>
-            <$ if(this.view && this.get("layer") == "gmlayer") { $>
-              <li data-action-type="tolayer_objects">${__("menu_quick_tofg")}</li>
-            <$ } $>
-
-            ${d20plus.cfg.getOrDefault("canvas", "quickMenuItem2") ? `
-              <$ if(${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem2")].condition}) { $>
-                <li data-action-type='${d20plus.cfg.getOrDefault("canvas", "quickMenuItem2")}'>${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem2")].ln}</li>
-              <$ } $>` : ``}
-
-            ${d20plus.cfg.getOrDefault("canvas", "quickMenuItem3") ? `
-            <$ if(${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem3")].condition}) { $>
-              <li data-action-type='${d20plus.cfg.getOrDefault("canvas", "quickMenuItem3")}'>${d20plus.cfg.quickActions[d20plus.cfg.getOrDefault("canvas", "quickMenuItem3")].ln}</li>
-            <$ } $>` : ``}
-              
-            ` : ``}
-
-          </ul>
-        </div>
-      </script>
-      `;
+		d20plus.template.generatedActionsMenu = (() => {
+			let templ = "";
+			Object.entries(d20plus.template_neat_submenus).forEach((menu) => {
+				const menuData = menu[1];
+				const menuName = `data-menuname='${menu[0]}'`;
+				let menuConditions = [];
+				let menuItems = "";
+				menuData.subitems.forEach((item) => {
+					if (item === "-") {
+						menuItems += `\n\t\t<div class="ctx__divider"></div>`;
+					} else {
+						let itemAction = d20plus.template_neat_actions[item].action || item;
+						item = d20plus.template_neat_actions[item];
+						const itemName = item.ln;
+						const itemCondition = item.condition;
+						const itemIcon = item.icon ? `<span class="pictos ctx__layer-icon" style="font-family:&quot;pictos custom&quot;, pictos">${item.icon}</span> ` : ``;
+						const itemActive = item.active ? ` class='<$ if(${item.active}) { $>active<$ } $>'` : ``;
+						const conditionStatement = itemCondition ? `if (${itemCondition})` : ``;
+						if (itemCondition && (menuConditions.at(-1) !== itemCondition)) menuConditions.push(itemCondition);
+						if (itemAction === "unlock-token") itemAction = "lock-token";
+						menuItems += `\n\t\t<$ ${conditionStatement} { $><li data-action-type='${itemAction}'${itemActive}>${itemIcon}${itemName}</li><$ } $>`;
+					}
+				})
+				templ += `<$ if ((${menuConditions.join(") || (")})) { $><li class='head hasSub' ${menuName}>\n\t${menuData.ln}&nbsp;&raquo;
+				<ul class='submenu' ${menuName}>${menuItems}\n\t</ul>\n</li><$ } $>\n`;
+			});
+			return `
+			<script id='tmpl_actions_menu' type='text/html'>
+			<div class='actions_menu d20contextmenu'>
+			  <ul>${templ}</ul>
+			  </div>
+			</script>
+			`;
+		})();
 
 		d20plus.template_charactereditor = `<script id='tmpl_charactereditor' type='text/html'>
     <div class='dialog largedialog charactereditor' style='display: block;'>
@@ -17299,7 +17509,7 @@ const betteR20Emoji = function () {
 
 	addConfigOptions(
 		"chat", {
-			_name: __("cfg_tab_interface"),
+			_name: __("cfg_tab_chat"),
 			_player: true,
 			emoji: {
 				name: __("cfg_option_emoji"),
