@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.13
+// @version      1.31.0.14
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -105,8 +105,10 @@ function baseLanguage () {
 		cfg_option_quick_init_sort: [`Add Quick Initiative Sort Button`],
 		cfg_option_grid_snap: [`Grid Snap`],
 		cfg_option_scaled_names: [`Scaled Names and Status Icons`],
+		cfg_option_show_fl: [`Include the Floors layer (reload to apply changes)`],
 		cfg_option_show_bg: [`Include the Background layer (reload to apply changes)`],
 		cfg_option_show_fg: [`Include the Foreground layer (reload to apply changes)`],
+		cfg_option_show_rf: [`Include the Roofs layer (reload to apply changes)`],
 		cfg_option_show_light: [`Include (force) light sources button (reload to apply changes)`],
 		cfg_option_show_weather: [`Include Weather layer and settings (reload to apply changes)`],
 		cfg_option_import_interval: [`Rest Time between Each Map (msec)`],
@@ -134,13 +136,18 @@ function baseLanguage () {
 		cfg_option_quick_2: [`-- Quick action 2`],
 		cfg_option_quick_3: [`-- Quick action 3`],
 		cfg_option_minify_tracker: [`Shrink Initiative Tracker Text`],
+		cfg_option_interiors_toggle: [`Add interior/outside mode switch`],
 		ui_bar_map: [`Map & Backdrop`],
 		ui_bar_obj: [`Objects & Tokens`],
+		ui_bar_fl: [`Floors`],
 		ui_bar_bg: [`Background`],
 		ui_bar_fg: [`Foreground`],
+		ui_bar_rf: [`Roofs`],
 		ui_bar_we: [`Weather Exclusions`],
 		ui_bar_barriers: [`Dynamic Field of View`],
 		ui_bar_light_n_barriers: [`Dynamic Lighting`],
+		ui_bar_toggle_layer_title: [`Toggle layer visibility`],
+		ui_bar_toggle_interior: [`Toggle inside/outside`],
 		ui_cfg_property: [`Property`],
 		ui_cfg_value: [`Value`],
 		ui_cfg_save: [`Save`],
@@ -164,9 +171,11 @@ function baseLanguage () {
 		menu_move_toback: [`To Back`],
 		menu_layer_title: [`Layer`],
 		menu_layer_map: [`Map`],
+		menu_layer_fl: [`Floors`],
 		menu_layer_bg: [`Background`],
 		menu_layer_obj: [`Tokens`],
 		menu_layer_fg: [`Foreground`],
+		menu_layer_rf: [`Roofs`],
 		menu_layer_gm: [`GM Hidden`],
 		menu_layer_barriers: [`Field of view`],
 		menu_layer_weather: [`Weather`],
@@ -268,8 +277,10 @@ function baseLanguage () {
 		cfg_option_quick_init_sort: [`Добавить кнопку быстрой сортировки Инициативы`],
 		cfg_option_grid_snap: [`Шаг "прилипания" к сетке`],
 		cfg_option_scaled_names: [`Масштабируемые имена и иконки статусов`],
+		cfg_option_show_fl: [`Включить слой Полов (нужен перезапуск)`],
 		cfg_option_show_bg: [`Включить слой Задний план (нужен перезапуск)`],
 		cfg_option_show_fg: [`Включить слой Передний план (нужен перезапуск)`],
+		cfg_option_show_rf: [`Включить слой Крыши (нужен перезапуск)`],
 		cfg_option_show_light: [`Включить кнопку для источников света (нужен перезапуск)`],
 		cfg_option_show_weather: [`Включить слой и настройки Погоды (нужен перезапуск)`],
 		cfg_option_import_interval: [`Время ожидания перед каждой картой (при импорте)`],
@@ -297,13 +308,18 @@ function baseLanguage () {
 		cfg_option_quick_2: [`-- Быстрое действие 2`],
 		cfg_option_quick_3: [`-- Быстрое действие 3`],
 		cfg_option_minify_tracker: [`Уменьшить размер элементов трекера инициативы`],
+		cfg_option_interiors_toggle: [`Добавить переключатель режима в помещении/снаружи`],
 		ui_bar_map: [`Карта и фон`],
 		ui_bar_obj: [`Объекты и токены`],
+		ui_bar_fl: [`Полы`],
 		ui_bar_bg: [`Задний план`],
 		ui_bar_fg: [`Передний план`],
+		ui_bar_rf: [`Крыши`],
 		ui_bar_we: [`Исключения погоды`],
 		ui_bar_barriers: [`Динамические преграды`],
 		ui_bar_light_n_barriers: [`Динамическое освещение`],
+		ui_bar_toggle_layer_title: [`Переключить видимость слоя`],
+		ui_bar_toggle_interior: [`Переключить вид`],
 		ui_cfg_property: [`Свойство`],
 		ui_cfg_value: [`Значение`],
 		ui_cfg_save: [`Сохранить`],
@@ -327,9 +343,11 @@ function baseLanguage () {
 		menu_move_toback: [`На задний план`],
 		menu_layer_title: [`Слой`],
 		menu_layer_map: [`Карта`],
+		menu_layer_fl: [`Полы`],
 		menu_layer_bg: [`Задний`],
 		menu_layer_obj: [`Основной`],
 		menu_layer_fg: [`Передний`],
+		menu_layer_rf: [`Крыши`],
 		menu_layer_gm: [`Слой ГМа`],
 		menu_layer_barriers: [`Преграды`],
 		menu_layer_weather: [`Погода`],
@@ -939,10 +957,11 @@ function baseUtil () {
 		})
 	};
 
-	d20plus.ut.LAYERS = ["map", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.LAYERS = ["map", "floors", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
 	d20plus.ut.layerToName = (l) => {
 		switch (l) {
 			case "map": return "Map";
+			case "floors": return "Floors";
 			case "background": return "Background";
 			case "objects": return "Objects & Tokens";
 			case "foreground": return "Foreground";
@@ -1915,6 +1934,12 @@ function baseConfig () {
 			"__sliderMax": 1,
 			"__sliderStep": 1,
 		},
+		"showFloors": {
+			"name": __("cfg_option_show_fl"),
+			"default": false,
+			"_type": "boolean",
+			"_player": false,
+		},
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
 			"default": true,
@@ -1924,6 +1949,12 @@ function baseConfig () {
 		"showForeground": {
 			"name": __("cfg_option_show_fg"),
 			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showRoofs": {
+			"name": __("cfg_option_show_rf"),
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
@@ -1938,6 +1969,11 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
+		},
+		"showInteriorToggle": {
+			"name": __("cfg_option_interiors_toggle"),
+			"default": false,
+			"_type": "boolean",
 		},
 		"gridSnap": {
 			"name": __("cfg_option_grid_snap"),
@@ -2761,10 +2797,33 @@ function baseConfig () {
 		}
 	}
 
+	d20plus.cfg.HandleCss = () => {
+		// ugly hook to move VTTES menu items
+		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+			d20plus.ut.dynamicStyles("vttesHide").html(`
+				.actions_menu.d20contextmenu > ul > li[style] {display:none;}
+			`);
+		}
+		// more readable secondary bar (if it's too cluttered)
+		if (d20plus.cfg.getOrDefault("canvas", "showInteriorToggle")
+			|| d20plus.cfg.getOrDefault("canvas", "showRoofs")
+			|| d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+			d20plus.ut.dynamicStyles("secBarGuide").html(`
+				#floatinglayerbar li.choosegmlayer {border-top-width: 2px; border-top-style: solid;}
+				#floatinglayerbar li.choosemap, 
+				#floatinglayerbar li.chooseroofs, 
+				#floatinglayerbar li.choosefloors {
+					image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
+				}
+			`);
+		}
+	}
+
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
 		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
+		d20plus.cfg.HandleCss();
 
 		if (window.is_gm) {
 			d20plus.cfg.HandlePlayerLog();
@@ -9517,11 +9576,17 @@ function d20plusEngine () {
 			if (!window.is_gm && t[0].lastElementChild.childElementCount < 1)
 				return !1;
 			t.appendTo("body");
-			setTimeout(() => {
-				for (let i=0; i<10; i++) {
-					$('#r20es-token-ctx-menu-button-'+i).detach().appendTo('#b20_custom_token_items ul');
-				} 
-			}, 10);
+			// BEGIN MOD
+			if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+				setTimeout(() => {
+					const group = $(`.actions_menu > ul > li`).find(`[data-menuname='token']`);
+					if (!group.length) return;
+					$('[id^=r20es-token-ctx-menu-button-]').each( function () {
+						$(this).detach().appendTo(group);
+					});
+				}, 10);
+			}
+			// END MOD
 			var d = t.height()
 				, h = t.width()
 				, p = {};
@@ -10567,6 +10632,132 @@ function d20plusEngine () {
 		})
 	};
 
+	d20plus.engine.layersVisibilityCheck = () => {
+		const layers = ["floors", "background", "foreground"];
+		layers.forEach((layer) => {
+			const isHidden = d20.engine.canvas._objects.some((o) => {
+				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
+			});
+			if (isHidden) d20plus.engine.layerVisibilityOff(layer, true, true);
+		});
+		$(`#editinglayer li.chooseobjects`).click();
+	}
+
+	d20plus.engine.layersModeCheck = () => {
+		let wallDrawingsLikeInside = false;
+		const hasWallDrawings = d20.engine.canvas._objects.some((o) => {
+			if (o.model.get("barrierType") === "wall") wallDrawingsLikeInside = true;
+			if (o.model) return (o.model.get("stroke") === `rgb(255, 255, 0)`) || (o.model.get("stroke") === `rgb(255, 255, 255)`);
+		});
+		if (hasWallDrawings) {
+			if (wallDrawingsLikeInside) $(`.toggleinterior`).addClass("inside");
+			else {
+				$(`.toggleinterior`).addClass("outside");
+				d20plus.engine.outsideMode = true;
+			}
+		}
+	}
+
+	d20plus.engine.layersToggle = (event) => {
+		event.stopPropagation();
+		let outliers = 0;
+		const target = event.target;
+		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
+		const hiddenName = `hidden_${layer}`;
+		const isHidden = d20.engine.canvas._objects.some((o) => {
+			if (o.model) {
+				if (o.model.get("layer") === layer) outliers++;
+				return o.model.get("layer") === hiddenName;
+			}
+		});
+		if (isHidden) {
+			d20plus.engine.layerVisibilityOff(layer, outliers);
+		} else {
+			d20plus.engine.layerVisibilityOff(layer, true);
+		}
+	};
+
+	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
+		const menuButton = $(`#editinglayer .choose${layer}`);
+		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
+		const visibleTag = layer;
+		const hiddenTag = `hidden_${layer}`;
+		if (off) {
+			if (d20plus.engine.layerObjectsFromTo(visibleTag, hiddenTag) || force) {
+				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
+				menuButton.addClass("stashed");
+				secondaryButton.addClass("off");
+			}
+		} else {
+			d20plus.engine.layerObjectsFromTo(hiddenTag, visibleTag);
+			menuButton.removeClass("stashed");
+			secondaryButton.removeClass("off");
+		}
+	}
+
+	d20plus.engine.layerObjectsFromTo = (from, to) => {
+		let some = false;
+		for (const o of d20.engine.canvas._objects) {
+			const model = o.model;
+			if (!model) continue;
+			if (model.get("layer") === from) {
+				model.attributes.layer = to;
+				model.save();
+				some = true;
+			}
+		}
+		return some;
+	};
+
+	d20plus.engine.switchInsideOutside = () => {
+		d20plus.engine.outsideMode = !d20plus.engine.outsideMode;
+		const btn = $(`.toggleinterior`);
+		btn.removeClass("inside");
+		btn.removeClass("outside");
+		if (d20plus.engine.outsideMode) d20plus.engine.layerVisibilityOff("foreground", false);
+		const wallTypes = {};
+		if (d20plus.engine.outsideMode) {
+			wallTypes.interiorwalls = "transparent";
+			wallTypes.outsidewalls = "oneWay";
+		} else {
+			wallTypes.interiorwalls = "wall";
+			wallTypes.outsidewalls = "wall";
+		}
+		const wallColors = {
+			outsidewalls: "rgb(255, 255, 0)",
+			interiorwalls: "rgb(255, 255, 255)",
+		}
+		for (const o of d20.engine.canvas._objects) {
+			if (o.model.get("type") === "path" && o.model.get("layer") === "walls") {
+				// console.log('checking color '+o.model.get('stroke'));
+				if (o.model.get("stroke") === wallColors.outsidewalls) {
+					// console.log('outside wall matches this '+o.model.get('barrierType'));
+					setTimeout(() => {
+						o.model.set("barrierType", wallTypes.outsidewalls);
+						o.model.save();
+					}, 1)
+					// console.log('outside wall now is '+o.model.get('barrierType'));
+				}
+				if (o.model.get("stroke") === wallColors.interiorwalls) {
+					// console.log('interior wall matches this '+o.model.get('barrierType'));
+					setTimeout(() => {
+						o.model.set("barrierType", wallTypes.interiorwalls);
+						o.model.save();
+					}, 1)
+					// console.log('interior now is '+o.model.get('barrierType'));
+				}
+			}
+		}
+		setTimeout(() => {
+			if (d20plus.engine.outsideMode) {
+				btn.addClass("outside");
+			} else {
+				d20plus.engine.layerVisibilityOff("foreground", true);
+				btn.addClass("inside");
+			}
+		}, 100);
+	};
+
 	d20plus.engine.addLayers = () => {
 		d20plus.ut.log("Adding layers");
 
@@ -10590,17 +10781,43 @@ function d20plusEngine () {
 					<li class="choosebackground">
 						<span class="pictos">P</span>
 						${__("ui_bar_bg")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
+				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+				$(`#floatingtoolbar .choosemap`).after(`
+					<li class="choosefloors">
+						<span class="pictos">I</span>
+						${__("ui_bar_fl")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
+				$(`#floatingtoolbar .chooseobjects`).after(`
+					<li class="chooseroofs">
+						<span class="pictos">H</span>
+						${__("ui_bar_rf")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
 
 			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-				$(`#floatingtoolbar .chooseobjects`).after(`
+				$(`#floatingtoolbar .choosegmlayer`).before(`
 					<li class="chooseforeground">
 						<span class="pictos">^</span>
 						${__("ui_bar_fg")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
+				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
 
 			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
@@ -12118,7 +12335,7 @@ function baseCss () {
 			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
 		},
 		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.background li.choosebackground",
+			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.roofs li.chooseroofs, #floatinglayerbar.floors li.choosefloors, #floatinglayerbar.background li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
 		},
 		// move layer bar to right
@@ -12133,11 +12350,6 @@ function baseCss () {
 		{
 			s: "#floatinglayerbar",
 			r: "left: 20px;",
-		},
-		// ugly hook to move VTTES menu items
-		{
-			s: ".actions_menu.d20contextmenu > ul > li[style]",
-			r: "display:none",
 		},
 		// Config & dark mode fixes
 		{
@@ -12160,15 +12372,9 @@ function baseCss () {
 			s: "#floatinglayerbar li",
 			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
 		},
-		/*
-				#d20plus-configeditor .nav li:not(.active) > a {cursor: pointer;}
-				#floatinglayerbar li {background-color: var(--dark-surface2);border-color: var(--dark-surface1);}
-				.tool-row:nth-child(2n+1) {background-color: rgba(120, 120, 120, 0.2);}
-				#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1) {background-color: rgba(120, 120, 120, 0.2);}
-		*/
 		// extra layer buttons
 		{
-			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
+			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
 		},
 		{
@@ -12178,6 +12384,14 @@ function baseCss () {
 		{
 			s: "#editinglayer.foreground .currentselection:after",
 			r: "content: \"^\";",
+		},
+		{
+			s: "#editinglayer.floors .currentselection:after",
+			r: "content: \"I\";",
+		},
+		{
+			s: "#editinglayer.roofs .currentselection:after",
+			r: "content: \"H\";",
 		},
 		{
 			s: "#editinglayer.background .currentselection:after",
@@ -12194,6 +12408,31 @@ function baseCss () {
 		{
 			s: "#editinglayer.gmlayer #editing_layer_icon",
 			r: "display:none;",
+		},
+		// layer visibility toggles
+		{
+			s: "#editinglayer .pictos.layer_toggle",
+			r: "float: right; cursor: alias; pointer-events: all;",
+		},
+		{
+			s: "#editinglayer li.stashed",
+			r: "pointer-events: none;",
+		},
+		{
+			s: "#editinglayer li.stashed .pictos.layer_toggle",
+			r: "position: relative; left: -19px; margin-right: -20px; margin-left: 0px;",
+		},
+		{
+			s: "#editinglayer li.stashed .pictos.layer_toggle::after",
+			r: "content: \"d\"; position: relative; left: -16px; color: rgba(200,50,50,0.7);",
+		},
+		{
+			s: "#playerzone #floatinglayerbar li.off > span::after",
+			r: "content: \"d\"; color: rgba(200, 100, 100, 0.7); margin-left: -20px;",
+		},
+		{
+			s: "#playerzone #floatinglayerbar li.off",
+			r: "color: rgba(153, 153, 153, 0.5); pointer-events: none;",
 		},
 		// adjust the "Talking to Yourself" box
 		{
@@ -12989,10 +13228,16 @@ function baseUi () {
 
 		// Add layers to second side bar
 		$(`<li title="${__("ui_bar_map")}" class="choosemap"><span class="pictos" style="padding: 0 3px;">G</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+			$(`<li title="${__("ui_bar_fl")}" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
+		}
 		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
 			$(`<li title="${__("ui_bar_bg")}" class="choosebackground"><span class="pictos">P</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
 		}
 		$(`<li title="${__("ui_bar_obj")}" class="chooseobjects"><span class="pictos">U</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
+			$(`<li title="${__("ui_bar_rf")}" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
+		}
 		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
 			$(`<li title="${__("ui_bar_fg")}" class="chooseforeground"><span class="pictos">^</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
 		}
@@ -13001,12 +13246,43 @@ function baseUi () {
 		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
 			$(`<li title="${__("ui_bar_we")}" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
 		}
+		if (d20plus.cfg.getOrDefault("canvas", "showInteriorToggle")) {
+			$(`
+				<li title="${__("ui_bar_toggle_interior")}" class="toggleinterior">
+					<span class="pictos">r</span>
+				</li>
+			`).appendTo($ulBtns).on("click", d20plus.engine.switchInsideOutside);
+			$(`<style>
+				#floatinglayerbar .toggleinterior {
+					pointer-events: none;
+					opacity: 0.8;
+				}
+				#floatinglayerbar .toggleinterior.inside,
+				#floatinglayerbar .toggleinterior.outside {
+					pointer-events: unset;
+					opacity: unset;
+				}
+				#floatinglayerbar .toggleinterior.outside span::after, 
+				#floatinglayerbar .toggleinterior.inside span::after {
+					content: "H";
+					margin-left: -9px;
+					font-size: 16px;
+					color: var(--dark-primarytext);
+					vertical-align: sub;
+				}
+				#floatinglayerbar .toggleinterior.inside span::after {
+					content: "I";
+				}
+			</style>`).appendTo($ulBtns);
+		}
 
 		$("body").on("click", "#editinglayer li", function () {
 			$("#floatinglayerbar").removeClass("map")
+				.removeClass("floors")
 				.removeClass("background")
 				.removeClass("objects")
 				.removeClass("foreground")
+				.removeClass("roofs")
 				.removeClass("gmlayer")
 				.removeClass("walls")
 				.removeClass("weather");
@@ -13604,6 +13880,7 @@ function d20plusMod () {
 	// END ROLL20 CODE
 
 	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background", "foreground"]);
+	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
 	// BEGIN ROLL20 CODE
 	d20plus.mod.renderAll = function (e) {
 		const t = e && e.context || this.contextContainer
@@ -13615,12 +13892,14 @@ function d20plusMod () {
 		const r = {
 			map: [],
 			// BEGIN MOD
+			floors: [],
 			background: [],
 			// END MOD
 			walls: [],
 			objects: [],
 			// BEGIN MOD
 			foreground: [],
+			roofs: [],
 			// END MOD
 			gmlayer: []
 			// BEGIN MOD
@@ -13658,22 +13937,32 @@ function d20plusMod () {
 				case "afow":
 					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
 					continue;
-				case "gmlayer":
-					t.globalAlpha = d20.engine.gm_layer_opacity;
-					break;
 				// BEGIN MOD
-				case "background":
-				case "foreground":
-					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.currentEditingLayer !== a && window.currentEditingLayer !== "objects") {
-						t.globalAlpha = .45;
-						break;
+				case "gmlayer":
+					if ("gmlayer" !== window.currentEditingLayer) {
+						t.globalAlpha = d20.engine.gm_layer_opacity;
+					} else {
+						t.globalAlpha = 1;
 					}
-				// END MOD
-				case "objects":
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer) {
+					break;
+				case "floors":
+					if ("map" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
 						break
 					}
+				case "roofs":
+					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer)) {
+						t.globalAlpha = .45;
+						break;
+					}
+				case "background":
+				case "foreground":
+				case "objects":
+					if (d20plus.mod._renderAll_serviceLayers.has(window.currentEditingLayer)) {
+						t.globalAlpha = .45;
+						break
+					}
+				// END MOD
 				default:
 					t.globalAlpha = 1
 			}
@@ -13735,6 +14024,10 @@ function d20plusMod () {
 			this._save_map_layer = !1);
 		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 
+		// BEGIN MOD
+		yield [this.floors, "floors"];
+		// END MOD
+
 		const grid_before_afow = e && e.grid_before_afow;
 		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
 		const grid_hide = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
@@ -13750,6 +14043,7 @@ function d20plusMod () {
 		yield [this.objects, "objects"];
 
 		// BEGIN MOD
+		yield [this.roofs, "roofs"];
 		yield [this.foreground, "foreground"];
 		// END MOD
 
@@ -13778,7 +14072,7 @@ function d20plusMod () {
 				$("#drawingtools .choosepath").hide();
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
 			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseroofs") ? window.currentEditingLayer = "roofs" : e.hasClass("choosefloors") ? window.currentEditingLayer = "floors" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
 					$("#drawingtools .choosepath").hide(),
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
 			}
@@ -15698,22 +15992,24 @@ const baseTemplate = function () {
 			"undo": { ln: __("menu_edit_undo"), icon: "1", condition: "window.is_gm" },
 			"tofront": { ln: __("menu_move_tofront"), condition: "this.view" },
 			"forward-one": { ln: __("menu_move_forwone"), condition: "this.view" },
-			"back-one": { ln: __("menu_move_backone"), condition: "this.view", quick: "menu_quick_toback"},
+			"back-one": { ln: __("menu_move_backone"), condition: "this.view", quick: __("menu_quick_toback")},
 			"toback": { ln: __("menu_move_toback"), condition: "this.view" },
 			"tolayer_map": { ln: __("menu_layer_map"), icon: "G", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"map\"" },
+			"tolayer_floors": { ln: __("menu_layer_fl"), icon: "I", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showFloors\")", active: "this && this.get && this.get(\"layer\") == \"floors\"" },
 			"tolayer_background": { ln: __("menu_layer_bg"), icon: "P", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showBackground\")", active: "this && this.get && this.get(\"layer\") == \"background\"" },
-			"tolayer_objects": { ln: __("menu_layer_obj"), icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"" },
-			"tolayer_foreground": { ln: __("menu_layer_fg"), icon: "^", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"", quick: "menu_quick_tofg"},
-			"tolayer_gmlayer": { ln: __("menu_layer_gm"), icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: "menu_quick_togm"},
+			"tolayer_objects": { ln: __("menu_layer_obj"), icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"", quick: __("menu_quick_tofg") },
+			"tolayer_foreground": { ln: __("menu_layer_fg"), icon: "^", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"" },
+			"tolayer_roofs": { ln: __("menu_layer_rf"), icon: "H", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showRoofs\")", active: "this && this.get && this.get(\"layer\") == \"roofs\"" },
+			"tolayer_gmlayer": { ln: __("menu_layer_gm"), icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: __("menu_quick_togm")},
 			"tolayer_walls": { ln: __("menu_layer_barriers"), icon: "r", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"walls\"" },
 			"tolayer_weather": { ln: __("menu_layer_weather"), icon: "C", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showWeather\")", active: "this && this.get && this.get(\"layer\") == \"weather\"" },
 			"util-scenes": { ln: __("menu_util_start"), condition: "" },
 			"token-animate": { ln: __("menu_util_animate"), condition: "this.get && this.get(\"type\") == \"image\"" },
 			"token-fly": { ln: __("menu_util_flight"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.attributes.statusmarkers.search(\"fluffy-wing@\")>-1" },
 			"token-light": { ln: __("menu_util_light"), condition: "this.get && this.get(\"type\") == \"image\"" },
-			"group": { ln: __("menu_adv_grp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && !(() => {for (const i of d20.engine.selected()) if (i._model.get(\"groupwith\")) return true; return false })())" },
-			"regroup": { ln: __("menu_adv_regrp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && (() => {for (const i of d20.engine.selected()) if (!i._model.get(\"groupwith\")) return true; return false })())", action: "group"},
-			"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.view && this.get(\"groupwith\")" },
+			"group": { ln: __("menu_adv_grp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && !d20.engine.selected().some( el => !!el.model.get(\"groupwith\")) )" },
+			"regroup": { ln: __("menu_adv_regrp"), condition: "this.view && this.get && (d20.engine.selected().length > 2 && d20.engine.selected().some( el => !el.model.get(\"groupwith\")) )", action: "group"},
+			"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.view && this.get  && d20.engine.selected().some( el => !!el.model.get(\"groupwith\"))" },
 			"toggledrawing": { ln: __("menu_adv_isdrv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"isdrawing\")" },
 			"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
 			"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
@@ -15725,7 +16021,7 @@ const baseTemplate = function () {
 			"copy-pathid": { ln: __("menu_adv_pathid"), condition: "this.get && this.get(\"type\") == \"path\"" },
 			"addturn": { ln: __("menu_token_turn"), condition: "this.get && this.get(\"type\") != \"path\"" },
 			"rollinit": { ln: __("menu_mass_init"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
-			"rollsaves": { ln: __("menu_mass_save"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: "menu_quick_save"},
+			"rollsaves": { ln: __("menu_mass_save"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: __("menu_quick_save")},
 			"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
 			"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 			"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
@@ -15753,9 +16049,11 @@ const baseTemplate = function () {
 				ln: __("menu_layer_title"),
 				subitems: [
 					"tolayer_map",
+					"tolayer_floors",
 					"tolayer_background",
 					"tolayer_objects",
 					"tolayer_foreground",
+					"tolayer_roofs",
 					"tolayer_gmlayer",
 					"tolayer_walls",
 					"tolayer_weather",
@@ -15816,6 +16114,28 @@ const baseTemplate = function () {
 				] },
 		}
 
+		d20plus.template.pushQuickMenus = () => {
+			if (d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems")) {
+				let output = "";
+				const pushMenu = (num, action, condition) => {
+					if (!action) action = d20plus.cfg.getOrDefault(`canvas`, `quickMenuItem${num}`);
+					if (action) title = d20plus.template_neat_actions[action].quick || d20plus.template_neat_actions[action].ln;
+					if (action && title) {
+						if (!condition) {
+							condition = d20plus.template_neat_actions[action].condition;
+						}
+						const conditionStatement = condition ? `if (${condition})` : ``;
+						output += `<$ ${conditionStatement} { $><li data-action-type='${action}'>${title}</li><$ } $>`;
+					}
+				};
+				pushMenu(null, "tolayer_objects", `this.view && this.get("layer") == "gmlayer"`);
+				pushMenu(null, "tolayer_gmlayer", `this.view && this.get("layer") != "gmlayer"`);
+				pushMenu(2);
+				pushMenu(3);
+				return output;
+			}
+		}
+
 		d20plus.template.generatedActionsMenu = (() => {
 			let templ = "";
 			Object.entries(d20plus.template_neat_submenus).forEach((menu) => {
@@ -15845,7 +16165,7 @@ const baseTemplate = function () {
 			return `
 			<script id='tmpl_actions_menu' type='text/html'>
 			<div class='actions_menu d20contextmenu'>
-			  <ul>${templ}</ul>
+			  <ul>${templ}${d20plus.template.pushQuickMenus()}</ul>
 			  </div>
 			</script>
 			`;
@@ -17811,6 +18131,7 @@ SCRIPT_EXTENSIONS.push(jukeboxWidget);
 
 
 const betteR20Core = function () {
+	// Page fully loaded and visible
 	d20plus.Init = async () => {
 		const scriptName = `betteR20-core v${d20plus.version}`;
 		try {
@@ -17825,8 +18146,9 @@ const betteR20Core = function () {
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
-			const showChatMsgs = !d20plus.cfg.get("chat", "suppressLoadingMessages");
-			const showLineSpl = !d20plus.cfg.get("interface", "hideLineSplitter");
+			const showChatMsgs = !d20plus.cfg.getOrDefault("chat", "suppressLoadingMessages");
+			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
+			const modeToggle = window.is_gm && d20plus.cfg.getOrDefault("canvas", "showInteriorToggle");
 
 			if (showChatMsgs) {
 				d20plus.ut.showLoadingMessage(scriptName);
@@ -17835,9 +18157,14 @@ const betteR20Core = function () {
 
 			d20plus.template.init();
 			d20plus.template.swapTemplates();
-
 			d20plus.ut.addAllCss();
-			if (window.is_gm) d20plus.engine.enhancePageSelector();
+
+			if (window.is_gm) {
+				d20plus.ut.log("Is GM");
+				d20plus.engine.enhancePageSelector();
+			} else {
+				d20plus.ut.log("Not GM. Some functionality will be unavailable.");
+			}
 
 			JqueryUtil.initEnhancements();
 
@@ -17874,6 +18201,8 @@ const betteR20Core = function () {
 			d20plus.engine.disableFrameRecorder();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
+			d20plus.engine.layersVisibilityCheck();
+			if (modeToggle) d20plus.engine.layersModeCheck();
 
 			// apply config
 			if (window.is_gm) {
