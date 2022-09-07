@@ -511,6 +511,7 @@ function d20plusMonsters () {
 							}
 
 							// add Tokenaction Macros
+							// TODO: Can probably be shortened using a generic add macro function
 							if (d20plus.cfg.getOrDefault("import", "tokenactionsSkills")) {
 								if (d20plus.sheet === "shaped") {
 									// Do nothing (room for future expansion!)
@@ -518,7 +519,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Skill-Check",
 										istokenaction: true,
-										action: d20plus.actionMacroSkillCheck,
+										action: d20plus.macro.actionMacroSkillCheck,
 									});
 								}
 							}
@@ -529,7 +530,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Perception",
 										istokenaction: true,
-										action: d20plus.actionMacroPerception,
+										action: d20plus.macro.actionMacroPerception,
 									});
 								}
 							}
@@ -544,7 +545,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Saves",
 										istokenaction: true,
-										action: d20plus.actionMacroSaves,
+										action: d20plus.macro.actionMacroSaves,
 									});
 								}
 							}
@@ -559,7 +560,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Init",
 										istokenaction: true,
-										action: d20plus.actionMacroInit,
+										action: d20plus.macro.actionMacroInit,
 									});
 								}
 							}
@@ -574,7 +575,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Ability-Check",
 										istokenaction: true,
-										action: d20plus.actionMacroAbilityCheck,
+										action: d20plus.macro.actionMacroAbilityCheck,
 									});
 								}
 							}
@@ -585,12 +586,12 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "DR/Immunities",
 										istokenaction: true,
-										action: d20plus.actionMacroDrImmunities,
+										action: d20plus.macro.actionMacroDrImmunities,
 									});
 									character.abilities.create({
 										name: "Stats",
 										istokenaction: true,
-										action: d20plus.actionMacroStats,
+										action: d20plus.macro.actionMacroStats,
 									});
 								}
 							}
@@ -1151,7 +1152,7 @@ function d20plusMonsters () {
 										character.abilities.create({
 											name: `Trait${offsetIndex}: ${v.name}`,
 											istokenaction: true,
-											action: d20plus.actionMacroTrait(offsetIndex),
+											action: d20plus.macro.actionMacroTrait(offsetIndex),
 										});
 									}
 
@@ -1172,7 +1173,7 @@ function d20plusMonsters () {
 										character.abilities.create({
 											name: `${offsetIndex}: ${v.name}`,
 											istokenaction: true,
-											action: d20plus.actionMacroTrait(offsetIndex),
+											action: d20plus.macro.actionMacroTrait(offsetIndex),
 										});
 									}
 
@@ -1265,7 +1266,7 @@ function d20plusMonsters () {
 										character.abilities.create({
 											name: `Reaction: ${v.name}`,
 											istokenaction: true,
-											action: d20plus.actionMacroReaction(i),
+											action: d20plus.macro.actionMacroReaction(i),
 										});
 									}
 
@@ -1309,7 +1310,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Legendary Actions",
 										istokenaction: true,
-										action: d20plus.actionMacroLegendary(tokenactiontext),
+										action: d20plus.macro.actionMacroLegendary(tokenactiontext),
 									});
 								}
 							}
@@ -1333,7 +1334,7 @@ function d20plusMonsters () {
 									character.abilities.create({
 										name: "Mythic Actions",
 										istokenaction: true,
-										action: d20plus.actionMacroMythic(tokenactiontext),
+										action: d20plus.macro.actionMacroMythic(tokenactiontext),
 									});
 								}
 							}

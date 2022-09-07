@@ -165,6 +165,7 @@ const SCRIPTS = {
 			"templates/template-token-editor",
 			"templates/template-page-settings",
 			"base-template",
+			"base-macro",
 			"base-emoji",
 			"base-remote-libre",
 			"base-jukebox-widget",
@@ -202,6 +203,7 @@ const SCRIPTS = {
 			"templates/template-token-editor",
 			"templates/template-page-settings",
 			"base-template",
+			"base-macro",
 			"base-emoji",
 			"base-remote-libre",
 			"base-jukebox-widget",
@@ -225,6 +227,7 @@ const SCRIPTS = {
 			"5etools-adventures",
 			"5etools-deities",
 			"5etools-vehicles",
+			"5etools-template",
 
 			"base",
 		],
@@ -252,4 +255,5 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 
 fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
 
+// eslint-disable-next-line no-console
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);
