@@ -39,7 +39,7 @@ const betteR205etools = function () {
 
 			d20plus.bindDropLocations();
 			d20plus.ui.addHtmlHeader();
-			d20plus.addCustomHTML();
+			d20plus.template5e.addCustomHTML();
 			d20plus.ui.addHtmlFooter();
 			d20plus.engine.enhanceMarkdown();
 			d20plus.engine.addProFeatures();

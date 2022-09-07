@@ -121,6 +121,94 @@ const betteR205etoolsMain = function () {
 		],
 	};
 
+	IMPORT_CATEGORIES = [
+		{
+			name: "background",
+			plural: "backgrounds",
+			playerImport: true,
+			baseUrl: BACKGROUND_DATA_URL,
+		},
+		{
+			name: "class",
+			plural: "classes",
+			playerImport: true,
+			allImport: true,
+			baseUrl: CLASS_DATA_DIR,
+			defaultSource: "",
+		},
+		{
+			name: "deity",
+			plural: "deities",
+			baseUrl: DEITY_DATA_URL,
+		},
+		{
+			name: "feat",
+			plural: "feats",
+			playerImport: true,
+			baseUrl: FEAT_DATA_URL,
+		},
+		{
+			name: "item",
+			plural: "items",
+			playerImport: true,
+			baseUrl: ITEM_DATA_URL,
+		},
+		{
+			name: "monster",
+			plural: "monsters",
+			allImport: true,
+			fileImport: true,
+			baseUrl: MONSTER_DATA_DIR,
+			defaultSource: "MM",
+			finalText: ` WARNING: Importing huge numbers of character sheets slows the game down. We recommend you import them as needed.<br>The "Import Monsters From All Sources" button presents a list containing monsters from official sources only.<br>To import from third-party sources, either individually select one available in the list, enter a custom URL, or upload a custom file, and "Import Monsters."`,
+		},
+		{
+			name: "object",
+			plural: "objects",
+			baseUrl: OBJECT_DATA_URL,
+		},
+		{
+			name: "optionalfeature",
+			plural: "optionalfeatures",
+			titleSing: "Optional Feature (Invocations, etc.)",
+			titlePl: "Optional Features (Invocations, etc.)",
+			playerImport: true,
+			baseUrl: OPT_FEATURE_DATA_URL,
+		},
+		{
+			name: "psionic",
+			plural: "psionics",
+			playerImport: true,
+			baseUrl: PSIONIC_DATA_URL,
+		},
+		{
+			name: "race",
+			plural: "races",
+			playerImport: true,
+			baseUrl: RACE_DATA_URL,
+		},
+		{
+			name: "spell",
+			plural: "spells",
+			playerImport: true,
+			allImport: true,
+			baseUrl: SPELL_DATA_DIR,
+			defaultSource: "PHB",
+			finalText: `The "Import Spells From All Sources" button presents a list containing spells from official sources only.<br>To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."`,
+		},
+		{
+			name: "subclass",
+			plural: "subclasses",
+			playerImport: true,
+			baseUrl: "",
+		},
+		{
+			name: "vehicle",
+			plural: "vehicles",
+			baseUrl: VEHICLE_DATA_URL,
+		},
+	]
+
 	let spellDataUrls = {};
 	let spellMetaData = {};
 	let monsterDataUrls = {};
@@ -488,295 +576,6 @@ const betteR205etoolsMain = function () {
 
 	d20plus.formSrcUrl = function (dataDir, fileName) {
 		return dataDir + fileName;
-	};
-
-	d20plus.addCustomHTML = function () {
-		function populateDropdown (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, brewProps) {
-			const defaultUrl = defaultSel ? d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]) : "";
-			$(inputFieldId).val(defaultUrl);
-			const dropdown = $(dropdownId);
-			$.each(Object.keys(srcUrlObject), function (i, src) {
-				dropdown.append($("<option>", {
-					value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
-					text: brewProps.includes("class") ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src),
-				}));
-			});
-			dropdown.append($("<option>", {
-				value: "",
-				text: "Custom",
-			}));
-
-			const dataList = [];
-			const seenPaths = new Set();
-			brewProps.forEach(prop => {
-				Object.entries(brewIndex[prop] || {})
-					.forEach(([path, dir]) => {
-						if (seenPaths.has(path)) return;
-						seenPaths.add(path);
-						dataList.push({
-							download_url: DataUtil.brew.getFileUrl(path),
-							path,
-							name: path.split("/").slice(1).join("/"),
-						});
-					});
-			});
-			dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
-				dropdown.append($("<option>", {
-					value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-					text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
-				}));
-			});
-
-			dropdown.val(defaultUrl);
-			dropdown.change(function () {
-				$(inputFieldId).val(this.value);
-			});
-		}
-
-		function populateBasicDropdown (dropdownId, inputFieldId, defaultSel, brewProps, addForPlayers) {
-			function doPopulate (dropdownId, inputFieldId) {
-				const $sel = $(dropdownId);
-				const existingItems = !!$sel.find(`option`).length;
-				if (defaultSel) {
-					$(inputFieldId).val(defaultSel);
-					$sel.append($("<option>", {
-						value: defaultSel,
-						text: "Official Sources",
-					}));
-				}
-				if (!existingItems) {
-					$sel.append($("<option>", {
-						value: "",
-						text: "Custom",
-					}));
-				}
-
-				const dataList = [];
-				const seenPaths = new Set();
-				brewProps.forEach(prop => {
-					Object.entries(brewIndex[prop] || {})
-						.forEach(([path, dir]) => {
-							if (seenPaths.has(path)) return;
-							seenPaths.add(path);
-							dataList.push({
-								download_url: DataUtil.brew.getFileUrl(path),
-								path,
-								name: path.split("/").slice(1).join("/"),
-							});
-						});
-				});
-				dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
-					$sel.append($("<option>", {
-						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
-					}));
-				});
-
-				$sel.val(defaultSel);
-				$sel.change(function () {
-					$(inputFieldId).val(this.value);
-				});
-			}
-
-			doPopulate(dropdownId, inputFieldId);
-			if (addForPlayers) doPopulate(`${dropdownId}-player`, `${inputFieldId}-player`);
-		}
-
-		const $body = $("body");
-
-		if (window.is_gm) {
-			const $wrpSettings = $(`#betteR20-settings`);
-
-			$wrpSettings.append(d20plus.template5e.settingsHtmlImportHeader);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlSelector);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtMonsters);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtItems);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtSpells);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtPsionics);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtRaces);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtFeats);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtObjects);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtVehicles);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtClasses);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtSubclasses);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtBackgrounds);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtOptfeatures);
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtDeities);
-			const $ptAdventures = $(d20plus.template5e.settingsHtmlPtAdventures);
-			$wrpSettings.append($ptAdventures);
-			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get("MODULES").openFn());
-			$wrpSettings.append(d20plus.template5e.settingsHtmlPtImportFooter);
-
-			$("#button-monsters-load").on(window.mousedowntype, d20plus.monsters.button);
-			$("#button-monsters-load-all").on(window.mousedowntype, d20plus.monsters.buttonAll);
-			$("#button-monsters-load-file").on(window.mousedowntype, d20plus.monsters.buttonFile);
-			$("#import-objects-load").on(window.mousedowntype, d20plus.objects.button);
-			$("#import-vehicles-load").on(window.mousedowntype, d20plus.vehicles.button);
-			$("#button-adventures-load").on(window.mousedowntype, d20plus.adventures.button);
-			$("#button-deities-load").on(window.mousedowntype, d20plus.deities.button);
-
-			$("#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
-			$("#initiativewindow .characterlist").before(d20plus.template5e.initiativeHeaders);
-
-			d20plus.setTurnOrderTemplate();
-			d20.Campaign.initiativewindow.rebuildInitiativeList();
-			d20plus.hpAllowEdit();
-			d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
-				d20plus.updateDifficulty();
-			});
-			d20plus.updateDifficulty();
-
-			populateDropdown("#button-monsters-select", "#import-monster-url", MONSTER_DATA_DIR, monsterDataUrls, "MM", ["monster"]);
-			populateBasicDropdown("#button-objects-select", "#import-objects-url", OBJECT_DATA_URL, ["object"]);
-			populateBasicDropdown("#button-vehicles-select", "#import-vehicles-url", VEHICLE_DATA_URL, ["vehicle"]);
-			populateBasicDropdown("#button-deities-select", "#import-deities-url", DEITY_DATA_URL, ["deity"]);
-
-			const populateAdventuresDropdown = () => {
-				const defaultAdvUrl = d20plus.formSrcUrl(ADVENTURE_DATA_DIR, "adventure-lmop.json");
-				const $iptUrl = $("#import-adventures-url");
-				$iptUrl.val(defaultAdvUrl);
-				$iptUrl.data("id", "lmop");
-				const $sel = $("#button-adventures-select");
-				adventureMetadata.adventure.forEach(a => {
-					$sel.append($("<option>", {
-						value: d20plus.formSrcUrl(ADVENTURE_DATA_DIR, `adventure-${a.id.toLowerCase()}.json|${a.id}`),
-						text: a.name,
-					}));
-				});
-				$sel.append($("<option>", {
-					value: "",
-					text: "Custom",
-				}));
-				$sel.val(defaultAdvUrl);
-				$sel.change(() => {
-					const [url, id] = $sel.val().split("|");
-					$($iptUrl).val(url);
-					$iptUrl.data("id", id);
-				});
-			}
-
-			populateAdventuresDropdown();
-
-			// import
-			$("a#button-spells-load").on(window.mousedowntype, () => d20plus.spells.button());
-			$("a#button-spells-load-all").on(window.mousedowntype, () => d20plus.spells.buttonAll());
-			$("a#import-psionics-load").on(window.mousedowntype, () => d20plus.psionics.button());
-			$("a#import-items-load").on(window.mousedowntype, () => d20plus.items.button());
-			$("a#import-races-load").on(window.mousedowntype, () => d20plus.races.button());
-			$("a#import-feats-load").on(window.mousedowntype, () => d20plus.feats.button());
-			$("a#button-classes-load").on(window.mousedowntype, () => d20plus.classes.button());
-			$("a#button-classes-load-all").on(window.mousedowntype, () => d20plus.classes.buttonAll());
-			$("a#import-subclasses-load").on(window.mousedowntype, () => d20plus.subclasses.button());
-			$("a#import-backgrounds-load").on(window.mousedowntype, () => d20plus.backgrounds.button());
-			$("a#import-optionalfeatures-load").on(window.mousedowntype, () => d20plus.optionalfeatures.button());
-			$("select#import-mode-select").on("change", () => d20plus.importer.importModeSwitch());
-		} else {
-			// player-only HTML if required
-		}
-
-		$body.append(d20plus.template5e.playerImportHtml);
-		const $winPlayer = $("#d20plus-playerimport");
-		const $appTo = $winPlayer.find(`.append-target`);
-		$appTo.append(d20plus.template5e.settingsHtmlSelectorPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtItemsPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtSpellsPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtPsionicsPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtRacesPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtFeatsPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtClassesPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtSubclassesPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtBackgroundsPlayer);
-		$appTo.append(d20plus.template5e.settingsHtmlPtOptfeaturesPlayer);
-
-		$winPlayer.dialog({
-			autoOpen: false,
-			resizable: true,
-			width: 800,
-			height: 650,
-		});
-
-		const $wrpPlayerImport = $(`
-			<div style="padding: 0 10px">
-				<h3 style="margin-bottom: 4px">BetteR20</h3>
-				<button id="b20-temp-import-open-button" class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Temp Import Spells, Items, Classes,...</button>
-					<div style="clear: both"></div>
-				<hr></hr>
-			</div>`);
-
-		$wrpPlayerImport.find("#b20-temp-import-open-button").on("click", () => {
-			$winPlayer.dialog("open");
-		});
-
-		$(`#journal`).prepend($wrpPlayerImport);
-
-		// SHARED WINDOWS/BUTTONS
-		// import
-		$("a#button-spells-load-player").on(window.mousedowntype, () => d20plus.spells.button(true));
-		$("a#button-spells-load-all-player").on(window.mousedowntype, () => d20plus.spells.buttonAll(true));
-		$("a#import-psionics-load-player").on(window.mousedowntype, () => d20plus.psionics.button(true));
-		$("a#import-items-load-player").on(window.mousedowntype, () => d20plus.items.button(true));
-		$("a#import-races-load-player").on(window.mousedowntype, () => d20plus.races.button(true));
-		$("a#import-feats-load-player").on(window.mousedowntype, () => d20plus.feats.button(true));
-		$("a#button-classes-load-player").on(window.mousedowntype, () => d20plus.classes.button(true));
-		$("a#button-classes-load-all-player").on(window.mousedowntype, () => d20plus.classes.buttonAll(true));
-		$("a#import-subclasses-load-player").on(window.mousedowntype, () => d20plus.subclasses.button(true));
-		$("a#import-backgrounds-load-player").on(window.mousedowntype, () => d20plus.backgrounds.button(true));
-		$("a#import-optionalfeatures-load-player").on(window.mousedowntype, () => d20plus.optionalfeatures.button(true));
-		$("select#import-mode-select-player").on("change", () => d20plus.importer.importModeSwitch());
-
-		$body.append(d20plus.template5e.importDialogHtml);
-		$body.append(d20plus.template5e.importListHTML);
-		$body.append(d20plus.template5e.importListPropsHTML);
-		$("#d20plus-import").dialog({
-			autoOpen: false,
-			resizable: false,
-		});
-		$("#d20plus-importlist").dialog({
-			autoOpen: false,
-			resizable: true,
-			width: 1000,
-			height: 700,
-		});
-		$("#d20plus-import-props").dialog({
-			autoOpen: false,
-			resizable: true,
-			width: 300,
-			height: 600,
-		});
-
-		populateDropdown("#button-spell-select", "#import-spell-url", SPELL_DATA_DIR, spellDataUrls, "PHB", ["spell"]);
-		populateDropdown("#button-spell-select-player", "#import-spell-url-player", SPELL_DATA_DIR, spellDataUrls, "PHB", ["spell"]);
-		populateDropdown("#button-classes-select", "#import-classes-url", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
-		populateDropdown("#button-classes-select-player", "#import-classes-url-player", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
-
-		// add class subclasses to the subclasses dropdown(s)
-		populateDropdown("#button-subclasses-select", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
-		populateDropdown("#button-subclasses-select-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
-
-		populateBasicDropdown("#button-items-select", "#import-items-url", ITEM_DATA_URL, ["item"], true);
-		populateBasicDropdown("#button-psionics-select", "#import-psionics-url", PSIONIC_DATA_URL, ["psionic"], true);
-		populateBasicDropdown("#button-feats-select", "#import-feats-url", FEAT_DATA_URL, ["feat"], true);
-		populateBasicDropdown("#button-races-select", "#import-races-url", RACE_DATA_URL, ["race"], true);
-		populateBasicDropdown("#button-subclasses-select", "#import-subclasses-url", "", ["subclass"], true);
-		populateBasicDropdown("#button-backgrounds-select", "#import-backgrounds-url", BACKGROUND_DATA_URL, ["background"], true);
-		populateBasicDropdown("#button-optionalfeatures-select", "#import-optionalfeatures-url", OPT_FEATURE_DATA_URL, ["optionalfeature"], true);
-
-		// bind tokens button
-		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
-		altBindButton.on("click", function () {
-			d20plus.bindDropLocations();
-		});
-
-		if (window.is_gm) {
-			const $addPoint = $(`#journal button.btn.superadd`);
-			altBindButton.css("margin-right", "5px");
-			$addPoint.after(altBindButton);
-		} else {
-			altBindButton.css("margin-top", "5px");
-			const $wrprControls = $(`#search-wrp-controls`);
-			$wrprControls.append(altBindButton);
-		}
-		$("#journal #bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
 	};
 
 	d20plus.updateDifficulty = function () {

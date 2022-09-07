@@ -164,7 +164,7 @@ function d20plusMonsters () {
 
 	// Import Monsters button was clicked
 	d20plus.monsters.button = function () {
-		const url = $("#import-monster-url").val();
+		const url = $("#import-monsters-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then(async data => {
 				const doShowList = () => {

@@ -1,6 +1,305 @@
 const d20plusTemplate = function () {
 	d20plus.template5e = {};
 
+	d20plus.template5e.addCustomHTML = function () {
+		// Object to get data urls because they get set after the categories object is created
+		const dataUrls = {
+			"spell": spellDataUrls,
+			"monster": monsterDataUrls,
+			"class": classDataUrls,
+		}
+
+		function populateDropdown (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, brewProps) {
+			const defaultUrl = defaultSel ? d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]) : "";
+			$(inputFieldId).val(defaultUrl);
+			const dropdown = $(dropdownId);
+			$.each(Object.keys(srcUrlObject), function (i, src) {
+				dropdown.append($("<option>", {
+					value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
+					text: brewProps.includes("class") ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src),
+				}));
+			});
+			dropdown.append($("<option>", {
+				value: "",
+				text: "Custom",
+			}));
+
+			const dataList = [];
+			const seenPaths = new Set();
+			brewProps.forEach(prop => {
+				Object.entries(brewIndex[prop] || {})
+					.forEach(([path, dir]) => {
+						if (seenPaths.has(path)) return;
+						seenPaths.add(path);
+						dataList.push({
+							download_url: DataUtil.brew.getFileUrl(path),
+							path,
+							name: path.split("/").slice(1).join("/"),
+						});
+					});
+			});
+			dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
+				dropdown.append($("<option>", {
+					value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
+					text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
+				}));
+			});
+
+			dropdown.val(defaultUrl);
+			dropdown.change(function () {
+				$(inputFieldId).val(this.value);
+			});
+		}
+
+		function populateBasicDropdown (dropdownId, inputFieldId, defaultSel, brewProps, addForPlayers) {
+			function doPopulate (dropdownId, inputFieldId) {
+				const $sel = $(dropdownId);
+				const existingItems = !!$sel.find(`option`).length;
+				if (defaultSel) {
+					$(inputFieldId).val(defaultSel);
+					$sel.append($("<option>", {
+						value: defaultSel,
+						text: "Official Sources",
+					}));
+				}
+				if (!existingItems) {
+					$sel.append($("<option>", {
+						value: "",
+						text: "Custom",
+					}));
+				}
+
+				const dataList = [];
+				const seenPaths = new Set();
+				brewProps.forEach(prop => {
+					Object.entries(brewIndex[prop] || {})
+						.forEach(([path, dir]) => {
+							if (seenPaths.has(path)) return;
+							seenPaths.add(path);
+							dataList.push({
+								download_url: DataUtil.brew.getFileUrl(path),
+								path,
+								name: path.split("/").slice(1).join("/"),
+							});
+						});
+				});
+				dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
+					$sel.append($("<option>", {
+						value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
+						text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
+					}));
+				});
+
+				$sel.val(defaultSel);
+				$sel.change(function () {
+					$(inputFieldId).val(this.value);
+				});
+			}
+
+			doPopulate(dropdownId, inputFieldId);
+			if (addForPlayers) doPopulate(`${dropdownId}-player`, `${inputFieldId}-player`);
+		}
+
+		const $body = $("body");
+
+		if (window.is_gm) {
+			const $wrpSettings = $(`#betteR20-settings`);
+
+			$wrpSettings.append(d20plus.template5e.settingsHtmlImportHeader);
+			$wrpSettings.append(d20plus.template5e.settingsHtmlSelector());
+			const $ptAdventures = $(d20plus.template5e.settingsHtmlPtAdventures);
+			$wrpSettings.append($ptAdventures);
+
+			IMPORT_CATEGORIES.forEach(ic => {
+				$wrpSettings.append(d20plus.template5e.getSettingsHTML(ic));
+			})
+			$ptAdventures.find(`.Vetools-module-tool-open`).click(() => d20plus.tool.get("MODULES").openFn());
+			$wrpSettings.append(d20plus.template5e.settingsHtmlPtImportFooter);
+
+			$("#bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+			$("#initiativewindow .characterlist").before(d20plus.template5e.initiativeHeaders);
+
+			d20plus.setTurnOrderTemplate();
+			d20.Campaign.initiativewindow.rebuildInitiativeList();
+			d20plus.hpAllowEdit();
+			d20.Campaign.initiativewindow.model.on("change:turnorder", function () {
+				d20plus.updateDifficulty();
+			});
+			d20plus.updateDifficulty();
+
+			const populateAdventuresDropdown = () => {
+				const defaultAdvUrl = d20plus.formSrcUrl(ADVENTURE_DATA_DIR, "adventure-lmop.json");
+				const $iptUrl = $("#import-adventures-url");
+				$iptUrl.val(defaultAdvUrl);
+				$iptUrl.data("id", "lmop");
+				const $sel = $("#button-adventures-select");
+				adventureMetadata.adventure.forEach(a => {
+					$sel.append($("<option>", {
+						value: d20plus.formSrcUrl(ADVENTURE_DATA_DIR, `adventure-${a.id.toLowerCase()}.json|${a.id}`),
+						text: a.name,
+					}));
+				});
+				$sel.append($("<option>", {
+					value: "",
+					text: "Custom",
+				}));
+				$sel.val(defaultAdvUrl);
+				$sel.change(() => {
+					const [url, id] = $sel.val().split("|");
+					$($iptUrl).val(url);
+					$iptUrl.data("id", id);
+				});
+			}
+
+			populateAdventuresDropdown();
+
+			// Bind buttons for GM import
+			IMPORT_CATEGORIES.forEach(ic => {
+				$(`a#import-${ic.plural}-load`).on(window.mousedowntype, () => d20plus[ic.plural].button());
+				if (ic.allImport) $(`a#import-${ic.plural}-load-all`).on(window.mousedowntype, () => d20plus[ic.plural].buttonAll());
+				if (ic.fileImport) $(`a#import-${ic.plural}-load-file`).on(window.mousedowntype, () => d20plus[ic.plural].buttonFile());
+			})
+			$("select#import-mode-select").on("change", () => d20plus.importer.importModeSwitch());
+		} else {
+			// player-only HTML if required
+		}
+
+		$body.append(d20plus.template5e.playerImportHtml);
+		const $winPlayer = $("#d20plus-playerimport");
+		const $appTo = $winPlayer.find(`.append-target`);
+
+		// Add HTML for items in the player menu
+		$appTo.append(d20plus.template5e.settingsHtmlSelectorPlayer());
+		IMPORT_CATEGORIES.filter(ic => ic.playerImport).forEach(ic => {
+			$appTo.append(d20plus.template5e.getSettingsHTMLPlayer(ic));
+		});
+
+		$winPlayer.dialog({
+			autoOpen: false,
+			resizable: true,
+			width: 800,
+			height: 650,
+		});
+
+		const $wrpPlayerImport = $(`
+			<div style="padding: 0 10px">
+				<h3 style="margin-bottom: 4px">BetteR20</h3>
+				<button id="b20-temp-import-open-button" class="btn" href="#" title="A tool to import temporary copies of various things, which can be drag-and-dropped to character sheets." style="margin-top: 5px">Temp Import Spells, Items, Classes,...</button>
+					<div style="clear: both"></div>
+				<hr></hr>
+			</div>`);
+
+		$wrpPlayerImport.find("#b20-temp-import-open-button").on("click", () => {
+			$winPlayer.dialog("open");
+		});
+
+		$(`#journal`).prepend($wrpPlayerImport);
+
+		// SHARED WINDOWS/BUTTONS
+		// Bind buttons for player import
+		$("select#import-mode-select-player").on("change", () => d20plus.importer.importModeSwitch());
+		IMPORT_CATEGORIES.filter(ic => ic.playerImport).forEach(ic => {
+			$(`a#import-${ic.plural}-load-player`).on(window.mousedowntype, () => d20plus[ic.plural].button(true));
+			if (ic.allImport) $(`a#import-${ic.plural}-load-all-player`).on(window.mousedowntype, () => d20plus[ic.plural].buttonAll(true));
+			if (ic.fileImport) $(`a#import-${ic.plural}-load-file-player`).on(window.mousedowntype, () => d20plus[ic.plural].buttonFile(true));
+		});
+
+		$body.append(d20plus.template5e.importDialogHtml);
+		$body.append(d20plus.template5e.importListHTML);
+		$body.append(d20plus.template5e.importListPropsHTML);
+		$("#d20plus-import").dialog({
+			autoOpen: false,
+			resizable: false,
+		});
+		$("#d20plus-importlist").dialog({
+			autoOpen: false,
+			resizable: true,
+			width: 1000,
+			height: 700,
+		});
+		$("#d20plus-import-props").dialog({
+			autoOpen: false,
+			resizable: true,
+			width: 300,
+			height: 600,
+		});
+
+		// add class subclasses to the subclasses dropdown(s)
+		populateDropdown("#button-subclasses-select", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
+		populateDropdown("#button-subclasses-select-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
+
+		// Populate all relevant dropdowns
+		IMPORT_CATEGORIES.forEach(ic => {
+			if (ic.defaultSource !== undefined) {
+				populateDropdown(`#button-${ic.plural}-select`, `#import-${ic.plural}-url`, ic.baseUrl, dataUrls[ic.name], ic.defaultSource, [`${ic.name}`]);
+				if (ic.playerImport) {
+					populateDropdown(`#button-${ic.plural}-select-player`, `#import-${ic.plural}-url-player`,
+						ic.baseUrl, dataUrls[ic.name], ic.defaultSource, [`${ic.name}`]);
+				}
+			}
+			else {
+				populateBasicDropdown(`#button-${ic.plural}-select`, `#import-${ic.plural}-url`, ic.baseUrl, [`${ic.name}`], ic.playerImport);
+			}
+		})
+
+		// bind tokens button
+		const altBindButton = $(`<button id="bind-drop-locations-alt" class="btn bind-drop-locations" title="Bind drop locations and handouts">Bind Drag-n-Drop</button>`);
+		altBindButton.on("click", function () {
+			d20plus.bindDropLocations();
+		});
+
+		if (window.is_gm) {
+			const $addPoint = $(`#journal button.btn.superadd`);
+			altBindButton.css("margin-right", "5px");
+			$addPoint.after(altBindButton);
+		} else {
+			altBindButton.css("margin-top", "5px");
+			const $wrprControls = $(`#search-wrp-controls`);
+			$wrprControls.append(altBindButton);
+		}
+		$("#journal #bind-drop-locations").on(window.mousedowntype, d20plus.bindDropLocations);
+	};
+
+	// Template for settings menu imports
+	d20plus.template5e.getSettingsHTML = function (category) {
+		allButton = category.allImport ? `<p><a class="btn" href="#" id="import-${category.plural}-load-all" title="Standard sources only; no third-party or UA">Import ${category.plural.toTitleCase()} From All Sources</a></p>` : "";
+		fileButton = category.fileImport ? `<p><a class="btn" href="#" id="import-${category.plural}-load-file" title="5eTools JSON formats only">Import ${category.plural.toTitleCase()} From File</a></p>` : "";
+		finalText = category.finalText ? `<p>${category.finalText}</p>` : "";
+
+		return `
+<div class="importer-section" data-import-group="${category.name}">
+<h4>${category.titleSing || category.name.toTitleCase()} Importing</h4>
+<label for="import-${category.plural}-url">${category.titleSing || category.name.toTitleCase()} Data URL:</label>
+<select id="button-${category.plural}-select"><!-- populate with JS--></select>
+<input type="text" id="import-${category.plural}-url">
+${category.allImport ? "<p>" : ""}<a class="btn" href="#" id="import-${category.plural}-load">Import ${category.plural.toTitleCase()}</a>${category.allImport ? "</p>" : ""}
+${allButton}
+${fileButton}
+${finalText}
+</div>
+`
+	}
+
+	// Template for player imports
+	d20plus.template5e.getSettingsHTMLPlayer = function (category) {
+		allButton = category.allImport ? `<p><a class="btn" href="#" id="import-${category.plural}-load-all-player" title="Standard sources only; no third-party or UA">Import ${category.plural.toTitleCase()} From All Sources</a></p>` : "";
+		fileButton = category.fileImport ? `<p><a class="btn" href="#" id="import-${category.plural}-load-file-player" title="5eTools JSON formats only">Import ${category.plural.toTitleCase()} From File</a></p>` : "";
+		finalText = category.finalText ? `<p>${category.finalText}</p>` : "";
+
+		return `
+<div class="importer-section" data-import-group="${category.name}">
+<h4>${category.titleSing || category.name.toTitleCase()} Importing</h4>
+<label for="import-${category.plural}-url-player">${category.titleSing || category.name.toTitleCase()} Data URL:</label>
+<select id="button-${category.plural}-select-player"><!-- populate with JS--></select>
+<input type="text" id="import-${category.plural}-url-player">
+${category.allImport ? "<p>" : ""}<a class="btn" href="#" id="import-${category.plural}-load-player">Import ${category.plural.toTitleCase()}</a>${category.allImport ? "</p>" : ""}
+${allButton}
+${fileButton}
+${finalText}
+</div>
+`;
+	}
+
 	d20plus.template5e.miniInitStyle = `
 #initiativewindow button.initmacrobutton {
     padding: 1px 4px;
@@ -117,277 +416,23 @@ Errors: <b id="import-errors">0</b>
 <h4>Import By Category</h4>
 <p><small><i>We strongly recommend the OGL sheet for importing. You can switch afterwards.</i></small></p>
 `;
-	d20plus.template5e.settingsHtmlSelector = `
+	d20plus.template5e.settingsHtmlSelector = function () {
+		return `
 <select id="import-mode-select">
 <option value="none" disabled selected>Select category...</option>
-<option value="adventure">Adventures</option>
-<option value="background">Backgrounds</option>
-<option value="class">Classes</option>
-<option value="deity">Deities</option>
-<option value="feat">Feats</option>
-<option value="item">Items</option>
-<option value="monster">Monsters</option>
-<option value="object">Objects</option>
-<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
-<option value="psionic">Psionics</option>
-<option value="race">Races</option>
-<option value="spell">Spells</option>
-<option value="subclass">Subclasses</option>
-<option value="vehicle">Vehicles</option>
+${IMPORT_CATEGORIES.map(ic => `<option value="${ic.name}">${ic.titlePl || ic.plural.toTitleCase()}</option>`).join("")}
 </select>
 `;
-	d20plus.template5e.settingsHtmlSelectorPlayer = `
+	}
+
+	d20plus.template5e.settingsHtmlSelectorPlayer = function () {
+		return `
 <select id="import-mode-select-player">
 <option value="none" disabled selected>Select category...</option>
-<option value="background">Backgrounds</option>
-<option value="class">Classes</option>
-<option value="feat">Feats</option>
-<option value="item">Items</option>
-<option value="optionalfeature">Optional Features (Invocations, etc.)</option>
-<option value="psionic">Psionics</option>
-<option value="race">Races</option>
-<option value="spell">Spells</option>
-<option value="subclass">Subclasses</option>
+${IMPORT_CATEGORIES.filter(ic => ic.playerImport).map(ic => `<option value="${ic.name}">${ic.titlePl || ic.plural.toTitleCase()}</option>`).join("")}
 </select>
 `;
-	d20plus.template5e.settingsHtmlPtMonsters = `
-<div class="importer-section" data-import-group="monster">
-<h4>Monster Importing</h4>
-<label for="import-monster-url">Monster Data URL:</label>
-<select id="button-monsters-select">
-<!-- populate with JS-->
-</select>
-<input type="text" id="import-monster-url">
-<p><a class="btn" href="#" id="button-monsters-load">Import Monsters</a></p>
-<p><a class="btn" href="#" id="button-monsters-load-all" title="Standard sources only; no third-party or UA">Import Monsters From All Sources</a></p>
-<p><a class="btn" href="#" id="button-monsters-load-file" title="5eTools JSON formats only">Import Monsters From File</a></p>
-<p>
-WARNING: Importing huge numbers of character sheets slows the game down. We recommend you import them as needed.<br>
-The "Import Monsters From All Sources" button presents a list containing monsters from official sources only.<br>
-To import from third-party sources, either individually select one available in the list, enter a custom URL, or upload a custom file, and "Import Monsters."
-</p>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtItems = `
-<div class="importer-section" data-import-group="item">
-<h4>Item Importing</h4>
-<label for="import-items-url">Item Data URL:</label>
-<select id="button-items-select"><!-- populate with JS--></select>
-<input type="text" id="import-items-url">
-<a class="btn" href="#" id="import-items-load">Import Items</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtItemsPlayer = `
-<div class="importer-section" data-import-group="item">
-<h4>Item Importing</h4>
-<label for="import-items-url-player">Item Data URL:</label>
-<select id="button-items-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-items-url-player">
-<a class="btn" href="#" id="import-items-load-player">Import Items</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtSpells = `
-<div class="importer-section" data-import-group="spell">
-<h4>Spell Importing</h4>
-<label for="import-spell-url">Spell Data URL:</label>
-<select id="button-spell-select">
-<!-- populate with JS-->
-</select>
-<input type="text" id="import-spell-url">
-<p><a class="btn" href="#" id="button-spells-load">Import Spells</a><p/>
-<p><a class="btn" href="#" id="button-spells-load-all" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
-<p>
-The "Import Spells From All Sources" button presents a list containing spells from official sources only.<br>
-To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."
-</p>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtSpellsPlayer = `
-<div class="importer-section" data-import-group="spell">
-<h4>Spell Importing</h4>
-<label for="import-spell-url-player">Spell Data URL:</label>
-<select id="button-spell-select-player">
-<!-- populate with JS-->
-</select>
-<input type="text" id="import-spell-url-player">
-<p><a class="btn" href="#" id="button-spells-load-player">Import Spells</a><p/>
-<p><a class="btn" href="#" id="button-spells-load-all-player" title="Standard sources only; no third-party or UA">Import Spells From All Sources</a></p>
-<p>
-The "Import Spells From All Sources" button presents a list containing spells from official sources only.<br>
-To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."
-</p>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtPsionics = `
-<div class="importer-section" data-import-group="psionic">
-<h4>Psionic Importing</h4>
-<label for="import-psionics-url">Psionics Data URL:</label>
-<select id="button-psionics-select"><!-- populate with JS--></select>
-<input type="text" id="import-psionics-url">
-<a class="btn" href="#" id="import-psionics-load">Import Psionics</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtPsionicsPlayer = `
-<div class="importer-section" data-import-group="psionic">
-<h4>Psionic Importing</h4>
-<label for="import-psionics-url-player">Psionics Data URL:</label>
-<select id="button-psionics-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-psionics-url-player">
-<a class="btn" href="#" id="import-psionics-load-player">Import Psionics</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtFeats = `
-<div class="importer-section" data-import-group="feat">
-<h4>Feat Importing</h4>
-<label for="import-feats-url">Feat Data URL:</label>
-<select id="button-feats-select"><!-- populate with JS--></select>
-<input type="text" id="import-feats-url">
-<a class="btn" href="#" id="import-feats-load">Import Feats</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtFeatsPlayer = `
-<div class="importer-section" data-import-group="feat">
-<h4>Feat Importing</h4>
-<label for="import-feats-url-player">Feat Data URL:</label>
-<select id="button-feats-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-feats-url-player">
-<a class="btn" href="#" id="import-feats-load-player">Import Feats</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtObjects = `
-<div class="importer-section" data-import-group="object">
-<h4>Object Importing</h4>
-<label for="import-objects-url">Object Data URL:</label>
-<select id="button-objects-select"><!-- populate with JS--></select>
-<input type="text" id="import-objects-url">
-<a class="btn" href="#" id="import-objects-load">Import Objects</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtVehicles = `
-<div class="importer-section" data-import-group="vehicle">
-<h4>Vehicle Importing</h4>
-<label for="import-vehicles-url">Vehicle Data URL:</label>
-<select id="button-vehicles-select"><!-- populate with JS--></select>
-<input type="text" id="import-vehicles-url">
-<a class="btn" href="#" id="import-vehicles-load">Import Vehicles</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtRaces = `
-<div class="importer-section" data-import-group="race">
-<h4>Race Importing</h4>
-<label for="import-races-url">Race Data URL:</label>
-<select id="button-races-select"><!-- populate with JS--></select>
-<input type="text" id="import-races-url">
-<a class="btn" href="#" id="import-races-load">Import Races</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtRacesPlayer = `
-<div class="importer-section" data-import-group="race">
-<h4>Race Importing</h4>
-<label for="import-races-url-player">Race Data URL:</label>
-<select id="button-races-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-races-url-player">
-<a class="btn" href="#" id="import-races-load-player">Import Races</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtClasses = `
-<div class="importer-section" data-import-group="class">
-<h4>Class Importing</h4>
-<p style="margin-top: 5px"><a class="btn" href="#" id="button-classes-load-all" title="Standard sources only; no third-party or UA">Import Classes from 5etools</a></p>
-<label for="import-classes-url">Class Data URL:</label>
-<select id="button-classes-select">
-<!-- populate with JS-->
-</select>
-<input type="text" id="import-classes-url">
-<p><a class="btn" href="#" id="button-classes-load">Import Classes from URL</a><p/>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtClassesPlayer = `
-<div class="importer-section" data-import-group="class">
-<h4>Class Importing</h4>
-<p style="margin-top: 5px"><a class="btn" href="#" id="button-classes-load-all-player">Import Classes from 5etools</a></p>
-<label for="import-classes-url-player">Class Data URL:</label>
-<select id="button-classes-select-player">
-<!-- populate with JS-->
-</select>
-<input type="text" id="import-classes-url-player">
-<p><a class="btn" href="#" id="button-classes-load-player">Import Classes from URL</a><p/>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtSubclasses = `
-<div class="importer-section" data-import-group="subclass">
-<h4>Subclass Importing</h4>
-<label for="import-subclasses-url">Subclass Data URL:</label>
-<select id="button-subclasses-select"><!-- populate with JS--></select>
-<input type="text" id="import-subclasses-url">
-<a class="btn" href="#" id="import-subclasses-load">Import Subclasses</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtSubclassesPlayer = `
-<div class="importer-section" data-import-group="subclass">
-<h4>Subclass Importing</h4>
-<label for="import-subclasses-url-player">Subclass Data URL:</label>
-<select id="button-subclasses-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-subclasses-url-player">
-<a class="btn" href="#" id="import-subclasses-load-player">Import Subclasses</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtBackgrounds = `
-<div class="importer-section" data-import-group="background">
-<h4>Background Importing</h4>
-<label for="import-backgrounds-url">Background Data URL:</label>
-<select id="button-backgrounds-select"><!-- populate with JS--></select>
-<input type="text" id="import-backgrounds-url">
-<a class="btn" href="#" id="import-backgrounds-load">Import Backgrounds</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtBackgroundsPlayer = `
-<div class="importer-section" data-import-group="background">
-<h4>Background Importing</h4>
-<label for="import-backgrounds-url-player">Background Data URL:</label>
-<select id="button-backgrounds-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-backgrounds-url-player">
-<a class="btn" href="#" id="import-backgrounds-load-player">Import Backgrounds</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtOptfeatures = `
-<div class="importer-section" data-import-group="optionalfeature">
-<h4>Optional Feature (Invocations, etc.) Importing</h4>
-<label for="import-optionalfeatures-url">Optional Feature Data URL:</label>
-<select id="button-optionalfeatures-select"><!-- populate with JS--></select>
-<input type="text" id="import-optionalfeatures-url">
-<a class="btn" href="#" id="import-optionalfeatures-load">Import Optional Features</a>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtOptfeaturesPlayer = `
-<div class="importer-section" data-import-group="optionalfeature">
-<h4>Optional Feature (Invocations, etc.) Importing</h4>
-<label for="import-optionalfeatures-url-player">Optional Feature Data URL:</label>
-<select id="button-optionalfeatures-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-optionalfeatures-url-player">
-<a class="btn" href="#" id="import-optionalfeatures-load-player">Import Optional Features</a>
-</div>
-`;
+	}
 
 	d20plus.template5e.settingsHtmlPtAdventures = `
 <div class="importer-section" data-import-group="adventure">
@@ -401,16 +446,6 @@ To import from third-party sources, either individually select one available in 
 <p><a class="btn" href="#" id="button-adventures-load">Import Adventure</a><p/>
 <p>
 </p>
-</div>
-`;
-
-	d20plus.template5e.settingsHtmlPtDeities = `
-<div class="importer-section" data-import-group="deity">
-<h4>Deity Importing</h4>
-<label for="import-deities-url">Deity Data URL:</label>
-<select id="button-deities-select"><!-- populate with JS--></select>
-<input type="text" id="import-deities-url">
-<a class="btn" href="#" id="button-deities-load">Import Deities</a>
 </div>
 `;
 
