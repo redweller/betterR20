@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.14
+// @version      1.31.0.15
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -169,6 +169,7 @@ function baseLanguage () {
 		menu_move_forwone: [`Forward One`],
 		menu_move_backone: [`Back One`],
 		menu_move_toback: [`To Back`],
+		menu_view_title: [`Assign view`],
 		menu_layer_title: [`Layer`],
 		menu_layer_map: [`Map`],
 		menu_layer_fl: [`Floors`],
@@ -341,6 +342,7 @@ function baseLanguage () {
 		menu_move_forwone: [`На шаг вперед`],
 		menu_move_backone: [`На шаг назад`],
 		menu_move_toback: [`На задний план`],
+		menu_view_title: [`Связать вид`],
 		menu_layer_title: [`Слой`],
 		menu_layer_map: [`Карта`],
 		menu_layer_fl: [`Полы`],
@@ -1970,11 +1972,6 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": false,
 		},
-		"showInteriorToggle": {
-			"name": __("cfg_option_interiors_toggle"),
-			"default": false,
-			"_type": "boolean",
-		},
 		"gridSnap": {
 			"name": __("cfg_option_grid_snap"),
 			"default": "1",
@@ -2805,15 +2802,14 @@ function baseConfig () {
 			`);
 		}
 		// more readable secondary bar (if it's too cluttered)
-		if (d20plus.cfg.getOrDefault("canvas", "showInteriorToggle")
-			|| d20plus.cfg.getOrDefault("canvas", "showRoofs")
+		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")
 			|| d20plus.cfg.getOrDefault("canvas", "showFloors")) {
 			d20plus.ut.dynamicStyles("secBarGuide").html(`
 				#floatinglayerbar li.choosegmlayer {border-top-width: 2px; border-top-style: solid;}
 				#floatinglayerbar li.choosemap, 
 				#floatinglayerbar li.chooseroofs, 
 				#floatinglayerbar li.choosefloors {
-					image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
+					background-image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
 				}
 			`);
 		}
@@ -10310,6 +10306,20 @@ function d20plusEngine () {
 								d20plus.anim.animatorTool.doStartScene(sceneUid);
 							});
 							i();
+						} else if (["assignview0", "assignview1", "assignview2", "assignview3"].includes(e)) {
+							const viewId = e.at(-1);
+							d20.engine.selected().forEach(it => {
+								if (it.model) {
+									if (it.model.get(`bR20_view${viewId}`)) {
+										it.model.set(`bR20_view${viewId}`, false);
+									} else {
+										it.model.set(`bR20_view${viewId}`, true);
+									}
+									it.saveState();
+									it.model.save();
+								}
+							});
+							i();
 						}
 						// END MOD
 						return !1
@@ -10632,46 +10642,31 @@ function d20plusEngine () {
 		})
 	};
 
+	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
+		const page = d20.Campaign.activePage();
+		if (page) return page.get(`bR20cfg_hidden`).search(layer) > -1;
+	}
+
 	d20plus.engine.layersVisibilityCheck = () => {
-		const layers = ["floors", "background", "foreground"];
+		const layers = ["floors", "background", "foreground", "roofs"];
 		layers.forEach((layer) => {
 			const isHidden = d20.engine.canvas._objects.some((o) => {
 				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
-			});
-			if (isHidden) d20plus.engine.layerVisibilityOff(layer, true, true);
+			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
+			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
 		});
-		$(`#editinglayer li.chooseobjects`).click();
-	}
-
-	d20plus.engine.layersModeCheck = () => {
-		let wallDrawingsLikeInside = false;
-		const hasWallDrawings = d20.engine.canvas._objects.some((o) => {
-			if (o.model.get("barrierType") === "wall") wallDrawingsLikeInside = true;
-			if (o.model) return (o.model.get("stroke") === `rgb(255, 255, 0)`) || (o.model.get("stroke") === `rgb(255, 255, 255)`);
-		});
-		if (hasWallDrawings) {
-			if (wallDrawingsLikeInside) $(`.toggleinterior`).addClass("inside");
-			else {
-				$(`.toggleinterior`).addClass("outside");
-				d20plus.engine.outsideMode = true;
-			}
-		}
+		if (!$(`#floatinglayerbar`).hasClass("objects")
+			&& window.currentEditingLayer === "objects") $(`#floatinglayerbar`).addClass("objects");
 	}
 
 	d20plus.engine.layersToggle = (event) => {
 		event.stopPropagation();
-		let outliers = 0;
 		const target = event.target;
+		const page = d20.Campaign.activePage();
 		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
-		const hiddenName = `hidden_${layer}`;
-		const isHidden = d20.engine.canvas._objects.some((o) => {
-			if (o.model) {
-				if (o.model.get("layer") === layer) outliers++;
-				return o.model.get("layer") === hiddenName;
-			}
-		});
-		if (isHidden) {
-			d20plus.engine.layerVisibilityOff(layer, outliers);
+		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
+		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+			d20plus.engine.layerVisibilityOff(layer, false);
 		} else {
 			d20plus.engine.layerVisibilityOff(layer, true);
 		}
@@ -10680,82 +10675,53 @@ function d20plusEngine () {
 	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
 		const menuButton = $(`#editinglayer .choose${layer}`);
 		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
-		const visibleTag = layer;
-		const hiddenTag = `hidden_${layer}`;
+		const page = d20.Campaign.activePage();
 		if (off) {
-			if (d20plus.engine.layerObjectsFromTo(visibleTag, hiddenTag) || force) {
+			if (d20plus.engine.objectsHideUnhide("layer", layer, "hidden", false) || force) {
 				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
 				menuButton.addClass("stashed");
 				secondaryButton.addClass("off");
+				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
+					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
+					page.save();
+				}
 			}
 		} else {
-			d20plus.engine.layerObjectsFromTo(hiddenTag, visibleTag);
+			d20plus.engine.objectsHideUnhide("layer", layer, "hidden", true);
 			menuButton.removeClass("stashed");
 			secondaryButton.removeClass("off");
+			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
+				page.save();
+			}
 		}
 	}
 
-	d20plus.engine.layerObjectsFromTo = (from, to) => {
+	d20plus.engine.objectsHideUnhide = (q, val, prefix, state) => {
 		let some = false;
 		for (const o of d20.engine.canvas._objects) {
 			const model = o.model;
 			if (!model) continue;
-			if (model.get("layer") === from) {
-				model.attributes.layer = to;
-				model.save();
-				some = true;
+			if (`${model.get(q)}`.search(val) > -1) {
+				const l = model.attributes.layer;
+				if (state) {
+					if (l.search(prefix) > -1) {
+						model.attributes.layer = l.replace(`${prefix}_`, "");
+						o.saveState();
+						model.save();
+						some = true;
+					}
+				} else {
+					if (l.search(prefix) === -1) {
+						model.attributes.layer = `${prefix}_${l}`;
+						o.saveState();
+						model.save();
+						some = true;
+					}
+				}
 			}
 		}
 		return some;
-	};
-
-	d20plus.engine.switchInsideOutside = () => {
-		d20plus.engine.outsideMode = !d20plus.engine.outsideMode;
-		const btn = $(`.toggleinterior`);
-		btn.removeClass("inside");
-		btn.removeClass("outside");
-		if (d20plus.engine.outsideMode) d20plus.engine.layerVisibilityOff("foreground", false);
-		const wallTypes = {};
-		if (d20plus.engine.outsideMode) {
-			wallTypes.interiorwalls = "transparent";
-			wallTypes.outsidewalls = "oneWay";
-		} else {
-			wallTypes.interiorwalls = "wall";
-			wallTypes.outsidewalls = "wall";
-		}
-		const wallColors = {
-			outsidewalls: "rgb(255, 255, 0)",
-			interiorwalls: "rgb(255, 255, 255)",
-		}
-		for (const o of d20.engine.canvas._objects) {
-			if (o.model.get("type") === "path" && o.model.get("layer") === "walls") {
-				// console.log('checking color '+o.model.get('stroke'));
-				if (o.model.get("stroke") === wallColors.outsidewalls) {
-					// console.log('outside wall matches this '+o.model.get('barrierType'));
-					setTimeout(() => {
-						o.model.set("barrierType", wallTypes.outsidewalls);
-						o.model.save();
-					}, 1)
-					// console.log('outside wall now is '+o.model.get('barrierType'));
-				}
-				if (o.model.get("stroke") === wallColors.interiorwalls) {
-					// console.log('interior wall matches this '+o.model.get('barrierType'));
-					setTimeout(() => {
-						o.model.set("barrierType", wallTypes.interiorwalls);
-						o.model.save();
-					}, 1)
-					// console.log('interior now is '+o.model.get('barrierType'));
-				}
-			}
-		}
-		setTimeout(() => {
-			if (d20plus.engine.outsideMode) {
-				btn.addClass("outside");
-			} else {
-				d20plus.engine.layerVisibilityOff("foreground", true);
-				btn.addClass("inside");
-			}
-		}, 100);
 	};
 
 	d20plus.engine.addLayers = () => {
@@ -11605,6 +11571,272 @@ function baseWeather () {
 
 SCRIPT_EXTENSIONS.push(baseWeather);
 
+
+function baseViews () {
+	d20plus.vw = {};
+
+	d20plus.vw._lastSettingsPageId = null;
+
+	d20plus.vw._initSettingsButton = () => {
+		$(`body`).on("click", ".Ve-btn-views", function () {
+			// close the parent page settings + hide the page overlay
+			const $this = $(this);
+			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("Save")`).click();
+			const $barPage = $(`#page-toolbar`);
+			if (!$barPage.hasClass("closed")) {
+				$barPage.find(`.handle`).click()
+			}
+
+			function doShowDialog (page) {
+				const mutExclusiveHelp = "Check this, if enabling this or PREVIOUS view should disable another one of them";
+				const $dialog = $(`
+					<div title="Views Configuration">
+						<div class="alert alert-info" role="alert">
+							<p>Views are states of objects on your map. Each view can store items as tokens, paths & images.
+							Items are assigned via Context menu (only works with bR20 Reorganized context menus).
+							Then you can easily hide or show stored items, no matter their type or layer, using controls at the bottom of Selected layer dropdown.
+							This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.</p>
+						</div>
+						<label class="split wth__row">
+							<span>Enable view management for this map</span>
+							<div class="grid_switch"><label class="switch">
+								<input class="gridenabled feature_enabled" name="viewsEnable" type="checkbox">
+								<span class="slider round"></span>
+							</label></div>
+						</label>
+						<div class="pagedetails__header w-100">
+							<h3 class="page_title text-capitalize">Default view</h3>
+						</div>
+						<label class="split wth__row">
+							<span>Custom name</span>
+							<input name="views0Name" placeholder="Default">
+						</label>
+						<div class="pagedetails__header w-100">
+							<h3 class="page_title text-capitalize">View 1</h3>
+						</div>
+						<div class="split">
+							<label class="half">
+								<span>Enable view 1</span>
+								<input type="checkbox" name="views1Enable">
+							</label>
+							<label class="half">
+								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
+								<input type="checkbox" name="views1Exclusive">
+							</label>
+						</div>
+						<label class="split wth__row">
+							<span>Custom name</span>
+							<input name="views1Name" placeholder="View 1">
+						</label>
+						<div class="pagedetails__header w-100">
+							<h3 class="page_title text-capitalize">View 2</h3>
+						</div>
+						<div class="split">
+							<label class="half">
+								<span>Enable view 2</span>
+								<input type="checkbox" name="views2Enable">
+							</label>
+							<label class="half">
+								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
+								<input type="checkbox" name="views2Exclusive">
+							</label>
+						</div>
+						<label class="split wth__row">
+							<span>Custom name</span>
+							<input name="views2Name" placeholder="View 2">
+						</label>
+						<div class="pagedetails__header w-100">
+							<h3 class="page_title text-capitalize">View 3</h3>
+						</div>
+						<div class="split">
+							<label class="half">
+								<span>Enable view 3</span>
+								<input type="checkbox" name="views3Enable">
+							</label>
+							<label class="half">
+								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
+								<input type="checkbox" name="views3Exclusive">
+							</label>
+						</div>
+						<label class="split wth__row">
+							<span>Custom name</span>
+							<input name="views3Name" placeholder="View 3">
+						</label>
+					</div>
+				`).appendTo($("body"));
+
+				const handleProp = (propName) => $dialog.find(`[name="${propName}"]`).each((i, e) => {
+					const $e = $(e);
+					if ($e.is(":checkbox")) {
+						$e.prop("checked", !!page.get(`bR20cfg_${propName}`));
+					} else {
+						$e.val(page.get(`bR20cfg_${propName}`));
+					}
+				});
+				const props = [
+					"viewsEnable",
+					"views0Name",
+					"views1Enable",
+					"views1Exclusive",
+					"views1Name",
+					"views2Enable",
+					"views2Exclusive",
+					"views2Name",
+					"views3Enable",
+					"views3Exclusive",
+					"views3Name",
+				];
+				props.forEach(handleProp);
+
+				function doSaveValues () {
+					props.forEach(propName => {
+						page.set(`bR20cfg_${propName}`, (() => {
+							const $e = $dialog.find(`[name="${propName}"]`);
+							if ($e.is(":checkbox")) {
+								return !!$e.prop("checked");
+							} else {
+								return $e.val();
+							}
+						})())
+					});
+					page.save();
+				}
+
+				$dialog.dialog({
+					width: 500,
+					dialogClass: "no-close",
+					buttons: [
+						{
+							text: "OK",
+							click: function () {
+								$(this).dialog("close");
+								$dialog.remove();
+								doSaveValues();
+							},
+						},
+						{
+							text: "Apply",
+							click: function () {
+								doSaveValues();
+							},
+						},
+						{
+							text: "Cancel",
+							click: function () {
+								$(this).dialog("close");
+								$dialog.remove();
+							},
+						},
+					],
+				});
+			}
+
+			if (d20plus.vw._lastSettingsPageId) {
+				const page = d20.Campaign.pages.get(d20plus.vw._lastSettingsPageId);
+				if (page) {
+					doShowDialog(page);
+				} else d20plus.ut.error(`No page found with ID "${d20plus.vw._lastSettingsPageId}"`);
+			} else d20plus.ut.error(`No page settings button was clicked?!`);
+		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
+			const $this = $(this);
+			d20plus.vw._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
+		});
+	};
+
+	d20plus.vw._initMenuActions = () => {
+		$(`body`).on("click", ".chooseViews > li", function () {
+			const page = d20.Campaign.activePage();
+			const items = $(".chooseViews > li")
+			const id = items.index(this);
+			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
+			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
+			if (page.get(`bR20cfg_views${id}Off`)) {
+				d20plus.vw.changeViewState(id, true);
+				for (let i = startgroupindex; i <= endgroupindex; i++) {
+					if (i !== id) d20plus.vw.changeViewState(i, false);
+				}
+			} else {
+				d20plus.vw.changeViewState(id, false);
+			}
+		});
+	}
+
+	d20plus.vw._initViewsCss = () => {
+		d20plus.ut.dynamicStyles("viewsSelect").html(`
+			.ui-dialog label.half {display: inline-block; margin-bottom: 6px;}
+			.ui-dialog label.half span {margin-right: 20px;}
+			#floatingtoolbar ul.chooseViews li {border-width: 1px;border-style: solid; border-color: var(--dark-surface1);}
+			#floatingtoolbar ul.chooseViews:empty {display:none;}
+			#floatingtoolbar ul.chooseViews li {height: 19px; border-radius: 12px;}
+			#floatingtoolbar ul.chooseViews li.fst {border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom-width: 0px;}
+			#floatingtoolbar ul.chooseViews li.lst {border-top-left-radius: 0px; border-top-right-radius: 0px; border-top-width: 0px;}
+			#floatingtoolbar ul.chooseViews li.mst {border-radius: 0px; border-top: 0px; border-bottom: 0px;}
+			#floatingtoolbar ul.chooseViews .pictos {padding: 0 3px 0 3px;}
+			#floatingtoolbar ul.chooseViews .view_toggle {padding: 4px 8px 3px 4px; margin-right: 8px; border-right: 1px solid; border-color: inherit;}
+			#floatingtoolbar ul.chooseViews li.off .view_toggle .pictos {color: #fff0;}
+		`);
+	}
+
+	d20plus.vw._initLayerMenu = () => {
+		d20plus.vw.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
+	}
+
+	d20plus.vw.populateMenu = () => {
+		const page = d20.Campaign.activePage();
+		if (!page) return;
+		let menuhtml = "";
+		if (page.get("bR20cfg_viewsEnable")) {
+			for (let id = 0; id <= 4; id++) {
+				if (!id || page.get(`bR20cfg_views${id}Enable`)) {
+					const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
+					const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
+					const viewexcl = page.get(`bR20cfg_views${id}Exclusive`) ? (page.get(`bR20cfg_views${id + 1}Exclusive`) ? "mst" : "lst") : page.get(`bR20cfg_views${id + 1}Exclusive`) ? "fst" : "";
+					const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
+					menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
+						<span class="view_toggle"><span class="pictos">E</span></span>
+						<span class="pictos">${viewicon}</span>
+						${viewname}
+					</li>`;
+				}
+			}
+		}
+		d20plus.vw.layerMenu.html(menuhtml);
+	}
+
+	d20plus.vw.changeViewState = (id, state) => {
+		const page = d20.Campaign.activePage();
+		const menuItem = $(".chooseViews > li").get(id);
+		if (state) {
+			$(menuItem).removeClass("off");
+			page.set(`bR20cfg_views${id}Off`, false);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, true);
+		} else {
+			$(menuItem).addClass("off");
+			page.set(`bR20cfg_views${id}Off`, true);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, false);
+		}
+		page.save();
+	}
+
+	d20plus.vw.checkPageSettings = () => {
+		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
+			setTimeout(d20plus.vw.checkPageSettings, 50);
+		} else {
+			d20plus.engine.layersVisibilityCheck();
+			d20plus.vw.populateMenu();
+		}
+	}
+
+	d20plus.vw.addViews = () => {
+		d20plus.vw._initSettingsButton();
+		d20plus.vw._initViewsCss();
+		d20plus.vw._initLayerMenu();
+		d20plus.vw._initMenuActions();
+		document.addEventListener("VePageChange", d20plus.vw.checkPageSettings);
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseViews);
 
 function d20plusJournal () {
 	d20plus.journal = {};
@@ -13246,35 +13478,6 @@ function baseUi () {
 		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
 			$(`<li title="${__("ui_bar_we")}" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
 		}
-		if (d20plus.cfg.getOrDefault("canvas", "showInteriorToggle")) {
-			$(`
-				<li title="${__("ui_bar_toggle_interior")}" class="toggleinterior">
-					<span class="pictos">r</span>
-				</li>
-			`).appendTo($ulBtns).on("click", d20plus.engine.switchInsideOutside);
-			$(`<style>
-				#floatinglayerbar .toggleinterior {
-					pointer-events: none;
-					opacity: 0.8;
-				}
-				#floatinglayerbar .toggleinterior.inside,
-				#floatinglayerbar .toggleinterior.outside {
-					pointer-events: unset;
-					opacity: unset;
-				}
-				#floatinglayerbar .toggleinterior.outside span::after, 
-				#floatinglayerbar .toggleinterior.inside span::after {
-					content: "H";
-					margin-left: -9px;
-					font-size: 16px;
-					color: var(--dark-primarytext);
-					vertical-align: sub;
-				}
-				#floatinglayerbar .toggleinterior.inside span::after {
-					content: "I";
-				}
-			</style>`).appendTo($ulBtns);
-		}
 
 		$("body").on("click", "#editinglayer li", function () {
 			$("#floatinglayerbar").removeClass("map")
@@ -13879,7 +14082,7 @@ function d20plusMod () {
 	};
 	// END ROLL20 CODE
 
-	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background", "foreground"]);
+	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background"]);
 	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
 	// BEGIN ROLL20 CODE
 	d20plus.mod.renderAll = function (e) {
@@ -13946,19 +14149,22 @@ function d20plusMod () {
 					}
 					break;
 				case "floors":
-					if ("map" === window.currentEditingLayer) {
+					if ("map" === window.currentEditingLayer && window.is_gm) {
 						t.globalAlpha = .45;
 						break
+					} else {
+						t.globalAlpha = 1;
+						break;
 					}
 				case "roofs":
-					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer)) {
+					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.is_gm) {
 						t.globalAlpha = .45;
 						break;
 					}
 				case "background":
 				case "foreground":
 				case "objects":
-					if (d20plus.mod._renderAll_serviceLayers.has(window.currentEditingLayer)) {
+					if (d20plus.mod._renderAll_serviceLayers.has(window.currentEditingLayer) && window.is_gm) {
 						t.globalAlpha = .45;
 						break
 					}
@@ -14022,7 +14228,6 @@ function d20plusMod () {
 		yield [this.map, "map"],
 		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
 			this._save_map_layer = !1);
-		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 
 		// BEGIN MOD
 		yield [this.floors, "floors"];
@@ -14054,6 +14259,7 @@ function d20plusMod () {
 
 		// BEGIN MOD
 		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
+		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 		// END MOD
 	};
 	// END ROLL20 CODE
@@ -15607,10 +15813,13 @@ Updated
             <hr>
              <div>
                 <div class='pagedetails__header'>
-                    <h3 class='page_title'>Weather</h3>
+                    <h3 class='page_title'>Extensions by betteR20</h3>
                 </div>
                 <button class='btn Ve-btn-weather'>
-					Configure
+					Configure Weather
+				</button>
+                <button class='btn Ve-btn-views'>
+					Configure Views
 				</button>
             </div>
 			<!-- END MOD -->
@@ -15982,6 +16191,20 @@ const baseTemplate = function () {
 	  </script>
 	  `;
 
+		d20plus.templateViewMenu = (id) => {
+			return `
+				<span class="pictos ctx__layer-icon"><$ if (d20.Campaign.activePage().get('bR20cfg_views${id}Icon')) { 
+					$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Icon')$> <$
+				} else { 
+					$>P<$ 
+				} $> </span> <$
+				if (d20.Campaign.activePage().get('bR20cfg_views${id}Name')) { 
+					$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Name')$> <$
+				} else { 
+					$> ${id ? `View ${id}` : `Default`} <$ 
+				} $>`;
+		}
+
 		d20plus.template_neat_actions = {
 			"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
 			"takecard": { ln: __("menu_take_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
@@ -16026,6 +16249,10 @@ const baseTemplate = function () {
 			"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 			"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 			"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+			"assignview0": { ln: d20plus.templateViewMenu("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
+			"assignview1": { ln: d20plus.templateViewMenu("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
+			"assignview2": { ln: d20plus.templateViewMenu("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
+			"assignview3": { ln: d20plus.templateViewMenu("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
 		};
 
 		d20plus.template_neat_submenus = {
@@ -16057,6 +16284,14 @@ const baseTemplate = function () {
 					"tolayer_gmlayer",
 					"tolayer_walls",
 					"tolayer_weather",
+				] },
+			"view": {
+				ln: __("menu_view_title"),
+				subitems: [
+					"assignview0",
+					"assignview1",
+					"assignview2",
+					"assignview3",
 				] },
 			"util": {
 				ln: __("menu_util_title"),
@@ -18148,7 +18383,6 @@ const betteR20Core = function () {
 
 			const showChatMsgs = !d20plus.cfg.getOrDefault("chat", "suppressLoadingMessages");
 			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
-			const modeToggle = window.is_gm && d20plus.cfg.getOrDefault("canvas", "showInteriorToggle");
 
 			if (showChatMsgs) {
 				d20plus.ut.showLoadingMessage(scriptName);
@@ -18197,12 +18431,12 @@ const betteR20Core = function () {
 			d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
+			d20plus.vw.addViews();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
-			d20plus.engine.layersVisibilityCheck();
-			if (modeToggle) d20plus.engine.layersModeCheck();
+			d20plus.vw.checkPageSettings();
 
 			// apply config
 			if (window.is_gm) {
