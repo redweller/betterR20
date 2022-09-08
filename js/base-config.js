@@ -10,8 +10,12 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
-	},
-	);
+		"massRollAssumesOGL": {
+			"name": __("cfg_option_assume_ogl"),
+			"default": true,
+			"_type": "boolean",
+		},
+	});
 	addConfigOptions("canvas", {
 		"_name": __("cfg_tab_canvas"),
 		"_player": true,
