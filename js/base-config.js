@@ -59,6 +59,11 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"enableNeatMenus": {
+			"name": __("cfg_option_neat_menus"),
+			"default": true,
+			"_type": "boolean",
+		},
 	});
 	addConfigOptions("import", {
 		"_name": __("cfg_tab_import"),
@@ -832,10 +837,21 @@ function baseConfig () {
 			$(`#button-add-external-art`).detach().appendTo($(`.addlibraryfolder`).parent());
 		}
 	}
+
+	d20plus.cfg.HandleCss = () => {
+		// ugly hook to move VTTES menu items
+		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+			d20plus.ut.dynamicStyles("vttesHide").html(`
+				.actions_menu.d20contextmenu > ul > li[style] {display:none;}
+			`);
+		}
+	}
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
 		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
+		d20plus.cfg.HandleCss();
+
 		if (window.is_gm) {
 			d20plus.cfg.HandlePlayerLog();
 			d20plus.cfg.HandleArtLibraryButtons();

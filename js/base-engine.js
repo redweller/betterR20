@@ -191,7 +191,11 @@ function d20plusEngine () {
 
 	d20plus.engine.addSelectedTokenCommands = () => {
 		d20plus.ut.log("Add token rightclick commands");
-		$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
+		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+			$("#tmpl_actions_menu").replaceWith(d20plus.template.generateNeatActionsMenu());
+		} else {
+			$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
+		}
 
 		const getTokenWhisperPart = () => d20plus.cfg.getOrDefault("token", "massRollWhisperName") ? "/w gm Rolling for @{selected|token_name}...\n" : "";
 
@@ -267,6 +271,17 @@ function d20plusEngine () {
 			if (!window.is_gm && t[0].lastElementChild.childElementCount < 1)
 				return !1;
 			t.appendTo("body");
+			// BEGIN MOD
+			if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+				setTimeout(() => {
+					const group = $(`.actions_menu > ul > li`).find(`[data-menuname='token']`);
+					if (!group.length) return;
+					$('[id^=r20es-token-ctx-menu-button-]').each( function () {
+						$(this).detach().appendTo(group);
+					});
+				}, 10);
+			}
+			// END MOD
 			var d = t.height()
 				, h = t.width()
 				, p = {};
