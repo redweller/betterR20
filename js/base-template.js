@@ -9,6 +9,20 @@ const baseTemplate = function () {
 		$("#tmpl_cardeditor").html($(d20plus.template.cardeditor).html());
 	};
 
+	d20plus.template.neatActionsView = (id) => {
+		return `
+			<span class="pictos ctx__layer-icon"><$ if (d20.Campaign.activePage().get('bR20cfg_views${id}Icon')) { 
+				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Icon')$> <$
+			} else { 
+				$>P<$ 
+			} $> </span> <$
+			if (d20.Campaign.activePage().get('bR20cfg_views${id}Name')) { 
+				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Name')$> <$
+			} else { 
+				$> ${id ? `View ${id}` : `Default`} <$ 
+			} $>`;
+	}
+
 	d20plus.template.neatActions = {
 		"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
 		"takecard": { ln: __("menu_take_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
@@ -53,6 +67,10 @@ const baseTemplate = function () {
 		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"assignview0": { ln: d20plus.template.neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
+		"assignview1": { ln: d20plus.template.neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
+		"assignview2": { ln: d20plus.template.neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
+		"assignview3": { ln: d20plus.template.neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
 	};
 
 	d20plus.template.neatStructure = {
@@ -149,6 +167,28 @@ const baseTemplate = function () {
 			] },
 	}
 
+	d20plus.template.pushQuickMenus = () => {
+		if (d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems")) {
+			let output = "";
+			const pushMenu = (num, action, condition) => {
+				if (!action) action = d20plus.cfg.getOrDefault(`canvas`, `quickMenuItem${num}`);
+				if (action) title = d20plus.template.neatActions[action].quick || d20plus.template.neatActions[action].ln;
+				if (action && title) {
+					if (!condition) {
+						condition = d20plus.template.neatActions[action].condition;
+					}
+					const conditionStatement = condition ? `if (${condition})` : ``;
+					output += `<$ ${conditionStatement} { $><li data-action-type='${action}'>${title}</li><$ } $>`;
+				}
+			};
+			pushMenu(null, "tolayer_objects", `this.view && this.get("layer") == "gmlayer"`);
+			pushMenu(null, "tolayer_gmlayer", `this.view && this.get("layer") != "gmlayer"`);
+			pushMenu(2);
+			pushMenu(3);
+			return output;
+		} else return "";
+	}
+
 	d20plus.template.generateNeatActionsMenu = () => {
 		let templ = "";
 		Object.entries(d20plus.template.neatStructure).forEach((menu) => {
@@ -181,11 +221,35 @@ const baseTemplate = function () {
 		<div class='actions_menu d20contextmenu'>
 		  <ul>
 		  	${templ}
+			${d20plus.template.pushQuickMenus()}
 		  </ul>
 		  </div>
 		</script>
 		`;
 	}
+
+	addConfigOptions("canvas", {
+		"_name": __("cfg_tab_canvas"),
+		"_player": true,
+		"enableQuickMenuItems": {
+			"name": __("cfg_option_quick_menu"),
+			"default": true,
+			"_type": "boolean",
+		},
+		"quickMenuItem2": {
+			"name": __("cfg_option_quick_2"),
+			"default": "back-one",
+			"_type": "_enum",
+			"__values": Object.keys(d20plus.template.neatActions),
+		},
+		"quickMenuItem3": {
+			"name": __("cfg_option_quick_3"),
+			"default": "rollsaves",
+			"_type": "_enum",
+			"__values": Object.keys(d20plus.template.neatActions),
+		},
+	});
+
 	d20plus.settingsHtmlPtFooter = `<p>
 			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 			</p>
