@@ -20,6 +20,14 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 		},
+		"quickLayerButtonsPosition": {
+			"name": __("cfg_option_layer_panel_position"),
+			"default": 1,
+			"_type": "_slider",
+			"__sliderMin": 0,
+			"__sliderMax": 1,
+			"__sliderStep": 1,
+		},
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
 			"default": true,
@@ -797,6 +805,8 @@ function baseConfig () {
 		}
 
 		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
+		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
+
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 	};
