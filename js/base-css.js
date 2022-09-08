@@ -563,6 +563,22 @@ function baseCss () {
 		},
 	]);
 
+	// Tweak OGL roll template styles
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
+			r: "padding-top: 0px",
+		},
+		{
+			s: ".sheet-rolltemplate-simple .sheet-charname, .sheet-rolltemplate-simple3D .sheet-charname, .sheet-rolltemplate-skill .sheet-charname, .sheet-rolltemplate-atk .sheet-charname, .sheet-rolltemplate-dmg .sheet-charname, .sheet-rolltemplate-atkdmg .sheet-charname",
+			r: "margin-top: -8px; padding-bottom: 2px;",
+		},
+		{
+			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
+			r: "font-size: 12px;",
+		},
+	]);
+
 	// Fix art repo buttons CSS
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
