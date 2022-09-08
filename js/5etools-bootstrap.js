@@ -14,8 +14,11 @@ const betteR205etools = function () {
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
+			const showChatMsgs = !d20plus.cfg.getOrDefault("chat", "suppressLoadingMessages");
+			if (showChatMsgs) {
 				d20plus.ut.showLoadingMessage(scriptName);
 				d20plus.ut.checkVersion();
+			}
 
 			d20plus.template.swapTemplates();
 			d20plus.ut.addAllCss();
@@ -87,7 +90,7 @@ const betteR205etools = function () {
 			}
 
 			d20plus.ut.log("All systems operational");
-			d20plus.ut.chatTag(`betteR20-5etools v${d20plus.version}`);
+			if (showChatMsgs) d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error(e);
