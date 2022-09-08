@@ -93,7 +93,7 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
 			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
@@ -132,7 +132,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		if (window.enhancementSuiteEnabled) {
 			d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
@@ -143,7 +143,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		d20plus.ut.sendHackerChat(`
 			${scriptName} initialising, please wait...<br><br>
@@ -152,12 +152,13 @@ function baseUtil () {
 	};
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
+		const defaultStyle = !!d20plus.cfg.get("chat", "modestSystemMessagesStyle");
 		d20.textchat.incoming(false, ({
 			who: "system",
 			type: "system",
-			content: `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			content: (!defaultStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
-			</span>`,
+			</span>` : message),
 		}));
 	};
 
@@ -548,6 +549,14 @@ function baseUtil () {
 			}
 		}
 	};
+
+	d20plus.ut.dynamicStyles = (slug) => {
+		if (!d20plus.css.dynamic) d20plus.css.dynamic = {};
+		if (!d20plus.css.dynamic[slug]) {
+			d20plus.css.dynamic[slug] = $("<style></style>").appendTo("body");
+		}
+		return d20plus.css.dynamic[slug];
+	}
 
 	/**
 	* Assumes any other lists have been searched using the same term

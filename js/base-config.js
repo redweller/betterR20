@@ -76,14 +76,39 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 		},
+	});
+	addConfigOptions("chat", {
+		"_name": __("cfg_tab_chat"),
+		"_player": true,
+		"playerPortraitSize": {
+			"name": __("cfg_option_player_size"),
+			"default": 30,
+			"_type": "_slider",
+			"__sliderMin": 30,
+			"__sliderMax": 250,
+			"__sliderStep": 20,
+			"_player": true,
+		},
 		"streamerChatTag": {
 			"name": __("cfg_option_streamer_tags"),
 			"default": false,
 			"_type": "boolean",
 		},
-		"hideDefaultJournalSearch": {
-			"name": "Hide Default Journal Search Bar",
+		"modestSystemMessagesStyle": {
+			"name": __("cfg_option_modest_chat"),
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"suppressLoadingMessages": {
+			"name": __("cfg_option_silent_chat"),
 			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showPlayerConnects": {
+			"name": __("cfg_option_log_players_in_chat"),
+			"default": true,
 			"_type": "boolean",
 		},
 	});
@@ -683,8 +708,60 @@ function baseConfig () {
 	};
 	*/
 
+	d20plus.cfg.handlePlayerImgSize = () => {
+		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
+		const dynamicStyle = d20plus.ut.dynamicStyles("players");
+		if (setSize === 30) {
+			dynamicStyle.html("");
+		} else {
+			const setFont = Math.round((setSize / 150) * 16);
+			const setCol = Math.round((setSize / 150) * 24);
+			const setLine = Math.round((setSize / 150) * 18);
+			const setStyle = `
+				#playerzone .player .playername {width: ${setSize}px !important; font-size: ${setFont}px !important;line-height:${setLine}px}
+				#playerzone .player .video {width: ${setSize}px; height: ${setSize}px; }
+				#playerzone .player .playercolor, .player .color_picker {width: ${setCol}px; height: ${setCol}px; }
+			`;
+			dynamicStyle.html(setStyle);
+		}
+	}
+
+	d20plus.cfg.HandlePlayerLog = () => {
+		const obsconfig = {childList: true, subtree: true};
+		if (!d20plus.cfg.playerWatcher) {
+			const playerListChange = (changelist) => {
+				for (const change of changelist) {
+					if ((change.type === "childList") && (change.addedNodes.length)) {
+						for (const node of change.addedNodes) {
+							const playerName = $(node).find(".playername .name").html();
+							if (!playerName) continue;
+							const playerPic = $(node).find(".video").css("background-image") || "";
+							const playerUrl = playerPic.replace(/[\\")(]/igm, "").replace("url", "");
+							const playerText = `
+								<span style="height:40px;display:block">
+									<img style="width:40px;float:left;margin-right:10px" src="${playerUrl}.png">
+									${(new Date()).toLocaleTimeString()}<br> 
+									${playerName} ${__("msg_player_connected")}
+								</span>
+							`;
+							d20plus.ut.sendHackerChat(playerText);
+						}
+					}
+				}
+			}
+			d20plus.cfg.playerWatcher = new MutationObserver(playerListChange);
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
+		else d20plus.cfg.playerWatcher.disconnect();
+	}
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
+		d20plus.cfg.handlePlayerImgSize();
+		if (window.is_gm) {
+			d20plus.cfg.HandlePlayerLog();
+		}
+
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
@@ -692,7 +769,6 @@ function baseConfig () {
 
 		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
-		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {

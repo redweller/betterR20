@@ -1186,8 +1186,9 @@ const betteR20Emoji = function () {
 	/* eslint-enable */
 
 	addConfigOptions(
-		"interface", {
-			_name: "Interface",
+		"chat", {
+			_name: __("cfg_tab_chat"),
+			_player: true,
 			emoji: {
 				name: __("cfg_option_emoji"),
 				default: true,
@@ -1202,7 +1203,7 @@ const betteR20Emoji = function () {
 		const tc = d20.textchat.$textarea;
 		$("#textchat-input").off("click", "button")
 		$("#textchat-input").on("click", "button", function () {
-			if (d20plus.cfg.getOrDefault("interface", "emoji")) {
+			if (d20plus.cfg.getOrDefault("chat", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					const clean = m1.replace(/:/g, "");
 					return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
