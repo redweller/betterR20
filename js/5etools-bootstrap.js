@@ -3,33 +3,36 @@ const betteR205etools = function () {
 	d20plus.Init = async function () {
 		const scriptName = `betteR20-5etools v${d20plus.version}`;
 		try {
-			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.ut.showLoadingMessage(scriptName);
-
-			d20plus.ut.checkVersion();
+			d20plus.ut.log(`Init (v${d20plus.version})`);// RB20 EXCLUDE START
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 
-			d20plus.template.swapTemplates();
-
-			d20plus.ut.addAllCss();
-			if (window.is_gm) {
-				d20plus.ut.log("Is GM");
-				d20plus.engine.enhancePageSelector();
-			} else d20plus.ut.log("Not GM. Some functionality will be unavailable.");
-
-			d20plus.setSheet();
 			await d20plus.js.pAddScripts();
 			await d20plus.qpi.pInitMockApi();
 			await d20plus.js.pAddApiScripts();
+
+			if (window.is_gm) await d20plus.cfg.pLoadConfig();
+			else await d20plus.cfg.pLoadPlayerConfig();
+
+				d20plus.ut.showLoadingMessage(scriptName);
+				d20plus.ut.checkVersion();
+
+			d20plus.template.swapTemplates();
+			d20plus.ut.addAllCss();
+
+			if (window.is_gm) {
+				d20plus.ut.log("Is GM");
+				d20plus.engine.enhancePageSelector();
+			} else {
+				d20plus.ut.log("Not GM. Some functionality will be unavailable.");
+			}
+
+			d20plus.setSheet();
 
 			JqueryUtil.initEnhancements();
 			await loadHomebrewMetadata();
 
 			await d20plus.pAddJson();
 			await monkeyPatch5etoolsCode();
-
-			if (window.is_gm) await d20plus.cfg.pLoadConfig();
-			else await d20plus.cfg.pLoadPlayerConfig();
 
 			d20plus.cfg5e.updateBaseSiteUrl();
 
