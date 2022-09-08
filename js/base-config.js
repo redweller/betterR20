@@ -89,6 +89,19 @@ function baseConfig () {
 			"name": __("cfg_option_hide_dmswitch"),
 			"default": false,
 			"_type": "boolean",
+			"_player": true,
+		},
+		"hideHelpButton": {
+			"name": __("cfg_option_hide_help"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"hideLineSplitter": {
+			"name": __("cfg_option_hide_linesplit"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
 		},
 		"quickInitButtons": {
 			"name": __("cfg_option_quick_init_sort"),
@@ -809,6 +822,7 @@ function baseConfig () {
 
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
+		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {

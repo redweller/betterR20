@@ -14,6 +14,8 @@ const betteR20Core = function () {
 			else await d20plus.cfg.pLoadPlayerConfig();
 
 			const showChatMsgs = !d20plus.cfg.getOrDefault("chat", "suppressLoadingMessages");
+			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
+
 			if (showChatMsgs) {
 				d20plus.ut.showLoadingMessage(scriptName);
 				d20plus.ut.checkVersion();
@@ -38,7 +40,7 @@ const betteR20Core = function () {
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.enhanceStatusEffects();
-			d20plus.engine.addLineCutterTool();
+			if (showLineSpl) d20plus.engine.addLineCutterTool();
 			d20plus.ui.addHtmlHeader();
 			d20plus.ui.addHtmlFooter();
 			d20plus.art.initArtFromUrlButtons();
