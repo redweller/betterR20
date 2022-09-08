@@ -1189,7 +1189,7 @@ const betteR20Emoji = function () {
 		"interface", {
 			_name: "Interface",
 			emoji: {
-				name: "Add Emoji Replacement to Chat",
+				name: __("cfg_option_emoji"),
 				default: true,
 				_type: "boolean",
 				_player: true,

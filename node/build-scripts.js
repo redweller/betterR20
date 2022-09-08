@@ -56,6 +56,7 @@ ${analyticsBlocking}
 const JS_DIR = "./js/";
 const LIB_DIR = "./lib/";
 const BUILD_DIR = "./dist";
+const LANG_STRS = {};
 
 function joinParts (...parts) {
 	return parts.join("\n\n");
@@ -80,6 +81,45 @@ JSON_DATA[\`${filePath}\`] = JSON.parse(${JSON.stringify(data)});
 `
 }
 
+function wrapLangData (ln, data) {
+	const header = `
+	d20plus.ln.${ln} = {
+`;
+	const footer = `
+	};
+`;
+	let body = header;
+	Object.entries(data).forEach((string) => {
+		body += `
+		${string[0]}: [\`${string[1]}\`],`;
+	})
+	body += footer;
+	return body;
+}
+
+function wrapLangBaseFile () {
+	const header = `function baseLanguage () {
+	d20plus.ln = { default: {} };
+`;
+	const footer = `
+	for (const id in d20plus.ln.en) {
+		d20plus.ln.default[id] = d20plus.ln.en[id];
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseLanguage);
+`;
+
+	let BASE_LNG = "";
+
+	LOCALES.forEach((lng) => {
+		LANG_STRS[lng] = require(`../lang/${lng}.js`);
+		BASE_LNG += wrapLangData(lng, LANG_STRS[lng]);
+	});
+
+	return `${header}${BASE_LNG}${footer}`;
+}
+
 let ixLibApiScript = 0;
 function wrapLibScript (script, isApiScript) {
 	const name = `lib_script_${ixLibApiScript++}`;
@@ -93,6 +133,11 @@ ${script}
 if (!fs.existsSync(BUILD_DIR)) {
 	fs.mkdirSync(BUILD_DIR);
 }
+
+const LOCALES = [
+	"en",
+	"ru",
+]
 
 const LIB_SCRIPTS = {
 	core: [
@@ -243,6 +288,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 		v.header,
 		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString(),
 		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
+		wrapLangBaseFile(),
 		...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString()),
 		...libScripts.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString())),
 		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true)),

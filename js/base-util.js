@@ -16,7 +16,33 @@ function baseUtil () {
 		// eslint-disable-next-line no-console
 		console.error("%cD20Plus > ", "color: #b93032; font-size: large", ...args);
 	};
+	// RB20 EXCLUDE START
+	d20plus.ut.localize = (str, substitutes) => {
+		if (substitutes) {
+			output = `${d20plus.ln.default[str]}`;
+			for (const needle in substitutes) {
+				output = output.replace(`$${needle}`, substitutes[needle]);
+			}
+			return output;
+		} else if (d20plus.ln.default[str]) {
+			return d20plus.ln.default[str];
+		} else {
+			return str;
+		}
+	}
 
+	window.__ = d20plus.ut.localize;
+
+	d20plus.ut.selectLocale = () => {
+		const lan = (typeof LANGUAGE !== "undefined" ? LANGUAGE : "en");
+		if ((lan === "en") || (!d20plus.ln[lan])) return;
+		for (const id in d20plus.ln.en) {
+			if (d20plus.ln[lan][id]) {
+				d20plus.ln.default[id][0] = d20plus.ln[lan][id][0];
+			}
+		}
+	}
+	// RB20 EXCLUDE END
 	d20plus.ut.chatLog = (arg) => {
 		d20.textchat.incoming(
 			false,
@@ -81,9 +107,9 @@ function baseUtil () {
 							if (!isStreamer) {
 								const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
 								const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
-								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
+								d20plus.ut.sendHackerChat(__("msg_b20_version", [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl]));
 							} else {
-								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br><br>`);
+								d20plus.ut.sendHackerChat(__("msg_b20_version_stream", [scriptName]));
 							}
 						}, 1000);
 					}
@@ -109,27 +135,11 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		if (window.enhancementSuiteEnabled) {
-			d20plus.ut.sendHackerChat(`
-				VTT Enhancement Suite detected.
-				<br><br>
-				${scriptName} initialised.
-				<br>
-			`);
+			d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
 		} else d20plus.ut.showHardDickMessage(scriptName);
-		d20plus.ut.sendHackerChat(`
-			${isStreamer ? "" : `
-			<br>
-			Need help? Visit our <a href="${d20plus.ut.WIKI_URL}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="You'd think this would be obvious.">
-			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
-			<br>
-			<br>
-			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
-			</span>
-			`}
-		`);
+		d20plus.ut.sendHackerChat(
+			isStreamer ? "" : __("msg_better20_help", [d20plus.ut.WIKI_URL]),
+		);
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {

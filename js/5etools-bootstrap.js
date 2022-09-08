@@ -4,6 +4,7 @@ const betteR205etools = function () {
 		const scriptName = `betteR20-5etools v${d20plus.version}`;
 		try {
 			d20plus.ut.log(`Init (v${d20plus.version})`);// RB20 EXCLUDE START
+			d20plus.ut.selectLocale();// RB20 EXCLUDE END
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 
 			await d20plus.js.pAddScripts();

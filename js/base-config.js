@@ -4,16 +4,16 @@ function baseConfig () {
 	d20plus.cfg.pLoadConfigFailed = false;
 
 	addConfigOptions("token", {
-		"_name": "Tokens",
+		"_name": __("cfg_tab_tokens"),
 		"massRollWhisperName": {
-			"name": "Whisper Token Name to Mass-Rolls",
+			"name": __("cfg_option_whisper_name"),
 			"default": false,
 			"_type": "boolean",
 		},
 	},
 	);
 	addConfigOptions("canvas", {
-		"_name": "Canvas",
+		"_name": __("cfg_tab_canvas"),
 		"_player": true,
 		"gridSnap": {
 			"name": "Grid Snap",
@@ -29,19 +29,19 @@ function baseConfig () {
 			"_player": true,
 		},
 		"showBackground": {
-			"name": "Include the Background layer (reload to apply changes)",
+			"name": __("cfg_option_show_bg"),
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showForeground": {
-			"name": "Include the Foreground layer (reload to apply changes)",
+			"name": __("cfg_option_show_fg"),
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showWeather": {
-			"name": "Include the Weather layer and settings (reload to apply changes)",
+			"name": __("cfg_option_show_weather"),
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
@@ -49,17 +49,17 @@ function baseConfig () {
 	},
 	);
 	addConfigOptions("import", {
-		"_name": "Import",
+		"_name": __("cfg_tab_import"),
 		"importIntervalMap": {
-			"name": "Rest Time between Each Map (msec)",
+			"name": __("cfg_option_import_interval"),
 			"default": 2500,
 			"_type": "integer",
 		},
 	});
 	addConfigOptions("interface", {
-		"_name": "Interface",
+		"_name": __("cfg_tab_interface"),
 		"toolbarOpacity": {
-			"name": "Horizontal Toolbar Opacity",
+			"name": __("cfg_option_toolbar_opac"),
 			"default": 100,
 			"_type": "_slider",
 			"__sliderMin": 1,
@@ -72,12 +72,12 @@ function baseConfig () {
 			"_type": "boolean",
 		},
 		"quickInitButtons": {
-			"name": "Add Quick Initiative Sort Button",
+			"name": __("cfg_option_quick_init_sort"),
 			"default": true,
 			"_type": "boolean",
 		},
 		"streamerChatTag": {
-			"name": "Streamer-Friendly Chat Tags",
+			"name": __("cfg_option_streamer_tags"),
 			"default": false,
 			"_type": "boolean",
 		},
@@ -409,7 +409,7 @@ function baseConfig () {
 				const content = $(`
 						<div class="config-table-wrapper">
 							<table class="config-table">
-								<thead><tr><th>Property</th><th>Value</th></tr></thead>
+								<thead><tr><th>${__("ui_cfg_property")}</th><th>${__("ui_cfg_value")}</th></tr></thead>
 								<tbody></tbody>
 							</table>
 						</div>
