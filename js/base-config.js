@@ -103,6 +103,24 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"selectJournalSearchType": {
+			"name": __("cfg_option_select_jrnsearch"),
+			"default": "roll20",
+			"_type": "_enum",
+			"__values": [
+				"Roll20",
+				"betteR20",
+			],
+		},
+		"selecArtLibraryType": {
+			"name": __("cfg_option_select_artlib"),
+			"default": "roll20",
+			"_type": "_enum",
+			"__values": [
+				"Roll20",
+				"betteR20",
+			],
+		},
 		"quickInitButtons": {
 			"name": __("cfg_option_quick_init_sort"),
 			"default": true,
@@ -804,12 +822,23 @@ function baseConfig () {
 		if (d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
 		else d20plus.cfg.playerWatcher.disconnect();
 	}
+
+	d20plus.cfg.HandleArtLibraryButtons = () => {
+		if (d20plus.cfg.getOrDefault("interface", "selecArtLibraryType") !== "Roll20") {
+			$(`#button-browse-external-art`).parent().parent().toggle(true);
+			$(`#button-add-external-art`).detach().appendTo($(`#button-browse-external-art`).parent());
+		} else {
+			$(`#button-browse-external-art`).parent().parent().toggle(false);
+			$(`#button-add-external-art`).detach().appendTo($(`.addlibraryfolder`).parent());
+		}
+	}
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
 		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
 		if (window.is_gm) {
 			d20plus.cfg.HandlePlayerLog();
+			d20plus.cfg.HandleArtLibraryButtons();
 		}
 
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
@@ -823,6 +852,10 @@ function baseConfig () {
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+
+		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
+		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
+		$(`#journal > div.content > br`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {

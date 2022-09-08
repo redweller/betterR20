@@ -542,6 +542,14 @@ function baseCss () {
 		},
 	]);
 
+	// Fix art repo buttons CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: "#imagedialog .searchbox p button",
+			r: "width: 100%; margin: 0px 5px !important;",
+		},
+	]);
+
 	// Art repo browser CSS
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		// full-width images search header
@@ -750,6 +758,19 @@ function baseCss () {
 		{
 			s: ".artr__big_img",
 			r: "display: block; max-width: 100%; max-height: 100%;",
+		},
+		// fix row styles
+		{
+			s: "#d20plus-artfolder .url",
+			r: "width: calc(65% - 70px) !important;white-space: nowrap;overflow: hidden;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item",
+			r: "line-height: 16px;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item:hover",
+			r: "background-color: rgba(100,100,100,0.5);",
 		},
 	]);
 
