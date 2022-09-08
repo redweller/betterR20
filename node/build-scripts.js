@@ -1,6 +1,7 @@
 const fs = require("fs");
 
 const SCRIPT_VERSION = "1.31.0";
+const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -21,13 +22,13 @@ const analyticsBlocking = `
 `;
 
 const HEADER_CORE = `// ==UserScript==
-// @name         betteR20-core
+// @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
 // @description  Enhance your Roll20 experience
-// @updateURL    https://github.com/redweller/betterR20/raw/development/dist/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/development/dist/betteR20-core.user.js
+// @updateURL    ${SCRIPT_REPO}betteR20-core.meta.js
+// @downloadURL  ${SCRIPT_REPO}betteR20-core.user.js
 // @author       TheGiddyLimit
 ${matchString}
 // @grant        unsafeWindow
@@ -37,12 +38,12 @@ ${analyticsBlocking}
 `;
 
 const HEADER_5ETOOLS = `// ==UserScript==
-// @name         betteR20-5etools
+// @name         betteR20-5etools-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/redweller/betterR20/raw/development/dist/betteR20-5etools.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/development/dist/betteR20-5etools.user.js
+// @updateURL    ${SCRIPT_REPO}betteR20-5etools.meta.js
+// @downloadURL  ${SCRIPT_REPO}betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
 ${matchString}
@@ -252,4 +253,5 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 
 fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
 
+// eslint-disable-next-line no-console
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);

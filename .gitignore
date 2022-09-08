@@ -121,4 +121,8 @@ typings/
 
 .idea
 *.iml
+
+# Vscode & build tools
 .vscode/settings.json
+.main*
+betterR20.code-workspace
