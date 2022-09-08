@@ -15,18 +15,10 @@ function baseConfig () {
 	addConfigOptions("canvas", {
 		"_name": __("cfg_tab_canvas"),
 		"_player": true,
-		"gridSnap": {
-			"name": "Grid Snap",
-			"default": "1",
-			"_type": "_enum",
-			"__values": ["0.25", "0.5", "1"],
-			"_player": true,
-		},
-		"scaleNamesStatuses": {
-			"name": "Scaled Names and Status Icons",
+		"quickLayerButtons": {
+			"name": __("cfg_option_layer_panel"),
 			"default": true,
 			"_type": "boolean",
-			"_player": true,
 		},
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
@@ -46,8 +38,20 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": false,
 		},
-	},
-	);
+		"gridSnap": {
+			"name": __("cfg_option_grid_snap"),
+			"default": "1",
+			"_type": "_enum",
+			"__values": ["0.25", "0.5", "1"],
+			"_player": true,
+		},
+		"scaleNamesStatuses": {
+			"name": __("cfg_option_scaled_names"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+	});
 	addConfigOptions("import", {
 		"_name": __("cfg_tab_import"),
 		"importIntervalMap": {
@@ -58,23 +62,36 @@ function baseConfig () {
 	});
 	addConfigOptions("interface", {
 		"_name": __("cfg_tab_interface"),
+		"_player": true,
+		"showCustomArtPreview": {
+			"name": __("cfg_option_art_previews"),
+			"default": true,
+			"_type": "boolean",
+		},
 		"toolbarOpacity": {
 			"name": __("cfg_option_toolbar_opac"),
 			"default": 100,
+			"_player": true,
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
 			"__sliderStep": 1,
 		},
-		"quickLayerButtons": {
-			"name": "Add Quick Layer Buttons",
-			"default": true,
+		"hideDarkModeSwitch": {
+			"name": __("cfg_option_hide_dmswitch"),
+			"default": false,
 			"_type": "boolean",
 		},
 		"quickInitButtons": {
 			"name": __("cfg_option_quick_init_sort"),
 			"default": true,
 			"_type": "boolean",
+		},
+		"minifyTracker": {
+			"name": __("cfg_option_minify_tracker"),
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
 		},
 	});
 	addConfigOptions("chat", {
@@ -93,6 +110,7 @@ function baseConfig () {
 			"name": __("cfg_option_streamer_tags"),
 			"default": false,
 			"_type": "boolean",
+			"_player": true,
 		},
 		"modestSystemMessagesStyle": {
 			"name": __("cfg_option_modest_chat"),
@@ -726,6 +744,16 @@ function baseConfig () {
 		}
 	}
 
+	d20plus.cfg.handleInitiativeShrink = () => {
+		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
+		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
+		if (doShrink) {
+			dynamicStyle.html(d20plus.css.miniInitStyle);
+		} else {
+			dynamicStyle.html("");
+		}
+	}
+
 	d20plus.cfg.HandlePlayerLog = () => {
 		const obsconfig = {childList: true, subtree: true};
 		if (!d20plus.cfg.playerWatcher) {
@@ -758,6 +786,7 @@ function baseConfig () {
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
 		d20plus.cfg.handlePlayerImgSize();
+		d20plus.cfg.handleInitiativeShrink();
 		if (window.is_gm) {
 			d20plus.cfg.HandlePlayerLog();
 		}
@@ -767,8 +796,9 @@ function baseConfig () {
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
+		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
+		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
