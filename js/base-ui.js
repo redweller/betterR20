@@ -89,24 +89,24 @@ function baseUi () {
 		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
 
 		// Add layers to second side bar
-		$(`<li title="Map" class="choosemap"><span class="pictos" style="padding: 0 3px;">@</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
+		$(`<li title="${__("ui_bar_map")}" class="choosemap"><span class="pictos" style="padding: 0 3px;">G</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
 			$(`<li title="${__("ui_bar_fl")}" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
 		}
 		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-			$(`<li title="Background" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
+			$(`<li title="${__("ui_bar_bg")}" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
 		}
+		$(`<li title="${__("ui_bar_obj")}" class="chooseobjects"><span class="pictos">U</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
 			$(`<li title="${__("ui_bar_rf")}" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
 		}
-		$(`<li title="Objects & Tokens" class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-			$(`<li title="Foreground" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
+			$(`<li title="${__("ui_bar_fg")}" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
 		}
 		$(`<li title="GM Info Overlay" class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
-		$(`<li title="Dynamic Lighting" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
+		$(`<li title="${__("ui_bar_barriers")}" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-			$(`<li title="Weather Exclusions" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
+			$(`<li title="${__("ui_bar_we")}" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
 		}
 
 		$("body").on("click", "#editinglayer li", function () {
