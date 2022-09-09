@@ -1357,15 +1357,38 @@ function d20plusEngine () {
 				$(`#floatingtoolbar .choosemap`).after(`
 					<li class="choosebackground">
 						<span class="pictos">a</span>
-						Background
+						${__("ui_bar_bg")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
 			}
-			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
+
+			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+				$(`#floatingtoolbar .choosemap`).after(`
+					<li class="choosefloors">
+						<span class="pictos">I</span>
+						${__("ui_bar_fl")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
 				$(`#floatingtoolbar .chooseobjects`).after(`
+					<li class="chooseroofs">
+						<span class="pictos">H</span>
+						${__("ui_bar_rf")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
+				$(`#floatingtoolbar .choosegmlayer`).before(`
 					<li class="chooseforeground">
 						<span class="pictos">B</span>
-						Foreground
+						${__("ui_bar_fg")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
 			}
@@ -1374,7 +1397,7 @@ function d20plusEngine () {
 				$(`#floatingtoolbar .choosewalls`).after(`
 					<li class="chooseweather">
 						<span class="pictos">C</span>
-						Weather Exclusions
+						${__("ui_bar_we")}
 					</li>
 				`);
 			}

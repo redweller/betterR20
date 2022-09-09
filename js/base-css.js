@@ -384,7 +384,7 @@ function baseCss () {
 			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
 		},
 		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.background li.choosebackground",
+			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.roofs li.chooseroofs, #floatinglayerbar.floors li.choosefloors, #floatinglayerbar.background li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
 		},
 		// move layer bar to right
@@ -423,7 +423,7 @@ function baseCss () {
 		},
 		// extra layer buttons
 		{
-			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
+			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
 		},
 		{
@@ -441,6 +441,14 @@ function baseCss () {
 		{
 			s: "#editinglayer.foreground .currentselection:after",
 			r: "content: \"B\";",
+		},
+		{
+			s: "#editinglayer.floors .currentselection:after",
+			r: "content: \"I\";",
+		},
+		{
+			s: "#editinglayer.roofs .currentselection:after",
+			r: "content: \"H\";",
 		},
 		{
 			s: "#editinglayer.background .currentselection:after",

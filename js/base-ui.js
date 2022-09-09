@@ -90,8 +90,14 @@ function baseUi () {
 
 		// Add layers to second side bar
 		$(`<li title="Map" class="choosemap"><span class="pictos" style="padding: 0 3px;">@</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+			$(`<li title="${__("ui_bar_fl")}" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
+		}
 		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
 			$(`<li title="Background" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
+		}
+		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
+			$(`<li title="${__("ui_bar_rf")}" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
 		}
 		$(`<li title="Objects & Tokens" class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
@@ -105,9 +111,11 @@ function baseUi () {
 
 		$("body").on("click", "#editinglayer li", function () {
 			$("#floatinglayerbar").removeClass("map")
+				.removeClass("floors")
 				.removeClass("background")
 				.removeClass("objects")
 				.removeClass("foreground")
+				.removeClass("roofs")
 				.removeClass("gmlayer")
 				.removeClass("walls")
 				.removeClass("weather");

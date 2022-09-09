@@ -344,7 +344,8 @@ function d20plusMod () {
 	};
 	// END ROLL20 CODE
 
-	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background", "foreground"]);
+	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background"]);
+	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
 	// BEGIN ROLL20 CODE
 	d20plus.mod.renderAll = function (e) {
 		const t = e && e.context || this.contextContainer
@@ -356,12 +357,14 @@ function d20plusMod () {
 		const r = {
 			map: [],
 			// BEGIN MOD
+			floors: [],
 			background: [],
 			// END MOD
 			walls: [],
 			objects: [],
 			// BEGIN MOD
 			foreground: [],
+			roofs: [],
 			// END MOD
 			gmlayer: []
 			// BEGIN MOD
@@ -399,22 +402,35 @@ function d20plusMod () {
 				case "afow":
 					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
 					continue;
-				case "gmlayer":
-					t.globalAlpha = d20.engine.gm_layer_opacity;
-					break;
 				// BEGIN MOD
-				case "background":
-				case "foreground":
-					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.currentEditingLayer !== a && window.currentEditingLayer !== "objects") {
+				case "gmlayer":
+					if ("gmlayer" !== window.currentEditingLayer) {
+						t.globalAlpha = d20.engine.gm_layer_opacity;
+					} else {
+						t.globalAlpha = 1;
+					}
+					break;
+				case "floors":
+					if ("map" === window.currentEditingLayer && window.is_gm) {
+						t.globalAlpha = .45;
+						break
+					} else {
+						t.globalAlpha = 1;
+						break;
+					}
+				case "roofs":
+					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.is_gm) {
 						t.globalAlpha = .45;
 						break;
 					}
-				// END MOD
+				case "background":
+				case "foreground":
 				case "objects":
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer) {
+					if (d20plus.mod._renderAll_serviceLayers.has(window.currentEditingLayer) && window.is_gm) {
 						t.globalAlpha = .45;
 						break
 					}
+				// END MOD
 				default:
 					t.globalAlpha = 1
 			}
@@ -474,7 +490,10 @@ function d20plusMod () {
 		yield [this.map, "map"],
 		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
 			this._save_map_layer = !1);
-		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
+
+		// BEGIN MOD
+		yield [this.floors, "floors"];
+		// END MOD
 
 		const grid_before_afow = e && e.grid_before_afow;
 		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
@@ -491,6 +510,7 @@ function d20plusMod () {
 		yield [this.objects, "objects"];
 
 		// BEGIN MOD
+		yield [this.roofs, "roofs"];
 		yield [this.foreground, "foreground"];
 		// END MOD
 
@@ -501,6 +521,7 @@ function d20plusMod () {
 
 		// BEGIN MOD
 		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
+		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 		// END MOD
 	};
 	// END ROLL20 CODE
@@ -519,7 +540,7 @@ function d20plusMod () {
 				$("#drawingtools .choosepath").hide();
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
 			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseroofs") ? window.currentEditingLayer = "roofs" : e.hasClass("choosefloors") ? window.currentEditingLayer = "floors" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
 					$("#drawingtools .choosepath").hide(),
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
 			}

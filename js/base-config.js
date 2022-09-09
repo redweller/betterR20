@@ -32,6 +32,12 @@ function baseConfig () {
 			"__sliderMax": 1,
 			"__sliderStep": 1,
 		},
+		"showFloors": {
+			"name": __("cfg_option_show_fl"),
+			"default": false,
+			"_type": "boolean",
+			"_player": false,
+		},
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
 			"default": true,
@@ -41,6 +47,12 @@ function baseConfig () {
 		"showForeground": {
 			"name": __("cfg_option_show_fg"),
 			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showRoofs": {
+			"name": __("cfg_option_show_rf"),
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
@@ -855,7 +867,20 @@ function baseConfig () {
 				.actions_menu.d20contextmenu > ul > li[style] {display:none;}
 			`);
 		}
+		// more readable secondary bar (if it's too cluttered)
+		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")
+			|| d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+			d20plus.ut.dynamicStyles("secBarGuide").html(`
+				#floatinglayerbar li.choosegmlayer {border-top-width: 2px; border-top-style: solid;}
+				#floatinglayerbar li.choosemap, 
+				#floatinglayerbar li.chooseroofs, 
+				#floatinglayerbar li.choosefloors {
+					background-image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
+				}
+			`);
+		}
 	}
+
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
 		d20plus.cfg.handlePlayerImgSize();
