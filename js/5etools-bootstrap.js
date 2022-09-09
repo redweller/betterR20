@@ -78,6 +78,7 @@ const betteR205etools = function () {
 			d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
+			d20plus.vw.addViews();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
 			// d20plus.ut.fixSidebarLayout();

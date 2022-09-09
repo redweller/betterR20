@@ -1013,6 +1013,20 @@ function d20plusEngine () {
 								d20plus.anim.animatorTool.doStartScene(sceneUid);
 							});
 							i();
+						} else if (["assignview0", "assignview1", "assignview2", "assignview3"].includes(e)) {
+							const viewId = e.at(-1);
+							d20.engine.selected().forEach(it => {
+								if (it.model) {
+									if (it.model.get(`bR20_view${viewId}`)) {
+										it.model.set(`bR20_view${viewId}`, false);
+									} else {
+										it.model.set(`bR20_view${viewId}`, true);
+									}
+									it.saveState();
+									it.model.save();
+								}
+							});
+							i();
 						}
 						// END MOD
 						return !1
