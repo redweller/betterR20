@@ -466,6 +466,31 @@ function baseCss () {
 			s: "#editinglayer.gmlayer #editing_layer_icon",
 			r: "display:none;",
 		},
+		// layer visibility toggles
+		{
+			s: "#editinglayer .pictos.layer_toggle",
+			r: "float: right; cursor: alias; pointer-events: all;",
+		},
+		{
+			s: "#editinglayer li.stashed",
+			r: "pointer-events: none;",
+		},
+		{
+			s: "#editinglayer li.stashed .pictos.layer_toggle",
+			r: "position: relative; left: -19px; margin-right: -20px; margin-left: 0px;",
+		},
+		{
+			s: "#editinglayer li.stashed .pictos.layer_toggle::after",
+			r: "content: \"d\"; position: relative; left: -16px; color: rgba(200,50,50,0.7);",
+		},
+		{
+			s: "#playerzone #floatinglayerbar li.off > span::after",
+			r: "content: \"d\"; color: rgba(200, 100, 100, 0.7); margin-left: -20px;",
+		},
+		{
+			s: "#playerzone #floatinglayerbar li.off",
+			r: "color: rgba(153, 153, 153, 0.5); pointer-events: none;",
+		},
 		// adjust the "Talking to Yourself" box
 		{
 			s: "#textchat-notifier",

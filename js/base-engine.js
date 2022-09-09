@@ -1335,6 +1335,88 @@ function d20plusEngine () {
 		})
 	};
 
+	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
+		const page = d20.Campaign.activePage();
+		if (page) return page.get(`bR20cfg_hidden`).search(layer) > -1;
+	}
+
+	d20plus.engine.layersVisibilityCheck = () => {
+		const layers = ["floors", "background", "foreground", "roofs"];
+		layers.forEach((layer) => {
+			const isHidden = d20.engine.canvas._objects.some((o) => {
+				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
+			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
+			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
+		});
+		if (!$(`#floatinglayerbar`).hasClass("objects")
+			&& window.currentEditingLayer === "objects") $(`#floatinglayerbar`).addClass("objects");
+	}
+
+	d20plus.engine.layersToggle = (event) => {
+		event.stopPropagation();
+		const target = event.target;
+		const page = d20.Campaign.activePage();
+		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
+		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
+		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+			d20plus.engine.layerVisibilityOff(layer, false);
+		} else {
+			d20plus.engine.layerVisibilityOff(layer, true);
+		}
+	};
+
+	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
+		const menuButton = $(`#editinglayer .choose${layer}`);
+		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
+		const page = d20.Campaign.activePage();
+		if (off) {
+			if (d20plus.engine.objectsHideUnhide("layer", layer, "hidden", false) || force) {
+				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
+				menuButton.addClass("stashed");
+				secondaryButton.addClass("off");
+				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
+					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
+					page.save();
+				}
+			}
+		} else {
+			d20plus.engine.objectsHideUnhide("layer", layer, "hidden", true);
+			menuButton.removeClass("stashed");
+			secondaryButton.removeClass("off");
+			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
+				page.save();
+			}
+		}
+	}
+
+	d20plus.engine.objectsHideUnhide = (q, val, prefix, state) => {
+		let some = false;
+		for (const o of d20.engine.canvas._objects) {
+			const model = o.model;
+			if (!model) continue;
+			if (`${model.get(q)}`.search(val) > -1) {
+				const l = model.attributes.layer;
+				if (state) {
+					if (l.search(prefix) > -1) {
+						model.attributes.layer = l.replace(`${prefix}_`, "");
+						o.saveState();
+						model.save();
+						some = true;
+					}
+				} else {
+					if (l.search(prefix) === -1) {
+						model.attributes.layer = `${prefix}_${l}`;
+						o.saveState();
+						model.save();
+						some = true;
+					}
+				}
+			}
+		}
+		return some;
+	};
+
 	d20plus.engine.addLayers = () => {
 		d20plus.ut.log("Adding layers");
 
@@ -1361,6 +1443,7 @@ function d20plusEngine () {
 						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
+				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
 
 			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
@@ -1371,6 +1454,7 @@ function d20plusEngine () {
 						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
+				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
 
 			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
@@ -1381,6 +1465,7 @@ function d20plusEngine () {
 						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
+				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
 
 			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
@@ -1391,6 +1476,7 @@ function d20plusEngine () {
 						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
 					</li>
 				`);
+				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
 
 			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
