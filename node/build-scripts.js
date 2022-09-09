@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.31.0";
+const SCRIPT_VERSION = "1.31.0.18";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
