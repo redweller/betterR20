@@ -616,8 +616,9 @@ function baseCss () {
 		},
 	]);
 
-	// Tweak OGL roll template styles
+	// QOL fixes
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// Tweak OGL roll template styles
 		{
 			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
 			r: "padding-top: 0px",
@@ -852,7 +853,7 @@ function baseCss () {
 		// fix row styles
 		{
 			s: "#d20plus-artfolder .url",
-			r: "width: calc(65% - 70px) !important;white-space: nowrap;overflow: hidden;",
+			r: "width: calc(65% - 75px) !important;white-space: nowrap;overflow: hidden;",
 		},
 		{
 			s: "#d20plus-artfolder .library-item",
