@@ -56,6 +56,8 @@ ${analyticsBlocking}
 const JS_DIR = "./js/";
 const LIB_DIR = "./lib/";
 const BUILD_DIR = "./dist";
+const MAIN_DIR = "./.main/js/";
+
 const LANG_STRS = {};
 
 function joinParts (...parts) {
@@ -298,6 +300,47 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	fs.writeFileSync(filename, fullScript);
 	fs.writeFileSync(metaFilename, v.header);
 });
+
+const MAIN_SCRIPTS = [
+	"templates/template-page-settings",
+	"5etools-bootstrap",
+	"5etools-config",
+	"5etools-main",
+	"base-config",
+	"base-css",
+	"base-emoji",
+	"base-engine",
+	"base-mod",
+	"base-template",
+	"base-views",
+	"base-ui",
+	"base-util",
+	// "base",
+	"core-bootstrap",
+	// "header",
+];
+
+MAIN_SCRIPTS.forEach((filename) => {
+	const srcpath = `${JS_DIR}${filename}.js`;
+	const exp = /\/\/ RB20 EXCLUDE START(.*?)\/\/ RB20 EXCLUDE END/sgm;
+
+	let script = fs.readFileSync(`${srcpath}`, "utf-8").toString();
+	script = script.replace(exp, "");
+
+	Object.entries(LANG_STRS.en).forEach((string) => {
+		const multiline = (`${string[1]}`).search("\n") !== -1;
+		let replacement = !multiline ? `"${string[1]}"` : `\`${string[1]}\``;
+		script = script.replace(new RegExp(`\\$\{__\\(["|']${string[0]}["|']\\)}`, "g"), string[1]);
+		script = script.replace(new RegExp(`__\\(["|']${string[0]}["|'],? ?\\[?([\\w, _.]*?)\\]?\\)`, "g"), (...group) => {
+			const matches = group[1].split(", ");
+			matches.forEach((match, i) => {
+				replacement = replacement.replace(`$${i}`, `\${${match}}`);
+			});
+			return replacement;
+		});
+	});
+	fs.writeFileSync(`${MAIN_DIR}${filename}.js`, script);
+})
 
 fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
 
