@@ -932,6 +932,20 @@ function d20plusEngine () {
 								d20plus.anim.animatorTool.doStartScene(sceneUid);
 							});
 							i();
+						} else if (["assignview0", "assignview1", "assignview2", "assignview3"].includes(e)) {
+							const viewId = e.at(-1);
+							d20.engine.selected().forEach(it => {
+								if (it.model) {
+									if (it.model.get(`bR20_view${viewId}`)) {
+										it.model.set(`bR20_view${viewId}`, false);
+									} else {
+										it.model.set(`bR20_view${viewId}`, true);
+									}
+									it.saveState();
+									it.model.save();
+								}
+							});
+							i();
 						}
 						// END MOD
 						return !1
@@ -1252,6 +1266,33 @@ function d20plusEngine () {
 				}
 			}, 35);
 		})
+	};
+
+	d20plus.engine.objectsHideUnhide = (q, val, prefix, state) => {
+		let some = false;
+		for (const o of d20.engine.canvas._objects) {
+			const model = o.model;
+			if (!model) continue;
+			if (`${model.get(q)}`.search(val) > -1) {
+				const l = model.attributes.layer;
+				if (state) {
+					if (l.search(prefix) > -1) {
+						model.attributes.layer = l.replace(`${prefix}_`, "");
+						o.saveState();
+						model.save();
+						some = true;
+					}
+				} else {
+					if (l.search(prefix) === -1) {
+						model.attributes.layer = `${prefix}_${l}`;
+						o.saveState();
+						model.save();
+						some = true;
+					}
+				}
+			}
+		}
+		return some;
 	};
 
 	d20plus.engine.addLayers = () => {
