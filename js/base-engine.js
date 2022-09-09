@@ -47,16 +47,24 @@ function d20plusEngine () {
 		if (window.is_gm) {
 			// add lighting layer tool
 			if (!$(`#editinglayer .choosewalls`).length) {
-				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
+				$(`#editinglayer .choosegmlayer`).after(`
+					<li class="choosewalls">
+						<span class="pictostwo">r</span> 
+						${d20plus.cfg.get("canvas", "showLight") ? __("ui_bar_light_n_barriers") : __("ui_bar_barriers")}
+					</li>
+				`);
 			}
 
 			// add light placement tool
-			if (!$(`#placelight`).length) {
-				const $torchMode = $(`<li class="placelight" tip="Place Light"><img id="placelighticon" src="/images/editor/torch.png" width="20" height="20"></li>`);
-				$torchMode.on("click", () => {
-					d20plus.setMode("placelight");
-				});
-				$(`#measure`).after($torchMode);
+			if (d20plus.cfg.get("canvas", "showLight")) {
+				if (!$(`#placelight`).length) {
+					const $torchMode = $(`<li class="placelight" tip="Place Light"><span class="pictostwo">t</span></li>`);
+					$torchMode.on("click", () => {
+						d20plus.setMode("placelight");
+						$torchMode.addClass("activebutton");
+					});
+					$(`#measure`).after($torchMode);
+				}
 			}
 
 			// ensure tokens have editable sight
@@ -1332,8 +1340,19 @@ function d20plusEngine () {
 
 		d20plus.mod.editingLayerOnclick();
 		if (window.is_gm) {
+			// Override icons a bit
+			$(`#floatingtoolbar .chooseobjects .pictos`).html("U");
+			$(`#editinglayer .submenu .choosegmlayer`).html(`
+				<span class="pictos">E</span>
+				${__("ui_bar_gm")}
+			`);
+
+			$(`#floatingtoolbar .choosemap`).html(`
+				<span class="pictos" style="padding: 0 3px 0 3px;">G</span> 
+				${__("ui_bar_map")}
+			`);
+
 			// Add layers to layer dropdown
-			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
 			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
 				$(`#floatingtoolbar .choosemap`).after(`
 					<li class="choosebackground">

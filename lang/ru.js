@@ -51,6 +51,7 @@ module.exports = {
 	ui_bar_fg: ["Передний план"],
 	ui_bar_rf: ["Крыши"],
 	ui_bar_we: ["Исключения погоды"],
+	ui_bar_gm: ["Скрытый слой Мастера"],
 	ui_bar_barriers: ["Динамические преграды"],
 	ui_bar_light_n_barriers: ["Динамическое освещение"],
 	ui_bar_toggle_layer_title: ["Переключить видимость слоя"],

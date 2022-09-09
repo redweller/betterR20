@@ -44,6 +44,12 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": false,
 		},
+		"showLight": {
+			"name": __("cfg_option_show_light"),
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
 			"default": true,

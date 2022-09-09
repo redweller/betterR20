@@ -427,6 +427,14 @@ function baseCss () {
 			r: "background-color: #54C3E8; color: #333;",
 		},
 		{
+			s: "#editinglayer.objects .currentselection::after",
+			r: "content: \"U\";",
+		},
+		{
+			s: "#editinglayer.map .currentselection::after",
+			r: "content: \"G\";",
+		},
+		{
 			s: "#editinglayer.weather .currentselection:after",
 			r: "content: \"C\";",
 		},
@@ -437,6 +445,18 @@ function baseCss () {
 		{
 			s: "#editinglayer.background .currentselection:after",
 			r: "content: \"a\";",
+		},
+		{
+			s: "#editinglayer.gmlayer .currentselection:after",
+			r: "content: \"E\";",
+		},
+		{
+			s: "#editinglayer.gmlayer > span.currentselection",
+			r: "display:unset;",
+		},
+		{
+			s: "#editinglayer.gmlayer #editing_layer_icon",
+			r: "display:none;",
 		},
 		// adjust the "Talking to Yourself" box
 		{

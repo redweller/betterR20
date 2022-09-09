@@ -51,6 +51,7 @@ module.exports = {
 	ui_bar_fg: ["Foreground"],
 	ui_bar_rf: ["Roofs"],
 	ui_bar_we: ["Weather Exclusions"],
+	ui_bar_gm: ["GM's Hidden layer"],
 	ui_bar_barriers: ["Dynamic Field of View"],
 	ui_bar_light_n_barriers: ["Dynamic Lighting"],
 	ui_bar_toggle_layer_title: ["Toggle layer visibility"],
