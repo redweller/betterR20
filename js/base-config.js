@@ -153,6 +153,11 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 		},
+		"quickInitButtonsClear": {
+			"name": __("cfg_option_quick_init_clear"),
+			"default": true,
+			"_type": "boolean",
+		},
 		"minifyTracker": {
 			"name": __("cfg_option_minify_tracker"),
 			"default": false,
@@ -901,6 +906,8 @@ function baseConfig () {
 		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
 
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
+		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtonsClear"));
+
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 

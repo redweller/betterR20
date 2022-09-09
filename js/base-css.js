@@ -618,6 +618,20 @@ function baseCss () {
 
 	// QOL fixes
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// Initiative dialog fixes
+		{
+			s: ".initiativedialog .ui-dialog-buttonset .ui-button",
+			r: "margin: 0px 0px 0px 3px; max-width: 37px; overflow: hidden; box-sizing: border-box;",
+		},
+		{
+			s: ".initiativedialog .difficulty",
+			r: "width: 40%; margin-top: -9px; font-size: 14px;",
+		},
+		// Spacing between token-actions
+		{
+			s: "#secondary-toolbar .tokenactions .btn",
+			r: "margin-left: 2px;",
+		},
 		// Tweak OGL roll template styles
 		{
 			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
