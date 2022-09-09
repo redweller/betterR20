@@ -1,9 +1,9 @@
 function baseViews () {
-	d20plus.vw = {};
+	d20plus.views = {};
 
-	d20plus.vw._lastSettingsPageId = null;
+	d20plus.views._lastSettingsPageId = null;
 
-	d20plus.vw._initSettingsButton = () => {
+	d20plus.views._initSettingsButton = () => {
 		$(`body`).on("click", ".Ve-btn-views", function () {
 			// close the parent page settings + hide the page overlay
 			const $this = $(this);
@@ -157,19 +157,19 @@ function baseViews () {
 				});
 			}
 
-			if (d20plus.vw._lastSettingsPageId) {
-				const page = d20.Campaign.pages.get(d20plus.vw._lastSettingsPageId);
+			if (d20plus.views._lastSettingsPageId) {
+				const page = d20.Campaign.pages.get(d20plus.views._lastSettingsPageId);
 				if (page) {
 					doShowDialog(page);
-				} else d20plus.ut.error(`No page found with ID "${d20plus.vw._lastSettingsPageId}"`);
+				} else d20plus.ut.error(`No page found with ID "${d20plus.views._lastSettingsPageId}"`);
 			} else d20plus.ut.error(`No page settings button was clicked?!`);
 		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
 			const $this = $(this);
-			d20plus.vw._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
+			d20plus.views._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
 		});
 	};
 
-	d20plus.vw._initMenuActions = () => {
+	d20plus.views._initMenuActions = () => {
 		$(`body`).on("click", ".chooseViews > li", function () {
 			const page = d20.Campaign.activePage();
 			const items = $(".chooseViews > li")
@@ -177,17 +177,17 @@ function baseViews () {
 			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
 			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
 			if (page.get(`bR20cfg_views${id}Off`)) {
-				d20plus.vw.changeViewState(id, true);
+				d20plus.views.changeViewState(id, true);
 				for (let i = startgroupindex; i <= endgroupindex; i++) {
-					if (i !== id) d20plus.vw.changeViewState(i, false);
+					if (i !== id) d20plus.views.changeViewState(i, false);
 				}
 			} else {
-				d20plus.vw.changeViewState(id, false);
+				d20plus.views.changeViewState(id, false);
 			}
 		});
 	}
 
-	d20plus.vw._initViewsCss = () => {
+	d20plus.views._initViewsCss = () => {
 		d20plus.ut.dynamicStyles("viewsSelect").html(`
 			.ui-dialog label.half {display: inline-block; margin-bottom: 6px;}
 			.ui-dialog label.half span {margin-right: 20px;}
@@ -203,11 +203,11 @@ function baseViews () {
 		`);
 	}
 
-	d20plus.vw._initLayerMenu = () => {
-		d20plus.vw.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
+	d20plus.views._initLayerMenu = () => {
+		d20plus.views.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
 	}
 
-	d20plus.vw.populateMenu = () => {
+	d20plus.views.populateMenu = () => {
 		const page = d20.Campaign.activePage();
 		if (!page) return;
 		let menuhtml = "";
@@ -226,10 +226,10 @@ function baseViews () {
 				}
 			}
 		}
-		d20plus.vw.layerMenu.html(menuhtml);
+		d20plus.views.layerMenu.html(menuhtml);
 	}
 
-	d20plus.vw.changeViewState = (id, state) => {
+	d20plus.views.changeViewState = (id, state) => {
 		const page = d20.Campaign.activePage();
 		const menuItem = $(".chooseViews > li").get(id);
 		if (state) {
@@ -244,22 +244,22 @@ function baseViews () {
 		page.save();
 	}
 
-	d20plus.vw.checkPageSettings = () => {
+	d20plus.views.checkPageSettings = () => {
 		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
-			setTimeout(d20plus.vw.checkPageSettings, 50);
+			setTimeout(d20plus.views.checkPageSettings, 50);
 		} else {
 			d20plus.engine.layersVisibilityCheck();
-			d20plus.vw.populateMenu();
+			d20plus.views.populateMenu();
 		}
 	}
 
-	d20plus.vw.addViews = () => {
-		d20plus.vw._initSettingsButton();
-		d20plus.vw._initViewsCss();
-		d20plus.vw._initLayerMenu();
-		d20plus.vw._initMenuActions();
-		document.addEventListener("VePageChange", d20plus.vw.checkPageSettings);
-		d20plus.vw.checkPageSettings();
+	d20plus.views.addViews = () => {
+		d20plus.views._initSettingsButton();
+		d20plus.views._initViewsCss();
+		d20plus.views._initLayerMenu();
+		d20plus.views._initMenuActions();
+		document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
+		d20plus.views.checkPageSettings();
 	}
 }
 
