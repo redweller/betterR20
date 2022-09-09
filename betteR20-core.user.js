@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.16
+// @version      1.31.0.17
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -12983,7 +12983,7 @@ function baseCss () {
 		// fix row styles
 		{
 			s: "#d20plus-artfolder .url",
-			r: "width: calc(65% - 70px) !important;white-space: nowrap;overflow: hidden;",
+			r: "width: calc(65% - 75px) !important;white-space: nowrap;overflow: hidden;",
 		},
 		{
 			s: "#d20plus-artfolder .library-item",
@@ -16185,7 +16185,7 @@ const baseTemplate = function () {
 	`;
 
 	d20plus.addArtHTML = `
-	<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative">
+	<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
 	<p>Add external images by URL. Any direct link to an image should work.</p>
 	<p>
 	<input placeholder="Name*" id="art-list-add-name">
@@ -16195,16 +16195,18 @@ const baseTemplate = function () {
 	<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
 	<p/>
 	<hr>
-	<div id="art-list-container">
-	<input class="search" autocomplete="off" placeholder="Search list..." style="width: 100%;">
-	<br>
-	<p>
-		<span style="display: inline-block; width: 40%; font-weight: bold;">Name</span>
+	<div id="art-list-container" style="background: inherit;">
+	<p style="position: sticky; top: -10px; background: inherit; z-index: 100;">
+		<span style="display: inline-block; width: calc( 35% + 35px ); font-weight: bold;">
+			Name
+			<input class="search" autocomplete="off" placeholder="Search list..." style="width: 60%; margin: 10px;">
+		</span>
 		<span style="display: inline-block; font-weight: bold;">URL</span>
 	</p>
-	<ul class="list artlist" style="max-height: 600px; overflow-y: scroll; display: block; margin: 0; transform: translateZ(0);"></ul>
+	<ul class="list artlist" style="display: block; margin: 0; transform: translateZ(0);"></ul>
 	</div>
-	</div>`;
+	</div>
+	<br>`;
 
 	d20plus.addArtMassAdderHTML = `
 	<div id="d20plus-artmassadd" title="Mass Add Art URLs">
