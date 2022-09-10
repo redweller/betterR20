@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         betteR20-core-dev
+// @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.19
+// @version      1.30.9
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
-// @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
 // @author       TheGiddyLimit
 
 // @match        https://app.roll20.net/editor
@@ -47,7 +47,11 @@ JSON_DATA = {};
 CONFIG_OPTIONS = {
 	interface: {
 		_name: "Interface",
-		_player: true,
+		showCustomArtPreview: {
+			name: "Show Custom Art Previews",
+			default: true,
+			_type: "boolean",
+		},
 	},
 };
 
@@ -91,360 +95,6 @@ EventTarget.prototype.addEventListener = function (type, listener, options, ...o
 };
 
 
-function baseLanguage () {
-	d20plus.ln = { default: {} };
-
-	d20plus.ln.en = {
-
-		cfg_tab_tokens: [`Tokens`],
-		cfg_tab_canvas: [`Canvas`],
-		cfg_tab_import: [`Import`],
-		cfg_tab_interface: [`Interface`],
-		cfg_tab_chat: [`Chat`],
-		cfg_option_whisper_name: [`Whisper Token Name to Mass-Rolls`],
-		cfg_option_quick_init_sort: [`Add Quick Initiative Sort Button`],
-		cfg_option_grid_snap: [`Grid Snap`],
-		cfg_option_scaled_names: [`Scaled Names and Status Icons`],
-		cfg_option_show_fl: [`Include the Floors layer (reload to apply changes)`],
-		cfg_option_show_bg: [`Include the Background layer (reload to apply changes)`],
-		cfg_option_show_fg: [`Include the Foreground layer (reload to apply changes)`],
-		cfg_option_show_rf: [`Include the Roofs layer (reload to apply changes)`],
-		cfg_option_show_light: [`Include (force) light sources button (reload to apply changes)`],
-		cfg_option_show_weather: [`Include Weather layer and settings (reload to apply changes)`],
-		cfg_option_import_interval: [`Rest Time between Each Map (msec)`],
-		cfg_option_emoji: [`Add Emoji Replacement to Chat`],
-		cfg_option_art_previews: [`Show Custom Art Previews`],
-		cfg_option_toolbar_opac: [`Horizontal Toolbar Opacity`],
-		cfg_option_layer_panel: [`Add Quick Layer Buttons panel`],
-		cfg_option_layer_panel_position: [`-- Select left or right side to display this panel`],
-		cfg_option_streamer_tags: [`Streamer-Friendly Chat Tags`],
-		cfg_option_hide_r20search: [`Hide Default Journal Search Bar`],
-		cfg_option_player_size: [`Set Player List size (0 - don't change)`],
-		cfg_option_hide_dmswitch: [`Hide Roll20's Dark Mode switch`],
-		cfg_option_hide_help: [`Hide Help Button on floating toolbar`],
-		cfg_option_dm_tweaks: [`Enable background style fixes for default dark mode`],
-		cfg_option_assume_ogl: [`Alternative mass rolls (only OGL 5e)`],
-		cfg_option_silent_chat: [`Don't show chat messages on load`],
-		cfg_option_modest_chat: [`Use default chat style for betteR20 system messages`],
-		cfg_option_select_jrnsearch: [`Select Journal search controls`],
-		cfg_option_select_artlib: [`Select Art Library controls`],
-		cfg_option_quick_init_clear: [`Add Quick Initiative tracker Clear Button`],
-		cfg_option_hide_linesplit: [`Hide Line Splitter (reload to apply changes)`],
-		cfg_option_log_players_in_chat: [`Show player connects messages`],
-		cfg_option_neat_menus: [`Reorganized canvas context menu (reload to apply changes)`],
-		cfg_option_quick_menu: [`Enable quick actions as copies of the menu entries added to the bottom of right-click menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back.`],
-		cfg_option_quick_2: [`-- Quick action 2`],
-		cfg_option_quick_3: [`-- Quick action 3`],
-		cfg_option_minify_tracker: [`Shrink Initiative Tracker Text`],
-		cfg_option_interiors_toggle: [`Add interior/outside mode switch`],
-		ui_bar_map: [`Map & Backdrop`],
-		ui_bar_obj: [`Objects & Tokens`],
-		ui_bar_fl: [`Floors`],
-		ui_bar_bg: [`Background`],
-		ui_bar_fg: [`Foreground`],
-		ui_bar_rf: [`Roofs`],
-		ui_bar_we: [`Weather Exclusions`],
-		ui_bar_gm: [`GM's Hidden layer`],
-		ui_bar_barriers: [`Dynamic Field of View`],
-		ui_bar_light_n_barriers: [`Dynamic Lighting`],
-		ui_bar_toggle_layer_title: [`Toggle layer visibility`],
-		ui_bar_toggle_interior: [`Toggle inside/outside`],
-		ui_cfg_property: [`Property`],
-		ui_cfg_value: [`Value`],
-		ui_cfg_save: [`Save`],
-		ui_dialog_title: [`Input value`],
-		ui_dialog_select: [`Select`],
-		ui_dialog_submit: [`Submit`],
-		ui_dialog_cancel: [`Cancel`],
-		menu_unlock: [`Unlock...`],
-		menu_card_title: [`Decks`],
-		menu_take_card: [`Take Card`],
-		menu_flip_card: [`Flip Card`],
-		menu_edit_title: [`Edit`],
-		menu_edit_del: [`Delete`],
-		menu_edit_copy: [`Copy`],
-		menu_edit_paste: [`Paste`],
-		menu_edit_undo: [`Undo`],
-		menu_move_title: [`Move`],
-		menu_move_tofront: [`To Front`],
-		menu_move_forwone: [`Forward One`],
-		menu_move_backone: [`Back One`],
-		menu_move_toback: [`To Back`],
-		menu_view_title: [`Assign view`],
-		menu_layer_title: [`Layer`],
-		menu_layer_map: [`Map`],
-		menu_layer_fl: [`Floors`],
-		menu_layer_bg: [`Background`],
-		menu_layer_obj: [`Tokens`],
-		menu_layer_fg: [`Foreground`],
-		menu_layer_rf: [`Roofs`],
-		menu_layer_gm: [`GM Hidden`],
-		menu_layer_barriers: [`Field of view`],
-		menu_layer_weather: [`Weather`],
-		menu_util_title: [`Utilities`],
-		menu_util_start: [`Start Scene`],
-		menu_util_animate: [`Animate`],
-		menu_util_flight: [`Set&nbsp;Flight&nbsp;Height`],
-		menu_util_light: [`Set&nbsp;Light`],
-		menu_adv_title: [`Advanced`],
-		menu_adv_grp: [`Group`],
-		menu_adv_regrp: [`Reroup`],
-		menu_adv_ungrp: [`Ungroup`],
-		menu_adv_isdrv: [`Is Drawing`],
-		menu_adv_flh: [`Flip Horizontal`],
-		menu_adv_flv: [`Flip Vertical`],
-		menu_adv_dimens: [`Set Dimensions`],
-		menu_adv_align: [`Align to Grid`],
-		menu_adv_lock: [`Lock`],
-		menu_adv_unlock: [`Unlock`],
-		menu_adv_tokenid: [`View Token ID`],
-		menu_adv_pathid: [`View Path ID`],
-		menu_token_title: [`Token Tasks`],
-		menu_token_turn: [`Add Turn`],
-		menu_mass_title: [`Mass Roll`],
-		menu_mass_init: [`Initiative`],
-		menu_mass_save: [`Saving Throw`],
-		menu_mass_skill: [`Skill Check`],
-		menu_multi_title: [`Multi-Sided`],
-		menu_multi_rnd: [`Random Side`],
-		menu_multi_select: [`Choose Side`],
-		menu_multi_size: [`Set Side Size`],
-		menu_quick_togm: [`Hide from layer`],
-		menu_quick_tofg: [`To visible layer`],
-		menu_quick_toback: [`Move behind`],
-		menu_quick_save: [`Roll save`],
-		stat_save_str: [`Strength`],
-		stat_save_dex: [`Dexterity`],
-		stat_save_con: [`Constitution`],
-		stat_save_int: [`Intelligence`],
-		stat_save_wis: [`Wisdom`],
-		stat_save_cha: [`Charisma`],
-		stat_ab_athl: [`Athletics`],
-		stat_ab_acrb: [`Acrobatics`],
-		stat_ab_sloh: [`Sleight of Hand`],
-		stat_ab_stel: [`Stealth`],
-		stat_ab_arcn: [`Arcana`],
-		stat_ab_hist: [`History`],
-		stat_ab_invs: [`Investigation`],
-		stat_ab_natr: [`Nature`],
-		stat_ab_relg: [`Religion`],
-		stat_ab_anih: [`Animal Handling`],
-		stat_ab_insg: [`Insight`],
-		stat_ab_medc: [`Medicine`],
-		stat_ab_perc: [`Perception`],
-		stat_ab_surv: [`Survival`],
-		stat_ab_decp: [`Deception`],
-		stat_ab_intm: [`Intimidation`],
-		stat_ab_perf: [`Performance`],
-		stat_ab_pers: [`Persuasion`],
-		stat_init: [`INITIATIVE`],
-		msg_vtte_init: [`
-			VTT Enhancement Suite detected.
-			<br><br>
-			$0 initialised.
-			<br>
-		`],
-		msg_better20_help: [`
-			<br>
-			Need help? Visit our <a href="$0/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="You'd think this would be obvious.">
-			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
-			<br>
-			<br>
-			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
-			</span>
-		`],
-		msg_b20_version_stream: [`<br>
-									A newer version of $0 is available.
-									<br><br>
-								`],
-		msg_b20_version: [`<br>
-									A newer version of $0 is available.<br>
-									Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.
-									<br><br>
-								`],
-		msg_player_connected: [`connected`],
-	};
-
-	d20plus.ln.ru = {
-
-		cfg_tab_tokens: [`Токены`],
-		cfg_tab_canvas: [`Слои`],
-		cfg_tab_import: [`Импорт`],
-		cfg_tab_interface: [`Интерфейс`],
-		cfg_tab_chat: [`Чат`],
-		cfg_option_whisper_name: [`Шептать в чат имена при групповых бросках`],
-		cfg_option_quick_init_sort: [`Добавить кнопку быстрой сортировки Инициативы`],
-		cfg_option_grid_snap: [`Шаг "прилипания" к сетке`],
-		cfg_option_scaled_names: [`Масштабируемые имена и иконки статусов`],
-		cfg_option_show_fl: [`Включить слой Полов (нужен перезапуск)`],
-		cfg_option_show_bg: [`Включить слой Задний план (нужен перезапуск)`],
-		cfg_option_show_fg: [`Включить слой Передний план (нужен перезапуск)`],
-		cfg_option_show_rf: [`Включить слой Крыши (нужен перезапуск)`],
-		cfg_option_show_light: [`Включить кнопку для источников света (нужен перезапуск)`],
-		cfg_option_show_weather: [`Включить слой и настройки Погоды (нужен перезапуск)`],
-		cfg_option_import_interval: [`Время ожидания перед каждой картой (при импорте)`],
-		cfg_option_emoji: [`Добавить в чат замену эмотиконов`],
-		cfg_option_art_previews: [`Использовать предпросмотр для библиотеки изображений`],
-		cfg_option_toolbar_opac: [`Прозрачность горизонтальной панели инструментов`],
-		cfg_option_layer_panel: [`Добавить панель Быстрого выбора слоя`],
-		cfg_option_layer_panel_position: [`-- Слева или справа отображать эту панель`],
-		cfg_option_streamer_tags: [`Обезличенные названия в чате (для стримеров)`],
-		cfg_option_hide_r20search: [`Спрятать дефолтную панель поиска в Журнале`],
-		cfg_option_player_size: [`Выберите размер списка игроков (0 - не менять)`],
-		cfg_option_hide_dmswitch: [`Спрятать переключатель темного режима от Roll20`],
-		cfg_option_hide_help: [`Спрятать кнопку Помощь на панели инструментов`],
-		cfg_option_dm_tweaks: [`Включить исправления стилей для темного режима`],
-		cfg_option_assume_ogl: [`Альтернативные групповые броски (только лист OGL)`],
-		cfg_option_silent_chat: [`Не выводить в чат уведомления при загрузке`],
-		cfg_option_modest_chat: [`Использовать родной стиль чата для уведомлений betteR20`],
-		cfg_option_select_jrnsearch: [`Выберите тип строки поиска в Журнале`],
-		cfg_option_select_artlib: [`Выберите элементы управления для Библиотеки`],
-		cfg_option_quick_init_clear: [`Добавить кнопку быстрой очистки Трекера`],
-		cfg_option_hide_linesplit: [`Спрятать кнопку разрезания линий (нужен перезапуск)`],
-		cfg_option_log_players_in_chat: [`Выводить сообщения о подключении игроков`],
-		cfg_option_neat_menus: [`Упорядоченное контекстное меню слоя (нужен перезапуск)`],
-		cfg_option_quick_menu: [`Включить быстрые действия, которые отображаются в самом низу меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда "На слой ГМа" и обратно`],
-		cfg_option_quick_2: [`-- Быстрое действие 2`],
-		cfg_option_quick_3: [`-- Быстрое действие 3`],
-		cfg_option_minify_tracker: [`Уменьшить размер элементов трекера инициативы`],
-		cfg_option_interiors_toggle: [`Добавить переключатель режима в помещении/снаружи`],
-		ui_bar_map: [`Карта и фон`],
-		ui_bar_obj: [`Объекты и токены`],
-		ui_bar_fl: [`Полы`],
-		ui_bar_bg: [`Задний план`],
-		ui_bar_fg: [`Передний план`],
-		ui_bar_rf: [`Крыши`],
-		ui_bar_we: [`Исключения погоды`],
-		ui_bar_gm: [`Скрытый слой Мастера`],
-		ui_bar_barriers: [`Динамические преграды`],
-		ui_bar_light_n_barriers: [`Динамическое освещение`],
-		ui_bar_toggle_layer_title: [`Переключить видимость слоя`],
-		ui_bar_toggle_interior: [`Переключить вид`],
-		ui_cfg_property: [`Свойство`],
-		ui_cfg_value: [`Значение`],
-		ui_cfg_save: [`Сохранить`],
-		ui_dialog_title: [`Введите значение`],
-		ui_dialog_select: [`Выберите`],
-		ui_dialog_submit: [`Подтвердить`],
-		ui_dialog_cancel: [`Отмена`],
-		menu_unlock: [`Снять блок...`],
-		menu_card_title: [`Колода`],
-		menu_take_card: [`Взять карту`],
-		menu_flip_card: [`Перевернуть`],
-		menu_edit_title: [`Правка`],
-		menu_edit_del: [`Удалить`],
-		menu_edit_copy: [`Копировать`],
-		menu_edit_paste: [`Вставить`],
-		menu_edit_undo: [`Отмена`],
-		menu_move_title: [`Наложение`],
-		menu_move_tofront: [`Перед всеми`],
-		menu_move_forwone: [`На шаг вперед`],
-		menu_move_backone: [`На шаг назад`],
-		menu_move_toback: [`На задний план`],
-		menu_view_title: [`Связать вид`],
-		menu_layer_title: [`Слой`],
-		menu_layer_map: [`Карта`],
-		menu_layer_fl: [`Полы`],
-		menu_layer_bg: [`Задний`],
-		menu_layer_obj: [`Основной`],
-		menu_layer_fg: [`Передний`],
-		menu_layer_rf: [`Крыши`],
-		menu_layer_gm: [`Слой ГМа`],
-		menu_layer_barriers: [`Преграды`],
-		menu_layer_weather: [`Погода`],
-		menu_util_title: [`Утилиты`],
-		menu_util_start: [`Старт сцены`],
-		menu_util_animate: [`Анимировать`],
-		menu_util_flight: [`Высота полета`],
-		menu_util_light: [`Источник света`],
-		menu_adv_title: [`Свойства`],
-		menu_adv_grp: [`Группировать`],
-		menu_adv_ungrp: [`Разгруппировка`],
-		menu_adv_regrp: [`Перегруппиров.`],
-		menu_adv_isdrv: [`Это рисунок`],
-		menu_adv_flh: [`Отразить гор.`],
-		menu_adv_flv: [`Отразить верт.`],
-		menu_adv_dimens: [`Размеры`],
-		menu_adv_align: [`Выровнять`],
-		menu_adv_lock: [`Блокировать`],
-		menu_adv_unlock: [`Разблокировать`],
-		menu_adv_tokenid: [`ID токена`],
-		menu_adv_pathid: [`ID линии`],
-		menu_token_title: [`Действия`],
-		menu_token_turn: [`В трекер`],
-		menu_mass_title: [`Кинуть кубы`],
-		menu_mass_init: [`Инициатива`],
-		menu_mass_save: [`Спасбросок`],
-		menu_mass_skill: [`Умения`],
-		menu_multi_title: [`Мультитокен`],
-		menu_multi_rnd: [`Случайно`],
-		menu_multi_select: [`Выбрать`],
-		menu_multi_size: [`Размер`],
-		menu_quick_togm: [`Спрятать токен`],
-		menu_quick_tofg: [`Вернуть на слой`],
-		menu_quick_toback: [`Уровень вниз`],
-		menu_quick_save: [`Спасброски`],
-		stat_save_str: [`Сила`],
-		stat_save_dex: [`Ловкость`],
-		stat_save_con: [`Телосложение`],
-		stat_save_int: [`Интеллект`],
-		stat_save_wis: [`Мудрость`],
-		stat_save_cha: [`Харизма`],
-		stat_ab_athl: [`Атлетика`],
-		stat_ab_acrb: [`Акробатика`],
-		stat_ab_sloh: [`Ловкость рук`],
-		stat_ab_stel: [`Скрытность`],
-		stat_ab_arcn: [`Магия`],
-		stat_ab_hist: [`История`],
-		stat_ab_invs: [`Расследование`],
-		stat_ab_natr: [`Природа`],
-		stat_ab_relg: [`Религия`],
-		stat_ab_anih: [`Уход за животными`],
-		stat_ab_insg: [`Проницательность`],
-		stat_ab_medc: [`Медицина`],
-		stat_ab_perc: [`Восприятие`],
-		stat_ab_surv: [`Выживание`],
-		stat_ab_decp: [`Обман`],
-		stat_ab_intm: [`Запугивание`],
-		stat_ab_perf: [`Выступление`],
-		stat_ab_pers: [`Убеждение`],
-		stat_init: [`ИНИЦИАТИВА`],
-		msg_vtte_init: [`
-		VTT Enhancement Suite обнаружен. $0 успешно инициализирован.
-		<br>
-	`],
-		msg_better20_help: [`
-		Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ">вики</a> или зайдите в <a href="https://discord.gg/nGvRCDs">Discord</a>.
-		<br>
-		<br>
-		<span title="Вроде, очевидно.">
-		Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.
-		<br>
-		<br>
-		Перед тем, как сообщить о баге на форумах Roll20, пожалуйста отключите данный скрипт и проверьте, сохраняется ли проблема.
-		</span>
-	`],
-		msg_b20_version_stream: [`<br>
-		$0 обновился, доступна новая версия.
-		<br><br>
-	`],
-		msg_b20_version: [`<br>
-		$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>
-	`],
-		msg_player_connected: [`подключился`],
-	};
-
-	for (const id in d20plus.ln.en) {
-		d20plus.ln.default[id] = d20plus.ln.en[id];
-	}
-}
-
-SCRIPT_EXTENSIONS.push(baseLanguage);
-
-
 function baseUtil () {
 	const vttesUrl = "https://justas-d.github.io/roll20-enhancement-suite/";
 	let shownHardDickWarning = false;
@@ -463,33 +113,7 @@ function baseUtil () {
 		// eslint-disable-next-line no-console
 		console.error("%cD20Plus > ", "color: #b93032; font-size: large", ...args);
 	};
-	// RB20 EXCLUDE START
-	d20plus.ut.localize = (str, substitutes) => {
-		if (substitutes) {
-			output = `${d20plus.ln.default[str]}`;
-			for (const needle in substitutes) {
-				output = output.replace(`$${needle}`, substitutes[needle]);
-			}
-			return output;
-		} else if (d20plus.ln.default[str]) {
-			return d20plus.ln.default[str];
-		} else {
-			return str;
-		}
-	}
-
-	window.__ = d20plus.ut.localize;
-
-	d20plus.ut.selectLocale = () => {
-		const lan = (typeof LANGUAGE !== "undefined" ? LANGUAGE : "en");
-		if ((lan === "en") || (!d20plus.ln[lan])) return;
-		for (const id in d20plus.ln.en) {
-			if (d20plus.ln[lan][id]) {
-				d20plus.ln.default[id][0] = d20plus.ln[lan][id][0];
-			}
-		}
-	}
-	// RB20 EXCLUDE END
+	
 	d20plus.ut.chatLog = (arg) => {
 		d20.textchat.incoming(
 			false,
@@ -554,9 +178,16 @@ function baseUtil () {
 							if (!isStreamer) {
 								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
 								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
-								d20plus.ut.sendHackerChat(__("msg_b20_version", [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl]));
+								d20plus.ut.sendHackerChat(`<br>
+									A newer version of ${scriptName} is available.<br>
+									Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.
+									<br><br>
+								`);
 							} else {
-								d20plus.ut.sendHackerChat(__("msg_b20_version_stream", [scriptName]));
+								d20plus.ut.sendHackerChat(`<br>
+									A newer version of ${scriptName} is available.
+									<br><br>
+								`);
 							}
 						}, 1000);
 					}
@@ -582,10 +213,26 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		if (window.enhancementSuiteEnabled) {
-			d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
+			d20plus.ut.sendHackerChat(`
+			VTT Enhancement Suite detected.
+			<br><br>
+			${scriptName} initialised.
+			<br>
+		`);
 		} else d20plus.ut.showHardDickMessage(scriptName);
 		d20plus.ut.sendHackerChat(
-			isStreamer ? "" : __("msg_better20_help", [d20plus.ut.WIKI_URL]),
+			isStreamer ? "" : `
+			<br>
+			Need help? Visit our <a href="${d20plus.ut.WIKI_URL}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
+			<br>
+			<br>
+			<span title="You'd think this would be obvious.">
+			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
+			<br>
+			<br>
+			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
+			</span>
+		`,
 		);
 	};
 
@@ -1872,28 +1519,28 @@ function baseConfig () {
 	d20plus.cfg.pLoadConfigFailed = false;
 
 	addConfigOptions("token", {
-		"_name": __("cfg_tab_tokens"),
+		"_name": "Tokens",
 		"massRollWhisperName": {
-			"name": __("cfg_option_whisper_name"),
+			"name": "Whisper Token Name to Mass-Rolls",
 			"default": false,
 			"_type": "boolean",
 		},
 		"massRollAssumesOGL": {
-			"name": __("cfg_option_assume_ogl"),
+			"name": "Alternative mass rolls (only OGL 5e)",
 			"default": true,
 			"_type": "boolean",
 		},
 	});
 	addConfigOptions("canvas", {
-		"_name": __("cfg_tab_canvas"),
+		"_name": "Canvas",
 		"_player": true,
 		"quickLayerButtons": {
-			"name": __("cfg_option_layer_panel"),
+			"name": "Add Quick Layer Buttons panel",
 			"default": true,
 			"_type": "boolean",
 		},
 		"quickLayerButtonsPosition": {
-			"name": __("cfg_option_layer_panel_position"),
+			"name": "-- Select left or right side to display this panel",
 			"default": 1,
 			"_type": "_slider",
 			"__sliderMin": 0,
@@ -1901,78 +1548,78 @@ function baseConfig () {
 			"__sliderStep": 1,
 		},
 		"showFloors": {
-			"name": __("cfg_option_show_fl"),
+			"name": "Include the Floors layer (reload to apply changes)",
 			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showBackground": {
-			"name": __("cfg_option_show_bg"),
+			"name": "Include the Background layer (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showForeground": {
-			"name": __("cfg_option_show_fg"),
+			"name": "Include the Foreground layer (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showRoofs": {
-			"name": __("cfg_option_show_rf"),
+			"name": "Include the Roofs layer (reload to apply changes)",
 			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showLight": {
-			"name": __("cfg_option_show_light"),
+			"name": "Include (force) light sources button (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showWeather": {
-			"name": __("cfg_option_show_weather"),
+			"name": "Include Weather layer and settings (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"gridSnap": {
-			"name": __("cfg_option_grid_snap"),
+			"name": "Grid Snap",
 			"default": "1",
 			"_type": "_enum",
 			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
 		},
 		"scaleNamesStatuses": {
-			"name": __("cfg_option_scaled_names"),
+			"name": "Scaled Names and Status Icons",
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
 		"enableNeatMenus": {
-			"name": __("cfg_option_neat_menus"),
+			"name": "Reorganized canvas context menu (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 		},
 	});
 	addConfigOptions("import", {
-		"_name": __("cfg_tab_import"),
+		"_name": "Import",
 		"importIntervalMap": {
-			"name": __("cfg_option_import_interval"),
+			"name": "Rest Time between Each Map (msec)",
 			"default": 2500,
 			"_type": "integer",
 		},
 	});
 	addConfigOptions("interface", {
-		"_name": __("cfg_tab_interface"),
+		"_name": "Interface",
 		"_player": true,
 		"showCustomArtPreview": {
-			"name": __("cfg_option_art_previews"),
+			"name": "Show Custom Art Previews",
 			"default": true,
 			"_type": "boolean",
 		},
 		"toolbarOpacity": {
-			"name": __("cfg_option_toolbar_opac"),
+			"name": "Horizontal Toolbar Opacity",
 			"default": 100,
 			"_player": true,
 			"_type": "_slider",
@@ -1981,25 +1628,25 @@ function baseConfig () {
 			"__sliderStep": 1,
 		},
 		"hideDarkModeSwitch": {
-			"name": __("cfg_option_hide_dmswitch"),
+			"name": "Hide Roll20's Dark Mode switch",
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
 		"hideHelpButton": {
-			"name": __("cfg_option_hide_help"),
+			"name": "Hide Help Button on floating toolbar",
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
 		"hideLineSplitter": {
-			"name": __("cfg_option_hide_linesplit"),
+			"name": "Hide Line Splitter (reload to apply changes)",
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
 		"selectJournalSearchType": {
-			"name": __("cfg_option_select_jrnsearch"),
+			"name": "Select Journal search controls",
 			"default": "roll20",
 			"_type": "_enum",
 			"__values": [
@@ -2008,7 +1655,7 @@ function baseConfig () {
 			],
 		},
 		"selecArtLibraryType": {
-			"name": __("cfg_option_select_artlib"),
+			"name": "Select Art Library controls",
 			"default": "roll20",
 			"_type": "_enum",
 			"__values": [
@@ -2017,27 +1664,27 @@ function baseConfig () {
 			],
 		},
 		"quickInitButtons": {
-			"name": __("cfg_option_quick_init_sort"),
+			"name": "Add Quick Initiative Sort Button",
 			"default": true,
 			"_type": "boolean",
 		},
 		"quickInitButtonsClear": {
-			"name": __("cfg_option_quick_init_clear"),
+			"name": "Add Quick Initiative tracker Clear Button",
 			"default": true,
 			"_type": "boolean",
 		},
 		"minifyTracker": {
-			"name": __("cfg_option_minify_tracker"),
+			"name": "Shrink Initiative Tracker Text",
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
 	});
 	addConfigOptions("chat", {
-		"_name": __("cfg_tab_chat"),
+		"_name": "Chat",
 		"_player": true,
 		"playerPortraitSize": {
-			"name": __("cfg_option_player_size"),
+			"name": "Set Player List size (0 - don't change)",
 			"default": 30,
 			"_type": "_slider",
 			"__sliderMin": 30,
@@ -2046,25 +1693,25 @@ function baseConfig () {
 			"_player": true,
 		},
 		"streamerChatTag": {
-			"name": __("cfg_option_streamer_tags"),
+			"name": "Streamer-Friendly Chat Tags",
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
 		"modestSystemMessagesStyle": {
-			"name": __("cfg_option_modest_chat"),
+			"name": "Use default chat style for betteR20 system messages",
 			"default": true,
 			"_type": "boolean",
 			"_player": true,
 		},
 		"suppressLoadingMessages": {
-			"name": __("cfg_option_silent_chat"),
+			"name": "Don't show chat messages on load",
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
 		"showPlayerConnects": {
-			"name": __("cfg_option_log_players_in_chat"),
+			"name": "Show player connects messages",
 			"default": true,
 			"_type": "boolean",
 		},
@@ -2391,7 +2038,7 @@ function baseConfig () {
 				const content = $(`
 						<div class="config-table-wrapper">
 							<table class="config-table">
-								<thead><tr><th>${__("ui_cfg_property")}</th><th>${__("ui_cfg_value")}</th></tr></thead>
+								<thead><tr><th>Property</th><th>Value</th></tr></thead>
 								<tbody></tbody>
 							</table>
 						</div>
@@ -2708,7 +2355,7 @@ function baseConfig () {
 								<span style="height:40px;display:block">
 									<img style="width:40px;float:left;margin-right:10px" src="${playerUrl}.png">
 									${(new Date()).toLocaleTimeString()}<br> 
-									${playerName} ${__("msg_player_connected")}
+									${playerName} connected
 								</span>
 							`;
 							d20plus.ut.sendHackerChat(playerText);
@@ -9282,7 +8929,7 @@ function d20plusEngine () {
 				$(`#editinglayer .choosegmlayer`).after(`
 					<li class="choosewalls">
 						<span class="pictostwo">r</span> 
-						${d20plus.cfg.get("canvas", "showLight") ? __("ui_bar_light_n_barriers") : __("ui_bar_barriers")}
+						${d20plus.cfg.get("canvas", "showLight") ? "Dynamic Lighting" : "Dynamic Field of View"}
 					</li>
 				`);
 			}
@@ -9819,15 +9466,15 @@ function d20plusEngine () {
 
 							options = options.map(it => `<option>${it}</option>`);
 
-							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags(''+__('ui_dialog_select')) + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
+							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags(''+"Select") + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
 
 							dialog.dialog({
-								title: __('ui_dialog_title'),
+								title: "Input value",
 								beforeClose: function() {
 									return false;
 								},
 								buttons: {
-									[__('ui_dialog_submit')+'']: function() {
+									["Submit"+'']: function() {
 										const val = dialog.find("select").val();
 										console.log(val);
 										d20.engine.unselect();
@@ -9842,7 +9489,7 @@ function d20plusEngine () {
 										dialog.dialog("destroy").remove();
 										d20.textchat.$textarea.focus();
 									},
-									[__('ui_dialog_cancel')+'']: function() {
+									["Cancel"+'']: function() {
 										dialog.off();
 										dialog.dialog("destroy").remove();
 									}
@@ -9858,12 +9505,12 @@ function d20plusEngine () {
 							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
 								const out_options = [];
 								const loc_options = {
-									[__('stat_save_str')]: 'Strength',
-									[__('stat_save_dex')]: 'Dexterity',
-									[__('stat_save_con')]: 'Constitution',
-									[__('stat_save_int')]: 'Intelligence',
-									[__('stat_save_wis')]: 'Wisdom',
-									[__('stat_save_cha')]: 'Charisma',
+									["Strength"]: 'Strength',
+									["Dexterity"]: 'Dexterity',
+									["Constitution"]: 'Constitution',
+									["Intelligence"]: 'Intelligence',
+									["Wisdom"]: 'Wisdom',
+									["Charisma"]: 'Charisma',
 								}
 								for (const i in loc_options) out_options.push(i);
 								showRollOptions(
@@ -9900,7 +9547,7 @@ function d20plusEngine () {
 								d20.engine.select(it);
 								let toRoll = ``;
 								if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-									toRoll = `&{template:simple} {{rname=${__('stat_init')}}} {{charname=@{selected|token_name}}} {{mod=@{selected|initiative_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|initiative_bonus} &{tracker}]]}} {{r2=[[@{selected|d20}+@{selected|initiative_bonus}]]}}`;
+									toRoll = `&{template:simple} {{rname=INITIATIVE}} {{charname=@{selected|token_name}}} {{mod=@{selected|initiative_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|initiative_bonus} &{tracker}]]}} {{r2=[[@{selected|d20}+@{selected|initiative_bonus}]]}}`;
 								}
 								else if ((d20plus.sheet === "ogl") || !!d20plus.cfg.get('token','massRollAssumesOGL')) {
 									toRoll = `%{selected|Initiative}`;
@@ -9940,24 +9587,24 @@ function d20plusEngine () {
 							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
 								let out_options = [];
 								const loc_options = {
-									[__('stat_ab_athl')]: 'Athletics',
-									[__('stat_ab_acrb')]: 'Acrobatics',
-									[__('stat_ab_sloh')]: 'Sleight of Hand',
-									[__('stat_ab_stel')]: 'Stealth',
-									[__('stat_ab_arcn')]: 'Arcana',
-									[__('stat_ab_hist')]: 'History',
-									[__('stat_ab_invs')]: 'Investigation',
-									[__('stat_ab_natr')]: 'Nature',
-									[__('stat_ab_relg')]: 'Religion',
-									[__('stat_ab_anih')]: 'Animal Handling',
-									[__('stat_ab_insg')]: 'Insight',
-									[__('stat_ab_medc')]: 'Medicine',
-									[__('stat_ab_perc')]: 'Perception',
-									[__('stat_ab_surv')]: 'Survival',
-									[__('stat_ab_decp')]: 'Deception',
-									[__('stat_ab_intm')]: 'Intimidation',
-									[__('stat_ab_perf')]: 'Performance',
-									[__('stat_ab_pers')]: 'Persuasion',
+									["Athletics"]: 'Athletics',
+									["Acrobatics"]: 'Acrobatics',
+									["Sleight of Hand"]: 'Sleight of Hand',
+									["Stealth"]: 'Stealth',
+									["Arcana"]: 'Arcana',
+									["History"]: 'History',
+									["Investigation"]: 'Investigation',
+									["Nature"]: 'Nature',
+									["Religion"]: 'Religion',
+									["Animal Handling"]: 'Animal Handling',
+									["Insight"]: 'Insight',
+									["Medicine"]: 'Medicine',
+									["Perception"]: 'Perception',
+									["Survival"]: 'Survival',
+									["Deception"]: 'Deception',
+									["Intimidation"]: 'Intimidation',
+									["Performance"]: 'Performance',
+									["Persuasion"]: 'Persuasion',
 								}
 								for (const i in loc_options) out_options.push(i);
 								out_options = out_options.sort();
@@ -10672,12 +10319,12 @@ function d20plusEngine () {
 			$(`#floatingtoolbar .chooseobjects .pictos`).html("U");
 			$(`#editinglayer .submenu .choosegmlayer`).html(`
 				<span class="pictos">E</span>
-				${__("ui_bar_gm")}
+				GM's Hidden layer
 			`);
 
 			$(`#floatingtoolbar .choosemap`).html(`
 				<span class="pictos" style="padding: 0 3px 0 3px;">G</span> 
-				${__("ui_bar_map")}
+				Map & Backdrop
 			`);
 
 			// Add layers to layer dropdown
@@ -10685,8 +10332,8 @@ function d20plusEngine () {
 				$(`#floatingtoolbar .choosemap`).after(`
 					<li class="choosebackground">
 						<span class="pictos">a</span>
-						${__("ui_bar_bg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+						Background
+						<span class="pictos layer_toggle" title="Toggle layer visibility">E</span>
 					</li>
 				`);
 				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
@@ -10696,8 +10343,8 @@ function d20plusEngine () {
 				$(`#floatingtoolbar .choosemap`).after(`
 					<li class="choosefloors">
 						<span class="pictos">I</span>
-						${__("ui_bar_fl")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+						Floors
+						<span class="pictos layer_toggle" title="Toggle layer visibility">E</span>
 					</li>
 				`);
 				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
@@ -10707,8 +10354,8 @@ function d20plusEngine () {
 				$(`#floatingtoolbar .chooseobjects`).after(`
 					<li class="chooseroofs">
 						<span class="pictos">H</span>
-						${__("ui_bar_rf")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+						Roofs
+						<span class="pictos layer_toggle" title="Toggle layer visibility">E</span>
 					</li>
 				`);
 				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
@@ -10718,8 +10365,8 @@ function d20plusEngine () {
 				$(`#floatingtoolbar .choosegmlayer`).before(`
 					<li class="chooseforeground">
 						<span class="pictos">B</span>
-						${__("ui_bar_fg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+						Foreground
+						<span class="pictos layer_toggle" title="Toggle layer visibility">E</span>
 					</li>
 				`);
 				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
@@ -10729,7 +10376,7 @@ function d20plusEngine () {
 				$(`#floatingtoolbar .choosewalls`).after(`
 					<li class="chooseweather">
 						<span class="pictos">C</span>
-						${__("ui_bar_we")}
+						Weather Exclusions
 					</li>
 				`);
 			}
@@ -11510,273 +11157,6 @@ function baseWeather () {
 
 SCRIPT_EXTENSIONS.push(baseWeather);
 
-
-function baseViews () {
-	d20plus.views = {};
-
-	d20plus.views._lastSettingsPageId = null;
-
-	d20plus.views._initSettingsButton = () => {
-		$(`body`).on("click", ".Ve-btn-views", function () {
-			// close the parent page settings + hide the page overlay
-			const $this = $(this);
-			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("Save")`).click();
-			const $barPage = $(`#page-toolbar`);
-			if (!$barPage.hasClass("closed")) {
-				$barPage.find(`.handle`).click()
-			}
-
-			function doShowDialog (page) {
-				const mutExclusiveHelp = "Check this, if enabling this or PREVIOUS view should disable another one of them";
-				const $dialog = $(`
-					<div title="Views Configuration">
-						<div class="alert alert-info" role="alert">
-							<p>Views are states of objects on your map. Each view can store items as tokens, paths & images.
-							Items are assigned via Context menu (only works with bR20 Reorganized context menus).
-							Then you can easily hide or show stored items, no matter their type or layer, using controls at the bottom of Selected layer dropdown.
-							This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.</p>
-						</div>
-						<label class="split wth__row">
-							<span>Enable view management for this map</span>
-							<div class="grid_switch"><label class="switch">
-								<input class="gridenabled feature_enabled" name="viewsEnable" type="checkbox">
-								<span class="slider round"></span>
-							</label></div>
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">Default view</h3>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views0Name" placeholder="Default">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 1</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 1</span>
-								<input type="checkbox" name="views1Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views1Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views1Name" placeholder="View 1">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 2</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 2</span>
-								<input type="checkbox" name="views2Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views2Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views2Name" placeholder="View 2">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 3</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 3</span>
-								<input type="checkbox" name="views3Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views3Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views3Name" placeholder="View 3">
-						</label>
-					</div>
-				`).appendTo($("body"));
-
-				const handleProp = (propName) => $dialog.find(`[name="${propName}"]`).each((i, e) => {
-					const $e = $(e);
-					if ($e.is(":checkbox")) {
-						$e.prop("checked", !!page.get(`bR20cfg_${propName}`));
-					} else {
-						$e.val(page.get(`bR20cfg_${propName}`));
-					}
-				});
-				const props = [
-					"viewsEnable",
-					"views0Name",
-					"views1Enable",
-					"views1Exclusive",
-					"views1Name",
-					"views2Enable",
-					"views2Exclusive",
-					"views2Name",
-					"views3Enable",
-					"views3Exclusive",
-					"views3Name",
-				];
-				props.forEach(handleProp);
-
-				function doSaveValues () {
-					props.forEach(propName => {
-						page.set(`bR20cfg_${propName}`, (() => {
-							const $e = $dialog.find(`[name="${propName}"]`);
-							if ($e.is(":checkbox")) {
-								return !!$e.prop("checked");
-							} else {
-								return $e.val();
-							}
-						})())
-					});
-					page.save();
-				}
-
-				$dialog.dialog({
-					width: 500,
-					dialogClass: "no-close",
-					buttons: [
-						{
-							text: "OK",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-								doSaveValues();
-							},
-						},
-						{
-							text: "Apply",
-							click: function () {
-								doSaveValues();
-							},
-						},
-						{
-							text: "Cancel",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-							},
-						},
-					],
-				});
-			}
-
-			if (d20plus.views._lastSettingsPageId) {
-				const page = d20.Campaign.pages.get(d20plus.views._lastSettingsPageId);
-				if (page) {
-					doShowDialog(page);
-				} else d20plus.ut.error(`No page found with ID "${d20plus.views._lastSettingsPageId}"`);
-			} else d20plus.ut.error(`No page settings button was clicked?!`);
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.views._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		});
-	};
-
-	d20plus.views._initMenuActions = () => {
-		$(`body`).on("click", ".chooseViews > li", function () {
-			const page = d20.Campaign.activePage();
-			const items = $(".chooseViews > li")
-			const id = items.index(this);
-			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
-			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
-			if (page.get(`bR20cfg_views${id}Off`)) {
-				d20plus.views.changeViewState(id, true);
-				for (let i = startgroupindex; i <= endgroupindex; i++) {
-					if (i !== id) d20plus.views.changeViewState(i, false);
-				}
-			} else {
-				d20plus.views.changeViewState(id, false);
-			}
-		});
-	}
-
-	d20plus.views._initViewsCss = () => {
-		d20plus.ut.dynamicStyles("viewsSelect").html(`
-			.ui-dialog label.half {display: inline-block; margin-bottom: 6px;}
-			.ui-dialog label.half span {margin-right: 20px;}
-			#floatingtoolbar ul.chooseViews li {border-width: 1px;border-style: solid; border-color: var(--dark-surface1);}
-			#floatingtoolbar ul.chooseViews:empty {display:none;}
-			#floatingtoolbar ul.chooseViews li {height: 19px; border-radius: 12px;}
-			#floatingtoolbar ul.chooseViews li.fst {border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom-width: 0px;}
-			#floatingtoolbar ul.chooseViews li.lst {border-top-left-radius: 0px; border-top-right-radius: 0px; border-top-width: 0px;}
-			#floatingtoolbar ul.chooseViews li.mst {border-radius: 0px; border-top: 0px; border-bottom: 0px;}
-			#floatingtoolbar ul.chooseViews .pictos {padding: 0 3px 0 3px;}
-			#floatingtoolbar ul.chooseViews .view_toggle {padding: 4px 8px 3px 4px; margin-right: 8px; border-right: 1px solid; border-color: inherit;}
-			#floatingtoolbar ul.chooseViews li.off .view_toggle .pictos {color: #fff0;}
-		`);
-	}
-
-	d20plus.views._initLayerMenu = () => {
-		d20plus.views.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
-	}
-
-	d20plus.views.populateMenu = () => {
-		const page = d20.Campaign.activePage();
-		if (!page) return;
-		let menuhtml = "";
-		if (page.get("bR20cfg_viewsEnable")) {
-			for (let id = 0; id <= 4; id++) {
-				if (!id || page.get(`bR20cfg_views${id}Enable`)) {
-					const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
-					const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
-					const viewexcl = page.get(`bR20cfg_views${id}Exclusive`) ? (page.get(`bR20cfg_views${id + 1}Exclusive`) ? "mst" : "lst") : page.get(`bR20cfg_views${id + 1}Exclusive`) ? "fst" : "";
-					const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
-					menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
-						<span class="view_toggle"><span class="pictos">E</span></span>
-						<span class="pictos">${viewicon}</span>
-						${viewname}
-					</li>`;
-				}
-			}
-		}
-		d20plus.views.layerMenu.html(menuhtml);
-	}
-
-	d20plus.views.changeViewState = (id, state) => {
-		const page = d20.Campaign.activePage();
-		const menuItem = $(".chooseViews > li").get(id);
-		if (state) {
-			$(menuItem).removeClass("off");
-			page.set(`bR20cfg_views${id}Off`, false);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, true);
-		} else {
-			$(menuItem).addClass("off");
-			page.set(`bR20cfg_views${id}Off`, true);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, false);
-		}
-		page.save();
-	}
-
-	d20plus.views.checkPageSettings = () => {
-		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
-			setTimeout(d20plus.views.checkPageSettings, 50);
-		} else {
-			d20plus.engine.layersVisibilityCheck();
-			d20plus.views.populateMenu();
-		}
-	}
-
-	d20plus.views.addViews = () => {
-		d20plus.views._initSettingsButton();
-		d20plus.views._initViewsCss();
-		d20plus.views._initLayerMenu();
-		d20plus.views._initMenuActions();
-		document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
-		d20plus.views.checkPageSettings();
-	}
-}
-
-SCRIPT_EXTENSIONS.push(baseViews);
 
 function d20plusJournal () {
 	d20plus.journal = {};
@@ -13414,24 +12794,24 @@ function baseUi () {
 		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
 
 		// Add layers to second side bar
-		$(`<li title="${__("ui_bar_map")}" class="choosemap"><span class="pictos" style="padding: 0 3px;">G</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
+		$(`<li title="Map & Backdrop" class="choosemap"><span class="pictos" style="padding: 0 3px;">G</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-			$(`<li title="${__("ui_bar_fl")}" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
+			$(`<li title="Floors" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
 		}
 		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-			$(`<li title="${__("ui_bar_bg")}" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
+			$(`<li title="Background" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
 		}
-		$(`<li title="${__("ui_bar_obj")}" class="chooseobjects"><span class="pictos">U</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
+		$(`<li title="Objects & Tokens" class="chooseobjects"><span class="pictos">U</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
-			$(`<li title="${__("ui_bar_rf")}" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
+			$(`<li title="Roofs" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
 		}
 		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-			$(`<li title="${__("ui_bar_fg")}" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
+			$(`<li title="Foreground" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
 		}
 		$(`<li title="GM Info Overlay" class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
-		$(`<li title="${__("ui_bar_barriers")}" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
+		$(`<li title="Dynamic Field of View" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-			$(`<li title="${__("ui_bar_we")}" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
+			$(`<li title="Weather Exclusions" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
 		}
 
 		$("body").on("click", "#editinglayer li", function () {
@@ -15943,49 +15323,49 @@ const baseTemplate = function () {
 	}
 
 	d20plus.template.neatActions = {
-		"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
-		"takecard": { ln: __("menu_take_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
-		"flipcard": { ln: __("menu_flip_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
-		"delete": { ln: __("menu_edit_del"), icon: "#", condition: "this.view" },
-		"copy": { ln: __("menu_edit_copy"), icon: "|", condition: "window.is_gm && this.view" },
-		"paste": { ln: __("menu_edit_paste"), icon: "W", condition: "window.is_gm && !this.view" },
-		"undo": { ln: __("menu_edit_undo"), icon: "1", condition: "window.is_gm" },
-		"tofront": { ln: __("menu_move_tofront"), condition: "this.view" },
-		"forward-one": { ln: __("menu_move_forwone"), condition: "this.view" },
-		"back-one": { ln: __("menu_move_backone"), condition: "this.view", quick: __("menu_quick_toback")},
-		"toback": { ln: __("menu_move_toback"), condition: "this.view" },
-		"tolayer_map": { ln: __("menu_layer_map"), icon: "G", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"map\"" },
-		"tolayer_floors": { ln: __("menu_layer_fl"), icon: "I", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showFloors\")", active: "this && this.get && this.get(\"layer\") == \"floors\"" },
-		"tolayer_background": { ln: __("menu_layer_bg"), icon: "a", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showBackground\")", active: "this && this.get && this.get(\"layer\") == \"background\"" },
-		"tolayer_objects": { ln: __("menu_layer_obj"), icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"", quick: __("menu_quick_tofg") },
-		"tolayer_foreground": { ln: __("menu_layer_fg"), icon: "B", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"" },
-		"tolayer_roofs": { ln: __("menu_layer_rf"), icon: "H", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showRoofs\")", active: "this && this.get && this.get(\"layer\") == \"roofs\"" },
-		"tolayer_gmlayer": { ln: __("menu_layer_gm"), icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: __("menu_quick_togm")},
-		"tolayer_walls": { ln: __("menu_layer_barriers"), icon: "r", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"walls\"" },
-		"tolayer_weather": { ln: __("menu_layer_weather"), icon: "C", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showWeather\")", active: "this && this.get && this.get(\"layer\") == \"weather\"" },
-		"util-scenes": { ln: __("menu_util_start"), condition: "" },
-		"token-animate": { ln: __("menu_util_animate"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"token-fly": { ln: __("menu_util_flight"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.attributes.statusmarkers.search(\"fluffy-wing@\")>-1" },
-		"token-light": { ln: __("menu_util_light"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"group": { ln: __("menu_adv_grp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && !d20.engine.selected().some( el => !!el.model.get(\"groupwith\")) )" },
-		"regroup": { ln: __("menu_adv_regrp"), condition: "this.view && this.get && (d20.engine.selected().length > 2 && d20.engine.selected().some( el => !el.model.get(\"groupwith\")) )", action: "group"},
-		"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.view && this.get  && d20.engine.selected().some( el => !!el.model.get(\"groupwith\"))" },
-		"toggledrawing": { ln: __("menu_adv_isdrv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"isdrawing\")" },
-		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
-		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
-		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
-		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
-		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
-		"copy-tokenid": { ln: __("menu_adv_tokenid"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"copy-pathid": { ln: __("menu_adv_pathid"), condition: "this.get && this.get(\"type\") == \"path\"" },
-		"addturn": { ln: __("menu_token_turn"), condition: "this.get && this.get(\"type\") != \"path\"" },
-		"rollinit": { ln: __("menu_mass_init"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
-		"rollsaves": { ln: __("menu_mass_save"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: __("menu_quick_save")},
-		"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
-		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"unlock-tokens": { ln: "Unlock...", condition: "window.is_gm && Object.keys(this).length === 0" },
+		"takecard": { ln: "Take Card", condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
+		"flipcard": { ln: "Flip Card", condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
+		"delete": { ln: "Delete", icon: "#", condition: "this.view" },
+		"copy": { ln: "Copy", icon: "|", condition: "window.is_gm && this.view" },
+		"paste": { ln: "Paste", icon: "W", condition: "window.is_gm && !this.view" },
+		"undo": { ln: "Undo", icon: "1", condition: "window.is_gm" },
+		"tofront": { ln: "To Front", condition: "this.view" },
+		"forward-one": { ln: "Forward One", condition: "this.view" },
+		"back-one": { ln: "Back One", condition: "this.view", quick: "Move behind"},
+		"toback": { ln: "To Back", condition: "this.view" },
+		"tolayer_map": { ln: "Map", icon: "G", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"map\"" },
+		"tolayer_floors": { ln: "Floors", icon: "I", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showFloors\")", active: "this && this.get && this.get(\"layer\") == \"floors\"" },
+		"tolayer_background": { ln: "Background", icon: "a", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showBackground\")", active: "this && this.get && this.get(\"layer\") == \"background\"" },
+		"tolayer_objects": { ln: "Tokens", icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"", quick: "To visible layer" },
+		"tolayer_foreground": { ln: "Foreground", icon: "B", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"" },
+		"tolayer_roofs": { ln: "Roofs", icon: "H", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showRoofs\")", active: "this && this.get && this.get(\"layer\") == \"roofs\"" },
+		"tolayer_gmlayer": { ln: "GM Hidden", icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: "Hide from layer"},
+		"tolayer_walls": { ln: "Field of view", icon: "r", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"walls\"" },
+		"tolayer_weather": { ln: "Weather", icon: "C", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showWeather\")", active: "this && this.get && this.get(\"layer\") == \"weather\"" },
+		"util-scenes": { ln: "Start Scene", condition: "" },
+		"token-animate": { ln: "Animate", condition: "this.get && this.get(\"type\") == \"image\"" },
+		"token-fly": { ln: "Set&nbsp;Flight&nbsp;Height", condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.attributes.statusmarkers.search(\"fluffy-wing@\")>-1" },
+		"token-light": { ln: "Set&nbsp;Light", condition: "this.get && this.get(\"type\") == \"image\"" },
+		"group": { ln: "Group", condition: "this.view && this.get && (d20.engine.selected().length > 1 && !d20.engine.selected().some( el => !!el.model.get(\"groupwith\")) )" },
+		"regroup": { ln: "Reroup", condition: "this.view && this.get && (d20.engine.selected().length > 2 && d20.engine.selected().some( el => !el.model.get(\"groupwith\")) )", action: "group"},
+		"ungroup": { ln: "Ungroup", condition: "this.view && this.get  && d20.engine.selected().some( el => !!el.model.get(\"groupwith\"))" },
+		"toggledrawing": { ln: "Is Drawing", condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"isdrawing\")" },
+		"togglefliph": { ln: "Flip Horizontal", condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
+		"toggleflipv": { ln: "Flip Vertical", condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
+		"setdimensions": { ln: "Set Dimensions", condition: "this.get && this.get(\"type\") == \"image\"" },
+		"aligntogrid": { ln: "Align to Grid", condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
+		"lock-token": { ln: "Lock", condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
+		"unlock-token": { ln: "Unlock", condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
+		"copy-tokenid": { ln: "View Token ID", condition: "this.get && this.get(\"type\") == \"image\"" },
+		"copy-pathid": { ln: "View Path ID", condition: "this.get && this.get(\"type\") == \"path\"" },
+		"addturn": { ln: "Add Turn", condition: "this.get && this.get(\"type\") != \"path\"" },
+		"rollinit": { ln: "Initiative", condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
+		"rollsaves": { ln: "Saving Throw", condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: "Roll save"},
+		"rollskills": { ln: "Skill Check", condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
+		"side_random": { ln: "Random Side", condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"side_choose": { ln: "Choose Side", condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"rollertokenresize": { ln: "Set Side Size", condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"assignview0": { ln: d20plus.template.neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
 		"assignview1": { ln: d20plus.template.neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
 		"assignview2": { ln: d20plus.template.neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
@@ -15994,7 +15374,7 @@ const baseTemplate = function () {
 
 	d20plus.template.neatStructure = {
 		"edit": {
-			ln: __("menu_edit_title"),
+			ln: "Edit",
 			subitems: [
 				"delete",
 				"copy",
@@ -16002,7 +15382,7 @@ const baseTemplate = function () {
 				"undo",
 			] },
 		"move": {
-			ln: __("menu_move_title"),
+			ln: "Move",
 			subitems: [
 				"tofront",
 				"forward-one",
@@ -16010,7 +15390,7 @@ const baseTemplate = function () {
 				"toback",
 			] },
 		"layer": {
-			ln: __("menu_layer_title"),
+			ln: "Layer",
 			subitems: [
 				"tolayer_map",
 				"tolayer_floors",
@@ -16023,7 +15403,7 @@ const baseTemplate = function () {
 				"tolayer_weather",
 			] },
 		"view": {
-			ln: __("menu_view_title"),
+			ln: "Assign view",
 			subitems: [
 				"assignview0",
 				"assignview1",
@@ -16031,7 +15411,7 @@ const baseTemplate = function () {
 				"assignview3",
 			] },
 		"util": {
-			ln: __("menu_util_title"),
+			ln: "Utilities",
 			subitems: [
 				"util-scenes",
 				"-",
@@ -16040,7 +15420,7 @@ const baseTemplate = function () {
 				"token-light",
 			] },
 		"adv": {
-			ln: __("menu_adv_title"),
+			ln: "Advanced",
 			subitems: [
 				"unlock-tokens",
 				"group",
@@ -16058,20 +15438,20 @@ const baseTemplate = function () {
 				"copy-pathid",
 			] },
 		"token": {
-			ln: __("menu_token_title"),
+			ln: "Token Tasks",
 			subitems: [
 				"addturn",
 				"-",
 			] },
 		"mass": {
-			ln: __("menu_mass_title"),
+			ln: "Mass Roll",
 			subitems: [
 				"rollinit",
 				"rollsaves",
 				"rollskills",
 			] },
 		"multi": {
-			ln: __("menu_multi_title"),
+			ln: "Multi-Sided",
 			subitems: [
 				"side_random",
 				"side_choose",
@@ -16079,7 +15459,7 @@ const baseTemplate = function () {
 				"rollertokenresize",
 			] },
 		"card": {
-			ln: __("menu_card_title"),
+			ln: "Decks",
 			subitems: [
 				"takecard",
 				"flipcard",
@@ -16148,21 +15528,21 @@ const baseTemplate = function () {
 	}
 
 	addConfigOptions("canvas", {
-		"_name": __("cfg_tab_canvas"),
+		"_name": "Canvas",
 		"_player": true,
 		"enableQuickMenuItems": {
-			"name": __("cfg_option_quick_menu"),
+			"name": "Enable quick actions as copies of the menu entries added to the bottom of right-click menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back.",
 			"default": true,
 			"_type": "boolean",
 		},
 		"quickMenuItem2": {
-			"name": __("cfg_option_quick_2"),
+			"name": "-- Quick action 2",
 			"default": "back-one",
 			"_type": "_enum",
 			"__values": Object.keys(d20plus.template.neatActions),
 		},
 		"quickMenuItem3": {
-			"name": __("cfg_option_quick_3"),
+			"name": "-- Quick action 3",
 			"default": "rollsaves",
 			"_type": "_enum",
 			"__values": Object.keys(d20plus.template.neatActions),
@@ -16245,7 +15625,7 @@ const baseTemplate = function () {
 	<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 	<div class="ui-dialog-buttonset">
 		<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
-			<span>${__("ui_cfg_save")}</span>
+			<span>Save</span>
 		</button>
 	</div>
 	</div>
@@ -18067,10 +17447,10 @@ const betteR20Emoji = function () {
 
 	addConfigOptions(
 		"chat", {
-			_name: __("cfg_tab_chat"),
+			_name: "Chat",
 			_player: true,
 			emoji: {
-				name: __("cfg_option_emoji"),
+				name: "Add Emoji Replacement to Chat",
 				default: true,
 				_type: "boolean",
 				_player: true,
@@ -18372,8 +17752,7 @@ const betteR20Core = function () {
 	d20plus.Init = async () => {
 		const scriptName = `betteR20-core v${d20plus.version}`;
 		try {
-			d20plus.ut.log(`Init (v${d20plus.version})`);// RB20 EXCLUDE START
-			d20plus.ut.selectLocale();// RB20 EXCLUDE END
+			d20plus.ut.log(`Init (v${d20plus.version})`);
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
 			await d20plus.js.pAddScripts();
