@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.31.0.18";
+const SCRIPT_VERSION = "1.31.0.19";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
@@ -303,6 +303,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 
 const MAIN_SCRIPTS = [
 	"templates/template-page-settings",
+	"templates/template-token-editor",
 	"5etools-bootstrap",
 	"5etools-config",
 	"5etools-main",
