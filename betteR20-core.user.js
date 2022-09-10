@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.18
+// @version      1.31.0.19
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -10583,7 +10583,7 @@ function d20plusEngine () {
 
 	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
 		const page = d20.Campaign.activePage();
-		if (page) return page.get(`bR20cfg_hidden`).search(layer) > -1;
+		if (page && page.get && page.get(`bR20cfg_hidden`)) return page.get(`bR20cfg_hidden`).search(layer) > -1;
 	}
 
 	d20plus.engine.layersVisibilityCheck = () => {
@@ -14471,8 +14471,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 1</span>
                                         <select class='bar1_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+											<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
@@ -14553,8 +14553,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 2</span>
                                         <select class='bar2_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+											<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
@@ -14635,8 +14635,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 3</span>
                                         <select class='bar3_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+												<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
