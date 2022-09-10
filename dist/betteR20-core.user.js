@@ -13174,8 +13174,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 1</span>
                                         <select class='bar1_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+											<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
@@ -13256,8 +13256,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 2</span>
                                         <select class='bar2_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+											<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
@@ -13338,8 +13338,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 3</span>
                                         <select class='bar3_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+												<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
