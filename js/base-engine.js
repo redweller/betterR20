@@ -1351,7 +1351,7 @@ function d20plusEngine () {
 
 	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
 		const page = d20.Campaign.activePage();
-		if (page) return page.get(`bR20cfg_hidden`).search(layer) > -1;
+		if (page && page.get && page.get(`bR20cfg_hidden`)) return page.get(`bR20cfg_hidden`).search(layer) > -1;
 	}
 
 	d20plus.engine.layersVisibilityCheck = () => {
