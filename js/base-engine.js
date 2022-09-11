@@ -1268,12 +1268,12 @@ function d20plusEngine () {
 		})
 	};
 
-	d20plus.engine.objectsHideUnhide = (q, val, prefix, state) => {
+	d20plus.engine.objectsHideUnhide = (query, val, prefix, state) => {
 		let some = false;
 		for (const o of d20.engine.canvas._objects) {
 			const model = o.model;
 			if (!model) continue;
-			if (`${model.get(q)}`.search(val) > -1) {
+			if (`${model.get(query)}`.search(val) > -1) {
 				const l = model.attributes.layer;
 				if (state) {
 					if (l.search(prefix) > -1) {
