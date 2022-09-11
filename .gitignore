@@ -123,6 +123,7 @@ typings/
 *.iml
 
 # Vscode & build tools
+betterR20.code-workspace
 .vscode/settings.json
 .main*
-betterR20.code-workspace
+.test*
