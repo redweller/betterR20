@@ -84,7 +84,7 @@ function baseUi () {
 				zIndex: 10600,
 				backgroundColor: "rgba(255,255,255,0.80)",
 			})
-			.appendTo($(`body`)).find(`ul`);
+			.appendTo($(`#playerzone`)).find(`ul`);
 
 		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
 
