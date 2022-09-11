@@ -321,5 +321,10 @@
 		"ver": "1.31.0",
 		"date": "2022-08-28",
 		"txt": "- Added Vehicle importer (thanks @darthbeep)\n- Monster importer now adds lair actions and regional effects, where available, to sheet Bio & Info (thanks @darthbeep)\n- (Updated to latest data files; added support for latest data changes)"
+	},
+	{
+		"ver": "1.31.1",
+		"date": "2022-09-11",
+		"txt": "- Added \"Quick Layer Buttons Position\" to switch which side of the screen the Quick Layer Buttons appear on (thanks @ Riedel)\n- Fixed token editor failing to open (thanks @ Riedel)"
 	}
 ]
