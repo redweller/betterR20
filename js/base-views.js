@@ -253,12 +253,14 @@ function baseViews () {
 	}
 
 	d20plus.views.addViews = () => {
-		d20plus.views._initSettingsButton();
-		d20plus.views._initViewsCss();
-		d20plus.views._initLayerMenu();
-		d20plus.views._initMenuActions();
-		document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
-		d20plus.views.checkPageSettings();
+		if (window.is_gm) {
+			d20plus.views._initSettingsButton();
+			d20plus.views._initViewsCss();
+			d20plus.views._initLayerMenu();
+			d20plus.views._initMenuActions();
+			document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
+			d20plus.views.checkPageSettings();
+		}
 	}
 }
 
