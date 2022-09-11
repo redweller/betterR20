@@ -73,7 +73,7 @@ function baseConfig () {
 		},
 		"quickLayerButtonsPosition": {
 			"name": "-- Quick Layer Buttons position (left/right)",
-			"default": 1,
+			"default": 0,
 			"_type": "_slider",
 			"__sliderMin": 0,
 			"__sliderMax": 1,
