@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.19
+// @version      1.31.0.20
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -10636,16 +10636,44 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.objectsHideUnhide = (q, val, prefix, state) => {
+	d20plus.engine.objectsStashProps = (obj, state) => {
+		const props = [
+			"emits_bright_light",
+			"emits_low_light",
+			"has_directional_bright_light",
+			"has_directional_dim_light",
+			"showplayers_bar1",
+			"showplayers_bar2",
+			"showplayers_bar3",
+			"showname",
+		];
+		props.each((prop) => {
+			if (!state) {
+				if (obj.attributes[prop]) {
+					obj.attributes[`bR20_${prop}`] = true;
+					obj.attributes[prop] = false;
+				}
+			} else {
+				if (obj.attributes[`bR20_${prop}`]) {
+					obj.attributes[prop] = true;
+					obj.attributes[`bR20_${prop}`] = false;
+					delete obj.attributes[`bR20_${prop}`];
+				}
+			}
+		});
+	}
+
+	d20plus.engine.objectsHideUnhide = (query, val, prefix, state) => {
 		let some = false;
 		for (const o of d20.engine.canvas._objects) {
 			const model = o.model;
 			if (!model) continue;
-			if (`${model.get(q)}`.search(val) > -1) {
+			if (`${model.get(query)}`.search(val) > -1) {
 				const l = model.attributes.layer;
 				if (state) {
 					if (l.search(prefix) > -1) {
 						model.attributes.layer = l.replace(`${prefix}_`, "");
+						d20plus.engine.objectsStashProps(model, true);
 						o.saveState();
 						model.save();
 						some = true;
@@ -10653,6 +10681,7 @@ function d20plusEngine () {
 				} else {
 					if (l.search(prefix) === -1) {
 						model.attributes.layer = `${prefix}_${l}`;
+						d20plus.engine.objectsStashProps(model, false);
 						o.saveState();
 						model.save();
 						some = true;
@@ -11755,6 +11784,7 @@ function baseViews () {
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, false);
 		}
 		page.save();
+		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
 	}
 
 	d20plus.views.checkPageSettings = () => {
@@ -11767,12 +11797,14 @@ function baseViews () {
 	}
 
 	d20plus.views.addViews = () => {
-		d20plus.views._initSettingsButton();
-		d20plus.views._initViewsCss();
-		d20plus.views._initLayerMenu();
-		d20plus.views._initMenuActions();
-		document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
-		d20plus.views.checkPageSettings();
+		if (window.is_gm) {
+			d20plus.views._initSettingsButton();
+			d20plus.views._initViewsCss();
+			d20plus.views._initLayerMenu();
+			d20plus.views._initMenuActions();
+			document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
+			d20plus.views.checkPageSettings();
+		}
 	}
 }
 
