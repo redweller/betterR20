@@ -121,7 +121,20 @@ const betteR205etoolsMain = function () {
 		],
 	};
 
-	IMPORT_CATEGORIES = [
+	/**
+	 * This is the main variable that should be modified when adding a new importable category (eg. spells, monsters, feats)
+	 * Each category is represented with the following fields:
+	 *
+	 * name: the category name (singular)
+	 * plural: the category name (plural)
+	 * playerImport: if the category is player importable
+	 * allImport: if the category has an import from all sources option
+	 * fileImport: if the category has an import from file option
+	 * baseUrl: the url of the official JSON or directory of JSONs
+	 * defaultSource: If there are multiple sources, the one to be shown by default
+	 * finalText: any text to be shown after the buttons
+	 */
+	const IMPORT_CATEGORIES = [
 		{
 			name: "background",
 			plural: "backgrounds",

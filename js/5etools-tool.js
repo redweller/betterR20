@@ -23,38 +23,13 @@ function tools5eTool () {
 						<!-- populate with JS-->
 						</select>
 						<button class="btn" name="view-select-entries">View/Select Entries</button>
-						<br>
-						<button class="btn" name="select-all-entries">Select Everything</button>
-						<div name="selection-summary" style="margin-top: 5px;"></div>
 					</div>
-					<hr>
-					<p><button class="btn" style="float: right;" name="import">Import Selected</button></p>
 					</div>
-	
-					<div id="d20plus-json-importer-list" title="Select Entries">
-						<div id="module-importer-list">
-							<input type="search" class="search" placeholder="Search..." disabled>
-							<div class="list" style="transform: translateZ(0); max-height: 650px; overflow-y: auto; overflow-x: hidden; margin-bottom: 10px;">
-							<i>Load a file to view the contents here</i>
-							</div>
-						</div>
-						<div>
-							<label class="ib"><input type="checkbox" class="select-all"> Select All</label>
-							<button class="btn" style="float: right;" name="confirm-selection">Confirm Selection</button>
-						</div>
-					</div>
-	
-					<div id="d20plus-json-importer-progress" title="Import Progress">
-						<h3 class="name"></h3>
-						<span class="remaining"></span>
-						<p>Errors: <span class="errors">0</span> <span class="error-names"></span></p>
-						<p><button class="btn cancel">Cancel</button></p>
-					</div>
-	
+
 					<div id="d20plus-json-importer-help" title="Readme">
-						<p>First, either load a module from 5etools, or upload one from a file. Then, choose the category you wish to import, and "View/Select Entries." Once you've selected everything you wish to import from the module, hit "Import Selected." This ensures entries are imported in the correct order.</p>
-						<p><b>Note:</b> The script-wide configurable "rest time" options affect how quickly each category of entries is imported (tables and decks use the "Handout" rest time).</p>
-						<p><b>Note:</b> Configuration options (aside from "rest time" as detailed above) <i>do not</i> affect the module importer. It effectively "clones" the content as-exported from the original module, including any whisper/advantage/etc settings.</p>
+						<p>First, either enter the url for a JSON in 5etools format, or upload one from a file. Then, choose the category you wish to import, and "View/Select Entries." You'll need to import items in each category separately.</p>
+						<p>This tool is mainly meant to allow homebrew files to be uploaded for every category without taking too much space.</p>
+						<p>If you're looking for a repository of homebrew files, one can be found <a href="https://github.com/TheGiddyLimit/homebrew" target="_blank">here</a>. To get an importable url, click on the file you want, then click the button that says "Raw" and use that url.</p>
 					</div>
 					`,
 			dialogFn: () => {
@@ -64,62 +39,21 @@ function tools5eTool () {
 					width: 750,
 					height: 360,
 				});
-				$(`#d20plus-json-importer-progress`).dialog({
-					autoOpen: false,
-					resizable: false,
-				});
 				$("#d20plus-json-importer-help").dialog({
 					autoOpen: false,
 					resizable: true,
 					width: 600,
 					height: 400,
 				});
-				$("#d20plus-json-importer-list").dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 600,
-					height: 800,
-				});
 			},
 			openFn: () => {
-				// The types of things that can be imported with this tool
-				const IMPORT_NAMES = {
-					"adventure": "Adventures",
-					"background": "Backgrounds",
-					"class": "Classes",
-					"deity": "Deities",
-					"feat": "Feats",
-					"item": "Items",
-					"monster": "Monsters",
-					"object": "Objects",
-					"optionalfeature": "Optional Features (Invocations, etc.)",
-					"psionic": "Psionics",
-					"race": "Races",
-					"spell": "Spells",
-					"subclass": "Subclasses",
-					"vehicle": "Vehicles",
-				};
-
 				const $win = $("#d20plus-json-importer");
 				$win.dialog("open");
-
-				const $winProgress = $(`#d20plus-json-importer-progress`);
-				const $btnCancel = $winProgress.find(".cancel").off("click");
 
 				const $win5etools = $(`#d20plus-json-importer-5etools`);
 
 				const $winHelp = $(`#d20plus-json-importer-help`);
 				const $btnHelp = $win.find(`.readme`).off("click").click(() => $winHelp.dialog("open"));
-
-				const $winList = $(`#d20plus-json-importer-list`);
-				const $wrpLst = $(`#module-json-list`);
-				const $lst = $winList.find(`.list`).empty();
-				const $cbAll = $winList.find(`.select-all`).off("click").prop("disabled", true);
-				const $iptSearch = $winList.find(`.search`).prop("disabled", true);
-				const $btnConfirmSel = $winList.find(`[name="confirm-selection"]`).off("click");
-
-				const $wrpSummary = $win.find(`[name="selection-summary"]`);
-				const $wrpDataLoadingMessage = $win.find(`[name="data-loading-message"]`);
 
 				const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
 				const $btnViewCat = $win.find(`[name="view-select-entries"]`).off("click").click(handleLoadedData).prop("disabled", true);
@@ -129,65 +63,32 @@ function tools5eTool () {
 				let genericFolder;
 				let lastLoadedData = null;
 
+				// The main function that's called with the import button gets clicked
 				async function handleLoadedData () {
 					const lastDataType = $selDataType.val();
-					let optionsContainer = null;
+					const cat = IMPORT_CATEGORIES.find(ic => ic.name === lastDataType);
+					const optionsContainer = d20plus[cat.plural];
 					let overrideData = null;
 					let extraOptions = {};
 
+					// Handle special cases where certain items need extra data
 					switch (lastDataType) {
-						case "adventure":
-							optionsContainer = d20plus.adventures;
-							break;
-						case "background":
-							optionsContainer = d20plus.backgrounds;
-							break;
 						case "class":
-							optionsContainer = d20plus.classes;
 							overrideData = (await d20plus.classes.getDataForImport(lastLoadedData)).class;
 							extraOptions["builderOptions"] = {
 								isHomebrew: true,
 							}
 							break;
-						case "deity":
-							optionsContainer = d20plus.deities;
-							break;
-						case "feat":
-							optionsContainer = d20plus.feats;
-							break;
-						case "item":
-							optionsContainer = d20plus.items;
-							break;
-						case "monster":
-							optionsContainer = d20plus.monsters;
-							break;
-						case "object":
-							optionsContainer = d20plus.objects;
-							break;
-						case "optionalfeature":
-							optionsContainer = d20plus.optionalfeatures;
-							break;
-						case "psionic":
-							optionsContainer = d20plus.psionics;
-							break;
-						case "race":
-							optionsContainer = d20plus.races;
-							break;
-						case "spell":
-							optionsContainer = d20plus.spells;
-							break;
 						case "subclass":
-							optionsContainer = d20plus.subclasses;
 							overrideData = await d20plus.subclasses.getDataForImport(lastLoadedData);
 							break;
-						case "vehicle":
-							optionsContainer = d20plus.vehicles;
-							break;
 						default:
-							throw new Error(`Unhandled data type: ${lastDataType}`);
+							break;
 					}
 
 					const handoutBuilder = optionsContainer["handoutBuilder"];
+
+					// Similar to the showImportList functions when buttons are pressed
 					d20plus.importer.showImportList(
 						lastDataType,
 						overrideData || lastLoadedData[lastDataType],
@@ -202,13 +103,14 @@ function tools5eTool () {
 					);
 				}
 
+				// Populate the dropdown menu that allows you to choose the category
 				function populateDropdown (cats) {
 					$selDataType.empty();
 					cats.forEach(c => {
-						$selDataType.append(`<option value="${c}">${IMPORT_NAMES[c]}</option>`)
+						$selDataType.append(`<option value="${c.name}">${c.titlePl || c.plural.toTitleCase()}</option>`)
 					});
 
-					// Disable buttons if there are no valid catagories to import
+					// Disable buttons if there are no valid categories to import
 					const disable = !cats.length;
 					$btnViewCat.prop("disabled", disable);
 					$btnSelAllContent.prop("disabled", disable);
@@ -221,7 +123,7 @@ function tools5eTool () {
 					const url = $("#import-json-url").val();
 					if (url && url.trim()) {
 						DataUtil.loadJSON(url).then(data => {
-							const cats = Object.keys(IMPORT_NAMES).filter(i => i in data);
+							const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data);
 							populateDropdown(cats);
 							lastLoadedData = data;
 						});
@@ -234,7 +136,7 @@ function tools5eTool () {
 					const allFiles = await DataUtil.pUserUpload();
 					// Due to the new util functon, need to account for data being an array
 					const data = allFiles.jsons.find(Boolean);
-					const cats = Object.keys(IMPORT_NAMES).filter(i => i in data);
+					const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data);
 					populateDropdown(cats);
 					lastLoadedData = data;
 				});
