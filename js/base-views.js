@@ -242,6 +242,7 @@ function baseViews () {
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, false);
 		}
 		page.save();
+		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
 	}
 
 	d20plus.views.checkPageSettings = () => {
