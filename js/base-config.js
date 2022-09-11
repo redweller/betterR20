@@ -71,6 +71,14 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 		},
+		"quickLayerButtonsPosition": {
+			"name": "-- Quick Layer Buttons position (left/right)",
+			"default": 0,
+			"_type": "_slider",
+			"__sliderMin": 0,
+			"__sliderMax": 1,
+			"__sliderStep": 1,
+		},
 		"quickInitButtons": {
 			"name": "Add Quick Initiative Sort Button",
 			"default": true,
@@ -691,6 +699,7 @@ function baseConfig () {
 		}
 
 		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
+		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
 	};

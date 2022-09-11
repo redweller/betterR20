@@ -387,6 +387,19 @@ function baseCss () {
 			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.background li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
 		},
+		// move layer bar to right
+		{
+			s: "#floatinglayerbar",
+			r: "pointer-events: all;",
+		},
+		{
+			s: "#floatinglayerbar.right",
+			r: "right: 30px; left: unset!important;",
+		},
+		{
+			s: "#floatinglayerbar",
+			r: "left: 20px;",
+		},
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
