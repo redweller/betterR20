@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0
+// @version      1.31.1
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -1568,6 +1568,14 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 		},
+		"quickLayerButtonsPosition": {
+			"name": "-- Quick Layer Buttons position (left/right)",
+			"default": 0,
+			"_type": "_slider",
+			"__sliderMin": 0,
+			"__sliderMax": 1,
+			"__sliderStep": 1,
+		},
 		"quickInitButtons": {
 			"name": "Add Quick Initiative Sort Button",
 			"default": true,
@@ -2188,6 +2196,7 @@ function baseConfig () {
 		}
 
 		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
+		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
 	};
@@ -11436,6 +11445,19 @@ function baseCss () {
 			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.background li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
 		},
+		// move layer bar to right
+		{
+			s: "#floatinglayerbar",
+			r: "pointer-events: all;",
+		},
+		{
+			s: "#floatinglayerbar.right",
+			r: "right: 30px; left: unset!important;",
+		},
+		{
+			s: "#floatinglayerbar",
+			r: "left: 20px;",
+		},
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
@@ -12149,7 +12171,7 @@ function baseUi () {
 				zIndex: 10600,
 				backgroundColor: "rgba(255,255,255,0.80)",
 			})
-			.appendTo($(`body`)).find(`ul`);
+			.appendTo($(`#playerzone`)).find(`ul`);
 
 		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
 
@@ -13174,8 +13196,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 1</span>
                                         <select class='bar1_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+											<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
@@ -13256,8 +13278,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 2</span>
                                         <select class='bar2_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+											<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
@@ -13338,8 +13360,8 @@ function initTemplateTokenEditor () {
                                         <span class='sr-only'>select a character sheet attribute to link to bar 3</span>
                                         <select class='bar3_link'>
                                             <option value=''>None</option>
-                                            <$ _.each(this.tokensettingsview.availAttribs(), function(attrib) { $>
-                                            <option value="<$!attrib.id$>"><$!attrib.name$>
+                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+												<option value="<$!attrib.id$>"><$!attrib.name$>
                                                 <$ }); $>
                                         </select>
                                     </label>
