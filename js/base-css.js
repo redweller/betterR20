@@ -181,7 +181,7 @@ function baseCss () {
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;	 border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
@@ -452,18 +452,18 @@ function baseCss () {
 		/* {
 			s: `#rightsidebar`,
 			r: `
-			    display: flex;
-			    flex-direction: column;
+				display: flex;
+				flex-direction: column;
 			`
 		},
 		{
 			s: `#rightsidebar ul.tabmenu`,
 			r: `
-			    padding: 0;
-    			flex-shrink: 0;
-    			position: relative;
-    			top: 0;
-    			width: 100%;
+				padding: 0;
+				flex-shrink: 0;
+				position: relative;
+				top: 0;
+				width: 100%;
 			`
 		},
 		{
@@ -478,7 +478,7 @@ function baseCss () {
 			s: `#textchat-input`,
 			r: `
 				position: relative;
-    			flex-shrink: 0;
+				flex-shrink: 0;
 			`
 		},
 		{
@@ -610,7 +610,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;	 font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
@@ -750,10 +750,10 @@ function baseCss () {
 		{
 			s: ".ui-dialog .anm__row",
 			r: `
-    			display: flex;
-    			align-items: center;
-    			margin-bottom: 3px;
-    			height: 20px;
+				display: flex;
+				align-items: center;
+				margin-bottom: 3px;
+				height: 20px;
 			`,
 		},
 		{
@@ -965,20 +965,20 @@ function baseCss () {
 		{
 			s: ".flex-row",
 			r: `
-			    display: flex;
-			    float: left;
+				display: flex;
+				float: left;
 				align-items: center;
-			    margin-bottom: 5px;
+				margin-bottom: 5px;
 			`,
 		},
 		{
 			s: ".pagedetails .flex-row input.units,.pagedetails .flex-row input.pixels",
 			r: `
 				width: 20%;
-			    text-align: center;
-			    border: 1px solid;
-			    border-radius: 5px;
-			    margin: 0 2%;
+				text-align: center;
+				border: 1px solid;
+				border-radius: 5px;
+				margin: 0 2%;
 			`,
 		},
 	]);
@@ -988,132 +988,25 @@ function baseCss () {
 		{
 			s: ".jukebox-widget-button",
 			r: `
-    			flex: 1;
-    			text-overflow: ellipsis;
-    			overflow: hidden;
-    			min-width: 50px;
+				flex: 1;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				min-width: 50px;
 			`,
 		},
 		{
 			s: ".jukebox-widget-slider",
 			r: `
-    			margin: 10px;
-    			display: inline-block;
-    			flex: 15;
+				margin: 10px;
+				display: inline-block;
+				flex: 15;
 			`,
 		},
 		{
 			s: ".jukebox-widget-button",
 			r: `
-    			letter-spacing: -1px
+				letter-spacing: -1px
 			`,
-		},
-	]);
-
-	// Technecally 5e css rules, but they aren't hurting anything and there aren't enough to justify a separate file
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		{
-			s: ".no-shrink",
-			r: "flex-shrink: 0;",
-		},
-		{
-			s: "#initiativewindow ul li span.initiative,#initiativewindow ul li span.tracker-col,#initiativewindow ul li span.initmacro",
-			r: "font-size: 25px;font-weight: bold;text-align: right;float: right;padding: 2px 5px;width: 10%;min-height: 20px;display: block;",
-		},
-		{
-			s: "#initiativewindow ul li span.editable input",
-			r: "width: 100%; box-sizing: border-box;height: 100%;",
-		},
-		{
-			s: "#initiativewindow div.header",
-			r: "height: 30px;",
-		},
-		{
-			s: "#initiativewindow div.header span",
-			r: "cursor: default;font-size: 15px;font-weight: bold;text-align: right;float: right;width: 10%;min-height: 20px;padding: 5px;",
-		},
-		{
-			s: ".ui-dialog-buttonpane span.difficulty",
-			r: "display: inline-block;padding: 5px 4px 6px;margin: .5em .4em .5em 0;font-size: 18px;",
-		},
-		{
-			s: ".ui-dialog-buttonpane.buttonpane-absolute-position",
-			r: "position: absolute;bottom: 0;box-sizing: border-box;width: 100%;",
-		},
-		{
-			s: ".ui-dialog.dialog-collapsed .ui-dialog-buttonpane",
-			r: "position: initial;",
-		},
-		{
-			s: ".token .cr,.header .cr",
-			r: "display: none!important;",
-		},
-		{
-			s: "li.handout.compendium-item .namecontainer",
-			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);",
-		},
-		{
-			s: ".bind-drop-locations:active",
-			r: "box-shadow: inset 0px 0px 25px 2px rgb(195, 239, 184);",
-		},
-		{
-			s: "del.userscript-hidden",
-			r: "display: none;",
-		},
-		{
-			s: ".importer-section",
-			r: "display: none;",
-		},
-		{
-			s: ".userscript-rd__h",
-			r: "font-weight: bold;",
-		},
-		{
-			s: ".userscript-rd__h--0",
-			r: "font-weight: bold; font-size: 1.5em;",
-		},
-		{
-			s: ".userscript-rd__h--2",
-			r: "font-weight: bold; font-size: 1.3em;",
-		},
-		{
-			s: ".userscript-rd__h--3, .userscript-rd__h--4",
-			r: "font-style: italic",
-		},
-		{
-			s: ".userscript-rd__b-inset--readaloud",
-			r: "background: #cbd6c688 !important",
-		},
-		// "No character sheet" message
-		{
-			s: ".ve-nosheet__body",
-			r: "overflow: hidden !important;",
-		},
-		{
-			s: ".ve-nosheet__overlay",
-			r: `
-            background: darkred;
-            position: fixed;
-            z-index: 99999;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            color: white;
-            font-family: monospace;`,
-		},
-		{
-			s: ".ve-nosheet__title",
-			r: "font-size: 72px;",
-		},
-		{
-			s: ".ve-nosheet__btn-close",
-			r: `position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 16px;`,
 		},
 	]);
 }

@@ -228,6 +228,7 @@ const SCRIPTS = {
 			"5etools-deities",
 			"5etools-vehicles",
 			"5etools-template",
+			"5etools-css",
 
 			"base",
 		],

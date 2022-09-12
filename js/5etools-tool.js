@@ -123,7 +123,7 @@ function tools5eTool () {
 					const url = $("#import-json-url").val();
 					if (url && url.trim()) {
 						DataUtil.loadJSON(url).then(data => {
-							const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data);
+							const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data && !ic.uniqueImport);
 							populateDropdown(cats);
 							lastLoadedData = data;
 						});
@@ -136,7 +136,7 @@ function tools5eTool () {
 					const allFiles = await DataUtil.pUserUpload();
 					// Due to the new util functon, need to account for data being an array
 					const data = allFiles.jsons.find(Boolean);
-					const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data);
+					const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data && !ic.uniqueImport);
 					populateDropdown(cats);
 					lastLoadedData = data;
 				});

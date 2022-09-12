@@ -130,11 +130,18 @@ const betteR205etoolsMain = function () {
 	 * playerImport: if the category is player importable
 	 * allImport: if the category has an import from all sources option
 	 * fileImport: if the category has an import from file option
+	 * uniqueImport: if the category has a unique import and not able to be handled by the showImportList function
 	 * baseUrl: the url of the official JSON or directory of JSONs
-	 * defaultSource: If there are multiple sources, the one to be shown by default
+	 * defaultSource: if there are multiple sources, the one to be shown by default
 	 * finalText: any text to be shown after the buttons
 	 */
 	const IMPORT_CATEGORIES = [
+		{
+			name: "adventure",
+			plural: "adventures",
+			baseUrl: ADVENTURE_DATA_DIR,
+			uniqueImport: true,
+		},
 		{
 			name: "background",
 			plural: "backgrounds",
