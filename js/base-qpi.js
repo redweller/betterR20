@@ -19,26 +19,28 @@ function baseQpi () {
 			on: {
 				_preInit () {
 					qpi._on_chatHandlers = [];
-					const seenMessages = new Set();
-					d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
-					const handleChat = (e) => {
-						if (!d20.textchat.chatstartingup) {
-							e.id = e.key;
-							if (!seenMessages.has(e.id)) {
-								seenMessages.add(e.id);
+					if (d20.textchat.shoutref) {
+						const seenMessages = new Set();
+						d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
+						const handleChat = (e) => {
+							if (!d20.textchat.chatstartingup) {
+								e.id = e.key;
+								if (!seenMessages.has(e.id)) {
+									seenMessages.add(e.id);
 
-								let t = e.val();
-								if (t) {
-									// eslint-disable-next-line no-console
-									if (window.DEBUG) console.log("CHAT: ", t);
+									let t = e.val();
+									if (t) {
+										// eslint-disable-next-line no-console
+										if (window.DEBUG) console.log("CHAT: ", t);
 
-									qpi._on_chatHandlers.forEach(fn => fn(t));
+										qpi._on_chatHandlers.forEach(fn => fn(t));
+									}
 								}
 							}
-						}
-					};
-					d20.textchat.chatref.on("child_added", handleChat);
-					d20.textchat.chatref.on("child_changed", handleChat);
+						};
+						d20.textchat.chatref.on("child_added", handleChat);
+						d20.textchat.chatref.on("child_changed", handleChat);
+					}
 				},
 				_ (evtType, fn, ...others) {
 					switch (evtType) {
