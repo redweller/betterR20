@@ -96,7 +96,7 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
-			url: `https://github.com/redweller/betterR20/raw/run/betteR20-version`,
+			url: `https://raw.githubusercontent.com/redweller/betterR20/run/betteR20-version`,
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;

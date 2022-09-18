@@ -311,6 +311,7 @@ const MAIN_SCRIPTS = [
 	"base-css",
 	"base-emoji",
 	"base-engine",
+	"base-qpi",
 	"base-mod",
 	"base-template",
 	"base-views",
