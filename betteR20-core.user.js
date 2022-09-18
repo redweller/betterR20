@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.20
+// @version      1.31.0.21
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -1221,26 +1221,31 @@ function baseQpi () {
 			on: {
 				_preInit () {
 					qpi._on_chatHandlers = [];
-					const seenMessages = new Set();
-					d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
-					const handleChat = (e) => {
-						if (!d20.textchat.chatstartingup) {
-							e.id = e.key;
-							if (!seenMessages.has(e.id)) {
-								seenMessages.add(e.id);
+					if (d20.textchat.shoutref) {
+						const seenMessages = new Set();
+						d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
+						const handleChat = (e) => {
+							if (!d20.textchat.chatstartingup) {
+								e.id = e.key;
+								if (!seenMessages.has(e.id)) {
+									seenMessages.add(e.id);
 
-								let t = e.val();
-								if (t) {
-									// eslint-disable-next-line no-console
-									if (window.DEBUG) console.log("CHAT: ", t);
+									let t = e.val();
+									if (t) {
+										// eslint-disable-next-line no-console
+										if (window.DEBUG) console.log("CHAT: ", t);
 
-									qpi._on_chatHandlers.forEach(fn => fn(t));
+										qpi._on_chatHandlers.forEach(fn => fn(t));
+									}
 								}
 							}
-						}
-					};
-					d20.textchat.chatref.on("child_added", handleChat);
-					d20.textchat.chatref.on("child_changed", handleChat);
+						};
+						d20.textchat.chatref.on("child_added", handleChat);
+						d20.textchat.chatref.on("child_changed", handleChat);
+					} else {
+						// eslint-disable-next-line no-console
+						console.warn("%cQPI > ", "color: #b93032; font-size: large", "Can't properly initialize chat handler");
+					}
 				},
 				_ (evtType, fn, ...others) {
 					switch (evtType) {
@@ -9393,7 +9398,132 @@ function d20plusEngine () {
 			originalFn();
 			debouncedOverwrite();
 		}
+
+		$(`body`).on("click", ".weather input[type=range]", function (event) {
+			if (this.name) $(`.${this.name}`).val(this.value);
+		}).on("mouseup", "li.dl", function (event) {
+			// process Dynamic Lighting tabs
+			const $dynLightTab = $(event.target).closest("li.dl");
+			const $isTabAnchor = $(event.target).closest("a");
+			if (!$dynLightTab.hasClass("active")) {
+				setTimeout(() => {
+					if (!$dynLightTab.hasClass("legacy")) $(`[data-tab=lighting]:visible`).click();
+					else $(`[data-tab=legacy-lighting]:visible`).click();
+				}, 10);
+			}
+			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
+			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
+		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
+			const $this = $(this);
+			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
+		}).on("click", ".chooseablepage .js__settings-page", function () {
+			setTimeout(() => d20plus.engine.enhancePageOptions(), 50);
+		});
 	};
+
+	d20plus.engine.applySettings = () => {
+		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
+		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
+		const pageid = d20plus.engine._lastSettingsPageId;
+		if ($dialog[0]) {
+			$(`#page-toolbar`).css("visibility", "hidden");
+			d20plus.engine.handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+			$dialog.find(`.btn-primary:visible`).click();
+			$(`#page-toolbar .handle`).click();
+			$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
+			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+		}
+		setTimeout(() => {
+			$(`#page-toolbar`).css("visibility", "unset");
+		}, 1000);
+	}
+
+	d20plus.engine.enhancePageOptions = () => {
+		if (!d20plus.engine._lastSettingsPageId) return;
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (page && page.get) {
+			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			// if editing active page then close pages list and add Apply button
+			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
+				const $barPage = $(`#page-toolbar`);
+				const $overlay = $(`.ui-widget-overlay`);
+				const templateApply = `<button type="button" class="btn btn-apply" title="Apply settings for current page">Apply</button>`;
+				if (!$barPage.hasClass("closed")) {
+					$barPage.find(`.handle`).click();
+					$overlay.remove();
+				}
+				$dialog.find(`.btn-primary:visible`).before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
+			}
+			// process options within open dialog
+			if ($dialog[0]) {
+				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
+				d20plus.engine.handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
+					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
+					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
+						d20plus.engine.handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+					});
+				}
+			}
+		}
+	}
+
+	d20plus.engine.handleCustomOptions = (dialog, doSave) => {
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page || !page.get) return;
+		const customOptionsPages = [
+			"weather",
+			"views",
+		];
+		customOptionsPages.forEach(category => {
+			d20plus[category].props.forEach(propName => {
+				if (doSave) {
+					d20plus.engine._saveOption(page, dialog, propName);
+				} else {
+					d20plus.engine._getOption(page, dialog, propName);
+				}
+			});
+		});
+		if (doSave) {
+			page.save();
+		}
+	}
+
+	d20plus.engine._saveOption = (page, dialog, propName) => {
+		const $e = dialog.find(`[name="${propName}"]`);
+		if ($e.is(":checkbox")) {
+			if ($e.prop("checked")) {
+				page.set(`bR20cfg_${propName}`, !!$e.prop("checked"));
+			} else {
+				page.unset(`bR20cfg_${propName}`);
+			}
+		} else {
+			if ($e.val()) {
+				page.set(`bR20cfg_${propName}`, $e.val());
+			} else {
+				page.unset(`bR20cfg_${propName}`);
+			}
+		}
+	}
+
+	d20plus.engine._getOption = (page, dialog, propName) => {
+		const val = page.get(`bR20cfg_${propName}`);
+		if (!val) return;
+		dialog.find(`[name="${propName}"]`).each((i, e) => {
+			const $e = $(e);
+			if ($e.is(":checkbox")) {
+				$e.prop("checked", !!val);
+			} else if ($e.is("input[type=range]")) {
+				if ($e.prop("name")) $(`.${$e.prop("name")}`).val(val);
+				$e.val(val);
+			} else {
+				$e.val(val);
+			}
+		});
+	}
 
 	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
 		$iptSearch.on("keyup", () => {
@@ -10656,8 +10786,7 @@ function d20plusEngine () {
 			} else {
 				if (obj.attributes[`bR20_${prop}`]) {
 					obj.attributes[prop] = true;
-					obj.attributes[`bR20_${prop}`] = false;
-					delete obj.attributes[`bR20_${prop}`];
+					obj.attributes[`bR20_${prop}`] = null;
 				}
 			}
 		});
@@ -10792,178 +10921,23 @@ SCRIPT_EXTENSIONS.push(d20plusEngine);
 function baseWeather () {
 	d20plus.weather = {};
 
-	d20plus.weather._lastSettingsPageId = null;
-	d20plus.weather._initSettingsButton = () => {
-		$(`body`).on("click", ".Ve-btn-weather", function () {
-			// close the parent page settings + hide the page overlay
-			const $this = $(this);
-			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("OK")`).click();
-			const $barPage = $(`#page-toolbar`);
-			if (!$barPage.hasClass("closed")) {
-				$barPage.find(`.handle`).click()
-			}
-
-			function doShowDialog (page) {
-				const $dialog = $(`
-					<div title="Weather Configuration">
-						<label class="split wth__row">
-							<span>Weather Type</span>
-							<select name="weatherType1">
-								<option>None</option>
-								<option>Fog</option>
-								<option>Rain</option>
-								<option>Ripples</option>
-								<option>Snow</option>
-								<option>Waves</option>
-								<option>Blood Rain</option>
-								<option>Custom (see below)</option>
-							</select>
-						</label>
-						<label class="split wth__row">
-							<span  class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Image</span>
-							<input name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
-						</label>
-						<label class="flex wth__row">
-							<span>Weather Speed</span>
-							<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Weather Direction</span>
-							<select name="weatherDir1">
-								<option>Northerly</option>
-								<option>North-Easterly</option>
-								<option>Easterly</option>
-								<option>South-Easterly</option>
-								<option>Southerly</option>
-								<option>South-Westerly</option>
-								<option>Westerly</option>
-								<option>North-Westerly</option>
-								<option>Custom (see below)</option>
-							</select>
-						</label>
-						<label class="flex wth__row">
-							<span class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Direction</span>
-							<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
-						</label>
-						<label class="flex wth__row">
-							<span>Weather Opacity</span>
-							<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Oscillate</span>
-							<input type="checkbox" name="weatherOscillate1">
-						</label>
-						<label class="flex wth__row">
-							<span>Oscillation Threshold</span>
-							<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Intensity</span>
-							<select name="weatherIntensity1">
-								<option>Normal</option>
-								<option>Heavy</option>
-							</select>
-						</label>
-						<label class="split wth__row">
-							<span>Tint</span>
-							<input type="checkbox" name="weatherTint1">
-						</label>
-						<label class="split wth__row">
-							<span>Tint Color</span>
-							<input type="color" name="weatherTintColor1" value="#4c566d">
-						</label>
-						<label class="split wth__row">
-							<span>Special Effects</span>
-							<select name="weatherEffect1">
-								<option>None</option>
-								<option>Lightning</option>
-							</select>
-						</label>
-					</div>
-				`).appendTo($("body"));
-
-				const handleProp = (propName) => $dialog.find(`[name="${propName}"]`).each((i, e) => {
-					const $e = $(e);
-					if ($e.is(":checkbox")) {
-						$e.prop("checked", !!page.get(`bR20cfg_${propName}`));
-					} else {
-						$e.val(page.get(`bR20cfg_${propName}`));
-					}
-				});
-				const props = [
-					"weatherType1",
-					"weatherTypeCustom1",
-					"weatherSpeed1",
-					"weatherDir1",
-					"weatherDirCustom1",
-					"weatherOpacity1",
-					"weatherOscillate1",
-					"weatherOscillateThreshold1",
-					"weatherIntensity1",
-					"weatherTint1",
-					"weatherTintColor1",
-					"weatherEffect1",
-				];
-				props.forEach(handleProp);
-
-				function doSaveValues () {
-					props.forEach(propName => {
-						page.set(`bR20cfg_${propName}`, (() => {
-							const $e = $dialog.find(`[name="${propName}"]`);
-							if ($e.is(":checkbox")) {
-								return !!$e.prop("checked");
-							} else {
-								return $e.val();
-							}
-						})())
-					});
-					page.save();
-				}
-
-				$dialog.dialog({
-					width: 500,
-					dialogClass: "no-close",
-					buttons: [
-						{
-							text: "OK",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-								doSaveValues();
-							},
-						},
-						{
-							text: "Apply",
-							click: function () {
-								doSaveValues();
-							},
-						},
-						{
-							text: "Cancel",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-							},
-						},
-					],
-				});
-			}
-
-			if (d20plus.weather._lastSettingsPageId) {
-				const page = d20.Campaign.pages.get(d20plus.weather._lastSettingsPageId);
-				if (page) {
-					doShowDialog(page);
-				} else d20plus.ut.error(`No page found with ID "${d20plus.weather._lastSettingsPageId}"`);
-			} else d20plus.ut.error(`No page settings button was clicked?!`);
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.weather._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		});
-	};
+	d20plus.weather.props = [
+		"weatherType1",
+		"weatherTypeCustom1",
+		"weatherSpeed1",
+		"weatherDir1",
+		"weatherDirCustom1",
+		"weatherOpacity1",
+		"weatherOscillate1",
+		"weatherOscillateThreshold1",
+		"weatherIntensity1",
+		"weatherTint1",
+		"weatherTintColor1",
+		"weatherTintOpacity1",
+		"weatherEffect1",
+	];
 
 	d20plus.weather.addWeather = () => {
-		d20plus.weather._initSettingsButton();
-
 		window.force = false; // missing variable in Roll20's code(?); define it here
 
 		d20plus.ut.log("Adding weather");
@@ -11124,7 +11098,9 @@ function baseWeather () {
 		function getTintColor (page) {
 			const tintEnabled = page.get("bR20cfg_weatherTint1");
 			if (tintEnabled) {
-				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}80`;
+				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1");
+				const tintOpacityHex = tintOpacity ? (14 + Math.round((243 - 16) * tintOpacity)).toString(16) : undefined;
+				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}${(tintOpacityHex || "80")}`;
 			} else return null;
 		}
 
@@ -11543,173 +11519,19 @@ SCRIPT_EXTENSIONS.push(baseWeather);
 function baseViews () {
 	d20plus.views = {};
 
-	d20plus.views._lastSettingsPageId = null;
-
-	d20plus.views._initSettingsButton = () => {
-		$(`body`).on("click", ".Ve-btn-views", function () {
-			// close the parent page settings + hide the page overlay
-			const $this = $(this);
-			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("Save")`).click();
-			const $barPage = $(`#page-toolbar`);
-			if (!$barPage.hasClass("closed")) {
-				$barPage.find(`.handle`).click()
-			}
-
-			function doShowDialog (page) {
-				const mutExclusiveHelp = "Check this, if enabling this or PREVIOUS view should disable another one of them";
-				const $dialog = $(`
-					<div title="Views Configuration">
-						<div class="alert alert-info" role="alert">
-							<p>Views are states of objects on your map. Each view can store items as tokens, paths & images.
-							Items are assigned via Context menu (only works with bR20 Reorganized context menus).
-							Then you can easily hide or show stored items, no matter their type or layer, using controls at the bottom of Selected layer dropdown.
-							This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.</p>
-						</div>
-						<label class="split wth__row">
-							<span>Enable view management for this map</span>
-							<div class="grid_switch"><label class="switch">
-								<input class="gridenabled feature_enabled" name="viewsEnable" type="checkbox">
-								<span class="slider round"></span>
-							</label></div>
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">Default view</h3>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views0Name" placeholder="Default">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 1</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 1</span>
-								<input type="checkbox" name="views1Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views1Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views1Name" placeholder="View 1">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 2</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 2</span>
-								<input type="checkbox" name="views2Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views2Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views2Name" placeholder="View 2">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 3</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 3</span>
-								<input type="checkbox" name="views3Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views3Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views3Name" placeholder="View 3">
-						</label>
-					</div>
-				`).appendTo($("body"));
-
-				const handleProp = (propName) => $dialog.find(`[name="${propName}"]`).each((i, e) => {
-					const $e = $(e);
-					if ($e.is(":checkbox")) {
-						$e.prop("checked", !!page.get(`bR20cfg_${propName}`));
-					} else {
-						$e.val(page.get(`bR20cfg_${propName}`));
-					}
-				});
-				const props = [
-					"viewsEnable",
-					"views0Name",
-					"views1Enable",
-					"views1Exclusive",
-					"views1Name",
-					"views2Enable",
-					"views2Exclusive",
-					"views2Name",
-					"views3Enable",
-					"views3Exclusive",
-					"views3Name",
-				];
-				props.forEach(handleProp);
-
-				function doSaveValues () {
-					props.forEach(propName => {
-						page.set(`bR20cfg_${propName}`, (() => {
-							const $e = $dialog.find(`[name="${propName}"]`);
-							if ($e.is(":checkbox")) {
-								return !!$e.prop("checked");
-							} else {
-								return $e.val();
-							}
-						})())
-					});
-					page.save();
-				}
-
-				$dialog.dialog({
-					width: 500,
-					dialogClass: "no-close",
-					buttons: [
-						{
-							text: "OK",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-								doSaveValues();
-							},
-						},
-						{
-							text: "Apply",
-							click: function () {
-								doSaveValues();
-							},
-						},
-						{
-							text: "Cancel",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-							},
-						},
-					],
-				});
-			}
-
-			if (d20plus.views._lastSettingsPageId) {
-				const page = d20.Campaign.pages.get(d20plus.views._lastSettingsPageId);
-				if (page) {
-					doShowDialog(page);
-				} else d20plus.ut.error(`No page found with ID "${d20plus.views._lastSettingsPageId}"`);
-			} else d20plus.ut.error(`No page settings button was clicked?!`);
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.views._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		});
-	};
+	d20plus.views.props = [
+		"viewsEnable",
+		"views0Name",
+		"views1Enable",
+		"views1Exclusive",
+		"views1Name",
+		"views2Enable",
+		"views2Exclusive",
+		"views2Name",
+		"views3Enable",
+		"views3Exclusive",
+		"views3Name",
+	];
 
 	d20plus.views._initMenuActions = () => {
 		$(`body`).on("click", ".chooseViews > li", function () {
@@ -11798,7 +11620,6 @@ function baseViews () {
 
 	d20plus.views.addViews = () => {
 		if (window.is_gm) {
-			d20plus.views._initSettingsButton();
 			d20plus.views._initViewsCss();
 			d20plus.views._initLayerMenu();
 			d20plus.views._initMenuActions();
@@ -12576,6 +12397,11 @@ function baseCss () {
 			s: "#floatinglayerbar li",
 			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
 		},
+		// Fix page options scrollbar color in darkmode on Chrome
+		{
+			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
+			r: "background-color: rgba(100, 100, 100, 0.5);",
+		},
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
@@ -12799,6 +12625,86 @@ function baseCss () {
 		{
 			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
 			r: "font-size: 12px;",
+		},
+	]);
+
+	// Rewamped page options
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".ui-dialog-pagename",
+			r: "padding: 12px 0px 0px 10px; display: inline-block; font-size: 14px; max-width: 130px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;",
+		},
+		{
+			s: ".nav-tabs--beta .label",
+			r: "left: calc( 50% - 21px); right: unset;",
+		},
+		{
+			s: ".nav-tabs > li > ul .nav-tabs--beta .label",
+			r: "top: -4px;",
+		},
+		{
+			s: ".nav-tabs > li > ul",
+			r: "width: 0px; overflow-x: visible; white-space: nowrap; margin-left: -50px; height: 0px; overflow-y: clip; transition: height 0.3s;",
+		},
+		{
+			s: ".nav-tabs > li.active > ul",
+			r: "height: 36px; transition: height 1s;",
+		},
+		{
+			s: ".dialog .nav-tabs > li.active.dl > a",
+			r: "background-color: unset; border-color: transparent; text-decoration: none; cursor: unset;",
+		},
+		{
+			s: ".ui-dialog .ui-dialog-content",
+			r: "background: inherit;",
+		},
+		{
+			s: ".dialog .nav.nav-tabs > li > a",
+			r: "cursor: pointer;",
+		},
+		{
+			s: ".nav-tabs > ul > li",
+			r: "list-style: none; display: inline-block;",
+		},
+		{
+			s: ".nav-tabs > ul > li a",
+			r: "border-radius: 4px 4px 0 0; padding-right: 12px; padding-left: 12px; margin-right: 2px; line-height: 14px; display: inline-block; padding-top: 9px; padding-bottom: 9px; border-style: solid; border-width: 1px; border-bottom: none;",
+		},
+		{
+			s: ".nav-tabs > ul > li.active a",
+			r: "background-color: var(--dark-primary); color: var(--dark-primarytext); border-color: var(--dark-primary-highlight); text-decoration-color: var(--color-primary-text); vertical-align: sub;",
+		},
+		{
+			s: ".nav-tabs > ul > li.active,	ul.nav-tabs li.active",
+			r: "border-bottom-width: 0px;",
+		},
+		{
+			s: "ul.nav-tabs > li.nav-tabs",
+			r: "border-bottom: none;",
+		},
+		{
+			s: ".nav.nav-tabs.pagedetails_navigation",
+			r: "position: sticky; top: -10px; z-index: 100; background-color: inherit; padding-top: 7px;",
+		},
+		{
+			s: ".page-input",
+			r: "box-sizing: border-box; height: 28px; width: 100%; border-radius: 0.5rem;",
+		},
+		{
+			s: ".page-input.page-hint[type=\"text\"]",
+			r: "border-radius: 0.5rem;",
+		},
+		{
+			s: ".weather input[type=\"color\"]",
+			r: "width: 100%; height: 24px; border-radius: 0.5rem; padding: 1px;",
+		},
+		{
+			s: ".views .pagedetails h4",
+			r: "display: inline;",
+		},
+		{
+			s: ".tab-pane strong .showtip",
+			r: "margin-left: 0px; margin-right: 3%; float: left; margin-top: 1px;",
 		},
 	]);
 
@@ -15420,32 +15326,55 @@ SCRIPT_EXTENSIONS.push(initTemplateTokenEditor);
 
 
 function initTemplatePageSettings () {
-	// no mods; just switched in to grant full features to non-pro
-	const templatePageSettings = `<script id='tmpl_pagesettings' type='text/html'>
-    <ul class='nav nav-tabs pagedetails_navigation'>
-        <li class='active'>
-            <a data-tab='pagedetails' href='javascript:void(0);'>
-                <h2>Page Details</h2>
-            </a>
-        </li>
-        <li class='nav-tabs--beta'>
-<span class='label label-info'>
-Updated
-</span>
-            <a data-tab='lighting' href='javascript:void(0);'>
-                <h2>Dynamic Lighting</h2>
-            </a>
-        </li>
-        <li class='nav-tabs'>
-            <a data-tab='legacy-lighting' href='javascript:void(0);'>
-                <h2>Legacy Lighting</h2>
-            </a>
-        </li>
-    </ul>
-    <div class='tab-content'>
+	// switched in to grant full features to non-pro
+	// also add weather and views edit pages
+	const navMenu = `
+			<li class="nav-tabs active">
+				<a data-tab="pagedetails" href="javascript:void(0);">
+					<h2>General</h2>
+				</a>
+			</li>
+			<li class="nav-tabs dl">
+				<a>
+					<h2>Lighting</h2>
+				</a>
+				<ul>
+					<li class="nav-tabs--beta">
+						<span class="label label-info">Updated</span>
+						<a data-tab="lighting" href="javascript:void(0);">
+							<h2>Dynamic Lighting</h2>
+						</a>
+					</li>
+					<li class="nav-tabs">
+						<a data-tab="legacy-lighting" href="javascript:void(0);">
+							<h2>Legacy Lighting</h2>
+						</a>
+					</li>
+				</ul>
+			</li>
+			<li class="nav-tabs--beta">
+				<span class="label label-info">bR20</span>
+				<a data-tab="weather" href="javascript:void(0);">
+					<h2>Weather</h2>
+				</a>
+			</li>
+			<li class="nav-tabs--beta">
+				<span class="label label-info">bR20</span>
+				<a data-tab="views" href="javascript:void(0);">
+					<h2>Views</h2>
+				</a>
+			</li>
+		</ul>
+	`;
+
+	const roll20settings = `
+		<!-- BEGIN ROLL20 CODE -->
         <div class='legacy-lighting tab-pane'>
 			<!-- BEGIN MOD -->
-			<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+			<strong style="display: block; margin-bottom: 10px;">
+				<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+				Requires a paid Roll20 subscription or all players to use a betteR20 script
+			</strong>
 			<hr>
 			<!-- END MOD -->
             <div class='lighting_feature showtip' data-feature_enabled='showdarkness' id='fog_settings' title='Enabling Fog of War will disable Updated Dynamic Lighting'>
@@ -15524,6 +15453,7 @@ Updated
                 <div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
             </div>
         </div>
+
         <div class='pagedetails tab-pane' style='display:block;'>
             <!-- * SIZE */ -->
             <div class='size_settings' id='size_settings'>
@@ -15795,22 +15725,6 @@ Updated
                     <select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
                 </div>
             </div>
-
-            <!-- BEGIN MOD -->
-            <hr>
-             <div>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Extensions by betteR20</h3>
-                </div>
-                <button class='btn Ve-btn-weather'>
-					Configure Weather
-				</button>
-                <button class='btn Ve-btn-views'>
-					Configure Views
-				</button>
-            </div>
-			<!-- END MOD -->
-
             <!-- * Archive & Delete Buttons */ -->
             <hr>
             <div class='page-buttons d-flex flex-wrap justify-content-between'>
@@ -15822,7 +15736,10 @@ Updated
         <div class='lighting tab-pane'>
             <div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
 				<!-- BEGIN MOD -->
-				<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+				<strong style="display: block; margin-bottom: 10px;">
+					<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+					Requires a paid Roll20 subscription or all players to use a betteR20 script
+				</strong>
 				<hr>
 				<!-- END MOD -->
                 <div class='alert alert-info' role='alert'>
@@ -15940,8 +15857,348 @@ Updated
                 <hr>
             </div>
         </div>
-    </div>
-</script>`;
+		<!-- END ROLL20 CODE -->
+	`;
+
+	const weatherSettings = `
+		<div class='weather tab-pane'>
+			<div class="pagedetails">
+				<strong style="display: block; margin-bottom: 10px;">
+					<a class="tipsy-w showtip pictos" title="Requires all players to use a betteR20 script">!</a>
+					Requires all players to use a betteR20 script
+				</strong>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Weather Type</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Select type</h4>
+				</div>
+				<div>
+					<label class="sr-only">select the weather type</label>
+					<select name="weatherType1">
+						<option>None</option>
+						<option>Fog</option>
+						<option>Rain</option>
+						<option>Ripples</option>
+						<option>Snow</option>
+						<option>Waves</option>
+						<option>Blood Rain</option>
+						<option>Custom (see below)</option>
+					</select>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom type</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input URL to your PNG when &quot;Custom&quot; is selected above">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom image</label>
+					<input class="page-input" name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Amimation</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Direction</h4>
+				</div>
+				<div>
+					<label class="sr-only">select the weather direction</label>
+					<select name="weatherDir1">
+						<option value="Northerly">Northerly</option>
+						<option value="North-Easterly">North-Easterly</option>
+						<option value="Easterly">Easterly</option>
+						<option value="South-Easterly">South-Easterly</option>
+						<option value="Southerly">Southerly</option>
+						<option value="South-Westerly">South-Westerly</option>
+						<option value="Westerly">Westerly</option>
+						<option value="North-Westerly">North-Westerly</option>
+						<option value="Custom (see below)">Custom (see below)</option>
+					</select>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom Direction</h4>
+					<a class="tipsy-w showtip pictos" original-title="Set direction when &quot;Custom&quot; is selected above">?</a>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherDirCustom1" disabled="" type="text">
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Speed</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01" value="0.4">
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherSpeed1" disabled="" type="text">
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Oscillate</h4>
+					</div>
+					<div class="col-xs-7 pagedetails__header">
+						<span>Periodically revert Weather direction, with frequency based on Threshold</span>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
+							<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox" value="1">
+							<span class="slider round">
+						</span></label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Oscillation Threshold</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01" value="0.5"/>
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherOscillateThreshold1" disabled="" type="text"/>
+					</div>
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Appearance</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Opacity</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01" value="0.5"/>
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherOpacity1" disabled="" type="text"/>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Intensity</h4>
+				</div>
+				<div>
+					<label class="sr-only">select the weather intensity</label>
+					<select name="weatherIntensity1">
+						<option>Normal</option>
+						<option>Heavy</option>
+					</select>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable Tint</h4>
+					</div>
+					<div class="col-xs-7 pagedetails__header">
+						<span>Adds semi-transparent color overlay to the whole page</span>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
+							<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox" value="1">
+							<span class="slider round">
+						</span></label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4>Tint Color</h4>
+					</div>
+					<div class="col-xs-3">
+						<input type="color" name="weatherTintColor1" value="#4c566d">
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Tint Opacity</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherTintOpacity1" min="0.01" max="0.7" step="0.01" value="0.5"/>
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text"/>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4 class="page_title">Special Effects</h4>
+				</div>
+				<div>
+					<label class="sr-only">select effects</label>
+					<select name="weatherEffect1">
+					<option>None</option>
+					<option>Lightning</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	`;
+
+	const viewSettings = `
+		<div class='views tab-pane'>
+			<div class="pagedetails">
+				<div class="alert alert-info" role="alert">
+					<p>Views are just another way to manage groups of items on your map
+					. Each View can include different items - tokens, paths & images, regardless of their layer. 
+					</p><p>Assign desired items to Views via the Context menu
+					. Then you can easily hide or show those items using controls at the bottom of "Editing layer" dropdown
+					. This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.
+					</p><p>Players do not need betteR20 to see the effect of switching Views.</p>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable Views</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="viewsEnable">toggle view one</label>
+							<input name="viewsEnable" class="feature_enabled" id="viewsEnable" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Default view</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views0Name" placeholder="Default">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">View 1</h3>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable View 1</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views1Enable">toggle view one</label>
+							<input name="views1Enable" class="feature_enabled" id="views1Enable" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Mutually exclusive with previous</h4>
+						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views1Exclusive">toggle view one</label>
+							<input name="views1Exclusive" class="feature_enabled" id="views1Exclusive" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views1Name" placeholder="View 1">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">View 2</h3>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable View 2</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views2Enable">toggle view one</label>
+							<input name="views2Enable" class="feature_enabled" id="views2Enable" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Mutually exclusive with previous</h4>
+						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views2Exclusive">toggle view two</label>
+							<input name="views2Exclusive" class="feature_enabled" id="views2Exclusive" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views2Name" placeholder="View 2">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">View 3</h3>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable View 3</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views3Enable">toggle view three</label>
+							<input name="views3Enable" class="feature_enabled" id="views3Enable" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Mutually exclusive with previous</h4>
+						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views3Exclusive">toggle view one</label>
+							<input name="views3Exclusive" class="feature_enabled" id="views3Exclusive" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views3Name" placeholder="View 3">
+				</div>
+			</div>
+		</div>
+	`;
+
+	const templatePageSettings = `
+		<script id='tmpl_pagesettings' type='text/html'>
+			<ul class='nav nav-tabs pagedetails_navigation'>
+				${navMenu}
+			</ul>
+			<div class='tab-content'>
+				${roll20settings}
+				${weatherSettings}
+				${viewSettings}
+			</div>
+		</script>
+	`;
 
 	d20plus.templates.templatePageSettings = templatePageSettings;
 }
