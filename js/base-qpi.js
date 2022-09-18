@@ -40,6 +40,9 @@ function baseQpi () {
 						};
 						d20.textchat.chatref.on("child_added", handleChat);
 						d20.textchat.chatref.on("child_changed", handleChat);
+					} else {
+						// eslint-disable-next-line no-console
+						console.warn("%cQPI > ", "color: #b93032; font-size: large", "Can't properly initialize chat handler");
 					}
 				},
 				_ (evtType, fn, ...others) {
