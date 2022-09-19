@@ -214,6 +214,7 @@ const SCRIPTS = {
 			"templates/template-page-settings",
 			"templates/template-roll20-actions-menu",
 			"templates/template-roll20-editors-misc",
+			"templates/template-base-misc",
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
@@ -253,6 +254,7 @@ const SCRIPTS = {
 			"templates/template-page-settings",
 			"templates/template-roll20-actions-menu",
 			"templates/template-roll20-editors-misc",
+			"templates/template-base-misc",
 			"base-template",
 			"base-emoji",
 			"base-remote-libre",
@@ -304,11 +306,15 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 });
 
 const MAIN_SCRIPTS = [
-	"templates/template-page-settings",
 	"templates/template-token-editor",
+	"templates/template-page-settings",
+	"templates/template-roll20-actions-menu",
+	"templates/template-roll20-editors-misc",
+	"templates/template-base-misc",
 	"5etools-bootstrap",
 	"5etools-config",
 	"5etools-main",
+	"base-art",
 	"base-config",
 	"base-css",
 	"base-emoji",

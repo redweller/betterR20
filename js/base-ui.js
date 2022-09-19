@@ -9,14 +9,14 @@ function baseUi () {
 		$("#settings-accordion").children(".panel.panel-default").first().before($wrpSettings);
 
 		$wrpSettings.append(d20plus.settingsHtmlHeader);
-		$body.append(d20plus.configEditorHTML);
+		$body.append(d20plus.html.configEditorHTML);
 		if (window.is_gm) {
-			$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.artTabHtml);
+			$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.html.artTabHtml);
 			$(`#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
 
-			$body.append(d20plus.addArtHTML);
-			$body.append(d20plus.addArtMassAdderHTML);
-			$body.append(d20plus.tool.toolsListHtml);
+			$body.append(d20plus.html.addArtHTML);
+			$body.append(d20plus.html.addArtMassAdderHTML);
+			$body.append(d20plus.html.toolsListHtml);
 			$("#d20plus-artfolder").dialog({
 				autoOpen: false,
 				resizable: true,
@@ -37,7 +37,7 @@ function baseUi () {
 			width: 800,
 			height: 650,
 		});
-		$cfgEditor.parent().append(d20plus.configEditorButtonBarHTML);
+		$cfgEditor.parent().append(d20plus.html.configEditorButtonBarHTML);
 
 		// shared GM/player conent
 		// quick search box
@@ -62,7 +62,7 @@ function baseUi () {
 
 	d20plus.ui.addHtmlFooter = () => {
 		const $wrpSettings = $(`#betteR20-settings`);
-		$wrpSettings.append(d20plus.settingsHtmlPtFooter);
+		$wrpSettings.append(d20plus.html.settingsHtmlPtFooter);
 		$wrpSettings.css("margin", "5px");
 
 		$("#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
