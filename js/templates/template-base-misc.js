@@ -148,6 +148,12 @@ function initHTMLbaseMisc () {
 					<h2>Weather</h2>
 				</a>
 			</li>
+			<li class="nav-tabs--beta">
+				<span class="label label-info">bR20</span>
+				<a data-tab="views" href="javascript:void(0);">
+					<h2>Views</h2>
+				</a>
+			</li>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});

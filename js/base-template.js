@@ -22,6 +22,7 @@ const baseTemplate = function () {
 			<div class='tab-content'>
 				${d20plus.html.roll20pageSettings}
 				${d20plus.html.pageSettingsWeather}
+				${d20plus.html.pageSettingsViews}
 			</div>
 		</script>`;
 	};
