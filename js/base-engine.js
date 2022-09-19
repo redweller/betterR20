@@ -67,10 +67,6 @@ function d20plusEngine () {
 				}
 			}
 
-			// ensure tokens have editable sight
-			$("#tmpl_tokeneditor").replaceWith(d20plus.templates.templateTokenEditor);
-			// show dynamic lighting/etc page settings
-			$("#tmpl_pagesettings").replaceWith(d20plus.templates.templatePageSettings);
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
 				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");

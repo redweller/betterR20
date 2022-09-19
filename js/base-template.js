@@ -2,11 +2,16 @@ const baseTemplate = function () {
 	d20plus.template = {};
 
 	d20plus.template.swapTemplates = () => {
+		document.dispatchEvent(new Event(`b20initTemplates`));
 		d20plus.ut.log("Swapping templates...");
 		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
 		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.template.deckeditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.template.cardeditor).html());
+		// ensure tokens have editable sight
+		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
+		// show dynamic lighting/etc page settings
+		$("#tmpl_pagesettings").replaceWith(d20plus.html.roll20pageSettings);
 	};
 
 	d20plus.template.neatActionsView = (id) => {

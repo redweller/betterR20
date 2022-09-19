@@ -1,7 +1,10 @@
-function initTemplateTokenEditor () {
+function initHTMLTokenEditor () {
+	d20plus.html = d20plus.html || {};
+
 	// no mods; just switched in to grant full features to non-pro
-	const templateTokenEditor = `<script id='tmpl_tokeneditor' type='text/html'>
-    <div class='dialog largedialog tokeneditor' style='display: block;'>
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.tokenEditor = `<script id='tmpl_tokeneditor' type='text/html'>
+    	<div class='dialog largedialog tokeneditor' style='display: block;'>
         <ul class='nav nav-tabs tokeneditor_navigation'>
             <li class='active'>
                 <a data-tab='basic' href='javascript:void(0);'>
@@ -1074,10 +1077,11 @@ function initTemplateTokenEditor () {
                 </div>
             </div>
         </div>
-    </div>
-</script>`;
+        </div>
+        </script>`;
 
-	d20plus.templates.templateTokenEditor = templateTokenEditor;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
-SCRIPT_EXTENSIONS.push(initTemplateTokenEditor);
+SCRIPT_EXTENSIONS.push(initHTMLTokenEditor);

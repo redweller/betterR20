@@ -1,6 +1,9 @@
-function initTemplatePageSettings () {
+function initHTMLPageSettings () {
+	d20plus.html = d20plus.html || {};
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.roll20pageSettings = `<!-- BEGIN ROLL20 CODE -->
 	// no mods; just switched in to grant full features to non-pro
-	const templatePageSettings = `<script id='tmpl_pagesettings' type='text/html'>
     <ul class='nav nav-tabs pagedetails_navigation'>
         <li class='active'>
             <a data-tab='pagedetails' href='javascript:void(0);'>
@@ -521,8 +524,9 @@ Updated
         </div>
     </div>
 </script>`;
-
-	d20plus.templates.templatePageSettings = templatePageSettings;
+		<!-- END ROLL20 CODE -->`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
-SCRIPT_EXTENSIONS.push(initTemplatePageSettings);
+SCRIPT_EXTENSIONS.push(initHTMLPageSettings);
