@@ -38,7 +38,7 @@ module.exports = {
 	cfg_option_hide_linesplit: ["Hide Line Splitter (reload to apply changes)"],
 	cfg_option_log_players_in_chat: ["Show player connects messages"],
 	cfg_option_neat_menus: ["Reorganized canvas context menu (reload to apply changes)"],
-	cfg_option_quick_menu: ["Enable quick actions as copies of the menu entries added to the bottom of right-click menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back."],
+	cfg_option_quick_menu: ["Enable quick actions as copies of the menu entries added to the bottom of Reorganized menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back."],
 	cfg_option_quick_2: ["-- Quick action 2"],
 	cfg_option_quick_3: ["-- Quick action 3"],
 	cfg_option_minify_tracker: ["Shrink Initiative Tracker Text"],
