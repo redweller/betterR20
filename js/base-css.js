@@ -421,6 +421,11 @@ function baseCss () {
 			s: "#floatinglayerbar li",
 			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
 		},
+		// Fix page options scrollbar color in darkmode on Chrome
+		{
+			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
+			r: "background-color: rgba(100, 100, 100, 0.5);",
+		},
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
@@ -644,6 +649,86 @@ function baseCss () {
 		{
 			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
 			r: "font-size: 12px;",
+		},
+	]);
+
+	// Rewamped page options
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".ui-dialog-pagename",
+			r: "padding: 12px 0px 0px 10px; display: inline-block; font-size: 14px; max-width: 130px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;",
+		},
+		{
+			s: ".nav-tabs--beta .label",
+			r: "left: calc( 50% - 21px); right: unset;",
+		},
+		{
+			s: ".nav-tabs > li > ul .nav-tabs--beta .label",
+			r: "top: -4px;",
+		},
+		{
+			s: ".nav-tabs > li > ul",
+			r: "width: 0px; overflow-x: visible; white-space: nowrap; margin-left: -50px; height: 0px; overflow-y: clip; transition: height 0.3s;",
+		},
+		{
+			s: ".nav-tabs > li.active > ul",
+			r: "height: 36px; transition: height 1s;",
+		},
+		{
+			s: ".dialog .nav-tabs > li.active.dl > a",
+			r: "background-color: unset; border-color: transparent; text-decoration: none; cursor: unset;",
+		},
+		{
+			s: ".ui-dialog .ui-dialog-content",
+			r: "background: inherit;",
+		},
+		{
+			s: ".dialog .nav.nav-tabs > li > a",
+			r: "cursor: pointer;",
+		},
+		{
+			s: ".nav-tabs > ul > li",
+			r: "list-style: none; display: inline-block;",
+		},
+		{
+			s: ".nav-tabs > ul > li a",
+			r: "border-radius: 4px 4px 0 0; padding-right: 12px; padding-left: 12px; margin-right: 2px; line-height: 14px; display: inline-block; padding-top: 9px; padding-bottom: 9px; border-style: solid; border-width: 1px; border-bottom: none;",
+		},
+		{
+			s: ".nav-tabs > ul > li.active a",
+			r: "background-color: var(--dark-primary); color: var(--dark-primarytext); border-color: var(--dark-primary-highlight); text-decoration-color: var(--color-primary-text); vertical-align: sub;",
+		},
+		{
+			s: ".nav-tabs > ul > li.active,	ul.nav-tabs li.active",
+			r: "border-bottom-width: 0px;",
+		},
+		{
+			s: "ul.nav-tabs > li.nav-tabs",
+			r: "border-bottom: none;",
+		},
+		{
+			s: ".nav.nav-tabs.pagedetails_navigation",
+			r: "position: sticky; top: -10px; z-index: 100; background-color: inherit; padding-top: 7px;",
+		},
+		{
+			s: ".page-input",
+			r: "box-sizing: border-box; height: 28px; width: 100%; border-radius: 0.5rem;",
+		},
+		{
+			s: ".page-input.page-hint[type=\"text\"]",
+			r: "border-radius: 0.5rem;",
+		},
+		{
+			s: ".weather input[type=\"color\"]",
+			r: "width: 100%; height: 24px; border-radius: 0.5rem; padding: 1px;",
+		},
+		{
+			s: ".views .pagedetails h4",
+			r: "display: inline;",
+		},
+		{
+			s: ".tab-pane strong .showtip",
+			r: "margin-left: 0px; margin-right: 3%; float: left; margin-top: 1px;",
 		},
 	]);
 

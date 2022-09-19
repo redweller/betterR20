@@ -11,8 +11,123 @@ const baseTemplate = function () {
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
 		// show dynamic lighting/etc page settings
-		$("#tmpl_pagesettings").replaceWith(d20plus.html.roll20pageSettings);
+		$("#tmpl_pagesettings").replaceWith(d20plus.template._makePageSettingsTemplate());
 	};
+
+	d20plus.template._makePageSettingsTemplate = () => {
+		return `<script id='tmpl_pagesettings' type='text/html'>
+			<ul class='nav nav-tabs pagedetails_navigation'>
+				${d20plus.html.pageSettingsNavTabs}
+			</ul>
+			<div class='tab-content'>
+				${d20plus.html.roll20pageSettings}
+			</div>
+		</script>`;
+	};
+
+	d20plus.template.processPageOptions = () => {
+		if (!d20plus.engine._lastSettingsPageId) return;
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (page && page.get) {
+			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			// if editing active page then close pages list and add Apply button
+			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
+				const $barPage = $(`#page-toolbar`);
+				const $overlay = $(`.ui-widget-overlay`);
+				const templateApply = `<button type="button" class="btn btn-apply" title="Apply settings for current page">Apply</button>`;
+				if (!$barPage.hasClass("closed")) {
+					$barPage.find(`.handle`).click();
+					$overlay.remove();
+				}
+				$dialog.find(`.btn-primary:visible`).before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.template._applySettings);
+			}
+			// process options within open dialog
+			if ($dialog[0]) {
+				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
+				d20plus.template._handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
+					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
+					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
+						d20plus.template._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+					});
+				}
+			}
+		}
+	}
+
+	d20plus.template._applySettings = () => {
+		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
+		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
+		const pageid = d20plus.engine._lastSettingsPageId;
+		if ($dialog[0]) {
+			$(`#page-toolbar`).css("visibility", "hidden");
+			d20plus.template._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+			$dialog.find(`.btn-primary:visible`).click();
+			$(`#page-toolbar .handle`).click();
+			$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
+			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+		}
+		setTimeout(() => {
+			$(`#page-toolbar`).css("visibility", "unset");
+		}, 1000);
+	}
+
+	d20plus.template._handleCustomOptions = (dialog, doSave) => {
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page || !page.get) return;
+		const customOptionsPages = [
+			"weather",
+			"views",
+		];
+		customOptionsPages.forEach(category => {
+			d20plus[category].props.forEach(propName => {
+				if (doSave) {
+					d20plus.template._saveOption(page, dialog, propName);
+				} else {
+					d20plus.template._getOption(page, dialog, propName);
+				}
+			});
+		});
+		if (doSave) {
+			page.save();
+		}
+	}
+
+	d20plus.template._saveOption = (page, dialog, propName) => {
+		const $e = dialog.find(`[name="${propName}"]`);
+		if ($e.is(":checkbox")) {
+			if ($e.prop("checked")) {
+				page.set(`bR20cfg_${propName}`, !!$e.prop("checked"));
+			} else {
+				page.unset(`bR20cfg_${propName}`);
+			}
+		} else {
+			if ($e.val()) {
+				page.set(`bR20cfg_${propName}`, $e.val());
+			} else {
+				page.unset(`bR20cfg_${propName}`);
+			}
+		}
+	}
+
+	d20plus.template._getOption = (page, dialog, propName) => {
+		const val = page.get(`bR20cfg_${propName}`);
+		if (!val) return;
+		dialog.find(`[name="${propName}"]`).each((i, e) => {
+			const $e = $(e);
+			if ($e.is(":checkbox")) {
+				$e.prop("checked", !!val);
+			} else if ($e.is("input[type=range]")) {
+				if ($e.prop("name")) $(`.${$e.prop("name")}`).val(val);
+				$e.val(val);
+			} else {
+				$e.val(val);
+			}
+		});
+	}
 
 	d20plus.template._neatActionsView = (id) => {
 		return `

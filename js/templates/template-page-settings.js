@@ -1,33 +1,15 @@
 function initHTMLPageSettings () {
 	d20plus.html = d20plus.html || {};
 
+	// no mods; just switched in to grant full features to non-pro
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.roll20pageSettings = `<!-- BEGIN ROLL20 CODE -->
-	// no mods; just switched in to grant full features to non-pro
-    <ul class='nav nav-tabs pagedetails_navigation'>
-        <li class='active'>
-            <a data-tab='pagedetails' href='javascript:void(0);'>
-                <h2>Page Details</h2>
-            </a>
-        </li>
-        <li class='nav-tabs--beta'>
-<span class='label label-info'>
-Updated
-</span>
-            <a data-tab='lighting' href='javascript:void(0);'>
-                <h2>Dynamic Lighting</h2>
-            </a>
-        </li>
-        <li class='nav-tabs'>
-            <a data-tab='legacy-lighting' href='javascript:void(0);'>
-                <h2>Legacy Lighting</h2>
-            </a>
-        </li>
-    </ul>
-    <div class='tab-content'>
         <div class='legacy-lighting tab-pane'>
 			<!-- BEGIN MOD -->
-			<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+			<strong style="display: block; margin-bottom: 10px;">
+				<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+				Requires a paid Roll20 subscription or all players to use a betteR20 script
+			</strong>
 			<hr>
 			<!-- END MOD -->
             <div class='lighting_feature showtip' data-feature_enabled='showdarkness' id='fog_settings' title='Enabling Fog of War will disable Updated Dynamic Lighting'>
@@ -106,6 +88,7 @@ Updated
                 <div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
             </div>
         </div>
+
         <div class='pagedetails tab-pane' style='display:block;'>
             <!-- * SIZE */ -->
             <div class='size_settings' id='size_settings'>
@@ -377,22 +360,6 @@ Updated
                     <select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
                 </div>
             </div>
-
-            <!-- BEGIN MOD -->
-            <hr>
-             <div>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Extensions by betteR20</h3>
-                </div>
-                <button class='btn Ve-btn-weather'>
-					Configure Weather
-				</button>
-                <button class='btn Ve-btn-views'>
-					Configure Views
-				</button>
-            </div>
-			<!-- END MOD -->
-
             <!-- * Archive & Delete Buttons */ -->
             <hr>
             <div class='page-buttons d-flex flex-wrap justify-content-between'>
@@ -404,7 +371,10 @@ Updated
         <div class='lighting tab-pane'>
             <div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
 				<!-- BEGIN MOD -->
-				<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+				<strong style="display: block; margin-bottom: 10px;">
+					<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+					Requires a paid Roll20 subscription or all players to use a betteR20 script
+				</strong>
 				<hr>
 				<!-- END MOD -->
                 <div class='alert alert-info' role='alert'>
@@ -522,8 +492,6 @@ Updated
                 <hr>
             </div>
         </div>
-    </div>
-</script>`;
 		<!-- END ROLL20 CODE -->`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});

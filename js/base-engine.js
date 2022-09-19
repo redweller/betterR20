@@ -157,6 +157,27 @@ function d20plusEngine () {
 			originalFn();
 			debouncedOverwrite();
 		}
+
+		$(`body`).on("click", ".weather input[type=range]", function (event) {
+			if (this.name) $(`.${this.name}`).val(this.value);
+		}).on("mouseup", "li.dl", function (event) {
+			// process Dynamic Lighting tabs
+			const $dynLightTab = $(event.target).closest("li.dl");
+			const $isTabAnchor = $(event.target).closest("a");
+			if (!$dynLightTab.hasClass("active")) {
+				setTimeout(() => {
+					if (!$dynLightTab.hasClass("legacy")) $(`[data-tab=lighting]:visible`).click();
+					else $(`[data-tab=legacy-lighting]:visible`).click();
+				}, 10);
+			}
+			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
+			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
+		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
+			const $this = $(this);
+			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
+		}).on("click", ".chooseablepage .js__settings-page", function () {
+			setTimeout(() => d20plus.template.processPageOptions(), 50);
+		});
 	};
 
 	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
