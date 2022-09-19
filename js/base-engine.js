@@ -1400,25 +1400,52 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.objectsHideUnhide = (q, val, prefix, state) => {
+	d20plus.engine.objectsStashProps = (obj, visible) => {
+		const props = [
+			"emits_bright_light",
+			"emits_low_light",
+			"has_directional_bright_light",
+			"has_directional_dim_light",
+			"showplayers_bar1",
+			"showplayers_bar2",
+			"showplayers_bar3",
+			"showname",
+		];
+		props.each((prop) => {
+			if (!visible) {
+				if (obj.attributes[prop]) {
+					obj.attributes[`bR20_${prop}`] = true;
+					obj.attributes[prop] = false;
+				}
+			} else {
+				if (obj.attributes[`bR20_${prop}`]) {
+					obj.attributes[prop] = true;
+					obj.attributes[`bR20_${prop}`] = null;
+				}
+			}
+		});
+	}
+
+	d20plus.engine.objectsHideUnhide = (query, val, prefix, visible) => {
 		let some = false;
 		for (const o of d20.engine.canvas._objects) {
-			const model = o.model;
-			if (!model) continue;
-			if (`${model.get(q)}`.search(val) > -1) {
-				const l = model.attributes.layer;
-				if (state) {
-					if (l.search(prefix) > -1) {
-						model.attributes.layer = l.replace(`${prefix}_`, "");
+			if (!o.model) continue;
+			if (`${o.model.get(query)}`.search(val) > -1) {
+				const {layer} = o.model.attributes;
+				if (visible) {
+					if (layer.search(prefix) > -1) {
+						o.model.attributes.layer = layer.replace(`${prefix}_`, "");
+						d20plus.engine.objectsStashProps(o.model, true);
 						o.saveState();
-						model.save();
+						o.model.save();
 						some = true;
 					}
 				} else {
-					if (l.search(prefix) === -1) {
-						model.attributes.layer = `${prefix}_${l}`;
+					if (layer.search(prefix) === -1) {
+						o.model.attributes.layer = `${prefix}_${layer}`;
+						d20plus.engine.objectsStashProps(o.model, false);
 						o.saveState();
-						model.save();
+						o.model.save();
 						some = true;
 					}
 				}
