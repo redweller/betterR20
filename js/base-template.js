@@ -14,7 +14,7 @@ const baseTemplate = function () {
 		$("#tmpl_pagesettings").replaceWith(d20plus.html.roll20pageSettings);
 	};
 
-	d20plus.template.neatActionsView = (id) => {
+	d20plus.template._neatActionsView = (id) => {
 		return `
 			<span class="pictos ctx__layer-icon"><$ if (d20.Campaign.activePage().get('bR20cfg_views${id}Icon')) { 
 				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Icon')$> <$
@@ -26,7 +26,7 @@ const baseTemplate = function () {
 			} else { 
 				$> ${id ? `View ${id}` : `Default`} <$ 
 			} $>`;
-	}
+	};
 
 	d20plus.template.neatActions = {
 		"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
@@ -72,13 +72,13 @@ const baseTemplate = function () {
 		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"assignview0": { ln: d20plus.template.neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
-		"assignview1": { ln: d20plus.template.neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
-		"assignview2": { ln: d20plus.template.neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
-		"assignview3": { ln: d20plus.template.neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
+		"assignview0": { ln: d20plus.template._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
+		"assignview1": { ln: d20plus.template._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
+		"assignview2": { ln: d20plus.template._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
+		"assignview3": { ln: d20plus.template._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
 	};
 
-	d20plus.template.neatStructure = {
+	d20plus.template._neatStructure = {
 		"edit": {
 			ln: __("menu_edit_title"),
 			subitems: [
@@ -170,9 +170,9 @@ const baseTemplate = function () {
 				"takecard",
 				"flipcard",
 			] },
-	}
+	};
 
-	d20plus.template.pushQuickMenus = () => {
+	d20plus.template._pushQuickMenus = () => {
 		if (d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems")) {
 			let output = "";
 			const pushMenu = (num, action, condition) => {
@@ -192,11 +192,11 @@ const baseTemplate = function () {
 			pushMenu(3);
 			return output;
 		} else return "";
-	}
+	};
 
 	d20plus.template.generateNeatActionsMenu = () => {
 		let templ = "";
-		Object.entries(d20plus.template.neatStructure).forEach((menu) => {
+		Object.entries(d20plus.template._neatStructure).forEach((menu) => {
 			const menuData = menu[1];
 			const menuName = `data-menuname='${menu[0]}'`;
 			let menuConditions = [];
@@ -226,12 +226,12 @@ const baseTemplate = function () {
 		<div class='actions_menu d20contextmenu'>
 		  <ul>
 		  	${templ}
-			${d20plus.template.pushQuickMenus()}
+			${d20plus.template._pushQuickMenus()}
 		  </ul>
 		  </div>
 		</script>
 		`;
-	}
+	};
 
 	addConfigOptions("canvas", {
 		"_name": __("cfg_tab_canvas"),
