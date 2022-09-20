@@ -22,7 +22,7 @@ const betteR205etools = function () {
 				d20plus.ut.checkVersion();
 			}
 
-			d20plus.template.swapTemplates();
+			d20plus.engine.swapTemplates();
 			d20plus.ut.addAllCss();
 
 			if (window.is_gm) {
@@ -55,7 +55,7 @@ const betteR205etools = function () {
 			d20plus.art.initArtFromUrlButtons();
 			if (window.is_gm) {
 				d20plus.journal.addJournalCommands();
-				d20plus.engine.addSelectedTokenCommands();
+				d20plus.menu.addSelectedTokenCommands();
 				d20plus.art.addCustomArtSearch();
 				d20plus.engine.addTokenHover();
 				d20plus.engine.enhanceTransmogrifier();

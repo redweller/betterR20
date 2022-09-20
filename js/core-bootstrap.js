@@ -21,7 +21,7 @@ const betteR20Core = function () {
 				d20plus.ut.checkVersion();
 			}
 
-			d20plus.template.swapTemplates();
+			d20plus.engine.swapTemplates();
 			d20plus.ut.addAllCss();
 
 			if (window.is_gm) {
