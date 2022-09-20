@@ -199,15 +199,14 @@ function baseTool () {
 					$btnDel.off("click").on("click", () => {
 						const sel = delList.items
 							.filter(it => $(it.elm).find(`input`).prop("checked"))
-							.map(it => journalItems[$(it.elm).attr("data-listid")]);
+							.map(it => journalItems[$(it.elm).attr("data-listid")])
+							.reverse();
 
 						if (!sel.length) {
 							alert("No items selected!");
 						} else if (confirm(`Are you sure you want to delete the ${sel.length} selected item${sel.length > 1 ? "s" : ""}?`)) {
 							$win.dialog("close");
 							$("a.ui-tabs-anchor[href='#journal']").trigger("click");
-							// Hackery to make sure longer paths (therefore subitems) are processed first
-							sel.sort((a, b) => a.path.length + a.name.length < b.path.length + b.name.length);
 							sel.forEach(toDel => {
 								// If the item is a folder, use the folder deletion functon
 								if (toDel.folder) d20plus.journal.removeDirByPath(toDel.path.split(" / "));
