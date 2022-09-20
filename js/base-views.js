@@ -1,19 +1,19 @@
 function baseViews () {
 	d20plus.views = {};
 
-	d20plus.views.props = [
-		"viewsEnable",
-		"views0Name",
-		"views1Enable",
-		"views1Exclusive",
-		"views1Name",
-		"views2Enable",
-		"views2Exclusive",
-		"views2Name",
-		"views3Enable",
-		"views3Exclusive",
-		"views3Name",
-	];
+	d20plus.views.props = {
+		"viewsEnable": false,
+		"views0Name": "",
+		"views1Enable": false,
+		"views1Exclusive": false,
+		"views1Name": "",
+		"views2Enable": false,
+		"views2Exclusive": false,
+		"views2Name": "",
+		"views3Enable": false,
+		"views3Exclusive": false,
+		"views3Name": "",
+	};
 
 	d20plus.views._initMenuActions = () => {
 		$(`body`).on("click", ".chooseViews > li", function () {

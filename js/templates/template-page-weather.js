@@ -74,7 +74,7 @@ function initHTMLpageWeather () {
 				</div>
 				<div class="row">
 					<div class="col-xs-9">
-						<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01" value="0.4">
+						<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
 					</div>
 					<div class="col-xs-1">
 						<input class="page-input page-hint weatherSpeed1" disabled="" type="text">
@@ -90,7 +90,7 @@ function initHTMLpageWeather () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
-							<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox" value="1">
+							<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
 							<span class="slider round">
 						</span></label>
 					</div>
@@ -100,7 +100,7 @@ function initHTMLpageWeather () {
 				</div>
 				<div class="row">
 					<div class="col-xs-9">
-						<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01" value="0.5"/>
+						<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01"/>
 					</div>
 					<div class="col-xs-1">
 						<input class="page-input page-hint weatherOscillateThreshold1" disabled="" type="text"/>
@@ -115,7 +115,7 @@ function initHTMLpageWeather () {
 				</div>
 				<div class="row">
 					<div class="col-xs-9">
-						<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01" value="0.5"/>
+						<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01"/>
 					</div>
 					<div class="col-xs-1">
 						<input class="page-input page-hint weatherOpacity1" disabled="" type="text"/>
@@ -141,7 +141,7 @@ function initHTMLpageWeather () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
-							<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox" value="1">
+							<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
 							<span class="slider round">
 						</span></label>
 					</div>
@@ -151,7 +151,7 @@ function initHTMLpageWeather () {
 						<h4>Tint Color</h4>
 					</div>
 					<div class="col-xs-3">
-						<input type="color" name="weatherTintColor1" value="#4c566d">
+						<input type="color" name="weatherTintColor1">
 					</div>
 				</div>
 				<div class="pagedetails__subheader">
@@ -159,7 +159,7 @@ function initHTMLpageWeather () {
 				</div>
 				<div class="row">
 					<div class="col-xs-9">
-						<input type="range" name="weatherTintOpacity1" min="0.01" max="0.7" step="0.01" value="0.5"/>
+						<input type="range" name="weatherTintOpacity1" min="0.01" max="0.7" step="0.01"/>
 					</div>
 					<div class="col-xs-1">
 						<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text"/>

@@ -1,21 +1,21 @@
 function baseWeather () {
 	d20plus.weather = {};
 
-	d20plus.weather.props = [
-		"weatherType1",
-		"weatherTypeCustom1",
-		"weatherSpeed1",
-		"weatherDir1",
-		"weatherDirCustom1",
-		"weatherOpacity1",
-		"weatherOscillate1",
-		"weatherOscillateThreshold1",
-		"weatherIntensity1",
-		"weatherTint1",
-		"weatherTintColor1",
-		"weatherTintOpacity1",
-		"weatherEffect1",
-	];
+	d20plus.weather.props = {
+		"weatherType1": "None",
+		"weatherTypeCustom1": "",
+		"weatherSpeed1": "0.4",
+		"weatherDir1": "Northerly",
+		"weatherDirCustom1": "180",
+		"weatherOpacity1": "0.5",
+		"weatherOscillate1": false,
+		"weatherOscillateThreshold1": "0.5",
+		"weatherIntensity1": "Normal",
+		"weatherTint1": false,
+		"weatherTintColor1": "#4c566d",
+		"weatherTintOpacity1": "0.5",
+		"weatherEffect1": "None",
+	};
 
 	d20plus.weather.addWeather = () => {
 		window.force = false; // missing variable in Roll20's code(?); define it here
@@ -138,7 +138,7 @@ function baseWeather () {
 		}
 
 		function getDirectionRotation (page) {
-			const dir = page.get("bR20cfg_weatherDir1");
+			const dir = page.get("bR20cfg_weatherDir1") || d20plus.weather.props.weatherDir1;
 			switch (dir) {
 				case "Northerly": return 0.25 * Math.PI;
 				case "North-Easterly": return 0.5 * Math.PI;
@@ -149,13 +149,13 @@ function baseWeather () {
 				case "Westerly": return 1.75 * Math.PI;
 				case "North-Westerly": return 0;
 				case "Custom (see below)":
-					return Number(page.get("bR20cfg_weatherDirCustom1") || 0) * Math.PI / 180;
+					return Number(page.get("bR20cfg_weatherDirCustom1") || d20plus.weather.props.weatherDirCustom1) * Math.PI / 180;
 				default: return 0;
 			}
 		}
 
 		function getOpacity (page) {
-			return page.get("bR20cfg_weatherOpacity1") || 1;
+			return page.get("bR20cfg_weatherOpacity1") || d20plus.weather.props.weatherOpacity1;
 		}
 
 		let oscillateMode = null;
@@ -164,7 +164,7 @@ function baseWeather () {
 		}
 
 		function getOscillationThresholdFactor (page) {
-			return page.get("bR20cfg_weatherOscillateThreshold1") || 1;
+			return page.get("bR20cfg_weatherOscillateThreshold1") || d20plus.weather.props.weatherOscillateThreshold1;
 		}
 
 		function getIntensity (page) {
@@ -310,7 +310,7 @@ function baseWeather () {
 
 						// if (clipMode === "INCLUDE") doMaskStep(true);
 
-						const speed = page.get("bR20cfg_weatherSpeed1") || 0.1;
+						const speed = page.get("bR20cfg_weatherSpeed1") || d20plus.weather.props.weatherSpeed1;
 						const speedFactor = speed * d20.engine.canvasZoom;
 						const maxAccum = Math.floor(scaledW / speedFactor);
 						const rot = getDirectionRotation(page);

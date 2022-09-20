@@ -19,7 +19,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="viewsEnable">toggle view one</label>
-							<input name="viewsEnable" class="feature_enabled" id="viewsEnable" type="checkbox" value="0">
+							<input name="viewsEnable" class="feature_enabled" id="viewsEnable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -46,7 +46,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views1Enable">toggle view one</label>
-							<input name="views1Enable" class="feature_enabled" id="views1Enable" type="checkbox" value="0">
+							<input name="views1Enable" class="feature_enabled" id="views1Enable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -59,7 +59,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views1Exclusive">toggle view one</label>
-							<input name="views1Exclusive" class="feature_enabled" id="views1Exclusive" type="checkbox" value="0">
+							<input name="views1Exclusive" class="feature_enabled" id="views1Exclusive" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -83,7 +83,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views2Enable">toggle view one</label>
-							<input name="views2Enable" class="feature_enabled" id="views2Enable" type="checkbox" value="0">
+							<input name="views2Enable" class="feature_enabled" id="views2Enable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -96,7 +96,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views2Exclusive">toggle view two</label>
-							<input name="views2Exclusive" class="feature_enabled" id="views2Exclusive" type="checkbox" value="0">
+							<input name="views2Exclusive" class="feature_enabled" id="views2Exclusive" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>

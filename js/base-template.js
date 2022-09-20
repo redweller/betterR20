@@ -53,6 +53,10 @@ const baseTemplate = function () {
 					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
 						d20plus.template._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
 					});
+					// closed editors behave strangely, so replace Close with Cancel
+					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
+						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
+					});
 				}
 			}
 		}
@@ -66,64 +70,57 @@ const baseTemplate = function () {
 		if ($dialog[0]) {
 			$(`#page-toolbar`).css("visibility", "hidden");
 			d20plus.template._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-			$dialog.find(`.btn-primary:visible`).click();
-			$(`#page-toolbar .handle`).click();
-			$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
-			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
-			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+			setTimeout(() => {
+				$dialog.find(`.btn-primary:visible`).click();
+				$(`#page-toolbar .handle`).click();
+				$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
+				$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+				$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+				setTimeout(() => {
+					$(`#page-toolbar`).css("visibility", "unset");
+				}, 1000);
+			}, 10);
 		}
-		setTimeout(() => {
-			$(`#page-toolbar`).css("visibility", "unset");
-		}, 1000);
 	}
 
 	d20plus.template._handleCustomOptions = (dialog, doSave) => {
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (!page || !page.get) return;
-		const customOptionsPages = [
+		[
 			"weather",
 			"views",
-		];
-		customOptionsPages.forEach(category => {
-			d20plus[category].props.forEach(propName => {
-				if (doSave) {
-					d20plus.template._saveOption(page, dialog, propName);
-				} else {
-					d20plus.template._getOption(page, dialog, propName);
-				}
-			});
-		});
+		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
+			if (doSave) {
+				d20plus.template._saveOption(page, dialog, {name, deflt});
+			} else {
+				d20plus.template._getOption(page, dialog, {name, deflt});
+			}
+		}));
 		if (doSave) {
 			page.save();
 		}
 	}
 
-	d20plus.template._saveOption = (page, dialog, propName) => {
-		const $e = dialog.find(`[name="${propName}"]`);
-		if ($e.is(":checkbox")) {
-			if ($e.prop("checked")) {
-				page.set(`bR20cfg_${propName}`, !!$e.prop("checked"));
-			} else {
-				page.unset(`bR20cfg_${propName}`);
-			}
+	d20plus.template._saveOption = (page, dialog, prop) => {
+		const $e = dialog.find(`[name="${prop.name}"]`);
+		const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
+		if (val && val !== prop.deflt) {
+			page.attributes[`bR20cfg_${prop.name}`] = val;
 		} else {
-			if ($e.val()) {
-				page.set(`bR20cfg_${propName}`, $e.val());
-			} else {
-				page.unset(`bR20cfg_${propName}`);
+			if (page.attributes.hasOwnProperty(`bR20cfg_${prop.name}`)) {
+				page.attributes[`bR20cfg_${prop.name}`] = null;
 			}
 		}
 	}
 
-	d20plus.template._getOption = (page, dialog, propName) => {
-		const val = page.get(`bR20cfg_${propName}`);
-		if (!val) return;
-		dialog.find(`[name="${propName}"]`).each((i, e) => {
+	d20plus.template._getOption = (page, dialog, prop) => {
+		const val = page.get(`bR20cfg_${prop.name}`) || prop.deflt;
+		dialog.find(`[name="${prop.name}"]`).each((i, e) => {
 			const $e = $(e);
 			if ($e.is(":checkbox")) {
 				$e.prop("checked", !!val);
 			} else if ($e.is("input[type=range]")) {
-				if ($e.prop("name")) $(`.${$e.prop("name")}`).val(val);
+				$(`.${prop.name}`).val(val);
 				$e.val(val);
 			} else {
 				$e.val(val);
