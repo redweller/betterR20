@@ -46,7 +46,7 @@ const betteR20Core = function () {
 			d20plus.art.initArtFromUrlButtons();
 			if (window.is_gm) {
 				d20plus.journal.addJournalCommands();
-				d20plus.engine.addSelectedTokenCommands();
+				d20plus.menu.addSelectedTokenCommands();
 				d20plus.art.addCustomArtSearch();
 				d20plus.engine.addTokenHover();
 				d20plus.engine.enhanceTransmogrifier();
