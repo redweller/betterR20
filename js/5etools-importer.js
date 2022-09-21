@@ -236,7 +236,7 @@ function d20plusImporter () {
 			character.abilities.create({
 				name: `${prefix + index}: ${name}`,
 				istokenaction: true,
-				action: d20plus.actionMacroAction(baseAction, index),
+				action: d20plus.macro.actionMacroAction(baseAction, index),
 			}).save();
 		}
 

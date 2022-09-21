@@ -21,6 +21,25 @@ function d20plusClass () {
 		}
 	};
 
+	d20plus.classes.getDataForImport = async function (oldData) {
+		await d20plus.importer.pAddBrew(oldData);
+		const data = MiscUtil.copy(oldData);
+		data.class = data.class || [];
+		for (let i = 0; i < data.class.length; ++i) {
+			data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
+		}
+
+		if (data.subclass) {
+			for (let i = 0; i < data.subclass.length; ++i) {
+				data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
+			}
+		}
+
+		d20plus.classes._doAttachChildSubclasses(data);
+
+		return data;
+	}
+
 	// Import Classes button was clicked
 	d20plus.classes.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -30,23 +49,9 @@ function d20plusClass () {
 			const officialClassUrls = Object.values(classDataUrls).map(v => d20plus.formSrcUrl(CLASS_DATA_DIR, v));
 
 			DataUtil.loadJSON(url).then(async (data) => {
-				await d20plus.importer.pAddBrew(data);
-
 				if (!data.class) return;
 
-				data = MiscUtil.copy(data);
-				data.class = data.class || [];
-				for (let i = 0; i < data.class.length; ++i) {
-					data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
-				}
-
-				if (data.subclass) {
-					for (let i = 0; i < data.subclass.length; ++i) {
-						data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
-					}
-				}
-
-				d20plus.classes._doAttachChildSubclasses(data);
+				data = await d20plus.classes.getDataForImport(data);
 
 				d20plus.importer.showImportList(
 					"class",
@@ -503,6 +508,37 @@ function d20plusClass () {
 			source: Parser.sourceJsonToAbv(sc.source).toLowerCase(),
 		};
 	};
+
+	d20plus.subclasses.getDataForImport = async function (data) {
+		await d20plus.importer.pAddBrew(data);
+
+		data = MiscUtil.copy(data);
+		for (let i = 0; i < (data.class || []).length; ++i) {
+			data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
+		}
+		for (let i = 0; i < (data.subclass || []).length; ++i) {
+			data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
+		}
+
+		// merge in any subclasses contained in class data
+		const allData = MiscUtil.copy(data.subclass || []);
+		(data.class || []).map(c => {
+			if (c.subclasses) {
+				// make a copy without subclasses to prevent circular references
+				const cpy = MiscUtil.copy(c);
+				delete cpy.subclasses;
+				c.subclasses.forEach(sc => {
+					sc.className = c.name;
+					sc.source = sc.source || c.source;
+					sc._baseClass = cpy;
+				});
+				return c.subclasses;
+			} else return false;
+		}).filter(Boolean).forEach(sc => allData.push(sc));
+
+		return allData.flat();
+	}
+
 	// Import Subclasses button was clicked
 	d20plus.subclasses.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
@@ -511,35 +547,11 @@ function d20plusClass () {
 			const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
 			DataUtil.loadJSON(url).then(async (data) => {
-				await d20plus.importer.pAddBrew(data);
-
-				data = MiscUtil.copy(data);
-				for (let i = 0; i < (data.class || []).length; ++i) {
-					data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
-				}
-				for (let i = 0; i < (data.subclass || []).length; ++i) {
-					data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
-				}
-
-				// merge in any subclasses contained in class data
-				const allData = MiscUtil.copy(data.subclass || []);
-				(data.class || []).map(c => {
-					if (c.subclasses) {
-						// make a copy without subclasses to prevent circular references
-						const cpy = MiscUtil.copy(c);
-						delete cpy.subclasses;
-						c.subclasses.forEach(sc => {
-							sc.className = c.name;
-							sc.source = sc.source || c.source;
-							sc._baseClass = cpy;
-						});
-						return c.subclasses;
-					} else return false;
-				}).filter(Boolean).forEach(sc => allData.push(sc));
+				const allData = await d20plus.subclasses.getDataForImport(data);
 
 				d20plus.importer.showImportList(
 					"subclass",
-					allData.flat(),
+					allData,
 					handoutBuilder,
 					{
 						groupOptions: d20plus.subclasses._groupOptions,

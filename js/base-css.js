@@ -181,7 +181,7 @@ function baseCss () {
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;	 border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
@@ -465,18 +465,18 @@ function baseCss () {
 		/* {
 			s: `#rightsidebar`,
 			r: `
-			    display: flex;
-			    flex-direction: column;
+				display: flex;
+				flex-direction: column;
 			`
 		},
 		{
 			s: `#rightsidebar ul.tabmenu`,
 			r: `
-			    padding: 0;
-    			flex-shrink: 0;
-    			position: relative;
-    			top: 0;
-    			width: 100%;
+				padding: 0;
+				flex-shrink: 0;
+				position: relative;
+				top: 0;
+				width: 100%;
 			`
 		},
 		{
@@ -491,7 +491,7 @@ function baseCss () {
 			s: `#textchat-input`,
 			r: `
 				position: relative;
-    			flex-shrink: 0;
+				flex-shrink: 0;
 			`
 		},
 		{
@@ -623,7 +623,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;	 font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
@@ -763,10 +763,10 @@ function baseCss () {
 		{
 			s: ".ui-dialog .anm__row",
 			r: `
-    			display: flex;
-    			align-items: center;
-    			margin-bottom: 3px;
-    			height: 20px;
+				display: flex;
+				align-items: center;
+				margin-bottom: 3px;
+				height: 20px;
 			`,
 		},
 		{
@@ -978,20 +978,20 @@ function baseCss () {
 		{
 			s: ".flex-row",
 			r: `
-			    display: flex;
-			    float: left;
+				display: flex;
+				float: left;
 				align-items: center;
-			    margin-bottom: 5px;
+				margin-bottom: 5px;
 			`,
 		},
 		{
 			s: ".pagedetails .flex-row input.units,.pagedetails .flex-row input.pixels",
 			r: `
 				width: 20%;
-			    text-align: center;
-			    border: 1px solid;
-			    border-radius: 5px;
-			    margin: 0 2%;
+				text-align: center;
+				border: 1px solid;
+				border-radius: 5px;
+				margin: 0 2%;
 			`,
 		},
 	]);
@@ -1001,24 +1001,24 @@ function baseCss () {
 		{
 			s: ".jukebox-widget-button",
 			r: `
-    			flex: 1;
-    			text-overflow: ellipsis;
-    			overflow: hidden;
-    			min-width: 50px;
+				flex: 1;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				min-width: 50px;
 			`,
 		},
 		{
 			s: ".jukebox-widget-slider",
 			r: `
-    			margin: 10px;
-    			display: inline-block;
-    			flex: 15;
+				margin: 10px;
+				display: inline-block;
+				flex: 15;
 			`,
 		},
 		{
 			s: ".jukebox-widget-button",
 			r: `
-    			letter-spacing: -1px
+				letter-spacing: -1px
 			`,
 		},
 	]);

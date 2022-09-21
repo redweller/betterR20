@@ -36,32 +36,32 @@ function d20plusJournal () {
 					character.abilities.create({
 						name: "Perception",
 						istokenaction: true,
-						action: d20plus.actionMacroPerception,
+						action: d20plus.macro.actionMacroPerception,
 					});
 					character.abilities.create({
 						name: "DR/Immunities",
 						istokenaction: true,
-						action: d20plus.actionMacroDrImmunities,
+						action: d20plus.macro.actionMacroDrImmunities,
 					});
 					character.abilities.create({
 						name: "Stats",
 						istokenaction: true,
-						action: d20plus.actionMacroStats,
+						action: d20plus.macro.actionMacroStats,
 					});
 					character.abilities.create({
 						name: "Saves",
 						istokenaction: true,
-						action: d20plus.actionMacroSaves,
+						action: d20plus.macro.actionMacroSaves,
 					});
 					character.abilities.create({
 						name: "Skill-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroSkillCheck,
+						action: d20plus.macro.actionMacroSkillCheck,
 					});
 					character.abilities.create({
 						name: "Ability-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroAbilityCheck,
+						action: d20plus.macro.actionMacroAbilityCheck,
 					});
 				} else {
 					// player specific tokenactions
@@ -117,7 +117,7 @@ function d20plusJournal () {
 				character.abilities.create({
 					name: "Initiative",
 					istokenaction: true,
-					action: d20plus.actionMacroInit,
+					action: d20plus.macro.actionMacroInit,
 				});
 			}
 		});
