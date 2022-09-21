@@ -199,7 +199,8 @@ function baseTool () {
 					$btnDel.off("click").on("click", () => {
 						const sel = delList.items
 							.filter(it => $(it.elm).find(`input`).prop("checked"))
-							.map(it => journalItems[$(it.elm).attr("data-listid")]);
+							.map(it => journalItems[$(it.elm).attr("data-listid")])
+							.reverse();
 
 						if (!sel.length) {
 							alert("No items selected!");
