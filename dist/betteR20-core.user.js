@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.1
+// @version      1.32.0
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -850,26 +850,31 @@ function baseQpi () {
 			on: {
 				_preInit () {
 					qpi._on_chatHandlers = [];
-					const seenMessages = new Set();
-					d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
-					const handleChat = (e) => {
-						if (!d20.textchat.chatstartingup) {
-							e.id = e.key;
-							if (!seenMessages.has(e.id)) {
-								seenMessages.add(e.id);
+					if (d20.textchat.shoutref) {
+						const seenMessages = new Set();
+						d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
+						const handleChat = (e) => {
+							if (!d20.textchat.chatstartingup) {
+								e.id = e.key;
+								if (!seenMessages.has(e.id)) {
+									seenMessages.add(e.id);
 
-								let t = e.val();
-								if (t) {
-									// eslint-disable-next-line no-console
-									if (window.DEBUG) console.log("CHAT: ", t);
+									let t = e.val();
+									if (t) {
+										// eslint-disable-next-line no-console
+										if (window.DEBUG) console.log("CHAT: ", t);
 
-									qpi._on_chatHandlers.forEach(fn => fn(t));
+										qpi._on_chatHandlers.forEach(fn => fn(t));
+									}
 								}
 							}
-						}
-					};
-					d20.textchat.chatref.on("child_added", handleChat);
-					d20.textchat.chatref.on("child_changed", handleChat);
+						};
+						d20.textchat.chatref.on("child_added", handleChat);
+						d20.textchat.chatref.on("child_changed", handleChat);
+					} else {
+						// eslint-disable-next-line no-console
+						console.warn("%cQPI > ", "color: #b93032; font-size: large", "Can't properly initialize chat handler");
+					}
 				},
 				_ (evtType, fn, ...others) {
 					switch (evtType) {
@@ -2421,7 +2426,8 @@ function baseTool () {
 					$btnDel.off("click").on("click", () => {
 						const sel = delList.items
 							.filter(it => $(it.elm).find(`input`).prop("checked"))
-							.map(it => journalItems[$(it.elm).attr("data-listid")]);
+							.map(it => journalItems[$(it.elm).attr("data-listid")])
+							.reverse();
 
 						if (!sel.length) {
 							alert("No items selected!");
@@ -10751,32 +10757,32 @@ function d20plusJournal () {
 					character.abilities.create({
 						name: "Perception",
 						istokenaction: true,
-						action: d20plus.actionMacroPerception,
+						action: d20plus.macro.actionMacroPerception,
 					});
 					character.abilities.create({
 						name: "DR/Immunities",
 						istokenaction: true,
-						action: d20plus.actionMacroDrImmunities,
+						action: d20plus.macro.actionMacroDrImmunities,
 					});
 					character.abilities.create({
 						name: "Stats",
 						istokenaction: true,
-						action: d20plus.actionMacroStats,
+						action: d20plus.macro.actionMacroStats,
 					});
 					character.abilities.create({
 						name: "Saves",
 						istokenaction: true,
-						action: d20plus.actionMacroSaves,
+						action: d20plus.macro.actionMacroSaves,
 					});
 					character.abilities.create({
 						name: "Skill-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroSkillCheck,
+						action: d20plus.macro.actionMacroSkillCheck,
 					});
 					character.abilities.create({
 						name: "Ability-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroAbilityCheck,
+						action: d20plus.macro.actionMacroAbilityCheck,
 					});
 				} else {
 					// player specific tokenactions
@@ -10832,7 +10838,7 @@ function d20plusJournal () {
 				character.abilities.create({
 					name: "Initiative",
 					istokenaction: true,
-					action: d20plus.actionMacroInit,
+					action: d20plus.macro.actionMacroInit,
 				});
 			}
 		});
@@ -11239,7 +11245,7 @@ function baseCss () {
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;	 border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
@@ -11523,18 +11529,18 @@ function baseCss () {
 		/* {
 			s: `#rightsidebar`,
 			r: `
-			    display: flex;
-			    flex-direction: column;
+				display: flex;
+				flex-direction: column;
 			`
 		},
 		{
 			s: `#rightsidebar ul.tabmenu`,
 			r: `
-			    padding: 0;
-    			flex-shrink: 0;
-    			position: relative;
-    			top: 0;
-    			width: 100%;
+				padding: 0;
+				flex-shrink: 0;
+				position: relative;
+				top: 0;
+				width: 100%;
 			`
 		},
 		{
@@ -11549,7 +11555,7 @@ function baseCss () {
 			s: `#textchat-input`,
 			r: `
 				position: relative;
-    			flex-shrink: 0;
+				flex-shrink: 0;
 			`
 		},
 		{
@@ -11681,7 +11687,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;	 font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
@@ -11821,10 +11827,10 @@ function baseCss () {
 		{
 			s: ".ui-dialog .anm__row",
 			r: `
-    			display: flex;
-    			align-items: center;
-    			margin-bottom: 3px;
-    			height: 20px;
+				display: flex;
+				align-items: center;
+				margin-bottom: 3px;
+				height: 20px;
 			`,
 		},
 		{
@@ -12036,20 +12042,20 @@ function baseCss () {
 		{
 			s: ".flex-row",
 			r: `
-			    display: flex;
-			    float: left;
+				display: flex;
+				float: left;
 				align-items: center;
-			    margin-bottom: 5px;
+				margin-bottom: 5px;
 			`,
 		},
 		{
 			s: ".pagedetails .flex-row input.units,.pagedetails .flex-row input.pixels",
 			r: `
 				width: 20%;
-			    text-align: center;
-			    border: 1px solid;
-			    border-radius: 5px;
-			    margin: 0 2%;
+				text-align: center;
+				border: 1px solid;
+				border-radius: 5px;
+				margin: 0 2%;
 			`,
 		},
 	]);
@@ -12059,24 +12065,24 @@ function baseCss () {
 		{
 			s: ".jukebox-widget-button",
 			r: `
-    			flex: 1;
-    			text-overflow: ellipsis;
-    			overflow: hidden;
-    			min-width: 50px;
+				flex: 1;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				min-width: 50px;
 			`,
 		},
 		{
 			s: ".jukebox-widget-slider",
 			r: `
-    			margin: 10px;
-    			display: inline-block;
-    			flex: 15;
+				margin: 10px;
+				display: inline-block;
+				flex: 15;
 			`,
 		},
 		{
 			s: ".jukebox-widget-button",
 			r: `
-    			letter-spacing: -1px
+				letter-spacing: -1px
 			`,
 		},
 	]);
@@ -15333,6 +15339,41 @@ const baseTemplate = function () {
 };
 
 SCRIPT_EXTENSIONS.push(baseTemplate);
+
+
+const baseMacro = function () {
+	d20plus.macro = {};
+
+	d20plus.macro.actionMacroTrait = function (index) {
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npctrait_$${index}_name}}} {{description=@{selected|repeating_npctrait_$${index}_desc} }}`;
+	};
+
+	d20plus.macro.actionMacroAction = function (baseAction, index) {
+		return `%{selected|${baseAction}_$${index}_npc_action}`;
+	};
+
+	d20plus.macro.actionMacroReaction = function (index) {
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$${index}_name}}} {{description=@{selected|repeating_npcreaction_$${index}_desc} }} `;
+	};
+
+	d20plus.macro.actionMacroLegendary = function (tokenactiontext) {
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r${tokenactiontext}}} `;
+	}
+
+	d20plus.macro.actionMacroMythic = function (tokenactiontext) {
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Mythic Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} mythic actions, choosing from the options below. Only one mythic option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent mythic actions at the start of its turn.\n\r${tokenactiontext}}} `;
+	}
+
+	d20plus.macro.actionMacroPerception = "%{Selected|npc_perception} @{selected|wtype} &{template:default} {{name=Senses}}  @{selected|wtype} @{Selected|npc_senses} ";
+	d20plus.macro.actionMacroInit = "%{selected|npc_init}";
+	d20plus.macro.actionMacroDrImmunities = "@{selected|wtype} &{template:default} {{name=DR/Immunities}} {{Damage Resistance= @{selected|npc_resistances}}} {{Damage Vulnerability= @{selected|npc_vulnerabilities}}} {{Damage Immunity= @{selected|npc_immunities}}} {{Condition Immunity= @{selected|npc_condition_immunities}}} ";
+	d20plus.macro.actionMacroStats = "@{selected|wtype} &{template:default} {{name=Stats}} {{Armor Class= @{selected|npc_AC}}} {{Hit Dice= @{selected|npc_hpformula}}} {{Speed= @{selected|npc_speed}}} {{Senses= @{selected|npc_senses}}} {{Languages= @{selected|npc_languages}}} {{Challenge= @{selected|npc_challenge}(@{selected|npc_xp}xp)}}";
+	d20plus.macro.actionMacroSaves = "@{selected|wtype} &{template:simple}{{always=1}}?{Saving Throw?|STR,{{rname=Strength Save&#125;&#125;{{mod=@{npc_str_save}&#125;&#125; {{r1=[[1d20+@{npc_str_save}]]&#125;&#125;{{r2=[[1d20+@{npc_str_save}]]&#125;&#125;|DEX,{{rname=Dexterity Save&#125;&#125;{{mod=@{npc_dex_save}&#125;&#125; {{r1=[[1d20+@{npc_dex_save}]]&#125;&#125;{{r2=[[1d20+@{npc_dex_save}]]&#125;&#125;|CON,{{rname=Constitution Save&#125;&#125;{{mod=@{npc_con_save}&#125;&#125; {{r1=[[1d20+@{npc_con_save}]]&#125;&#125;{{r2=[[1d20+@{npc_con_save}]]&#125;&#125;|INT,{{rname=Intelligence Save&#125;&#125;{{mod=@{npc_int_save}&#125;&#125; {{r1=[[1d20+@{npc_int_save}]]&#125;&#125;{{r2=[[1d20+@{npc_int_save}]]&#125;&#125;|WIS,{{rname=Wisdom Save&#125;&#125;{{mod=@{npc_wis_save}&#125;&#125; {{r1=[[1d20+@{npc_wis_save}]]&#125;&#125;{{r2=[[1d20+@{npc_wis_save}]]&#125;&#125;|CHA,{{rname=Charisma Save&#125;&#125;{{mod=@{npc_cha_save}&#125;&#125; {{r1=[[1d20+@{npc_cha_save}]]&#125;&#125;{{r2=[[1d20+@{npc_cha_save}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.macro.actionMacroSkillCheck = "@{selected|wtype} &{template:simple}{{always=1}}?{Ability?|Acrobatics,{{rname=Acrobatics&#125;&#125;{{mod=@{npc_acrobatics}&#125;&#125; {{r1=[[1d20+@{npc_acrobatics}]]&#125;&#125;{{r2=[[1d20+@{npc_acrobatics}]]&#125;&#125;|Animal Handling,{{rname=Animal Handling&#125;&#125;{{mod=@{npc_animal_handling}&#125;&#125; {{r1=[[1d20+@{npc_animal_handling}]]&#125;&#125;{{r2=[[1d20+@{npc_animal_handling}]]&#125;&#125;|Arcana,{{rname=Arcana&#125;&#125;{{mod=@{npc_arcana}&#125;&#125; {{r1=[[1d20+@{npc_arcana}]]&#125;&#125;{{r2=[[1d20+@{npc_arcana}]]&#125;&#125;|Athletics,{{rname=Athletics&#125;&#125;{{mod=@{npc_athletics}&#125;&#125; {{r1=[[1d20+@{npc_athletics}]]&#125;&#125;{{r2=[[1d20+@{npc_athletics}]]&#125;&#125;|Deception,{{rname=Deception&#125;&#125;{{mod=@{npc_deception}&#125;&#125; {{r1=[[1d20+@{npc_deception}]]&#125;&#125;{{r2=[[1d20+@{npc_deception}]]&#125;&#125;|History,{{rname=History&#125;&#125;{{mod=@{npc_history}&#125;&#125; {{r1=[[1d20+@{npc_history}]]&#125;&#125;{{r2=[[1d20+@{npc_history}]]&#125;&#125;|Insight,{{rname=Insight&#125;&#125;{{mod=@{npc_insight}&#125;&#125; {{r1=[[1d20+@{npc_insight}]]&#125;&#125;{{r2=[[1d20+@{npc_insight}]]&#125;&#125;|Intimidation,{{rname=Intimidation&#125;&#125;{{mod=@{npc_intimidation}&#125;&#125; {{r1=[[1d20+@{npc_intimidation}]]&#125;&#125;{{r2=[[1d20+@{npc_intimidation}]]&#125;&#125;|Investigation,{{rname=Investigation&#125;&#125;{{mod=@{npc_investigation}&#125;&#125; {{r1=[[1d20+@{npc_investigation}]]&#125;&#125;{{r2=[[1d20+@{npc_investigation}]]&#125;&#125;|Medicine,{{rname=Medicine&#125;&#125;{{mod=@{npc_medicine}&#125;&#125; {{r1=[[1d20+@{npc_medicine}]]&#125;&#125;{{r2=[[1d20+@{npc_medicine}]]&#125;&#125;|Nature,{{rname=Nature&#125;&#125;{{mod=@{npc_nature}&#125;&#125; {{r1=[[1d20+@{npc_nature}]]&#125;&#125;{{r2=[[1d20+@{npc_nature}]]&#125;&#125;|Perception,{{rname=Perception&#125;&#125;{{mod=@{npc_perception}&#125;&#125; {{r1=[[1d20+@{npc_perception}]]&#125;&#125;{{r2=[[1d20+@{npc_perception}]]&#125;&#125;|Performance,{{rname=Performance&#125;&#125;{{mod=@{npc_performance}&#125;&#125; {{r1=[[1d20+@{npc_performance}]]&#125;&#125;{{r2=[[1d20+@{npc_performance}]]&#125;&#125;|Persuasion,{{rname=Persuasion&#125;&#125;{{mod=@{npc_persuasion}&#125;&#125; {{r1=[[1d20+@{npc_persuasion}]]&#125;&#125;{{r2=[[1d20+@{npc_persuasion}]]&#125;&#125;|Religion,{{rname=Religion&#125;&#125;{{mod=@{npc_religion}&#125;&#125; {{r1=[[1d20+@{npc_religion}]]&#125;&#125;{{r2=[[1d20+@{npc_religion}]]&#125;&#125;|Sleight of Hand,{{rname=Sleight of Hand&#125;&#125;{{mod=@{npc_sleight_of_hand}&#125;&#125; {{r1=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;{{r2=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;|Stealth,{{rname=Stealth&#125;&#125;{{mod=@{npc_stealth}&#125;&#125; {{r1=[[1d20+@{npc_stealth}]]&#125;&#125;{{r2=[[1d20+@{npc_stealth}]]&#125;&#125;|Survival,{{rname=Survival&#125;&#125;{{mod=@{npc_survival}&#125;&#125; {{r1=[[1d20+@{npc_survival}]]&#125;&#125;{{r2=[[1d20+@{npc_survival}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.macro.actionMacroAbilityCheck = "@{selected|wtype} &{template:simple}{{always=1}}?{Ability?|STR,{{rname=Strength&#125;&#125;{{mod=@{strength_mod}&#125;&#125; {{r1=[[1d20+@{strength_mod}]]&#125;&#125;{{r2=[[1d20+@{strength_mod}]]&#125;&#125;|DEX,{{rname=Dexterity&#125;&#125;{{mod=@{dexterity_mod}&#125;&#125; {{r1=[[1d20+@{dexterity_mod}]]&#125;&#125;{{r2=[[1d20+@{dexterity_mod}]]&#125;&#125;|CON,{{rname=Constitution&#125;&#125;{{mod=@{constitution_mod}&#125;&#125; {{r1=[[1d20+@{constitution_mod}]]&#125;&#125;{{r2=[[1d20+@{constitution_mod}]]&#125;&#125;|INT,{{rname=Intelligence&#125;&#125;{{mod=@{intelligence_mod}&#125;&#125; {{r1=[[1d20+@{intelligence_mod}]]&#125;&#125;{{r2=[[1d20+@{intelligence_mod}]]&#125;&#125;|WIS,{{rname=Wisdom&#125;&#125;{{mod=@{wisdom_mod}&#125;&#125; {{r1=[[1d20+@{wisdom_mod}]]&#125;&#125;{{r2=[[1d20+@{wisdom_mod}]]&#125;&#125;|CHA,{{rname=Charisma&#125;&#125;{{mod=@{charisma_mod}&#125;&#125; {{r1=[[1d20+@{charisma_mod}]]&#125;&#125;{{r2=[[1d20+@{charisma_mod}]]&#125;&#125;}{{charname=@{character_name}}} ";
+};
+
+SCRIPT_EXTENSIONS.push(baseMacro);
 
 
 const betteR20Emoji = function () {
