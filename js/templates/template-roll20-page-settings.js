@@ -1,6 +1,8 @@
-function initTemplatePageSettings () {
+function initHTMLPageSettings () {
+	d20plus.html = d20plus.html || {};
+
 	// no mods; just switched in to grant full features to non-pro
-	const templatePageSettings = `<script id='tmpl_pagesettings' type='text/html'>
+	d20plus.html.pageSettings = `<script id='tmpl_pagesettings' type='text/html'>
     <ul class='nav nav-tabs pagedetails_navigation'>
         <li class='active'>
             <a data-tab='pagedetails' href='javascript:void(0);'>
@@ -519,7 +521,6 @@ Updated
     </div>
 </script>`;
 
-	d20plus.templates.templatePageSettings = templatePageSettings;
 }
 
-SCRIPT_EXTENSIONS.push(initTemplatePageSettings);
+SCRIPT_EXTENSIONS.push(initHTMLPageSettings);
