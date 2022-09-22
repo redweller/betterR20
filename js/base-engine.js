@@ -424,6 +424,23 @@ function d20plusEngine () {
 
 	/* eslint-enable */
 
+	d20plus.engine.tokenRepresentsPc = (token) => {
+		if (!token || !token.get) return undefined;
+		if (token.get("type") !== "image") return false;
+		if (!token.character) return false;
+		if (!token.character.attribs.length && !token.character.attribs.fetching) {
+			token.character.attribs.fetch(token.character.attribs);
+			token.character.attribs.fetching = true;
+		} else if (token.character.attribs.length) {
+			if (token.character.attribs.fetching) delete token.character.attribs.fetching;
+			const attr = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
+			if (attr) {
+				if (attr.attributes.current === "0") return true;
+				else return false;
+			}
+		}
+	}
+
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);
 
@@ -617,7 +634,7 @@ function d20plusEngine () {
 		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
 		const page = d20.Campaign.activePage();
 		if (off) {
-			if (d20plus.engine.objectsHideUnhide("layer", layer, "hidden", false) || force) {
+			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
 				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
 				menuButton.addClass("stashed");
 				secondaryButton.addClass("off");
@@ -627,7 +644,7 @@ function d20plusEngine () {
 				}
 			}
 		} else {
-			d20plus.engine.objectsHideUnhide("layer", layer, "hidden", true);
+			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
 			menuButton.removeClass("stashed");
 			secondaryButton.removeClass("off");
 			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
@@ -637,30 +654,44 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.objectsStashProps = (obj, visible) => {
-		const props = [
+	d20plus.engine._objectsStashProps = (obj, visible) => {
+		[
 			"emits_bright_light",
 			"emits_low_light",
 			"has_directional_bright_light",
 			"has_directional_dim_light",
-			"showplayers_bar1",
-			"showplayers_bar2",
-			"showplayers_bar3",
+			"bar1_value",
+			"bar2_value",
+			"bar3_value",
 			"showname",
-		];
-		props.each((prop) => {
+		].each((prop) => {
 			if (!visible) {
 				if (obj.attributes[prop]) {
-					obj.attributes[`bR20_${prop}`] = true;
+					obj.attributes[`bR20_${prop}`] = obj.attributes[prop];
 					obj.attributes[prop] = false;
 				}
 			} else {
 				if (obj.attributes[`bR20_${prop}`]) {
-					obj.attributes[prop] = true;
+					obj.attributes[prop] = obj.attributes[`bR20_${prop}`];
 					obj.attributes[`bR20_${prop}`] = null;
 				}
 			}
 		});
+	}
+
+	d20plus.engine._graphicsStashToRight = (_this, visible) => {
+		if (typeof _this.left !== "number") return;
+		if (!visible) {
+			const page = d20.Campaign.pages.get(_this.page_id);
+			const newLeft = _this.left + page.get("width") * 70;
+			_this.bR20_left = _this.left;
+			_this.left = newLeft;
+		} else {
+			if (_this.bR20_left) {
+				_this.left = _this.bR20_left;
+				_this.bR20_left = null;
+			}
+		}
 	}
 
 	d20plus.engine.objectsHideUnhide = (query, val, prefix, visible) => {
@@ -668,19 +699,32 @@ function d20plusEngine () {
 		for (const o of d20.engine.canvas._objects) {
 			if (!o.model) continue;
 			if (`${o.model.get(query)}`.search(val) > -1) {
+				const _this = o.model.attributes;
 				const {layer} = o.model.attributes;
 				if (visible) {
-					if (layer.search(prefix) > -1) {
-						o.model.attributes.layer = layer.replace(`${prefix}_`, "");
-						d20plus.engine.objectsStashProps(o.model, true);
+					if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
+						_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
+						if (_this.type !== "path") {
+							_this.layer = layer.replace(`${prefix}_`, "");
+							if (!_this.bR20_hidden) {
+								d20plus.engine._objectsStashProps(o.model, true);
+							}
+						} else if (!_this.bR20_hidden) {
+							d20plus.engine._graphicsStashToRight(_this, true);
+						}
 						o.saveState();
 						o.model.save();
 						some = true;
 					}
 				} else {
-					if (layer.search(prefix) === -1) {
-						o.model.attributes.layer = `${prefix}_${layer}`;
-						d20plus.engine.objectsStashProps(o.model, false);
+					if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
+						_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
+						if (_this.type !== "path") {
+							_this.layer = `${prefix}_${layer}`;
+							d20plus.engine._objectsStashProps(o.model, false);
+						} else {
+							d20plus.engine._graphicsStashToRight(_this, false);
+						}
 						o.saveState();
 						o.model.save();
 						some = true;

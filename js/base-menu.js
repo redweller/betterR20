@@ -824,7 +824,7 @@ function baseMenu () {
 									if (it.model.get(`bR20_view${viewId}`)) {
 										it.model.set(`bR20_view${viewId}`, false);
 									} else {
-										it.model.set(`bR20_view${viewId}`, true);
+										if (!d20plus.engine.tokenRepresentsPc(it.model)) it.model.set(`bR20_view${viewId}`, true);
 									}
 									it.saveState();
 									it.model.save();
@@ -970,10 +970,10 @@ function baseMenu () {
 		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
-		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
-		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
-		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
+		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
+		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
+		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
+		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
 	};
 
 	d20plus.menu._neatStructure = {

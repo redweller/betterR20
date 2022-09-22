@@ -80,11 +80,11 @@ function baseViews () {
 		if (state) {
 			$(menuItem).removeClass("off");
 			page.set(`bR20cfg_views${id}Off`, false);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, true);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, true);
 		} else {
 			$(menuItem).addClass("off");
 			page.set(`bR20cfg_views${id}Off`, true);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, false);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, false);
 		}
 		page.save();
 		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
