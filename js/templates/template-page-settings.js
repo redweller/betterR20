@@ -3,7 +3,7 @@ function initHTMLPageSettings () {
 
 	// no mods; just switched in to grant full features to non-pro
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.roll20pageSettings = `<!-- BEGIN ROLL20 CODE -->
+		d20plus.html.roll20pageSettings = `
         <div class='legacy-lighting tab-pane'>
 			<!-- BEGIN MOD -->
 			<strong style="display: block; margin-bottom: 10px;">
@@ -491,8 +491,7 @@ function initHTMLPageSettings () {
                 </div>
                 <hr>
             </div>
-        </div>
-		<!-- END ROLL20 CODE -->`;
+        </div>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }

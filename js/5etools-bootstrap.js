@@ -69,7 +69,6 @@ const betteR205etools = function () {
 			}
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-			d20plus.engine.addSelectedTokenCommands();
 			d20plus.engine.enhanceStatusEffects();
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();

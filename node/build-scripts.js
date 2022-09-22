@@ -309,7 +309,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	fs.writeFileSync(metaFilename, v.header);
 });
 
-const MAIN_SCRIPTS = [
+const CHANGED_SCRIPTS = [
 	"templates/template-token-editor",
 	"templates/template-page-settings",
 	"templates/template-roll20-actions-menu",
@@ -328,6 +328,7 @@ const MAIN_SCRIPTS = [
 	"base-qpi",
 	"base-mod",
 	"base-views",
+	"base-weather",
 	"base-menu",
 	"base-ui",
 	"base-util",
@@ -336,12 +337,11 @@ const MAIN_SCRIPTS = [
 	// "header",
 ];
 
-MAIN_SCRIPTS.forEach((filename) => {
+CHANGED_SCRIPTS.forEach((filename) => {
 	const srcpath = `${JS_DIR}${filename}.js`;
-	const exp = /\/\/ RB20 EXCLUDE START(.*?)\/\/ RB20 EXCLUDE END/sgm;
-
+	const exclude = /\/\/ RB20 EXCLUDE START(.*?)\/\/ RB20 EXCLUDE END/sgm;
 	let script = fs.readFileSync(`${srcpath}`, "utf-8").toString();
-	script = script.replace(exp, "");
+	script = script.replace(exclude, "");
 
 	Object.entries(LANG_STRS.en).forEach((string) => {
 		const multiline = (`${string[1]}`).search("\n") !== -1;
