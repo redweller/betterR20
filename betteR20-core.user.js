@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.1.23
+// @version      1.31.1.24
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -10835,8 +10835,7 @@ function initHTMLroll20actionsMenu () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.roll20actionsMenu = `
-		<script id='tmpl_actions_menu' type='text/html'>
+		d20plus.html.roll20actionsMenu = `<script id='tmpl_actions_menu' type='text/html'>
 			<div class='actions_menu d20contextmenu'>
 				<ul>
 					<$ if (Object.keys(this).length === 0) { $>
@@ -10954,17 +10953,17 @@ function initHTMLroll20actionsMenu () {
 						<li class='head hasSub' data-menuname='view'>
 							Assign view &raquo;
 							<ul class='submenu' data-menuname='view'>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
-								<li data-action-type="assignview0" class='<$ if(this && this.get && this && this.get("bR20_view0")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views0Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views0Name')$> <$ } else { $> View 1 <$ } $></li>
+								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+								<li data-action-type="assignview0" class='<$ if(this && this.get && this && this.get("bR20_view0")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views0Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views0Name')$> <$ } else { $> Default <$ } $></li>
 								<$ } $>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
-								<li data-action-type="assignview1" class='<$ if(this && this.get && this && this.get("bR20_view1")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views1Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views1Name')$> <$ } else { $> View 2 <$ } $></li>
+								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
+								<li data-action-type="assignview1" class='<$ if(this && this.get && this && this.get("bR20_view1")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views1Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views1Name')$> <$ } else { $> View 1 <$ } $></li>
 								<$ } $>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
-								<li data-action-type="assignview2" class='<$ if(this && this.get && this && this.get("bR20_view2")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views2Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views2Name')$> <$ } else { $> View 3 <$ } $></li>
+								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
+								<li data-action-type="assignview2" class='<$ if(this && this.get && this && this.get("bR20_view2")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views2Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views2Name')$> <$ } else { $> View 2 <$ } $></li>
 								<$ } $>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
-								<li data-action-type="assignview3" class='<$ if(this && this.get && this && this.get("bR20_view3")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views3Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views3Name')$> <$ } else { $> View 4 <$ } $></li>
+								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
+								<li data-action-type="assignview3" class='<$ if(this && this.get && this && this.get("bR20_view3")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views3Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views3Name')$> <$ } else { $> View 3 <$ } $></li>
 								<$ } $>
 							</ul>
 						</li>
@@ -10983,8 +10982,7 @@ function initHTMLroll20actionsMenu () {
 					<$ } $>
 				</ul>
 			</div>
-		</script>
-		`;
+		</script>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -10996,135 +10994,155 @@ function initHTMLroll20EditorsMisc () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.characterEditor = `
-<script id='tmpl_charactereditor' type='text/html'>
-  <div class='dialog largedialog charactereditor' style='display: block;'>
-    <div class='tab-content'>
-      <div class='bioinfo tab-pane'>
-        <div class='row-fluid'>
-          <div class='span5'>
-            <label>
-              <strong>Avatar</strong>
-            </label>
-            <$ if(true) { $>
-            <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
-            <div class="status"></div>
-            <div class="inner">
-              <$ if(this.get("avatar") == "") { $>
-              <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
-              <br /> or
-              <button class="btn">Click to Upload</button>
-              <input class="manual" type="file" />
-              <$ } else { $>
-              <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-              <video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
-              <$ } else { $>
-              <img src="<$!this.get("avatar")$>" draggable="false" />
-              <$ } $>
-              <div class='remove'><a href='#'>Remove</a></div>
-              <$ } $>
-            </div>
-          </div>
-          <$ } else { $>
-          <div class='avatar'>
-            <$ if(this.get("avatar") != "") { $>
-            <img src="<$!this.get("avatar")$>" draggable="false" />
-            <$ } $>
-          </div>
-          <$ } $>
-          <div class='clear'></div>
-          <!-- BEGIN MOD -->
-          <button class="btn character-image-by-url">Set Image from URL</button>
-          <div class='clear'></div>
-          <!-- END MOD -->
-          <$ if (window.is_gm) { $>
-          <label>
-            <strong>Default Token (Optional)</strong>
-          </label>
-          <div class="defaulttoken tokenslot <$! this.get("defaulttoken") !== "" ? "filled" : "" $> style="width: 95%;">
-          <$ if(this.get("defaulttoken") !== "") { $>
-          <img src="" draggable="false" />
-          <div class="remove"><a href="#">Remove</a></div>
-          <$ } else { $>
-          <button class="btn">Use Selected Token</button>
-          <small>Select a token on the tabletop to use as the Default Token</small>
-          <$ } $>
-        </div>
+		d20plus.html.characterEditor = `<script id="tmpl_charactereditor" type="text/html">
+		<div class='dialog largedialog charactereditor' style='display: block;'>
+		<div class='tab-content'>
+		<div class='bioinfo tab-pane'>
+		<div class='row-fluid'>
+		<div class='span5'>
+		<label>
+		<strong>Avatar</strong>
+		</label>
+		<$ if(true) { $>
+		<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
+		<div class="status"></div>
+		<div class="inner">
+		<$ if(this.get("avatar") == "") { $>
+		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+		<br /> or
+		<button class="btn">Click to Upload</button>
+		<input class="manual" type="file" />
+		<$ } else { $>
+		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+		<video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+		<$ } else { $>
+		<img src="<$!this.get("avatar")$>" draggable="false" />
+		<$ } $>
+		<div class='remove'><a href='#'>Remove</a></div>
+		<$ } $>
+		</div>
+		</div>
+		<$ } else { $>
+		<div class='avatar'>
+		<$ if(this.get("avatar") != "") { $>
+		<img src="<$!this.get("avatar")$>" draggable="false" />
+		<$ } $>
+		</div>
+		<$ } $>
+		<div class='clear'></div>
+		<!-- BEGIN MOD -->
+		<button class="btn character-image-by-url">Set Image from URL</button>
+		<div class='clear'></div>
+		<!-- END MOD -->
+		<label>
+		<strong>Default Token (Optional)</strong>
+		<a class='showtip pictos' title='The default token will be used when this character is dragged from the Journal Tab to the Virtual Tabletop. For regular 1x1 tokens representing this character, you may use images from your Art Library or computer. For larger tokens, create a token on the Virtual Tabletop and use &quot;Use Selected Token.&quot;'>?</a>
+		</label>
+		<div class="defaultToken dropbox <$! this.defaultTokenImage != "" ? "filled" : "" $>">
+		<div class="status"></div>
+		<div class="inner">
+		<$ if(this.defaultTokenImage == "") { $>
+		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+		<br /> or
+		<button class="btn">Click to Upload</button>
+		<input class="manual" type="file" />
+		<$ } else { $>
+		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.defaultTokenImage)) { $>
+		<video src="<$!this.defaultTokenImage$>" draggable="false" muted autoplay loop />
+		<$ } else { $>
+		<img src="<$!this.defaultTokenImage$>" draggable="false" />
+		<$ } $>
+		<div class='remove'><a href='#'>Remove</a></div>
+		<$ } $>
+		</div>
+		</div>
+		<div class="default-token-buttons">
+		<$ if(window.is_gm) { $>
+		<button class='btn btn-primary edit-default-token'>Edit Token Properties</button>
+		<a class='showtip pictos' title='Edit the Token Settings for this character’s default token. Use &quot;Apply Token Defaults&quot; to apply these settings to any existing tokens on the Virtual Tabletop.'>?</a>
+		<$ } $>
+		<button class='btn use-selected-token'>Use Selected Token</button>
+		<a class='showtip pictos' title='Copy a snapshot of the selected token&#39;s image and settings as this character’s default token.'>?</a>
+		<$ if(window.is_gm) { $>
+		<button class='btn apply-token-defaults'>Apply Token Defaults</button>
+		<a class='showtip pictos' title='Update tokens where Represents Character is set to this character. All tokens representing this character across all pages will be overwritten.'>?</a>
         <!-- BEGIN MOD -->
         <button class="btn token-image-by-url">Set Token Image from URL</button>
-        <small style="text-align: left;">(Update will only be visible upon re-opening the sheet)</small>
-        <div class='clear'></div>
+		<a class='showtip pictos' title='Update will only be visible upon re-opening the sheet.'>?</a>
         <!-- END MOD -->
-        <$ } $>
-      </div>
-      <div class='span7'>
-        <label>
-          <strong>Name</strong>
-        </label>
-        <input class='name' type='text'>
-        <div class='clear'></div>
-        <$ if(window.is_gm) { $>
-        <label>
-          <strong>In Player's Journals</strong>
-        </label>
-        <select class='inplayerjournals selectize' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Can Be Edited &amp; Controlled By</strong>
-        </label>
-        <select class='controlledby selectize' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Tags</strong>
-        </label>
-        <input class='tags'>
-        <div class='clear'></div>
-        <hr>
-        <button class='delete btn btn-danger' style='float: right;'>
-          Delete
-        </button>
-        <button class='duplicate btn' style='margin-right: 10px;'>
-          Duplicate
-        </button>
-        <button class='archive btn'>
-          <$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
-        </button>
-        <div class='clear'></div>
-        <$ } $>
-        <div class='clear'></div>
-      </div>
-    </div>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <hr>
-        <label>
-          <strong>Bio & Info</strong>
-        </label>
-        <textarea class='bio'></textarea>
-        <div class='clear'></div>
-        <$ if(window.is_gm) { $>
-        <label>
-          <strong>GM Notes (Only visible to GM)</strong>
-        </label>
-        <textarea class='gmnotes'></textarea>
-        <div class='clear'></div>
-        <$ } $>
-      </div>
-    </div>
-  </div>
-  </div>
-  </div>
-</script>`;
+		<$ } $>
+		</div>
+		</div>
+		<div class='span7'>
+		<label>
+		<strong>Name</strong>
+		</label>
+		<input class='name' data-test='character-edit-name' type='text'>
+		<div class='clear'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		<strong>In Player's Journals</strong>
+		</label>
+		<select class='inplayerjournals selectize' data-test='character-edit-in-journal' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Can Be Edited &amp; Controlled By</strong>
+		</label>
+		<select class='controlledby selectize' data-test='character-edit-controlledby' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Tags</strong>
+		</label>
+		<input class='tags'>
+		<div class='clear'></div>
+		<hr>
+		<button class='delete btn btn-danger' data-test='character-delete' style='float: right;'>
+		Delete
+		</button>
+		<button class='duplicate btn' data-test='character-duplicate' style='margin-right: 10px;'>
+		Duplicate
+		</button>
+		<button class='archive btn' data-test='character-archive'>
+		<$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
+		</button>
+		<div class='clear'></div>
+		<$ } $>
+		<div class='clear'></div>
+		</div>
+		</div>
+		<$ if(!window.ADVANCED_SHEET) { $>
+		<div class='row-fluid'>
+		<div class='span12'>
+		<hr>
+		<label>
+		<strong>Bio & Info</strong>
+		</label>
+		<textarea class='bio'></textarea>
+		<div class='clear'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		<strong>GM Notes (Only visible to GM)</strong>
+		</label>
+		<textarea class='gmnotes'></textarea>
+		<div class='clear'></div>
+		<$ } $>
+		</div>
+		</div>
+		<$ } $>
+		</div>
+		</div>
+		</div>
+		</script>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
@@ -11271,8 +11289,7 @@ function initHTMLroll20EditorsMisc () {
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.deckEditor = `
-    <script id='tmpl_deckeditor' type='text/html'>
+		d20plus.html.deckEditor = `<script id='tmpl_deckeditor' type='text/html'>
       <div class='dialog largedialog deckeditor' style='display: block;'>
         <label>Name</label>
         <input class='name' type='text'>
@@ -11432,14 +11449,12 @@ function initHTMLroll20EditorsMisc () {
         </p>
         <$ } $>
       </div>
-    </script>
-		`;
+    </script>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.cardEditor = `
-    <script id='tmpl_cardeditor' type='text/html'>
+		d20plus.html.cardEditor = `<script id='tmpl_cardeditor' type='text/html'>
       <div class='dialog largedialog cardeditor' style='display: block;'>
         <label>Name</label>
         <input class='name' type='text'>
@@ -11467,8 +11482,7 @@ function initHTMLroll20EditorsMisc () {
         <label>&nbsp;</label>
         <button class='deletecard btn btn-danger'>Delete Card</button>
       </div>
-    </script>
-		`;
+    </script>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -11489,27 +11503,23 @@ function initHTMLbaseMisc () {
 		<p>
 		For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
 		</p>
-		<style id="dynamicStyle"></style>
-		`;
+		<style id="dynamicStyle"></style>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.artTabHtml = `
-		<div>
+		d20plus.html.artTabHtml = `<div>
 			<h3 style="margin-bottom: 4px;">BetteR20</h3>
 			<p style="display: flex; width: 100%; justify-content: space-between;">
 				<button class="btn" id="button-add-external-art" style="margin-right: 5px;">Manage External Art</button>
 				<button class="btn" id="button-browse-external-art">Browse Repo</button>
 			</p>
-		</div>
-		`;
+		</div>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.addArtHTML = `
-		<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
+		d20plus.html.addArtHTML = `<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
 		<p>Add external images by URL. Any direct link to an image should work.</p>
 		<p>
 		<input placeholder="Name*" id="art-list-add-name">
@@ -11535,8 +11545,7 @@ function initHTMLbaseMisc () {
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.addArtMassAdderHTML = `
-		<div id="d20plus-artmassadd" title="Mass Add Art URLs">
+		d20plus.html.addArtMassAdderHTML = `<div id="d20plus-artmassadd" title="Mass Add Art URLs">
 		<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
 		<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
 		</div>`;
@@ -11544,95 +11553,84 @@ function initHTMLbaseMisc () {
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.artListHTML = `
-		<div id="Vetoolsresults">
-		<ol class="dd-list" id="image-search-none"><div class="alert white">No results found in 5etools for those keywords.</div></ol>
-	
-		<ol class="dd-list" id="image-search-has-results">
+		d20plus.html.artListHTML = `<div id="Vetoolsresults">
+		<ol class="dd-list" id="image-search-none">
+			<div class="alert white">No results found in 5etools for those keywords.</div>
+		</ol><ol class="dd-list" id="image-search-has-results">
 			<li class="dd-item dd-folder Vetoolsresult">
 				<div class="dd-content">
 					<div class="folder-title">From 5etools</div>
 				</div>
-	
 				<ol class="dd-list Vetoolsresultfolder" id="custom-art-results"></ol>
 			</li>
 		</ol>
-		</div>
-		`;
+		</div>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.configEditorHTML = `
-		<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
+		d20plus.html.configEditorHTML = `<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
 		<!-- populate with js -->
-		</div>
-		`;
+		</div>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.configEditorButtonBarHTML = `
-		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-		<div class="ui-dialog-buttonset">
-			<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
-				<span>${__("ui_cfg_save")}</span>
-			</button>
-		</div>
-		</div>
-		`;
+		d20plus.html.configEditorButtonBarHTML = `<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<div class="ui-dialog-buttonset">
+				<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
+					<span>${__("ui_cfg_save")}</span>
+				</button>
+			</div>
+		</div>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.toolsListHtml = `
-		<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
+		d20plus.html.toolsListHtml = `<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
 		<div class="tools-list">
 		<!-- populate with js -->
 		</div>
-		</div>
-		`;
+		</div>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsNavTabs = `
-			<li class="nav-tabs active">
-				<a data-tab="pagedetails" href="javascript:void(0);">
-					<h2>General</h2>
-				</a>
-			</li>
-			<li class="nav-tabs dl">
-				<a>
-					<h2>Lighting</h2>
-				</a>
-				<ul>
-					<li class="nav-tabs--beta">
-						<span class="label label-info">Updated</span>
-						<a data-tab="lighting" href="javascript:void(0);">
-							<h2>Dynamic Lighting</h2>
-						</a>
-					</li>
-					<li class="nav-tabs">
-						<a data-tab="legacy-lighting" href="javascript:void(0);">
-							<h2>Legacy Lighting</h2>
-						</a>
-					</li>
-				</ul>
-			</li>
-			<li class="nav-tabs--beta">
-				<span class="label label-info">bR20</span>
-				<a data-tab="weather" href="javascript:void(0);">
-					<h2>Weather</h2>
-				</a>
-			</li>
-			<li class="nav-tabs--beta">
-				<span class="label label-info">bR20</span>
-				<a data-tab="views" href="javascript:void(0);">
-					<h2>Views</h2>
-				</a>
-			</li>
-		`;
+		d20plus.html.pageSettingsNavTabs = `<li class="nav-tabs active">
+			<a data-tab="pagedetails" href="javascript:void(0);">
+				<h2>General</h2>
+			</a>
+		</li>
+		<li class="nav-tabs dl">
+			<a>
+				<h2>Lighting</h2>
+			</a>
+			<ul>
+				<li class="nav-tabs--beta">
+					<span class="label label-info">Updated</span>
+					<a data-tab="lighting" href="javascript:void(0);">
+						<h2>Dynamic Lighting</h2>
+					</a>
+				</li>
+				<li class="nav-tabs">
+					<a data-tab="legacy-lighting" href="javascript:void(0);">
+						<h2>Legacy Lighting</h2>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="nav-tabs--beta">
+			<span class="label label-info">bR20</span>
+			<a data-tab="weather" href="javascript:void(0);">
+				<h2>Weather</h2>
+			</a>
+		</li>
+		<li class="nav-tabs--beta">
+			<span class="label label-info">bR20</span>
+			<a data-tab="views" href="javascript:void(0);">
+				<h2>Views</h2>
+			</a>
+		</li>`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -11648,7 +11646,7 @@ function initHTMLpageViews () {
 			<div class="pagedetails">
 				<div class="alert alert-info" role="alert">
 					<p>Views are just another way to manage groups of items on your map
-					. Each View can include different items - tokens, paths & images, regardless of their layer. 
+					. Each View can include different items - tokens (except PCs), paths & images, regardless of their layer.
 					</p><p>Assign desired items to Views via the Context menu
 					. Then you can easily hide or show those items using controls at the bottom of "Editing layer" dropdown
 					. This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.
@@ -12411,6 +12409,23 @@ function d20plusEngine () {
 
 	/* eslint-enable */
 
+	d20plus.engine.tokenRepresentsPc = (token) => {
+		if (!token || !token.get) return undefined;
+		if (token.get("type") !== "image") return false;
+		if (!token.character) return false;
+		if (!token.character.attribs.length && !token.character.attribs.fetching) {
+			token.character.attribs.fetch(token.character.attribs);
+			token.character.attribs.fetching = true;
+		} else if (token.character.attribs.length) {
+			if (token.character.attribs.fetching) delete token.character.attribs.fetching;
+			const attr = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
+			if (attr) {
+				if (attr.attributes.current === "0") return true;
+				else return false;
+			}
+		}
+	}
+
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);
 
@@ -12604,7 +12619,7 @@ function d20plusEngine () {
 		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
 		const page = d20.Campaign.activePage();
 		if (off) {
-			if (d20plus.engine.objectsHideUnhide("layer", layer, "hidden", false) || force) {
+			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
 				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
 				menuButton.addClass("stashed");
 				secondaryButton.addClass("off");
@@ -12614,7 +12629,7 @@ function d20plusEngine () {
 				}
 			}
 		} else {
-			d20plus.engine.objectsHideUnhide("layer", layer, "hidden", true);
+			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
 			menuButton.removeClass("stashed");
 			secondaryButton.removeClass("off");
 			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
@@ -13628,7 +13643,7 @@ function baseMenu () {
 									if (it.model.get(`bR20_view${viewId}`)) {
 										it.model.set(`bR20_view${viewId}`, false);
 									} else {
-										it.model.set(`bR20_view${viewId}`, true);
+										if (!d20plus.engine.tokenRepresentsPc(it.model)) it.model.set(`bR20_view${viewId}`, true);
 									}
 									it.saveState();
 									it.model.save();
@@ -13774,10 +13789,10 @@ function baseMenu () {
 		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
-		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
-		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
-		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
+		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
+		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
+		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
+		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
 	};
 
 	d20plus.menu._neatStructure = {
@@ -14680,11 +14695,11 @@ function baseViews () {
 		if (state) {
 			$(menuItem).removeClass("off");
 			page.set(`bR20cfg_views${id}Off`, false);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, true);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, true);
 		} else {
 			$(menuItem).addClass("off");
 			page.set(`bR20cfg_views${id}Off`, true);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, false);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, false);
 		}
 		page.save();
 		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
