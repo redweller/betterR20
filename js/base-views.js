@@ -56,21 +56,20 @@ function baseViews () {
 	d20plus.views.populateMenu = () => {
 		const page = d20.Campaign.activePage();
 		if (!page) return;
+		if (!page.get("bR20cfg_viewsEnable")) return d20plus.views.layerMenu.html("");
 		let menuhtml = "";
-		if (page.get("bR20cfg_viewsEnable")) {
-			for (let id = 0; id <= 4; id++) {
-				if (!id || page.get(`bR20cfg_views${id}Enable`)) {
-					const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
-					const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
-					const viewexcl = page.get(`bR20cfg_views${id}Exclusive`) ? (page.get(`bR20cfg_views${id + 1}Exclusive`) ? "mst" : "lst") : page.get(`bR20cfg_views${id + 1}Exclusive`) ? "fst" : "";
-					const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
-					menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
-						<span class="view_toggle"><span class="pictos">E</span></span>
-						<span class="pictos">${viewicon}</span>
-						${viewname}
-					</li>`;
-				}
-			}
+		for (let id = 0; id <= 4; id++) {
+			if (id && !page.get(`bR20cfg_views${id}Enable`)) continue;
+			const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
+			const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
+			const exclCheck = (id) => { return page.get(`bR20cfg_views${id}Exclusive`) };
+			const viewexcl = exclCheck(id) ? (exclCheck(id + 1) ? "mst" : "lst") : (exclCheck(id + 1) ? "fst" : "");
+			const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
+			menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
+				<span class="view_toggle"><span class="pictos">E</span></span>
+				<span class="pictos">${viewicon}</span>
+				${viewname}
+			</li>`;
 		}
 		d20plus.views.layerMenu.html(menuhtml);
 	}
