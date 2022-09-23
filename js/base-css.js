@@ -447,6 +447,18 @@ function baseCss () {
 			s: "#editinglayer.background .currentselection:after",
 			r: "content: \"a\";",
 		},
+		{
+			s: "#editinglayer.gmlayer .currentselection:after",
+			r: "content: \"E\";",
+		},
+		{
+			s: "#editinglayer.gmlayer > span.currentselection",
+			r: "display:unset;",
+		},
+		{
+			s: "#editinglayer.gmlayer #editing_layer_icon",
+			r: "display:none;",
+		},
 		// adjust the "Talking to Yourself" box
 		{
 			s: "#textchat-notifier",
