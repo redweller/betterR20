@@ -2,33 +2,15 @@ function initHTMLPageSettings () {
 	d20plus.html = d20plus.html || {};
 
 	// no mods; just switched in to grant full features to non-pro
-	d20plus.html.pageSettings = `<script id='tmpl_pagesettings' type='text/html'>
-    <ul class='nav nav-tabs pagedetails_navigation'>
-        <li class='active'>
-            <a data-tab='pagedetails' href='javascript:void(0);'>
-                <h2>Page Details</h2>
-            </a>
-        </li>
-        <li class='nav-tabs--beta'>
-<span class='label label-info'>
-Updated
-</span>
-            <a data-tab='lighting' href='javascript:void(0);'>
-                <h2>Dynamic Lighting</h2>
-            </a>
-        </li>
-        <li class='nav-tabs'>
-            <a data-tab='legacy-lighting' href='javascript:void(0);'>
-                <h2>Legacy Lighting</h2>
-            </a>
-        </li>
-    </ul>
-    <div class='tab-content'>
+	d20plus.html.pageSettings = `
         <div class='legacy-lighting tab-pane'>
-			<!-- BEGIN MOD -->
-			<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
-			<hr>
-			<!-- END MOD -->
+            <!-- BEGIN MOD -->
+            <strong style="display: block; margin-bottom: 10px;">
+                <a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+                Requires a paid Roll20 subscription or all players to use a betteR20 script
+            </strong>
+            <hr>
+            <!-- END MOD -->
             <div class='lighting_feature showtip' data-feature_enabled='showdarkness' id='fog_settings' title='Enabling Fog of War will disable Updated Dynamic Lighting'>
                 <label class='feature_name'>
                     <strong>Fog of War</strong>
@@ -105,6 +87,7 @@ Updated
                 <div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
             </div>
         </div>
+
         <div class='pagedetails tab-pane' style='display:block;'>
             <!-- * SIZE */ -->
             <div class='size_settings' id='size_settings'>
@@ -376,19 +359,6 @@ Updated
                     <select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
                 </div>
             </div>
-
-            <!-- BEGIN MOD -->
-            <hr>
-             <div>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Weather</h3>
-                </div>
-                <button class='btn Ve-btn-weather'>
-					Configure
-				</button>
-            </div>
-			<!-- END MOD -->
-
             <!-- * Archive & Delete Buttons */ -->
             <hr>
             <div class='page-buttons d-flex flex-wrap justify-content-between'>
@@ -399,12 +369,15 @@ Updated
 
         <div class='lighting tab-pane'>
             <div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
-				<!-- BEGIN MOD -->
-				<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
-				<hr>
-				<!-- END MOD -->
+                <!-- BEGIN MOD -->
+                <strong style="display: block; margin-bottom: 10px;">
+                    <a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+                    Requires a paid Roll20 subscription or all players to use a betteR20 script
+                </strong>
+                <hr>
+                <!-- END MOD -->
                 <div class='alert alert-info' role='alert'>
-                    <p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other.  Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
+                    <p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other. Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
                 </div>
                 <div class='dyn_fog_settings'>
                     <div class='row'>
@@ -518,9 +491,7 @@ Updated
                 <hr>
             </div>
         </div>
-    </div>
-</script>`;
-
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLPageSettings);

@@ -59,10 +59,6 @@ function d20plusEngine () {
 				$(`#measure`).after($torchMode);
 			}
 
-			// ensure tokens have editable sight
-			$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
-			// show dynamic lighting/etc page settings
-			$("#tmpl_pagesettings").replaceWith(d20plus.html.pageSettings);
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
 				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
@@ -99,6 +95,22 @@ function d20plusEngine () {
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		// ensure tokens have editable sight
+		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
+		// show dynamic lighting/etc page settings
+		$("#tmpl_pagesettings").replaceWith(d20plus.engine._makePageSettings());
+	};
+
+	d20plus.engine._makePageSettings = () => {
+		return `<script id='tmpl_pagesettings' type='text/html'>
+			<ul class='nav nav-tabs pagedetails_navigation'>
+				${d20plus.html.pageSettingsNavTabs}
+			</ul>
+			<div class='tab-content'>
+				${d20plus.html.pageSettings}
+				${d20plus.html.pageSettingsWeather}
+			</div>
+		</script>`;
 	};
 
 	d20plus.engine.enhancePageSelector = () => {
@@ -161,7 +173,128 @@ function d20plusEngine () {
 			originalFn();
 			debouncedOverwrite();
 		}
+
+		$(`body`).on("click", ".weather input[type=range]", function (event) {
+			if (this.name) $(`.${this.name}`).val(this.value);
+		}).on("mouseup", "li.dl", function (event) {
+			// process Dynamic Lighting tabs
+			const $dynLightTab = $(event.target).closest("li.dl");
+			const $isTabAnchor = $(event.target).closest("a");
+			if (!$dynLightTab.hasClass("active")) {
+				setTimeout(() => {
+					if (!$dynLightTab.hasClass("legacy")) $(`[data-tab=lighting]:visible`).click();
+					else $(`[data-tab=legacy-lighting]:visible`).click();
+				}, 10);
+			}
+			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
+			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
+		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
+			const $this = $(this);
+			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
+		}).on("click", ".chooseablepage .js__settings-page", function () {
+			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
+		});
 	};
+
+	d20plus.engine.enhancePageSettings = () => {
+		if (!d20plus.engine._lastSettingsPageId) return;
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (page && page.get) {
+			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			// if editing active page then close pages list and add Apply button
+			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
+				const $barPage = $(`#page-toolbar`);
+				const $overlay = $(`.ui-widget-overlay`);
+				const templateApply = `<button type="button" class="btn btn-apply" title="Apply settings for current page">Apply</button>`;
+				if (!$barPage.hasClass("closed")) {
+					$barPage.find(`.handle`).click();
+					$overlay.remove();
+				}
+				$dialog.find(`.btn-primary:visible`).before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.engine._applySettings);
+			}
+			// process options within open dialog
+			if ($dialog[0]) {
+				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
+				d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
+					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
+					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
+						d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+					});
+					// closed editors behave strangely, so replace Close with Cancel
+					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
+						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
+					});
+				}
+			}
+		}
+	}
+
+	d20plus.engine._applySettings = () => {
+		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
+		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
+		const pageid = d20plus.engine._lastSettingsPageId;
+		if ($dialog[0]) {
+			$(`#page-toolbar`).css("visibility", "hidden");
+			d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+			setTimeout(() => {
+				$dialog.find(`.btn-primary:visible`).click();
+				$(`#page-toolbar .handle`).click();
+				$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
+				$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+				$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+				setTimeout(() => {
+					$(`#page-toolbar`).css("visibility", "unset");
+				}, 1000);
+			}, 10);
+		}
+	}
+
+	d20plus.engine._handleCustomOptions = (dialog, doSave) => {
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page || !page.get) return;
+		[
+			"weather",
+		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
+			if (doSave) {
+				d20plus.engine._saveOption(page, dialog, {name, deflt});
+			} else {
+				d20plus.engine._getOption(page, dialog, {name, deflt});
+			}
+		}));
+		if (doSave) {
+			page.save();
+		}
+	}
+
+	d20plus.engine._saveOption = (page, dialog, prop) => {
+		const $e = dialog.find(`[name="${prop.name}"]`);
+		const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
+		if (val && val !== prop.deflt) {
+			page.attributes[`bR20cfg_${prop.name}`] = val;
+		} else {
+			if (page.attributes.hasOwnProperty(`bR20cfg_${prop.name}`)) {
+				page.attributes[`bR20cfg_${prop.name}`] = null;
+			}
+		}
+	}
+
+	d20plus.engine._getOption = (page, dialog, prop) => {
+		const val = page.get(`bR20cfg_${prop.name}`) || prop.deflt;
+		dialog.find(`[name="${prop.name}"]`).each((i, e) => {
+			const $e = $(e);
+			if ($e.is(":checkbox")) {
+				$e.prop("checked", !!val);
+			} else if ($e.is("input[type=range]")) {
+				$(`.${prop.name}`).val(val);
+				$e.val(val);
+			} else {
+				$e.val(val);
+			}
+		});
+	}
 
 	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
 		$iptSearch.on("keyup", () => {

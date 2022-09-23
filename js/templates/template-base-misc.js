@@ -93,6 +93,44 @@ function initHTMLbaseMisc () {
 		</div>
 	</div>
 	`;
+
+	d20plus.html.pageSettingsNavTabs = `
+	<li class="nav-tabs active">
+		<a data-tab="pagedetails" href="javascript:void(0);">
+			<h2>General</h2>
+		</a>
+	</li>
+	<li class="nav-tabs dl">
+		<a>
+			<h2>Lighting</h2>
+		</a>
+		<ul>
+			<li class="nav-tabs--beta">
+				<span class="label label-info">Updated</span>
+				<a data-tab="lighting" href="javascript:void(0);">
+					<h2>Dynamic Lighting</h2>
+				</a>
+			</li>
+			<li class="nav-tabs">
+				<a data-tab="legacy-lighting" href="javascript:void(0);">
+					<h2>Legacy Lighting</h2>
+				</a>
+			</li>
+		</ul>
+	</li>
+	<li class="nav-tabs--beta">
+		<span class="label label-info">bR20</span>
+		<a data-tab="weather" href="javascript:void(0);">
+			<h2>Weather</h2>
+		</a>
+	</li>
+	<li class="nav-tabs--beta">
+		<span class="label label-info">bR20</span>
+		<a data-tab="views" href="javascript:void(0);">
+			<h2>Views</h2>
+		</a>
+	</li>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
