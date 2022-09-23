@@ -400,6 +400,36 @@ function baseCss () {
 			s: "#floatinglayerbar",
 			r: "left: 20px;",
 		},
+		// Config & dark mode fixes
+		{
+			s: ".config-name",
+			r: "padding: 6px 0px; line-height: 21px;",
+		},
+		{
+			s: "#d20plus-configeditor .nav li:not(.active) > a",
+			r: "cursor: pointer;",
+		},
+		{
+			s: "#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: ".tokeneditor__bar-inputs input[type=\"text\"][disabled], .token_bar_input[disabled]",
+			r: "background-color: rgba(180, 180, 180, 0.3);",
+		},
+		{
+			s: ".tool-row:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: "#floatinglayerbar li",
+			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
+		},
+		// Fix page options scrollbar color in darkmode on Chrome
+		{
+			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
+			r: "background-color: rgba(100, 100, 100, 0.5);",
+		},
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
