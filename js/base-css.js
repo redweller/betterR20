@@ -831,6 +831,19 @@ function baseCss () {
 			s: ".artr__big_img",
 			r: "display: block; max-width: 100%; max-height: 100%;",
 		},
+		// fix row styles
+		{
+			s: "#d20plus-artfolder .url",
+			r: "width: calc(65% - 75px) !important;white-space: nowrap;overflow: hidden;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item",
+			r: "line-height: 16px;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item:hover",
+			r: "background-color: rgba(100,100,100,0.5);",
+		},
 	]);
 
 	// Animator CSS -- `anm__` prefix
