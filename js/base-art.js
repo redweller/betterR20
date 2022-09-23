@@ -223,7 +223,7 @@ function d20plusArt () {
 	d20plus.art.addCustomArtSearch = () => {
 		d20plus.ut.log("Add custom art search");
 		const $afterTo = $(`#libraryresults`);
-		$afterTo.after(d20plus.artListHTML);
+		$afterTo.after(d20plus.html.artListHTML);
 
 		const $olNone = $(`#image-search-none`);
 		const $olHasResults = $(`#image-search-has-results`);
