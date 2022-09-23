@@ -2,7 +2,7 @@ function initHTMLroll20EditorsMisc () {
 	d20plus.html = d20plus.html || {};
 
 	d20plus.html.characterEditor = `
-	<script id='tmpl_charactereditor' type='text/html'>
+	<script id="tmpl_charactereditor" type="text/html">
 		<div class='dialog largedialog charactereditor' style='display: block;'>
 			<div class='tab-content'>
 				<div class='bioinfo tab-pane'>
@@ -42,37 +42,56 @@ function initHTMLroll20EditorsMisc () {
 							<button class="btn character-image-by-url">Set Image from URL</button>
 							<div class='clear'></div>
 							<!-- END MOD -->
-							<$ if (window.is_gm) { $>
 							<label>
 								<strong>Default Token (Optional)</strong>
+								<a class='showtip pictos' title='The default token will be used when this character is dragged from the Journal Tab to the Virtual Tabletop. For regular 1x1 tokens representing this character, you may use images from your Art Library or computer. For larger tokens, create a token on the Virtual Tabletop and use &quot;Use Selected Token.&quot;'>?</a>
 							</label>
-							<div class="defaulttoken tokenslot <$! this.get("defaulttoken") !== "" ? "filled" : "" $> style=" width: 95%;">
-								<$ if(this.get("defaulttoken") !== "") { $>
-								<img src="" draggable="false" />
-								<div class="remove"><a href="#">Remove</a></div>
-								<$ } else { $>
-								<button class="btn">Use Selected Token</button>
-								<small>Select a token on the tabletop to use as the Default Token</small>
+							<div class="defaultToken dropbox <$! this.defaultTokenImage != "" ? "filled" : "" $>">
+								<div class="status"></div>
+								<div class="inner">
+									<$ if(this.defaultTokenImage == "") { $>
+									<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+									<br /> or
+									<button class="btn">Click to Upload</button>
+									<input class="manual" type="file" />
+									<$ } else { $>
+									<$ if(/.+\\.webm(\\?.*)?$/i.test(this.defaultTokenImage)) { $>
+									<video src="<$!this.defaultTokenImage$>" draggable="false" muted autoplay loop />
+									<$ } else { $>
+									<img src="<$!this.defaultTokenImage$>" draggable="false" />
+									<$ } $>
+									<div class='remove'><a href='#'>Remove</a></div>
+									<$ } $>
+								</div>
+							</div>
+							<div class="default-token-buttons">
+								<$ if(window.is_gm) { $>
+								<button class='btn btn-primary edit-default-token'>Edit Token Properties</button>
+								<a class='showtip pictos' title='Edit the Token Settings for this character’s default token. Use &quot;Apply Token Defaults&quot; to apply these settings to any existing tokens on the Virtual Tabletop.'>?</a>
+								<$ } $>
+								<button class='btn use-selected-token'>Use Selected Token</button>
+								<a class='showtip pictos' title='Copy a snapshot of the selected token&#39;s image and settings as this character’s default token.'>?</a>
+								<$ if(window.is_gm) { $>
+								<button class='btn apply-token-defaults'>Apply Token Defaults</button>
+								<a class='showtip pictos' title='Update tokens where Represents Character is set to this character. All tokens representing this character across all pages will be overwritten.'>?</a>
+								<!-- BEGIN MOD -->
+								<button class="btn token-image-by-url">Set Token Image from URL</button>
+								<a class='showtip pictos' title='Update will only be visible upon re-opening the sheet.'>?</a>
+								<!-- END MOD -->
 								<$ } $>
 							</div>
-							<!-- BEGIN MOD -->
-							<button class="btn token-image-by-url">Set Token Image from URL</button>
-							<small style="text-align: left;">(Update will only be visible upon re-opening the sheet)</small>
-							<div class='clear'></div>
-							<!-- END MOD -->
-							<$ } $>
 						</div>
 						<div class='span7'>
 							<label>
 								<strong>Name</strong>
 							</label>
-							<input class='name' type='text'>
+							<input class='name' data-test='character-edit-name' type='text'>
 							<div class='clear'></div>
 							<$ if(window.is_gm) { $>
 							<label>
 								<strong>In Player's Journals</strong>
 							</label>
-							<select class='inplayerjournals selectize' multiple='true' style='width: 100%;'>
+							<select class='inplayerjournals selectize' data-test='character-edit-in-journal' multiple='true' style='width: 100%;'>
 								<option value="all">All Players</option>
 								<$ window.Campaign.players.each(function(player) { $>
 								<option value="<$!player.id$>"><$!player.get("displayname")$></option>
@@ -82,7 +101,7 @@ function initHTMLroll20EditorsMisc () {
 							<label>
 								<strong>Can Be Edited &amp; Controlled By</strong>
 							</label>
-							<select class='controlledby selectize' multiple='true' style='width: 100%;'>
+							<select class='controlledby selectize' data-test='character-edit-controlledby' multiple='true' style='width: 100%;'>
 								<option value="all">All Players</option>
 								<$ window.Campaign.players.each(function(player) { $>
 								<option value="<$!player.id$>"><$!player.get("displayname")$></option>
@@ -95,13 +114,13 @@ function initHTMLroll20EditorsMisc () {
 							<input class='tags'>
 							<div class='clear'></div>
 							<hr>
-							<button class='delete btn btn-danger' style='float: right;'>
+							<button class='delete btn btn-danger' data-test='character-delete' style='float: right;'>
 								Delete
 							</button>
-							<button class='duplicate btn' style='margin-right: 10px;'>
+							<button class='duplicate btn' data-test='character-duplicate' style='margin-right: 10px;'>
 								Duplicate
 							</button>
-							<button class='archive btn'>
+							<button class='archive btn' data-test='character-archive'>
 								<$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
 							</button>
 							<div class='clear'></div>
@@ -109,6 +128,7 @@ function initHTMLroll20EditorsMisc () {
 							<div class='clear'></div>
 						</div>
 					</div>
+					<$ if(!window.ADVANCED_SHEET) { $>
 					<div class='row-fluid'>
 						<div class='span12'>
 							<hr>
@@ -126,6 +146,7 @@ function initHTMLroll20EditorsMisc () {
 							<$ } $>
 						</div>
 					</div>
+					<$ } $>
 				</div>
 			</div>
 		</div>
