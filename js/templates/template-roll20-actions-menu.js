@@ -2,7 +2,7 @@ function initHTMLroll20actionsMenu () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.roll20actionsMenu = `
+		d20plus.html.actionsMenu = `
 		<script id='tmpl_actions_menu' type='text/html'>
 			<div class='actions_menu d20contextmenu'>
 				<ul>

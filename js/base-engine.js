@@ -116,7 +116,7 @@ function d20plusEngine () {
 				${d20plus.html.pageSettingsNavTabs}
 			</ul>
 			<div class='tab-content'>
-				${d20plus.html.roll20pageSettings}
+				${d20plus.html.pageSettings}
 				${d20plus.html.pageSettingsWeather}
 				${d20plus.html.pageSettingsViews}
 			</div>

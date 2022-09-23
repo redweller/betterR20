@@ -6,7 +6,7 @@ function baseMenu () {
 		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
 			$("#tmpl_actions_menu").replaceWith(d20plus.menu.generateNeatActionsMenu());
 		} else {
-			$("#tmpl_actions_menu").replaceWith(d20plus.html.roll20actionsMenu);
+			$("#tmpl_actions_menu").replaceWith(d20plus.html.actionsMenu);
 		}
 
 		const getTokenWhisperPart = () => d20plus.cfg.getOrDefault("token", "massRollWhisperName") ? "/w gm Rolling for @{selected|token_name}...\n" : "";

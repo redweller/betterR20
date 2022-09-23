@@ -203,8 +203,8 @@ const SCRIPTS = {
 			"base-art-browse",
 			"overwrites/base",
 			"overwrites/canvas-handler",
-			"templates/template-token-editor",
-			"templates/template-page-settings",
+			"templates/template-roll20-token-editor",
+			"templates/template-roll20-page-settings",
 			"templates/template-roll20-actions-menu",
 			"templates/template-roll20-editors-misc",
 			"templates/template-base-misc",
@@ -245,8 +245,8 @@ const SCRIPTS = {
 			"base-art-browse",
 			"overwrites/base",
 			"overwrites/canvas-handler",
-			"templates/template-token-editor",
-			"templates/template-page-settings",
+			"templates/template-roll20-token-editor",
+			"templates/template-roll20-page-settings",
 			"templates/template-roll20-actions-menu",
 			"templates/template-roll20-editors-misc",
 			"templates/template-base-misc",
@@ -310,8 +310,8 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 });
 
 const CHANGED_SCRIPTS = [
-	"templates/template-token-editor",
-	"templates/template-page-settings",
+	"templates/template-roll20-token-editor",
+	"templates/template-roll20-page-settings",
 	"templates/template-roll20-actions-menu",
 	"templates/template-roll20-editors-misc",
 	"templates/template-base-misc",

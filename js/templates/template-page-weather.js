@@ -2,7 +2,8 @@ function initHTMLpageWeather () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsWeather = `<div class='weather tab-pane'>
+		d20plus.html.pageSettingsWeather = `
+		<div class='weather tab-pane'>
 			<div class="pagedetails">
 				<strong style="display: block; margin-bottom: 10px;">
 					<a class="tipsy-w showtip pictos" title="Requires all players to use a betteR20 script">!</a>
@@ -176,8 +177,8 @@ function initHTMLpageWeather () {
 					</select>
 				</div>
 			</div>
-		</div>`;
-
+		</div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }

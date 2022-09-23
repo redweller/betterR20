@@ -2,7 +2,8 @@ function initHTMLpageViews () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsViews = `<div class='views tab-pane'>
+		d20plus.html.pageSettingsViews = `
+		<div class='views tab-pane'>
 			<div class="pagedetails">
 				<div class="alert alert-info" role="alert">
 					<p>Views are just another way to manage groups of items on your map
@@ -147,8 +148,8 @@ function initHTMLpageViews () {
 					<input class="page-input" name="views3Name" placeholder="View 3">
 				</div>
 			</div>
-		</div>`;
-
+		</div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
