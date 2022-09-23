@@ -93,6 +93,14 @@ function d20plusEngine () {
 		$(document).on("mouseenter", ".markermenu", d20plus.mod.mouseEnterMarkerMenu)
 	};
 
+	d20plus.engine.swapTemplates = () => {
+		d20plus.ut.log("Swapping templates...");
+		$("#tmpl_charactereditor").html($(d20plus.html.characterEditor).html());
+		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
+		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
+		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+	};
+
 	d20plus.engine.enhancePageSelector = () => {
 		d20plus.ut.log("Enhancing page selector");
 

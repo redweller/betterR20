@@ -9,8 +9,7 @@ const betteR205etools = function () {
 			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 
-			d20plus.template.swapTemplates();
-
+			d20plus.engine.swapTemplates();
 			d20plus.ut.addAllCss();
 			if (window.is_gm) {
 				d20plus.ut.log("Is GM");
