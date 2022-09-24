@@ -117,20 +117,20 @@ function initHTMLroll20actionsMenu () {
 					<$ } $>
 
 					<!-- BEGIN MOD -->
-					<$ if(this.view && this.get && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+					<$ if(this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
 						<li class='head hasSub' data-menuname='view'>
 							Assign view &raquo;
 							<ul class='submenu' data-menuname='view'>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
 								<li data-action-type="assignview0" class='<$ if(this && this.get && this && this.get("bR20_view0")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views0Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views0Name')$> <$ } else { $> Default <$ } $></li>
 								<$ } $>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
 								<li data-action-type="assignview1" class='<$ if(this && this.get && this && this.get("bR20_view1")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views1Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views1Name')$> <$ } else { $> View 1 <$ } $></li>
 								<$ } $>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
 								<li data-action-type="assignview2" class='<$ if(this && this.get && this && this.get("bR20_view2")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views2Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views2Name')$> <$ } else { $> View 2 <$ } $></li>
 								<$ } $>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
 								<li data-action-type="assignview3" class='<$ if(this && this.get && this && this.get("bR20_view3")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views3Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views3Name')$> <$ } else { $> View 3 <$ } $></li>
 								<$ } $>
 							</ul>
