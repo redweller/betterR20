@@ -1,4 +1,5 @@
 const fs = require("fs");
+const beautify_html = require("js-beautify").html;
 
 const SCRIPT_VERSION = "1.31.1.19";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
@@ -340,8 +341,19 @@ const CHANGED_SCRIPTS = [
 CHANGED_SCRIPTS.forEach((filename) => {
 	const srcpath = `${JS_DIR}${filename}.js`;
 	const exclude = /\/\/ RB20 EXCLUDE START(.*?)\/\/ RB20 EXCLUDE END/sgm;
+	const refactorTemplates = /document\.addEventListener\("b20initTemplates", function initHTML \(\) {\r\n\t\td20plus\.html\.([\w_]+?) = `(.*?)\t`;\r\n\t\tdocument\.removeEventListener\("b20initTemplates", initHTML, false\);\r\n\t}\);/sgm;
+	const template = (...s) => {
+		let html = `<br20_npm_temp>${s[2]}</br20_npm_temp>`;
+		html = html.replace(/<\$(.*?)\$>/g, (...i) => { return `&lt;!--$${i[1].replace(/'/g, "%b20squote%").replace(/"/g, "%b20dquote%")}$--&gt;` });
+		html = beautify_html(html, {"indent_with_tabs": true});
+		html = html.replace(/&lt;!--\$(.*?)\$--&gt;/g, (...i) => { return `<$${i[1].replace(/%b20squote%/g, "'").replace(/%b20dquote%/g, "\"")}$>` });
+		html = [html.replace(/<[/]?br20_npm_temp>/g, ""), `\t`].join("");
+		return `d20plus.html.${s[1]} = \`${html}\`;`
+	}
+
 	let script = fs.readFileSync(`${srcpath}`, "utf-8").toString();
 	script = script.replace(exclude, "");
+	script = script.replace(refactorTemplates, template);
 
 	Object.entries(LANG_STRS.en).forEach((string) => {
 		const multiline = (`${string[1]}`).search("\n") !== -1;

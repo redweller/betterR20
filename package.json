@@ -12,5 +12,8 @@
 	"repository": "5etools/5etoolsR20",
 	"devDependencies": {
 		"eslint": "^7.32.0"
+	},
+	"dependencies": {
+		"js-beautify": "^1.14.6"
 	}
 }
