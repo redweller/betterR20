@@ -3,8 +3,9 @@ function initHTMLTokenEditor () {
 
 	// no mods; just switched in to grant full features to non-pro
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.tokenEditor = `<script id='tmpl_tokeneditor' type='text/html'>
-    	<div class='dialog largedialog tokeneditor' style='display: block;'>
+		d20plus.html.tokenEditor = `
+        <script id='tmpl_tokeneditor' type='text/html'>
+        <div class='dialog largedialog tokeneditor' style='display: block;'>
         <ul class='nav nav-tabs tokeneditor_navigation'>
             <li class='active'>
                 <a data-tab='basic' href='javascript:void(0);'>
@@ -1078,8 +1079,8 @@ function initHTMLTokenEditor () {
             </div>
         </div>
         </div>
-        </script>`;
-
+        </script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }

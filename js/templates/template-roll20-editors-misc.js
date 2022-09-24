@@ -2,7 +2,8 @@ function initHTMLroll20EditorsMisc () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.characterEditor = `<script id="tmpl_charactereditor" type="text/html">
+		d20plus.html.characterEditor = `
+		<script id="tmpl_charactereditor" type="text/html">
 		<div class='dialog largedialog charactereditor' style='display: block;'>
 		<div class='tab-content'>
 		<div class='bioinfo tab-pane'>
@@ -150,7 +151,8 @@ function initHTMLroll20EditorsMisc () {
 		</div>
 		</div>
 		</div>
-		</script>`;
+		</script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
@@ -292,7 +294,8 @@ function initHTMLroll20EditorsMisc () {
       <$ } $>
     </div>
   </div>
-</script>`;
+</script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
