@@ -414,6 +414,10 @@ function baseCss () {
 			r: "background-color: rgba(120, 120, 120, 0.2);",
 		},
 		{
+			s: ".tokeneditor__bar-inputs input[type=\"text\"][disabled], .token_bar_input[disabled]",
+			r: "background-color: rgba(180, 180, 180, 0.3);",
+		},
+		{
 			s: ".tool-row:nth-child(2n+1)",
 			r: "background-color: rgba(120, 120, 120, 0.2);",
 		},
