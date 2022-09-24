@@ -1,7 +1,7 @@
 const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 
-const SCRIPT_VERSION = "1.31.1.19";
+const SCRIPT_VERSION = "1.32.0.24";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
@@ -219,6 +219,7 @@ const SCRIPTS = {
 			"base-css",
 			"base-ui",
 			"base-mod",
+			"base-macro",
 			"base-emoji",
 			"base-remote-libre",
 			"base-jukebox-widget",
@@ -261,6 +262,7 @@ const SCRIPTS = {
 			"base-css",
 			"base-ui",
 			"base-mod",
+			"base-macro",
 			"base-emoji",
 			"base-remote-libre",
 			"base-jukebox-widget",
@@ -284,6 +286,8 @@ const SCRIPTS = {
 			"5etools-adventures",
 			"5etools-deities",
 			"5etools-vehicles",
+			"5etools-template",
+			"5etools-css",
 
 			"base",
 		],

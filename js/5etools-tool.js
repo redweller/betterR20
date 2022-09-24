@@ -2,6 +2,147 @@ function tools5eTool () {
 	// Add the array of tools that are 5e only to the tools array
 	d20plus.tool.tools = d20plus.tool.tools.concat([
 		{
+			toolId: "JSON",
+			name: "JSON Importer",
+			desc: "Import 5etools JSON files from url or file upload",
+			html: `
+					<div id="d20plus-json-importer" title="Better20 - JSON Importer">
+					<p style="margin-bottom: 4px;">
+						<b style="font-size: 110%;">Importer:</b>
+						<button class="btn readme" style="float: right;">Help/README</button>
+						<div style="clear: both;"></div>
+					</p>
+					<div style="border-bottom: 1px solid #ccc; margin-bottom: 3px; padding-bottom: 3px;">
+						<input type="text" id="import-json-url">
+						<p><a class="btn" href="#" id="button-json-load-url">Load From URL</a></p>
+						<p><a class="btn" href="#" id="button-json-load-file">Load From File</a></p>
+					</div>
+					<div>
+						<div name="data-loading-message"></div>
+						<select name="data-type" disabled style="margin-bottom: 0;">
+						<!-- populate with JS-->
+						</select>
+						<button class="btn" name="view-select-entries">View/Select Entries</button>
+					</div>
+					</div>
+
+					<div id="d20plus-json-importer-help" title="Readme">
+						<p>First, either enter the url for a JSON in 5etools format, or upload one from a file. Then, choose the category you wish to import, and "View/Select Entries." You'll need to import items in each category separately.</p>
+						<p>This tool is mainly meant to allow homebrew files to be uploaded for every category without taking too much space.</p>
+						<p>If you're looking for a repository of homebrew files, one can be found <a href="https://github.com/TheGiddyLimit/homebrew" target="_blank">here</a>. To get an importable url, click on the file you want, then click the button that says "Raw" and use that url.</p>
+					</div>
+					`,
+			dialogFn: () => {
+				$("#d20plus-json-importer").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 750,
+					height: 360,
+				});
+				$("#d20plus-json-importer-help").dialog({
+					autoOpen: false,
+					resizable: true,
+					width: 600,
+					height: 400,
+				});
+			},
+			openFn: () => {
+				const $win = $("#d20plus-json-importer");
+				$win.dialog("open");
+
+				const $win5etools = $(`#d20plus-json-importer-5etools`);
+
+				const $winHelp = $(`#d20plus-json-importer-help`);
+				const $btnHelp = $win.find(`.readme`).off("click").click(() => $winHelp.dialog("open"));
+
+				const $btnImport = $win.find(`[name="import"]`).off("click").prop("disabled", true);
+				const $btnViewCat = $win.find(`[name="view-select-entries"]`).off("click").click(handleLoadedData).prop("disabled", true);
+				const $btnSelAllContent = $win.find(`[name="select-all-entries"]`).off("click").prop("disabled", true);
+
+				const $selDataType = $win.find(`[name="data-type"]`).prop("disabled", true);
+				let genericFolder;
+				let lastLoadedData = null;
+
+				// The main function that's called with the import button gets clicked
+				async function handleLoadedData () {
+					const lastDataType = $selDataType.val();
+					const cat = IMPORT_CATEGORIES.find(ic => ic.name === lastDataType);
+					const optionsContainer = d20plus[cat.plural];
+					let overrideData = null;
+					let extraOptions = {};
+
+					// Handle special cases where certain items need extra data
+					switch (lastDataType) {
+						case "class":
+							overrideData = (await d20plus.classes.getDataForImport(lastLoadedData)).class;
+							extraOptions["builderOptions"] = {
+								isHomebrew: true,
+							}
+							break;
+						case "subclass":
+							overrideData = await d20plus.subclasses.getDataForImport(lastLoadedData);
+							break;
+						default:
+							break;
+					}
+
+					const handoutBuilder = optionsContainer["handoutBuilder"];
+
+					// Similar to the showImportList functions when buttons are pressed
+					d20plus.importer.showImportList(
+						lastDataType,
+						overrideData || lastLoadedData[lastDataType],
+						handoutBuilder,
+						{
+							groupOptions: optionsContainer._groupOptions,
+							listItemBuilder: optionsContainer._listItemBuilder,
+							listIndex: optionsContainer._listCols,
+							listIndexConverter: optionsContainer._listIndexConverter,
+							...extraOptions,
+						},
+					);
+				}
+
+				// Populate the dropdown menu that allows you to choose the category
+				function populateDropdown (cats) {
+					$selDataType.empty();
+					cats.forEach(c => {
+						$selDataType.append(`<option value="${c.name}">${c.titlePl || c.plural.toTitleCase()}</option>`)
+					});
+
+					// Disable buttons if there are no valid categories to import
+					const disable = !cats.length;
+					$btnViewCat.prop("disabled", disable);
+					$btnSelAllContent.prop("disabled", disable);
+					$selDataType.prop("disabled", disable);
+				}
+
+				// Load from url
+				const $btnLoadUrl = $(`#button-json-load-url`);
+				$btnLoadUrl.off("click").click(async () => {
+					const url = $("#import-json-url").val();
+					if (url && url.trim()) {
+						DataUtil.loadJSON(url).then(data => {
+							const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data && !ic.uniqueImport);
+							populateDropdown(cats);
+							lastLoadedData = data;
+						});
+					}
+				});
+
+				// Load from file
+				const $btnLoadFile = $(`#button-json-load-file`);
+				$btnLoadFile.off("click").click(async () => {
+					const allFiles = await DataUtil.pUserUpload();
+					// Due to the new util functon, need to account for data being an array
+					const data = allFiles.jsons.find(Boolean);
+					const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data && !ic.uniqueImport);
+					populateDropdown(cats);
+					lastLoadedData = data;
+				});
+			},
+		},
+		{
 			name: "Shapeshifter Token Builder",
 			desc: "Build a rollable table and related token to represent a shapeshifting creature.",
 			html: `

@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.0.19
+// @version      1.32.0.24
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -132,7 +132,7 @@ function baseLanguage () {
 		cfg_option_hide_linesplit: [`Hide Line Splitter (reload to apply changes)`],
 		cfg_option_log_players_in_chat: [`Show player connects messages`],
 		cfg_option_neat_menus: [`Reorganized canvas context menu (reload to apply changes)`],
-		cfg_option_quick_menu: [`Enable quick actions as copies of the menu entries added to the bottom of right-click menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back.`],
+		cfg_option_quick_menu: [`Enable quick actions as copies of the menu entries added to the bottom of Reorganized menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back.`],
 		cfg_option_quick_2: [`-- Quick action 2`],
 		cfg_option_quick_3: [`-- Quick action 3`],
 		cfg_option_minify_tracker: [`Shrink Initiative Tracker Text`],
@@ -306,7 +306,7 @@ function baseLanguage () {
 		cfg_option_hide_linesplit: [`Спрятать кнопку разрезания линий (нужен перезапуск)`],
 		cfg_option_log_players_in_chat: [`Выводить сообщения о подключении игроков`],
 		cfg_option_neat_menus: [`Упорядоченное контекстное меню слоя (нужен перезапуск)`],
-		cfg_option_quick_menu: [`Включить быстрые действия, которые отображаются в самом низу меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда "На слой ГМа" и обратно`],
+		cfg_option_quick_menu: [`Включить быстрые действия, которые отображаются в самом низу Упорядоченного меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда "На слой ГМа" и обратно`],
 		cfg_option_quick_2: [`-- Быстрое действие 2`],
 		cfg_option_quick_3: [`-- Быстрое действие 3`],
 		cfg_option_minify_tracker: [`Уменьшить размер элементов трекера инициативы`],
@@ -543,7 +543,7 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
-			url: `https://github.com/redweller/betterR20/raw/run/betteR20-version`,
+			url: `https://raw.githubusercontent.com/redweller/betterR20/run/betteR20-version`,
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;
@@ -1221,26 +1221,31 @@ function baseQpi () {
 			on: {
 				_preInit () {
 					qpi._on_chatHandlers = [];
-					const seenMessages = new Set();
-					d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
-					const handleChat = (e) => {
-						if (!d20.textchat.chatstartingup) {
-							e.id = e.key;
-							if (!seenMessages.has(e.id)) {
-								seenMessages.add(e.id);
+					if (d20.textchat.shoutref) {
+						const seenMessages = new Set();
+						d20.textchat.chatref = d20.textchat.shoutref.parent.child("chat");
+						const handleChat = (e) => {
+							if (!d20.textchat.chatstartingup) {
+								e.id = e.key;
+								if (!seenMessages.has(e.id)) {
+									seenMessages.add(e.id);
 
-								let t = e.val();
-								if (t) {
-									// eslint-disable-next-line no-console
-									if (window.DEBUG) console.log("CHAT: ", t);
+									let t = e.val();
+									if (t) {
+										// eslint-disable-next-line no-console
+										if (window.DEBUG) console.log("CHAT: ", t);
 
-									qpi._on_chatHandlers.forEach(fn => fn(t));
+										qpi._on_chatHandlers.forEach(fn => fn(t));
+									}
 								}
 							}
-						}
-					};
-					d20.textchat.chatref.on("child_added", handleChat);
-					d20.textchat.chatref.on("child_changed", handleChat);
+						};
+						d20.textchat.chatref.on("child_added", handleChat);
+						d20.textchat.chatref.on("child_changed", handleChat);
+					} else {
+						// eslint-disable-next-line no-console
+						console.warn("%cQPI > ", "color: #b93032; font-size: large", "Can't properly initialize chat handler");
+					}
 				},
 				_ (evtType, fn, ...others) {
 					switch (evtType) {
@@ -3004,7 +3009,8 @@ function baseTool () {
 					$btnDel.off("click").on("click", () => {
 						const sel = delList.items
 							.filter(it => $(it.elm).find(`input`).prop("checked"))
-							.map(it => journalItems[$(it.elm).attr("data-listid")]);
+							.map(it => journalItems[$(it.elm).attr("data-listid")])
+							.reverse();
 
 						if (!sel.length) {
 							alert("No items selected!");
@@ -8028,7 +8034,7 @@ function d20plusArt () {
 	d20plus.art.addCustomArtSearch = () => {
 		d20plus.ut.log("Add custom art search");
 		const $afterTo = $(`#libraryresults`);
-		$afterTo.after(d20plus.artListHTML);
+		$afterTo.after(d20plus.html.artListHTML);
 
 		const $olNone = $(`#image-search-none`);
 		const $olHasResults = $(`#image-search-has-results`);
@@ -9230,5082 +9236,14 @@ function initCanvasHandlerOverwrite () {
 SCRIPT_EXTENSIONS.push(initCanvasHandlerOverwrite);
 
 
-function d20plusEngine () {
-	d20plus.engine = {};
+function initHTMLTokenEditor () {
+	d20plus.html = d20plus.html || {};
 
-	d20plus.engine.addProFeatures = () => {
-		d20plus.ut.log("Add Pro features");
-
-		d20plus.setMode = d20plus.mod.setMode;
-		window.setMode = d20plus.mod.setMode;
-
-		// rebind buttons with new setMode
-		const $drawTools = $("#drawingtools");
-		const $rect = $drawTools.find(".chooserect");
-		const $ellipse = $drawTools.find(".choosecircle");
-		const $path = $drawTools.find(".choosepath");
-		const $poly = $drawTools.find(".choosepolygon");
-		$drawTools.unbind(clicktype).bind(clicktype, function () {
-			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("ellipse") ? setMode("ellipse") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
-		});
-		$rect.unbind(clicktype).bind(clicktype, () => {
-			setMode("rect");
-			return false;
-		});
-		$ellipse.unbind(clicktype).bind(clicktype, () => {
-			setMode("ellipse");
-			return false;
-		});
-		$path.unbind(clicktype).bind(clicktype, () => {
-			setMode("path");
-			return false;
-		});
-		$poly.unbind(clicktype).bind(clicktype, () => {
-			setMode("polygon");
-			return false;
-		});
-		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
-		$("#ellipse").unbind(clicktype).bind(clicktype, () => setMode("ellipse"));
-		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
-
-		if (!$(`#fxtools`).length) {
-			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
-			$fxMode.on("click", () => {
-				d20plus.setMode("fxtools");
-			});
-			$(`#drawingtools`).after($fxMode);
-		}
-
-		if (window.is_gm) {
-			// add lighting layer tool
-			if (!$(`#editinglayer .choosewalls`).length) {
-				$(`#editinglayer .choosegmlayer`).after(`
-					<li class="choosewalls">
-						<span class="pictostwo">r</span> 
-						${d20plus.cfg.get("canvas", "showLight") ? __("ui_bar_light_n_barriers") : __("ui_bar_barriers")}
-					</li>
-				`);
-			}
-
-			// add light placement tool
-			if (d20plus.cfg.get("canvas", "showLight")) {
-				if (!$(`#placelight`).length) {
-					const $torchMode = $(`<li class="placelight" tip="Place Light"><span class="pictostwo">t</span></li>`);
-					$torchMode.on("click", () => {
-						d20plus.setMode("placelight");
-						$torchMode.addClass("activebutton");
-					});
-					$(`#measure`).after($torchMode);
-				}
-			}
-
-			// ensure tokens have editable sight
-			$("#tmpl_tokeneditor").replaceWith(d20plus.templates.templateTokenEditor);
-			// show dynamic lighting/etc page settings
-			$("#tmpl_pagesettings").replaceWith(d20plus.templates.templatePageSettings);
-			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
-				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
-				e.view._template = $.jqotec("#tmpl_pagesettings");
-			});
-		}
-	};
-
-	d20plus.engine._removeStatusEffectEntries = () => {
-		$(`#5etools-status-css`).html("");
-		Object.keys(d20.token_editor.statusmarkers).filter(k => k.startsWith("5etools_")).forEach(k => delete d20.token_editor.statusmarkers[k]);
-	};
-
-	d20plus.engine.enhanceStatusEffects = () => {
-		d20plus.ut.log("Enhance status effects");
-		$(`head`).append(`<style id="5etools-status-css"/>`);
-
-		d20plus.mod.overwriteStatusEffects();
-
-		d20.engine.canvas.off("object:added");
-		d20.engine.canvas.on("object:added", d20plus.mod.overwriteStatusEffects);
-
-		// the holy trinity
-		// d20.engine.canvas.on("object:removed", () => console.log("added"));
-		// d20.engine.canvas.on("object:removed", () => console.log("removed"));
-		// d20.engine.canvas.on("object:modified", () => console.log("modified"));
-
-		$(document).off("mouseenter", ".markermenu");
-		$(document).on("mouseenter", ".markermenu", d20plus.mod.mouseEnterMarkerMenu)
-	};
-
-	d20plus.engine.enhancePageSelector = () => {
-		d20plus.ut.log("Enhancing page selector");
-
-		let updatePageOrder = function () {
-			d20plus.ut.log("Saving page order...");
-			let pos = 0;
-			$("#page-toolbar .pages .chooseablepage").each(function () {
-				let page = d20.Campaign.pages.get($(this).attr("data-pageid"));
-				page && page.save({
-					placement: pos,
-				});
-				pos++;
-			});
-			d20.pagetoolbar.noReload = false;
-			d20.pagetoolbar.refreshPageListing();
-		};
-
-		function overwriteDraggables () {
-			// make them draggable on both axes
-			$("#page-toolbar .pages").sortable("destroy");
-			$("#page-toolbar .pages").sortable({
-				items: "> .chooseablepage",
-				start: function () {
-					d20.pagetoolbar.noReload = true;
-				},
-				stop: function () {
-					updatePageOrder()
-				},
-				distance: 15,
-			}).addTouch();
-			$("#page-toolbar .playerbookmark").draggable("destroy");
-			$("#page-toolbar .playerbookmark").draggable({
-				revert: "invalid",
-				appendTo: "#page-toolbar",
-				helper: "original",
-			}).addTouch();
-			$("#page-toolbar .playerspecificbookmark").draggable("destroy");
-			$("#page-toolbar .playerspecificbookmark").draggable({
-				revert: "invalid",
-				appendTo: "#page-toolbar",
-				helper: "original",
-			}).addTouch();
-		}
-
-		overwriteDraggables();
-		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
-
-		const originalFn = d20.pagetoolbar.refreshPageListing;
-		// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-		const debouncedOverwrite = _.debounce(() => {
-			overwriteDraggables();
-			// fire an event for other parts of the script to listen for
-			const pageChangeEvt = new Event(`VePageChange`);
-			d20plus.ut.log("Firing page-change event");
-			document.dispatchEvent(pageChangeEvt);
-		}, 110);
-		d20.pagetoolbar.refreshPageListing = () => {
-			originalFn();
-			debouncedOverwrite();
-		}
-	};
-
-	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
-		$iptSearch.on("keyup", () => {
-			const searchVal = ($iptSearch.val() || "").trim();
-			$outSearch.empty();
-			if (searchVal.length <= 2) return; // ignore 2 characters or less, for performance reasons
-			const found = $(`#journal .content`).find(`li[data-itemid]`).filter((i, ele) => {
-				const $ele = $(ele);
-				return $ele.find(`.name`).text().trim().toLowerCase().includes(searchVal.toLowerCase());
-			});
-			if (found.length) {
-				$outSearch.append(`<p><b>Search results:</b></p>`);
-				const $outList = $(`<ol class="dd-list Vetools-search-results"/>`);
-				$outSearch.append($outList);
-				found.clone().addClass("Vetools-draggable").appendTo($outList);
-				$outSearch.append(`<hr>`);
-				$(`.Vetools-search-results .Vetools-draggable`).draggable({
-					revert: true,
-					distance: 10,
-					revertDuration: 0,
-					helper: "clone",
-					handle: ".namecontainer",
-					appendTo: "body",
-					scroll: true,
-					start: function () {
-						$("#journalfolderroot").addClass("externaldrag")
-					},
-					stop: function () {
-						$("#journalfolderroot").removeClass("externaldrag")
-					},
-				});
-			}
-		});
-	};
-
-	d20plus.engine.addSelectedTokenCommands = () => {
-		d20plus.ut.log("Add token rightclick commands");
-		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
-			$("#tmpl_actions_menu").replaceWith(d20plus.template.generateNeatActionsMenu());
-		} else {
-			$("#tmpl_actions_menu").replaceWith(d20plus.template_actionsMenu);
-		}
-
-		const getTokenWhisperPart = () => d20plus.cfg.getOrDefault("token", "massRollWhisperName") ? "/w gm Rolling for @{selected|token_name}...\n" : "";
-
-		Mousetrap.bind("b b", function () { // back on layer
-			const n = d20plus.engine._getSelectedToMove();
-			d20plus.engine.backwardOneLayer(n);
-			return false;
-		});
-
-		Mousetrap.bind("b f", function () { // forward one layer
-			const n = d20plus.engine._getSelectedToMove();
-			d20plus.engine.forwardOneLayer(n);
-			return false;
-		});
-
-		/**
-		 * @param token A token.
-		 * @return {number} 0 for unknown, 1 for NPC, 2 for PC.
-		 */
-		function getTokenType (token) {
-			if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
-				const charIdMaybe = token.model.toJSON().represents;
-				if (!charIdMaybe) return 0; //
-				const charMaybe = d20.Campaign.characters.get(charIdMaybe);
-				if (charMaybe) {
-					const atbs = charMaybe.attribs.toJSON();
-					const npcAtbMaybe = atbs.find(it => it.name === "npc");
-
-					if (npcAtbMaybe && Number(npcAtbMaybe.current) === 1) {
-						return 1;
-					} else {
-						return 2;
-					}
-				} else return 0;
-			} else return 0;
-		}
-
-		const lastContextSelection = {
-			lastAnimUid: null,
-			lastSceneUid: null,
-		};
-
-		/* eslint-disable */
-
-		// BEGIN ROLL20 CODE
-		var e, t = !1, n = [];
-		var i = function() {
-			t && (t.remove(),
-				t = !1),
-			e && clearTimeout(e)
-		};
-		var r = function (r) {
-			var o, a;
-			r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
-				a = r.changedTouches[0].pageY) : (o = r.pageX,
-				a = r.pageY),
-				i(),
-				n = [];
-			for (var s = [], l = d20.engine.selected(), c = 0; c < l.length; c++)
-				n.push(l[c]),
-					s.push(l[c].type);
-			if (s = _.uniq(s),
-			n.length > 0)
-				if (1 == s.length) {
-					var u = n[0];
-					t = $("image" == u.type && 0 == u.model.get("isdrawing") ? $("#tmpl_actions_menu").jqote(u.model) : $("#tmpl_actions_menu").jqote(u.model))
-				} else {
-					var u = n[0];
-					t = $($("#tmpl_actions_menu").jqote(u.model))
-				}
-			else
-				t = $($("#tmpl_actions_menu").jqote({}));
-			if (!window.is_gm && t[0].lastElementChild.childElementCount < 1)
-				return !1;
-			t.appendTo("body");
-			// BEGIN MOD
-			if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
-				setTimeout(() => {
-					const group = $(`.actions_menu > ul > li`).find(`[data-menuname='token']`);
-					if (!group.length) return;
-					$('[id^=r20es-token-ctx-menu-button-]').each( function () {
-						$(this).detach().appendTo(group);
-					});
-				}, 10);
-			}
-			// END MOD
-			var d = t.height()
-				, h = t.width()
-				, p = {};
-			return p.top = a > $("#editor-wrapper").height() - $("#playerzone").height() - d - 100 ? a - d + "px" : a + "px",
-				p.left = o > $("#editor-wrapper").width() - h ? o + 10 - h + "px" : o + 10 + "px",
-				t.css(p),
-				$(".actions_menu").bind("mousedown mouseup touchstart", function(e) {
-					e.stopPropagation()
-				}),
-				$(".actions_menu ul > li").bind("mouseover touchend", function() {
-					if (e && (clearTimeout(e),
-						e = !1),
-					$(this).parents(".hasSub").length > 0)
-						;
-					else if ($(this).hasClass("hasSub")) {
-						$(".actions_menu").css({
-							width: "215px",
-							height: "250px"
-						});
-						var t = this;
-						_.defer(function() {
-							$(".actions_menu ul.submenu").hide(),
-								$(t).find("ul.submenu:hidden").show()
-						})
-					} else
-						$(".actions_menu ul.submenu").hide()
-				}),
-				$(".actions_menu ul.submenu").live("mouseover", function() {
-					e && (clearTimeout(e),
-						e = !1)
-				}),
-				$(".actions_menu, .actions_menu ul.submenu").live("mouseleave", function() {
-					e || (e = setTimeout(function() {
-						$(".actions_menu ul.submenu").hide(),
-							$(".actions_menu").css("width", "100px").css("height", "auto"),
-							e = !1
-					}, 500))
-				}),
-				$(".actions_menu li").on(clicktype, function() {
-					var e = $(this).attr("data-action-type");
-					if (null != e) {
-						if ("copy" == e)
-							d20.clipboard.doCopy(),
-								i();
-						else if ("paste" == e)
-							d20.clipboard.doPaste(),
-								i();
-						else if ("delete" == e) {
-							var t = d20.engine.selected();
-							d20.engine.canvas.deactivateAllWithDispatch();
-							for (var r = 0; r < t.length; r++)
-								t[r].model.destroy();
-							i()
-						} else if ("undo" == e)
-							d20.undo && d20.undo.doUndo(),
-								i();
-						else if ("tofront" == e)
-							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-								_.each(n, function(e) {
-									d20.engine.canvas.bringToFront(e)
-								}),
-								d20.Campaign.activePage().debounced_recordZIndexes(),
-								i();
-						else if ("toback" == e)
-							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-								_.each(n, function(e) {
-									d20.engine.canvas.sendToBack(e)
-								}),
-								d20.Campaign.activePage().debounced_recordZIndexes(),
-								i();
-						else if (-1 !== e.indexOf("tolayer_")) {
-							d20.engine.unselect();
-							var o = e.replace("tolayer_", "");
-							_.each(n, function(e) {
-								e.model.save({
-									layer: o
-								})
-							}),
-								i(),
-								d20.token_editor.removeRadialMenu()
-						} else if ("addturn" == e)
-							_.each(n, function(e) {
-								d20.Campaign.initiativewindow.addTokenToList(e.model.id)
-							}),
-								i(),
-							d20.tutorial && d20.tutorial.active && $(document.body).trigger("addedTurn");
-						else if ("group" == e) {
-							var a = [];
-							d20.engine.unselect(),
-								_.each(n, function(e) {
-									a.push(e.model.id)
-								}),
-								_.each(n, function(e) {
-									e.model.addToGroup(a)
-								}),
-								i();
-							var s = n[0];
-							d20.engine.select(s)
-						} else if ("ungroup" == e)
-							d20.engine.unselect(),
-								_.each(n, function(e) {
-									e.model.clearGroup()
-								}),
-								d20.token_editor.removeRadialMenu(),
-								i();
-						else if ("toggledrawing" == e)
-							d20.engine.unselect(),
-								_.each(n, function(e) {
-									e.model.set({
-										isdrawing: !e.model.get("isdrawing")
-									}).save()
-								}),
-								i(),
-								d20.token_editor.removeRadialMenu();
-						else if ("toggleflipv" == e)
-							d20.engine.unselect(),
-								_.each(n, function(e) {
-									e.model.set({
-										flipv: !e.model.get("flipv")
-									}).save()
-								}),
-								i(),
-								d20.token_editor.removeRadialMenu();
-						else if ("togglefliph" == e)
-							d20.engine.unselect(),
-								_.each(n, function(e) {
-									e.model.set({
-										fliph: !e.model.get("fliph")
-									}).save()
-								}),
-								i(),
-								d20.token_editor.removeRadialMenu();
-						else if ("takecard" == e)
-							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-								_.each(n, function(e) {
-									var t = d20.decks.cardByID(e.model.get("cardid"));
-									if (e.model.get("isdrawing") === !1)
-										var n = {
-											bar1_value: e.model.get("bar1_value"),
-											bar1_max: e.model.get("bar1_max"),
-											bar2_value: e.model.get("bar2_value"),
-											bar2_max: e.model.get("bar2_max"),
-											bar3_value: e.model.get("bar3_value"),
-											bar3_max: e.model.get("bar3_max")
-										};
-									d20.Campaign.hands.addCardToHandForPlayer(t, window.currentPlayer, n ? n : void 0),
-										_.defer(function() {
-											e.model.destroy()
-										})
-								}),
-								d20.engine.unselect(),
-								i();
-						else if ("flipcard" == e)
-							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-								_.each(n, function(e) {
-									var t = e.model.get("sides").split("|")
-										, n = e.model.get("currentSide")
-										, i = n + 1;
-									i > t.length - 1 && (i = 0),
-										e.model.set({
-											currentSide: i,
-											imgsrc: unescape(t[i])
-										}).save()
-								}),
-								i();
-						else if ("setdimensions" == e) {
-							var l = n[0]
-								, c = $($("#tmpl_setdimensions").jqote()).dialog({
-								title: "Set Dimensions",
-								width: 325,
-								height: 225,
-								buttons: {
-									Set: function() {
-										var e, t;
-										"pixels" == c.find(".dimtype").val() ? (e = parseInt(c.find("input.width").val(), 10),
-											t = parseInt(c.find("input.height").val(), 10)) : (e = parseFloat(c.find("input.width").val()) * window.dpi,
-											t = parseFloat(c.find("input.height").val()) * window.dpi),
-											l.model.save({
-												width: e,
-												height: t
-											}),
-											c.off("change"),
-											c.dialog("destroy").remove()
-									},
-									Cancel: function() {
-										c.off("change"),
-											c.dialog("destroy").remove()
-									}
-								},
-								beforeClose: function() {
-									c.off("change"),
-										c.dialog("destroy").remove()
-								}
-							});
-							c.on("change", ".dimtype", function() {
-								"pixels" == $(this).val() ? (c.find("input.width").val(Math.round(l.get("width"))),
-									c.find("input.height").val(Math.round(l.get("height")))) : (c.find("input.width").val(l.get("width") / window.dpi),
-									c.find("input.height").val(l.get("height") / window.dpi))
-							}),
-								c.find(".dimtype").trigger("change"),
-								i()
-						} else if ("aligntogrid" == e)
-							if (0 === d20.Campaign.activePage().get("snapping_increment")) {
-								i();
-								var u = $($("#tmpl_grid-disabled").jqote(h)).dialog({
-									title: "Grid Off",
-									buttons: {
-										Ok: function() {
-											u.off("change"),
-												u.dialog("destroy").remove()
-										}
-									},
-									beforeClose: function() {
-										u.off("change"),
-											u.dialog("destroy").remove()
-									}
-								})
-							} else
-								d20.engine.gridaligner.target = n[0],
-									d20plus.setMode("gridalign"),
-									i();
-						else if ("side_random" == e) {
-							d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
-							var d = [];
-							_.each(n, function(e) {
-								if (e.model && "" != e.model.get("sides")) {
-									var t = e.model.get("sides").split("|")
-										, n = t.length
-										, i = d20.textchat.diceengine.random(n);
-									// BEGIN MOD
-									const imgUrl = unescape(t[i]);
-									e.model.save(getRollableTokenUpdate(imgUrl, i)),
-									// END MOD
-										d.push(t[i])
-								}
-							}),
-								d20.textchat.rawChatInput({
-									type: "tokenroll",
-									content: d.join("|")
-								}),
-								i()
-						} else if ("side_choose" == e) {
-							const e = n[0]
-								, t = e.model.toJSON()
-								, o = t.sides.split("|");
-							let r = t.currentSide;
-							const a = $($("#tmpl_chooseside").jqote()).dialog({
-								title: "Choose Side",
-								width: 325,
-								height: 225,
-								buttons: {
-									Choose: function() {
-										const imgUrl = unescape(o[r]);
-										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-											// BEGIN MOD
-											e.model.save(getRollableTokenUpdate(imgUrl, r)),
-											// END MOD
-											a.off("slide"),
-											a.dialog("destroy").remove()
-									},
-									Cancel: function() {
-										a.off("slide"),
-											a.dialog("destroy").remove()
-									}
-								},
-								beforeClose: function() {
-									a.off("slide"),
-										a.dialog("destroy").remove()
-								}
-							})
-								, s = a.find(".sidechoices");
-							for (const e of o) {
-								const t = unescape(e);
-								let n = d20.utils.isVideo(t) ? `<video src="${t.replace("/med.webm", "/thumb.webm")}" muted autoplay loop />` : `<img src="${t}" />`;
-								n = `<div class="sidechoice">${n}</div>`,
-									s.append(n)
-							}
-							s.children().attr("data-selected", !1).eq(r).attr("data-selected", !0),
-								a.find(".sideslider").slider({
-									min: 0,
-									max: o.length - 1,
-									step: 1,
-									value: r
-								}),
-								a.on("slide", function(e, t) {
-									t.value != r && (r = t.value,
-										a.find(".sidechoices .sidechoice").attr("data-selected", !1).eq(t.value).attr("data-selected", !0))
-								}),
-								i(),
-								d20.token_editor.removeRadialMenu()
-						}
-						// BEGIN MOD
-						const showRollOptions = (formula, options) => {
-							const sel = d20.engine.selected();
-
-							options = options.map(it => `<option>${it}</option>`);
-
-							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags(''+__('ui_dialog_select')) + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
-
-							dialog.dialog({
-								title: __('ui_dialog_title'),
-								beforeClose: function() {
-									return false;
-								},
-								buttons: {
-									[__('ui_dialog_submit')+'']: function() {
-										const val = dialog.find("select").val();
-										console.log(val);
-										d20.engine.unselect();
-										sel.forEach(it => {
-											d20.engine.select(it);
-											const toRoll = formula(it, val);
-											d20.textchat.doChatInput(toRoll);
-											d20.engine.unselect();
-										});
-
-										dialog.off();
-										dialog.dialog("destroy").remove();
-										d20.textchat.$textarea.focus();
-									},
-									[__('ui_dialog_cancel')+'']: function() {
-										dialog.off();
-										dialog.dialog("destroy").remove();
-									}
-								}
-							});
-
-							i();
-						};
-
-						if ("rollsaves" === e) {
-							// Mass roll: Saves
-							const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
-							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-								const out_options = [];
-								const loc_options = {
-									[__('stat_save_str')]: 'Strength',
-									[__('stat_save_dex')]: 'Dexterity',
-									[__('stat_save_con')]: 'Constitution',
-									[__('stat_save_int')]: 'Intelligence',
-									[__('stat_save_wis')]: 'Wisdom',
-									[__('stat_save_cha')]: 'Charisma',
-								}
-								for (const i in loc_options) out_options.push(i);
-								showRollOptions(
-									(token, val) => {
-										return `&{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
-									},
-									out_options
-								);
-							}
-							else if (d20plus.sheet === "ogl") {
-								showRollOptions(
-									(token, val) => {
-										if (getTokenType(token) === 1) {
-											const short = val.substring(0, 3);
-											return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Save}} @{selected|rtype} + [[@{selected|npc_${short.toLowerCase()}_save}]][${short.toUpperCase()}]]]}} {{rname=${val} Save}} {{r1=[[1d20 + [[@{selected|npc_${short.toLowerCase()}_save}]][${short.toUpperCase()}]]]}}`;
-										} else {
-											return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`;
-										}
-									},
-									options
-								);
-							}
-							else if (d20plus.sheet === "shaped") {
-								showRollOptions(
-									(token, val) => `@{selected|output_option}} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_mod}}} {{roll1=[[1d20+@{selected|${val.toLowerCase()}_mod}]]}} {{roll2=[[1d20+@{selected|${val.toLowerCase()}_mod}]]}}`,
-									options
-								);
-							}
-						} else if ("rollinit" === e) {
-							// Mass roll: Initiative
-							const sel = d20.engine.selected();
-							d20.engine.unselect();
-							sel.forEach(it => {
-								d20.engine.select(it);
-								let toRoll = ``;
-								if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-									toRoll = `&{template:simple} {{rname=${__('stat_init')}}} {{charname=@{selected|token_name}}} {{mod=@{selected|initiative_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|initiative_bonus} &{tracker}]]}} {{r2=[[@{selected|d20}+@{selected|initiative_bonus}]]}}`;
-								}
-								else if ((d20plus.sheet === "ogl") || !!d20plus.cfg.get('token','massRollAssumesOGL')) {
-									toRoll = `%{selected|Initiative}`;
-								}
-								else if (d20plus.sheet === "shaped") {
-									toRoll = `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{title=INITIATIVE}} {{roll1=[[@{selected|initiative_formula}]]}}`;
-								}
-								d20.textchat.doChatInput(toRoll);
-								d20.engine.unselect();
-							});
-							i();
-						} else if ("rollskills" === e) {
-							// TODO a "roll abilitiy check" option? NPC macro: @{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Check}} @{selected|rtype} + [[@{selected|strength_mod}]][STR]]]}} {{rname=Strength Check}} {{r1=[[1d20 + [[@{selected|strength_mod}]][STR]]]}}
-
-							// Mass roll: Skills
-							const options = [
-								"Athletics",
-								"Acrobatics",
-								"Sleight of Hand",
-								"Stealth",
-								"Arcana",
-								"History",
-								"Investigation",
-								"Nature",
-								"Religion",
-								"Animal Handling",
-								"Insight",
-								"Medicine",
-								"Perception",
-								"Survival",
-								"Deception",
-								"Intimidation",
-								"Performance",
-								"Persuasion"
-							].sort();
-
-							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-								let out_options = [];
-								const loc_options = {
-									[__('stat_ab_athl')]: 'Athletics',
-									[__('stat_ab_acrb')]: 'Acrobatics',
-									[__('stat_ab_sloh')]: 'Sleight of Hand',
-									[__('stat_ab_stel')]: 'Stealth',
-									[__('stat_ab_arcn')]: 'Arcana',
-									[__('stat_ab_hist')]: 'History',
-									[__('stat_ab_invs')]: 'Investigation',
-									[__('stat_ab_natr')]: 'Nature',
-									[__('stat_ab_relg')]: 'Religion',
-									[__('stat_ab_anih')]: 'Animal Handling',
-									[__('stat_ab_insg')]: 'Insight',
-									[__('stat_ab_medc')]: 'Medicine',
-									[__('stat_ab_perc')]: 'Perception',
-									[__('stat_ab_surv')]: 'Survival',
-									[__('stat_ab_decp')]: 'Deception',
-									[__('stat_ab_intm')]: 'Intimidation',
-									[__('stat_ab_perf')]: 'Performance',
-									[__('stat_ab_pers')]: 'Persuasion',
-								}
-								for (const i in loc_options) out_options.push(i);
-								out_options = out_options.sort();
-								showRollOptions(
-									(token, val) => {
-										const ready_val = loc_options[val].toLowerCase().replace(/ /g, "_");
-										return `&{template:simple} {{rname=^{${ready_val}-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${ready_val}_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}}`;
-									},
-									out_options
-								);
-							}
-							else {
-								showRollOptions(
-									(token, val) => {
-										const clean = val.toLowerCase().replace(/ /g, "_");
-										const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
-	
-										let doRoll = '';
-										if (d20plus.sheet === "ogl") {
-											doRoll = (atb = abil) => {
-												if (getTokenType(token) === 1) {
-													const slugged = val.replace(/\s/g, "_").toLowerCase();
-													return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Skill}} @{selected|rtype} + [[@{selected|npc_${slugged}}]]]]}}; {{rname=${val}}}; {{r1=[[1d20 + [[@{selected|npc_${slugged}}]]]]}}`;
-												} else {
-													return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
-												}
-											}
-										} 
-										else if (d20plus.sheet === "shaped"){
-											doRoll = (atb = abil) => {
-												return `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val}}} {{mod=@{selected|${atb}}}} {{roll1=[[1d20+@{selected|${atb}}]]}} {{roll2=[[1d20+@{selected|${atb}}]]}}`;
-											}
-										}
-	
-										try {
-											if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
-												const charIdMaybe = token.model.toJSON().represents;
-												if (!charIdMaybe) return doRoll();
-												const charMaybe = d20.Campaign.characters.get(charIdMaybe);
-												if (charMaybe) {
-													const atbs = charMaybe.attribs.toJSON();
-													const npcAtbMaybe = atbs.find(it => it.name === "npc");
-	
-													if (npcAtbMaybe && npcAtbMaybe.current == 1) {
-														const npcClean = `npc_${clean}`;
-														const bonusMaybe = atbs.find(it => it.name === npcClean);
-														if (bonusMaybe) return doRoll(npcClean);
-														else return doRoll();
-													} else {
-														const pcClean = `${clean}_bonus`;
-														const bonusMaybe = atbs.find(it => it.name === pcClean);
-														if (bonusMaybe) return doRoll(pcClean);
-														else return doRoll();
-													}
-												} else return doRoll();
-											} else return doRoll();
-										} catch (x) {
-											console.error(x);
-											return doRoll();
-										}
-									},
-									options
-								);
-							}
-
-							
-						} else if ("forward-one" === e) {
-							d20plus.engine.forwardOneLayer(n);
-							i();
-						} else if ("back-one" === e) {
-							d20plus.engine.backwardOneLayer(n);
-							i();
-						} else if ("rollertokenresize" === e) {
-							resizeToken();
-							i();
-						} else if ("copy-tokenid" === e) {
-							const sel = d20.engine.selected();
-							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
-							i();
-						} else if ("copy-pathid" === e) {
-							const sel = d20.engine.selected();
-							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
-							i();
-						} else if ("token-fly" === e) {
-							const sel = d20.engine.selected().filter(it => it && it.type === "image");
-							new Promise((resolve, reject) => {
-								const $dialog = $(`
-									<div title="Flight Height">
-										<input type="number" placeholder="Flight height" name="flight">
-									</div>
-								`).appendTo($("body"));
-								const $iptHeight = $dialog.find(`input[name="flight"]`).on("keypress", evt => {
-									if (evt.which === 13) { // return
-										doHandleOk();
-									}
-								});
-
-								const doHandleOk = () => {
-									const selected = Number($iptHeight.val());
-									$dialog.dialog("close");
-									if (isNaN(selected)) reject(`Value "${$iptHeight.val()}" was not a number!`);
-									else resolve(selected);
-								};
-
-								$dialog.dialog({
-									dialogClass: "no-close",
-									buttons: [
-										{
-											text: "Cancel",
-											click: function () {
-												$(this).dialog("close");
-												$dialog.remove();
-												reject(`User cancelled the prompt`);
-											}
-										},
-										{
-											text: "OK",
-											click: function () {
-												doHandleOk();
-											}
-										}
-									]
-								});
-							}).then(num => {
-								const STATUS_PREFIX = `fluffy-wing@`;
-								const statusString = `${num}`.split("").map(it => `${STATUS_PREFIX}${it}`).join(",");
-								sel.forEach(s => {
-									const existing = s.model.get("statusmarkers");
-									if (existing && existing.trim()) {
-										s.model.set("statusmarkers", [statusString, ...existing.split(",").filter(it => it && it && !it.startsWith(STATUS_PREFIX))].join(","));
-									} else {
-										s.model.set("statusmarkers", statusString);
-									}
-									s.model.save();
-								});
-							});
-							i();
-						} else if ("token-light" === e) {
-							const SOURCES = {
-								"None (Blind)": {
-									bright: 0,
-									dim: 0
-								},
-								"Torch/Light (Spell)": {
-									bright: 20,
-									dim: 20
-								},
-								"Lamp": {
-									bright: 15,
-									dim: 30
-								},
-								"Lantern, Bullseye": {
-									bright: 60,
-									dim: 60,
-									angle: 30
-								},
-								"Lantern, Hooded": {
-									bright: 30,
-									dim: 30
-								},
-								"Lantern, Hooded (Dimmed)": {
-									bright: 0,
-									dim: 5
-								},
-								"Candle": {
-									bright: 5,
-									dim: 5
-								},
-								"Darkvision": {
-									bright: 0,
-									dim: 60,
-									hidden: true
-								},
-								"Superior Darkvision": {
-									bright: 0,
-									dim: 120,
-									hidden: true
-								}
-							};
-
-							const sel = d20.engine.selected().filter(it => it && it.type === "image");
-							new Promise((resolve, reject) => {
-								const $dialog = $(`
-									<div title="Light">
-										<label class="flex">
-											<span>Set Light Style</span>
-											 <select style="width: 250px;">
-												${Object.keys(SOURCES).map(it => `<option>${it}</option>`).join("")}
-											</select>
-										</label>
-									</div>
-								`).appendTo($("body"));
-								const $selLight = $dialog.find(`select`);
-
-								$dialog.dialog({
-									dialogClass: "no-close",
-									buttons: [
-										{
-											text: "Cancel",
-											click: function () {
-												$(this).dialog("close");
-												$dialog.remove();
-												reject(`User cancelled the prompt`);
-											}
-										},
-										{
-											text: "OK",
-											click: function () {
-												const selected = $selLight.val();
-												$dialog.dialog("close");
-												if (!selected) reject(`No value selected!`);
-												else resolve(selected);
-											}
-										}
-									]
-								});
-							}).then(key => {
-								const light = SOURCES[key];
-
-								const light_otherplayers = !light.hidden;
-								// these are all stored as strings
-								const dimRad = (light.dim || 0);
-								const brightRad = (light.bright || 0);
-								const totalRad = dimRad + brightRad;
-								const light_angle = `${light.angle}` || "";
-								const light_dimradius = `${totalRad - dimRad}`;
-								const light_radius = `${totalRad}`;
-
-								sel.forEach(s => {
-									s.model.set("light_angle", light_angle);
-									s.model.set("light_dimradius", light_dimradius);
-									s.model.set("light_otherplayers", light_otherplayers);
-									s.model.set("light_radius", light_radius);
-									s.model.save();
-								});
-							});
-							i();
-						} else if ("unlock-tokens" === e) {
-							d20plus.tool.get("UNLOCKER").openFn();
-							i();
-						} else if ("lock-token" === e) {
-							d20.engine.selected().forEach(it => {
-								if (it.model) {
-									if (it.model.get("VeLocked")) {
-										it.lockMovementX = false;
-										it.lockMovementY = false;
-										it.lockScalingX = false;
-										it.lockScalingY = false;
-										it.lockRotation = false;
-
-										it.model.set("VeLocked", false);
-									} else {
-										it.lockMovementX = true;
-										it.lockMovementY = true;
-										it.lockScalingX = true;
-										it.lockScalingY = true;
-										it.lockRotation = true;
-
-										it.model.set("VeLocked", true);
-									}
-									it.saveState();
-									it.model.save();
-								}
-							});
-							i();
-						} else if ("token-animate" === e) {
-							d20plus.anim.animatorTool.pSelectAnimation(lastContextSelection.lastAnimUid).then(animUid => {
-								if (animUid == null) return;
-
-								lastContextSelection.lastAnimUid = animUid;
-								const selected = d20.engine.selected();
-								d20.engine.unselect();
-								selected.forEach(it => {
-									if (it.model) {
-										d20plus.anim.animator.startAnimation(it.model, animUid)
-									}
-								});
-							});
-							i();
-						} else if ("util-scenes" === e) {
-							d20plus.anim.animatorTool.pSelectScene(lastContextSelection.lastSceneUid).then(sceneUid => {
-								if (sceneUid == null) return;
-
-								lastContextSelection.lastSceneUid = sceneUid;
-								d20plus.anim.animatorTool.doStartScene(sceneUid);
-							});
-							i();
-						} else if (["assignview0", "assignview1", "assignview2", "assignview3"].includes(e)) {
-							const viewId = e.at(-1);
-							d20.engine.selected().forEach(it => {
-								if (it.model) {
-									if (it.model.get(`bR20_view${viewId}`)) {
-										it.model.set(`bR20_view${viewId}`, false);
-									} else {
-										it.model.set(`bR20_view${viewId}`, true);
-									}
-									it.saveState();
-									it.model.save();
-								}
-							});
-							i();
-						}
-						// END MOD
-						return !1
-					}
-				}),
-				!1
-		};
-		// END ROLL20 CODE
-
-		/* eslint-enable */
-
-		function getRollableTokenUpdate (imgUrl, curSide) {
-			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
-			const toSave = {
-				currentSide: curSide,
-				imgsrc: imgUrl,
-			};
-			if (m) {
-				toSave.width = 70 * Number(m[1]);
-				toSave.height = 70 * Number(m[1])
-			}
-			return toSave;
-		}
-
-		function resizeToken () {
-			const sel = d20.engine.selected();
-
-			const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
-			const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
-			dialog.dialog({
-				title: "New Size",
-				beforeClose: function () {
-					return false;
-				},
-				buttons: {
-					Submit: function () {
-						const size = dialog.find("select").val();
-						d20.engine.unselect();
-						sel.forEach(it => {
-							const nxtSize = size * 70;
-							const sides = it.model.get("sides");
-							if (sides) {
-								const ueSides = unescape(sides);
-								const cur = it.model.get("currentSide");
-								const split = ueSides.split("|");
-								if (split[cur].includes("roll20_token_size")) {
-									split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
-								} else {
-									split[cur] += `?roll20_token_size=${size}`;
-								}
-								const toSaveSides = split.map(it => escape(it)).join("|");
-								const toSave = {
-									sides: toSaveSides,
-									width: nxtSize,
-									height: nxtSize,
-								};
-								// eslint-disable-next-line no-console
-								console.log(`Updating token:`, toSave);
-								it.model.save(toSave);
-							} else {
-								// eslint-disable-next-line no-console
-								console.warn("Token had no side data!")
-							}
-						});
-						dialog.off();
-						dialog.dialog("destroy").remove();
-						d20.textchat.$textarea.focus();
-					},
-					Cancel: function () {
-						dialog.off();
-						dialog.dialog("destroy").remove();
-					},
-				},
-			});
-		}
-
-		d20.token_editor.showContextMenu = r;
-		d20.token_editor.closeContextMenu = i;
-		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
-	};
-
-	/* eslint-disable */
-
-	d20plus.engine._getSelectedToMove = () => {
-		const n = [];
-		for (var l = d20.engine.selected(), c = 0; c < l.length; c++)
-			n.push(l[c]);
-	};
-
-	d20plus.engine.forwardOneLayer = (n) => {
-		d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-			_.each(n, function (e) {
-				d20.engine.canvas.bringForward(e)
-			}),
-			d20.Campaign.activePage().debounced_recordZIndexes()
-	};
-
-	d20plus.engine.backwardOneLayer = (n) => {
-		d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
-			_.each(n, function (e) {
-				d20.engine.canvas.sendBackwards(e)
-			}),
-			d20.Campaign.activePage().debounced_recordZIndexes()
-	};
-
-	// previously "enhanceSnap"
-	d20plus.engine.enhanceMouseDown = () => {
-		const R = d20plus.overwrites.canvasHandlerDown
-
-		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
-			FINAL_CANVAS_MOUSEDOWN = (FINAL_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
-		}
-
-		if (FINAL_CANVAS_MOUSEDOWN) {
-			d20plus.ut.log("Enhancing hex snap");
-			d20.engine.final_canvas.removeEventListener("mousedown", FINAL_CANVAS_MOUSEDOWN);
-			d20.engine.final_canvas.addEventListener("mousedown", R);
-		}
-
-		// add sub-grid snap
-		d20.engine.snapToIncrement = function(e, t) {
-			t *= Number(d20plus.cfg.getOrDefault("canvas", "gridSnap"));
-			return t * Math.round(e / t);
-		}
-	};
-
-	d20plus.engine.enhanceMouseUp = () => { // P
-
-	};
-
-	// needs to be called after `enhanceMeasureTool()`
-	d20plus.engine.enhanceMouseMove = () => {
-		// add missing vars
-		var i = d20.engine.canvas;
-
-		// Roll20 bug (present as of 2019-5-25) workaround
-		//   when box-selecting + moving tokens, the "object:moving" event throws an exception
-		//   try-catch-ignore this, because it's extremely annoying
-		const cachedFire = i.fire.bind(i);
-		i.fire = function (namespace, opts) {
-			if (namespace === "object:moving") {
-				try {
-					cachedFire(namespace, opts);
-				} catch (e) {}
-			} else {
-				cachedFire(namespace, opts);
-			}
-		};
-
-		const I = d20plus.overwrites.canvasHandlerMove
-
-		if (FINAL_CANVAS_MOUSEMOVE_LIST.length) {
-			FINAL_CANVAS_MOUSEMOVE = (FINAL_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
-		}
-
-		if (FINAL_CANVAS_MOUSEMOVE) {
-			d20plus.ut.log("Enhancing mouse move");
-			d20.engine.final_canvas.removeEventListener("mousemove", FINAL_CANVAS_MOUSEMOVE);
-			d20.engine.final_canvas.addEventListener("mousemove", I);
-		}
-	};
-
-	/* eslint-enable */
-
-	d20plus.engine.addLineCutterTool = () => {
-		const $btnTextTool = $(`.choosetext`);
-
-		const $btnSplitTool = $(`<li class="choosesplitter">✂️ Line Splitter</li>`).click(() => {
-			d20plus.setMode("line_splitter");
-		});
-
-		$btnTextTool.after($btnSplitTool);
-	};
-
-	d20plus.engine._tokenHover = null;
-	d20plus.engine._drawTokenHover = () => {
-		$(`.Vetools-token-hover`).remove();
-		if (!d20plus.engine._tokenHover || !d20plus.engine._tokenHover.text) return;
-
-		const pt = d20plus.engine._tokenHover.pt;
-		const txt = unescape(d20plus.engine._tokenHover.text);
-
-		$(`body`).append(`<div class="Vetools-token-hover" style="top: ${pt.y * d20.engine.canvasZoom}px; left: ${pt.x * d20.engine.canvasZoom}px">${txt}</div>`);
-	};
-	d20plus.engine.addTokenHover = () => {
-		// gm notes on shift-hover
-		const cacheRenderLoop = d20.engine.renderLoop;
-		d20.engine.renderLoop = () => {
-			d20plus.engine._drawTokenHover();
-			cacheRenderLoop();
-		};
-
-		// store data for the rendering function to access
-		d20.engine.canvas.on("mouse:move", (data, ...others) => {
-			// enable hover from GM layer -> token layer
-			let hoverTarget = data.target;
-			if (data.e && window.currentEditingLayer === "gmlayer") {
-				const cache = window.currentEditingLayer;
-				window.currentEditingLayer = "objects";
-				hoverTarget = d20.engine.canvas.findTarget(data.e, null, true);
-				window.currentEditingLayer = cache;
-			}
-
-			if (data.e.shiftKey && hoverTarget && hoverTarget.model) {
-				d20.engine.redrawScreenNextTick();
-				const gmNotes = hoverTarget.model.get("gmnotes");
-				const pt = d20.engine.canvas.getPointer(data.e);
-				pt.x -= d20.engine.currentCanvasOffset[0];
-				pt.y -= d20.engine.currentCanvasOffset[1];
-				d20plus.engine._tokenHover = {
-					pt: pt,
-					text: gmNotes,
-					id: hoverTarget.model.id,
-				};
-			} else {
-				if (d20plus.engine._tokenHover) d20.engine.redrawScreenNextTick();
-				d20plus.engine._tokenHover = null;
-			}
-		})
-	};
-
-	d20plus.engine.enhanceMarkdown = () => {
-		const OUT_STRIKE = "<span style='text-decoration: line-through'>$1</span>";
-
-		/* eslint-disable */
-
-		// BEGIN ROLL20 CODE
-		window.Markdown.parse = function(e) {
-			{
-				var t = e
-					, n = []
-					, i = [];
-				-1 != t.indexOf("\r\n") ? "\r\n" : -1 != t.indexOf("\n") ? "\n" : ""
-			}
-			return t = t.replace(/{{{([\s\S]*?)}}}/g, function(e) {
-				return n.push(e.substring(3, e.length - 3)),
-					"{{{}}}"
-			}),
-				t = t.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(e) {
-					return i.push(e.substring(5, e.length - 6)),
-						"<pre></pre>"
-				}),
-				// BEGIN MOD
-				t = t.replace(/~~(.*?)~~/g, OUT_STRIKE),
-				// END MOD
-				t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-				t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
-				t = t.replace(/``(.*?)``/g, "<code>$1</code>"),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
-				t = t.replace(new RegExp("<pre></pre>","g"), function() {
-					return "<pre>" + i.shift() + "</pre>"
-				}),
-				t = t.replace(/{{{}}}/g, function() {
-					return n.shift()
-				})
-		};
-		// END ROLL20 CODE
-
-		/* eslint-enable */
-
-		// after a short delay, replace any old content in the chat
-		setTimeout(() => {
-			$(`.message`).each(function () {
-				$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
-			})
-		}, 2500);
-	};
-
-	d20plus.engine.enhancePathWidths = () => {
-		const $selThicc = $(`#path_width`).css("width", "150px");
-		$selThicc.append(`
-				<option value="5">Custom 1 (5 px.)</option>
-				<option value="5">Custom 2 (5 px.)</option>
-				<option value="5">Custom 3 (5 px.)</option>
-			`);
-		const $iptThicc = $(`<input type="number" style="max-width: 50px;">`).hide();
-		const $lblPixels = $(`<label style="display: inline-flex;"> pixels</label>`).hide();
-		$selThicc.after($lblPixels).after($iptThicc);
-
-		let $selOpt = null;
-		$selThicc.on("change", () => {
-			$selOpt = $selThicc.find(`option:selected`);
-			const txt = $selOpt.text();
-			if (txt.startsWith("Custom")) {
-				const thicc = /\((.*?) px\.\)/.exec(txt)[1];
-				$lblPixels.show();
-				$iptThicc.show().val(Number(thicc));
-			} else {
-				$lblPixels.hide();
-				$iptThicc.hide();
-			}
-		});
-
-		$iptThicc.on("keyup", () => {
-			if (!$selOpt) $selOpt = $selThicc.find(`option:selected`);
-			if ($selOpt) {
-				const clean = Math.round(Math.max(1, Number($iptThicc.val())));
-				$selOpt.val(`${clean}`);
-				$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${clean} px.)`));
-				d20.engine.canvas.freeDrawingBrush.width = clean;
-			}
-		});
-	};
-
-	d20plus.engine.enhanceTransmogrifier = () => {
-		JqueryUtil.addSelectors();
-
-		$("#transmogrifier").on("click", () => {
-			setTimeout(() => {
-				const $btnAlpha = $(`#vetools-transmog-alpha`);
-				if (!$btnAlpha.length) {
-					const $prependTarget = $(`.ui-dialog-title:textEquals(transmogrifier)`).first().parent().parent().find(`.ui-dialog-content`);
-					$(`<button id="#vetools-transmog-alpha" class="btn btn default" style="margin-bottom: 5px;">Sort Items Alphabetically</button>`).on("click", () => {
-						// coped from a bookmarklet
-						$("iframe").contents().find(".objects").each((c, e) => { let $e = $(e); $e.children().sort((a, b) => { let name1 = $(a).find(".name").text().toLowerCase(); let name2 = $(b).find(".name").text().toLowerCase(); let comp = name1.localeCompare(name2); return comp; }).each((i, c) => $e.append(c)); });
-					}).prependTo($prependTarget);
-				}
-			}, 35);
-		})
-	};
-
-	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
-		const page = d20.Campaign.activePage();
-		if (page && page.get && page.get(`bR20cfg_hidden`)) return page.get(`bR20cfg_hidden`).search(layer) > -1;
-	}
-
-	d20plus.engine.layersVisibilityCheck = () => {
-		const layers = ["floors", "background", "foreground", "roofs"];
-		layers.forEach((layer) => {
-			const isHidden = d20.engine.canvas._objects.some((o) => {
-				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
-			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
-			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
-		});
-		if (!$(`#floatinglayerbar`).hasClass("objects")
-			&& window.currentEditingLayer === "objects") $(`#floatinglayerbar`).addClass("objects");
-	}
-
-	d20plus.engine.layersToggle = (event) => {
-		event.stopPropagation();
-		const target = event.target;
-		const page = d20.Campaign.activePage();
-		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
-		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
-		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
-			d20plus.engine.layerVisibilityOff(layer, false);
-		} else {
-			d20plus.engine.layerVisibilityOff(layer, true);
-		}
-	};
-
-	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
-		const menuButton = $(`#editinglayer .choose${layer}`);
-		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
-		const page = d20.Campaign.activePage();
-		if (off) {
-			if (d20plus.engine.objectsHideUnhide("layer", layer, "hidden", false) || force) {
-				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
-				menuButton.addClass("stashed");
-				secondaryButton.addClass("off");
-				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
-					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
-					page.save();
-				}
-			}
-		} else {
-			d20plus.engine.objectsHideUnhide("layer", layer, "hidden", true);
-			menuButton.removeClass("stashed");
-			secondaryButton.removeClass("off");
-			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
-				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
-				page.save();
-			}
-		}
-	}
-
-	d20plus.engine.objectsHideUnhide = (q, val, prefix, state) => {
-		let some = false;
-		for (const o of d20.engine.canvas._objects) {
-			const model = o.model;
-			if (!model) continue;
-			if (`${model.get(q)}`.search(val) > -1) {
-				const l = model.attributes.layer;
-				if (state) {
-					if (l.search(prefix) > -1) {
-						model.attributes.layer = l.replace(`${prefix}_`, "");
-						o.saveState();
-						model.save();
-						some = true;
-					}
-				} else {
-					if (l.search(prefix) === -1) {
-						model.attributes.layer = `${prefix}_${l}`;
-						o.saveState();
-						model.save();
-						some = true;
-					}
-				}
-			}
-		}
-		return some;
-	};
-
-	d20plus.engine.addLayers = () => {
-		d20plus.ut.log("Adding layers");
-
-		d20plus.mod.editingLayerOnclick();
-		if (window.is_gm) {
-			// Override icons a bit
-			$(`#floatingtoolbar .chooseobjects .pictos`).html("U");
-			$(`#editinglayer .submenu .choosegmlayer`).html(`
-				<span class="pictos">E</span>
-				${__("ui_bar_gm")}
-			`);
-
-			$(`#floatingtoolbar .choosemap`).html(`
-				<span class="pictos" style="padding: 0 3px 0 3px;">G</span> 
-				${__("ui_bar_map")}
-			`);
-
-			// Add layers to layer dropdown
-			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosebackground">
-						<span class="pictos">a</span>
-						${__("ui_bar_bg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosefloors">
-						<span class="pictos">I</span>
-						${__("ui_bar_fl")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
-				$(`#floatingtoolbar .chooseobjects`).after(`
-					<li class="chooseroofs">
-						<span class="pictos">H</span>
-						${__("ui_bar_rf")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-				$(`#floatingtoolbar .choosegmlayer`).before(`
-					<li class="chooseforeground">
-						<span class="pictos">B</span>
-						${__("ui_bar_fg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-				$(`#floatingtoolbar .choosewalls`).after(`
-					<li class="chooseweather">
-						<span class="pictos">C</span>
-						${__("ui_bar_we")}
-					</li>
-				`);
-			}
-		}
-
-		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
-		d20.engine.canvas._layerIteratorGenerator = d20plus.mod.layerIteratorGenerator;
-	};
-
-	d20plus.engine.removeLinkConfirmation = function () {
-		d20.utils.handleURL = d20plus.mod.handleURL;
-		$(document).off("click", "a").on("click", "a", d20.utils.handleURL);
-	};
-
-	d20plus.engine.repairPrototypeMethods = function () {
-		d20plus.mod.fixHexMethods();
-		d20plus.mod.fixVideoMethods();
-	};
-
-	d20plus.engine.disableFrameRecorder = function () {
-		if (d20.engine.frame_recorder) {
-			d20.engine.frame_recorder.active = false;
-			d20.engine.frame_recorder._active = false;
-		}
-	};
-}
-
-SCRIPT_EXTENSIONS.push(d20plusEngine);
-
-
-function baseWeather () {
-	d20plus.weather = {};
-
-	d20plus.weather._lastSettingsPageId = null;
-	d20plus.weather._initSettingsButton = () => {
-		$(`body`).on("click", ".Ve-btn-weather", function () {
-			// close the parent page settings + hide the page overlay
-			const $this = $(this);
-			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("OK")`).click();
-			const $barPage = $(`#page-toolbar`);
-			if (!$barPage.hasClass("closed")) {
-				$barPage.find(`.handle`).click()
-			}
-
-			function doShowDialog (page) {
-				const $dialog = $(`
-					<div title="Weather Configuration">
-						<label class="split wth__row">
-							<span>Weather Type</span>
-							<select name="weatherType1">
-								<option>None</option>
-								<option>Fog</option>
-								<option>Rain</option>
-								<option>Ripples</option>
-								<option>Snow</option>
-								<option>Waves</option>
-								<option>Blood Rain</option>
-								<option>Custom (see below)</option>
-							</select>
-						</label>
-						<label class="split wth__row">
-							<span  class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Image</span>
-							<input name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
-						</label>
-						<label class="flex wth__row">
-							<span>Weather Speed</span>
-							<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Weather Direction</span>
-							<select name="weatherDir1">
-								<option>Northerly</option>
-								<option>North-Easterly</option>
-								<option>Easterly</option>
-								<option>South-Easterly</option>
-								<option>Southerly</option>
-								<option>South-Westerly</option>
-								<option>Westerly</option>
-								<option>North-Westerly</option>
-								<option>Custom (see below)</option>
-							</select>
-						</label>
-						<label class="flex wth__row">
-							<span class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Direction</span>
-							<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
-						</label>
-						<label class="flex wth__row">
-							<span>Weather Opacity</span>
-							<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Oscillate</span>
-							<input type="checkbox" name="weatherOscillate1">
-						</label>
-						<label class="flex wth__row">
-							<span>Oscillation Threshold</span>
-							<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Intensity</span>
-							<select name="weatherIntensity1">
-								<option>Normal</option>
-								<option>Heavy</option>
-							</select>
-						</label>
-						<label class="split wth__row">
-							<span>Tint</span>
-							<input type="checkbox" name="weatherTint1">
-						</label>
-						<label class="split wth__row">
-							<span>Tint Color</span>
-							<input type="color" name="weatherTintColor1" value="#4c566d">
-						</label>
-						<label class="split wth__row">
-							<span>Special Effects</span>
-							<select name="weatherEffect1">
-								<option>None</option>
-								<option>Lightning</option>
-							</select>
-						</label>
-					</div>
-				`).appendTo($("body"));
-
-				const handleProp = (propName) => $dialog.find(`[name="${propName}"]`).each((i, e) => {
-					const $e = $(e);
-					if ($e.is(":checkbox")) {
-						$e.prop("checked", !!page.get(`bR20cfg_${propName}`));
-					} else {
-						$e.val(page.get(`bR20cfg_${propName}`));
-					}
-				});
-				const props = [
-					"weatherType1",
-					"weatherTypeCustom1",
-					"weatherSpeed1",
-					"weatherDir1",
-					"weatherDirCustom1",
-					"weatherOpacity1",
-					"weatherOscillate1",
-					"weatherOscillateThreshold1",
-					"weatherIntensity1",
-					"weatherTint1",
-					"weatherTintColor1",
-					"weatherEffect1",
-				];
-				props.forEach(handleProp);
-
-				function doSaveValues () {
-					props.forEach(propName => {
-						page.set(`bR20cfg_${propName}`, (() => {
-							const $e = $dialog.find(`[name="${propName}"]`);
-							if ($e.is(":checkbox")) {
-								return !!$e.prop("checked");
-							} else {
-								return $e.val();
-							}
-						})())
-					});
-					page.save();
-				}
-
-				$dialog.dialog({
-					width: 500,
-					dialogClass: "no-close",
-					buttons: [
-						{
-							text: "OK",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-								doSaveValues();
-							},
-						},
-						{
-							text: "Apply",
-							click: function () {
-								doSaveValues();
-							},
-						},
-						{
-							text: "Cancel",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-							},
-						},
-					],
-				});
-			}
-
-			if (d20plus.weather._lastSettingsPageId) {
-				const page = d20.Campaign.pages.get(d20plus.weather._lastSettingsPageId);
-				if (page) {
-					doShowDialog(page);
-				} else d20plus.ut.error(`No page found with ID "${d20plus.weather._lastSettingsPageId}"`);
-			} else d20plus.ut.error(`No page settings button was clicked?!`);
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.weather._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		});
-	};
-
-	d20plus.weather.addWeather = () => {
-		d20plus.weather._initSettingsButton();
-
-		window.force = false; // missing variable in Roll20's code(?); define it here
-
-		d20plus.ut.log("Adding weather");
-
-		const MAX_ZOOM = 2.5; // max canvas zoom
-		const tmp = []; // temp vector
-		// cache images
-		const IMAGES = {
-			"Rain": new Image(),
-			"Snow": new Image(),
-			"Fog": new Image(),
-			"Waves": new Image(),
-			"Ripples": new Image(),
-			"Blood Rain": new Image(),
-		};
-		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
-		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
-		IMAGES.Fog.src = "https://i.imgur.com/SRsUpHW.png";
-		IMAGES.Waves.src = "https://i.imgur.com/iYEzmvB.png";
-		IMAGES.Ripples.src = "https://i.imgur.com/fFCr0yx.png";
-		IMAGES["Blood Rain"].src = "https://i.imgur.com/SP2aoeq.png";
-		const SFX = {
-			lightning: [],
-		};
-
-		// FIXME find a better way of handling this; `clip` is super-slow
-		const clipMode = "EXCLUDE";
-
-		function SfxLightning () {
-			this.brightness = 255;
-		}
-
-		const $wrpEditor = $("#editor-wrapper");
-
-		// add custom canvas
-		const $wrpCanvas = $wrpEditor.find(".canvas-container");
-
-		// make buffer canvas
-		const $canBuf = $("<canvas style='position: absolute; z-index: -100; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
-		const cvBuf = $canBuf[0];
-		const ctxBuf = cvBuf.getContext("2d");
-
-		// make weather canvas
-		const $canvasWeather = $("<canvas id='Vet-canvas-weather' style='position: absolute; z-index: 2; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
-		const cv = $canvasWeather[0];
-		d20.engine.weathercanvas = cv;
-
-		// add our canvas to those adjusted when canvas size changes
-		const cachedSetCanvasSize = d20.engine.setCanvasSize;
-		d20.engine.setCanvasSize = function (e, n) {
-			cv.width = e;
-			cv.height = n;
-
-			cvBuf.width = e;
-			cvBuf.height = n;
-
-			cachedSetCanvasSize(e, n);
-		};
-
-		cv.width = cvBuf.width = d20.engine.canvas.width;
-		cv.height = cvBuf.height = d20.engine.canvas.height;
-
-		const ctx = cv.getContext("2d");
-
-		const CTX = {
-			_hasWarned: new Set(),
-		};
-
-		function ofX (x) { // offset X
-			return x - d20.engine.currentCanvasOffset[0];
-		}
-
-		function ofY (y) { // offset Y
-			return y - d20.engine.currentCanvasOffset[1];
-		}
-
-		function lineIntersectsBounds (points, bounds) {
-			return d20plus.math.doPolygonsIntersect([points[0], points[2], points[3], points[1]], bounds);
-		}
-
-		function copyPoints (toCopy) {
-			return [...toCopy.map(pt => [...pt])];
-		}
-
-		function getImage (page) {
-			const imageName = page.get("bR20cfg_weatherType1");
-
-			switch (imageName) {
-				case "Rain":
-				case "Snow":
-				case "Fog":
-				case "Waves":
-				case "Ripples":
-				case "Blood Rain":
-					IMAGES["Custom"] = null;
-					return IMAGES[imageName];
-				case "Custom (see below)":
-					if (!IMAGES["Custom"] || (
-						(IMAGES["Custom"].src !== page.get("bR20cfg_weatherTypeCustom1") && IMAGES["Custom"]._errorSrc == null)
-						|| (IMAGES["Custom"]._errorSrc != null && IMAGES["Custom"]._errorSrc !== page.get("bR20cfg_weatherTypeCustom1")))
-					) {
-						IMAGES["Custom"] = new Image();
-						IMAGES["Custom"]._errorSrc = null;
-						IMAGES["Custom"].onerror = () => {
-							if (IMAGES["Custom"]._errorSrc == null) {
-								IMAGES["Custom"]._errorSrc = page.get("bR20cfg_weatherTypeCustom1");
-								alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
-							}
-							IMAGES["Custom"].src = IMAGES["Rain"].src;
-						};
-						IMAGES["Custom"].src = page.get("bR20cfg_weatherTypeCustom1");
-					}
-					return IMAGES["Custom"];
-				default:
-					IMAGES["Custom"] = null;
-					return null;
-			}
-		}
-
-		function getDirectionRotation (page) {
-			const dir = page.get("bR20cfg_weatherDir1");
-			switch (dir) {
-				case "Northerly": return 0.25 * Math.PI;
-				case "North-Easterly": return 0.5 * Math.PI;
-				case "Easterly": return 0.75 * Math.PI;
-				case "South-Easterly": return Math.PI;
-				case "Southerly": return 1.25 * Math.PI;
-				case "South-Westerly": return 1.5 * Math.PI;
-				case "Westerly": return 1.75 * Math.PI;
-				case "North-Westerly": return 0;
-				case "Custom (see below)":
-					return Number(page.get("bR20cfg_weatherDirCustom1") || 0) * Math.PI / 180;
-				default: return 0;
-			}
-		}
-
-		function getOpacity (page) {
-			return page.get("bR20cfg_weatherOpacity1") || 1;
-		}
-
-		let oscillateMode = null;
-		function isOscillating (page) {
-			return !!page.get("bR20cfg_weatherOscillate1");
-		}
-
-		function getOscillationThresholdFactor (page) {
-			return page.get("bR20cfg_weatherOscillateThreshold1") || 1;
-		}
-
-		function getIntensity (page) {
-			const tint = page.get("bR20cfg_weatherIntensity1");
-			switch (tint) {
-				case "Heavy": return 1;
-				default: return 0;
-			}
-		}
-
-		function getTintColor (page) {
-			const tintEnabled = page.get("bR20cfg_weatherTint1");
-			if (tintEnabled) {
-				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}80`;
-			} else return null;
-		}
-
-		function getEffect (page) {
-			const effect = page.get("bR20cfg_weatherEffect1");
-			switch (effect) {
-				case "Lightning": return "lightning";
-				default: return null;
-			}
-		}
-
-		function handleSvgCoord (coords, obj, basesXY, center, angle) {
-			const vec = [
-				ofX(coords[0] * obj.scaleX) + basesXY[0],
-				ofY(coords[1] * obj.scaleY) + basesXY[1],
-			];
-			d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
-			if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
-			return vec;
-		}
-
-		let accum = 0;
-		let then = 0;
-		let image;
-		let currentSfx;
-		let hasWeather = false;
-		function drawFrame (now) {
-			const deltaTime = now - then;
-			then = now;
-
-			const page = d20 && d20.Campaign && d20.Campaign.activePage ? d20.Campaign.activePage() : null;
-			if (page && page.get("bR20cfg_weatherType1") !== "None") {
-				image = getImage(page);
-				currentSfx = getEffect(page);
-
-				// generate SFX
-				if (currentSfx) {
-					if (currentSfx === "lightning" && Math.random() > 0.999) SFX.lightning.push(new SfxLightning());
-				} else {
-					SFX.lightning = [];
-				}
-
-				if (hasWeather) ctx.clearRect(0, 0, cv.width, cv.height);
-				const hasImage = image && image.complete;
-				const tint = getTintColor(page);
-				const scaledW = hasImage ? Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
-				const scaledH = hasImage ? Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
-				const hasSfx = SFX.lightning.length;
-				if (hasImage || tint || hasSfx) {
-					hasWeather = true;
-
-					// draw weather
-					if (
-						hasImage
-						&& !(scaledW <= 0 || scaledH <= 0) // sanity check
-					) {
-						// mask weather
-						const doMaskStep = () => {
-							ctxBuf.clearRect(0, 0, cvBuf.width, cvBuf.height);
-
-							ctxBuf.fillStyle = "#ffffffff";
-
-							const objectLen = d20.engine.canvas._objects.length;
-							for (let i = 0; i < objectLen; ++i) {
-								const obj = d20.engine.canvas._objects[i];
-								if (obj.type === "path" && obj.model && obj.model.get("layer") === "weather") {
-									// obj.top is X pos of center of object
-									// obj.left is Y pos of center of object
-									const xBase = (obj.left - (obj.width * obj.scaleX / 2));
-									const yBase = (obj.top - (obj.height * obj.scaleY / 2));
-									const basesXY = [xBase, yBase];
-									const angle = (obj.angle > 360 ? obj.angle - 360 : obj.angle) / 180 * Math.PI;
-									const center = [ofX(obj.left), ofY(obj.top)];
-									d20plus.math.vec2.scale(center, center, d20.engine.canvasZoom);
-
-									ctxBuf.beginPath();
-									obj.path.forEach(opp => {
-										const [op, x, y, ...others] = opp;
-										switch (op) {
-											case "M": {
-												const vec = handleSvgCoord([x, y], obj, basesXY, center, angle);
-												ctxBuf.moveTo(vec[0], vec[1]);
-												break;
-											}
-											case "L": {
-												const vec = handleSvgCoord([x, y], obj, basesXY, center, angle);
-												ctxBuf.lineTo(vec[0], vec[1]);
-												break;
-											}
-											case "C": {
-												const control1 = handleSvgCoord([x, y], obj, basesXY, center, angle);
-												const control2 = handleSvgCoord([others[0], others[1]], obj, basesXY, center, angle);
-												const end = handleSvgCoord([others[2], others[3]], obj, basesXY, center, angle);
-												ctxBuf.bezierCurveTo(...control1, ...control2, ...end);
-												break;
-											}
-											default:
-												if (!CTX._hasWarned.has(op)) {
-													CTX._hasWarned.add(op);
-													// eslint-disable-next-line no-console
-													console.error(`UNHANDLED OP!: ${op}`);
-												}
-										}
-									});
-									ctxBuf.fill();
-									ctxBuf.closePath();
-								}
-							}
-
-							// draw final weather mask
-							/// / change drawing mode
-							ctx.globalCompositeOperation = "destination-out";
-							ctx.drawImage(cvBuf, 0, 0);
-
-							// handle opacity
-							const opacity = Number(getOpacity(page));
-							if (opacity !== 1) {
-								ctxBuf.clearRect(0, 0, cvBuf.width, cvBuf.height);
-								ctxBuf.fillStyle = `#ffffff${Math.round((1 - opacity) * 255).toString(16)}`;
-								ctxBuf.fillRect(0, 0, cvBuf.width, cvBuf.height);
-								ctx.drawImage(cvBuf, 0, 0);
-							}
-
-							/// / reset drawing mode
-							ctx.globalCompositeOperation = "source-over";
-						};
-
-						// if (clipMode === "INCLUDE") doMaskStep(true);
-
-						const speed = page.get("bR20cfg_weatherSpeed1") || 0.1;
-						const speedFactor = speed * d20.engine.canvasZoom;
-						const maxAccum = Math.floor(scaledW / speedFactor);
-						const rot = getDirectionRotation(page);
-						const w = scaledW;
-						const h = scaledH;
-						const boundingBox = [
-							[
-								-1.5 * w,
-								-1.5 * h,
-							],
-							[
-								-1.5 * w,
-								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
-							],
-							[
-								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
-								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
-							],
-							[
-								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
-								-1.5 * h,
-							],
-						];
-						const BASE_OFFSET_X = -w / 2;
-						const BASE_OFFSET_Y = -h / 2;
-
-						// calculate resultant points of a rotated shape
-						const pt00 = [0, 0];
-						const pt01 = [0, 1];
-						const pt10 = [1, 0];
-						const pt11 = [1, 1];
-						const basePts = [
-							pt00,
-							pt01,
-							pt10,
-							pt11,
-						].map(pt => [
-							(pt[0] * w) + BASE_OFFSET_X - d20.engine.currentCanvasOffset[0],
-							(pt[1] * h) + BASE_OFFSET_Y - d20.engine.currentCanvasOffset[1],
-						]);
-						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
-
-						// calculate animation values
-						(() => {
-							if (isOscillating(page)) {
-								const oscThreshFactor = getOscillationThresholdFactor(page);
-
-								if (oscillateMode == null) {
-									oscillateMode = 1;
-									accum += deltaTime;
-									if (accum >= maxAccum * oscThreshFactor) accum -= maxAccum;
-								} else {
-									if (oscillateMode === 1) {
-										accum += deltaTime;
-										if (accum >= maxAccum * oscThreshFactor) {
-											accum -= 2 * deltaTime;
-											oscillateMode = -1;
-										}
-									} else {
-										accum -= deltaTime;
-										if (accum <= 0) {
-											oscillateMode = 1;
-											accum += 2 * deltaTime;
-										}
-									}
-								}
-							} else {
-								oscillateMode = null;
-								accum += deltaTime;
-								if (accum >= maxAccum) accum -= maxAccum;
-							}
-						})();
-
-						const intensity = getIntensity(page) * speedFactor;
-						const timeOffsetX = Math.ceil(speedFactor * accum);
-						const timeOffsetY = Math.ceil(speedFactor * accum);
-
-						/// / rotate coord space
-						ctx.rotate(rot);
-
-						// draw base image
-						const doDraw = (offsetX, offsetY) => {
-							const xPos = BASE_OFFSET_X + timeOffsetX + offsetX - d20.engine.currentCanvasOffset[0];
-							const yPos = BASE_OFFSET_Y + timeOffsetY + offsetY - d20.engine.currentCanvasOffset[1];
-							ctx.drawImage(
-								image,
-								xPos,
-								yPos,
-								w,
-								h,
-							);
-
-							if (intensity) {
-								const offsetIntensity = -Math.floor(w / 4);
-								ctx.drawImage(
-									image,
-									xPos + offsetIntensity,
-									yPos + offsetIntensity,
-									w,
-									h,
-								);
-							}
-						}
-
-						const inBounds = (nextPts) => {
-							return lineIntersectsBounds(nextPts, boundingBox);
-						}
-
-						const moveXDir = (pt, i, isAdd) => {
-							if (i % 2) d20plus.math.vec2.sub(tmp, basePts[3], basePts[1]);
-							else d20plus.math.vec2.sub(tmp, basePts[2], basePts[0]);
-
-							if (isAdd) d20plus.math.vec2.add(pt, pt, tmp);
-							else d20plus.math.vec2.sub(pt, pt, tmp);
-						}
-
-						const moveYDir = (pt, i, isAdd) => {
-							if (i > 1) d20plus.math.vec2.sub(tmp, basePts[3], basePts[2]);
-							else d20plus.math.vec2.sub(tmp, basePts[1], basePts[0]);
-
-							if (isAdd) d20plus.math.vec2.add(pt, pt, tmp);
-							else d20plus.math.vec2.sub(pt, pt, tmp);
-						}
-
-						const getMaxMoves = () => {
-							const hyp = [];
-							d20plus.math.vec2.sub(hyp, boundingBox[2], boundingBox[0]);
-
-							const dist = d20plus.math.vec2.len(hyp);
-							const maxMoves = dist / Math.min(w, h);
-							return [Math.abs(hyp[0]) > Math.abs(hyp[1]) ? "x" : "y", maxMoves];
-						};
-
-						const handleXAxisYIncrease = (nxtPts, maxMoves, moves, xDir) => {
-							const handleY = (dir) => {
-								let subNxtPts, subMoves;
-								subNxtPts = copyPoints(nxtPts);
-								subMoves = 0;
-								while (subMoves <= maxMoves[1]) {
-									subNxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
-									subMoves++;
-									if (inBounds(subNxtPts)) doDraw(xDir * moves * w, dir * (subMoves * h));
-								}
-							};
-
-							handleY(1); // y axis increasing
-							handleY(-1); // y axis decreasing
-						};
-
-						const handleYAxisXIncrease = (nxtPts, maxMoves, moves, yDir) => {
-							const handleX = (dir) => {
-								let subNxtPts, subMoves;
-								subNxtPts = copyPoints(nxtPts);
-								subMoves = 0;
-								while (subMoves <= maxMoves[1]) {
-									subNxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
-									subMoves++;
-									if (lineIntersectsBounds(subNxtPts, boundingBox)) doDraw(dir * (subMoves * w), yDir * moves * h);
-								}
-							};
-
-							handleX(1); // x axis increasing
-							handleX(-1); // x axis decreasing
-						};
-
-						const handleBasicX = (maxMoves) => {
-							const handleX = (dir) => {
-								let nxtPts, moves;
-								nxtPts = copyPoints(basePts);
-								moves = 0;
-								while (moves < maxMoves) {
-									nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
-									moves++;
-									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
-								}
-							};
-
-							handleX(1); // x axis increasing
-							handleX(-1); // x axis decreasing
-						};
-
-						const handleBasicY = (maxMoves) => {
-							const handleY = (dir) => {
-								let nxtPts, moves;
-								nxtPts = copyPoints(basePts);
-								moves = 0;
-								while (moves < maxMoves) {
-									nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
-									moves++;
-									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
-								}
-							};
-
-							handleY(1); // y axis increasing
-							handleY(-1); // y axis decreasing
-						};
-
-						doDraw(0, 0);
-
-						(() => {
-							// choose largest axis
-							const maxMoves = getMaxMoves();
-
-							if (maxMoves[0] === "x") {
-								const handleX = (dir) => {
-									let nxtPts, moves;
-									nxtPts = copyPoints(basePts);
-									moves = 0;
-									while (moves < maxMoves[1]) {
-										nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
-										moves++;
-										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
-										handleXAxisYIncrease(nxtPts, maxMoves, moves, dir);
-									}
-								};
-
-								handleBasicY(maxMoves[1]);
-								handleX(1); // x axis increasing
-								handleX(-1); // x axis decreasing
-							} else {
-								const handleY = (dir) => {
-									let nxtPts, moves;
-									nxtPts = copyPoints(basePts);
-									moves = 0;
-									while (moves < maxMoves[1]) {
-										nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
-										moves++;
-										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
-										handleYAxisXIncrease(nxtPts, maxMoves, moves, dir);
-									}
-								};
-
-								handleBasicX(maxMoves[1]);
-								handleY(1); // y axis increasing
-								handleY(-1); // y axis decreasing
-							}
-						})();
-
-						/// / revert coord space rotation
-						ctx.rotate(-rot);
-
-						if (clipMode === "EXCLUDE") doMaskStep(false);
-					}
-
-					// draw sfx
-					if (hasSfx) {
-						for (let i = SFX.lightning.length - 1; i >= 0; --i) {
-							const l = SFX.lightning[i];
-							if (l.brightness <= 5) {
-								SFX.lightning.splice(i, 1);
-							} else {
-								ctx.fillStyle = `#effbff${l.brightness.toString(16).padStart(2, "0")}`;
-								ctx.fillRect(0, 0, cv.width, cv.height);
-								l.brightness -= Math.floor(deltaTime);
-							}
-						}
-					}
-
-					// draw tint
-					if (tint) {
-						ctx.fillStyle = tint;
-						ctx.fillRect(0, 0, cv.width, cv.height);
-					}
-				}
-
-				requestAnimationFrame(drawFrame);
-			} else {
-				// if weather is disabled, maintain a background tick
-				if (hasWeather) {
-					ctx.clearRect(0, 0, cv.width, cv.height);
-					hasWeather = false;
-				}
-				setTimeout(() => {
-					drawFrame(0);
-				}, 1000);
-			}
-		}
-
-		requestAnimationFrame(drawFrame);
-	};
-}
-
-SCRIPT_EXTENSIONS.push(baseWeather);
-
-
-function baseViews () {
-	d20plus.views = {};
-
-	d20plus.views._lastSettingsPageId = null;
-
-	d20plus.views._initSettingsButton = () => {
-		$(`body`).on("click", ".Ve-btn-views", function () {
-			// close the parent page settings + hide the page overlay
-			const $this = $(this);
-			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("Save")`).click();
-			const $barPage = $(`#page-toolbar`);
-			if (!$barPage.hasClass("closed")) {
-				$barPage.find(`.handle`).click()
-			}
-
-			function doShowDialog (page) {
-				const mutExclusiveHelp = "Check this, if enabling this or PREVIOUS view should disable another one of them";
-				const $dialog = $(`
-					<div title="Views Configuration">
-						<div class="alert alert-info" role="alert">
-							<p>Views are states of objects on your map. Each view can store items as tokens, paths & images.
-							Items are assigned via Context menu (only works with bR20 Reorganized context menus).
-							Then you can easily hide or show stored items, no matter their type or layer, using controls at the bottom of Selected layer dropdown.
-							This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.</p>
-						</div>
-						<label class="split wth__row">
-							<span>Enable view management for this map</span>
-							<div class="grid_switch"><label class="switch">
-								<input class="gridenabled feature_enabled" name="viewsEnable" type="checkbox">
-								<span class="slider round"></span>
-							</label></div>
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">Default view</h3>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views0Name" placeholder="Default">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 1</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 1</span>
-								<input type="checkbox" name="views1Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views1Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views1Name" placeholder="View 1">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 2</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 2</span>
-								<input type="checkbox" name="views2Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views2Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views2Name" placeholder="View 2">
-						</label>
-						<div class="pagedetails__header w-100">
-							<h3 class="page_title text-capitalize">View 3</h3>
-						</div>
-						<div class="split">
-							<label class="half">
-								<span>Enable view 3</span>
-								<input type="checkbox" name="views3Enable">
-							</label>
-							<label class="half">
-								<span class="help" title="${mutExclusiveHelp}">Mutually exclusive with previous</span>
-								<input type="checkbox" name="views3Exclusive">
-							</label>
-						</div>
-						<label class="split wth__row">
-							<span>Custom name</span>
-							<input name="views3Name" placeholder="View 3">
-						</label>
-					</div>
-				`).appendTo($("body"));
-
-				const handleProp = (propName) => $dialog.find(`[name="${propName}"]`).each((i, e) => {
-					const $e = $(e);
-					if ($e.is(":checkbox")) {
-						$e.prop("checked", !!page.get(`bR20cfg_${propName}`));
-					} else {
-						$e.val(page.get(`bR20cfg_${propName}`));
-					}
-				});
-				const props = [
-					"viewsEnable",
-					"views0Name",
-					"views1Enable",
-					"views1Exclusive",
-					"views1Name",
-					"views2Enable",
-					"views2Exclusive",
-					"views2Name",
-					"views3Enable",
-					"views3Exclusive",
-					"views3Name",
-				];
-				props.forEach(handleProp);
-
-				function doSaveValues () {
-					props.forEach(propName => {
-						page.set(`bR20cfg_${propName}`, (() => {
-							const $e = $dialog.find(`[name="${propName}"]`);
-							if ($e.is(":checkbox")) {
-								return !!$e.prop("checked");
-							} else {
-								return $e.val();
-							}
-						})())
-					});
-					page.save();
-				}
-
-				$dialog.dialog({
-					width: 500,
-					dialogClass: "no-close",
-					buttons: [
-						{
-							text: "OK",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-								doSaveValues();
-							},
-						},
-						{
-							text: "Apply",
-							click: function () {
-								doSaveValues();
-							},
-						},
-						{
-							text: "Cancel",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-							},
-						},
-					],
-				});
-			}
-
-			if (d20plus.views._lastSettingsPageId) {
-				const page = d20.Campaign.pages.get(d20plus.views._lastSettingsPageId);
-				if (page) {
-					doShowDialog(page);
-				} else d20plus.ut.error(`No page found with ID "${d20plus.views._lastSettingsPageId}"`);
-			} else d20plus.ut.error(`No page settings button was clicked?!`);
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.views._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		});
-	};
-
-	d20plus.views._initMenuActions = () => {
-		$(`body`).on("click", ".chooseViews > li", function () {
-			const page = d20.Campaign.activePage();
-			const items = $(".chooseViews > li")
-			const id = items.index(this);
-			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
-			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
-			if (page.get(`bR20cfg_views${id}Off`)) {
-				d20plus.views.changeViewState(id, true);
-				for (let i = startgroupindex; i <= endgroupindex; i++) {
-					if (i !== id) d20plus.views.changeViewState(i, false);
-				}
-			} else {
-				d20plus.views.changeViewState(id, false);
-			}
-		});
-	}
-
-	d20plus.views._initViewsCss = () => {
-		d20plus.ut.dynamicStyles("viewsSelect").html(`
-			.ui-dialog label.half {display: inline-block; margin-bottom: 6px;}
-			.ui-dialog label.half span {margin-right: 20px;}
-			#floatingtoolbar ul.chooseViews li {border-width: 1px;border-style: solid; border-color: var(--dark-surface1);}
-			#floatingtoolbar ul.chooseViews:empty {display:none;}
-			#floatingtoolbar ul.chooseViews li {height: 19px; border-radius: 12px;}
-			#floatingtoolbar ul.chooseViews li.fst {border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom-width: 0px;}
-			#floatingtoolbar ul.chooseViews li.lst {border-top-left-radius: 0px; border-top-right-radius: 0px; border-top-width: 0px;}
-			#floatingtoolbar ul.chooseViews li.mst {border-radius: 0px; border-top: 0px; border-bottom: 0px;}
-			#floatingtoolbar ul.chooseViews .pictos {padding: 0 3px 0 3px;}
-			#floatingtoolbar ul.chooseViews .view_toggle {padding: 4px 8px 3px 4px; margin-right: 8px; border-right: 1px solid; border-color: inherit;}
-			#floatingtoolbar ul.chooseViews li.off .view_toggle .pictos {color: #fff0;}
-		`);
-	}
-
-	d20plus.views._initLayerMenu = () => {
-		d20plus.views.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
-	}
-
-	d20plus.views.populateMenu = () => {
-		const page = d20.Campaign.activePage();
-		if (!page) return;
-		let menuhtml = "";
-		if (page.get("bR20cfg_viewsEnable")) {
-			for (let id = 0; id <= 4; id++) {
-				if (!id || page.get(`bR20cfg_views${id}Enable`)) {
-					const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
-					const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
-					const viewexcl = page.get(`bR20cfg_views${id}Exclusive`) ? (page.get(`bR20cfg_views${id + 1}Exclusive`) ? "mst" : "lst") : page.get(`bR20cfg_views${id + 1}Exclusive`) ? "fst" : "";
-					const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
-					menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
-						<span class="view_toggle"><span class="pictos">E</span></span>
-						<span class="pictos">${viewicon}</span>
-						${viewname}
-					</li>`;
-				}
-			}
-		}
-		d20plus.views.layerMenu.html(menuhtml);
-	}
-
-	d20plus.views.changeViewState = (id, state) => {
-		const page = d20.Campaign.activePage();
-		const menuItem = $(".chooseViews > li").get(id);
-		if (state) {
-			$(menuItem).removeClass("off");
-			page.set(`bR20cfg_views${id}Off`, false);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, true);
-		} else {
-			$(menuItem).addClass("off");
-			page.set(`bR20cfg_views${id}Off`, true);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `off${id}`, false);
-		}
-		page.save();
-	}
-
-	d20plus.views.checkPageSettings = () => {
-		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
-			setTimeout(d20plus.views.checkPageSettings, 50);
-		} else {
-			d20plus.engine.layersVisibilityCheck();
-			d20plus.views.populateMenu();
-		}
-	}
-
-	d20plus.views.addViews = () => {
-		d20plus.views._initSettingsButton();
-		d20plus.views._initViewsCss();
-		d20plus.views._initLayerMenu();
-		d20plus.views._initMenuActions();
-		document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
-		d20plus.views.checkPageSettings();
-	}
-}
-
-SCRIPT_EXTENSIONS.push(baseViews);
-
-function d20plusJournal () {
-	d20plus.journal = {};
-
-	d20plus.journal.lastClickedFolderId = null;
-
-	d20plus.journal.addJournalCommands = () => {
-		// Create new Journal commands
-		// stash the folder ID of the last folder clicked
-		$("#journalfolderroot").on("contextmenu", ".dd-content", function (e) {
-			if ($(this).parent().hasClass("dd-folder")) {
-				const lastClicked = $(this).parent();
-				d20plus.journal.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
-			}
-
-			if ($(this).parent().hasClass("character")) {
-				$(`.Vetools-make-tokenactions`).show();
-			} else {
-				$(`.Vetools-make-tokenactions`).hide();
-			}
-		});
-
-		let first = $("#journalitemmenu ul li").first();
-		// "Make Tokenactions" option
-		first.after(`<li class="Vetools-make-tokenactions" data-action-type="additem">Make Tokenactions</li>`);
-		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=additem]", function () {
-			let id = $currentItemTarget.attr("data-itemid");
-			let character = d20.Campaign.characters.get(id);
-			d20plus.ut.log("Making Token Actions..");
-			if (character) {
-				let npc = character.attribs.find(function (a) {
-					return a.get("name").toLowerCase() === "npc";
-				});
-				let isNPC = npc ? parseInt(npc.get("current")) : 0;
-				if (isNPC) {
-					// Npc specific tokenactions
-					character.abilities.create({
-						name: "Perception",
-						istokenaction: true,
-						action: d20plus.actionMacroPerception,
-					});
-					character.abilities.create({
-						name: "DR/Immunities",
-						istokenaction: true,
-						action: d20plus.actionMacroDrImmunities,
-					});
-					character.abilities.create({
-						name: "Stats",
-						istokenaction: true,
-						action: d20plus.actionMacroStats,
-					});
-					character.abilities.create({
-						name: "Saves",
-						istokenaction: true,
-						action: d20plus.actionMacroSaves,
-					});
-					character.abilities.create({
-						name: "Skill-Check",
-						istokenaction: true,
-						action: d20plus.actionMacroSkillCheck,
-					});
-					character.abilities.create({
-						name: "Ability-Check",
-						istokenaction: true,
-						action: d20plus.actionMacroAbilityCheck,
-					});
-				} else {
-					// player specific tokenactions
-					// @{selected|repeating_attack_$0_atkname}
-					character.abilities.create({
-						name: "Attack 1",
-						istokenaction: true,
-						action: "%{selected|repeating_attack_$0_attack}",
-					});
-					character.abilities.create({
-						name: "Attack 2",
-						istokenaction: true,
-						action: "%{selected|repeating_attack_$1_attack}",
-					});
-					character.abilities.create({
-						name: "Attack 3",
-						istokenaction: true,
-						action: "%{selected|repeating_attack_$2_attack}",
-					});
-					character.abilities.create({
-						name: "Tool 1",
-						istokenaction: true,
-						action: "%{selected|repeating_tool_$0_tool}",
-					});
-					// " + character.get("name") + "
-					character.abilities.create({
-						name: "Whisper GM",
-						istokenaction: true,
-						action: "/w gm ?{Message to whisper the GM?}",
-					});
-					character.abilities.create({
-						name: "Favorite Spells",
-						istokenaction: true,
-						action: "/w @{character_name} &{template:npcaction} {{rname=Favorite Spells}} {{description=Favorite Spells are the first spells in each level of your spellbook.\n\r[Cantrip](~selected|repeating_spell-cantrip_$0_spell)\n[1st Level](~selected|repeating_spell-1_$0_spell)\n\r[2nd Level](~selected|repeating_spell-2_$0_spell)\n\r[3rd Level](~selected|repeating_spell-3_$0_spell)\n\r[4th Level](~selected|repeating_spell-4_$0_spell)\n\r[5th Level](~selected|repeating_spell-5_$0_spell)}}",
-					});
-					character.abilities.create({
-						name: "Dual Attack",
-						istokenaction: false,
-						action: "%{selected|repeating_attack_$0_attack}\n\r%{selected|repeating_attack_$0_attack}",
-					});
-					character.abilities.create({
-						name: "Saves",
-						istokenaction: true,
-						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Save|Strength, +@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Strength Save&#125;&#125 {{mod=@{selected|strength_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Dexterity, +@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Dexterity Save&#125;&#125 {{mod=@{selected|dexterity_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Constitution, +@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Constitution Save&#125;&#125 {{mod=@{selected|constitution_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Intelligence, +@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Intelligence Save&#125;&#125 {{mod=@{selected|intelligence_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Wisdom, +@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Wisdom Save&#125;&#125 {{mod=@{selected|wisdom_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Charisma, +@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Charisma Save&#125;&#125 {{mod=@{selected|charisma_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125;}@{selected|global_save_mod}@{selected|charname_output",
-					});
-					character.abilities.create({
-						name: "Skill-Check",
-						istokenaction: true,
-						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Ability|Acrobatics, +@{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Acrobatics&#125;&#125; {{mod=@{selected|acrobatics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Animal Handling, +@{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Animal Handling&#125;&#125; {{mod=@{selected|animal_handling_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Arcana, +@{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Arcana&#125;&#125; {{mod=@{selected|arcana_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Athletics, +@{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Athletics&#125;&#125; {{mod=@{selected|athletics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Deception, +@{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Deception&#125;&#125; {{mod=@{selected|deception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |History, +@{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=History&#125;&#125; {{mod=@{selected|history_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Insight, +@{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Insight&#125;&#125; {{mod=@{selected|insight_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Intimidation, +@{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Intimidation&#125;&#125; {{mod=@{selected|intimidation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Investigation, +@{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Investigation&#125;&#125; {{mod=@{selected|investigation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Medicine, +@{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Medicine&#125;&#125; {{mod=@{selected|medicine_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Nature, +@{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Nature&#125;&#125; {{mod=@{selected|nature_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Perception, +@{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Perception&#125;&#125; {{mod=@{selected|perception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Performance, +@{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Performance&#125;&#125; {{mod=@{selected|performance_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Persuasion, +@{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Persuasion&#125;&#125; {{mod=@{selected|persuasion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Religion, +@{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Religion&#125;&#125; {{mod=@{selected|religion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Sleight of Hand, +@{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Sleight of Hand&#125;&#125; {{mod=@{selected|sleight_of_hand_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Stealth, +@{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Stealth&#125;&#125; {{mod=@{selected|stealth_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Survival, +@{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Survival&#125;&#125; {{mod=@{selected|survival_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Strength, +@{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; {{rname=Strength&#125;&#125; {{mod=@{selected|strength_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; |Dexterity, +@{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; {{rname=Dexterity&#125;&#125; {{mod=@{selected|dexterity_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; |Constitution, +@{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; {{rname=Constitution&#125;&#125; {{mod=@{selected|constitution_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; |Intelligence, +@{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; {{rname=Intelligence&#125;&#125; {{mod=@{selected|intelligence_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; |Wisdom, +@{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; {{rname=Wisdom&#125;&#125; {{mod=@{selected|wisdom_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; |Charisma, +@{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; {{rname=Charisma&#125;&#125; {{mod=@{selected|charisma_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; } @{selected|global_skill_mod} @{selected|charname_output}",
-					});
-				}
-				// for everyone
-				character.abilities.create({
-					name: "Initiative",
-					istokenaction: true,
-					action: d20plus.actionMacroInit,
-				});
-			}
-		});
-
-		// New command on FOLDERS
-		const last = $("#journalmenu ul li").last();
-		last.before("<li data-action-type=\"archiveall\">Archive All Contents</li>");
-
-		const $journalUl = $("#journalmenu ul");
-
-		$journalUl.on(window.mousedowntype, "li[data-action-type=archiveall]", function () {
-			d20plus.journal.recursiveArchiveDirById(d20plus.journal.lastClickedFolderId, true);
-			$("#journalmenu").hide();
-		});
-	};
-
-	/**
-	 * Takes a path made up of strings and arrays of strings, and turns it into one flat array of strings
-	 * Note that paths must be of the form ["folder", "subfolder", "subsubfolder", etc]
-	 */
-	d20plus.journal.getCleanPath = function (...path) {
-		const clean = [];
-		getStrings(clean, path);
-		return clean.map(s => s.trim()).filter(s => s);
-
-		function getStrings (stack, toProc) {
-			toProc.forEach(tp => {
-				if (typeof tp === "string") {
-					stack.push(tp);
-				} else if (tp instanceof Array) {
-					getStrings(stack, tp);
-				} else {
-					throw new Error("Object in path was not a string or an array")
-				}
-			});
-		}
-	};
-
-	d20plus.journal.makeDirTree = function (...path) {
-		const parts = d20plus.journal.getCleanPath(path);
-		// path e.g. d20plus.journal.makeDirTree("Spells", "Cantrips", "1")
-		// roll20 allows a max directory depth of 4 :joy: (5, but the 5th level is unusable)
-		if (parts.length > 4) throw new Error("Max directory depth exceeded! The maximum is 4.")
-
-		const madeSoFar = [];
-
-		const root = {i: d20plus.ut.getJournalFolderObj()};
-
-		// roll20 folder management is dumb, so just pick the first folder with the right name if there's multiple
-		let curDir = root;
-		parts.forEach(toMake => {
-			const existing = curDir.i.find((it) => {
-				// n is folder name (only folders have the n property)
-				return it.n && it.n === toMake && it.i;
-			});
-			if (!existing) {
-				if (curDir.id) {
-					d20.journal.addFolderToFolderStructure(toMake, curDir.id);
-				} else {
-					// root has no id
-					d20.journal.addFolderToFolderStructure(toMake);
-				}
-			}
-			d20.journal.refreshJournalList();
-			madeSoFar.push(toMake);
-
-			// we have to save -> reread the entire directory JSON -> walk back to where we were
-			let nextDir = {i: JSON.parse(d20.Campaign.get("journalfolder"))};
-			madeSoFar.forEach(f => {
-				nextDir = nextDir.i.find(dir => dir.n && (dir.n.toLowerCase() === f.toLowerCase()));
-			});
-
-			curDir = nextDir;
-		});
-		return curDir;
-	};
-
-	d20plus.journal.recursiveRemoveDirById = function (folderId, withConfirmation) {
-		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
-			const folder = $(`[data-globalfolderid='${folderId}']`);
-			if (folder.length) {
-				d20plus.ut.log("Nuking directory...");
-				const childItems = folder.find("[data-itemid]").each((i, e) => {
-					const $e = $(e);
-					const itemId = $e.attr("data-itemid");
-					let toDel = d20.Campaign.handouts.get(itemId);
-					toDel || (toDel = d20.Campaign.characters.get(itemId));
-					if (toDel) toDel.destroy();
-				});
-				const childFolders = folder.find(`[data-globalfolderid]`).remove();
-				folder.remove();
-				$("#journalfolderroot").trigger("change");
-			}
-		}
-	};
-
-	d20plus.journal.recursiveArchiveDirById = function (folderId, withConfirmation) {
-		if (!withConfirmation || confirm("Are you sure you want to archive this folder, and everything in it? This cannot be undone.")) {
-			const folder = $(`[data-globalfolderid='${folderId}']`);
-			if (folder.length) {
-				d20plus.ut.log("Archiving directory...");
-				folder.find("[data-itemid]").each((i, e) => {
-					const $e = $(e);
-					const itemId = $e.attr("data-itemid");
-					let toArchive = d20.Campaign.handouts.get(itemId);
-					toArchive || (toArchive = d20.Campaign.characters.get(itemId));
-					if (toArchive && toArchive.attributes) {
-						toArchive.attributes.archived = true;
-						toArchive.save()
-					}
-				});
-			}
-		}
-	};
-
-	d20plus.journal.removeDirByPath = function (...path) {
-		path = d20plus.journal.getCleanPath(path);
-		return d20plus.journal._checkOrRemoveDirByPath(true, path);
-	};
-
-	d20plus.journal.checkDirExistsByPath = function (...path) {
-		path = d20plus.journal.getCleanPath(path);
-		return d20plus.journal._checkOrRemoveDirByPath(false, path);
-	};
-
-	d20plus.journal._checkOrRemoveDirByPath = function (doDelete, path) {
-		const parts = d20plus.journal.getCleanPath(path);
-
-		const root = {i: d20plus.ut.getJournalFolderObj()};
-
-		let curDir = root;
-		for (let i = 0; i < parts.length; ++i) {
-			const p = parts[i];
-			let lastId;
-			const existing = curDir.i.find((it) => {
-				lastId = it.id;
-				// n is folder name (only folders have the n property)
-				return it.n && it.n === p;
-			});
-			if (!existing) return false;
-			if (!doDelete) return true;
-			curDir = existing;
-			if (i === parts.length - 1) {
-				d20plus.journal.recursiveRemoveDirById(lastId, false);
-				return true;
-			}
-		}
-	};
-
-	d20plus.journal.getExportableJournal = () => {
-		// build a list of (id, path) pairs
-		const out = [];
-
-		function recurse (entry, pos) {
-			if (entry.i) {
-				// pos.push({name: entry.n, id: entry.id}); // if IDs are required, use this instead?
-				pos.push(entry.n);
-				entry.i.forEach(nxt => recurse(nxt, pos));
-				pos.pop();
-			} else {
-				out.push({id: entry, path: MiscUtil.copy(pos)});
-			}
-		}
-
-		const root = {i: d20plus.ut.getJournalFolderObj(), n: "Root", id: "root"};
-		recurse(root, []);
-		return out;
-	};
-
-	d20plus.journal.removeFileByPath = function (...path) {
-		path = d20plus.journal.getCleanPath(path);
-		return d20plus.journal._checkOrRemoveFileByPath(true, path);
-	};
-
-	d20plus.journal.checkFileExistsByPath = function (...path) {
-		path = d20plus.journal.getCleanPath(path);
-		return d20plus.journal._checkOrRemoveFileByPath(false, path);
-	};
-
-	d20plus.journal._checkOrRemoveFileByPath = function (doDelete, path) {
-		const parts = d20plus.journal.getCleanPath(path);
-
-		const root = {i: d20plus.ut.getJournalFolderObj()};
-
-		let curDir = root;
-		for (let i = 0; i < parts.length; ++i) {
-			const p = parts[i];
-			let lastId;
-			const existing = curDir.i.find((it) => {
-				if (i === parts.length - 1) {
-					// for the last item, check handouts/characters to see if the match it (which could be a string ID)
-					const char = d20.Campaign.characters.get(it);
-					const handout = d20.Campaign.handouts.get(it);
-					if ((char && char.get("name") === p) || (handout && handout.get("name") === p)) {
-						lastId = it;
-						return true;
-					}
-				} else {
-					lastId = it.id;
-					// n is folder name (only folders have the n property)
-					return it.n && it.n === p;
-				}
-				return false;
-			});
-			if (!existing) return false;
-			curDir = existing;
-			if (i === parts.length - 1) {
-				if (doDelete) {
-					// on the last item, delete
-					let toDel = d20.Campaign.handouts.get(lastId);
-					toDel || (toDel = d20.Campaign.characters.get(lastId))
-					if (toDel) toDel.destroy();
-				}
-				return true;
-			}
-		}
-		return false;
-	};
-}
-
-SCRIPT_EXTENSIONS.push(d20plusJournal);
-
-
-function baseCss () {
-	d20plus.css = {};
-
-	// Convert to regular CSS:
-	// `[ ... rules ... ].map(it => `${it.s} {\n${it.r.split(";").map(str => str.trim()).join(";\n")}}\n`).join("\n")`
-	d20plus.css.baseCssRules = [
-		// generic
-		{
-			s: ".inline-block, .display-inline-block",
-			r: "display: inline-block;",
-		},
-		{
-			s: ".bold",
-			r: "font-weight: bold;",
-		},
-		{
-			s: ".italic",
-			r: "font-style: italic;",
-		},
-		{
-			s: ".clickable",
-			r: "cursor: pointer;",
-		},
-		{
-			s: ".split",
-			r: "display: flex; justify-content: space-between;",
-		},
-		{
-			s: ".relative",
-			r: "position: relative !important;",
-		},
-		{
-			s: ".flex",
-			r: "display: flex;",
-		},
-		{
-			s: ".flex-col",
-			r: "display: flex; flex-direction: column;",
-		},
-		{
-			s: ".flex-v-center",
-			r: "display: flex; align-items: center;",
-		},
-		{
-			s: ".flex-vh-center",
-			r: "display: flex; justify-content: center; align-items: center;",
-		},
-		{
-			s: ".no-shrink",
-			r: "flex-shrink: 0;",
-		},
-		{
-			s: ".flex-1",
-			r: "flex: 1",
-		},
-		{
-			s: ".full-width",
-			r: "width: 100%;",
-		},
-		{
-			s: ".full-height",
-			r: "height: 100%;",
-		},
-		{
-			s: ".text-center",
-			r: "text-align: center;",
-		},
-		{
-			s: ".text-right",
-			r: "text-align: right;",
-		},
-		{
-			s: ".is-error",
-			r: "color: #d60000;",
-		},
-		{
-			s: ".flex-label",
-			r: "display: inline-flex; align-items: center;",
-		},
-		{
-			s: ".sel-xs",
-			r: `
-				height: 18px;
-				line-height: 18px;
-				margin: 0;
-				padding: 0;
-			`,
-		},
-		{
-			s: ".btn-xs",
-			r: `
-				height: 18px;
-				line-height: 18px;
-				margin: 0;
-				padding: 0 4px;
-			`,
-		},
-		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
-		// {
-		// 	s: ".note-editable p",
-		// 	r: "margin-bottom: 0;"
-		// },
-		// ensure rightclick menu width doesn't break layout // FIXME might be fixing the symptoms and not the cause
-		{
-			s: ".actions_menu.d20contextmenu > ul > li",
-			r: "max-width: 100px;",
-		},
-		// page view enhancement
-		{
-			s: "#page-toolbar",
-			r: "height: calc(90vh - 40px);",
-		},
-		{
-			s: "#page-toolbar .container",
-			r: "height: 100%; white-space: normal;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage",
-			r: "width: 100px; height: 100px;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage img.pagethumb",
-			r: "max-width: 60px; max-height: 60px;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage span",
-			r: "bottom: 1px;",
-		},
-		{
-			s: "#page-toolbar",
-			r: "background: #a8aaad80;",
-		},
-		// search
-		{
-			s: ".Vetoolsresult",
-			r: "background: #ff8080;",
-		},
-		// config editor
-		{
-			s: "div.config-table-wrapper",
-			r: "min-height: 200px; width: 100%; height: 100%; max-height: 460px; overflow-y: auto; transform: translateZ(0);",
-		},
-		{
-			s: "table.config-table",
-			r: "width: 100%; table-layout: fixed;",
-		},
-		{
-			s: "table.config-table tbody tr:nth-child(odd)",
-			r: "background-color: #f8f8f8;",
-		},
-		{
-			s: "table.config-table tbody td > *",
-			r: "vertical-align: middle; margin: 0;",
-		},
-		{
-			s: ".config-name",
-			r: "display: inline-block; line-height: 35px; width: 100%;",
-		},
-		// tool list
-		{
-			s: ".tools-list",
-			r: "max-height: 70vh;",
-		},
-		{
-			s: ".tool-row",
-			r: "min-height: 40px; display: flex; flex-direction: row; align-items: center;",
-		},
-		{
-			s: ".tool-row:nth-child(odd)",
-			r: "background-color: #f0f0f0;",
-		},
-		{
-			s: ".tool-row > *",
-			r: "flex-shrink: 0;",
-		},
-		// warning overlay
-		{
-			s: ".temp-warning",
-			r: "position: fixed; top: 12px; left: calc(50vw - 200px); z-index: 10000; width: 320px; background: transparent; color: red; font-weight: bold; font-size: 150%; font-variant: small-caps; border: 1px solid red; padding: 4px; text-align: center; border-radius: 4px;",
-		},
-		// GM hover text
-		{
-			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;",
-		},
-		// drawing tools bar
-		{
-			s: "#drawingtools.line_splitter .currentselection:after",
-			r: "content: '✂️';",
-		},
-		// chat tag
-		{
-			s: ".userscript-hacker-chat",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
-		},
-		{
-			s: ".userscript-hacker-chat a",
-			r: "color: white;",
-		},
-		{
-			s: ".userscript-hacker-chat-error",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #FF69B4; background: black; padding: 3px; min-width: calc(100% + 60px);",
-		},
-		{
-			s: ".userscript-hacker-chat-error a",
-			r: "color: white;",
-		},
-		{
-			s: ".withoutavatars .userscript-hacker-chat",
-			r: "margin-left: -15px; min-width: calc(100% + 30px);",
-		},
-		{
-			s: ".Ve-btn-chat",
-			r: "margin-top: 10px; margin-left: -35px;",
-		},
-		{
-			s: ".withoutavatars .Ve-btn-chat",
-			r: "margin-left: -5px;",
-		},
-		// Bootstrap-alikes
-		{
-			s: ".col",
-			r: "display: inline-block;",
-		},
-		{
-			s: ".col-1",
-			r: "width: 8.333%;",
-		},
-		{
-			s: ".col-2",
-			r: "width: 16.666%;",
-		},
-		{
-			s: ".col-3",
-			r: "width: 25%;",
-		},
-		{
-			s: ".col-4",
-			r: "width: 33.333%;",
-		},
-		{
-			s: ".col-5",
-			r: "width: 41.667%;",
-		},
-		{
-			s: ".col-6",
-			r: "width: 50%;",
-		},
-		{
-			s: ".col-7",
-			r: "width: 58.333%;",
-		},
-		{
-			s: ".col-8",
-			r: "width: 66.667%;",
-		},
-		{
-			s: ".col-9",
-			r: "width: 75%;",
-		},
-		{
-			s: ".col-10",
-			r: "width: 83.333%;",
-		},
-		{
-			s: ".col-11",
-			r: "width: 91.667%;",
-		},
-		{
-			s: ".col-12",
-			r: "width: 100%;",
-		},
-		{
-			s: ".ib",
-			r: "display: inline-block;",
-		},
-		{
-			s: ".float-right",
-			r: "float: right;",
-		},
-		{
-			s: ".my-0",
-			r: "margin-top: 0 !important; margin-bottom: 0 !important;",
-		},
-		{
-			s: ".m-1",
-			r: "margin: 0.25rem !important;",
-		},
-		{
-			s: ".mt-2",
-			r: "margin-top: 0.5rem !important;",
-		},
-		{
-			s: ".mr-1",
-			r: "margin-right: 0.25rem !important;",
-		},
-		{
-			s: ".ml-1",
-			r: "margin-left: 0.25rem !important;",
-		},
-		{
-			s: ".mr-2",
-			r: "margin-right: 0.5rem !important;",
-		},
-		{
-			s: ".ml-2",
-			r: "margin-left: 0.5rem !important;",
-		},
-		{
-			s: ".mb-2",
-			r: "margin-bottom: 0.5rem !important;",
-		},
-		{
-			s: ".mb-1",
-			r: "margin-bottom: 0.25rem !important;",
-		},
-		{
-			s: ".p-2",
-			r: "padding: 0.5rem !important;",
-		},
-		{
-			s: ".p-3",
-			r: "padding: 1rem !important;",
-		},
-		{
-			s: ".split",
-			r: "display: flex; justify-content: space-between;",
-		},
-		{
-			s: ".split--center",
-			r: "align-items: center;",
-		},
-		// image rows
-		{
-			s: ".import-cb-label--img",
-			r: "display: flex; height: 64px; align-items: center; padding: 4px;",
-		},
-		{
-			s: ".import-label__img",
-			r: "display: inline-block; width: 60px; height: 60px; padding: 0 5px;",
-		},
-		// importer
-		{
-			s: ".import-cb-label",
-			r: "display: block; margin-right: -13px !important;",
-		},
-		{
-			s: ".import-cb-label span",
-			r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;",
-		},
-		{
-			s: ".import-cb-label span.readable",
-			r: "letter-spacing: initial",
-		},
-		{
-			s: ".import-cb-label .source",
-			r: "width: calc(16.667% - 28px);'",
-		},
-		// Table importer
-		{
-			s: ".table-import-search",
-			r: "transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;",
-		},
-		{
-			s: ".table-import-textarea",
-			r: "display: block; width: 600px; height: 340px;",
-		},
-		// horizontal toolbar
-		{
-			s: "#secondary-toolbar:hover",
-			r: "opacity: 1 !important;",
-		},
-		// addon layer bar
-		{
-			s: "#floatinglayerbar ul",
-			r: "margin: 0; padding: 0;",
-		},
-		{
-			s: "#floatinglayerbar li:hover, #floatinglayerbar li.activebutton",
-			r: "color: #333; background-color: #54C3E8; cursor: pointer;",
-		},
-		{
-			s: "#floatinglayerbar li",
-			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
-		},
-		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.roofs li.chooseroofs, #floatinglayerbar.floors li.choosefloors, #floatinglayerbar.background li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;",
-		},
-		// move layer bar to right
-		{
-			s: "#floatinglayerbar",
-			r: "pointer-events: all;",
-		},
-		{
-			s: "#floatinglayerbar.right",
-			r: "right: 30px; left: unset!important;",
-		},
-		{
-			s: "#floatinglayerbar",
-			r: "left: 20px;",
-		},
-		// Config & dark mode fixes
-		{
-			s: ".config-name",
-			r: "padding: 6px 0px; line-height: 21px;",
-		},
-		{
-			s: "#d20plus-configeditor .nav li:not(.active) > a",
-			r: "cursor: pointer;",
-		},
-		{
-			s: "#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1)",
-			r: "background-color: rgba(120, 120, 120, 0.2);",
-		},
-		{
-			s: ".tool-row:nth-child(2n+1)",
-			r: "background-color: rgba(120, 120, 120, 0.2);",
-		},
-		{
-			s: "#floatinglayerbar li",
-			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
-		},
-		// extra layer buttons
-		{
-			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;",
-		},
-		{
-			s: "#editinglayer.objects .currentselection::after",
-			r: "content: \"U\";",
-		},
-		{
-			s: "#editinglayer.map .currentselection::after",
-			r: "content: \"G\";",
-		},
-		{
-			s: "#editinglayer.weather .currentselection:after",
-			r: "content: \"C\";",
-		},
-		{
-			s: "#editinglayer.foreground .currentselection:after",
-			r: "content: \"B\";",
-		},
-		{
-			s: "#editinglayer.floors .currentselection:after",
-			r: "content: \"I\";",
-		},
-		{
-			s: "#editinglayer.roofs .currentselection:after",
-			r: "content: \"H\";",
-		},
-		{
-			s: "#editinglayer.background .currentselection:after",
-			r: "content: \"a\";",
-		},
-		{
-			s: "#editinglayer.gmlayer .currentselection:after",
-			r: "content: \"E\";",
-		},
-		{
-			s: "#editinglayer.gmlayer > span.currentselection",
-			r: "display:unset;",
-		},
-		{
-			s: "#editinglayer.gmlayer #editing_layer_icon",
-			r: "display:none;",
-		},
-		// layer visibility toggles
-		{
-			s: "#editinglayer .pictos.layer_toggle",
-			r: "float: right; cursor: alias; pointer-events: all;",
-		},
-		{
-			s: "#editinglayer li.stashed",
-			r: "pointer-events: none;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle",
-			r: "position: relative; left: -19px; margin-right: -20px; margin-left: 0px;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle::after",
-			r: "content: \"d\"; position: relative; left: -16px; color: rgba(200,50,50,0.7);",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off > span::after",
-			r: "content: \"d\"; color: rgba(200, 100, 100, 0.7); margin-left: -20px;",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off",
-			r: "color: rgba(153, 153, 153, 0.5); pointer-events: none;",
-		},
-		// adjust the "Talking to Yourself" box
-		{
-			s: "#textchat-notifier",
-			r: "top: -5px; background-color: red; opacity: 0.5; color: white;",
-		},
-		{
-			s: "#textchat-notifier:after",
-			r: "content: '!'",
-		},
-		{
-			s: ".ctx__layer-icon",
-			r: `
-			display: inline-block;
-			width: 12px;
-			text-align: center;
-			`,
-		},
-		// fix the shitty undersized "fire" icon
-		{
-			s: ".choosewalls > .pictostwo",
-			r: "width: 15px; height: 17px; display: inline-block; text-align: center;",
-		},
-		{
-			s: "#editinglayer.walls > .pictos",
-			r: "width: 20px; height: 22px; display: inline-block; text-align: center; font-size: 0.9em;",
-		},
-		// weather config window
-		{
-			s: ".ui-dialog .wth__row",
-			r: "margin-bottom: 10px; align-items: center; padding: 0 0 5px; border-bottom: 1px solid #eee;",
-		},
-		{
-			s: ".wth__row select",
-			r: "margin-bottom: 0",
-		},
-		{
-			s: `.wth__row input[type="range"]`,
-			r: "width: calc(100% - 8px);",
-		},
-		// context menu
-		{
-			s: `.ctx__divider`,
-			r: "width: calc(100% - 2px); border: 1px solid black;",
-		},
-		// sidebar fix
-		/* {
-			s: `#rightsidebar`,
-			r: `
-			    display: flex;
-			    flex-direction: column;
-			`
-		},
-		{
-			s: `#rightsidebar ul.tabmenu`,
-			r: `
-			    padding: 0;
-    			flex-shrink: 0;
-    			position: relative;
-    			top: 0;
-    			width: 100%;
-			`
-		},
-		{
-			s: `#rightsidebar .ui-tabs-panel`,
-			r: `
-				height: 100% !important;
-				display: block;
-				top: 0;
-			`
-		},
-		{
-			s: `#textchat-input`,
-			r: `
-				position: relative;
-    			flex-shrink: 0;
-			`
-		},
-		{
-			s: `#textchat-input textarea`,
-			r: `
-				width: calc(100% - 8px) !important;
-				resize: vertical;
-			`
-		}, */
-		// Ensure page toolbar is displayed
-		{
-			s: `#page-toolbar`,
-			r: `display: block;`,
-		},
-	];
-
-	d20plus.css.baseCssRulesPlayer = [
-		{
-			s: ".player-hidden",
-			r: "display: none !important;",
-		},
-		// Force-hide page toolbar
-		{
-			s: `#page-toolbar`,
-			r: `display: none;`,
-		},
-	];
-
-	d20plus.css.cssRules = []; // other scripts should populate this
-
-	// Mirrors of 5etools CSS
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		{
-			s: ".copied-tip",
-			r: "pointer-events: none; position: fixed; background: transparent; user-select: none; z-index: 100000; width: 80px; height: 24px; line-height: 24px;",
-		},
-		{
-			s: ".copied-tip > span",
-			r: "display: inline-block; width: 100%; text-align: center;",
-		},
-		{
-			s: ".help",
-			r: "cursor: help; text-decoration: underline; text-decoration-style: dotted;",
-		},
-		{
-			s: ".help--subtle",
-			r: "cursor: help;",
-		},
-	]);
-
-	// QOL fixes
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		// Initiative dialog fixes
-		{
-			s: ".initiativedialog .ui-dialog-buttonset .ui-button",
-			r: "margin: 0px 0px 0px 3px; max-width: 37px; overflow: hidden; box-sizing: border-box;",
-		},
-		{
-			s: ".initiativedialog .difficulty",
-			r: "width: 40%; margin-top: -9px; font-size: 14px;",
-		},
-		// Spacing between token-actions
-		{
-			s: "#secondary-toolbar .tokenactions .btn",
-			r: "margin-left: 2px;",
-		},
-		// Tweak OGL roll template styles
-		{
-			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
-			r: "padding-top: 0px",
-		},
-		{
-			s: ".sheet-rolltemplate-simple .sheet-charname, .sheet-rolltemplate-simple3D .sheet-charname, .sheet-rolltemplate-skill .sheet-charname, .sheet-rolltemplate-atk .sheet-charname, .sheet-rolltemplate-dmg .sheet-charname, .sheet-rolltemplate-atkdmg .sheet-charname",
-			r: "margin-top: -8px; padding-bottom: 2px;",
-		},
-		{
-			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
-			r: "font-size: 12px;",
-		},
-	]);
-
-	// Fix art repo buttons CSS
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		{
-			s: "#imagedialog .searchbox p button",
-			r: "width: 100%; margin: 0px 5px !important;",
-		},
-	]);
-
-	// Art repo browser CSS
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		// full-width images search header
-		{
-			s: "#imagedialog .searchbox",
-			r: "width: calc(100% - 10px)",
-		},
-		/// ////////////
-		{
-			s: ".artr__win",
-			r: "display: flex; align-items: stretch; width: 100%; height: 100%; padding: 0 !important;",
-		},
-		// fix box sizing
-		{
-			s: ".artr__win *",
-			r: "box-sizing: border-box;",
-		},
-		// custom scrollbars
-		{
-			s: ".artr__win *::-webkit-scrollbar",
-			r: "width: 9px; height: 9px;",
-		},
-		{
-			s: ".artr__win *::-webkit-scrollbar-track",
-			r: "background: transparent;",
-		},
-		{
-			s: ".artr__win *::-webkit-scrollbar-thumb",
-			r: "background: #cbcbcb;",
-		},
-		/// ////////////
-		{
-			s: ".artr__side",
-			r: "width: 300px; height: 100%; border-right: 1px solid #ccc; background: #f8f8f8; position: relative; flex-shrink: 0; display: flex; flex-direction: column;",
-		},
-		{
-			s: ".artr__side__head",
-			r: "flex-shrink: 0; font-weight: bold; margin-bottom: 7px; margin-bottom: 7px; border-bottom: 3px solid #ccc; background: white;",
-		},
-		{
-			s: ".artr__side__head__title",
-			r: "font-size: 16px; font-weight: bold;",
-		},
-		{
-			s: ".artr__side__body",
-			r: "flex-shrink: 0; overflow-y: auto; transform: translateZ(0);",
-		},
-		{
-			s: ".artr__side__tag_header",
-			r: "width: 100%; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; padding: 0 6px; cursor: pointer; margin-bottom: 10px;",
-		},
-		{
-			s: ".artr__side__tag_grid",
-			r: "display: flex; width: 100%; flex-wrap: wrap; margin-bottom: 15px; background: #f0f0f0; border-radius: 5px;",
-		},
-		{
-			s: ".artr__side__tag",
-			r: "padding: 2px 4px; margin: 2px 4px; font-size: 11px;",
-		},
-		{
-			s: `.artr__side__tag[data-state="1"]`,
-			r: "background-image: linear-gradient(#fff, #337ab7);",
-		},
-		{
-			s: `.artr__side__tag[data-state="1"]:hover`,
-			r: "background-image: linear-gradient(rgb(#337ab7), rgb(#337ab7)); background-position: 0; transition: none;",
-		},
-		{
-			s: `.artr__side__tag[data-state="2"]`,
-			r: "background-image: linear-gradient(#fff, #8a1a1b);",
-		},
-		{
-			s: `.artr__side__tag[data-state="2"]:hover`,
-			r: "background-image: linear-gradient(rgb(#8a1a1b), rgb(#8a1a1b)); background-position: 0; transition: none;",
-		},
-		{
-			s: ".artr__main",
-			r: "width: 100%; height: 100%; display: flex; overflow-y: auto; flex-direction: column; position: relative;",
-		},
-		{
-			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;",
-		},
-		{
-			s: ".artr__bread",
-			r: "width: 100%; margin-bottom: 2px;",
-		},
-		{
-			s: ".artr__crumb",
-			r: "border: 1px solid #ccc; border-radius: 5px; padding: 0 5px; display: inline-block; cursor: pointer; user-select: none;",
-		},
-		{
-			s: ".artr__crumb--sep",
-			r: "border: 0; cursor: default;",
-		},
-		{
-			s: ".artr__search",
-			r: "flex-shrink: 0; width: 100%; border-bottom: 1px solid #ccc; display: flex; flex-direction: column;",
-		},
-		{
-			s: ".artr__search__field",
-			r: "width: 100%; height: 26px;",
-		},
-		{
-			s: ".artr__view",
-			r: "position: absolute; top: 64px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0); background-color: whitesmoke;",
-		},
-		{
-			s: ".artr__view_inner",
-			r: "display: flex; width: 100%; height: 100%; flex-wrap: wrap; align-content: flex-start;",
-		},
-		{
-			s: ".artr__no_results_wrp",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center;",
-		},
-		{
-			s: ".artr__no_results",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;",
-		},
-		{
-			s: ".artr__no_results_headline",
-			r: "font-size: 125%; font-weight: bold;",
-		},
-		{
-			s: ".artr__item",
-			r: "width: 180px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white; position: relative;",
-			// Using flex makes scrolling extremely sluggish
-			// display: flex; flex-direction: column; cursor: pointer; float: left;
-		},
-		{
-			s: ".artr__item__stats",
-			r: "position: absolute; left: 0; top: 0; display: none;",
-		},
-		{
-			s: ".artr__item:hover .artr__item__stats",
-			r: "display: block;",
-		},
-		{
-			s: ".artr__item__stats_item",
-			r: "color: grey; background: white; border-radius: 5px; margin: 4px 2px; padding: 0 2px; text-align: center; border: 1px solid #e0e0e0",
-		},
-		{
-			s: ".artr__item__menu",
-			r: "position: absolute; right: 0; top: 0; display: none;",
-		},
-		{
-			s: ".artr__item:hover .artr__item__menu",
-			r: "display: block;",
-		},
-		{
-			s: ".artr__item__menu_item",
-			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; border-radius: 5px; margin: 4px; padding: 2px; text-align: center; display: block; border: 1px solid #ccc; background: white;",
-		},
-		{
-			s: ".artr__item--index",
-			r: "height: 240px;",
-		},
-		{
-			s: ".artr__item--item",
-			r: "height: 180px;",
-		},
-		{
-			s: ".artr__item:hover",
-			r: "box-shadow: 0 0 8px 0 rgba(38, 167, 242, 1); opacity: 0.95;",
-		},
-		{
-			s: ".artr__item--back",
-			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; color: #888;",
-		},
-		{
-			s: ".artr__item__top",
-			r: "width: 100%; height: 180px; flex-shrink: 0; margin: 0 auto; display: flex; align-items: center;",
-		},
-		{
-			s: ".artr__item__top--quart",
-			r: "display: flex; flex-wrap: wrap;",
-		},
-		{
-			s: ".artr__item__bottom",
-			r: "width: 100%; height: 60px; flex-shrink: 0;  border-top: 1px solid #ccc; background: #f8f8f8; display: flex; flex-direction: column; font-size: 12px; justify-content: space-evenly;",
-		},
-		{
-			s: ".artr__item__bottom__row",
-			r: "width: 100% height: 20px; flex-shrink: 0; padding: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
-		},
-		{
-			s: ".artr__item__thumbnail",
-			r: "max-width: 100%; max-height: 100%; display: block; margin: 0 auto;",
-		},
-		{
-			s: ".atr__item__quart",
-			r: "width: 50%; height: 50%; display: block; margin: 0;",
-		},
-		{
-			s: ".atr__item__quart--more",
-			r: "display: flex; justify-content: center; align-items: center;",
-		},
-		{
-			s: ".artr__item__full",
-			r: "width: 100%; height: 180px; margin: 0 auto; display: flex; align-items: center; padding: 3px;",
-		},
-		{
-			s: ".artr__wrp_big_img",
-			r: "position: fixed; top: 0; bottom: 0; right: 0; left: 0; background: #30303080; padding: 30px; display: flex; justify-content: center; align-items: center; z-index: 99999;",
-		},
-		{
-			s: ".artr__big_img",
-			r: "display: block; max-width: 100%; max-height: 100%;",
-		},
-		// fix row styles
-		{
-			s: "#d20plus-artfolder .url",
-			r: "width: calc(65% - 75px) !important;white-space: nowrap;overflow: hidden;",
-		},
-		{
-			s: "#d20plus-artfolder .library-item",
-			r: "line-height: 16px;",
-		},
-		{
-			s: "#d20plus-artfolder .library-item:hover",
-			r: "background-color: rgba(100,100,100,0.5);",
-		},
-	]);
-
-	// Animator CSS -- `anm__` prefix
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		// fix box sizing
-		{
-			s: ".anm__win *",
-			r: "box-sizing: border-box;",
-		},
-		{
-			s: ".ui-dialog .anm__row",
-			r: `
-    			display: flex;
-    			align-items: center;
-    			margin-bottom: 3px;
-    			height: 20px;
-			`,
-		},
-		{
-			s: ".anm__row > div",
-			r: `
-				display: inline-flex;
-			`,
-		},
-		{
-			s: ".anm__row-btn",
-			r: `
-				padding: 0 6px;
-			`,
-		},
-		{
-			s: ".anm__row-wrp-cb",
-			r: `
-				justify-content: center;
-				align-items: center;
-			`,
-		},
-		{
-			s: ".anm__wrp-sel-all",
-			r: `
-				align-items: center;
-				margin-bottom: 5px;
-				display: flex;
-				justify-content: space-between;
-			`,
-		},
-		{
-			s: ".anm-edit__ipt-lines-wrp",
-			r: `
-				flex-basis: 100%;
-				flex-shrink: 100;
-			`,
-		},
-		{
-			s: ".anm-edit__gui .anm-edit__gui-hidden",
-			r: `
-				display: none;
-			`,
-		},
-		{
-			s: ".anm-edit__text .anm-edit__gui-visible",
-			r: `
-				display: none;
-			`,
-		},
-		{
-			s: ".anm-edit__ipt-lines-wrp--gui",
-			r: `
-				overflow-y: auto;
-				display: flex;
-				flex-direction: column;
-			`,
-		},
-		{
-			s: ".anm-edit__ipt-lines-wrp--gui > *",
-			r: `
-				flex-shrink: 0;
-			`,
-		},
-		{
-			s: ".anm-edit__ipt-lines",
-			r: `
-				resize: none;
-				width: 100%;
-				height: 100%;
-				margin-bottom: 0;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row",
-			r: `
-				padding: 4px;
-				border: 1px solid #ccc;
-				border-radius: 3px;
-				margin-bottom: 3px;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row:nth-child(even)",
-			r: `
-				background: #f8f8f8;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name",
-			r: `
-				color: white;
-				-webkit-text-stroke: 1px #555;
-				text-stroke: 1px black;
-				padding: 3px 5px;
-				border-radius: 3px;
-				font-size: 16px;
-				display: inline-block;
-				min-width: 150px;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--Move",
-			r: `
-				background: #ff0004;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--Rotate",
-			r: `
-				background: #ff6c00;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--Copy",
-			r: `
-				background: #fff700;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--Flip",
-			r: `
-				background: #a3ff00;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--Scale",
-			r: `
-				background: #5eff00;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--Layer",
-			r: `
-				background: #00ff25;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--Lighting",
-			r: `
-				background: #00ffb6;
-			`,
-		},
-		{
-			s: [
-				".anm-edit__gui-row-name--SetProperty",
-				".anm-edit__gui-row-name--SumProperty",
-			],
-			r: `
-				background: #006bff;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--TriggerMacro",
-			r: `
-				background: #0023ff;
-			`,
-		},
-		{
-			s: ".anm-edit__gui-row-name--TriggerAnimation",
-			r: `
-				background: #9800ff;
-			`,
-		},
-		{
-			s: ".anm-scene__wrp-tokens",
-			r: `
-				width: 100%;
-				max-height: 100%;
-				overflow-y: auto;
-				display: flex;
-				flex-wrap: wrap;
-			`,
-		},
-		{
-			s: ".anm-scene__wrp-token",
-			r: `
-				width: 80px;
-				height: 100px;
-				background: #f0f0f0;
-				box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75);
-				margin: 4px;
-				display: flex;
-				flex-direction: column;
-				padding: 3px;
-			`,
-		},
-		{
-			s: ".anm-scene__wrp-token--active",
-			r: `
-				background: #a0f0ff;
-			`,
-		},
-		{
-			s: ".anm-scene__wrp-token-name",
-			r: `
-				height: 20px;
-				overflow: hidden;
-			`,
-		},
-		{
-			s: ".anm-scene__wrp-token-name-inner",
-			r: `
-				height: 20px;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-			`,
-		},
-		{
-			s: ".flex-row",
-			r: `
-			    display: flex;
-			    float: left;
-				align-items: center;
-			    margin-bottom: 5px;
-			`,
-		},
-		{
-			s: ".pagedetails .flex-row input.units,.pagedetails .flex-row input.pixels",
-			r: `
-				width: 20%;
-			    text-align: center;
-			    border: 1px solid;
-			    border-radius: 5px;
-			    margin: 0 2%;
-			`,
-		},
-	]);
-
-	// Jukebox CSS
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		{
-			s: ".jukebox-widget-button",
-			r: `
-    			flex: 1;
-    			text-overflow: ellipsis;
-    			overflow: hidden;
-    			min-width: 50px;
-			`,
-		},
-		{
-			s: ".jukebox-widget-slider",
-			r: `
-    			margin: 10px;
-    			display: inline-block;
-    			flex: 15;
-			`,
-		},
-		{
-			s: ".jukebox-widget-button",
-			r: `
-    			letter-spacing: -1px
-			`,
-		},
-	]);
-
-	d20plus.css.miniInitStyle = `
-		#initiativewindow button.initmacrobutton {
-			padding: 1px 4px;
-		}
-
-		#initiativewindow input {
-			font-size: 8px;
-		}
-
-		#initiativewindow ul li span.name {
-			font-size: 13px;
-			padding-top: 0;
-			padding-left: 4px;
-			margin-top: -3px;
-		}
-
-		#initiativewindow ul li img {
-			min-height: 15px;
-			max-height: 15px;
-		}
-
-		#initiativewindow ul li {
-			min-height: 15px;
-		}
-
-		#initiativewindow div.header span.initiative,
-		#initiativewindow ul li span.initiative,
-		#initiativewindow ul li span.tracker-col,
-		#initiativewindow div.header span.tracker-col,
-		#initiativewindow div.header span.initmacro,
-		#initiativewindow ul li span.initmacro {
-			font-size: 10px;
-			font-weight: bold;
-			text-align: right;
-			float: right;
-			padding: 0 5px;
-			width: 7%;
-			min-height: 20px;
-			display: block;
-			overflow: hidden;
-		}
-
-		#initiativewindow ul li .controls {
-			padding: 0 3px;
-		}
-	`;
-}
-
-SCRIPT_EXTENSIONS.push(baseCss);
-
-
-function baseUi () {
-	d20plus.ui = {};
-
-	d20plus.ui.addHtmlHeader = () => {
-		d20plus.ut.log("Add HTML");
-		const $body = $("body");
-
-		const $wrpSettings = $(`<div id="betteR20-settings"/>`);
-		$("#settings-accordion").children(".panel.panel-default").first().before($wrpSettings);
-
-		$wrpSettings.append(d20plus.settingsHtmlHeader);
-		$body.append(d20plus.configEditorHTML);
-		if (window.is_gm) {
-			$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.artTabHtml);
-			$(`#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
-
-			$body.append(d20plus.addArtHTML);
-			$body.append(d20plus.addArtMassAdderHTML);
-			$body.append(d20plus.tool.toolsListHtml);
-			$("#d20plus-artfolder").dialog({
-				autoOpen: false,
-				resizable: true,
-				width: 1000,
-				height: 800,
-			});
-			$("#d20plus-artmassadd").dialog({
-				autoOpen: false,
-				resizable: true,
-				width: 800,
-				height: 650,
-			});
-		}
-		const $cfgEditor = $("#d20plus-configeditor");
-		$cfgEditor.dialog({
-			autoOpen: false,
-			resizable: true,
-			width: 800,
-			height: 650,
-		});
-		$cfgEditor.parent().append(d20plus.configEditorButtonBarHTML);
-
-		// shared GM/player conent
-		// quick search box
-		const $iptSearch = $(`<input id="player-search" class="ui-autocomplete-input" autocomplete="off" placeholder="Quick search by name...">`);
-		const $wrprResults = $(`<div id="player-search-results" class="content searchbox"/>`);
-
-		if (window.is_gm) {
-			$iptSearch.css("width", "calc(100% - 5px)");
-			const $addPoint = $("#journal").find("button.btn.superadd");
-			$addPoint.after($wrprResults);
-			$addPoint.after(`<br>`);
-			$addPoint.after($iptSearch);
-			$addPoint.after(`<br><br>`);
-		} else {
-			const $wrprControls = $(`<div class="content searchbox" id="search-wrp-controls"/>`);
-			$(`#journal .content`).before($wrprControls).before($wrprResults);
-			$iptSearch.css("max-width", "calc(100% - 140px)");
-			$wrprControls.append($iptSearch);
-		}
-		d20plus.engine.initQuickSearch($iptSearch, $wrprResults);
-	};
-
-	d20plus.ui.addHtmlFooter = () => {
-		const $wrpSettings = $(`#betteR20-settings`);
-		$wrpSettings.append(d20plus.settingsHtmlPtFooter);
-		$wrpSettings.css("margin", "5px");
-
-		$("#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
-		d20plus.tool.addTools();
-	};
-
-	d20plus.ui.addQuickUiGm = () => {
-		const $wrpBtnsMain = $(`#floatingtoolbar`);
-
-		// add quick layer selection panel
-		const $ulBtns = $(`<div id="floatinglayerbar"><ul/></div>`)
-			.css({
-				width: 30,
-				position: "absolute",
-				left: 20,
-				top: $wrpBtnsMain.height() + 90,
-				border: "1px solid #666",
-				boxShadow: "1px 1px 3px #666",
-				zIndex: 10600,
-				backgroundColor: "rgba(255,255,255,0.80)",
-			})
-			.appendTo($(`#playerzone`)).find(`ul`);
-
-		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
-
-		// Add layers to second side bar
-		$(`<li title="${__("ui_bar_map")}" class="choosemap"><span class="pictos" style="padding: 0 3px;">G</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-			$(`<li title="${__("ui_bar_fl")}" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
-		}
-		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-			$(`<li title="${__("ui_bar_bg")}" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
-		}
-		$(`<li title="${__("ui_bar_obj")}" class="chooseobjects"><span class="pictos">U</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
-			$(`<li title="${__("ui_bar_rf")}" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
-		}
-		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-			$(`<li title="${__("ui_bar_fg")}" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
-		}
-		$(`<li title="GM Info Overlay" class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
-		$(`<li title="${__("ui_bar_barriers")}" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-			$(`<li title="${__("ui_bar_we")}" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
-		}
-
-		$("body").on("click", "#editinglayer li", function () {
-			$("#floatinglayerbar").removeClass("map")
-				.removeClass("floors")
-				.removeClass("background")
-				.removeClass("objects")
-				.removeClass("foreground")
-				.removeClass("roofs")
-				.removeClass("gmlayer")
-				.removeClass("walls")
-				.removeClass("weather");
-			setTimeout(() => {
-				$("#floatinglayerbar").addClass(window.currentEditingLayer)
-			}, 1);
-		});
-
-		// add "desc sort" button to init tracker
-		const $initTracker = $(`#initiativewindow`);
-		const addInitSortBtn = () => {
-			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px; padding:5px 2px;"><span class="pictos">l</span></div>`).click(() => {
-				// this will throw a benign error if the settings dialog has never been opened
-				$("#initiativewindow_settings .sortlist_numericdesc").click();
-			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`).parent());
-		};
-		const addInitResetBtn = () => { // also add "reset tracker" button
-			$(`<div class="btn" id="init-quick-reset" style="margin-right: 5px; padding:5px 2px;"><span class="pictos">#</span></div>`).click(() => {
-				// this will throw a benign error if the settings dialog has never been opened
-				$("#initiativewindow_settings .clearlist").click();
-			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`).parent());
-		};
-		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) {
-			addInitSortBtn();
-			addInitResetBtn();
-		} else {
-			d20.Campaign.initiativewindow.model.on("change", (e) => {
-				if (d20.Campaign.initiativewindow.model.attributes.initiativepage && $(`#init-quick-sort-desc`).length === 0) {
-					addInitSortBtn();
-					addInitResetBtn();
-					d20plus.cfg.baseHandleConfigChange();
-				}
-			})
-		}
-	};
-
-	/**
-	 * Prompt the user to choose from a list of checkboxes. By default, one checkbox can be selected, but a "count"
-	 * option can be provided to allow the user to choose multiple options.
-	 *
-	 * @param dataArray options to choose from
-	 * @param dataTitle title for the window
-	 * @param displayFormatter function to format dataArray for display
-	 * @param count exact number of  options the user must, mutually exclusive with countMin and countMax
-	 * @param countMin lowest number of options the user must choose, requires countMax, mutually exclusive with count
-	 * @param countMax highest number of options the user must choose, requires countMax, mutually exclusive with count
-	 * @param additionalHTML additional html code, such as a button
-	 * @param note add a note at the bottom of the window
-	 * @param messageCountIncomplete message when user does not choose correct number of choices
-	 * @param random show button for random choices
-	 * @param randomMax Enforce max random choices
-	 * @param totallyRandom select randomly number of items between countMin and countMax. Requires count to be null. This has higher priority than randomMax
-	 * @return {Promise}
-	 */
-	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null, random = null, randomMax = null, totallyRandom = null} = {}) {
-		return new Promise((resolve, reject) => {
-			// Ensure count, countMin, and countMax don't mess up
-			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
-			if ((Number.isInteger(count) && Number.isInteger(countMin))
-			|| (Number.isInteger(count) && Number.isInteger(countMax))
-			|| (count == null && (Number.isInteger(countMin) ^ Number.isInteger(countMax)))
-			|| (countMin > countMax)) {
-				reject(new Error("Bad arguments--count is mutually exclusive with countMin and countMax, and countMin and countMax require each other."))
-			}
-			const useRange = Number.isInteger(countMin) && countMax;
-
-			// Generate the HTML
-			const $dialog = $(`
-				<div title="${dataTitle}">
-					${Number.isInteger(count) ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
-					${Number.isInteger(countMax) ? `<div name="remain" class="bold">Remaining: ${countMax}, Minimum: ${countMin}</div>` : ""}
-					<div>
-						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
-					</div>
-					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
-					${note ? `<br><div class="italic">${note}</div>` : ""}
-				</div>
-			`).appendTo($("body"));
-			const $remain = $dialog.find(`[name="remain"]`);
-			const $cbChoices = $dialog.find(`input[type="checkbox"]`);
-
-			// Ensure the proper number of items is chosen
-			if (count != null || useRange) {
-				const targetCount = count || countMax;
-				const remainMin = countMax ? `, Minimum: ${countMin}` : "";
-				$cbChoices.on("change", function () {
-					const $e = $(this);
-					let selectedCount = getSelected().length;
-					if (selectedCount > targetCount) {
-						$e.prop("checked", false);
-						selectedCount--;
-					}
-					$remain.text(`Remaining: ${targetCount - selectedCount}${remainMin}`);
-				});
-			}
-
-			function getSelected () {
-				return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
-					.filter(it => it.selected).map(it => it.choice);
-			}
-
-			// Accept or reject selection
-			$dialog.dialog({
-				dialogClass: "no-close",
-				buttons: [
-					{
-						text: "Cancel",
-						click: function () {
-							$(this).dialog("close");
-							$dialog.remove();
-							reject(new Error(`User cancelled the prompt`));
-						},
-					},
-					(random ? {
-						text: "Choose randomly",
-						click: function () {
-							document.querySelectorAll("input[type=checkbox]").forEach(el => el.checked = false);
-							let alreadySelected = [];
-							if (count != null) {
-								for (let i = 0; i < count; i++) {
-									let randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
-									while (alreadySelected.includes(randomSelection)) {
-										randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
-									}
-									alreadySelected.push(randomSelection);
-									let chkbx = document.querySelector(`[data-choice="${randomSelection}"]`);
-									chkbx.checked = true;
-								}
-							} else {
-								let loops;
-								if (totallyRandom) {
-									loops = Math.floor(Math.random() * (countMax - countMin + 1) + countMin);
-								} else {
-									loops = randomMax ? countMax : countMin;
-								}
-
-								for (let i = 0; i < loops; i++) {
-									let randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
-									if (randomMax) {
-										while (alreadySelected.includes(randomSelection)) {
-											randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
-										}
-									}
-									alreadySelected.push(randomSelection);
-									let chkbx = document.querySelector(`[data-choice="${randomSelection}"]`);
-									chkbx.checked = true;
-								}
-							}
-						},
-					} : null),
-					{
-						text: "OK",
-						click: function () {
-							const selected = getSelected();
-							if (Number.isInteger(countMin) && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
-								$(this).dialog("close");
-								$dialog.remove();
-								resolve(selected);
-							} else if (!useRange && (selected.length === count || count == null)) {
-								$(this).dialog("close");
-								$dialog.remove();
-								resolve(selected);
-							} else {
-								alert(messageCountIncomplete ?? "Please select more options!");
-							}
-						},
-					},
-				].filter(Boolean),
-			})
-		});
-	};
-
-	/**
-	 * Prompt the user to choose from a list of radios. Radio button allow exactly one choice.
-	 *
-	 * @param dataArray options to choose from
-	 * @param dataTitle title for the window
-	 * @param displayFormatter function to format dataArray for display
-	 * @param random show button for random choices
-	 * @param additionalHTML additional html code, such as a button
-	 * @param note add a note at the bottom of the window
-	 * @param messageCountIncomplete message when user does not choose correct number of choices
-	 * @return {Promise}
-	 */
-	d20plus.ui.chooseRadioList = async function (dataArray, dataTitle, {displayFormatter = null, random = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
-		return new Promise((resolve, reject) => {
-			// Generate the HTML
-			const $dialog = $(`
-				<div title="${dataTitle}">
-					<div>
-						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="radio" name="${dataTitle}"></label>`).join("")}
-					</div>
-					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
-					${note ? `<br><div class="italic">${note}</div>` : ""}
-				</div>
-			`).appendTo($("body"));
-			const $remain = $dialog.find(`[name="remain"]`);
-			const $cbChoices = $dialog.find(`input[type="radio"]`);
-
-			function getSelected () {
-				return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
-					.filter(it => it.selected).map(it => it.choice);
-			}
-
-			// Accept or reject selection
-			$dialog.dialog({
-				dialogClass: "no-close",
-				buttons: [
-					{
-						text: "Cancel",
-						click: function () {
-							$(this).dialog("close");
-							$dialog.remove();
-							reject(new Error(`User cancelled the prompt`));
-						},
-					},
-					(random ? {
-						text: "Choose randomly",
-						click: function () {
-							const randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
-							const radio = document.querySelector(`[data-choice="${randomSelection}"]`);
-							radio.checked = true;
-						},
-					} : null),
-					{
-						text: "OK",
-						click: function () {
-							const selected = getSelected();
-							if (selected.length === 1) {
-								$(this).dialog("close");
-								$dialog.remove();
-								resolve(selected);
-							} else if (!useRange && (selected.length === count || count == null)) {
-								$(this).dialog("close");
-								$dialog.remove();
-								resolve(selected);
-							} else {
-								alert(messageCountIncomplete ?? "Please an option!");
-							}
-						},
-					},
-				].filter(Boolean),
-			})
-		});
-	};
-}
-
-SCRIPT_EXTENSIONS.push(baseUi);
-
-
-/**
- * All the modified minified based on parts of Roll20's `app.js`
- */
-function d20plusMod () {
-	d20plus.mod = {};
-
-	/* eslint-disable */
-
-	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
-	// BEGIN ROLL20 CODE
-	d20plus.mod.setMode = function (e) {
-		d20plus.ut.log("Setting mode " + e);
-		// BEGIN MOD
-		// "text" === e || "rect" === e || "ellipse" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
-		// END MOD
-		"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
-			$("#floatingtoolbar li").removeClass("activebutton"),
-			$("#" + e).addClass("activebutton"),
-		"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton");
-
-		const drawingTools = ["rect", "ellipse", "text", "path", "polygon", "line_splitter"];
-		if (drawingTools.includes(e)) {
-			if ("ellipse" == e) $('#drawingtools span.subicon').addClass('fas fa-circle');
-			else $('#drawingtools span.subicon').removeClass('fas fa-circle');
-			$("#drawingtools").addClass("activebutton").removeClass("text rect ellipse path polygon line_splitter");
-			"rect" == e && $("#drawingtools").addClass("rect");
-			"ellipse" == e && $("#drawingtools").addClass("ellipse");
-			"text" == e && $("#drawingtools").addClass("activebutton").removeClass("rect ellipse path polygon line_splitter").addClass("text");
-			"path" == e && $("#drawingtools").addClass("path");
-			"polygon" == e && $("#drawingtools").addClass("polygon");
-			// BEGIN MOD (also line_splitter added to above removeClass calls
-			"line_splitter" == e && $("#drawingtools").addClass("line_splitter");
-			// END MOD
-		}
-		"polygon" != e && d20.engine.finishCurrentPolygon();
-
-		"pan" !== e && "select" !== e && d20.engine.unselect(),
-			"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
-				d20.token_editor.removeRadialMenu(),
-				$("#editor-wrapper").addClass("panning")) : $("#editor-wrapper").removeClass("panning"),
-		"select" == e && $("#select").addClass("select").removeClass("pan").addClass("activebutton"),
-			$("#floatingtoolbar .mode").hide(),
-		("text" == e || "select" == e) && $("#floatingtoolbar ." + e).show(),
-			"gridalign" == e ? $("#gridaligninstructions").show() : "gridalign" === d20.engine.mode && $("#gridaligninstructions").hide(),
-			"targeting" === e ? ($("#targetinginstructions").show(),
-				$("#finalcanvas").addClass("targeting"),
-				d20.engine.canvas.hoverCursor = "crosshair") : "targeting" === d20.engine.mode && ($("#targetinginstructions").hide(),
-				$("#finalcanvas").removeClass("targeting"),
-			d20.engine.nextTargetCallback && _.defer(function () {
-				d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
-			}),
-				d20.engine.canvas.hoverCursor = "move"),
-			// BEGIN MOD
-			// console.log("Switch mode to " + e),
-			d20.engine.mode = e,
-		"measure" !== e && window.currentPlayer && d20.engine.measurements[window.currentPlayer.id] && !d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.announceEndMeasure({
-			player: window.currentPlayer.id
-		}),
-			d20.engine.endMeasure()),
-			d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
-		if ("text" == e || "path" == e || "rect" == e || "ellipse" == e || "polygon" == e || "fxtools" == e) {
-			$("#secondary-toolbar").show();
-			$("#secondary-toolbar .mode").hide();
-			$("#secondary-toolbar ." + e).show();
-			("path" == e || "rect" == e || "ellipse" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
-				$("#path_fillcolor").val("transparent").trigger("change-silent")),
-				d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
-				d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
-				$("#path_width").trigger("change")),
-			"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent"),
-				$("#floatingtoolbar").trigger("blur")
-		} else {
-			$("#secondary-toolbar").hide();
-			$("#floatingtoolbar").trigger("blur");
-		}
-		// END MOD
-		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
-		d20.engine.redrawScreenNextTick()
-	};
-	// END ROLL20 CODE
-
-	d20plus.mod.overwriteStatusEffects = function () {
-		d20.engine.canvasDirty = true;
-		d20.engine.canvasTopDirty = true;
-		d20.engine.canvas._objects.forEach(it => {
-			// avoid adding it to any objects that wouldn't have it to begin with
-			if (!it.model || !it.model.view || !it.model.view.updateBackdrops) return;
-
-			// BEGIN ROLL20 CODE
-			it.model.view.updateBackdrops = function (e) {
-				if (!this.nohud && ("objects" == this.model.get("layer") || "gmlayer" == this.model.get("layer")) && "image" == this.model.get("type") && this.model && this.model.collection && this.graphic) {
-					// BEGIN MOD
-					const scaleFact = (d20plus.cfg.get("canvas", "scaleNamesStatuses") && d20.Campaign.activePage().get("snapping_increment"))
-						? d20.Campaign.activePage().get("snapping_increment")
-						: 1;
-					// END MOD
-					var t = this.model.collection.page
-						, n = e || d20.engine.canvas.getContext();
-					n.save(),
-					(this.graphic.get("flipX") || this.graphic.get("flipY")) && n.scale(this.graphic.get("flipX") ? -1 : 1, this.graphic.get("flipY") ? -1 : 1);
-					var i = this
-						, r = Math.floor(this.graphic.get("width") / 2)
-						, o = Math.floor(this.graphic.get("height") / 2)
-						, a = (parseFloat(t.get("scale_number")),
-						this.model.get("statusmarkers").split(","));
-					-1 !== a.indexOf("dead") && (n.strokeStyle = "rgba(189,13,13,0.60)",
-						n.lineWidth = 10,
-						n.beginPath(),
-						n.moveTo(-r + 7, -o + 15),
-						n.lineTo(r - 7, o - 5),
-						n.moveTo(r - 7, -o + 15),
-						n.lineTo(-r + 7, o - 5),
-						n.closePath(),
-						n.stroke()),
-						n.rotate(-this.graphic.get("angle") * Math.PI / 180),
-						n.strokeStyle = "rgba(0,0,0,0.65)",
-						n.lineWidth = 1;
-					var s = 0
-						, l = i.model.get("bar1_value")
-						, c = i.model.get("bar1_max");
-					if ("" != c && (window.is_gm || this.model.get("showplayers_bar1") || this.model.currentPlayerControls() && this.model.get("playersedit_bar1"))) {
-						var u = parseInt(l, 10) / parseInt(c, 10)
-							, d = -o - 20 + 0;
-						n.fillStyle = "rgba(" + d20.Campaign.tokendisplay.bar1_rgb + ",0.75)",
-							n.beginPath(),
-							n.rect(-r + 3, d, Math.floor((2 * r - 6) * u), 8),
-							n.closePath(),
-							n.fill(),
-							n.beginPath(),
-							n.rect(-r + 3, d, 2 * r - 6, 8),
-							n.closePath(),
-							n.stroke(),
-							s++
-					}
-					var l = i.model.get("bar2_value")
-						, c = i.model.get("bar2_max");
-					if ("" != c && (window.is_gm || this.model.get("showplayers_bar2") || this.model.currentPlayerControls() && this.model.get("playersedit_bar2"))) {
-						var u = parseInt(l, 10) / parseInt(c, 10)
-							, d = -o - 20 + 12;
-						n.fillStyle = "rgba(" + d20.Campaign.tokendisplay.bar2_rgb + ",0.75)",
-							n.beginPath(),
-							n.rect(-r + 3, d, Math.floor((2 * r - 6) * u), 8),
-							n.closePath(),
-							n.fill(),
-							n.beginPath(),
-							n.rect(-r + 3, d, 2 * r - 6, 8),
-							n.closePath(),
-							n.stroke(),
-							s++
-					}
-					var l = i.model.get("bar3_value")
-						, c = i.model.get("bar3_max");
-					if ("" != c && (window.is_gm || this.model.get("showplayers_bar3") || this.model.currentPlayerControls() && this.model.get("playersedit_bar3"))) {
-						var u = parseInt(l, 10) / parseInt(c, 10)
-							, d = -o - 20 + 24;
-						n.fillStyle = "rgba(" + d20.Campaign.tokendisplay.bar3_rgb + ",0.75)",
-							n.beginPath(),
-							n.rect(-r + 3, d, Math.floor((2 * r - 6) * u), 8),
-							n.closePath(),
-							n.fill(),
-							n.beginPath(),
-							n.rect(-r + 3, d, 2 * r - 6, 8),
-							n.closePath(),
-							n.stroke()
-					}
-					var h, p, g = 1, f = !1;
-					switch (d20.Campaign.get("markers_position")) {
-						case "bottom":
-							h = o - 10,
-								p = r;
-							break;
-						case "left":
-							h = -o - 10,
-								p = -r,
-								f = !0;
-							break;
-						case "right":
-							h = -o - 10,
-								p = r - 18,
-								f = !0;
-							break;
-						default:
-							h = -o + 10,
-								p = r
-					}
-					// BEGIN MOD
-					n.strokeStyle = "white";
-					n.lineWidth = 3 * scaleFact;
-					const scaledFont = 14 * scaleFact;
-					n.font = "bold " + scaledFont + "px Arial";
-					// END MOD
-					_.each(a, function (e) {
-						var t = d20.token_editor.statusmarkers[e.split("@")[0]];
-						if (!t)
-							return !0;
-						if ("dead" === e)
-							return !0;
-						var i = 0;
-						if (g--,
-						"#" === t.substring(0, 1))
-							n.fillStyle = t,
-								n.beginPath(),
-								f ? h += 16 : p -= 16,
-								n.arc(p + 8, f ? h + 4 : h, 6, 0, 2 * Math.PI, !0),
-								n.closePath(),
-								n.stroke(),
-								n.fill(),
-								i = f ? 10 : 4;
-						else {
-							// BEGIN MOD
-							if (!d20.token_editor.statussheet_ready) return;
-							const scaledWH = 21 * scaleFact;
-							const scaledOffset = 22 * scaleFact;
-							f ? h += scaledOffset : p -= scaledOffset;
-
-							if (d20.engine.canvasZoom <= 1) {
-								n.drawImage(d20.token_editor.statussheet_small, parseInt(t, 10), 0, 21, 21, p, h - 9, scaledWH, scaledWH);
-							} else {
-								n.drawImage(d20.token_editor.statussheet, parseInt(t, 10), 0, 24, 24, p, h - 9, scaledWH, scaledWH)
-							}
-
-							i = f ? 14 : 12;
-							i *= scaleFact;
-							// END MOD
-						}
-						if (-1 !== e.indexOf("@")) {
-							var r = e.split("@")[1];
-							// BEGIN MOD
-							// bing backtick to "clear counter"
-							if (r === "`") return;
-							n.fillStyle = "rgb(222,31,31)";
-							var o = f ? 9 : 14;
-							o *= scaleFact;
-							o -= (14 - (scaleFact * 14));
-							n.strokeText(r + "", p + i, h + o);
-							n.fillText(r + "", p + i, h + o);
-							// END MOD
-						}
-					});
-					var m = i.model.get("name");
-					if ("" != m && 1 == this.model.get("showname") && (window.is_gm || this.model.get("showplayers_name") || this.model.currentPlayerControls() && this.model.get("playersedit_name"))) {
-						n.textAlign = "center";
-						// BEGIN MOD
-						const fontSize = 14;
-						var scaledFontSize = fontSize * scaleFact;
-						const scaledY = 22 * scaleFact;
-						const scaled6 = 6 * scaleFact;
-						const scaled8 = 8 * scaleFact;
-						n.font = "bold " + scaledFontSize + "px Arial";
-						var v = n.measureText(m).width;
-
-						/*
-							Note(stormy): compatibility with R20ES's ScaleTokenNamesBySize module.
-						 */
-						if(window.r20es && window.r20es.drawNameplate) {
-							window.r20es.drawNameplate(this.model, n, v, o, fontSize, m);
-						} else {
-							n.fillStyle = "rgba(255,255,255,0.50)";
-							n.fillRect(-1 * Math.floor((v + scaled6) / 2), o + scaled8, v + scaled6, scaledFontSize + scaled6);
-							n.fillStyle = "rgb(0,0,0)";
-							n.fillText(m + "", 0, o + scaledY, v);
-						}
-						// END MOD
-					}
-					n.restore()
-				}
-			}
-			// END ROLL20 CODE
-		});
-	};
-
-	d20plus.mod.mouseEnterMarkerMenu = function () {
-		var e = this;
-		$(this).on("mouseover.statusiconhover", ".statusicon", function () {
-			a = $(this).attr("data-action-type").replace("toggle_status_", "")
-		}),
-			$(document).on("keypress.statusnum", function (t) {
-				// BEGIN MOD // TODO see if this clashes with keyboard shortcuts
-				let currentcontexttarget = d20.engine.selected()[0];
-				if ("dead" !== a && currentcontexttarget) {
-					// END MOD
-					var n = String.fromCharCode(t.which)
-						,
-						i = "" == currentcontexttarget.model.get("statusmarkers") ? [] : currentcontexttarget.model.get("statusmarkers").split(",")
-						, r = (_.map(i, function (e) {
-							return e.split("@")[0]
-						}),
-							!1);
-					i = _.map(i, function (e) {
-						return e.split("@")[0] == a ? (r = !0,
-						a + "@" + n) : e
-					}),
-					r || ($(e).find(".statusicon[data-action-type=toggle_status_" + a + "]").addClass("active"),
-						i.push(a + "@" + n)),
-						currentcontexttarget.model.save({
-							statusmarkers: i.join(",")
-						})
-				}
-			})
-	};
-
-	// BEGIN ROLL20 CODE
-	d20plus.mod.handleURL = function(e) {
-		if (!($(this).hasClass("lightly") || $(this).parents(".note-editable").length > 0)) {
-			var t = $(this).attr("href");
-			if (void 0 === t)
-				return !1;
-			if (-1 !== t.indexOf("journal.roll20.net") || -1 !== t.indexOf("wiki.roll20.net")) {
-				var n = t.split("/")[3]
-					, i = t.split("/")[4]
-					, o = d20.Campaign[n + "s"].get(i);
-				if (o) {
-					var r = o.get("inplayerjournals").split(",");
-					(window.is_gm || -1 !== _.indexOf(r, "all") || window.currentPlayer && -1 !== _.indexOf(r, window.currentPlayer.id)) && o.view.showDialog()
-				}
-				return $("#existing" + n + "s").find("tr[data-" + n + "id=" + i + "]").trigger("click"),
-					!1
-			}
-			var a = /(?:(?:http(?:s?):\/\/(?:app\.)?roll20(?:staging)?\.(?:net|local:5000)\/|^\/?)compendium\/)([^\/]+)\/([^\/#?]+)/i
-				, s = t.match(a);
-			if (s)
-				return d20.utils.openCompendiumPage(s[1], s[2]),
-					e.stopPropagation(),
-					void e.preventDefault();
-			if (-1 !== t.indexOf("javascript:"))
-				return !1;
-			if ("`" === t.substring(0, 1))
-				return d20.textchat.doChatInput(t.substring(1)),
-					!1;
-			if ("!" === t.substring(0, 1))
-				return d20.textchat.doChatInput(t),
-					!1;
-			if ("~" === t.substring(0, 1))
-				return d20.textchat.doChatInput("%{" + t.substring(1, t.length) + "}"),
-					!1;
-			if (t !== undefined && ("external" === $(this).attr("rel") || -1 === t.indexOf("javascript:") && -1 !== t.indexOf("://"))) {
-				// BEGIN MOD
-				e.stopPropagation();
-				e.preventDefault();
-				window.open(t);
-				// END MOD
-			}
-		}
-	};
-	// END ROLL20 CODE
-
-	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background"]);
-	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
-	// BEGIN ROLL20 CODE
-	d20plus.mod.renderAll = function (e) {
-		const t = e && e.context || this.contextContainer
-			, i = this.getActiveGroup()
-			, n = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
-			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset, d20.math.div(n, 2)),...n,0);
-		i && !window.is_gm && (i.hideResizers = !0),
-			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
-		const r = {
-			map: [],
-			// BEGIN MOD
-			floors: [],
-			background: [],
-			// END MOD
-			walls: [],
-			objects: [],
-			// BEGIN MOD
-			foreground: [],
-			roofs: [],
-			// END MOD
-			gmlayer: []
-			// BEGIN MOD
-			, weather: [],
-			// END MOD
-			_save_map_layer: this._save_map_layer
-		};
-		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
-		const a = e && e.tokens_to_render || this._objects;
-		for (let e of a)
-			if (e.model) {
-				const t = e.model.get("layer");
-				if (!r[t])
-					continue;
-				r[t].push(e)
-			} else
-				r[window.currentEditingLayer].push(e);
-
-		// BEGIN MOD
-		// Here we get the layers and look if there's a foreground in the current map
-		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
-		const noForegroundLayer = !layers.some(it => it === 'foreground');
-		// END MOD
-
-		for (const [n,a] of r) {
-			switch (a) {
-				case "lighting and fog":
-					d20.engine.drawHighlights(this.contextContainer), d20.dyn_fog.render({
-						main_canvas: this.contextContainer.canvas
-					});
-					continue;
-				case "grid":
-					d20.canvas_overlay.drawGrid(t);
-					continue;
-				case "afow":
-					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
-					continue;
-				// BEGIN MOD
-				case "gmlayer":
-					if ("gmlayer" !== window.currentEditingLayer) {
-						t.globalAlpha = d20.engine.gm_layer_opacity;
-					} else {
-						t.globalAlpha = 1;
-					}
-					break;
-				case "floors":
-					if ("map" === window.currentEditingLayer && window.is_gm) {
-						t.globalAlpha = .45;
-						break
-					} else {
-						t.globalAlpha = 1;
-						break;
-					}
-				case "roofs":
-					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.is_gm) {
-						t.globalAlpha = .45;
-						break;
-					}
-				case "background":
-				case "foreground":
-				case "objects":
-					if (d20plus.mod._renderAll_serviceLayers.has(window.currentEditingLayer) && window.is_gm) {
-						t.globalAlpha = .45;
-						break
-					}
-				// END MOD
-				default:
-					t.globalAlpha = 1
-			}
-			_.chain(n).filter(n=>{
-					let r;
-					return i && n && i.contains(n) ? (n.renderingInGroup = i,
-						n.hasControls = !1) : (n.renderingInGroup = null,
-						n.hasControls = !0,
-						"text" !== n.type && window.is_gm ? n.hideResizers = !1 : n.hideResizers = !0),
-						e && e.invalid_rects ? (r = n.intersects([o]) && (n.needsToBeDrawn || n.intersects(e.invalid_rects)),
-						!e.skip_prerender && n.renderPre && n.renderPre(t)) : (r = n.needsRender(o),
-						(!e || !e.skip_prerender) && r && n.renderPre && n.renderPre(t, {
-							should_update: !0
-						})),
-						r
-				}
-			).each(i=> {
-				// BEGIN MOD
-				let toRender = false;
-				// END MOD
-
-				const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
-
-				// BEGIN MOD
-				// If there is a foreground layer, do not give "owned tokens with sight" special treatment;
-				//   render them during the normal render flow (rather than skipping them)
-				 const o = noForegroundLayer ? e && e.owned_with_sight_auras_only : false;
-				// END MOD
-
-				let r = i._model;
-				r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
-				// BEGIN MOD
-				// We don't draw immediately the token. Instead, we mark it as "to render"
-				o && (!o || n && r) || (toRender = true);
-
-				if (toRender) {
-					// For the token checked "to render", we draw them if
-					//  - we're in a "render everything" call (i.e. no specific `tokens_to_render`), rather than a "render own tokens" call
-					//  - there isn't a foreground layer for the map or
-					//  - is everything but an object
-					if (!e.tokens_to_render || noForegroundLayer || a !== 'objects') {
-						this._draw(t, i);
-					}
-					i.renderingInGroup = null;
-				}
-				// END MOD
-			})
-		}
-		return t.restore(),
-			this
-	};
-	// END ROLL20 CODE
-
-	// shoutouts to Roll20 for making me learn how `yield` works
-	// BEGIN ROLL20 CODE
-	d20plus.mod.layerIteratorGenerator = function*(e) {
-		yield [this.map, "map"],
-		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
-			this._save_map_layer = !1);
-
-		// BEGIN MOD
-		yield [this.floors, "floors"];
-		// END MOD
-
-		const grid_before_afow = e && e.grid_before_afow;
-		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
-		const grid_hide = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
-
-		if (grid_before_afow && !grid_hide) yield [null, "grid"];
-		if (!adv_fow_disabled) yield [null, "afow"];
-		if (!grid_before_afow && !grid_hide) yield [null, "grid"];
-
-		// BEGIN MOD
-		yield [this.background, "background"];
-		// END MOD
-
-		yield [this.objects, "objects"];
-
-		// BEGIN MOD
-		yield [this.roofs, "roofs"];
-		yield [this.foreground, "foreground"];
-		// END MOD
-
-		if (window.is_gm) yield [this.gmlayer, "gmlayer"];
-
-		const enable_dynamic_fog = e && e.enable_dynamic_fog;
-		if (d20.dyn_fog.ready() && enable_dynamic_fog) yield [null, "lighting and fog"];
-
-		// BEGIN MOD
-		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
-		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
-		// END MOD
-	};
-	// END ROLL20 CODE
-
-	// BEGIN ROLL20 CODE
-	d20plus.mod.editingLayerOnclick = () => {
-		$("#editinglayer").off(clicktype).on(clicktype, "li", function() {
-			var e = $(this);
-			$("#editinglayer").removeClass(window.currentEditingLayer);
-			$("#drawingtools .choosepath").show();
-			"polygon" !== d20.engine.mode && $("#drawingtools").hasClass("polygon") && $("#drawingtools").removeClass("polygon").addClass("path");
-
-			// BEGIN MOD
-			if (e.hasClass("chooseweather")) {
-				window.currentEditingLayer = "weather";
-				$("#drawingtools .choosepath").hide();
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
-			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseroofs") ? window.currentEditingLayer = "roofs" : e.hasClass("choosefloors") ? window.currentEditingLayer = "floors" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
-					$("#drawingtools .choosepath").hide(),
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
-			}
-			// END MOD
-			$("#editinglayer").addClass(window.currentEditingLayer);
-			$(document).trigger("d20:editingLayerChanged");
-		});
-	};
-	// END ROLL20 CODE
-
-	// prevent prototype methods from breaking some poorly-written property loops
-	d20plus.mod.fixHexMethods = () => {
-		try {
-			// BEGIN ROLL20 CODE
-			HT.Grid.prototype.GetHexAt = function(e) {
-				// BEGIN MOD
-				for (const t of this.Hexes)
-					if (t.Contains(e))
-						return t;
-				// END MOD
-				return null
-			};
-			// END ROLL20 CODE
-		} catch (ignored) {
-			console.error(ignored)
-		}
-
-		try {
-			// BEGIN ROLL20 CODE
-			HT.Grid.prototype.GetHexById = function(e) {
-				// BEGIN MOD
-				for (const t of this.Hexes)
-					if (t.Id == e)
-						return t;
-				// END MOD
-				return null
-			};
-			// END ROLL20 CODE
-		} catch (ignored) {
-			console.error(ignored)
-		}
-	};
-
-	// prevent prototype methods from breaking some poorly-written property loops
-	d20plus.mod.fixVideoMethods = () => {
-		const arr = [];
-		for (const k in arr) {
-			const v = arr[k];
-			if (typeof v === "function") {
-				v.getReceiver = v.getReceiver || (() => null);
-				v.getSender = v.getSender || (() => null);
-			}
-		}
-	};
-
-	/* eslint-enable */
-}
-
-SCRIPT_EXTENSIONS.push(d20plusMod);
-
-
-function initTemplates () {
-	d20plus.templates = {};
-}
-
-SCRIPT_EXTENSIONS.push(initTemplates);
-
-
-function initTemplateTokenEditor () {
 	// no mods; just switched in to grant full features to non-pro
-	const templateTokenEditor = `<script id='tmpl_tokeneditor' type='text/html'>
-    <div class='dialog largedialog tokeneditor' style='display: block;'>
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.tokenEditor = `
+        <script id='tmpl_tokeneditor' type='text/html'>
+        <div class='dialog largedialog tokeneditor' style='display: block;'>
         <ul class='nav nav-tabs tokeneditor_navigation'>
             <li class='active'>
                 <a data-tab='basic' href='javascript:void(0);'>
@@ -15378,42 +10316,28 @@ function initTemplateTokenEditor () {
                 </div>
             </div>
         </div>
-    </div>
-</script>`;
-
-	d20plus.templates.templateTokenEditor = templateTokenEditor;
+        </div>
+        </script>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
-SCRIPT_EXTENSIONS.push(initTemplateTokenEditor);
+SCRIPT_EXTENSIONS.push(initHTMLTokenEditor);
 
 
-function initTemplatePageSettings () {
+function initHTMLPageSettings () {
+	d20plus.html = d20plus.html || {};
+
 	// no mods; just switched in to grant full features to non-pro
-	const templatePageSettings = `<script id='tmpl_pagesettings' type='text/html'>
-    <ul class='nav nav-tabs pagedetails_navigation'>
-        <li class='active'>
-            <a data-tab='pagedetails' href='javascript:void(0);'>
-                <h2>Page Details</h2>
-            </a>
-        </li>
-        <li class='nav-tabs--beta'>
-<span class='label label-info'>
-Updated
-</span>
-            <a data-tab='lighting' href='javascript:void(0);'>
-                <h2>Dynamic Lighting</h2>
-            </a>
-        </li>
-        <li class='nav-tabs'>
-            <a data-tab='legacy-lighting' href='javascript:void(0);'>
-                <h2>Legacy Lighting</h2>
-            </a>
-        </li>
-    </ul>
-    <div class='tab-content'>
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.pageSettings = `
         <div class='legacy-lighting tab-pane'>
 			<!-- BEGIN MOD -->
-			<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+			<strong style="display: block; margin-bottom: 10px;">
+				<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+				Requires a paid Roll20 subscription or all players to use a betteR20 script
+			</strong>
 			<hr>
 			<!-- END MOD -->
             <div class='lighting_feature showtip' data-feature_enabled='showdarkness' id='fog_settings' title='Enabling Fog of War will disable Updated Dynamic Lighting'>
@@ -15492,6 +10416,7 @@ Updated
                 <div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
             </div>
         </div>
+
         <div class='pagedetails tab-pane' style='display:block;'>
             <!-- * SIZE */ -->
             <div class='size_settings' id='size_settings'>
@@ -15763,22 +10688,6 @@ Updated
                     <select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
                 </div>
             </div>
-
-            <!-- BEGIN MOD -->
-            <hr>
-             <div>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Extensions by betteR20</h3>
-                </div>
-                <button class='btn Ve-btn-weather'>
-					Configure Weather
-				</button>
-                <button class='btn Ve-btn-views'>
-					Configure Views
-				</button>
-            </div>
-			<!-- END MOD -->
-
             <!-- * Archive & Delete Buttons */ -->
             <hr>
             <div class='page-buttons d-flex flex-wrap justify-content-between'>
@@ -15790,7 +10699,10 @@ Updated
         <div class='lighting tab-pane'>
             <div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
 				<!-- BEGIN MOD -->
-				<strong style="display: block; margin-bottom: 10px;"><i>Requires a paid subscription or all players to use a betteR20 script</i></strong>
+				<strong style="display: block; margin-bottom: 10px;">
+					<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+					Requires a paid Roll20 subscription or all players to use a betteR20 script
+				</strong>
 				<hr>
 				<!-- END MOD -->
                 <div class='alert alert-info' role='alert'>
@@ -15908,358 +10820,19 @@ Updated
                 <hr>
             </div>
         </div>
-    </div>
-</script>`;
-
-	d20plus.templates.templatePageSettings = templatePageSettings;
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
-SCRIPT_EXTENSIONS.push(initTemplatePageSettings);
+SCRIPT_EXTENSIONS.push(initHTMLPageSettings);
 
 
-const baseTemplate = function () {
-	d20plus.template = {};
+function initHTMLroll20actionsMenu () {
+	d20plus.html = d20plus.html || {};
 
-	d20plus.template.swapTemplates = () => {
-		d20plus.ut.log("Swapping templates...");
-		$("#tmpl_charactereditor").html($(d20plus.template_charactereditor).html());
-		$("#tmpl_handouteditor").html($(d20plus.template_handouteditor).html());
-		$("#tmpl_deckeditor").html($(d20plus.template.deckeditor).html());
-		$("#tmpl_cardeditor").html($(d20plus.template.cardeditor).html());
-	};
-
-	d20plus.template.neatActionsView = (id) => {
-		return `
-			<span class="pictos ctx__layer-icon"><$ if (d20.Campaign.activePage().get('bR20cfg_views${id}Icon')) { 
-				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Icon')$> <$
-			} else { 
-				$>P<$ 
-			} $> </span> <$
-			if (d20.Campaign.activePage().get('bR20cfg_views${id}Name')) { 
-				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Name')$> <$
-			} else { 
-				$> ${id ? `View ${id}` : `Default`} <$ 
-			} $>`;
-	}
-
-	d20plus.template.neatActions = {
-		"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
-		"takecard": { ln: __("menu_take_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
-		"flipcard": { ln: __("menu_flip_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
-		"delete": { ln: __("menu_edit_del"), icon: "#", condition: "this.view" },
-		"copy": { ln: __("menu_edit_copy"), icon: "|", condition: "window.is_gm && this.view" },
-		"paste": { ln: __("menu_edit_paste"), icon: "W", condition: "window.is_gm && !this.view" },
-		"undo": { ln: __("menu_edit_undo"), icon: "1", condition: "window.is_gm" },
-		"tofront": { ln: __("menu_move_tofront"), condition: "this.view" },
-		"forward-one": { ln: __("menu_move_forwone"), condition: "this.view" },
-		"back-one": { ln: __("menu_move_backone"), condition: "this.view", quick: __("menu_quick_toback")},
-		"toback": { ln: __("menu_move_toback"), condition: "this.view" },
-		"tolayer_map": { ln: __("menu_layer_map"), icon: "G", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"map\"" },
-		"tolayer_floors": { ln: __("menu_layer_fl"), icon: "I", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showFloors\")", active: "this && this.get && this.get(\"layer\") == \"floors\"" },
-		"tolayer_background": { ln: __("menu_layer_bg"), icon: "a", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showBackground\")", active: "this && this.get && this.get(\"layer\") == \"background\"" },
-		"tolayer_objects": { ln: __("menu_layer_obj"), icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"", quick: __("menu_quick_tofg") },
-		"tolayer_foreground": { ln: __("menu_layer_fg"), icon: "B", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"" },
-		"tolayer_roofs": { ln: __("menu_layer_rf"), icon: "H", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showRoofs\")", active: "this && this.get && this.get(\"layer\") == \"roofs\"" },
-		"tolayer_gmlayer": { ln: __("menu_layer_gm"), icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: __("menu_quick_togm")},
-		"tolayer_walls": { ln: __("menu_layer_barriers"), icon: "r", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"walls\"" },
-		"tolayer_weather": { ln: __("menu_layer_weather"), icon: "C", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showWeather\")", active: "this && this.get && this.get(\"layer\") == \"weather\"" },
-		"util-scenes": { ln: __("menu_util_start"), condition: "" },
-		"token-animate": { ln: __("menu_util_animate"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"token-fly": { ln: __("menu_util_flight"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.attributes.statusmarkers.search(\"fluffy-wing@\")>-1" },
-		"token-light": { ln: __("menu_util_light"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"group": { ln: __("menu_adv_grp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && !d20.engine.selected().some( el => !!el.model.get(\"groupwith\")) )" },
-		"regroup": { ln: __("menu_adv_regrp"), condition: "this.view && this.get && (d20.engine.selected().length > 2 && d20.engine.selected().some( el => !el.model.get(\"groupwith\")) )", action: "group"},
-		"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.view && this.get  && d20.engine.selected().some( el => !!el.model.get(\"groupwith\"))" },
-		"toggledrawing": { ln: __("menu_adv_isdrv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"isdrawing\")" },
-		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
-		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
-		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
-		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
-		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
-		"copy-tokenid": { ln: __("menu_adv_tokenid"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"copy-pathid": { ln: __("menu_adv_pathid"), condition: "this.get && this.get(\"type\") == \"path\"" },
-		"addturn": { ln: __("menu_token_turn"), condition: "this.get && this.get(\"type\") != \"path\"" },
-		"rollinit": { ln: __("menu_mass_init"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
-		"rollsaves": { ln: __("menu_mass_save"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: __("menu_quick_save")},
-		"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
-		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"assignview0": { ln: d20plus.template.neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
-		"assignview1": { ln: d20plus.template.neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
-		"assignview2": { ln: d20plus.template.neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
-		"assignview3": { ln: d20plus.template.neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
-	};
-
-	d20plus.template.neatStructure = {
-		"edit": {
-			ln: __("menu_edit_title"),
-			subitems: [
-				"delete",
-				"copy",
-				"paste",
-				"undo",
-			] },
-		"move": {
-			ln: __("menu_move_title"),
-			subitems: [
-				"tofront",
-				"forward-one",
-				"back-one",
-				"toback",
-			] },
-		"layer": {
-			ln: __("menu_layer_title"),
-			subitems: [
-				"tolayer_map",
-				"tolayer_floors",
-				"tolayer_background",
-				"tolayer_objects",
-				"tolayer_foreground",
-				"tolayer_roofs",
-				"tolayer_gmlayer",
-				"tolayer_walls",
-				"tolayer_weather",
-			] },
-		"view": {
-			ln: __("menu_view_title"),
-			subitems: [
-				"assignview0",
-				"assignview1",
-				"assignview2",
-				"assignview3",
-			] },
-		"util": {
-			ln: __("menu_util_title"),
-			subitems: [
-				"util-scenes",
-				"-",
-				"token-animate",
-				"token-fly",
-				"token-light",
-			] },
-		"adv": {
-			ln: __("menu_adv_title"),
-			subitems: [
-				"unlock-tokens",
-				"group",
-				"regroup",
-				"ungroup",
-				"lock-token",
-				"unlock-token",
-				"-",
-				"toggledrawing",
-				"togglefliph",
-				"toggleflipv",
-				"setdimensions",
-				"aligntogrid",
-				"copy-tokenid",
-				"copy-pathid",
-			] },
-		"token": {
-			ln: __("menu_token_title"),
-			subitems: [
-				"addturn",
-				"-",
-			] },
-		"mass": {
-			ln: __("menu_mass_title"),
-			subitems: [
-				"rollinit",
-				"rollsaves",
-				"rollskills",
-			] },
-		"multi": {
-			ln: __("menu_multi_title"),
-			subitems: [
-				"side_random",
-				"side_choose",
-				"-",
-				"rollertokenresize",
-			] },
-		"card": {
-			ln: __("menu_card_title"),
-			subitems: [
-				"takecard",
-				"flipcard",
-			] },
-	}
-
-	d20plus.template.pushQuickMenus = () => {
-		if (d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems")) {
-			let output = "";
-			const pushMenu = (num, action, condition) => {
-				if (!action) action = d20plus.cfg.getOrDefault(`canvas`, `quickMenuItem${num}`);
-				if (action) title = d20plus.template.neatActions[action].quick || d20plus.template.neatActions[action].ln;
-				if (action && title) {
-					if (!condition) {
-						condition = d20plus.template.neatActions[action].condition;
-					}
-					const conditionStatement = condition ? `if (${condition})` : ``;
-					output += `<$ ${conditionStatement} { $><li data-action-type='${action}'>${title}</li><$ } $>`;
-				}
-			};
-			pushMenu(null, "tolayer_objects", `this.view && this.get("layer") == "gmlayer"`);
-			pushMenu(null, "tolayer_gmlayer", `this.view && this.get("layer") != "gmlayer"`);
-			pushMenu(2);
-			pushMenu(3);
-			return output;
-		} else return "";
-	}
-
-	d20plus.template.generateNeatActionsMenu = () => {
-		let templ = "";
-		Object.entries(d20plus.template.neatStructure).forEach((menu) => {
-			const menuData = menu[1];
-			const menuName = `data-menuname='${menu[0]}'`;
-			let menuConditions = [];
-			let menuItems = "";
-			menuData.subitems.forEach((item) => {
-				if (item === "-") {
-					menuItems += `\n\t\t<div class="ctx__divider"></div>`;
-				} else {
-					let itemAction = d20plus.template.neatActions[item].action || item;
-					item = d20plus.template.neatActions[item];
-					const itemName = item.ln;
-					const itemCondition = item.condition;
-					const iconsStyle = item.icon === "a" ? `` : ` style="font-family:&quot;pictos custom&quot;, pictos"`;
-					const itemIcon = item.icon ? `<span class="pictos ctx__layer-icon"${iconsStyle}>${item.icon}</span> ` : ``;
-					const itemActive = item.active ? ` class='<$ if(${item.active}) { $>active<$ } $>'` : ``;
-					const conditionStatement = itemCondition ? `if (${itemCondition})` : ``;
-					if (itemCondition && (menuConditions.at(-1) !== itemCondition)) menuConditions.push(itemCondition);
-					if (itemAction === "unlock-token") itemAction = "lock-token";
-					menuItems += `\n\t\t<$ ${conditionStatement} { $><li data-action-type='${itemAction}'${itemActive}>${itemIcon}${itemName}</li><$ } $>`;
-				}
-			})
-			templ += `<$ if ((${menuConditions.join(") || (")})) { $><li class='head hasSub' ${menuName}>\n\t${menuData.ln}&nbsp;&raquo;
-			<ul class='submenu' ${menuName}>${menuItems}\n\t</ul>\n</li><$ } $>\n`;
-		});
-		return `
-		<script id='tmpl_actions_menu' type='text/html'>
-		<div class='actions_menu d20contextmenu'>
-		  <ul>
-		  	${templ}
-			${d20plus.template.pushQuickMenus()}
-		  </ul>
-		  </div>
-		</script>
-		`;
-	}
-
-	addConfigOptions("canvas", {
-		"_name": __("cfg_tab_canvas"),
-		"_player": true,
-		"enableQuickMenuItems": {
-			"name": __("cfg_option_quick_menu"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"quickMenuItem2": {
-			"name": __("cfg_option_quick_2"),
-			"default": "back-one",
-			"_type": "_enum",
-			"__values": Object.keys(d20plus.template.neatActions),
-		},
-		"quickMenuItem3": {
-			"name": __("cfg_option_quick_3"),
-			"default": "rollsaves",
-			"_type": "_enum",
-			"__values": Object.keys(d20plus.template.neatActions),
-		},
-	});
-
-	d20plus.settingsHtmlPtFooter = `<p>
-			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
-			</p>
-      <p>
-			<a class="btn btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; width: calc(100% - 22px);">Open Tools List</a>
-			</p>
-			<p>
-			For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
-			</p>
-			<style id="dynamicStyle"></style>
-		`;
-
-	d20plus.artTabHtml = `
-	<div>
-		<h3 style="margin-bottom: 4px;">BetteR20</h3>
-		<p style="display: flex; width: 100%; justify-content: space-between;">
-			<button class="btn" id="button-add-external-art" style="margin-right: 5px;">Manage External Art</button>
-			<button class="btn" id="button-browse-external-art">Browse Repo</button>
-		</p>
-	</div>
-	`;
-
-	d20plus.addArtHTML = `
-	<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
-	<p>Add external images by URL. Any direct link to an image should work.</p>
-	<p>
-	<input placeholder="Name*" id="art-list-add-name">
-	<input placeholder="URL*" id="art-list-add-url">
-	<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
-	<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
-	<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
-	<p/>
-	<hr>
-	<div id="art-list-container" style="background: inherit;">
-	<p style="position: sticky; top: -10px; background: inherit; z-index: 100;">
-		<span style="display: inline-block; width: calc( 35% + 35px ); font-weight: bold;">
-			Name
-			<input class="search" autocomplete="off" placeholder="Search list..." style="width: 60%; margin: 10px;">
-		</span>
-		<span style="display: inline-block; font-weight: bold;">URL</span>
-	</p>
-	<ul class="list artlist" style="display: block; margin: 0; transform: translateZ(0);"></ul>
-	</div>
-	</div>
-	<br>`;
-
-	d20plus.addArtMassAdderHTML = `
-	<div id="d20plus-artmassadd" title="Mass Add Art URLs">
-	<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
-	<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
-	</div>`;
-
-	d20plus.artListHTML = `
-	<div id="Vetoolsresults">
-	<ol class="dd-list" id="image-search-none"><div class="alert white">No results found in 5etools for those keywords.</div></ol>
-
-	<ol class="dd-list" id="image-search-has-results">
-		<li class="dd-item dd-folder Vetoolsresult">
-			<div class="dd-content">
-				<div class="folder-title">From 5etools</div>
-			</div>
-
-			<ol class="dd-list Vetoolsresultfolder" id="custom-art-results"></ol>
-		</li>
-	</ol>
-	</div>`;
-
-	d20plus.configEditorHTML = `
-	<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
-	<!-- populate with js -->
-	</div>`;
-
-	d20plus.configEditorButtonBarHTML = `
-	<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-	<div class="ui-dialog-buttonset">
-		<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
-			<span>${__("ui_cfg_save")}</span>
-		</button>
-	</div>
-	</div>
-	`;
-
-	d20plus.tool.toolsListHtml = `
-		<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
-		<div class="tools-list">
-		<!-- populate with js -->
-		</div>
-		</div>
-		`;
-
-	d20plus.template_actionsMenu = `
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.actionsMenu = `
 		<script id='tmpl_actions_menu' type='text/html'>
 			<div class='actions_menu d20contextmenu'>
 				<ul>
@@ -16374,21 +10947,21 @@ const baseTemplate = function () {
 					<$ } $>
 
 					<!-- BEGIN MOD -->
-					<$ if(this.view && this.get && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+					<$ if(this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
 						<li class='head hasSub' data-menuname='view'>
 							Assign view &raquo;
 							<ul class='submenu' data-menuname='view'>
 								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
-								<li data-action-type="assignview0" class='<$ if(this && this.get && this && this.get("bR20_view0")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views0Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views0Name')$> <$ } else { $> View 1 <$ } $></li>
+								<li data-action-type="assignview0" class='<$ if(this && this.get && this && this.get("bR20_view0")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views0Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views0Name')$> <$ } else { $> Default <$ } $></li>
 								<$ } $>
 								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
-								<li data-action-type="assignview1" class='<$ if(this && this.get && this && this.get("bR20_view1")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views1Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views1Name')$> <$ } else { $> View 2 <$ } $></li>
+								<li data-action-type="assignview1" class='<$ if(this && this.get && this && this.get("bR20_view1")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views1Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views1Name')$> <$ } else { $> View 1 <$ } $></li>
 								<$ } $>
 								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
-								<li data-action-type="assignview2" class='<$ if(this && this.get && this && this.get("bR20_view2")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views2Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views2Name')$> <$ } else { $> View 3 <$ } $></li>
+								<li data-action-type="assignview2" class='<$ if(this && this.get && this && this.get("bR20_view2")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views2Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views2Name')$> <$ } else { $> View 2 <$ } $></li>
 								<$ } $>
 								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
-								<li data-action-type="assignview3" class='<$ if(this && this.get && this && this.get("bR20_view3")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views3Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views3Name')$> <$ } else { $> View 4 <$ } $></li>
+								<li data-action-type="assignview3" class='<$ if(this && this.get && this && this.get("bR20_view3")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views3Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views3Name')$> <$ } else { $> View 3 <$ } $></li>
 								<$ } $>
 							</ul>
 						</li>
@@ -16409,138 +10982,174 @@ const baseTemplate = function () {
 			</div>
 		</script>
 		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+}
 
-	d20plus.template_charactereditor = `<script id='tmpl_charactereditor' type='text/html'>
-  <div class='dialog largedialog charactereditor' style='display: block;'>
-    <div class='tab-content'>
-      <div class='bioinfo tab-pane'>
-        <div class='row-fluid'>
-          <div class='span5'>
-            <label>
-              <strong>Avatar</strong>
-            </label>
-            <$ if(true) { $>
-            <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
-            <div class="status"></div>
-            <div class="inner">
-              <$ if(this.get("avatar") == "") { $>
-              <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
-              <br /> or
-              <button class="btn">Click to Upload</button>
-              <input class="manual" type="file" />
-              <$ } else { $>
-              <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-              <video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
-              <$ } else { $>
-              <img src="<$!this.get("avatar")$>" draggable="false" />
-              <$ } $>
-              <div class='remove'><a href='#'>Remove</a></div>
-              <$ } $>
-            </div>
-          </div>
-          <$ } else { $>
-          <div class='avatar'>
-            <$ if(this.get("avatar") != "") { $>
-            <img src="<$!this.get("avatar")$>" draggable="false" />
-            <$ } $>
-          </div>
-          <$ } $>
-          <div class='clear'></div>
-          <!-- BEGIN MOD -->
-          <button class="btn character-image-by-url">Set Image from URL</button>
-          <div class='clear'></div>
-          <!-- END MOD -->
-          <$ if (window.is_gm) { $>
-          <label>
-            <strong>Default Token (Optional)</strong>
-          </label>
-          <div class="defaulttoken tokenslot <$! this.get("defaulttoken") !== "" ? "filled" : "" $> style="width: 95%;">
-          <$ if(this.get("defaulttoken") !== "") { $>
-          <img src="" draggable="false" />
-          <div class="remove"><a href="#">Remove</a></div>
-          <$ } else { $>
-          <button class="btn">Use Selected Token</button>
-          <small>Select a token on the tabletop to use as the Default Token</small>
-          <$ } $>
-        </div>
+SCRIPT_EXTENSIONS.push(initHTMLroll20actionsMenu);
+
+
+function initHTMLroll20EditorsMisc () {
+	d20plus.html = d20plus.html || {};
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.characterEditor = `
+		<script id="tmpl_charactereditor" type="text/html">
+		<div class='dialog largedialog charactereditor' style='display: block;'>
+		<div class='tab-content'>
+		<div class='bioinfo tab-pane'>
+		<div class='row-fluid'>
+		<div class='span5'>
+		<label>
+		<strong>Avatar</strong>
+		</label>
+		<$ if(true) { $>
+		<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
+		<div class="status"></div>
+		<div class="inner">
+		<$ if(this.get("avatar") == "") { $>
+		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+		<br /> or
+		<button class="btn">Click to Upload</button>
+		<input class="manual" type="file" />
+		<$ } else { $>
+		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+		<video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+		<$ } else { $>
+		<img src="<$!this.get("avatar")$>" draggable="false" />
+		<$ } $>
+		<div class='remove'><a href='#'>Remove</a></div>
+		<$ } $>
+		</div>
+		</div>
+		<$ } else { $>
+		<div class='avatar'>
+		<$ if(this.get("avatar") != "") { $>
+		<img src="<$!this.get("avatar")$>" draggable="false" />
+		<$ } $>
+		</div>
+		<$ } $>
+		<div class='clear'></div>
+		<!-- BEGIN MOD -->
+		<button class="btn character-image-by-url">Set Image from URL</button>
+		<div class='clear'></div>
+		<!-- END MOD -->
+		<label>
+		<strong>Default Token (Optional)</strong>
+		<a class='showtip pictos' title='The default token will be used when this character is dragged from the Journal Tab to the Virtual Tabletop. For regular 1x1 tokens representing this character, you may use images from your Art Library or computer. For larger tokens, create a token on the Virtual Tabletop and use &quot;Use Selected Token.&quot;'>?</a>
+		</label>
+		<div class="defaultToken dropbox <$! this.defaultTokenImage != "" ? "filled" : "" $>">
+		<div class="status"></div>
+		<div class="inner">
+		<$ if(this.defaultTokenImage == "") { $>
+		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+		<br /> or
+		<button class="btn">Click to Upload</button>
+		<input class="manual" type="file" />
+		<$ } else { $>
+		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.defaultTokenImage)) { $>
+		<video src="<$!this.defaultTokenImage$>" draggable="false" muted autoplay loop />
+		<$ } else { $>
+		<img src="<$!this.defaultTokenImage$>" draggable="false" />
+		<$ } $>
+		<div class='remove'><a href='#'>Remove</a></div>
+		<$ } $>
+		</div>
+		</div>
+		<div class="default-token-buttons">
+		<$ if(window.is_gm) { $>
+		<button class='btn btn-primary edit-default-token'>Edit Token Properties</button>
+		<a class='showtip pictos' title='Edit the Token Settings for this character’s default token. Use &quot;Apply Token Defaults&quot; to apply these settings to any existing tokens on the Virtual Tabletop.'>?</a>
+		<$ } $>
+		<button class='btn use-selected-token'>Use Selected Token</button>
+		<a class='showtip pictos' title='Copy a snapshot of the selected token&#39;s image and settings as this character’s default token.'>?</a>
+		<$ if(window.is_gm) { $>
+		<button class='btn apply-token-defaults'>Apply Token Defaults</button>
+		<a class='showtip pictos' title='Update tokens where Represents Character is set to this character. All tokens representing this character across all pages will be overwritten.'>?</a>
         <!-- BEGIN MOD -->
         <button class="btn token-image-by-url">Set Token Image from URL</button>
-        <small style="text-align: left;">(Update will only be visible upon re-opening the sheet)</small>
-        <div class='clear'></div>
+		<a class='showtip pictos' title='Update will only be visible upon re-opening the sheet.'>?</a>
         <!-- END MOD -->
-        <$ } $>
-      </div>
-      <div class='span7'>
-        <label>
-          <strong>Name</strong>
-        </label>
-        <input class='name' type='text'>
-        <div class='clear'></div>
-        <$ if(window.is_gm) { $>
-        <label>
-          <strong>In Player's Journals</strong>
-        </label>
-        <select class='inplayerjournals selectize' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Can Be Edited &amp; Controlled By</strong>
-        </label>
-        <select class='controlledby selectize' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Tags</strong>
-        </label>
-        <input class='tags'>
-        <div class='clear'></div>
-        <hr>
-        <button class='delete btn btn-danger' style='float: right;'>
-          Delete
-        </button>
-        <button class='duplicate btn' style='margin-right: 10px;'>
-          Duplicate
-        </button>
-        <button class='archive btn'>
-          <$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
-        </button>
-        <div class='clear'></div>
-        <$ } $>
-        <div class='clear'></div>
-      </div>
-    </div>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <hr>
-        <label>
-          <strong>Bio & Info</strong>
-        </label>
-        <textarea class='bio'></textarea>
-        <div class='clear'></div>
-        <$ if(window.is_gm) { $>
-        <label>
-          <strong>GM Notes (Only visible to GM)</strong>
-        </label>
-        <textarea class='gmnotes'></textarea>
-        <div class='clear'></div>
-        <$ } $>
-      </div>
-    </div>
-  </div>
-  </div>
-  </div>
-</script>
+		<$ } $>
+		</div>
+		</div>
+		<div class='span7'>
+		<label>
+		<strong>Name</strong>
+		</label>
+		<input class='name' data-test='character-edit-name' type='text'>
+		<div class='clear'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		<strong>In Player's Journals</strong>
+		</label>
+		<select class='inplayerjournals selectize' data-test='character-edit-in-journal' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Can Be Edited &amp; Controlled By</strong>
+		</label>
+		<select class='controlledby selectize' data-test='character-edit-controlledby' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Tags</strong>
+		</label>
+		<input class='tags'>
+		<div class='clear'></div>
+		<hr>
+		<button class='delete btn btn-danger' data-test='character-delete' style='float: right;'>
+		Delete
+		</button>
+		<button class='duplicate btn' data-test='character-duplicate' style='margin-right: 10px;'>
+		Duplicate
+		</button>
+		<button class='archive btn' data-test='character-archive'>
+		<$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
+		</button>
+		<div class='clear'></div>
+		<$ } $>
+		<div class='clear'></div>
+		</div>
+		</div>
+		<$ if(!window.ADVANCED_SHEET) { $>
+		<div class='row-fluid'>
+		<div class='span12'>
+		<hr>
+		<label>
+		<strong>Bio & Info</strong>
+		</label>
+		<textarea class='bio'></textarea>
+		<div class='clear'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		<strong>GM Notes (Only visible to GM)</strong>
+		</label>
+		<textarea class='gmnotes'></textarea>
+		<div class='clear'></div>
+		<$ } $>
+		</div>
+		</div>
+		<$ } $>
+		</div>
+		</div>
+		</div>
+		</script>
 		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 
-	d20plus.template_handouteditor = `<script id='tmpl_handouteditor' type='text/html'>
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.handoutEditor = `
+<script id='tmpl_handouteditor' type='text/html'>
   <div class='dialog largedialog handouteditor' style='display: block;'>
     <div class='row-fluid'>
       <div class='span12'>
@@ -16677,10 +11286,13 @@ const baseTemplate = function () {
     </div>
   </div>
 </script>
-	`;
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 
-	d20plus.template.deckeditor = `
-	<script id='tmpl_deckeditor' type='text/html'>
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.deckEditor = `
+    <script id='tmpl_deckeditor' type='text/html'>
       <div class='dialog largedialog deckeditor' style='display: block;'>
         <label>Name</label>
         <input class='name' type='text'>
@@ -16841,8 +11453,12 @@ const baseTemplate = function () {
         <$ } $>
       </div>
     </script>
-	`;
-	d20plus.template.cardeditor = `
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.cardEditor = `
     <script id='tmpl_cardeditor' type='text/html'>
       <div class='dialog largedialog cardeditor' style='display: block;'>
         <label>Name</label>
@@ -16872,10 +11488,5872 @@ const baseTemplate = function () {
         <button class='deletecard btn btn-danger'>Delete Card</button>
       </div>
     </script>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+}
+
+SCRIPT_EXTENSIONS.push(initHTMLroll20EditorsMisc);
+
+
+function initHTMLbaseMisc () {
+	d20plus.html = d20plus.html || {};
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.settingsHtmlPtFooter = `
+		<p>
+			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
+		</p>
+		<p>
+			<a class="btn btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; width: calc(100% - 22px);">Open Tools List</a>
+		</p>
+		<p>
+			For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
+		</p>
+		<style id="dynamicStyle"></style>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.artTabHtml = `
+		<div>
+			<h3 style="margin-bottom: 4px;">BetteR20</h3>
+			<p style="display: flex; width: 100%; justify-content: space-between;">
+				<button class="btn" id="button-add-external-art" style="margin-right: 5px;">Manage External Art</button>
+				<button class="btn" id="button-browse-external-art">Browse Repo</button>
+			</p>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.addArtHTML = `
+		<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
+			<p>Add external images by URL. Any direct link to an image should work.</p>
+			<p>
+			<input placeholder="Name*" id="art-list-add-name">
+			<input placeholder="URL*" id="art-list-add-url">
+			<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
+			<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
+			<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
+			<p/>
+			<hr>
+			<div id="art-list-container" style="background: inherit;">
+				<p style="position: sticky; top: -10px; background: inherit; z-index: 100;">
+					<span style="display: inline-block; width: calc( 35% + 35px ); font-weight: bold;">
+						Name
+						<input class="search" autocomplete="off" placeholder="Search list..." style="width: 60%; margin: 10px;">
+					</span>
+					<span style="display: inline-block; font-weight: bold;">URL</span>
+				</p>
+				<ul class="list artlist" style="display: block; margin: 0; transform: translateZ(0);"></ul>
+			</div>
+		</div>
+		<br>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.addArtMassAdderHTML = `
+		<div id="d20plus-artmassadd" title="Mass Add Art URLs">
+			<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
+			<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.artListHTML = `
+		<div id="Vetoolsresults">
+		<ol class="dd-list" id="image-search-none">
+			<div class="alert white">No results found in 5etools for those keywords.</div>
+		</ol>
+		<ol class="dd-list" id="image-search-has-results">
+			<li class="dd-item dd-folder Vetoolsresult">
+				<div class="dd-content">
+					<div class="folder-title">From 5etools</div>
+				</div>
+				<ol class="dd-list Vetoolsresultfolder" id="custom-art-results"></ol>
+			</li>
+		</ol>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.configEditorHTML = `
+		<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
+			<!-- populate with js -->
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.configEditorButtonBarHTML = `
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+			<div class="ui-dialog-buttonset">
+				<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
+					<span>${__("ui_cfg_save")}</span>
+				</button>
+			</div>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.toolsListHtml = `
+		<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
+			<div class="tools-list">
+			<!-- populate with js -->
+			</div>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.pageSettingsNavTabs = `
+		<li class="nav-tabs active">
+			<a data-tab="pagedetails" href="javascript:void(0);">
+				<h2>General</h2>
+			</a>
+		</li>
+		<li class="nav-tabs dl">
+			<a>
+				<h2>Lighting</h2>
+			</a>
+			<ul>
+				<li class="nav-tabs--beta">
+					<span class="label label-info">Updated</span>
+					<a data-tab="lighting" href="javascript:void(0);">
+						<h2>Dynamic Lighting</h2>
+					</a>
+				</li>
+				<li class="nav-tabs">
+					<a data-tab="legacy-lighting" href="javascript:void(0);">
+						<h2>Legacy Lighting</h2>
+					</a>
+				</li>
+			</ul>
+		</li>
+		<li class="nav-tabs--beta">
+			<span class="label label-info">bR20</span>
+			<a data-tab="weather" href="javascript:void(0);">
+				<h2>Weather</h2>
+			</a>
+		</li>
+		<li class="nav-tabs--beta">
+			<span class="label label-info">bR20</span>
+			<a data-tab="views" href="javascript:void(0);">
+				<h2>Views</h2>
+			</a>
+		</li>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+}
+
+SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
+
+
+function initHTMLpageViews () {
+	d20plus.html = d20plus.html || {};
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.pageSettingsViews = `
+		<div class='views tab-pane'>
+			<div class="pagedetails">
+				<div class="alert alert-info" role="alert">
+					<p>Views are just another way to manage groups of items on your map
+					. Each View can include different items - tokens (except PCs), paths & images, regardless of their layer.
+					</p><p>Assign desired items to Views via the Context menu
+					. Then you can easily hide or show those items using controls at the bottom of "Editing layer" dropdown
+					. This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.
+					</p><p>Players do not need betteR20 to see the effect of switching Views.</p>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable Views</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="viewsEnable">toggle view one</label>
+							<input name="viewsEnable" class="feature_enabled" id="viewsEnable" type="checkbox">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Default view</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views0Name" placeholder="Default">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">View 1</h3>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable View 1</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views1Enable">toggle view one</label>
+							<input name="views1Enable" class="feature_enabled" id="views1Enable" type="checkbox">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Mutually exclusive with previous</h4>
+						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views1Exclusive">toggle view one</label>
+							<input name="views1Exclusive" class="feature_enabled" id="views1Exclusive" type="checkbox">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views1Name" placeholder="View 1">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">View 2</h3>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable View 2</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views2Enable">toggle view one</label>
+							<input name="views2Enable" class="feature_enabled" id="views2Enable" type="checkbox">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Mutually exclusive with previous</h4>
+						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views2Exclusive">toggle view two</label>
+							<input name="views2Exclusive" class="feature_enabled" id="views2Exclusive" type="checkbox">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views2Name" placeholder="View 2">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">View 3</h3>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable View 3</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views3Enable">toggle view three</label>
+							<input name="views3Enable" class="feature_enabled" id="views3Enable" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Mutually exclusive with previous</h4>
+						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views3Exclusive">toggle view one</label>
+							<input name="views3Exclusive" class="feature_enabled" id="views3Exclusive" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views3Name" placeholder="View 3">
+				</div>
+			</div>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+}
+
+SCRIPT_EXTENSIONS.push(initHTMLpageViews);
+
+
+function initHTMLpageWeather () {
+	d20plus.html = d20plus.html || {};
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.pageSettingsWeather = `
+		<div class='weather tab-pane'>
+			<div class="pagedetails">
+				<strong style="display: block; margin-bottom: 10px;">
+					<a class="tipsy-w showtip pictos" title="Requires all players to use a betteR20 script">!</a>
+					Requires all players to use a betteR20 script
+				</strong>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Weather Type</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Select type</h4>
+				</div>
+				<div>
+					<label class="sr-only">select the weather type</label>
+					<select name="weatherType1">
+						<option>None</option>
+						<option>Fog</option>
+						<option>Rain</option>
+						<option>Ripples</option>
+						<option>Snow</option>
+						<option>Waves</option>
+						<option>Blood Rain</option>
+						<option>Custom (see below)</option>
+					</select>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom type</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input URL to your PNG when &quot;Custom&quot; is selected above">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom image</label>
+					<input class="page-input" name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Amimation</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Direction</h4>
+				</div>
+				<div>
+					<label class="sr-only">select the weather direction</label>
+					<select name="weatherDir1">
+						<option value="Northerly">Northerly</option>
+						<option value="North-Easterly">North-Easterly</option>
+						<option value="Easterly">Easterly</option>
+						<option value="South-Easterly">South-Easterly</option>
+						<option value="Southerly">Southerly</option>
+						<option value="South-Westerly">South-Westerly</option>
+						<option value="Westerly">Westerly</option>
+						<option value="North-Westerly">North-Westerly</option>
+						<option value="Custom (see below)">Custom (see below)</option>
+					</select>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom Direction</h4>
+					<a class="tipsy-w showtip pictos" original-title="Set direction when &quot;Custom&quot; is selected above">?</a>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherDirCustom1" disabled="" type="text">
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Speed</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherSpeed1" disabled="" type="text">
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Oscillate</h4>
+					</div>
+					<div class="col-xs-7 pagedetails__header">
+						<span>Periodically revert Weather direction, with frequency based on Threshold</span>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
+							<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+							<span class="slider round">
+						</span></label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Oscillation Threshold</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01"/>
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherOscillateThreshold1" disabled="" type="text"/>
+					</div>
+				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">Appearance</h3>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Opacity</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01"/>
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherOpacity1" disabled="" type="text"/>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Weather Intensity</h4>
+				</div>
+				<div>
+					<label class="sr-only">select the weather intensity</label>
+					<select name="weatherIntensity1">
+						<option>Normal</option>
+						<option>Heavy</option>
+					</select>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable Tint</h4>
+					</div>
+					<div class="col-xs-7 pagedetails__header">
+						<span>Adds semi-transparent color overlay to the whole page</span>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
+							<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+							<span class="slider round">
+						</span></label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4>Tint Color</h4>
+					</div>
+					<div class="col-xs-3">
+						<input type="color" name="weatherTintColor1">
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Tint Opacity</h4>
+				</div>
+				<div class="row">
+					<div class="col-xs-9">
+						<input type="range" name="weatherTintOpacity1" min="0.01" max="0.7" step="0.01"/>
+					</div>
+					<div class="col-xs-1">
+						<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text"/>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4 class="page_title">Special Effects</h4>
+				</div>
+				<div>
+					<label class="sr-only">select effects</label>
+					<select name="weatherEffect1">
+					<option>None</option>
+					<option>Lightning</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+}
+
+SCRIPT_EXTENSIONS.push(initHTMLpageWeather);
+
+
+function d20plusEngine () {
+	d20plus.engine = {};
+
+	d20plus.engine.addProFeatures = () => {
+		d20plus.ut.log("Add Pro features");
+
+		d20plus.setMode = d20plus.mod.setMode;
+		window.setMode = d20plus.mod.setMode;
+
+		// rebind buttons with new setMode
+		const $drawTools = $("#drawingtools");
+		const $rect = $drawTools.find(".chooserect");
+		const $ellipse = $drawTools.find(".choosecircle");
+		const $path = $drawTools.find(".choosepath");
+		const $poly = $drawTools.find(".choosepolygon");
+		$drawTools.unbind(clicktype).bind(clicktype, function () {
+			$(this).hasClass("rect") ? setMode("rect") : $(this).hasClass("ellipse") ? setMode("ellipse") : $(this).hasClass("text") ? setMode("text") : $(this).hasClass("path") ? setMode("path") : $(this).hasClass("drawselect") ? setMode("drawselect") : $(this).hasClass("polygon") && setMode("polygon")
+		});
+		$rect.unbind(clicktype).bind(clicktype, () => {
+			setMode("rect");
+			return false;
+		});
+		$ellipse.unbind(clicktype).bind(clicktype, () => {
+			setMode("ellipse");
+			return false;
+		});
+		$path.unbind(clicktype).bind(clicktype, () => {
+			setMode("path");
+			return false;
+		});
+		$poly.unbind(clicktype).bind(clicktype, () => {
+			setMode("polygon");
+			return false;
+		});
+		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
+		$("#ellipse").unbind(clicktype).bind(clicktype, () => setMode("ellipse"));
+		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
+
+		if (!$(`#fxtools`).length) {
+			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
+			$fxMode.on("click", () => {
+				d20plus.setMode("fxtools");
+			});
+			$(`#drawingtools`).after($fxMode);
+		}
+
+		if (window.is_gm) {
+			// add lighting layer tool
+			if (!$(`#editinglayer .choosewalls`).length) {
+				$(`#editinglayer .choosegmlayer`).after(`
+					<li class="choosewalls">
+						<span class="pictostwo">r</span> 
+						${d20plus.cfg.get("canvas", "showLight") ? __("ui_bar_light_n_barriers") : __("ui_bar_barriers")}
+					</li>
+				`);
+			}
+
+			// add light placement tool
+			if (d20plus.cfg.get("canvas", "showLight")) {
+				if (!$(`#placelight`).length) {
+					const $torchMode = $(`<li class="placelight" tip="Place Light"><span class="pictostwo">t</span></li>`);
+					$torchMode.on("click", () => {
+						d20plus.setMode("placelight");
+						$torchMode.addClass("activebutton");
+					});
+					$(`#measure`).after($torchMode);
+				}
+			}
+
+			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
+				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
+				e.view._template = $.jqotec("#tmpl_pagesettings");
+			});
+		}
+	};
+
+	d20plus.engine._removeStatusEffectEntries = () => {
+		$(`#5etools-status-css`).html("");
+		Object.keys(d20.token_editor.statusmarkers).filter(k => k.startsWith("5etools_")).forEach(k => delete d20.token_editor.statusmarkers[k]);
+	};
+
+	d20plus.engine.enhanceStatusEffects = () => {
+		d20plus.ut.log("Enhance status effects");
+		$(`head`).append(`<style id="5etools-status-css"/>`);
+
+		d20plus.mod.overwriteStatusEffects();
+
+		d20.engine.canvas.off("object:added");
+		d20.engine.canvas.on("object:added", d20plus.mod.overwriteStatusEffects);
+
+		// the holy trinity
+		// d20.engine.canvas.on("object:removed", () => console.log("added"));
+		// d20.engine.canvas.on("object:removed", () => console.log("removed"));
+		// d20.engine.canvas.on("object:modified", () => console.log("modified"));
+
+		$(document).off("mouseenter", ".markermenu");
+		$(document).on("mouseenter", ".markermenu", d20plus.mod.mouseEnterMarkerMenu)
+	};
+
+	d20plus.engine.swapTemplates = () => {
+		document.dispatchEvent(new Event(`b20initTemplates`));
+		d20plus.ut.log("Swapping templates...");
+		$("#tmpl_charactereditor").html($(d20plus.html.characterEditor).html());
+		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
+		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
+		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		// ensure tokens have editable sight
+		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
+		// show dynamic lighting/etc page settings
+		$("#tmpl_pagesettings").replaceWith(d20plus.engine._makePageSettings());
+	};
+
+	d20plus.engine._makePageSettings = () => {
+		return `<script id='tmpl_pagesettings' type='text/html'>
+			<ul class='nav nav-tabs pagedetails_navigation'>
+				${d20plus.html.pageSettingsNavTabs}
+			</ul>
+			<div class='tab-content'>
+				${d20plus.html.pageSettings}
+				${d20plus.html.pageSettingsWeather}
+				${d20plus.html.pageSettingsViews}
+			</div>
+		</script>`;
+	};
+
+	d20plus.engine.enhancePageSelector = () => {
+		d20plus.ut.log("Enhancing page selector");
+
+		let updatePageOrder = function () {
+			d20plus.ut.log("Saving page order...");
+			let pos = 0;
+			$("#page-toolbar .pages .chooseablepage").each(function () {
+				let page = d20.Campaign.pages.get($(this).attr("data-pageid"));
+				page && page.save({
+					placement: pos,
+				});
+				pos++;
+			});
+			d20.pagetoolbar.noReload = false;
+			d20.pagetoolbar.refreshPageListing();
+		};
+
+		function overwriteDraggables () {
+			// make them draggable on both axes
+			$("#page-toolbar .pages").sortable("destroy");
+			$("#page-toolbar .pages").sortable({
+				items: "> .chooseablepage",
+				start: function () {
+					d20.pagetoolbar.noReload = true;
+				},
+				stop: function () {
+					updatePageOrder()
+				},
+				distance: 15,
+			}).addTouch();
+			$("#page-toolbar .playerbookmark").draggable("destroy");
+			$("#page-toolbar .playerbookmark").draggable({
+				revert: "invalid",
+				appendTo: "#page-toolbar",
+				helper: "original",
+			}).addTouch();
+			$("#page-toolbar .playerspecificbookmark").draggable("destroy");
+			$("#page-toolbar .playerspecificbookmark").draggable({
+				revert: "invalid",
+				appendTo: "#page-toolbar",
+				helper: "original",
+			}).addTouch();
+		}
+
+		overwriteDraggables();
+		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
+
+		const originalFn = d20.pagetoolbar.refreshPageListing;
+		// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+		const debouncedOverwrite = _.debounce(() => {
+			overwriteDraggables();
+			// fire an event for other parts of the script to listen for
+			const pageChangeEvt = new Event(`VePageChange`);
+			d20plus.ut.log("Firing page-change event");
+			document.dispatchEvent(pageChangeEvt);
+		}, 110);
+		d20.pagetoolbar.refreshPageListing = () => {
+			originalFn();
+			debouncedOverwrite();
+		}
+
+		$(`body`).on("click", ".weather input[type=range]", function (event) {
+			if (this.name) $(`.${this.name}`).val(this.value);
+		}).on("mouseup", "li.dl", function (event) {
+			// process Dynamic Lighting tabs
+			const $dynLightTab = $(event.target).closest("li.dl");
+			const $isTabAnchor = $(event.target).closest("a");
+			if (!$dynLightTab.hasClass("active")) {
+				setTimeout(() => {
+					if (!$dynLightTab.hasClass("legacy")) $(`[data-tab=lighting]:visible`).click();
+					else $(`[data-tab=legacy-lighting]:visible`).click();
+				}, 10);
+			}
+			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
+			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
+		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
+			const $this = $(this);
+			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
+		}).on("click", ".chooseablepage .js__settings-page", function () {
+			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
+		});
+	};
+
+	d20plus.engine.enhancePageSettings = () => {
+		if (!d20plus.engine._lastSettingsPageId) return;
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (page && page.get) {
+			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			// if editing active page then close pages list and add Apply button
+			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
+				const $barPage = $(`#page-toolbar`);
+				const $overlay = $(`.ui-widget-overlay`);
+				const templateApply = `<button type="button" class="btn btn-apply" title="Apply settings for current page">Apply</button>`;
+				if (!$barPage.hasClass("closed")) {
+					$barPage.find(`.handle`).click();
+					$overlay.remove();
+				}
+				$dialog.find(`.btn-primary:visible`).before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.engine._applySettings);
+			}
+			// process options within open dialog
+			if ($dialog[0]) {
+				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
+				d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
+					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
+					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
+						d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+					});
+					// closed editors behave strangely, so replace Close with Cancel
+					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
+						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
+					});
+				}
+			}
+		}
+	}
+
+	d20plus.engine._applySettings = () => {
+		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
+		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
+		const pageid = d20plus.engine._lastSettingsPageId;
+		if ($dialog[0]) {
+			$(`#page-toolbar`).css("visibility", "hidden");
+			d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
+			setTimeout(() => {
+				$dialog.find(`.btn-primary:visible`).click();
+				$(`#page-toolbar .handle`).click();
+				$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
+				$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+				$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+				setTimeout(() => {
+					$(`#page-toolbar`).css("visibility", "unset");
+				}, 1000);
+			}, 10);
+		}
+	}
+
+	d20plus.engine._handleCustomOptions = (dialog, doSave) => {
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page || !page.get) return;
+		[
+			"weather",
+			"views",
+		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
+			if (doSave) {
+				d20plus.engine._saveOption(page, dialog, {name, deflt});
+			} else {
+				d20plus.engine._getOption(page, dialog, {name, deflt});
+			}
+		}));
+		if (doSave) {
+			page.save();
+		}
+	}
+
+	d20plus.engine._saveOption = (page, dialog, prop) => {
+		const $e = dialog.find(`[name="${prop.name}"]`);
+		const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
+		if (val && val !== prop.deflt) {
+			page.attributes[`bR20cfg_${prop.name}`] = val;
+		} else {
+			if (page.attributes.hasOwnProperty(`bR20cfg_${prop.name}`)) {
+				page.attributes[`bR20cfg_${prop.name}`] = null;
+			}
+		}
+	}
+
+	d20plus.engine._getOption = (page, dialog, prop) => {
+		const val = page.get(`bR20cfg_${prop.name}`) || prop.deflt;
+		dialog.find(`[name="${prop.name}"]`).each((i, e) => {
+			const $e = $(e);
+			if ($e.is(":checkbox")) {
+				$e.prop("checked", !!val);
+			} else if ($e.is("input[type=range]")) {
+				$(`.${prop.name}`).val(val);
+				$e.val(val);
+			} else {
+				$e.val(val);
+			}
+		});
+	}
+
+	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
+		$iptSearch.on("keyup", () => {
+			const searchVal = ($iptSearch.val() || "").trim();
+			$outSearch.empty();
+			if (searchVal.length <= 2) return; // ignore 2 characters or less, for performance reasons
+			const found = $(`#journal .content`).find(`li[data-itemid]`).filter((i, ele) => {
+				const $ele = $(ele);
+				return $ele.find(`.name`).text().trim().toLowerCase().includes(searchVal.toLowerCase());
+			});
+			if (found.length) {
+				$outSearch.append(`<p><b>Search results:</b></p>`);
+				const $outList = $(`<ol class="dd-list Vetools-search-results"/>`);
+				$outSearch.append($outList);
+				found.clone().addClass("Vetools-draggable").appendTo($outList);
+				$outSearch.append(`<hr>`);
+				$(`.Vetools-search-results .Vetools-draggable`).draggable({
+					revert: true,
+					distance: 10,
+					revertDuration: 0,
+					helper: "clone",
+					handle: ".namecontainer",
+					appendTo: "body",
+					scroll: true,
+					start: function () {
+						$("#journalfolderroot").addClass("externaldrag")
+					},
+					stop: function () {
+						$("#journalfolderroot").removeClass("externaldrag")
+					},
+				});
+			}
+		});
+	};
+
+	/* eslint-disable */
+
+	d20plus.engine.getSelectedToMove = () => {
+		const n = [];
+		for (var l = d20.engine.selected(), c = 0; c < l.length; c++)
+			n.push(l[c]);
+	};
+
+	d20plus.engine.forwardOneLayer = (n) => {
+		d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+			_.each(n, function (e) {
+				d20.engine.canvas.bringForward(e)
+			}),
+			d20.Campaign.activePage().debounced_recordZIndexes()
+	};
+
+	d20plus.engine.backwardOneLayer = (n) => {
+		d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+			_.each(n, function (e) {
+				d20.engine.canvas.sendBackwards(e)
+			}),
+			d20.Campaign.activePage().debounced_recordZIndexes()
+	};
+
+	// previously "enhanceSnap"
+	d20plus.engine.enhanceMouseDown = () => {
+		const R = d20plus.overwrites.canvasHandlerDown
+
+		if (FINAL_CANVAS_MOUSEDOWN_LIST.length) {
+			FINAL_CANVAS_MOUSEDOWN = (FINAL_CANVAS_MOUSEDOWN_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
+		}
+
+		if (FINAL_CANVAS_MOUSEDOWN) {
+			d20plus.ut.log("Enhancing hex snap");
+			d20.engine.final_canvas.removeEventListener("mousedown", FINAL_CANVAS_MOUSEDOWN);
+			d20.engine.final_canvas.addEventListener("mousedown", R);
+		}
+
+		// add sub-grid snap
+		d20.engine.snapToIncrement = function(e, t) {
+			t *= Number(d20plus.cfg.getOrDefault("canvas", "gridSnap"));
+			return t * Math.round(e / t);
+		}
+	};
+
+	d20plus.engine.enhanceMouseUp = () => { // P
+
+	};
+
+	// needs to be called after `enhanceMeasureTool()`
+	d20plus.engine.enhanceMouseMove = () => {
+		// add missing vars
+		var i = d20.engine.canvas;
+
+		// Roll20 bug (present as of 2019-5-25) workaround
+		//   when box-selecting + moving tokens, the "object:moving" event throws an exception
+		//   try-catch-ignore this, because it's extremely annoying
+		const cachedFire = i.fire.bind(i);
+		i.fire = function (namespace, opts) {
+			if (namespace === "object:moving") {
+				try {
+					cachedFire(namespace, opts);
+				} catch (e) {}
+			} else {
+				cachedFire(namespace, opts);
+			}
+		};
+
+		const I = d20plus.overwrites.canvasHandlerMove
+
+		if (FINAL_CANVAS_MOUSEMOVE_LIST.length) {
+			FINAL_CANVAS_MOUSEMOVE = (FINAL_CANVAS_MOUSEMOVE_LIST.find(it => it.on === d20.engine.final_canvas) || {}).listener;
+		}
+
+		if (FINAL_CANVAS_MOUSEMOVE) {
+			d20plus.ut.log("Enhancing mouse move");
+			d20.engine.final_canvas.removeEventListener("mousemove", FINAL_CANVAS_MOUSEMOVE);
+			d20.engine.final_canvas.addEventListener("mousemove", I);
+		}
+	};
+
+	/* eslint-enable */
+
+	d20plus.engine.tokenRepresentsPc = (token) => {
+		if (!token || !token.get) return undefined;
+		if (token.get("type") !== "image") return false;
+		if (!token.character) return false;
+		if (!token.character.attribs.length && !token.character.attribs.fetching) {
+			token.character.attribs.fetch(token.character.attribs);
+			token.character.attribs.fetching = true;
+		} else if (token.character.attribs.length) {
+			if (token.character.attribs.fetching) delete token.character.attribs.fetching;
+			const attr = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
+			if (attr) {
+				if (attr.attributes.current === "0") return true;
+				else return false;
+			}
+		}
+	}
+
+	d20plus.engine.addLineCutterTool = () => {
+		const $btnTextTool = $(`.choosetext`);
+
+		const $btnSplitTool = $(`<li class="choosesplitter">✂️ Line Splitter</li>`).click(() => {
+			d20plus.setMode("line_splitter");
+		});
+
+		$btnTextTool.after($btnSplitTool);
+	};
+
+	d20plus.engine._tokenHover = null;
+	d20plus.engine._drawTokenHover = () => {
+		$(`.Vetools-token-hover`).remove();
+		if (!d20plus.engine._tokenHover || !d20plus.engine._tokenHover.text) return;
+
+		const pt = d20plus.engine._tokenHover.pt;
+		const txt = unescape(d20plus.engine._tokenHover.text);
+
+		$(`body`).append(`<div class="Vetools-token-hover" style="top: ${pt.y * d20.engine.canvasZoom}px; left: ${pt.x * d20.engine.canvasZoom}px">${txt}</div>`);
+	};
+	d20plus.engine.addTokenHover = () => {
+		// gm notes on shift-hover
+		const cacheRenderLoop = d20.engine.renderLoop;
+		d20.engine.renderLoop = () => {
+			d20plus.engine._drawTokenHover();
+			cacheRenderLoop();
+		};
+
+		// store data for the rendering function to access
+		d20.engine.canvas.on("mouse:move", (data, ...others) => {
+			// enable hover from GM layer -> token layer
+			let hoverTarget = data.target;
+			if (data.e && window.currentEditingLayer === "gmlayer") {
+				const cache = window.currentEditingLayer;
+				window.currentEditingLayer = "objects";
+				hoverTarget = d20.engine.canvas.findTarget(data.e, null, true);
+				window.currentEditingLayer = cache;
+			}
+
+			if (data.e.shiftKey && hoverTarget && hoverTarget.model) {
+				d20.engine.redrawScreenNextTick();
+				const gmNotes = hoverTarget.model.get("gmnotes");
+				const pt = d20.engine.canvas.getPointer(data.e);
+				pt.x -= d20.engine.currentCanvasOffset[0];
+				pt.y -= d20.engine.currentCanvasOffset[1];
+				d20plus.engine._tokenHover = {
+					pt: pt,
+					text: gmNotes,
+					id: hoverTarget.model.id,
+				};
+			} else {
+				if (d20plus.engine._tokenHover) d20.engine.redrawScreenNextTick();
+				d20plus.engine._tokenHover = null;
+			}
+		})
+	};
+
+	d20plus.engine.enhanceMarkdown = () => {
+		const OUT_STRIKE = "<span style='text-decoration: line-through'>$1</span>";
+
+		/* eslint-disable */
+
+		// BEGIN ROLL20 CODE
+		window.Markdown.parse = function(e) {
+			{
+				var t = e
+					, n = []
+					, i = [];
+				-1 != t.indexOf("\r\n") ? "\r\n" : -1 != t.indexOf("\n") ? "\n" : ""
+			}
+			return t = t.replace(/{{{([\s\S]*?)}}}/g, function(e) {
+				return n.push(e.substring(3, e.length - 3)),
+					"{{{}}}"
+			}),
+				t = t.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(e) {
+					return i.push(e.substring(5, e.length - 6)),
+						"<pre></pre>"
+				}),
+				// BEGIN MOD
+				t = t.replace(/~~(.*?)~~/g, OUT_STRIKE),
+				// END MOD
+				t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+				t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
+				t = t.replace(/``(.*?)``/g, "<code>$1</code>"),
+				t = t.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
+				t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
+				t = t.replace(new RegExp("<pre></pre>","g"), function() {
+					return "<pre>" + i.shift() + "</pre>"
+				}),
+				t = t.replace(/{{{}}}/g, function() {
+					return n.shift()
+				})
+		};
+		// END ROLL20 CODE
+
+		/* eslint-enable */
+
+		// after a short delay, replace any old content in the chat
+		setTimeout(() => {
+			$(`.message`).each(function () {
+				$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
+			})
+		}, 2500);
+	};
+
+	d20plus.engine.enhancePathWidths = () => {
+		const $selThicc = $(`#path_width`).css("width", "150px");
+		$selThicc.append(`
+				<option value="5">Custom 1 (5 px.)</option>
+				<option value="5">Custom 2 (5 px.)</option>
+				<option value="5">Custom 3 (5 px.)</option>
+			`);
+		const $iptThicc = $(`<input type="number" style="max-width: 50px;">`).hide();
+		const $lblPixels = $(`<label style="display: inline-flex;"> pixels</label>`).hide();
+		$selThicc.after($lblPixels).after($iptThicc);
+
+		let $selOpt = null;
+		$selThicc.on("change", () => {
+			$selOpt = $selThicc.find(`option:selected`);
+			const txt = $selOpt.text();
+			if (txt.startsWith("Custom")) {
+				const thicc = /\((.*?) px\.\)/.exec(txt)[1];
+				$lblPixels.show();
+				$iptThicc.show().val(Number(thicc));
+			} else {
+				$lblPixels.hide();
+				$iptThicc.hide();
+			}
+		});
+
+		$iptThicc.on("keyup", () => {
+			if (!$selOpt) $selOpt = $selThicc.find(`option:selected`);
+			if ($selOpt) {
+				const clean = Math.round(Math.max(1, Number($iptThicc.val())));
+				$selOpt.val(`${clean}`);
+				$selOpt.text($selOpt.text().replace(/\(\d+ px\.\)/, `(${clean} px.)`));
+				d20.engine.canvas.freeDrawingBrush.width = clean;
+			}
+		});
+	};
+
+	d20plus.engine.enhanceTransmogrifier = () => {
+		JqueryUtil.addSelectors();
+
+		$("#transmogrifier").on("click", () => {
+			setTimeout(() => {
+				const $btnAlpha = $(`#vetools-transmog-alpha`);
+				if (!$btnAlpha.length) {
+					const $prependTarget = $(`.ui-dialog-title:textEquals(transmogrifier)`).first().parent().parent().find(`.ui-dialog-content`);
+					$(`<button id="#vetools-transmog-alpha" class="btn btn default" style="margin-bottom: 5px;">Sort Items Alphabetically</button>`).on("click", () => {
+						// coped from a bookmarklet
+						$("iframe").contents().find(".objects").each((c, e) => { let $e = $(e); $e.children().sort((a, b) => { let name1 = $(a).find(".name").text().toLowerCase(); let name2 = $(b).find(".name").text().toLowerCase(); let comp = name1.localeCompare(name2); return comp; }).each((i, c) => $e.append(c)); });
+					}).prependTo($prependTarget);
+				}
+			}, 35);
+		})
+	};
+
+	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
+		const page = d20.Campaign.activePage();
+		if (page && page.get && page.get(`bR20cfg_hidden`)) return page.get(`bR20cfg_hidden`).search(layer) > -1;
+	}
+
+	d20plus.engine.layersVisibilityCheck = () => {
+		const layers = ["floors", "background", "foreground", "roofs"];
+		layers.forEach((layer) => {
+			const isHidden = d20.engine.canvas._objects.some((o) => {
+				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
+			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
+			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
+		});
+		if (!$(`#floatinglayerbar`).hasClass("objects")
+			&& window.currentEditingLayer === "objects") $(`#floatinglayerbar`).addClass("objects");
+	}
+
+	d20plus.engine.layersToggle = (event) => {
+		event.stopPropagation();
+		const target = event.target;
+		const page = d20.Campaign.activePage();
+		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
+		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
+		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+			d20plus.engine.layerVisibilityOff(layer, false);
+		} else {
+			d20plus.engine.layerVisibilityOff(layer, true);
+		}
+	};
+
+	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
+		const menuButton = $(`#editinglayer .choose${layer}`);
+		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
+		const page = d20.Campaign.activePage();
+		if (off) {
+			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
+				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
+				menuButton.addClass("stashed");
+				secondaryButton.addClass("off");
+				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
+					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
+					page.save();
+				}
+			}
+		} else {
+			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
+			menuButton.removeClass("stashed");
+			secondaryButton.removeClass("off");
+			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
+				page.save();
+			}
+		}
+	}
+
+	d20plus.engine._objectsStashProps = (obj, visible) => {
+		[
+			"emits_bright_light",
+			"emits_low_light",
+			"has_directional_bright_light",
+			"has_directional_dim_light",
+			"bar1_value",
+			"bar2_value",
+			"bar3_value",
+			"showname",
+		].each((prop) => {
+			if (!visible) {
+				if (obj.attributes[prop]) {
+					obj.attributes[`bR20_${prop}`] = obj.attributes[prop];
+					obj.attributes[prop] = false;
+				}
+			} else {
+				if (obj.attributes[`bR20_${prop}`]) {
+					obj.attributes[prop] = obj.attributes[`bR20_${prop}`];
+					obj.attributes[`bR20_${prop}`] = null;
+				}
+			}
+		});
+	}
+
+	d20plus.engine._graphicsStashToRight = (_this, visible) => {
+		if (typeof _this.left !== "number") return;
+		if (!visible) {
+			const page = d20.Campaign.pages.get(_this.page_id);
+			const newLeft = _this.left + page.get("width") * 70;
+			_this.bR20_left = _this.left;
+			_this.left = newLeft;
+		} else {
+			if (_this.bR20_left) {
+				_this.left = _this.bR20_left;
+				_this.bR20_left = null;
+			}
+		}
+	}
+
+	d20plus.engine.objectsHideUnhide = (query, val, prefix, visible) => {
+		let some = false;
+		for (const o of d20.engine.canvas._objects) {
+			if (!o.model) continue;
+			if (`${o.model.get(query)}`.search(val) > -1) {
+				const _this = o.model.attributes;
+				const {layer} = o.model.attributes;
+				if (visible) {
+					if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
+						_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
+						if (_this.type !== "path") {
+							_this.layer = layer.replace(`${prefix}_`, "");
+							if (!_this.bR20_hidden) {
+								d20plus.engine._objectsStashProps(o.model, true);
+							}
+						} else if (!_this.bR20_hidden) {
+							d20plus.engine._graphicsStashToRight(_this, true);
+						}
+						o.saveState();
+						o.model.save();
+						some = true;
+					}
+				} else {
+					if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
+						_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
+						if (_this.type !== "path") {
+							_this.layer = `${prefix}_${layer}`;
+							d20plus.engine._objectsStashProps(o.model, false);
+						} else {
+							d20plus.engine._graphicsStashToRight(_this, false);
+						}
+						o.saveState();
+						o.model.save();
+						some = true;
+					}
+				}
+			}
+		}
+		return some;
+	};
+
+	d20plus.engine.addLayers = () => {
+		d20plus.ut.log("Adding layers");
+
+		d20plus.mod.editingLayerOnclick();
+		if (window.is_gm) {
+			// Override icons a bit
+			$(`#floatingtoolbar .chooseobjects .pictos`).html("U");
+			$(`#editinglayer .submenu .choosegmlayer`).html(`
+				<span class="pictos">E</span>
+				${__("ui_bar_gm")}
+			`);
+
+			$(`#floatingtoolbar .choosemap`).html(`
+				<span class="pictos" style="padding: 0 3px 0 3px;">G</span> 
+				${__("ui_bar_map")}
+			`);
+
+			// Add layers to layer dropdown
+			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
+				$(`#floatingtoolbar .choosemap`).after(`
+					<li class="choosebackground">
+						<span class="pictos">a</span>
+						${__("ui_bar_bg")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+				$(`#floatingtoolbar .choosemap`).after(`
+					<li class="choosefloors">
+						<span class="pictos">I</span>
+						${__("ui_bar_fl")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
+				$(`#floatingtoolbar .chooseobjects`).after(`
+					<li class="chooseroofs">
+						<span class="pictos">H</span>
+						${__("ui_bar_rf")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
+				$(`#floatingtoolbar .choosegmlayer`).before(`
+					<li class="chooseforeground">
+						<span class="pictos">B</span>
+						${__("ui_bar_fg")}
+						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+					</li>
+				`);
+				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
+			}
+
+			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
+				$(`#floatingtoolbar .choosewalls`).after(`
+					<li class="chooseweather">
+						<span class="pictos">C</span>
+						${__("ui_bar_we")}
+					</li>
+				`);
+			}
+		}
+
+		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
+		d20.engine.canvas._layerIteratorGenerator = d20plus.mod.layerIteratorGenerator;
+	};
+
+	d20plus.engine.removeLinkConfirmation = function () {
+		d20.utils.handleURL = d20plus.mod.handleURL;
+		$(document).off("click", "a").on("click", "a", d20.utils.handleURL);
+	};
+
+	d20plus.engine.repairPrototypeMethods = function () {
+		d20plus.mod.fixHexMethods();
+		d20plus.mod.fixVideoMethods();
+	};
+
+	d20plus.engine.disableFrameRecorder = function () {
+		if (d20.engine.frame_recorder) {
+			d20.engine.frame_recorder.active = false;
+			d20.engine.frame_recorder._active = false;
+		}
+	};
+}
+
+SCRIPT_EXTENSIONS.push(d20plusEngine);
+
+
+function baseMenu () {
+	d20plus.menu = {};
+
+	d20plus.menu.addSelectedTokenCommands = () => {
+		d20plus.ut.log("Add token rightclick commands");
+		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+			$("#tmpl_actions_menu").replaceWith(d20plus.menu.generateNeatActionsMenu());
+		} else {
+			$("#tmpl_actions_menu").replaceWith(d20plus.html.actionsMenu);
+		}
+
+		const getTokenWhisperPart = () => d20plus.cfg.getOrDefault("token", "massRollWhisperName") ? "/w gm Rolling for @{selected|token_name}...\n" : "";
+
+		Mousetrap.bind("b b", function () { // back on layer
+			const n = d20plus.engine.getSelectedToMove();
+			d20plus.engine.backwardOneLayer(n);
+			return false;
+		});
+
+		Mousetrap.bind("b f", function () { // forward one layer
+			const n = d20plus.engine.getSelectedToMove();
+			d20plus.engine.forwardOneLayer(n);
+			return false;
+		});
+
+		/**
+		 * @param token A token.
+		 * @return {number} 0 for unknown, 1 for NPC, 2 for PC.
+		 */
+		function getTokenType (token) {
+			if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
+				const charIdMaybe = token.model.toJSON().represents;
+				if (!charIdMaybe) return 0; //
+				const charMaybe = d20.Campaign.characters.get(charIdMaybe);
+				if (charMaybe) {
+					const atbs = charMaybe.attribs.toJSON();
+					const npcAtbMaybe = atbs.find(it => it.name === "npc");
+
+					if (npcAtbMaybe && Number(npcAtbMaybe.current) === 1) {
+						return 1;
+					} else {
+						return 2;
+					}
+				} else return 0;
+			} else return 0;
+		}
+
+		const lastContextSelection = {
+			lastAnimUid: null,
+			lastSceneUid: null,
+		};
+
+		/* eslint-disable */
+
+		// BEGIN ROLL20 CODE
+		var e, t = !1, n = [];
+		var i = function() {
+			t && (t.remove(),
+				t = !1),
+			e && clearTimeout(e)
+		};
+		var r = function (r) {
+			var o, a;
+			r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
+				a = r.changedTouches[0].pageY) : (o = r.pageX,
+				a = r.pageY),
+				i(),
+				n = [];
+			for (var s = [], l = d20.engine.selected(), c = 0; c < l.length; c++)
+				n.push(l[c]),
+					s.push(l[c].type);
+			if (s = _.uniq(s),
+			n.length > 0)
+				if (1 == s.length) {
+					var u = n[0];
+					t = $("image" == u.type && 0 == u.model.get("isdrawing") ? $("#tmpl_actions_menu").jqote(u.model) : $("#tmpl_actions_menu").jqote(u.model))
+				} else {
+					var u = n[0];
+					t = $($("#tmpl_actions_menu").jqote(u.model))
+				}
+			else
+				t = $($("#tmpl_actions_menu").jqote({}));
+			if (!window.is_gm && t[0].lastElementChild.childElementCount < 1)
+				return !1;
+			t.appendTo("body");
+			// BEGIN MOD
+			if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
+				setTimeout(() => {
+					const group = $(`.actions_menu > ul > li`).find(`[data-menuname='token']`);
+					if (!group.length) return;
+					$('[id^=r20es-token-ctx-menu-button-]').each( function () {
+						$(this).detach().appendTo(group);
+					});
+				}, 10);
+			}
+			// END MOD
+			var d = t.height()
+				, h = t.width()
+				, p = {};
+			return p.top = a > $("#editor-wrapper").height() - $("#playerzone").height() - d - 100 ? a - d + "px" : a + "px",
+				p.left = o > $("#editor-wrapper").width() - h ? o + 10 - h + "px" : o + 10 + "px",
+				t.css(p),
+				$(".actions_menu").bind("mousedown mouseup touchstart", function(e) {
+					e.stopPropagation()
+				}),
+				$(".actions_menu ul > li").bind("mouseover touchend", function() {
+					if (e && (clearTimeout(e),
+						e = !1),
+					$(this).parents(".hasSub").length > 0)
+						;
+					else if ($(this).hasClass("hasSub")) {
+						$(".actions_menu").css({
+							width: "215px",
+							height: "250px"
+						});
+						var t = this;
+						_.defer(function() {
+							$(".actions_menu ul.submenu").hide(),
+								$(t).find("ul.submenu:hidden").show()
+						})
+					} else
+						$(".actions_menu ul.submenu").hide()
+				}),
+				$(".actions_menu ul.submenu").live("mouseover", function() {
+					e && (clearTimeout(e),
+						e = !1)
+				}),
+				$(".actions_menu, .actions_menu ul.submenu").live("mouseleave", function() {
+					e || (e = setTimeout(function() {
+						$(".actions_menu ul.submenu").hide(),
+							$(".actions_menu").css("width", "100px").css("height", "auto"),
+							e = !1
+					}, 500))
+				}),
+				$(".actions_menu li").on(clicktype, function() {
+					var e = $(this).attr("data-action-type");
+					if (null != e) {
+						if ("copy" == e)
+							d20.clipboard.doCopy(),
+								i();
+						else if ("paste" == e)
+							d20.clipboard.doPaste(),
+								i();
+						else if ("delete" == e) {
+							var t = d20.engine.selected();
+							d20.engine.canvas.deactivateAllWithDispatch();
+							for (var r = 0; r < t.length; r++)
+								t[r].model.destroy();
+							i()
+						} else if ("undo" == e)
+							d20.undo && d20.undo.doUndo(),
+								i();
+						else if ("tofront" == e)
+							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+								_.each(n, function(e) {
+									d20.engine.canvas.bringToFront(e)
+								}),
+								d20.Campaign.activePage().debounced_recordZIndexes(),
+								i();
+						else if ("toback" == e)
+							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+								_.each(n, function(e) {
+									d20.engine.canvas.sendToBack(e)
+								}),
+								d20.Campaign.activePage().debounced_recordZIndexes(),
+								i();
+						else if (-1 !== e.indexOf("tolayer_")) {
+							d20.engine.unselect();
+							var o = e.replace("tolayer_", "");
+							_.each(n, function(e) {
+								e.model.save({
+									layer: o
+								})
+							}),
+								i(),
+								d20.token_editor.removeRadialMenu()
+						} else if ("addturn" == e)
+							_.each(n, function(e) {
+								d20.Campaign.initiativewindow.addTokenToList(e.model.id)
+							}),
+								i(),
+							d20.tutorial && d20.tutorial.active && $(document.body).trigger("addedTurn");
+						else if ("group" == e) {
+							var a = [];
+							d20.engine.unselect(),
+								_.each(n, function(e) {
+									a.push(e.model.id)
+								}),
+								_.each(n, function(e) {
+									e.model.addToGroup(a)
+								}),
+								i();
+							var s = n[0];
+							d20.engine.select(s)
+						} else if ("ungroup" == e)
+							d20.engine.unselect(),
+								_.each(n, function(e) {
+									e.model.clearGroup()
+								}),
+								d20.token_editor.removeRadialMenu(),
+								i();
+						else if ("toggledrawing" == e)
+							d20.engine.unselect(),
+								_.each(n, function(e) {
+									e.model.set({
+										isdrawing: !e.model.get("isdrawing")
+									}).save()
+								}),
+								i(),
+								d20.token_editor.removeRadialMenu();
+						else if ("toggleflipv" == e)
+							d20.engine.unselect(),
+								_.each(n, function(e) {
+									e.model.set({
+										flipv: !e.model.get("flipv")
+									}).save()
+								}),
+								i(),
+								d20.token_editor.removeRadialMenu();
+						else if ("togglefliph" == e)
+							d20.engine.unselect(),
+								_.each(n, function(e) {
+									e.model.set({
+										fliph: !e.model.get("fliph")
+									}).save()
+								}),
+								i(),
+								d20.token_editor.removeRadialMenu();
+						else if ("takecard" == e)
+							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+								_.each(n, function(e) {
+									var t = d20.decks.cardByID(e.model.get("cardid"));
+									if (e.model.get("isdrawing") === !1)
+										var n = {
+											bar1_value: e.model.get("bar1_value"),
+											bar1_max: e.model.get("bar1_max"),
+											bar2_value: e.model.get("bar2_value"),
+											bar2_max: e.model.get("bar2_max"),
+											bar3_value: e.model.get("bar3_value"),
+											bar3_max: e.model.get("bar3_max")
+										};
+									d20.Campaign.hands.addCardToHandForPlayer(t, window.currentPlayer, n ? n : void 0),
+										_.defer(function() {
+											e.model.destroy()
+										})
+								}),
+								d20.engine.unselect(),
+								i();
+						else if ("flipcard" == e)
+							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+								_.each(n, function(e) {
+									var t = e.model.get("sides").split("|")
+										, n = e.model.get("currentSide")
+										, i = n + 1;
+									i > t.length - 1 && (i = 0),
+										e.model.set({
+											currentSide: i,
+											imgsrc: unescape(t[i])
+										}).save()
+								}),
+								i();
+						else if ("setdimensions" == e) {
+							var l = n[0]
+								, c = $($("#tmpl_setdimensions").jqote()).dialog({
+								title: "Set Dimensions",
+								width: 325,
+								height: 225,
+								buttons: {
+									Set: function() {
+										var e, t;
+										"pixels" == c.find(".dimtype").val() ? (e = parseInt(c.find("input.width").val(), 10),
+											t = parseInt(c.find("input.height").val(), 10)) : (e = parseFloat(c.find("input.width").val()) * window.dpi,
+											t = parseFloat(c.find("input.height").val()) * window.dpi),
+											l.model.save({
+												width: e,
+												height: t
+											}),
+											c.off("change"),
+											c.dialog("destroy").remove()
+									},
+									Cancel: function() {
+										c.off("change"),
+											c.dialog("destroy").remove()
+									}
+								},
+								beforeClose: function() {
+									c.off("change"),
+										c.dialog("destroy").remove()
+								}
+							});
+							c.on("change", ".dimtype", function() {
+								"pixels" == $(this).val() ? (c.find("input.width").val(Math.round(l.get("width"))),
+									c.find("input.height").val(Math.round(l.get("height")))) : (c.find("input.width").val(l.get("width") / window.dpi),
+									c.find("input.height").val(l.get("height") / window.dpi))
+							}),
+								c.find(".dimtype").trigger("change"),
+								i()
+						} else if ("aligntogrid" == e)
+							if (0 === d20.Campaign.activePage().get("snapping_increment")) {
+								i();
+								var u = $($("#tmpl_grid-disabled").jqote(h)).dialog({
+									title: "Grid Off",
+									buttons: {
+										Ok: function() {
+											u.off("change"),
+												u.dialog("destroy").remove()
+										}
+									},
+									beforeClose: function() {
+										u.off("change"),
+											u.dialog("destroy").remove()
+									}
+								})
+							} else
+								d20.engine.gridaligner.target = n[0],
+									d20plus.setMode("gridalign"),
+									i();
+						else if ("side_random" == e) {
+							d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
+							var d = [];
+							_.each(n, function(e) {
+								if (e.model && "" != e.model.get("sides")) {
+									var t = e.model.get("sides").split("|")
+										, n = t.length
+										, i = d20.textchat.diceengine.random(n);
+									// BEGIN MOD
+									const imgUrl = unescape(t[i]);
+									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+									// END MOD
+										d.push(t[i])
+								}
+							}),
+								d20.textchat.rawChatInput({
+									type: "tokenroll",
+									content: d.join("|")
+								}),
+								i()
+						} else if ("side_choose" == e) {
+							const e = n[0]
+								, t = e.model.toJSON()
+								, o = t.sides.split("|");
+							let r = t.currentSide;
+							const a = $($("#tmpl_chooseside").jqote()).dialog({
+								title: "Choose Side",
+								width: 325,
+								height: 225,
+								buttons: {
+									Choose: function() {
+										const imgUrl = unescape(o[r]);
+										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+											// BEGIN MOD
+											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											// END MOD
+											a.off("slide"),
+											a.dialog("destroy").remove()
+									},
+									Cancel: function() {
+										a.off("slide"),
+											a.dialog("destroy").remove()
+									}
+								},
+								beforeClose: function() {
+									a.off("slide"),
+										a.dialog("destroy").remove()
+								}
+							})
+								, s = a.find(".sidechoices");
+							for (const e of o) {
+								const t = unescape(e);
+								let n = d20.utils.isVideo(t) ? `<video src="${t.replace("/med.webm", "/thumb.webm")}" muted autoplay loop />` : `<img src="${t}" />`;
+								n = `<div class="sidechoice">${n}</div>`,
+									s.append(n)
+							}
+							s.children().attr("data-selected", !1).eq(r).attr("data-selected", !0),
+								a.find(".sideslider").slider({
+									min: 0,
+									max: o.length - 1,
+									step: 1,
+									value: r
+								}),
+								a.on("slide", function(e, t) {
+									t.value != r && (r = t.value,
+										a.find(".sidechoices .sidechoice").attr("data-selected", !1).eq(t.value).attr("data-selected", !0))
+								}),
+								i(),
+								d20.token_editor.removeRadialMenu()
+						}
+						// BEGIN MOD
+						const showRollOptions = (formula, options) => {
+							const sel = d20.engine.selected();
+
+							options = options.map(it => `<option>${it}</option>`);
+
+							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags(''+__('ui_dialog_select')) + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
+
+							dialog.dialog({
+								title: __('ui_dialog_title'),
+								beforeClose: function() {
+									return false;
+								},
+								buttons: {
+									[__('ui_dialog_submit')+'']: function() {
+										const val = dialog.find("select").val();
+										console.log(val);
+										d20.engine.unselect();
+										sel.forEach(it => {
+											d20.engine.select(it);
+											const toRoll = formula(it, val);
+											d20.textchat.doChatInput(toRoll);
+											d20.engine.unselect();
+										});
+
+										dialog.off();
+										dialog.dialog("destroy").remove();
+										d20.textchat.$textarea.focus();
+									},
+									[__('ui_dialog_cancel')+'']: function() {
+										dialog.off();
+										dialog.dialog("destroy").remove();
+									}
+								}
+							});
+
+							i();
+						};
+
+						if ("rollsaves" === e) {
+							// Mass roll: Saves
+							const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
+							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
+								const out_options = [];
+								const loc_options = {
+									[__('stat_save_str')]: 'Strength',
+									[__('stat_save_dex')]: 'Dexterity',
+									[__('stat_save_con')]: 'Constitution',
+									[__('stat_save_int')]: 'Intelligence',
+									[__('stat_save_wis')]: 'Wisdom',
+									[__('stat_save_cha')]: 'Charisma',
+								}
+								for (const i in loc_options) out_options.push(i);
+								showRollOptions(
+									(token, val) => {
+										return `&{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
+									},
+									out_options
+								);
+							}
+							else if (d20plus.sheet === "ogl") {
+								showRollOptions(
+									(token, val) => {
+										if (getTokenType(token) === 1) {
+											const short = val.substring(0, 3);
+											return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Save}} @{selected|rtype} + [[@{selected|npc_${short.toLowerCase()}_save}]][${short.toUpperCase()}]]]}} {{rname=${val} Save}} {{r1=[[1d20 + [[@{selected|npc_${short.toLowerCase()}_save}]][${short.toUpperCase()}]]]}}`;
+										} else {
+											return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_save_bonus}}} {{r1=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}} {{r2=[[1d20+@{selected|${val.toLowerCase()}_save_bonus}]]}}`;
+										}
+									},
+									options
+								);
+							}
+							else if (d20plus.sheet === "shaped") {
+								showRollOptions(
+									(token, val) => `@{selected|output_option}} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val} Save}} {{mod=@{selected|${val.toLowerCase()}_mod}}} {{roll1=[[1d20+@{selected|${val.toLowerCase()}_mod}]]}} {{roll2=[[1d20+@{selected|${val.toLowerCase()}_mod}]]}}`,
+									options
+								);
+							}
+						} else if ("rollinit" === e) {
+							// Mass roll: Initiative
+							const sel = d20.engine.selected();
+							d20.engine.unselect();
+							sel.forEach(it => {
+								d20.engine.select(it);
+								let toRoll = ``;
+								if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
+									toRoll = `&{template:simple} {{rname=${__('stat_init')}}} {{charname=@{selected|token_name}}} {{mod=@{selected|initiative_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|initiative_bonus} &{tracker}]]}} {{r2=[[@{selected|d20}+@{selected|initiative_bonus}]]}}`;
+								}
+								else if ((d20plus.sheet === "ogl") || !!d20plus.cfg.get('token','massRollAssumesOGL')) {
+									toRoll = `%{selected|Initiative}`;
+								}
+								else if (d20plus.sheet === "shaped") {
+									toRoll = `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{title=INITIATIVE}} {{roll1=[[@{selected|initiative_formula}]]}}`;
+								}
+								d20.textchat.doChatInput(toRoll);
+								d20.engine.unselect();
+							});
+							i();
+						} else if ("rollskills" === e) {
+							// TODO a "roll abilitiy check" option? NPC macro: @{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Check}} @{selected|rtype} + [[@{selected|strength_mod}]][STR]]]}} {{rname=Strength Check}} {{r1=[[1d20 + [[@{selected|strength_mod}]][STR]]]}}
+
+							// Mass roll: Skills
+							const options = [
+								"Athletics",
+								"Acrobatics",
+								"Sleight of Hand",
+								"Stealth",
+								"Arcana",
+								"History",
+								"Investigation",
+								"Nature",
+								"Religion",
+								"Animal Handling",
+								"Insight",
+								"Medicine",
+								"Perception",
+								"Survival",
+								"Deception",
+								"Intimidation",
+								"Performance",
+								"Persuasion"
+							].sort();
+
+							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
+								let out_options = [];
+								const loc_options = {
+									[__('stat_ab_athl')]: 'Athletics',
+									[__('stat_ab_acrb')]: 'Acrobatics',
+									[__('stat_ab_sloh')]: 'Sleight of Hand',
+									[__('stat_ab_stel')]: 'Stealth',
+									[__('stat_ab_arcn')]: 'Arcana',
+									[__('stat_ab_hist')]: 'History',
+									[__('stat_ab_invs')]: 'Investigation',
+									[__('stat_ab_natr')]: 'Nature',
+									[__('stat_ab_relg')]: 'Religion',
+									[__('stat_ab_anih')]: 'Animal Handling',
+									[__('stat_ab_insg')]: 'Insight',
+									[__('stat_ab_medc')]: 'Medicine',
+									[__('stat_ab_perc')]: 'Perception',
+									[__('stat_ab_surv')]: 'Survival',
+									[__('stat_ab_decp')]: 'Deception',
+									[__('stat_ab_intm')]: 'Intimidation',
+									[__('stat_ab_perf')]: 'Performance',
+									[__('stat_ab_pers')]: 'Persuasion',
+								}
+								for (const i in loc_options) out_options.push(i);
+								out_options = out_options.sort();
+								showRollOptions(
+									(token, val) => {
+										const ready_val = loc_options[val].toLowerCase().replace(/ /g, "_");
+										return `&{template:simple} {{rname=^{${ready_val}-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${ready_val}_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}}`;
+									},
+									out_options
+								);
+							}
+							else {
+								showRollOptions(
+									(token, val) => {
+										const clean = val.toLowerCase().replace(/ /g, "_");
+										const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
+	
+										let doRoll = '';
+										if (d20plus.sheet === "ogl") {
+											doRoll = (atb = abil) => {
+												if (getTokenType(token) === 1) {
+													const slugged = val.replace(/\s/g, "_").toLowerCase();
+													return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Skill}} @{selected|rtype} + [[@{selected|npc_${slugged}}]]]]}}; {{rname=${val}}}; {{r1=[[1d20 + [[@{selected|npc_${slugged}}]]]]}}`;
+												} else {
+													return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+												}
+											}
+										} 
+										else if (d20plus.sheet === "shaped"){
+											doRoll = (atb = abil) => {
+												return `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val}}} {{mod=@{selected|${atb}}}} {{roll1=[[1d20+@{selected|${atb}}]]}} {{roll2=[[1d20+@{selected|${atb}}]]}}`;
+											}
+										}
+	
+										try {
+											if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
+												const charIdMaybe = token.model.toJSON().represents;
+												if (!charIdMaybe) return doRoll();
+												const charMaybe = d20.Campaign.characters.get(charIdMaybe);
+												if (charMaybe) {
+													const atbs = charMaybe.attribs.toJSON();
+													const npcAtbMaybe = atbs.find(it => it.name === "npc");
+	
+													if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+														const npcClean = `npc_${clean}`;
+														const bonusMaybe = atbs.find(it => it.name === npcClean);
+														if (bonusMaybe) return doRoll(npcClean);
+														else return doRoll();
+													} else {
+														const pcClean = `${clean}_bonus`;
+														const bonusMaybe = atbs.find(it => it.name === pcClean);
+														if (bonusMaybe) return doRoll(pcClean);
+														else return doRoll();
+													}
+												} else return doRoll();
+											} else return doRoll();
+										} catch (x) {
+											console.error(x);
+											return doRoll();
+										}
+									},
+									options
+								);
+							}
+
+							
+						} else if ("forward-one" === e) {
+							d20plus.engine.forwardOneLayer(n);
+							i();
+						} else if ("back-one" === e) {
+							d20plus.engine.backwardOneLayer(n);
+							i();
+						} else if ("rollertokenresize" === e) {
+							resizeToken();
+							i();
+						} else if ("copy-tokenid" === e) {
+							const sel = d20.engine.selected();
+							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
+							i();
+						} else if ("copy-pathid" === e) {
+							const sel = d20.engine.selected();
+							window.prompt("Copy to clipboard: Ctrl+C, Enter", sel[0].model.id);
+							i();
+						} else if ("token-fly" === e) {
+							const sel = d20.engine.selected().filter(it => it && it.type === "image");
+							new Promise((resolve, reject) => {
+								const $dialog = $(`
+									<div title="Flight Height">
+										<input type="number" placeholder="Flight height" name="flight">
+									</div>
+								`).appendTo($("body"));
+								const $iptHeight = $dialog.find(`input[name="flight"]`).on("keypress", evt => {
+									if (evt.which === 13) { // return
+										doHandleOk();
+									}
+								});
+
+								const doHandleOk = () => {
+									const selected = Number($iptHeight.val());
+									$dialog.dialog("close");
+									if (isNaN(selected)) reject(`Value "${$iptHeight.val()}" was not a number!`);
+									else resolve(selected);
+								};
+
+								$dialog.dialog({
+									dialogClass: "no-close",
+									buttons: [
+										{
+											text: "Cancel",
+											click: function () {
+												$(this).dialog("close");
+												$dialog.remove();
+												reject(`User cancelled the prompt`);
+											}
+										},
+										{
+											text: "OK",
+											click: function () {
+												doHandleOk();
+											}
+										}
+									]
+								});
+							}).then(num => {
+								const STATUS_PREFIX = `fluffy-wing@`;
+								const statusString = `${num}`.split("").map(it => `${STATUS_PREFIX}${it}`).join(",");
+								sel.forEach(s => {
+									const existing = s.model.get("statusmarkers");
+									if (existing && existing.trim()) {
+										s.model.set("statusmarkers", [statusString, ...existing.split(",").filter(it => it && it && !it.startsWith(STATUS_PREFIX))].join(","));
+									} else {
+										s.model.set("statusmarkers", statusString);
+									}
+									s.model.save();
+								});
+							});
+							i();
+						} else if ("token-light" === e) {
+							const SOURCES = {
+								"None (Blind)": {
+									bright: 0,
+									dim: 0
+								},
+								"Torch/Light (Spell)": {
+									bright: 20,
+									dim: 20
+								},
+								"Lamp": {
+									bright: 15,
+									dim: 30
+								},
+								"Lantern, Bullseye": {
+									bright: 60,
+									dim: 60,
+									angle: 30
+								},
+								"Lantern, Hooded": {
+									bright: 30,
+									dim: 30
+								},
+								"Lantern, Hooded (Dimmed)": {
+									bright: 0,
+									dim: 5
+								},
+								"Candle": {
+									bright: 5,
+									dim: 5
+								},
+								"Darkvision": {
+									bright: 0,
+									dim: 60,
+									hidden: true
+								},
+								"Superior Darkvision": {
+									bright: 0,
+									dim: 120,
+									hidden: true
+								}
+							};
+
+							const sel = d20.engine.selected().filter(it => it && it.type === "image");
+							new Promise((resolve, reject) => {
+								const $dialog = $(`
+									<div title="Light">
+										<label class="flex">
+											<span>Set Light Style</span>
+											 <select style="width: 250px;">
+												${Object.keys(SOURCES).map(it => `<option>${it}</option>`).join("")}
+											</select>
+										</label>
+									</div>
+								`).appendTo($("body"));
+								const $selLight = $dialog.find(`select`);
+
+								$dialog.dialog({
+									dialogClass: "no-close",
+									buttons: [
+										{
+											text: "Cancel",
+											click: function () {
+												$(this).dialog("close");
+												$dialog.remove();
+												reject(`User cancelled the prompt`);
+											}
+										},
+										{
+											text: "OK",
+											click: function () {
+												const selected = $selLight.val();
+												$dialog.dialog("close");
+												if (!selected) reject(`No value selected!`);
+												else resolve(selected);
+											}
+										}
+									]
+								});
+							}).then(key => {
+								const light = SOURCES[key];
+
+								const light_otherplayers = !light.hidden;
+								// these are all stored as strings
+								const dimRad = (light.dim || 0);
+								const brightRad = (light.bright || 0);
+								const totalRad = dimRad + brightRad;
+								const light_angle = `${light.angle}` || "";
+								const light_dimradius = `${totalRad - dimRad}`;
+								const light_radius = `${totalRad}`;
+
+								sel.forEach(s => {
+									s.model.set("light_angle", light_angle);
+									s.model.set("light_dimradius", light_dimradius);
+									s.model.set("light_otherplayers", light_otherplayers);
+									s.model.set("light_radius", light_radius);
+									s.model.save();
+								});
+							});
+							i();
+						} else if ("unlock-tokens" === e) {
+							d20plus.tool.get("UNLOCKER").openFn();
+							i();
+						} else if ("lock-token" === e) {
+							d20.engine.selected().forEach(it => {
+								if (it.model) {
+									if (it.model.get("VeLocked")) {
+										it.lockMovementX = false;
+										it.lockMovementY = false;
+										it.lockScalingX = false;
+										it.lockScalingY = false;
+										it.lockRotation = false;
+
+										it.model.set("VeLocked", false);
+									} else {
+										it.lockMovementX = true;
+										it.lockMovementY = true;
+										it.lockScalingX = true;
+										it.lockScalingY = true;
+										it.lockRotation = true;
+
+										it.model.set("VeLocked", true);
+									}
+									it.saveState();
+									it.model.save();
+								}
+							});
+							i();
+						} else if ("token-animate" === e) {
+							d20plus.anim.animatorTool.pSelectAnimation(lastContextSelection.lastAnimUid).then(animUid => {
+								if (animUid == null) return;
+
+								lastContextSelection.lastAnimUid = animUid;
+								const selected = d20.engine.selected();
+								d20.engine.unselect();
+								selected.forEach(it => {
+									if (it.model) {
+										d20plus.anim.animator.startAnimation(it.model, animUid)
+									}
+								});
+							});
+							i();
+						} else if ("util-scenes" === e) {
+							d20plus.anim.animatorTool.pSelectScene(lastContextSelection.lastSceneUid).then(sceneUid => {
+								if (sceneUid == null) return;
+
+								lastContextSelection.lastSceneUid = sceneUid;
+								d20plus.anim.animatorTool.doStartScene(sceneUid);
+							});
+							i();
+						} else if (["assignview0", "assignview1", "assignview2", "assignview3"].includes(e)) {
+							const viewId = e.at(-1);
+							d20.engine.selected().forEach(it => {
+								if (it.model) {
+									if (it.model.get(`bR20_view${viewId}`)) {
+										it.model.set(`bR20_view${viewId}`, false);
+									} else {
+										if (!d20plus.engine.tokenRepresentsPc(it.model)) it.model.set(`bR20_view${viewId}`, true);
+									}
+									it.saveState();
+									it.model.save();
+								}
+							});
+							i();
+						}
+						// END MOD
+						return !1
+					}
+				}),
+				!1
+		};
+		// END ROLL20 CODE
+
+		/* eslint-enable */
+
+		function getRollableTokenUpdate (imgUrl, curSide) {
+			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
+			const toSave = {
+				currentSide: curSide,
+				imgsrc: imgUrl,
+			};
+			if (m) {
+				toSave.width = 70 * Number(m[1]);
+				toSave.height = 70 * Number(m[1])
+			}
+			return toSave;
+		}
+
+		function resizeToken () {
+			const sel = d20.engine.selected();
+
+			const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
+			const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
+			dialog.dialog({
+				title: "New Size",
+				beforeClose: function () {
+					return false;
+				},
+				buttons: {
+					Submit: function () {
+						const size = dialog.find("select").val();
+						d20.engine.unselect();
+						sel.forEach(it => {
+							const nxtSize = size * 70;
+							const sides = it.model.get("sides");
+							if (sides) {
+								const ueSides = unescape(sides);
+								const cur = it.model.get("currentSide");
+								const split = ueSides.split("|");
+								if (split[cur].includes("roll20_token_size")) {
+									split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
+								} else {
+									split[cur] += `?roll20_token_size=${size}`;
+								}
+								const toSaveSides = split.map(it => escape(it)).join("|");
+								const toSave = {
+									sides: toSaveSides,
+									width: nxtSize,
+									height: nxtSize,
+								};
+								// eslint-disable-next-line no-console
+								console.log(`Updating token:`, toSave);
+								it.model.save(toSave);
+							} else {
+								// eslint-disable-next-line no-console
+								console.warn("Token had no side data!")
+							}
+						});
+						dialog.off();
+						dialog.dialog("destroy").remove();
+						d20.textchat.$textarea.focus();
+					},
+					Cancel: function () {
+						dialog.off();
+						dialog.dialog("destroy").remove();
+					},
+				},
+			});
+		}
+
+		d20.token_editor.showContextMenu = r;
+		d20.token_editor.closeContextMenu = i;
+		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+	};
+
+	d20plus.menu._neatActionsView = (id) => {
+		return `
+			<span class="pictos ctx__layer-icon"><$ if (d20.Campaign.activePage().get('bR20cfg_views${id}Icon')) { 
+				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Icon')$> <$
+			} else { 
+				$>P<$ 
+			} $> </span> <$
+			if (d20.Campaign.activePage().get('bR20cfg_views${id}Name')) { 
+				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Name')$> <$
+			} else { 
+				$> ${id ? `View ${id}` : `Default`} <$ 
+			} $>`;
+	};
+
+	d20plus.menu.neatActions = {
+		"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
+		"takecard": { ln: __("menu_take_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
+		"flipcard": { ln: __("menu_flip_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
+		"delete": { ln: __("menu_edit_del"), icon: "#", condition: "this.view" },
+		"copy": { ln: __("menu_edit_copy"), icon: "|", condition: "window.is_gm && this.view" },
+		"paste": { ln: __("menu_edit_paste"), icon: "W", condition: "window.is_gm && !this.view" },
+		"undo": { ln: __("menu_edit_undo"), icon: "1", condition: "window.is_gm" },
+		"tofront": { ln: __("menu_move_tofront"), condition: "this.view" },
+		"forward-one": { ln: __("menu_move_forwone"), condition: "this.view" },
+		"back-one": { ln: __("menu_move_backone"), condition: "this.view", quick: __("menu_quick_toback")},
+		"toback": { ln: __("menu_move_toback"), condition: "this.view" },
+		"tolayer_map": { ln: __("menu_layer_map"), icon: "G", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"map\"" },
+		"tolayer_floors": { ln: __("menu_layer_fl"), icon: "I", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showFloors\")", active: "this && this.get && this.get(\"layer\") == \"floors\"" },
+		"tolayer_background": { ln: __("menu_layer_bg"), icon: "a", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showBackground\")", active: "this && this.get && this.get(\"layer\") == \"background\"" },
+		"tolayer_objects": { ln: __("menu_layer_obj"), icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"", quick: __("menu_quick_tofg") },
+		"tolayer_foreground": { ln: __("menu_layer_fg"), icon: "B", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"" },
+		"tolayer_roofs": { ln: __("menu_layer_rf"), icon: "H", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showRoofs\")", active: "this && this.get && this.get(\"layer\") == \"roofs\"" },
+		"tolayer_gmlayer": { ln: __("menu_layer_gm"), icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: __("menu_quick_togm")},
+		"tolayer_walls": { ln: __("menu_layer_barriers"), icon: "r", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"walls\"" },
+		"tolayer_weather": { ln: __("menu_layer_weather"), icon: "C", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showWeather\")", active: "this && this.get && this.get(\"layer\") == \"weather\"" },
+		"util-scenes": { ln: __("menu_util_start"), condition: "" },
+		"token-animate": { ln: __("menu_util_animate"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"token-fly": { ln: __("menu_util_flight"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.attributes.statusmarkers.search(\"fluffy-wing@\")>-1" },
+		"token-light": { ln: __("menu_util_light"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"group": { ln: __("menu_adv_grp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && !d20.engine.selected().some( el => !!el.model.get(\"groupwith\")) )" },
+		"regroup": { ln: __("menu_adv_regrp"), condition: "this.view && this.get && (d20.engine.selected().length > 2 && d20.engine.selected().some( el => !el.model.get(\"groupwith\")) )", action: "group"},
+		"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.view && this.get  && d20.engine.selected().some( el => !!el.model.get(\"groupwith\"))" },
+		"toggledrawing": { ln: __("menu_adv_isdrv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"isdrawing\")" },
+		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
+		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
+		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
+		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
+		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
+		"copy-tokenid": { ln: __("menu_adv_tokenid"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"copy-pathid": { ln: __("menu_adv_pathid"), condition: "this.get && this.get(\"type\") == \"path\"" },
+		"addturn": { ln: __("menu_token_turn"), condition: "this.get && this.get(\"type\") != \"path\"" },
+		"rollinit": { ln: __("menu_mass_init"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
+		"rollsaves": { ln: __("menu_mass_save"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: __("menu_quick_save")},
+		"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
+		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
+		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
+		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
+		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
+	};
+
+	d20plus.menu._neatStructure = {
+		"edit": {
+			ln: __("menu_edit_title"),
+			subitems: [
+				"delete",
+				"copy",
+				"paste",
+				"undo",
+			] },
+		"move": {
+			ln: __("menu_move_title"),
+			subitems: [
+				"tofront",
+				"forward-one",
+				"back-one",
+				"toback",
+			] },
+		"layer": {
+			ln: __("menu_layer_title"),
+			subitems: [
+				"tolayer_map",
+				"tolayer_floors",
+				"tolayer_background",
+				"tolayer_objects",
+				"tolayer_foreground",
+				"tolayer_roofs",
+				"tolayer_gmlayer",
+				"tolayer_walls",
+				"tolayer_weather",
+			] },
+		"view": {
+			ln: __("menu_view_title"),
+			subitems: [
+				"assignview0",
+				"assignview1",
+				"assignview2",
+				"assignview3",
+			] },
+		"util": {
+			ln: __("menu_util_title"),
+			subitems: [
+				"util-scenes",
+				"-",
+				"token-animate",
+				"token-fly",
+				"token-light",
+			] },
+		"adv": {
+			ln: __("menu_adv_title"),
+			subitems: [
+				"unlock-tokens",
+				"group",
+				"regroup",
+				"ungroup",
+				"lock-token",
+				"unlock-token",
+				"-",
+				"toggledrawing",
+				"togglefliph",
+				"toggleflipv",
+				"setdimensions",
+				"aligntogrid",
+				"copy-tokenid",
+				"copy-pathid",
+			] },
+		"token": {
+			ln: __("menu_token_title"),
+			subitems: [
+				"addturn",
+				"-",
+			] },
+		"mass": {
+			ln: __("menu_mass_title"),
+			subitems: [
+				"rollinit",
+				"rollsaves",
+				"rollskills",
+			] },
+		"multi": {
+			ln: __("menu_multi_title"),
+			subitems: [
+				"side_random",
+				"side_choose",
+				"-",
+				"rollertokenresize",
+			] },
+		"card": {
+			ln: __("menu_card_title"),
+			subitems: [
+				"takecard",
+				"flipcard",
+			] },
+	};
+
+	d20plus.menu._pushQuickMenus = () => {
+		if (d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems")) {
+			let output = "";
+			const pushMenu = (num, action, condition) => {
+				if (!action) action = d20plus.cfg.getOrDefault(`canvas`, `quickMenuItem${num}`);
+				if (action) title = d20plus.menu.neatActions[action].quick || d20plus.menu.neatActions[action].ln;
+				if (action && title) {
+					if (!condition) {
+						condition = d20plus.menu.neatActions[action].condition;
+					}
+					const conditionStatement = condition ? `if (${condition})` : ``;
+					output += `<$ ${conditionStatement} { $><li data-action-type='${action}'>${title}</li><$ } $>`;
+				}
+			};
+			pushMenu(null, "tolayer_objects", `this.view && this.get("layer") == "gmlayer"`);
+			pushMenu(null, "tolayer_gmlayer", `this.view && this.get("layer") != "gmlayer"`);
+			pushMenu(2);
+			pushMenu(3);
+			return output;
+		} else return "";
+	};
+
+	d20plus.menu.generateNeatActionsMenu = () => {
+		let templ = "";
+		Object.entries(d20plus.menu._neatStructure).forEach((menu) => {
+			const menuData = menu[1];
+			const menuName = `data-menuname='${menu[0]}'`;
+			let menuConditions = [];
+			let menuItems = "";
+			menuData.subitems.forEach((item) => {
+				if (item === "-") {
+					menuItems += `\n\t\t<div class="ctx__divider"></div>`;
+				} else {
+					let itemAction = d20plus.menu.neatActions[item].action || item;
+					item = d20plus.menu.neatActions[item];
+					const itemName = item.ln;
+					const itemCondition = item.condition;
+					const iconsStyle = item.icon === "a" ? `` : ` style="font-family:&quot;pictos custom&quot;, pictos"`;
+					const itemIcon = item.icon ? `<span class="pictos ctx__layer-icon"${iconsStyle}>${item.icon}</span> ` : ``;
+					const itemActive = item.active ? ` class='<$ if(${item.active}) { $>active<$ } $>'` : ``;
+					const conditionStatement = itemCondition ? `if (${itemCondition})` : ``;
+					if (itemCondition && (menuConditions.at(-1) !== itemCondition)) menuConditions.push(itemCondition);
+					if (itemAction === "unlock-token") itemAction = "lock-token";
+					menuItems += `\n\t\t<$ ${conditionStatement} { $><li data-action-type='${itemAction}'${itemActive}>${itemIcon}${itemName}</li><$ } $>`;
+				}
+			})
+			templ += `<$ if ((${menuConditions.join(") || (")})) { $><li class='head hasSub' ${menuName}>\n\t${menuData.ln}&nbsp;&raquo;
+			<ul class='submenu' ${menuName}>${menuItems}\n\t</ul>\n</li><$ } $>\n`;
+		});
+		return `
+		<script id='tmpl_actions_menu' type='text/html'>
+		<div class='actions_menu d20contextmenu'>
+		  <ul>
+		  	${templ}
+			${d20plus.menu._pushQuickMenus()}
+		  </ul>
+		  </div>
+		</script>
+		`;
+	};
+
+	addConfigOptions("canvas", {
+		"_name": __("cfg_tab_canvas"),
+		"_player": true,
+		"enableQuickMenuItems": {
+			"name": __("cfg_option_quick_menu"),
+			"default": true,
+			"_type": "boolean",
+		},
+		"quickMenuItem2": {
+			"name": __("cfg_option_quick_2"),
+			"default": "back-one",
+			"_type": "_enum",
+			"__values": Object.keys(d20plus.menu.neatActions),
+		},
+		"quickMenuItem3": {
+			"name": __("cfg_option_quick_3"),
+			"default": "rollsaves",
+			"_type": "_enum",
+			"__values": Object.keys(d20plus.menu.neatActions),
+		},
+	});
+}
+
+SCRIPT_EXTENSIONS.push(baseMenu);
+
+
+function baseWeather () {
+	d20plus.weather = {};
+
+	d20plus.weather.props = {
+		"weatherType1": "None",
+		"weatherTypeCustom1": "",
+		"weatherSpeed1": "0.4",
+		"weatherDir1": "Northerly",
+		"weatherDirCustom1": "180",
+		"weatherOpacity1": "0.5",
+		"weatherOscillate1": false,
+		"weatherOscillateThreshold1": "0.5",
+		"weatherIntensity1": "Normal",
+		"weatherTint1": false,
+		"weatherTintColor1": "#4c566d",
+		"weatherTintOpacity1": "0.5",
+		"weatherEffect1": "None",
+	};
+
+	d20plus.weather.addWeather = () => {
+		window.force = false; // missing variable in Roll20's code(?); define it here
+
+		d20plus.ut.log("Adding weather");
+
+		const MAX_ZOOM = 2.5; // max canvas zoom
+		const tmp = []; // temp vector
+		// cache images
+		const IMAGES = {
+			"Rain": new Image(),
+			"Snow": new Image(),
+			"Fog": new Image(),
+			"Waves": new Image(),
+			"Ripples": new Image(),
+			"Blood Rain": new Image(),
+		};
+		IMAGES.Rain.src = "https://i.imgur.com/lZrqiVk.png";
+		IMAGES.Snow.src = "https://i.imgur.com/uwLQjWY.png";
+		IMAGES.Fog.src = "https://i.imgur.com/SRsUpHW.png";
+		IMAGES.Waves.src = "https://i.imgur.com/iYEzmvB.png";
+		IMAGES.Ripples.src = "https://i.imgur.com/fFCr0yx.png";
+		IMAGES["Blood Rain"].src = "https://i.imgur.com/SP2aoeq.png";
+		const SFX = {
+			lightning: [],
+		};
+
+		// FIXME find a better way of handling this; `clip` is super-slow
+		const clipMode = "EXCLUDE";
+
+		function SfxLightning () {
+			this.brightness = 255;
+		}
+
+		const $wrpEditor = $("#editor-wrapper");
+
+		// add custom canvas
+		const $wrpCanvas = $wrpEditor.find(".canvas-container");
+
+		// make buffer canvas
+		const $canBuf = $("<canvas style='position: absolute; z-index: -100; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
+		const cvBuf = $canBuf[0];
+		const ctxBuf = cvBuf.getContext("2d");
+
+		// make weather canvas
+		const $canvasWeather = $("<canvas id='Vet-canvas-weather' style='position: absolute; z-index: 2; left:0; top: 0; pointer-events: none;' tabindex='-1'/>").appendTo($wrpCanvas);
+		const cv = $canvasWeather[0];
+		d20.engine.weathercanvas = cv;
+
+		// add our canvas to those adjusted when canvas size changes
+		const cachedSetCanvasSize = d20.engine.setCanvasSize;
+		d20.engine.setCanvasSize = function (e, n) {
+			cv.width = e;
+			cv.height = n;
+
+			cvBuf.width = e;
+			cvBuf.height = n;
+
+			cachedSetCanvasSize(e, n);
+		};
+
+		cv.width = cvBuf.width = d20.engine.canvas.width;
+		cv.height = cvBuf.height = d20.engine.canvas.height;
+
+		const ctx = cv.getContext("2d");
+
+		const CTX = {
+			_hasWarned: new Set(),
+		};
+
+		function ofX (x) { // offset X
+			return x - d20.engine.currentCanvasOffset[0];
+		}
+
+		function ofY (y) { // offset Y
+			return y - d20.engine.currentCanvasOffset[1];
+		}
+
+		function lineIntersectsBounds (points, bounds) {
+			return d20plus.math.doPolygonsIntersect([points[0], points[2], points[3], points[1]], bounds);
+		}
+
+		function copyPoints (toCopy) {
+			return [...toCopy.map(pt => [...pt])];
+		}
+
+		function getImage (page) {
+			const imageName = page.get("bR20cfg_weatherType1");
+
+			switch (imageName) {
+				case "Rain":
+				case "Snow":
+				case "Fog":
+				case "Waves":
+				case "Ripples":
+				case "Blood Rain":
+					IMAGES["Custom"] = null;
+					return IMAGES[imageName];
+				case "Custom (see below)":
+					if (!IMAGES["Custom"] || (
+						(IMAGES["Custom"].src !== page.get("bR20cfg_weatherTypeCustom1") && IMAGES["Custom"]._errorSrc == null)
+						|| (IMAGES["Custom"]._errorSrc != null && IMAGES["Custom"]._errorSrc !== page.get("bR20cfg_weatherTypeCustom1")))
+					) {
+						IMAGES["Custom"] = new Image();
+						IMAGES["Custom"]._errorSrc = null;
+						IMAGES["Custom"].onerror = () => {
+							if (IMAGES["Custom"]._errorSrc == null) {
+								IMAGES["Custom"]._errorSrc = page.get("bR20cfg_weatherTypeCustom1");
+								alert(`Custom weather image "${IMAGES["Custom"].src}" failed to load!`);
+							}
+							IMAGES["Custom"].src = IMAGES["Rain"].src;
+						};
+						IMAGES["Custom"].src = page.get("bR20cfg_weatherTypeCustom1");
+					}
+					return IMAGES["Custom"];
+				default:
+					IMAGES["Custom"] = null;
+					return null;
+			}
+		}
+
+		function getDirectionRotation (page) {
+			const dir = page.get("bR20cfg_weatherDir1") || d20plus.weather.props.weatherDir1;
+			switch (dir) {
+				case "Northerly": return 0.25 * Math.PI;
+				case "North-Easterly": return 0.5 * Math.PI;
+				case "Easterly": return 0.75 * Math.PI;
+				case "South-Easterly": return Math.PI;
+				case "Southerly": return 1.25 * Math.PI;
+				case "South-Westerly": return 1.5 * Math.PI;
+				case "Westerly": return 1.75 * Math.PI;
+				case "North-Westerly": return 0;
+				case "Custom (see below)":
+					return Number(page.get("bR20cfg_weatherDirCustom1") || d20plus.weather.props.weatherDirCustom1) * Math.PI / 180;
+				default: return 0;
+			}
+		}
+
+		function getOpacity (page) {
+			return page.get("bR20cfg_weatherOpacity1") || d20plus.weather.props.weatherOpacity1;
+		}
+
+		let oscillateMode = null;
+		function isOscillating (page) {
+			return !!page.get("bR20cfg_weatherOscillate1");
+		}
+
+		function getOscillationThresholdFactor (page) {
+			return page.get("bR20cfg_weatherOscillateThreshold1") || d20plus.weather.props.weatherOscillateThreshold1;
+		}
+
+		function getIntensity (page) {
+			const tint = page.get("bR20cfg_weatherIntensity1");
+			switch (tint) {
+				case "Heavy": return 1;
+				default: return 0;
+			}
+		}
+
+		function getTintColor (page) {
+			const tintEnabled = page.get("bR20cfg_weatherTint1");
+			if (tintEnabled) {
+				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1");
+				const tintOpacityHex = tintOpacity ? (14 + Math.round((243 - 16) * tintOpacity)).toString(16) : undefined;
+				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}${(tintOpacityHex || "80")}`;
+			} else return null;
+		}
+
+		function getEffect (page) {
+			const effect = page.get("bR20cfg_weatherEffect1");
+			switch (effect) {
+				case "Lightning": return "lightning";
+				default: return null;
+			}
+		}
+
+		function handleSvgCoord (coords, obj, basesXY, center, angle) {
+			const vec = [
+				ofX(coords[0] * obj.scaleX) + basesXY[0],
+				ofY(coords[1] * obj.scaleY) + basesXY[1],
+			];
+			d20plus.math.vec2.scale(vec, vec, d20.engine.canvasZoom);
+			if (angle) d20plus.math.vec2.rotate(vec, vec, center, angle);
+			return vec;
+		}
+
+		let accum = 0;
+		let then = 0;
+		let image;
+		let currentSfx;
+		let hasWeather = false;
+		function drawFrame (now) {
+			const deltaTime = now - then;
+			then = now;
+
+			const page = d20 && d20.Campaign && d20.Campaign.activePage ? d20.Campaign.activePage() : null;
+			if (page && page.get("bR20cfg_weatherType1") !== "None") {
+				image = getImage(page);
+				currentSfx = getEffect(page);
+
+				// generate SFX
+				if (currentSfx) {
+					if (currentSfx === "lightning" && Math.random() > 0.999) SFX.lightning.push(new SfxLightning());
+				} else {
+					SFX.lightning = [];
+				}
+
+				if (hasWeather) ctx.clearRect(0, 0, cv.width, cv.height);
+				const hasImage = image && image.complete;
+				const tint = getTintColor(page);
+				const scaledW = hasImage ? Math.ceil((image.width * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
+				const scaledH = hasImage ? Math.ceil((image.height * d20.engine.canvasZoom) / MAX_ZOOM) : -1;
+				const hasSfx = SFX.lightning.length;
+				if (hasImage || tint || hasSfx) {
+					hasWeather = true;
+
+					// draw weather
+					if (
+						hasImage
+						&& !(scaledW <= 0 || scaledH <= 0) // sanity check
+					) {
+						// mask weather
+						const doMaskStep = () => {
+							ctxBuf.clearRect(0, 0, cvBuf.width, cvBuf.height);
+
+							ctxBuf.fillStyle = "#ffffffff";
+
+							const objectLen = d20.engine.canvas._objects.length;
+							for (let i = 0; i < objectLen; ++i) {
+								const obj = d20.engine.canvas._objects[i];
+								if (obj.type === "path" && obj.model && obj.model.get("layer") === "weather") {
+									// obj.top is X pos of center of object
+									// obj.left is Y pos of center of object
+									const xBase = (obj.left - (obj.width * obj.scaleX / 2));
+									const yBase = (obj.top - (obj.height * obj.scaleY / 2));
+									const basesXY = [xBase, yBase];
+									const angle = (obj.angle > 360 ? obj.angle - 360 : obj.angle) / 180 * Math.PI;
+									const center = [ofX(obj.left), ofY(obj.top)];
+									d20plus.math.vec2.scale(center, center, d20.engine.canvasZoom);
+
+									ctxBuf.beginPath();
+									obj.path.forEach(opp => {
+										const [op, x, y, ...others] = opp;
+										switch (op) {
+											case "M": {
+												const vec = handleSvgCoord([x, y], obj, basesXY, center, angle);
+												ctxBuf.moveTo(vec[0], vec[1]);
+												break;
+											}
+											case "L": {
+												const vec = handleSvgCoord([x, y], obj, basesXY, center, angle);
+												ctxBuf.lineTo(vec[0], vec[1]);
+												break;
+											}
+											case "C": {
+												const control1 = handleSvgCoord([x, y], obj, basesXY, center, angle);
+												const control2 = handleSvgCoord([others[0], others[1]], obj, basesXY, center, angle);
+												const end = handleSvgCoord([others[2], others[3]], obj, basesXY, center, angle);
+												ctxBuf.bezierCurveTo(...control1, ...control2, ...end);
+												break;
+											}
+											default:
+												if (!CTX._hasWarned.has(op)) {
+													CTX._hasWarned.add(op);
+													// eslint-disable-next-line no-console
+													console.error(`UNHANDLED OP!: ${op}`);
+												}
+										}
+									});
+									ctxBuf.fill();
+									ctxBuf.closePath();
+								}
+							}
+
+							// draw final weather mask
+							/// / change drawing mode
+							ctx.globalCompositeOperation = "destination-out";
+							ctx.drawImage(cvBuf, 0, 0);
+
+							// handle opacity
+							const opacity = Number(getOpacity(page));
+							if (opacity !== 1) {
+								ctxBuf.clearRect(0, 0, cvBuf.width, cvBuf.height);
+								ctxBuf.fillStyle = `#ffffff${Math.round((1 - opacity) * 255).toString(16)}`;
+								ctxBuf.fillRect(0, 0, cvBuf.width, cvBuf.height);
+								ctx.drawImage(cvBuf, 0, 0);
+							}
+
+							/// / reset drawing mode
+							ctx.globalCompositeOperation = "source-over";
+						};
+
+						// if (clipMode === "INCLUDE") doMaskStep(true);
+
+						const speed = page.get("bR20cfg_weatherSpeed1") || d20plus.weather.props.weatherSpeed1;
+						const speedFactor = speed * d20.engine.canvasZoom;
+						const maxAccum = Math.floor(scaledW / speedFactor);
+						const rot = getDirectionRotation(page);
+						const w = scaledW;
+						const h = scaledH;
+						const boundingBox = [
+							[
+								-1.5 * w,
+								-1.5 * h,
+							],
+							[
+								-1.5 * w,
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
+							],
+							[
+								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
+								cv.height + (1.5 * h) + d20.engine.currentCanvasOffset[1],
+							],
+							[
+								cv.width + (1.5 * w) + d20.engine.currentCanvasOffset[0],
+								-1.5 * h,
+							],
+						];
+						const BASE_OFFSET_X = -w / 2;
+						const BASE_OFFSET_Y = -h / 2;
+
+						// calculate resultant points of a rotated shape
+						const pt00 = [0, 0];
+						const pt01 = [0, 1];
+						const pt10 = [1, 0];
+						const pt11 = [1, 1];
+						const basePts = [
+							pt00,
+							pt01,
+							pt10,
+							pt11,
+						].map(pt => [
+							(pt[0] * w) + BASE_OFFSET_X - d20.engine.currentCanvasOffset[0],
+							(pt[1] * h) + BASE_OFFSET_Y - d20.engine.currentCanvasOffset[1],
+						]);
+						basePts.forEach(pt => d20plus.math.vec2.rotate(pt, pt, [0, 0], rot));
+
+						// calculate animation values
+						(() => {
+							if (isOscillating(page)) {
+								const oscThreshFactor = getOscillationThresholdFactor(page);
+
+								if (oscillateMode == null) {
+									oscillateMode = 1;
+									accum += deltaTime;
+									if (accum >= maxAccum * oscThreshFactor) accum -= maxAccum;
+								} else {
+									if (oscillateMode === 1) {
+										accum += deltaTime;
+										if (accum >= maxAccum * oscThreshFactor) {
+											accum -= 2 * deltaTime;
+											oscillateMode = -1;
+										}
+									} else {
+										accum -= deltaTime;
+										if (accum <= 0) {
+											oscillateMode = 1;
+											accum += 2 * deltaTime;
+										}
+									}
+								}
+							} else {
+								oscillateMode = null;
+								accum += deltaTime;
+								if (accum >= maxAccum) accum -= maxAccum;
+							}
+						})();
+
+						const intensity = getIntensity(page) * speedFactor;
+						const timeOffsetX = Math.ceil(speedFactor * accum);
+						const timeOffsetY = Math.ceil(speedFactor * accum);
+
+						/// / rotate coord space
+						ctx.rotate(rot);
+
+						// draw base image
+						const doDraw = (offsetX, offsetY) => {
+							const xPos = BASE_OFFSET_X + timeOffsetX + offsetX - d20.engine.currentCanvasOffset[0];
+							const yPos = BASE_OFFSET_Y + timeOffsetY + offsetY - d20.engine.currentCanvasOffset[1];
+							ctx.drawImage(
+								image,
+								xPos,
+								yPos,
+								w,
+								h,
+							);
+
+							if (intensity) {
+								const offsetIntensity = -Math.floor(w / 4);
+								ctx.drawImage(
+									image,
+									xPos + offsetIntensity,
+									yPos + offsetIntensity,
+									w,
+									h,
+								);
+							}
+						}
+
+						const inBounds = (nextPts) => {
+							return lineIntersectsBounds(nextPts, boundingBox);
+						}
+
+						const moveXDir = (pt, i, isAdd) => {
+							if (i % 2) d20plus.math.vec2.sub(tmp, basePts[3], basePts[1]);
+							else d20plus.math.vec2.sub(tmp, basePts[2], basePts[0]);
+
+							if (isAdd) d20plus.math.vec2.add(pt, pt, tmp);
+							else d20plus.math.vec2.sub(pt, pt, tmp);
+						}
+
+						const moveYDir = (pt, i, isAdd) => {
+							if (i > 1) d20plus.math.vec2.sub(tmp, basePts[3], basePts[2]);
+							else d20plus.math.vec2.sub(tmp, basePts[1], basePts[0]);
+
+							if (isAdd) d20plus.math.vec2.add(pt, pt, tmp);
+							else d20plus.math.vec2.sub(pt, pt, tmp);
+						}
+
+						const getMaxMoves = () => {
+							const hyp = [];
+							d20plus.math.vec2.sub(hyp, boundingBox[2], boundingBox[0]);
+
+							const dist = d20plus.math.vec2.len(hyp);
+							const maxMoves = dist / Math.min(w, h);
+							return [Math.abs(hyp[0]) > Math.abs(hyp[1]) ? "x" : "y", maxMoves];
+						};
+
+						const handleXAxisYIncrease = (nxtPts, maxMoves, moves, xDir) => {
+							const handleY = (dir) => {
+								let subNxtPts, subMoves;
+								subNxtPts = copyPoints(nxtPts);
+								subMoves = 0;
+								while (subMoves <= maxMoves[1]) {
+									subNxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
+									subMoves++;
+									if (inBounds(subNxtPts)) doDraw(xDir * moves * w, dir * (subMoves * h));
+								}
+							};
+
+							handleY(1); // y axis increasing
+							handleY(-1); // y axis decreasing
+						};
+
+						const handleYAxisXIncrease = (nxtPts, maxMoves, moves, yDir) => {
+							const handleX = (dir) => {
+								let subNxtPts, subMoves;
+								subNxtPts = copyPoints(nxtPts);
+								subMoves = 0;
+								while (subMoves <= maxMoves[1]) {
+									subNxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
+									subMoves++;
+									if (lineIntersectsBounds(subNxtPts, boundingBox)) doDraw(dir * (subMoves * w), yDir * moves * h);
+								}
+							};
+
+							handleX(1); // x axis increasing
+							handleX(-1); // x axis decreasing
+						};
+
+						const handleBasicX = (maxMoves) => {
+							const handleX = (dir) => {
+								let nxtPts, moves;
+								nxtPts = copyPoints(basePts);
+								moves = 0;
+								while (moves < maxMoves) {
+									nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
+									moves++;
+									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
+								}
+							};
+
+							handleX(1); // x axis increasing
+							handleX(-1); // x axis decreasing
+						};
+
+						const handleBasicY = (maxMoves) => {
+							const handleY = (dir) => {
+								let nxtPts, moves;
+								nxtPts = copyPoints(basePts);
+								moves = 0;
+								while (moves < maxMoves) {
+									nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
+									moves++;
+									if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
+								}
+							};
+
+							handleY(1); // y axis increasing
+							handleY(-1); // y axis decreasing
+						};
+
+						doDraw(0, 0);
+
+						(() => {
+							// choose largest axis
+							const maxMoves = getMaxMoves();
+
+							if (maxMoves[0] === "x") {
+								const handleX = (dir) => {
+									let nxtPts, moves;
+									nxtPts = copyPoints(basePts);
+									moves = 0;
+									while (moves < maxMoves[1]) {
+										nxtPts.forEach((pt, i) => moveXDir(pt, i, dir > 0));
+										moves++;
+										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(dir * (moves * w), 0);
+										handleXAxisYIncrease(nxtPts, maxMoves, moves, dir);
+									}
+								};
+
+								handleBasicY(maxMoves[1]);
+								handleX(1); // x axis increasing
+								handleX(-1); // x axis decreasing
+							} else {
+								const handleY = (dir) => {
+									let nxtPts, moves;
+									nxtPts = copyPoints(basePts);
+									moves = 0;
+									while (moves < maxMoves[1]) {
+										nxtPts.forEach((pt, i) => moveYDir(pt, i, dir > 0));
+										moves++;
+										if (lineIntersectsBounds(nxtPts, boundingBox)) doDraw(0, dir * (moves * h));
+										handleYAxisXIncrease(nxtPts, maxMoves, moves, dir);
+									}
+								};
+
+								handleBasicX(maxMoves[1]);
+								handleY(1); // y axis increasing
+								handleY(-1); // y axis decreasing
+							}
+						})();
+
+						/// / revert coord space rotation
+						ctx.rotate(-rot);
+
+						if (clipMode === "EXCLUDE") doMaskStep(false);
+					}
+
+					// draw sfx
+					if (hasSfx) {
+						for (let i = SFX.lightning.length - 1; i >= 0; --i) {
+							const l = SFX.lightning[i];
+							if (l.brightness <= 5) {
+								SFX.lightning.splice(i, 1);
+							} else {
+								ctx.fillStyle = `#effbff${l.brightness.toString(16).padStart(2, "0")}`;
+								ctx.fillRect(0, 0, cv.width, cv.height);
+								l.brightness -= Math.floor(deltaTime);
+							}
+						}
+					}
+
+					// draw tint
+					if (tint) {
+						ctx.fillStyle = tint;
+						ctx.fillRect(0, 0, cv.width, cv.height);
+					}
+				}
+
+				requestAnimationFrame(drawFrame);
+			} else {
+				// if weather is disabled, maintain a background tick
+				if (hasWeather) {
+					ctx.clearRect(0, 0, cv.width, cv.height);
+					hasWeather = false;
+				}
+				setTimeout(() => {
+					drawFrame(0);
+				}, 1000);
+			}
+		}
+
+		requestAnimationFrame(drawFrame);
+	};
+}
+
+SCRIPT_EXTENSIONS.push(baseWeather);
+
+
+function baseViews () {
+	d20plus.views = {};
+
+	d20plus.views.props = {
+		"viewsEnable": false,
+		"views0Name": "",
+		"views1Enable": false,
+		"views1Exclusive": false,
+		"views1Name": "",
+		"views2Enable": false,
+		"views2Exclusive": false,
+		"views2Name": "",
+		"views3Enable": false,
+		"views3Exclusive": false,
+		"views3Name": "",
+	};
+
+	d20plus.views._initMenuActions = () => {
+		$(`body`).on("click", ".chooseViews > li", function () {
+			const page = d20.Campaign.activePage();
+			const items = $(".chooseViews > li")
+			const id = items.index(this);
+			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
+			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
+			if (page.get(`bR20cfg_views${id}Off`)) {
+				d20plus.views.changeViewState(id, true);
+				for (let i = startgroupindex; i <= endgroupindex; i++) {
+					if (i !== id) d20plus.views.changeViewState(i, false);
+				}
+			} else {
+				d20plus.views.changeViewState(id, false);
+			}
+		});
+	}
+
+	d20plus.views._initViewsCss = () => {
+		d20plus.ut.dynamicStyles("viewsSelect").html(`
+			.ui-dialog label.half {display: inline-block; margin-bottom: 6px;}
+			.ui-dialog label.half span {margin-right: 20px;}
+			#floatingtoolbar ul.chooseViews li {border-width: 1px;border-style: solid; border-color: var(--dark-surface1);}
+			#floatingtoolbar ul.chooseViews:empty {display:none;}
+			#floatingtoolbar ul.chooseViews li {height: 19px; border-radius: 12px;}
+			#floatingtoolbar ul.chooseViews li.fst {border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom-width: 0px;}
+			#floatingtoolbar ul.chooseViews li.lst {border-top-left-radius: 0px; border-top-right-radius: 0px; border-top-width: 0px;}
+			#floatingtoolbar ul.chooseViews li.mst {border-radius: 0px; border-top: 0px; border-bottom: 0px;}
+			#floatingtoolbar ul.chooseViews .pictos {padding: 0 3px 0 3px;}
+			#floatingtoolbar ul.chooseViews .view_toggle {padding: 4px 8px 3px 4px; margin-right: 8px; border-right: 1px solid; border-color: inherit;}
+			#floatingtoolbar ul.chooseViews li.off .view_toggle .pictos {color: #fff0;}
+		`);
+	}
+
+	d20plus.views._initLayerMenu = () => {
+		d20plus.views.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
+	}
+
+	d20plus.views.populateMenu = () => {
+		const page = d20.Campaign.activePage();
+		if (!page) return;
+		if (!page.get("bR20cfg_viewsEnable")) return d20plus.views.layerMenu.html("");
+		let menuhtml = "";
+		for (let id = 0; id <= 4; id++) {
+			if (id && !page.get(`bR20cfg_views${id}Enable`)) continue;
+			const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
+			const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
+			const exclCheck = (id) => { return page.get(`bR20cfg_views${id}Exclusive`) };
+			const viewexcl = exclCheck(id) ? (exclCheck(id + 1) ? "mst" : "lst") : (exclCheck(id + 1) ? "fst" : "");
+			const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
+			menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
+				<span class="view_toggle"><span class="pictos">E</span></span>
+				<span class="pictos">${viewicon}</span>
+				${viewname}
+			</li>`;
+		}
+		d20plus.views.layerMenu.html(menuhtml);
+	}
+
+	d20plus.views.changeViewState = (id, state) => {
+		const page = d20.Campaign.activePage();
+		const menuItem = $(".chooseViews > li").get(id);
+		if (state) {
+			$(menuItem).removeClass("off");
+			page.set(`bR20cfg_views${id}Off`, false);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, true);
+		} else {
+			$(menuItem).addClass("off");
+			page.set(`bR20cfg_views${id}Off`, true);
+			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, false);
+		}
+		page.save();
+		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
+	}
+
+	d20plus.views.checkPageSettings = () => {
+		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
+			setTimeout(d20plus.views.checkPageSettings, 50);
+		} else {
+			d20plus.engine.layersVisibilityCheck();
+			d20plus.views.populateMenu();
+		}
+	}
+
+	d20plus.views.addViews = () => {
+		if (window.is_gm) {
+			d20plus.views._initViewsCss();
+			d20plus.views._initLayerMenu();
+			d20plus.views._initMenuActions();
+			document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
+			d20plus.views.checkPageSettings();
+		}
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseViews);
+
+function d20plusJournal () {
+	d20plus.journal = {};
+
+	d20plus.journal.lastClickedFolderId = null;
+
+	d20plus.journal.addJournalCommands = () => {
+		// Create new Journal commands
+		// stash the folder ID of the last folder clicked
+		$("#journalfolderroot").on("contextmenu", ".dd-content", function (e) {
+			if ($(this).parent().hasClass("dd-folder")) {
+				const lastClicked = $(this).parent();
+				d20plus.journal.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
+			}
+
+			if ($(this).parent().hasClass("character")) {
+				$(`.Vetools-make-tokenactions`).show();
+			} else {
+				$(`.Vetools-make-tokenactions`).hide();
+			}
+		});
+
+		let first = $("#journalitemmenu ul li").first();
+		// "Make Tokenactions" option
+		first.after(`<li class="Vetools-make-tokenactions" data-action-type="additem">Make Tokenactions</li>`);
+		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=additem]", function () {
+			let id = $currentItemTarget.attr("data-itemid");
+			let character = d20.Campaign.characters.get(id);
+			d20plus.ut.log("Making Token Actions..");
+			if (character) {
+				let npc = character.attribs.find(function (a) {
+					return a.get("name").toLowerCase() === "npc";
+				});
+				let isNPC = npc ? parseInt(npc.get("current")) : 0;
+				if (isNPC) {
+					// Npc specific tokenactions
+					character.abilities.create({
+						name: "Perception",
+						istokenaction: true,
+						action: d20plus.macro.actionMacroPerception,
+					});
+					character.abilities.create({
+						name: "DR/Immunities",
+						istokenaction: true,
+						action: d20plus.macro.actionMacroDrImmunities,
+					});
+					character.abilities.create({
+						name: "Stats",
+						istokenaction: true,
+						action: d20plus.macro.actionMacroStats,
+					});
+					character.abilities.create({
+						name: "Saves",
+						istokenaction: true,
+						action: d20plus.macro.actionMacroSaves,
+					});
+					character.abilities.create({
+						name: "Skill-Check",
+						istokenaction: true,
+						action: d20plus.macro.actionMacroSkillCheck,
+					});
+					character.abilities.create({
+						name: "Ability-Check",
+						istokenaction: true,
+						action: d20plus.macro.actionMacroAbilityCheck,
+					});
+				} else {
+					// player specific tokenactions
+					// @{selected|repeating_attack_$0_atkname}
+					character.abilities.create({
+						name: "Attack 1",
+						istokenaction: true,
+						action: "%{selected|repeating_attack_$0_attack}",
+					});
+					character.abilities.create({
+						name: "Attack 2",
+						istokenaction: true,
+						action: "%{selected|repeating_attack_$1_attack}",
+					});
+					character.abilities.create({
+						name: "Attack 3",
+						istokenaction: true,
+						action: "%{selected|repeating_attack_$2_attack}",
+					});
+					character.abilities.create({
+						name: "Tool 1",
+						istokenaction: true,
+						action: "%{selected|repeating_tool_$0_tool}",
+					});
+					// " + character.get("name") + "
+					character.abilities.create({
+						name: "Whisper GM",
+						istokenaction: true,
+						action: "/w gm ?{Message to whisper the GM?}",
+					});
+					character.abilities.create({
+						name: "Favorite Spells",
+						istokenaction: true,
+						action: "/w @{character_name} &{template:npcaction} {{rname=Favorite Spells}} {{description=Favorite Spells are the first spells in each level of your spellbook.\n\r[Cantrip](~selected|repeating_spell-cantrip_$0_spell)\n[1st Level](~selected|repeating_spell-1_$0_spell)\n\r[2nd Level](~selected|repeating_spell-2_$0_spell)\n\r[3rd Level](~selected|repeating_spell-3_$0_spell)\n\r[4th Level](~selected|repeating_spell-4_$0_spell)\n\r[5th Level](~selected|repeating_spell-5_$0_spell)}}",
+					});
+					character.abilities.create({
+						name: "Dual Attack",
+						istokenaction: false,
+						action: "%{selected|repeating_attack_$0_attack}\n\r%{selected|repeating_attack_$0_attack}",
+					});
+					character.abilities.create({
+						name: "Saves",
+						istokenaction: true,
+						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Save|Strength, +@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Strength Save&#125;&#125 {{mod=@{selected|strength_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|strength_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Dexterity, +@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Dexterity Save&#125;&#125 {{mod=@{selected|dexterity_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|dexterity_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Constitution, +@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Constitution Save&#125;&#125 {{mod=@{selected|constitution_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|constitution_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Intelligence, +@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Intelligence Save&#125;&#125 {{mod=@{selected|intelligence_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|intelligence_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Wisdom, +@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Wisdom Save&#125;&#125 {{mod=@{selected|wisdom_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|wisdom_save_bonus}@{selected|pbd_safe}]]&#125;&#125; |Charisma, +@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125; {{rname=Charisma Save&#125;&#125 {{mod=@{selected|charisma_save_bonus}&#125;&#125; {{r1=[[@{selected|d20}+@{selected|charisma_save_bonus}@{selected|pbd_safe}]]&#125;&#125;}@{selected|global_save_mod}@{selected|charname_output",
+					});
+					character.abilities.create({
+						name: "Skill-Check",
+						istokenaction: true,
+						action: "@{selected|wtype}&{template:simple} @{selected|rtype}?{Ability|Acrobatics, +@{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Acrobatics&#125;&#125; {{mod=@{selected|acrobatics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|acrobatics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Animal Handling, +@{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Animal Handling&#125;&#125; {{mod=@{selected|animal_handling_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|animal_handling_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Arcana, +@{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Arcana&#125;&#125; {{mod=@{selected|arcana_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|arcana_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Athletics, +@{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Athletics&#125;&#125; {{mod=@{selected|athletics_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|athletics_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Deception, +@{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Deception&#125;&#125; {{mod=@{selected|deception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|deception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |History, +@{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=History&#125;&#125; {{mod=@{selected|history_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|history_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Insight, +@{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Insight&#125;&#125; {{mod=@{selected|insight_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|insight_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Intimidation, +@{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Intimidation&#125;&#125; {{mod=@{selected|intimidation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intimidation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Investigation, +@{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Investigation&#125;&#125; {{mod=@{selected|investigation_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|investigation_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Medicine, +@{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Medicine&#125;&#125; {{mod=@{selected|medicine_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|medicine_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Nature, +@{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Nature&#125;&#125; {{mod=@{selected|nature_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|nature_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Perception, +@{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Perception&#125;&#125; {{mod=@{selected|perception_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|perception_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Performance, +@{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Performance&#125;&#125; {{mod=@{selected|performance_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|performance_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Persuasion, +@{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Persuasion&#125;&#125; {{mod=@{selected|persuasion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|persuasion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Religion, +@{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Religion&#125;&#125; {{mod=@{selected|religion_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|religion_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Sleight of Hand, +@{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Sleight of Hand&#125;&#125; {{mod=@{selected|sleight_of_hand_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|sleight_of_hand_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Stealth, +@{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Stealth&#125;&#125; {{mod=@{selected|stealth_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|stealth_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Survival, +@{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; {{rname=Survival&#125;&#125; {{mod=@{selected|survival_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|survival_bonus}@{selected|pbd_safe} ]]&#125;&#125; |Strength, +@{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; {{rname=Strength&#125;&#125; {{mod=@{selected|strength_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|strength_mod}@{selected|jack_attr}[STR]]]&#125;&#125; |Dexterity, +@{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; {{rname=Dexterity&#125;&#125; {{mod=@{selected|dexterity_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|dexterity_mod}@{selected|jack_attr}[DEX]]]&#125;&#125; |Constitution, +@{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; {{rname=Constitution&#125;&#125; {{mod=@{selected|constitution_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|constitution_mod}@{selected|jack_attr}[CON]]]&#125;&#125; |Intelligence, +@{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; {{rname=Intelligence&#125;&#125; {{mod=@{selected|intelligence_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|intelligence_mod}@{selected|jack_attr}[INT]]]&#125;&#125; |Wisdom, +@{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; {{rname=Wisdom&#125;&#125; {{mod=@{selected|wisdom_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|wisdom_mod}@{selected|jack_attr}[WIS]]]&#125;&#125; |Charisma, +@{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; {{rname=Charisma&#125;&#125; {{mod=@{selected|charisma_mod}@{selected|jack_bonus}&#125;&#125; {{r1=[[ @{selected|d20} + @{selected|charisma_mod}@{selected|jack_attr}[CHA]]]&#125;&#125; } @{selected|global_skill_mod} @{selected|charname_output}",
+					});
+				}
+				// for everyone
+				character.abilities.create({
+					name: "Initiative",
+					istokenaction: true,
+					action: d20plus.macro.actionMacroInit,
+				});
+			}
+		});
+
+		// New command on FOLDERS
+		const last = $("#journalmenu ul li").last();
+		last.before("<li data-action-type=\"archiveall\">Archive All Contents</li>");
+
+		const $journalUl = $("#journalmenu ul");
+
+		$journalUl.on(window.mousedowntype, "li[data-action-type=archiveall]", function () {
+			d20plus.journal.recursiveArchiveDirById(d20plus.journal.lastClickedFolderId, true);
+			$("#journalmenu").hide();
+		});
+	};
+
+	/**
+	 * Takes a path made up of strings and arrays of strings, and turns it into one flat array of strings
+	 * Note that paths must be of the form ["folder", "subfolder", "subsubfolder", etc]
+	 */
+	d20plus.journal.getCleanPath = function (...path) {
+		const clean = [];
+		getStrings(clean, path);
+		return clean.map(s => s.trim()).filter(s => s);
+
+		function getStrings (stack, toProc) {
+			toProc.forEach(tp => {
+				if (typeof tp === "string") {
+					stack.push(tp);
+				} else if (tp instanceof Array) {
+					getStrings(stack, tp);
+				} else {
+					throw new Error("Object in path was not a string or an array")
+				}
+			});
+		}
+	};
+
+	d20plus.journal.makeDirTree = function (...path) {
+		const parts = d20plus.journal.getCleanPath(path);
+		// path e.g. d20plus.journal.makeDirTree("Spells", "Cantrips", "1")
+		// roll20 allows a max directory depth of 4 :joy: (5, but the 5th level is unusable)
+		if (parts.length > 4) throw new Error("Max directory depth exceeded! The maximum is 4.")
+
+		const madeSoFar = [];
+
+		const root = {i: d20plus.ut.getJournalFolderObj()};
+
+		// roll20 folder management is dumb, so just pick the first folder with the right name if there's multiple
+		let curDir = root;
+		parts.forEach(toMake => {
+			const existing = curDir.i.find((it) => {
+				// n is folder name (only folders have the n property)
+				return it.n && it.n === toMake && it.i;
+			});
+			if (!existing) {
+				if (curDir.id) {
+					d20.journal.addFolderToFolderStructure(toMake, curDir.id);
+				} else {
+					// root has no id
+					d20.journal.addFolderToFolderStructure(toMake);
+				}
+			}
+			d20.journal.refreshJournalList();
+			madeSoFar.push(toMake);
+
+			// we have to save -> reread the entire directory JSON -> walk back to where we were
+			let nextDir = {i: JSON.parse(d20.Campaign.get("journalfolder"))};
+			madeSoFar.forEach(f => {
+				nextDir = nextDir.i.find(dir => dir.n && (dir.n.toLowerCase() === f.toLowerCase()));
+			});
+
+			curDir = nextDir;
+		});
+		return curDir;
+	};
+
+	d20plus.journal.recursiveRemoveDirById = function (folderId, withConfirmation) {
+		if (!withConfirmation || confirm("Are you sure you want to delete this folder, and everything in it? This cannot be undone.")) {
+			const folder = $(`[data-globalfolderid='${folderId}']`);
+			if (folder.length) {
+				d20plus.ut.log("Nuking directory...");
+				const childItems = folder.find("[data-itemid]").each((i, e) => {
+					const $e = $(e);
+					const itemId = $e.attr("data-itemid");
+					let toDel = d20.Campaign.handouts.get(itemId);
+					toDel || (toDel = d20.Campaign.characters.get(itemId));
+					if (toDel) toDel.destroy();
+				});
+				const childFolders = folder.find(`[data-globalfolderid]`).remove();
+				folder.remove();
+				$("#journalfolderroot").trigger("change");
+			}
+		}
+	};
+
+	d20plus.journal.recursiveArchiveDirById = function (folderId, withConfirmation) {
+		if (!withConfirmation || confirm("Are you sure you want to archive this folder, and everything in it? This cannot be undone.")) {
+			const folder = $(`[data-globalfolderid='${folderId}']`);
+			if (folder.length) {
+				d20plus.ut.log("Archiving directory...");
+				folder.find("[data-itemid]").each((i, e) => {
+					const $e = $(e);
+					const itemId = $e.attr("data-itemid");
+					let toArchive = d20.Campaign.handouts.get(itemId);
+					toArchive || (toArchive = d20.Campaign.characters.get(itemId));
+					if (toArchive && toArchive.attributes) {
+						toArchive.attributes.archived = true;
+						toArchive.save()
+					}
+				});
+			}
+		}
+	};
+
+	d20plus.journal.removeDirByPath = function (...path) {
+		path = d20plus.journal.getCleanPath(path);
+		return d20plus.journal._checkOrRemoveDirByPath(true, path);
+	};
+
+	d20plus.journal.checkDirExistsByPath = function (...path) {
+		path = d20plus.journal.getCleanPath(path);
+		return d20plus.journal._checkOrRemoveDirByPath(false, path);
+	};
+
+	d20plus.journal._checkOrRemoveDirByPath = function (doDelete, path) {
+		const parts = d20plus.journal.getCleanPath(path);
+
+		const root = {i: d20plus.ut.getJournalFolderObj()};
+
+		let curDir = root;
+		for (let i = 0; i < parts.length; ++i) {
+			const p = parts[i];
+			let lastId;
+			const existing = curDir.i.find((it) => {
+				lastId = it.id;
+				// n is folder name (only folders have the n property)
+				return it.n && it.n === p;
+			});
+			if (!existing) return false;
+			if (!doDelete) return true;
+			curDir = existing;
+			if (i === parts.length - 1) {
+				d20plus.journal.recursiveRemoveDirById(lastId, false);
+				return true;
+			}
+		}
+	};
+
+	d20plus.journal.getExportableJournal = () => {
+		// build a list of (id, path) pairs
+		const out = [];
+
+		function recurse (entry, pos) {
+			if (entry.i) {
+				// pos.push({name: entry.n, id: entry.id}); // if IDs are required, use this instead?
+				pos.push(entry.n);
+				entry.i.forEach(nxt => recurse(nxt, pos));
+				pos.pop();
+			} else {
+				out.push({id: entry, path: MiscUtil.copy(pos)});
+			}
+		}
+
+		const root = {i: d20plus.ut.getJournalFolderObj(), n: "Root", id: "root"};
+		recurse(root, []);
+		return out;
+	};
+
+	d20plus.journal.removeFileByPath = function (...path) {
+		path = d20plus.journal.getCleanPath(path);
+		return d20plus.journal._checkOrRemoveFileByPath(true, path);
+	};
+
+	d20plus.journal.checkFileExistsByPath = function (...path) {
+		path = d20plus.journal.getCleanPath(path);
+		return d20plus.journal._checkOrRemoveFileByPath(false, path);
+	};
+
+	d20plus.journal._checkOrRemoveFileByPath = function (doDelete, path) {
+		const parts = d20plus.journal.getCleanPath(path);
+
+		const root = {i: d20plus.ut.getJournalFolderObj()};
+
+		let curDir = root;
+		for (let i = 0; i < parts.length; ++i) {
+			const p = parts[i];
+			let lastId;
+			const existing = curDir.i.find((it) => {
+				if (i === parts.length - 1) {
+					// for the last item, check handouts/characters to see if the match it (which could be a string ID)
+					const char = d20.Campaign.characters.get(it);
+					const handout = d20.Campaign.handouts.get(it);
+					if ((char && char.get("name") === p) || (handout && handout.get("name") === p)) {
+						lastId = it;
+						return true;
+					}
+				} else {
+					lastId = it.id;
+					// n is folder name (only folders have the n property)
+					return it.n && it.n === p;
+				}
+				return false;
+			});
+			if (!existing) return false;
+			curDir = existing;
+			if (i === parts.length - 1) {
+				if (doDelete) {
+					// on the last item, delete
+					let toDel = d20.Campaign.handouts.get(lastId);
+					toDel || (toDel = d20.Campaign.characters.get(lastId))
+					if (toDel) toDel.destroy();
+				}
+				return true;
+			}
+		}
+		return false;
+	};
+}
+
+SCRIPT_EXTENSIONS.push(d20plusJournal);
+
+
+function baseCss () {
+	d20plus.css = {};
+
+	// Convert to regular CSS:
+	// `[ ... rules ... ].map(it => `${it.s} {\n${it.r.split(";").map(str => str.trim()).join(";\n")}}\n`).join("\n")`
+	d20plus.css.baseCssRules = [
+		// generic
+		{
+			s: ".inline-block, .display-inline-block",
+			r: "display: inline-block;",
+		},
+		{
+			s: ".bold",
+			r: "font-weight: bold;",
+		},
+		{
+			s: ".italic",
+			r: "font-style: italic;",
+		},
+		{
+			s: ".clickable",
+			r: "cursor: pointer;",
+		},
+		{
+			s: ".split",
+			r: "display: flex; justify-content: space-between;",
+		},
+		{
+			s: ".relative",
+			r: "position: relative !important;",
+		},
+		{
+			s: ".flex",
+			r: "display: flex;",
+		},
+		{
+			s: ".flex-col",
+			r: "display: flex; flex-direction: column;",
+		},
+		{
+			s: ".flex-v-center",
+			r: "display: flex; align-items: center;",
+		},
+		{
+			s: ".flex-vh-center",
+			r: "display: flex; justify-content: center; align-items: center;",
+		},
+		{
+			s: ".no-shrink",
+			r: "flex-shrink: 0;",
+		},
+		{
+			s: ".flex-1",
+			r: "flex: 1",
+		},
+		{
+			s: ".full-width",
+			r: "width: 100%;",
+		},
+		{
+			s: ".full-height",
+			r: "height: 100%;",
+		},
+		{
+			s: ".text-center",
+			r: "text-align: center;",
+		},
+		{
+			s: ".text-right",
+			r: "text-align: right;",
+		},
+		{
+			s: ".is-error",
+			r: "color: #d60000;",
+		},
+		{
+			s: ".flex-label",
+			r: "display: inline-flex; align-items: center;",
+		},
+		{
+			s: ".sel-xs",
+			r: `
+				height: 18px;
+				line-height: 18px;
+				margin: 0;
+				padding: 0;
+			`,
+		},
+		{
+			s: ".btn-xs",
+			r: `
+				height: 18px;
+				line-height: 18px;
+				margin: 0;
+				padding: 0 4px;
+			`,
+		},
+		// // fix Roll20's <p> margins in the text editor // FIXME make this configurable
+		// {
+		// 	s: ".note-editable p",
+		// 	r: "margin-bottom: 0;"
+		// },
+		// ensure rightclick menu width doesn't break layout // FIXME might be fixing the symptoms and not the cause
+		{
+			s: ".actions_menu.d20contextmenu > ul > li",
+			r: "max-width: 100px;",
+		},
+		// page view enhancement
+		{
+			s: "#page-toolbar",
+			r: "height: calc(90vh - 40px);",
+		},
+		{
+			s: "#page-toolbar .container",
+			r: "height: 100%; white-space: normal;",
+		},
+		{
+			s: "#page-toolbar .pages .availablepage",
+			r: "width: 100px; height: 100px;",
+		},
+		{
+			s: "#page-toolbar .pages .availablepage img.pagethumb",
+			r: "max-width: 60px; max-height: 60px;",
+		},
+		{
+			s: "#page-toolbar .pages .availablepage span",
+			r: "bottom: 1px;",
+		},
+		{
+			s: "#page-toolbar",
+			r: "background: #a8aaad80;",
+		},
+		// search
+		{
+			s: ".Vetoolsresult",
+			r: "background: #ff8080;",
+		},
+		// config editor
+		{
+			s: "div.config-table-wrapper",
+			r: "min-height: 200px; width: 100%; height: 100%; max-height: 460px; overflow-y: auto; transform: translateZ(0);",
+		},
+		{
+			s: "table.config-table",
+			r: "width: 100%; table-layout: fixed;",
+		},
+		{
+			s: "table.config-table tbody tr:nth-child(odd)",
+			r: "background-color: #f8f8f8;",
+		},
+		{
+			s: "table.config-table tbody td > *",
+			r: "vertical-align: middle; margin: 0;",
+		},
+		{
+			s: ".config-name",
+			r: "display: inline-block; line-height: 35px; width: 100%;",
+		},
+		// tool list
+		{
+			s: ".tools-list",
+			r: "max-height: 70vh;",
+		},
+		{
+			s: ".tool-row",
+			r: "min-height: 40px; display: flex; flex-direction: row; align-items: center;",
+		},
+		{
+			s: ".tool-row:nth-child(odd)",
+			r: "background-color: #f0f0f0;",
+		},
+		{
+			s: ".tool-row > *",
+			r: "flex-shrink: 0;",
+		},
+		// warning overlay
+		{
+			s: ".temp-warning",
+			r: "position: fixed; top: 12px; left: calc(50vw - 200px); z-index: 10000; width: 320px; background: transparent; color: red; font-weight: bold; font-size: 150%; font-variant: small-caps; border: 1px solid red; padding: 4px; text-align: center; border-radius: 4px;",
+		},
+		// GM hover text
+		{
+			s: ".Vetools-token-hover",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;	 border: 1px solid #ccc; max-width: 450px;",
+		},
+		// drawing tools bar
+		{
+			s: "#drawingtools.line_splitter .currentselection:after",
+			r: "content: '✂️';",
+		},
+		// chat tag
+		{
+			s: ".userscript-hacker-chat",
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
+		},
+		{
+			s: ".userscript-hacker-chat a",
+			r: "color: white;",
+		},
+		{
+			s: ".userscript-hacker-chat-error",
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #FF69B4; background: black; padding: 3px; min-width: calc(100% + 60px);",
+		},
+		{
+			s: ".userscript-hacker-chat-error a",
+			r: "color: white;",
+		},
+		{
+			s: ".withoutavatars .userscript-hacker-chat",
+			r: "margin-left: -15px; min-width: calc(100% + 30px);",
+		},
+		{
+			s: ".Ve-btn-chat",
+			r: "margin-top: 10px; margin-left: -35px;",
+		},
+		{
+			s: ".withoutavatars .Ve-btn-chat",
+			r: "margin-left: -5px;",
+		},
+		// Bootstrap-alikes
+		{
+			s: ".col",
+			r: "display: inline-block;",
+		},
+		{
+			s: ".col-1",
+			r: "width: 8.333%;",
+		},
+		{
+			s: ".col-2",
+			r: "width: 16.666%;",
+		},
+		{
+			s: ".col-3",
+			r: "width: 25%;",
+		},
+		{
+			s: ".col-4",
+			r: "width: 33.333%;",
+		},
+		{
+			s: ".col-5",
+			r: "width: 41.667%;",
+		},
+		{
+			s: ".col-6",
+			r: "width: 50%;",
+		},
+		{
+			s: ".col-7",
+			r: "width: 58.333%;",
+		},
+		{
+			s: ".col-8",
+			r: "width: 66.667%;",
+		},
+		{
+			s: ".col-9",
+			r: "width: 75%;",
+		},
+		{
+			s: ".col-10",
+			r: "width: 83.333%;",
+		},
+		{
+			s: ".col-11",
+			r: "width: 91.667%;",
+		},
+		{
+			s: ".col-12",
+			r: "width: 100%;",
+		},
+		{
+			s: ".ib",
+			r: "display: inline-block;",
+		},
+		{
+			s: ".float-right",
+			r: "float: right;",
+		},
+		{
+			s: ".my-0",
+			r: "margin-top: 0 !important; margin-bottom: 0 !important;",
+		},
+		{
+			s: ".m-1",
+			r: "margin: 0.25rem !important;",
+		},
+		{
+			s: ".mt-2",
+			r: "margin-top: 0.5rem !important;",
+		},
+		{
+			s: ".mr-1",
+			r: "margin-right: 0.25rem !important;",
+		},
+		{
+			s: ".ml-1",
+			r: "margin-left: 0.25rem !important;",
+		},
+		{
+			s: ".mr-2",
+			r: "margin-right: 0.5rem !important;",
+		},
+		{
+			s: ".ml-2",
+			r: "margin-left: 0.5rem !important;",
+		},
+		{
+			s: ".mb-2",
+			r: "margin-bottom: 0.5rem !important;",
+		},
+		{
+			s: ".mb-1",
+			r: "margin-bottom: 0.25rem !important;",
+		},
+		{
+			s: ".p-2",
+			r: "padding: 0.5rem !important;",
+		},
+		{
+			s: ".p-3",
+			r: "padding: 1rem !important;",
+		},
+		{
+			s: ".split",
+			r: "display: flex; justify-content: space-between;",
+		},
+		{
+			s: ".split--center",
+			r: "align-items: center;",
+		},
+		// image rows
+		{
+			s: ".import-cb-label--img",
+			r: "display: flex; height: 64px; align-items: center; padding: 4px;",
+		},
+		{
+			s: ".import-label__img",
+			r: "display: inline-block; width: 60px; height: 60px; padding: 0 5px;",
+		},
+		// importer
+		{
+			s: ".import-cb-label",
+			r: "display: block; margin-right: -13px !important;",
+		},
+		{
+			s: ".import-cb-label span",
+			r: "display: inline-block; overflow: hidden; max-height: 18px; letter-spacing: -1px; font-size: 12px;",
+		},
+		{
+			s: ".import-cb-label span.readable",
+			r: "letter-spacing: initial",
+		},
+		{
+			s: ".import-cb-label .source",
+			r: "width: calc(16.667% - 28px);'",
+		},
+		// Table importer
+		{
+			s: ".table-import-search",
+			r: "transform: translateZ(0); max-height: 490px; overflow-y: scroll; overflow-x: hidden;",
+		},
+		{
+			s: ".table-import-textarea",
+			r: "display: block; width: 600px; height: 340px;",
+		},
+		// horizontal toolbar
+		{
+			s: "#secondary-toolbar:hover",
+			r: "opacity: 1 !important;",
+		},
+		// addon layer bar
+		{
+			s: "#floatinglayerbar ul",
+			r: "margin: 0; padding: 0;",
+		},
+		{
+			s: "#floatinglayerbar li:hover, #floatinglayerbar li.activebutton",
+			r: "color: #333; background-color: #54C3E8; cursor: pointer;",
+		},
+		{
+			s: "#floatinglayerbar li",
+			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
+		},
+		{
+			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.roofs li.chooseroofs, #floatinglayerbar.floors li.choosefloors, #floatinglayerbar.background li.choosebackground",
+			r: "background-color: #54C3E8; color: #333;",
+		},
+		// move layer bar to right
+		{
+			s: "#floatinglayerbar",
+			r: "pointer-events: all;",
+		},
+		{
+			s: "#floatinglayerbar.right",
+			r: "right: 30px; left: unset!important;",
+		},
+		{
+			s: "#floatinglayerbar",
+			r: "left: 20px;",
+		},
+		// Config & dark mode fixes
+		{
+			s: ".config-name",
+			r: "padding: 6px 0px; line-height: 21px;",
+		},
+		{
+			s: "#d20plus-configeditor .nav li:not(.active) > a",
+			r: "cursor: pointer;",
+		},
+		{
+			s: "#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: ".tokeneditor__bar-inputs input[type=\"text\"][disabled], .token_bar_input[disabled]",
+			r: "background-color: rgba(180, 180, 180, 0.3);",
+		},
+		{
+			s: ".tool-row:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: "#floatinglayerbar li",
+			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
+		},
+		// Fix page options scrollbar color in darkmode on Chrome
+		{
+			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
+			r: "background-color: rgba(100, 100, 100, 0.5);",
+		},
+		// extra layer buttons
+		{
+			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
+			r: "background-color: #54C3E8; color: #333;",
+		},
+		{
+			s: "#editinglayer.objects .currentselection::after",
+			r: "content: \"U\";",
+		},
+		{
+			s: "#editinglayer.map .currentselection::after",
+			r: "content: \"G\";",
+		},
+		{
+			s: "#editinglayer.weather .currentselection:after",
+			r: "content: \"C\";",
+		},
+		{
+			s: "#editinglayer.foreground .currentselection:after",
+			r: "content: \"B\";",
+		},
+		{
+			s: "#editinglayer.floors .currentselection:after",
+			r: "content: \"I\";",
+		},
+		{
+			s: "#editinglayer.roofs .currentselection:after",
+			r: "content: \"H\";",
+		},
+		{
+			s: "#editinglayer.background .currentselection:after",
+			r: "content: \"a\";",
+		},
+		{
+			s: "#editinglayer.gmlayer .currentselection:after",
+			r: "content: \"E\";",
+		},
+		{
+			s: "#editinglayer.gmlayer > span.currentselection",
+			r: "display:unset;",
+		},
+		{
+			s: "#editinglayer.gmlayer #editing_layer_icon",
+			r: "display:none;",
+		},
+		// layer visibility toggles
+		{
+			s: "#editinglayer .pictos.layer_toggle",
+			r: "float: right; cursor: alias; pointer-events: all;",
+		},
+		{
+			s: "#editinglayer li.stashed",
+			r: "pointer-events: none;",
+		},
+		{
+			s: "#editinglayer li.stashed .pictos.layer_toggle",
+			r: "position: relative; left: -19px; margin-right: -20px; margin-left: 0px;",
+		},
+		{
+			s: "#editinglayer li.stashed .pictos.layer_toggle::after",
+			r: "content: \"d\"; position: relative; left: -16px; color: rgba(200,50,50,0.7);",
+		},
+		{
+			s: "#playerzone #floatinglayerbar li.off > span::after",
+			r: "content: \"d\"; color: rgba(200, 100, 100, 0.7); margin-left: -20px;",
+		},
+		{
+			s: "#playerzone #floatinglayerbar li.off",
+			r: "color: rgba(153, 153, 153, 0.5); pointer-events: none;",
+		},
+		// adjust the "Talking to Yourself" box
+		{
+			s: "#textchat-notifier",
+			r: "top: -5px; background-color: red; opacity: 0.5; color: white;",
+		},
+		{
+			s: "#textchat-notifier:after",
+			r: "content: '!'",
+		},
+		{
+			s: ".ctx__layer-icon",
+			r: `
+			display: inline-block;
+			width: 12px;
+			text-align: center;
+			`,
+		},
+		// fix the shitty undersized "fire" icon
+		{
+			s: ".choosewalls > .pictostwo",
+			r: "width: 15px; height: 17px; display: inline-block; text-align: center;",
+		},
+		{
+			s: "#editinglayer.walls > .pictos",
+			r: "width: 20px; height: 22px; display: inline-block; text-align: center; font-size: 0.9em;",
+		},
+		// weather config window
+		{
+			s: ".ui-dialog .wth__row",
+			r: "margin-bottom: 10px; align-items: center; padding: 0 0 5px; border-bottom: 1px solid #eee;",
+		},
+		{
+			s: ".wth__row select",
+			r: "margin-bottom: 0",
+		},
+		{
+			s: `.wth__row input[type="range"]`,
+			r: "width: calc(100% - 8px);",
+		},
+		// context menu
+		{
+			s: `.ctx__divider`,
+			r: "width: calc(100% - 2px); border: 1px solid black;",
+		},
+		// sidebar fix
+		/* {
+			s: `#rightsidebar`,
+			r: `
+				display: flex;
+				flex-direction: column;
+			`
+		},
+		{
+			s: `#rightsidebar ul.tabmenu`,
+			r: `
+				padding: 0;
+				flex-shrink: 0;
+				position: relative;
+				top: 0;
+				width: 100%;
+			`
+		},
+		{
+			s: `#rightsidebar .ui-tabs-panel`,
+			r: `
+				height: 100% !important;
+				display: block;
+				top: 0;
+			`
+		},
+		{
+			s: `#textchat-input`,
+			r: `
+				position: relative;
+				flex-shrink: 0;
+			`
+		},
+		{
+			s: `#textchat-input textarea`,
+			r: `
+				width: calc(100% - 8px) !important;
+				resize: vertical;
+			`
+		}, */
+		// Ensure page toolbar is displayed
+		{
+			s: `#page-toolbar`,
+			r: `display: block;`,
+		},
+	];
+
+	d20plus.css.baseCssRulesPlayer = [
+		{
+			s: ".player-hidden",
+			r: "display: none !important;",
+		},
+		// Force-hide page toolbar
+		{
+			s: `#page-toolbar`,
+			r: `display: none;`,
+		},
+	];
+
+	d20plus.css.cssRules = []; // other scripts should populate this
+
+	// Mirrors of 5etools CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".copied-tip",
+			r: "pointer-events: none; position: fixed; background: transparent; user-select: none; z-index: 100000; width: 80px; height: 24px; line-height: 24px;",
+		},
+		{
+			s: ".copied-tip > span",
+			r: "display: inline-block; width: 100%; text-align: center;",
+		},
+		{
+			s: ".help",
+			r: "cursor: help; text-decoration: underline; text-decoration-style: dotted;",
+		},
+		{
+			s: ".help--subtle",
+			r: "cursor: help;",
+		},
+	]);
+
+	// QOL fixes
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// Initiative dialog fixes
+		{
+			s: ".initiativedialog .ui-dialog-buttonset .ui-button",
+			r: "margin: 0px 0px 0px 3px; max-width: 37px; overflow: hidden; box-sizing: border-box;",
+		},
+		{
+			s: ".initiativedialog .difficulty",
+			r: "width: 40%; margin-top: -9px; font-size: 14px;",
+		},
+		// Spacing between token-actions
+		{
+			s: "#secondary-toolbar .tokenactions .btn",
+			r: "margin-left: 2px;",
+		},
+		// Tweak OGL roll template styles
+		{
+			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
+			r: "padding-top: 0px",
+		},
+		{
+			s: ".sheet-rolltemplate-simple .sheet-charname, .sheet-rolltemplate-simple3D .sheet-charname, .sheet-rolltemplate-skill .sheet-charname, .sheet-rolltemplate-atk .sheet-charname, .sheet-rolltemplate-dmg .sheet-charname, .sheet-rolltemplate-atkdmg .sheet-charname",
+			r: "margin-top: -8px; padding-bottom: 2px;",
+		},
+		{
+			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
+			r: "font-size: 12px;",
+		},
+	]);
+
+	// Rewamped page options
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".ui-dialog-pagename",
+			r: "padding: 12px 0px 0px 10px; display: inline-block; font-size: 14px; max-width: 130px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;",
+		},
+		{
+			s: ".nav-tabs--beta .label",
+			r: "left: calc( 50% - 21px); right: unset;",
+		},
+		{
+			s: ".nav-tabs > li > ul .nav-tabs--beta .label",
+			r: "top: -4px;",
+		},
+		{
+			s: ".nav-tabs > li > ul",
+			r: "width: 0px; overflow-x: visible; white-space: nowrap; margin-left: -50px; height: 0px; overflow-y: clip; transition: height 0.3s;",
+		},
+		{
+			s: ".nav-tabs > li.active > ul",
+			r: "height: 36px; transition: height 1s;",
+		},
+		{
+			s: ".dialog .nav-tabs > li.active.dl > a",
+			r: "background-color: unset; border-color: transparent; text-decoration: none; cursor: unset;",
+		},
+		{
+			s: ".ui-dialog .ui-dialog-content",
+			r: "background: inherit;",
+		},
+		{
+			s: ".dialog .nav.nav-tabs > li > a",
+			r: "cursor: pointer;",
+		},
+		{
+			s: ".nav-tabs > ul > li",
+			r: "list-style: none; display: inline-block;",
+		},
+		{
+			s: ".nav-tabs > ul > li a",
+			r: "border-radius: 4px 4px 0 0; padding-right: 12px; padding-left: 12px; margin-right: 2px; line-height: 14px; display: inline-block; padding-top: 9px; padding-bottom: 9px; border-style: solid; border-width: 1px; border-bottom: none;",
+		},
+		{
+			s: ".nav-tabs > ul > li.active a",
+			r: "background-color: var(--dark-primary); color: var(--dark-primarytext); border-color: var(--dark-primary-highlight); text-decoration-color: var(--color-primary-text); vertical-align: sub;",
+		},
+		{
+			s: ".nav-tabs > ul > li.active,	ul.nav-tabs li.active",
+			r: "border-bottom-width: 0px;",
+		},
+		{
+			s: "ul.nav-tabs > li.nav-tabs",
+			r: "border-bottom: none;",
+		},
+		{
+			s: ".nav.nav-tabs.pagedetails_navigation",
+			r: "position: sticky; top: -10px; z-index: 100; background-color: inherit; padding-top: 7px;",
+		},
+		{
+			s: ".page-input",
+			r: "box-sizing: border-box; height: 28px; width: 100%; border-radius: 0.5rem;",
+		},
+		{
+			s: ".page-input.page-hint[type=\"text\"]",
+			r: "border-radius: 0.5rem;",
+		},
+		{
+			s: ".weather input[type=\"color\"]",
+			r: "width: 100%; height: 24px; border-radius: 0.5rem; padding: 1px;",
+		},
+		{
+			s: ".views .pagedetails h4",
+			r: "display: inline;",
+		},
+		{
+			s: ".tab-pane strong .showtip",
+			r: "margin-left: 0px; margin-right: 3%; float: left; margin-top: 1px;",
+		},
+	]);
+
+	// Fix art repo buttons CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: "#imagedialog .searchbox p button",
+			r: "width: 100%; margin: 0px 5px !important;",
+		},
+	]);
+
+	// Art repo browser CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// full-width images search header
+		{
+			s: "#imagedialog .searchbox",
+			r: "width: calc(100% - 10px)",
+		},
+		/// ////////////
+		{
+			s: ".artr__win",
+			r: "display: flex; align-items: stretch; width: 100%; height: 100%; padding: 0 !important;",
+		},
+		// fix box sizing
+		{
+			s: ".artr__win *",
+			r: "box-sizing: border-box;",
+		},
+		// custom scrollbars
+		{
+			s: ".artr__win *::-webkit-scrollbar",
+			r: "width: 9px; height: 9px;",
+		},
+		{
+			s: ".artr__win *::-webkit-scrollbar-track",
+			r: "background: transparent;",
+		},
+		{
+			s: ".artr__win *::-webkit-scrollbar-thumb",
+			r: "background: #cbcbcb;",
+		},
+		/// ////////////
+		{
+			s: ".artr__side",
+			r: "width: 300px; height: 100%; border-right: 1px solid #ccc; background: #f8f8f8; position: relative; flex-shrink: 0; display: flex; flex-direction: column;",
+		},
+		{
+			s: ".artr__side__head",
+			r: "flex-shrink: 0; font-weight: bold; margin-bottom: 7px; margin-bottom: 7px; border-bottom: 3px solid #ccc; background: white;",
+		},
+		{
+			s: ".artr__side__head__title",
+			r: "font-size: 16px; font-weight: bold;",
+		},
+		{
+			s: ".artr__side__body",
+			r: "flex-shrink: 0; overflow-y: auto; transform: translateZ(0);",
+		},
+		{
+			s: ".artr__side__tag_header",
+			r: "width: 100%; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; padding: 0 6px; cursor: pointer; margin-bottom: 10px;",
+		},
+		{
+			s: ".artr__side__tag_grid",
+			r: "display: flex; width: 100%; flex-wrap: wrap; margin-bottom: 15px; background: #f0f0f0; border-radius: 5px;",
+		},
+		{
+			s: ".artr__side__tag",
+			r: "padding: 2px 4px; margin: 2px 4px; font-size: 11px;",
+		},
+		{
+			s: `.artr__side__tag[data-state="1"]`,
+			r: "background-image: linear-gradient(#fff, #337ab7);",
+		},
+		{
+			s: `.artr__side__tag[data-state="1"]:hover`,
+			r: "background-image: linear-gradient(rgb(#337ab7), rgb(#337ab7)); background-position: 0; transition: none;",
+		},
+		{
+			s: `.artr__side__tag[data-state="2"]`,
+			r: "background-image: linear-gradient(#fff, #8a1a1b);",
+		},
+		{
+			s: `.artr__side__tag[data-state="2"]:hover`,
+			r: "background-image: linear-gradient(rgb(#8a1a1b), rgb(#8a1a1b)); background-position: 0; transition: none;",
+		},
+		{
+			s: ".artr__main",
+			r: "width: 100%; height: 100%; display: flex; overflow-y: auto; flex-direction: column; position: relative;",
+		},
+		{
+			s: ".artr__side__loading, .artr__main__loading",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;	 font-style: italic;",
+		},
+		{
+			s: ".artr__bread",
+			r: "width: 100%; margin-bottom: 2px;",
+		},
+		{
+			s: ".artr__crumb",
+			r: "border: 1px solid #ccc; border-radius: 5px; padding: 0 5px; display: inline-block; cursor: pointer; user-select: none;",
+		},
+		{
+			s: ".artr__crumb--sep",
+			r: "border: 0; cursor: default;",
+		},
+		{
+			s: ".artr__search",
+			r: "flex-shrink: 0; width: 100%; border-bottom: 1px solid #ccc; display: flex; flex-direction: column;",
+		},
+		{
+			s: ".artr__search__field",
+			r: "width: 100%; height: 26px;",
+		},
+		{
+			s: ".artr__view",
+			r: "position: absolute; top: 64px; bottom: 0; left: 0; right: 0; overflow-y: auto; transform: translateZ(0); background-color: whitesmoke;",
+		},
+		{
+			s: ".artr__view_inner",
+			r: "display: flex; width: 100%; height: 100%; flex-wrap: wrap; align-content: flex-start;",
+		},
+		{
+			s: ".artr__no_results_wrp",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center;",
+		},
+		{
+			s: ".artr__no_results",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;",
+		},
+		{
+			s: ".artr__no_results_headline",
+			r: "font-size: 125%; font-weight: bold;",
+		},
+		{
+			s: ".artr__item",
+			r: "width: 180px; margin: 5px; box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75); display: block; background: white; position: relative;",
+			// Using flex makes scrolling extremely sluggish
+			// display: flex; flex-direction: column; cursor: pointer; float: left;
+		},
+		{
+			s: ".artr__item__stats",
+			r: "position: absolute; left: 0; top: 0; display: none;",
+		},
+		{
+			s: ".artr__item:hover .artr__item__stats",
+			r: "display: block;",
+		},
+		{
+			s: ".artr__item__stats_item",
+			r: "color: grey; background: white; border-radius: 5px; margin: 4px 2px; padding: 0 2px; text-align: center; border: 1px solid #e0e0e0",
+		},
+		{
+			s: ".artr__item__menu",
+			r: "position: absolute; right: 0; top: 0; display: none;",
+		},
+		{
+			s: ".artr__item:hover .artr__item__menu",
+			r: "display: block;",
+		},
+		{
+			s: ".artr__item__menu_item",
+			r: "cursor: pointer; color: grey; font-size: 26px; line-height: 24px; border-radius: 5px; margin: 4px; padding: 2px; text-align: center; display: block; border: 1px solid #ccc; background: white;",
+		},
+		{
+			s: ".artr__item--index",
+			r: "height: 240px;",
+		},
+		{
+			s: ".artr__item--item",
+			r: "height: 180px;",
+		},
+		{
+			s: ".artr__item:hover",
+			r: "box-shadow: 0 0 8px 0 rgba(38, 167, 242, 1); opacity: 0.95;",
+		},
+		{
+			s: ".artr__item--back",
+			r: "display: flex; justify-content: center; align-items: center; font-size: 24px; color: #888;",
+		},
+		{
+			s: ".artr__item__top",
+			r: "width: 100%; height: 180px; flex-shrink: 0; margin: 0 auto; display: flex; align-items: center;",
+		},
+		{
+			s: ".artr__item__top--quart",
+			r: "display: flex; flex-wrap: wrap;",
+		},
+		{
+			s: ".artr__item__bottom",
+			r: "width: 100%; height: 60px; flex-shrink: 0;  border-top: 1px solid #ccc; background: #f8f8f8; display: flex; flex-direction: column; font-size: 12px; justify-content: space-evenly;",
+		},
+		{
+			s: ".artr__item__bottom__row",
+			r: "width: 100% height: 20px; flex-shrink: 0; padding: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;",
+		},
+		{
+			s: ".artr__item__thumbnail",
+			r: "max-width: 100%; max-height: 100%; display: block; margin: 0 auto;",
+		},
+		{
+			s: ".atr__item__quart",
+			r: "width: 50%; height: 50%; display: block; margin: 0;",
+		},
+		{
+			s: ".atr__item__quart--more",
+			r: "display: flex; justify-content: center; align-items: center;",
+		},
+		{
+			s: ".artr__item__full",
+			r: "width: 100%; height: 180px; margin: 0 auto; display: flex; align-items: center; padding: 3px;",
+		},
+		{
+			s: ".artr__wrp_big_img",
+			r: "position: fixed; top: 0; bottom: 0; right: 0; left: 0; background: #30303080; padding: 30px; display: flex; justify-content: center; align-items: center; z-index: 99999;",
+		},
+		{
+			s: ".artr__big_img",
+			r: "display: block; max-width: 100%; max-height: 100%;",
+		},
+		// fix row styles
+		{
+			s: "#d20plus-artfolder .url",
+			r: "width: calc(65% - 75px) !important;white-space: nowrap;overflow: hidden;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item",
+			r: "line-height: 16px;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item:hover",
+			r: "background-color: rgba(100,100,100,0.5);",
+		},
+	]);
+
+	// Animator CSS -- `anm__` prefix
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// fix box sizing
+		{
+			s: ".anm__win *",
+			r: "box-sizing: border-box;",
+		},
+		{
+			s: ".ui-dialog .anm__row",
+			r: `
+				display: flex;
+				align-items: center;
+				margin-bottom: 3px;
+				height: 20px;
+			`,
+		},
+		{
+			s: ".anm__row > div",
+			r: `
+				display: inline-flex;
+			`,
+		},
+		{
+			s: ".anm__row-btn",
+			r: `
+				padding: 0 6px;
+			`,
+		},
+		{
+			s: ".anm__row-wrp-cb",
+			r: `
+				justify-content: center;
+				align-items: center;
+			`,
+		},
+		{
+			s: ".anm__wrp-sel-all",
+			r: `
+				align-items: center;
+				margin-bottom: 5px;
+				display: flex;
+				justify-content: space-between;
+			`,
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp",
+			r: `
+				flex-basis: 100%;
+				flex-shrink: 100;
+			`,
+		},
+		{
+			s: ".anm-edit__gui .anm-edit__gui-hidden",
+			r: `
+				display: none;
+			`,
+		},
+		{
+			s: ".anm-edit__text .anm-edit__gui-visible",
+			r: `
+				display: none;
+			`,
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp--gui",
+			r: `
+				overflow-y: auto;
+				display: flex;
+				flex-direction: column;
+			`,
+		},
+		{
+			s: ".anm-edit__ipt-lines-wrp--gui > *",
+			r: `
+				flex-shrink: 0;
+			`,
+		},
+		{
+			s: ".anm-edit__ipt-lines",
+			r: `
+				resize: none;
+				width: 100%;
+				height: 100%;
+				margin-bottom: 0;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row",
+			r: `
+				padding: 4px;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+				margin-bottom: 3px;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row:nth-child(even)",
+			r: `
+				background: #f8f8f8;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name",
+			r: `
+				color: white;
+				-webkit-text-stroke: 1px #555;
+				text-stroke: 1px black;
+				padding: 3px 5px;
+				border-radius: 3px;
+				font-size: 16px;
+				display: inline-block;
+				min-width: 150px;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--Move",
+			r: `
+				background: #ff0004;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--Rotate",
+			r: `
+				background: #ff6c00;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--Copy",
+			r: `
+				background: #fff700;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--Flip",
+			r: `
+				background: #a3ff00;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--Scale",
+			r: `
+				background: #5eff00;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--Layer",
+			r: `
+				background: #00ff25;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--Lighting",
+			r: `
+				background: #00ffb6;
+			`,
+		},
+		{
+			s: [
+				".anm-edit__gui-row-name--SetProperty",
+				".anm-edit__gui-row-name--SumProperty",
+			],
+			r: `
+				background: #006bff;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--TriggerMacro",
+			r: `
+				background: #0023ff;
+			`,
+		},
+		{
+			s: ".anm-edit__gui-row-name--TriggerAnimation",
+			r: `
+				background: #9800ff;
+			`,
+		},
+		{
+			s: ".anm-scene__wrp-tokens",
+			r: `
+				width: 100%;
+				max-height: 100%;
+				overflow-y: auto;
+				display: flex;
+				flex-wrap: wrap;
+			`,
+		},
+		{
+			s: ".anm-scene__wrp-token",
+			r: `
+				width: 80px;
+				height: 100px;
+				background: #f0f0f0;
+				box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.75);
+				margin: 4px;
+				display: flex;
+				flex-direction: column;
+				padding: 3px;
+			`,
+		},
+		{
+			s: ".anm-scene__wrp-token--active",
+			r: `
+				background: #a0f0ff;
+			`,
+		},
+		{
+			s: ".anm-scene__wrp-token-name",
+			r: `
+				height: 20px;
+				overflow: hidden;
+			`,
+		},
+		{
+			s: ".anm-scene__wrp-token-name-inner",
+			r: `
+				height: 20px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			`,
+		},
+		{
+			s: ".flex-row",
+			r: `
+				display: flex;
+				float: left;
+				align-items: center;
+				margin-bottom: 5px;
+			`,
+		},
+		{
+			s: ".pagedetails .flex-row input.units,.pagedetails .flex-row input.pixels",
+			r: `
+				width: 20%;
+				text-align: center;
+				border: 1px solid;
+				border-radius: 5px;
+				margin: 0 2%;
+			`,
+		},
+	]);
+
+	// Jukebox CSS
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		{
+			s: ".jukebox-widget-button",
+			r: `
+				flex: 1;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				min-width: 50px;
+			`,
+		},
+		{
+			s: ".jukebox-widget-slider",
+			r: `
+				margin: 10px;
+				display: inline-block;
+				flex: 15;
+			`,
+		},
+		{
+			s: ".jukebox-widget-button",
+			r: `
+				letter-spacing: -1px
+			`,
+		},
+	]);
+
+	d20plus.css.miniInitStyle = `
+		#initiativewindow button.initmacrobutton {
+			padding: 1px 4px;
+		}
+
+		#initiativewindow input {
+			font-size: 8px;
+		}
+
+		#initiativewindow ul li span.name {
+			font-size: 13px;
+			padding-top: 0;
+			padding-left: 4px;
+			margin-top: -3px;
+		}
+
+		#initiativewindow ul li img {
+			min-height: 15px;
+			max-height: 15px;
+		}
+
+		#initiativewindow ul li {
+			min-height: 15px;
+		}
+
+		#initiativewindow div.header span.initiative,
+		#initiativewindow ul li span.initiative,
+		#initiativewindow ul li span.tracker-col,
+		#initiativewindow div.header span.tracker-col,
+		#initiativewindow div.header span.initmacro,
+		#initiativewindow ul li span.initmacro {
+			font-size: 10px;
+			font-weight: bold;
+			text-align: right;
+			float: right;
+			padding: 0 5px;
+			width: 7%;
+			min-height: 20px;
+			display: block;
+			overflow: hidden;
+		}
+
+		#initiativewindow ul li .controls {
+			padding: 0 3px;
+		}
 	`;
+}
+
+SCRIPT_EXTENSIONS.push(baseCss);
+
+
+function baseUi () {
+	d20plus.ui = {};
+
+	d20plus.ui.addHtmlHeader = () => {
+		d20plus.ut.log("Add HTML");
+		const $body = $("body");
+
+		const $wrpSettings = $(`<div id="betteR20-settings"/>`);
+		$("#settings-accordion").children(".panel.panel-default").first().before($wrpSettings);
+
+		$wrpSettings.append(d20plus.settingsHtmlHeader);
+		$body.append(d20plus.html.configEditorHTML);
+		if (window.is_gm) {
+			$(`#imagedialog`).find(`.searchbox`).find(`.tabcontainer`).first().after(d20plus.html.artTabHtml);
+			$(`#button-add-external-art`).on(window.mousedowntype, d20plus.art.button);
+
+			$body.append(d20plus.html.addArtHTML);
+			$body.append(d20plus.html.addArtMassAdderHTML);
+			$body.append(d20plus.html.toolsListHtml);
+			$("#d20plus-artfolder").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 1000,
+				height: 800,
+			});
+			$("#d20plus-artmassadd").dialog({
+				autoOpen: false,
+				resizable: true,
+				width: 800,
+				height: 650,
+			});
+		}
+		const $cfgEditor = $("#d20plus-configeditor");
+		$cfgEditor.dialog({
+			autoOpen: false,
+			resizable: true,
+			width: 800,
+			height: 650,
+		});
+		$cfgEditor.parent().append(d20plus.html.configEditorButtonBarHTML);
+
+		// shared GM/player conent
+		// quick search box
+		const $iptSearch = $(`<input id="player-search" class="ui-autocomplete-input" autocomplete="off" placeholder="Quick search by name...">`);
+		const $wrprResults = $(`<div id="player-search-results" class="content searchbox"/>`);
+
+		if (window.is_gm) {
+			$iptSearch.css("width", "calc(100% - 5px)");
+			const $addPoint = $("#journal").find("button.btn.superadd");
+			$addPoint.after($wrprResults);
+			$addPoint.after(`<br>`);
+			$addPoint.after($iptSearch);
+			$addPoint.after(`<br><br>`);
+		} else {
+			const $wrprControls = $(`<div class="content searchbox" id="search-wrp-controls"/>`);
+			$(`#journal .content`).before($wrprControls).before($wrprResults);
+			$iptSearch.css("max-width", "calc(100% - 140px)");
+			$wrprControls.append($iptSearch);
+		}
+		d20plus.engine.initQuickSearch($iptSearch, $wrprResults);
+	};
+
+	d20plus.ui.addHtmlFooter = () => {
+		const $wrpSettings = $(`#betteR20-settings`);
+		$wrpSettings.append(d20plus.html.settingsHtmlPtFooter);
+		$wrpSettings.css("margin", "5px");
+
+		$("#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
+		d20plus.tool.addTools();
+	};
+
+	d20plus.ui.addQuickUiGm = () => {
+		const $wrpBtnsMain = $(`#floatingtoolbar`);
+
+		// add quick layer selection panel
+		const $ulBtns = $(`<div id="floatinglayerbar"><ul/></div>`)
+			.css({
+				width: 30,
+				position: "absolute",
+				left: 20,
+				top: $wrpBtnsMain.height() + 90,
+				border: "1px solid #666",
+				boxShadow: "1px 1px 3px #666",
+				zIndex: 10600,
+				backgroundColor: "rgba(255,255,255,0.80)",
+			})
+			.appendTo($(`#playerzone`)).find(`ul`);
+
+		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
+
+		// Add layers to second side bar
+		$(`<li title="${__("ui_bar_map")}" class="choosemap"><span class="pictos" style="padding: 0 3px;">G</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
+			$(`<li title="${__("ui_bar_fl")}" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
+		}
+		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
+			$(`<li title="${__("ui_bar_bg")}" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
+		}
+		$(`<li title="${__("ui_bar_obj")}" class="chooseobjects"><span class="pictos">U</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
+			$(`<li title="${__("ui_bar_rf")}" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
+		}
+		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
+			$(`<li title="${__("ui_bar_fg")}" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
+		}
+		$(`<li title="GM Info Overlay" class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
+		$(`<li title="${__("ui_bar_barriers")}" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
+		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
+			$(`<li title="${__("ui_bar_we")}" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
+		}
+
+		$("body").on("click", "#editinglayer li", function () {
+			$("#floatinglayerbar").removeClass("map")
+				.removeClass("floors")
+				.removeClass("background")
+				.removeClass("objects")
+				.removeClass("foreground")
+				.removeClass("roofs")
+				.removeClass("gmlayer")
+				.removeClass("walls")
+				.removeClass("weather");
+			setTimeout(() => {
+				$("#floatinglayerbar").addClass(window.currentEditingLayer)
+			}, 1);
+		});
+
+		// add "desc sort" button to init tracker
+		const $initTracker = $(`#initiativewindow`);
+		const addInitSortBtn = () => {
+			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px; padding:5px 2px;"><span class="pictos">l</span></div>`).click(() => {
+				// this will throw a benign error if the settings dialog has never been opened
+				$("#initiativewindow_settings .sortlist_numericdesc").click();
+			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`).parent());
+		};
+		const addInitResetBtn = () => { // also add "reset tracker" button
+			$(`<div class="btn" id="init-quick-reset" style="margin-right: 5px; padding:5px 2px;"><span class="pictos">#</span></div>`).click(() => {
+				// this will throw a benign error if the settings dialog has never been opened
+				$("#initiativewindow_settings .clearlist").click();
+			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`).parent());
+		};
+		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) {
+			addInitSortBtn();
+			addInitResetBtn();
+		} else {
+			d20.Campaign.initiativewindow.model.on("change", (e) => {
+				if (d20.Campaign.initiativewindow.model.attributes.initiativepage && $(`#init-quick-sort-desc`).length === 0) {
+					addInitSortBtn();
+					addInitResetBtn();
+					d20plus.cfg.baseHandleConfigChange();
+				}
+			})
+		}
+	};
+
+	/**
+	 * Prompt the user to choose from a list of checkboxes. By default, one checkbox can be selected, but a "count"
+	 * option can be provided to allow the user to choose multiple options.
+	 *
+	 * @param dataArray options to choose from
+	 * @param dataTitle title for the window
+	 * @param displayFormatter function to format dataArray for display
+	 * @param count exact number of  options the user must, mutually exclusive with countMin and countMax
+	 * @param countMin lowest number of options the user must choose, requires countMax, mutually exclusive with count
+	 * @param countMax highest number of options the user must choose, requires countMax, mutually exclusive with count
+	 * @param additionalHTML additional html code, such as a button
+	 * @param note add a note at the bottom of the window
+	 * @param messageCountIncomplete message when user does not choose correct number of choices
+	 * @param random show button for random choices
+	 * @param randomMax Enforce max random choices
+	 * @param totallyRandom select randomly number of items between countMin and countMax. Requires count to be null. This has higher priority than randomMax
+	 * @return {Promise}
+	 */
+	d20plus.ui.chooseCheckboxList = async function (dataArray, dataTitle, {displayFormatter = null, count = null, countMin = null, countMax = null, additionalHTML = null, note = null, messageCountIncomplete = null, random = null, randomMax = null, totallyRandom = null} = {}) {
+		return new Promise((resolve, reject) => {
+			// Ensure count, countMin, and countMax don't mess up
+			// Note if(var) is false if the number is 0. countMin is the only count allowed to be 0
+			if ((Number.isInteger(count) && Number.isInteger(countMin))
+			|| (Number.isInteger(count) && Number.isInteger(countMax))
+			|| (count == null && (Number.isInteger(countMin) ^ Number.isInteger(countMax)))
+			|| (countMin > countMax)) {
+				reject(new Error("Bad arguments--count is mutually exclusive with countMin and countMax, and countMin and countMax require each other."))
+			}
+			const useRange = Number.isInteger(countMin) && countMax;
+
+			// Generate the HTML
+			const $dialog = $(`
+				<div title="${dataTitle}">
+					${Number.isInteger(count) ? `<div name="remain" class="bold">Remaining: ${count}</div>` : ""}
+					${Number.isInteger(countMax) ? `<div name="remain" class="bold">Remaining: ${countMax}, Minimum: ${countMin}</div>` : ""}
+					<div>
+						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="checkbox"></label>`).join("")}
+					</div>
+					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
+					${note ? `<br><div class="italic">${note}</div>` : ""}
+				</div>
+			`).appendTo($("body"));
+			const $remain = $dialog.find(`[name="remain"]`);
+			const $cbChoices = $dialog.find(`input[type="checkbox"]`);
+
+			// Ensure the proper number of items is chosen
+			if (count != null || useRange) {
+				const targetCount = count || countMax;
+				const remainMin = countMax ? `, Minimum: ${countMin}` : "";
+				$cbChoices.on("change", function () {
+					const $e = $(this);
+					let selectedCount = getSelected().length;
+					if (selectedCount > targetCount) {
+						$e.prop("checked", false);
+						selectedCount--;
+					}
+					$remain.text(`Remaining: ${targetCount - selectedCount}${remainMin}`);
+				});
+			}
+
+			function getSelected () {
+				return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
+					.filter(it => it.selected).map(it => it.choice);
+			}
+
+			// Accept or reject selection
+			$dialog.dialog({
+				dialogClass: "no-close",
+				buttons: [
+					{
+						text: "Cancel",
+						click: function () {
+							$(this).dialog("close");
+							$dialog.remove();
+							reject(new Error(`User cancelled the prompt`));
+						},
+					},
+					(random ? {
+						text: "Choose randomly",
+						click: function () {
+							document.querySelectorAll("input[type=checkbox]").forEach(el => el.checked = false);
+							let alreadySelected = [];
+							if (count != null) {
+								for (let i = 0; i < count; i++) {
+									let randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
+									while (alreadySelected.includes(randomSelection)) {
+										randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
+									}
+									alreadySelected.push(randomSelection);
+									let chkbx = document.querySelector(`[data-choice="${randomSelection}"]`);
+									chkbx.checked = true;
+								}
+							} else {
+								let loops;
+								if (totallyRandom) {
+									loops = Math.floor(Math.random() * (countMax - countMin + 1) + countMin);
+								} else {
+									loops = randomMax ? countMax : countMin;
+								}
+
+								for (let i = 0; i < loops; i++) {
+									let randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
+									if (randomMax) {
+										while (alreadySelected.includes(randomSelection)) {
+											randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
+										}
+									}
+									alreadySelected.push(randomSelection);
+									let chkbx = document.querySelector(`[data-choice="${randomSelection}"]`);
+									chkbx.checked = true;
+								}
+							}
+						},
+					} : null),
+					{
+						text: "OK",
+						click: function () {
+							const selected = getSelected();
+							if (Number.isInteger(countMin) && countMax && count == null && selected.length >= countMin && selected.length <= countMax) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else if (!useRange && (selected.length === count || count == null)) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else {
+								alert(messageCountIncomplete ?? "Please select more options!");
+							}
+						},
+					},
+				].filter(Boolean),
+			})
+		});
+	};
+
+	/**
+	 * Prompt the user to choose from a list of radios. Radio button allow exactly one choice.
+	 *
+	 * @param dataArray options to choose from
+	 * @param dataTitle title for the window
+	 * @param displayFormatter function to format dataArray for display
+	 * @param random show button for random choices
+	 * @param additionalHTML additional html code, such as a button
+	 * @param note add a note at the bottom of the window
+	 * @param messageCountIncomplete message when user does not choose correct number of choices
+	 * @return {Promise}
+	 */
+	d20plus.ui.chooseRadioList = async function (dataArray, dataTitle, {displayFormatter = null, random = null, additionalHTML = null, note = null, messageCountIncomplete = null} = {}) {
+		return new Promise((resolve, reject) => {
+			// Generate the HTML
+			const $dialog = $(`
+				<div title="${dataTitle}">
+					<div>
+						${dataArray.map(it => `<label class="split"><span>${displayFormatter ? displayFormatter(it) : it}</span> <input data-choice="${it}" type="radio" name="${dataTitle}"></label>`).join("")}
+					</div>
+					${additionalHTML ? `<br><div>${additionalHTML}</div>` : ""}
+					${note ? `<br><div class="italic">${note}</div>` : ""}
+				</div>
+			`).appendTo($("body"));
+			const $remain = $dialog.find(`[name="remain"]`);
+			const $cbChoices = $dialog.find(`input[type="radio"]`);
+
+			function getSelected () {
+				return $cbChoices.map((i, e) => ({choice: $(e).data("choice"), selected: $(e).prop("checked")})).get()
+					.filter(it => it.selected).map(it => it.choice);
+			}
+
+			// Accept or reject selection
+			$dialog.dialog({
+				dialogClass: "no-close",
+				buttons: [
+					{
+						text: "Cancel",
+						click: function () {
+							$(this).dialog("close");
+							$dialog.remove();
+							reject(new Error(`User cancelled the prompt`));
+						},
+					},
+					(random ? {
+						text: "Choose randomly",
+						click: function () {
+							const randomSelection = dataArray[Math.floor(Math.random() * dataArray.length)];
+							const radio = document.querySelector(`[data-choice="${randomSelection}"]`);
+							radio.checked = true;
+						},
+					} : null),
+					{
+						text: "OK",
+						click: function () {
+							const selected = getSelected();
+							if (selected.length === 1) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else if (!useRange && (selected.length === count || count == null)) {
+								$(this).dialog("close");
+								$dialog.remove();
+								resolve(selected);
+							} else {
+								alert(messageCountIncomplete ?? "Please an option!");
+							}
+						},
+					},
+				].filter(Boolean),
+			})
+		});
+	};
+}
+
+SCRIPT_EXTENSIONS.push(baseUi);
+
+
+/**
+ * All the modified minified based on parts of Roll20's `app.js`
+ */
+function d20plusMod () {
+	d20plus.mod = {};
+
+	/* eslint-disable */
+
+	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
+	// BEGIN ROLL20 CODE
+	d20plus.mod.setMode = function (e) {
+		d20plus.ut.log("Setting mode " + e);
+		// BEGIN MOD
+		// "text" === e || "rect" === e || "ellipse" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
+		// END MOD
+		"text" == e ? $("#editor").addClass("texteditmode") : $("#editor").removeClass("texteditmode"),
+			$("#floatingtoolbar li").removeClass("activebutton"),
+			$("#" + e).addClass("activebutton"),
+		"fog" == e.substring(0, 3) && $("#fogcontrols").addClass("activebutton");
+
+		const drawingTools = ["rect", "ellipse", "text", "path", "polygon", "line_splitter"];
+		if (drawingTools.includes(e)) {
+			if ("ellipse" == e) $('#drawingtools span.subicon').addClass('fas fa-circle');
+			else $('#drawingtools span.subicon').removeClass('fas fa-circle');
+			$("#drawingtools").addClass("activebutton").removeClass("text rect ellipse path polygon line_splitter");
+			"rect" == e && $("#drawingtools").addClass("rect");
+			"ellipse" == e && $("#drawingtools").addClass("ellipse");
+			"text" == e && $("#drawingtools").addClass("activebutton").removeClass("rect ellipse path polygon line_splitter").addClass("text");
+			"path" == e && $("#drawingtools").addClass("path");
+			"polygon" == e && $("#drawingtools").addClass("polygon");
+			// BEGIN MOD (also line_splitter added to above removeClass calls
+			"line_splitter" == e && $("#drawingtools").addClass("line_splitter");
+			// END MOD
+		}
+		"polygon" != e && d20.engine.finishCurrentPolygon();
+
+		"pan" !== e && "select" !== e && d20.engine.unselect(),
+			"pan" == e ? ($("#select").addClass("pan").removeClass("select").addClass("activebutton"),
+				d20.token_editor.removeRadialMenu(),
+				$("#editor-wrapper").addClass("panning")) : $("#editor-wrapper").removeClass("panning"),
+		"select" == e && $("#select").addClass("select").removeClass("pan").addClass("activebutton"),
+			$("#floatingtoolbar .mode").hide(),
+		("text" == e || "select" == e) && $("#floatingtoolbar ." + e).show(),
+			"gridalign" == e ? $("#gridaligninstructions").show() : "gridalign" === d20.engine.mode && $("#gridaligninstructions").hide(),
+			"targeting" === e ? ($("#targetinginstructions").show(),
+				$("#finalcanvas").addClass("targeting"),
+				d20.engine.canvas.hoverCursor = "crosshair") : "targeting" === d20.engine.mode && ($("#targetinginstructions").hide(),
+				$("#finalcanvas").removeClass("targeting"),
+			d20.engine.nextTargetCallback && _.defer(function () {
+				d20.engine.nextTargetCallback && d20.engine.nextTargetCallback(!1)
+			}),
+				d20.engine.canvas.hoverCursor = "move"),
+			// BEGIN MOD
+			// console.log("Switch mode to " + e),
+			d20.engine.mode = e,
+		"measure" !== e && window.currentPlayer && d20.engine.measurements[window.currentPlayer.id] && !d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.announceEndMeasure({
+			player: window.currentPlayer.id
+		}),
+			d20.engine.endMeasure()),
+			d20.engine.canvas.isDrawingMode = "path" == e ? !0 : !1;
+		if ("text" == e || "path" == e || "rect" == e || "ellipse" == e || "polygon" == e || "fxtools" == e) {
+			$("#secondary-toolbar").show();
+			$("#secondary-toolbar .mode").hide();
+			$("#secondary-toolbar ." + e).show();
+			("path" == e || "rect" == e || "ellipse" == e || "polygon" == e) && ("" === $("#path_strokecolor").val() && ($("#path_strokecolor").val("#000000").trigger("change-silent"),
+				$("#path_fillcolor").val("transparent").trigger("change-silent")),
+				d20.engine.canvas.freeDrawingBrush.color = $("#path_strokecolor").val(),
+				d20.engine.canvas.freeDrawingBrush.fill = $("#path_fillcolor").val() || "transparent",
+				$("#path_width").trigger("change")),
+			"fxtools" == e && "" === $("#fxtools_color").val() && $("#fxtools_color").val("#a61c00").trigger("change-silent"),
+				$("#floatingtoolbar").trigger("blur")
+		} else {
+			$("#secondary-toolbar").hide();
+			$("#floatingtoolbar").trigger("blur");
+		}
+		// END MOD
+		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
+		d20.engine.redrawScreenNextTick()
+	};
+	// END ROLL20 CODE
+
+	d20plus.mod.overwriteStatusEffects = function () {
+		d20.engine.canvasDirty = true;
+		d20.engine.canvasTopDirty = true;
+		d20.engine.canvas._objects.forEach(it => {
+			// avoid adding it to any objects that wouldn't have it to begin with
+			if (!it.model || !it.model.view || !it.model.view.updateBackdrops) return;
+
+			// BEGIN ROLL20 CODE
+			it.model.view.updateBackdrops = function (e) {
+				if (!this.nohud && ("objects" == this.model.get("layer") || "gmlayer" == this.model.get("layer")) && "image" == this.model.get("type") && this.model && this.model.collection && this.graphic) {
+					// BEGIN MOD
+					const scaleFact = (d20plus.cfg.get("canvas", "scaleNamesStatuses") && d20.Campaign.activePage().get("snapping_increment"))
+						? d20.Campaign.activePage().get("snapping_increment")
+						: 1;
+					// END MOD
+					var t = this.model.collection.page
+						, n = e || d20.engine.canvas.getContext();
+					n.save(),
+					(this.graphic.get("flipX") || this.graphic.get("flipY")) && n.scale(this.graphic.get("flipX") ? -1 : 1, this.graphic.get("flipY") ? -1 : 1);
+					var i = this
+						, r = Math.floor(this.graphic.get("width") / 2)
+						, o = Math.floor(this.graphic.get("height") / 2)
+						, a = (parseFloat(t.get("scale_number")),
+						this.model.get("statusmarkers").split(","));
+					-1 !== a.indexOf("dead") && (n.strokeStyle = "rgba(189,13,13,0.60)",
+						n.lineWidth = 10,
+						n.beginPath(),
+						n.moveTo(-r + 7, -o + 15),
+						n.lineTo(r - 7, o - 5),
+						n.moveTo(r - 7, -o + 15),
+						n.lineTo(-r + 7, o - 5),
+						n.closePath(),
+						n.stroke()),
+						n.rotate(-this.graphic.get("angle") * Math.PI / 180),
+						n.strokeStyle = "rgba(0,0,0,0.65)",
+						n.lineWidth = 1;
+					var s = 0
+						, l = i.model.get("bar1_value")
+						, c = i.model.get("bar1_max");
+					if ("" != c && (window.is_gm || this.model.get("showplayers_bar1") || this.model.currentPlayerControls() && this.model.get("playersedit_bar1"))) {
+						var u = parseInt(l, 10) / parseInt(c, 10)
+							, d = -o - 20 + 0;
+						n.fillStyle = "rgba(" + d20.Campaign.tokendisplay.bar1_rgb + ",0.75)",
+							n.beginPath(),
+							n.rect(-r + 3, d, Math.floor((2 * r - 6) * u), 8),
+							n.closePath(),
+							n.fill(),
+							n.beginPath(),
+							n.rect(-r + 3, d, 2 * r - 6, 8),
+							n.closePath(),
+							n.stroke(),
+							s++
+					}
+					var l = i.model.get("bar2_value")
+						, c = i.model.get("bar2_max");
+					if ("" != c && (window.is_gm || this.model.get("showplayers_bar2") || this.model.currentPlayerControls() && this.model.get("playersedit_bar2"))) {
+						var u = parseInt(l, 10) / parseInt(c, 10)
+							, d = -o - 20 + 12;
+						n.fillStyle = "rgba(" + d20.Campaign.tokendisplay.bar2_rgb + ",0.75)",
+							n.beginPath(),
+							n.rect(-r + 3, d, Math.floor((2 * r - 6) * u), 8),
+							n.closePath(),
+							n.fill(),
+							n.beginPath(),
+							n.rect(-r + 3, d, 2 * r - 6, 8),
+							n.closePath(),
+							n.stroke(),
+							s++
+					}
+					var l = i.model.get("bar3_value")
+						, c = i.model.get("bar3_max");
+					if ("" != c && (window.is_gm || this.model.get("showplayers_bar3") || this.model.currentPlayerControls() && this.model.get("playersedit_bar3"))) {
+						var u = parseInt(l, 10) / parseInt(c, 10)
+							, d = -o - 20 + 24;
+						n.fillStyle = "rgba(" + d20.Campaign.tokendisplay.bar3_rgb + ",0.75)",
+							n.beginPath(),
+							n.rect(-r + 3, d, Math.floor((2 * r - 6) * u), 8),
+							n.closePath(),
+							n.fill(),
+							n.beginPath(),
+							n.rect(-r + 3, d, 2 * r - 6, 8),
+							n.closePath(),
+							n.stroke()
+					}
+					var h, p, g = 1, f = !1;
+					switch (d20.Campaign.get("markers_position")) {
+						case "bottom":
+							h = o - 10,
+								p = r;
+							break;
+						case "left":
+							h = -o - 10,
+								p = -r,
+								f = !0;
+							break;
+						case "right":
+							h = -o - 10,
+								p = r - 18,
+								f = !0;
+							break;
+						default:
+							h = -o + 10,
+								p = r
+					}
+					// BEGIN MOD
+					n.strokeStyle = "white";
+					n.lineWidth = 3 * scaleFact;
+					const scaledFont = 14 * scaleFact;
+					n.font = "bold " + scaledFont + "px Arial";
+					// END MOD
+					_.each(a, function (e) {
+						var t = d20.token_editor.statusmarkers[e.split("@")[0]];
+						if (!t)
+							return !0;
+						if ("dead" === e)
+							return !0;
+						var i = 0;
+						if (g--,
+						"#" === t.substring(0, 1))
+							n.fillStyle = t,
+								n.beginPath(),
+								f ? h += 16 : p -= 16,
+								n.arc(p + 8, f ? h + 4 : h, 6, 0, 2 * Math.PI, !0),
+								n.closePath(),
+								n.stroke(),
+								n.fill(),
+								i = f ? 10 : 4;
+						else {
+							// BEGIN MOD
+							if (!d20.token_editor.statussheet_ready) return;
+							const scaledWH = 21 * scaleFact;
+							const scaledOffset = 22 * scaleFact;
+							f ? h += scaledOffset : p -= scaledOffset;
+
+							if (d20.engine.canvasZoom <= 1) {
+								n.drawImage(d20.token_editor.statussheet_small, parseInt(t, 10), 0, 21, 21, p, h - 9, scaledWH, scaledWH);
+							} else {
+								n.drawImage(d20.token_editor.statussheet, parseInt(t, 10), 0, 24, 24, p, h - 9, scaledWH, scaledWH)
+							}
+
+							i = f ? 14 : 12;
+							i *= scaleFact;
+							// END MOD
+						}
+						if (-1 !== e.indexOf("@")) {
+							var r = e.split("@")[1];
+							// BEGIN MOD
+							// bing backtick to "clear counter"
+							if (r === "`") return;
+							n.fillStyle = "rgb(222,31,31)";
+							var o = f ? 9 : 14;
+							o *= scaleFact;
+							o -= (14 - (scaleFact * 14));
+							n.strokeText(r + "", p + i, h + o);
+							n.fillText(r + "", p + i, h + o);
+							// END MOD
+						}
+					});
+					var m = i.model.get("name");
+					if ("" != m && 1 == this.model.get("showname") && (window.is_gm || this.model.get("showplayers_name") || this.model.currentPlayerControls() && this.model.get("playersedit_name"))) {
+						n.textAlign = "center";
+						// BEGIN MOD
+						const fontSize = 14;
+						var scaledFontSize = fontSize * scaleFact;
+						const scaledY = 22 * scaleFact;
+						const scaled6 = 6 * scaleFact;
+						const scaled8 = 8 * scaleFact;
+						n.font = "bold " + scaledFontSize + "px Arial";
+						var v = n.measureText(m).width;
+
+						/*
+							Note(stormy): compatibility with R20ES's ScaleTokenNamesBySize module.
+						 */
+						if(window.r20es && window.r20es.drawNameplate) {
+							window.r20es.drawNameplate(this.model, n, v, o, fontSize, m);
+						} else {
+							n.fillStyle = "rgba(255,255,255,0.50)";
+							n.fillRect(-1 * Math.floor((v + scaled6) / 2), o + scaled8, v + scaled6, scaledFontSize + scaled6);
+							n.fillStyle = "rgb(0,0,0)";
+							n.fillText(m + "", 0, o + scaledY, v);
+						}
+						// END MOD
+					}
+					n.restore()
+				}
+			}
+			// END ROLL20 CODE
+		});
+	};
+
+	d20plus.mod.mouseEnterMarkerMenu = function () {
+		var e = this;
+		$(this).on("mouseover.statusiconhover", ".statusicon", function () {
+			a = $(this).attr("data-action-type").replace("toggle_status_", "")
+		}),
+			$(document).on("keypress.statusnum", function (t) {
+				// BEGIN MOD // TODO see if this clashes with keyboard shortcuts
+				let currentcontexttarget = d20.engine.selected()[0];
+				if ("dead" !== a && currentcontexttarget) {
+					// END MOD
+					var n = String.fromCharCode(t.which)
+						,
+						i = "" == currentcontexttarget.model.get("statusmarkers") ? [] : currentcontexttarget.model.get("statusmarkers").split(",")
+						, r = (_.map(i, function (e) {
+							return e.split("@")[0]
+						}),
+							!1);
+					i = _.map(i, function (e) {
+						return e.split("@")[0] == a ? (r = !0,
+						a + "@" + n) : e
+					}),
+					r || ($(e).find(".statusicon[data-action-type=toggle_status_" + a + "]").addClass("active"),
+						i.push(a + "@" + n)),
+						currentcontexttarget.model.save({
+							statusmarkers: i.join(",")
+						})
+				}
+			})
+	};
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.handleURL = function(e) {
+		if (!($(this).hasClass("lightly") || $(this).parents(".note-editable").length > 0)) {
+			var t = $(this).attr("href");
+			if (void 0 === t)
+				return !1;
+			if (-1 !== t.indexOf("journal.roll20.net") || -1 !== t.indexOf("wiki.roll20.net")) {
+				var n = t.split("/")[3]
+					, i = t.split("/")[4]
+					, o = d20.Campaign[n + "s"].get(i);
+				if (o) {
+					var r = o.get("inplayerjournals").split(",");
+					(window.is_gm || -1 !== _.indexOf(r, "all") || window.currentPlayer && -1 !== _.indexOf(r, window.currentPlayer.id)) && o.view.showDialog()
+				}
+				return $("#existing" + n + "s").find("tr[data-" + n + "id=" + i + "]").trigger("click"),
+					!1
+			}
+			var a = /(?:(?:http(?:s?):\/\/(?:app\.)?roll20(?:staging)?\.(?:net|local:5000)\/|^\/?)compendium\/)([^\/]+)\/([^\/#?]+)/i
+				, s = t.match(a);
+			if (s)
+				return d20.utils.openCompendiumPage(s[1], s[2]),
+					e.stopPropagation(),
+					void e.preventDefault();
+			if (-1 !== t.indexOf("javascript:"))
+				return !1;
+			if ("`" === t.substring(0, 1))
+				return d20.textchat.doChatInput(t.substring(1)),
+					!1;
+			if ("!" === t.substring(0, 1))
+				return d20.textchat.doChatInput(t),
+					!1;
+			if ("~" === t.substring(0, 1))
+				return d20.textchat.doChatInput("%{" + t.substring(1, t.length) + "}"),
+					!1;
+			if (t !== undefined && ("external" === $(this).attr("rel") || -1 === t.indexOf("javascript:") && -1 !== t.indexOf("://"))) {
+				// BEGIN MOD
+				e.stopPropagation();
+				e.preventDefault();
+				window.open(t);
+				// END MOD
+			}
+		}
+	};
+	// END ROLL20 CODE
+
+	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background"]);
+	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
+	// BEGIN ROLL20 CODE
+	d20plus.mod.renderAll = function (e) {
+		const t = e && e.context || this.contextContainer
+			, i = this.getActiveGroup()
+			, n = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
+			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset, d20.math.div(n, 2)),...n,0);
+		i && !window.is_gm && (i.hideResizers = !0),
+			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
+		const r = {
+			map: [],
+			// BEGIN MOD
+			floors: [],
+			background: [],
+			// END MOD
+			walls: [],
+			objects: [],
+			// BEGIN MOD
+			foreground: [],
+			roofs: [],
+			// END MOD
+			gmlayer: []
+			// BEGIN MOD
+			, weather: [],
+			// END MOD
+			_save_map_layer: this._save_map_layer
+		};
+		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
+		const a = e && e.tokens_to_render || this._objects;
+		for (let e of a)
+			if (e.model) {
+				const t = e.model.get("layer");
+				if (!r[t])
+					continue;
+				r[t].push(e)
+			} else
+				r[window.currentEditingLayer].push(e);
+
+		// BEGIN MOD
+		// Here we get the layers and look if there's a foreground in the current map
+		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
+		const noForegroundLayer = !layers.some(it => it === 'foreground');
+		// END MOD
+
+		for (const [n,a] of r) {
+			switch (a) {
+				case "lighting and fog":
+					d20.engine.drawHighlights(this.contextContainer), d20.dyn_fog.render({
+						main_canvas: this.contextContainer.canvas
+					});
+					continue;
+				case "grid":
+					d20.canvas_overlay.drawGrid(t);
+					continue;
+				case "afow":
+					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
+					continue;
+				// BEGIN MOD
+				case "gmlayer":
+					if ("gmlayer" !== window.currentEditingLayer) {
+						t.globalAlpha = d20.engine.gm_layer_opacity;
+					} else {
+						t.globalAlpha = 1;
+					}
+					break;
+				case "floors":
+					if ("map" === window.currentEditingLayer && window.is_gm) {
+						t.globalAlpha = .45;
+						break
+					} else {
+						t.globalAlpha = 1;
+						break;
+					}
+				case "roofs":
+					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.is_gm) {
+						t.globalAlpha = .45;
+						break;
+					}
+				case "background":
+				case "foreground":
+				case "objects":
+					if (d20plus.mod._renderAll_serviceLayers.has(window.currentEditingLayer) && window.is_gm) {
+						t.globalAlpha = .45;
+						break
+					}
+				// END MOD
+				default:
+					t.globalAlpha = 1
+			}
+			_.chain(n).filter(n=>{
+					let r;
+					return i && n && i.contains(n) ? (n.renderingInGroup = i,
+						n.hasControls = !1) : (n.renderingInGroup = null,
+						n.hasControls = !0,
+						"text" !== n.type && window.is_gm ? n.hideResizers = !1 : n.hideResizers = !0),
+						e && e.invalid_rects ? (r = n.intersects([o]) && (n.needsToBeDrawn || n.intersects(e.invalid_rects)),
+						!e.skip_prerender && n.renderPre && n.renderPre(t)) : (r = n.needsRender(o),
+						(!e || !e.skip_prerender) && r && n.renderPre && n.renderPre(t, {
+							should_update: !0
+						})),
+						r
+				}
+			).each(i=> {
+				// BEGIN MOD
+				let toRender = false;
+				// END MOD
+
+				const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
+
+				// BEGIN MOD
+				// If there is a foreground layer, do not give "owned tokens with sight" special treatment;
+				//   render them during the normal render flow (rather than skipping them)
+				 const o = noForegroundLayer ? e && e.owned_with_sight_auras_only : false;
+				// END MOD
+
+				let r = i._model;
+				r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
+				// BEGIN MOD
+				// We don't draw immediately the token. Instead, we mark it as "to render"
+				o && (!o || n && r) || (toRender = true);
+
+				if (toRender) {
+					// For the token checked "to render", we draw them if
+					//  - we're in a "render everything" call (i.e. no specific `tokens_to_render`), rather than a "render own tokens" call
+					//  - there isn't a foreground layer for the map or
+					//  - is everything but an object
+					if (!e.tokens_to_render || noForegroundLayer || a !== 'objects') {
+						this._draw(t, i);
+					}
+					i.renderingInGroup = null;
+				}
+				// END MOD
+			})
+		}
+		return t.restore(),
+			this
+	};
+	// END ROLL20 CODE
+
+	// shoutouts to Roll20 for making me learn how `yield` works
+	// BEGIN ROLL20 CODE
+	d20plus.mod.layerIteratorGenerator = function*(e) {
+		yield [this.map, "map"],
+		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
+			this._save_map_layer = !1);
+
+		// BEGIN MOD
+		yield [this.floors, "floors"];
+		// END MOD
+
+		const grid_before_afow = e && e.grid_before_afow;
+		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
+		const grid_hide = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
+
+		if (grid_before_afow && !grid_hide) yield [null, "grid"];
+		if (!adv_fow_disabled) yield [null, "afow"];
+		if (!grid_before_afow && !grid_hide) yield [null, "grid"];
+
+		// BEGIN MOD
+		yield [this.background, "background"];
+		// END MOD
+
+		yield [this.objects, "objects"];
+
+		// BEGIN MOD
+		yield [this.roofs, "roofs"];
+		yield [this.foreground, "foreground"];
+		// END MOD
+
+		if (window.is_gm) yield [this.gmlayer, "gmlayer"];
+
+		const enable_dynamic_fog = e && e.enable_dynamic_fog;
+		if (d20.dyn_fog.ready() && enable_dynamic_fog) yield [null, "lighting and fog"];
+
+		// BEGIN MOD
+		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
+		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
+		// END MOD
+	};
+	// END ROLL20 CODE
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.editingLayerOnclick = () => {
+		$("#editinglayer").off(clicktype).on(clicktype, "li", function() {
+			var e = $(this);
+			$("#editinglayer").removeClass(window.currentEditingLayer);
+			$("#drawingtools .choosepath").show();
+			"polygon" !== d20.engine.mode && $("#drawingtools").hasClass("polygon") && $("#drawingtools").removeClass("polygon").addClass("path");
+
+			// BEGIN MOD
+			if (e.hasClass("chooseweather")) {
+				window.currentEditingLayer = "weather";
+				$("#drawingtools .choosepath").hide();
+				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
+			} else {
+				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseroofs") ? window.currentEditingLayer = "roofs" : e.hasClass("choosefloors") ? window.currentEditingLayer = "floors" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+					$("#drawingtools .choosepath").hide(),
+				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
+			}
+			// END MOD
+			$("#editinglayer").addClass(window.currentEditingLayer);
+			$(document).trigger("d20:editingLayerChanged");
+		});
+	};
+	// END ROLL20 CODE
+
+	// prevent prototype methods from breaking some poorly-written property loops
+	d20plus.mod.fixHexMethods = () => {
+		try {
+			// BEGIN ROLL20 CODE
+			HT.Grid.prototype.GetHexAt = function(e) {
+				// BEGIN MOD
+				for (const t of this.Hexes)
+					if (t.Contains(e))
+						return t;
+				// END MOD
+				return null
+			};
+			// END ROLL20 CODE
+		} catch (ignored) {
+			console.error(ignored)
+		}
+
+		try {
+			// BEGIN ROLL20 CODE
+			HT.Grid.prototype.GetHexById = function(e) {
+				// BEGIN MOD
+				for (const t of this.Hexes)
+					if (t.Id == e)
+						return t;
+				// END MOD
+				return null
+			};
+			// END ROLL20 CODE
+		} catch (ignored) {
+			console.error(ignored)
+		}
+	};
+
+	// prevent prototype methods from breaking some poorly-written property loops
+	d20plus.mod.fixVideoMethods = () => {
+		const arr = [];
+		for (const k in arr) {
+			const v = arr[k];
+			if (typeof v === "function") {
+				v.getReceiver = v.getReceiver || (() => null);
+				v.getSender = v.getSender || (() => null);
+			}
+		}
+	};
+
+	/* eslint-enable */
+}
+
+SCRIPT_EXTENSIONS.push(d20plusMod);
+
+
+const baseMacro = function () {
+	d20plus.macro = {};
+
+	d20plus.macro.actionMacroTrait = function (index) {
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npctrait_$${index}_name}}} {{description=@{selected|repeating_npctrait_$${index}_desc} }}`;
+	};
+
+	d20plus.macro.actionMacroAction = function (baseAction, index) {
+		return `%{selected|${baseAction}_$${index}_npc_action}`;
+	};
+
+	d20plus.macro.actionMacroReaction = function (index) {
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$${index}_name}}} {{description=@{selected|repeating_npcreaction_$${index}_desc} }} `;
+	};
+
+	d20plus.macro.actionMacroLegendary = function (tokenactiontext) {
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r${tokenactiontext}}} `;
+	}
+
+	d20plus.macro.actionMacroMythic = function (tokenactiontext) {
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Mythic Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} mythic actions, choosing from the options below. Only one mythic option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent mythic actions at the start of its turn.\n\r${tokenactiontext}}} `;
+	}
+
+	d20plus.macro.actionMacroPerception = "%{Selected|npc_perception} @{selected|wtype} &{template:default} {{name=Senses}}  @{selected|wtype} @{Selected|npc_senses} ";
+	d20plus.macro.actionMacroInit = "%{selected|npc_init}";
+	d20plus.macro.actionMacroDrImmunities = "@{selected|wtype} &{template:default} {{name=DR/Immunities}} {{Damage Resistance= @{selected|npc_resistances}}} {{Damage Vulnerability= @{selected|npc_vulnerabilities}}} {{Damage Immunity= @{selected|npc_immunities}}} {{Condition Immunity= @{selected|npc_condition_immunities}}} ";
+	d20plus.macro.actionMacroStats = "@{selected|wtype} &{template:default} {{name=Stats}} {{Armor Class= @{selected|npc_AC}}} {{Hit Dice= @{selected|npc_hpformula}}} {{Speed= @{selected|npc_speed}}} {{Senses= @{selected|npc_senses}}} {{Languages= @{selected|npc_languages}}} {{Challenge= @{selected|npc_challenge}(@{selected|npc_xp}xp)}}";
+	d20plus.macro.actionMacroSaves = "@{selected|wtype} &{template:simple}{{always=1}}?{Saving Throw?|STR,{{rname=Strength Save&#125;&#125;{{mod=@{npc_str_save}&#125;&#125; {{r1=[[1d20+@{npc_str_save}]]&#125;&#125;{{r2=[[1d20+@{npc_str_save}]]&#125;&#125;|DEX,{{rname=Dexterity Save&#125;&#125;{{mod=@{npc_dex_save}&#125;&#125; {{r1=[[1d20+@{npc_dex_save}]]&#125;&#125;{{r2=[[1d20+@{npc_dex_save}]]&#125;&#125;|CON,{{rname=Constitution Save&#125;&#125;{{mod=@{npc_con_save}&#125;&#125; {{r1=[[1d20+@{npc_con_save}]]&#125;&#125;{{r2=[[1d20+@{npc_con_save}]]&#125;&#125;|INT,{{rname=Intelligence Save&#125;&#125;{{mod=@{npc_int_save}&#125;&#125; {{r1=[[1d20+@{npc_int_save}]]&#125;&#125;{{r2=[[1d20+@{npc_int_save}]]&#125;&#125;|WIS,{{rname=Wisdom Save&#125;&#125;{{mod=@{npc_wis_save}&#125;&#125; {{r1=[[1d20+@{npc_wis_save}]]&#125;&#125;{{r2=[[1d20+@{npc_wis_save}]]&#125;&#125;|CHA,{{rname=Charisma Save&#125;&#125;{{mod=@{npc_cha_save}&#125;&#125; {{r1=[[1d20+@{npc_cha_save}]]&#125;&#125;{{r2=[[1d20+@{npc_cha_save}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.macro.actionMacroSkillCheck = "@{selected|wtype} &{template:simple}{{always=1}}?{Ability?|Acrobatics,{{rname=Acrobatics&#125;&#125;{{mod=@{npc_acrobatics}&#125;&#125; {{r1=[[1d20+@{npc_acrobatics}]]&#125;&#125;{{r2=[[1d20+@{npc_acrobatics}]]&#125;&#125;|Animal Handling,{{rname=Animal Handling&#125;&#125;{{mod=@{npc_animal_handling}&#125;&#125; {{r1=[[1d20+@{npc_animal_handling}]]&#125;&#125;{{r2=[[1d20+@{npc_animal_handling}]]&#125;&#125;|Arcana,{{rname=Arcana&#125;&#125;{{mod=@{npc_arcana}&#125;&#125; {{r1=[[1d20+@{npc_arcana}]]&#125;&#125;{{r2=[[1d20+@{npc_arcana}]]&#125;&#125;|Athletics,{{rname=Athletics&#125;&#125;{{mod=@{npc_athletics}&#125;&#125; {{r1=[[1d20+@{npc_athletics}]]&#125;&#125;{{r2=[[1d20+@{npc_athletics}]]&#125;&#125;|Deception,{{rname=Deception&#125;&#125;{{mod=@{npc_deception}&#125;&#125; {{r1=[[1d20+@{npc_deception}]]&#125;&#125;{{r2=[[1d20+@{npc_deception}]]&#125;&#125;|History,{{rname=History&#125;&#125;{{mod=@{npc_history}&#125;&#125; {{r1=[[1d20+@{npc_history}]]&#125;&#125;{{r2=[[1d20+@{npc_history}]]&#125;&#125;|Insight,{{rname=Insight&#125;&#125;{{mod=@{npc_insight}&#125;&#125; {{r1=[[1d20+@{npc_insight}]]&#125;&#125;{{r2=[[1d20+@{npc_insight}]]&#125;&#125;|Intimidation,{{rname=Intimidation&#125;&#125;{{mod=@{npc_intimidation}&#125;&#125; {{r1=[[1d20+@{npc_intimidation}]]&#125;&#125;{{r2=[[1d20+@{npc_intimidation}]]&#125;&#125;|Investigation,{{rname=Investigation&#125;&#125;{{mod=@{npc_investigation}&#125;&#125; {{r1=[[1d20+@{npc_investigation}]]&#125;&#125;{{r2=[[1d20+@{npc_investigation}]]&#125;&#125;|Medicine,{{rname=Medicine&#125;&#125;{{mod=@{npc_medicine}&#125;&#125; {{r1=[[1d20+@{npc_medicine}]]&#125;&#125;{{r2=[[1d20+@{npc_medicine}]]&#125;&#125;|Nature,{{rname=Nature&#125;&#125;{{mod=@{npc_nature}&#125;&#125; {{r1=[[1d20+@{npc_nature}]]&#125;&#125;{{r2=[[1d20+@{npc_nature}]]&#125;&#125;|Perception,{{rname=Perception&#125;&#125;{{mod=@{npc_perception}&#125;&#125; {{r1=[[1d20+@{npc_perception}]]&#125;&#125;{{r2=[[1d20+@{npc_perception}]]&#125;&#125;|Performance,{{rname=Performance&#125;&#125;{{mod=@{npc_performance}&#125;&#125; {{r1=[[1d20+@{npc_performance}]]&#125;&#125;{{r2=[[1d20+@{npc_performance}]]&#125;&#125;|Persuasion,{{rname=Persuasion&#125;&#125;{{mod=@{npc_persuasion}&#125;&#125; {{r1=[[1d20+@{npc_persuasion}]]&#125;&#125;{{r2=[[1d20+@{npc_persuasion}]]&#125;&#125;|Religion,{{rname=Religion&#125;&#125;{{mod=@{npc_religion}&#125;&#125; {{r1=[[1d20+@{npc_religion}]]&#125;&#125;{{r2=[[1d20+@{npc_religion}]]&#125;&#125;|Sleight of Hand,{{rname=Sleight of Hand&#125;&#125;{{mod=@{npc_sleight_of_hand}&#125;&#125; {{r1=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;{{r2=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;|Stealth,{{rname=Stealth&#125;&#125;{{mod=@{npc_stealth}&#125;&#125; {{r1=[[1d20+@{npc_stealth}]]&#125;&#125;{{r2=[[1d20+@{npc_stealth}]]&#125;&#125;|Survival,{{rname=Survival&#125;&#125;{{mod=@{npc_survival}&#125;&#125; {{r1=[[1d20+@{npc_survival}]]&#125;&#125;{{r2=[[1d20+@{npc_survival}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.macro.actionMacroAbilityCheck = "@{selected|wtype} &{template:simple}{{always=1}}?{Ability?|STR,{{rname=Strength&#125;&#125;{{mod=@{strength_mod}&#125;&#125; {{r1=[[1d20+@{strength_mod}]]&#125;&#125;{{r2=[[1d20+@{strength_mod}]]&#125;&#125;|DEX,{{rname=Dexterity&#125;&#125;{{mod=@{dexterity_mod}&#125;&#125; {{r1=[[1d20+@{dexterity_mod}]]&#125;&#125;{{r2=[[1d20+@{dexterity_mod}]]&#125;&#125;|CON,{{rname=Constitution&#125;&#125;{{mod=@{constitution_mod}&#125;&#125; {{r1=[[1d20+@{constitution_mod}]]&#125;&#125;{{r2=[[1d20+@{constitution_mod}]]&#125;&#125;|INT,{{rname=Intelligence&#125;&#125;{{mod=@{intelligence_mod}&#125;&#125; {{r1=[[1d20+@{intelligence_mod}]]&#125;&#125;{{r2=[[1d20+@{intelligence_mod}]]&#125;&#125;|WIS,{{rname=Wisdom&#125;&#125;{{mod=@{wisdom_mod}&#125;&#125; {{r1=[[1d20+@{wisdom_mod}]]&#125;&#125;{{r2=[[1d20+@{wisdom_mod}]]&#125;&#125;|CHA,{{rname=Charisma&#125;&#125;{{mod=@{charisma_mod}&#125;&#125; {{r1=[[1d20+@{charisma_mod}]]&#125;&#125;{{r2=[[1d20+@{charisma_mod}]]&#125;&#125;}{{charname=@{character_name}}} ";
 };
 
-SCRIPT_EXTENSIONS.push(baseTemplate);
+SCRIPT_EXTENSIONS.push(baseMacro);
 
 
 const betteR20Emoji = function () {
@@ -18391,7 +18869,7 @@ const betteR20Core = function () {
 				d20plus.ut.checkVersion();
 			}
 
-			d20plus.template.swapTemplates();
+			d20plus.engine.swapTemplates();
 			d20plus.ut.addAllCss();
 
 			if (window.is_gm) {
@@ -18416,7 +18894,7 @@ const betteR20Core = function () {
 			d20plus.art.initArtFromUrlButtons();
 			if (window.is_gm) {
 				d20plus.journal.addJournalCommands();
-				d20plus.engine.addSelectedTokenCommands();
+				d20plus.menu.addSelectedTokenCommands();
 				d20plus.art.addCustomArtSearch();
 				d20plus.engine.addTokenHover();
 				d20plus.engine.enhanceTransmogrifier();

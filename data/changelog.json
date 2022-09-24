@@ -326,5 +326,10 @@
 		"ver": "1.31.1",
 		"date": "2022-09-11",
 		"txt": "- Added \"Quick Layer Buttons Position\" to switch which side of the screen the Quick Layer Buttons appear on (thanks @ Riedel)\n- Fixed token editor failing to open (thanks @ Riedel)"
+	},
+	{
+		"ver": "1.32.0",
+		"date": "2022-09-21",
+		"txt": "- Added \"JSON Importer\" tool, which allows entire JSON files to be imported in one go (particularly useful for homebrew) (thanks @ darthbeep)\n- Fixed issue when deleting folder and files at the same time in the Journal Cleaner (thanks @ darthbeep)\n- Fixed random crash during initialization (generally caused by poor connection) (thanks @ Riedel)"
 	}
 ]

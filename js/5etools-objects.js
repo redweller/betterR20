@@ -97,7 +97,7 @@ function d20plusObjects () {
 								character.abilities.create({
 									name: `Information: ${name}`,
 									istokenaction: true,
-									action: d20plus.actionMacroTrait(0),
+									action: d20plus.macro.actionMacroTrait(0),
 								});
 							}
 						}

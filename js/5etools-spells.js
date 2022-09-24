@@ -26,7 +26,7 @@ function d20plusSpells () {
 	// Import Spells button was clicked
 	d20plus.spells.button = function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
-		const url = playerMode ? $("#import-spell-url-player").val() : $("#import-spell-url").val();
+		const url = playerMode ? $("#import-spells-url-player").val() : $("#import-spells-url").val();
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
