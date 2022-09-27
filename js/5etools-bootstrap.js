@@ -9,8 +9,7 @@ const betteR205etools = function () {
 			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
 
-			d20plus.template.swapTemplates();
-
+			d20plus.engine.swapTemplates();
 			d20plus.ut.addAllCss();
 			if (window.is_gm) {
 				d20plus.ut.log("Is GM");
@@ -46,7 +45,7 @@ const betteR205etools = function () {
 			d20plus.art.initArtFromUrlButtons();
 			if (window.is_gm) {
 				d20plus.journal.addJournalCommands();
-				d20plus.engine.addSelectedTokenCommands();
+				d20plus.menu.addSelectedTokenCommands();
 				d20plus.art.addCustomArtSearch();
 				d20plus.engine.addTokenHover();
 				d20plus.engine.enhanceTransmogrifier();
@@ -60,7 +59,6 @@ const betteR205etools = function () {
 			}
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
-			d20plus.engine.addSelectedTokenCommands();
 			d20plus.engine.enhanceStatusEffects();
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();

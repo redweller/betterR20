@@ -1,178 +1,23 @@
 function baseWeather () {
 	d20plus.weather = {};
 
-	d20plus.weather._lastSettingsPageId = null;
-	d20plus.weather._initSettingsButton = () => {
-		$(`body`).on("click", ".Ve-btn-weather", function () {
-			// close the parent page settings + hide the page overlay
-			const $this = $(this);
-			$this.closest(`[role="dialog"]`).find(`.ui-dialog-buttonpane button:contains("OK")`).click();
-			const $barPage = $(`#page-toolbar`);
-			if (!$barPage.hasClass("closed")) {
-				$barPage.find(`.handle`).click()
-			}
-
-			function doShowDialog (page) {
-				const $dialog = $(`
-					<div title="Weather Configuration">
-						<label class="split wth__row">
-							<span>Weather Type</span>
-							<select name="weatherType1">
-								<option>None</option>
-								<option>Fog</option>
-								<option>Rain</option>
-								<option>Ripples</option>
-								<option>Snow</option>
-								<option>Waves</option>
-								<option>Blood Rain</option>
-								<option>Custom (see below)</option>
-							</select>
-						</label>
-						<label class="split wth__row">
-							<span  class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Image</span>
-							<input name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
-						</label>
-						<label class="flex wth__row">
-							<span>Weather Speed</span>
-							<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Weather Direction</span>
-							<select name="weatherDir1">
-								<option>Northerly</option>
-								<option>North-Easterly</option>
-								<option>Easterly</option>
-								<option>South-Easterly</option>
-								<option>Southerly</option>
-								<option>South-Westerly</option>
-								<option>Westerly</option>
-								<option>North-Westerly</option>
-								<option>Custom (see below)</option>
-							</select>
-						</label>
-						<label class="flex wth__row">
-							<span class="help" title="When &quot;Custom&quot; is selected, above">Custom Weather Direction</span>
-							<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
-						</label>
-						<label class="flex wth__row">
-							<span>Weather Opacity</span>
-							<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Oscillate</span>
-							<input type="checkbox" name="weatherOscillate1">
-						</label>
-						<label class="flex wth__row">
-							<span>Oscillation Threshold</span>
-							<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01">
-						</label>
-						<label class="split wth__row">
-							<span>Intensity</span>
-							<select name="weatherIntensity1">
-								<option>Normal</option>
-								<option>Heavy</option>
-							</select>
-						</label>
-						<label class="split wth__row">
-							<span>Tint</span>
-							<input type="checkbox" name="weatherTint1">
-						</label>
-						<label class="split wth__row">
-							<span>Tint Color</span>
-							<input type="color" name="weatherTintColor1" value="#4c566d">
-						</label>
-						<label class="split wth__row">
-							<span>Special Effects</span>
-							<select name="weatherEffect1">
-								<option>None</option>
-								<option>Lightning</option>
-							</select>
-						</label>
-					</div>
-				`).appendTo($("body"));
-
-				const handleProp = (propName) => $dialog.find(`[name="${propName}"]`).each((i, e) => {
-					const $e = $(e);
-					if ($e.is(":checkbox")) {
-						$e.prop("checked", !!page.get(`bR20cfg_${propName}`));
-					} else {
-						$e.val(page.get(`bR20cfg_${propName}`));
-					}
-				});
-				const props = [
-					"weatherType1",
-					"weatherTypeCustom1",
-					"weatherSpeed1",
-					"weatherDir1",
-					"weatherDirCustom1",
-					"weatherOpacity1",
-					"weatherOscillate1",
-					"weatherOscillateThreshold1",
-					"weatherIntensity1",
-					"weatherTint1",
-					"weatherTintColor1",
-					"weatherEffect1",
-				];
-				props.forEach(handleProp);
-
-				function doSaveValues () {
-					props.forEach(propName => {
-						page.set(`bR20cfg_${propName}`, (() => {
-							const $e = $dialog.find(`[name="${propName}"]`);
-							if ($e.is(":checkbox")) {
-								return !!$e.prop("checked");
-							} else {
-								return $e.val();
-							}
-						})())
-					});
-					page.save();
-				}
-
-				$dialog.dialog({
-					width: 500,
-					dialogClass: "no-close",
-					buttons: [
-						{
-							text: "OK",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-								doSaveValues();
-							},
-						},
-						{
-							text: "Apply",
-							click: function () {
-								doSaveValues();
-							},
-						},
-						{
-							text: "Cancel",
-							click: function () {
-								$(this).dialog("close");
-								$dialog.remove();
-							},
-						},
-					],
-				});
-			}
-
-			if (d20plus.weather._lastSettingsPageId) {
-				const page = d20.Campaign.pages.get(d20plus.weather._lastSettingsPageId);
-				if (page) {
-					doShowDialog(page);
-				} else d20plus.ut.error(`No page found with ID "${d20plus.weather._lastSettingsPageId}"`);
-			} else d20plus.ut.error(`No page settings button was clicked?!`);
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.weather._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		});
+	d20plus.weather.props = {
+		"weatherType1": "None",
+		"weatherTypeCustom1": "",
+		"weatherSpeed1": "0.4",
+		"weatherDir1": "Northerly",
+		"weatherDirCustom1": "180",
+		"weatherOpacity1": "0.5",
+		"weatherOscillate1": false,
+		"weatherOscillateThreshold1": "0.5",
+		"weatherIntensity1": "Normal",
+		"weatherTint1": false,
+		"weatherTintColor1": "#4c566d",
+		"weatherTintOpacity1": "0.5",
+		"weatherEffect1": "None",
 	};
 
 	d20plus.weather.addWeather = () => {
-		d20plus.weather._initSettingsButton();
-
 		window.force = false; // missing variable in Roll20's code(?); define it here
 
 		d20plus.ut.log("Adding weather");
@@ -293,7 +138,7 @@ function baseWeather () {
 		}
 
 		function getDirectionRotation (page) {
-			const dir = page.get("bR20cfg_weatherDir1");
+			const dir = page.get("bR20cfg_weatherDir1") || d20plus.weather.props.weatherDir1;
 			switch (dir) {
 				case "Northerly": return 0.25 * Math.PI;
 				case "North-Easterly": return 0.5 * Math.PI;
@@ -304,13 +149,13 @@ function baseWeather () {
 				case "Westerly": return 1.75 * Math.PI;
 				case "North-Westerly": return 0;
 				case "Custom (see below)":
-					return Number(page.get("bR20cfg_weatherDirCustom1") || 0) * Math.PI / 180;
+					return Number(page.get("bR20cfg_weatherDirCustom1") || d20plus.weather.props.weatherDirCustom1) * Math.PI / 180;
 				default: return 0;
 			}
 		}
 
 		function getOpacity (page) {
-			return page.get("bR20cfg_weatherOpacity1") || 1;
+			return page.get("bR20cfg_weatherOpacity1") || d20plus.weather.props.weatherOpacity1;
 		}
 
 		let oscillateMode = null;
@@ -319,7 +164,7 @@ function baseWeather () {
 		}
 
 		function getOscillationThresholdFactor (page) {
-			return page.get("bR20cfg_weatherOscillateThreshold1") || 1;
+			return page.get("bR20cfg_weatherOscillateThreshold1") || d20plus.weather.props.weatherOscillateThreshold1;
 		}
 
 		function getIntensity (page) {
@@ -463,7 +308,7 @@ function baseWeather () {
 
 						// if (clipMode === "INCLUDE") doMaskStep(true);
 
-						const speed = page.get("bR20cfg_weatherSpeed1") || 0.1;
+						const speed = page.get("bR20cfg_weatherSpeed1") || d20plus.weather.props.weatherSpeed1;
 						const speedFactor = speed * d20.engine.canvasZoom;
 						const maxAccum = Math.floor(scaledW / speedFactor);
 						const rot = getDirectionRotation(page);
