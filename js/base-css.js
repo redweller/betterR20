@@ -400,6 +400,36 @@ function baseCss () {
 			s: "#floatinglayerbar",
 			r: "left: 20px;",
 		},
+		// Config & dark mode fixes
+		{
+			s: ".config-name",
+			r: "padding: 6px 0px; line-height: 21px;",
+		},
+		{
+			s: "#d20plus-configeditor .nav li:not(.active) > a",
+			r: "cursor: pointer;",
+		},
+		{
+			s: "#d20plus-configeditor table.config-table tbody tr:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: ".tokeneditor__bar-inputs input[type=\"text\"][disabled], .token_bar_input[disabled]",
+			r: "background-color: rgba(180, 180, 180, 0.3);",
+		},
+		{
+			s: ".tool-row:nth-child(2n+1)",
+			r: "background-color: rgba(120, 120, 120, 0.2);",
+		},
+		{
+			s: "#floatinglayerbar li",
+			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
+		},
+		// Fix page options scrollbar color in darkmode on Chrome
+		{
+			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
+			r: "background-color: rgba(100, 100, 100, 0.5);",
+		},
 		// extra layer buttons
 		{
 			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
@@ -416,6 +446,18 @@ function baseCss () {
 		{
 			s: "#editinglayer.background .currentselection:after",
 			r: "content: \"a\";",
+		},
+		{
+			s: "#editinglayer.gmlayer .currentselection:after",
+			r: "content: \"E\";",
+		},
+		{
+			s: "#editinglayer.gmlayer > span.currentselection",
+			r: "display:unset;",
+		},
+		{
+			s: "#editinglayer.gmlayer #editing_layer_icon",
+			r: "display:none;",
 		},
 		// adjust the "Talking to Yourself" box
 		{
@@ -830,6 +872,19 @@ function baseCss () {
 		{
 			s: ".artr__big_img",
 			r: "display: block; max-width: 100%; max-height: 100%;",
+		},
+		// fix row styles
+		{
+			s: "#d20plus-artfolder .url",
+			r: "width: calc(65% - 75px) !important;white-space: nowrap;overflow: hidden;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item",
+			r: "line-height: 16px;",
+		},
+		{
+			s: "#d20plus-artfolder .library-item:hover",
+			r: "background-color: rgba(100,100,100,0.5);",
 		},
 	]);
 
