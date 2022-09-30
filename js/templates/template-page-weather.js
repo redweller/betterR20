@@ -90,7 +90,7 @@ function initHTMLpageWeather () {
 				<div class="col-xs-3">
 					<label class="switch">
 						<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
-						<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+						<input name="weatherOscillate1" id="page-oscillate-toggle" type="checkbox">
 						<span class="slider round">
 						</span></label>
 				</div>
@@ -141,7 +141,7 @@ function initHTMLpageWeather () {
 				<div class="col-xs-3">
 					<label class="switch">
 						<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
-						<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+						<input name="weatherTint1" id="page-oscillate-toggle" type="checkbox">
 						<span class="slider round">
 						</span></label>
 				</div>
