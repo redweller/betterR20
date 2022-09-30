@@ -155,6 +155,17 @@ function initHTMLpageWeather () {
 				</div>
 			</div>
 			<div class="pagedetails__subheader">
+				<h4>Tint Opacity</h4>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">
+					<input type="range" name="weatherTintOpacity1" min="0.01" max="0.7" step="0.01" />
+				</div>
+				<div class="col-xs-1">
+					<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text" />
+				</div>
+			</div>
+			<div class="pagedetails__subheader">
 				<h4 class="page_title">Special Effects</h4>
 			</div>
 			<div>
