@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.31.1.24
+// @version      1.32.0.25
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -3015,7 +3015,8 @@ function baseTool () {
 					$btnDel.off("click").on("click", () => {
 						const sel = delList.items
 							.filter(it => $(it.elm).find(`input`).prop("checked"))
-							.map(it => journalItems[$(it.elm).attr("data-listid")]);
+							.map(it => journalItems[$(it.elm).attr("data-listid")])
+							.reverse();
 
 						if (!sel.length) {
 							alert("No items selected!");
@@ -9246,8 +9247,9 @@ function initHTMLTokenEditor () {
 
 	// no mods; just switched in to grant full features to non-pro
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.tokenEditor = `<script id='tmpl_tokeneditor' type='text/html'>
-    	<div class='dialog largedialog tokeneditor' style='display: block;'>
+		d20plus.html.tokenEditor = `
+        <script id='tmpl_tokeneditor' type='text/html'>
+        <div class='dialog largedialog tokeneditor' style='display: block;'>
         <ul class='nav nav-tabs tokeneditor_navigation'>
             <li class='active'>
                 <a data-tab='basic' href='javascript:void(0);'>
@@ -10321,8 +10323,8 @@ function initHTMLTokenEditor () {
             </div>
         </div>
         </div>
-        </script>`;
-
+        </script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -10335,7 +10337,7 @@ function initHTMLPageSettings () {
 
 	// no mods; just switched in to grant full features to non-pro
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.roll20pageSettings = `
+		d20plus.html.pageSettings = `
         <div class='legacy-lighting tab-pane'>
 			<!-- BEGIN MOD -->
 			<strong style="display: block; margin-bottom: 10px;">
@@ -10823,7 +10825,8 @@ function initHTMLPageSettings () {
                 </div>
                 <hr>
             </div>
-        </div>`;
+        </div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -10835,7 +10838,8 @@ function initHTMLroll20actionsMenu () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.roll20actionsMenu = `<script id='tmpl_actions_menu' type='text/html'>
+		d20plus.html.actionsMenu = `
+		<script id='tmpl_actions_menu' type='text/html'>
 			<div class='actions_menu d20contextmenu'>
 				<ul>
 					<$ if (Object.keys(this).length === 0) { $>
@@ -10949,20 +10953,20 @@ function initHTMLroll20actionsMenu () {
 					<$ } $>
 
 					<!-- BEGIN MOD -->
-					<$ if(this.view && this.get && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+					<$ if(this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
 						<li class='head hasSub' data-menuname='view'>
 							Assign view &raquo;
 							<ul class='submenu' data-menuname='view'>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
 								<li data-action-type="assignview0" class='<$ if(this && this.get && this && this.get("bR20_view0")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views0Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views0Name')$> <$ } else { $> Default <$ } $></li>
 								<$ } $>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
 								<li data-action-type="assignview1" class='<$ if(this && this.get && this && this.get("bR20_view1")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views1Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views1Name')$> <$ } else { $> View 1 <$ } $></li>
 								<$ } $>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
 								<li data-action-type="assignview2" class='<$ if(this && this.get && this && this.get("bR20_view2")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views2Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views2Name')$> <$ } else { $> View 2 <$ } $></li>
 								<$ } $>
-								<$ if(this.view && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
+								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
 								<li data-action-type="assignview3" class='<$ if(this && this.get && this && this.get("bR20_view3")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views3Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views3Name')$> <$ } else { $> View 3 <$ } $></li>
 								<$ } $>
 							</ul>
@@ -10982,7 +10986,8 @@ function initHTMLroll20actionsMenu () {
 					<$ } $>
 				</ul>
 			</div>
-		</script>`;
+		</script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -10994,7 +10999,8 @@ function initHTMLroll20EditorsMisc () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.characterEditor = `<script id="tmpl_charactereditor" type="text/html">
+		d20plus.html.characterEditor = `
+		<script id="tmpl_charactereditor" type="text/html">
 		<div class='dialog largedialog charactereditor' style='display: block;'>
 		<div class='tab-content'>
 		<div class='bioinfo tab-pane'>
@@ -11142,7 +11148,8 @@ function initHTMLroll20EditorsMisc () {
 		</div>
 		</div>
 		</div>
-		</script>`;
+		</script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
@@ -11284,12 +11291,14 @@ function initHTMLroll20EditorsMisc () {
       <$ } $>
     </div>
   </div>
-</script>`;
+</script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.deckEditor = `<script id='tmpl_deckeditor' type='text/html'>
+		d20plus.html.deckEditor = `
+    <script id='tmpl_deckeditor' type='text/html'>
       <div class='dialog largedialog deckeditor' style='display: block;'>
         <label>Name</label>
         <input class='name' type='text'>
@@ -11449,12 +11458,14 @@ function initHTMLroll20EditorsMisc () {
         </p>
         <$ } $>
       </div>
-    </script>`;
+    </script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.cardEditor = `<script id='tmpl_cardeditor' type='text/html'>
+		d20plus.html.cardEditor = `
+    <script id='tmpl_cardeditor' type='text/html'>
       <div class='dialog largedialog cardeditor' style='display: block;'>
         <label>Name</label>
         <input class='name' type='text'>
@@ -11482,7 +11493,8 @@ function initHTMLroll20EditorsMisc () {
         <label>&nbsp;</label>
         <button class='deletecard btn btn-danger'>Delete Card</button>
       </div>
-    </script>`;
+    </script>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -11494,69 +11506,79 @@ function initHTMLbaseMisc () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.settingsHtmlPtFooter = `<p>
-		<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
+		d20plus.html.settingsHtmlPtFooter = `
+		<p>
+			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
 		</p>
 		<p>
-		<a class="btn btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; width: calc(100% - 22px);">Open Tools List</a>
+			<a class="btn btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; width: calc(100% - 22px);">Open Tools List</a>
 		</p>
 		<p>
-		For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
+			For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
 		</p>
-		<style id="dynamicStyle"></style>`;
+		<style id="dynamicStyle"></style>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.artTabHtml = `<div>
+		d20plus.html.artTabHtml = `
+		<div>
 			<h3 style="margin-bottom: 4px;">BetteR20</h3>
 			<p style="display: flex; width: 100%; justify-content: space-between;">
 				<button class="btn" id="button-add-external-art" style="margin-right: 5px;">Manage External Art</button>
 				<button class="btn" id="button-browse-external-art">Browse Repo</button>
 			</p>
-		</div>`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
-
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.addArtHTML = `<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
-		<p>Add external images by URL. Any direct link to an image should work.</p>
-		<p>
-		<input placeholder="Name*" id="art-list-add-name">
-		<input placeholder="URL*" id="art-list-add-url">
-		<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
-		<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
-		<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
-		<p/>
-		<hr>
-		<div id="art-list-container" style="background: inherit;">
-		<p style="position: sticky; top: -10px; background: inherit; z-index: 100;">
-			<span style="display: inline-block; width: calc( 35% + 35px ); font-weight: bold;">
-				Name
-				<input class="search" autocomplete="off" placeholder="Search list..." style="width: 60%; margin: 10px;">
-			</span>
-			<span style="display: inline-block; font-weight: bold;">URL</span>
-		</p>
-		<ul class="list artlist" style="display: block; margin: 0; transform: translateZ(0);"></ul>
 		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.addArtHTML = `
+		<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
+			<p>Add external images by URL. Any direct link to an image should work.</p>
+			<p>
+			<input placeholder="Name*" id="art-list-add-name">
+			<input placeholder="URL*" id="art-list-add-url">
+			<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
+			<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
+			<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
+			<p/>
+			<hr>
+			<div id="art-list-container" style="background: inherit;">
+				<p style="position: sticky; top: -10px; background: inherit; z-index: 100;">
+					<span style="display: inline-block; width: calc( 35% + 35px ); font-weight: bold;">
+						Name
+						<input class="search" autocomplete="off" placeholder="Search list..." style="width: 60%; margin: 10px;">
+					</span>
+					<span style="display: inline-block; font-weight: bold;">URL</span>
+				</p>
+				<ul class="list artlist" style="display: block; margin: 0; transform: translateZ(0);"></ul>
+			</div>
 		</div>
-		<br>`;
+		<br>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.addArtMassAdderHTML = `<div id="d20plus-artmassadd" title="Mass Add Art URLs">
-		<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
-		<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
-		</div>`;
+		d20plus.html.addArtMassAdderHTML = `
+		<div id="d20plus-artmassadd" title="Mass Add Art URLs">
+			<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
+			<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
+		</div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.artListHTML = `<div id="Vetoolsresults">
+		d20plus.html.artListHTML = `
+		<div id="Vetoolsresults">
 		<ol class="dd-list" id="image-search-none">
 			<div class="alert white">No results found in 5etools for those keywords.</div>
-		</ol><ol class="dd-list" id="image-search-has-results">
+		</ol>
+		<ol class="dd-list" id="image-search-has-results">
 			<li class="dd-item dd-folder Vetoolsresult">
 				<div class="dd-content">
 					<div class="folder-title">From 5etools</div>
@@ -11564,39 +11586,47 @@ function initHTMLbaseMisc () {
 				<ol class="dd-list Vetoolsresultfolder" id="custom-art-results"></ol>
 			</li>
 		</ol>
-		</div>`;
+		</div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.configEditorHTML = `<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
-		<!-- populate with js -->
-		</div>`;
+		d20plus.html.configEditorHTML = `
+		<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
+			<!-- populate with js -->
+		</div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.configEditorButtonBarHTML = `<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+		d20plus.html.configEditorButtonBarHTML = `
+		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 			<div class="ui-dialog-buttonset">
 				<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
 					<span>${__("ui_cfg_save")}</span>
 				</button>
 			</div>
-		</div>`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
-
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.toolsListHtml = `<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
-		<div class="tools-list">
-		<!-- populate with js -->
 		</div>
-		</div>`;
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsNavTabs = `<li class="nav-tabs active">
+		d20plus.html.toolsListHtml = `
+		<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
+			<div class="tools-list">
+			<!-- populate with js -->
+			</div>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.pageSettingsNavTabs = `
+		<li class="nav-tabs active">
 			<a data-tab="pagedetails" href="javascript:void(0);">
 				<h2>General</h2>
 			</a>
@@ -11630,7 +11660,8 @@ function initHTMLbaseMisc () {
 			<a data-tab="views" href="javascript:void(0);">
 				<h2>Views</h2>
 			</a>
-		</li>`;
+		</li>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -11642,7 +11673,8 @@ function initHTMLpageViews () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsViews = `<div class='views tab-pane'>
+		d20plus.html.pageSettingsViews = `
+		<div class='views tab-pane'>
 			<div class="pagedetails">
 				<div class="alert alert-info" role="alert">
 					<p>Views are just another way to manage groups of items on your map
@@ -11659,7 +11691,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="viewsEnable">toggle view one</label>
-							<input name="viewsEnable" class="feature_enabled" id="viewsEnable" type="checkbox">
+							<input name="viewsEnable" id="viewsEnable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -11686,7 +11718,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views1Enable">toggle view one</label>
-							<input name="views1Enable" class="feature_enabled" id="views1Enable" type="checkbox">
+							<input name="views1Enable" id="views1Enable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -11699,7 +11731,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views1Exclusive">toggle view one</label>
-							<input name="views1Exclusive" class="feature_enabled" id="views1Exclusive" type="checkbox">
+							<input name="views1Exclusive" id="views1Exclusive" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -11723,7 +11755,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views2Enable">toggle view one</label>
-							<input name="views2Enable" class="feature_enabled" id="views2Enable" type="checkbox">
+							<input name="views2Enable" id="views2Enable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -11736,7 +11768,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views2Exclusive">toggle view two</label>
-							<input name="views2Exclusive" class="feature_enabled" id="views2Exclusive" type="checkbox">
+							<input name="views2Exclusive" id="views2Exclusive" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -11760,7 +11792,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views3Enable">toggle view three</label>
-							<input name="views3Enable" class="feature_enabled" id="views3Enable" type="checkbox" value="0">
+							<input name="views3Enable" id="views3Enable" type="checkbox" value="0">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -11773,7 +11805,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views3Exclusive">toggle view one</label>
-							<input name="views3Exclusive" class="feature_enabled" id="views3Exclusive" type="checkbox" value="0">
+							<input name="views3Exclusive" id="views3Exclusive" type="checkbox" value="0">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -11787,8 +11819,8 @@ function initHTMLpageViews () {
 					<input class="page-input" name="views3Name" placeholder="View 3">
 				</div>
 			</div>
-		</div>`;
-
+		</div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -11800,7 +11832,8 @@ function initHTMLpageWeather () {
 	d20plus.html = d20plus.html || {};
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsWeather = `<div class='weather tab-pane'>
+		d20plus.html.pageSettingsWeather = `
+		<div class='weather tab-pane'>
 			<div class="pagedetails">
 				<strong style="display: block; margin-bottom: 10px;">
 					<a class="tipsy-w showtip pictos" title="Requires all players to use a betteR20 script">!</a>
@@ -11888,7 +11921,7 @@ function initHTMLpageWeather () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
-							<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+							<input name="weatherOscillate1" id="page-oscillate-toggle" type="checkbox">
 							<span class="slider round">
 						</span></label>
 					</div>
@@ -11939,7 +11972,7 @@ function initHTMLpageWeather () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
-							<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+							<input name="weatherTint1" id="page-oscillate-toggle" type="checkbox">
 							<span class="slider round">
 						</span></label>
 					</div>
@@ -11974,8 +12007,8 @@ function initHTMLpageWeather () {
 					</select>
 				</div>
 			</div>
-		</div>`;
-
+		</div>
+		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 }
@@ -12101,7 +12134,7 @@ function d20plusEngine () {
 				${d20plus.html.pageSettingsNavTabs}
 			</ul>
 			<div class='tab-content'>
-				${d20plus.html.roll20pageSettings}
+				${d20plus.html.pageSettings}
 				${d20plus.html.pageSettingsWeather}
 				${d20plus.html.pageSettingsViews}
 			</div>
@@ -12169,9 +12202,7 @@ function d20plusEngine () {
 			debouncedOverwrite();
 		}
 
-		$(`body`).on("click", ".weather input[type=range]", function (event) {
-			if (this.name) $(`.${this.name}`).val(this.value);
-		}).on("mouseup", "li.dl", function (event) {
+		$(`body`).on("mouseup", "li.dl", function (event) {
 			// process Dynamic Lighting tabs
 			const $dynLightTab = $(event.target).closest("li.dl");
 			const $isTabAnchor = $(event.target).closest("a");
@@ -12186,8 +12217,14 @@ function d20plusEngine () {
 		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
 			const $this = $(this);
 			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		}).on("click", ".chooseablepage .js__settings-page", function () {
+		}).on("click", ".weather input[type=range]", function () {
+			if (this.name) $(`.${this.name}`).val(this.value);
+		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
+		}).on("click", ".nav-tabs--beta", () => {
+			d20plus.engine._populateCustomOptions();
+		}).on("click keyup", ".weather input, .views input, .weather .slider, .views .slider", () => {
+			d20plus.engine._updateCustomOptions();
 		});
 	};
 
@@ -12196,6 +12233,7 @@ function d20plusEngine () {
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			const $saveBtn = $dialog.find(`.btn-primary:visible`);
 			// if editing active page then close pages list and add Apply button
 			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
 				const $barPage = $(`#page-toolbar`);
@@ -12205,91 +12243,169 @@ function d20plusEngine () {
 					$barPage.find(`.handle`).click();
 					$overlay.remove();
 				}
-				$dialog.find(`.btn-primary:visible`).before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine._applySettings);
+				$saveBtn.before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preserveCustomOptions(page);
+				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
-					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
-						d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-					});
+					$saveBtn.off();
+					$saveBtn.on("click", d20plus.engine.applySettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
+					});
+					// one property for two checkboxes, make sure they're synced
+					$(`.tab-content:visible .dyn_fog_update_on_drop`).parent().parent().on("click", function (event) {
+						if ($(event.target).parent().find(`input`).length) {
+							$(`.tab-content:visible .lightingupdate`)
+								.prop("checked", $(event.target).parent().find(`input`).prop("checked"));
+						}
 					});
 				}
 			}
 		}
 	}
 
-	d20plus.engine._applySettings = () => {
+	d20plus.engine.applySettings = function (event) {
+		event.stopPropagation();
+		event.preventDefault();
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page || !page.get) return;
+
 		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		if (!$dialog[0]) return;
+
 		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
-		const pageid = d20plus.engine._lastSettingsPageId;
-		if ($dialog[0]) {
-			$(`#page-toolbar`).css("visibility", "hidden");
-			d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-			setTimeout(() => {
-				$dialog.find(`.btn-primary:visible`).click();
-				$(`#page-toolbar .handle`).click();
-				$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
-				$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
-				$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-				setTimeout(() => {
-					$(`#page-toolbar`).css("visibility", "unset");
-				}, 1000);
-			}, 10);
+		const $settings = $dialog.find(`.dialog .tab-content`);
+
+		d20plus.engine._saveCustomOptions(page);
+		d20plus.engine._saveNativeOptions(page, $settings);
+
+		page.save();
+
+		if (!$(this).hasClass("btn-apply")) {
+			// now we should close the dialog (effectively press Cancel)
+			$(`.ui-dialog-buttonpane:visible .btn:not(.btn-apply):not(.btn-primary)`).click();
+		} else {
+			// page.save resets current dialog, so we need to restore status quo
+			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+			d20plus.engine._populateCustomOptions();
 		}
 	}
 
-	d20plus.engine._handleCustomOptions = (dialog, doSave) => {
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+	d20plus.engine._saveNativeOptions = (page, dialog) => {
+		const getVal = (el) => {
+			if (el.hasClass("dyn_fog_autofog_mode")) return el.prop("checked") ? "basic" : "off";
+			else if (el.is(":checkbox")) return !!el.prop("checked");
+			else if (el.tag() === "a") return el.get(0).style.left.slice(0, -1) / 100;
+			else return el.val();
+		}
 		if (!page || !page.get) return;
+		const pageOptions = {
+			width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
+			height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
+			background_color: {class: ".pagebackground"},
+			scale_number: {id: "page-size-height-input", class: ".scale_number"},
+			scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
+			gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
+			snapping_increment: {id: "page-grid-cell-width-input", class: ".grid-cell-width.snappingincrement.units"},
+			gridcolor: {class: ".gridcolor"},
+			grid_opacity: {class: ".gridopacity a.ui-slider-handle"},
+			lightrestrictmove: {id: "page-dynamic-lighting-line-restrict-movement-toggle", class: ".lightrestrictmove"},
+			jukeboxtrigger: {id: "page-audio-play-on-load", class: ".pagejukeboxtrigger"},
+
+			dynamic_lighting_enabled: {class: ".dyn_fog_enabled"},
+			explorer_mode: {class: ".dyn_fog_autofog_mode"},
+			daylight_mode_enabled: {class: ".dyn_fog_global_illum"},
+			daylightModeOpacity: {class: ".dyn_fog_daylight_slider"},
+			// lightupdatedrop: {class: ".dyn_fog_update_on_drop"}, // same property
+			fog_opacity: {class: ".fogopacity a.ui-slider-handle"},
+
+			showdarkness: {class: ".darknessenabled"},
+
+			adv_fow_enabled: {class: ".advancedfowenabled"},
+			adv_fow_show_grid: {class: ".advancedfowshowgrid"},
+			adv_fow_dim_reveals: {class: ".dimlightreveals"},
+			adv_fow_gm_see_all: {id: "#afow_gm_see_all"},
+			adv_fow_grid_size: {class: ".advancedfowgridsize"},
+			showlighting: {class: ".lightingenabled"},
+			lightenforcelos: {class: ".lightenforcelos"},
+			lightupdatedrop: {class: ".lightingupdate"},
+			lightglobalillum: {class: ".lightglobalillum"},
+		};
+		for (const [name, option] of Object.entries(pageOptions)) {
+			const $e = dialog.find(option.class || option.id);
+			const val = getVal($e);
+			page.attributes[name] = val;
+		}
+	}
+
+	d20plus.engine._saveCustomOptions = (page) => {
+		const values = d20plus.engine._customOptions[page.id];
+		$.each(values, (name, val) => {
+			if (name === "_defaults") return;
+			if (val && val !== values._defaults[name]) {
+				page.attributes[`bR20cfg_${name}`] = val;
+			} else {
+				if (page.attributes.hasOwnProperty(`bR20cfg_${name}`)) {
+					page.attributes[`bR20cfg_${name}`] = null;
+				}
+			}
+		});
+	}
+
+	d20plus.engine._populateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		$.each(d20plus.engine._customOptions[page.id], (name, val) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				if ($e.is(":checkbox")) {
+					$e.prop("checked", !!val);
+				} else if ($e.is("input[type=range]")) {
+					dialog.find(`.${name}`).val(val);
+					$e.val(val);
+				} else {
+					$e.val(val);
+				}
+			});
+		});
+		// ensure all Select elements will update options on change
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
+	}
+
+	d20plus.engine._updateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		$.each(d20plus.engine._customOptions[page.id], (name, val) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
+				d20plus.engine._customOptions[page.id][name] = val;
+			});
+		});
+	}
+
+	d20plus.engine._preserveCustomOptions = (page) => {
+		if (!page || !page.get) return;
+		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
+		d20plus.engine._customOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
 			"views",
 		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
-			if (doSave) {
-				d20plus.engine._saveOption(page, dialog, {name, deflt});
-			} else {
-				d20plus.engine._getOption(page, dialog, {name, deflt});
-			}
+			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
 		}));
-		if (doSave) {
-			page.save();
-		}
-	}
-
-	d20plus.engine._saveOption = (page, dialog, prop) => {
-		const $e = dialog.find(`[name="${prop.name}"]`);
-		const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-		if (val && val !== prop.deflt) {
-			page.attributes[`bR20cfg_${prop.name}`] = val;
-		} else {
-			if (page.attributes.hasOwnProperty(`bR20cfg_${prop.name}`)) {
-				page.attributes[`bR20cfg_${prop.name}`] = null;
-			}
-		}
-	}
-
-	d20plus.engine._getOption = (page, dialog, prop) => {
-		const val = page.get(`bR20cfg_${prop.name}`) || prop.deflt;
-		dialog.find(`[name="${prop.name}"]`).each((i, e) => {
-			const $e = $(e);
-			if ($e.is(":checkbox")) {
-				$e.prop("checked", !!val);
-			} else if ($e.is("input[type=range]")) {
-				$(`.${prop.name}`).val(val);
-				$e.val(val);
-			} else {
-				$e.val(val);
-			}
-		});
 	}
 
 	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
@@ -12825,7 +12941,7 @@ function baseMenu () {
 		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
 			$("#tmpl_actions_menu").replaceWith(d20plus.menu.generateNeatActionsMenu());
 		} else {
-			$("#tmpl_actions_menu").replaceWith(d20plus.html.roll20actionsMenu);
+			$("#tmpl_actions_menu").replaceWith(d20plus.html.actionsMenu);
 		}
 
 		const getTokenWhisperPart = () => d20plus.cfg.getOrDefault("token", "massRollWhisperName") ? "/w gm Rolling for @{selected|token_name}...\n" : "";
@@ -14765,32 +14881,32 @@ function d20plusJournal () {
 					character.abilities.create({
 						name: "Perception",
 						istokenaction: true,
-						action: d20plus.actionMacroPerception,
+						action: d20plus.macro.actionMacroPerception,
 					});
 					character.abilities.create({
 						name: "DR/Immunities",
 						istokenaction: true,
-						action: d20plus.actionMacroDrImmunities,
+						action: d20plus.macro.actionMacroDrImmunities,
 					});
 					character.abilities.create({
 						name: "Stats",
 						istokenaction: true,
-						action: d20plus.actionMacroStats,
+						action: d20plus.macro.actionMacroStats,
 					});
 					character.abilities.create({
 						name: "Saves",
 						istokenaction: true,
-						action: d20plus.actionMacroSaves,
+						action: d20plus.macro.actionMacroSaves,
 					});
 					character.abilities.create({
 						name: "Skill-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroSkillCheck,
+						action: d20plus.macro.actionMacroSkillCheck,
 					});
 					character.abilities.create({
 						name: "Ability-Check",
 						istokenaction: true,
-						action: d20plus.actionMacroAbilityCheck,
+						action: d20plus.macro.actionMacroAbilityCheck,
 					});
 				} else {
 					// player specific tokenactions
@@ -14846,7 +14962,7 @@ function d20plusJournal () {
 				character.abilities.create({
 					name: "Initiative",
 					istokenaction: true,
-					action: d20plus.actionMacroInit,
+					action: d20plus.macro.actionMacroInit,
 				});
 			}
 		});
@@ -15253,7 +15369,7 @@ function baseCss () {
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;     border: 1px solid #ccc; max-width: 450px;",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px; border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
@@ -15486,6 +15602,10 @@ function baseCss () {
 			r: "background-color: rgba(120, 120, 120, 0.2);",
 		},
 		{
+			s: ".tokeneditor__bar-inputs input[type=\"text\"][disabled], .token_bar_input[disabled]",
+			r: "background-color: rgba(180, 180, 180, 0.3);",
+		},
+		{
 			s: ".tool-row:nth-child(2n+1)",
 			r: "background-color: rgba(120, 120, 120, 0.2);",
 		},
@@ -15701,7 +15821,7 @@ function baseCss () {
 			r: "margin: 0px 0px 0px 3px; max-width: 37px; overflow: hidden; box-sizing: border-box;",
 		},
 		{
-			s: ".initiativedialog .difficulty",
+			s: ".initiativedialog span.difficulty",
 			r: "width: 40%; margin-top: -9px; font-size: 14px;",
 		},
 		// Spacing between token-actions
@@ -15748,7 +15868,7 @@ function baseCss () {
 		},
 		{
 			s: ".dialog .nav-tabs > li.active.dl > a",
-			r: "background-color: unset; border-color: transparent; text-decoration: none; cursor: unset;",
+			r: "background-color: unset; border-color: transparent; text-decoration: none; pointer-events: none; cursor: unset;",
 		},
 		{
 			s: ".ui-dialog .ui-dialog-content",
@@ -15893,7 +16013,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;     font-style: italic;",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
@@ -17327,6 +17447,41 @@ function d20plusMod () {
 }
 
 SCRIPT_EXTENSIONS.push(d20plusMod);
+
+
+const baseMacro = function () {
+	d20plus.macro = {};
+
+	d20plus.macro.actionMacroTrait = function (index) {
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npctrait_$${index}_name}}} {{description=@{selected|repeating_npctrait_$${index}_desc} }}`;
+	};
+
+	d20plus.macro.actionMacroAction = function (baseAction, index) {
+		return `%{selected|${baseAction}_$${index}_npc_action}`;
+	};
+
+	d20plus.macro.actionMacroReaction = function (index) {
+		return `@{selected|wtype} &{template:npcaction} {{name=@{selected|npc_name}}} {{rname=@{selected|repeating_npcreaction_$${index}_name}}} {{description=@{selected|repeating_npcreaction_$${index}_desc} }} `;
+	};
+
+	d20plus.macro.actionMacroLegendary = function (tokenactiontext) {
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Legendary Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} legendary actions, choosing from the options below. Only one legendary option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent legendary actions at the start of its turn.\n\r${tokenactiontext}}} `;
+	}
+
+	d20plus.macro.actionMacroMythic = function (tokenactiontext) {
+		return `@{selected|wtype} @{selected|wtype}&{template:npcaction} {{name=@{selected|npc_name}}} {{rname=Mythic Actions}} {{description=The @{selected|npc_name} can take @{selected|npc_legendary_actions} mythic actions, choosing from the options below. Only one mythic option can be used at a time and only at the end of another creature's turn. The @{selected|npc_name} regains spent mythic actions at the start of its turn.\n\r${tokenactiontext}}} `;
+	}
+
+	d20plus.macro.actionMacroPerception = "%{Selected|npc_perception} @{selected|wtype} &{template:default} {{name=Senses}}  @{selected|wtype} @{Selected|npc_senses} ";
+	d20plus.macro.actionMacroInit = "%{selected|npc_init}";
+	d20plus.macro.actionMacroDrImmunities = "@{selected|wtype} &{template:default} {{name=DR/Immunities}} {{Damage Resistance= @{selected|npc_resistances}}} {{Damage Vulnerability= @{selected|npc_vulnerabilities}}} {{Damage Immunity= @{selected|npc_immunities}}} {{Condition Immunity= @{selected|npc_condition_immunities}}} ";
+	d20plus.macro.actionMacroStats = "@{selected|wtype} &{template:default} {{name=Stats}} {{Armor Class= @{selected|npc_AC}}} {{Hit Dice= @{selected|npc_hpformula}}} {{Speed= @{selected|npc_speed}}} {{Senses= @{selected|npc_senses}}} {{Languages= @{selected|npc_languages}}} {{Challenge= @{selected|npc_challenge}(@{selected|npc_xp}xp)}}";
+	d20plus.macro.actionMacroSaves = "@{selected|wtype} &{template:simple}{{always=1}}?{Saving Throw?|STR,{{rname=Strength Save&#125;&#125;{{mod=@{npc_str_save}&#125;&#125; {{r1=[[1d20+@{npc_str_save}]]&#125;&#125;{{r2=[[1d20+@{npc_str_save}]]&#125;&#125;|DEX,{{rname=Dexterity Save&#125;&#125;{{mod=@{npc_dex_save}&#125;&#125; {{r1=[[1d20+@{npc_dex_save}]]&#125;&#125;{{r2=[[1d20+@{npc_dex_save}]]&#125;&#125;|CON,{{rname=Constitution Save&#125;&#125;{{mod=@{npc_con_save}&#125;&#125; {{r1=[[1d20+@{npc_con_save}]]&#125;&#125;{{r2=[[1d20+@{npc_con_save}]]&#125;&#125;|INT,{{rname=Intelligence Save&#125;&#125;{{mod=@{npc_int_save}&#125;&#125; {{r1=[[1d20+@{npc_int_save}]]&#125;&#125;{{r2=[[1d20+@{npc_int_save}]]&#125;&#125;|WIS,{{rname=Wisdom Save&#125;&#125;{{mod=@{npc_wis_save}&#125;&#125; {{r1=[[1d20+@{npc_wis_save}]]&#125;&#125;{{r2=[[1d20+@{npc_wis_save}]]&#125;&#125;|CHA,{{rname=Charisma Save&#125;&#125;{{mod=@{npc_cha_save}&#125;&#125; {{r1=[[1d20+@{npc_cha_save}]]&#125;&#125;{{r2=[[1d20+@{npc_cha_save}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.macro.actionMacroSkillCheck = "@{selected|wtype} &{template:simple}{{always=1}}?{Ability?|Acrobatics,{{rname=Acrobatics&#125;&#125;{{mod=@{npc_acrobatics}&#125;&#125; {{r1=[[1d20+@{npc_acrobatics}]]&#125;&#125;{{r2=[[1d20+@{npc_acrobatics}]]&#125;&#125;|Animal Handling,{{rname=Animal Handling&#125;&#125;{{mod=@{npc_animal_handling}&#125;&#125; {{r1=[[1d20+@{npc_animal_handling}]]&#125;&#125;{{r2=[[1d20+@{npc_animal_handling}]]&#125;&#125;|Arcana,{{rname=Arcana&#125;&#125;{{mod=@{npc_arcana}&#125;&#125; {{r1=[[1d20+@{npc_arcana}]]&#125;&#125;{{r2=[[1d20+@{npc_arcana}]]&#125;&#125;|Athletics,{{rname=Athletics&#125;&#125;{{mod=@{npc_athletics}&#125;&#125; {{r1=[[1d20+@{npc_athletics}]]&#125;&#125;{{r2=[[1d20+@{npc_athletics}]]&#125;&#125;|Deception,{{rname=Deception&#125;&#125;{{mod=@{npc_deception}&#125;&#125; {{r1=[[1d20+@{npc_deception}]]&#125;&#125;{{r2=[[1d20+@{npc_deception}]]&#125;&#125;|History,{{rname=History&#125;&#125;{{mod=@{npc_history}&#125;&#125; {{r1=[[1d20+@{npc_history}]]&#125;&#125;{{r2=[[1d20+@{npc_history}]]&#125;&#125;|Insight,{{rname=Insight&#125;&#125;{{mod=@{npc_insight}&#125;&#125; {{r1=[[1d20+@{npc_insight}]]&#125;&#125;{{r2=[[1d20+@{npc_insight}]]&#125;&#125;|Intimidation,{{rname=Intimidation&#125;&#125;{{mod=@{npc_intimidation}&#125;&#125; {{r1=[[1d20+@{npc_intimidation}]]&#125;&#125;{{r2=[[1d20+@{npc_intimidation}]]&#125;&#125;|Investigation,{{rname=Investigation&#125;&#125;{{mod=@{npc_investigation}&#125;&#125; {{r1=[[1d20+@{npc_investigation}]]&#125;&#125;{{r2=[[1d20+@{npc_investigation}]]&#125;&#125;|Medicine,{{rname=Medicine&#125;&#125;{{mod=@{npc_medicine}&#125;&#125; {{r1=[[1d20+@{npc_medicine}]]&#125;&#125;{{r2=[[1d20+@{npc_medicine}]]&#125;&#125;|Nature,{{rname=Nature&#125;&#125;{{mod=@{npc_nature}&#125;&#125; {{r1=[[1d20+@{npc_nature}]]&#125;&#125;{{r2=[[1d20+@{npc_nature}]]&#125;&#125;|Perception,{{rname=Perception&#125;&#125;{{mod=@{npc_perception}&#125;&#125; {{r1=[[1d20+@{npc_perception}]]&#125;&#125;{{r2=[[1d20+@{npc_perception}]]&#125;&#125;|Performance,{{rname=Performance&#125;&#125;{{mod=@{npc_performance}&#125;&#125; {{r1=[[1d20+@{npc_performance}]]&#125;&#125;{{r2=[[1d20+@{npc_performance}]]&#125;&#125;|Persuasion,{{rname=Persuasion&#125;&#125;{{mod=@{npc_persuasion}&#125;&#125; {{r1=[[1d20+@{npc_persuasion}]]&#125;&#125;{{r2=[[1d20+@{npc_persuasion}]]&#125;&#125;|Religion,{{rname=Religion&#125;&#125;{{mod=@{npc_religion}&#125;&#125; {{r1=[[1d20+@{npc_religion}]]&#125;&#125;{{r2=[[1d20+@{npc_religion}]]&#125;&#125;|Sleight of Hand,{{rname=Sleight of Hand&#125;&#125;{{mod=@{npc_sleight_of_hand}&#125;&#125; {{r1=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;{{r2=[[1d20+@{npc_sleight_of_hand}]]&#125;&#125;|Stealth,{{rname=Stealth&#125;&#125;{{mod=@{npc_stealth}&#125;&#125; {{r1=[[1d20+@{npc_stealth}]]&#125;&#125;{{r2=[[1d20+@{npc_stealth}]]&#125;&#125;|Survival,{{rname=Survival&#125;&#125;{{mod=@{npc_survival}&#125;&#125; {{r1=[[1d20+@{npc_survival}]]&#125;&#125;{{r2=[[1d20+@{npc_survival}]]&#125;&#125;}{{charname=@{character_name}}} ";
+	d20plus.macro.actionMacroAbilityCheck = "@{selected|wtype} &{template:simple}{{always=1}}?{Ability?|STR,{{rname=Strength&#125;&#125;{{mod=@{strength_mod}&#125;&#125; {{r1=[[1d20+@{strength_mod}]]&#125;&#125;{{r2=[[1d20+@{strength_mod}]]&#125;&#125;|DEX,{{rname=Dexterity&#125;&#125;{{mod=@{dexterity_mod}&#125;&#125; {{r1=[[1d20+@{dexterity_mod}]]&#125;&#125;{{r2=[[1d20+@{dexterity_mod}]]&#125;&#125;|CON,{{rname=Constitution&#125;&#125;{{mod=@{constitution_mod}&#125;&#125; {{r1=[[1d20+@{constitution_mod}]]&#125;&#125;{{r2=[[1d20+@{constitution_mod}]]&#125;&#125;|INT,{{rname=Intelligence&#125;&#125;{{mod=@{intelligence_mod}&#125;&#125; {{r1=[[1d20+@{intelligence_mod}]]&#125;&#125;{{r2=[[1d20+@{intelligence_mod}]]&#125;&#125;|WIS,{{rname=Wisdom&#125;&#125;{{mod=@{wisdom_mod}&#125;&#125; {{r1=[[1d20+@{wisdom_mod}]]&#125;&#125;{{r2=[[1d20+@{wisdom_mod}]]&#125;&#125;|CHA,{{rname=Charisma&#125;&#125;{{mod=@{charisma_mod}&#125;&#125; {{r1=[[1d20+@{charisma_mod}]]&#125;&#125;{{r2=[[1d20+@{charisma_mod}]]&#125;&#125;}{{charname=@{character_name}}} ";
+};
+
+SCRIPT_EXTENSIONS.push(baseMacro);
 
 
 const betteR20Emoji = function () {
