@@ -680,7 +680,7 @@ function baseCss () {
 		},
 		{
 			s: ".dialog .nav-tabs > li.active.dl > a",
-			r: "background-color: unset; border-color: transparent; text-decoration: none; cursor: unset;",
+			r: "background-color: unset; border-color: transparent; text-decoration: none; pointer-events: none; cursor: unset;",
 		},
 		{
 			s: ".ui-dialog .ui-dialog-content",

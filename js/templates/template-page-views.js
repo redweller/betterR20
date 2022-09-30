@@ -20,7 +20,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="viewsEnable">toggle view one</label>
-							<input name="viewsEnable" class="feature_enabled" id="viewsEnable" type="checkbox">
+							<input name="viewsEnable" id="viewsEnable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -47,7 +47,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views1Enable">toggle view one</label>
-							<input name="views1Enable" class="feature_enabled" id="views1Enable" type="checkbox">
+							<input name="views1Enable" id="views1Enable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -60,7 +60,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views1Exclusive">toggle view one</label>
-							<input name="views1Exclusive" class="feature_enabled" id="views1Exclusive" type="checkbox">
+							<input name="views1Exclusive" id="views1Exclusive" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -84,7 +84,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views2Enable">toggle view one</label>
-							<input name="views2Enable" class="feature_enabled" id="views2Enable" type="checkbox">
+							<input name="views2Enable" id="views2Enable" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -97,7 +97,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views2Exclusive">toggle view two</label>
-							<input name="views2Exclusive" class="feature_enabled" id="views2Exclusive" type="checkbox">
+							<input name="views2Exclusive" id="views2Exclusive" type="checkbox">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -121,7 +121,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views3Enable">toggle view three</label>
-							<input name="views3Enable" class="feature_enabled" id="views3Enable" type="checkbox" value="0">
+							<input name="views3Enable" id="views3Enable" type="checkbox" value="0">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -134,7 +134,7 @@ function initHTMLpageViews () {
 					<div class="col-xs-3">
 						<label class="switch">
 							<label class="sr-only" for="views3Exclusive">toggle view one</label>
-							<input name="views3Exclusive" class="feature_enabled" id="views3Exclusive" type="checkbox" value="0">
+							<input name="views3Exclusive" id="views3Exclusive" type="checkbox" value="0">
 							<span class="slider round"></span>
 						</label>
 					</div>
