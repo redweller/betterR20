@@ -184,9 +184,7 @@ function d20plusEngine () {
 			debouncedOverwrite();
 		}
 
-		$(`body`).on("click", ".weather input[type=range]", function (event) {
-			if (this.name) $(`.${this.name}`).val(this.value);
-		}).on("mouseup", "li.dl", function (event) {
+		$(`body`).on("mouseup", "li.dl", function (event) {
 			// process Dynamic Lighting tabs
 			const $dynLightTab = $(event.target).closest("li.dl");
 			const $isTabAnchor = $(event.target).closest("a");
@@ -201,8 +199,14 @@ function d20plusEngine () {
 		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
 			const $this = $(this);
 			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		}).on("click", ".chooseablepage .js__settings-page", function () {
+		}).on("click", ".weather input[type=range]", function () {
+			if (this.name) $(`.${this.name}`).val(this.value);
+		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
+		}).on("click", ".nav-tabs--beta", () => {
+			d20plus.engine._populateCustomOptions();
+		}).on("click keyup", ".weather input, .views input, .weather .slider, .views .slider", () => {
+			d20plus.engine._updateCustomOptions();
 		});
 	};
 
@@ -211,6 +215,7 @@ function d20plusEngine () {
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			const $saveBtn = $dialog.find(`.btn-primary:visible`);
 			// if editing active page then close pages list and add Apply button
 			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
 				const $barPage = $(`#page-toolbar`);
@@ -220,91 +225,169 @@ function d20plusEngine () {
 					$barPage.find(`.handle`).click();
 					$overlay.remove();
 				}
-				$dialog.find(`.btn-primary:visible`).before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine._applySettings);
+				$saveBtn.before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preserveCustomOptions(page);
+				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
-					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
-						d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-					});
+					$saveBtn.off();
+					$saveBtn.on("click", d20plus.engine.applySettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
+					});
+					// one property for two checkboxes, make sure they're synced
+					$(`.tab-content:visible .dyn_fog_update_on_drop`).parent().parent().on("click", function (event) {
+						if ($(event.target).parent().find(`input`).length) {
+							$(`.tab-content:visible .lightingupdate`)
+								.prop("checked", $(event.target).parent().find(`input`).prop("checked"));
+						}
 					});
 				}
 			}
 		}
 	}
 
-	d20plus.engine._applySettings = () => {
+	d20plus.engine.applySettings = function (event) {
+		event.stopPropagation();
+		event.preventDefault();
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page || !page.get) return;
+
 		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		if (!$dialog[0]) return;
+
 		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
-		const pageid = d20plus.engine._lastSettingsPageId;
-		if ($dialog[0]) {
-			$(`#page-toolbar`).css("visibility", "hidden");
-			d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-			setTimeout(() => {
-				$dialog.find(`.btn-primary:visible`).click();
-				$(`#page-toolbar .handle`).click();
-				$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
-				$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
-				$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-				setTimeout(() => {
-					$(`#page-toolbar`).css("visibility", "unset");
-				}, 1000);
-			}, 10);
+		const $settings = $dialog.find(`.dialog .tab-content`);
+
+		d20plus.engine._saveCustomOptions(page);
+		d20plus.engine._saveNativeOptions(page, $settings);
+
+		page.save();
+
+		if (!$(this).hasClass("btn-apply")) {
+			// now we should close the dialog (effectively press Cancel)
+			$(`.ui-dialog-buttonpane:visible .btn:not(.btn-apply):not(.btn-primary)`).click();
+		} else {
+			// page.save resets current dialog, so we need to restore status quo
+			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+			d20plus.engine._populateCustomOptions();
 		}
 	}
 
-	d20plus.engine._handleCustomOptions = (dialog, doSave) => {
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+	d20plus.engine._saveNativeOptions = (page, dialog) => {
+		const getVal = (el) => {
+			if (el.hasClass("dyn_fog_autofog_mode")) return el.prop("checked") ? "basic" : "off";
+			else if (el.is(":checkbox")) return !!el.prop("checked");
+			else if (el.tag() === "a") return el.get(0).style.left.slice(0, -1) / 100;
+			else return el.val();
+		}
 		if (!page || !page.get) return;
+		const pageOptions = {
+			width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
+			height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
+			background_color: {class: ".pagebackground"},
+			scale_number: {id: "page-size-height-input", class: ".scale_number"},
+			scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
+			gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
+			snapping_increment: {id: "page-grid-cell-width-input", class: ".grid-cell-width.snappingincrement.units"},
+			gridcolor: {class: ".gridcolor"},
+			grid_opacity: {class: ".gridopacity a.ui-slider-handle"},
+			lightrestrictmove: {id: "page-dynamic-lighting-line-restrict-movement-toggle", class: ".lightrestrictmove"},
+			jukeboxtrigger: {id: "page-audio-play-on-load", class: ".pagejukeboxtrigger"},
+
+			dynamic_lighting_enabled: {class: ".dyn_fog_enabled"},
+			explorer_mode: {class: ".dyn_fog_autofog_mode"},
+			daylight_mode_enabled: {class: ".dyn_fog_global_illum"},
+			daylightModeOpacity: {class: ".dyn_fog_daylight_slider"},
+			// lightupdatedrop: {class: ".dyn_fog_update_on_drop"}, // same property
+			fog_opacity: {class: ".fogopacity a.ui-slider-handle"},
+
+			showdarkness: {class: ".darknessenabled"},
+
+			adv_fow_enabled: {class: ".advancedfowenabled"},
+			adv_fow_show_grid: {class: ".advancedfowshowgrid"},
+			adv_fow_dim_reveals: {class: ".dimlightreveals"},
+			adv_fow_gm_see_all: {id: "#afow_gm_see_all"},
+			adv_fow_grid_size: {class: ".advancedfowgridsize"},
+			showlighting: {class: ".lightingenabled"},
+			lightenforcelos: {class: ".lightenforcelos"},
+			lightupdatedrop: {class: ".lightingupdate"},
+			lightglobalillum: {class: ".lightglobalillum"},
+		};
+		for (const [name, option] of Object.entries(pageOptions)) {
+			const $e = dialog.find(option.class || option.id);
+			const val = getVal($e);
+			page.attributes[name] = val;
+		}
+	}
+
+	d20plus.engine._saveCustomOptions = (page) => {
+		const values = d20plus.engine._customOptions[page.id];
+		$.each(values, (name, val) => {
+			if (name === "_defaults") return;
+			if (val && val !== values._defaults[name]) {
+				page.attributes[`bR20cfg_${name}`] = val;
+			} else {
+				if (page.attributes.hasOwnProperty(`bR20cfg_${name}`)) {
+					page.attributes[`bR20cfg_${name}`] = null;
+				}
+			}
+		});
+	}
+
+	d20plus.engine._populateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		$.each(d20plus.engine._customOptions[page.id], (name, val) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				if ($e.is(":checkbox")) {
+					$e.prop("checked", !!val);
+				} else if ($e.is("input[type=range]")) {
+					dialog.find(`.${name}`).val(val);
+					$e.val(val);
+				} else {
+					$e.val(val);
+				}
+			});
+		});
+		// ensure all Select elements will update options on change
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
+	}
+
+	d20plus.engine._updateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		$.each(d20plus.engine._customOptions[page.id], (name, val) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
+				d20plus.engine._customOptions[page.id][name] = val;
+			});
+		});
+	}
+
+	d20plus.engine._preserveCustomOptions = (page) => {
+		if (!page || !page.get) return;
+		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
+		d20plus.engine._customOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
 			"views",
 		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
-			if (doSave) {
-				d20plus.engine._saveOption(page, dialog, {name, deflt});
-			} else {
-				d20plus.engine._getOption(page, dialog, {name, deflt});
-			}
+			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
 		}));
-		if (doSave) {
-			page.save();
-		}
-	}
-
-	d20plus.engine._saveOption = (page, dialog, prop) => {
-		const $e = dialog.find(`[name="${prop.name}"]`);
-		const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-		if (val && val !== prop.deflt) {
-			page.attributes[`bR20cfg_${prop.name}`] = val;
-		} else {
-			if (page.attributes.hasOwnProperty(`bR20cfg_${prop.name}`)) {
-				page.attributes[`bR20cfg_${prop.name}`] = null;
-			}
-		}
-	}
-
-	d20plus.engine._getOption = (page, dialog, prop) => {
-		const val = page.get(`bR20cfg_${prop.name}`) || prop.deflt;
-		dialog.find(`[name="${prop.name}"]`).each((i, e) => {
-			const $e = $(e);
-			if ($e.is(":checkbox")) {
-				$e.prop("checked", !!val);
-			} else if ($e.is("input[type=range]")) {
-				$(`.${prop.name}`).val(val);
-				$e.val(val);
-			} else {
-				$e.val(val);
-			}
-		});
 	}
 
 	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
