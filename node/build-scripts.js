@@ -377,4 +377,4 @@ CHANGED_SCRIPTS.forEach((filename) => {
 fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
 
 // eslint-disable-next-line no-console
-console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toJSON().slice(11, 19)}`);
+console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toLocaleString().slice(12, 20)}`);
