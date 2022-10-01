@@ -178,9 +178,9 @@ function baseWeather () {
 		function getTintColor (page) {
 			const tintEnabled = page.get("bR20cfg_weatherTint1");
 			if (tintEnabled) {
-				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1");
-				const tintOpacityHex = tintOpacity ? (14 + Math.round((243 - 16) * tintOpacity)).toString(16) : undefined;
-				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}${(tintOpacityHex || "80")}`;
+				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1") || d20plus.weather.props.weatherTintOpacity1;
+				const tintOpacityHex = tintOpacity ? (14 + Math.round((243 - 16) * tintOpacity)).toString(16) : 80;
+				return `${(page.get("bR20cfg_weatherTintColor1") || d20plus.weather.props.weatherTintColor1)}${tintOpacityHex}`;
 			} else return null;
 		}
 
