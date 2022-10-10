@@ -690,6 +690,7 @@ function baseToolModule () {
 						// eslint-disable-next-line no-console
 						console.log("Exporting characters...");
 						characters = d20.Campaign.characters.models.map(character => {
+							character.attribs.fetch(character.attribs);
 							const out = {
 								attributes: character.attributes,
 								attribs: character.attribs,

@@ -3925,6 +3925,9 @@
 				"max": 750
 			},
 			"darkvision": 60,
+			"traitTags": [
+				"Improved Resting"
+			],
 			"skillProficiencies": [
 				{
 					"perception": true
@@ -6252,14 +6255,7 @@
 					"type": "entries",
 					"name": "Glide",
 					"entries": [
-						"If you are not {@condition incapacitated} or wearing heavy armor, you can extend your skin membranes and glide. When you do so, you can perform the following aerial maneuvers:",
-						{
-							"type": "list",
-							"items": [
-								"You can move up to 5 feet horizontally for every 1 foot you descend in the air, at no movement cost to you.",
-								"When you would take damage from a fall, you can use your reaction to reduce the fall's damage to 0."
-							]
-						}
+						"When you fall at least 10 feet above the ground, you can use your reaction to extend your skin membranes to glide horizontally a number of feet equal to your walking speed, and you take 0 damage from the fall. You determine the direction of the glide."
 					]
 				},
 				{
@@ -8067,7 +8063,7 @@
 				{
 					"name": "Ambusher",
 					"entries": [
-						"In the first round of a combat, you have advantage on attack rolls against any creature who is surprised."
+						"In the first round of a combat, you have advantage on attack rolls against any creature who is {@quickref Surprise|PHB|3|0|surprised}."
 					],
 					"type": "entries"
 				},
@@ -11519,7 +11515,8 @@
 			},
 			"darkvision": 60,
 			"traitTags": [
-				"Amphibious"
+				"Amphibious",
+				"Improved Resting"
 			],
 			"skillProficiencies": [
 				{
@@ -16028,6 +16025,13 @@
 				"baseWeight": 90,
 				"weightMod": "1d4"
 			},
+			"languageProficiencies": [
+				{
+					"common": true,
+					"elvish": true,
+					"anyStandard": 1
+				}
+			],
 			"weaponProficiencies": [
 				{
 					"longsword|phb": true,
@@ -16073,6 +16077,9 @@
 					"type": "entries"
 				}
 			],
+			"overwrite": {
+				"languageProficiencies": true
+			},
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
