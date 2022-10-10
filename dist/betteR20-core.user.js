@@ -11102,7 +11102,7 @@ function initHTMLpageWeather () {
 				<div class="col-xs-3">
 					<label class="switch">
 						<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
-						<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+						<input name="weatherOscillate1" id="page-oscillate-toggle" type="checkbox">
 						<span class="slider round">
 						</span></label>
 				</div>
@@ -11153,7 +11153,7 @@ function initHTMLpageWeather () {
 				<div class="col-xs-3">
 					<label class="switch">
 						<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
-						<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
+						<input name="weatherTint1" id="page-oscillate-toggle" type="checkbox">
 						<span class="slider round">
 						</span></label>
 				</div>
@@ -11164,6 +11164,17 @@ function initHTMLpageWeather () {
 				</div>
 				<div class="col-xs-3">
 					<input type="color" name="weatherTintColor1">
+				</div>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Tint Opacity</h4>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">
+					<input type="range" name="weatherTintOpacity1" min="0.1" max="1" step="0.01" />
+				</div>
+				<div class="col-xs-1">
+					<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text" />
 				</div>
 			</div>
 			<div class="pagedetails__subheader">
@@ -11360,12 +11371,10 @@ function d20plusEngine () {
 			debouncedOverwrite();
 		}
 
-		$(`body`).on("click", ".weather input[type=range]", function (event) {
-			if (this.name) $(`.${this.name}`).val(this.value);
-		}).on("mouseup", "li.dl", function (event) {
+		$(`body`).on("mouseup", "li.dl", (evt) => {
 			// process Dynamic Lighting tabs
-			const $dynLightTab = $(event.target).closest("li.dl");
-			const $isTabAnchor = $(event.target).closest("a");
+			const $dynLightTab = $(evt.target).closest("li.dl");
+			const $isTabAnchor = $(evt.target).closest("a");
 			if (!$dynLightTab.hasClass("active")) {
 				setTimeout(() => {
 					if (!$dynLightTab.hasClass("legacy")) $(`[data-tab=lighting]:visible`).click();
@@ -11374,11 +11383,18 @@ function d20plusEngine () {
 			}
 			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
 			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		}).on("click", ".chooseablepage .js__settings-page", function () {
+		}).on("mousedown", ".chooseablepage .js__settings-page", (evt) => {
+			const {currentTarget: target} = evt;
+			d20plus.engine._lastSettingsPageId = $(target).closest(`[data-pageid]`).data("pageid");
+		}).on("click", ".weather input[type=range]", (evt) => {
+			const {currentTarget: target} = evt;
+			if (target.name) $(`.${target.name}`).val(target.value);
+		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
+		}).on("click", ".nav-tabs--beta", () => {
+			d20plus.engine._populateCustomOptions();
+		}).on("click keyup", ".weather input, .weather .slider", () => {
+			d20plus.engine._updateCustomOptions();
 		});
 	};
 
@@ -11387,6 +11403,7 @@ function d20plusEngine () {
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			const $saveBtn = $dialog.find(`.btn-primary:visible`);
 			// if editing active page then close pages list and add Apply button
 			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
 				const $barPage = $(`#page-toolbar`);
@@ -11396,88 +11413,177 @@ function d20plusEngine () {
 					$barPage.find(`.handle`).click();
 					$overlay.remove();
 				}
-				$dialog.find(`.btn-primary:visible`).before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine._applySettings);
+				$saveBtn.before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preserveCustomOptions(page);
+				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
-					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
-						d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-					});
+					$saveBtn.off("click");
+					$saveBtn.on("click", d20plus.engine.applySettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
+					}).off("click");
+					// one property for two checkboxes, make sure they're synced
+					const $dynlgtCheckbox = $(`.tab-content:visible .dyn_fog_update_on_drop`).parent().parent();
+					const $legacyCheckbox = $(`.tab-content:visible .lightingupdate`);
+					$dynlgtCheckbox.on("click", (evt) => {
+						const $checkTarget = $(evt.target).parent().find(`input`);
+						if ($checkTarget.length) {
+							$legacyCheckbox.prop("checked", $checkTarget.prop("checked"));
+						}
 					});
 				}
 			}
 		}
 	}
 
-	d20plus.engine._applySettings = () => {
+	d20plus.engine.applySettings = (evt) => {
+		evt.stopPropagation();
+		evt.preventDefault();
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page?.get) return;
+
 		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		if (!$dialog[0]) return;
+
 		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
-		const pageid = d20plus.engine._lastSettingsPageId;
-		if ($dialog[0]) {
-			$(`#page-toolbar`).css("visibility", "hidden");
-			d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-			setTimeout(() => {
-				$dialog.find(`.btn-primary:visible`).click();
-				$(`#page-toolbar .handle`).click();
-				$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
-				$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
-				$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-				setTimeout(() => {
-					$(`#page-toolbar`).css("visibility", "unset");
-				}, 1000);
-			}, 10);
+		const $settings = $dialog.find(`.dialog .tab-content`);
+
+		d20plus.engine._saveCustomOptions(page);
+		d20plus.engine._saveNativeOptions(page, $settings);
+
+		page.save();
+
+		if (!$(evt.currentTarget).hasClass("btn-apply")) {
+			// now we should close the dialog (effectively press Cancel)
+			$(`.ui-dialog-buttonpane:visible .btn:not(.btn-apply):not(.btn-primary)`).click();
+		} else {
+			// page.save resets current dialog, so we need to restore status quo
+			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+			d20plus.engine._populateCustomOptions();
 		}
 	}
 
-	d20plus.engine._handleCustomOptions = (dialog, doSave) => {
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+	d20plus.engine._ROLL20_PAGE_OPTIONS = {
+		width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
+		height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
+		background_color: {class: ".pagebackground"},
+		scale_number: {id: "page-size-height-input", class: ".scale_number"},
+		scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
+		gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
+		snapping_increment: {id: "page-grid-cell-width-input", class: ".grid-cell-width.snappingincrement.units"},
+		gridcolor: {class: ".gridcolor"},
+		grid_opacity: {class: ".gridopacity a.ui-slider-handle"},
+		lightrestrictmove: {id: "page-dynamic-lighting-line-restrict-movement-toggle", class: ".lightrestrictmove"},
+		jukeboxtrigger: {id: "page-audio-play-on-load", class: ".pagejukeboxtrigger"},
+
+		dynamic_lighting_enabled: {class: ".dyn_fog_enabled"},
+		explorer_mode: {class: ".dyn_fog_autofog_mode"},
+		daylight_mode_enabled: {class: ".dyn_fog_global_illum"},
+		daylightModeOpacity: {class: ".dyn_fog_daylight_slider"},
+		// lightupdatedrop: {class: ".dyn_fog_update_on_drop"}, // same property
+		fog_opacity: {class: ".fogopacity a.ui-slider-handle"},
+
+		showdarkness: {class: ".darknessenabled"},
+
+		adv_fow_enabled: {class: ".advancedfowenabled"},
+		adv_fow_show_grid: {class: ".advancedfowshowgrid"},
+		adv_fow_dim_reveals: {class: ".dimlightreveals"},
+		adv_fow_gm_see_all: {id: "#afow_gm_see_all"},
+		adv_fow_grid_size: {class: ".advancedfowgridsize"},
+		showlighting: {class: ".lightingenabled"},
+		lightenforcelos: {class: ".lightenforcelos"},
+		lightupdatedrop: {class: ".lightingupdate"},
+		lightglobalillum: {class: ".lightglobalillum"},
+	};
+
+	d20plus.engine._saveNativeOptions = (page, dialog) => {
 		if (!page || !page.get) return;
+		const getSlider = (el) => {
+			if (el.style.left?.search("%") > 0) return el.style.left.slice(0, -1) / 100;
+			else {
+				// eslint-disable-next-line no-console
+				console.warn("%cD20Plus > ", "color: #b93032; font-size: large", "Can't process slider value");
+				return undefined;
+			}
+		}
+		const getVal = (el) => {
+			if (el.hasClass("dyn_fog_autofog_mode")) return el.prop("checked") ? "basic" : "off";
+			else if (el.is(":checkbox")) return !!el.prop("checked");
+			else if (el.hasClass("ui-slider-handle")) return getSlider(el.get(0));
+			else return el.val();
+		}
+		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
+			const $e = dialog.find(option.class || option.id);
+			const val = getVal($e);
+			if (val !== undefined) page.attributes[name] = val;
+		});
+	}
+
+	d20plus.engine._preserveCustomOptions = (page) => {
+		if (!page || !page.get) return;
+		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
+		d20plus.engine._customOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
-		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
-			if (doSave) {
-				d20plus.engine._saveOption(page, dialog, {name, deflt});
-			} else {
-				d20plus.engine._getOption(page, dialog, {name, deflt});
-			}
+		].forEach(category => Object.entries(d20plus[category].props).forEach(([name, deflt]) => {
+			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
 		}));
-		if (doSave) {
-			page.save();
-		}
 	}
 
-	d20plus.engine._saveOption = (page, dialog, prop) => {
-		const $e = dialog.find(`[name="${prop.name}"]`);
-		const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-		if (val && val !== prop.deflt) {
-			page.attributes[`bR20cfg_${prop.name}`] = val;
-		} else {
-			if (page.attributes.hasOwnProperty(`bR20cfg_${prop.name}`)) {
-				page.attributes[`bR20cfg_${prop.name}`] = null;
-			}
-		}
+	d20plus.engine._populateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				if ($e.is(":checkbox")) {
+					$e.prop("checked", !!val);
+				} else if ($e.is("input[type=range]")) {
+					dialog.find(`.${name}`).val(val);
+					$e.val(val);
+				} else {
+					$e.val(val);
+				}
+			});
+		});
+		// ensure all Select elements will update options on change
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
 	}
 
-	d20plus.engine._getOption = (page, dialog, prop) => {
-		const val = page.get(`bR20cfg_${prop.name}`) || prop.deflt;
-		dialog.find(`[name="${prop.name}"]`).each((i, e) => {
-			const $e = $(e);
-			if ($e.is(":checkbox")) {
-				$e.prop("checked", !!val);
-			} else if ($e.is("input[type=range]")) {
-				$(`.${prop.name}`).val(val);
-				$e.val(val);
+	d20plus.engine._updateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
+				d20plus.engine._customOptions[page.id][name] = val;
+			});
+		});
+	}
+
+	d20plus.engine._saveCustomOptions = (page) => {
+		const values = d20plus.engine._customOptions[page.id];
+		Object.entries(values).forEach(([name, val]) => {
+			if (name === "_defaults") return;
+			if (val && val !== values._defaults[name]) {
+				page.attributes[`bR20cfg_${name}`] = val;
 			} else {
-				$e.val(val);
+				if (page.attributes.hasOwnProperty(`bR20cfg_${name}`)) {
+					page.attributes[`bR20cfg_${name}`] = null;
+				}
 			}
 		});
 	}
@@ -12827,7 +12933,9 @@ function baseWeather () {
 		function getTintColor (page) {
 			const tintEnabled = page.get("bR20cfg_weatherTint1");
 			if (tintEnabled) {
-				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}80`;
+				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1") || d20plus.weather.props.weatherTintOpacity1;
+				const tintOpacityHex = tintOpacity ? Math.round(255 * tintOpacity).toString(16) : 80;
+				return `${(page.get("bR20cfg_weatherTintColor1") || d20plus.weather.props.weatherTintColor1)}${tintOpacityHex}`;
 			} else return null;
 		}
 
@@ -14196,7 +14304,7 @@ function baseCss () {
 		},
 		{
 			s: ".dialog .nav-tabs > li.active.dl > a",
-			r: "background-color: unset; border-color: transparent; text-decoration: none; cursor: unset;",
+			r: "background-color: unset; border-color: transparent; text-decoration: none; pointer-events: none; cursor: unset;",
 		},
 		{
 			s: ".ui-dialog .ui-dialog-content",
