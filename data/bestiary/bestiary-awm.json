@@ -64,8 +64,8 @@
 				"invisible",
 				"restrained"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Birdsquirrel",
@@ -196,8 +196,8 @@
 			"miscTags": [
 				"MW"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Crystal Cave Merfolk",
@@ -264,8 +264,8 @@
 			"miscTags": [
 				"MW"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Dankwood Hag",
@@ -362,8 +362,8 @@
 			"conditionInflict": [
 				"invisible"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Dum-Dum Goblin",
@@ -667,8 +667,8 @@
 				"MW",
 				"RCH"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Hill Giant, Blorbo",
@@ -860,8 +860,8 @@
 			"conditionInflict": [
 				"grappled"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		}
 	]
 }

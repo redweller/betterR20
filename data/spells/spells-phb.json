@@ -13186,6 +13186,7 @@
 			"source": "PHB",
 			"page": 237,
 			"srd": true,
+			"basicRules": true,
 			"level": 0,
 			"school": "V",
 			"time": [
@@ -13736,12 +13737,6 @@
 				]
 			},
 			"races": [
-				{
-					"name": "Dwarf (Duergar)",
-					"source": "SCAG",
-					"baseName": "Dwarf",
-					"baseSource": "PHB"
-				},
 				{
 					"name": "Dwarf (Duergar)",
 					"source": "MTF",
@@ -17118,7 +17113,7 @@
 				}
 			],
 			"entries": [
-				"You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target can't be surprised and has advantage on attack rolls, ability checks, and saving throws. Additionally, other creatures have disadvantage on attack rolls against the target for the duration.",
+				"You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target can't be {@quickref Surprise|PHB|3|0|surprised} and has advantage on attack rolls, ability checks, and saving throws. Additionally, other creatures have disadvantage on attack rolls against the target for the duration.",
 				"This spell immediately ends if you cast it again before its duration ends."
 			],
 			"areaTags": [
@@ -22705,12 +22700,6 @@
 			"races": [
 				{
 					"name": "Dwarf (Duergar)",
-					"source": "SCAG",
-					"baseName": "Dwarf",
-					"baseSource": "PHB"
-				},
-				{
-					"name": "Dwarf (Duergar)",
 					"source": "MTF",
 					"baseName": "Dwarf",
 					"baseSource": "PHB"
@@ -24868,7 +24857,8 @@
 					"baseName": "Tiefling",
 					"baseSource": "PHB"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Magic Mouth",
@@ -27198,7 +27188,7 @@
 				"s": true,
 				"m": {
 					"text": "a miniature portal carved from ivory, a small piece of polished marble, and a tiny silver spoon, each item worth at least 5 gp",
-					"cost": 500
+					"cost": 1500
 				}
 			},
 			"duration": [
@@ -32168,7 +32158,8 @@
 					"name": "Boros Legionnaire",
 					"source": "GGR"
 				}
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Sanctuary",
@@ -32494,8 +32485,7 @@
 					"name": "Boros Legionnaire",
 					"source": "GGR"
 				}
-			],
-			"hasFluffImages": true
+			]
 		},
 		{
 			"name": "Scrying",
@@ -39389,7 +39379,7 @@
 				"s": true,
 				"m": {
 					"text": "a pair of platinum rings worth at least 50 gp each, which you and the target must wear for the duration",
-					"cost": 5000
+					"cost": 10000
 				}
 			},
 			"duration": [

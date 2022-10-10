@@ -7708,8 +7708,8 @@
 				"prone",
 				"restrained"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Deep Dragon Wyrmling",

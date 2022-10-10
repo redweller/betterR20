@@ -664,8 +664,8 @@
 				"exhaustion",
 				"poisoned"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Diva",
@@ -792,9 +792,9 @@
 					]
 				}
 			],
+			"hasToken": true,
 			"hasFluff": true,
-			"hasFluffImages": true,
-			"hasToken": true
+			"hasFluffImages": true
 		},
 		{
 			"name": "Dukha Bhatiyali",
@@ -1528,8 +1528,8 @@
 			"traitTags": [
 				"Water Breathing"
 			],
-			"hasFluff": true,
-			"hasToken": true
+			"hasToken": true,
+			"hasFluff": true
 		},
 		{
 			"name": "Nimuel",
