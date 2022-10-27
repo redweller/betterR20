@@ -11,7 +11,7 @@ function d20plusAdventure () {
 	d20plus.adventures.load = function (url) {
 		$("a.ui-tabs-anchor[href='#journal']").trigger("click");
 		DataUtil.loadJSON(url)
-			.then(data => {
+			.then(async data => {
 				function isPart (e) {
 					return typeof e === "string" || (typeof e === "object" && (e.type !== "entries"));
 				}
@@ -91,11 +91,15 @@ function d20plusAdventure () {
 				// storage for returned handout/character IDs
 				const RETURNED_IDS = {};
 
+				// Check to see what should be imported
+				const toImport = await d20plus.ui.chooseCheckboxList(["Creatures", "Items", "Handouts"], "What to import for this adventure?");
+				console.log(toImport);
+
 				// monsters
 				const preMonsters = Object.keys(tags)
 					.filter(k => tags[k].page === "bestiary.html")
 					.map(k => tags[k]);
-				if (confirm("Import creatures from this adventure?")) doPreImport(preMonsters, showMonsterImport);
+				if (toImport.includes("Creatures")) doPreImport(preMonsters, showMonsterImport);
 				else doItemImport();
 
 				function showMonsterImport (toImport) {
@@ -120,7 +124,7 @@ function d20plusAdventure () {
 					const preItems = Object.keys(tags)
 						.filter(k => tags[k].page === "items.html")
 						.map(k => tags[k]);
-					if (confirm("Import items from this adventure?")) doPreImport(preItems, showItemImport);
+					if (toImport.includes("Items")) doPreImport(preItems, showItemImport);
 					else doMainImport();
 				}
 
@@ -161,6 +165,12 @@ function d20plusAdventure () {
 				}
 				/// /////////////////////////////////////////////////////////////////////////////////////////////////////
 				function doMainImport () {
+					// Check to make sure the user wants to import everything
+					if (!toImport.includes("Handouts")) {
+						$("#d20plus-import").dialog("close");
+						return;
+					}
+
 					// pass in any created handouts/characters to use for links in the renderer
 					renderer.setRoll20Ids(RETURNED_IDS);
 
