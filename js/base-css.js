@@ -181,7 +181,7 @@ function baseCss () {
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;	 border: 1px solid #ccc; max-width: 450px;",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px; border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
@@ -825,7 +825,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;	 font-style: italic;",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
