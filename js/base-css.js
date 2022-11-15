@@ -633,7 +633,7 @@ function baseCss () {
 			r: "margin: 0px 0px 0px 3px; max-width: 37px; overflow: hidden; box-sizing: border-box;",
 		},
 		{
-			s: ".initiativedialog .difficulty",
+			s: ".initiativedialog .ui-dialog-buttonpane span.difficulty",
 			r: "width: 40%; margin-top: -9px; font-size: 14px;",
 		},
 		// Spacing between token-actions
