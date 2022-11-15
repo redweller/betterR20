@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         betteR20-core-dev
+// @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.32.0.24
+// @version      1.32.1
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
-// @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
 // @author       TheGiddyLimit
 
 // @match        https://app.roll20.net/editor
@@ -47,7 +47,11 @@ JSON_DATA = {};
 CONFIG_OPTIONS = {
 	interface: {
 		_name: "Interface",
-		_player: true,
+		showCustomArtPreview: {
+			name: "Show Custom Art Previews",
+			default: true,
+			_type: "boolean",
+		},
 	},
 };
 
@@ -91,360 +95,6 @@ EventTarget.prototype.addEventListener = function (type, listener, options, ...o
 };
 
 
-function baseLanguage () {
-	d20plus.ln = { default: {} };
-
-	d20plus.ln.en = {
-
-		cfg_tab_tokens: [`Tokens`],
-		cfg_tab_canvas: [`Canvas`],
-		cfg_tab_import: [`Import`],
-		cfg_tab_interface: [`Interface`],
-		cfg_tab_chat: [`Chat`],
-		cfg_option_whisper_name: [`Whisper Token Name to Mass-Rolls`],
-		cfg_option_quick_init_sort: [`Add Quick Initiative Sort Button`],
-		cfg_option_grid_snap: [`Grid Snap`],
-		cfg_option_scaled_names: [`Scaled Names and Status Icons`],
-		cfg_option_show_fl: [`Include the Floors layer (reload to apply changes)`],
-		cfg_option_show_bg: [`Include the Background layer (reload to apply changes)`],
-		cfg_option_show_fg: [`Include the Foreground layer (reload to apply changes)`],
-		cfg_option_show_rf: [`Include the Roofs layer (reload to apply changes)`],
-		cfg_option_show_light: [`Include (force) light sources button (reload to apply changes)`],
-		cfg_option_show_weather: [`Include Weather layer and settings (reload to apply changes)`],
-		cfg_option_import_interval: [`Rest Time between Each Map (msec)`],
-		cfg_option_emoji: [`Add Emoji Replacement to Chat`],
-		cfg_option_art_previews: [`Show Custom Art Previews`],
-		cfg_option_toolbar_opac: [`Horizontal Toolbar Opacity`],
-		cfg_option_layer_panel: [`Add Quick Layer Buttons panel`],
-		cfg_option_layer_panel_position: [`-- Select left or right side to display this panel`],
-		cfg_option_streamer_tags: [`Streamer-Friendly Chat Tags`],
-		cfg_option_hide_r20search: [`Hide Default Journal Search Bar`],
-		cfg_option_player_size: [`Set Player List size (0 - don't change)`],
-		cfg_option_hide_dmswitch: [`Hide Roll20's Dark Mode switch`],
-		cfg_option_hide_help: [`Hide Help Button on floating toolbar`],
-		cfg_option_dm_tweaks: [`Enable background style fixes for default dark mode`],
-		cfg_option_assume_ogl: [`Alternative mass rolls (only OGL 5e)`],
-		cfg_option_silent_chat: [`Don't show chat messages on load`],
-		cfg_option_modest_chat: [`Use default chat style for betteR20 system messages`],
-		cfg_option_select_jrnsearch: [`Select Journal search controls`],
-		cfg_option_select_artlib: [`Select Art Library controls`],
-		cfg_option_quick_init_clear: [`Add Quick Initiative tracker Clear Button`],
-		cfg_option_hide_linesplit: [`Hide Line Splitter (reload to apply changes)`],
-		cfg_option_log_players_in_chat: [`Show player connects messages`],
-		cfg_option_neat_menus: [`Reorganized canvas context menu (reload to apply changes)`],
-		cfg_option_quick_menu: [`Enable quick actions as copies of the menu entries added to the bottom of Reorganized menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back.`],
-		cfg_option_quick_2: [`-- Quick action 2`],
-		cfg_option_quick_3: [`-- Quick action 3`],
-		cfg_option_minify_tracker: [`Shrink Initiative Tracker Text`],
-		cfg_option_interiors_toggle: [`Add interior/outside mode switch`],
-		ui_bar_map: [`Map & Backdrop`],
-		ui_bar_obj: [`Objects & Tokens`],
-		ui_bar_fl: [`Floors`],
-		ui_bar_bg: [`Background`],
-		ui_bar_fg: [`Foreground`],
-		ui_bar_rf: [`Roofs`],
-		ui_bar_we: [`Weather Exclusions`],
-		ui_bar_gm: [`GM's Hidden layer`],
-		ui_bar_barriers: [`Dynamic Field of View`],
-		ui_bar_light_n_barriers: [`Dynamic Lighting`],
-		ui_bar_toggle_layer_title: [`Toggle layer visibility`],
-		ui_bar_toggle_interior: [`Toggle inside/outside`],
-		ui_cfg_property: [`Property`],
-		ui_cfg_value: [`Value`],
-		ui_cfg_save: [`Save`],
-		ui_dialog_title: [`Input value`],
-		ui_dialog_select: [`Select`],
-		ui_dialog_submit: [`Submit`],
-		ui_dialog_cancel: [`Cancel`],
-		menu_unlock: [`Unlock...`],
-		menu_card_title: [`Decks`],
-		menu_take_card: [`Take Card`],
-		menu_flip_card: [`Flip Card`],
-		menu_edit_title: [`Edit`],
-		menu_edit_del: [`Delete`],
-		menu_edit_copy: [`Copy`],
-		menu_edit_paste: [`Paste`],
-		menu_edit_undo: [`Undo`],
-		menu_move_title: [`Move`],
-		menu_move_tofront: [`To Front`],
-		menu_move_forwone: [`Forward One`],
-		menu_move_backone: [`Back One`],
-		menu_move_toback: [`To Back`],
-		menu_view_title: [`Assign view`],
-		menu_layer_title: [`Layer`],
-		menu_layer_map: [`Map`],
-		menu_layer_fl: [`Floors`],
-		menu_layer_bg: [`Background`],
-		menu_layer_obj: [`Tokens`],
-		menu_layer_fg: [`Foreground`],
-		menu_layer_rf: [`Roofs`],
-		menu_layer_gm: [`GM Hidden`],
-		menu_layer_barriers: [`Field of view`],
-		menu_layer_weather: [`Weather`],
-		menu_util_title: [`Utilities`],
-		menu_util_start: [`Start Scene`],
-		menu_util_animate: [`Animate`],
-		menu_util_flight: [`Set&nbsp;Flight&nbsp;Height`],
-		menu_util_light: [`Set&nbsp;Light`],
-		menu_adv_title: [`Advanced`],
-		menu_adv_grp: [`Group`],
-		menu_adv_regrp: [`Reroup`],
-		menu_adv_ungrp: [`Ungroup`],
-		menu_adv_isdrv: [`Is Drawing`],
-		menu_adv_flh: [`Flip Horizontal`],
-		menu_adv_flv: [`Flip Vertical`],
-		menu_adv_dimens: [`Set Dimensions`],
-		menu_adv_align: [`Align to Grid`],
-		menu_adv_lock: [`Lock`],
-		menu_adv_unlock: [`Unlock`],
-		menu_adv_tokenid: [`View Token ID`],
-		menu_adv_pathid: [`View Path ID`],
-		menu_token_title: [`Token Tasks`],
-		menu_token_turn: [`Add Turn`],
-		menu_mass_title: [`Mass Roll`],
-		menu_mass_init: [`Initiative`],
-		menu_mass_save: [`Saving Throw`],
-		menu_mass_skill: [`Skill Check`],
-		menu_multi_title: [`Multi-Sided`],
-		menu_multi_rnd: [`Random Side`],
-		menu_multi_select: [`Choose Side`],
-		menu_multi_size: [`Set Side Size`],
-		menu_quick_togm: [`Hide from layer`],
-		menu_quick_tofg: [`To visible layer`],
-		menu_quick_toback: [`Move behind`],
-		menu_quick_save: [`Roll save`],
-		stat_save_str: [`Strength`],
-		stat_save_dex: [`Dexterity`],
-		stat_save_con: [`Constitution`],
-		stat_save_int: [`Intelligence`],
-		stat_save_wis: [`Wisdom`],
-		stat_save_cha: [`Charisma`],
-		stat_ab_athl: [`Athletics`],
-		stat_ab_acrb: [`Acrobatics`],
-		stat_ab_sloh: [`Sleight of Hand`],
-		stat_ab_stel: [`Stealth`],
-		stat_ab_arcn: [`Arcana`],
-		stat_ab_hist: [`History`],
-		stat_ab_invs: [`Investigation`],
-		stat_ab_natr: [`Nature`],
-		stat_ab_relg: [`Religion`],
-		stat_ab_anih: [`Animal Handling`],
-		stat_ab_insg: [`Insight`],
-		stat_ab_medc: [`Medicine`],
-		stat_ab_perc: [`Perception`],
-		stat_ab_surv: [`Survival`],
-		stat_ab_decp: [`Deception`],
-		stat_ab_intm: [`Intimidation`],
-		stat_ab_perf: [`Performance`],
-		stat_ab_pers: [`Persuasion`],
-		stat_init: [`INITIATIVE`],
-		msg_vtte_init: [`
-			VTT Enhancement Suite detected.
-			<br><br>
-			$0 initialised.
-			<br>
-		`],
-		msg_better20_help: [`
-			<br>
-			Need help? Visit our <a href="$0/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="You'd think this would be obvious.">
-			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
-			<br>
-			<br>
-			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
-			</span>
-		`],
-		msg_b20_version_stream: [`<br>
-									A newer version of $0 is available.
-									<br><br>
-								`],
-		msg_b20_version: [`<br>
-									A newer version of $0 is available.<br>
-									Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.
-									<br><br>
-								`],
-		msg_player_connected: [`connected`],
-	};
-
-	d20plus.ln.ru = {
-
-		cfg_tab_tokens: [`Токены`],
-		cfg_tab_canvas: [`Слои`],
-		cfg_tab_import: [`Импорт`],
-		cfg_tab_interface: [`Интерфейс`],
-		cfg_tab_chat: [`Чат`],
-		cfg_option_whisper_name: [`Шептать в чат имена при групповых бросках`],
-		cfg_option_quick_init_sort: [`Добавить кнопку быстрой сортировки Инициативы`],
-		cfg_option_grid_snap: [`Шаг "прилипания" к сетке`],
-		cfg_option_scaled_names: [`Масштабируемые имена и иконки статусов`],
-		cfg_option_show_fl: [`Включить слой Полов (нужен перезапуск)`],
-		cfg_option_show_bg: [`Включить слой Задний план (нужен перезапуск)`],
-		cfg_option_show_fg: [`Включить слой Передний план (нужен перезапуск)`],
-		cfg_option_show_rf: [`Включить слой Крыши (нужен перезапуск)`],
-		cfg_option_show_light: [`Включить кнопку для источников света (нужен перезапуск)`],
-		cfg_option_show_weather: [`Включить слой и настройки Погоды (нужен перезапуск)`],
-		cfg_option_import_interval: [`Время ожидания перед каждой картой (при импорте)`],
-		cfg_option_emoji: [`Добавить в чат замену эмотиконов`],
-		cfg_option_art_previews: [`Использовать предпросмотр для библиотеки изображений`],
-		cfg_option_toolbar_opac: [`Прозрачность горизонтальной панели инструментов`],
-		cfg_option_layer_panel: [`Добавить панель Быстрого выбора слоя`],
-		cfg_option_layer_panel_position: [`-- Слева или справа отображать эту панель`],
-		cfg_option_streamer_tags: [`Обезличенные названия в чате (для стримеров)`],
-		cfg_option_hide_r20search: [`Спрятать дефолтную панель поиска в Журнале`],
-		cfg_option_player_size: [`Выберите размер списка игроков (0 - не менять)`],
-		cfg_option_hide_dmswitch: [`Спрятать переключатель темного режима от Roll20`],
-		cfg_option_hide_help: [`Спрятать кнопку Помощь на панели инструментов`],
-		cfg_option_dm_tweaks: [`Включить исправления стилей для темного режима`],
-		cfg_option_assume_ogl: [`Альтернативные групповые броски (только лист OGL)`],
-		cfg_option_silent_chat: [`Не выводить в чат уведомления при загрузке`],
-		cfg_option_modest_chat: [`Использовать родной стиль чата для уведомлений betteR20`],
-		cfg_option_select_jrnsearch: [`Выберите тип строки поиска в Журнале`],
-		cfg_option_select_artlib: [`Выберите элементы управления для Библиотеки`],
-		cfg_option_quick_init_clear: [`Добавить кнопку быстрой очистки Трекера`],
-		cfg_option_hide_linesplit: [`Спрятать кнопку разрезания линий (нужен перезапуск)`],
-		cfg_option_log_players_in_chat: [`Выводить сообщения о подключении игроков`],
-		cfg_option_neat_menus: [`Упорядоченное контекстное меню слоя (нужен перезапуск)`],
-		cfg_option_quick_menu: [`Включить быстрые действия, которые отображаются в самом низу Упорядоченного меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда "На слой ГМа" и обратно`],
-		cfg_option_quick_2: [`-- Быстрое действие 2`],
-		cfg_option_quick_3: [`-- Быстрое действие 3`],
-		cfg_option_minify_tracker: [`Уменьшить размер элементов трекера инициативы`],
-		cfg_option_interiors_toggle: [`Добавить переключатель режима в помещении/снаружи`],
-		ui_bar_map: [`Карта и фон`],
-		ui_bar_obj: [`Объекты и токены`],
-		ui_bar_fl: [`Полы`],
-		ui_bar_bg: [`Задний план`],
-		ui_bar_fg: [`Передний план`],
-		ui_bar_rf: [`Крыши`],
-		ui_bar_we: [`Исключения погоды`],
-		ui_bar_gm: [`Скрытый слой Мастера`],
-		ui_bar_barriers: [`Динамические преграды`],
-		ui_bar_light_n_barriers: [`Динамическое освещение`],
-		ui_bar_toggle_layer_title: [`Переключить видимость слоя`],
-		ui_bar_toggle_interior: [`Переключить вид`],
-		ui_cfg_property: [`Свойство`],
-		ui_cfg_value: [`Значение`],
-		ui_cfg_save: [`Сохранить`],
-		ui_dialog_title: [`Введите значение`],
-		ui_dialog_select: [`Выберите`],
-		ui_dialog_submit: [`Подтвердить`],
-		ui_dialog_cancel: [`Отмена`],
-		menu_unlock: [`Снять блок...`],
-		menu_card_title: [`Колода`],
-		menu_take_card: [`Взять карту`],
-		menu_flip_card: [`Перевернуть`],
-		menu_edit_title: [`Правка`],
-		menu_edit_del: [`Удалить`],
-		menu_edit_copy: [`Копировать`],
-		menu_edit_paste: [`Вставить`],
-		menu_edit_undo: [`Отмена`],
-		menu_move_title: [`Наложение`],
-		menu_move_tofront: [`Перед всеми`],
-		menu_move_forwone: [`На шаг вперед`],
-		menu_move_backone: [`На шаг назад`],
-		menu_move_toback: [`На задний план`],
-		menu_view_title: [`Связать вид`],
-		menu_layer_title: [`Слой`],
-		menu_layer_map: [`Карта`],
-		menu_layer_fl: [`Полы`],
-		menu_layer_bg: [`Задний`],
-		menu_layer_obj: [`Основной`],
-		menu_layer_fg: [`Передний`],
-		menu_layer_rf: [`Крыши`],
-		menu_layer_gm: [`Слой ГМа`],
-		menu_layer_barriers: [`Преграды`],
-		menu_layer_weather: [`Погода`],
-		menu_util_title: [`Утилиты`],
-		menu_util_start: [`Старт сцены`],
-		menu_util_animate: [`Анимировать`],
-		menu_util_flight: [`Высота полета`],
-		menu_util_light: [`Источник света`],
-		menu_adv_title: [`Свойства`],
-		menu_adv_grp: [`Группировать`],
-		menu_adv_ungrp: [`Разгруппировка`],
-		menu_adv_regrp: [`Перегруппиров.`],
-		menu_adv_isdrv: [`Это рисунок`],
-		menu_adv_flh: [`Отразить гор.`],
-		menu_adv_flv: [`Отразить верт.`],
-		menu_adv_dimens: [`Размеры`],
-		menu_adv_align: [`Выровнять`],
-		menu_adv_lock: [`Блокировать`],
-		menu_adv_unlock: [`Разблокировать`],
-		menu_adv_tokenid: [`ID токена`],
-		menu_adv_pathid: [`ID линии`],
-		menu_token_title: [`Действия`],
-		menu_token_turn: [`В трекер`],
-		menu_mass_title: [`Кинуть кубы`],
-		menu_mass_init: [`Инициатива`],
-		menu_mass_save: [`Спасбросок`],
-		menu_mass_skill: [`Умения`],
-		menu_multi_title: [`Мультитокен`],
-		menu_multi_rnd: [`Случайно`],
-		menu_multi_select: [`Выбрать`],
-		menu_multi_size: [`Размер`],
-		menu_quick_togm: [`Спрятать токен`],
-		menu_quick_tofg: [`Вернуть на слой`],
-		menu_quick_toback: [`Уровень вниз`],
-		menu_quick_save: [`Спасброски`],
-		stat_save_str: [`Сила`],
-		stat_save_dex: [`Ловкость`],
-		stat_save_con: [`Телосложение`],
-		stat_save_int: [`Интеллект`],
-		stat_save_wis: [`Мудрость`],
-		stat_save_cha: [`Харизма`],
-		stat_ab_athl: [`Атлетика`],
-		stat_ab_acrb: [`Акробатика`],
-		stat_ab_sloh: [`Ловкость рук`],
-		stat_ab_stel: [`Скрытность`],
-		stat_ab_arcn: [`Магия`],
-		stat_ab_hist: [`История`],
-		stat_ab_invs: [`Расследование`],
-		stat_ab_natr: [`Природа`],
-		stat_ab_relg: [`Религия`],
-		stat_ab_anih: [`Уход за животными`],
-		stat_ab_insg: [`Проницательность`],
-		stat_ab_medc: [`Медицина`],
-		stat_ab_perc: [`Восприятие`],
-		stat_ab_surv: [`Выживание`],
-		stat_ab_decp: [`Обман`],
-		stat_ab_intm: [`Запугивание`],
-		stat_ab_perf: [`Выступление`],
-		stat_ab_pers: [`Убеждение`],
-		stat_init: [`ИНИЦИАТИВА`],
-		msg_vtte_init: [`
-		VTT Enhancement Suite обнаружен. $0 успешно инициализирован.
-		<br>
-	`],
-		msg_better20_help: [`
-		Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ">вики</a> или зайдите в <a href="https://discord.gg/nGvRCDs">Discord</a>.
-		<br>
-		<br>
-		<span title="Вроде, очевидно.">
-		Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.
-		<br>
-		<br>
-		Перед тем, как сообщить о баге на форумах Roll20, пожалуйста отключите данный скрипт и проверьте, сохраняется ли проблема.
-		</span>
-	`],
-		msg_b20_version_stream: [`<br>
-		$0 обновился, доступна новая версия.
-		<br><br>
-	`],
-		msg_b20_version: [`<br>
-		$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>
-	`],
-		msg_player_connected: [`подключился`],
-	};
-
-	for (const id in d20plus.ln.en) {
-		d20plus.ln.default[id] = d20plus.ln.en[id];
-	}
-}
-
-SCRIPT_EXTENSIONS.push(baseLanguage);
-
-
 function baseUtil () {
 	const vttesUrl = "https://justas-d.github.io/roll20-enhancement-suite/";
 	let shownHardDickWarning = false;
@@ -463,33 +113,7 @@ function baseUtil () {
 		// eslint-disable-next-line no-console
 		console.error("%cD20Plus > ", "color: #b93032; font-size: large", ...args);
 	};
-	// RB20 EXCLUDE START
-	d20plus.ut.localize = (str, substitutes) => {
-		if (substitutes) {
-			output = `${d20plus.ln.default[str]}`;
-			for (const needle in substitutes) {
-				output = output.replace(`$${needle}`, substitutes[needle]);
-			}
-			return output;
-		} else if (d20plus.ln.default[str]) {
-			return d20plus.ln.default[str];
-		} else {
-			return str;
-		}
-	}
 
-	window.__ = d20plus.ut.localize;
-
-	d20plus.ut.selectLocale = () => {
-		const lan = (typeof LANGUAGE !== "undefined" ? LANGUAGE : "en");
-		if ((lan === "en") || (!d20plus.ln[lan])) return;
-		for (const id in d20plus.ln.en) {
-			if (d20plus.ln[lan][id]) {
-				d20plus.ln.default[id][0] = d20plus.ln[lan][id][0];
-			}
-		}
-	}
-	// RB20 EXCLUDE END
 	d20plus.ut.chatLog = (arg) => {
 		d20.textchat.incoming(
 			false,
@@ -540,10 +164,10 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
-		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
-			url: `https://raw.githubusercontent.com/redweller/betterR20/run/betteR20-version`,
+			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;
@@ -552,11 +176,11 @@ function baseUtil () {
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
-								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
-								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
-								d20plus.ut.sendHackerChat(__("msg_b20_version", [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl]));
+								const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
+								const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
+								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
 							} else {
-								d20plus.ut.sendHackerChat(__("msg_b20_version_stream", [scriptName]));
+								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br><br>`);
 							}
 						}, 1000);
 					}
@@ -579,18 +203,34 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = (message) => {
-		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		if (window.enhancementSuiteEnabled) {
-			d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
+			d20plus.ut.sendHackerChat(`
+				VTT Enhancement Suite detected.
+				<br><br>
+				${scriptName} initialised.
+				<br>
+			`);
 		} else d20plus.ut.showHardDickMessage(scriptName);
-		d20plus.ut.sendHackerChat(
-			isStreamer ? "" : __("msg_better20_help", [d20plus.ut.WIKI_URL]),
-		);
+		d20plus.ut.sendHackerChat(`
+			${isStreamer ? "" : `
+			<br>
+			Need help? Visit our <a href="${d20plus.ut.WIKI_URL}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
+			<br>
+			<br>
+			<span title="You'd think this would be obvious.">
+			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
+			<br>
+			<br>
+			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
+			</span>
+			`}
+		`);
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		d20plus.ut.sendHackerChat(`
 			${scriptName} initialising, please wait...<br><br>
@@ -599,13 +239,12 @@ function baseUtil () {
 	};
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
-		const defaultStyle = !!d20plus.cfg.get("chat", "modestSystemMessagesStyle");
 		d20.textchat.incoming(false, ({
 			who: "system",
 			type: "system",
-			content: (!defaultStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			content: `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
-			</span>` : message),
+			</span>`,
 		}));
 	};
 
@@ -961,14 +600,12 @@ function baseUtil () {
 		})
 	};
 
-	d20plus.ut.LAYERS = ["map", "floors", "background", "objects", "roofs", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.LAYERS = ["map", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
 	d20plus.ut.layerToName = (l) => {
 		switch (l) {
 			case "map": return "Map";
-			case "floors": return "Floors";
 			case "background": return "Background";
 			case "objects": return "Objects & Tokens";
-			case "roofs": return "Roofs";
 			case "foreground": return "Foreground";
 			case "gmlayer": return "GM Info Overlay";
 			case "walls": return "Dynamic Lighting";
@@ -998,14 +635,6 @@ function baseUtil () {
 			}
 		}
 	};
-
-	d20plus.ut.dynamicStyles = (slug) => {
-		if (!d20plus.css.dynamic) d20plus.css.dynamic = {};
-		if (!d20plus.css.dynamic[slug]) {
-			d20plus.css.dynamic[slug] = $("<style></style>").appendTo("body");
-		}
-		return d20plus.css.dynamic[slug];
-	}
 
 	/**
 	* Assumes any other lists have been searched using the same term
@@ -1877,200 +1506,94 @@ function baseConfig () {
 	d20plus.cfg.pLoadConfigFailed = false;
 
 	addConfigOptions("token", {
-		"_name": __("cfg_tab_tokens"),
+		"_name": "Tokens",
 		"massRollWhisperName": {
-			"name": __("cfg_option_whisper_name"),
+			"name": "Whisper Token Name to Mass-Rolls",
 			"default": false,
 			"_type": "boolean",
 		},
-		"massRollAssumesOGL": {
-			"name": __("cfg_option_assume_ogl"),
-			"default": true,
-			"_type": "boolean",
-		},
-	});
+	},
+	);
 	addConfigOptions("canvas", {
-		"_name": __("cfg_tab_canvas"),
+		"_name": "Canvas",
 		"_player": true,
-		"quickLayerButtons": {
-			"name": __("cfg_option_layer_panel"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"quickLayerButtonsPosition": {
-			"name": __("cfg_option_layer_panel_position"),
-			"default": 1,
-			"_type": "_slider",
-			"__sliderMin": 0,
-			"__sliderMax": 1,
-			"__sliderStep": 1,
-		},
-		"showFloors": {
-			"name": __("cfg_option_show_fl"),
-			"default": false,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showBackground": {
-			"name": __("cfg_option_show_bg"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showForeground": {
-			"name": __("cfg_option_show_fg"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showRoofs": {
-			"name": __("cfg_option_show_rf"),
-			"default": false,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showLight": {
-			"name": __("cfg_option_show_light"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
-		"showWeather": {
-			"name": __("cfg_option_show_weather"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		},
 		"gridSnap": {
-			"name": __("cfg_option_grid_snap"),
+			"name": "Grid Snap",
 			"default": "1",
 			"_type": "_enum",
 			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
 		},
 		"scaleNamesStatuses": {
-			"name": __("cfg_option_scaled_names"),
-			"default": false,
+			"name": "Scaled Names and Status Icons",
+			"default": true,
 			"_type": "boolean",
 			"_player": true,
 		},
-		"enableNeatMenus": {
-			"name": __("cfg_option_neat_menus"),
+		"showBackground": {
+			"name": "Include the Background layer (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
+			"_player": false,
 		},
-	});
+		"showForeground": {
+			"name": "Include the Foreground layer (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showWeather": {
+			"name": "Include the Weather layer and settings (reload to apply changes)",
+			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+	},
+	);
 	addConfigOptions("import", {
-		"_name": __("cfg_tab_import"),
+		"_name": "Import",
 		"importIntervalMap": {
-			"name": __("cfg_option_import_interval"),
+			"name": "Rest Time between Each Map (msec)",
 			"default": 2500,
 			"_type": "integer",
 		},
 	});
 	addConfigOptions("interface", {
-		"_name": __("cfg_tab_interface"),
-		"_player": true,
-		"showCustomArtPreview": {
-			"name": __("cfg_option_art_previews"),
-			"default": true,
-			"_type": "boolean",
-		},
+		"_name": "Interface",
 		"toolbarOpacity": {
-			"name": __("cfg_option_toolbar_opac"),
+			"name": "Horizontal Toolbar Opacity",
 			"default": 100,
-			"_player": true,
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
 			"__sliderStep": 1,
 		},
-		"hideDarkModeSwitch": {
-			"name": __("cfg_option_hide_dmswitch"),
-			"default": false,
+		"quickLayerButtons": {
+			"name": "Add Quick Layer Buttons",
+			"default": true,
 			"_type": "boolean",
-			"_player": true,
 		},
-		"hideHelpButton": {
-			"name": __("cfg_option_hide_help"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideLineSplitter": {
-			"name": __("cfg_option_hide_linesplit"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"selectJournalSearchType": {
-			"name": __("cfg_option_select_jrnsearch"),
-			"default": "roll20",
-			"_type": "_enum",
-			"__values": [
-				"Roll20",
-				"betteR20",
-			],
-		},
-		"selecArtLibraryType": {
-			"name": __("cfg_option_select_artlib"),
-			"default": "roll20",
-			"_type": "_enum",
-			"__values": [
-				"Roll20",
-				"betteR20",
-			],
+		"quickLayerButtonsPosition": {
+			"name": "-- Quick Layer Buttons position (left/right)",
+			"default": 0,
+			"_type": "_slider",
+			"__sliderMin": 0,
+			"__sliderMax": 1,
+			"__sliderStep": 1,
 		},
 		"quickInitButtons": {
-			"name": __("cfg_option_quick_init_sort"),
+			"name": "Add Quick Initiative Sort Button",
 			"default": true,
 			"_type": "boolean",
-		},
-		"quickInitButtonsClear": {
-			"name": __("cfg_option_quick_init_clear"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"minifyTracker": {
-			"name": __("cfg_option_minify_tracker"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-	});
-	addConfigOptions("chat", {
-		"_name": __("cfg_tab_chat"),
-		"_player": true,
-		"playerPortraitSize": {
-			"name": __("cfg_option_player_size"),
-			"default": 30,
-			"_type": "_slider",
-			"__sliderMin": 30,
-			"__sliderMax": 250,
-			"__sliderStep": 20,
-			"_player": true,
 		},
 		"streamerChatTag": {
-			"name": __("cfg_option_streamer_tags"),
+			"name": "Streamer-Friendly Chat Tags",
 			"default": false,
 			"_type": "boolean",
-			"_player": true,
 		},
-		"modestSystemMessagesStyle": {
-			"name": __("cfg_option_modest_chat"),
-			"default": true,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"suppressLoadingMessages": {
-			"name": __("cfg_option_silent_chat"),
+		"hideDefaultJournalSearch": {
+			"name": "Hide Default Journal Search Bar",
 			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"showPlayerConnects": {
-			"name": __("cfg_option_log_players_in_chat"),
-			"default": true,
 			"_type": "boolean",
 		},
 	});
@@ -2396,7 +1919,7 @@ function baseConfig () {
 				const content = $(`
 						<div class="config-table-wrapper">
 							<table class="config-table">
-								<thead><tr><th>${__("ui_cfg_property")}</th><th>${__("ui_cfg_value")}</th></tr></thead>
+								<thead><tr><th>Property</th><th>Value</th></tr></thead>
 								<tbody></tbody>
 							</table>
 						</div>
@@ -2670,123 +2193,17 @@ function baseConfig () {
 	};
 	*/
 
-	d20plus.cfg.handlePlayerImgSize = () => {
-		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
-		const dynamicStyle = d20plus.ut.dynamicStyles("players");
-		if (setSize === 30) {
-			dynamicStyle.html("");
-		} else {
-			const setFont = Math.round((setSize / 150) * 16);
-			const setCol = Math.round((setSize / 150) * 24);
-			const setLine = Math.round((setSize / 150) * 18);
-			const setStyle = `
-				#playerzone .player .playername {width: ${setSize}px !important; font-size: ${setFont}px !important;line-height:${setLine}px}
-				#playerzone .player .video {width: ${setSize}px; height: ${setSize}px; }
-				#playerzone .player .playercolor, .player .color_picker {width: ${setCol}px; height: ${setCol}px; }
-			`;
-			dynamicStyle.html(setStyle);
-		}
-	}
-
-	d20plus.cfg.handleInitiativeShrink = () => {
-		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
-		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
-		if (doShrink) {
-			dynamicStyle.html(d20plus.css.miniInitStyle);
-		} else {
-			dynamicStyle.html("");
-		}
-	}
-
-	d20plus.cfg.HandlePlayerLog = () => {
-		const obsconfig = {childList: true, subtree: true};
-		if (!d20plus.cfg.playerWatcher) {
-			const playerListChange = (changelist) => {
-				for (const change of changelist) {
-					if ((change.type === "childList") && (change.addedNodes.length)) {
-						for (const node of change.addedNodes) {
-							const playerName = $(node).find(".playername .name").html();
-							if (!playerName) continue;
-							const playerPic = $(node).find(".video").css("background-image") || "";
-							const playerUrl = playerPic.replace(/[\\")(]/igm, "").replace("url", "");
-							const playerText = `
-								<span style="height:40px;display:block">
-									<img style="width:40px;float:left;margin-right:10px" src="${playerUrl}.png">
-									${(new Date()).toLocaleTimeString()}<br> 
-									${playerName} ${__("msg_player_connected")}
-								</span>
-							`;
-							d20plus.ut.sendHackerChat(playerText);
-						}
-					}
-				}
-			}
-			d20plus.cfg.playerWatcher = new MutationObserver(playerListChange);
-		}
-
-		if (d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
-		else d20plus.cfg.playerWatcher.disconnect();
-	}
-
-	d20plus.cfg.HandleArtLibraryButtons = () => {
-		if (d20plus.cfg.getOrDefault("interface", "selecArtLibraryType") !== "Roll20") {
-			$(`#button-browse-external-art`).parent().parent().toggle(true);
-			$(`#button-add-external-art`).detach().appendTo($(`#button-browse-external-art`).parent());
-		} else {
-			$(`#button-browse-external-art`).parent().parent().toggle(false);
-			$(`#button-add-external-art`).detach().appendTo($(`.addlibraryfolder`).parent());
-		}
-	}
-
-	d20plus.cfg.HandleCss = () => {
-		// ugly hook to move VTTES menu items
-		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
-			d20plus.ut.dynamicStyles("vttesHide").html(`
-				.actions_menu.d20contextmenu > ul > li[style] {display:none;}
-			`);
-		}
-		// more readable secondary bar (if it's too cluttered)
-		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")
-			|| d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-			d20plus.ut.dynamicStyles("secBarGuide").html(`
-				#floatinglayerbar li.choosegmlayer {border-top-width: 2px; border-top-style: solid;}
-				#floatinglayerbar li.choosemap, 
-				#floatinglayerbar li.chooseroofs, 
-				#floatinglayerbar li.choosefloors {
-					background-image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
-				}
-			`);
-		}
-	}
-
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
-		d20plus.cfg.handlePlayerImgSize();
-		d20plus.cfg.handleInitiativeShrink();
-		d20plus.cfg.HandleCss();
-
-		if (window.is_gm) {
-			d20plus.cfg.HandlePlayerLog();
-			d20plus.cfg.HandleArtLibraryButtons();
-		}
-
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
-		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
-
+		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
+		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
-		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtonsClear"));
-
-		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
-		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
-
-		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
-		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
-		$(`#journal > div.content > br`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
+		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
@@ -4331,6 +3748,7 @@ function baseToolModule () {
 						// eslint-disable-next-line no-console
 						console.log("Exporting characters...");
 						characters = d20.Campaign.characters.models.map(character => {
+							character.attribs.fetch(character.attribs);
 							const out = {
 								attributes: character.attributes,
 								attribs: character.attribs,
@@ -9240,1087 +8658,1084 @@ function initHTMLTokenEditor () {
 	d20plus.html = d20plus.html || {};
 
 	// no mods; just switched in to grant full features to non-pro
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.tokenEditor = `
-        <script id='tmpl_tokeneditor' type='text/html'>
-        <div class='dialog largedialog tokeneditor' style='display: block;'>
-        <ul class='nav nav-tabs tokeneditor_navigation'>
-            <li class='active'>
-                <a data-tab='basic' href='javascript:void(0);'>
-                    <h2>Details</h2>
-                </a>
-            </li>
-            <li>
-                <a data-tab='notes' href='javascript:void(0);'>
-                    <h2>GM Notes</h2>
-                </a>
-            </li>
-            <li class='nav-tabs--beta'>
-                <span class='label label-info'>
-                    Updated
-                </span>
-                <a data-tab='prototype' href='javascript:void(0);'>
-                    <h2>Dynamic Lighting</h2>
-                </a>
-            </li>
-            <li>
-                <a data-tab='advanced' href='javascript:void(0);'>
-                    <h2>Legacy Lighting</h2>
-                </a>
-            </li>
-        </ul>
-        <div class='tab-content'>
-            <div class='basic tab-pane tokeneditor__details'>
-                <div class='w-100 d-inline-flex flex-wrap'>
-                    <!-- General -->
-                    <div class='tokeneditor__col general'>
-                        <div class='tokeneditor__row--general d-grid'>
-                            <div class='tokeneditor__header'>
-                                <h3 class='page_title text-capitalize'>general</h3>
-                            </div>
-                            <div class='tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>nameplate player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to see name plate'>
-                                                    <input class='showplayers_name' type='checkbox'>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit name plate'>
-                                                    <input class='playersedit_name' type='checkbox'>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Represents Character -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader help-icon'>
-                                <h4>Represents Character</h4>
-                                <a class='showtip pictos' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
-                            </div>
-                            <div class='tokeneditor__container'>
-                                <label title='select which token this character represents'>
-                                    <span class='sr-only'>select which token this character represents</span>
-                                    <select class='represents'>
-                                        <option value=''>None/Generic Token</option>
-                                        <$ _.each(window.Campaign.activeCharacters(), function(char) { $>
-                                        <option value="<$!char.id$>"><$!char.get("name")$></option>
-                                        <$ }); $>
-                                    </select>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- Name -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader'>
-                                <h4>Name</h4>
-                            </div>
-                            <div class='tokeneditor__container tokeneditor__container-name tokeneditor__border d-inline-grid'>
-                                <div class='d-flex'>
-                                    <label class='sr-only' for='token-general-character-name'>character name</label>
-                                    <input class='name' id='token-general-character-name' type='text'>
-                                </div>
-                                <div class='tokeneditor__container-nameplate disable_box'>
-                                    <div class='d-flex justify-content-center align-items-center'>
-                                        <label class='sr-only' for='token-general-nameplate'>show nameplate on token</label>
-                                        <input class='showname' id='token-general-nameplate' type='checkbox' value='1'>
-                                    </div>
-                                    <h4 class='text-capitalize'>nameplate</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Controlled By -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader'>
-                                <h4>Controlled By</h4>
-                            </div>
-                            <div class='tokeneditor__container'>
-                                <$ if(this.character) { $>
-                                <p>(Determined by Character settings)</p>
-                                <$ } else { $>
-                                <select class='controlledby selectize' multiple='true'>
-                                    <option value='all'>All Players</option>
-                                    <$ window.Campaign.players.each(function(player) { $>
-                                    <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-                                    <$ }); $>
-                                </select>
-                                <$ } $>
-                            </div>
-                        </div>
-                        <!-- Tint Color -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader'>
-                                <h4>Tint Color</h4>
-                            </div>
-                            <div class='tokeneditor__container'>
-                                <label class='sr-only' for='token-general-tint-color'>choose a tint color of the token</label>
-                                <input class='tint_color colorpicker' id='token-general-tint-color' type='text'>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Token Settings -->
-                    <div class='tokeneditor__col token-settings'>
-                        <div class='tokeneditor__header'>
-                            <h3 class='page_title text-capitalize'>token bars</h3>
-                        </div>
-                        <div class='tokeneditor__row tokeneditor__row--bar d-grid'>
-                            <div class='col tokeneditor__bar-inputs d-grid'>
-                                <div class='tokeneditor__subheader align-items-center d-grid'>
-                                    <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar1_color')$>'></span>
-                                    <h4>Bar 1</h4>
-                                </div>
-                                <div class='tokeneditor__container align-items-center d-grid'>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 1 value'>
-                                            <input class='bar1_value' placeholder='Value' type='text'>
-                                        </label>
-                                    </div>
-                                    <span>/</span>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 1 maximum value'>
-                                            <input class='bar1_max' placeholder='Max' type='text'>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__bar-select align-items-center'>
-                                <div class='tokeneditor__subheader help-icon'>
-                                    <h4 class='text-capitalize'>attribute</h4>
-                                    <a class='pictos showtip' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
-                                </div>
-                                <div class='tokeneditor__container'>
-                                    <label title='select a character sheet attribute to link to bar 1'>
-                                        <span class='sr-only'>select a character sheet attribute to link to bar 1</span>
-                                        <select class='bar1_link'>
-                                            <option value=''>None</option>
-                                            <$ _.each(this.availAttribs(), function(attrib) { $>
-											<option value="<$!attrib.id$>"><$!attrib.name$>
-                                                <$ }); $>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>bar 1 player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='bar1 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='show players bar 1'>
-                                                    <input class='showplayers_bar1' type='checkbox' value=''>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit bar 1'>
-                                                    <input class='playersedit_bar1' type='checkbox' value=''>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <label class='bar_val_permission'>
-                                                Text Overlay:
-                                                <select class='bar1options'>
-                                                    <option value='hidden'>
-                                                        Hidden
-                                                    </option>
-                                                    <option selected value='editors'>
-                                                        Visible to Editors
-                                                    </option>
-                                                    <option value='everyone'>
-                                                        Visible to Everyone
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__row tokeneditor__row--bar d-grid'>
-                            <div class='col tokeneditor__bar-inputs d-grid'>
-                                <div class='tokeneditor__subheader align-items-center d-grid'>
-                                    <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar2_color')$>'></span>
-                                    <h4>Bar 2</h4>
-                                </div>
-                                <div class='tokeneditor__container align-items-center d-grid'>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 2 value'>
-                                            <input class='bar2_value' placeholder='Value' type='text'>
-                                        </label>
-                                    </div>
-                                    <span>/</span>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 2 maximum value'>
-                                            <input class='bar2_max' placeholder='Max' type='text'>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__bar-select align-items-center'>
-                                <div class='tokeneditor__subheader help-icon'>
-                                    <h4 class='text-capitalize'>attribute</h4>
-                                </div>
-                                <div class='tokeneditor__container'>
-                                    <label title='select a character sheet attribute to link to bar 2'>
-                                        <span class='sr-only'>select a character sheet attribute to link to bar 2</span>
-                                        <select class='bar2_link'>
-                                            <option value=''>None</option>
-                                            <$ _.each(this.availAttribs(), function(attrib) { $>
-											<option value="<$!attrib.id$>"><$!attrib.name$>
-                                                <$ }); $>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>bar 2 player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='bar2 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='show players bar 2'>
-                                                    <input class='showplayers_bar2' type='checkbox' value=''>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit bar 2'>
-                                                    <input class='playersedit_bar2' type='checkbox' value=''>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <label class='bar_val_permission'>
-                                                Text Overlay:
-                                                <select class='bar2options'>
-                                                    <option value='hidden'>
-                                                        Hidden
-                                                    </option>
-                                                    <option selected value='editors'>
-                                                        Visible to Editors
-                                                    </option>
-                                                    <option value='everyone'>
-                                                        Visible to Everyone
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__row tokeneditor__row--bar d-grid'>
-                            <div class='col tokeneditor__bar-inputs d-grid'>
-                                <div class='tokeneditor__subheader align-items-center d-grid'>
-                                    <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar3_color')$>'></span>
-                                    <h4>Bar 3</h4>
-                                </div>
-                                <div class='tokeneditor__container align-items-center d-grid'>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 3 value'>
-                                            <input class='bar3_value' placeholder='Value' type='text'>
-                                        </label>
-                                    </div>
-                                    <span>/</span>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 3 maximum value'>
-                                            <input class='bar3_max' placeholder='Max' type='text'>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__bar-select align-items-center'>
-                                <div class='tokeneditor__subheader help-icon'>
-                                    <h4 class='text-capitalize'>attribute</h4>
-                                </div>
-                                <div class='tokeneditor__container'>
-                                    <label title='select a character sheet attribute to link to bar 3'>
-                                        <span class='sr-only'>select a character sheet attribute to link to bar 3</span>
-                                        <select class='bar3_link'>
-                                            <option value=''>None</option>
-                                            <$ _.each(this.availAttribs(), function(attrib) { $>
+	d20plus.html.tokenEditor = `
+	<script id='tmpl_tokeneditor' type='text/html'>
+		<div class='dialog largedialog tokeneditor' style='display: block;'>
+			<ul class='nav nav-tabs tokeneditor_navigation'>
+				<li class='active'>
+					<a data-tab='basic' href='javascript:void(0);'>
+						<h2>Details</h2>
+					</a>
+				</li>
+				<li>
+					<a data-tab='notes' href='javascript:void(0);'>
+						<h2>GM Notes</h2>
+					</a>
+				</li>
+				<li class='nav-tabs--beta'>
+					<span class='label label-info'>
+						Updated
+					</span>
+					<a data-tab='prototype' href='javascript:void(0);'>
+						<h2>Dynamic Lighting</h2>
+					</a>
+				</li>
+				<li>
+					<a data-tab='advanced' href='javascript:void(0);'>
+						<h2>Legacy Lighting</h2>
+					</a>
+				</li>
+			</ul>
+			<div class='tab-content'>
+				<div class='basic tab-pane tokeneditor__details'>
+					<div class='w-100 d-inline-flex flex-wrap'>
+						<!-- General -->
+						<div class='tokeneditor__col general'>
+							<div class='tokeneditor__row--general d-grid'>
+								<div class='tokeneditor__header'>
+									<h3 class='page_title text-capitalize'>general</h3>
+								</div>
+								<div class='tokeneditor__dropdown d-grid'>
+									<div class='dropdown keep-open'>
+										<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+											<span class='sr-only'>nameplate player permissions menu</span>
+											<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+												<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+											</svg>
+										</button>
+										<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right'>
+											<h4>Player Permissions</h4>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='allow players to see name plate'>
+														<input class='showplayers_name' type='checkbox'>
+														See
+													</label>
+												</div>
+											</li>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='allow players to edit name plate'>
+														<input class='playersedit_name' type='checkbox'>
+														Edit
+													</label>
+												</div>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- Represents Character -->
+							<div class='tokeneditor__row'>
+								<div class='tokeneditor__subheader help-icon'>
+									<h4>Represents Character</h4>
+									<a class='showtip pictos' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
+								</div>
+								<div class='tokeneditor__container'>
+									<label title='select which token this character represents'>
+										<span class='sr-only'>select which token this character represents</span>
+										<select class='represents'>
+											<option value=''>None/Generic Token</option>
+											<$ _.each(window.Campaign.activeCharacters(), function(char) { $>
+											<option value="<$!char.id$>"><$!char.get("name")$></option>
+											<$ }); $>
+										</select>
+									</label>
+								</div>
+							</div>
+							<!-- Name -->
+							<div class='tokeneditor__row'>
+								<div class='tokeneditor__subheader'>
+									<h4>Name</h4>
+								</div>
+								<div class='tokeneditor__container tokeneditor__container-name tokeneditor__border d-inline-grid'>
+									<div class='d-flex'>
+										<label class='sr-only' for='token-general-character-name'>character name</label>
+										<input class='name' id='token-general-character-name' type='text'>
+									</div>
+									<div class='tokeneditor__container-nameplate disable_box'>
+										<div class='d-flex justify-content-center align-items-center'>
+											<label class='sr-only' for='token-general-nameplate'>show nameplate on token</label>
+											<input class='showname' id='token-general-nameplate' type='checkbox' value='1'>
+										</div>
+										<h4 class='text-capitalize'>nameplate</h4>
+									</div>
+								</div>
+							</div>
+							<!-- Controlled By -->
+							<div class='tokeneditor__row'>
+								<div class='tokeneditor__subheader'>
+									<h4>Controlled By</h4>
+								</div>
+								<div class='tokeneditor__container'>
+									<$ if(this.character) { $>
+									<p>(Determined by Character settings)</p>
+									<$ } else { $>
+									<select class='controlledby selectize' multiple='true'>
+										<option value='all'>All Players</option>
+										<$ window.Campaign.players.each(function(player) { $>
+										<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+										<$ }); $>
+									</select>
+									<$ } $>
+								</div>
+							</div>
+							<!-- Tint Color -->
+							<div class='tokeneditor__row'>
+								<div class='tokeneditor__subheader'>
+									<h4>Tint Color</h4>
+								</div>
+								<div class='tokeneditor__container'>
+									<label class='sr-only' for='token-general-tint-color'>choose a tint color of the token</label>
+									<input class='tint_color colorpicker' id='token-general-tint-color' type='text'>
+								</div>
+							</div>
+						</div>
+						<!-- Token Settings -->
+						<div class='tokeneditor__col token-settings'>
+							<div class='tokeneditor__header'>
+								<h3 class='page_title text-capitalize'>token bars</h3>
+							</div>
+							<div class='tokeneditor__row tokeneditor__row--bar d-grid'>
+								<div class='col tokeneditor__bar-inputs d-grid'>
+									<div class='tokeneditor__subheader align-items-center d-grid'>
+										<span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar1_color')$>'></span>
+										<h4>Bar 1</h4>
+									</div>
+									<div class='tokeneditor__container align-items-center d-grid'>
+										<div class='tokeneditor__border'>
+											<label title='enter bar 1 value'>
+												<input class='bar1_value' placeholder='Value' type='text'>
+											</label>
+										</div>
+										<span>/</span>
+										<div class='tokeneditor__border'>
+											<label title='enter bar 1 maximum value'>
+												<input class='bar1_max' placeholder='Max' type='text'>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class='col tokeneditor__bar-select align-items-center'>
+									<div class='tokeneditor__subheader help-icon'>
+										<h4 class='text-capitalize'>attribute</h4>
+										<a class='pictos showtip' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
+									</div>
+									<div class='tokeneditor__container'>
+										<label title='select a character sheet attribute to link to bar 1'>
+											<span class='sr-only'>select a character sheet attribute to link to bar 1</span>
+											<select class='bar1_link'>
+												<option value=''>None</option>
+												<$ _.each(this.availAttribs(), function(attrib) { $>
 												<option value="<$!attrib.id$>"><$!attrib.name$>
-                                                <$ }); $>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>bar 3 player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='bar3 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='show players bar 3'>
-                                                    <input class='showplayers_bar3' type='checkbox' value=''>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit bar 3'>
-                                                    <input class='playersedit_bar3' type='checkbox' value=''>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <label class='bar_val_permission'>
-                                                Text Overlay:
-                                                <select class='bar3options'>
-                                                    <option value='hidden'>
-                                                        Hidden
-                                                    </option>
-                                                    <option selected value='editors'>
-                                                        Visible to Editors
-                                                    </option>
-                                                    <option value='everyone'>
-                                                        Visible to Everyone
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <!-- Token Tooltip -->
-                <div class='tokendescription w-100'>
-                    <div class='w-100 d-inline-flex flex-wrap tokeneditor__container tokeneditor__tooltip-title'>
-                        <div class='flex-col'>
-                            <div class='tokeneditor__header w-100'>
-                                <h3 class='page_title text-capitalize'>Tooltip</h3>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__container-tooltip tooltip_disable_box'>
-                            <div class='d-flex justify-content-center align-items-center'>
-                                <label class='sr-only' for='token-general-description-toggle'>show tooltip on token</label>
-                                <input class='show_tooltip' id='token-general-tooltip-toggle' type='checkbox' value='1'>
-                            </div>
-                            <h4 class='text-capitalize'>Show</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class='tokeneditor__row'>
-                    <div class='tokeneditor__container'>
-                        <div class='d-flex'>
-                            <textarea class='token-tooltip' id='token-general-description' maxlength='150' type='text'></textarea>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <small>
-                <span class='tooltip-count'>0</span>
-                /150
-                </small>
-                <hr>
-                <!-- Token Bar Options -->
-                <div class='tokenbaroptions w-100'>
-                    <div class='tokeneditor__header w-100'>
-                        <h3 class='page_title text-capitalize'>token bar options</h3>
-                    </div>
-                    <div class='w-100 d-inline-flex flex-wrap'>
-                        <div class='tokeneditor__col'>
-                            <div class='tokeneditor__subheader help-icon'>
-                                <h4 class='text-capitalize'>location</h4>
-                                <a class='showtip pictos' title='&lt;b&gt;Above:&lt;/b&gt; &lt;br&gt; All bars are above the token. (Default for new games) &lt;br&gt; &lt;b&gt;Top Overlapping:&lt;/b&gt; &lt;br&gt; The bottom-most bar overlaps the top of the token. Other bars float above it. &lt;br&gt; &lt;b&gt;Bottom Overlapping:&lt;/b&gt; &lt;br&gt; Bars fill the token from the bottom up. &lt;br&gt; &lt;b&gt;Below:&lt;/b&gt; &lt;br&gt; All bars are below the token.'>?</a>
-                            </div>
-                            <div class='tokeneditor__container player-permissions'>
-                                <div class='permission_section barLocation'>
-                                    <label class='movable_token_bar' title='select the token bar location'>
-                                        <span class='sr-only'>select the token bar location</span>
-                                        <select class='token_bar_location'>
-                                            <option selected value='above'>
-                                                Above
-                                            </option>
-                                            <option value='overlap_top'>
-                                                Top Overlapping
-                                            </option>
-                                            <option value='overlap_bottom'>
-                                                Bottom Overlapping
-                                            </option>
-                                            <option value='below'>
-                                                Below
-                                            </option>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__col'>
-                            <div class='tokeneditor__subheader help-icon'>
-                                <h4 class='text-capitalize'>style</h4>
-                                <a class='showtip pictos' title='&lt;b&gt;Standard:&lt;/b&gt;&lt;br&gt; Full sized token bar, displays text overlays. &lt;br&gt; &lt;b&gt;Compact:&lt;/b&gt; &lt;br&gt;Narrow token bars. No text overlay.'>?</a>
-                            </div>
-                            <div class='tokeneditor__container player-permissions'>
-                                <div class='permission_section barLocation tokenbaroptions__style d-grid'>
-                                    <label class='compact_bar align-items-center' title='Standard token bar style'>
-                                        <input checked name='barStyle' type='radio' value='standard'>
-                                        <span class='sr-only'>choose token bar style</span>
-                                        Standard
-                                    </label>
-                                    <label class='compact_bar align-items-center' title='Compact token bar style'>
-                                        <span class='sr-only'>choose token bar style</span>
-                                        <input name='barStyle' type='radio' value='compact'>
-                                        Compact
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <!-- Token Aura -->
-                <div class='tokenaura w-100'>
-                    <div class='tokeneditor__header w-100'>
-                        <h3 class='page_title text-capitalize'>token aura</h3>
-                    </div>
-                    <div class='w-100 d-inline-flex flex-wrap'>
-                        <div class='tokeneditor__col'>
-                            <div class='tokenaura__header d-grid'>
-                                <div class='tokeneditor__subheader'>
-                                    <h4 class='text-capitalize'>Aura 1</h4>
-                                </div>
-                                <div class='tokeneditor__dropdown d-grid'>
-                                    <div class='dropdown keep-open dropup'>
-                                        <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                            <span class='sr-only'>aura 1 player permissions menu</span>
-                                            <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                                <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                            </svg>
-                                        </button>
-                                        <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
-                                            <h4>Player Permissions</h4>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='show players aura 1'>
-                                                        <input class='showplayers_aura1' type='checkbox' value=''>
-                                                        See
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='allow players to edit aura 1'>
-                                                        <input class='playersedit_aura1' type='checkbox' value=''>
-                                                        Edit
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='tokenaura__container d-grid'>
-                                <!-- Token Aura Diameter -->
-                                <div class='tokenaura__diameter'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>diameter</h4>
-                                    </div>
-                                    <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 1 diameter'>
-                                            <input class='aura1_radius' type='text'>
-                                        </label>
-                                        <div class='disable_box d-block'>
-                                            <$!window.Campaign.activePage().get("scale_units")$>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Shape -->
-                                <div class='tokenaura__shape'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>shape</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <label title='select aura 1 shape'>
-                                            <select class='aura1_options text-capitalize'>
-                                                <option selected value='circle'>circle</option>
-                                                <option value='square'>square</option>
-                                            </select>
-                                        </label>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Tint Color -->
-                                <div class='tokeneditor__tint'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>tint color</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <input class='aura1_color colorpicker' type='text'>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__col'>
-                            <div class='tokenaura__header d-grid'>
-                                <div class='tokeneditor__subheader'>
-                                    <h4 class='text-capitalize'>Aura 2</h4>
-                                </div>
-                                <div class='tokeneditor__dropdown d-grid'>
-                                    <div class='dropdown keep-open dropup'>
-                                        <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                            <span class='sr-only'>aura 2 player permissions menu</span>
-                                            <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                                <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                            </svg>
-                                        </button>
-                                        <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
-                                            <h4>Player Permissions</h4>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='show players aura 2'>
-                                                        <input class='showplayers_aura2' type='checkbox' value=''>
-                                                        See
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='allow players to edit aura 2'>
-                                                        <input class='playersedit_aura2' type='checkbox' value=''>
-                                                        Edit
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='tokenaura__container d-grid'>
-                                <!-- Token Aura Diameter -->
-                                <div class='tokenaura__diameter'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>diameter</h4>
-                                    </div>
-                                    <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 2 diameter'>
-                                            <input class='aura2_radius' type='text'>
-                                        </label>
-                                        <div class='disable_box d-block'>
-                                            <$!window.Campaign.activePage().get("scale_units")$>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Shape -->
-                                <div class='tokenaura__shape'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>shape</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <label title='select aura 2 shape'>
-                                            <select class='aura2_options text-capitalize'>
-                                                <option selected value='circle'>circle</option>
-                                                <option value='square'>square</option>
-                                            </select>
-                                        </label>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Tint Color -->
-                                <div class='tokeneditor__tint'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>tint color</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <input class='aura2_color colorpicker' type='text'>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- GM Notes -->
-            <div class='notes tab-pane'>
-                <div class='tokeneditor__header'>
-                    <h3 class='d-inline'>GM Notes</h3>
-                    <span>(Only visible to GMs)</span>
-                </div>
-                <div>
-                    <textarea class='gmnotes summernote'></textarea>
-                </div>
-            </div>
-            <!-- Legacy Lighting -->
-            <div class='advanced tab-pane'>
-                <div class='row-fluid'>
-                    <div class='emits-light'>
-                        <h4>Emits Light</h4>
-                        <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                            <input class='light_radius' type='text'>
-                            <$!window.Campaign.activePage().get("scale_units")$>.
-                            <input class='light_dimradius' type='text'>
-                            <$!window.Campaign.activePage().get("scale_units")$>.
-                            <input class='light_angle' placeholder='360' type='text'>
-                            <span style='font-size: 2.0em;'>&deg;</span>
-                        </div>
-                        <span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
-                        <div class='inlineinputs' style='margin-top: 5px;'>
-                            <label style='margin-left: 7px;'>
-                                <input class='light_otherplayers' type='checkbox'>
-                                All Players See Light
-                            </label>
-                        </div>
-                        <div class='inlineinputs' style='margin-top: 2px;'>
-                            <label style='margin-left: 7px;'>
-                                <input class='light_hassight' type='checkbox'>
-                                Has Sight
-                            </label>
-                            <span style="margin-left: 9px; margin-right: 28px;">/</span>
-                            Angle:
-                            <input class='light_losangle' placeholder='360' type='text'>
-                            <span style='font-size: 2.0em;'>&deg;</span>
-                        </div>
-                        <div class='inlineinputs' style='margin-left: 90px; margin-top: 5px;'>
-                            <span style="margin-left: 8px; margin-right: 12px;">/</span>
-                            Multiplier:
-                            <input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
-                        </div>
-                        <h4>Advanced Fog of War</h4>
-                        <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                            <input class='advfow_viewdistance' type='text'>
-                            <$!window.Campaign.activePage().get("scale_units")$>.
-                        </div>
-                        <span style='color: #888; padding-left: 5px;'>Reveal Distance</span>
-                    </div>
-                </div>
-                <div class='alert alert-info' role='alert' style='margin-top: 5%'>
-                    <p><strong>Legacy</strong> - in the coming months, Advanced Fog of War and Dynamic Lighting will be replaced with Updated Dynamic Lighting.</p>
-                </div>
-            </div>
-            <!-- Updated Dynamic Lighting -->
-            <div class='prototype tab-pane'>
-                <div class='alert alert-info' role='alert'>
-                    <p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other.  Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
-                </div>
-                <div class='token_vision'>
-                    <p class='token_vision_title'>Token Vision</p>
-                    <div class='dyn_fog_vision' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='vision_title'>Vision</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_vision feature_toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Gives the ability to see, if there is light or if Night Vision is enabled. Tokens with vision can see to the edge of the available light.</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='hidden'>
-                                    <input class='dyn_fog_vision_range' type='number'>
-                                    <input class='dyn_fog_dim_vision_range' type='number'>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='dyn_fog_dark_vision' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='vision_title'>Night Vision</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_dark_vision feature_toggle' data-target='.dark_vision_input' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span12'>
-                                <p class='description'>Give this token the ability to see without any light.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input'>
-                            <div class='span8'>
-                                <label class='distance'>Night Vision Distance</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_dark_vision_range' min='0' type='number'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_night_vision hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input'>
-                            <div class='span8'>
-                                <label class='vision-color'>Tint Color</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <input class='dyn_fog_dark_vision_color colorpicker' type='text'>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input' style='padding-top: 10px'>
-                            <div class='span8'>
-                                <label>Night Vision Effect</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group' style='float:right;'>
-                                    <div class='input-group'>
-                                        <label class='dyn_fog_dropdown'>
-                                            <select class='dyn_fog_dark_vision_effect form-control'>
-                                                <option value=''>None</option>
-                                                <option value='Nocturnal'>Nocturnal</option>
-                                                <option value='Dimming'>Dimming</option>
-                                            </select>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input dyn_fog_dark_fx_dimming_row hidden' style='padding-top: 10px'>
-                            <div class='span8'>
-                                <label class='dyn_fog_dark_vision_color'>Dimming Start</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_dark_vision_effect_dimming' max='100' min='0' step='0.01' type='number' value='5'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_night_vision_dimming hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='limit_field_of_vision hidden' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='vision_title'>Limit Field of Vision</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='field_of_vision feature_toggle' data-target='.field_of_vision_inputs' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span12'>
-                                <p class='description'>Limit the field revealed for the token.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element field_of_vision_inputs'>
-                            <div class='span3'>
-                                <label class='distance'>Total</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='field_of_vision_total' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='span3'>
-                                <label class='distance'>Center</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='field_of_vision_center' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'></div>
-                            <div class='row-fluid clearfix'>
-                                <div class='alert alert-danger wrong_number_alert_vision hidden' role='alert'>
-                                    <p>Please enter a number between 0-360.</p>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'>
-                                <div class='span6'>
-                                    <p class='description'>Total size of the Field of Vision.</p>
-                                </div>
-                                <div class='span6'>
-                                    <p class='description'>50% of Vision is before the Center, 50% is after.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                </div>
-                <div class='token_light'>
-                    <p class='token_light_title'>Token Emits Light</p>
-                    <div class='dyn_fog_light' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Bright Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_light feature_toggle' data-target='.bright_light_input' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Makes the token emit Bright Light. Enable this to set its Distance.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element bright_light_input'>
-                            <div class='span8'>
-                                <label class='distance'>Bright Light Distance</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_light_range' min='0' type='number'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_bright_light hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='dyn_fog_dim_light' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Low Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_dim_light feature_toggle' data-target='.low_light_input' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Makes the token emit Low Light, in addition to any Bright Light set above. Enable this to set its Distance.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element low_light_input'>
-                            <div class='span8'>
-                                <label class='distance'>Low Light Distance</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_dim_light_range' min='0' type='number'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element low_light_input'>
-                            <div class='span8'>
-                                <label class='distance'>Brightness</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group flex-group'>
-                                        <img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
-                                        <input class='dyn_fog_dim_light_opacity flex-item' max='1' min='0.2' step='0.05' type='range'>
-                                        <img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_dim_light hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='directional_bright_light hidden' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Directional Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='directional_bright_light_toggle feature_toggle' data-target='.directional_bright_light_inputs' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span12'>
-                                <p class='description'>Set the direction of the Light emitting from this token.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element directional_bright_light_inputs'>
-                            <div class='span3'>
-                                <label class='distance'>Total</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='directional_bright_light_total' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='span3'>
-                                <label class='distance'>Center</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='directional_bright_light_center' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'></div>
-                            <div class='row-fluid clearfix'>
-                                <div class='alert alert-danger wrong_number_alert_bright hidden' role='alert'>
-                                    <p>Please enter a number between 0-360.</p>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'>
-                                <div class='span6'>
-                                    <p class='description'>Total size of the Field of Light.</p>
-                                </div>
-                                <div class='span6'>
-                                    <p class='description'>50% of Light is before the Center, 50% is after.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row-fluid clearfix">
-                            <div class="span8">
-                                <label class="light_title">Light Color</label>
-                            </div>
-                            <div class="span4 dyn_fog_switch">
-                                <input class="dyn_fog_light_color colorpicker" type="text" value="transparent" style="display: none;">
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class='total_light'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Total Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='total_light_input' disabled type='number' value='0'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Amount of light emitting from this token.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='token_light'>
-                        <div aria-expanded='false' class='span8' data-target='.collapse_dyn_fog_advance' data-toggle='collapse' style='display:flex'>
-                            <p class='token_light_title' style='flex:1'>Advanced Settings</p>
-                            <i aria-expanded='false' class='fa fa-chevron-up collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
-                            <i aria-expanded='false' class='fa fa-chevron-down collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
-                        </div>
-                        <div class='dyn_fog_light' style='padding-top: 10px;'></div>
-                        <div class='total_light collapse collapse_dyn_fog_advance'>
-                            <div class='row-fluid clearfix'>
-                                <div class='span8'>
-                                    <p class='light_title'>Light Multiplier</p>
-                                </div>
-                                <div class='span4 dyn_fog_switch'>
-                                    <div class='form-group'>
-                                        <div class='input-group'>
-                                            <input class='light_multi_input' min='1' type='number' value='100'>
-                                            <span class='input-group-addon'>%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'>
-                                <div class='span8'>
-                                    <p class='description'>This changes the effective radius of light for this player. A setting of 200% will let this player see light from twice it’s set radius.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-        </script>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+													<$ }); $>
+											</select>
+										</label>
+									</div>
+								</div>
+								<div class='col tokeneditor__dropdown d-grid'>
+									<div class='dropdown keep-open'>
+										<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+											<span class='sr-only'>bar 1 player permissions menu</span>
+											<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+												<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+											</svg>
+										</button>
+										<ul aria-labelledby='dLabel' class='bar1 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+											<h4>Player Permissions</h4>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='show players bar 1'>
+														<input class='showplayers_bar1' type='checkbox' value=''>
+														See
+													</label>
+												</div>
+											</li>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='allow players to edit bar 1'>
+														<input class='playersedit_bar1' type='checkbox' value=''>
+														Edit
+													</label>
+												</div>
+											</li>
+											<li class='dropdown-item'>
+												<label class='bar_val_permission'>
+													Text Overlay:
+													<select class='bar1options'>
+														<option value='hidden'>
+															Hidden
+														</option>
+														<option selected value='editors'>
+															Visible to Editors
+														</option>
+														<option value='everyone'>
+															Visible to Everyone
+														</option>
+													</select>
+												</label>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class='tokeneditor__row tokeneditor__row--bar d-grid'>
+								<div class='col tokeneditor__bar-inputs d-grid'>
+									<div class='tokeneditor__subheader align-items-center d-grid'>
+										<span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar2_color')$>'></span>
+										<h4>Bar 2</h4>
+									</div>
+									<div class='tokeneditor__container align-items-center d-grid'>
+										<div class='tokeneditor__border'>
+											<label title='enter bar 2 value'>
+												<input class='bar2_value' placeholder='Value' type='text'>
+											</label>
+										</div>
+										<span>/</span>
+										<div class='tokeneditor__border'>
+											<label title='enter bar 2 maximum value'>
+												<input class='bar2_max' placeholder='Max' type='text'>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class='col tokeneditor__bar-select align-items-center'>
+									<div class='tokeneditor__subheader help-icon'>
+										<h4 class='text-capitalize'>attribute</h4>
+									</div>
+									<div class='tokeneditor__container'>
+										<label title='select a character sheet attribute to link to bar 2'>
+											<span class='sr-only'>select a character sheet attribute to link to bar 2</span>
+											<select class='bar2_link'>
+												<option value=''>None</option>
+												<$ _.each(this.availAttribs(), function(attrib) { $>
+												<option value="<$!attrib.id$>"><$!attrib.name$>
+													<$ }); $>
+											</select>
+										</label>
+									</div>
+								</div>
+								<div class='col tokeneditor__dropdown d-grid'>
+									<div class='dropdown keep-open'>
+										<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+											<span class='sr-only'>bar 2 player permissions menu</span>
+											<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+												<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+											</svg>
+										</button>
+										<ul aria-labelledby='dLabel' class='bar2 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+											<h4>Player Permissions</h4>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='show players bar 2'>
+														<input class='showplayers_bar2' type='checkbox' value=''>
+														See
+													</label>
+												</div>
+											</li>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='allow players to edit bar 2'>
+														<input class='playersedit_bar2' type='checkbox' value=''>
+														Edit
+													</label>
+												</div>
+											</li>
+											<li class='dropdown-item'>
+												<label class='bar_val_permission'>
+													Text Overlay:
+													<select class='bar2options'>
+														<option value='hidden'>
+															Hidden
+														</option>
+														<option selected value='editors'>
+															Visible to Editors
+														</option>
+														<option value='everyone'>
+															Visible to Everyone
+														</option>
+													</select>
+												</label>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class='tokeneditor__row tokeneditor__row--bar d-grid'>
+								<div class='col tokeneditor__bar-inputs d-grid'>
+									<div class='tokeneditor__subheader align-items-center d-grid'>
+										<span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar3_color')$>'></span>
+										<h4>Bar 3</h4>
+									</div>
+									<div class='tokeneditor__container align-items-center d-grid'>
+										<div class='tokeneditor__border'>
+											<label title='enter bar 3 value'>
+												<input class='bar3_value' placeholder='Value' type='text'>
+											</label>
+										</div>
+										<span>/</span>
+										<div class='tokeneditor__border'>
+											<label title='enter bar 3 maximum value'>
+												<input class='bar3_max' placeholder='Max' type='text'>
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class='col tokeneditor__bar-select align-items-center'>
+									<div class='tokeneditor__subheader help-icon'>
+										<h4 class='text-capitalize'>attribute</h4>
+									</div>
+									<div class='tokeneditor__container'>
+										<label title='select a character sheet attribute to link to bar 3'>
+											<span class='sr-only'>select a character sheet attribute to link to bar 3</span>
+											<select class='bar3_link'>
+												<option value=''>None</option>
+												<$ _.each(this.availAttribs(), function(attrib) { $>
+												<option value="<$!attrib.id$>"><$!attrib.name$>
+													<$ }); $>
+											</select>
+										</label>
+									</div>
+								</div>
+								<div class='col tokeneditor__dropdown d-grid'>
+									<div class='dropdown keep-open'>
+										<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+											<span class='sr-only'>bar 3 player permissions menu</span>
+											<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+												<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+											</svg>
+										</button>
+										<ul aria-labelledby='dLabel' class='bar3 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+											<h4>Player Permissions</h4>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='show players bar 3'>
+														<input class='showplayers_bar3' type='checkbox' value=''>
+														See
+													</label>
+												</div>
+											</li>
+											<li class='dropdown-item'>
+												<div class='checkbox'>
+													<label title='allow players to edit bar 3'>
+														<input class='playersedit_bar3' type='checkbox' value=''>
+														Edit
+													</label>
+												</div>
+											</li>
+											<li class='dropdown-item'>
+												<label class='bar_val_permission'>
+													Text Overlay:
+													<select class='bar3options'>
+														<option value='hidden'>
+															Hidden
+														</option>
+														<option selected value='editors'>
+															Visible to Editors
+														</option>
+														<option value='everyone'>
+															Visible to Everyone
+														</option>
+													</select>
+												</label>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<!-- Token Tooltip -->
+					<div class='tokendescription w-100'>
+						<div class='w-100 d-inline-flex flex-wrap tokeneditor__container tokeneditor__tooltip-title'>
+							<div class='flex-col'>
+								<div class='tokeneditor__header w-100'>
+									<h3 class='page_title text-capitalize'>Tooltip</h3>
+								</div>
+							</div>
+							<div class='tokeneditor__container-tooltip tooltip_disable_box'>
+								<div class='d-flex justify-content-center align-items-center'>
+									<label class='sr-only' for='token-general-description-toggle'>show tooltip on token</label>
+									<input class='show_tooltip' id='token-general-tooltip-toggle' type='checkbox' value='1'>
+								</div>
+								<h4 class='text-capitalize'>Show</h4>
+							</div>
+						</div>
+					</div>
+					<div class='tokeneditor__row'>
+						<div class='tokeneditor__container'>
+							<div class='d-flex'>
+								<textarea class='token-tooltip' id='token-general-description' maxlength='150' type='text'></textarea>
+							</div>
+						</div>
+					</div>
+					<br>
+					<small>
+						<span class='tooltip-count'>0</span>
+						/150
+					</small>
+					<hr>
+					<!-- Token Bar Options -->
+					<div class='tokenbaroptions w-100'>
+						<div class='tokeneditor__header w-100'>
+							<h3 class='page_title text-capitalize'>token bar options</h3>
+						</div>
+						<div class='w-100 d-inline-flex flex-wrap'>
+							<div class='tokeneditor__col'>
+								<div class='tokeneditor__subheader help-icon'>
+									<h4 class='text-capitalize'>location</h4>
+									<a class='showtip pictos' title='&lt;b&gt;Above:&lt;/b&gt; &lt;br&gt; All bars are above the token. (Default for new games) &lt;br&gt; &lt;b&gt;Top Overlapping:&lt;/b&gt; &lt;br&gt; The bottom-most bar overlaps the top of the token. Other bars float above it. &lt;br&gt; &lt;b&gt;Bottom Overlapping:&lt;/b&gt; &lt;br&gt; Bars fill the token from the bottom up. &lt;br&gt; &lt;b&gt;Below:&lt;/b&gt; &lt;br&gt; All bars are below the token.'>?</a>
+								</div>
+								<div class='tokeneditor__container player-permissions'>
+									<div class='permission_section barLocation'>
+										<label class='movable_token_bar' title='select the token bar location'>
+											<span class='sr-only'>select the token bar location</span>
+											<select class='token_bar_location'>
+												<option selected value='above'>
+													Above
+												</option>
+												<option value='overlap_top'>
+													Top Overlapping
+												</option>
+												<option value='overlap_bottom'>
+													Bottom Overlapping
+												</option>
+												<option value='below'>
+													Below
+												</option>
+											</select>
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class='tokeneditor__col'>
+								<div class='tokeneditor__subheader help-icon'>
+									<h4 class='text-capitalize'>style</h4>
+									<a class='showtip pictos' title='&lt;b&gt;Standard:&lt;/b&gt;&lt;br&gt; Full sized token bar, displays text overlays. &lt;br&gt; &lt;b&gt;Compact:&lt;/b&gt; &lt;br&gt;Narrow token bars. No text overlay.'>?</a>
+								</div>
+								<div class='tokeneditor__container player-permissions'>
+									<div class='permission_section barLocation tokenbaroptions__style d-grid'>
+										<label class='compact_bar align-items-center' title='Standard token bar style'>
+											<input checked name='barStyle' type='radio' value='standard'>
+											<span class='sr-only'>choose token bar style</span>
+											Standard
+										</label>
+										<label class='compact_bar align-items-center' title='Compact token bar style'>
+											<span class='sr-only'>choose token bar style</span>
+											<input name='barStyle' type='radio' value='compact'>
+											Compact
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<!-- Token Aura -->
+					<div class='tokenaura w-100'>
+						<div class='tokeneditor__header w-100'>
+							<h3 class='page_title text-capitalize'>token aura</h3>
+						</div>
+						<div class='w-100 d-inline-flex flex-wrap'>
+							<div class='tokeneditor__col'>
+								<div class='tokenaura__header d-grid'>
+									<div class='tokeneditor__subheader'>
+										<h4 class='text-capitalize'>Aura 1</h4>
+									</div>
+									<div class='tokeneditor__dropdown d-grid'>
+										<div class='dropdown keep-open dropup'>
+											<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+												<span class='sr-only'>aura 1 player permissions menu</span>
+												<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+													<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+												</svg>
+											</button>
+											<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
+												<h4>Player Permissions</h4>
+												<li class='dropdown-item'>
+													<div class='checkbox'>
+														<label title='show players aura 1'>
+															<input class='showplayers_aura1' type='checkbox' value=''>
+															See
+														</label>
+													</div>
+												</li>
+												<li class='dropdown-item'>
+													<div class='checkbox'>
+														<label title='allow players to edit aura 1'>
+															<input class='playersedit_aura1' type='checkbox' value=''>
+															Edit
+														</label>
+													</div>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class='tokenaura__container d-grid'>
+									<!-- Token Aura Diameter -->
+									<div class='tokenaura__diameter'>
+										<div class='tokeneditor__subheader'>
+											<h4 class='text-capitalize'>diameter</h4>
+										</div>
+										<div class='tokeneditor__container tokeneditor__border'>
+											<label title='input aura 1 diameter'>
+												<input class='aura1_radius' type='text'>
+											</label>
+											<div class='disable_box d-block'>
+												<$!window.Campaign.activePage().get("scale_units")$>
+											</div>
+										</div>
+									</div>
+									<!-- Token Aura Shape -->
+									<div class='tokenaura__shape'>
+										<div class='tokeneditor__subheader'>
+											<h4 class='text-capitalize'>shape</h4>
+										</div>
+										<div class='tokeneditor__container'>
+											<label title='select aura 1 shape'>
+												<select class='aura1_options text-capitalize'>
+													<option selected value='circle'>circle</option>
+													<option value='square'>square</option>
+												</select>
+											</label>
+										</div>
+									</div>
+									<!-- Token Aura Tint Color -->
+									<div class='tokeneditor__tint'>
+										<div class='tokeneditor__subheader'>
+											<h4 class='text-capitalize'>tint color</h4>
+										</div>
+										<div class='tokeneditor__container'>
+											<input class='aura1_color colorpicker' type='text'>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='tokeneditor__col'>
+								<div class='tokenaura__header d-grid'>
+									<div class='tokeneditor__subheader'>
+										<h4 class='text-capitalize'>Aura 2</h4>
+									</div>
+									<div class='tokeneditor__dropdown d-grid'>
+										<div class='dropdown keep-open dropup'>
+											<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+												<span class='sr-only'>aura 2 player permissions menu</span>
+												<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+													<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+												</svg>
+											</button>
+											<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
+												<h4>Player Permissions</h4>
+												<li class='dropdown-item'>
+													<div class='checkbox'>
+														<label title='show players aura 2'>
+															<input class='showplayers_aura2' type='checkbox' value=''>
+															See
+														</label>
+													</div>
+												</li>
+												<li class='dropdown-item'>
+													<div class='checkbox'>
+														<label title='allow players to edit aura 2'>
+															<input class='playersedit_aura2' type='checkbox' value=''>
+															Edit
+														</label>
+													</div>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class='tokenaura__container d-grid'>
+									<!-- Token Aura Diameter -->
+									<div class='tokenaura__diameter'>
+										<div class='tokeneditor__subheader'>
+											<h4 class='text-capitalize'>diameter</h4>
+										</div>
+										<div class='tokeneditor__container tokeneditor__border'>
+											<label title='input aura 2 diameter'>
+												<input class='aura2_radius' type='text'>
+											</label>
+											<div class='disable_box d-block'>
+												<$!window.Campaign.activePage().get("scale_units")$>
+											</div>
+										</div>
+									</div>
+									<!-- Token Aura Shape -->
+									<div class='tokenaura__shape'>
+										<div class='tokeneditor__subheader'>
+											<h4 class='text-capitalize'>shape</h4>
+										</div>
+										<div class='tokeneditor__container'>
+											<label title='select aura 2 shape'>
+												<select class='aura2_options text-capitalize'>
+													<option selected value='circle'>circle</option>
+													<option value='square'>square</option>
+												</select>
+											</label>
+										</div>
+									</div>
+									<!-- Token Aura Tint Color -->
+									<div class='tokeneditor__tint'>
+										<div class='tokeneditor__subheader'>
+											<h4 class='text-capitalize'>tint color</h4>
+										</div>
+										<div class='tokeneditor__container'>
+											<input class='aura2_color colorpicker' type='text'>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- GM Notes -->
+				<div class='notes tab-pane'>
+					<div class='tokeneditor__header'>
+						<h3 class='d-inline'>GM Notes</h3>
+						<span>(Only visible to GMs)</span>
+					</div>
+					<div>
+						<textarea class='gmnotes summernote'></textarea>
+					</div>
+				</div>
+				<!-- Legacy Lighting -->
+				<div class='advanced tab-pane'>
+					<div class='row-fluid'>
+						<div class='emits-light'>
+							<h4>Emits Light</h4>
+							<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+								<input class='light_radius' type='text'>
+								<$!window.Campaign.activePage().get("scale_units")$>.
+								<input class='light_dimradius' type='text'>
+								<$!window.Campaign.activePage().get("scale_units")$>.
+								<input class='light_angle' placeholder='360' type='text'>
+								<span style='font-size: 2.0em;'>&deg;</span>
+							</div>
+							<span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
+							<div class='inlineinputs' style='margin-top: 5px;'>
+								<label style='margin-left: 7px;'>
+									<input class='light_otherplayers' type='checkbox'>
+									All Players See Light
+								</label>
+							</div>
+							<div class='inlineinputs' style='margin-top: 2px;'>
+								<label style='margin-left: 7px;'>
+									<input class='light_hassight' type='checkbox'>
+									Has Sight
+								</label>
+								<span style="margin-left: 9px; margin-right: 28px;">/</span>
+								Angle:
+								<input class='light_losangle' placeholder='360' type='text'>
+								<span style='font-size: 2.0em;'>&deg;</span>
+							</div>
+							<div class='inlineinputs' style='margin-left: 90px; margin-top: 5px;'>
+								<span style="margin-left: 8px; margin-right: 12px;">/</span>
+								Multiplier:
+								<input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
+							</div>
+							<h4>Advanced Fog of War</h4>
+							<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+								<input class='advfow_viewdistance' type='text'>
+								<$!window.Campaign.activePage().get("scale_units")$>.
+							</div>
+							<span style='color: #888; padding-left: 5px;'>Reveal Distance</span>
+						</div>
+					</div>
+					<div class='alert alert-info' role='alert' style='margin-top: 5%'>
+						<p><strong>Legacy</strong> - in the coming months, Advanced Fog of War and Dynamic Lighting will be replaced with Updated Dynamic Lighting.</p>
+					</div>
+				</div>
+				<!-- Updated Dynamic Lighting -->
+				<div class='prototype tab-pane'>
+					<div class='alert alert-info' role='alert'>
+						<p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other. Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
+					</div>
+					<div class='token_vision'>
+						<p class='token_vision_title'>Token Vision</p>
+						<div class='dyn_fog_vision' style='padding-top: 10px;'>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='vision_title'>Vision</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<label class='switch'>
+										<input class='dyn_fog_emits_vision feature_toggle' type='checkbox'>
+										<span class='slider round'></span>
+										</input>
+									</label>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='description'>Gives the ability to see, if there is light or if Night Vision is enabled. Tokens with vision can see to the edge of the available light.</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='hidden'>
+										<input class='dyn_fog_vision_range' type='number'>
+										<input class='dyn_fog_dim_vision_range' type='number'>
+									</div>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class='dyn_fog_dark_vision' style='padding-top: 10px;'>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='vision_title'>Night Vision</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<label class='switch'>
+										<input class='dyn_fog_emits_dark_vision feature_toggle' data-target='.dark_vision_input' data-toggle='toggle' type='checkbox'>
+										<span class='slider round'></span>
+										</input>
+									</label>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span12'>
+									<p class='description'>Give this token the ability to see without any light.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element dark_vision_input'>
+								<div class='span8'>
+									<label class='distance'>Night Vision Distance</label>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='dyn_fog_dark_vision_range' min='0' type='number'>
+											<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='alert alert-danger negative_number_alert_night_vision hidden' role='alert'>
+									<p>Please enter a positive number.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element dark_vision_input'>
+								<div class='span8'>
+									<label class='vision-color'>Tint Color</label>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<input class='dyn_fog_dark_vision_color colorpicker' type='text'>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element dark_vision_input' style='padding-top: 10px'>
+								<div class='span8'>
+									<label>Night Vision Effect</label>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='form-group' style='float:right;'>
+										<div class='input-group'>
+											<label class='dyn_fog_dropdown'>
+												<select class='dyn_fog_dark_vision_effect form-control'>
+													<option value=''>None</option>
+													<option value='Nocturnal'>Nocturnal</option>
+													<option value='Dimming'>Dimming</option>
+												</select>
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element dark_vision_input dyn_fog_dark_fx_dimming_row hidden' style='padding-top: 10px'>
+								<div class='span8'>
+									<label class='dyn_fog_dark_vision_color'>Dimming Start</label>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='dyn_fog_dark_vision_effect_dimming' max='100' min='0' step='0.01' type='number' value='5'>
+											<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='alert alert-danger negative_number_alert_night_vision_dimming hidden' role='alert'>
+									<p>Please enter a positive number.</p>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class='limit_field_of_vision hidden' style='padding-top: 10px;'>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='vision_title'>Limit Field of Vision</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<label class='switch'>
+										<input class='field_of_vision feature_toggle' data-target='.field_of_vision_inputs' data-toggle='toggle' type='checkbox'>
+										<span class='slider round'></span>
+										</input>
+									</label>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span12'>
+									<p class='description'>Limit the field revealed for the token.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element field_of_vision_inputs'>
+								<div class='span3'>
+									<label class='distance'>Total</label>
+								</div>
+								<div class='span3 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='field_of_vision_total' max='360' min='0' type='number'>
+											<span class='input-group-addon'>&deg;</span>
+										</div>
+									</div>
+								</div>
+								<div class='span3'>
+									<label class='distance'>Center</label>
+								</div>
+								<div class='span3 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='field_of_vision_center' max='360' min='0' type='number'>
+											<span class='input-group-addon'>&deg;</span>
+										</div>
+									</div>
+								</div>
+								<div class='row-fluid clearfix'></div>
+								<div class='row-fluid clearfix'>
+									<div class='alert alert-danger wrong_number_alert_vision hidden' role='alert'>
+										<p>Please enter a number between 0-360.</p>
+									</div>
+								</div>
+								<div class='row-fluid clearfix'>
+									<div class='span6'>
+										<p class='description'>Total size of the Field of Vision.</p>
+									</div>
+									<div class='span6'>
+										<p class='description'>50% of Vision is before the Center, 50% is after.</p>
+									</div>
+								</div>
+							</div>
+							<hr>
+						</div>
+					</div>
+					<div class='token_light'>
+						<p class='token_light_title'>Token Emits Light</p>
+						<div class='dyn_fog_light' style='padding-top: 10px;'>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='light_title'>Bright Light</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<label class='switch'>
+										<input class='dyn_fog_emits_light feature_toggle' data-target='.bright_light_input' data-toggle='toggle' type='checkbox'>
+										<span class='slider round'></span>
+										</input>
+									</label>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='description'>Makes the token emit Bright Light. Enable this to set its Distance.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element bright_light_input'>
+								<div class='span8'>
+									<label class='distance'>Bright Light Distance</label>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='dyn_fog_light_range' min='0' type='number'>
+											<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='alert alert-danger negative_number_alert_bright_light hidden' role='alert'>
+									<p>Please enter a positive number.</p>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class='dyn_fog_dim_light' style='padding-top: 10px;'>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='light_title'>Low Light</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<label class='switch'>
+										<input class='dyn_fog_emits_dim_light feature_toggle' data-target='.low_light_input' data-toggle='toggle' type='checkbox'>
+										<span class='slider round'></span>
+										</input>
+									</label>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='description'>Makes the token emit Low Light, in addition to any Bright Light set above. Enable this to set its Distance.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element low_light_input'>
+								<div class='span8'>
+									<label class='distance'>Low Light Distance</label>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='dyn_fog_dim_light_range' min='0' type='number'>
+											<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element low_light_input'>
+								<div class='span8'>
+									<label class='distance'>Brightness</label>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group flex-group'>
+											<img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
+											<input class='dyn_fog_dim_light_opacity flex-item' max='1' min='0.2' step='0.05' type='range'>
+											<img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='alert alert-danger negative_number_alert_dim_light hidden' role='alert'>
+									<p>Please enter a positive number.</p>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class='directional_bright_light hidden' style='padding-top: 10px;'>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='light_title'>Directional Light</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<label class='switch'>
+										<input class='directional_bright_light_toggle feature_toggle' data-target='.directional_bright_light_inputs' data-toggle='toggle' type='checkbox'>
+										<span class='slider round'></span>
+										</input>
+									</label>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span12'>
+									<p class='description'>Set the direction of the Light emitting from this token.</p>
+								</div>
+							</div>
+							<div class='row-fluid clearfix toggle-element directional_bright_light_inputs'>
+								<div class='span3'>
+									<label class='distance'>Total</label>
+								</div>
+								<div class='span3 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='directional_bright_light_total' max='360' min='0' type='number'>
+											<span class='input-group-addon'>&deg;</span>
+										</div>
+									</div>
+								</div>
+								<div class='span3'>
+									<label class='distance'>Center</label>
+								</div>
+								<div class='span3 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='directional_bright_light_center' max='360' min='0' type='number'>
+											<span class='input-group-addon'>&deg;</span>
+										</div>
+									</div>
+								</div>
+								<div class='row-fluid clearfix'></div>
+								<div class='row-fluid clearfix'>
+									<div class='alert alert-danger wrong_number_alert_bright hidden' role='alert'>
+										<p>Please enter a number between 0-360.</p>
+									</div>
+								</div>
+								<div class='row-fluid clearfix'>
+									<div class='span6'>
+										<p class='description'>Total size of the Field of Light.</p>
+									</div>
+									<div class='span6'>
+										<p class='description'>50% of Light is before the Center, 50% is after.</p>
+									</div>
+								</div>
+							</div>
+							<hr>
+							<div class="row-fluid clearfix">
+								<div class="span8">
+									<label class="light_title">Light Color</label>
+								</div>
+								<div class="span4 dyn_fog_switch">
+									<input class="dyn_fog_light_color colorpicker" type="text" value="transparent" style="display: none;">
+								</div>
+							</div>
+							<hr>
+						</div>
+						<div class='total_light'>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='light_title'>Total Light</p>
+								</div>
+								<div class='span4 dyn_fog_switch'>
+									<div class='form-group'>
+										<div class='input-group'>
+											<input class='total_light_input' disabled type='number' value='0'>
+											<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<p class='description'>Amount of light emitting from this token.</p>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class='token_light'>
+							<div aria-expanded='false' class='span8' data-target='.collapse_dyn_fog_advance' data-toggle='collapse' style='display:flex'>
+								<p class='token_light_title' style='flex:1'>Advanced Settings</p>
+								<i aria-expanded='false' class='fa fa-chevron-up collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
+								<i aria-expanded='false' class='fa fa-chevron-down collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
+							</div>
+							<div class='dyn_fog_light' style='padding-top: 10px;'></div>
+							<div class='total_light collapse collapse_dyn_fog_advance'>
+								<div class='row-fluid clearfix'>
+									<div class='span8'>
+										<p class='light_title'>Light Multiplier</p>
+									</div>
+									<div class='span4 dyn_fog_switch'>
+										<div class='form-group'>
+											<div class='input-group'>
+												<input class='light_multi_input' min='1' type='number' value='100'>
+												<span class='input-group-addon'>%</span>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class='row-fluid clearfix'>
+									<div class='span8'>
+										<p class='description'>This changes the effective radius of light for this player. A setting of 200% will let this player see light from twice it’s set radius.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLTokenEditor);
@@ -10330,9 +9745,373 @@ function initHTMLPageSettings () {
 	d20plus.html = d20plus.html || {};
 
 	// no mods; just switched in to grant full features to non-pro
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettings = `
-        <div class='legacy-lighting tab-pane'>
+	d20plus.html.pageSettings = `
+	<div class='legacy-lighting tab-pane'>
+		<!-- BEGIN MOD -->
+		<strong style="display: block; margin-bottom: 10px;">
+			<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+			Requires a paid Roll20 subscription or all players to use a betteR20 script
+		</strong>
+		<hr>
+		<!-- END MOD -->
+		<div class='lighting_feature showtip' data-feature_enabled='showdarkness' id='fog_settings' title='Enabling Fog of War will disable Updated Dynamic Lighting'>
+			<label class='feature_name'>
+				<strong>Fog of War</strong>
+			</label>
+			<div class='feature_options'>
+				<input class='darknessenabled feature_enabled' type='checkbox' value='1'>
+				<label class='checkbox'>&nbsp; Enabled</label>
+			</div>
+		</div>
+		<hr>
+		<div class='lighting_feature' data-feature_enabled='adv_fow_enabled' id='afow_settings'>
+			<label class='feature_name'>
+				<strong>Advanced Fog of War</strong>
+			</label>
+			<div class='feature_options'>
+				<input class='advancedfowenabled feature_enabled showtip' type='checkbox' value='1'>
+				<label class='checkbox'>&nbsp; Enabled</label>
+				<div class='subsettings'>
+					<div>
+						<input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>
+						<label class='checkbox'>&nbsp; Show Grid</label>
+					</div>
+					<div>
+						<input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>
+						<label class='checkbox'>&nbsp; Dim Light Reveals</label>
+					</div>
+					<div>
+						<input class='showtip' id='afow_gm_see_all' title='By default, Advanced Fog of War is only revealed by tokens with sight that are controlled by at least one player.&lt;br&gt;This option allows tokens with sight which are not controlled by anyone to reveal Advanced Fog of War for the GM only.' type='checkbox' value='0'>
+						<label class='checkbox'>&nbsp; All Tokens Reveal (GM)</label>
+					</div>
+					<div id='afow_grid_size' style='width: 180px; line-height: 30px;'>
+						<span id='cell_measurement'>Cell Width:</span>
+						<input type="number" class="advancedfowgridsize units" value="<$!this.model.get("adv_fow_grid_size")$>" />
+						<br>
+						<span>x 70 px =</span>
+						<input type="number" class="px_advancedfowgridsize pixels" value="<$!this.model.get("adv_fow_grid_size")*70$>" />
+						<span>px<sup>*</sup></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='lighting_feature' data-feature_enabled='showlighting' id='dynamic_lighting_settings'>
+			<label class='feature_name'>
+				<strong>Dynamic Lighting</strong>
+			</label>
+			<div class='feature_options'>
+				<input class='lightingenabled feature_enabled showtip' type='checkbox' value='1'>
+				<label class='checkbox'>&nbsp; Enabled</label>
+				<div class='subsettings'>
+					<div>
+						<input class='lightenforcelos showtip' title='Player&#39;s line of sight set by what tokens they can control.' type='checkbox' value='1'>
+						<label class='checkbox'>&nbsp; Enforce Line of Sight</label>
+					</div>
+					<div>
+						<input class='lightingupdate' type='checkbox' value='1'>
+						<label class='checkbox'>&nbsp; Only Update on Drop</label>
+					</div>
+					<div>
+						<input class='lightglobalillum showtip' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>
+						<label class='checkbox'>&nbsp; Global Illumination</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr>
+		<div class='alert alert-info' role='alert'>
+			<p><strong>Legacy</strong> - in the coming months, Advanced Fog of War and Dynamic Lighting will be replaced with Updated Dynamic Lighting.</p>
+		</div>
+		<hr>
+		<div id='gm_darkness_opacity'>
+			<label class='feature_name'>
+				<strong>Darkness Opacity (GM)</strong>
+			</label>
+			<div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
+		</div>
+	</div>
+
+	<div class='pagedetails tab-pane' style='display:block;'>
+		<!-- * SIZE */ -->
+		<div class='size_settings' id='size_settings'>
+			<div class='pagedetails__header'>
+				<h3 class='page_title'>Size</h3>
+			</div>
+			<div class='pagedetails__subheader'>
+				<h4>Width</h4>
+			</div>
+			<div class='pagedetails__container grid_settings-input--list input-group'>
+				<div class='pagedetails-input size_settings-input'>
+					<div>
+						<label class='sr-only' for='page-size-width-input'>enter a custom page width in pixels</label>
+						<input id="page-size-width-input" type="number" class="width units page_setting_item" value="<$!this.model.get("width")$>" />
+					</div>
+					<div class='disable_box'>px</div>
+				</div>
+				<div class='col pagedetails-symbol'>
+					<span class='page_setting_item'>X</span>
+				</div>
+				<div class='pagedetails-input size_settings-input'>
+					<div>
+						<label class='sr-only' for='page-size-width-multiplier'>custom page width will be multiplied by 70</label>
+						<input id='page-size-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
+					</div>
+					<div class='disable_box'>px</div>
+				</div>
+				<div class='col pagedetails-symbol'>
+					<span class='page_setting_item'>=</span>
+				</div>
+				<div class='pagedetails-input size_settings-input'>
+					<div>
+						<label class='sr-only' for='page-size-width-total'>total page width in pixels after being multiplied by 70</label>
+						<input id='page-size-width-total' type="number" class="px_width pixels page_setting_item" value="<$!this.model.get("width")*70$>" />
+					</div>
+					<div class='disable_box'>px</div>
+				</div>
+			</div>
+			<div class='pagedetails__subheader'>
+				<h4>Height</h4>
+			</div>
+			<div class='pagedetails__container grid_settings-input--list input-group'>
+				<div class='pagedetails-input size_settings-input'>
+					<div>
+						<label class='sr-only' for='page-size-height-input'>enter a custom page height in pixels</label>
+						<input id="page-size-height-input" type="number" class="height units page_setting_item" value="<$!this.model.get("height")$>" />
+					</div>
+					<div class='disable_box'>px</div>
+				</div>
+				<div class='col pagedetails-symbol'>
+					<span class='page_setting_item'>X</span>
+				</div>
+				<div class='pagedetails-input size_settings-input'>
+					<div>
+						<label class='sr-only' for='page-size-height-multiplier'>custom page height will be multiplied by 70</label>
+						<input id='page-size-height-multiplier' type="text" value="70" class="page_setting_item" disabled>
+					</div>
+					<div class='disable_box'>px</div>
+				</div>
+				<div class='col pagedetails-symbol'>
+					<span class='page_setting_item'>=</span>
+				</div>
+				<div class='pagedetails-input size_settings-input'>
+					<div>
+						<label class='sr-only' for='page-size-height-total'>total page height in pixels after being multiplied by 70</label>
+						<input id='page-size-height-total' type="number" class="px_height pixels page_setting_item" value="<$!this.model.get("height")*70$>" />
+					</div>
+					<div class='disable_box'>px</div>
+				</div>
+			</div>
+			<div class='fine-print text-muted'>
+				<p>The height and width are true to size when zoom is set to 100%.</p>
+			</div>
+		</div>
+		<hr>
+		<!-- * BACKGROUND */ -->
+		<div class='background_settings'>
+			<div class='pagedetails__header'>
+				<h3 class='page_title'>Background</h3>
+			</div>
+			<div class='pagedetails__subheader'>
+				<h4>Color</h4>
+			</div>
+			<input class='pagebackground' type='text'>
+		</div>
+		<hr>
+		<!-- * SCALE */ -->
+		<div class='scale_settings'>
+			<div class='pagedetails__header'>
+				<h3 class='page_title'>Scale</h3>
+			</div>
+			<div class='pagedetails__subheader'>
+				<h4 class='text-capitalize'>grid cell distance</h4>
+			</div>
+			<div class='pagedetails__container'>
+				<div class='pagedetails-input scale_settings-input'>
+					<div>
+						<label class='sr-only' for='page-scale-grid-cell-distance'>enter a custom distance for each grid cell</label>
+						<input id='page-scale-grid-cell-distance' type="number" class="scale_number" value="<$!this.model.get("scale_number")$>" />
+					</div>
+					<div class='scale_settings-select'>
+						<label class='sr-only' for='page-scale-grid-cell-label-select'>choose a label for your grid cells</label>
+						<select class='scale_units' id='page-scale-grid-cell-label-select'>
+							<option value='ft'>ft.</option>
+							<option value='m'>m.</option>
+							<option value='km'>km.</option>
+							<option value='mi'>mi.</option>
+							<option value='in'>in.</option>
+							<option value='cm'>cm.</option>
+							<option value='un'>un.</option>
+							<option value='hex'>hex</option>
+							<option value='sq'>sq.</option>
+							<option value='custom'>Custom</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class='hidden' id='custom_scale_units'>
+				<div class='pagedetails__subheader'>
+					<h4>custom label</h4>
+				</div>
+				<div class='pagedetails__container'>
+					<div class='pagedetails-input custom_scale_units-input'>
+						<label class='sr-only' for='page-scale-grid-cell-custom-label'>enter a custom label for your grid cells</label>
+						<input id="page-scale-grid-cell-custom-label" type="text" value="<$!this.model.get("scale_units")$>" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<hr>
+		<!-- * GRID */ -->
+		<div class='grid_settings' data-feature_enabled='showgrid' id='grid_settings'>
+			<div class='row'>
+				<div class='col-xs-7 pagedetails__header'>
+					<h3 class='page_title'>Grid</h3>
+				</div>
+				<div class='col-xs-3 grid_switch'>
+					<label class='switch'>
+						<label class='sr-only' for='page-grid-display-toggle'>toggle the page grid</label>
+						<input class='gridenabled feature_enabled' id='page-grid-display-toggle' type='checkbox' value='1'>
+						<span class='slider round'></span>
+						</input>
+					</label>
+				</div>
+			</div>
+			<div class='grid_subsettings' id='grid_subsettings'>
+				<div class='pagedetails__container'>
+					<div class='pagedetails__subheader'>
+						<h4>Type</h4>
+					</div>
+					<div class='grid_settings-select'>
+						<label class='sr-only' for='gridtype'>select the grid type</label>
+						<select id='gridtype'>
+							<option selected value='square'>Square</option>
+							<option value='hex'>Hex (V)</option>
+							<option value='hexr'>Hex (H)</option>
+						</select>
+					</div>
+				</div>
+				<div class='pagedetails__container grid_settings-row--hex flex-wrap align-items-center' id='hexlabels'>
+					<div class='col-xs-7 pagedetails__subheader'>
+						<h4>show hex labels</h4>
+					</div>
+					<div class='col-xs-3 grid_switch'>
+						<label class='switch'>
+							<label class='sr-only' for='page-grid-hex-label-toggle'>toggle display labels inside of hexes</label>
+							<input class='gridlabels' id='page-grid-hex-label-toggle' type='checkbox' value='1'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+				<div class='pagedetails__subheader help-icon'>
+					<h4>Measurement</h4>
+					<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039674913-Ruler' target='_blank' title='Controls how diagonal cells are measured.'>?</a>
+				</div>
+				<div class='pagedetails__container'>
+					<div class='grid_settings-select'>
+						<select id='diagonaltype'>
+							<option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
+							<option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
+							<option class='squareonly' value='manhattan'>Manhattan</option>
+							<option class='hexonly' value='hex'>Hex Path</option>
+							<option value='pythagorean'>Euclidean</option>
+						</select>
+					</div>
+				</div>
+				<div class='pagedetails__subheader help-icon'>
+					<h4>Cell Width</h4>
+					<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039675373-Page-Settings' target='_blank' title='The number of cells per 70 pixels in your grid. Ex .5 = 35 pixels per cell.'>?</a>
+				</div>
+				<div class='pagedetails__container grid_settings-input--list'>
+					<div class='pagedetails-input grid_settings-input'>
+						<label class='sr-only' for='page-grid-cell-width-input'>enter a custom cell width</label>
+						<input id="page-grid-cell-width-input" type="number" class="grid-cell-width snappingincrement units" value="<$!this.model.get("snapping_increment")$>" />
+					</div>
+					<div class='col pagedetails-symbol'>
+						<span class='page_setting_item'>X</span>
+					</div>
+					<div class='pagedetails-input grid_settings-input'>
+						<div>
+							<label class='sr-only' for='page-grid-cell-width-multiplier'>custom cell width will be multiplied by 70</label>
+							<input id='page-grid-cell-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
+						</div>
+						<div class='disable_box'>px</div>
+					</div>
+					<div class='col pagedetails-symbol'>
+						<span class='page_setting_item'>=</span>
+					</div>
+					<div class='pagedetails-input grid_settings-input'>
+						<div>
+							<label class='sr-only' for='page-grid-cell-width-total'>total cell width in pixels after being multiplied by 70</label>
+							<input id="page-grid-cell-width-total" type="number" class="px_snappingincrement pixels" value="<$!this.model.get("snapping_increment")*70$>" />
+						</div>
+						<div class='disable_box'>px</div>
+					</div>
+				</div>
+				<div class='pagedetails__subheader'>
+					<h4>Color</h4>
+				</div>
+				<div class='pagedetails__container'>
+					<div>
+						<input class='gridcolor' type='text'>
+					</div>
+				</div>
+				<div class='pagedetails__subheader'>
+					<h4>Opacity</h4>
+				</div>
+				<div class='pagedetails__container'>
+					<div>
+						<div class='gridopacity'></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- * Movement */ -->
+		<hr>
+		<div class='restrict_movement lighting_feature' id='restict_movement'>
+			<div class='pagedetails__header w-100'>
+				<h3 class='page_title text-capitalize'>movement</h3>
+			</div>
+			<div class='pagedetails__container d-flex'>
+				<div class='row'>
+					<div class='col-xs-7 pagedetails__subheader'>
+						<h4 class='text-capitalize'>dynamic lighting barriers restrict movement</h4>
+					</div>
+					<div class='col-xs-3 grid_switch'>
+						<label class='switch'>
+							<label class='sr-only' for='page-dynamic-lighting-line-restrict-movement-toggle'>dynamic lighting lines restrict movement toggle</label>
+							<input class='lightrestrictmove showtip' id='page-dynamic-lighting-line-restrict-movement-toggle' title='Don&#39;t allow player tokens to move through Dynamic Lighting walls. Can be enabled even if lighting is not used.' type='checkbox' value='1'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- * Audio */ -->
+		<hr>
+		<div class='audio_settings'>
+			<div class='pagedetails__header'>
+				<h3 class='page_title'>Audio</h3>
+			</div>
+			<div class='pagedetails__subheader'>
+				<h4>Play on Load</h4>
+			</div>
+			<div class='pagedetails__container'>
+				<label class='sr-only' for='page-audio-play-on-load'>play an audio track on page load</label>
+				<select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
+			</div>
+		</div>
+		<!-- * Archive & Delete Buttons */ -->
+		<hr>
+		<div class='page-buttons d-flex flex-wrap justify-content-between'>
+			<button class='archive btn'>Archive Page</button>
+			<button class='delete btn btn-danger'>Delete Page</button>
+		</div>
+	</div>
+
+	<div class='lighting tab-pane'>
+		<div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
 			<!-- BEGIN MOD -->
 			<strong style="display: block; margin-bottom: 10px;">
 				<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
@@ -10340,489 +10119,122 @@ function initHTMLPageSettings () {
 			</strong>
 			<hr>
 			<!-- END MOD -->
-            <div class='lighting_feature showtip' data-feature_enabled='showdarkness' id='fog_settings' title='Enabling Fog of War will disable Updated Dynamic Lighting'>
-                <label class='feature_name'>
-                    <strong>Fog of War</strong>
-                </label>
-                <div class='feature_options'>
-                    <input class='darknessenabled feature_enabled' type='checkbox' value='1'>
-                    <label class='checkbox'>&nbsp; Enabled</label>
-                </div>
-            </div>
-            <hr>
-            <div class='lighting_feature' data-feature_enabled='adv_fow_enabled' id='afow_settings'>
-                <label class='feature_name'>
-                    <strong>Advanced Fog of War</strong>
-                </label>
-                <div class='feature_options'>
-                    <input class='advancedfowenabled feature_enabled showtip' type='checkbox' value='1'>
-                    <label class='checkbox'>&nbsp; Enabled</label>
-                    <div class='subsettings'>
-                        <div>
-                            <input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>
-                            <label class='checkbox'>&nbsp; Show Grid</label>
-                        </div>
-                        <div>
-                            <input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>
-                            <label class='checkbox'>&nbsp; Dim Light Reveals</label>
-                        </div>
-                        <div>
-                            <input class='showtip' id='afow_gm_see_all' title='By default, Advanced Fog of War is only revealed by tokens with sight that are controlled by at least one player.&lt;br&gt;This option allows tokens with sight which are not controlled by anyone to reveal Advanced Fog of War for the GM only.' type='checkbox' value='0'>
-                            <label class='checkbox'>&nbsp; All Tokens Reveal (GM)</label>
-                        </div>
-                        <div id='afow_grid_size' style='width: 180px; line-height: 30px;'>
-                            <span id='cell_measurement'>Cell Width:</span>
-                            <input type="number" class="advancedfowgridsize units" value="<$!this.model.get("adv_fow_grid_size")$>" />
-                            <br>
-                            <span>x 70 px =</span>
-                            <input type="number" class="px_advancedfowgridsize pixels" value="<$!this.model.get("adv_fow_grid_size")*70$>" />
-                            <span>px<sup>*</sup></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class='lighting_feature' data-feature_enabled='showlighting' id='dynamic_lighting_settings'>
-                <label class='feature_name'>
-                    <strong>Dynamic Lighting</strong>
-                </label>
-                <div class='feature_options'>
-                    <input class='lightingenabled feature_enabled showtip' type='checkbox' value='1'>
-                    <label class='checkbox'>&nbsp; Enabled</label>
-                    <div class='subsettings'>
-                        <div>
-                            <input class='lightenforcelos showtip' title='Player&#39;s line of sight set by what tokens they can control.' type='checkbox' value='1'>
-                            <label class='checkbox'>&nbsp; Enforce Line of Sight</label>
-                        </div>
-                        <div>
-                            <input class='lightingupdate' type='checkbox' value='1'>
-                            <label class='checkbox'>&nbsp; Only Update on Drop</label>
-                        </div>
-                        <div>
-                            <input class='lightglobalillum showtip' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>
-                            <label class='checkbox'>&nbsp; Global Illumination</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class='alert alert-info' role='alert'>
-                <p><strong>Legacy</strong> - in the coming months, Advanced Fog of War and Dynamic Lighting will be replaced with Updated Dynamic Lighting.</p>
-            </div>
-            <hr>
-            <div id='gm_darkness_opacity'>
-                <label class='feature_name'>
-                    <strong>Darkness Opacity (GM)</strong>
-                </label>
-                <div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
-            </div>
-        </div>
-
-        <div class='pagedetails tab-pane' style='display:block;'>
-            <!-- * SIZE */ -->
-            <div class='size_settings' id='size_settings'>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Size</h3>
-                </div>
-                <div class='pagedetails__subheader'>
-                    <h4>Width</h4>
-                </div>
-                <div class='pagedetails__container grid_settings-input--list input-group'>
-                    <div class='pagedetails-input size_settings-input'>
-                        <div>
-                            <label class='sr-only' for='page-size-width-input'>enter a custom page width in pixels</label>
-                            <input id="page-size-width-input" type="number" class="width units page_setting_item" value="<$!this.model.get("width")$>" />
-                        </div>
-                        <div class='disable_box'>px</div>
-                    </div>
-                    <div class='col pagedetails-symbol'>
-                        <span class='page_setting_item'>X</span>
-                    </div>
-                    <div class='pagedetails-input size_settings-input'>
-                        <div>
-                            <label class='sr-only' for='page-size-width-multiplier'>custom page width will be multiplied by 70</label>
-                            <input id='page-size-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
-                        </div>
-                        <div class='disable_box'>px</div>
-                    </div>
-                    <div class='col pagedetails-symbol'>
-                        <span class='page_setting_item'>=</span>
-                    </div>
-                    <div class='pagedetails-input size_settings-input'>
-                        <div>
-                            <label class='sr-only' for='page-size-width-total'>total page width in pixels after being multiplied by 70</label>
-                            <input id='page-size-width-total' type="number" class="px_width pixels page_setting_item" value="<$!this.model.get("width")*70$>" />
-                        </div>
-                        <div class='disable_box'>px</div>
-                    </div>
-                </div>
-                <div class='pagedetails__subheader'>
-                    <h4>Height</h4>
-                </div>
-                <div class='pagedetails__container grid_settings-input--list input-group'>
-                    <div class='pagedetails-input size_settings-input'>
-                        <div>
-                            <label class='sr-only' for='page-size-height-input'>enter a custom page height in pixels</label>
-                            <input id="page-size-height-input" type="number" class="height units page_setting_item" value="<$!this.model.get("height")$>" />
-                        </div>
-                        <div class='disable_box'>px</div>
-                    </div>
-                    <div class='col pagedetails-symbol'>
-                        <span class='page_setting_item'>X</span>
-                    </div>
-                    <div class='pagedetails-input size_settings-input'>
-                        <div>
-                            <label class='sr-only' for='page-size-height-multiplier'>custom page height will be multiplied by 70</label>
-                            <input id='page-size-height-multiplier' type="text" value="70" class="page_setting_item" disabled>
-                        </div>
-                        <div class='disable_box'>px</div>
-                    </div>
-                    <div class='col pagedetails-symbol'>
-                        <span class='page_setting_item'>=</span>
-                    </div>
-                    <div class='pagedetails-input size_settings-input'>
-                        <div>
-                            <label class='sr-only' for='page-size-height-total'>total page height in pixels after being multiplied by 70</label>
-                            <input id='page-size-height-total' type="number" class="px_height pixels page_setting_item" value="<$!this.model.get("height")*70$>" />
-                        </div>
-                        <div class='disable_box'>px</div>
-                    </div>
-                </div>
-                <div class='fine-print text-muted'>
-                    <p>The height and width are true to size when zoom is set to 100%.</p>
-                </div>
-            </div>
-            <hr>
-            <!-- * BACKGROUND */ -->
-            <div class='background_settings'>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Background</h3>
-                </div>
-                <div class='pagedetails__subheader'>
-                    <h4>Color</h4>
-                </div>
-                <input class='pagebackground' type='text'>
-            </div>
-            <hr>
-            <!-- * SCALE */ -->
-            <div class='scale_settings'>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Scale</h3>
-                </div>
-                <div class='pagedetails__subheader'>
-                    <h4 class='text-capitalize'>grid cell distance</h4>
-                </div>
-                <div class='pagedetails__container'>
-                    <div class='pagedetails-input scale_settings-input'>
-                        <div>
-                            <label class='sr-only' for='page-scale-grid-cell-distance'>enter a custom distance for each grid cell</label>
-                            <input id='page-scale-grid-cell-distance' type="number" class="scale_number" value="<$!this.model.get("scale_number")$>" />
-                        </div>
-                        <div class='scale_settings-select'>
-                            <label class='sr-only' for='page-scale-grid-cell-label-select'>choose a label for your grid cells</label>
-                            <select class='scale_units' id='page-scale-grid-cell-label-select'>
-                                <option value='ft'>ft.</option>
-                                <option value='m'>m.</option>
-                                <option value='km'>km.</option>
-                                <option value='mi'>mi.</option>
-                                <option value='in'>in.</option>
-                                <option value='cm'>cm.</option>
-                                <option value='un'>un.</option>
-                                <option value='hex'>hex</option>
-                                <option value='sq'>sq.</option>
-                                <option value='custom'>Custom</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class='hidden' id='custom_scale_units'>
-                    <div class='pagedetails__subheader'>
-                        <h4>custom label</h4>
-                    </div>
-                    <div class='pagedetails__container'>
-                        <div class='pagedetails-input custom_scale_units-input'>
-                            <label class='sr-only' for='page-scale-grid-cell-custom-label'>enter a custom label for your grid cells</label>
-                            <input id="page-scale-grid-cell-custom-label" type="text" value="<$!this.model.get("scale_units")$>" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <!-- * GRID */ -->
-            <div class='grid_settings' data-feature_enabled='showgrid' id='grid_settings'>
-                <div class='row'>
-                    <div class='col-xs-7 pagedetails__header'>
-                        <h3 class='page_title'>Grid</h3>
-                    </div>
-                    <div class='col-xs-3 grid_switch'>
-                        <label class='switch'>
-                            <label class='sr-only' for='page-grid-display-toggle'>toggle the page grid</label>
-                            <input class='gridenabled feature_enabled' id='page-grid-display-toggle' type='checkbox' value='1'>
-                            <span class='slider round'></span>
-                            </input>
-                        </label>
-                    </div>
-                </div>
-                <div class='grid_subsettings' id='grid_subsettings'>
-                    <div class='pagedetails__container'>
-                        <div class='pagedetails__subheader'>
-                            <h4>Type</h4>
-                        </div>
-                        <div class='grid_settings-select'>
-                            <label class='sr-only' for='gridtype'>select the grid type</label>
-                            <select id='gridtype'>
-                                <option selected value='square'>Square</option>
-                                <option value='hex'>Hex (V)</option>
-                                <option value='hexr'>Hex (H)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class='pagedetails__container grid_settings-row--hex flex-wrap align-items-center' id='hexlabels'>
-                        <div class='col-xs-7 pagedetails__subheader'>
-                            <h4>show hex labels</h4>
-                        </div>
-                        <div class='col-xs-3 grid_switch'>
-                            <label class='switch'>
-                                <label class='sr-only' for='page-grid-hex-label-toggle'>toggle display labels inside of hexes</label>
-                                <input class='gridlabels' id='page-grid-hex-label-toggle' type='checkbox' value='1'>
-                                <span class='slider round'></span>
-                                </input>
-                            </label>
-                        </div>
-                    </div>
-                    <div class='pagedetails__subheader help-icon'>
-                        <h4>Measurement</h4>
-                        <a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039674913-Ruler' target='_blank' title='Controls how diagonal cells are measured.'>?</a>
-                    </div>
-                    <div class='pagedetails__container'>
-                        <div class='grid_settings-select'>
-                            <select id='diagonaltype'>
-                                <option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
-                                <option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
-                                <option class='squareonly' value='manhattan'>Manhattan</option>
-                                <option class='hexonly' value='hex'>Hex Path</option>
-                                <option value='pythagorean'>Euclidean</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class='pagedetails__subheader help-icon'>
-                        <h4>Cell Width</h4>
-                        <a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039675373-Page-Settings' target='_blank' title='The number of cells per 70 pixels in your grid. Ex .5 = 35 pixels per cell.'>?</a>
-                    </div>
-                    <div class='pagedetails__container grid_settings-input--list'>
-                        <div class='pagedetails-input grid_settings-input'>
-                            <label class='sr-only' for='page-grid-cell-width-input'>enter a custom cell width</label>
-                            <input id="page-grid-cell-width-input" type="number" class="grid-cell-width snappingincrement units" value="<$!this.model.get("snapping_increment")$>" />
-                        </div>
-                        <div class='col pagedetails-symbol'>
-                            <span class='page_setting_item'>X</span>
-                        </div>
-                        <div class='pagedetails-input grid_settings-input'>
-                            <div>
-                                <label class='sr-only' for='page-grid-cell-width-multiplier'>custom cell width will be multiplied by 70</label>
-                                <input id='page-grid-cell-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
-                            </div>
-                            <div class='disable_box'>px</div>
-                        </div>
-                        <div class='col pagedetails-symbol'>
-                            <span class='page_setting_item'>=</span>
-                        </div>
-                        <div class='pagedetails-input grid_settings-input'>
-                            <div>
-                                <label class='sr-only' for='page-grid-cell-width-total'>total cell width in pixels after being multiplied by 70</label>
-                                <input id="page-grid-cell-width-total" type="number" class="px_snappingincrement pixels" value="<$!this.model.get("snapping_increment")*70$>" />
-                            </div>
-                            <div class='disable_box'>px</div>
-                        </div>
-                    </div>
-                    <div class='pagedetails__subheader'>
-                        <h4>Color</h4>
-                    </div>
-                    <div class='pagedetails__container'>
-                        <div>
-                            <input class='gridcolor' type='text'>
-                        </div>
-                    </div>
-                    <div class='pagedetails__subheader'>
-                        <h4>Opacity</h4>
-                    </div>
-                    <div class='pagedetails__container'>
-                        <div>
-                            <div class='gridopacity'></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- * Movement */ -->
-            <hr>
-            <div class='restrict_movement lighting_feature' id='restict_movement'>
-                <div class='pagedetails__header w-100'>
-                    <h3 class='page_title text-capitalize'>movement</h3>
-                </div>
-                <div class='pagedetails__container d-flex'>
-                    <div class='row'>
-                        <div class='col-xs-7 pagedetails__subheader'>
-                            <h4 class='text-capitalize'>dynamic lighting barriers restrict movement</h4>
-                        </div>
-                        <div class='col-xs-3 grid_switch'>
-                            <label class='switch'>
-                                <label class='sr-only' for='page-dynamic-lighting-line-restrict-movement-toggle'>dynamic lighting lines restrict movement toggle</label>
-                                <input class='lightrestrictmove showtip' id='page-dynamic-lighting-line-restrict-movement-toggle' title='Don&#39;t allow player tokens to move through Dynamic Lighting walls. Can be enabled even if lighting is not used.' type='checkbox' value='1'>
-                                <span class='slider round'></span>
-                                </input>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- * Audio */ -->
-            <hr>
-            <div class='audio_settings'>
-                <div class='pagedetails__header'>
-                    <h3 class='page_title'>Audio</h3>
-                </div>
-                <div class='pagedetails__subheader'>
-                    <h4>Play on Load</h4>
-                </div>
-                <div class='pagedetails__container'>
-                    <label class='sr-only' for='page-audio-play-on-load'>play an audio track on page load</label>
-                    <select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
-                </div>
-            </div>
-            <!-- * Archive & Delete Buttons */ -->
-            <hr>
-            <div class='page-buttons d-flex flex-wrap justify-content-between'>
-                <button class='archive btn'>Archive Page</button>
-                <button class='delete btn btn-danger'>Delete Page</button>
-            </div>
-        </div>
-
-        <div class='lighting tab-pane'>
-            <div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
-				<!-- BEGIN MOD -->
-				<strong style="display: block; margin-bottom: 10px;">
-					<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
-					Requires a paid Roll20 subscription or all players to use a betteR20 script
-				</strong>
-				<hr>
-				<!-- END MOD -->
-                <div class='alert alert-info' role='alert'>
-                    <p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other.  Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
-                </div>
-                <div class='dyn_fog_settings'>
-                    <div class='row'>
-                        <div class='col-xs-6'>
-                            <p class='dynamic_lighting_title'>Dynamic Lighting</p>
-                        </div>
-                        <div class='col-xs-3 dyn_fog_switch'>
-                            <label class='switch'>
-                                <input class='dyn_fog_enabled feature_enabled' type='checkbox'>
-                                <span class='slider round'></span>
-                                </input>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class='explorer_mode'>
-                    <div class='row'>
-                        <div class='col-xs-6'>
-                            <p class='explorer_mode_title'>Explorer Mode</p>
-                        </div>
-                        <div class='col-xs-3 dyn_fog_switch'>
-                            <label class='switch'>
-                                <input class='dyn_fog_autofog_mode' type='checkbox'>
-                                <span class='slider round'></span>
-                                </input>
-                            </label>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col-xs-11'>
-                            <p class='description'>Reveals areas of the Map Layer that Players have already explored. Does not reveal areas that were revealed when Explorer Mode is disabled. Previously called "Advanced Fog of War".</p>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class='daylight_mode'>
-                    <div class='row'>
-                        <div class='col-xs-6'>
-                            <p class='explorer_mode_title'>Daylight Mode</p>
-                        </div>
-                        <div class='col-xs-3 dyn_fog_switch'>
-                            <label class='switch'>
-                                <input class='dyn_fog_global_illum' type='checkbox'>
-                                <span class='slider round'></span>
-                                </input>
-                            </label>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col-xs-11'>
-                            <p class='description'>Adds Light to the whole Page, good for a sunny day or well lit room or GMs who don't want to place a bunch of torches. Previously called "Global Illumination".</p>
-                        </div>
-                    </div>
-                    <div class='row-fluid clearfix daylight_slider_row' style='display: none;'>
-                        <div class='span2' style='float:left'>
-                            <label class='distance'>Brightness</label>
-                        </div>
-                        <div class='span8 dyn_fog_switch' style='float:right'>
-                            <div class='form-group'>
-                                <div class='input-group flex-group'>
-                                    <img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
-                                    <input class='dyn_fog_daylight_slider flex-item' max='1' min='0.05' step='0.05' type='range' value='1'>
-                                    <img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class='update_on_drop_mode'>
-                    <div class='row'>
-                        <div class='col-xs-6'>
-                            <p class='update_on_drop_title'>Update when Token Drop</p>
-                        </div>
-                        <div class='col-xs-3 dyn_fog_switch'>
-                            <label class='switch'>
-                                <input class='dyn_fog_update_on_drop' type='checkbox'>
-                                <span class='slider round'></span>
-                                </input>
-                            </label>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col-xs-11'>
-                            <p class='description'>When dragging and dropping a token, the lighting will only change after a player has dropped, not while dragging.</p>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class='gm_darkness_opacity'>
-                    <div class='row'>
-                        <div class='col-xs-12'>
-                            <p class='opacity_title'>GM Darkness Opacity</p>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col-xs-11'>
-                            <p class='description'>The GM can see through dark areas hidden from the Players when using Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.</p>
-                        </div>
-                    </div>
-                    <div class='row'>
-                        <div class='col-xs-8'>
-                            <div class='fogopacity'></div>
-                        </div>
-                        <div class='col-xs-1'>
-                            <input class='opacity_percentage' disabled type='text'>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            </div>
-        </div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+			<div class='alert alert-info' role='alert'>
+				<p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other. Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
+			</div>
+			<div class='dyn_fog_settings'>
+				<div class='row'>
+					<div class='col-xs-6'>
+						<p class='dynamic_lighting_title'>Dynamic Lighting</p>
+					</div>
+					<div class='col-xs-3 dyn_fog_switch'>
+						<label class='switch'>
+							<input class='dyn_fog_enabled feature_enabled' type='checkbox'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class='explorer_mode'>
+				<div class='row'>
+					<div class='col-xs-6'>
+						<p class='explorer_mode_title'>Explorer Mode</p>
+					</div>
+					<div class='col-xs-3 dyn_fog_switch'>
+						<label class='switch'>
+							<input class='dyn_fog_autofog_mode' type='checkbox'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-xs-11'>
+						<p class='description'>Reveals areas of the Map Layer that Players have already explored. Does not reveal areas that were revealed when Explorer Mode is disabled. Previously called "Advanced Fog of War".</p>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class='daylight_mode'>
+				<div class='row'>
+					<div class='col-xs-6'>
+						<p class='explorer_mode_title'>Daylight Mode</p>
+					</div>
+					<div class='col-xs-3 dyn_fog_switch'>
+						<label class='switch'>
+							<input class='dyn_fog_global_illum' type='checkbox'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-xs-11'>
+						<p class='description'>Adds Light to the whole Page, good for a sunny day or well lit room or GMs who don't want to place a bunch of torches. Previously called "Global Illumination".</p>
+					</div>
+				</div>
+				<div class='row-fluid clearfix daylight_slider_row' style='display: none;'>
+					<div class='span2' style='float:left'>
+						<label class='distance'>Brightness</label>
+					</div>
+					<div class='span8 dyn_fog_switch' style='float:right'>
+						<div class='form-group'>
+							<div class='input-group flex-group'>
+								<img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
+								<input class='dyn_fog_daylight_slider flex-item' max='1' min='0.05' step='0.05' type='range' value='1'>
+								<img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class='update_on_drop_mode'>
+				<div class='row'>
+					<div class='col-xs-6'>
+						<p class='update_on_drop_title'>Update when Token Drop</p>
+					</div>
+					<div class='col-xs-3 dyn_fog_switch'>
+						<label class='switch'>
+							<input class='dyn_fog_update_on_drop' type='checkbox'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-xs-11'>
+						<p class='description'>When dragging and dropping a token, the lighting will only change after a player has dropped, not while dragging.</p>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class='gm_darkness_opacity'>
+				<div class='row'>
+					<div class='col-xs-12'>
+						<p class='opacity_title'>GM Darkness Opacity</p>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-xs-11'>
+						<p class='description'>The GM can see through dark areas hidden from the Players when using Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.</p>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-xs-8'>
+						<div class='fogopacity'></div>
+					</div>
+					<div class='col-xs-1'>
+						<input class='opacity_percentage' disabled type='text'>
+					</div>
+				</div>
+			</div>
+			<hr>
+		</div>
+	</div>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLPageSettings);
@@ -10831,159 +10243,138 @@ SCRIPT_EXTENSIONS.push(initHTMLPageSettings);
 function initHTMLroll20actionsMenu () {
 	d20plus.html = d20plus.html || {};
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.actionsMenu = `
-		<script id='tmpl_actions_menu' type='text/html'>
-			<div class='actions_menu d20contextmenu'>
-				<ul>
-					<$ if (Object.keys(this).length === 0) { $>
-						<li data-action-type='unlock-tokens'>Unlock...</li>
-					<$ } $>
-					<$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
-						<li class='head hasSub' data-action-type='takecard'>Take Card</li>
-						<li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
-					<$ } $>
-					<$ if(window.is_gm) { $>
-						<$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
-							<!-- BEGIN MOD -->
-							<li class='head hasSub' data-menuname='massroll'>
-								Mass Roll &raquo;
-								<ul class='submenu' data-menuname='massroll'>
-									<li class='head hasSub' data-action-type='rollinit'>Initiative</li>
-									<li class='head hasSub' data-action-type='rollsaves'>Save</li>
-									<li class='head hasSub' data-action-type='rollskills'>Skill</li>
-								</ul>
-							</li>
-							<!-- END MOD -->
-							<li class='head hasSub' data-action-type='addturn'>Add Turn</li>
+	d20plus.html.actionsMenu = `
+	<script id='tmpl_actions_menu' type='text/html'>
+		<div class='actions_menu d20contextmenu'>
+			<ul>
+				<$ if (Object.keys(this).length === 0) { $>
+				<li data-action-type='unlock-tokens'>Unlock...</li>
+				<$ } $>
+				<$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
+				<li class='head hasSub' data-action-type='takecard'>Take Card</li>
+				<li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
+				<$ } $>
+				<$ if(window.is_gm) { $>
+				<$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
+				<!-- BEGIN MOD -->
+				<li class='head hasSub' data-menuname='massroll'>
+					Mass Roll &raquo;
+					<ul class='submenu' data-menuname='massroll'>
+						<li class='head hasSub' data-action-type='rollinit'>Initiative</li>
+						<li class='head hasSub' data-action-type='rollsaves'>Save</li>
+						<li class='head hasSub' data-action-type='rollskills'>Skill</li>
+					</ul>
+				</li>
+				<!-- END MOD -->
+				<li class='head hasSub' data-action-type='addturn'>Add Turn</li>
+				<$ } $>
+				<!-- BEGIN MOD -->
+				<!-- <li class='head'>Edit</li> -->
+				<!-- END MOD -->
+				<$ if(this.view) { $>
+				<li data-action-type='delete'>Delete</li>
+				<li data-action-type='copy'>Copy</li>
+				<$ } $>
+				<li data-action-type='paste'>Paste</li>
+				<!-- BEGIN MOD -->
+				<$ if(!this.view) { $>
+				<li data-action-type='undo'>Undo</li>
+				<$ } $>
+				<!-- END MOD -->
+
+				<!-- BEGIN MOD -->
+				<$ if(this.view) { $>
+				<li class='head hasSub' data-menuname='move'>
+					Move &raquo;
+					<ul class='submenu' data-menuname='move'>
+						<li data-action-type='tofront'>To Front</li>
+						<li data-action-type='forward-one'>Forward One
+							<!-- (B-F)-->
+						</li>
+						<li data-action-type='back-one'>Back One
+							<!-- (B-B)-->
+						</li>
+						<li data-action-type='toback'>To Back</li>
+					</ul>
+				</li>
+				<$ } $>
+
+				<li class='head hasSub' data-menuname='VeUtil'>
+					Utilities &raquo;
+					<ul class='submenu' data-menuname='VeUtil'>
+						<li data-action-type='util-scenes'>Start Scene</li>
+						<$ if(this.get && this.get("type") == "image") { $>
+						<div class="ctx__divider"></div>
+						<li data-action-type='token-animate'>Animate</li>
+						<li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>
+						<li data-action-type='token-light'>Set&nbsp;Light</li>
 						<$ } $>
-						<!-- BEGIN MOD -->
-						<!-- <li class='head'>Edit</li> -->
-						<!-- END MOD -->
+					</ul>
+				</li>
+				<!-- END MOD -->
+
+				<li class='head hasSub' data-menuname='advanced'>
+					Advanced &raquo;
+					<ul class='submenu' data-menuname='advanced'>
+						<li data-action-type='group'>Group</li>
+						<li data-action-type='ungroup'>Ungroup</li>
+						<$ if(this.get && this.get("type") == "image") { $>
+						<li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
+						<li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
+						<li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
+						<li data-action-type='setdimensions'>Set Dimensions</li>
+						<$ if(window.currentEditingLayer == "map") { $>
+						<li data-action-type='aligntogrid'>Align to Grid</li>
+						<$ } $>
+						<$ } $>
+
 						<$ if(this.view) { $>
-							<li data-action-type='delete'>Delete</li>
-							<li data-action-type='copy'>Copy</li>
+						<li data-action-type='lock-token'>Lock/Unlock Position</li>
 						<$ } $>
-						<li data-action-type='paste'>Paste</li>
+
+						<$ if(this.get && this.get("type") == "image") { $>
+						<li data-action-type='copy-tokenid'>View Token ID</li>
+						<$ } $>
+						<$ if(this.get && this.get("type") == "path") { $>
+						<li data-action-type='copy-pathid'>View Path ID</li>
+						<$ } $>
+					</ul>
+				</li>
+
+				<li class='head hasSub' data-menuname='positioning'>
+					Layer &raquo;
+					<ul class='submenu' data-menuname='positioning'>
+						<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'><span class="pictos ctx__layer-icon">@</span> Map Layer</li>
 						<!-- BEGIN MOD -->
-						<$ if(!this.view) { $>
-							<li data-action-type='undo'>Undo</li>
-						<$ } $>
+						<li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'><span class="pictos ctx__layer-icon">a</span> Background Layer</li>
 						<!-- END MOD -->
-
+						<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'><span class="pictos ctx__layer-icon">b</span> Token Layer</li>
 						<!-- BEGIN MOD -->
-						<$ if(this.view) { $>
-							<li class='head hasSub' data-menuname='move'>
-							Move &raquo;
-								<ul class='submenu' data-menuname='move'>
-									<li data-action-type='tofront'>To Front</li>
-									<li data-action-type='forward-one'>Forward One<!-- (B-F)--></li>
-									<li data-action-type='back-one'>Back One<!-- (B-B)--></li>
-									<li data-action-type='toback'>To Back</li>
-								</ul>
-							</li>
-						<$ } $>
-
-						<li class='head hasSub' data-menuname='VeUtil'>
-							Utilities &raquo;
-							<ul class='submenu' data-menuname='VeUtil'>
-								<li data-action-type='util-scenes'>Start Scene</li>
-								<$ if(this.get && this.get("type") == "image") { $>
-									<div class="ctx__divider"></div>
-									<li data-action-type='token-animate'>Animate</li>
-									<li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>
-									<li data-action-type='token-light'>Set&nbsp;Light</li>
-								<$ } $>
-							</ul>
-						</li>
+						<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'><span class="pictos ctx__layer-icon">B</span> Foreground Layer</li>
 						<!-- END MOD -->
+						<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'><span class="pictos ctx__layer-icon">E</span> GM Layer</li>
+						<li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'><span class="pictostwo ctx__layer-icon">r</span> Lighting Layer</li>
+						<!-- BEGIN MOD -->
+						<li data-action-type="tolayer_weather" class='<$ if(this && this.get && this.get("layer") == "weather") { $>active<$ } $>'><span class="pictos ctx__layer-icon">C</span> Weather Layer</li>
+						<!-- END MOD -->
+					</ul>
+				</li>
+				<$ } $>
 
-						<li class='head hasSub' data-menuname='advanced'>
-							Advanced &raquo;
-							<ul class='submenu' data-menuname='advanced'>
-								<li data-action-type='group'>Group</li>
-								<li data-action-type='ungroup'>Ungroup</li>
-								<$ if(this.get && this.get("type") == "image") { $>
-									<li class="<$ if (this && this.get("isdrawing")) { $>active<$ } $>" data-action-type="toggledrawing">Is Drawing</li>
-									<li class="<$ if (this && this.get("fliph")) { $>active<$ } $>" data-action-type="togglefliph">Flip Horizontal</li>
-									<li class="<$ if (this && this.get("flipv")) { $>active<$ } $>" data-action-type="toggleflipv">Flip Vertical</li>
-									<li data-action-type='setdimensions'>Set Dimensions</li>
-									<$ if(window.currentEditingLayer == "map") { $>
-										<li data-action-type='aligntogrid'>Align to Grid</li>
-									<$ } $>
-								<$ } $>
-
-								<$ if(this.view) { $>
-									<li data-action-type='lock-token'>Lock/Unlock Position</li>
-								<$ } $>
-
-								<$ if(this.get && this.get("type") == "image") { $>
-									<li data-action-type='copy-tokenid'>View Token ID</li>
-								<$ } $>
-								<$ if(this.get && this.get("type") == "path") { $>
-									<li data-action-type='copy-pathid'>View Path ID</li>
-								<$ } $>
-							</ul>
-						</li>
-
-						<li class='head hasSub' data-menuname='positioning'>
-							Layer &raquo;
-							<ul class='submenu' data-menuname='positioning'>
-								<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'><span class="pictos ctx__layer-icon">@</span> Map Layer</li>
-								<!-- BEGIN MOD -->
-								<li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'><span class="pictos ctx__layer-icon">a</span> Background Layer</li>
-								<!-- END MOD -->
-								<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'><span class="pictos ctx__layer-icon">b</span> Token Layer</li>
-								<!-- BEGIN MOD -->
-								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'><span class="pictos ctx__layer-icon">B</span> Foreground Layer</li>
-								<!-- END MOD -->
-								<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'><span class="pictos ctx__layer-icon">E</span> GM Layer</li>
-								<li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'><span class="pictostwo ctx__layer-icon">r</span> Lighting Layer</li>
-								<!-- BEGIN MOD -->
-								<li data-action-type="tolayer_weather" class='<$ if(this && this.get && this.get("layer") == "weather") { $>active<$ } $>'><span class="pictos ctx__layer-icon">C</span> Weather Layer</li>
-								<!-- END MOD -->
-							</ul>
-						</li>
-					<$ } $>
-
-					<!-- BEGIN MOD -->
-					<$ if(this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
-						<li class='head hasSub' data-menuname='view'>
-							Assign view &raquo;
-							<ul class='submenu' data-menuname='view'>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
-								<li data-action-type="assignview0" class='<$ if(this && this.get && this && this.get("bR20_view0")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views0Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views0Name')$> <$ } else { $> Default <$ } $></li>
-								<$ } $>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views1Enable')) { $>
-								<li data-action-type="assignview1" class='<$ if(this && this.get && this && this.get("bR20_view1")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views1Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views1Name')$> <$ } else { $> View 1 <$ } $></li>
-								<$ } $>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views2Enable')) { $>
-								<li data-action-type="assignview2" class='<$ if(this && this.get && this && this.get("bR20_view2")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views2Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views2Name')$> <$ } else { $> View 2 <$ } $></li>
-								<$ } $>
-								<$ if(this.view && d20.Campaign.activePage().get('bR20cfg_views3Enable')) { $>
-								<li data-action-type="assignview3" class='<$ if(this && this.get && this && this.get("bR20_view3")) { $>active<$ } $>'><span class="pictos ctx__layer-icon">P</span><$ if (d20.Campaign.activePage().get('bR20cfg_views3Name')) { $> <$!d20.Campaign.activePage().get('bR20cfg_views3Name')$> <$ } else { $> View 3 <$ } $></li>
-								<$ } $>
-							</ul>
-						</li>
-					<$ } $>
-					<!-- END MOD -->
-
-					<$ if(this.view && this.get && this.get("sides") !== "" && this.get("cardid") === "") { $>
-						<li class='head hasSub' data-menuname='mutliside'>
-							Multi-Sided &raquo;
-							<ul class='submenu' data-menuname='multiside'>
-								<li data-action-type='side_random'>Random Side</li>
-								<li data-action-type='side_choose'>Choose Side</li>
-								<li data-action-type='rollertokenresize'>Set Side Size</li>
-							</ul>
-						</li>
-					<$ } $>
-				</ul>
-			</div>
-		</script>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+				<$ if(this.view && this.get && this.get("sides") !== "" && this.get("cardid") === "") { $>
+				<li class='head hasSub' data-menuname='mutliside'>
+					Multi-Sided &raquo;
+					<ul class='submenu' data-menuname='multiside'>
+						<li data-action-type='side_random'>Random Side</li>
+						<li data-action-type='side_choose'>Choose Side</li>
+						<li data-action-type='rollertokenresize'>Set Side Size</li>
+					</ul>
+				</li>
+				<$ } $>
+			</ul>
+		</div>
+	</script>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLroll20actionsMenu);
@@ -10992,505 +10383,494 @@ SCRIPT_EXTENSIONS.push(initHTMLroll20actionsMenu);
 function initHTMLroll20EditorsMisc () {
 	d20plus.html = d20plus.html || {};
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.characterEditor = `
-		<script id="tmpl_charactereditor" type="text/html">
+	d20plus.html.characterEditor = `
+	<script id="tmpl_charactereditor" type="text/html">
 		<div class='dialog largedialog charactereditor' style='display: block;'>
-		<div class='tab-content'>
-		<div class='bioinfo tab-pane'>
-		<div class='row-fluid'>
-		<div class='span5'>
-		<label>
-		<strong>Avatar</strong>
-		</label>
-		<$ if(true) { $>
-		<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
-		<div class="status"></div>
-		<div class="inner">
-		<$ if(this.get("avatar") == "") { $>
-		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
-		<br /> or
-		<button class="btn">Click to Upload</button>
-		<input class="manual" type="file" />
-		<$ } else { $>
-		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-		<video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
-		<$ } else { $>
-		<img src="<$!this.get("avatar")$>" draggable="false" />
-		<$ } $>
-		<div class='remove'><a href='#'>Remove</a></div>
-		<$ } $>
+			<div class='tab-content'>
+				<div class='bioinfo tab-pane'>
+					<div class='row-fluid'>
+						<div class='span5'>
+							<label>
+								<strong>Avatar</strong>
+							</label>
+							<$ if(true) { $>
+							<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>" style="width: 95%;">
+								<div class="status"></div>
+								<div class="inner">
+									<$ if(this.get("avatar") == "") { $>
+									<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+									<br /> or
+									<button class="btn">Click to Upload</button>
+									<input class="manual" type="file" />
+									<$ } else { $>
+									<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+									<video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+									<$ } else { $>
+									<img src="<$!this.get("avatar")$>" draggable="false" />
+									<$ } $>
+									<div class='remove'><a href='#'>Remove</a></div>
+									<$ } $>
+								</div>
+							</div>
+							<$ } else { $>
+							<div class='avatar'>
+								<$ if(this.get("avatar") != "") { $>
+								<img src="<$!this.get("avatar")$>" draggable="false" />
+								<$ } $>
+							</div>
+							<$ } $>
+							<div class='clear'></div>
+							<!-- BEGIN MOD -->
+							<button class="btn character-image-by-url">Set Image from URL</button>
+							<div class='clear'></div>
+							<!-- END MOD -->
+							<label>
+								<strong>Default Token (Optional)</strong>
+								<a class='showtip pictos' title='The default token will be used when this character is dragged from the Journal Tab to the Virtual Tabletop. For regular 1x1 tokens representing this character, you may use images from your Art Library or computer. For larger tokens, create a token on the Virtual Tabletop and use &quot;Use Selected Token.&quot;'>?</a>
+							</label>
+							<div class="defaultToken dropbox <$! this.defaultTokenImage != "" ? "filled" : "" $>">
+								<div class="status"></div>
+								<div class="inner">
+									<$ if(this.defaultTokenImage == "") { $>
+									<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
+									<br /> or
+									<button class="btn">Click to Upload</button>
+									<input class="manual" type="file" />
+									<$ } else { $>
+									<$ if(/.+\\.webm(\\?.*)?$/i.test(this.defaultTokenImage)) { $>
+									<video src="<$!this.defaultTokenImage$>" draggable="false" muted autoplay loop />
+									<$ } else { $>
+									<img src="<$!this.defaultTokenImage$>" draggable="false" />
+									<$ } $>
+									<div class='remove'><a href='#'>Remove</a></div>
+									<$ } $>
+								</div>
+							</div>
+							<div class="default-token-buttons">
+								<$ if(window.is_gm) { $>
+								<button class='btn btn-primary edit-default-token'>Edit Token Properties</button>
+								<a class='showtip pictos' title='Edit the Token Settings for this character’s default token. Use &quot;Apply Token Defaults&quot; to apply these settings to any existing tokens on the Virtual Tabletop.'>?</a>
+								<$ } $>
+								<button class='btn use-selected-token'>Use Selected Token</button>
+								<a class='showtip pictos' title='Copy a snapshot of the selected token&#39;s image and settings as this character’s default token.'>?</a>
+								<$ if(window.is_gm) { $>
+								<button class='btn apply-token-defaults'>Apply Token Defaults</button>
+								<a class='showtip pictos' title='Update tokens where Represents Character is set to this character. All tokens representing this character across all pages will be overwritten.'>?</a>
+								<!-- BEGIN MOD -->
+								<button class="btn token-image-by-url">Set Token Image from URL</button>
+								<a class='showtip pictos' title='Update will only be visible upon re-opening the sheet.'>?</a>
+								<!-- END MOD -->
+								<$ } $>
+							</div>
+						</div>
+						<div class='span7'>
+							<label>
+								<strong>Name</strong>
+							</label>
+							<input class='name' data-test='character-edit-name' type='text'>
+							<div class='clear'></div>
+							<$ if(window.is_gm) { $>
+							<label>
+								<strong>In Player's Journals</strong>
+							</label>
+							<select class='inplayerjournals selectize' data-test='character-edit-in-journal' multiple='true' style='width: 100%;'>
+								<option value="all">All Players</option>
+								<$ window.Campaign.players.each(function(player) { $>
+								<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+								<$ }); $>
+							</select>
+							<div class='clear'></div>
+							<label>
+								<strong>Can Be Edited &amp; Controlled By</strong>
+							</label>
+							<select class='controlledby selectize' data-test='character-edit-controlledby' multiple='true' style='width: 100%;'>
+								<option value="all">All Players</option>
+								<$ window.Campaign.players.each(function(player) { $>
+								<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+								<$ }); $>
+							</select>
+							<div class='clear'></div>
+							<label>
+								<strong>Tags</strong>
+							</label>
+							<input class='tags'>
+							<div class='clear'></div>
+							<hr>
+							<button class='delete btn btn-danger' data-test='character-delete' style='float: right;'>
+								Delete
+							</button>
+							<button class='duplicate btn' data-test='character-duplicate' style='margin-right: 10px;'>
+								Duplicate
+							</button>
+							<button class='archive btn' data-test='character-archive'>
+								<$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
+							</button>
+							<div class='clear'></div>
+							<$ } $>
+							<div class='clear'></div>
+						</div>
+					</div>
+					<$ if(!window.ADVANCED_SHEET) { $>
+					<div class='row-fluid'>
+						<div class='span12'>
+							<hr>
+							<label>
+								<strong>Bio & Info</strong>
+							</label>
+							<textarea class='bio'></textarea>
+							<div class='clear'></div>
+							<$ if(window.is_gm) { $>
+							<label>
+								<strong>GM Notes (Only visible to GM)</strong>
+							</label>
+							<textarea class='gmnotes'></textarea>
+							<div class='clear'></div>
+							<$ } $>
+						</div>
+					</div>
+					<$ } $>
+				</div>
+			</div>
 		</div>
-		</div>
-		<$ } else { $>
-		<div class='avatar'>
-		<$ if(this.get("avatar") != "") { $>
-		<img src="<$!this.get("avatar")$>" draggable="false" />
-		<$ } $>
-		</div>
-		<$ } $>
-		<div class='clear'></div>
-		<!-- BEGIN MOD -->
-		<button class="btn character-image-by-url">Set Image from URL</button>
-		<div class='clear'></div>
-		<!-- END MOD -->
-		<label>
-		<strong>Default Token (Optional)</strong>
-		<a class='showtip pictos' title='The default token will be used when this character is dragged from the Journal Tab to the Virtual Tabletop. For regular 1x1 tokens representing this character, you may use images from your Art Library or computer. For larger tokens, create a token on the Virtual Tabletop and use &quot;Use Selected Token.&quot;'>?</a>
-		</label>
-		<div class="defaultToken dropbox <$! this.defaultTokenImage != "" ? "filled" : "" $>">
-		<div class="status"></div>
-		<div class="inner">
-		<$ if(this.defaultTokenImage == "") { $>
-		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file from your <br>Art Library or computer<small>(JPG, GIF, PNG, WEBM, WP4)</small></h4>
-		<br /> or
-		<button class="btn">Click to Upload</button>
-		<input class="manual" type="file" />
-		<$ } else { $>
-		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.defaultTokenImage)) { $>
-		<video src="<$!this.defaultTokenImage$>" draggable="false" muted autoplay loop />
-		<$ } else { $>
-		<img src="<$!this.defaultTokenImage$>" draggable="false" />
-		<$ } $>
-		<div class='remove'><a href='#'>Remove</a></div>
-		<$ } $>
-		</div>
-		</div>
-		<div class="default-token-buttons">
-		<$ if(window.is_gm) { $>
-		<button class='btn btn-primary edit-default-token'>Edit Token Properties</button>
-		<a class='showtip pictos' title='Edit the Token Settings for this character’s default token. Use &quot;Apply Token Defaults&quot; to apply these settings to any existing tokens on the Virtual Tabletop.'>?</a>
-		<$ } $>
-		<button class='btn use-selected-token'>Use Selected Token</button>
-		<a class='showtip pictos' title='Copy a snapshot of the selected token&#39;s image and settings as this character’s default token.'>?</a>
-		<$ if(window.is_gm) { $>
-		<button class='btn apply-token-defaults'>Apply Token Defaults</button>
-		<a class='showtip pictos' title='Update tokens where Represents Character is set to this character. All tokens representing this character across all pages will be overwritten.'>?</a>
-        <!-- BEGIN MOD -->
-        <button class="btn token-image-by-url">Set Token Image from URL</button>
-		<a class='showtip pictos' title='Update will only be visible upon re-opening the sheet.'>?</a>
-        <!-- END MOD -->
-		<$ } $>
-		</div>
-		</div>
-		<div class='span7'>
-		<label>
-		<strong>Name</strong>
-		</label>
-		<input class='name' data-test='character-edit-name' type='text'>
-		<div class='clear'></div>
-		<$ if(window.is_gm) { $>
-		<label>
-		<strong>In Player's Journals</strong>
-		</label>
-		<select class='inplayerjournals selectize' data-test='character-edit-in-journal' multiple='true' style='width: 100%;'>
-		<option value="all">All Players</option>
-		<$ window.Campaign.players.each(function(player) { $>
-		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
-		<$ }); $>
-		</select>
-		<div class='clear'></div>
-		<label>
-		<strong>Can Be Edited &amp; Controlled By</strong>
-		</label>
-		<select class='controlledby selectize' data-test='character-edit-controlledby' multiple='true' style='width: 100%;'>
-		<option value="all">All Players</option>
-		<$ window.Campaign.players.each(function(player) { $>
-		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
-		<$ }); $>
-		</select>
-		<div class='clear'></div>
-		<label>
-		<strong>Tags</strong>
-		</label>
-		<input class='tags'>
-		<div class='clear'></div>
-		<hr>
-		<button class='delete btn btn-danger' data-test='character-delete' style='float: right;'>
-		Delete
-		</button>
-		<button class='duplicate btn' data-test='character-duplicate' style='margin-right: 10px;'>
-		Duplicate
-		</button>
-		<button class='archive btn' data-test='character-archive'>
-		<$ if(this.get("archived")) { $>Restore from Archive<$ } else { $>Archive<$ } $>
-		</button>
-		<div class='clear'></div>
-		<$ } $>
-		<div class='clear'></div>
-		</div>
-		</div>
-		<$ if(!window.ADVANCED_SHEET) { $>
-		<div class='row-fluid'>
-		<div class='span12'>
-		<hr>
-		<label>
-		<strong>Bio & Info</strong>
-		</label>
-		<textarea class='bio'></textarea>
-		<div class='clear'></div>
-		<$ if(window.is_gm) { $>
-		<label>
-		<strong>GM Notes (Only visible to GM)</strong>
-		</label>
-		<textarea class='gmnotes'></textarea>
-		<div class='clear'></div>
-		<$ } $>
-		</div>
-		</div>
-		<$ } $>
-		</div>
-		</div>
-		</div>
-		</script>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	</script>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.handoutEditor = `
-<script id='tmpl_handouteditor' type='text/html'>
-  <div class='dialog largedialog handouteditor' style='display: block;'>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <label>
-          <strong>Name</strong>
-        </label>
-        <input class='name' type='text'>
-        <div class='clear'></div>
-        <$ if (window.is_gm) { $>
-        <label>
-          <strong>In Player's Journals</strong>
-        </label>
-        <select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Can Be Edited By</strong>
-        </label>
-        <select class='controlledby chosen' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Tags</strong>
-        </label>
-        <input class='tags'>
-        <div class='clear'></div>
-        <$ } $>
-      </div>
-    </div>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-        <div class="status"></div>
-        <div class="inner">
-          <$ if(this.get("avatar") == "") { $>
-          <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
-          <br /> or
-          <button class="btn">Choose a file...</button>
-          <input class="manual" type="file" />
-          <$ } else { $>
-          <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-          <video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
-          <$ } else { $>
-          <img src="<$!this.get("avatar")$>" />
-          <$ } $>
-          <div class='remove'><a href='#'>Remove</a></div>
-          <$ } $>
-        </div>
-      </div>
-      <div class='clear'></div>
-    </div>
-  </div>
-  <!-- BEGIN MOD -->
-  <div class='row-fluid'>
-  <button class="btn handout-image-by-url">Set Image from URL</button>
-  <div class='clear'></div>
-  </div>
-  <!-- END MOD -->
-  <div class='row-fluid'>
-    <div class='span12'>
-      <label>
-        <strong>Description & Notes</strong>
-      </label>
-      <textarea class='notes'></textarea>
-      <div class='clear'></div>
-      <$ if(window.is_gm) { $>
-      <label>
-        <strong>GM Notes (Only visible to GM)</strong>
-      </label>
-      <textarea class='gmnotes'></textarea>
-      <div class='clear'></div>
-      <hr>
-      <button class='delete btn btn-danger' style='float: right;'>
-        Delete Handout
-      </button>
-      <button class='duplicate btn' style='margin-right: 10px;'>
-        Duplicate
-      </button>
-      <button class='archive btn'>
-        <$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive<$ } $>
-      </button>
-      <div class='clear'></div>
-      <$ } $>
-    </div>
-  </div>
-  </div>
-</script>
-<script id='tmpl_handoutviewer' type='text/html'>
-  <div class='dialog largedialog handoutviewer' style='display: block;'>
-    <div style='padding: 10px;'>
-      <$ if(this.get("avatar") != "") { $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <div class='avatar'>
-            <a class="lightly" target="_blank" href="<$!(this.get("avatar").indexOf("d20.io/") !== -1 ? this.get("avatar").replace(/\\/med\\.(?!webm)/, "/max.") : this.get("avatar"))$>">
-            <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-            <video src="<$!this.get("avatar")$>" draggable="false" loop muted autoplay />
-            <$ } else { $>
-            <img src="<$!this.get("avatar")$>" draggable="false" />
-            <$ } $>
-            <div class='mag-glass pictos'>s</div></a>
-            </a>
-          </div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ } $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <div class='content note-editor notes'></div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ if(window.is_gm) { $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <hr>
-          <label>
-            <strong>GM Notes (Only visible to GM)</strong>
-          </label>
-          <div class='content note-editor gmnotes'></div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ } $>
-    </div>
-  </div>
-</script>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	d20plus.html.handoutEditor = `
+	<script id='tmpl_handouteditor' type='text/html'>
+		<div class='dialog largedialog handouteditor' style='display: block;'>
+			<div class='row-fluid'>
+				<div class='span12'>
+					<label>
+						<strong>Name</strong>
+					</label>
+					<input class='name' type='text'>
+					<div class='clear'></div>
+					<$ if (window.is_gm) { $>
+					<label>
+						<strong>In Player's Journals</strong>
+					</label>
+					<select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
+						<option value="all">All Players</option>
+						<$ window.Campaign.players.each(function(player) { $>
+						<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+						<$ }); $>
+					</select>
+					<div class='clear'></div>
+					<label>
+						<strong>Can Be Edited By</strong>
+					</label>
+					<select class='controlledby chosen' multiple='true' style='width: 100%;'>
+						<option value="all">All Players</option>
+						<$ window.Campaign.players.each(function(player) { $>
+						<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+						<$ }); $>
+					</select>
+					<div class='clear'></div>
+					<label>
+						<strong>Tags</strong>
+					</label>
+					<input class='tags'>
+					<div class='clear'></div>
+					<$ } $>
+				</div>
+			</div>
+			<div class='row-fluid'>
+				<div class='span12'>
+					<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+						<div class="status"></div>
+						<div class="inner">
+							<$ if(this.get("avatar") == "") { $>
+							<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+							<br /> or
+							<button class="btn">Choose a file...</button>
+							<input class="manual" type="file" />
+							<$ } else { $>
+							<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+							<video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+							<$ } else { $>
+							<img src="<$!this.get("avatar")$>" />
+							<$ } $>
+							<div class='remove'><a href='#'>Remove</a></div>
+							<$ } $>
+						</div>
+					</div>
+					<div class='clear'></div>
+				</div>
+			</div>
+			<!-- BEGIN MOD -->
+			<div class='row-fluid'>
+				<button class="btn handout-image-by-url">Set Image from URL</button>
+				<div class='clear'></div>
+			</div>
+			<!-- END MOD -->
+			<div class='row-fluid'>
+				<div class='span12'>
+					<label>
+						<strong>Description & Notes</strong>
+					</label>
+					<textarea class='notes'></textarea>
+					<div class='clear'></div>
+					<$ if(window.is_gm) { $>
+					<label>
+						<strong>GM Notes (Only visible to GM)</strong>
+					</label>
+					<textarea class='gmnotes'></textarea>
+					<div class='clear'></div>
+					<hr>
+					<button class='delete btn btn-danger' style='float: right;'>
+						Delete Handout
+					</button>
+					<button class='duplicate btn' style='margin-right: 10px;'>
+						Duplicate
+					</button>
+					<button class='archive btn'>
+						<$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive<$ } $>
+					</button>
+					<div class='clear'></div>
+					<$ } $>
+				</div>
+			</div>
+		</div>
+	</script>
+	<script id='tmpl_handoutviewer' type='text/html'>
+		<div class='dialog largedialog handoutviewer' style='display: block;'>
+			<div style='padding: 10px;'>
+				<$ if(this.get("avatar") != "") { $>
+				<div class='row-fluid'>
+					<div class='span12'>
+						<div class='avatar'>
+							<a class="lightly" target="_blank" href="<$!(this.get("avatar").indexOf("d20.io/") !== -1 ? this.get("avatar").replace(/\\/med\\.(?!webm)/, "/max.") : this.get("avatar"))$>">
+								<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+								<video src="<$!this.get("avatar")$>" draggable="false" loop muted autoplay />
+								<$ } else { $>
+								<img src="<$!this.get("avatar")$>" draggable="false" />
+								<$ } $>
+								<div class='mag-glass pictos'>s</div>
+							</a>
+							</a>
+						</div>
+						<div class='clear'></div>
+					</div>
+				</div>
+				<$ } $>
+				<div class='row-fluid'>
+					<div class='span12'>
+						<div class='content note-editor notes'></div>
+						<div class='clear'></div>
+					</div>
+				</div>
+				<$ if(window.is_gm) { $>
+				<div class='row-fluid'>
+					<div class='span12'>
+						<hr>
+						<label>
+							<strong>GM Notes (Only visible to GM)</strong>
+						</label>
+						<div class='content note-editor gmnotes'></div>
+						<div class='clear'></div>
+					</div>
+				</div>
+				<$ } $>
+			</div>
+		</div>
+	</script>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.deckEditor = `
-    <script id='tmpl_deckeditor' type='text/html'>
-      <div class='dialog largedialog deckeditor' style='display: block;'>
-        <label>Name</label>
-        <input class='name' type='text'>
-        <div class='clear' style='height: 14px;'></div>
-        <label>
-          <input class='showplayers' type='checkbox'>
-          Show deck to players?
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          <input class='playerscandraw' type='checkbox'>
-          Players can draw cards?
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          <input class='infinitecards' type='checkbox'>
-          Cards in deck are infinite?
-        </label>
-        <p class='infinitecardstype'>
-          <label>
-            <input name='infinitecardstype' type='radio' value='random'>
-            Always a random card
-          </label>
-          <label>
-            <input name='infinitecardstype' type='radio' value='cycle'>
-            Draw through deck, shuffle, repeat
-          </label>
-        </p>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          Allow choosing specific cards from deck:
-          <select class='deckpilemode'>
-            <option value='none'>Disabled</option>
-            <option value='choosebacks_gm'>GM Choose: Show Backs</option>
-            <option value='choosefronts_gm'>GM Choose: Show Fronts</option>
-            <option value='choosebacks'>GM + Players Choose: Show Backs</option>
-            <option value='choosefronts'>GM + Players Choose: Show Fronts</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          Discard Pile:
-          <select class='discardpilemode'>
-            <option value='none'>No discard pile</option>
-            <option value='choosebacks'>Choose: Show Backs</option>
-            <option value='choosefronts'>Choose: Show Fronts</option>
-            <option value='drawtop'>Draw most recent/top card</option>
-            <option value='drawbottom'>Draw oldest/bottom card</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <hr>
-        <strong>When played to the tabletop...</strong>
-        <div class='clear' style='height: 5px;'></div>
-        <label>
-          Played Facing:
-          <select class='cardsplayed' style='display: inline-block; width: auto; position: relative; top: 3px;'>
-            <option value='facedown'>Face Down</option>
-            <option value='faceup'>Face Up</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          Considered:
-          <select class='treatasdrawing' style='display: inline-block; width: auto; position: relative; top: 3px;'>
-            <option value='true'>Drawings (No Bubbles/Stats)</option>
-            <option value='false'>Tokens (Including Bubbles and Stats)</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <div class='inlineinputs'>
-          Card Size:
-          <input class='defaultwidth' type='text'>
-          x
-          <input class='defaultheight' type='text'>
-          px
-        </div>
-        <small style='text-align: left; padding-left: 135px; width: auto;'>Leave blank for default auto-sizing</small>
-        <div class='clear' style='height: 7px;'></div>
-        <!-- %label -->
-        <!-- %input.showalldrawn(type="checkbox") -->
-        <!-- Everyone sees what card is drawn onto top of deck? -->
-        <!-- .clear(style="height: 7px;") -->
-        <hr>
-        <strong>In other's hands...</strong>
-        <div class='clear' style='height: 5px;'></div>
-        <div class='inlineinputs'>
-          <label style='width: 75px;'>Players see:</label>
-          <label>
-            <input class='players_seenumcards' type='checkbox'>
-            Number of Cards
-          </label>
-          <label>
-            <input class='players_seefrontofcards' type='checkbox'>
-            Front of Cards
-          </label>
-        </div>
-        <div class='clear' style='height: 5px;'></div>
-        <div class='inlineinputs'>
-          <label style='width: 75px;'>GM sees:</label>
-          <label>
-            <input class='gm_seenumcards' type='checkbox'>
-            Number of Cards
-          </label>
-          <label>
-            <input class='gm_seefrontofcards' type='checkbox'>
-            Front of Cards
-          </label>
-        </div>
-        <div class='clear' style='height: 5px;'></div>
-        <hr>
-        <!-- BEGIN MOD -->
-        <button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px;' data-deck-id="<$!this.id$>">
-          Add Cards from URLs
-        </button>
-        <!-- END MOD -->
-        <button class='addcard btn' style='float: right;'>
-          <span class='pictos'>&</span>
-          Add Card
-        </button>
-        <h3>Cards</h3>
-        <div class='clear' style='height: 7px;'></div>
-        <table class='table table-striped'>
-          <tbody></tbody>
-        </table>
-        <div class='clear' style='height: 15px;'></div>
-        <label>
-          <strong>Card Backing (Required)</strong>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <!-- BEGIN MOD -->
-        <button class='btn deck-image-by-url' style="margin-bottom: 10px" data-deck-id="<$!this.id$>">Set image from URL...</button>
-        <!-- END MOD -->
-        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-        <div class='status'></div>
-        <div class='inner'></div>
-        <$ if(this.get("avatar") == "") { $>
-        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
-        <br>or</br>
-        <button class='btn'>Choose a file...</button>
-        <input class='manual' type='file'>
-        <$ } else { $>
-        <img src="<$!this.get("avatar")$>" />
-        <div class='remove'>
-          <a href='javascript:void(0);'>Remove</a>
-        </div>
-        <$ } $>
-        </div>
-        </div>
-        <div class='clear' style='height: 20px;'></div>
-        <p style='float: left;'>
-          <button class='btn dupedeck'>Duplicate Deck</button>
-        </p>
-        <$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
-        <p style='text-align: right;'>
-          <button class='btn btn-danger deletedeck'>Delete Deck</button>
-        </p>
-        <$ } $>
-      </div>
-    </script>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	d20plus.html.deckEditor = `
+	<script id='tmpl_deckeditor' type='text/html'>
+		<div class='dialog largedialog deckeditor' style='display: block;'>
+			<label>Name</label>
+			<input class='name' type='text'>
+			<div class='clear' style='height: 14px;'></div>
+			<label>
+				<input class='showplayers' type='checkbox'>
+				Show deck to players?
+			</label>
+			<div class='clear' style='height: 7px;'></div>
+			<label>
+				<input class='playerscandraw' type='checkbox'>
+				Players can draw cards?
+			</label>
+			<div class='clear' style='height: 7px;'></div>
+			<label>
+				<input class='infinitecards' type='checkbox'>
+				Cards in deck are infinite?
+			</label>
+			<p class='infinitecardstype'>
+				<label>
+					<input name='infinitecardstype' type='radio' value='random'>
+					Always a random card
+				</label>
+				<label>
+					<input name='infinitecardstype' type='radio' value='cycle'>
+					Draw through deck, shuffle, repeat
+				</label>
+			</p>
+			<div class='clear' style='height: 7px;'></div>
+			<label>
+				Allow choosing specific cards from deck:
+				<select class='deckpilemode'>
+					<option value='none'>Disabled</option>
+					<option value='choosebacks_gm'>GM Choose: Show Backs</option>
+					<option value='choosefronts_gm'>GM Choose: Show Fronts</option>
+					<option value='choosebacks'>GM + Players Choose: Show Backs</option>
+					<option value='choosefronts'>GM + Players Choose: Show Fronts</option>
+				</select>
+			</label>
+			<div class='clear' style='height: 7px;'></div>
+			<label>
+				Discard Pile:
+				<select class='discardpilemode'>
+					<option value='none'>No discard pile</option>
+					<option value='choosebacks'>Choose: Show Backs</option>
+					<option value='choosefronts'>Choose: Show Fronts</option>
+					<option value='drawtop'>Draw most recent/top card</option>
+					<option value='drawbottom'>Draw oldest/bottom card</option>
+				</select>
+			</label>
+			<div class='clear' style='height: 7px;'></div>
+			<hr>
+			<strong>When played to the tabletop...</strong>
+			<div class='clear' style='height: 5px;'></div>
+			<label>
+				Played Facing:
+				<select class='cardsplayed' style='display: inline-block; width: auto; position: relative; top: 3px;'>
+					<option value='facedown'>Face Down</option>
+					<option value='faceup'>Face Up</option>
+				</select>
+			</label>
+			<div class='clear' style='height: 7px;'></div>
+			<label>
+				Considered:
+				<select class='treatasdrawing' style='display: inline-block; width: auto; position: relative; top: 3px;'>
+					<option value='true'>Drawings (No Bubbles/Stats)</option>
+					<option value='false'>Tokens (Including Bubbles and Stats)</option>
+				</select>
+			</label>
+			<div class='clear' style='height: 7px;'></div>
+			<div class='inlineinputs'>
+				Card Size:
+				<input class='defaultwidth' type='text'>
+				x
+				<input class='defaultheight' type='text'>
+				px
+			</div>
+			<small style='text-align: left; padding-left: 135px; width: auto;'>Leave blank for default auto-sizing</small>
+			<div class='clear' style='height: 7px;'></div>
+			<!-- %label -->
+			<!-- %input.showalldrawn(type="checkbox") -->
+			<!-- Everyone sees what card is drawn onto top of deck? -->
+			<!-- .clear(style="height: 7px;") -->
+			<hr>
+			<strong>In other's hands...</strong>
+			<div class='clear' style='height: 5px;'></div>
+			<div class='inlineinputs'>
+				<label style='width: 75px;'>Players see:</label>
+				<label>
+					<input class='players_seenumcards' type='checkbox'>
+					Number of Cards
+				</label>
+				<label>
+					<input class='players_seefrontofcards' type='checkbox'>
+					Front of Cards
+				</label>
+			</div>
+			<div class='clear' style='height: 5px;'></div>
+			<div class='inlineinputs'>
+				<label style='width: 75px;'>GM sees:</label>
+				<label>
+					<input class='gm_seenumcards' type='checkbox'>
+					Number of Cards
+				</label>
+				<label>
+					<input class='gm_seefrontofcards' type='checkbox'>
+					Front of Cards
+				</label>
+			</div>
+			<div class='clear' style='height: 5px;'></div>
+			<hr>
+			<!-- BEGIN MOD -->
+			<button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px;' data-deck-id="<$!this.id$>">
+				Add Cards from URLs
+			</button>
+			<!-- END MOD -->
+			<button class='addcard btn' style='float: right;'>
+				<span class='pictos'>&</span>
+				Add Card
+			</button>
+			<h3>Cards</h3>
+			<div class='clear' style='height: 7px;'></div>
+			<table class='table table-striped'>
+				<tbody></tbody>
+			</table>
+			<div class='clear' style='height: 15px;'></div>
+			<label>
+				<strong>Card Backing (Required)</strong>
+			</label>
+			<div class='clear' style='height: 7px;'></div>
+			<!-- BEGIN MOD -->
+			<button class='btn deck-image-by-url' style="margin-bottom: 10px" data-deck-id="<$!this.id$>">Set image from URL...</button>
+			<!-- END MOD -->
+			<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+				<div class='status'></div>
+				<div class='inner'></div>
+				<$ if(this.get("avatar") == "") { $>
+				<h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
+				<br>or</br>
+				<button class='btn'>Choose a file...</button>
+				<input class='manual' type='file'>
+				<$ } else { $>
+				<img src="<$!this.get("avatar")$>" />
+				<div class='remove'>
+					<a href='javascript:void(0);'>Remove</a>
+				</div>
+				<$ } $>
+			</div>
+		</div>
+		<div class='clear' style='height: 20px;'></div>
+		<p style='float: left;'>
+			<button class='btn dupedeck'>Duplicate Deck</button>
+		</p>
+		<$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
+		<p style='text-align: right;'>
+			<button class='btn btn-danger deletedeck'>Delete Deck</button>
+		</p>
+		<$ } $>
+		</div>
+	</script>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.cardEditor = `
-    <script id='tmpl_cardeditor' type='text/html'>
-      <div class='dialog largedialog cardeditor' style='display: block;'>
-        <label>Name</label>
-        <input class='name' type='text'>
-        <div class='clear'></div>
-        <!-- BEGIN MOD -->
-        <button class='btn card-image-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
-        <!-- END MOD -->
-        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-        <div class="status"></div>
-        <div class="inner">
-        <$ if(this.get("avatar") == "") { $>
-        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
-        <br>or</br>
-        <button class='btn'>Choose a file...</button>
-        <input class='manual' type='file'>
-        <$ } else { $>
-        <img src="<$!this.get("avatar")$>" />
-        <div class='remove'>
-          <a href='javascript:void(0);'>Remove</a>
-        </div>
-        <$ } $>
-        </div>
-        </div>
-        <div class='clear'></div>
-        <label>&nbsp;</label>
-        <button class='deletecard btn btn-danger'>Delete Card</button>
-      </div>
-    </script>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	d20plus.html.cardEditor = `
+	<script id='tmpl_cardeditor' type='text/html'>
+		<div class='dialog largedialog cardeditor' style='display: block;'>
+			<label>Name</label>
+			<input class='name' type='text'>
+			<div class='clear'></div>
+			<!-- BEGIN MOD -->
+			<button class='btn card-image-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
+			<!-- END MOD -->
+			<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+				<div class="status"></div>
+				<div class="inner">
+					<$ if(this.get("avatar") == "") { $>
+					<h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
+					<br>or</br>
+					<button class='btn'>Choose a file...</button>
+					<input class='manual' type='file'>
+					<$ } else { $>
+					<img src="<$!this.get("avatar")$>" />
+					<div class='remove'>
+						<a href='javascript:void(0);'>Remove</a>
+					</div>
+					<$ } $>
+				</div>
+			</div>
+			<div class='clear'></div>
+			<label>&nbsp;</label>
+			<button class='deletecard btn btn-danger'>Delete Card</button>
+		</div>
+	</script>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLroll20EditorsMisc);
@@ -11499,76 +10879,63 @@ SCRIPT_EXTENSIONS.push(initHTMLroll20EditorsMisc);
 function initHTMLbaseMisc () {
 	d20plus.html = d20plus.html || {};
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.settingsHtmlPtFooter = `
-		<p>
-			<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
-		</p>
-		<p>
-			<a class="btn btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; width: calc(100% - 22px);">Open Tools List</a>
-		</p>
-		<p>
-			For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
-		</p>
-		<style id="dynamicStyle"></style>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	d20plus.html.settingsHtmlPtFooter = `
+	<p>
+		<a class="btn " href="#" id="button-edit-config" style="margin-top: 3px; width: calc(100% - 22px);">Edit Config</a>
+	</p>
+	<p>
+		<a class="btn btn player-hidden" href="#" id="button-view-tools" style="margin-top: 3px; width: calc(100% - 22px);">Open Tools List</a>
+	</p>
+	<p>
+		For help, advice, and updates, <a href="https://discord.gg/nGvRCDs" target="_blank" style="color: #08c;">join our Discord!</a>
+	</p>
+	<style id="dynamicStyle"></style>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.artTabHtml = `
-		<div>
-			<h3 style="margin-bottom: 4px;">BetteR20</h3>
-			<p style="display: flex; width: 100%; justify-content: space-between;">
-				<button class="btn" id="button-add-external-art" style="margin-right: 5px;">Manage External Art</button>
-				<button class="btn" id="button-browse-external-art">Browse Repo</button>
-			</p>
-		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	d20plus.html.artTabHtml = `
+	<div>
+		<h3 style="margin-bottom: 4px;">BetteR20</h3>
+		<p style="display: flex; width: 100%; justify-content: space-between;">
+			<button class="btn" id="button-add-external-art" style="margin-right: 5px; width: 100%;">Manage External Art</button>
+			<button class="btn" id="button-browse-external-art" style="width: 100%;">Browse Repo</button>
+		</p>
+	</div>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.addArtHTML = `
-		<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
-			<p>Add external images by URL. Any direct link to an image should work.</p>
-			<p>
+	d20plus.html.addArtHTML = `
+	<div id="d20plus-artfolder" title="BetteR20 - External Art" style="position: relative; background: inherit;">
+		<p>Add external images by URL. Any direct link to an image should work.</p>
+		<p>
 			<input placeholder="Name*" id="art-list-add-name">
 			<input placeholder="URL*" id="art-list-add-url">
 			<a class="btn" href="#" id="art-list-add-btn">Add URL</a>
 			<a class="btn" href="#" id="art-list-multi-add-btn">Add Multiple URLs...</a>
 			<a class="btn btn-danger" href="#" id="art-list-delete-all-btn" style="margin-left: 12px;">Delete All</a>
-			<p/>
+			<p />
 			<hr>
-			<div id="art-list-container" style="background: inherit;">
-				<p style="position: sticky; top: -10px; background: inherit; z-index: 100;">
-					<span style="display: inline-block; width: calc( 35% + 35px ); font-weight: bold;">
-						Name
-						<input class="search" autocomplete="off" placeholder="Search list..." style="width: 60%; margin: 10px;">
-					</span>
-					<span style="display: inline-block; font-weight: bold;">URL</span>
-				</p>
-				<ul class="list artlist" style="display: block; margin: 0; transform: translateZ(0);"></ul>
-			</div>
+		<div id="art-list-container" style="background: inherit;">
+			<p style="position: sticky; top: -10px; background: inherit; z-index: 100;">
+				<span style="display: inline-block; width: calc( 35% + 35px ); font-weight: bold;">
+					Name
+					<input class="search" autocomplete="off" placeholder="Search list..." style="width: 60%; margin: 10px;">
+				</span>
+				<span style="display: inline-block; font-weight: bold;">URL</span>
+			</p>
+			<ul class="list artlist" style="display: block; margin: 0; transform: translateZ(0);"></ul>
 		</div>
-		<br>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	</div>
+	<br>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.addArtMassAdderHTML = `
-		<div id="d20plus-artmassadd" title="Mass Add Art URLs">
-			<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
-			<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
-		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	d20plus.html.addArtMassAdderHTML = `
+	<div id="d20plus-artmassadd" title="Mass Add Art URLs">
+		<p>One entry per line; entry format: <b>[name]---[URL (direct link to image)]</b> <button class="btn" id="art-list-multi-add-btn-submit">Add URLs</button></p>
+		<p><textarea id="art-list-multi-add-area" style="width: 100%; height: 100%; min-height: 500px;" placeholder="My Image---http://example.com/img1.png"></textarea></p>
+	</div>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.artListHTML = `
-		<div id="Vetoolsresults">
+	d20plus.html.artListHTML = `
+	<div id="Vetoolsresults">
 		<ol class="dd-list" id="image-search-none">
 			<div class="alert white">No results found in 5etools for those keywords.</div>
 		</ol>
@@ -11580,431 +10947,249 @@ function initHTMLbaseMisc () {
 				<ol class="dd-list Vetoolsresultfolder" id="custom-art-results"></ol>
 			</li>
 		</ol>
-		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	</div>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.configEditorHTML = `
-		<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
+	d20plus.html.configEditorHTML = `
+	<div id="d20plus-configeditor" title="Better20 - Config Editor" style="position: relative">
+		<!-- populate with js -->
+	</div>
+	`;
+
+	d20plus.html.configEditorButtonBarHTML = `
+	<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+		<div class="ui-dialog-buttonset">
+			<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
+				<span>Save</span>
+			</button>
+		</div>
+	</div>
+	`;
+
+	d20plus.html.toolsListHtml = `
+	<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
+		<div class="tools-list">
 			<!-- populate with js -->
 		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	</div>
+	`;
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.configEditorButtonBarHTML = `
-		<div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
-			<div class="ui-dialog-buttonset">
-				<button type="button" id="configsave" alt="Save" title="Save Config" class="btn" role="button" aria-disabled="false">
-					<span>${__("ui_cfg_save")}</span>
-				</button>
-			</div>
-		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
-
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.toolsListHtml = `
-		<div id="d20-tools-list" title="BetteR20 - Tools List" style="position: relative">
-			<div class="tools-list">
-			<!-- populate with js -->
-			</div>
-		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
-
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsNavTabs = `
-		<li class="nav-tabs active">
-			<a data-tab="pagedetails" href="javascript:void(0);">
-				<h2>General</h2>
-			</a>
-		</li>
-		<li class="nav-tabs dl">
-			<a>
-				<h2>Lighting</h2>
-			</a>
-			<ul>
-				<li class="nav-tabs--beta">
-					<span class="label label-info">Updated</span>
-					<a data-tab="lighting" href="javascript:void(0);">
-						<h2>Dynamic Lighting</h2>
-					</a>
-				</li>
-				<li class="nav-tabs">
-					<a data-tab="legacy-lighting" href="javascript:void(0);">
-						<h2>Legacy Lighting</h2>
-					</a>
-				</li>
-			</ul>
-		</li>
-		<li class="nav-tabs--beta">
-			<span class="label label-info">bR20</span>
-			<a data-tab="weather" href="javascript:void(0);">
-				<h2>Weather</h2>
-			</a>
-		</li>
-		<li class="nav-tabs--beta">
-			<span class="label label-info">bR20</span>
-			<a data-tab="views" href="javascript:void(0);">
-				<h2>Views</h2>
-			</a>
-		</li>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	d20plus.html.pageSettingsNavTabs = `
+	<li class="nav-tabs active">
+		<a data-tab="pagedetails" href="javascript:void(0);">
+			<h2>General</h2>
+		</a>
+	</li>
+	<li class="nav-tabs dl">
+		<a>
+			<h2>Lighting</h2>
+		</a>
+		<ul>
+			<li class="nav-tabs--beta">
+				<span class="label label-info">Updated</span>
+				<a data-tab="lighting" href="javascript:void(0);">
+					<h2>Dynamic Lighting</h2>
+				</a>
+			</li>
+			<li class="nav-tabs">
+				<a data-tab="legacy-lighting" href="javascript:void(0);">
+					<h2>Legacy Lighting</h2>
+				</a>
+			</li>
+		</ul>
+	</li>
+	<li class="nav-tabs--beta">
+		<span class="label label-info">bR20</span>
+		<a data-tab="weather" href="javascript:void(0);">
+			<h2>Weather</h2>
+		</a>
+	</li>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
 
 
-function initHTMLpageViews () {
-	d20plus.html = d20plus.html || {};
-
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsViews = `
-		<div class='views tab-pane'>
-			<div class="pagedetails">
-				<div class="alert alert-info" role="alert">
-					<p>Views are just another way to manage groups of items on your map
-					. Each View can include different items - tokens (except PCs), paths & images, regardless of their layer.
-					</p><p>Assign desired items to Views via the Context menu
-					. Then you can easily hide or show those items using controls at the bottom of "Editing layer" dropdown
-					. This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.
-					</p><p>Players do not need betteR20 to see the effect of switching Views.</p>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Enable Views</h4>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="viewsEnable">toggle view one</label>
-							<input name="viewsEnable" class="feature_enabled" id="viewsEnable" type="checkbox">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-				<div class="pagedetails__header">
-					<h3 class="page_title">Default view</h3>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Custom name</h4>
-					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
-				</div>
-				<div>
-					<label class="sr-only">input custom name</label>
-					<input class="page-input" name="views0Name" placeholder="Default">
-				</div>
-				<hr>
-				<div class="pagedetails__header">
-					<h3 class="page_title">View 1</h3>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Enable View 1</h4>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="views1Enable">toggle view one</label>
-							<input name="views1Enable" class="feature_enabled" id="views1Enable" type="checkbox">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Mutually exclusive with previous</h4>
-						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="views1Exclusive">toggle view one</label>
-							<input name="views1Exclusive" class="feature_enabled" id="views1Exclusive" type="checkbox">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Custom name</h4>
-					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
-				</div>
-				<div>
-					<label class="sr-only">input custom name</label>
-					<input class="page-input" name="views1Name" placeholder="View 1">
-				</div>
-				<hr>
-				<div class="pagedetails__header">
-					<h3 class="page_title">View 2</h3>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Enable View 2</h4>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="views2Enable">toggle view one</label>
-							<input name="views2Enable" class="feature_enabled" id="views2Enable" type="checkbox">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Mutually exclusive with previous</h4>
-						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="views2Exclusive">toggle view two</label>
-							<input name="views2Exclusive" class="feature_enabled" id="views2Exclusive" type="checkbox">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Custom name</h4>
-					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
-				</div>
-				<div>
-					<label class="sr-only">input custom name</label>
-					<input class="page-input" name="views2Name" placeholder="View 2">
-				</div>
-				<hr>
-				<div class="pagedetails__header">
-					<h3 class="page_title">View 3</h3>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Enable View 3</h4>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="views3Enable">toggle view three</label>
-							<input name="views3Enable" class="feature_enabled" id="views3Enable" type="checkbox" value="0">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Mutually exclusive with previous</h4>
-						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="views3Exclusive">toggle view one</label>
-							<input name="views3Exclusive" class="feature_enabled" id="views3Exclusive" type="checkbox" value="0">
-							<span class="slider round"></span>
-						</label>
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Custom name</h4>
-					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
-				</div>
-				<div>
-					<label class="sr-only">input custom name</label>
-					<input class="page-input" name="views3Name" placeholder="View 3">
-				</div>
-			</div>
-		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
-}
-
-SCRIPT_EXTENSIONS.push(initHTMLpageViews);
-
-
 function initHTMLpageWeather () {
 	d20plus.html = d20plus.html || {};
 
-	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.pageSettingsWeather = `
-		<div class='weather tab-pane'>
-			<div class="pagedetails">
-				<strong style="display: block; margin-bottom: 10px;">
-					<a class="tipsy-w showtip pictos" title="Requires all players to use a betteR20 script">!</a>
-					Requires all players to use a betteR20 script
-				</strong>
-				<hr>
-				<div class="pagedetails__header">
-					<h3 class="page_title">Weather Type</h3>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Select type</h4>
-				</div>
-				<div>
-					<label class="sr-only">select the weather type</label>
-					<select name="weatherType1">
-						<option>None</option>
-						<option>Fog</option>
-						<option>Rain</option>
-						<option>Ripples</option>
-						<option>Snow</option>
-						<option>Waves</option>
-						<option>Blood Rain</option>
-						<option>Custom (see below)</option>
-					</select>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Custom type</h4>
-					<a class="tipsy-w showtip pictos" original-title="Input URL to your PNG when &quot;Custom&quot; is selected above">?</a>
-				</div>
-				<div>
-					<label class="sr-only">input custom image</label>
-					<input class="page-input" name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
-				</div>
-				<hr>
-				<div class="pagedetails__header">
-					<h3 class="page_title">Amimation</h3>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Weather Direction</h4>
-				</div>
-				<div>
-					<label class="sr-only">select the weather direction</label>
-					<select name="weatherDir1">
-						<option value="Northerly">Northerly</option>
-						<option value="North-Easterly">North-Easterly</option>
-						<option value="Easterly">Easterly</option>
-						<option value="South-Easterly">South-Easterly</option>
-						<option value="Southerly">Southerly</option>
-						<option value="South-Westerly">South-Westerly</option>
-						<option value="Westerly">Westerly</option>
-						<option value="North-Westerly">North-Westerly</option>
-						<option value="Custom (see below)">Custom (see below)</option>
-					</select>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Custom Direction</h4>
-					<a class="tipsy-w showtip pictos" original-title="Set direction when &quot;Custom&quot; is selected above">?</a>
-				</div>
-				<div class="row">
-					<div class="col-xs-9">
-						<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
-					</div>
-					<div class="col-xs-1">
-						<input class="page-input page-hint weatherDirCustom1" disabled="" type="text">
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Weather Speed</h4>
-				</div>
-				<div class="row">
-					<div class="col-xs-9">
-						<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
-					</div>
-					<div class="col-xs-1">
-						<input class="page-input page-hint weatherSpeed1" disabled="" type="text">
-					</div>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Oscillate</h4>
-					</div>
-					<div class="col-xs-7 pagedetails__header">
-						<span>Periodically revert Weather direction, with frequency based on Threshold</span>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
-							<input name="weatherOscillate1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
-							<span class="slider round">
-						</span></label>
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Oscillation Threshold</h4>
-				</div>
-				<div class="row">
-					<div class="col-xs-9">
-						<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01"/>
-					</div>
-					<div class="col-xs-1">
-						<input class="page-input page-hint weatherOscillateThreshold1" disabled="" type="text"/>
-					</div>
-				</div>
-				<hr>
-				<div class="pagedetails__header">
-					<h3 class="page_title">Appearance</h3>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Weather Opacity</h4>
-				</div>
-				<div class="row">
-					<div class="col-xs-9">
-						<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01"/>
-					</div>
-					<div class="col-xs-1">
-						<input class="page-input page-hint weatherOpacity1" disabled="" type="text"/>
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Weather Intensity</h4>
-				</div>
-				<div>
-					<label class="sr-only">select the weather intensity</label>
-					<select name="weatherIntensity1">
-						<option>Normal</option>
-						<option>Heavy</option>
-					</select>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4 class="page_title">Enable Tint</h4>
-					</div>
-					<div class="col-xs-7 pagedetails__header">
-						<span>Adds semi-transparent color overlay to the whole page</span>
-					</div>
-					<div class="col-xs-3">
-						<label class="switch">
-							<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
-							<input name="weatherTint1" class="feature_enabled" id="page-oscillate-toggle" type="checkbox">
-							<span class="slider round">
-						</span></label>
-					</div>
-				</div>
-				<div class="row pagedetails__subheader">
-					<div class="col-xs-7 pagedetails__header">
-						<h4>Tint Color</h4>
-					</div>
-					<div class="col-xs-3">
-						<input type="color" name="weatherTintColor1">
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4>Tint Opacity</h4>
-				</div>
-				<div class="row">
-					<div class="col-xs-9">
-						<input type="range" name="weatherTintOpacity1" min="0.01" max="0.7" step="0.01"/>
-					</div>
-					<div class="col-xs-1">
-						<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text"/>
-					</div>
-				</div>
-				<div class="pagedetails__subheader">
-					<h4 class="page_title">Special Effects</h4>
-				</div>
-				<div>
-					<label class="sr-only">select effects</label>
-					<select name="weatherEffect1">
+	d20plus.html.pageSettingsWeather = `
+	<div class='weather tab-pane'>
+		<div class="pagedetails">
+			<strong style="display: block; margin-bottom: 10px;">
+				<a class="tipsy-w showtip pictos" title="Requires all players to use a betteR20 script">!</a>
+				Requires all players to use a betteR20 script
+			</strong>
+			<hr>
+			<div class="pagedetails__header">
+				<h3 class="page_title">Weather Type</h3>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Select type</h4>
+			</div>
+			<div>
+				<label class="sr-only">select the weather type</label>
+				<select name="weatherType1">
 					<option>None</option>
-					<option>Lightning</option>
-					</select>
+					<option>Fog</option>
+					<option>Rain</option>
+					<option>Ripples</option>
+					<option>Snow</option>
+					<option>Waves</option>
+					<option>Blood Rain</option>
+					<option>Custom (see below)</option>
+				</select>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Custom type</h4>
+				<a class="tipsy-w showtip pictos" original-title="Input URL to your PNG when &quot;Custom&quot; is selected above">?</a>
+			</div>
+			<div>
+				<label class="sr-only">input custom image</label>
+				<input class="page-input" name="weatherTypeCustom1" placeholder="https://example.com/pic.png">
+			</div>
+			<hr>
+			<div class="pagedetails__header">
+				<h3 class="page_title">Amimation</h3>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Weather Direction</h4>
+			</div>
+			<div>
+				<label class="sr-only">select the weather direction</label>
+				<select name="weatherDir1">
+					<option value="Northerly">Northerly</option>
+					<option value="North-Easterly">North-Easterly</option>
+					<option value="Easterly">Easterly</option>
+					<option value="South-Easterly">South-Easterly</option>
+					<option value="Southerly">Southerly</option>
+					<option value="South-Westerly">South-Westerly</option>
+					<option value="Westerly">Westerly</option>
+					<option value="North-Westerly">North-Westerly</option>
+					<option value="Custom (see below)">Custom (see below)</option>
+				</select>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Custom Direction</h4>
+				<a class="tipsy-w showtip pictos" original-title="Set direction when &quot;Custom&quot; is selected above">?</a>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">
+					<input type="range" name="weatherDirCustom1" min="0" max="360" step="1">
+				</div>
+				<div class="col-xs-1">
+					<input class="page-input page-hint weatherDirCustom1" disabled="" type="text">
 				</div>
 			</div>
+			<div class="pagedetails__subheader">
+				<h4>Weather Speed</h4>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">
+					<input type="range" name="weatherSpeed1" min="0.01" max="1" step="0.01">
+				</div>
+				<div class="col-xs-1">
+					<input class="page-input page-hint weatherSpeed1" disabled="" type="text">
+				</div>
+			</div>
+			<div class="row pagedetails__subheader">
+				<div class="col-xs-7 pagedetails__header">
+					<h4 class="page_title">Oscillate</h4>
+				</div>
+				<div class="col-xs-7 pagedetails__header">
+					<span>Periodically revert Weather direction, with frequency based on Threshold</span>
+				</div>
+				<div class="col-xs-3">
+					<label class="switch">
+						<label class="sr-only" for="page-oscillate-toggle">toggle oscillate</label>
+						<input name="weatherOscillate1" id="page-oscillate-toggle" type="checkbox">
+						<span class="slider round">
+						</span></label>
+				</div>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Oscillation Threshold</h4>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">
+					<input type="range" name="weatherOscillateThreshold1" min="0.05" max="1" step="0.01" />
+				</div>
+				<div class="col-xs-1">
+					<input class="page-input page-hint weatherOscillateThreshold1" disabled="" type="text" />
+				</div>
+			</div>
+			<hr>
+			<div class="pagedetails__header">
+				<h3 class="page_title">Appearance</h3>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Weather Opacity</h4>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">
+					<input type="range" name="weatherOpacity1" min="0.05" max="1" step="0.01" />
+				</div>
+				<div class="col-xs-1">
+					<input class="page-input page-hint weatherOpacity1" disabled="" type="text" />
+				</div>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Weather Intensity</h4>
+			</div>
+			<div>
+				<label class="sr-only">select the weather intensity</label>
+				<select name="weatherIntensity1">
+					<option>Normal</option>
+					<option>Heavy</option>
+				</select>
+			</div>
+			<div class="row pagedetails__subheader">
+				<div class="col-xs-7 pagedetails__header">
+					<h4 class="page_title">Enable Tint</h4>
+				</div>
+				<div class="col-xs-7 pagedetails__header">
+					<span>Adds semi-transparent color overlay to the whole page</span>
+				</div>
+				<div class="col-xs-3">
+					<label class="switch">
+						<label class="sr-only" for="page-oscillate-toggle">toggle tint</label>
+						<input name="weatherTint1" id="page-oscillate-toggle" type="checkbox">
+						<span class="slider round">
+						</span></label>
+				</div>
+			</div>
+			<div class="row pagedetails__subheader">
+				<div class="col-xs-7 pagedetails__header">
+					<h4>Tint Color</h4>
+				</div>
+				<div class="col-xs-3">
+					<input type="color" name="weatherTintColor1">
+				</div>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4>Tint Opacity</h4>
+			</div>
+			<div class="row">
+				<div class="col-xs-9">
+					<input type="range" name="weatherTintOpacity1" min="0.1" max="1" step="0.01" />
+				</div>
+				<div class="col-xs-1">
+					<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text" />
+				</div>
+			</div>
+			<div class="pagedetails__subheader">
+				<h4 class="page_title">Special Effects</h4>
+			</div>
+			<div>
+				<label class="sr-only">select effects</label>
+				<select name="weatherEffect1">
+					<option>None</option>
+					<option>Lightning</option>
+				</select>
+			</div>
 		</div>
-		`;
-		document.removeEventListener("b20initTemplates", initHTML, false);
-	});
+	</div>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLpageWeather);
@@ -12059,24 +11244,16 @@ function d20plusEngine () {
 		if (window.is_gm) {
 			// add lighting layer tool
 			if (!$(`#editinglayer .choosewalls`).length) {
-				$(`#editinglayer .choosegmlayer`).after(`
-					<li class="choosewalls">
-						<span class="pictostwo">r</span> 
-						${d20plus.cfg.get("canvas", "showLight") ? __("ui_bar_light_n_barriers") : __("ui_bar_barriers")}
-					</li>
-				`);
+				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
 			}
 
 			// add light placement tool
-			if (d20plus.cfg.get("canvas", "showLight")) {
-				if (!$(`#placelight`).length) {
-					const $torchMode = $(`<li class="placelight" tip="Place Light"><span class="pictostwo">t</span></li>`);
-					$torchMode.on("click", () => {
-						d20plus.setMode("placelight");
-						$torchMode.addClass("activebutton");
-					});
-					$(`#measure`).after($torchMode);
-				}
+			if (!$(`#placelight`).length) {
+				const $torchMode = $(`<li class="placelight" tip="Place Light"><img id="placelighticon" src="/images/editor/torch.png" width="20" height="20"></li>`);
+				$torchMode.on("click", () => {
+					d20plus.setMode("placelight");
+				});
+				$(`#measure`).after($torchMode);
 			}
 
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
@@ -12110,7 +11287,6 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.swapTemplates = () => {
-		document.dispatchEvent(new Event(`b20initTemplates`));
 		d20plus.ut.log("Swapping templates...");
 		$("#tmpl_charactereditor").html($(d20plus.html.characterEditor).html());
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
@@ -12130,7 +11306,6 @@ function d20plusEngine () {
 			<div class='tab-content'>
 				${d20plus.html.pageSettings}
 				${d20plus.html.pageSettingsWeather}
-				${d20plus.html.pageSettingsViews}
 			</div>
 		</script>`;
 	};
@@ -12196,12 +11371,10 @@ function d20plusEngine () {
 			debouncedOverwrite();
 		}
 
-		$(`body`).on("click", ".weather input[type=range]", function (event) {
-			if (this.name) $(`.${this.name}`).val(this.value);
-		}).on("mouseup", "li.dl", function (event) {
+		$(`body`).on("mouseup", "li.dl", (evt) => {
 			// process Dynamic Lighting tabs
-			const $dynLightTab = $(event.target).closest("li.dl");
-			const $isTabAnchor = $(event.target).closest("a");
+			const $dynLightTab = $(evt.target).closest("li.dl");
+			const $isTabAnchor = $(evt.target).closest("a");
 			if (!$dynLightTab.hasClass("active")) {
 				setTimeout(() => {
 					if (!$dynLightTab.hasClass("legacy")) $(`[data-tab=lighting]:visible`).click();
@@ -12210,11 +11383,18 @@ function d20plusEngine () {
 			}
 			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
 			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		}).on("click", ".chooseablepage .js__settings-page", function () {
+		}).on("mousedown", ".chooseablepage .js__settings-page", (evt) => {
+			const {currentTarget: target} = evt;
+			d20plus.engine._lastSettingsPageId = $(target).closest(`[data-pageid]`).data("pageid");
+		}).on("click", ".weather input[type=range]", (evt) => {
+			const {currentTarget: target} = evt;
+			if (target.name) $(`.${target.name}`).val(target.value);
+		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
+		}).on("click", ".nav-tabs--beta", () => {
+			d20plus.engine._populateCustomOptions();
+		}).on("click keyup", ".weather input, .weather .slider", () => {
+			d20plus.engine._updateCustomOptions();
 		});
 	};
 
@@ -12223,6 +11403,7 @@ function d20plusEngine () {
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
+			const $saveBtn = $dialog.find(`.btn-primary:visible`);
 			// if editing active page then close pages list and add Apply button
 			if (d20.Campaign.activePage().id === d20plus.engine._lastSettingsPageId) {
 				const $barPage = $(`#page-toolbar`);
@@ -12232,89 +11413,177 @@ function d20plusEngine () {
 					$barPage.find(`.handle`).click();
 					$overlay.remove();
 				}
-				$dialog.find(`.btn-primary:visible`).before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine._applySettings);
+				$saveBtn.before(templateApply);
+				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preserveCustomOptions(page);
+				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
-					$dialog.find(`.btn-primary:visible`).on("mousedown", () => {
-						d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-					});
+					$saveBtn.off("click");
+					$saveBtn.on("click", d20plus.engine.applySettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
+					}).off("click");
+					// one property for two checkboxes, make sure they're synced
+					const $dynlgtCheckbox = $(`.tab-content:visible .dyn_fog_update_on_drop`).parent().parent();
+					const $legacyCheckbox = $(`.tab-content:visible .lightingupdate`);
+					$dynlgtCheckbox.on("click", (evt) => {
+						const $checkTarget = $(evt.target).parent().find(`input`);
+						if ($checkTarget.length) {
+							$legacyCheckbox.prop("checked", $checkTarget.prop("checked"));
+						}
 					});
 				}
 			}
 		}
 	}
 
-	d20plus.engine._applySettings = () => {
+	d20plus.engine.applySettings = (evt) => {
+		evt.stopPropagation();
+		evt.preventDefault();
+		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!page?.get) return;
+
 		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		if (!$dialog[0]) return;
+
 		const activeTab = $(`li.active:visible:not(.dl) > a`).data("tab");
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
-		const pageid = d20plus.engine._lastSettingsPageId;
-		if ($dialog[0]) {
-			$(`#page-toolbar`).css("visibility", "hidden");
-			d20plus.engine._handleCustomOptions($dialog.find(`.dialog .tab-content`), "save");
-			setTimeout(() => {
-				$dialog.find(`.btn-primary:visible`).click();
-				$(`#page-toolbar .handle`).click();
-				$(`.chooseablepage[data-pageid=${pageid}] .js__settings-page`).click();
-				$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
-				$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-				setTimeout(() => {
-					$(`#page-toolbar`).css("visibility", "unset");
-				}, 1000);
-			}, 10);
+		const $settings = $dialog.find(`.dialog .tab-content`);
+
+		d20plus.engine._saveCustomOptions(page);
+		d20plus.engine._saveNativeOptions(page, $settings);
+
+		page.save();
+
+		if (!$(evt.currentTarget).hasClass("btn-apply")) {
+			// now we should close the dialog (effectively press Cancel)
+			$(`.ui-dialog-buttonpane:visible .btn:not(.btn-apply):not(.btn-primary)`).click();
+		} else {
+			// page.save resets current dialog, so we need to restore status quo
+			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
+			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
+			d20plus.engine._populateCustomOptions();
 		}
 	}
 
-	d20plus.engine._handleCustomOptions = (dialog, doSave) => {
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+	d20plus.engine._ROLL20_PAGE_OPTIONS = {
+		width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
+		height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
+		background_color: {class: ".pagebackground"},
+		scale_number: {id: "page-size-height-input", class: ".scale_number"},
+		scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
+		gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
+		snapping_increment: {id: "page-grid-cell-width-input", class: ".grid-cell-width.snappingincrement.units"},
+		gridcolor: {class: ".gridcolor"},
+		grid_opacity: {class: ".gridopacity a.ui-slider-handle"},
+		lightrestrictmove: {id: "page-dynamic-lighting-line-restrict-movement-toggle", class: ".lightrestrictmove"},
+		jukeboxtrigger: {id: "page-audio-play-on-load", class: ".pagejukeboxtrigger"},
+
+		dynamic_lighting_enabled: {class: ".dyn_fog_enabled"},
+		explorer_mode: {class: ".dyn_fog_autofog_mode"},
+		daylight_mode_enabled: {class: ".dyn_fog_global_illum"},
+		daylightModeOpacity: {class: ".dyn_fog_daylight_slider"},
+		// lightupdatedrop: {class: ".dyn_fog_update_on_drop"}, // same property
+		fog_opacity: {class: ".fogopacity a.ui-slider-handle"},
+
+		showdarkness: {class: ".darknessenabled"},
+
+		adv_fow_enabled: {class: ".advancedfowenabled"},
+		adv_fow_show_grid: {class: ".advancedfowshowgrid"},
+		adv_fow_dim_reveals: {class: ".dimlightreveals"},
+		adv_fow_gm_see_all: {id: "#afow_gm_see_all"},
+		adv_fow_grid_size: {class: ".advancedfowgridsize"},
+		showlighting: {class: ".lightingenabled"},
+		lightenforcelos: {class: ".lightenforcelos"},
+		lightupdatedrop: {class: ".lightingupdate"},
+		lightglobalillum: {class: ".lightglobalillum"},
+	};
+
+	d20plus.engine._saveNativeOptions = (page, dialog) => {
 		if (!page || !page.get) return;
+		const getSlider = (el) => {
+			if (el.style.left?.search("%") > 0) return el.style.left.slice(0, -1) / 100;
+			else {
+				// eslint-disable-next-line no-console
+				console.warn("%cD20Plus > ", "color: #b93032; font-size: large", "Can't process slider value");
+				return undefined;
+			}
+		}
+		const getVal = (el) => {
+			if (el.hasClass("dyn_fog_autofog_mode")) return el.prop("checked") ? "basic" : "off";
+			else if (el.is(":checkbox")) return !!el.prop("checked");
+			else if (el.hasClass("ui-slider-handle")) return getSlider(el.get(0));
+			else return el.val();
+		}
+		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
+			const $e = dialog.find(option.class || option.id);
+			const val = getVal($e);
+			if (val !== undefined) page.attributes[name] = val;
+		});
+	}
+
+	d20plus.engine._preserveCustomOptions = (page) => {
+		if (!page || !page.get) return;
+		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
+		d20plus.engine._customOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
-			"views",
-		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
-			if (doSave) {
-				d20plus.engine._saveOption(page, dialog, {name, deflt});
-			} else {
-				d20plus.engine._getOption(page, dialog, {name, deflt});
-			}
+		].forEach(category => Object.entries(d20plus[category].props).forEach(([name, deflt]) => {
+			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
 		}));
-		if (doSave) {
-			page.save();
-		}
 	}
 
-	d20plus.engine._saveOption = (page, dialog, prop) => {
-		const $e = dialog.find(`[name="${prop.name}"]`);
-		const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-		if (val && val !== prop.deflt) {
-			page.attributes[`bR20cfg_${prop.name}`] = val;
-		} else {
-			if (page.attributes.hasOwnProperty(`bR20cfg_${prop.name}`)) {
-				page.attributes[`bR20cfg_${prop.name}`] = null;
-			}
-		}
+	d20plus.engine._populateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				if ($e.is(":checkbox")) {
+					$e.prop("checked", !!val);
+				} else if ($e.is("input[type=range]")) {
+					dialog.find(`.${name}`).val(val);
+					$e.val(val);
+				} else {
+					$e.val(val);
+				}
+			});
+		});
+		// ensure all Select elements will update options on change
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
 	}
 
-	d20plus.engine._getOption = (page, dialog, prop) => {
-		const val = page.get(`bR20cfg_${prop.name}`) || prop.deflt;
-		dialog.find(`[name="${prop.name}"]`).each((i, e) => {
-			const $e = $(e);
-			if ($e.is(":checkbox")) {
-				$e.prop("checked", !!val);
-			} else if ($e.is("input[type=range]")) {
-				$(`.${prop.name}`).val(val);
-				$e.val(val);
+	d20plus.engine._updateCustomOptions = (page, dialog) => {
+		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
+		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		if (!d20plus.engine._customOptions[page.id]) return;
+		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+			dialog.find(`[name="${name}"]`).each((i, e) => {
+				const $e = $(e);
+				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
+				d20plus.engine._customOptions[page.id][name] = val;
+			});
+		});
+	}
+
+	d20plus.engine._saveCustomOptions = (page) => {
+		const values = d20plus.engine._customOptions[page.id];
+		Object.entries(values).forEach(([name, val]) => {
+			if (name === "_defaults") return;
+			if (val && val !== values._defaults[name]) {
+				page.attributes[`bR20cfg_${name}`] = val;
 			} else {
-				$e.val(val);
+				if (page.attributes.hasOwnProperty(`bR20cfg_${name}`)) {
+					page.attributes[`bR20cfg_${name}`] = null;
+				}
 			}
 		});
 	}
@@ -12435,23 +11704,6 @@ function d20plusEngine () {
 	};
 
 	/* eslint-enable */
-
-	d20plus.engine.tokenRepresentsPc = (token) => {
-		if (!token || !token.get) return undefined;
-		if (token.get("type") !== "image") return false;
-		if (!token.character) return false;
-		if (!token.character.attribs.length && !token.character.attribs.fetching) {
-			token.character.attribs.fetch(token.character.attribs);
-			token.character.attribs.fetching = true;
-		} else if (token.character.attribs.length) {
-			if (token.character.attribs.fetching) delete token.character.attribs.fetching;
-			const attr = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
-			if (attr) {
-				if (attr.attributes.current === "0") return true;
-				else return false;
-			}
-		}
-	}
 
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);
@@ -12611,209 +11863,35 @@ function d20plusEngine () {
 		})
 	};
 
-	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
-		const page = d20.Campaign.activePage();
-		if (page && page.get && page.get(`bR20cfg_hidden`)) return page.get(`bR20cfg_hidden`).search(layer) > -1;
-	}
-
-	d20plus.engine.layersVisibilityCheck = () => {
-		const layers = ["floors", "background", "foreground", "roofs"];
-		layers.forEach((layer) => {
-			const isHidden = d20.engine.canvas._objects.some((o) => {
-				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
-			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
-			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
-		});
-		if (!$(`#floatinglayerbar`).hasClass("objects")
-			&& window.currentEditingLayer === "objects") $(`#floatinglayerbar`).addClass("objects");
-	}
-
-	d20plus.engine.layersToggle = (event) => {
-		event.stopPropagation();
-		const target = event.target;
-		const page = d20.Campaign.activePage();
-		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
-		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
-		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
-			d20plus.engine.layerVisibilityOff(layer, false);
-		} else {
-			d20plus.engine.layerVisibilityOff(layer, true);
-		}
-	};
-
-	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
-		const menuButton = $(`#editinglayer .choose${layer}`);
-		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
-		const page = d20.Campaign.activePage();
-		if (off) {
-			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
-				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
-				menuButton.addClass("stashed");
-				secondaryButton.addClass("off");
-				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
-					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
-					page.save();
-				}
-			}
-		} else {
-			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
-			menuButton.removeClass("stashed");
-			secondaryButton.removeClass("off");
-			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
-				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
-				page.save();
-			}
-		}
-	}
-
-	d20plus.engine._objectsStashProps = (obj, visible) => {
-		[
-			"emits_bright_light",
-			"emits_low_light",
-			"has_directional_bright_light",
-			"has_directional_dim_light",
-			"bar1_value",
-			"bar2_value",
-			"bar3_value",
-			"showname",
-		].each((prop) => {
-			if (!visible) {
-				if (obj.attributes[prop]) {
-					obj.attributes[`bR20_${prop}`] = obj.attributes[prop];
-					obj.attributes[prop] = false;
-				}
-			} else {
-				if (obj.attributes[`bR20_${prop}`]) {
-					obj.attributes[prop] = obj.attributes[`bR20_${prop}`];
-					obj.attributes[`bR20_${prop}`] = null;
-				}
-			}
-		});
-	}
-
-	d20plus.engine._graphicsStashToRight = (_this, visible) => {
-		if (typeof _this.left !== "number") return;
-		if (!visible) {
-			const page = d20.Campaign.pages.get(_this.page_id);
-			const newLeft = _this.left + page.get("width") * 70;
-			_this.bR20_left = _this.left;
-			_this.left = newLeft;
-		} else {
-			if (_this.bR20_left) {
-				_this.left = _this.bR20_left;
-				_this.bR20_left = null;
-			}
-		}
-	}
-
-	d20plus.engine.objectsHideUnhide = (query, val, prefix, visible) => {
-		let some = false;
-		for (const o of d20.engine.canvas._objects) {
-			if (!o.model) continue;
-			if (`${o.model.get(query)}`.search(val) > -1) {
-				const _this = o.model.attributes;
-				const {layer} = o.model.attributes;
-				if (visible) {
-					if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
-						_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
-						if (_this.type !== "path") {
-							_this.layer = layer.replace(`${prefix}_`, "");
-							if (!_this.bR20_hidden) {
-								d20plus.engine._objectsStashProps(o.model, true);
-							}
-						} else if (!_this.bR20_hidden) {
-							d20plus.engine._graphicsStashToRight(_this, true);
-						}
-						o.saveState();
-						o.model.save();
-						some = true;
-					}
-				} else {
-					if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
-						_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
-						if (_this.type !== "path") {
-							_this.layer = `${prefix}_${layer}`;
-							d20plus.engine._objectsStashProps(o.model, false);
-						} else {
-							d20plus.engine._graphicsStashToRight(_this, false);
-						}
-						o.saveState();
-						o.model.save();
-						some = true;
-					}
-				}
-			}
-		}
-		return some;
-	};
-
 	d20plus.engine.addLayers = () => {
 		d20plus.ut.log("Adding layers");
 
 		d20plus.mod.editingLayerOnclick();
 		if (window.is_gm) {
-			// Override icons a bit
-			$(`#floatingtoolbar .chooseobjects .pictos`).html("U");
-			$(`#editinglayer .submenu .choosegmlayer`).html(`
-				<span class="pictos">E</span>
-				${__("ui_bar_gm")}
-			`);
-
-			$(`#floatingtoolbar .choosemap`).html(`
-				<span class="pictos" style="padding: 0 3px 0 3px;">G</span> 
-				${__("ui_bar_map")}
-			`);
-
 			// Add layers to layer dropdown
+			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
 			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
 				$(`#floatingtoolbar .choosemap`).after(`
 					<li class="choosebackground">
 						<span class="pictos">a</span>
-						${__("ui_bar_bg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+						Background
 					</li>
 				`);
-				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosefloors">
-						<span class="pictos">I</span>
-						${__("ui_bar_fl")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
-				$(`#floatingtoolbar .chooseobjects`).after(`
-					<li class="chooseroofs">
-						<span class="pictos">H</span>
-						${__("ui_bar_rf")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
 			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-				$(`#floatingtoolbar .choosegmlayer`).before(`
+				$(`#floatingtoolbar .chooseobjects`).after(`
 					<li class="chooseforeground">
 						<span class="pictos">B</span>
-						${__("ui_bar_fg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
+						Foreground
 					</li>
 				`);
-				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
 			}
 
 			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
 				$(`#floatingtoolbar .choosewalls`).after(`
 					<li class="chooseweather">
 						<span class="pictos">C</span>
-						${__("ui_bar_we")}
+						Weather Exclusions
 					</li>
 				`);
 			}
@@ -12849,11 +11927,7 @@ function baseMenu () {
 
 	d20plus.menu.addSelectedTokenCommands = () => {
 		d20plus.ut.log("Add token rightclick commands");
-		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
-			$("#tmpl_actions_menu").replaceWith(d20plus.menu.generateNeatActionsMenu());
-		} else {
-			$("#tmpl_actions_menu").replaceWith(d20plus.html.actionsMenu);
-		}
+		$("#tmpl_actions_menu").replaceWith(d20plus.html.actionsMenu);
 
 		const getTokenWhisperPart = () => d20plus.cfg.getOrDefault("token", "massRollWhisperName") ? "/w gm Rolling for @{selected|token_name}...\n" : "";
 
@@ -12929,17 +12003,6 @@ function baseMenu () {
 			if (!window.is_gm && t[0].lastElementChild.childElementCount < 1)
 				return !1;
 			t.appendTo("body");
-			// BEGIN MOD
-			if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
-				setTimeout(() => {
-					const group = $(`.actions_menu > ul > li`).find(`[data-menuname='token']`);
-					if (!group.length) return;
-					$('[id^=r20es-token-ctx-menu-button-]').each( function () {
-						$(this).detach().appendTo(group);
-					});
-				}, 10);
-			}
-			// END MOD
 			var d = t.height()
 				, h = t.width()
 				, p = {};
@@ -13237,15 +12300,15 @@ function baseMenu () {
 
 							options = options.map(it => `<option>${it}</option>`);
 
-							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags(''+__('ui_dialog_select')) + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
+							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags("Select Save") + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
 
 							dialog.dialog({
-								title: __('ui_dialog_title'),
+								title: "Input Value",
 								beforeClose: function() {
 									return false;
 								},
 								buttons: {
-									[__('ui_dialog_submit')+'']: function() {
+									Submit: function() {
 										const val = dialog.find("select").val();
 										console.log(val);
 										d20.engine.unselect();
@@ -13260,7 +12323,7 @@ function baseMenu () {
 										dialog.dialog("destroy").remove();
 										d20.textchat.$textarea.focus();
 									},
-									[__('ui_dialog_cancel')+'']: function() {
+									Cancel: function() {
 										dialog.off();
 										dialog.dialog("destroy").remove();
 									}
@@ -13273,25 +12336,7 @@ function baseMenu () {
 						if ("rollsaves" === e) {
 							// Mass roll: Saves
 							const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
-							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-								const out_options = [];
-								const loc_options = {
-									[__('stat_save_str')]: 'Strength',
-									[__('stat_save_dex')]: 'Dexterity',
-									[__('stat_save_con')]: 'Constitution',
-									[__('stat_save_int')]: 'Intelligence',
-									[__('stat_save_wis')]: 'Wisdom',
-									[__('stat_save_cha')]: 'Charisma',
-								}
-								for (const i in loc_options) out_options.push(i);
-								showRollOptions(
-									(token, val) => {
-										return `&{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
-									},
-									out_options
-								);
-							}
-							else if (d20plus.sheet === "ogl") {
+							if (d20plus.sheet === "ogl") {
 								showRollOptions(
 									(token, val) => {
 										if (getTokenType(token) === 1) {
@@ -13317,13 +12362,9 @@ function baseMenu () {
 							sel.forEach(it => {
 								d20.engine.select(it);
 								let toRoll = ``;
-								if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-									toRoll = `&{template:simple} {{rname=${__('stat_init')}}} {{charname=@{selected|token_name}}} {{mod=@{selected|initiative_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|initiative_bonus} &{tracker}]]}} {{r2=[[@{selected|d20}+@{selected|initiative_bonus}]]}}`;
-								}
-								else if ((d20plus.sheet === "ogl") || !!d20plus.cfg.get('token','massRollAssumesOGL')) {
+								if (d20plus.sheet === "ogl") {
 									toRoll = `%{selected|Initiative}`;
-								}
-								else if (d20plus.sheet === "shaped") {
+								} else if (d20plus.sheet === "shaped") {
 									toRoll = `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{title=INITIATIVE}} {{roll1=[[@{selected|initiative_formula}]]}}`;
 								}
 								d20.textchat.doChatInput(toRoll);
@@ -13355,93 +12396,57 @@ function baseMenu () {
 								"Persuasion"
 							].sort();
 
-							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-								let out_options = [];
-								const loc_options = {
-									[__('stat_ab_athl')]: 'Athletics',
-									[__('stat_ab_acrb')]: 'Acrobatics',
-									[__('stat_ab_sloh')]: 'Sleight of Hand',
-									[__('stat_ab_stel')]: 'Stealth',
-									[__('stat_ab_arcn')]: 'Arcana',
-									[__('stat_ab_hist')]: 'History',
-									[__('stat_ab_invs')]: 'Investigation',
-									[__('stat_ab_natr')]: 'Nature',
-									[__('stat_ab_relg')]: 'Religion',
-									[__('stat_ab_anih')]: 'Animal Handling',
-									[__('stat_ab_insg')]: 'Insight',
-									[__('stat_ab_medc')]: 'Medicine',
-									[__('stat_ab_perc')]: 'Perception',
-									[__('stat_ab_surv')]: 'Survival',
-									[__('stat_ab_decp')]: 'Deception',
-									[__('stat_ab_intm')]: 'Intimidation',
-									[__('stat_ab_perf')]: 'Performance',
-									[__('stat_ab_pers')]: 'Persuasion',
-								}
-								for (const i in loc_options) out_options.push(i);
-								out_options = out_options.sort();
-								showRollOptions(
-									(token, val) => {
-										const ready_val = loc_options[val].toLowerCase().replace(/ /g, "_");
-										return `&{template:simple} {{rname=^{${ready_val}-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${ready_val}_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}}`;
-									},
-									out_options
-								);
-							}
-							else {
-								showRollOptions(
-									(token, val) => {
-										const clean = val.toLowerCase().replace(/ /g, "_");
-										const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
-	
-										let doRoll = '';
-										if (d20plus.sheet === "ogl") {
-											doRoll = (atb = abil) => {
-												if (getTokenType(token) === 1) {
-													const slugged = val.replace(/\s/g, "_").toLowerCase();
-													return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Skill}} @{selected|rtype} + [[@{selected|npc_${slugged}}]]]]}}; {{rname=${val}}}; {{r1=[[1d20 + [[@{selected|npc_${slugged}}]]]]}}`;
-												} else {
-													return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
-												}
-											}
-										} 
-										else if (d20plus.sheet === "shaped"){
-											doRoll = (atb = abil) => {
-												return `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val}}} {{mod=@{selected|${atb}}}} {{roll1=[[1d20+@{selected|${atb}}]]}} {{roll2=[[1d20+@{selected|${atb}}]]}}`;
-											}
-										}
-	
-										try {
-											if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
-												const charIdMaybe = token.model.toJSON().represents;
-												if (!charIdMaybe) return doRoll();
-												const charMaybe = d20.Campaign.characters.get(charIdMaybe);
-												if (charMaybe) {
-													const atbs = charMaybe.attribs.toJSON();
-													const npcAtbMaybe = atbs.find(it => it.name === "npc");
-	
-													if (npcAtbMaybe && npcAtbMaybe.current == 1) {
-														const npcClean = `npc_${clean}`;
-														const bonusMaybe = atbs.find(it => it.name === npcClean);
-														if (bonusMaybe) return doRoll(npcClean);
-														else return doRoll();
-													} else {
-														const pcClean = `${clean}_bonus`;
-														const bonusMaybe = atbs.find(it => it.name === pcClean);
-														if (bonusMaybe) return doRoll(pcClean);
-														else return doRoll();
-													}
-												} else return doRoll();
-											} else return doRoll();
-										} catch (x) {
-											console.error(x);
-											return doRoll();
-										}
-									},
-									options
-								);
-							}
+							showRollOptions(
+								(token, val) => {
+									const clean = val.toLowerCase().replace(/ /g, "_");
+									const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
 
-							
+									let doRoll = '';
+									if (d20plus.sheet === "ogl") {
+										doRoll = (atb = abil) => {
+											if (getTokenType(token) === 1) {
+												const slugged = val.replace(/\s/g, "_").toLowerCase();
+												return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Skill}} @{selected|rtype} + [[@{selected|npc_${slugged}}]]]]}}; {{rname=${val}}}; {{r1=[[1d20 + [[@{selected|npc_${slugged}}]]]]}}
+`
+											} else {
+												return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+											}
+										}
+									} else if (d20plus.sheet === "shaped"){
+										doRoll = (atb = abil) => {
+											return `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val}}} {{mod=@{selected|${atb}}}} {{roll1=[[1d20+@{selected|${atb}}]]}} {{roll2=[[1d20+@{selected|${atb}}]]}}`;
+										}
+									}
+
+									try {
+										if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
+											const charIdMaybe = token.model.toJSON().represents;
+											if (!charIdMaybe) return doRoll();
+											const charMaybe = d20.Campaign.characters.get(charIdMaybe);
+											if (charMaybe) {
+												const atbs = charMaybe.attribs.toJSON();
+												const npcAtbMaybe = atbs.find(it => it.name === "npc");
+
+												if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+													const npcClean = `npc_${clean}`;
+													const bonusMaybe = atbs.find(it => it.name === npcClean);
+													if (bonusMaybe) return doRoll(npcClean);
+													else return doRoll();
+												} else {
+													const pcClean = `${clean}_bonus`;
+													const bonusMaybe = atbs.find(it => it.name === pcClean);
+													if (bonusMaybe) return doRoll(pcClean);
+													else return doRoll();
+												}
+											} else return doRoll();
+										} else return doRoll();
+									} catch (x) {
+										console.error(x);
+										return doRoll();
+									}
+								},
+								options
+							);
 						} else if ("forward-one" === e) {
 							d20plus.engine.forwardOneLayer(n);
 							i();
@@ -13663,20 +12668,6 @@ function baseMenu () {
 								d20plus.anim.animatorTool.doStartScene(sceneUid);
 							});
 							i();
-						} else if (["assignview0", "assignview1", "assignview2", "assignview3"].includes(e)) {
-							const viewId = e.at(-1);
-							d20.engine.selected().forEach(it => {
-								if (it.model) {
-									if (it.model.get(`bR20_view${viewId}`)) {
-										it.model.set(`bR20_view${viewId}`, false);
-									} else {
-										if (!d20plus.engine.tokenRepresentsPc(it.model)) it.model.set(`bR20_view${viewId}`, true);
-									}
-									it.saveState();
-									it.model.save();
-								}
-							});
-							i();
 						}
 						// END MOD
 						return !1
@@ -13757,247 +12748,6 @@ function baseMenu () {
 		d20.token_editor.closeContextMenu = i;
 		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};
-
-	d20plus.menu._neatActionsView = (id) => {
-		return `
-			<span class="pictos ctx__layer-icon"><$ if (d20.Campaign.activePage().get('bR20cfg_views${id}Icon')) { 
-				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Icon')$> <$
-			} else { 
-				$>P<$ 
-			} $> </span> <$
-			if (d20.Campaign.activePage().get('bR20cfg_views${id}Name')) { 
-				$> <$!d20.Campaign.activePage().get('bR20cfg_views${id}Name')$> <$
-			} else { 
-				$> ${id ? `View ${id}` : `Default`} <$ 
-			} $>`;
-	};
-
-	d20plus.menu.neatActions = {
-		"unlock-tokens": { ln: __("menu_unlock"), condition: "window.is_gm && Object.keys(this).length === 0" },
-		"takecard": { ln: __("menu_take_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
-		"flipcard": { ln: __("menu_flip_card"), condition: "this.view && this.view.graphic.type == \"image\" && this.get(\"cardid\") !== \"\"" },
-		"delete": { ln: __("menu_edit_del"), icon: "#", condition: "this.view" },
-		"copy": { ln: __("menu_edit_copy"), icon: "|", condition: "window.is_gm && this.view" },
-		"paste": { ln: __("menu_edit_paste"), icon: "W", condition: "window.is_gm && !this.view" },
-		"undo": { ln: __("menu_edit_undo"), icon: "1", condition: "window.is_gm" },
-		"tofront": { ln: __("menu_move_tofront"), condition: "this.view" },
-		"forward-one": { ln: __("menu_move_forwone"), condition: "this.view" },
-		"back-one": { ln: __("menu_move_backone"), condition: "this.view", quick: __("menu_quick_toback")},
-		"toback": { ln: __("menu_move_toback"), condition: "this.view" },
-		"tolayer_map": { ln: __("menu_layer_map"), icon: "G", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"map\"" },
-		"tolayer_floors": { ln: __("menu_layer_fl"), icon: "I", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showFloors\")", active: "this && this.get && this.get(\"layer\") == \"floors\"" },
-		"tolayer_background": { ln: __("menu_layer_bg"), icon: "a", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showBackground\")", active: "this && this.get && this.get(\"layer\") == \"background\"" },
-		"tolayer_objects": { ln: __("menu_layer_obj"), icon: "U", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"objects\"", quick: __("menu_quick_tofg") },
-		"tolayer_foreground": { ln: __("menu_layer_fg"), icon: "B", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showForeground\")", active: "this && this.get && this.get(\"layer\") == \"foreground\"" },
-		"tolayer_roofs": { ln: __("menu_layer_rf"), icon: "H", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showRoofs\")", active: "this && this.get && this.get(\"layer\") == \"roofs\"" },
-		"tolayer_gmlayer": { ln: __("menu_layer_gm"), icon: "E", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"gmlayer\"", quick: __("menu_quick_togm")},
-		"tolayer_walls": { ln: __("menu_layer_barriers"), icon: "r", condition: "this.view", active: "this && this.get && this.get(\"layer\") == \"walls\"" },
-		"tolayer_weather": { ln: __("menu_layer_weather"), icon: "C", condition: "this.view && d20plus.cfg.getOrDefault(\"canvas\", \"showWeather\")", active: "this && this.get && this.get(\"layer\") == \"weather\"" },
-		"util-scenes": { ln: __("menu_util_start"), condition: "" },
-		"token-animate": { ln: __("menu_util_animate"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"token-fly": { ln: __("menu_util_flight"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.attributes.statusmarkers.search(\"fluffy-wing@\")>-1" },
-		"token-light": { ln: __("menu_util_light"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"group": { ln: __("menu_adv_grp"), condition: "this.view && this.get && (d20.engine.selected().length > 1 && !d20.engine.selected().some( el => !!el.model.get(\"groupwith\")) )" },
-		"regroup": { ln: __("menu_adv_regrp"), condition: "this.view && this.get && (d20.engine.selected().length > 2 && d20.engine.selected().some( el => !el.model.get(\"groupwith\")) )", action: "group"},
-		"ungroup": { ln: __("menu_adv_ungrp"), condition: "this.view && this.get  && d20.engine.selected().some( el => !!el.model.get(\"groupwith\"))" },
-		"toggledrawing": { ln: __("menu_adv_isdrv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"isdrawing\")" },
-		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
-		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
-		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
-		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
-		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
-		"copy-tokenid": { ln: __("menu_adv_tokenid"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"copy-pathid": { ln: __("menu_adv_pathid"), condition: "this.get && this.get(\"type\") == \"path\"" },
-		"addturn": { ln: __("menu_token_turn"), condition: "this.get && this.get(\"type\") != \"path\"" },
-		"rollinit": { ln: __("menu_mass_init"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
-		"rollsaves": { ln: __("menu_mass_save"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))", quick: __("menu_quick_save")},
-		"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
-		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
-		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
-		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
-		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
-	};
-
-	d20plus.menu._neatStructure = {
-		"edit": {
-			ln: __("menu_edit_title"),
-			subitems: [
-				"delete",
-				"copy",
-				"paste",
-				"undo",
-			] },
-		"move": {
-			ln: __("menu_move_title"),
-			subitems: [
-				"tofront",
-				"forward-one",
-				"back-one",
-				"toback",
-			] },
-		"layer": {
-			ln: __("menu_layer_title"),
-			subitems: [
-				"tolayer_map",
-				"tolayer_floors",
-				"tolayer_background",
-				"tolayer_objects",
-				"tolayer_foreground",
-				"tolayer_roofs",
-				"tolayer_gmlayer",
-				"tolayer_walls",
-				"tolayer_weather",
-			] },
-		"view": {
-			ln: __("menu_view_title"),
-			subitems: [
-				"assignview0",
-				"assignview1",
-				"assignview2",
-				"assignview3",
-			] },
-		"util": {
-			ln: __("menu_util_title"),
-			subitems: [
-				"util-scenes",
-				"-",
-				"token-animate",
-				"token-fly",
-				"token-light",
-			] },
-		"adv": {
-			ln: __("menu_adv_title"),
-			subitems: [
-				"unlock-tokens",
-				"group",
-				"regroup",
-				"ungroup",
-				"lock-token",
-				"unlock-token",
-				"-",
-				"toggledrawing",
-				"togglefliph",
-				"toggleflipv",
-				"setdimensions",
-				"aligntogrid",
-				"copy-tokenid",
-				"copy-pathid",
-			] },
-		"token": {
-			ln: __("menu_token_title"),
-			subitems: [
-				"addturn",
-				"-",
-			] },
-		"mass": {
-			ln: __("menu_mass_title"),
-			subitems: [
-				"rollinit",
-				"rollsaves",
-				"rollskills",
-			] },
-		"multi": {
-			ln: __("menu_multi_title"),
-			subitems: [
-				"side_random",
-				"side_choose",
-				"-",
-				"rollertokenresize",
-			] },
-		"card": {
-			ln: __("menu_card_title"),
-			subitems: [
-				"takecard",
-				"flipcard",
-			] },
-	};
-
-	d20plus.menu._pushQuickMenus = () => {
-		if (d20plus.cfg.getOrDefault("canvas", "enableQuickMenuItems")) {
-			let output = "";
-			const pushMenu = (num, action, condition) => {
-				if (!action) action = d20plus.cfg.getOrDefault(`canvas`, `quickMenuItem${num}`);
-				if (action) title = d20plus.menu.neatActions[action].quick || d20plus.menu.neatActions[action].ln;
-				if (action && title) {
-					if (!condition) {
-						condition = d20plus.menu.neatActions[action].condition;
-					}
-					const conditionStatement = condition ? `if (${condition})` : ``;
-					output += `<$ ${conditionStatement} { $><li data-action-type='${action}'>${title}</li><$ } $>`;
-				}
-			};
-			pushMenu(null, "tolayer_objects", `this.view && this.get("layer") == "gmlayer"`);
-			pushMenu(null, "tolayer_gmlayer", `this.view && this.get("layer") != "gmlayer"`);
-			pushMenu(2);
-			pushMenu(3);
-			return output;
-		} else return "";
-	};
-
-	d20plus.menu.generateNeatActionsMenu = () => {
-		let templ = "";
-		Object.entries(d20plus.menu._neatStructure).forEach((menu) => {
-			const menuData = menu[1];
-			const menuName = `data-menuname='${menu[0]}'`;
-			let menuConditions = [];
-			let menuItems = "";
-			menuData.subitems.forEach((item) => {
-				if (item === "-") {
-					menuItems += `\n\t\t<div class="ctx__divider"></div>`;
-				} else {
-					let itemAction = d20plus.menu.neatActions[item].action || item;
-					item = d20plus.menu.neatActions[item];
-					const itemName = item.ln;
-					const itemCondition = item.condition;
-					const iconsStyle = item.icon === "a" ? `` : ` style="font-family:&quot;pictos custom&quot;, pictos"`;
-					const itemIcon = item.icon ? `<span class="pictos ctx__layer-icon"${iconsStyle}>${item.icon}</span> ` : ``;
-					const itemActive = item.active ? ` class='<$ if(${item.active}) { $>active<$ } $>'` : ``;
-					const conditionStatement = itemCondition ? `if (${itemCondition})` : ``;
-					if (itemCondition && (menuConditions.at(-1) !== itemCondition)) menuConditions.push(itemCondition);
-					if (itemAction === "unlock-token") itemAction = "lock-token";
-					menuItems += `\n\t\t<$ ${conditionStatement} { $><li data-action-type='${itemAction}'${itemActive}>${itemIcon}${itemName}</li><$ } $>`;
-				}
-			})
-			templ += `<$ if ((${menuConditions.join(") || (")})) { $><li class='head hasSub' ${menuName}>\n\t${menuData.ln}&nbsp;&raquo;
-			<ul class='submenu' ${menuName}>${menuItems}\n\t</ul>\n</li><$ } $>\n`;
-		});
-		return `
-		<script id='tmpl_actions_menu' type='text/html'>
-		<div class='actions_menu d20contextmenu'>
-		  <ul>
-		  	${templ}
-			${d20plus.menu._pushQuickMenus()}
-		  </ul>
-		  </div>
-		</script>
-		`;
-	};
-
-	addConfigOptions("canvas", {
-		"_name": __("cfg_tab_canvas"),
-		"_player": true,
-		"enableQuickMenuItems": {
-			"name": __("cfg_option_quick_menu"),
-			"default": true,
-			"_type": "boolean",
-		},
-		"quickMenuItem2": {
-			"name": __("cfg_option_quick_2"),
-			"default": "back-one",
-			"_type": "_enum",
-			"__values": Object.keys(d20plus.menu.neatActions),
-		},
-		"quickMenuItem3": {
-			"name": __("cfg_option_quick_3"),
-			"default": "rollsaves",
-			"_type": "_enum",
-			"__values": Object.keys(d20plus.menu.neatActions),
-		},
-	});
 }
 
 SCRIPT_EXTENSIONS.push(baseMenu);
@@ -14183,9 +12933,9 @@ function baseWeather () {
 		function getTintColor (page) {
 			const tintEnabled = page.get("bR20cfg_weatherTint1");
 			if (tintEnabled) {
-				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1");
-				const tintOpacityHex = tintOpacity ? (14 + Math.round((243 - 16) * tintOpacity)).toString(16) : undefined;
-				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}${(tintOpacityHex || "80")}`;
+				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1") || d20plus.weather.props.weatherTintOpacity1;
+				const tintOpacityHex = tintOpacity ? Math.round(255 * tintOpacity).toString(16) : 80;
+				return `${(page.get("bR20cfg_weatherTintColor1") || d20plus.weather.props.weatherTintColor1)}${tintOpacityHex}`;
 			} else return null;
 		}
 
@@ -14600,120 +13350,6 @@ function baseWeather () {
 
 SCRIPT_EXTENSIONS.push(baseWeather);
 
-
-function baseViews () {
-	d20plus.views = {};
-
-	d20plus.views.props = {
-		"viewsEnable": false,
-		"views0Name": "",
-		"views1Enable": false,
-		"views1Exclusive": false,
-		"views1Name": "",
-		"views2Enable": false,
-		"views2Exclusive": false,
-		"views2Name": "",
-		"views3Enable": false,
-		"views3Exclusive": false,
-		"views3Name": "",
-	};
-
-	d20plus.views._initMenuActions = () => {
-		$(`body`).on("click", ".chooseViews > li", function () {
-			const page = d20.Campaign.activePage();
-			const items = $(".chooseViews > li")
-			const id = items.index(this);
-			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
-			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
-			if (page.get(`bR20cfg_views${id}Off`)) {
-				d20plus.views.changeViewState(id, true);
-				for (let i = startgroupindex; i <= endgroupindex; i++) {
-					if (i !== id) d20plus.views.changeViewState(i, false);
-				}
-			} else {
-				d20plus.views.changeViewState(id, false);
-			}
-		});
-	}
-
-	d20plus.views._initViewsCss = () => {
-		d20plus.ut.dynamicStyles("viewsSelect").html(`
-			.ui-dialog label.half {display: inline-block; margin-bottom: 6px;}
-			.ui-dialog label.half span {margin-right: 20px;}
-			#floatingtoolbar ul.chooseViews li {border-width: 1px;border-style: solid; border-color: var(--dark-surface1);}
-			#floatingtoolbar ul.chooseViews:empty {display:none;}
-			#floatingtoolbar ul.chooseViews li {height: 19px; border-radius: 12px;}
-			#floatingtoolbar ul.chooseViews li.fst {border-bottom-left-radius: 0px; border-bottom-right-radius: 0px; border-bottom-width: 0px;}
-			#floatingtoolbar ul.chooseViews li.lst {border-top-left-radius: 0px; border-top-right-radius: 0px; border-top-width: 0px;}
-			#floatingtoolbar ul.chooseViews li.mst {border-radius: 0px; border-top: 0px; border-bottom: 0px;}
-			#floatingtoolbar ul.chooseViews .pictos {padding: 0 3px 0 3px;}
-			#floatingtoolbar ul.chooseViews .view_toggle {padding: 4px 8px 3px 4px; margin-right: 8px; border-right: 1px solid; border-color: inherit;}
-			#floatingtoolbar ul.chooseViews li.off .view_toggle .pictos {color: #fff0;}
-		`);
-	}
-
-	d20plus.views._initLayerMenu = () => {
-		d20plus.views.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
-	}
-
-	d20plus.views.populateMenu = () => {
-		const page = d20.Campaign.activePage();
-		if (!page) return;
-		if (!page.get("bR20cfg_viewsEnable")) return d20plus.views.layerMenu.html("");
-		let menuhtml = "";
-		for (let id = 0; id <= 4; id++) {
-			if (id && !page.get(`bR20cfg_views${id}Enable`)) continue;
-			const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
-			const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
-			const exclCheck = (id) => { return page.get(`bR20cfg_views${id}Exclusive`) };
-			const viewexcl = exclCheck(id) ? (exclCheck(id + 1) ? "mst" : "lst") : (exclCheck(id + 1) ? "fst" : "");
-			const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
-			menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
-				<span class="view_toggle"><span class="pictos">E</span></span>
-				<span class="pictos">${viewicon}</span>
-				${viewname}
-			</li>`;
-		}
-		d20plus.views.layerMenu.html(menuhtml);
-	}
-
-	d20plus.views.changeViewState = (id, state) => {
-		const page = d20.Campaign.activePage();
-		const menuItem = $(".chooseViews > li").get(id);
-		if (state) {
-			$(menuItem).removeClass("off");
-			page.set(`bR20cfg_views${id}Off`, false);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, true);
-		} else {
-			$(menuItem).addClass("off");
-			page.set(`bR20cfg_views${id}Off`, true);
-			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, false);
-		}
-		page.save();
-		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
-	}
-
-	d20plus.views.checkPageSettings = () => {
-		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
-			setTimeout(d20plus.views.checkPageSettings, 50);
-		} else {
-			d20plus.engine.layersVisibilityCheck();
-			d20plus.views.populateMenu();
-		}
-	}
-
-	d20plus.views.addViews = () => {
-		if (window.is_gm) {
-			d20plus.views._initViewsCss();
-			d20plus.views._initLayerMenu();
-			d20plus.views._initMenuActions();
-			document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
-			d20plus.views.checkPageSettings();
-		}
-	}
-}
-
-SCRIPT_EXTENSIONS.push(baseViews);
 
 function d20plusJournal () {
 	d20plus.journal = {};
@@ -15444,7 +14080,7 @@ function baseCss () {
 			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
 		},
 		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.roofs li.chooseroofs, #floatinglayerbar.floors li.choosefloors, #floatinglayerbar.background li.choosebackground",
+			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.background li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
 		},
 		// move layer bar to right
@@ -15492,16 +14128,8 @@ function baseCss () {
 		},
 		// extra layer buttons
 		{
-			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
+			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.background div.submenu li.choosebackground",
 			r: "background-color: #54C3E8; color: #333;",
-		},
-		{
-			s: "#editinglayer.objects .currentselection::after",
-			r: "content: \"U\";",
-		},
-		{
-			s: "#editinglayer.map .currentselection::after",
-			r: "content: \"G\";",
 		},
 		{
 			s: "#editinglayer.weather .currentselection:after",
@@ -15510,14 +14138,6 @@ function baseCss () {
 		{
 			s: "#editinglayer.foreground .currentselection:after",
 			r: "content: \"B\";",
-		},
-		{
-			s: "#editinglayer.floors .currentselection:after",
-			r: "content: \"I\";",
-		},
-		{
-			s: "#editinglayer.roofs .currentselection:after",
-			r: "content: \"H\";",
 		},
 		{
 			s: "#editinglayer.background .currentselection:after",
@@ -15534,31 +14154,6 @@ function baseCss () {
 		{
 			s: "#editinglayer.gmlayer #editing_layer_icon",
 			r: "display:none;",
-		},
-		// layer visibility toggles
-		{
-			s: "#editinglayer .pictos.layer_toggle",
-			r: "float: right; cursor: alias; pointer-events: all;",
-		},
-		{
-			s: "#editinglayer li.stashed",
-			r: "pointer-events: none;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle",
-			r: "position: relative; left: -19px; margin-right: -20px; margin-left: 0px;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle::after",
-			r: "content: \"d\"; position: relative; left: -16px; color: rgba(200,50,50,0.7);",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off > span::after",
-			r: "content: \"d\"; color: rgba(200, 100, 100, 0.7); margin-left: -20px;",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off",
-			r: "color: rgba(153, 153, 153, 0.5); pointer-events: none;",
 		},
 		// adjust the "Talking to Yourself" box
 		{
@@ -15685,37 +14280,6 @@ function baseCss () {
 		},
 	]);
 
-	// QOL fixes
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		// Initiative dialog fixes
-		{
-			s: ".initiativedialog .ui-dialog-buttonset .ui-button",
-			r: "margin: 0px 0px 0px 3px; max-width: 37px; overflow: hidden; box-sizing: border-box;",
-		},
-		{
-			s: ".initiativedialog .difficulty",
-			r: "width: 40%; margin-top: -9px; font-size: 14px;",
-		},
-		// Spacing between token-actions
-		{
-			s: "#secondary-toolbar .tokenactions .btn",
-			r: "margin-left: 2px;",
-		},
-		// Tweak OGL roll template styles
-		{
-			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
-			r: "padding-top: 0px",
-		},
-		{
-			s: ".sheet-rolltemplate-simple .sheet-charname, .sheet-rolltemplate-simple3D .sheet-charname, .sheet-rolltemplate-skill .sheet-charname, .sheet-rolltemplate-atk .sheet-charname, .sheet-rolltemplate-dmg .sheet-charname, .sheet-rolltemplate-atkdmg .sheet-charname",
-			r: "margin-top: -8px; padding-bottom: 2px;",
-		},
-		{
-			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
-			r: "font-size: 12px;",
-		},
-	]);
-
 	// Rewamped page options
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
@@ -15740,7 +14304,7 @@ function baseCss () {
 		},
 		{
 			s: ".dialog .nav-tabs > li.active.dl > a",
-			r: "background-color: unset; border-color: transparent; text-decoration: none; cursor: unset;",
+			r: "background-color: unset; border-color: transparent; text-decoration: none; pointer-events: none; cursor: unset;",
 		},
 		{
 			s: ".ui-dialog .ui-dialog-content",
@@ -15793,14 +14357,6 @@ function baseCss () {
 		{
 			s: ".tab-pane strong .showtip",
 			r: "margin-left: 0px; margin-right: 3%; float: left; margin-top: 1px;",
-		},
-	]);
-
-	// Fix art repo buttons CSS
-	d20plus.css.cssRules = d20plus.css.cssRules.concat([
-		{
-			s: "#imagedialog .searchbox p button",
-			r: "width: 100%; margin: 0px 5px !important;",
 		},
 	]);
 
@@ -16297,53 +14853,6 @@ function baseCss () {
 			`,
 		},
 	]);
-
-	d20plus.css.miniInitStyle = `
-		#initiativewindow button.initmacrobutton {
-			padding: 1px 4px;
-		}
-
-		#initiativewindow input {
-			font-size: 8px;
-		}
-
-		#initiativewindow ul li span.name {
-			font-size: 13px;
-			padding-top: 0;
-			padding-left: 4px;
-			margin-top: -3px;
-		}
-
-		#initiativewindow ul li img {
-			min-height: 15px;
-			max-height: 15px;
-		}
-
-		#initiativewindow ul li {
-			min-height: 15px;
-		}
-
-		#initiativewindow div.header span.initiative,
-		#initiativewindow ul li span.initiative,
-		#initiativewindow ul li span.tracker-col,
-		#initiativewindow div.header span.tracker-col,
-		#initiativewindow div.header span.initmacro,
-		#initiativewindow ul li span.initmacro {
-			font-size: 10px;
-			font-weight: bold;
-			text-align: right;
-			float: right;
-			padding: 0 5px;
-			width: 7%;
-			min-height: 20px;
-			display: block;
-			overflow: hidden;
-		}
-
-		#initiativewindow ul li .controls {
-			padding: 0 3px;
-		}
-	`;
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);
@@ -16440,33 +14949,25 @@ function baseUi () {
 		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
 
 		// Add layers to second side bar
-		$(`<li title="${__("ui_bar_map")}" class="choosemap"><span class="pictos" style="padding: 0 3px;">G</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-			$(`<li title="${__("ui_bar_fl")}" class="choosefloors"><span class="pictos">I</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosefloors`, evt));
-		}
+		$(`<li title="Map" class="choosemap"><span class="pictos" style="padding: 0 3px;">@</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-			$(`<li title="${__("ui_bar_bg")}" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
+			$(`<li title="Background" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
 		}
-		$(`<li title="${__("ui_bar_obj")}" class="chooseobjects"><span class="pictos">U</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
-			$(`<li title="${__("ui_bar_rf")}" class="chooseroofs"><span class="pictos">H</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseroofs`, evt));
-		}
+		$(`<li title="Objects & Tokens" class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-			$(`<li title="${__("ui_bar_fg")}" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
+			$(`<li title="Foreground" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
 		}
 		$(`<li title="GM Info Overlay" class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
-		$(`<li title="${__("ui_bar_barriers")}" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
+		$(`<li title="Dynamic Lighting" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
 		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-			$(`<li title="${__("ui_bar_we")}" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
+			$(`<li title="Weather Exclusions" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
 		}
 
 		$("body").on("click", "#editinglayer li", function () {
 			$("#floatinglayerbar").removeClass("map")
-				.removeClass("floors")
 				.removeClass("background")
 				.removeClass("objects")
 				.removeClass("foreground")
-				.removeClass("roofs")
 				.removeClass("gmlayer")
 				.removeClass("walls")
 				.removeClass("weather");
@@ -16478,25 +14979,17 @@ function baseUi () {
 		// add "desc sort" button to init tracker
 		const $initTracker = $(`#initiativewindow`);
 		const addInitSortBtn = () => {
-			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px; padding:5px 2px;"><span class="pictos">l</span></div>`).click(() => {
+			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;"><span class="pictos">}</span></div>`).click(() => {
 				// this will throw a benign error if the settings dialog has never been opened
 				$("#initiativewindow_settings .sortlist_numericdesc").click();
-			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`).parent());
-		};
-		const addInitResetBtn = () => { // also add "reset tracker" button
-			$(`<div class="btn" id="init-quick-reset" style="margin-right: 5px; padding:5px 2px;"><span class="pictos">#</span></div>`).click(() => {
-				// this will throw a benign error if the settings dialog has never been opened
-				$("#initiativewindow_settings .clearlist").click();
-			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`).parent());
+			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`));
 		};
 		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) {
 			addInitSortBtn();
-			addInitResetBtn();
 		} else {
 			d20.Campaign.initiativewindow.model.on("change", (e) => {
 				if (d20.Campaign.initiativewindow.model.attributes.initiativepage && $(`#init-quick-sort-desc`).length === 0) {
 					addInitSortBtn();
-					addInitResetBtn();
 					d20plus.cfg.baseHandleConfigChange();
 				}
 			})
@@ -17063,8 +15556,7 @@ function d20plusMod () {
 	};
 	// END ROLL20 CODE
 
-	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background"]);
-	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
+	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background", "foreground"]);
 	// BEGIN ROLL20 CODE
 	d20plus.mod.renderAll = function (e) {
 		const t = e && e.context || this.contextContainer
@@ -17076,14 +15568,12 @@ function d20plusMod () {
 		const r = {
 			map: [],
 			// BEGIN MOD
-			floors: [],
 			background: [],
 			// END MOD
 			walls: [],
 			objects: [],
 			// BEGIN MOD
 			foreground: [],
-			roofs: [],
 			// END MOD
 			gmlayer: []
 			// BEGIN MOD
@@ -17121,35 +15611,22 @@ function d20plusMod () {
 				case "afow":
 					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
 					continue;
-				// BEGIN MOD
 				case "gmlayer":
-					if ("gmlayer" !== window.currentEditingLayer) {
-						t.globalAlpha = d20.engine.gm_layer_opacity;
-					} else {
-						t.globalAlpha = 1;
-					}
+					t.globalAlpha = d20.engine.gm_layer_opacity;
 					break;
-				case "floors":
-					if ("map" === window.currentEditingLayer && window.is_gm) {
-						t.globalAlpha = .45;
-						break
-					} else {
-						t.globalAlpha = 1;
-						break;
-					}
-				case "roofs":
-					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.is_gm) {
-						t.globalAlpha = .45;
-						break;
-					}
+				// BEGIN MOD
 				case "background":
 				case "foreground":
+					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.currentEditingLayer !== a && window.currentEditingLayer !== "objects") {
+						t.globalAlpha = .45;
+						break;
+					}
+				// END MOD
 				case "objects":
-					if (d20plus.mod._renderAll_serviceLayers.has(window.currentEditingLayer) && window.is_gm) {
+					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer) {
 						t.globalAlpha = .45;
 						break
 					}
-				// END MOD
 				default:
 					t.globalAlpha = 1
 			}
@@ -17209,10 +15686,7 @@ function d20plusMod () {
 		yield [this.map, "map"],
 		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
 			this._save_map_layer = !1);
-
-		// BEGIN MOD
-		yield [this.floors, "floors"];
-		// END MOD
+		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 
 		const grid_before_afow = e && e.grid_before_afow;
 		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
@@ -17229,7 +15703,6 @@ function d20plusMod () {
 		yield [this.objects, "objects"];
 
 		// BEGIN MOD
-		yield [this.roofs, "roofs"];
 		yield [this.foreground, "foreground"];
 		// END MOD
 
@@ -17240,7 +15713,6 @@ function d20plusMod () {
 
 		// BEGIN MOD
 		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
-		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 		// END MOD
 	};
 	// END ROLL20 CODE
@@ -17259,7 +15731,7 @@ function d20plusMod () {
 				$("#drawingtools .choosepath").hide();
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
 			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseroofs") ? window.currentEditingLayer = "roofs" : e.hasClass("choosefloors") ? window.currentEditingLayer = "floors" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
+				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
 					$("#drawingtools .choosepath").hide(),
 				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
 			}
@@ -18544,11 +17016,10 @@ const betteR20Emoji = function () {
 	/* eslint-enable */
 
 	addConfigOptions(
-		"chat", {
-			_name: __("cfg_tab_chat"),
-			_player: true,
+		"interface", {
+			_name: "Interface",
 			emoji: {
-				name: __("cfg_option_emoji"),
+				name: "Add Emoji Replacement to Chat",
 				default: true,
 				_type: "boolean",
 				_player: true,
@@ -18561,7 +17032,7 @@ const betteR20Emoji = function () {
 		const tc = d20.textchat.$textarea;
 		$("#textchat-input").off("click", "button")
 		$("#textchat-input").on("click", "button", function () {
-			if (d20plus.cfg.getOrDefault("chat", "emoji")) {
+			if (d20plus.cfg.getOrDefault("interface", "emoji")) {
 				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 					const clean = m1.replace(/:/g, "");
 					return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
@@ -18850,36 +17321,23 @@ const betteR20Core = function () {
 	d20plus.Init = async () => {
 		const scriptName = `betteR20-core v${d20plus.version}`;
 		try {
-			d20plus.ut.log(`Init (v${d20plus.version})`);// RB20 EXCLUDE START
-			d20plus.ut.selectLocale();// RB20 EXCLUDE END
+			d20plus.ut.log(`Init (v${d20plus.version})`);
+			d20plus.ut.showLoadingMessage(scriptName);
+			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
+			d20plus.engine.swapTemplates();
+
+			d20plus.ut.addAllCss();
+			if (window.is_gm) d20plus.engine.enhancePageSelector();
 			await d20plus.js.pAddScripts();
 			await d20plus.qpi.pInitMockApi();
 			await d20plus.js.pAddApiScripts();
 
+			JqueryUtil.initEnhancements();
+
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
-
-			const showChatMsgs = !d20plus.cfg.getOrDefault("chat", "suppressLoadingMessages");
-			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
-
-			if (showChatMsgs) {
-				d20plus.ut.showLoadingMessage(scriptName);
-				d20plus.ut.checkVersion();
-			}
-
-			d20plus.engine.swapTemplates();
-			d20plus.ut.addAllCss();
-
-			if (window.is_gm) {
-				d20plus.ut.log("Is GM");
-				d20plus.engine.enhancePageSelector();
-			} else {
-				d20plus.ut.log("Not GM. Some functionality will be unavailable.");
-			}
-
-			JqueryUtil.initEnhancements();
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
@@ -18888,7 +17346,7 @@ const betteR20Core = function () {
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.enhanceStatusEffects();
-			if (showLineSpl) d20plus.engine.addLineCutterTool();
+			d20plus.engine.addLineCutterTool();
 			d20plus.ui.addHtmlHeader();
 			d20plus.ui.addHtmlFooter();
 			d20plus.art.initArtFromUrlButtons();
@@ -18910,7 +17368,6 @@ const betteR20Core = function () {
 			d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
-			d20plus.views.addViews();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
 			// d20plus.ut.fixSidebarLayout();
@@ -18924,7 +17381,7 @@ const betteR20Core = function () {
 			}
 
 			d20plus.ut.log("All systems operational");
-			if (showChatMsgs) d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
+			d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error(e);
@@ -21471,6 +19928,7 @@ SRC_SAiS = "SAiS";
 SRC_AAG = "AAG";
 SRC_BAM = "BAM";
 SRC_LoX = "LoX";
+SRC_DoSI = "DoSI";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
@@ -21686,6 +20144,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_SAiS] = "Spelljammer: Adventures in Space";
 Parser.SOURCE_JSON_TO_FULL[SRC_AAG] = "Astral Adventurer's Guide";
 Parser.SOURCE_JSON_TO_FULL[SRC_BAM] = "Boo's Astral Menagerie";
 Parser.SOURCE_JSON_TO_FULL[SRC_LoX] = "Light of Xaryxis";
+Parser.SOURCE_JSON_TO_FULL[SRC_DoSI] = "Dragons of Stormwreck Isle";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
@@ -21879,6 +20338,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_SAiS] = "SAiS";
 Parser.SOURCE_JSON_TO_ABV[SRC_AAG] = "AAG";
 Parser.SOURCE_JSON_TO_ABV[SRC_BAM] = "BAM";
 Parser.SOURCE_JSON_TO_ABV[SRC_LoX] = "LoX";
+Parser.SOURCE_JSON_TO_ABV[SRC_DoSI] = "DoSI";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_DUNGEON_KIT] = "ScDun";
@@ -22071,6 +20531,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_SAiS] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_AAG] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_BAM] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_LoX] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[SRC_DoSI] = "2022-07-31";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
@@ -22243,6 +20704,7 @@ Parser.SOURCES_ADVENTURES = new Set([
 	SRC_JttRC,
 	SRC_SjA,
 	SRC_LoX,
+	SRC_DoSI,
 
 	SRC_AWM,
 ]);
@@ -22450,6 +20912,7 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	SRC_CRCotN,
 	SRC_JttRC,
 	SRC_LoX,
+	SRC_DoSI,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
@@ -22660,7 +21123,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.167.2"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.168.1"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -24151,11 +22614,11 @@ MiscUtil = {
 		return new Promise(resolve => setTimeout(() => resolve(resolveAs), msecs));
 	},
 
-	GENERIC_WALKER_ENTRIES_KEY_BLACKLIST: new Set(["caption", "type", "colLabels", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path"]),
+	GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST: new Set(["caption", "type", "colLabels", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path"]),
 
 	/**
 	 * @param [opts]
-	 * @param [opts.keyBlacklist]
+	 * @param [opts.keyBlocklist]
 	 * @param [opts.isAllowDeleteObjects] If returning `undefined` from an object handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteArrays] If returning `undefined` from an array handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteBooleans] (Unimplemented) // TODO
@@ -24170,7 +22633,7 @@ MiscUtil = {
 
 		if (opts.isBreakOnReturn && !opts.isNoModification) throw new Error(`"isBreakOnReturn" may only be used in "isNoModification" mode!`);
 
-		const keyBlacklist = opts.keyBlacklist || new Set();
+		const keyBlocklist = opts.keyBlocklist || new Set();
 
 		const getMappedPrimitive = (obj, primitiveHandlers, lastKey, stack, prop, propPre, propPost) => {
 			if (primitiveHandlers[propPre]) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers[propPre], obj, lastKey, stack});
@@ -24186,7 +22649,7 @@ MiscUtil = {
 		const doObjectRecurse = (obj, primitiveHandlers, stack) => {
 			const didBreak = Object.keys(obj).some(k => {
 				const v = obj[k];
-				if (keyBlacklist.has(k)) return;
+				if (keyBlocklist.has(k)) return;
 
 				const out = fn(v, primitiveHandlers, k, stack);
 				if (out === VeCt.SYM_WALKER_BREAK) return true;
@@ -24307,7 +22770,7 @@ MiscUtil = {
 	/**
 	 * TODO refresh to match sync version
 	 * @param [opts]
-	 * @param [opts.keyBlacklist]
+	 * @param [opts.keyBlocklist]
 	 * @param [opts.isAllowDeleteObjects] If returning `undefined` from an object handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteArrays] If returning `undefined` from an array handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteBooleans] (Unimplemented) // TODO
@@ -24318,7 +22781,7 @@ MiscUtil = {
 	 */
 	getAsyncWalker (opts) {
 		opts = opts || {};
-		const keyBlacklist = opts.keyBlacklist || new Set();
+		const keyBlocklist = opts.keyBlocklist || new Set();
 
 		const pFn = async (obj, primitiveHandlers, lastKey, stack) => {
 			if (obj == null) {
@@ -24329,7 +22792,7 @@ MiscUtil = {
 			const pDoObjectRecurse = async () => {
 				await Object.keys(obj).pSerialAwaitMap(async k => {
 					const v = obj[k];
-					if (keyBlacklist.has(k)) return;
+					if (keyBlocklist.has(k)) return;
 					const out = await pFn(v, primitiveHandlers, k, stack);
 					if (!opts.isNoModification) obj[k] = out;
 				});
@@ -24770,6 +23233,8 @@ UrlUtil = {
 
 	categoryToPage (category) { return UrlUtil.CAT_TO_PAGE[category]; },
 	categoryToHoverPage (category) { return UrlUtil.CAT_TO_HOVER_PAGE[category] || UrlUtil.categoryToPage(category); },
+
+	pageToDisplayPage (page) { return UrlUtil.PG_TO_NAME[page] || page; },
 
 	getFilename (url) { return url.slice(url.lastIndexOf("/") + 1); },
 
@@ -25835,7 +24300,7 @@ DataUtil = {
 			default: {
 				const impl = DataUtil[prop];
 				if (impl && (impl.getDataUrl || impl.loadJSON)) {
-					const data = await (impl.loadJSON ? impl.loadJSON : DataUtil.loadJSON(impl.getDataUrl()));
+					const data = await (impl.loadJSON ? impl.loadJSON() : DataUtil.loadJSON(impl.getDataUrl()));
 					if (data[prop] && data[prop].some(it => it.source === source)) return data;
 
 					return DataUtil.pLoadBrewBySource(source);
@@ -25929,7 +24394,8 @@ DataUtil = {
 		},
 
 		getUid (ent, {isMaintainCase = false} = {}) {
-			const {name, source} = ent;
+			const {name} = ent;
+			const source = SourceUtil.getEntitySource(ent);
 			if (!name || !source) throw new Error(`Entity did not have a name and source!`);
 			const out = [name, source].join("|");
 			if (isMaintainCase) return out;
@@ -26625,10 +25091,25 @@ DataUtil = {
 	},
 
 	proxy: {
-		getVersions (prop, ent) { return (DataUtil[prop]?.getVersions || DataUtil.generic.getVersions)(ent); },
-		unpackUid (prop, uid, tag, opts) { return (DataUtil[prop]?.unpackUid || DataUtil.generic.unpackUid)(uid, tag, opts); },
-		getNormalizedUid (prop, uid, tag, opts) { return (DataUtil[prop]?.getNormalizedUid || DataUtil.generic.getNormalizedUid)(uid, tag, opts); },
-		getUid (prop, ent, opts) { return (DataUtil[prop]?.getUid || DataUtil.generic.getUid)(ent, opts); },
+		getVersions (prop, ent) {
+			if (DataUtil[prop]?.getVersions) return DataUtil[prop]?.getVersions(ent);
+			return DataUtil.generic.getVersions(ent);
+		},
+
+		unpackUid (prop, uid, tag, opts) {
+			if (DataUtil[prop]?.unpackUid) return DataUtil[prop]?.unpackUid(uid, tag, opts);
+			return DataUtil.generic.unpackUid(uid, tag, opts);
+		},
+
+		getNormalizedUid (prop, uid, tag, opts) {
+			if (DataUtil[prop]?.getNormalizedUid) return DataUtil[prop].getNormalizedUid(uid, tag, opts);
+			return DataUtil.generic.getNormalizedUid(uid, tag, opts);
+		},
+
+		getUid (prop, ent, opts) {
+			if (DataUtil[prop]?.getUid) return DataUtil[prop].getUid(ent, opts);
+			return DataUtil.generic.getUid(ent, opts);
+		},
 	},
 
 	monster: class extends _DataUtilPropConfigMultiSource {
@@ -26662,7 +25143,7 @@ DataUtil = {
 		}
 
 		static _getAdditionalVersionsData (mon) {
-			if (!mon.variant) return [];
+			if (!mon.variant?.length) return [];
 
 			return mon.variant
 				.filter(it => it._version)
@@ -26912,6 +25393,7 @@ DataUtil = {
 		}
 
 		static async loadBrew ({isAddBaseRaces = true} = {}) {
+			if (typeof BrewUtil2 === "undefined") return {};
 			const rawSite = await DataUtil.race.loadRawJSON();
 			const brew = await BrewUtil2.pGetBrewProcessed();
 			return DataUtil.race.getPostProcessedBrewJson(rawSite, brew, {isAddBaseRaces});
@@ -27022,7 +25504,7 @@ DataUtil = {
 		}
 
 		static async loadBrew () {
-			const brew = await BrewUtil2.pGetBrewProcessed();
+			const brew = typeof BrewUtil2 !== "undefined" ? await BrewUtil2.pGetBrewProcessed() : {};
 			DataUtil.recipe.postProcessData(brew);
 			return brew;
 		}
@@ -27216,7 +25698,7 @@ DataUtil = {
 
 				const hash = UrlUtil.URL_TO_HASH_BUILDER["classFeature"]({name, className, classSource, level, source});
 
-				// Skip blacklisted
+				// Skip blocklisted
 				if (ExcludeUtil.isInitialised && ExcludeUtil.isExcluded(hash, "classFeature", source, {isNoCount: true})) continue;
 
 				const classFeature = await Renderer.hover.pCacheAndGet("classFeature", source, hash, {isCopy: true});
@@ -27267,7 +25749,7 @@ DataUtil = {
 
 				const hash = UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"]({name, className, classSource, subclassShortName, subclassSource, level, source});
 
-				// Skip blacklisted
+				// Skip blocklisted
 				if (ExcludeUtil.isInitialised && ExcludeUtil.isExcluded(hash, "subclassFeature", source, {isNoCount: true})) continue;
 
 				const subclassFeature = await Renderer.hover.pCacheAndGet("subclassFeature", source, hash, {isCopy: true});
@@ -27363,6 +25845,35 @@ DataUtil = {
 			return data;
 		}
 
+		static getUid (ent, opts) {
+			return this.packUidDeity(ent, opts);
+		}
+
+		static getNormalizedUid (uid, tag) {
+			const {name, pantheon, source} = this.unpackUidDeity(uid, tag, {isLower: true});
+			return [name, pantheon, source].join("|");
+		}
+
+		static unpackUidDeity (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [name, pantheon, source, displayText, ...others] = uid.split("|").map(it => it.trim());
+
+			pantheon = pantheon || "forgotten realms";
+			if (opts.isLower) pantheon = pantheon.toLowerCase();
+
+			source = source || Parser.getTagSource("deity", source);
+			if (opts.isLower) source = source.toLowerCase();
+
+			return {
+				name,
+				pantheon,
+				source,
+				displayText,
+				others,
+			};
+		}
+
 		static packUidDeity (it) {
 			// <name>|<pantheon>|<source>
 			const sourceDefault = Parser.getTagSource("deity");
@@ -27416,7 +25927,7 @@ DataUtil = {
 			return combined;
 		}
 
-		static _getConvertedEncounterTableName (group, tableRaw) { return `${group.name} Encounters (Levels ${tableRaw.minlvl}\u2014${tableRaw.maxlvl})`; }
+		static _getConvertedEncounterTableName (group, tableRaw) { return `${group.name} Encounters${tableRaw.minlvl && tableRaw.maxlvl ? ` (Levels ${tableRaw.minlvl}\u2014${tableRaw.maxlvl})` : ""}`; }
 		static _getConvertedNameTableName (group, tableRaw) { return `${group.name} Names - ${tableRaw.option}`; }
 
 		static _getConvertedEncounterOrNamesTable ({group, tableRaw, fnGetNameCaption, colLabel1}) {
@@ -27430,15 +25941,18 @@ DataUtil = {
 				colLabels: [
 					`d${tableRaw.diceType}`,
 					colLabel1,
-				],
+					tableRaw.rollAttitude ? `Attitude` : null,
+				].filter(Boolean),
 				colStyles: [
 					"col-2 text-center",
-					"col-10",
-				],
+					tableRaw.rollAttitude ? "col-8" : "col-10",
+					tableRaw.rollAttitude ? `col-2 text-center` : null,
+				].filter(Boolean),
 				rows: tableRaw.table.map(it => [
 					`${it.min}${it.max && it.max !== it.min ? `-${it.max}` : ""}`,
-					it.result.replace(RollerUtil.DICE_REGEX, (...m) => `{@dice ${m[0]}}`),
-				]),
+					it.result,
+					tableRaw.rollAttitude ? it.resultAttitude || "\u2014" : null,
+				].filter(Boolean)),
 			};
 		}
 	},
@@ -27456,7 +25970,7 @@ DataUtil = {
 		static _PAGE = UrlUtil.PG_VARIANTRULES;
 		static _FILENAME = "variantrules.json";
 
-		async loadJSON () {
+		static async loadJSON () {
 			const rawData = await super.loadJSON();
 			const rawDataGenerated = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/generated/gendata-variantrules.json`);
 
@@ -28658,7 +27172,7 @@ ExcludeUtil = {
 			ExcludeUtil._excludes = ExcludeUtil._excludes.filter(it => it.hash); // remove legacy rows
 		} catch (e) {
 			JqueryUtil.doToast({
-				content: "Error when loading content blacklist! Purged blacklist data. (See the log for more information.)",
+				content: "Error when loading content blocklist! Purged blocklist data. (See the log for more information.)",
 				type: "danger",
 			});
 			try {
@@ -28774,7 +27288,7 @@ ExcludeUtil = {
 	},
 
 	isAllContentExcluded (list) { return (!list.length && ExcludeUtil._excludeCount) || (list.length > 0 && list.length === ExcludeUtil._excludeCount); },
-	getAllContentBlacklistedHtml () { return `<div class="initial-message">(All content <a href="blacklist.html">blacklisted</a>)</div>`; },
+	getAllContentBlocklistedHtml () { return `<div class="initial-message">(All content <a href="blocklist.html">blocklisted</a>)</div>`; },
 
 	async _pSave () {
 		return StorageUtil.pSet(VeCt.STORAGE_EXCLUDES, ExcludeUtil._excludes);
@@ -28974,6 +27488,30 @@ DatetimeUtil._SECS_PER_YEAR = 31536000;
 DatetimeUtil._SECS_PER_DAY = 86400;
 DatetimeUtil._SECS_PER_HOUR = 3600;
 DatetimeUtil._SECS_PER_MINUTE = 60;
+
+EditorUtil = {
+	getTheme () {
+		const {isNight} = styleSwitcher.getSummary();
+		return isNight ? "ace/theme/tomorrow_night" : "ace/theme/textmate";
+	},
+
+	initEditor (id, additionalOpts = null) {
+		additionalOpts = additionalOpts || {};
+
+		const editor = ace.edit(id);
+		editor.setOptions({
+			theme: EditorUtil.getTheme(),
+			wrap: true,
+			showPrintMargin: false,
+			tabSize: 2,
+			...additionalOpts,
+		});
+
+		styleSwitcher.addFnOnChange(() => editor.setOptions({theme: EditorUtil.getTheme()}));
+
+		return editor;
+	},
+};
 
 // MISC WEBPAGE ONLOADS ================================================================================================
 if (!IS_VTT && typeof window !== "undefined") {
@@ -30336,7 +28874,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 	}
 }
 
-// TODO have this respect the blacklist?
+// TODO have this respect the blocklist?
 class SearchUiUtil {
 	static async pDoGlobalInit () {
 		elasticlunr.clearStopWords();
@@ -32216,7 +30754,7 @@ class SourceUiUtil {
 				${$iptName}
 			</div></div>
 			<div class="ui-source__row mb-2"><div class="col-12 ve-flex-v-center">
-				<span class="mr-2 ui-source__name help" title="An abbreviated form of the title. This will be shown in lists on the site, and in the top-right corner of statblocks or data entries; for example, 'MM'">Abbreviation</span>
+				<span class="mr-2 ui-source__name help" title="An abbreviated form of the title. This will be shown in lists on the site, and in the top-right corner of stat blocks or data entries; for example, 'MM'">Abbreviation</span>
 				${$iptAbv}
 			</div></div>
 			<div class="ui-source__row mb-2"><div class="col-12 ve-flex-v-center">
@@ -32843,17 +31381,17 @@ function MixinComponentHistory (Cls) {
 			this._histStackUndo = [];
 			this._histStackRedo = [];
 			this._isHistDisabled = true;
-			this._histPropBlacklist = new Set();
-			this._histPropWhitelist = null;
+			this._histPropBlocklist = new Set();
+			this._histPropAllowlist = null;
 
 			this._histInitialState = null;
 		}
 
 		set isHistDisabled (val) { this._isHistDisabled = val; }
-		addBlacklistProps (...props) { props.forEach(p => this._histPropBlacklist.add(p)); }
-		addWhitelistProps (...props) {
-			this._histPropWhitelist = this._histPropWhitelist || new Set();
-			props.forEach(p => this._histPropWhitelist.add(p));
+		addBlocklistProps (...props) { props.forEach(p => this._histPropBlocklist.add(p)); }
+		addAllowlistProps (...props) {
+			this._histPropAllowlist = this._histPropAllowlist || new Set();
+			props.forEach(p => this._histPropAllowlist.add(p));
 		}
 
 		/**
@@ -32866,8 +31404,8 @@ function MixinComponentHistory (Cls) {
 
 			this._addHookAll("state", prop => {
 				if (this._isHistDisabled) return;
-				if (this._histPropBlacklist.has(prop)) return;
-				if (this._histPropWhitelist && !this._histPropWhitelist.has(prop)) return;
+				if (this._histPropBlocklist.has(prop)) return;
+				if (this._histPropAllowlist && !this._histPropAllowlist.has(prop)) return;
 
 				this.recordHistory();
 			});
@@ -32877,8 +31415,8 @@ function MixinComponentHistory (Cls) {
 			const stateCopy = MiscUtil.copy(this._state);
 
 			// remove any un-tracked properties
-			this._histPropBlacklist.forEach(prop => delete stateCopy[prop]);
-			if (this._histPropWhitelist) Object.keys(stateCopy).filter(k => !this._histPropWhitelist.has(k)).forEach(k => delete stateCopy[k]);
+			this._histPropBlocklist.forEach(prop => delete stateCopy[prop]);
+			if (this._histPropAllowlist) Object.keys(stateCopy).filter(k => !this._histPropAllowlist.has(k)).forEach(k => delete stateCopy[k]);
 
 			this._histStackUndo.push(stateCopy);
 			this._histStackRedo = [];
@@ -32886,8 +31424,8 @@ function MixinComponentHistory (Cls) {
 
 		_histAddExcludedProperties (stateCopy) {
 			Object.entries(this._state).forEach(([k, v]) => {
-				if (this._histPropBlacklist.has(k)) return stateCopy[k] = v;
-				if (this._histPropWhitelist && !this._histPropWhitelist.has(k)) stateCopy[k] = v;
+				if (this._histPropBlocklist.has(k)) return stateCopy[k] = v;
+				if (this._histPropAllowlist && !this._histPropAllowlist.has(k)) stateCopy[k] = v;
 			});
 		}
 
@@ -33386,6 +31924,7 @@ class ComponentUiUtil {
 	 * @param [opts.isAllowNull] If null is allowed.
 	 * @param [opts.fnDisplay] Value display function.
 	 * @param [opts.displayNullAs] If null values are allowed, display them as this string.
+	 * @param [opts.fnGetAdditionalStyleClasses] Function which converts an item into CSS classes.
 	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and the select.
 	 * @param [opts.isDisabled] If the selector should be display-only
 	 * @return {JQuery}
@@ -33459,8 +31998,9 @@ class ComponentUiUtil {
 		const procValues = opts.isAllowNull ? [null, ...opts.values] : opts.values;
 		const metaOptions = procValues.map((v, i) => {
 			const display = v == null ? (opts.displayNullAs || "\u2014") : opts.fnDisplay ? opts.fnDisplay(v) : v;
+			const additionalStyleClasses = opts.fnGetAdditionalStyleClasses ? opts.fnGetAdditionalStyleClasses(v) : null;
 
-			const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""}" tabindex="${i}">${display}</div>`)
+			const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""} ${additionalStyleClasses ? additionalStyleClasses.join(" ") : ""}" tabindex="${i}">${display}</div>`)
 				.click(() => {
 					if (opts.isDisabled) return;
 
@@ -33610,8 +32150,8 @@ class ComponentUiUtil {
 			}
 		};
 
-		const setValues = (nxtValues, {isResetOnMissing = false} = {}) => {
-			if (CollectionUtil.deepEquals(values_, nxtValues)) return;
+		const setValues = (nxtValues, {isResetOnMissing = false, isForce = false} = {}) => {
+			if (!isForce && CollectionUtil.deepEquals(values_, nxtValues)) return;
 			values_ = nxtValues;
 			$sel.empty();
 			// Use native API for performance

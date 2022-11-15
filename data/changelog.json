@@ -331,5 +331,10 @@
 		"ver": "1.32.0",
 		"date": "2022-09-21",
 		"txt": "- Added \"JSON Importer\" tool, which allows entire JSON files to be imported in one go (particularly useful for homebrew) (thanks @ darthbeep)\n- Fixed issue when deleting folder and files at the same time in the Journal Cleaner (thanks @ darthbeep)\n- Fixed random crash during initialization (generally caused by poor connection) (thanks @ Riedel)"
+	},
+	{
+		"ver": "1.32.1",
+		"date": "2022-10-01",
+		"txt": "- Re-organized page options, collecting lighting options into a single tab, and giving Weather its own tab (thanks @ Redweller)\n- Added weather \"Tint Opacity\" slider (thanks @ Redweller)\n- Fixed default token being un-settable (thanks @ Redweller)\n- Improved Art Browser styling (thanks @ Redweller)\n- Fixed some dark mode styling (thanks @ Redweller)\n- Fixed Module Importer/Exporter regression where creature data would not be exported (thanks @ darthbeep and @ Redweller)\n- (Updated to latest data files; added support for latest data changes)"
 	}
 ]

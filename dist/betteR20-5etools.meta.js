@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         betteR20-5etools-dev
+// @name         betteR20-5etools
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.32.0.24
-// @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-5etools.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js
+// @version      1.32.1
+// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.meta.js
+// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang/Redweller
 
 // @match        https://app.roll20.net/editor
 // @match        https://app.roll20.net/editor#*

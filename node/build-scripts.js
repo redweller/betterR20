@@ -1,7 +1,7 @@
 const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 
-const SCRIPT_VERSION = "1.32.0.24";
+const SCRIPT_VERSION = "1.32.1.24";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
@@ -46,7 +46,7 @@ const HEADER_5ETOOLS = `// ==UserScript==
 // @updateURL    ${SCRIPT_REPO}betteR20-5etools.meta.js
 // @downloadURL  ${SCRIPT_REPO}betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang
+// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang/Redweller
 ${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start
