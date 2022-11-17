@@ -125,6 +125,13 @@ function initHTMLTokenEditor () {
                                 <$ } $>
                             </div>
                         </div>
+						<!-- Update default token button -->
+						<$ if(!this.isDefaultToken) { $>
+						<div class='tokeneditor__row'>
+							<button class='btn btn-primary update_default_token'>Update Default Token</button>
+							<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
+						</div>
+						<$ } $>
                         <!-- Tint Color -->
                         <div class='tokeneditor__row'>
                             <div class='tokeneditor__subheader'>
@@ -186,7 +193,7 @@ function initHTMLTokenEditor () {
                                             <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
                                         </svg>
                                     </button>
-                                    <ul aria-labelledby='dLabel' class='bar1 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar1' id='myDropdown'>
                                         <h4>Player Permissions</h4>
                                         <li class='dropdown-item'>
                                             <div class='checkbox'>
@@ -268,7 +275,7 @@ function initHTMLTokenEditor () {
                                             <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
                                         </svg>
                                     </button>
-                                    <ul aria-labelledby='dLabel' class='bar2 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar2' id='myDropdown'>
                                         <h4>Player Permissions</h4>
                                         <li class='dropdown-item'>
                                             <div class='checkbox'>
@@ -350,7 +357,7 @@ function initHTMLTokenEditor () {
                                             <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
                                         </svg>
                                     </button>
-                                    <ul aria-labelledby='dLabel' class='bar3 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar3' id='myDropdown'>
                                         <h4>Player Permissions</h4>
                                         <li class='dropdown-item'>
                                             <div class='checkbox'>
@@ -522,10 +529,10 @@ function initHTMLTokenEditor () {
                                 <!-- Token Aura Diameter -->
                                 <div class='tokenaura__diameter'>
                                     <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>diameter</h4>
+                                        <h4 class='text-capitalize'>radius</h4>
                                     </div>
                                     <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 1 diameter'>
+                                        <label title='input aura 1 radius'>
                                             <input class='aura1_radius' type='text'>
                                         </label>
                                         <div class='disable_box d-block'>
@@ -540,7 +547,7 @@ function initHTMLTokenEditor () {
                                     </div>
                                     <div class='tokeneditor__container'>
                                         <label title='select aura 1 shape'>
-                                            <select class='aura1_options text-capitalize'>
+                                            <select class='text-capitalize aura1_options'>
                                                 <option selected value='circle'>circle</option>
                                                 <option value='square'>square</option>
                                             </select>
@@ -553,7 +560,7 @@ function initHTMLTokenEditor () {
                                         <h4 class='text-capitalize'>tint color</h4>
                                     </div>
                                     <div class='tokeneditor__container'>
-                                        <input class='aura1_color colorpicker' type='text'>
+                                        <input class='colorpicker aura1_color' type='text'>
                                     </div>
                                 </div>
                             </div>
@@ -597,10 +604,10 @@ function initHTMLTokenEditor () {
                                 <!-- Token Aura Diameter -->
                                 <div class='tokenaura__diameter'>
                                     <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>diameter</h4>
+                                        <h4 class='text-capitalize'>radius</h4>
                                     </div>
                                     <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 2 diameter'>
+                                        <label title='input aura 2 radius'>
                                             <input class='aura2_radius' type='text'>
                                         </label>
                                         <div class='disable_box d-block'>
@@ -615,7 +622,7 @@ function initHTMLTokenEditor () {
                                     </div>
                                     <div class='tokeneditor__container'>
                                         <label title='select aura 2 shape'>
-                                            <select class='aura2_options text-capitalize'>
+                                            <select class='text-capitalize aura2_options'>
                                                 <option selected value='circle'>circle</option>
                                                 <option value='square'>square</option>
                                             </select>
@@ -628,7 +635,7 @@ function initHTMLTokenEditor () {
                                         <h4 class='text-capitalize'>tint color</h4>
                                     </div>
                                     <div class='tokeneditor__container'>
-                                        <input class='aura2_color colorpicker' type='text'>
+                                        <input class='colorpicker aura2_color' type='text'>
                                     </div>
                                 </div>
                             </div>
