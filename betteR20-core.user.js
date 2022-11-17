@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.32.0.25
+// @version      1.32.1.26
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -4337,6 +4337,7 @@ function baseToolModule () {
 						// eslint-disable-next-line no-console
 						console.log("Exporting characters...");
 						characters = d20.Campaign.characters.models.map(character => {
+							character.attribs.fetch(character.attribs);
 							const out = {
 								attributes: character.attributes,
 								attribs: character.attribs,
@@ -9369,6 +9370,13 @@ function initHTMLTokenEditor () {
                                 <$ } $>
                             </div>
                         </div>
+						<!-- Update default token button -->
+						<$ if(!this.isDefaultToken) { $>
+						<div class='tokeneditor__row'>
+							<button class='btn btn-primary update_default_token'>Update Default Token</button>
+							<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
+						</div>
+						<$ } $>
                         <!-- Tint Color -->
                         <div class='tokeneditor__row'>
                             <div class='tokeneditor__subheader'>
@@ -9430,7 +9438,7 @@ function initHTMLTokenEditor () {
                                             <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
                                         </svg>
                                     </button>
-                                    <ul aria-labelledby='dLabel' class='bar1 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar1' id='myDropdown'>
                                         <h4>Player Permissions</h4>
                                         <li class='dropdown-item'>
                                             <div class='checkbox'>
@@ -9512,7 +9520,7 @@ function initHTMLTokenEditor () {
                                             <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
                                         </svg>
                                     </button>
-                                    <ul aria-labelledby='dLabel' class='bar2 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar2' id='myDropdown'>
                                         <h4>Player Permissions</h4>
                                         <li class='dropdown-item'>
                                             <div class='checkbox'>
@@ -9594,7 +9602,7 @@ function initHTMLTokenEditor () {
                                             <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
                                         </svg>
                                     </button>
-                                    <ul aria-labelledby='dLabel' class='bar3 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar3' id='myDropdown'>
                                         <h4>Player Permissions</h4>
                                         <li class='dropdown-item'>
                                             <div class='checkbox'>
@@ -9766,10 +9774,10 @@ function initHTMLTokenEditor () {
                                 <!-- Token Aura Diameter -->
                                 <div class='tokenaura__diameter'>
                                     <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>diameter</h4>
+                                        <h4 class='text-capitalize'>radius</h4>
                                     </div>
                                     <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 1 diameter'>
+                                        <label title='input aura 1 radius'>
                                             <input class='aura1_radius' type='text'>
                                         </label>
                                         <div class='disable_box d-block'>
@@ -9784,7 +9792,7 @@ function initHTMLTokenEditor () {
                                     </div>
                                     <div class='tokeneditor__container'>
                                         <label title='select aura 1 shape'>
-                                            <select class='aura1_options text-capitalize'>
+                                            <select class='text-capitalize aura1_options'>
                                                 <option selected value='circle'>circle</option>
                                                 <option value='square'>square</option>
                                             </select>
@@ -9797,7 +9805,7 @@ function initHTMLTokenEditor () {
                                         <h4 class='text-capitalize'>tint color</h4>
                                     </div>
                                     <div class='tokeneditor__container'>
-                                        <input class='aura1_color colorpicker' type='text'>
+                                        <input class='colorpicker aura1_color' type='text'>
                                     </div>
                                 </div>
                             </div>
@@ -9841,10 +9849,10 @@ function initHTMLTokenEditor () {
                                 <!-- Token Aura Diameter -->
                                 <div class='tokenaura__diameter'>
                                     <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>diameter</h4>
+                                        <h4 class='text-capitalize'>radius</h4>
                                     </div>
                                     <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 2 diameter'>
+                                        <label title='input aura 2 radius'>
                                             <input class='aura2_radius' type='text'>
                                         </label>
                                         <div class='disable_box d-block'>
@@ -9859,7 +9867,7 @@ function initHTMLTokenEditor () {
                                     </div>
                                     <div class='tokeneditor__container'>
                                         <label title='select aura 2 shape'>
-                                            <select class='aura2_options text-capitalize'>
+                                            <select class='text-capitalize aura2_options'>
                                                 <option selected value='circle'>circle</option>
                                                 <option value='square'>square</option>
                                             </select>
@@ -9872,7 +9880,7 @@ function initHTMLTokenEditor () {
                                         <h4 class='text-capitalize'>tint color</h4>
                                     </div>
                                     <div class='tokeneditor__container'>
-                                        <input class='aura2_color colorpicker' type='text'>
+                                        <input class='colorpicker aura2_color' type='text'>
                                     </div>
                                 </div>
                             </div>
@@ -11990,7 +11998,7 @@ function initHTMLpageWeather () {
 				</div>
 				<div class="row">
 					<div class="col-xs-9">
-						<input type="range" name="weatherTintOpacity1" min="0.01" max="0.7" step="0.01"/>
+						<input type="range" name="weatherTintOpacity1" min="0.1" max="1" step="0.01"/>
 					</div>
 					<div class="col-xs-1">
 						<input class="page-input page-hint weatherTintOpacity1" disabled="" type="text"/>
@@ -12202,10 +12210,10 @@ function d20plusEngine () {
 			debouncedOverwrite();
 		}
 
-		$(`body`).on("mouseup", "li.dl", function (event) {
+		$(`body`).on("mouseup", "li.dl", (evt) => {
 			// process Dynamic Lighting tabs
-			const $dynLightTab = $(event.target).closest("li.dl");
-			const $isTabAnchor = $(event.target).closest("a");
+			const $dynLightTab = $(evt.target).closest("li.dl");
+			const $isTabAnchor = $(evt.target).closest("a");
 			if (!$dynLightTab.hasClass("active")) {
 				setTimeout(() => {
 					if (!$dynLightTab.hasClass("legacy")) $(`[data-tab=lighting]:visible`).click();
@@ -12214,16 +12222,17 @@ function d20plusEngine () {
 			}
 			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
 			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
-		}).on("mousedown", ".chooseablepage .js__settings-page", function () {
-			const $this = $(this);
-			d20plus.engine._lastSettingsPageId = $this.closest(`[data-pageid]`).data("pageid");
-		}).on("click", ".weather input[type=range]", function () {
-			if (this.name) $(`.${this.name}`).val(this.value);
+		}).on("mousedown", ".chooseablepage .js__settings-page", (evt) => {
+			const {currentTarget: target} = evt;
+			d20plus.engine._lastSettingsPageId = $(target).closest(`[data-pageid]`).data("pageid");
+		}).on("click", ".weather input[type=range]", (evt) => {
+			const {currentTarget: target} = evt;
+			if (target.name) $(`.${target.name}`).val(target.value);
 		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
 		}).on("click", ".nav-tabs--beta", () => {
 			d20plus.engine._populateCustomOptions();
-		}).on("click keyup", ".weather input, .views input, .weather .slider, .views .slider", () => {
+		}).on("click keyup", ".weather input, .weather .slider", () => {
 			d20plus.engine._updateCustomOptions();
 		});
 	};
@@ -12253,17 +12262,19 @@ function d20plusEngine () {
 				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
-					$saveBtn.off();
+					$saveBtn.off("click");
 					$saveBtn.on("click", d20plus.engine.applySettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
-					});
+					}).off("click");
 					// one property for two checkboxes, make sure they're synced
-					$(`.tab-content:visible .dyn_fog_update_on_drop`).parent().parent().on("click", function (event) {
-						if ($(event.target).parent().find(`input`).length) {
-							$(`.tab-content:visible .lightingupdate`)
-								.prop("checked", $(event.target).parent().find(`input`).prop("checked"));
+					const $dynlgtCheckbox = $(`.tab-content:visible .dyn_fog_update_on_drop`).parent().parent();
+					const $legacyCheckbox = $(`.tab-content:visible .lightingupdate`);
+					$dynlgtCheckbox.on("click", (evt) => {
+						const $checkTarget = $(evt.target).parent().find(`input`);
+						if ($checkTarget.length) {
+							$legacyCheckbox.prop("checked", $checkTarget.prop("checked"));
 						}
 					});
 				}
@@ -12271,11 +12282,11 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.applySettings = function (event) {
-		event.stopPropagation();
-		event.preventDefault();
+	d20plus.engine.applySettings = (evt) => {
+		evt.stopPropagation();
+		evt.preventDefault();
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!page || !page.get) return;
+		if (!page?.get) return;
 
 		const $dialog = $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		if (!$dialog[0]) return;
@@ -12289,7 +12300,7 @@ function d20plusEngine () {
 
 		page.save();
 
-		if (!$(this).hasClass("btn-apply")) {
+		if (!$(evt.currentTarget).hasClass("btn-apply")) {
 			// now we should close the dialog (effectively press Cancel)
 			$(`.ui-dialog-buttonpane:visible .btn:not(.btn-apply):not(.btn-primary)`).click();
 		} else {
@@ -12300,72 +12311,80 @@ function d20plusEngine () {
 		}
 	}
 
+	d20plus.engine._ROLL20_PAGE_OPTIONS = {
+		width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
+		height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
+		background_color: {class: ".pagebackground"},
+		scale_number: {id: "page-size-height-input", class: ".scale_number"},
+		scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
+		gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
+		snapping_increment: {id: "page-grid-cell-width-input", class: ".grid-cell-width.snappingincrement.units"},
+		gridcolor: {class: ".gridcolor"},
+		grid_opacity: {class: ".gridopacity a.ui-slider-handle"},
+		lightrestrictmove: {id: "page-dynamic-lighting-line-restrict-movement-toggle", class: ".lightrestrictmove"},
+		jukeboxtrigger: {id: "page-audio-play-on-load", class: ".pagejukeboxtrigger"},
+
+		dynamic_lighting_enabled: {class: ".dyn_fog_enabled"},
+		explorer_mode: {class: ".dyn_fog_autofog_mode"},
+		daylight_mode_enabled: {class: ".dyn_fog_global_illum"},
+		daylightModeOpacity: {class: ".dyn_fog_daylight_slider"},
+		// lightupdatedrop: {class: ".dyn_fog_update_on_drop"}, // same property
+		fog_opacity: {class: ".fogopacity a.ui-slider-handle"},
+
+		showdarkness: {class: ".darknessenabled"},
+
+		adv_fow_enabled: {class: ".advancedfowenabled"},
+		adv_fow_show_grid: {class: ".advancedfowshowgrid"},
+		adv_fow_dim_reveals: {class: ".dimlightreveals"},
+		adv_fow_gm_see_all: {id: "#afow_gm_see_all"},
+		adv_fow_grid_size: {class: ".advancedfowgridsize"},
+		showlighting: {class: ".lightingenabled"},
+		lightenforcelos: {class: ".lightenforcelos"},
+		lightupdatedrop: {class: ".lightingupdate"},
+		lightglobalillum: {class: ".lightglobalillum"},
+	};
+
 	d20plus.engine._saveNativeOptions = (page, dialog) => {
+		if (!page || !page.get) return;
+		const getSlider = (el) => {
+			if (el.style.left?.search("%") > 0) return el.style.left.slice(0, -1) / 100;
+			else {
+				// eslint-disable-next-line no-console
+				console.warn("%cD20Plus > ", "color: #b93032; font-size: large", "Can't process slider value");
+				return undefined;
+			}
+		}
 		const getVal = (el) => {
 			if (el.hasClass("dyn_fog_autofog_mode")) return el.prop("checked") ? "basic" : "off";
 			else if (el.is(":checkbox")) return !!el.prop("checked");
-			else if (el.tag() === "a") return el.get(0).style.left.slice(0, -1) / 100;
+			else if (el.hasClass("ui-slider-handle")) return getSlider(el.get(0));
 			else return el.val();
 		}
-		if (!page || !page.get) return;
-		const pageOptions = {
-			width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
-			height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
-			background_color: {class: ".pagebackground"},
-			scale_number: {id: "page-size-height-input", class: ".scale_number"},
-			scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
-			gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
-			snapping_increment: {id: "page-grid-cell-width-input", class: ".grid-cell-width.snappingincrement.units"},
-			gridcolor: {class: ".gridcolor"},
-			grid_opacity: {class: ".gridopacity a.ui-slider-handle"},
-			lightrestrictmove: {id: "page-dynamic-lighting-line-restrict-movement-toggle", class: ".lightrestrictmove"},
-			jukeboxtrigger: {id: "page-audio-play-on-load", class: ".pagejukeboxtrigger"},
-
-			dynamic_lighting_enabled: {class: ".dyn_fog_enabled"},
-			explorer_mode: {class: ".dyn_fog_autofog_mode"},
-			daylight_mode_enabled: {class: ".dyn_fog_global_illum"},
-			daylightModeOpacity: {class: ".dyn_fog_daylight_slider"},
-			// lightupdatedrop: {class: ".dyn_fog_update_on_drop"}, // same property
-			fog_opacity: {class: ".fogopacity a.ui-slider-handle"},
-
-			showdarkness: {class: ".darknessenabled"},
-
-			adv_fow_enabled: {class: ".advancedfowenabled"},
-			adv_fow_show_grid: {class: ".advancedfowshowgrid"},
-			adv_fow_dim_reveals: {class: ".dimlightreveals"},
-			adv_fow_gm_see_all: {id: "#afow_gm_see_all"},
-			adv_fow_grid_size: {class: ".advancedfowgridsize"},
-			showlighting: {class: ".lightingenabled"},
-			lightenforcelos: {class: ".lightenforcelos"},
-			lightupdatedrop: {class: ".lightingupdate"},
-			lightglobalillum: {class: ".lightglobalillum"},
-		};
-		for (const [name, option] of Object.entries(pageOptions)) {
+		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
 			const $e = dialog.find(option.class || option.id);
 			const val = getVal($e);
-			page.attributes[name] = val;
-		}
+			if (val !== undefined) page.attributes[name] = val;
+		});
 	}
 
-	d20plus.engine._saveCustomOptions = (page) => {
-		const values = d20plus.engine._customOptions[page.id];
-		$.each(values, (name, val) => {
-			if (name === "_defaults") return;
-			if (val && val !== values._defaults[name]) {
-				page.attributes[`bR20cfg_${name}`] = val;
-			} else {
-				if (page.attributes.hasOwnProperty(`bR20cfg_${name}`)) {
-					page.attributes[`bR20cfg_${name}`] = null;
-				}
-			}
-		});
+	d20plus.engine._preserveCustomOptions = (page) => {
+		if (!page || !page.get) return;
+		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
+		d20plus.engine._customOptions[page.id] = { _defaults: {} };
+		[
+			"weather",
+			"views",
+		].forEach(category => Object.entries(d20plus[category].props).forEach(([name, deflt]) => {
+			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
+		}));
 	}
 
 	d20plus.engine._populateCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (!d20plus.engine._customOptions[page.id]) return;
-		$.each(d20plus.engine._customOptions[page.id], (name, val) => {
+		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				if ($e.is(":checkbox")) {
@@ -12386,7 +12405,7 @@ function d20plusEngine () {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (!d20plus.engine._customOptions[page.id]) return;
-		$.each(d20plus.engine._customOptions[page.id], (name, val) => {
+		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
@@ -12395,17 +12414,18 @@ function d20plusEngine () {
 		});
 	}
 
-	d20plus.engine._preserveCustomOptions = (page) => {
-		if (!page || !page.get) return;
-		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
-		d20plus.engine._customOptions[page.id] = { _defaults: {} };
-		[
-			"weather",
-			"views",
-		].forEach(category => $.each(d20plus[category].props, (name, deflt) => {
-			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
-			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
-		}));
+	d20plus.engine._saveCustomOptions = (page) => {
+		const values = d20plus.engine._customOptions[page.id];
+		Object.entries(values).forEach(([name, val]) => {
+			if (name === "_defaults") return;
+			if (val && val !== values._defaults[name]) {
+				page.attributes[`bR20cfg_${name}`] = val;
+			} else {
+				if (page.attributes.hasOwnProperty(`bR20cfg_${name}`)) {
+					page.attributes[`bR20cfg_${name}`] = null;
+				}
+			}
+		});
 	}
 
 	d20plus.engine.initQuickSearch = ($iptSearch, $outSearch) => {
@@ -14311,9 +14331,9 @@ function baseWeather () {
 		function getTintColor (page) {
 			const tintEnabled = page.get("bR20cfg_weatherTint1");
 			if (tintEnabled) {
-				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1");
-				const tintOpacityHex = tintOpacity ? (14 + Math.round((243 - 16) * tintOpacity)).toString(16) : undefined;
-				return `${(page.get("bR20cfg_weatherTintColor1") || "#4c566d")}${(tintOpacityHex || "80")}`;
+				const tintOpacity = page.get("bR20cfg_weatherTintOpacity1") || d20plus.weather.props.weatherTintOpacity1;
+				const tintOpacityHex = tintOpacity ? Math.round(255 * tintOpacity).toString(16) : 80;
+				return `${(page.get("bR20cfg_weatherTintColor1") || d20plus.weather.props.weatherTintColor1)}${tintOpacityHex}`;
 			} else return null;
 		}
 
@@ -15821,7 +15841,7 @@ function baseCss () {
 			r: "margin: 0px 0px 0px 3px; max-width: 37px; overflow: hidden; box-sizing: border-box;",
 		},
 		{
-			s: ".initiativedialog span.difficulty",
+			s: ".initiativedialog .ui-dialog-buttonpane span.difficulty",
 			r: "width: 40%; margin-top: -9px; font-size: 14px;",
 		},
 		// Spacing between token-actions
@@ -16153,6 +16173,11 @@ function baseCss () {
 		{
 			s: "#d20plus-artfolder .library-item:hover",
 			r: "background-color: rgba(100,100,100,0.5);",
+		},
+		// fix global dialog height for art browser
+		{
+			s: ".ui-dialog",
+			r: "max-height:98vh;",
 		},
 	]);
 
@@ -21599,6 +21624,7 @@ SRC_SAiS = "SAiS";
 SRC_AAG = "AAG";
 SRC_BAM = "BAM";
 SRC_LoX = "LoX";
+SRC_DoSI = "DoSI";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
@@ -21814,6 +21840,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_SAiS] = "Spelljammer: Adventures in Space";
 Parser.SOURCE_JSON_TO_FULL[SRC_AAG] = "Astral Adventurer's Guide";
 Parser.SOURCE_JSON_TO_FULL[SRC_BAM] = "Boo's Astral Menagerie";
 Parser.SOURCE_JSON_TO_FULL[SRC_LoX] = "Light of Xaryxis";
+Parser.SOURCE_JSON_TO_FULL[SRC_DoSI] = "Dragons of Stormwreck Isle";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
@@ -22007,6 +22034,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_SAiS] = "SAiS";
 Parser.SOURCE_JSON_TO_ABV[SRC_AAG] = "AAG";
 Parser.SOURCE_JSON_TO_ABV[SRC_BAM] = "BAM";
 Parser.SOURCE_JSON_TO_ABV[SRC_LoX] = "LoX";
+Parser.SOURCE_JSON_TO_ABV[SRC_DoSI] = "DoSI";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_DUNGEON_KIT] = "ScDun";
@@ -22199,6 +22227,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_SAiS] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_AAG] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_BAM] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_LoX] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[SRC_DoSI] = "2022-07-31";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
@@ -22371,6 +22400,7 @@ Parser.SOURCES_ADVENTURES = new Set([
 	SRC_JttRC,
 	SRC_SjA,
 	SRC_LoX,
+	SRC_DoSI,
 
 	SRC_AWM,
 ]);
@@ -22578,6 +22608,7 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	SRC_CRCotN,
 	SRC_JttRC,
 	SRC_LoX,
+	SRC_DoSI,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
@@ -22788,7 +22819,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.167.2"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.168.1"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -24279,11 +24310,11 @@ MiscUtil = {
 		return new Promise(resolve => setTimeout(() => resolve(resolveAs), msecs));
 	},
 
-	GENERIC_WALKER_ENTRIES_KEY_BLACKLIST: new Set(["caption", "type", "colLabels", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path"]),
+	GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST: new Set(["caption", "type", "colLabels", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path"]),
 
 	/**
 	 * @param [opts]
-	 * @param [opts.keyBlacklist]
+	 * @param [opts.keyBlocklist]
 	 * @param [opts.isAllowDeleteObjects] If returning `undefined` from an object handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteArrays] If returning `undefined` from an array handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteBooleans] (Unimplemented) // TODO
@@ -24298,7 +24329,7 @@ MiscUtil = {
 
 		if (opts.isBreakOnReturn && !opts.isNoModification) throw new Error(`"isBreakOnReturn" may only be used in "isNoModification" mode!`);
 
-		const keyBlacklist = opts.keyBlacklist || new Set();
+		const keyBlocklist = opts.keyBlocklist || new Set();
 
 		const getMappedPrimitive = (obj, primitiveHandlers, lastKey, stack, prop, propPre, propPost) => {
 			if (primitiveHandlers[propPre]) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers[propPre], obj, lastKey, stack});
@@ -24314,7 +24345,7 @@ MiscUtil = {
 		const doObjectRecurse = (obj, primitiveHandlers, stack) => {
 			const didBreak = Object.keys(obj).some(k => {
 				const v = obj[k];
-				if (keyBlacklist.has(k)) return;
+				if (keyBlocklist.has(k)) return;
 
 				const out = fn(v, primitiveHandlers, k, stack);
 				if (out === VeCt.SYM_WALKER_BREAK) return true;
@@ -24435,7 +24466,7 @@ MiscUtil = {
 	/**
 	 * TODO refresh to match sync version
 	 * @param [opts]
-	 * @param [opts.keyBlacklist]
+	 * @param [opts.keyBlocklist]
 	 * @param [opts.isAllowDeleteObjects] If returning `undefined` from an object handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteArrays] If returning `undefined` from an array handler should be treated as a delete.
 	 * @param [opts.isAllowDeleteBooleans] (Unimplemented) // TODO
@@ -24446,7 +24477,7 @@ MiscUtil = {
 	 */
 	getAsyncWalker (opts) {
 		opts = opts || {};
-		const keyBlacklist = opts.keyBlacklist || new Set();
+		const keyBlocklist = opts.keyBlocklist || new Set();
 
 		const pFn = async (obj, primitiveHandlers, lastKey, stack) => {
 			if (obj == null) {
@@ -24457,7 +24488,7 @@ MiscUtil = {
 			const pDoObjectRecurse = async () => {
 				await Object.keys(obj).pSerialAwaitMap(async k => {
 					const v = obj[k];
-					if (keyBlacklist.has(k)) return;
+					if (keyBlocklist.has(k)) return;
 					const out = await pFn(v, primitiveHandlers, k, stack);
 					if (!opts.isNoModification) obj[k] = out;
 				});
@@ -24898,6 +24929,8 @@ UrlUtil = {
 
 	categoryToPage (category) { return UrlUtil.CAT_TO_PAGE[category]; },
 	categoryToHoverPage (category) { return UrlUtil.CAT_TO_HOVER_PAGE[category] || UrlUtil.categoryToPage(category); },
+
+	pageToDisplayPage (page) { return UrlUtil.PG_TO_NAME[page] || page; },
 
 	getFilename (url) { return url.slice(url.lastIndexOf("/") + 1); },
 
@@ -25963,7 +25996,7 @@ DataUtil = {
 			default: {
 				const impl = DataUtil[prop];
 				if (impl && (impl.getDataUrl || impl.loadJSON)) {
-					const data = await (impl.loadJSON ? impl.loadJSON : DataUtil.loadJSON(impl.getDataUrl()));
+					const data = await (impl.loadJSON ? impl.loadJSON() : DataUtil.loadJSON(impl.getDataUrl()));
 					if (data[prop] && data[prop].some(it => it.source === source)) return data;
 
 					return DataUtil.pLoadBrewBySource(source);
@@ -26057,7 +26090,8 @@ DataUtil = {
 		},
 
 		getUid (ent, {isMaintainCase = false} = {}) {
-			const {name, source} = ent;
+			const {name} = ent;
+			const source = SourceUtil.getEntitySource(ent);
 			if (!name || !source) throw new Error(`Entity did not have a name and source!`);
 			const out = [name, source].join("|");
 			if (isMaintainCase) return out;
@@ -26753,10 +26787,25 @@ DataUtil = {
 	},
 
 	proxy: {
-		getVersions (prop, ent) { return (DataUtil[prop]?.getVersions || DataUtil.generic.getVersions)(ent); },
-		unpackUid (prop, uid, tag, opts) { return (DataUtil[prop]?.unpackUid || DataUtil.generic.unpackUid)(uid, tag, opts); },
-		getNormalizedUid (prop, uid, tag, opts) { return (DataUtil[prop]?.getNormalizedUid || DataUtil.generic.getNormalizedUid)(uid, tag, opts); },
-		getUid (prop, ent, opts) { return (DataUtil[prop]?.getUid || DataUtil.generic.getUid)(ent, opts); },
+		getVersions (prop, ent) {
+			if (DataUtil[prop]?.getVersions) return DataUtil[prop]?.getVersions(ent);
+			return DataUtil.generic.getVersions(ent);
+		},
+
+		unpackUid (prop, uid, tag, opts) {
+			if (DataUtil[prop]?.unpackUid) return DataUtil[prop]?.unpackUid(uid, tag, opts);
+			return DataUtil.generic.unpackUid(uid, tag, opts);
+		},
+
+		getNormalizedUid (prop, uid, tag, opts) {
+			if (DataUtil[prop]?.getNormalizedUid) return DataUtil[prop].getNormalizedUid(uid, tag, opts);
+			return DataUtil.generic.getNormalizedUid(uid, tag, opts);
+		},
+
+		getUid (prop, ent, opts) {
+			if (DataUtil[prop]?.getUid) return DataUtil[prop].getUid(ent, opts);
+			return DataUtil.generic.getUid(ent, opts);
+		},
 	},
 
 	monster: class extends _DataUtilPropConfigMultiSource {
@@ -26790,7 +26839,7 @@ DataUtil = {
 		}
 
 		static _getAdditionalVersionsData (mon) {
-			if (!mon.variant) return [];
+			if (!mon.variant?.length) return [];
 
 			return mon.variant
 				.filter(it => it._version)
@@ -27040,6 +27089,7 @@ DataUtil = {
 		}
 
 		static async loadBrew ({isAddBaseRaces = true} = {}) {
+			if (typeof BrewUtil2 === "undefined") return {};
 			const rawSite = await DataUtil.race.loadRawJSON();
 			const brew = await BrewUtil2.pGetBrewProcessed();
 			return DataUtil.race.getPostProcessedBrewJson(rawSite, brew, {isAddBaseRaces});
@@ -27150,7 +27200,7 @@ DataUtil = {
 		}
 
 		static async loadBrew () {
-			const brew = await BrewUtil2.pGetBrewProcessed();
+			const brew = typeof BrewUtil2 !== "undefined" ? await BrewUtil2.pGetBrewProcessed() : {};
 			DataUtil.recipe.postProcessData(brew);
 			return brew;
 		}
@@ -27344,7 +27394,7 @@ DataUtil = {
 
 				const hash = UrlUtil.URL_TO_HASH_BUILDER["classFeature"]({name, className, classSource, level, source});
 
-				// Skip blacklisted
+				// Skip blocklisted
 				if (ExcludeUtil.isInitialised && ExcludeUtil.isExcluded(hash, "classFeature", source, {isNoCount: true})) continue;
 
 				const classFeature = await Renderer.hover.pCacheAndGet("classFeature", source, hash, {isCopy: true});
@@ -27395,7 +27445,7 @@ DataUtil = {
 
 				const hash = UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"]({name, className, classSource, subclassShortName, subclassSource, level, source});
 
-				// Skip blacklisted
+				// Skip blocklisted
 				if (ExcludeUtil.isInitialised && ExcludeUtil.isExcluded(hash, "subclassFeature", source, {isNoCount: true})) continue;
 
 				const subclassFeature = await Renderer.hover.pCacheAndGet("subclassFeature", source, hash, {isCopy: true});
@@ -27491,6 +27541,35 @@ DataUtil = {
 			return data;
 		}
 
+		static getUid (ent, opts) {
+			return this.packUidDeity(ent, opts);
+		}
+
+		static getNormalizedUid (uid, tag) {
+			const {name, pantheon, source} = this.unpackUidDeity(uid, tag, {isLower: true});
+			return [name, pantheon, source].join("|");
+		}
+
+		static unpackUidDeity (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [name, pantheon, source, displayText, ...others] = uid.split("|").map(it => it.trim());
+
+			pantheon = pantheon || "forgotten realms";
+			if (opts.isLower) pantheon = pantheon.toLowerCase();
+
+			source = source || Parser.getTagSource("deity", source);
+			if (opts.isLower) source = source.toLowerCase();
+
+			return {
+				name,
+				pantheon,
+				source,
+				displayText,
+				others,
+			};
+		}
+
 		static packUidDeity (it) {
 			// <name>|<pantheon>|<source>
 			const sourceDefault = Parser.getTagSource("deity");
@@ -27544,7 +27623,7 @@ DataUtil = {
 			return combined;
 		}
 
-		static _getConvertedEncounterTableName (group, tableRaw) { return `${group.name} Encounters (Levels ${tableRaw.minlvl}\u2014${tableRaw.maxlvl})`; }
+		static _getConvertedEncounterTableName (group, tableRaw) { return `${group.name} Encounters${tableRaw.minlvl && tableRaw.maxlvl ? ` (Levels ${tableRaw.minlvl}\u2014${tableRaw.maxlvl})` : ""}`; }
 		static _getConvertedNameTableName (group, tableRaw) { return `${group.name} Names - ${tableRaw.option}`; }
 
 		static _getConvertedEncounterOrNamesTable ({group, tableRaw, fnGetNameCaption, colLabel1}) {
@@ -27558,15 +27637,18 @@ DataUtil = {
 				colLabels: [
 					`d${tableRaw.diceType}`,
 					colLabel1,
-				],
+					tableRaw.rollAttitude ? `Attitude` : null,
+				].filter(Boolean),
 				colStyles: [
 					"col-2 text-center",
-					"col-10",
-				],
+					tableRaw.rollAttitude ? "col-8" : "col-10",
+					tableRaw.rollAttitude ? `col-2 text-center` : null,
+				].filter(Boolean),
 				rows: tableRaw.table.map(it => [
 					`${it.min}${it.max && it.max !== it.min ? `-${it.max}` : ""}`,
-					it.result.replace(RollerUtil.DICE_REGEX, (...m) => `{@dice ${m[0]}}`),
-				]),
+					it.result,
+					tableRaw.rollAttitude ? it.resultAttitude || "\u2014" : null,
+				].filter(Boolean)),
 			};
 		}
 	},
@@ -27584,7 +27666,7 @@ DataUtil = {
 		static _PAGE = UrlUtil.PG_VARIANTRULES;
 		static _FILENAME = "variantrules.json";
 
-		async loadJSON () {
+		static async loadJSON () {
 			const rawData = await super.loadJSON();
 			const rawDataGenerated = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/generated/gendata-variantrules.json`);
 
@@ -28786,7 +28868,7 @@ ExcludeUtil = {
 			ExcludeUtil._excludes = ExcludeUtil._excludes.filter(it => it.hash); // remove legacy rows
 		} catch (e) {
 			JqueryUtil.doToast({
-				content: "Error when loading content blacklist! Purged blacklist data. (See the log for more information.)",
+				content: "Error when loading content blocklist! Purged blocklist data. (See the log for more information.)",
 				type: "danger",
 			});
 			try {
@@ -28902,7 +28984,7 @@ ExcludeUtil = {
 	},
 
 	isAllContentExcluded (list) { return (!list.length && ExcludeUtil._excludeCount) || (list.length > 0 && list.length === ExcludeUtil._excludeCount); },
-	getAllContentBlacklistedHtml () { return `<div class="initial-message">(All content <a href="blacklist.html">blacklisted</a>)</div>`; },
+	getAllContentBlocklistedHtml () { return `<div class="initial-message">(All content <a href="blocklist.html">blocklisted</a>)</div>`; },
 
 	async _pSave () {
 		return StorageUtil.pSet(VeCt.STORAGE_EXCLUDES, ExcludeUtil._excludes);
@@ -29102,6 +29184,30 @@ DatetimeUtil._SECS_PER_YEAR = 31536000;
 DatetimeUtil._SECS_PER_DAY = 86400;
 DatetimeUtil._SECS_PER_HOUR = 3600;
 DatetimeUtil._SECS_PER_MINUTE = 60;
+
+EditorUtil = {
+	getTheme () {
+		const {isNight} = styleSwitcher.getSummary();
+		return isNight ? "ace/theme/tomorrow_night" : "ace/theme/textmate";
+	},
+
+	initEditor (id, additionalOpts = null) {
+		additionalOpts = additionalOpts || {};
+
+		const editor = ace.edit(id);
+		editor.setOptions({
+			theme: EditorUtil.getTheme(),
+			wrap: true,
+			showPrintMargin: false,
+			tabSize: 2,
+			...additionalOpts,
+		});
+
+		styleSwitcher.addFnOnChange(() => editor.setOptions({theme: EditorUtil.getTheme()}));
+
+		return editor;
+	},
+};
 
 // MISC WEBPAGE ONLOADS ================================================================================================
 if (!IS_VTT && typeof window !== "undefined") {
@@ -30464,7 +30570,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 	}
 }
 
-// TODO have this respect the blacklist?
+// TODO have this respect the blocklist?
 class SearchUiUtil {
 	static async pDoGlobalInit () {
 		elasticlunr.clearStopWords();
@@ -32344,7 +32450,7 @@ class SourceUiUtil {
 				${$iptName}
 			</div></div>
 			<div class="ui-source__row mb-2"><div class="col-12 ve-flex-v-center">
-				<span class="mr-2 ui-source__name help" title="An abbreviated form of the title. This will be shown in lists on the site, and in the top-right corner of statblocks or data entries; for example, 'MM'">Abbreviation</span>
+				<span class="mr-2 ui-source__name help" title="An abbreviated form of the title. This will be shown in lists on the site, and in the top-right corner of stat blocks or data entries; for example, 'MM'">Abbreviation</span>
 				${$iptAbv}
 			</div></div>
 			<div class="ui-source__row mb-2"><div class="col-12 ve-flex-v-center">
@@ -32971,17 +33077,17 @@ function MixinComponentHistory (Cls) {
 			this._histStackUndo = [];
 			this._histStackRedo = [];
 			this._isHistDisabled = true;
-			this._histPropBlacklist = new Set();
-			this._histPropWhitelist = null;
+			this._histPropBlocklist = new Set();
+			this._histPropAllowlist = null;
 
 			this._histInitialState = null;
 		}
 
 		set isHistDisabled (val) { this._isHistDisabled = val; }
-		addBlacklistProps (...props) { props.forEach(p => this._histPropBlacklist.add(p)); }
-		addWhitelistProps (...props) {
-			this._histPropWhitelist = this._histPropWhitelist || new Set();
-			props.forEach(p => this._histPropWhitelist.add(p));
+		addBlocklistProps (...props) { props.forEach(p => this._histPropBlocklist.add(p)); }
+		addAllowlistProps (...props) {
+			this._histPropAllowlist = this._histPropAllowlist || new Set();
+			props.forEach(p => this._histPropAllowlist.add(p));
 		}
 
 		/**
@@ -32994,8 +33100,8 @@ function MixinComponentHistory (Cls) {
 
 			this._addHookAll("state", prop => {
 				if (this._isHistDisabled) return;
-				if (this._histPropBlacklist.has(prop)) return;
-				if (this._histPropWhitelist && !this._histPropWhitelist.has(prop)) return;
+				if (this._histPropBlocklist.has(prop)) return;
+				if (this._histPropAllowlist && !this._histPropAllowlist.has(prop)) return;
 
 				this.recordHistory();
 			});
@@ -33005,8 +33111,8 @@ function MixinComponentHistory (Cls) {
 			const stateCopy = MiscUtil.copy(this._state);
 
 			// remove any un-tracked properties
-			this._histPropBlacklist.forEach(prop => delete stateCopy[prop]);
-			if (this._histPropWhitelist) Object.keys(stateCopy).filter(k => !this._histPropWhitelist.has(k)).forEach(k => delete stateCopy[k]);
+			this._histPropBlocklist.forEach(prop => delete stateCopy[prop]);
+			if (this._histPropAllowlist) Object.keys(stateCopy).filter(k => !this._histPropAllowlist.has(k)).forEach(k => delete stateCopy[k]);
 
 			this._histStackUndo.push(stateCopy);
 			this._histStackRedo = [];
@@ -33014,8 +33120,8 @@ function MixinComponentHistory (Cls) {
 
 		_histAddExcludedProperties (stateCopy) {
 			Object.entries(this._state).forEach(([k, v]) => {
-				if (this._histPropBlacklist.has(k)) return stateCopy[k] = v;
-				if (this._histPropWhitelist && !this._histPropWhitelist.has(k)) stateCopy[k] = v;
+				if (this._histPropBlocklist.has(k)) return stateCopy[k] = v;
+				if (this._histPropAllowlist && !this._histPropAllowlist.has(k)) stateCopy[k] = v;
 			});
 		}
 
@@ -33514,6 +33620,7 @@ class ComponentUiUtil {
 	 * @param [opts.isAllowNull] If null is allowed.
 	 * @param [opts.fnDisplay] Value display function.
 	 * @param [opts.displayNullAs] If null values are allowed, display them as this string.
+	 * @param [opts.fnGetAdditionalStyleClasses] Function which converts an item into CSS classes.
 	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and the select.
 	 * @param [opts.isDisabled] If the selector should be display-only
 	 * @return {JQuery}
@@ -33587,8 +33694,9 @@ class ComponentUiUtil {
 		const procValues = opts.isAllowNull ? [null, ...opts.values] : opts.values;
 		const metaOptions = procValues.map((v, i) => {
 			const display = v == null ? (opts.displayNullAs || "\u2014") : opts.fnDisplay ? opts.fnDisplay(v) : v;
+			const additionalStyleClasses = opts.fnGetAdditionalStyleClasses ? opts.fnGetAdditionalStyleClasses(v) : null;
 
-			const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""}" tabindex="${i}">${display}</div>`)
+			const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""} ${additionalStyleClasses ? additionalStyleClasses.join(" ") : ""}" tabindex="${i}">${display}</div>`)
 				.click(() => {
 					if (opts.isDisabled) return;
 
@@ -33738,8 +33846,8 @@ class ComponentUiUtil {
 			}
 		};
 
-		const setValues = (nxtValues, {isResetOnMissing = false} = {}) => {
-			if (CollectionUtil.deepEquals(values_, nxtValues)) return;
+		const setValues = (nxtValues, {isResetOnMissing = false, isForce = false} = {}) => {
+			if (!isForce && CollectionUtil.deepEquals(values_, nxtValues)) return;
 			values_ = nxtValues;
 			$sel.empty();
 			// Use native API for performance
