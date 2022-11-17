@@ -1,7 +1,7 @@
 const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 
-const SCRIPT_VERSION = "1.32.1.24";
+const SCRIPT_VERSION = "1.32.1.25";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
