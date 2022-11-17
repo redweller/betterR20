@@ -886,6 +886,11 @@ function baseCss () {
 			s: "#d20plus-artfolder .library-item:hover",
 			r: "background-color: rgba(100,100,100,0.5);",
 		},
+		// fix global dialog height for art browser
+		{
+			s: ".ui-dialog",
+			r: "max-height:98vh;",
+		},
 	]);
 
 	// Animator CSS -- `anm__` prefix
