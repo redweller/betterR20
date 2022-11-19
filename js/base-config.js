@@ -58,9 +58,16 @@ function baseConfig () {
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
+		"_player": true,
+		"showCustomArtPreview": {
+			"name": "Show Custom Art Previews",
+			"default": true,
+			"_type": "boolean",
+		},
 		"toolbarOpacity": {
 			"name": "Horizontal Toolbar Opacity",
 			"default": 100,
+			"_player": true,
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,

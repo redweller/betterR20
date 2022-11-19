@@ -19,11 +19,7 @@ JSON_DATA = {};
 CONFIG_OPTIONS = {
 	interface: {
 		_name: "Interface",
-		showCustomArtPreview: {
-			name: "Show Custom Art Previews",
-			default: true,
-			_type: "boolean",
-		},
+		_player: true,
 	},
 };
 
