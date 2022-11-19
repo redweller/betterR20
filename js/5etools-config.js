@@ -273,11 +273,6 @@ function tools5eConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
-		"minifyTracker": {
-			"name": "Shrink Initiative Tracker Text",
-			"default": false,
-			"_type": "boolean",
-		},
 		"showDifficulty": {
 			"name": "Show Difficulty in Tracker",
 			"default": true,
@@ -328,7 +323,6 @@ function tools5eConfig () {
 	d20plus.cfg5e.handleConfigChange = function (isSyncingPlayer) {
 		if (!isSyncingPlayer) d20plus.ut.log("Applying config");
 		if (window.is_gm) {
-			d20plus.setInitiativeShrink(d20plus.cfg.get("interface", "minifyTracker"));
 			d20.Campaign.initiativewindow.rebuildInitiativeList();
 			d20plus.updateDifficulty();
 			if (d20plus.art.refreshList) d20plus.art.refreshList();

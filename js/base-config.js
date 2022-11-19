@@ -84,6 +84,12 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 		},
+		"minifyTracker": {
+			"name": "Shrink Initiative Tracker Text",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
 			"default": false,
@@ -691,8 +697,20 @@ function baseConfig () {
 	};
 	*/
 
+	d20plus.cfg.handleInitiativeShrink = () => {
+		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
+		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
+		if (doShrink) {
+			dynamicStyle.html(d20plus.css.miniInitStyle);
+		} else {
+			dynamicStyle.html("");
+		}
+	}
+
 	d20plus.cfg.baseHandleConfigChange = () => {
 		// d20plus.cfg._handleWeatherConfigChange();
+		d20plus.cfg.handleInitiativeShrink();
+
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});

@@ -1157,6 +1157,53 @@ function baseCss () {
 			`,
 		},
 	]);
+
+	d20plus.css.miniInitStyle = `
+		#initiativewindow button.initmacrobutton {
+			padding: 1px 4px;
+		}
+
+		#initiativewindow input {
+			font-size: 8px;
+		}
+
+		#initiativewindow ul li span.name {
+			font-size: 13px;
+			padding-top: 0;
+			padding-left: 4px;
+			margin-top: -3px;
+		}
+
+		#initiativewindow ul li img {
+			min-height: 15px;
+			max-height: 15px;
+		}
+
+		#initiativewindow ul li {
+			min-height: 15px;
+		}
+
+		#initiativewindow div.header span.initiative,
+		#initiativewindow ul li span.initiative,
+		#initiativewindow ul li span.tracker-col,
+		#initiativewindow div.header span.tracker-col,
+		#initiativewindow div.header span.initmacro,
+		#initiativewindow ul li span.initmacro {
+			font-size: 10px;
+			font-weight: bold;
+			text-align: right;
+			float: right;
+			padding: 0 5px;
+			width: 7%;
+			min-height: 20px;
+			display: block;
+			overflow: hidden;
+		}
+
+		#initiativewindow ul li .controls {
+			padding: 0 3px;
+		}
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);
