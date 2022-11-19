@@ -66,6 +66,18 @@ function baseConfig () {
 			"__sliderMax": 100,
 			"__sliderStep": 1,
 		},
+		"hideDarkModeSwitch": {
+			"name": "Hide Roll20's Dark Mode switch",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"hideHelpButton": {
+			"name": "Hide Help Button on floating toolbar",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
 		"quickLayerButtons": {
 			"name": "Add Quick Layer Buttons",
 			"default": true,
