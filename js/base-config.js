@@ -727,7 +727,6 @@ function baseConfig () {
 	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
-		// d20plus.cfg._handleWeatherConfigChange();
 		d20plus.cfg.handleInitiativeShrink();
 
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
