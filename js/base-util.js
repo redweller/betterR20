@@ -542,7 +542,7 @@ function baseUtil () {
 	d20plus.ut.dynamicStyles = (slug) => {
 		if (!d20plus.css.dynamic) d20plus.css.dynamic = {};
 		if (!d20plus.css.dynamic[slug]) {
-			d20plus.css.dynamic[slug] = $("<style></style>").appendTo("body");
+			d20plus.css.dynamic[slug] = $("<style></style>").appendTo(document.body);
 		}
 		return d20plus.css.dynamic[slug];
 	}
