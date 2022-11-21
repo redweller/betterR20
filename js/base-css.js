@@ -425,6 +425,10 @@ function baseCss () {
 			s: "#floatinglayerbar li",
 			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
 		},
+		{
+			s: ".ui-dialog .artr__side, .ui-dialog .artr__view, .ui-dialog .artr__side__tag_grid, .ui-dialog .artr__side__head",
+			r: "background-color: unset;",
+		},
 		// Fix page options scrollbar color in darkmode on Chrome
 		{
 			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
@@ -965,6 +969,11 @@ function baseCss () {
 		{
 			s: "#d20plus-artfolder .library-item:hover",
 			r: "background-color: rgba(100,100,100,0.5);",
+		},
+		// fix global dialog height for art browser
+		{
+			s: ".ui-dialog",
+			r: "max-height:98vh;",
 		},
 	]);
 

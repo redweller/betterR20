@@ -15,8 +15,8 @@ function baseUtil () {
 	d20plus.ut.error = (...args) => {
 		// eslint-disable-next-line no-console
 		console.error("%cD20Plus > ", "color: #b93032; font-size: large", ...args);
-	};
-	// RB20 EXCLUDE START
+	}; // RB20 EXCLUDE START
+
 	d20plus.ut.localize = (str, substitutes) => {
 		if (substitutes) {
 			output = `${d20plus.ln.default[str]}`;
@@ -41,8 +41,8 @@ function baseUtil () {
 				d20plus.ln.default[id][0] = d20plus.ln[lan][id][0];
 			}
 		}
-	}
-	// RB20 EXCLUDE END
+	} // RB20 EXCLUDE END
+
 	d20plus.ut.chatLog = (arg) => {
 		d20.textchat.incoming(
 			false,
@@ -555,7 +555,7 @@ function baseUtil () {
 	d20plus.ut.dynamicStyles = (slug) => {
 		if (!d20plus.css.dynamic) d20plus.css.dynamic = {};
 		if (!d20plus.css.dynamic[slug]) {
-			d20plus.css.dynamic[slug] = $("<style></style>").appendTo("body");
+			d20plus.css.dynamic[slug] = $("<style></style>").appendTo(document.body);
 		}
 		return d20plus.css.dynamic[slug];
 	}

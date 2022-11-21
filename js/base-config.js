@@ -887,7 +887,6 @@ function baseConfig () {
 	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
-		// d20plus.cfg._handleWeatherConfigChange();
 		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
 		d20plus.cfg.HandleCss();

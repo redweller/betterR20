@@ -325,6 +325,7 @@ const CHANGED_SCRIPTS = [
 	"5etools-bootstrap",
 	"5etools-config",
 	"5etools-main",
+	"5etools-template",
 	"base-art",
 	"base-config",
 	"base-css",
@@ -339,12 +340,12 @@ const CHANGED_SCRIPTS = [
 	"base-util",
 	// "base",
 	"core-bootstrap",
-	// "header",
+	"header",
 ];
 
 CHANGED_SCRIPTS.forEach((filename) => {
 	const srcpath = `${JS_DIR}${filename}.js`;
-	const exclude = /\/\/ RB20 EXCLUDE START(.*?)\/\/ RB20 EXCLUDE END/sgm;
+	const exclude = / ?\/\/ RB20 EXCLUDE START(.*?)\/\/ RB20 EXCLUDE END/sgm;
 	const refactorTemplates = /document\.addEventListener\("b20initTemplates", function initHTML \(\) {\r\n\t\td20plus\.html\.([\w_]+?) = `(.*?)\t`;\r\n\t\tdocument\.removeEventListener\("b20initTemplates", initHTML, false\);\r\n\t}\);/sgm;
 	const template = (...s) => {
 		let html = `<br20_npm_temp>${s[2]}</br20_npm_temp>`;
