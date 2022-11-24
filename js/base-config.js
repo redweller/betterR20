@@ -58,13 +58,32 @@ function baseConfig () {
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
+		"_player": true,
+		"showCustomArtPreview": {
+			"name": "Show Custom Art Previews",
+			"default": true,
+			"_type": "boolean",
+		},
 		"toolbarOpacity": {
 			"name": "Horizontal Toolbar Opacity",
 			"default": 100,
+			"_player": true,
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
 			"__sliderStep": 1,
+		},
+		"hideDarkModeSwitch": {
+			"name": "Hide Roll20's Dark Mode switch",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"hideHelpButton": {
+			"name": "Hide Help Button on floating toolbar",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
 		},
 		"quickLayerButtons": {
 			"name": "Add Quick Layer Buttons",
@@ -83,6 +102,12 @@ function baseConfig () {
 			"name": "Add Quick Initiative Sort Button",
 			"default": true,
 			"_type": "boolean",
+		},
+		"minifyTracker": {
+			"name": "Shrink Initiative Tracker Text",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
 		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
@@ -691,8 +716,19 @@ function baseConfig () {
 	};
 	*/
 
+	d20plus.cfg.handleInitiativeShrink = () => {
+		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
+		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
+		if (doShrink) {
+			dynamicStyle.html(d20plus.css.miniInitStyle);
+		} else {
+			dynamicStyle.html("");
+		}
+	}
+
 	d20plus.cfg.baseHandleConfigChange = () => {
-		// d20plus.cfg._handleWeatherConfigChange();
+		d20plus.cfg.handleInitiativeShrink();
+
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
@@ -702,6 +738,8 @@ function baseConfig () {
 		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
+		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
+		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {

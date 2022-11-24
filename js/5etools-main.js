@@ -1091,15 +1091,6 @@ const betteR205etoolsMain = function () {
 		// if the tracker is already open, widen it
 		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) d20.Campaign.initiativewindow.$el.dialog("option", "width", getTargetWidth());
 	};
-
-	d20plus.setInitiativeShrink = function (doShrink) {
-		const customStyle = $(`#dynamicStyle`);
-		if (doShrink) {
-			customStyle.html(d20plus.template5e.miniInitStyle);
-		} else {
-			customStyle.html("");
-		}
-	};
 };
 
 SCRIPT_EXTENSIONS.push(betteR205etoolsMain);
