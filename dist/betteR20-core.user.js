@@ -47,11 +47,7 @@ JSON_DATA = {};
 CONFIG_OPTIONS = {
 	interface: {
 		_name: "Interface",
-		showCustomArtPreview: {
-			name: "Show Custom Art Previews",
-			default: true,
-			_type: "boolean",
-		},
+		_player: true,
 	},
 };
 
@@ -635,6 +631,14 @@ function baseUtil () {
 			}
 		}
 	};
+
+	d20plus.ut.dynamicStyles = (slug) => {
+		if (!d20plus.css.dynamic) d20plus.css.dynamic = {};
+		if (!d20plus.css.dynamic[slug]) {
+			d20plus.css.dynamic[slug] = $("<style></style>").appendTo(document.body);
+		}
+		return d20plus.css.dynamic[slug];
+	}
 
 	/**
 	* Assumes any other lists have been searched using the same term
@@ -1560,13 +1564,32 @@ function baseConfig () {
 	});
 	addConfigOptions("interface", {
 		"_name": "Interface",
+		"_player": true,
+		"showCustomArtPreview": {
+			"name": "Show Custom Art Previews",
+			"default": true,
+			"_type": "boolean",
+		},
 		"toolbarOpacity": {
 			"name": "Horizontal Toolbar Opacity",
 			"default": 100,
+			"_player": true,
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
 			"__sliderStep": 1,
+		},
+		"hideDarkModeSwitch": {
+			"name": "Hide Roll20's Dark Mode switch",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"hideHelpButton": {
+			"name": "Hide Help Button on floating toolbar",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
 		},
 		"quickLayerButtons": {
 			"name": "Add Quick Layer Buttons",
@@ -1585,6 +1608,12 @@ function baseConfig () {
 			"name": "Add Quick Initiative Sort Button",
 			"default": true,
 			"_type": "boolean",
+		},
+		"minifyTracker": {
+			"name": "Shrink Initiative Tracker Text",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
 		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
@@ -2193,8 +2222,19 @@ function baseConfig () {
 	};
 	*/
 
+	d20plus.cfg.handleInitiativeShrink = () => {
+		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
+		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
+		if (doShrink) {
+			dynamicStyle.html(d20plus.css.miniInitStyle);
+		} else {
+			dynamicStyle.html("");
+		}
+	}
+
 	d20plus.cfg.baseHandleConfigChange = () => {
-		// d20plus.cfg._handleWeatherConfigChange();
+		d20plus.cfg.handleInitiativeShrink();
+
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
 			const v = Math.max(Math.min(Number(d20plus.cfg.get("interface", "toolbarOpacity")), 100), 0);
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
@@ -2204,6 +2244,8 @@ function baseConfig () {
 		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
 		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
+		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
+		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
@@ -8780,6 +8822,13 @@ function initHTMLTokenEditor () {
 									<$ } $>
 								</div>
 							</div>
+							<!-- Update default token button -->
+							<$ if(!this.isDefaultToken) { $>
+							<div class='tokeneditor__row'>
+								<button class='btn btn-primary update_default_token'>Update Default Token</button>
+								<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
+							</div>
+							<$ } $>
 							<!-- Tint Color -->
 							<div class='tokeneditor__row'>
 								<div class='tokeneditor__subheader'>
@@ -8841,7 +8890,7 @@ function initHTMLTokenEditor () {
 												<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
 											</svg>
 										</button>
-										<ul aria-labelledby='dLabel' class='bar1 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+										<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar1' id='myDropdown'>
 											<h4>Player Permissions</h4>
 											<li class='dropdown-item'>
 												<div class='checkbox'>
@@ -8923,7 +8972,7 @@ function initHTMLTokenEditor () {
 												<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
 											</svg>
 										</button>
-										<ul aria-labelledby='dLabel' class='bar2 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+										<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar2' id='myDropdown'>
 											<h4>Player Permissions</h4>
 											<li class='dropdown-item'>
 												<div class='checkbox'>
@@ -9005,7 +9054,7 @@ function initHTMLTokenEditor () {
 												<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
 											</svg>
 										</button>
-										<ul aria-labelledby='dLabel' class='bar3 dropdown-menu dropdown-menu--right permission_section' id='myDropdown'>
+										<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar3' id='myDropdown'>
 											<h4>Player Permissions</h4>
 											<li class='dropdown-item'>
 												<div class='checkbox'>
@@ -9177,10 +9226,10 @@ function initHTMLTokenEditor () {
 									<!-- Token Aura Diameter -->
 									<div class='tokenaura__diameter'>
 										<div class='tokeneditor__subheader'>
-											<h4 class='text-capitalize'>diameter</h4>
+											<h4 class='text-capitalize'>radius</h4>
 										</div>
 										<div class='tokeneditor__container tokeneditor__border'>
-											<label title='input aura 1 diameter'>
+											<label title='input aura 1 radius'>
 												<input class='aura1_radius' type='text'>
 											</label>
 											<div class='disable_box d-block'>
@@ -9195,7 +9244,7 @@ function initHTMLTokenEditor () {
 										</div>
 										<div class='tokeneditor__container'>
 											<label title='select aura 1 shape'>
-												<select class='aura1_options text-capitalize'>
+												<select class='text-capitalize aura1_options'>
 													<option selected value='circle'>circle</option>
 													<option value='square'>square</option>
 												</select>
@@ -9208,7 +9257,7 @@ function initHTMLTokenEditor () {
 											<h4 class='text-capitalize'>tint color</h4>
 										</div>
 										<div class='tokeneditor__container'>
-											<input class='aura1_color colorpicker' type='text'>
+											<input class='colorpicker aura1_color' type='text'>
 										</div>
 									</div>
 								</div>
@@ -9252,10 +9301,10 @@ function initHTMLTokenEditor () {
 									<!-- Token Aura Diameter -->
 									<div class='tokenaura__diameter'>
 										<div class='tokeneditor__subheader'>
-											<h4 class='text-capitalize'>diameter</h4>
+											<h4 class='text-capitalize'>radius</h4>
 										</div>
 										<div class='tokeneditor__container tokeneditor__border'>
-											<label title='input aura 2 diameter'>
+											<label title='input aura 2 radius'>
 												<input class='aura2_radius' type='text'>
 											</label>
 											<div class='disable_box d-block'>
@@ -9270,7 +9319,7 @@ function initHTMLTokenEditor () {
 										</div>
 										<div class='tokeneditor__container'>
 											<label title='select aura 2 shape'>
-												<select class='aura2_options text-capitalize'>
+												<select class='text-capitalize aura2_options'>
 													<option selected value='circle'>circle</option>
 													<option value='square'>square</option>
 												</select>
@@ -9283,7 +9332,7 @@ function initHTMLTokenEditor () {
 											<h4 class='text-capitalize'>tint color</h4>
 										</div>
 										<div class='tokeneditor__container'>
-											<input class='aura2_color colorpicker' type='text'>
+											<input class='colorpicker aura2_color' type='text'>
 										</div>
 									</div>
 								</div>
@@ -14121,6 +14170,10 @@ function baseCss () {
 			s: "#floatinglayerbar li",
 			r: "background-color: var(--dark-surface2);border-color: var(--dark-surface1);",
 		},
+		{
+			s: ".ui-dialog .artr__side, .ui-dialog .artr__view, .ui-dialog .artr__side__tag_grid, .ui-dialog .artr__side__head",
+			r: "background-color: unset;",
+		},
 		// Fix page options scrollbar color in darkmode on Chrome
 		{
 			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
@@ -14582,6 +14635,11 @@ function baseCss () {
 			s: "#d20plus-artfolder .library-item:hover",
 			r: "background-color: rgba(100,100,100,0.5);",
 		},
+		// fix global dialog height for art browser
+		{
+			s: ".ui-dialog",
+			r: "max-height:98vh;",
+		},
 	]);
 
 	// Animator CSS -- `anm__` prefix
@@ -14853,6 +14911,53 @@ function baseCss () {
 			`,
 		},
 	]);
+
+	d20plus.css.miniInitStyle = `
+		#initiativewindow button.initmacrobutton {
+			padding: 1px 4px;
+		}
+
+		#initiativewindow input {
+			font-size: 8px;
+		}
+
+		#initiativewindow ul li span.name {
+			font-size: 13px;
+			padding-top: 0;
+			padding-left: 4px;
+			margin-top: -3px;
+		}
+
+		#initiativewindow ul li img {
+			min-height: 15px;
+			max-height: 15px;
+		}
+
+		#initiativewindow ul li {
+			min-height: 15px;
+		}
+
+		#initiativewindow div.header span.initiative,
+		#initiativewindow ul li span.initiative,
+		#initiativewindow ul li span.tracker-col,
+		#initiativewindow div.header span.tracker-col,
+		#initiativewindow div.header span.initmacro,
+		#initiativewindow ul li span.initmacro {
+			font-size: 10px;
+			font-weight: bold;
+			text-align: right;
+			float: right;
+			padding: 0 5px;
+			width: 7%;
+			min-height: 20px;
+			display: block;
+			overflow: hidden;
+		}
+
+		#initiativewindow ul li .controls {
+			padding: 0 3px;
+		}
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);
