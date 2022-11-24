@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.32.1
+// @version      1.33.0
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -17743,11 +17743,16 @@ Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false} = {}) =
 	if (typeof ent.speed === "object") {
 		const stack = [];
 		let joiner = ", ";
-		Parser.SPEED_MODES.forEach(mode => Parser._getSpeedString_addSpeedMode({ent, prop: mode, stack, isMetric, isSkipZeroWalk, unit}));
-		if (ent.speed.choose) {
+
+		Parser.SPEED_MODES
+			.filter(mode => !ent.speed.hidden?.includes(mode))
+			.forEach(mode => Parser._getSpeedString_addSpeedMode({ent, prop: mode, stack, isMetric, isSkipZeroWalk, unit}));
+
+		if (ent.speed.choose && !ent.speed.hidden?.includes("choose")) {
 			joiner = "; ";
 			stack.push(`${ent.speed.choose.from.sort().joinConjunct(", ", " or ")} ${ent.speed.choose.amount} ${unit}${ent.speed.choose.note ? ` ${ent.speed.choose.note}` : ""}`);
 		}
+
 		return stack.join(joiner) + (ent.speed.note ? ` ${ent.speed.note}` : "");
 	}
 
@@ -18815,6 +18820,7 @@ Parser.SP_MISC_TAG_TO_FULL = {
 	RO: "Rollable Effects",
 	LGTS: "Creates Sunlight",
 	LGT: "Creates Light",
+	UBA: "Uses Bonus Action",
 };
 Parser.spMiscTagToFull = function (type) {
 	return Parser._parse_aToB(Parser.SP_MISC_TAG_TO_FULL, type);
@@ -18832,7 +18838,15 @@ Parser.spCasterProgressionToFull = function (type) {
 
 // mon-prefix functions are for parsing monster data, and shared with the roll20 script
 Parser.monTypeToFullObj = function (type) {
-	const out = {type: "", tags: [], asText: ""};
+	const out = {
+		type: "",
+		tags: [],
+		asText: "",
+
+		typeSidekick: null,
+		tagsSidekick: [],
+		asTextSidekick: null,
+	};
 
 	if (typeof type === "string") {
 		// handles e.g. "fey"
@@ -18841,20 +18855,6 @@ Parser.monTypeToFullObj = function (type) {
 		return out;
 	}
 
-	const tempTags = [];
-	if (type.tags) {
-		for (const tag of type.tags) {
-			if (typeof tag === "string") {
-				// handles e.g. "fiend (devil)"
-				out.tags.push(tag.toLowerCase());
-				tempTags.push(tag);
-			} else {
-				// handles e.g. "humanoid (Chondathan human)"
-				out.tags.push(tag.tag.toLowerCase());
-				tempTags.push(`${tag.prefix} ${tag.tag}`);
-			}
-		}
-	}
 	out.type = type.type;
 	if (type.swarmSize) {
 		out.tags.push("swarm");
@@ -18863,8 +18863,45 @@ Parser.monTypeToFullObj = function (type) {
 	} else {
 		out.asText = `${type.type}`;
 	}
-	if (tempTags.length) out.asText += ` (${tempTags.join(", ")})`;
+
+	const tagMetas = Parser.monTypeToFullObj._getTagMetas(type.tags);
+	if (tagMetas.length) {
+		out.tags.push(...tagMetas.map(({filterTag}) => filterTag));
+		out.asText += ` (${tagMetas.map(({displayTag}) => displayTag).join(", ")})`;
+	}
+
+	// region Sidekick
+	if (type.sidekickType) {
+		out.typeSidekick = type.sidekickType;
+		if (!type.sidekickHidden) out.asTextSidekick = `${type.sidekickType}`;
+
+		const tagMetas = Parser.monTypeToFullObj._getTagMetas(type.sidekickTags);
+		if (tagMetas.length) {
+			out.tagsSidekick.push(...tagMetas.map(({filterTag}) => filterTag));
+			if (!type.sidekickHidden) out.asTextSidekick += ` (${tagMetas.map(({displayTag}) => displayTag).join(", ")})`;
+		}
+	}
+	// endregion
+
 	return out;
+};
+
+Parser.monTypeToFullObj._getTagMetas = (tags) => {
+	return tags
+		? tags.map(tag => {
+			if (typeof tag === "string") { // handles e.g. "fiend (devil)"
+				return {
+					filterTag: tag.toLowerCase(),
+					displayTag: tag,
+				};
+			} else { // handles e.g. "humanoid (Chondathan human)"
+				return {
+					filterTag: tag.tag.toLowerCase(),
+					displayTag: `${tag.prefix} ${tag.tag}`,
+				};
+			}
+		})
+		: [];
 };
 
 Parser.monTypeToPlural = function (type) {
@@ -19929,6 +19966,7 @@ SRC_AAG = "AAG";
 SRC_BAM = "BAM";
 SRC_LoX = "LoX";
 SRC_DoSI = "DoSI";
+SRC_DSotDQ = "DSotDQ";
 SRC_SCREEN = "Screen";
 SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
@@ -20145,6 +20183,7 @@ Parser.SOURCE_JSON_TO_FULL[SRC_AAG] = "Astral Adventurer's Guide";
 Parser.SOURCE_JSON_TO_FULL[SRC_BAM] = "Boo's Astral Menagerie";
 Parser.SOURCE_JSON_TO_FULL[SRC_LoX] = "Light of Xaryxis";
 Parser.SOURCE_JSON_TO_FULL[SRC_DoSI] = "Dragons of Stormwreck Isle";
+Parser.SOURCE_JSON_TO_FULL[SRC_DSotDQ] = "Dragonlance: Shadow of the Dragon Queen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
@@ -20339,6 +20378,7 @@ Parser.SOURCE_JSON_TO_ABV[SRC_AAG] = "AAG";
 Parser.SOURCE_JSON_TO_ABV[SRC_BAM] = "BAM";
 Parser.SOURCE_JSON_TO_ABV[SRC_LoX] = "LoX";
 Parser.SOURCE_JSON_TO_ABV[SRC_DoSI] = "DoSI";
+Parser.SOURCE_JSON_TO_ABV[SRC_DSotDQ] = "DSotDQ";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
 Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_DUNGEON_KIT] = "ScDun";
@@ -20532,6 +20572,7 @@ Parser.SOURCE_JSON_TO_DATE[SRC_AAG] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_BAM] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_LoX] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[SRC_DoSI] = "2022-07-31";
+Parser.SOURCE_JSON_TO_DATE[SRC_DSotDQ] = "2022-11-22";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
@@ -20705,6 +20746,7 @@ Parser.SOURCES_ADVENTURES = new Set([
 	SRC_SjA,
 	SRC_LoX,
 	SRC_DoSI,
+	SRC_DSotDQ,
 
 	SRC_AWM,
 ]);
@@ -20803,6 +20845,7 @@ Parser.SOURCES_NON_FR = new Set([
 	SRC_AAG,
 	SRC_BAM,
 	SRC_LoX,
+	SRC_DSotDQ,
 ]);
 
 // endregion
@@ -20913,6 +20956,7 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	SRC_JttRC,
 	SRC_LoX,
 	SRC_DoSI,
+	SRC_DSotDQ,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
@@ -21123,7 +21167,7 @@ if (IS_NODE) require("./parser.js");
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.168.1"/* 5ETOOLS_VERSION__CLOSE */;
+VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.170.0"/* 5ETOOLS_VERSION__CLOSE */;
 DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
 // for the roll20 script to set
 IS_VTT = false;
@@ -21405,7 +21449,7 @@ StrUtil = {
 	// Certain minor words should be left lowercase unless they are the first or last words in the string
 	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over", "von"],
 	// Certain words such as initialisms or acronyms should be left uppercase
-	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc", "Tpk"],
+	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc", "Tpk", "Wip"],
 
 	padNumber: (n, len, padder) => {
 		return String(n).padStart(len, padder);
@@ -23012,10 +23056,10 @@ ContextUtil = {
 		this._pResult = null;
 		this._resolveResult = null;
 
-		this._userData = null;
+		this.userData = null;
 
 		this._$ele = null;
-		this._$btnsActions = [];
+		this._metasActions = [];
 
 		this.remove = function () { if (this._$ele) this._$ele.remove(); };
 
@@ -23032,7 +23076,7 @@ ContextUtil = {
 			this._pResult = new Promise(resolve => {
 				this._resolveResult = resolve;
 			});
-			this._userData = userData;
+			this.userData = userData;
 
 			this._$ele
 				// Show as transparent/non-clickable first, so we can get an accurate width/height
@@ -23051,53 +23095,24 @@ ContextUtil = {
 					pointerEvents: "",
 				});
 
-			this._$btnsActions[0].focus();
+			this._metasActions[0].$eleRow.focus();
 
 			return this._pResult;
 		};
 		this.close = function () { if (this._$ele) this._$ele.hideVe(); };
 
 		this._initLazy = function () {
-			if (this._$ele) return;
+			if (this._$ele) {
+				this._metasActions.forEach(meta => meta.action.update());
+				return;
+			}
 
 			const $elesAction = this._actions.map(it => {
 				if (it == null) return $(`<div class="my-1 w-100 ui-ctx__divider"></div>`);
 
-				const $btnAction = $(`<div class="w-100 min-w-0 ui-ctx__btn py-1 pl-5 ${it.fnActionAlt ? "" : "pr-5"}" ${it.isDisabled ? "disabled" : ""} tabindex="0">${it.text}</div>`)
-					.click(async evt => {
-						if (it.isDisabled) return;
-
-						evt.preventDefault();
-						evt.stopPropagation();
-
-						this.close();
-
-						const result = await it.fnAction(evt, this._userData);
-						if (this._resolveResult) this._resolveResult(result);
-					})
-					.keydown(evt => {
-						if (evt.key !== "Enter") return;
-						$btnAction.click();
-					});
-				if (it.title) $btnAction.title(it.title);
-
-				this._$btnsActions.push($btnAction);
-
-				const $btnActionAlt = it.fnActionAlt ? $(`<div class="ui-ctx__btn ml-1 bl-1 py-1 px-4" ${it.isDisabled ? "disabled" : ""}>${it.textAlt ?? `<span class="glyphicon glyphicon-cog"></span>`}</div>`)
-					.click(async evt => {
-						if (it.isDisabled) return;
-
-						evt.preventDefault();
-						evt.stopPropagation();
-
-						this.close();
-
-						const result = await it.fnActionAlt(evt, this._userData);
-						if (this._resolveResult) this._resolveResult(result);
-					}) : null;
-				if (it.titleAlt && $btnActionAlt) $btnActionAlt.title(it.titleAlt);
-
-				return $$`<div class="ui-ctx__row ve-flex-v-center ${it.style || ""}">${$btnAction}${$btnActionAlt}</div>`;
+				const rdMeta = it.render({menu: this});
+				this._metasActions.push(rdMeta);
+				return rdMeta.$eleRow;
 			});
 
 			this._$ele = $$`<div class="ve-flex-col ui-ctx__wrp py-2 absolute">${$elesAction}</div>`
@@ -23145,6 +23160,79 @@ ContextUtil = {
 		this.fnActionAlt = opts.fnActionAlt;
 		this.textAlt = opts.textAlt;
 		this.titleAlt = opts.titleAlt;
+
+		this.render = function ({menu}) {
+			const $btnAction = this._render_$btnAction({menu});
+			const $btnActionAlt = this._render_$btnActionAlt({menu});
+
+			return {
+				action: this,
+				$eleRow: $$`<div class="ui-ctx__row ve-flex-v-center ${this.style || ""}">${$btnAction}${$btnActionAlt}</div>`,
+				$eleBtn: $btnAction,
+			};
+		};
+
+		this._render_$btnAction = function ({menu}) {
+			const $btnAction = $(`<div class="w-100 min-w-0 ui-ctx__btn py-1 pl-5 ${this.fnActionAlt ? "" : "pr-5"}" ${this.isDisabled ? "disabled" : ""} tabindex="0">${this.text}</div>`)
+				.click(async evt => {
+					if (this.isDisabled) return;
+
+					evt.preventDefault();
+					evt.stopPropagation();
+
+					menu.close();
+
+					const result = await this.fnAction(evt, menu.userData);
+					if (this._resolveResult) this._resolveResult(result);
+				})
+				.keydown(evt => {
+					if (evt.key !== "Enter") return;
+					$btnAction.click();
+				});
+			if (this.title) $btnAction.title(this.title);
+
+			return $btnAction;
+		};
+
+		this._render_$btnActionAlt = function ({menu}) {
+			if (!this.fnActionAlt) return null;
+
+			const $btnActionAlt = $(`<div class="ui-ctx__btn ml-1 bl-1 py-1 px-4" ${this.isDisabled ? "disabled" : ""}>${this.textAlt ?? `<span class="glyphicon glyphicon-cog"></span>`}</div>`)
+				.click(async evt => {
+					if (this.isDisabled) return;
+
+					evt.preventDefault();
+					evt.stopPropagation();
+
+					menu.close();
+
+					const result = await this.fnActionAlt(evt, menu.userData);
+					if (this._resolveResult) this._resolveResult(result);
+				});
+			if (this.titleAlt) $btnActionAlt.title(this.titleAlt);
+
+			return $btnActionAlt;
+		};
+
+		this.update = function () { /* Implement as required */ };
+	},
+
+	ActionLink: function (text, fnHref, opts) {
+		ContextUtil.Action.call(this, text, null, opts);
+
+		this.fnHref = fnHref;
+		this._$btnAction = null;
+
+		this._render_$btnAction = function () {
+			this._$btnAction = $(`<a href="${this.fnHref()}" class="w-100 min-w-0 ui-ctx__btn py-1 pl-5 ${this.fnActionAlt ? "" : "pr-5"}" ${this.isDisabled ? "disabled" : ""} tabindex="0">${this.text}</a>`);
+			if (this.title) this._$btnAction.title(this.title);
+
+			return this._$btnAction;
+		};
+
+		this.update = function () {
+			this._$btnAction.attr("href", this.fnHref());
+		};
 	},
 };
 
@@ -23172,6 +23260,10 @@ UrlUtil = {
 
 	decodeHash (hash) {
 		return hash.split(HASH_LIST_SEP).map(it => decodeURIComponent(it));
+	},
+
+	getSluggedHash (hash) {
+		return Parser.stringToSlug(decodeURIComponent(hash)).replace(/_/g, "-");
 	},
 
 	getCurrentPage () {
@@ -23237,6 +23329,8 @@ UrlUtil = {
 	pageToDisplayPage (page) { return UrlUtil.PG_TO_NAME[page] || page; },
 
 	getFilename (url) { return url.slice(url.lastIndexOf("/") + 1); },
+
+	isFullUrl (url) { return url && /^.*?:\/\//.test(url); },
 
 	mini: {
 		compress (primitive) {
@@ -23486,11 +23580,18 @@ UrlUtil.URL_TO_HASH_BUILDER["classFeature"] = (it) => UrlUtil.encodeForHash([it.
 UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"] = (it) => UrlUtil.encodeForHash([it.name, it.className, it.classSource, it.subclassShortName, it.subclassSource, it.level, it.source]);
 UrlUtil.URL_TO_HASH_BUILDER["legendaryGroup"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemEntry"] = UrlUtil.URL_TO_HASH_GENERIC;
+UrlUtil.URL_TO_HASH_BUILDER["skill"] = UrlUtil.URL_TO_HASH_GENERIC;
+UrlUtil.URL_TO_HASH_BUILDER["sense"] = UrlUtil.URL_TO_HASH_GENERIC;
+
+// Add lowercase aliases
 Object.keys(UrlUtil.URL_TO_HASH_BUILDER)
 	.filter(k => !k.endsWith(".html") && k.toLowerCase() !== k)
 	.forEach(k => UrlUtil.URL_TO_HASH_BUILDER[k.toLowerCase()] = UrlUtil.URL_TO_HASH_BUILDER[k]);
-UrlUtil.URL_TO_HASH_BUILDER["skill"] = UrlUtil.URL_TO_HASH_GENERIC;
-UrlUtil.URL_TO_HASH_BUILDER["sense"] = UrlUtil.URL_TO_HASH_GENERIC;
+
+// Add fluff aliases
+Object.keys(UrlUtil.URL_TO_HASH_BUILDER)
+	.filter(k => !k.endsWith(".html"))
+	.forEach(k => UrlUtil.URL_TO_HASH_BUILDER[`${k}Fluff`] = UrlUtil.URL_TO_HASH_BUILDER[k]);
 // endregion
 
 UrlUtil.PG_TO_NAME = {};
@@ -24095,13 +24196,6 @@ DataUtil = {
 
 		if (data._meta && !Object.keys(data._meta).length) delete data._meta;
 
-		const props = Object.keys(data);
-		for (const prop of props) {
-			if (!data[prop] || !(data[prop] instanceof Array) || !data[prop].length) continue;
-
-			if (DataUtil[prop]?.pPostProcess) await DataUtil[prop]?.pPostProcess(data);
-		}
-
 		DataUtil._merged[ident] = data;
 	},
 
@@ -24254,6 +24348,8 @@ DataUtil = {
 		"spellFluff": "spells",
 		"class": "class",
 		"subclass": "class",
+		"classFeature": "class",
+		"subclassFeature": "class",
 	},
 	_MULTI_SOURCE_PROP_TO_INDEX_NAME: {
 		"monster": "index.json",
@@ -24262,6 +24358,8 @@ DataUtil = {
 		"spellFluff": "fluff-index.json",
 		"class": "index.json",
 		"subclass": "index.json",
+		"classFeature": "index.json",
+		"subclassFeature": "index.json",
 	},
 	async pLoadByMeta (prop, source) {
 		// TODO(future) expand support
@@ -24273,7 +24371,9 @@ DataUtil = {
 			case "monsterFluff":
 			case "spellFluff":
 			case "class":
-			case "subclass": {
+			case "subclass":
+			case "classFeature":
+			case "subclassFeature": {
 				const baseUrlPart = `${Renderer.get().baseUrl}data/${DataUtil._MULTI_SOURCE_PROP_TO_DIR[prop]}`;
 				const index = await DataUtil.loadJSON(`${baseUrlPart}/${DataUtil._MULTI_SOURCE_PROP_TO_INDEX_NAME[prop]}`);
 				if (index[source]) return DataUtil.loadJSON(`${baseUrlPart}/${index[source]}`);
@@ -24327,7 +24427,7 @@ DataUtil = {
 	},
 
 	async _pLoadAddBrewBySource_pGetUrl ({source, isSilent = true}) {
-		const brewIndex = await DataUtil.brew.pLoadSourceIndex();
+		const brewIndex = await DataUtil.brew.pLoadSourceIndex(typeof BrewUtil2 !== "undefined" ? await BrewUtil2.pGetCustomUrl() : null);
 		if (!brewIndex[source]) {
 			if (isSilent) return null;
 			throw new Error(`Neither base nor brew index contained source "${source}"`);
@@ -24683,7 +24783,7 @@ DataUtil = {
 						if (m) {
 							found = true;
 							// if the creature already has a greater sense of this type, do nothing
-							if (Number(m[1]) < sense.type) {
+							if (Number(m[1]) < sense.range) {
 								copyTo.senses[i] = `${sense.type} ${sense.range} ft.`;
 							}
 							break;
@@ -25267,6 +25367,16 @@ DataUtil = {
 		static _FILENAME = "conditionsdiseases.json";
 	},
 
+	feat: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_FEATS;
+		static _FILENAME = "feats.json";
+	},
+
+	featFluff: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_FEATS;
+		static _FILENAME = "fluff-feats.json";
+	},
+
 	item: class extends _DataUtilPropConfigCustom {
 		static _MERGE_REQUIRES_PRESERVE = {
 			lootTables: true,
@@ -25355,6 +25465,16 @@ DataUtil = {
 	languageFluff: class extends _DataUtilPropConfigSingleSource {
 		static _PAGE = UrlUtil.PG_LANGUAGES;
 		static _FILENAME = "fluff-languages.json";
+	},
+
+	object: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_OBJECTS;
+		static _FILENAME = "objects.json";
+	},
+
+	objectFluff: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_OBJECTS;
+		static _FILENAME = "fluff-objects.json";
 	},
 
 	race: class extends _DataUtilPropConfigSingleSource {
@@ -25526,7 +25646,7 @@ DataUtil = {
 	},
 
 	optionalfeature: class extends _DataUtilPropConfigSingleSource {
-		static _PAGE = UrlUtil.PG_BACKGROUNDS;
+		static _PAGE = UrlUtil.PG_OPT_FEATURES;
 		static _FILENAME = "optionalfeatures.json";
 	},
 
@@ -25887,9 +26007,7 @@ DataUtil = {
 
 	table: class extends _DataUtilPropConfigCustom {
 		static async loadJSON () {
-			const [dataEncounters, dataNames, ...datas] = await Promise.all([
-				`${Renderer.get().baseUrl}data/encounters.json`,
-				`${Renderer.get().baseUrl}data/names.json`,
+			const datas = await Promise.all([
 				`${Renderer.get().baseUrl}data/generated/gendata-tables.json`,
 				`${Renderer.get().baseUrl}data/tables.json`,
 			].map(url => DataUtil.loadJSON(url)));
@@ -25902,58 +26020,7 @@ DataUtil = {
 				});
 			});
 
-			dataEncounters.encounter.forEach(group => {
-				group.tables.forEach(tableRaw => {
-					combined.table.push(this._getConvertedEncounterOrNamesTable({
-						group,
-						tableRaw,
-						fnGetNameCaption: this._getConvertedEncounterTableName.bind(this),
-						colLabel1: "Encounter",
-					}));
-				});
-			});
-
-			dataNames.name.forEach(group => {
-				group.tables.forEach(tableRaw => {
-					combined.table.push(this._getConvertedEncounterOrNamesTable({
-						group,
-						tableRaw,
-						fnGetNameCaption: this._getConvertedNameTableName.bind(this),
-						colLabel1: "Name",
-					}));
-				});
-			});
-
 			return combined;
-		}
-
-		static _getConvertedEncounterTableName (group, tableRaw) { return `${group.name} Encounters${tableRaw.minlvl && tableRaw.maxlvl ? ` (Levels ${tableRaw.minlvl}\u2014${tableRaw.maxlvl})` : ""}`; }
-		static _getConvertedNameTableName (group, tableRaw) { return `${group.name} Names - ${tableRaw.option}`; }
-
-		static _getConvertedEncounterOrNamesTable ({group, tableRaw, fnGetNameCaption, colLabel1}) {
-			const nameCaption = fnGetNameCaption(group, tableRaw);
-			return {
-				name: nameCaption,
-				source: group.source,
-				__prop: "table",
-				page: group.page,
-				caption: nameCaption,
-				colLabels: [
-					`d${tableRaw.diceType}`,
-					colLabel1,
-					tableRaw.rollAttitude ? `Attitude` : null,
-				].filter(Boolean),
-				colStyles: [
-					"col-2 text-center",
-					tableRaw.rollAttitude ? "col-8" : "col-10",
-					tableRaw.rollAttitude ? `col-2 text-center` : null,
-				].filter(Boolean),
-				rows: tableRaw.table.map(it => [
-					`${it.min}${it.max && it.max !== it.min ? `-${it.max}` : ""}`,
-					it.result,
-					tableRaw.rollAttitude ? it.resultAttitude || "\u2014" : null,
-				].filter(Boolean)),
-			};
 		}
 	},
 
@@ -26028,6 +26095,11 @@ DataUtil = {
 		async pLoadAbbreviationIndex (urlRoot) {
 			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
 			return DataUtil.loadJSON(`${urlRoot}_generated/index-abbreviations.json`);
+		},
+
+		async pLoadMetaIndex (urlRoot) {
+			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
+			return DataUtil.loadJSON(`${urlRoot}_generated/index-meta.json`);
 		},
 
 		async pLoadSourceIndex (urlRoot) {
@@ -26647,6 +26719,50 @@ CollectionUtil = {
 		return new Set([...set1].filter(it => !set2.has(it)));
 	},
 
+	objectDiff (obj1, obj2) {
+		const out = {};
+
+		[...new Set([...Object.keys(obj1), ...Object.keys(obj2)])]
+			.forEach(k => {
+				const diff = CollectionUtil._objectDiff_recurse(obj1[k], obj2[k]);
+				if (diff !== undefined) out[k] = diff;
+			});
+
+		return out;
+	},
+
+	_objectDiff_recurse (a, b) {
+		if (CollectionUtil.deepEquals(a, b)) return undefined;
+
+		if (a && b && typeof a === "object" && typeof b === "object") {
+			return CollectionUtil.objectDiff(a, b);
+		}
+
+		return b;
+	},
+
+	objectIntersect (obj1, obj2) {
+		const out = {};
+
+		[...new Set([...Object.keys(obj1), ...Object.keys(obj2)])]
+			.forEach(k => {
+				const diff = CollectionUtil._objectIntersect_recurse(obj1[k], obj2[k]);
+				if (diff !== undefined) out[k] = diff;
+			});
+
+		return out;
+	},
+
+	_objectIntersect_recurse (a, b) {
+		if (CollectionUtil.deepEquals(a, b)) return a;
+
+		if (a && b && typeof a === "object" && typeof b === "object") {
+			return CollectionUtil.objectIntersect(a, b);
+		}
+
+		return undefined;
+	},
+
 	deepEquals (a, b) {
 		if (Object.is(a, b)) return true;
 		if (a && b && typeof a === "object" && typeof b === "object") {
@@ -26855,6 +26971,18 @@ Array.prototype.pSerialAwaitMap || Object.defineProperty(Array.prototype, "pSeri
 	value: async function (fnMap) {
 		const out = [];
 		for (let i = 0, len = this.length; i < len; ++i) out.push(await fnMap(this[i], i, this));
+		return out;
+	},
+});
+
+Array.prototype.pSerialAwaitFilter || Object.defineProperty(Array.prototype, "pSerialAwaitFilter", {
+	enumerable: false,
+	writable: true,
+	value: async function (fnFilter) {
+		const out = [];
+		for (let i = 0, len = this.length; i < len; ++i) {
+			if (await fnFilter(this[i], i, this)) out.push(this[i]);
+		}
 		return out;
 	},
 });
@@ -27504,6 +27632,7 @@ EditorUtil = {
 			wrap: true,
 			showPrintMargin: false,
 			tabSize: 2,
+			useWorker: false,
 			...additionalOpts,
 		});
 
