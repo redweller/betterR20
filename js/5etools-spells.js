@@ -18,7 +18,7 @@ function d20plusSpells () {
 			name: sp.name.toLowerCase(),
 			class: ((sp.classes || {}).fromClassList || (sp.classes || {}).fromClassListVariant || []).map(c => c.name.toLowerCase()),
 			level: Parser.spLevelToFull(sp.level).toLowerCase(),
-			school: sp.school.toLowerCase(),
+			school: Parser.spSchoolAbvToFull(sp.school).toLowerCase(),
 			source: Parser.sourceJsonToAbv(sp.source).toLowerCase(),
 		};
 	};
