@@ -336,5 +336,10 @@
 		"ver": "1.32.1",
 		"date": "2022-10-01",
 		"txt": "- Re-organized page options, collecting lighting options into a single tab, and giving Weather its own tab (thanks @ Redweller)\n- Added weather \"Tint Opacity\" slider (thanks @ Redweller)\n- Fixed default token being un-settable (thanks @ Redweller)\n- Improved Art Browser styling (thanks @ Redweller)\n- Fixed some dark mode styling (thanks @ Redweller)\n- Fixed Module Importer/Exporter regression where creature data would not be exported (thanks @ darthbeep and @ Redweller)\n- (Updated to latest data files; added support for latest data changes)"
+	},
+	{
+		"ver": "1.33.0",
+		"date": "2022-10-01",
+		"txt": "- Handout creation is now optional in the Adventure Importer (thanks @ darthbeep)\n- The Spell Importer \"spell school\" filter now filters by the full school name, rather than the internal abbreviation (thanks @ darthbeep)\n- Updated token editor to latest Roll20 version, adding missing \"Update Default Token\" button (thanks @ Redweller)\n- Made all \"Interface\" options available to players (thanks @ Redweller)\n- Made \"Shrink Initiative Tracker\" option available to \"core\" script users (thanks @ Redweller)\n- Added \"Hide Roll20's Dark Mode switch\" and \"Hide Help Button on floating toolbar\" Interface options (thanks @ Redweller)\n- Fixed External Art Manager sizing on small screens (thanks @ Redweller)\n- (Updated to latest data files; added support for latest data changes)"
 	}
 ]

@@ -2288,7 +2288,34 @@
 						"replace": "the drow",
 						"with": "Hanne",
 						"flags": "i"
-					}
+					},
+					"spellcasting": [
+						{
+							"mode": "appendArr",
+							"items": {
+								"name": "Spellcasting",
+								"headerEntries": [
+									"Hanne is a 1st-level spellcaster. Her spellcasting ability is Intelligence (spell save {@dc 13}, {@hit 5} to hit with spell attacks). She has the following wizard spells prepared:"
+								],
+								"spells": {
+									"0": {
+										"spells": [
+											"{@spell minor illusion}",
+											"{@spell ray of frost}"
+										]
+									},
+									"1": {
+										"slots": 4,
+										"spells": [
+											"{@spell shield}",
+											"{@spell mage armor}"
+										]
+									}
+								},
+								"ability": "int"
+							}
+						}
+					]
 				}
 			},
 			"ac": [
@@ -2735,6 +2762,12 @@
 					}
 				}
 			},
+			"languages": [
+				"Common",
+				"Gnomish",
+				"Terran",
+				"Undercommon"
+			],
 			"spellcastingTags": [
 				"I"
 			],
@@ -3401,6 +3434,10 @@
 					}
 				}
 			},
+			"languages": [
+				"Elvish",
+				"Undercommon"
+			],
 			"hasToken": true,
 			"hasFluffImages": true
 		},
@@ -4209,6 +4246,10 @@
 			"_copy": {
 				"name": "Wererat",
 				"source": "MM",
+				"_trait": {
+					"name": "Deep Gnome",
+					"source": "DMG"
+				},
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -4218,6 +4259,11 @@
 					}
 				}
 			},
+			"languages": [
+				"Gnomish",
+				"Terran",
+				"Undercommon"
+			],
 			"hasToken": true,
 			"hasFluffImages": true
 		},
@@ -4359,6 +4405,10 @@
 			"_copy": {
 				"name": "Wererat",
 				"source": "MM",
+				"_trait": {
+					"name": "Deep Gnome",
+					"source": "DMG"
+				},
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -4368,6 +4418,11 @@
 					}
 				}
 			},
+			"languages": [
+				"Gnomish",
+				"Terran",
+				"Undercommon"
+			],
 			"hasToken": true,
 			"hasFluffImages": true
 		},
