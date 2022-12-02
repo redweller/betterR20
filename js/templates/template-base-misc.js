@@ -102,23 +102,10 @@ function initHTMLbaseMisc () {
 			<h2>General</h2>
 		</a>
 	</li>
-	<li class="nav-tabs dl">
-		<a>
+	<li class="nav-tabs">
+		<a data-tab="lighting" href="javascript:void(0);">
 			<h2>Lighting</h2>
 		</a>
-		<ul>
-			<li class="nav-tabs--beta">
-				<span class="label label-info">Updated</span>
-				<a data-tab="lighting" href="javascript:void(0);">
-					<h2>Dynamic Lighting</h2>
-				</a>
-			</li>
-			<li class="nav-tabs">
-				<a data-tab="legacy-lighting" href="javascript:void(0);">
-					<h2>Legacy Lighting</h2>
-				</a>
-			</li>
-		</ul>
 	</li>
 	<li class="nav-tabs--beta">
 		<span class="label label-info">bR20</span>
