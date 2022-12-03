@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.0
+// @version      1.33.1
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -9795,91 +9795,6 @@ function initHTMLPageSettings () {
 
 	// no mods; just switched in to grant full features to non-pro
 	d20plus.html.pageSettings = `
-	<div class='legacy-lighting tab-pane'>
-		<!-- BEGIN MOD -->
-		<strong style="display: block; margin-bottom: 10px;">
-			<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
-			Requires a paid Roll20 subscription or all players to use a betteR20 script
-		</strong>
-		<hr>
-		<!-- END MOD -->
-		<div class='lighting_feature showtip' data-feature_enabled='showdarkness' id='fog_settings' title='Enabling Fog of War will disable Updated Dynamic Lighting'>
-			<label class='feature_name'>
-				<strong>Fog of War</strong>
-			</label>
-			<div class='feature_options'>
-				<input class='darknessenabled feature_enabled' type='checkbox' value='1'>
-				<label class='checkbox'>&nbsp; Enabled</label>
-			</div>
-		</div>
-		<hr>
-		<div class='lighting_feature' data-feature_enabled='adv_fow_enabled' id='afow_settings'>
-			<label class='feature_name'>
-				<strong>Advanced Fog of War</strong>
-			</label>
-			<div class='feature_options'>
-				<input class='advancedfowenabled feature_enabled showtip' type='checkbox' value='1'>
-				<label class='checkbox'>&nbsp; Enabled</label>
-				<div class='subsettings'>
-					<div>
-						<input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>
-						<label class='checkbox'>&nbsp; Show Grid</label>
-					</div>
-					<div>
-						<input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>
-						<label class='checkbox'>&nbsp; Dim Light Reveals</label>
-					</div>
-					<div>
-						<input class='showtip' id='afow_gm_see_all' title='By default, Advanced Fog of War is only revealed by tokens with sight that are controlled by at least one player.&lt;br&gt;This option allows tokens with sight which are not controlled by anyone to reveal Advanced Fog of War for the GM only.' type='checkbox' value='0'>
-						<label class='checkbox'>&nbsp; All Tokens Reveal (GM)</label>
-					</div>
-					<div id='afow_grid_size' style='width: 180px; line-height: 30px;'>
-						<span id='cell_measurement'>Cell Width:</span>
-						<input type="number" class="advancedfowgridsize units" value="<$!this.model.get("adv_fow_grid_size")$>" />
-						<br>
-						<span>x 70 px =</span>
-						<input type="number" class="px_advancedfowgridsize pixels" value="<$!this.model.get("adv_fow_grid_size")*70$>" />
-						<span>px<sup>*</sup></span>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class='lighting_feature' data-feature_enabled='showlighting' id='dynamic_lighting_settings'>
-			<label class='feature_name'>
-				<strong>Dynamic Lighting</strong>
-			</label>
-			<div class='feature_options'>
-				<input class='lightingenabled feature_enabled showtip' type='checkbox' value='1'>
-				<label class='checkbox'>&nbsp; Enabled</label>
-				<div class='subsettings'>
-					<div>
-						<input class='lightenforcelos showtip' title='Player&#39;s line of sight set by what tokens they can control.' type='checkbox' value='1'>
-						<label class='checkbox'>&nbsp; Enforce Line of Sight</label>
-					</div>
-					<div>
-						<input class='lightingupdate' type='checkbox' value='1'>
-						<label class='checkbox'>&nbsp; Only Update on Drop</label>
-					</div>
-					<div>
-						<input class='lightglobalillum showtip' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>
-						<label class='checkbox'>&nbsp; Global Illumination</label>
-					</div>
-				</div>
-			</div>
-		</div>
-		<hr>
-		<div class='alert alert-info' role='alert'>
-			<p><strong>Legacy</strong> - in the coming months, Advanced Fog of War and Dynamic Lighting will be replaced with Updated Dynamic Lighting.</p>
-		</div>
-		<hr>
-		<div id='gm_darkness_opacity'>
-			<label class='feature_name'>
-				<strong>Darkness Opacity (GM)</strong>
-			</label>
-			<div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
-		</div>
-	</div>
-
 	<div class='pagedetails tab-pane' style='display:block;'>
 		<!-- * SIZE */ -->
 		<div class='size_settings' id='size_settings'>
@@ -9895,7 +9810,7 @@ function initHTMLPageSettings () {
 						<label class='sr-only' for='page-size-width-input'>enter a custom page width in pixels</label>
 						<input id="page-size-width-input" type="number" class="width units page_setting_item" value="<$!this.model.get("width")$>" />
 					</div>
-					<div class='disable_box'>px</div>
+					<div class='disable_box'>cells</div>
 				</div>
 				<div class='col pagedetails-symbol'>
 					<span class='page_setting_item'>X</span>
@@ -9927,7 +9842,7 @@ function initHTMLPageSettings () {
 						<label class='sr-only' for='page-size-height-input'>enter a custom page height in pixels</label>
 						<input id="page-size-height-input" type="number" class="height units page_setting_item" value="<$!this.model.get("height")$>" />
 					</div>
-					<div class='disable_box'>px</div>
+					<div class='disable_box'>cells</div>
 				</div>
 				<div class='col pagedetails-symbol'>
 					<span class='page_setting_item'>X</span>
@@ -10036,6 +9951,8 @@ function initHTMLPageSettings () {
 							<option selected value='square'>Square</option>
 							<option value='hex'>Hex (V)</option>
 							<option value='hexr'>Hex (H)</option>
+							<option value='dimetric'>Dimetric</option>
+							<option value='isometric'>Isometric</option>
 						</select>
 					</div>
 				</div>
@@ -10137,6 +10054,46 @@ function initHTMLPageSettings () {
 				</div>
 			</div>
 		</div>
+		<hr>
+		<div class='standard_fog lighting_feature' id='standard_fog'>
+			<div class='pagedetails__header w-100'>
+				<h3 class='page_title text-capitalize'>Fog of War</h3>
+			</div>
+			<div class='pagedetails__container d-flex'>
+				<div class='row'>
+					<div class='col-xs-7 pagedetails__subheader'>
+						<h4 class='text-capitalize'>Standard Fog of War</h4>
+						<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039674913-Ruler' target='_blank' title='Enabling Fog of War will disable Updated Dynamic Lighting'>?</a>
+					</div>
+					<div class='col-xs-3 grid_switch'>
+						<label class='switch'>
+							<label class='sr-only' for='page-standard-fog-basic-toggle'>fog</label>
+							<input class='darknessenabled feature_enabled showtip' id='page-standard-fog-basic-toggle' title='Simplest method of adding fog of war to your games. Use in conjunction with the hide/reveal tool' type='checkbox' value='1'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		</hr>
+		<hr>
+		<div class='gm_darkness_opacity'>
+			<div class='row'>
+				<div class='col-xs-12'>
+					<p class='opacity_title'>GM Darkness Opacity</p>
+				</div>
+			</div>
+		</div>
+		<div class='row'>
+			<div class='col-xs-8'>
+				<div class='fogopacity'></div>
+			</div>
+			<div class='col-xs-1'>
+				<input class='opacity_percentage' disabled type='text'>
+			</div>
+		</div>
+		</hr>
 		<!-- * Audio */ -->
 		<hr>
 		<div class='audio_settings'>
@@ -10159,17 +10116,16 @@ function initHTMLPageSettings () {
 		</div>
 	</div>
 
-	<div class='lighting tab-pane'>
+	<div class='lighting tab-pane' style='display:none;'>
+		<!-- BEGIN MOD -->
+		<strong style="display: block; margin-bottom: 10px;">
+			<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+			Requires a paid Roll20 subscription or all players to use a betteR20 script
+		</strong>
+		<!-- END MOD -->
 		<div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
-			<!-- BEGIN MOD -->
-			<strong style="display: block; margin-bottom: 10px;">
-				<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
-				Requires a paid Roll20 subscription or all players to use a betteR20 script
-			</strong>
-			<hr>
-			<!-- END MOD -->
 			<div class='alert alert-info' role='alert'>
-				<p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other. Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
+				<p><a href="https://help.roll20.net/hc/en-us/articles/360052521913" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
 			</div>
 			<div class='dyn_fog_settings'>
 				<div class='row'>
@@ -10281,6 +10237,95 @@ function initHTMLPageSettings () {
 				</div>
 			</div>
 			<hr>
+		</div>
+		<div id='legacy_section'>
+			<div aria-expanded='false' class='span8' data-target='.collapse_legacy_lighting' data-toggle='collapse' style='display:flex'>
+				<p class='token_light_title' style='flex:1'>Advanced & Legacy Settings</p>
+				<i aria-expanded='false' class='fa fa-chevron-up collapse_legacy_lighting' style='font-size:20px;cursor: pointer;'></i>
+				<i aria-expanded='false' class='fa fa-chevron-down collapse_legacy_lighting' style='font-size:20px;cursor: pointer;'></i>
+			</div>
+			<div class='collapse collapse_legacy_lighting'>
+				<div class='clearfix'>
+					<div class='col-xs-7'>
+						<p class='light_title'>Legacy Lighting</p>
+					</div>
+					<div class='col-xs-2 dyn_fog_switch'>
+						<label class='switch'>
+							<input class='page_settings_enable_legacy_lighting lighting_feature feature_toggle' data-feature_enabled='showlighting' data-target='.legacy_only_section' data-toggle='toggle' type='checkbox'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+				<div class='toggle-element legacy_only_section'>
+					<hr>
+					<div class='lighting_feature' data-feature_enabled='adv_fow_enabled' id='afow_settings'>
+						<label class='feature_name'>
+							<strong>Advanced Fog of War</strong>
+						</label>
+						<div class='feature_options'>
+							<input class='advancedfowenabled feature_enabled showtip' type='checkbox' value='1'>
+							<label class='checkbox'>&nbsp; Enabled</label>
+							<div class='subsettings'>
+								<div>
+									<input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>
+									<label class='checkbox'>&nbsp; Show Grid</label>
+								</div>
+								<div>
+									<input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>
+									<label class='checkbox'>&nbsp; Dim Light Reveals</label>
+								</div>
+								<div>
+									<input class='showtip' id='afow_gm_see_all' title='By default, Advanced Fog of War is only revealed by tokens with sight that are controlled by at least one player.&lt;br&gt;This option allows tokens with sight which are not controlled by anyone to reveal Advanced Fog of War for the GM only.' type='checkbox' value='0'>
+									<label class='checkbox'>&nbsp; All Tokens Reveal (GM)</label>
+								</div>
+								<div id='afow_grid_size' style='width: 180px; line-height: 30px;'>
+									<span id='cell_measurement'>Cell Width:</span>
+									<input type="number" class="advancedfowgridsize units" value="<$!this.model.get("adv_fow_grid_size")$>" />
+									<br>
+									<span>x 70 px =</span>
+									<input type="number" class="px_advancedfowgridsize pixels" value="<$!this.model.get("adv_fow_grid_size")*70$>" />
+									<span>px<sup>*</sup></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class='lighting_feature' data-feature_enabled='showlighting' id='dynamic_lighting_settings'>
+						<label class='feature_name'>
+							<strong>Dynamic Lighting</strong>
+						</label>
+						<div class='feature_options'>
+							<input class='lightingenabled feature_enabled showtip' type='checkbox' value='1'>
+							<label class='checkbox'>&nbsp; Enabled</label>
+							<div class='subsettings'>
+								<div>
+									<input class='lightenforcelos showtip' title='Player&#39;s line of sight set by what tokens they can control.' type='checkbox' value='1'>
+									<label class='checkbox'>&nbsp; Enforce Line of Sight</label>
+								</div>
+								<div>
+									<input class='lightingupdate' type='checkbox' value='1'>
+									<label class='checkbox'>&nbsp; Only Update on Drop</label>
+								</div>
+								<div>
+									<input class='lightglobalillum showtip' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>
+									<label class='checkbox'>&nbsp; Global Illumination</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class='alert alert-info' role='alert'>
+						<p><a href=" https://blog.roll20.net/posts/retiring-legacy-dynamic-lighting-what-you-need-to-know/" target='' _blank''>The sunset has started for Legacy Dynamic Lighting. Convert to Dynamic Lighting now; click to learn more.</a></p>
+					</div>
+					<hr>
+					<div id='gm_darkness_opacity'>
+						<label class='feature_name'>
+							<strong>Darkness Opacity (GM)</strong>
+						</label>
+						<div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	`;
@@ -11029,23 +11074,10 @@ function initHTMLbaseMisc () {
 			<h2>General</h2>
 		</a>
 	</li>
-	<li class="nav-tabs dl">
-		<a>
+	<li class="nav-tabs">
+		<a data-tab="lighting" href="javascript:void(0);">
 			<h2>Lighting</h2>
 		</a>
-		<ul>
-			<li class="nav-tabs--beta">
-				<span class="label label-info">Updated</span>
-				<a data-tab="lighting" href="javascript:void(0);">
-					<h2>Dynamic Lighting</h2>
-				</a>
-			</li>
-			<li class="nav-tabs">
-				<a data-tab="legacy-lighting" href="javascript:void(0);">
-					<h2>Legacy Lighting</h2>
-				</a>
-			</li>
-		</ul>
 	</li>
 	<li class="nav-tabs--beta">
 		<span class="label label-info">bR20</span>
@@ -11345,6 +11377,8 @@ function d20plusEngine () {
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
 		// show dynamic lighting/etc page settings
 		$("#tmpl_pagesettings").replaceWith(d20plus.engine._makePageSettings());
+		// swap templates stashed in page.view.template for each page
+		d20.Campaign.pages.models.forEach(page => page.view.template = $.jqotec("#tmpl_pagesettings"));
 	};
 
 	d20plus.engine._makePageSettings = () => {
