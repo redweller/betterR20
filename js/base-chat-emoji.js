@@ -1,4 +1,4 @@
-const betteR20Emoji = function () {
+const baseChatEmoji = function () {
 	d20plus.chat = {};
 
 	/* eslint-disable */
@@ -1197,27 +1197,6 @@ const betteR20Emoji = function () {
 			},
 		},
 	);
-
-	d20plus.chat.enhanceChat = () => {
-		d20plus.ut.log("Enhancing chat");
-		const tc = d20.textchat.$textarea;
-		$("#textchat-input").off("click", "button")
-		$("#textchat-input").on("click", "button", function () {
-			if (d20plus.cfg.getOrDefault("chat", "emoji")) {
-				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
-					const clean = m1.replace(/:/g, "");
-					return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
-				}));
-			}
-
-			// add custom commands
-			tc.val(tc.val().replace(/^\/ttms( |$)/, "/talktomyself$1"));
-
-			const toSend = $.trim(tc.val());
-			d20.textchat.doChatInput(toSend);
-			tc.val("").focus();
-		});
-	};
 };
 
-SCRIPT_EXTENSIONS.push(betteR20Emoji);
+SCRIPT_EXTENSIONS.push(baseChatEmoji);

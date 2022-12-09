@@ -1,7 +1,7 @@
 const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 
-const SCRIPT_VERSION = "1.33.0.27";
+const SCRIPT_VERSION = "1.33.1.28";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
@@ -220,7 +220,8 @@ const SCRIPTS = {
 			"base-ui",
 			"base-mod",
 			"base-macro",
-			"base-emoji",
+			"base-chat-emoji",
+			"base-chat",
 			"base-remote-libre",
 			"base-jukebox-widget",
 
@@ -263,7 +264,8 @@ const SCRIPTS = {
 			"base-ui",
 			"base-mod",
 			"base-macro",
-			"base-emoji",
+			"base-chat-emoji",
+			"base-chat",
 			"base-remote-libre",
 			"base-jukebox-widget",
 
@@ -304,6 +306,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	const fullScript = joinParts(
 		v.header,
 		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString(),
+		// fs.readFileSync(`${JS_DIR}base-lzstring.js`, "utf-8").toString(),
 		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
 		wrapLangBaseFile(),
 		...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString()),

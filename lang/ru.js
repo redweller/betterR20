@@ -184,5 +184,6 @@ module.exports = {
 	msg_b20_version: [`<br>
 		$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>
 	`],
+	msg_b20_chat_help: [`<li>Полный список команд<br>нажмите $0<br>или посетите <a target='blank' href='$1'>roll20 wiki</a></li>`],
 	msg_player_connected: [`подключился`],
 };

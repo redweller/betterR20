@@ -189,5 +189,6 @@ module.exports = {
 									Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.
 									<br><br>
 								`],
+	msg_b20_chat_help: [`<li>Full list of chat commands<br>type or press $0<br>or visit <a target='blank' href='$1'>roll20 wiki</a></li>`],
 	msg_player_connected: [`connected`],
 };
