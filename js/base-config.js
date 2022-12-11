@@ -183,9 +183,9 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
-		"modestSystemMessagesStyle": {
-			"name": __("cfg_option_modest_chat"),
-			"default": true,
+		"legacySystemMessagesStyle": {
+			"name": __("cfg_option_legacy_chat"),
+			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
@@ -194,11 +194,6 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
-		"showPlayerConnects": {
-			"name": __("cfg_option_log_players_in_chat"),
-			"default": true,
-			"_type": "boolean",
 		},
 	});
 
@@ -360,7 +355,7 @@ function baseConfig () {
 	d20plus.cfg.getDefaultConfig = () => {
 		const outCpy = {};
 		$.each(CONFIG_OPTIONS, (sectK, sect) => {
-			if (window.is_gm || sect._player) {
+			if ((window.is_gm && sect._player !== "only") || sect._player) {
 				outCpy[sectK] = outCpy[sectK] || {};
 				$.each(sect, (k, data) => {
 					if (!k.startsWith("_") && (window.is_gm || data._player)) {
@@ -825,36 +820,6 @@ function baseConfig () {
 		}
 	}
 
-	d20plus.cfg.HandlePlayerLog = () => {
-		const obsconfig = {childList: true, subtree: true};
-		if (!d20plus.cfg.playerWatcher) {
-			const playerListChange = (changelist) => {
-				for (const change of changelist) {
-					if ((change.type === "childList") && (change.addedNodes.length)) {
-						for (const node of change.addedNodes) {
-							const playerName = $(node).find(".playername .name").html();
-							if (!playerName) continue;
-							const playerPic = $(node).find(".video").css("background-image") || "";
-							const playerUrl = playerPic.replace(/[\\")(]/igm, "").replace("url", "");
-							const playerText = `
-								<span style="height:40px;display:block">
-									<img style="width:40px;float:left;margin-right:10px" src="${playerUrl}.png">
-									${(new Date()).toLocaleTimeString()}<br> 
-									${playerName} ${__("msg_player_connected")}
-								</span>
-							`;
-							d20plus.ut.sendHackerChat(playerText);
-						}
-					}
-				}
-			}
-			d20plus.cfg.playerWatcher = new MutationObserver(playerListChange);
-		}
-
-		if (d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
-		else d20plus.cfg.playerWatcher.disconnect();
-	}
-
 	d20plus.cfg.HandleArtLibraryButtons = () => {
 		if (d20plus.cfg.getOrDefault("interface", "selecArtLibraryType") !== "Roll20") {
 			$(`#button-browse-external-art`).parent().parent().toggle(true);
@@ -892,7 +857,6 @@ function baseConfig () {
 		d20plus.cfg.HandleCss();
 
 		if (window.is_gm) {
-			d20plus.cfg.HandlePlayerLog();
 			d20plus.cfg.HandleArtLibraryButtons();
 		}
 

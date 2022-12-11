@@ -210,6 +210,10 @@ function baseCss () {
 			r: "margin-left: -15px; min-width: calc(100% + 30px);",
 		},
 		{
+			s: ".userscript-commandintro img.userscript-b20img",
+			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
+		},
+		{
 			s: ".Ve-btn-chat",
 			r: "margin-top: 10px; margin-left: -35px;",
 		},

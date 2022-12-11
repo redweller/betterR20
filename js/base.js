@@ -24,6 +24,7 @@ const D20plus = function (version) {
 
 	// Window loaded
 	function doBootstrap () {
+		d20plus.ut.showInitMessage();
 		d20plus.ut.log("Waiting for enhancement suite...");
 
 		let timeWaitedForEnhancementSuiteMs = 0;
@@ -45,7 +46,7 @@ const D20plus = function (version) {
 				})();
 
 				window.d20plus = d20plus;
-				d20plus.ut.log("Injected");
+				d20plus.ut.log("Injection successful...");
 			} else {
 				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
 					alert("betteR20 requires the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");

@@ -30,19 +30,26 @@ module.exports = {
 	cfg_option_hide_help: ["Спрятать кнопку Помощь на панели инструментов"],
 	cfg_option_dm_tweaks: ["Включить исправления стилей для темного режима"],
 	cfg_option_assume_ogl: ["Альтернативные групповые броски (только лист OGL)"],
-	cfg_option_silent_chat: ["Не выводить в чат уведомления при загрузке"],
+	cfg_option_silent_chat: ["Не выводить в чат приветствие при загрузке"],
 	cfg_option_modest_chat: ["Использовать родной стиль чата для уведомлений betteR20"],
 	cfg_option_select_jrnsearch: ["Выберите тип строки поиска в Журнале"],
 	cfg_option_select_artlib: ["Выберите элементы управления для Библиотеки"],
 	cfg_option_quick_init_clear: ["Добавить кнопку быстрой очистки Трекера"],
 	cfg_option_hide_linesplit: ["Спрятать кнопку разрезания линий (нужен перезапуск)"],
-	cfg_option_log_players_in_chat: ["Выводить сообщения о подключении игроков"],
 	cfg_option_neat_menus: ["Упорядоченное контекстное меню слоя (нужен перезапуск)"],
 	cfg_option_quick_menu: ["Включить быстрые действия, которые отображаются в самом низу Упорядоченного меню и дублируют обычные пункты (нужен перезапуск)<br> -- Быстрое действие 1, всегда \"На слой ГМа\" и обратно"],
 	cfg_option_quick_2: ["-- Быстрое действие 2"],
 	cfg_option_quick_3: ["-- Быстрое действие 3"],
 	cfg_option_minify_tracker: ["Уменьшить размер элементов трекера инициативы"],
 	cfg_option_interiors_toggle: ["Добавить переключатель режима в помещении/снаружи"],
+
+	cfg_option_legacy_chat: ["Использовать черно-зелёный стиль для уведомлений betteR20"],
+	cfg_option_log_players_in_chat: ["Выводить сообщения о подключении игроков"],
+	cfg_option_enable_social: ["Включить панель опций чата (нужен перезапуск)"],
+	cfg_option_additional_commands: ["Дополнительные команды чата (нужен перезапуск)"],
+	cfg_option_highlight_ttms: ["Подсвечивать область ввода в режиме TTMS"],
+	cfg_option_versions_from_players: ["Показывать уведомления о версиях скриптов"],
+	cfg_option_versions_to_gm: ["Уведомлять ГМа о номерах версий скриптов"],
 
 	ui_bar_map: ["Карта и фон"],
 	ui_bar_obj: ["Объекты и токены"],
@@ -162,6 +169,14 @@ module.exports = {
 
 	stat_init: ["ИНИЦИАТИВА"],
 
+	msg_chat_lang_title: [`Вы понимаете это потому что ваш персонаж знает`],
+
+	msg_b20_chat_help: [`<li>Полный список команд чата:<br>-нажмите $0<br>-или посетите <a target='blank' href='$1'>roll20 wiki</a></li>`],
+	msg_b20_chat_help_title: [`
+		<strong>Список команд чата:</strong>
+		<br>Команды от betteR20 отмечены &#42;
+	`],
+
 	msg_vtte_init: [`
 		VTT Enhancement Suite обнаружен. $0 успешно инициализирован.
 		<br>
@@ -184,6 +199,9 @@ module.exports = {
 	msg_b20_version: [`<br>
 		$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>
 	`],
-	msg_b20_chat_help: [`<li>Полный список команд<br>нажмите $0<br>или посетите <a target='blank' href='$1'>roll20 wiki</a></li>`],
+
 	msg_player_connected: [`подключился`],
+	msg_player_joined: [`присоединился`],
+	msg_status_name: [`статус`],
+	msg_player_disconnected: [`отключился`],
 };

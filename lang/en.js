@@ -30,19 +30,26 @@ module.exports = {
 	cfg_option_hide_help: ["Hide Help Button on floating toolbar"],
 	cfg_option_dm_tweaks: ["Enable background style fixes for default dark mode"],
 	cfg_option_assume_ogl: ["Alternative mass rolls (only OGL 5e)"],
-	cfg_option_silent_chat: ["Don't show chat messages on load"],
+	cfg_option_silent_chat: ["Don't show welcome messages on load"],
 	cfg_option_modest_chat: ["Use default chat style for betteR20 system messages"],
 	cfg_option_select_jrnsearch: ["Select Journal search controls"],
 	cfg_option_select_artlib: ["Select Art Library controls"],
 	cfg_option_quick_init_clear: ["Add Quick Initiative tracker Clear Button"],
 	cfg_option_hide_linesplit: ["Hide Line Splitter (reload to apply changes)"],
-	cfg_option_log_players_in_chat: ["Show player connects messages"],
 	cfg_option_neat_menus: ["Reorganized canvas context menu (reload to apply changes)"],
 	cfg_option_quick_menu: ["Enable quick actions as copies of the menu entries added to the bottom of Reorganized menu for quick access (needs restart)<br> -- Quick action 1 is always Token to GM & back."],
 	cfg_option_quick_2: ["-- Quick action 2"],
 	cfg_option_quick_3: ["-- Quick action 3"],
 	cfg_option_minify_tracker: ["Shrink Initiative Tracker Text"],
 	cfg_option_interiors_toggle: ["Add interior/outside mode switch"],
+
+	cfg_option_legacy_chat: ["Use green/black style for betteR20 system messages"],
+	cfg_option_log_players_in_chat: ["Show player connects messages"],
+	cfg_option_enable_social: ["Enable chat social panel (requires restart)"],
+	cfg_option_additional_commands: ["Additional text chat commands (requires restart)"],
+	cfg_option_highlight_ttms: ["Highlisht text box when in TTMS mode"],
+	cfg_option_versions_from_players: ["Show script version notifications from players"],
+	cfg_option_versions_to_gm: ["Notify GM of your script version numbers"],
 
 	ui_bar_map: ["Map & Backdrop"],
 	ui_bar_obj: ["Objects & Tokens"],
@@ -65,6 +72,13 @@ module.exports = {
 	ui_dialog_select: ["Select"],
 	ui_dialog_submit: ["Submit"],
 	ui_dialog_cancel: ["Cancel"],
+
+	ui_updated: ["Updated"],
+
+	ui_tokened_details: ["Details"],
+	ui_tokened_gmnotes: ["GM Notes"],
+	ui_tokened_dynlight: ["Dynamic Lighting"],
+	ui_tokened_leglight: ["Legacy Lighting"],
 
 	menu_unlock: ["Unlock..."],
 
@@ -162,6 +176,14 @@ module.exports = {
 
 	stat_init: ["INITIATIVE"],
 
+	msg_chat_lang_title: [`You understand this because one of your characters speaks`],
+
+	msg_b20_chat_help: [`<li>Full list of chat commands<br>type or press $0<br>or visit <a target='blank' href='$1'>roll20 wiki</a></li>`],
+	msg_b20_chat_help_title: [`
+		<strong>List of chat commands:</strong>
+		<br>betteR20 commands marked with &#42;
+	`],
+
 	msg_vtte_init: [`
 			VTT Enhancement Suite detected.
 			<br><br>
@@ -189,6 +211,9 @@ module.exports = {
 									Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.
 									<br><br>
 								`],
-	msg_b20_chat_help: [`<li>Full list of chat commands<br>type or press $0<br>or visit <a target='blank' href='$1'>roll20 wiki</a></li>`],
+
 	msg_player_connected: [`connected`],
+	msg_player_joined: [`joined`],
+	msg_status_name: [`status`],
+	msg_player_disconnected: [`disconnected`],
 };

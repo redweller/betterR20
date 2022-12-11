@@ -10,6 +10,8 @@ function baseUtil () {
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
+		$("#lamer-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
+		// .get(0)?.scrollIntoView();
 	};
 
 	d20plus.ut.error = (...args) => {
@@ -142,25 +144,74 @@ function baseUtil () {
 	d20plus.ut.chatTag = (message) => {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
+		const data = [
+			d20plus.scriptName,
+			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			d20plus.ut.WIKI_URL,
+		];
+		const welcomeTemplate = (b20v, vttv, faq) => `
+			<div class="userscript-commandintro">
+				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
+				<h1 style="display: inline-block;line-height: 22px;margin-top: 5px;">
+					betteR20 
+					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
+					<p style="font-size: 12px;line-height: 15px;">${__("$0 loaded<br>VTTES v$1 detected", [b20v, vttv])}</p>
+				</h1>
+				<p>${__("Need help? Visit our <a href=\"$0/index.php/BetteR20_FAQ\">wiki</a> or join our", [faq])} <a href="https://discord.gg/nGvRCDs">Discord</a>.</p>
+				<span title="${__("You'd think this would be obvious.")}">
+					<p>${__("Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.")}</p>
+					<p>${__("Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.")}</p>
+				</span>
+			</div>
+		`;
 		if (window.enhancementSuiteEnabled) {
-			d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
+			$("#lamer-progress").before(`<span><span>&gt;</span>VTT Enhancement Suite detected</span>`)
+			// d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
 		} else d20plus.ut.showHardDickMessage(scriptName);
 		d20plus.ut.sendHackerChat(
-			isStreamer ? "" : __("msg_better20_help", [d20plus.ut.WIKI_URL]),
+			isStreamer ? "" : welcomeTemplate(...data),
 		);
 	};
 
-	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
-		d20plus.ut.sendHackerChat(`
-			${scriptName} initialising, please wait...<br><br>
-		`);
-		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	d20plus.ut.showInitMessage = () => {
+		d20plus.ut.consTemplate = `<div class="lamer-chat">
+			<span><span>&gt;</span>initializing, please wait...</span>
+			<span id="lamer-progress"><span>&gt;</span>|...</span>
+			<style type="text/css">
+			.lamer-chat {
+				font-family: Menlo, Monaco, Consolas, monospace;
+				font-size: small;
+				background: black;
+				display: inline-block;
+				font-weight: bold;
+				color: rgb(32, 194, 14);
+				padding: 10px 5px 25px 45px;
+				width: 100%;
+				position: sticky;
+				z-index: 1000;
+				top: 0px;
+			}
+			.lamer-chat span {
+				display: block; white-space: nowrap;
+			}
+			.lamer-chat > span > span {
+				float: left; margin-left: -39px;
+			}
+			</style>
+		</div>`;
+		$(`#textchat`).prepend(d20plus.ut.consTemplate);
 	};
 
+	d20plus.ut.showLoadingMessage = () => {
+		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const loadmsgtemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
+		if (!isStreamer) $(".lamer-chat > span:first-child").after(loadmsgtemplate);
+		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	}
+
 	d20plus.ut.sendHackerChat = (message, error = false) => {
-		const defaultStyle = !!d20plus.cfg.get("chat", "modestSystemMessagesStyle");
+		const defaultStyle = !d20plus.cfg.get("chat", "cfg_option_legacy_chat");
 		d20.textchat.incoming(false, ({
 			who: "system",
 			type: defaultStyle && error ? "error" : "system",

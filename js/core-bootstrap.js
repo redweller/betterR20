@@ -1,7 +1,9 @@
 const betteR20Core = function () {
+	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		const scriptName = `betteR20-core v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-core v${d20plus.version}`;
 		try {
+			d20plus.ut.showLoadingMessage();
 			d20plus.ut.log(`Init (v${d20plus.version})`);// RB20 EXCLUDE START
 			d20plus.ut.selectLocale();// RB20 EXCLUDE END
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
@@ -17,7 +19,6 @@ const betteR20Core = function () {
 			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
 
 			if (showChatMsgs) {
-				d20plus.ut.showLoadingMessage(scriptName);
 				d20plus.ut.checkVersion();
 			}
 
@@ -76,7 +77,7 @@ const betteR20Core = function () {
 			}
 
 			d20plus.ut.log("All systems operational");
-			if (showChatMsgs) d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
+			d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error(e);
