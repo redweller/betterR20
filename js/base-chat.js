@@ -202,6 +202,16 @@ function baseChat () {
 		</script>
 	`;
 
+	const playerConnectsTemplate = (id) => `
+			<input type="checkbox" class="connects-state" id="connects${id}-state"/>
+			<label for="connects${id}-state">
+				<span id="connects${id}-info" class="connects-info" title="Show player details">?</span>
+				<span id="connects${id}" class="connects-log">
+				Updating...
+				</span>
+			</label>
+	`;
+
 	const chatHelp = [
 		["/w (name)", "private message (whisper)"],
 		["/w gm", "private message to your GM"],
@@ -318,6 +328,21 @@ function baseChat () {
 		}
 	}
 
+	d20plus.chat.checkPlayerVersion = (player, id) => {
+		const raw = d20.Campaign.players.get(player).get("script");
+		if (raw) {
+			const info = JSON.parse(decodeURI(atob(raw)));
+			const time = d20plus.ut.timeAgo(info.date);
+			let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}<br>Info updated ${time}`;
+			if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
+			if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+			$(`#connects${id}`).html(html);
+			$(`#connects${id}-info`).html("i");
+		} else {
+			$(`#connects${id}`).html("VTTES/betteR20 not installed or version info sharing is disabled");
+		}
+	}
+
 	d20plus.chat.getSpeakingTo = () => {
 		const prev = $("#speakingto").val();
 		$("#speakingto").html((() => {
@@ -362,16 +387,11 @@ function baseChat () {
 				"_type": "boolean",
 				"_player": true,
 			},
-			"showVersions": {
-				"name": __("cfg_option_versions_from_players"),
+			"shareVersions": {
+				"name": __("cfg_option_share_version_info"),
 				"default": true,
 				"_type": "boolean",
-			},
-			"sendVersions": {
-				"name": __("cfg_option_versions_to_gm"),
-				"default": true,
-				"_type": "boolean",
-				"_player": "only",
+				"_player": true,
 			},
 		},
 	);
@@ -405,47 +425,52 @@ function baseChat () {
 	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
-		// console.log(changelist);
-		// console.log(d20.Campaign.players.models.reduce((outp, player) => `${outp} | ${player.attributes.displayname} ${player.attributes.online}`, ""));
 		if (!d20plus.chat.players) d20plus.chat.players = {};
-		d20.Campaign.players.models.forEach(player => {
-			const player_state = player.attributes.online;
-			const player_name = player.attributes.displayname;
+		d20.Campaign.players.models.forEach(current => {
+			const player = {
+				on: current.attributes.online,
+				name: current.attributes.displayname,
+				delay: 0,
+			};
 			let notification = false;
-			let drwho = player_name.length > 17 ? `${player_name.slice(0, 15)}...` : player_name;
-			if (!d20plus.chat.players[player.id]) {
-				d20plus.chat.players[player.id] = { online: player_state };
-				notification = `${drwho}} ${__("msg_player_joined")}`;
-				drwho = "::";
+			player.name = player.name.length > 17 ? `${player.name.slice(0, 15)}...` : player.name;
+			if (!d20plus.chat.players[current.id]) {
+				d20plus.chat.players[current.id] = { online: player.on };
+				notification = `${player.name} ${__("msg_player_joined")}`;
+				player.delay = 8000;
 			} else {
-				if (d20plus.chat.players[player.id].online && !player_state) {
-					notification = `${drwho} ${__("msg_player_disconnected")}`;
-					drwho = "::";
-					d20plus.chat.players[player.id].online = false;
-				} else if (!d20plus.chat.players[player.id].online && player_state) {
-					notification = __("msg_player_connected");
-					drwho = false;
-					d20plus.chat.players[player.id].online = true;
+				if (d20plus.chat.players[current.id].online && !player.on) {
+					notification = `${player.name} ${__("msg_player_disconnected")}`;
+					d20plus.chat.players[current.id].online = false;
+				} else if (!d20plus.chat.players[current.id].online && player.on) {
+					notification = `${player.name} ${__("msg_player_connected")}`;
+					d20plus.chat.players[current.id].online = true;
+					player.delay = 8000;
 				}
 			}
 			if (changelist && notification && d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) {
+				const id = d20plus.ut.generateRowId();
+				d20plus.chat.drwho = d20plus.chat.drwho ? "" : "꞉꞉" // replace ":" with U+789 to separate messages
 				d20.textchat.incoming(false, {
-					who: drwho || player_name,
+					who: d20plus.chat.drwho || "::",
 					type: "general",
 					// playerid: window.currentPlayer.id,
 					// target: d20_player_id,
-					id: d20plus.ut.generateRowId(),
-					avatar: `/users/avatar/${player.attributes.d20userid}/30`,
+					id: id,
+					avatar: `/users/avatar/${current.attributes.d20userid}/30`,
 					content: notification,
 				})
+				$(`[data-messageid=${id}]`).append(playerConnectsTemplate(id));
+				setTimeout(() => {
+					d20plus.chat.checkPlayerVersion(current.id, id);
+				}, player.delay)
 			}
 		})
 	}
 
 	d20plus.chat.incoming = (params) => {
-		console.log(params[1], d20plus.chat.localHistory);
+		// console.log(params[1], d20plus.chat.localHistory);
 		const msg = params[1];
-		const version_tmpl = /^VTTES .*? \| betteR20 .*?$/;
 		if (msg.playerid === d20_player_id || msg.type === "system") {
 			const stash = [];
 			while (d20plus.chat.localHistory.length) {
@@ -458,13 +483,7 @@ function baseChat () {
 			d20plus.chat.localHistory.pop();
 		}
 		if (msg.type === "whisper") {
-			if (window.is_gm && msg.content.match(version_tmpl)) {
-				if (d20plus.cfg.getOrDefault("chat", "showVersions")) {
-					msg.type = "general";
-				} else {
-					return;
-				}
-			} else if (params[1].playerid === d20_player_id) {
+			if (params[1].playerid === d20_player_id) {
 				d20plus.chat.lastRespondent = params[1].target_name;
 			} else if (params[1].target.includes(d20_player_id)) {
 				d20plus.chat.lastRespondent = d20.Campaign.players.get(params[1].playerid)?.attributes.displayname;
@@ -473,12 +492,6 @@ function baseChat () {
 		if (d20plus.chat.mtms?.await && params[1]) {
 			if (params[1].playerid === d20_player_id
 				|| params[1].type === "error") d20plus.chat.mtms.success = true;
-		}
-		if (!d20plus.chat.sentVersion && !window.is_gm) {
-			if (msg.content.match(version_tmpl)) {
-				d20plus.chat.sentVersion = true;
-				return;
-			}
 		}
 		if (params[1].rolltemplate === "inlanguage") {
 			const template = /\{\{language=(.*?)\}\} \{\{languageid=(.*?)\}\} \{\{encoded=(.*?)\}\}/;
@@ -565,12 +578,6 @@ function baseChat () {
 			const obsconfig = { childList: true, subtree: false };
 			d20plus.cfg.playerWatcher = new MutationObserver(d20plus.chat.processPlayersList);
 			d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
-		} else if (d20plus.cfg.getOrDefault("chat", "sendVersions")) {
-			d20.textchat.doChatInput([
-				"/w gm ",
-				`VTTES ${window.r20es?.hooks?.welcomeScreen?.config?.previousVersion}`,
-				` | betteR20 ${d20plus.version}`,
-			].join(""));
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "social")) {

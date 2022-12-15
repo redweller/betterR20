@@ -43,13 +43,14 @@ module.exports = {
 	cfg_option_minify_tracker: ["Уменьшить размер элементов трекера инициативы"],
 	cfg_option_interiors_toggle: ["Добавить переключатель режима в помещении/снаружи"],
 
-	cfg_option_legacy_chat: ["Использовать черно-зелёный стиль для уведомлений betteR20"],
+	cfg_option_legacy_chat: ["Черно-зелёный (классический) стиль уведомлений betteR20"],
+	cfg_option_welcome_msg: ["Выводить в чат приветствие при загрузке"],
 	cfg_option_log_players_in_chat: ["Выводить сообщения о подключении игроков"],
 	cfg_option_enable_social: ["Включить панель опций чата (нужен перезапуск)"],
 	cfg_option_additional_commands: ["Дополнительные команды чата (нужен перезапуск)"],
 	cfg_option_highlight_ttms: ["Подсвечивать область ввода в режиме TTMS"],
 	cfg_option_versions_from_players: ["Показывать уведомления о версиях скриптов"],
-	cfg_option_versions_to_gm: ["Уведомлять ГМа о номерах версий скриптов"],
+	cfg_option_share_version_info: ["Делиться информацией о версиях скриптов"],
 
 	ui_bar_map: ["Карта и фон"],
 	ui_bar_obj: ["Объекты и токены"],
@@ -72,6 +73,8 @@ module.exports = {
 	ui_dialog_select: ["Выберите"],
 	ui_dialog_submit: ["Подтвердить"],
 	ui_dialog_cancel: ["Отмена"],
+
+	ui_tokened_details: ["Детали"],
 
 	menu_unlock: ["Снять блок..."],
 
@@ -172,33 +175,17 @@ module.exports = {
 	msg_chat_lang_title: [`Вы понимаете это потому что ваш персонаж знает`],
 
 	msg_b20_chat_help: [`<li>Полный список команд чата:<br>-нажмите $0<br>-или посетите <a target='blank' href='$1'>roll20 wiki</a></li>`],
-	msg_b20_chat_help_title: [`
-		<strong>Список команд чата:</strong>
-		<br>Команды от betteR20 отмечены &#42;
-	`],
+	msg_b20_chat_help_title: [`<strong>Список команд чата:</strong><br>Команды от betteR20 отмечены &#42;`],
 
-	msg_vtte_init: [`
-		VTT Enhancement Suite обнаружен. $0 успешно инициализирован.
-		<br>
-	`],
-	msg_better20_help: [`
-		Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ">вики</a> или зайдите в <a href="https://discord.gg/nGvRCDs">Discord</a>.
-		<br>
-		<br>
-		<span title="Вроде, очевидно.">
-		Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.
-		<br>
-		<br>
-		Перед тем, как сообщить о баге на форумах Roll20, пожалуйста отключите данный скрипт и проверьте, сохраняется ли проблема.
-		</span>
-	`],
-	msg_b20_version_stream: [`<br>
-		$0 обновился, доступна новая версия.
-		<br><br>
-	`],
-	msg_b20_version: [`<br>
-		$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>
-	`],
+	msg_b20_vtte_init: [`VTTE обнаружен и $0 успешно загрузился.<br>`],
+	msg_b20_version_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
+	msg_b20_version: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
+
+	msg_welcome_versions: ["$0 загружен<br>VTTES v$1 найден"],
+	msg_welcome_faq: ["Нужна помощь? Посетите <a href=\"$0/index.php/BetteR20_FAQ\">вики</a> или зайдите в"],
+	msg_welcome_sarcasm: ["Вроде, это должно быть очевидно"],
+	msg_welcome_p1: ["Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20."],
+	msg_welcome_p2: ["Перед тем, как сообщить о баге на форумах Roll20, пожалуйста отключите данный скрипт и проверьте, сохраняется ли проблема."],
 
 	msg_player_connected: [`подключился`],
 	msg_player_joined: [`присоединился`],

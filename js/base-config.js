@@ -189,9 +189,9 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
-		"suppressLoadingMessages": {
-			"name": __("cfg_option_silent_chat"),
-			"default": false,
+		"showWelcomeMessage": {
+			"name": __("cfg_option_welcome_msg"),
+			"default": true,
 			"_type": "boolean",
 			"_player": true,
 		},

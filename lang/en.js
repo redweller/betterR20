@@ -44,12 +44,13 @@ module.exports = {
 	cfg_option_interiors_toggle: ["Add interior/outside mode switch"],
 
 	cfg_option_legacy_chat: ["Use green/black style for betteR20 system messages"],
+	cfg_option_welcome_msg: ["Show welcome message on load"],
 	cfg_option_log_players_in_chat: ["Show player connects messages"],
 	cfg_option_enable_social: ["Enable chat social panel (requires restart)"],
 	cfg_option_additional_commands: ["Additional text chat commands (requires restart)"],
 	cfg_option_highlight_ttms: ["Highlisht text box when in TTMS mode"],
 	cfg_option_versions_from_players: ["Show script version notifications from players"],
-	cfg_option_versions_to_gm: ["Notify GM of your script version numbers"],
+	cfg_option_share_version_info: ["Share script version numbers"],
 
 	ui_bar_map: ["Map & Backdrop"],
 	ui_bar_obj: ["Objects & Tokens"],
@@ -179,38 +180,17 @@ module.exports = {
 	msg_chat_lang_title: [`You understand this because one of your characters speaks`],
 
 	msg_b20_chat_help: [`<li>Full list of chat commands<br>type or press $0<br>or visit <a target='blank' href='$1'>roll20 wiki</a></li>`],
-	msg_b20_chat_help_title: [`
-		<strong>List of chat commands:</strong>
-		<br>betteR20 commands marked with &#42;
-	`],
+	msg_b20_chat_help_title: [`<strong>List of chat commands:</strong><br>betteR20 commands marked with &#42;`],
 
-	msg_vtte_init: [`
-			VTT Enhancement Suite detected.
-			<br><br>
-			$0 initialised.
-			<br>
-		`],
-	msg_better20_help: [`
-			<br>
-			Need help? Visit our <a href="$0/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="You'd think this would be obvious.">
-			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
-			<br>
-			<br>
-			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
-			</span>
-		`],
-	msg_b20_version_stream: [`<br>
-									A newer version of $0 is available.
-									<br><br>
-								`],
-	msg_b20_version: [`<br>
-									A newer version of $0 is available.<br>
-									Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.
-									<br><br>
-								`],
+	msg_b20_vtte_init: [`VTTE detected and $0 successfully loaded.<br>`],
+	msg_b20_version_stream: [`<br>A newer version of $0 is available.<br><br>`],
+	msg_b20_version: [`<br>A newer version of $0 is available.<br>Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>`],
+
+	msg_welcome_versions: ["$0 loaded<br>VTTES v$1 detected"],
+	msg_welcome_faq: ["Need help? Visit our <a href=\"$0/index.php/BetteR20_FAQ\">wiki</a> or join our"],
+	msg_welcome_sarcasm: ["You'd think this would be obvious."],
+	msg_welcome_p1: ["Please DO NOT post about this script or any related content in official channels, including the Roll20 forums."],
+	msg_welcome_p2: ["Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists."],
 
 	msg_player_connected: [`connected`],
 	msg_player_joined: [`joined`],

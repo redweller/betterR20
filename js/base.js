@@ -24,7 +24,6 @@ const D20plus = function (version) {
 
 	// Window loaded
 	function doBootstrap () {
-		d20plus.ut.showInitMessage();
 		d20plus.ut.log("Waiting for enhancement suite...");
 
 		let timeWaitedForEnhancementSuiteMs = 0;
@@ -37,6 +36,7 @@ const D20plus = function (version) {
 				// r20es will expose the d20 variable if we wait
 				// this should always trigger after window.onload has fired, but track init state just in case
 				(function waitForD20 () {
+					if ($("#textchat").get(0) && !$(".lamer-chat").get(0)) d20plus.ut.showInitMessage();
 					if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 						hasRunInit = true;
 						d20plus.Init();

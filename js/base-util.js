@@ -11,7 +11,6 @@ function baseUtil () {
 		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
 		$("#lamer-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
-		// .get(0)?.scrollIntoView();
 	};
 
 	d20plus.ut.error = (...args) => {
@@ -86,22 +85,8 @@ function baseUtil () {
 	}
 
 	d20plus.ut.checkVersion = () => {
+		d20plus.ut.plantVersionInfo();
 		d20plus.ut.log("Checking current version");
-
-		function cmpVersions (a, b) {
-			const regExStrip0 = /(\.0+)+$/;
-			const segmentsA = a.replace(regExStrip0, "").split(".");
-			const segmentsB = b.replace(regExStrip0, "").split(".");
-			const l = Math.min(segmentsA.length, segmentsB.length);
-
-			for (let i = 0; i < l; i++) {
-				const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
-				if (diff) {
-					return diff;
-				}
-			}
-			return segmentsA.length - segmentsB.length;
-		}
 
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
@@ -111,7 +96,7 @@ function baseUtil () {
 				if (data) {
 					const curr = d20plus.version;
 					const avail = data;
-					const cmp = cmpVersions(curr, avail);
+					const cmp = d20plus.ut.cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
@@ -141,42 +126,58 @@ function baseUtil () {
 		`, true);
 	};
 
-	d20plus.ut.chatTag = (message) => {
+	d20plus.ut.chatTag = () => {
+		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
+		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
+		const classname = !legacytStyle ? "userscript-commandintro" : "userscript-hackerintro";
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const data = [
 			d20plus.scriptName,
 			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
 			d20plus.ut.WIKI_URL,
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
-			<div class="userscript-commandintro">
+			<div class="${classname}">
 				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
-				<h1 style="display: inline-block;line-height: 22px;margin-top: 5px;">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 12px;line-height: 15px;">${__("$0 loaded<br>VTTES v$1 detected", [b20v, vttv])}</p>
+					<p style="font-size: 11px;line-height: 15px;">${__("msg_welcome_versions", [b20v, vttv])}</p>
 				</h1>
-				<p>${__("Need help? Visit our <a href=\"$0/index.php/BetteR20_FAQ\">wiki</a> or join our", [faq])} <a href="https://discord.gg/nGvRCDs">Discord</a>.</p>
-				<span title="${__("You'd think this would be obvious.")}">
-					<p>${__("Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.")}</p>
-					<p>${__("Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.")}</p>
+				<p>${__("msg_welcome_faq", [faq])} <a href="https://discord.gg/nGvRCDs">Discord</a>.</p>
+				<span title="${__("msg_welcome_sarcasm")}">
+					<p>${__("msg_welcome_p1")}</p>
+					<p>${__("msg_welcome_p2")}</p>
 				</span>
 			</div>
 		`;
+		if (showWelcome) {
+			if (!isStreamer) {
+				d20plus.ut.sendHackerChat(welcomeTemplate(...data));
+			} else {
+				d20plus.ut.sendHackerChat(__("msg_b20_vtte_init", [scriptName]));
+			}
+		}
 		if (window.enhancementSuiteEnabled) {
-			$("#lamer-progress").before(`<span><span>&gt;</span>VTT Enhancement Suite detected</span>`)
-			// d20plus.ut.sendHackerChat(__("msg_vtte_init", [scriptName]));
-		} else d20plus.ut.showHardDickMessage(scriptName);
-		d20plus.ut.sendHackerChat(
-			isStreamer ? "" : welcomeTemplate(...data),
-		);
+			$("#lamer-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+		} else {
+			d20plus.ut.showHardDickMessage(scriptName);
+		}
+		setTimeout(() => {
+			$(`.lamer-chat`).css("height", "0px");
+			setTimeout(() => {
+				$(".lamer-chat").remove();
+				clearInterval(d20plus.ut.cursor);
+			}, 2000);
+		}, 6000);
 	};
 
 	d20plus.ut.showInitMessage = () => {
 		d20plus.ut.consTemplate = `<div class="lamer-chat">
 			<span><span>&gt;</span>initializing, please wait...</span>
-			<span id="lamer-progress"><span>&gt;</span>|...</span>
+			<span id="lamer-progress"><span>&gt;</span>loading data</span>
+			<span id="lamer-cursor"><span>&gt;</span><aside>|</aside></span>
 			<style type="text/css">
 			.lamer-chat {
 				font-family: Menlo, Monaco, Consolas, monospace;
@@ -185,14 +186,18 @@ function baseUtil () {
 				display: inline-block;
 				font-weight: bold;
 				color: rgb(32, 194, 14);
-				padding: 10px 5px 25px 45px;
 				width: 100%;
 				position: sticky;
 				z-index: 1000;
 				top: 0px;
+				height: 100px;
+				transition: height 2s;
+				overflow: hidden;
+				border-bottom: 1px solid rgb(32, 194, 14);
 			}
-			.lamer-chat span {
+			.lamer-chat > span {
 				display: block; white-space: nowrap;
+				padding: 0px 5px 0px 45px;
 			}
 			.lamer-chat > span > span {
 				float: left; margin-left: -39px;
@@ -200,6 +205,13 @@ function baseUtil () {
 			</style>
 		</div>`;
 		$(`#textchat`).prepend(d20plus.ut.consTemplate);
+		let blink = false;
+		d20plus.ut.cursor = setInterval(() => {
+			$(`.lamer-chat`).append($(`.lamer-cursor`));
+			if (blink) $(`.lamer-chat aside`).html("|");
+			else $(`.lamer-chat aside`).html("");
+			blink = !blink;
+		}, 300);
 	};
 
 	d20plus.ut.showLoadingMessage = () => {
@@ -211,15 +223,52 @@ function baseUtil () {
 	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
-		const defaultStyle = !d20plus.cfg.get("chat", "cfg_option_legacy_chat");
+		const legacytStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
+		if (!message) return;
 		d20.textchat.incoming(false, ({
 			who: "system",
-			type: defaultStyle && error ? "error" : "system",
-			content: (!defaultStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			type: !legacytStyle && error ? "error" : "system",
+			content: (legacytStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
 			</span>` : message),
 		}));
 	};
+
+	d20plus.ut.plantVersionInfo = () => {
+		const thisPlayer = d20?.Campaign.players.get(d20_player_id);
+		if (!thisPlayer) return;
+		if (!d20plus.cfg.getOrDefault("chat", "shareVersions")) {
+			if (thisPlayer.get("script")) {
+				thisPlayer.set("script", null, true);
+				thisPlayer.save();
+			}
+			return;
+		}
+		d20plus.ut.log("Managing version info");
+		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
+		const b20v = encodeURI(d20plus.version);
+		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
+		const date = Number(new Date());
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, date}));
+		thisPlayer.set("script", info, true);
+		thisPlayer.save();
+	}
+
+	d20plus.ut.cmpVersions = (present, latest) => {
+		if (!present || !latest) return 0;
+		const regExStrip0 = /(\.0+)+$/;
+		const segmentsA = present.replace(regExStrip0, "").split(".");
+		const segmentsB = latest.replace(regExStrip0, "").split(".");
+		const l = Math.min(segmentsA.length, segmentsB.length);
+
+		for (let i = 0; i < l; i++) {
+			const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
+			if (diff) {
+				return diff;
+			}
+		}
+		return segmentsA.length - segmentsB.length;
+	}
 
 	d20plus.ut.addCSS = (sheet, selectors, rules) => {
 		if (!(selectors instanceof Array)) selectors = [selectors];
@@ -260,6 +309,17 @@ function baseUtil () {
 			d20plus.ut.addCSS(targetSheet, r.s, r.r);
 		});
 	};
+
+	d20plus.ut.timeAgo = (ts) => {
+		const difInteger = Number(new Date()) - Number(ts);
+		const difMinutes = Math.round((difInteger - 60000) / 60000);
+		const difHours = Math.round((difInteger - 3600000) / 3600000);
+		const difDays = Math.round((difInteger - 86400000) / 86400000);
+		if (difDays > 0) return `${difDays} ${__("d ago")}`;
+		if (difHours > 0) return `${difHours} ${__("hr ago")}`;
+		if (difMinutes > 0) return `${difMinutes} ${__("min ago")}`;
+		return `0 ${__("min ago")}`;
+	}
 
 	d20plus.ut.getAntiCacheSuffix = () => {
 		return `?${(new Date()).getTime()}`;

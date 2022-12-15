@@ -206,12 +206,44 @@ function baseCss () {
 			r: "color: white;",
 		},
 		{
-			s: ".withoutavatars .userscript-hacker-chat",
-			r: "margin-left: -15px; min-width: calc(100% + 30px);",
+			s: ".userscript-hackerintro",
+			r: "background: black; padding: 3px;",
+		},
+		{
+			s: ".userscript-hackerintro h1",
+			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: 18px;",
+		},
+		{
+			s: ".userscript-hackerintro p",
+			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: unset; font-weight: bold; line-height: 20px;",
 		},
 		{
 			s: ".userscript-commandintro img.userscript-b20img",
 			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
+		},
+		{
+			s: ".connects-log",
+			r: "display: none; font-variant: small-caps; font-size: 12px; padding: 18px 2px 2px 32px; margin-left: -8px; border: 1px solid; border-top: none; margin-top: -16px; background: rgba(100, 100, 100, 0.2); cursor: pointer;",
+		},
+		{
+			s: ".connects-info",
+			r: "font-family: pictos; margin-right: 4px; text-decoration: none !important; cursor: pointer; float: right; position: relative; top: -16px;",
+		},
+		{
+			s: "input:checked + label .connects-info",
+			r: "position: unset;",
+		},
+		{
+			s: "input:checked + label .connects-log",
+			r: "display: block;",
+		},
+		{
+			s: ".connects-state",
+			r: "display: none;",
+		},
+		{
+			s: ".withoutavatars .userscript-hacker-chat",
+			r: "margin-left: -15px; min-width: calc(100% + 30px);",
 		},
 		{
 			s: ".Ve-btn-chat",
