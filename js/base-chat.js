@@ -15,6 +15,7 @@ function baseChat () {
 
 	function buildLanguageIndex () {
 		d20plus.chat.languageIndex = {};
+		d20plus.chat.languageAdditions = {};
 		Object.keys(languages).forEach(id => {
 			const language = languages[id];
 			d20plus.chat.languageIndex[id] = id;
@@ -26,6 +27,8 @@ function baseChat () {
 	}
 
 	function gibberish (string, langId, incompetent) {
+		if (!Object.keys(languages).includes(langId)) langId = d20plus.chat.languageAdditions[langId];
+		if (!Object.keys(languages).includes(langId)) return string;
 		const paragraphs = string.split("\n");
 		if (paragraphs.length > 1) return paragraphs.map(str => gibberish(str, langId, incompetent)).join("\n");
 		const src_words = string.toLowerCase().match(/\p{L}+/gu);
@@ -152,6 +155,40 @@ function baseChat () {
 		return players.concat(characters);
 	}
 
+	d20plus.chat.setLanguagePreset = (message, language) => {
+		const dialog = $(languageDialogTemplate(message, language));
+		const src = d20.textchat.$textarea.val();
+		setTimeout(() => {
+			d20.textchat.$textarea.val(src);
+		}, 200);
+		dialog.dialog({
+			title: "Choose transcription",
+			open: function () {
+				$("#soundslike").change(() => {
+					const val = dialog.find("#soundslike").val();
+					$("#languageeg").html(gibberish(message, val));
+				});
+			},
+			buttons: {
+				[`${__("ui_dialog_submit")}`]: function () {
+					const val = dialog.find("#soundslike").val();
+					d20plus.ut.log(`Select language style ${language} to ${val}`);
+					langId = language.normalize().toLowerCase();
+					d20plus.chat.languageAdditions[langId] = val;
+					d20plus.chat.outgoing();
+
+					dialog.off();
+					dialog.dialog("destroy").remove();
+					d20.textchat.$textarea.focus();
+				},
+				[`${__("ui_dialog_cancel")}`]: function () {
+					dialog.off();
+					dialog.dialog("destroy").remove();
+				},
+			},
+		});
+	}
+
 	const socialHTML = `
 		<div class="btn" id="socialswitch">
 			<span class="pictos">w</span>
@@ -195,11 +232,24 @@ function baseChat () {
 	`;
 
 	const languageTemplate = () => `
-		<script id="sheet-rolltemplate-inlanguage" type="text/html">
+		<script id="sheet-rolltemplate-inlanguage" type="text/html">{{displaymessage}}<br>
 			<span style="font-style:italic" title="${__("msg_chat_lang_title")} {{titlelanguage}}">
 			<span style="font-weight:bold">{{displaylanguage}}</span> {{translated}}
 			</span>
 		</script>
+	`;
+
+	const languageDialogTemplate = (msg, language) => `
+			<div>
+				<p><strong>What does ${language} language sound like?</strong></p>
+				<p>It seems you're trying to speak language not included in the standard list of D&D PHB.</p>
+				<p>That's not a problem. Please select one of the languages from the dropdown below, and it will be used for the imitated message.</p>
+				<p>Your choice is purely cosmetic and will not affect who can or can not understand it. This will be remembered until you refresh the page.</p>
+				<select id="soundslike">
+					${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
+				</select>
+				<p><i>Example: <span id="languageeg">${gibberish(msg, "common")}</span></i></p>
+			</div>
 	`;
 
 	const playerConnectsTemplate = (id) => `
@@ -251,14 +301,22 @@ function baseChat () {
 		return "";
 	}
 
-	d20plus.chat.sendInLanguage = (string, lan) => {
-		const lanid = d20plus.chat.getLanguageId(lan);
-		const knows = window.is_gm || hasLanguageProfeciency(lanid);
-		string = knows ? string : gibberish(string, lanid, true);
-		const coded = btoa(encodeURI(string));
-		const pos = Math.round(Math.random() * (coded.length - 2));
-		const ready = coded.slice(0, pos) + btoa(encodeURI(d20_player_id)) + coded.slice(pos);
-		return `${gibberish(string, lanid)}\n&{template:inlanguage} {{language=${lan}}} {{languageid=${lanid}}} {{encoded=${ready}}}`;
+	d20plus.chat.sendInLanguage = (message, language) => {
+		let languageid = d20plus.chat.getLanguageId(language);
+		if (!Object.keys(languages).includes(languageid)) {
+			if (!Object.keys(d20plus.chat.languageAdditions).includes(languageid)) {
+				d20plus.chat.setLanguagePreset(message, language);
+				return "";
+			}
+		}
+		const knows = window.is_gm || hasLanguageProfeciency(languageid);
+		message = knows ? message : gibberish(message, languageid, true);
+		// const coded = btoa(encodeURI(string));
+		// const pos = Math.round(Math.random() * (coded.length - 2));
+		// const encoded = coded.slice(0, pos) + btoa(encodeURI(d20_player_id)) + coded.slice(pos);
+		// return `${gibberish(string, lanid)}\n&{template:inlanguage} {{language=${language}}} {{languageid=${languageid}}} {{encoded=${encoded}}}`;
+		d20plus.chat.msgInLang = {language, languageid, message};
+		return gibberish(message, languageid);
 	}
 
 	d20plus.chat.sendReply = (text, msg) => {
@@ -311,7 +369,7 @@ function baseChat () {
 		return "";
 	}
 
-	d20plus.chat.sendToThoseWhoUnderstand = (text, msg) => {
+	d20plus.chat.sendParsedInLanguage = (text, msg) => {
 		return msg.replace(/^ (?:(\p{L}+)|"(.*?)") (.*?)$/u, (...str) => {
 			return d20plus.chat.sendInLanguage(str[3], str[1] || str[2]);
 		});
@@ -469,7 +527,8 @@ function baseChat () {
 	}
 
 	d20plus.chat.incoming = (params) => {
-		// console.log(params[1], d20plus.chat.localHistory);
+		// eslint-disable-next-line no-console
+		console.log(params[1], d20plus.chat.localHistory);
 		const msg = params[1];
 		if (msg.playerid === d20_player_id || msg.type === "system") {
 			const stash = [];
@@ -493,7 +552,20 @@ function baseChat () {
 			if (params[1].playerid === d20_player_id
 				|| params[1].type === "error") d20plus.chat.mtms.success = true;
 		}
-		if (params[1].rolltemplate === "inlanguage") {
+		if (msg.listenerid?.language) {
+			const speech = msg.listenerid;
+			const is_current_player = msg.playerid === d20_player_id;
+			const knows_language = hasLanguageProfeciency(speech.languageid);
+			if (window.is_gm || is_current_player || knows_language) {
+				msg.content = `
+					{{displaymessage=${msg.content}}}
+					{{displaylanguage=(${speech.language})}}
+					{{titlelanguage=${speech.language}}}
+					{{translated=${speech.message}}}`;
+				msg.rolltemplate = "inlanguage";
+				delete msg.listenerid;
+			}
+			/* return `{{displaylanguage=(${lang})}} {{titlelanguage=${lang}}} {{translated=${decodedFinal}}}`;
 			const template = /\{\{language=(.*?)\}\} \{\{languageid=(.*?)\}\} \{\{encoded=(.*?)\}\}/;
 			params[1].content = params[1].content
 				.replace(template, (str, lang, lanId, encoded) => {
@@ -506,6 +578,7 @@ function baseChat () {
 						return `{{displaylanguage=(${lang})}} {{titlelanguage=${lang}}} {{translated=${decodedFinal}}}`;
 					}
 				});
+			*/
 		}
 		return {through: true, params};
 	}
@@ -525,12 +598,12 @@ function baseChat () {
 
 		if (d20plus.cfg.getOrDefault("chat", "commands")) {
 			// add custom commands
-			text = text.replace(/\/in(.*?)$/gm, d20plus.chat.sendToThoseWhoUnderstand);
-			text = text.replace(/\/wb(.*?)$/gm, d20plus.chat.sendReply);
+			text = text.replace(/^\/wb(.*?)$/gm, d20plus.chat.sendReply);
 			text = text.replace(/^\/ws(.*?)$/gm, d20plus.chat.sendToSelected);
 			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
 			text = text.replace(/^\/mtms(.*?)$/s, d20plus.chat.sendMyself);
 			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
+			text = text.replace(/\/in(.*?)$/gm, d20plus.chat.sendParsedInLanguage);
 			// text = text.replace(/^\/cl (on|off)$/sm, comprehendLanguages);
 		}
 
@@ -552,8 +625,16 @@ function baseChat () {
 
 		const toSend = $.trim(text);
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
-		d20.textchat.doChatInput(toSend);
-		tc.val("").focus();
+
+		if (d20plus.chat.msgInLang) {
+			d20.textchat.doChatInput(toSend, undefined, d20plus.chat.msgInLang);
+			delete d20plus.chat.msgInLang;
+			tc.val("").focus();
+		} else {
+			d20.textchat.doChatInput(toSend);
+			tc.val("").focus();
+		}
+
 		if (text !== "" && d20plus.chat.social) {
 			d20plus.chat.onsocial();
 			if (!d20.textchat.talktomyself) $("#speakingto").val("");

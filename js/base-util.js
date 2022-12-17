@@ -312,9 +312,9 @@ function baseUtil () {
 
 	d20plus.ut.timeAgo = (ts) => {
 		const difInteger = Number(new Date()) - Number(ts);
-		const difMinutes = Math.round((difInteger - 60000) / 60000);
-		const difHours = Math.round((difInteger - 3600000) / 3600000);
-		const difDays = Math.round((difInteger - 86400000) / 86400000);
+		const difMinutes = Math.ceil((difInteger - 60000) / 60000);
+		const difHours = Math.ceil((difInteger - 3600000) / 3600000);
+		const difDays = Math.ceil((difInteger - 86400000) / 86400000);
 		if (difDays > 0) return `${difDays} ${__("d ago")}`;
 		if (difHours > 0) return `${difHours} ${__("hr ago")}`;
 		if (difMinutes > 0) return `${difMinutes} ${__("min ago")}`;
