@@ -67,7 +67,7 @@ function baseUtil () {
 			return segmentsA.length - segmentsB.length;
 		}
 
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
 			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
@@ -106,7 +106,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		if (window.enhancementSuiteEnabled) {
 			d20plus.ut.sendHackerChat(`
@@ -133,7 +133,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : message;
 		d20plus.ut.sendHackerChat(`
 			${scriptName} initialising, please wait...<br><br>

@@ -109,15 +109,20 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
-		"streamerChatTag": {
-			"name": "Streamer-Friendly Chat Tags",
-			"default": false,
-			"_type": "boolean",
-		},
 		"hideDefaultJournalSearch": {
 			"name": "Hide Default Journal Search Bar",
 			"default": false,
 			"_type": "boolean",
+		},
+	});
+	addConfigOptions("chat", {
+		"_name": "Chat",
+		"_player": true,
+		"streamerChatTag": {
+			"name": "Streamer-Friendly Chat Tags",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
 		},
 	});
 
