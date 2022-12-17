@@ -2,7 +2,8 @@ function baseChat () {
 	d20plus.chat = d20plus.chat || {};
 
 	d20plus.chat.localHistory = [];
-	d20plus.chat.lastRespondent = ""
+	d20plus.chat.lastRespondent = "";
+	const languages = d20plus.chat.languages;
 	const e = "playerid";
 	let comprehendsAll = false;
 
@@ -10,17 +11,20 @@ function baseChat () {
 		return string.charAt(0).toUpperCase() + (lowercase ? string.slice(1).toLowerCase() : string.slice(1));
 	}
 
-	// eslint-disable-next-line
-	const languages = {"common":{"title":"common","lexis":["alae","alavairthae","alehose","amarast","anyhail","badaulder","darchains","dathna","deven","drios","durgos","elsun","evenfeast","eventide","fieldings","fireseared","galad","glim","haelhard","harbright","hardjaws","harnor","haularake","hawksnarl","highsun","hrammar","hrast","hrasting","hugor","hykyath","jursak","keghand","kell","lalandath","lamenor","lammath","lifeblood","marrado","mayhap","murdath","naed","naeth","nandra","navalar","nightjack","nightmaid","olor","orbal","parharding","plounce","potjack","potmaid","punnet","rhambukkya","rivvim","roofwrack","sabbas","sabruin","saer","sark","scorchkettle","sel","shaeling","sheelie","sildur","silverfin","skaether","slake","sorn","spear","spurnarmor","standath","steading","stettar","stlarn","stomran","straek","sumbor","tantam","tasmar","tenday","thael","thargur","tharsun","thoats","thruss","thulsun","tindertwig","tluin","topon","tumin","uluvathae","vasark","vlandranna","voh","waelo","wanton","wenich","zzar"],"particles":["fol","a","me","on","an","fo-","to-","do","per"],"alias":"human","factor":4},"dwarvish":{"title":"dwarvish","lexis":["akrak","angaz","azamar","azul","bakraz","barag","barak","baraz","bin","bin","bolg","brog","chuf","dal","dar","dharkhangron","doh","drakk","drazh","drek","drongnel","fleg","gorak","gorm","gorog","goruz","grim","grimaz","gromdal","gronit","grumbak","guz","guzzen","guzzen","hunk","karu","kazad","kazak","kazhunki","kazhunki","khaz","khazukan","klad","krink","kro","kron","kruk","kruti","migdhal","migdhal","mizpal","naggrund","nar","onk","orrud","ragarin","rik","rikigraz","rikigraz","rorkaz","ruf","runk","ruvalk","sar","skarrenruf","skruff","skrund","skuf","stok","thingaz","thongli","throng","thrund","thrynaz","thrynaz","tiwaz","tiwaz","trogg","umanar","umanar","und","undi","ungor","urk","varaz","varf","varn","vengryn","vlag","vorkhul","wan","wanaz","wazzock","werit","wyr","zak","zaki","zan","zank"],"particles":["ha ","a-","un","um","dum-","on-","or","ad","har"],"alias":"dwarven","factor":3},"elvish":{"title":"elvish","lexis":["alahen","alamanyar","alaninquitálima","alasaila","alaurē","alcárima","alcorin","aleldarin","alfárima","alfirin","alistima","alómear","alquettima","ampanotalea","ancale","ancárima","andúne","asanye","avante","celure","ceníte","cirmacin","etya","etyarin","farale","farastea","himíte","ilquárea","induinen","indyel","insil","intin","isil","istalima","istare","lacalima","laistea","laistila","laman","lamate","lambion","lamélima","lirale","líruima","manar","mára","mastima","mecin","milyar","mólome","nairea","naitie","nandor","nasque","nefíte","nemestea","nengwear","níríte","noldorin","númen","númerea","nyárula","nyelle","ocamnar","ólamar","ontale","ortalima","ortare","perómandar","púlima","puntar","qualme","quende","quenderin","quenelya","quettima","raiqua","símen","sinan","sinar","sindar","sinome","sintar","súrimar","suryar","taltea","tancal","tauvar","telerin","tírima","turindura","túvima","tyen","úcalima","úcárima","umbar","vanima","vórear","yúlima"],"particles":["na","en'","il'","né","ol'","an","o'","lor-","i-"],"alias":"elven|elf","factor":5},"giant":{"title":"giant","lexis":["arûna","ascûdgamln","astim","athrid","bahst","barzûl","barzûln","belard","beor","borith","brâgha","brak","carharûg","carkna","carn","darm","delva","dem","derûndân","dômar","dorzada","drâth","dûnost","dûrgrimst","dûrmgrist","ebardac","edaris","egraz","encesti","erôth","erôthknurl","estvarn","estver","etal","fanghur","feldûnost","felfarthen","felrast","formv","frekk","fûthmér","gáld","gáldhiem","gaml","ganaht","gar","gauhnith","gedthrall","gerdûm","ghastgar","goroth","grimstnzhadn","gûntera","harng","harûg","helzvog","hert","hiem","hírna","hort","hrenth","hrestvog","hreth","hrethcarach","hûthvír","hûtt","ingeitum","knurlcarathn","ledwonnû","meitder","mendûnost","menknurlan","mensagh","menthiv","menwarrev","mérna","mezzintar","mithrim","môgh","môgren","nal","narho","quan","ragni","sartos","sartosvrenht","sesti","sheilve","sweld","thardsvergûndnzmal","thargen","thorv","thriknzdal","thrond","trangnarn","urzhad","vrem","vrenht","wharn"],"particles":["dûr","az","azt","og","rra-","rna-","da-","rr-","gro"],"alias":"ogre","factor":3},"gnomish":{"title":"gnomish","lexis":["athon","aumata","budhu","burbo","buspo","caw","cewin","cha","curunír","eglath","ettuli","ghaik","ghustil","gurgof","hacta","hadhwa","haedh","hamna","hanin","hatta","hauda","haudh","hîn","huine","jez","kaincha","kainu","kait","kalach","kalas","kel","kelu","khamu","kheru","kith","koilu","koiru","koitā","kuinu","kuitā","kurwē","lauda","laudh","linna","liru","madha","mascu","matjā","matulā","melā","mîdh","mirhanac","nacte","nadha","naedh","natha","natte","ndilā","necte","nette","nidh","nîdh","nídha","niñkwis","ōmata","peles","pelsa","pentro","psar","psára","raef","rak","rathki","resta","revrykal","rîdh","rrakkma","sedu","taltas","tancula","tañkas","teles","telu","thar","thillu","thilnu","thoron","tinnúviel","tithilla","tolen","tolu","tuilu","tyaz","uba","umitl","varsh","vlaakith","xarā","xenna"],"particles":["ae","et","en","dam","bom","ne","m","ik","ro"],"alias":"gnome","factor":4},"goblin":{"title":"goblin","lexis":["ana","ari","armauk","auga","bagal","banam","banos","bauruk","bizel","booyahg","braeunk","bree","dabog","dargrath","dargum","daul","dha","durbuluk","fak","foshnu","fund","fushat","gever","gog","golog","guthash","hak","hruggekolohk","hu","hum","illska","karanzol","karkat","karkitas","kherek","kurrauz","laug","lind","lodar","lorach","loz","mabus","magas","margim","mub","mubaram","mubulat","mug","nagransham","namat","nixir","noldo","nor","nying","ovani","paflok","pafund","paken","palkas","parat","parhor","pik","plak","plasas","plasi","pluhun","poni","porandor","rup","ryk","sapat","shakab","shakapon","shakutarbik","shat","skag","tarthur","thag","tharb","thark","tharm","thos","thur","tok","trolkh","vadoksam","vadoksog","vaws","vaza","vek","vhos","vok","vosh","voz","yark","zabraz","zan","zongot","zorrat"],"particles":["ta","vo","no","suk","ya","yol","mar","mak","psa"],"alias":"goblinoid","factor":3},"halfling":{"title":"halfling","lexis":["adaldrida","balc","ban","banakil","banzir","barabatta","bas","bilba","bolgra","bophîn","branda","brandu","brandugamba","bree","carbandur","cast","castu","chet","cubuc","cugbagu","dûkan","dûkan","fallohide","froda","gad","galab","galbassi","galpsi","gamba","globa","gluva","grad","hamanullas","hamfast","harfoots","hloth","hlothran","isen","kali","kalimac","karningul","kast","kili","kûd","kuduk","labin","labingi","lograd","loho","lohtur","lothran","luthran","luthur","mathom","maura","nahald","nargian","nec","nîn","peppin","pharë","phur","phurunargian","ram","ran","rapha","rasputa","raspûta","raza","razan","razanur","razar","rog","sharku","smial","soval","stenr","stjarna","stoor","stydja","sund","sûza","tapuc","thain","tharantin","tharni","tóbias","tragu","trahald","trahan","trân","tuca","tung","tur","turac","wini","zara","zilbirapha","zir"],"particles":["a","o","ol-","nî","ul","lo","u","u-","so-"],"alias":"hobbit","factor":4}};
-
 	function buildLanguageIndex () {
 		d20plus.chat.languageIndex = {};
 		d20plus.chat.languageAdditions = {};
 		Object.keys(languages).forEach(id => {
-			const language = languages[id];
+			const language = languages[id];// RB20 EXCLUDE START
+
+			const alias = `${__(`lang_alias_${id}`)}`
+			language.title = `${__(`lang_${id}`)}`;
+			if (!language.alias) language.alias = alias;
+			else language.alias = "".concat(language.alias, ", ", alias);
+			// RB20 EXCLUDE END
 			d20plus.chat.languageIndex[id] = id;
-			d20plus.chat.languageIndex[language.title] = id;
-			language.alias.split("|").forEach(name => {
+			d20plus.chat.languageIndex[language.title.toLowerCase()] = id;
+			language.alias.split(", ").forEach(name => {
 				d20plus.chat.languageIndex[name] = id;
 			})
 		});
@@ -36,6 +40,7 @@ function baseChat () {
 		const src_terms = string.toLowerCase().match(/(--\p{L}+|\p{L}+)/gu);
 		const src_temp = [...src_words];
 		const spacing = " ";
+		let prev_particle = false;
 		const translation = src_words.map((word, i) => {
 			const metaword = (i > 0 ? src_words[i - 1] : "") + word + (i < src_words.length - 1 && src_words.length > 2 ? src_words[i + 1] : "");
 			let index = 0;
@@ -43,17 +48,21 @@ function baseChat () {
 				index += letter.charCodeAt(0);
 			});
 			if (incompetent && Math.random() > 0.5) {
+				prev_particle = false;
 				const newid = Math.floor(Math.random() * src_temp.length);
 				const newword = src_temp[newid];
 				src_temp.splice(newid, 1);
 				return newword + spacing;
 			} else if (src_terms[i].includes("--")) {
+				prev_particle = false;
 				return d20plus.chat.toCamelCase(src_terms[i].replace(/--/gu, "")) + spacing;
-			} else if ((index - 1) % 9 + 1 < languages[langId].factor && i < src_words.length - 1) {
+			} else if ((index - 1) % 9 + 1 < languages[langId].factor && i < src_words.length - 1 && !prev_particle) {
+				prev_particle = true;
 				const newid = (index.toString().charAt(0) + index - 1) % 9;
 				const spacing = /['-]$/.test(languages[langId].particles[newid]) ? "" : " ";
 				return languages[langId].particles[newid] + spacing;
 			} else {
+				prev_particle = false;
 				const newid = index.toString().slice(-2);
 				return languages[langId].lexis[parseInt(newid)] + spacing;
 			}
@@ -113,7 +122,7 @@ function baseChat () {
 
 	d20plus.chat.getSpeakingIn = (available) => {
 		$("#speakingin").html(available
-			.map(lan => lan.charAt(0).toUpperCase() + lan.slice(1).toLowerCase())
+			.map(lan => d20plus.chat.toCamelCase(lan))
 			.reduce((html, lan) => `${html}<option>${lan}</option>`, "<option></option>"),
 		);
 	}
@@ -130,9 +139,12 @@ function baseChat () {
 		if (actorIsPlayer) {
 			if (window.is_gm) {
 				const prev = $("#speakingin").val();
-				d20plus.chat.getSpeakingIn(Object.keys(languages));
+				d20plus.chat.getSpeakingIn(Object.keys(languages)
+					.filter(lan => !lan.includes("fake"))
+					.map(lan => languages[lan].title));
 				$("#speakingin").val(prev);
 			} else {
+				d20plus.chat.getSpeakingIn([]);
 				$("#speakingin").val("<option></option>");
 			}
 		} else {

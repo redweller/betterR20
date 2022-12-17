@@ -1,5 +1,5 @@
 const baseChatEmoji = function () {
-	d20plus.chat = {};
+	d20plus.chat = d20plus.chat || {};
 
 	/* eslint-disable */
 
