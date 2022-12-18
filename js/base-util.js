@@ -50,6 +50,14 @@ function baseUtil () {
 		});
 	};
 
+	d20plus.ut.injectCode = (object, method, injectedCode) => {
+		const source = object[method];
+		object[method] = function (...params) {
+			const pass = injectedCode(params);
+			if (pass?.through) return source.apply(source, pass.params);
+		}
+	}
+
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
