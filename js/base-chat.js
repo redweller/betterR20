@@ -3,9 +3,144 @@ function baseChat () {
 
 	d20plus.chat.localHistory = [];
 	d20plus.chat.lastRespondent = "";
+	const languages = d20plus.chat.languages;
 
 	d20plus.chat.toCamelCase = (string, lowercase) => {
 		return string.charAt(0).toUpperCase() + (lowercase ? string.slice(1).toLowerCase() : string.slice(1));
+	}
+
+	function buildLanguageIndex () {
+		d20plus.chat.languageIndex = {};
+		d20plus.chat.languageAdditions = {};
+		Object.keys(languages).forEach(id => {
+			const language = languages[id];
+			d20plus.chat.languageIndex[id] = id;
+			d20plus.chat.languageIndex[language.title.toLowerCase()] = id;
+			language.alias.split(", ").forEach(name => {
+				d20plus.chat.languageIndex[name] = id;
+			})
+		});
+	}
+
+	function gibberish (string, langId, incompetent) {
+		if (!Object.keys(languages).includes(langId)) langId = d20plus.chat.languageAdditions[langId];
+		if (!Object.keys(languages).includes(langId)) return string;
+		const paragraphs = string.split("\n");
+		if (paragraphs.length > 1) return paragraphs.map(str => gibberish(str, langId, incompetent)).join("\n");
+		const src_words = string.toLowerCase().match(/\p{L}+/gu);
+		if (src_words === null) return "";
+		const src_terms = string.toLowerCase().match(/(--\p{L}+|\p{L}+)/gu);
+		const src_temp = [...src_words];
+		const spacing = " ";
+		let prev_particle = false;
+		const translation = src_words.map((word, i) => {
+			const metaword = (i > 0 ? src_words[i - 1] : "") + word + (i < src_words.length - 1 && src_words.length > 2 ? src_words[i + 1] : "");
+			let index = 0;
+			Array.from(metaword).forEach((letter) => {
+				index += letter.charCodeAt(0);
+			});
+			if (incompetent && Math.random() > 0.5) {
+				prev_particle = false;
+				const newid = Math.floor(Math.random() * src_temp.length);
+				const newword = src_temp[newid];
+				src_temp.splice(newid, 1);
+				return newword + spacing;
+			} else if (src_terms[i].includes("--")) {
+				prev_particle = false;
+				return d20plus.chat.toCamelCase(src_terms[i].replace(/--/gu, "")) + spacing;
+			} else if ((index - 1) % 9 + 1 < languages[langId].factor && i < src_words.length - 1 && !prev_particle) {
+				prev_particle = true;
+				const newid = (index.toString().charAt(0) + index - 1) % 9;
+				const spacing = /['-]$/.test(languages[langId].particles[newid]) ? "" : " ";
+				return languages[langId].particles[newid] + spacing;
+			} else {
+				prev_particle = false;
+				const newid = index.toString().slice(-2);
+				return languages[langId].lexis[parseInt(newid)] + spacing;
+			}
+		});
+		return d20plus.chat.toCamelCase(translation.join(""), false);
+	}
+
+	function availableLanguages (charId) {
+		const char = d20.Campaign.characters.get(charId);
+		const langId = d20.journal.customSheets.availableAttributes.repeating_proficiencies_prof_type;
+		const traits = char.attribs.models
+			.filter(prop => {
+				return prop.attributes.name.match(/repeating_proficiencies_(.*?)_prof_type/)
+				&& ![langId, "LANGUAGE"].includes(prop.attributes.current);
+			})
+			.map(trait => trait.attributes.name.replace(/repeating_proficiencies_(.*?)_prof_type/, "$1"));
+		if (!char.attribs.length && !char.attribs.fetching) {
+			char.attribs.fetch(char.attribs);
+			char.attribs.fetching = true;
+			const wait = setInterval(function () {
+				if (char.attribs.length) {
+					clearInterval(wait);
+					delete char.attribs.fetching;
+					d20plus.chat.refreshLanguages();
+				}
+			}, 20);
+		}
+		const charspeaks = char.attribs.models.map(prop => {
+			const filter = /repeating_proficiencies_(.*?)_name/;
+			if (prop.attributes.name.match(filter)) {
+				const exp = new RegExp(filter);
+				if (!traits.includes(exp.exec(prop.attributes.name)[1])) return prop.attributes.current;
+			} else if (prop.attributes.name === "npc_languages") {
+				return prop.attributes.current.split(", ");
+			}
+		}).filter(lang => lang !== undefined);
+		return charspeaks.flatten().map(lan => lan.normalize());
+	}
+
+	function availableLanguagesPlayer (playerId) {
+		const characters = d20.Campaign.characters.models
+			.filter(char => {
+				const actors = char.attributes.controlledby.split(",");
+				return actors.includes(playerId);
+			})
+			.map(char => char.id);
+		return characters.map(char => availableLanguages(char)).flatten();
+	}
+
+	function hasLanguageProfeciency (langid) {
+		const profecientIn = availableLanguagesPlayer(d20_player_id).map(lan => d20plus.chat.getLanguageId(lan));
+		return profecientIn.includes(d20plus.chat.getLanguageId(langid));
+	}
+
+	d20plus.chat.getSpeakingIn = (available) => {
+		$("#speakingin").html(available
+			.map(lan => d20plus.chat.toCamelCase(lan))
+			.reduce((html, lan) => `${html}<option>${lan}</option>`, "<option></option>"),
+		);
+	}
+
+	d20plus.chat.getLanguageId = (lan) => {
+		if (Array.isArray(lan)) return lan.map(language => d20plus.chat.getLanguageId(language));
+		else return d20plus.chat.languageIndex[lan.normalize().toLowerCase()] || lan.normalize().toLowerCase();
+	}
+
+	d20plus.chat.refreshLanguages = () => {
+		const speakingAs = $("#speakingas").val().split("|");
+		const actorId = speakingAs[1];
+		const actorIsPlayer = speakingAs[0] === "player";
+		if (actorIsPlayer) {
+			if (window.is_gm) {
+				const prev = $("#speakingin").val();
+				d20plus.chat.getSpeakingIn(Object.keys(languages)
+					.filter(lan => !lan.includes("fake"))
+					.map(lan => languages[lan].title));
+				$("#speakingin").val(prev);
+			} else {
+				d20plus.chat.getSpeakingIn([]);
+				$("#speakingin").val("<option></option>");
+			}
+		} else {
+			const prev = $("#speakingin").val();
+			d20plus.chat.getSpeakingIn(availableLanguages(actorId));
+			$("#speakingin").val(prev);
+		}
 	}
 
 	d20plus.chat.availableAddressees = () => {
@@ -20,6 +155,61 @@ function baseChat () {
 			.map(char => [char.attributes.name, false]);
 		return players.concat(characters);
 	}
+
+	d20plus.chat.setLanguagePreset = (message, language) => {
+		const dialog = $(languageDialogTemplate(message, language));
+		const src = d20.textchat.$textarea.val();
+		setTimeout(() => {
+			d20.textchat.$textarea.val(src);
+		}, 200);
+		dialog.dialog({
+			title: "Choose transcription",
+			open: function () {
+				$("#soundslike").change(() => {
+					const val = dialog.find("#soundslike").val();
+					$("#languageeg").html(gibberish(message, val));
+				});
+			},
+			buttons: {
+				[`Submit`]: function () {
+					const val = dialog.find("#soundslike").val();
+					d20plus.ut.log(`Select language style ${language} to ${val}`);
+					langId = language.normalize().toLowerCase();
+					d20plus.chat.languageAdditions[langId] = val;
+					d20plus.chat.outgoing();
+
+					dialog.off();
+					dialog.dialog("destroy").remove();
+					d20.textchat.$textarea.focus();
+				},
+				[`Cancel`]: function () {
+					dialog.off();
+					dialog.dialog("destroy").remove();
+				},
+			},
+		});
+	}
+
+	const languageTemplate = () => `
+		<script id="sheet-rolltemplate-inlanguage" type="text/html">{{displaymessage}}<br>
+			<span style="font-style:italic" title="You understand this because one of your characters speaks {{titlelanguage}}">
+			<span style="font-weight:bold">{{displaylanguage}}</span> {{translated}}
+			</span>
+		</script>
+	`;
+
+	const languageDialogTemplate = (msg, language) => `
+			<div>
+				<p><strong>What does ${language} language sound like?</strong></p>
+				<p>It seems you're trying to speak language not included in the standard list of D&D PHB.</p>
+				<p>That's not a problem. Please select one of the languages from the dropdown below, and it will be used for the imitated message.</p>
+				<p>Your choice is purely cosmetic and will not affect who can or can not understand it. This will be remembered until you refresh the page.</p>
+				<select id="soundslike">
+					${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
+				</select>
+				<p><i>Example: <span id="languageeg">${gibberish(msg, "common")}</span></i></p>
+			</div>
+	`;
 
 	const playerConnectsTemplate = (id) => `
 			<input type="checkbox" class="connects-state" id="connects${id}-state"/>
@@ -37,6 +227,9 @@ function baseChat () {
 		["/wb", "reply or whisper to last contact", "b20"],
 		["/ws", "whisper to selected tokens", "b20"],
 		["/em, /me", "emote (action from your POV)"],
+		["/in (language)", "speak in a language", "b20"],
+		["--(word)", "skip word (for in-language)", "b20"],
+		// ["/cl on|off", "comprehend language switch", "b20"],
 		["/talktomyself", "silent mode on/off"],
 		["/ttms", "shortcut to /talktomyself", "b20"],
 		["/mtms (text)", "simple message to self", "b20"],
@@ -61,10 +254,25 @@ function baseChat () {
 			const isb20 = string[2] === "b20" ? "&#42;" : "";
 			const code = string[0] ? `<code>${string[0]}</code>${isb20}` : "";
 			const gmcheck = string[2] !== "gm" || window.is_gm;
-			if (gmcheck) return `${html}<br>${code}<span style="float:right"> ${string[1]}</span>`;
+			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || string[0].search(/(in \(language\))|(-\(word\))/) === -1;
+			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${string[1]}</span>`;
 			return html;
 		}, "<strong>List of chat commands:</strong><br>betteR20 commands marked with &#42;"));
 		return "";
+	}
+
+	d20plus.chat.sendInLanguage = (message, language) => {
+		let languageid = d20plus.chat.getLanguageId(language);
+		if (!Object.keys(languages).includes(languageid)) {
+			if (!Object.keys(d20plus.chat.languageAdditions).includes(languageid)) {
+				d20plus.chat.setLanguagePreset(message, language);
+				return "";
+			}
+		}
+		const knows = window.is_gm || hasLanguageProfeciency(languageid);
+		message = knows ? message : gibberish(message, languageid, true);
+		d20plus.chat.msgInLang = {language, languageid, message};
+		return gibberish(message, languageid);
 	}
 
 	d20plus.chat.sendReply = (text, msg) => {
@@ -117,6 +325,12 @@ function baseChat () {
 		return "";
 	}
 
+	d20plus.chat.sendParsedInLanguage = (text, msg) => {
+		return msg.replace(/^ (?:(\p{L}+)|"(.*?)") (.*?)$/u, (...str) => {
+			return d20plus.chat.sendInLanguage(str[3], str[1] || str[2]);
+		});
+	}
+
 	d20plus.chat.checkTTMSStatus = () => {
 		$notifier = $("#textchat-notifier");
 		if (d20.textchat.talktomyself) {
@@ -143,15 +357,35 @@ function baseChat () {
 		}
 	}
 
+	d20plus.chat.getSpeakingTo = () => {
+		const prev = $("#speakingto").val();
+		$("#speakingto").html((() => {
+			return d20plus.chat.availableAddressees().reduce((result, addressee) => {
+				const icon = addressee[1] ? "🗣" : "⚑";
+				const option = `${icon} ${addressee[0]}`;
+				const value = `value="${addressee[0]}"`;
+				result += `<option ${value}>${option}</option>`;
+				return result;
+			}, `<option value="">All</option><option value="ttms">None</option>`);
+		})());
+		$("#speakingto").val(prev);
+	}
+
 	addConfigOptions(
 		"chat", {
+			"social": {
+				"name": "Enable chat social panel (requires restart)",
+				"default": true,
+				"_type": "boolean",
+				"_player": true,
+			},
 			"showPlayerConnects": {
 				"name": "Show player connects messages",
 				"default": true,
 				"_type": "boolean",
 			},
 			"commands": {
-				"name": "Additional text chat commands (requires restart)",
+				"name": "Additional text chat commands (/help for full list)",
 				"default": true,
 				"_type": "boolean",
 				"_player": true,
@@ -170,6 +404,34 @@ function baseChat () {
 			},
 		},
 	);
+
+	d20plus.chat.onsocial = () => {
+		d20plus.chat.social = !d20plus.chat.social;
+		if (d20plus.chat.social) {
+			$("#textchat-input").addClass("social");
+			d20plus.chat.refreshLanguages();
+			d20plus.chat.getSpeakingTo();
+		} else {
+			$("#textchat-input").removeClass("social");
+		}
+	}
+
+	d20plus.chat.onspeakingas = () => {
+		d20plus.chat.refreshLanguages();
+	}
+
+	d20plus.chat.onspeakingto = () => {
+		const ttms = $("#speakingto").val() === "ttms";
+		if (d20.textchat.talktomyself && !ttms) {
+			d20.textchat.doChatInput(`/talktomyself off`);
+			d20plus.chat.localHistory.push(false);
+			setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
+		} else if (!d20.textchat.talktomyself && ttms) {
+			d20.textchat.doChatInput(`/talktomyself on`);
+			d20plus.chat.localHistory.push(false);
+			setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
+		}
+	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
 		if (!d20plus.chat.players) d20plus.chat.players = {};
@@ -237,6 +499,21 @@ function baseChat () {
 			if (params[1].playerid === d20_player_id
 				|| params[1].type === "error") d20plus.chat.mtms.success = true;
 		}
+		if (d20plus.cfg.getOrDefault("chat", "languages") && msg.listenerid?.language) {
+			const speech = msg.listenerid;
+			const is_current_player = msg.playerid === d20_player_id;
+			const knows_language = hasLanguageProfeciency(speech.languageid);
+			const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
+			if (window.is_gm || is_current_player || knows_language) {
+				msg.content = `
+					{{displaymessage=${msg.content}}}
+					{{displaylanguage=(${speech.language})}}
+					{{titlelanguage=${speech.language}}}
+					{{translated=${translated}}}`;
+				msg.rolltemplate = "inlanguage";
+				delete msg.listenerid;
+			}
+		}
 		return {through: true, params};
 	}
 
@@ -260,13 +537,42 @@ function baseChat () {
 			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
 			text = text.replace(/^\/mtms(.*?)$/s, d20plus.chat.sendMyself);
 			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
+			if (d20plus.cfg.getOrDefault("chat", "languages")) text = text.replace(/\/in(.*?)$/gm, d20plus.chat.sendParsedInLanguage);
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "social")) {
+			const speakingto = $("#speakingto").val();
+			const speakingin = $("#speakingin").val();
+
+			if (speakingin) {
+				if (!text.match(/^\/(.*?)$/)) text = d20plus.chat.sendInLanguage(text, speakingin);
+			}
+
+			if (speakingto && speakingto !== "ttms") {
+				text = text.replace(/^([^/]*?)$/mgu, (...str) => {
+					const prepared = str[1].replace(/\/(r|roll) ([ \dd+-]*?)$/umg, "[[$2]]");
+					return `/w "${speakingto}" ${prepared}`;
+				});
+			}
 		}
 
 		const toSend = $.trim(text);
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
+
+		if (d20plus.chat.msgInLang) {
+			d20.textchat.doChatInput(toSend, undefined, d20plus.chat.msgInLang);
+			delete d20plus.chat.msgInLang;
+			tc.val("").focus();
+		} else {
 			d20.textchat.doChatInput(toSend);
 			tc.val("").focus();
+		}
 
+		if (text !== "" && d20plus.chat.social) {
+			d20plus.chat.onsocial();
+			if (!d20.textchat.talktomyself) $("#speakingto").val("");
+			$("#speakingin").val("");
+		}
 		if (d20plus.cfg.getOrDefault("chat", "highlightttms")) {
 			if (toSend.includes("/talktomyself")) {
 				setTimeout(() => d20plus.chat.checkTTMSStatus(), 20);
@@ -278,11 +584,22 @@ function baseChat () {
 		d20plus.ut.log("Enhancing chat");
 		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.incoming);
 
+		$("body").append(languageTemplate());
+		buildLanguageIndex();
+
 		if (window.is_gm) {
 			d20plus.chat.processPlayersList();
 			const obsconfig = { childList: true, subtree: false };
 			d20plus.cfg.playerWatcher = new MutationObserver(d20plus.chat.processPlayersList);
 			d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "social")) {
+			$("#textchat-input").append(d20plus.html.chatSocial);
+			$("#socialswitch").on("click", d20plus.chat.onsocial);
+			$("#speakingas").on("change", d20plus.chat.onspeakingas);
+			$("#speakingto").on("change", d20plus.chat.onspeakingto);
+			d20plus.chat.getSpeakingTo();
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "commands")) {

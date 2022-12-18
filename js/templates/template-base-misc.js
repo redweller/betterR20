@@ -114,6 +114,57 @@ function initHTMLbaseMisc () {
 		</a>
 	</li>
 	`;
+
+	d20plus.html.chatSocial = `
+	<div class="btn" id="socialswitch">
+		<span class="pictos">w</span>
+	</div>
+	<div style="float: left;" class="social">
+		<label for="speakingto">To:</label>
+		<select id="speakingto" class="selectize social">
+			<option value="">All</option>
+		</select>
+		<span id="langpanel">
+			<label for="speakingin">In:</label>
+			<select class="selectize social" id="speakingin">
+				<option value=""></option>
+			</select>
+		</span>
+	</div>
+	<style type="text/css">
+		#textchat-input .social {
+			display: none;
+		}
+
+		#textchat-input.social .social {
+			display: inline-block;
+		}
+
+		#textchat-input.social textarea {
+			height: 19px;
+		}
+
+		.selectize.social {
+			width: 100px;
+		}
+
+		select#speakingto,
+		select#speakingin {
+			height: 22px;
+			padding: 0px 5px;
+		}
+
+		#socialswitch {
+			height: 18px;
+			margin-left: 5px;
+		}
+
+		#textchat-input.talkingtoself textarea {
+			border: 2px solid rgba(255, 0, 0, 0.4);
+			background-color: rgba(255, 0, 0, 0.2);
+		}
+	</style>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);

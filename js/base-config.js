@@ -136,6 +136,12 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"languages": {
+			"name": "Enable in-game languages (via social panel or /in)",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
 	});
 
 	d20plus.cfg.pLoadConfig = async () => {
@@ -757,6 +763,7 @@ function baseConfig () {
 		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
