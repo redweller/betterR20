@@ -1,10 +1,9 @@
 const betteR20Core = function () {
+	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		const scriptName = `betteR20-core v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-core v${d20plus.version}`;
 		try {
 			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.ut.showLoadingMessage(scriptName);
-			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
 			d20plus.engine.swapTemplates();
@@ -19,6 +18,9 @@ const betteR20Core = function () {
 
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
+
+			d20plus.ut.showLoadingMessage();
+			d20plus.ut.checkVersion();
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
@@ -62,7 +64,7 @@ const betteR20Core = function () {
 			}
 
 			d20plus.ut.log("All systems operational");
-			d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
+			d20plus.ut.chatTag();
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error(e);

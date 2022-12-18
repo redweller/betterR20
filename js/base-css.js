@@ -206,6 +206,22 @@ function baseCss () {
 			r: "color: white;",
 		},
 		{
+			s: ".userscript-hackerintro",
+			r: "background: black; padding: 3px;",
+		},
+		{
+			s: ".userscript-hackerintro h1",
+			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: 18px;",
+		},
+		{
+			s: ".userscript-hackerintro p",
+			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: unset; font-weight: bold; line-height: 20px;",
+		},
+		{
+			s: ".userscript-commandintro img.userscript-b20img",
+			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
+		},
+		{
 			s: ".withoutavatars .userscript-hacker-chat",
 			r: "margin-left: -15px; min-width: calc(100% + 30px);",
 		},

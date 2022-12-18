@@ -10,6 +10,7 @@ function baseUtil () {
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
+		$("#lamer-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
 	};
 
 	d20plus.ut.error = (...args) => {
@@ -52,21 +53,6 @@ function baseUtil () {
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
-		function cmpVersions (a, b) {
-			const regExStrip0 = /(\.0+)+$/;
-			const segmentsA = a.replace(regExStrip0, "").split(".");
-			const segmentsB = b.replace(regExStrip0, "").split(".");
-			const l = Math.min(segmentsA.length, segmentsB.length);
-
-			for (let i = 0; i < l; i++) {
-				const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
-				if (diff) {
-					return diff;
-				}
-			}
-			return segmentsA.length - segmentsB.length;
-		}
-
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
@@ -75,7 +61,7 @@ function baseUtil () {
 				if (data) {
 					const curr = d20plus.version;
 					const avail = data;
-					const cmp = cmpVersions(curr, avail);
+					const cmp = d20plus.ut.cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
@@ -105,51 +91,129 @@ function baseUtil () {
 		`, true);
 	};
 
-	d20plus.ut.chatTag = (message) => {
+	d20plus.ut.chatTag = () => {
+		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
+		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
+		const classname = !legacytStyle ? "userscript-commandintro" : "userscript-hackerintro";
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const data = [
+			d20plus.scriptName,
+			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			d20plus.ut.WIKI_URL,
+		];
+		const welcomeTemplate = (b20v, vttv, faq) => `
+			<div class="${classname}">
+				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px;">
+					betteR20 
+					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
+					<p style="font-size: 11px;line-height: 15px;">${b20v} loaded<br>VTTES v${vttv} detected</p>
+				</h1>
+				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.</p>
+				<span title="You'd think this would be obvious.">
+					<p>Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.</p>
+					<p>Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.</p>
+				</span>
+			</div>
+		`;
+		if (showWelcome) {
+			if (!isStreamer) {
+				d20plus.ut.sendHackerChat(welcomeTemplate(...data));
+			} else {
+				d20plus.ut.sendHackerChat(`VTTE detected and ${scriptName} successfully loaded.<br>`);
+			}
+		}
 		if (window.enhancementSuiteEnabled) {
-			d20plus.ut.sendHackerChat(`
-				VTT Enhancement Suite detected.
-				<br><br>
-				${scriptName} initialised.
-				<br>
-			`);
-		} else d20plus.ut.showHardDickMessage(scriptName);
-		d20plus.ut.sendHackerChat(`
-			${isStreamer ? "" : `
-			<br>
-			Need help? Visit our <a href="${d20plus.ut.WIKI_URL}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="You'd think this would be obvious.">
-			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
-			<br>
-			<br>
-			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
-			</span>
-			`}
-		`);
+			$("#lamer-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+		} else {
+			d20plus.ut.showHardDickMessage(scriptName);
+		}
+		setTimeout(() => {
+			$(`.lamer-chat`).css("height", "0px");
+			setTimeout(() => {
+				$(".lamer-chat").remove();
+				clearInterval(d20plus.ut.cursor);
+			}, 2000);
+		}, 6000);
 	};
 
-	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
-		d20plus.ut.sendHackerChat(`
-			${scriptName} initialising, please wait...<br><br>
-		`);
-		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	d20plus.ut.showInitMessage = () => {
+		d20plus.ut.consTemplate = `<div class="lamer-chat">
+			<span><span>&gt;</span>initializing, please wait...</span>
+			<span id="lamer-progress"><span>&gt;</span>loading data</span>
+			<span id="lamer-cursor"><span>&gt;</span><aside>|</aside></span>
+			<style type="text/css">
+			.lamer-chat {
+				font-family: Menlo, Monaco, Consolas, monospace;
+				font-size: small;
+				background: black;
+				display: inline-block;
+				font-weight: bold;
+				color: rgb(32, 194, 14);
+				width: 100%;
+				position: sticky;
+				z-index: 1000;
+				top: 0px;
+				height: 100px;
+				transition: height 2s;
+				overflow: hidden;
+				border-bottom: 1px solid rgb(32, 194, 14);
+			}
+			.lamer-chat > span {
+				display: block; white-space: nowrap;
+				padding: 0px 5px 0px 45px;
+			}
+			.lamer-chat > span > span {
+				float: left; margin-left: -39px;
+			}
+			</style>
+		</div>`;
+		$(`#textchat`).prepend(d20plus.ut.consTemplate);
+		let blink = false;
+		d20plus.ut.cursor = setInterval(() => {
+			$(`.lamer-chat`).append($(`.lamer-cursor`));
+			if (blink) $(`.lamer-chat aside`).html("|");
+			else $(`.lamer-chat aside`).html("");
+			blink = !blink;
+		}, 300);
 	};
+
+	d20plus.ut.showLoadingMessage = () => {
+		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const loadmsgtemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
+		if (!isStreamer) $(".lamer-chat > span:first-child").after(loadmsgtemplate);
+		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
+		const legacytStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
+		if (!message) return;
 		d20.textchat.incoming(false, ({
 			who: "system",
-			type: "system",
-			content: `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			type: !legacytStyle && error ? "error" : "system",
+			content: (legacytStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
-			</span>`,
+			</span>` : message),
 		}));
 	};
+
+	d20plus.ut.cmpVersions = (present, latest) => {
+		if (!present || !latest) return 0;
+		const regExStrip0 = /(\.0+)+$/;
+		const segmentsA = present.replace(regExStrip0, "").split(".");
+		const segmentsB = latest.replace(regExStrip0, "").split(".");
+		const l = Math.min(segmentsA.length, segmentsB.length);
+
+		for (let i = 0; i < l; i++) {
+			const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
+			if (diff) {
+				return diff;
+			}
+		}
+		return segmentsA.length - segmentsB.length;
+	}
 
 	d20plus.ut.addCSS = (sheet, selectors, rules) => {
 		if (!(selectors instanceof Array)) selectors = [selectors];
