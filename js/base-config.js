@@ -124,6 +124,18 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"legacySystemMessagesStyle": {
+			"name": "Use green/black style for betteR20 system messages",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showWelcomeMessage": {
+			"name": "Show welcome message on load",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
 	});
 
 	d20plus.cfg.pLoadConfig = async () => {
