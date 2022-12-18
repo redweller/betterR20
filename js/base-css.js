@@ -222,6 +222,26 @@ function baseCss () {
 			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
 		},
 		{
+			s: ".connects-log",
+			r: "display: none; font-variant: small-caps; font-size: 12px; padding: 18px 2px 2px 32px; margin-left: -8px; border: 1px solid; border-top: none; margin-top: -16px; background: rgba(100, 100, 100, 0.2); cursor: pointer;",
+		},
+		{
+			s: ".connects-info",
+			r: "font-family: pictos; margin-right: 4px; text-decoration: none !important; cursor: pointer; float: right; position: relative; top: -16px;",
+		},
+		{
+			s: "input:checked + label .connects-info",
+			r: "position: unset;",
+		},
+		{
+			s: "input:checked + label .connects-log",
+			r: "display: block;",
+		},
+		{
+			s: ".connects-state",
+			r: "display: none;",
+		},
+		{
 			s: ".withoutavatars .userscript-hacker-chat",
 			r: "margin-left: -15px; min-width: calc(100% + 30px);",
 		},
@@ -765,7 +785,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;	 font-style: italic;",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
