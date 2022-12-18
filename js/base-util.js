@@ -59,6 +59,7 @@ function baseUtil () {
 	}
 
 	d20plus.ut.checkVersion = () => {
+		d20plus.ut.plantVersionInfo();
 		d20plus.ut.log("Checking current version");
 
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
@@ -207,6 +208,26 @@ function baseUtil () {
 		}));
 	};
 
+	d20plus.ut.plantVersionInfo = () => {
+		const thisPlayer = d20?.Campaign.players.get(d20_player_id);
+		if (!thisPlayer) return;
+		if (!d20plus.cfg.getOrDefault("chat", "shareVersions")) {
+			if (thisPlayer.get("script")) {
+				thisPlayer.set("script", null, true);
+				thisPlayer.save();
+			}
+			return;
+		}
+		d20plus.ut.log("Managing version info");
+		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
+		const b20v = encodeURI(d20plus.version);
+		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
+		const date = Number(new Date());
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, date}));
+		thisPlayer.set("script", info, true);
+		thisPlayer.save();
+	}
+
 	d20plus.ut.cmpVersions = (present, latest) => {
 		if (!present || !latest) return 0;
 		const regExStrip0 = /(\.0+)+$/;
@@ -262,6 +283,17 @@ function baseUtil () {
 			d20plus.ut.addCSS(targetSheet, r.s, r.r);
 		});
 	};
+
+	d20plus.ut.timeAgo = (ts) => {
+		const difInteger = Number(new Date()) - Number(ts);
+		const difMinutes = Math.ceil((difInteger - 60000) / 60000);
+		const difHours = Math.ceil((difInteger - 3600000) / 3600000);
+		const difDays = Math.ceil((difInteger - 86400000) / 86400000);
+		if (difDays > 0) return `${difDays} d ago`;
+		if (difHours > 0) return `${difHours} hr ago`;
+		if (difMinutes > 0) return `${difMinutes} min ago`;
+		return `0 min ago`;
+	}
 
 	d20plus.ut.getAntiCacheSuffix = () => {
 		return `?${(new Date()).getTime()}`;
