@@ -391,7 +391,7 @@ function baseChat () {
 				"_player": true,
 			},
 			"highlightttms": {
-				"name": "Highlisht text box when in TTMS mode",
+				"name": "Highlight text box when in TTMS mode",
 				"default": true,
 				"_type": "boolean",
 				"_player": true,
