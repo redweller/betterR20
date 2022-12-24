@@ -130,6 +130,12 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"resizeSidebarElements": {
+			"name": "Resize textbox & tabs with sidebar (requires restart)",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
 		"showWelcomeMessage": {
 			"name": "Show welcome message on load",
 			"default": true,

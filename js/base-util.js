@@ -138,6 +138,11 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
+		if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
+			$("#rightsidebar").on("mouseout", d20plus.ut.resizeSidebar);
+			$("body").on("mouseup", d20plus.ut.resizeSidebar);
+			d20plus.ut.resizeSidebar("startup");
+		}
 		setTimeout(() => {
 			$(`.lamer-chat`).css("height", "0px");
 			setTimeout(() => {
@@ -242,6 +247,17 @@ function baseUtil () {
 			}
 		}
 		return segmentsA.length - segmentsB.length;
+	}
+
+	d20plus.ut.resizeSidebar = (init) => {
+		const $sidebar = $("#rightsidebar");
+		if (init === "startup" || $sidebar.hasClass("ui-resizable-resizing")) {
+			const sidebarwidth = $sidebar.width();
+			let textdelta = 9;
+			if (d20plus.ut.dmscriptDetected) textdelta = 6;
+			$("#textchat-input").width(sidebarwidth - textdelta);
+			$(".tabmenu").width(sidebarwidth - 11);
+		}
 	}
 
 	d20plus.ut.addCSS = (selectors, rules) => {
