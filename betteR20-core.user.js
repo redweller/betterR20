@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.1.29
+// @version      1.33.1.30
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -137,11 +137,13 @@ function baseLanguage () {
 		cfg_option_minify_tracker: [`Shrink Initiative Tracker Text`],
 		cfg_option_interiors_toggle: [`Add interior/outside mode switch`],
 		cfg_option_legacy_chat: [`Use green/black style for betteR20 system messages`],
+		cfg_option_resize_sidebar: [`Resize textbox & tabs with sidebar (requires restart)`],
 		cfg_option_welcome_msg: [`Show welcome message on load`],
 		cfg_option_log_players_in_chat: [`Show player connects messages`],
 		cfg_option_enable_social: [`Enable chat social panel (requires restart)`],
-		cfg_option_additional_commands: [`Additional text chat commands (requires restart)`],
-		cfg_option_highlight_ttms: [`Highlisht text box when in TTMS mode`],
+		cfg_option_languages: [`Enable in-game languages (via social panel or /in)`],
+		cfg_option_additional_commands: [`Additional text chat commands (/help for full list)`],
+		cfg_option_highlight_ttms: [`Highlight text box when in TTMS mode`],
 		cfg_option_versions_from_players: [`Show script version notifications from players`],
 		cfg_option_share_version_info: [`Share script version numbers`],
 		ui_bar_map: [`Map & Backdrop`],
@@ -289,7 +291,7 @@ function baseLanguage () {
 		msg_b20_version_stream: [`<br>A newer version of $0 is available.<br><br>`],
 		msg_b20_version: [`<br>A newer version of $0 is available.<br>Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>`],
 		msg_welcome_versions: [`$0 loaded<br>VTTES v$1 detected`],
-		msg_welcome_faq: [`Need help? Visit our <a href="$0/index.php/BetteR20_FAQ">wiki</a> or join our`],
+		msg_welcome_faq: [`Need help? Visit our <a href="$0/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our`],
 		msg_welcome_sarcasm: [`You'd think this would be obvious.`],
 		msg_welcome_p1: [`Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.`],
 		msg_welcome_p2: [`Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.`],
@@ -342,10 +344,12 @@ function baseLanguage () {
 		cfg_option_minify_tracker: [`Уменьшить размер элементов трекера инициативы`],
 		cfg_option_interiors_toggle: [`Добавить переключатель режима в помещении/снаружи`],
 		cfg_option_legacy_chat: [`Черно-зелёный (классический) стиль уведомлений betteR20`],
+		cfg_option_resize_sidebar: [`Подгонять размер текстбокса под панель (нужен перезапуск)`],
 		cfg_option_welcome_msg: [`Выводить в чат приветствие при загрузке`],
 		cfg_option_log_players_in_chat: [`Выводить сообщения о подключении игроков`],
 		cfg_option_enable_social: [`Включить панель опций чата (нужен перезапуск)`],
-		cfg_option_additional_commands: [`Дополнительные команды чата (нужен перезапуск)`],
+		cfg_option_languages: [`Включить внутриигровые языки (через панель чата или /in)`],
+		cfg_option_additional_commands: [`Дополнительные команды чата (/help - список)`],
 		cfg_option_highlight_ttms: [`Подсвечивать область ввода в режиме TTMS`],
 		cfg_option_versions_from_players: [`Показывать уведомления о версиях скриптов`],
 		cfg_option_share_version_info: [`Делиться информацией о версиях скриптов`],
@@ -490,7 +494,7 @@ function baseLanguage () {
 		msg_b20_version_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
 		msg_b20_version: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
 		msg_welcome_versions: [`$0 загружен<br>VTTES v$1 найден`],
-		msg_welcome_faq: [`Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ">вики</a> или зайдите в`],
+		msg_welcome_faq: [`Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ"><strong>вики</strong></a> или зайдите в`],
 		msg_welcome_sarcasm: [`Вроде, это должно быть очевидно`],
 		msg_welcome_p1: [`Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.`],
 		msg_welcome_p2: [`Перед тем, как сообщить о баге на форумах Roll20, пожалуйста отключите данный скрипт и проверьте, сохраняется ли проблема.`],
@@ -640,7 +644,7 @@ function baseUtil () {
 		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
 		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const classname = !legacytStyle ? "userscript-commandintro" : "userscript-hackerintro";
+		const classname = !legacytStyle ? "userscript-commandintro userscript-b20" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const data = [
 			d20plus.scriptName,
@@ -650,12 +654,12 @@ function baseUtil () {
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
 				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
-				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px;">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 11px;line-height: 15px;">${__("msg_welcome_versions", [b20v, vttv])}</p>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">${__("msg_welcome_versions", [b20v, vttv])}</p>
 				</h1>
-				<p>${__("msg_welcome_faq", [faq])} <a href="https://discord.gg/nGvRCDs">Discord</a>.</p>
+				<p>${__("msg_welcome_faq", [faq])} <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
 				<span title="${__("msg_welcome_sarcasm")}">
 					<p>${__("msg_welcome_p1")}</p>
 					<p>${__("msg_welcome_p2")}</p>
@@ -673,6 +677,11 @@ function baseUtil () {
 			$("#lamer-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
+		}
+		if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
+			$("#rightsidebar").on("mouseout", d20plus.ut.resizeSidebar);
+			$("body").on("mouseup", d20plus.ut.resizeSidebar);
+			d20plus.ut.resizeSidebar("startup");
 		}
 		setTimeout(() => {
 			$(`.lamer-chat`).css("height", "0px");
@@ -758,8 +767,9 @@ function baseUtil () {
 		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
 		const b20v = encodeURI(d20plus.version);
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
+		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
-		const info = btoa(JSON.stringify({b20n, b20v, vtte, date}));
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
 		thisPlayer.set("script", info, true);
 		thisPlayer.save();
 	}
@@ -778,6 +788,28 @@ function baseUtil () {
 			}
 		}
 		return segmentsA.length - segmentsB.length;
+	}
+
+	d20plus.ut.detectDarkModeScript = () => {
+		d20plus.ut.dmscriptDetected = false;
+		$("style").each((i, el) => {
+			if (el.textContent.indexOf("/*New Characteristics Menu*/") >= 0) {
+				d20plus.ut.dmscriptDetected = true;
+				return false;
+			}
+		});
+		return d20plus.ut.dmscriptDetected;
+	}
+
+	d20plus.ut.resizeSidebar = (init) => {
+		const $sidebar = $("#rightsidebar");
+		if (init === "startup" || $sidebar.hasClass("ui-resizable-resizing")) {
+			const sidebarwidth = $sidebar.width();
+			let textdelta = 9;
+			if (d20plus.ut.dmscriptDetected) textdelta = 6;
+			$("#textchat-input").width(sidebarwidth - textdelta);
+			$(".tabmenu").width(sidebarwidth - 11);
+		}
 	}
 
 	d20plus.ut.addCSS = (sheet, selectors, rules) => {
@@ -2244,8 +2276,20 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"resizeSidebarElements": {
+			"name": __("cfg_option_resize_sidebar"),
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
 		"showWelcomeMessage": {
 			"name": __("cfg_option_welcome_msg"),
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"languages": {
+			"name": __("cfg_option_languages"),
 			"default": true,
 			"_type": "boolean",
 			"_player": true,
@@ -2928,6 +2972,7 @@ function baseConfig () {
 
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 
 		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
 		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
@@ -11843,6 +11888,53 @@ function initHTMLbaseMisc () {
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.chatSocial = `
+		<div class="btn" id="socialswitch">
+			<span class="pictos">w</span>
+		</div>
+		<div style="float: left;" class="social">
+			<label for="speakingto">To:</label>
+			<select id="speakingto" class="selectize social">
+				<option value="">All</option>
+			</select>
+			<span id="langpanel">
+				<label for="speakingin">In:</label>
+				<select class="selectize social" id="speakingin">
+					<option value=""></option>
+				</select>
+			</span>
+		</div>
+		<style type="text/css">
+			#textchat-input .social {
+				display: none;
+			}
+			#textchat-input.social .social {
+				display: inline-block;
+			}
+			#textchat-input.social textarea {
+				height: 19px;
+			}
+			.selectize.social {
+				width: 100px;
+			}
+			select#speakingto, select#speakingin {
+				height: 22px;
+				padding: 0px 5px;
+			}
+			#socialswitch {
+				height: 18px;
+				margin-left: 5px;
+			}
+			#textchat-input.talkingtoself textarea {
+				border: 2px solid rgba(255,0,0,0.4) !important;
+				background-color: rgba(255,0,0,0.2) !important;
+			}
+		</style>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
@@ -15569,7 +15661,7 @@ function baseCss () {
 			s: "#drawingtools.line_splitter .currentselection:after",
 			r: "content: '✂️';",
 		},
-		// chat tag
+		// "old style" system messages
 		{
 			s: ".userscript-hacker-chat",
 			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
@@ -15586,6 +15678,7 @@ function baseCss () {
 			s: ".userscript-hacker-chat-error a",
 			r: "color: white;",
 		},
+		// "old style" chat tag
 		{
 			s: ".userscript-hackerintro",
 			r: "background: black; padding: 3px;",
@@ -15598,10 +15691,28 @@ function baseCss () {
 			s: ".userscript-hackerintro p",
 			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: unset; font-weight: bold; line-height: 20px;",
 		},
+		// vttes-style chat tag
 		{
 			s: ".userscript-commandintro img.userscript-b20img",
 			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
 		},
+		{
+			s: ".userscript-commandintro.userscript-b20",
+			r: "box-shadow: 0px 0px 10px rgb( 6 , 26 , 45 ); padding: 8px;background: rgb(6, 26, 45);color: whitesmoke;",
+		},
+		{
+			s: ".userscript-commandintro.userscript-b20 strong",
+			r: "color: orange;",
+		},
+		{
+			s: ".userscript-commandintro.userscript-b20 h1",
+			r: "color: whitesmoke;",
+		},
+		{
+			s: "code",
+			r: "padding: 1px 2px;color: rgb(73, 45, 32);background-color: #fff4e8;border: 1px solid;",
+		},
+		// "player connects/disconnects" messages
 		{
 			s: ".connects-log",
 			r: "display: none; font-variant: small-caps; font-size: 12px; padding: 18px 2px 2px 32px; margin-left: -8px; border: 1px solid; border-top: none; margin-top: -16px; background: rgba(100, 100, 100, 0.2); cursor: pointer;",
@@ -21355,9 +21466,11 @@ function baseChatLanguages () {
 			"factor": 3
 		}
 	};
+	/* eslint-enable */
 }
 
 SCRIPT_EXTENSIONS.push(baseChatLanguages);
+
 
 function baseChat () {
 	d20plus.chat = d20plus.chat || {};
@@ -21529,26 +21642,36 @@ function baseChat () {
 	}
 
 	d20plus.chat.setLanguagePreset = (message, language) => {
+		if ($("#soundslike").length) return;
 		const dialog = $(languageDialogTemplate(message, language));
 		const src = d20.textchat.$textarea.val();
+		const msg = {};
 		setTimeout(() => {
 			d20.textchat.$textarea.val(src);
 		}, 200);
 		dialog.dialog({
 			title: "Choose transcription",
-			open: function () {
+			modal: true,
+			width: 365,
+			open: () => {
+				msg.selected = dialog.find("#soundslike");
+				msg.sample = dialog.find("#languageeg");
 				$("#soundslike").change(() => {
-					const val = dialog.find("#soundslike").val();
-					$("#languageeg").html(gibberish(message, val));
+					msg.sample.html(gibberish(message, msg.selected.val()));
+					msg.selected.focus();
 				});
+			},
+			close: () => {
+				dialog.off();
+				dialog.dialog("destroy").remove();
 			},
 			buttons: {
 				[`${__("ui_dialog_submit")}`]: function () {
-					const val = dialog.find("#soundslike").val();
+					const val = msg.selected.val();
 					d20plus.ut.log(`Select language style ${language} to ${val}`);
 					langId = language.normalize().toLowerCase();
 					d20plus.chat.languageAdditions[langId] = val;
-					d20plus.chat.outgoing();
+					$("#textchat-input button.btn").get(0).click();
 
 					dialog.off();
 					dialog.dialog("destroy").remove();
@@ -21562,48 +21685,6 @@ function baseChat () {
 		});
 	}
 
-	const socialHTML = `
-		<div class="btn" id="socialswitch">
-			<span class="pictos">w</span>
-		</div>
-		<div style="float: left;" class="social">
-			<label for="speakingto">To:</label>
-			<select id="speakingto" class="selectize social">
-				<option value="">All</option>
-			</select>
-			<label for="speakingin">In:</label>
-			<select class="selectize social" id="speakingin">
-				<option value=""></option>
-			</select>
-		</div>
-		<style type="text/css">
-			#textchat-input .social {
-				display: none;
-			}
-			#textchat-input.social .social {
-				display: inline-block;
-			}
-			#textchat-input.social textarea {
-				height: 19px;
-			}
-			.selectize.social {
-				width: 100px;
-			}
-			select#speakingto, select#speakingin {
-				height: 22px;
-				padding: 0px 5px;
-			}
-			#socialswitch {
-				height: 18px;
-				margin-left: 5px;
-			}
-			#textchat-input.talkingtoself textarea {
-				border: 2px solid rgba(255,0,0,0.4);
-				background-color: rgba(255,0,0,0.2);
-			}
-		</style>
-	`;
-
 	const languageTemplate = () => `
 		<script id="sheet-rolltemplate-inlanguage" type="text/html">{{displaymessage}}<br>
 			<span style="font-style:italic" title="${__("msg_chat_lang_title")} {{titlelanguage}}">
@@ -21615,13 +21696,19 @@ function baseChat () {
 	const languageDialogTemplate = (msg, language) => `
 			<div>
 				<p><strong>What does ${language} language sound like?</strong></p>
-				<p>It seems you're trying to speak language not included in the standard list of D&D PHB.</p>
+				<p>It seems you're trying to speak language not included in the standard list of D&D 5e PHB.</p>
 				<p>That's not a problem. Please select one of the languages from the dropdown below, and it will be used for the imitated message.</p>
 				<p>Your choice is purely cosmetic and will not affect who can or can not understand it. This will be remembered until you refresh the page.</p>
-				<select id="soundslike">
-					${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
-				</select>
-				<p><i>Example: <span id="languageeg">${gibberish(msg, "common")}</span></i></p>
+				<span style="display:block; height: 40px;">
+					<label style="display: inline-block;" for="soundslike">Transcribe as:</label>
+					<select id="soundslike" style="float: right; width: 60%;">
+						${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
+					</select>
+				</span>
+				<p>This is what your message will look like with the current selection to those who don't speak ${language}:</p>
+				<p><textarea id="languageeg" disabled="" style="width: 100%; box-sizing: border-box; height: 50px;cursor: default;resize: none; background: rgba(100, 100, 150, 0.2);"
+					>${gibberish(msg, "common")}</textarea>
+				</p>
 			</div>
 	`;
 
@@ -21668,13 +21755,15 @@ function baseChat () {
 			const isb20 = string[2] === "b20" ? "&#42;" : "";
 			const code = string[0] ? `<code>${string[0]}</code>${isb20}` : "";
 			const gmcheck = string[2] !== "gm" || window.is_gm;
-			if (gmcheck) return `${html}<br>${code}<span style="float:right"> ${string[1]}</span>`;
+			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || string[0].search(/(in \(language\))|(-\(word\))/) === -1;
+			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${string[1]}</span>`;
 			return html;
 		}, __("msg_b20_chat_help_title")));
 		return "";
 	}
 
 	d20plus.chat.sendInLanguage = (message, language) => {
+		d20plus.ut.log(message, language);
 		let languageid = d20plus.chat.getLanguageId(language);
 		if (!Object.keys(languages).includes(languageid)) {
 			if (!Object.keys(d20plus.chat.languageAdditions).includes(languageid)) {
@@ -21688,8 +21777,8 @@ function baseChat () {
 		// const pos = Math.round(Math.random() * (coded.length - 2));
 		// const encoded = coded.slice(0, pos) + btoa(encodeURI(d20_player_id)) + coded.slice(pos);
 		// return `${gibberish(string, lanid)}\n&{template:inlanguage} {{language=${language}}} {{languageid=${languageid}}} {{encoded=${encoded}}}`;
-		d20plus.chat.msgInLang = {language, languageid, message};
-		return gibberish(message, languageid);
+		// d20plus.chat.msgInLang = {language, languageid, message};
+		return `${gibberish(message, languageid)}|&inlang|${language}|&meta|${languageid}|&meta|${message}`;
 	}
 
 	d20plus.chat.sendReply = (text, msg) => {
@@ -21764,7 +21853,8 @@ function baseChat () {
 		if (raw) {
 			const info = JSON.parse(decodeURI(atob(raw)));
 			const time = d20plus.ut.timeAgo(info.date);
-			let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}<br>Info updated ${time}`;
+			const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
+			let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
 			if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
 			if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
 			$(`#connects${id}`).html(html);
@@ -21795,16 +21885,16 @@ function baseChat () {
 
 	addConfigOptions(
 		"chat", {
-			"showPlayerConnects": {
-				"name": __("cfg_option_log_players_in_chat"),
-				"default": true,
-				"_type": "boolean",
-			},
 			"social": {
 				"name": __("cfg_option_enable_social"),
 				"default": true,
 				"_type": "boolean",
 				"_player": true,
+			},
+			"showPlayerConnects": {
+				"name": __("cfg_option_log_players_in_chat"),
+				"default": true,
+				"_type": "boolean",
 			},
 			"commands": {
 				"name": __("cfg_option_additional_commands"),
@@ -21901,7 +21991,7 @@ function baseChat () {
 
 	d20plus.chat.incoming = (params) => {
 		// eslint-disable-next-line no-console
-		console.log(params[1], d20plus.chat.localHistory);
+		// console.log(params[1], d20plus.chat.localHistory);
 		const msg = params[1];
 		if (msg.playerid === d20_player_id || msg.type === "system") {
 			const stash = [];
@@ -21925,16 +22015,17 @@ function baseChat () {
 			if (params[1].playerid === d20_player_id
 				|| params[1].type === "error") d20plus.chat.mtms.success = true;
 		}
-		if (msg.listenerid?.language) {
+		if (d20plus.cfg.getOrDefault("chat", "languages") && msg.listenerid?.language) {
 			const speech = msg.listenerid;
 			const is_current_player = msg.playerid === d20_player_id;
 			const knows_language = hasLanguageProfeciency(speech.languageid);
+			const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
 			if (window.is_gm || is_current_player || knows_language) {
 				msg.content = `
 					{{displaymessage=${msg.content}}}
 					{{displaylanguage=(${speech.language})}}
 					{{titlelanguage=${speech.language}}}
-					{{translated=${speech.message}}}`;
+					{{translated=${translated}}}`;
 				msg.rolltemplate = "inlanguage";
 				delete msg.listenerid;
 			}
@@ -21976,7 +22067,7 @@ function baseChat () {
 			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
 			text = text.replace(/^\/mtms(.*?)$/s, d20plus.chat.sendMyself);
 			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
-			text = text.replace(/\/in(.*?)$/gm, d20plus.chat.sendParsedInLanguage);
+			if (d20plus.cfg.getOrDefault("chat", "languages")) text = text.replace(/\/in(.*?)$/gm, d20plus.chat.sendParsedInLanguage);
 			// text = text.replace(/^\/cl (on|off)$/sm, comprehendLanguages);
 		}
 
@@ -21999,9 +22090,12 @@ function baseChat () {
 		const toSend = $.trim(text);
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
 
-		if (d20plus.chat.msgInLang) {
-			d20.textchat.doChatInput(toSend, undefined, d20plus.chat.msgInLang);
-			delete d20plus.chat.msgInLang;
+		if (toSend.indexOf("|&inlang|") >= 0) {
+			const data = toSend.split("|&inlang|");
+			const msg = data[0];
+			const meta = data[1].split("|&meta|");
+			const transport = {language: meta[0], languageid: meta[1], message: meta[2]};
+			d20.textchat.doChatInput(msg, undefined, transport);
 			tc.val("").focus();
 		} else {
 			d20.textchat.doChatInput(toSend);
@@ -22035,7 +22129,7 @@ function baseChat () {
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "social")) {
-			$("#textchat-input").append(socialHTML);
+			$("#textchat-input").append(d20plus.html.chatSocial);
 			$("#socialswitch").on("click", d20plus.chat.onsocial);
 			$("#speakingas").on("change", d20plus.chat.onspeakingas);
 			$("#speakingto").on("change", d20plus.chat.onspeakingto);
