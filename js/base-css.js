@@ -188,7 +188,7 @@ function baseCss () {
 			s: "#drawingtools.line_splitter .currentselection:after",
 			r: "content: '✂️';",
 		},
-		// chat tag
+		// "old style" system messages
 		{
 			s: ".userscript-hacker-chat",
 			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
@@ -205,6 +205,7 @@ function baseCss () {
 			s: ".userscript-hacker-chat-error a",
 			r: "color: white;",
 		},
+		// "old style" chat tag
 		{
 			s: ".userscript-hackerintro",
 			r: "background: black; padding: 3px;",
@@ -217,10 +218,28 @@ function baseCss () {
 			s: ".userscript-hackerintro p",
 			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: unset; font-weight: bold; line-height: 20px;",
 		},
+		// vttes-style chat tag
 		{
 			s: ".userscript-commandintro img.userscript-b20img",
 			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
 		},
+		{
+			s: ".userscript-commandintro.userscript-b20",
+			r: "box-shadow: 0px 0px 10px rgb( 6 , 26 , 45 ); padding: 8px;background: rgb(6, 26, 45);color: whitesmoke;",
+		},
+		{
+			s: ".userscript-commandintro.userscript-b20 strong",
+			r: "color: orange;",
+		},
+		{
+			s: ".userscript-commandintro.userscript-b20 h1",
+			r: "color: whitesmoke;",
+		},
+		{
+			s: "code",
+			r: "padding: 1px 2px;color: rgb(73, 45, 32);background-color: #fff4e8;border: 1px solid;",
+		},
+		// "player connects/disconnects" messages
 		{
 			s: ".connects-log",
 			r: "display: none; font-variant: small-caps; font-size: 12px; padding: 18px 2px 2px 32px; margin-left: -8px; border: 1px solid; border-top: none; margin-top: -16px; background: rgba(100, 100, 100, 0.2); cursor: pointer;",

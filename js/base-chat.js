@@ -5,10 +5,6 @@ function baseChat () {
 	d20plus.chat.lastRespondent = "";
 	const languages = d20plus.chat.languages;
 
-	d20plus.chat.toCamelCase = (string, lowercase) => {
-		return string.charAt(0).toUpperCase() + (lowercase ? string.slice(1).toLowerCase() : string.slice(1));
-	}
-
 	function buildLanguageIndex () {
 		d20plus.chat.languageIndex = {};
 		d20plus.chat.languageAdditions = {};
@@ -47,7 +43,7 @@ function baseChat () {
 				return newword + spacing;
 			} else if (src_terms[i].includes("--")) {
 				prev_particle = false;
-				return d20plus.chat.toCamelCase(src_terms[i].replace(/--/gu, "")) + spacing;
+				return d20plus.ut.toSentenceCase(src_terms[i].replace(/--/gu, "")) + spacing;
 			} else if ((index - 1) % 9 + 1 < languages[langId].factor && i < src_words.length - 1 && !prev_particle) {
 				prev_particle = true;
 				const newid = (index.toString().charAt(0) + index - 1) % 9;
@@ -59,18 +55,13 @@ function baseChat () {
 				return languages[langId].lexis[parseInt(newid)] + spacing;
 			}
 		});
-		return d20plus.chat.toCamelCase(translation.join(""), false);
+		return d20plus.ut.toSentenceCase(translation.join(""), false);
 	}
 
 	function availableLanguages (charId) {
 		const char = d20.Campaign.characters.get(charId);
 		const langId = d20.journal.customSheets.availableAttributes.repeating_proficiencies_prof_type;
-		const traits = char.attribs.models
-			.filter(prop => {
-				return prop.attributes.name.match(/repeating_proficiencies_(.*?)_prof_type/)
-				&& ![langId, "LANGUAGE"].includes(prop.attributes.current);
-			})
-			.map(trait => trait.attributes.name.replace(/repeating_proficiencies_(.*?)_prof_type/, "$1"));
+		// first check if character sheet is loaded, if not - initialize it
 		if (!char.attribs.length && !char.attribs.fetching) {
 			char.attribs.fetch(char.attribs);
 			char.attribs.fetching = true;
@@ -82,6 +73,17 @@ function baseChat () {
 				}
 			}, 20);
 		}
+		// roll20 OGL sheet stores languages differently compared to other traits
+		// by default, they don't have corresponging "proficiency type" attribute
+		// however, if you create a trait and THEN change it to be language, it will have LOCALIZED "language" proficiency type
+		// so to find all languages, we must filter out other named traits, except for the traits named "language" or "(localized word for LANGUAGE)"
+		const traits = char.attribs.models
+			.filter(prop => {
+				return prop.attributes.name.match(/repeating_proficiencies_(.*?)_prof_type/)
+				&& ![langId, "LANGUAGE"].includes(prop.attributes.current);
+			})
+			.map(trait => trait.attributes.name.replace(/repeating_proficiencies_(.*?)_prof_type/, "$1"));
+		// now that we have a list of named non-language traits we can just find what we need
 		const charspeaks = char.attribs.models.map(prop => {
 			const filter = /repeating_proficiencies_(.*?)_name/;
 			if (prop.attributes.name.match(filter)) {
@@ -111,7 +113,7 @@ function baseChat () {
 
 	d20plus.chat.getSpeakingIn = (available) => {
 		$("#speakingin").html(available
-			.map(lan => d20plus.chat.toCamelCase(lan))
+			.map(lan => d20plus.ut.toSentenceCase(lan, true))
 			.reduce((html, lan) => `${html}<option>${lan}</option>`, "<option></option>"),
 		);
 	}
@@ -157,30 +159,42 @@ function baseChat () {
 	}
 
 	d20plus.chat.setLanguagePreset = (message, language) => {
+		if ($("#soundslike").length) return;
 		const dialog = $(languageDialogTemplate(message, language));
 		const src = d20.textchat.$textarea.val();
+		const msg = {};
 		setTimeout(() => {
 			d20.textchat.$textarea.val(src);
+			dialog.find("#soundslike").focus();
 		}, 200);
 		dialog.dialog({
 			title: "Choose transcription",
-			open: function () {
+			modal: true,
+			width: 365,
+			open: () => {
+				msg.selected = dialog.find("#soundslike");
+				msg.sample = dialog.find("#languageeg");
 				$("#soundslike").change(() => {
-					const val = dialog.find("#soundslike").val();
-					$("#languageeg").html(gibberish(message, val));
+					msg.sample.html(gibberish(message, msg.selected.val()));
 				});
+				msg.selected.focus();
+			},
+			close: () => {
+				dialog.off();
+				dialog.dialog("destroy").remove();
 			},
 			buttons: {
 				[`Submit`]: function () {
-					const val = dialog.find("#soundslike").val();
+					const val = msg.selected.val();
+					const langId = language.normalize().toLowerCase();
 					d20plus.ut.log(`Select language style ${language} to ${val}`);
-					langId = language.normalize().toLowerCase();
-					d20plus.chat.languageAdditions[langId] = val;
-					d20plus.chat.outgoing();
 
 					dialog.off();
 					dialog.dialog("destroy").remove();
 					d20.textchat.$textarea.focus();
+
+					d20plus.chat.languageAdditions[langId] = val;
+					$("#textchat-input button.btn").get(0).click();
 				},
 				[`Cancel`]: function () {
 					dialog.off();
@@ -201,13 +215,19 @@ function baseChat () {
 	const languageDialogTemplate = (msg, language) => `
 			<div>
 				<p><strong>What does ${language} language sound like?</strong></p>
-				<p>It seems you're trying to speak language not included in the standard list of D&D PHB.</p>
+				<p>It seems you're trying to speak language not included in the standard list of D&D 5e PHB.</p>
 				<p>That's not a problem. Please select one of the languages from the dropdown below, and it will be used for the imitated message.</p>
 				<p>Your choice is purely cosmetic and will not affect who can or can not understand it. This will be remembered until you refresh the page.</p>
-				<select id="soundslike">
-					${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
-				</select>
-				<p><i>Example: <span id="languageeg">${gibberish(msg, "common")}</span></i></p>
+				<span style="display:block; height: 40px;">
+					<label style="display: inline-block;" for="soundslike">Transcribe as:</label>
+					<select id="soundslike" style="float: right; width: 60%;">
+						${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
+					</select>
+				</span>
+				<p>This is what your message will look like with the current selection to those who don't speak ${language}:</p>
+				<p><textarea id="languageeg" disabled="" style="width: 100%; box-sizing: border-box; height: 50px;cursor: default;resize: none; background: rgba(100, 100, 150, 0.2);"
+					>${gibberish(msg, "common")}</textarea>
+				</p>
 			</div>
 	`;
 
@@ -262,6 +282,7 @@ function baseChat () {
 	}
 
 	d20plus.chat.sendInLanguage = (message, language) => {
+		d20plus.ut.log(message, language);
 		let languageid = d20plus.chat.getLanguageId(language);
 		if (!Object.keys(languages).includes(languageid)) {
 			if (!Object.keys(d20plus.chat.languageAdditions).includes(languageid)) {
@@ -271,8 +292,7 @@ function baseChat () {
 		}
 		const knows = window.is_gm || hasLanguageProfeciency(languageid);
 		message = knows ? message : gibberish(message, languageid, true);
-		d20plus.chat.msgInLang = {language, languageid, message};
-		return gibberish(message, languageid);
+		return `${gibberish(message, languageid)}|&inlang|${language}|&meta|${languageid}|&meta|${message}`;
 	}
 
 	d20plus.chat.sendReply = (text, msg) => {
@@ -347,7 +367,8 @@ function baseChat () {
 		if (raw) {
 			const info = JSON.parse(decodeURI(atob(raw)));
 			const time = d20plus.ut.timeAgo(info.date);
-			let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}<br>Info updated ${time}`;
+			const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
+			let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
 			if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
 			if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
 			$(`#connects${id}`).html(html);
@@ -421,7 +442,8 @@ function baseChat () {
 	}
 
 	d20plus.chat.onspeakingto = () => {
-		const ttms = $("#speakingto").val() === "ttms";
+		const speakingto = $("#speakingto").val();
+		const ttms = speakingto === "ttms";
 		if (d20.textchat.talktomyself && !ttms) {
 			d20.textchat.doChatInput(`/talktomyself off`);
 			d20plus.chat.localHistory.push(false);
@@ -431,6 +453,34 @@ function baseChat () {
 			d20plus.chat.localHistory.push(false);
 			setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
 		}
+		if (speakingto && !ttms) {
+			$("#textchat-social-notifier").addClass("b20-to");
+			$("#textchat-social-notifier-to").text(speakingto);
+		} else {
+			$("#textchat-social-notifier").removeClass("b20-to");
+		}
+	}
+
+	d20plus.chat.onspeakingin = () => {
+		const speakingin = $("#speakingin").val();
+		if (speakingin) {
+			$("#textchat-social-notifier").addClass("b20-in");
+			$("#textchat-social-notifier-in").text(speakingin);
+		} else {
+			$("#textchat-social-notifier").removeClass("b20-in");
+		}
+	}
+
+	d20plus.chat.resetSocial = () => {
+		if (!d20.textchat.talktomyself) $("#speakingto").val("");
+		$("#speakingin").val("");
+		$("#textchat-social-notifier").removeClass("b20-in");
+		$("#textchat-social-notifier").removeClass("b20-to");
+	}
+
+	d20plus.chat.closeSocial = () => {
+		d20plus.chat.social = false;
+		$("#textchat-input").removeClass("social");
 	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
@@ -545,7 +595,9 @@ function baseChat () {
 			const speakingin = $("#speakingin").val();
 
 			if (speakingin) {
-				if (!text.match(/^\/(.*?)$/)) text = d20plus.chat.sendInLanguage(text, speakingin);
+				text = text.replace(/^[^/][^{^}]*?$/gm, msg => {
+					return d20plus.chat.sendInLanguage(msg, speakingin);
+				});
 			}
 
 			if (speakingto && speakingto !== "ttms") {
@@ -556,23 +608,28 @@ function baseChat () {
 			}
 		}
 
-		const toSend = $.trim(text);
+		let toSend = $.trim(text);
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
+		if ($("#soundslike").get(0)) toSend = "";
 
-		if (d20plus.chat.msgInLang) {
-			d20.textchat.doChatInput(toSend, undefined, d20plus.chat.msgInLang);
-			delete d20plus.chat.msgInLang;
+		if (toSend.indexOf("|&inlang|") >= 0) {
+			toSend.split("\n").forEach((str, i) => {
+				const data = str.split("|&inlang|");
+				if (data.length === 2) {
+					const msg = data[0];
+					const meta = data[1].split("|&meta|");
+					const transport = {language: meta[0], languageid: meta[1], message: meta[2]};
+					d20.textchat.doChatInput(msg, undefined, transport);
+				} else {
+					d20.textchat.doChatInput(str);
+				}
+			})
 			tc.val("").focus();
 		} else {
 			d20.textchat.doChatInput(toSend);
 			tc.val("").focus();
 		}
 
-		if (text !== "" && d20plus.chat.social) {
-			d20plus.chat.onsocial();
-			if (!d20.textchat.talktomyself) $("#speakingto").val("");
-			$("#speakingin").val("");
-		}
 		if (d20plus.cfg.getOrDefault("chat", "highlightttms")) {
 			if (toSend.includes("/talktomyself")) {
 				setTimeout(() => d20plus.chat.checkTTMSStatus(), 20);
@@ -595,10 +652,22 @@ function baseChat () {
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "social")) {
-			$("#textchat-input").append(d20plus.html.chatSocial);
+			const $input_container = $("#textchat-input");
+			const $chat_notifier = $("#textchat-notifier");
+			const $chat_textarea = d20.textchat.$textarea;
+
+			$input_container.append(d20plus.html.chatSocial);
+			$input_container.prepend(d20plus.html.chatSocialNotifier);
+			$("#textchat-note-container").append($chat_notifier);
+
+			$chat_textarea.on("focus", d20plus.chat.closeSocial);
+			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
+
 			$("#socialswitch").on("click", d20plus.chat.onsocial);
 			$("#speakingas").on("change", d20plus.chat.onspeakingas);
 			$("#speakingto").on("change", d20plus.chat.onspeakingto);
+			$("#speakingin").on("change", d20plus.chat.onspeakingin);
+
 			d20plus.chat.getSpeakingTo();
 		}
 
