@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.1.30
+// @version      1.33.1.31
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -693,7 +693,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.showInitMessage = () => {
-		d20plus.ut.consTemplate = `<div class="lamer-chat">
+		const consTemplate = `<div class="lamer-chat">
 			<span><span>&gt;</span>initializing, please wait...</span>
 			<span id="lamer-progress"><span>&gt;</span>loading data</span>
 			<span id="lamer-cursor"><span>&gt;</span><aside>|</aside></span>
@@ -723,7 +723,7 @@ function baseUtil () {
 			}
 			</style>
 		</div>`;
-		$(`#textchat`).prepend(d20plus.ut.consTemplate);
+		$(`#textchat`).prepend(consTemplate);
 		let blink = false;
 		d20plus.ut.cursor = setInterval(() => {
 			$(`.lamer-chat`).append($(`.lamer-cursor`));
@@ -1009,6 +1009,10 @@ function baseUtil () {
 	d20plus.ut.sanitizeFilename = function (str) {
 		return str.trim().replace(/[^-\w]/g, "_");
 	};
+
+	d20plus.ut.toSentenceCase = (string, forcelowercase) => {
+		return string.charAt(0).toUpperCase() + (forcelowercase ? string.slice(1).toLowerCase() : string.slice(1));
+	}
 
 	d20plus.ut.saveAsJson = function (filename, data) {
 		const blob = new Blob([JSON.stringify(data, null, "\t")], {type: "application/json"});
@@ -11935,6 +11939,68 @@ function initHTMLbaseMisc () {
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.chatSocialNotifier = `
+		<div id="textchat-note-container">
+			<div id="textchat-social-notifier" title="Click to reset">
+				<span id="textchat-social-notifier-to"></span>
+				<span id="textchat-social-notifier-in"></span>
+			</div>
+		</div>
+		<style type="text/css">
+			#textchat-note-container {
+				position: absolute;
+				right: 0px;
+				top: -5px;
+			}
+			#textchat-social-notifier {
+				background-color: rgba(70, 50, 70, 0.8);
+				color: white;
+				opacity: 0.6;
+				font-size: 0.9em;
+				font-weight: bold;
+				height: 17px;
+				padding: 5px;
+				float: right;
+				cursor: pointer;
+				display: none;
+			}
+			#textchat-social-notifier.b20-in, #textchat-social-notifier.b20-to {
+				display: block;
+			}
+			#textchat-social-notifier span {
+				padding-left: 5px;
+				display: none;
+				max-width: 70px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+				vertical-align: baseline;
+			}
+			#textchat-social-notifier.b20-in #textchat-social-notifier-in, #textchat-social-notifier.b20-to #textchat-social-notifier-to {
+				display: inline-block;
+			}
+			#textchat-social-notifier-to::before {
+				content: "TO: ";
+			}
+			#textchat-social-notifier-in::before {
+				content: "IN: ";
+			}
+			#textchat-social-notifier::after {
+				content: "*";
+				font-family: pictos;
+				padding-left: 3px;
+				vertical-align: top;
+			}
+			#textchat-notifier {
+				float: right;
+				position: unset;
+			}
+		</style>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
@@ -19149,6 +19215,7 @@ function baseChatLanguages () {
 				"waelo",
 				"wanton",
 				"wenich",
+				"winker",
 				"zzar"
 			],
 			"particles": [
@@ -19177,7 +19244,7 @@ function baseChatLanguages () {
 				"barag",
 				"barak",
 				"baraz",
-				"bin",
+				"binaz",
 				"bolg",
 				"brog",
 				"chuf",
@@ -19219,6 +19286,7 @@ function baseChatLanguages () {
 				"kruti",
 				"migdhal",
 				"mizpal",
+				"muzkhgrum",
 				"naggrund",
 				"nar",
 				"onk",
@@ -19269,7 +19337,7 @@ function baseChatLanguages () {
 				"zank"
 			],
 			"particles": [
-				"ha ",
+				"ha",
 				"a-",
 				"un",
 				"um",
@@ -19307,6 +19375,7 @@ function baseChatLanguages () {
 				"celure",
 				"ceníte",
 				"cirmacin",
+				"ennie",
 				"etya",
 				"etyarin",
 				"farale",
@@ -19447,7 +19516,7 @@ function baseChatLanguages () {
 				"gáldhiem",
 				"gaml",
 				"ganaht",
-				"gar",
+				"garth",
 				"gauhnith",
 				"gedthrall",
 				"gerdûm",
@@ -19457,6 +19526,7 @@ function baseChatLanguages () {
 				"gûntera",
 				"harng",
 				"harûg",
+				"hefthyn",
 				"helzvog",
 				"hert",
 				"hiem",
@@ -19574,7 +19644,7 @@ function baseChatLanguages () {
 				"nacte",
 				"nadha",
 				"naedh",
-				"natha",
+				"nathu",
 				"natte",
 				"ndilā",
 				"necte",
@@ -19584,6 +19654,7 @@ function baseChatLanguages () {
 				"nídha",
 				"niñkwis",
 				"ōmata",
+				"omnu",
 				"peles",
 				"pelsa",
 				"pentro",
@@ -19591,11 +19662,11 @@ function baseChatLanguages () {
 				"psára",
 				"raef",
 				"rak",
+				"rakkma",
 				"rathki",
 				"resta",
 				"revrykal",
 				"rîdh",
-				"rrakkma",
 				"sedu",
 				"taltas",
 				"tancula",
@@ -19647,7 +19718,7 @@ function baseChatLanguages () {
 				"bizel",
 				"booyahg",
 				"braeunk",
-				"bree",
+				"breek",
 				"dabog",
 				"dargrath",
 				"dargum",
@@ -19664,7 +19735,7 @@ function baseChatLanguages () {
 				"guthash",
 				"hak",
 				"hruggekolohk",
-				"hu",
+				"huhak",
 				"hum",
 				"illska",
 				"karanzol",
@@ -19672,6 +19743,7 @@ function baseChatLanguages () {
 				"karkitas",
 				"kherek",
 				"kurrauz",
+				"kykat",
 				"laug",
 				"lind",
 				"lodar",
@@ -19755,8 +19827,8 @@ function baseChatLanguages () {
 			"lexis": [
 				"adaldrida",
 				"balc",
-				"ban",
 				"banakil",
+				"banta",
 				"banzir",
 				"barabatta",
 				"bas",
@@ -19768,13 +19840,14 @@ function baseChatLanguages () {
 				"brandugamba",
 				"bree",
 				"carbandur",
+				"carbanga",
 				"cast",
 				"castu",
 				"chet",
 				"cubuc",
 				"cugbagu",
 				"dûkan",
-				"dûkan",
+				"dûkaru",
 				"fallohide",
 				"froda",
 				"gad",
@@ -19964,6 +20037,7 @@ function baseChatLanguages () {
 				"thoror",
 				"thrak",
 				"ugrukh",
+				"urdanog",
 				"ushtar",
 				"ushtarak",
 				"zagavarr",
@@ -19987,109 +20061,120 @@ function baseChatLanguages () {
 		"abyssal": {
 			"title": "abyssal",
 			"lexis": [
-				"grumz",
-				"sathrakur",
-				"hrija",
-				"immrek",
-				"immrekr",
-				"knor",
-				"vjarbund",
-				"dilann",
-				"snertal",
-				"vulridir",
-				"dezezz",
-				"ynsta",
-				"greahjertr",
-				"votr",
-				"immreth",
-				"nautza",
-				"vinthis",
-				"fernalm",
-				"fjir",
-				"djovul",
-				"zank",
-				"zankhez",
-				"zankr",
-				"bevinja",
-				"dolg",
-				"vink",
-				"vinkr",
-				"aldr",
-				"fjyrk",
-				"geth",
-				"jemm",
-				"brjalarokk",
-				"hloth",
-				"gamwad",
-				"gamwaddad",
-				"vjaklud",
-				"kvunk",
-				"thjarl",
-				"vot",
-				"rir",
-				"vurth",
-				"vurthr",
-				"vork",
-				"vorkr",
-				"formorian",
-				"oonbleth",
-				"got",
-				"gottoth",
-				"gotothog",
-				"vram",
-				"undith",
-				"thjara",
-				"rev",
-				"revr",
-				"hoinni",
-				"gevroran",
-				"nurn",
-				"nurnr",
-				"borfra",
-				"gevror",
-				"gevrorgevna",
-				"bloz",
-				"blozr",
-				"skelg",
-				"vulrur",
-				"knaklarth",
-				"kheev",
-				"alzerja",
-				"alzerjar",
-				"ragregur",
-				"wulfa",
-				"jaru",
-				"jarugleg",
-				"veorm",
-				"mjuva",
-				"grathur",
-				"dansthorf",
-				"laeg",
-				"knakar",
-				"gimstenalv",
-				"farurm",
-				"balalor",
-				"slaugob",
-				"halag",
-				"halast",
-				"halagstr",
-				"gana",
-				"glang",
-				"jarhrog",
-				"zulgvarin",
-				"broath",
-				"druldnazim",
-				"druldnazimr",
-				"thakk",
-				"grov",
-				"bleth",
-				"blethr",
-				"grathr",
-				"tur"
+				"aldanarí",
+				"argetlam",
+				"äthalvard",
+				"bjartskular",
+				"bjartstál",
+				"blödhgarm",
+				"blödhren",
+				"brisingr",
+				"dagshelgr",
+				"darmthrell",
+				"dauthdaert",
+				"dauthleikr",
+				"dröttning",
+				"dröttningu",
+				"ebrithil",
+				"edoc’sil",
+				"eïnradhin",
+				"eldhrimner",
+				"eldrvarí",
+				"eldrvarya",
+				"eldunarí",
+				"ellesméra",
+				"elthrimórno",
+				"ethilnadras",
+				"ethildurin",
+				"faelnirv",
+				"fëon",
+				"finiarel",
+				"flutningr",
+				"förn",
+				"framvír",
+				"frethya",
+				"galbatorix",
+				"garjzla",
+				"gëuloth",
+				"haldthin",
+				"helgrind",
+				"herdtha",
+				"hernskja",
+				"hljödhr",
+				"hröslvalhr",
+				"ikonoka",
+				"íllgrathr",
+				"ilumaro",
+				"indlvarn",
+				"islingr",
+				"istalrí",
+				"könungr",
+				"kvaedhí",
+				"kvaedhí",
+				"kveykva",
+				"lámarae",
+				"laufsblädr",
+				"lethrblaka",
+				"loivissa",
+				"malthinae",
+				"midhring",
+				"mor’ranr",
+				"mulabra",
+				"nalgask",
+				"nangoröth",
+				"nángoröth",
+				"nïdhwal",
+				"niernen",
+				"orgetorix",
+				"orothrim",
+				"osthato",
+				"otherúm",
+				"pömnuria",
+				"rextugenos",
+				"ristvak’baen",
+				"sharjalví",
+				"shur’tugal",
+				"silbena",
+				"sköliro",
+				"skulblaka",
+				"snalglí",
+				"sundavar",
+				"sundavrblaka",
+				"svit-kona",
+				"thaefathan",
+				"theirra",
+				"thelduin",
+				"thornessa",
+				"thrautha",
+				"threyja",
+				"thrífask",
+				"thringa",
+				"thrysta",
+				"titlingr",
+				"traevam",
+				"vanyalí",
+				"vercingetorix",
+				"vergandí",
+				"vergarí",
+				"vergathos",
+				"verrunsmal",
+				"vervada",
+				"weldenvarden",
+				"weohnataí"
 			],
-			"particles": [],
-			"alias": "",
-			"factor": 0
+			"particles": [
+				"ash'",
+				"ash'",
+				"ath'",
+				"ath'",
+				"tero-",
+				"tero-",
+				"al'",
+				"al'",
+				"al'"
+			],
+			"alias": "demon",
+			"factor": 2
 		},
 		"celestial": {
 			"title": "celestial",
@@ -20115,6 +20200,7 @@ function baseChatLanguages () {
 				"darahar",
 				"darastrix",
 				"darastrixethe",
+				"djerad",
 				"eanm",
 				"eesem",
 				"farang",
@@ -20123,7 +20209,7 @@ function baseChatLanguages () {
 				"fliaot",
 				"flolhwouth",
 				"flonn",
-				"flonn",
+				"flonna",
 				"frahr",
 				"garurt",
 				"geth",
@@ -20222,6 +20308,7 @@ function baseChatLanguages () {
 				"darathric",
 				"darss",
 				"ekess",
+				"elaress",
 				"eorikc",
 				"erekess",
 				"faessi",
@@ -20328,105 +20415,106 @@ function baseChatLanguages () {
 		"deepspeech": {
 			"title": "deepspeech",
 			"lexis": [
+				"aat",
+				"abakavith",
+				"achthend",
+				"achuak",
+				"adreda",
+				"alor",
 				"alstgrana",
-				"ertond",
-				"gamlormeth",
-				"hjandlom",
-				"avobi",
+				"arboth",
+				"arn",
+				"ath",
 				"avglaga",
-				"gerk",
-				"legjan",
+				"avka",
+				"avobi",
 				"avrez",
-				"jektor",
-				"jektorigur",
-				"jektorgurd",
+				"avurtsi",
+				"azlang",
+				"badorank",
+				"bathjert",
 				"bavta",
+				"beal",
+				"blozwatan",
+				"bod",
+				"bodsith",
+				"borla",
+				"bosumr",
+				"djor",
+				"djorr",
+				"dramath",
+				"eom",
+				"ertond",
+				"ezol",
+				"gamlormeth",
+				"gelevan",
+				"gemagal",
+				"gerk",
+				"hjandlom",
+				"hrut",
+				"hverth",
+				"ialdra",
+				"ialdrar",
+				"imurt",
+				"imurtr",
+				"jarburrir",
+				"jektor",
+				"jektorgurd",
+				"jektorigur",
+				"jektraldr",
+				"kolav",
+				"konuxja",
+				"krenl",
+				"krugg",
+				"kruggr",
+				"legjan",
+				"lether",
+				"lurl",
+				"lurlom",
+				"lurlthjold",
+				"lurlurt",
+				"matmurzar",
+				"merklesh",
+				"morz",
+				"morzr",
+				"navlat",
+				"neastlik",
+				"nutha",
+				"ommathur",
+				"orgrad",
+				"orthrumt",
+				"orthrumtr",
+				"orzra",
+				"oved",
+				"ovgathi",
 				"rithar",
+				"rothilr",
+				"skegga",
+				"skjurvjaklud",
+				"slalig",
+				"sloshtar",
+				"sloshtard",
+				"tjorn",
 				"unge",
 				"ungermoth",
 				"ura",
-				"wundstr",
-				"alor",
-				"blozwatan",
-				"lurlom",
+				"uxja",
 				"valbleth",
 				"valblethr",
-				"neastlik",
-				"navlat",
-				"azlang",
-				"nutha",
-				"avka",
-				"aat",
-				"uz",
-				"gemagal",
-				"att",
-				"ialdra",
-				"ialdrar",
-				"oz",
-				"tjorn",
-				"vothnak",
-				"sloshtar",
-				"sloshtard",
-				"bathjert",
-				"zarathag",
-				"imurt",
-				"imurtr",
-				"lurl",
-				"lurlthjold",
-				"lurlurt",
-				"ur",
-				"zirund",
-				"orgrad",
-				"zirundr",
-				"zirundr",
-				"oved",
-				"eom",
-				"jektraldr",
-				"yrja",
-				"ezol",
-				"arn",
-				"vrenka",
-				"rothilr",
-				"skjurvjaklud",
-				"avurtsi",
-				"merklesh",
-				"uxja",
-				"beal",
-				"hrut",
-				"slalig",
-				"morz",
-				"morzr",
-				"kolav",
-				"matmurzar",
-				"adreda",
-				"krugg",
-				"kruggr",
-				"lether",
-				"orzra",
-				"konuxja",
-				"ath",
-				"borla",
-				"skegga",
-				"djor",
-				"djorr",
-				"vlitagana",
-				"voldreg",
 				"vethethaz",
+				"vlitagana",
 				"vold",
-				"orthrumt",
-				"orthrumtr",
-				"hverth",
-				"zwatan",
+				"voldreg",
+				"vothnak",
+				"vrenka",
+				"vrutan",
 				"withaur",
-				"ovgathi",
-				"bodsith",
-				"bod",
-				"abakavith",
-				"jarburrir",
-				"ommathur",
-				"dramath",
-				"gelevan",
-				"bosumr"
+				"wundstr",
+				"yrja",
+				"zarathag",
+				"zirund",
+				"zirundr",
+				"zwatan"
 			],
 			"particles": [],
 			"alias": "",
@@ -20435,212 +20523,224 @@ function baseChatLanguages () {
 		"infernal": {
 			"title": "infernal",
 			"lexis": [
-				"badorank",
-				"arboth",
-				"arbothr",
-				"krenl",
-				"vrutan",
-				"vrutanr",
-				"stjo",
-				"ugol",
-				"ugolr",
-				"ojti",
-				"zliv",
-				"vartr",
-				"grazz",
-				"grazzr",
-				"blad",
-				"bloth",
-				"bjar",
-				"golth",
-				"golthr",
-				"inoth",
-				"byska",
-				"torjaldr",
-				"forslagr",
-				"gorthena",
-				"baebl",
-				"fjad",
-				"fjad",
-				"knet",
-				"zlivothnak",
-				"vizta",
-				"wugga",
-				"tjon",
-				"brair",
-				"ror",
-				"mjilv",
-				"bjonn",
-				"theovstran",
-				"pjurk",
-				"toth",
-				"skrimskal",
-				"vazlur",
-				"dokk",
-				"hjav",
-				"hrenga",
-				"kjothi",
-				"erverth",
-				"galjeva",
-				"gintorkurz",
-				"verglborthjaal",
-				"galk",
-				"forg",
-				"ugattun",
-				"case",
-				"kjangtoth",
-				"kleklot",
-				"nugon",
-				"urndlikr",
-				"zum",
-				"dinz",
-				"dinzr",
-				"gustol",
-				"yngwet",
-				"zolzund",
-				"vormirkung",
-				"urizona",
-				"shek",
-				"hjodlikkumb",
-				"karn",
-				"karnr",
-				"baor",
-				"kjanth",
-				"zakljur",
-				"brelna",
-				"tella",
-				"klad",
-				"ukurwar",
-				"vlin",
-				"hofsmel",
-				"orv",
-				"veggog",
-				"otak",
-				"kjom",
-				"avyst",
-				"fyrdirska",
-				"visturk",
-				"halvram",
-				"zatl",
-				"verolkki",
-				"glogti",
-				"ada",
-				"nasketh",
-				"hljalkith",
-				"stjar",
-				"zigrima",
-				"zigrimar",
-				"zarth",
-				"avakzarth",
-				"glaga",
-				"velrofjad"
+				"achor",
+				"adare",
+				"akimkurai",
+				"akminkurai",
+				"akreesh",
+				"akris",
+				"amanalar",
+				"amanare",
+				"amanemodas",
+				"arakal",
+				"arakalada",
+				"archim",
+				"archimtiros",
+				"ashjraka",
+				"ashjrakamas",
+				"ashjrethul",
+				"azgala",
+				"azgalada",
+				"azrathud",
+				"ban",
+				"belan",
+				"belankar",
+				"belaros",
+				"benthadoom",
+				"buras",
+				"burasadare",
+				"danashj",
+				"enkil",
+				"enkilgular",
+				"enkilzar",
+				"ered",
+				"faramos",
+				"galar",
+				"golad",
+				"gulamir",
+				"gular",
+				"kamil",
+				"kamilgolad",
+				"kanrethad",
+				"karaman",
+				"karkun",
+				"kazile",
+				"kieldaz",
+				"kirasath",
+				"kirestalak",
+				"kurai",
+				"maev",
+				"maladath",
+				"mannor",
+				"mannorgulan",
+				"matheredor",
+				"melar",
+				"melarnagas",
+				"melarorah",
+				"mishun",
+				"mishunadare",
+				"modas",
+				"mordanas",
+				"nagas",
+				"nagasraka",
+				"nash",
+				"nazthagos",
+				"naztheros",
+				"normenoth",
+				"nortalesh",
+				"pathrebosh",
+				"rakeesh",
+				"rakir",
+				"rakkan",
+				"rakkas",
+				"reesh",
+				"refir",
+				"rethul",
+				"rethule",
+				"revola",
+				"revos",
+				"romathis",
+				"rukadare",
+				"shazakiel",
+				"sheekthrish",
+				"sheetsah",
+				"sheki",
+				"shudas",
+				"soran",
+				"soranaman",
+				"sorankar",
+				"teamanare",
+				"theramas",
+				"thorje",
+				"tichar",
+				"ticharamir",
+				"tiriosh",
+				"tiros",
+				"toralar",
+				"urzul",
+				"zekul",
+				"zekulrakkas",
+				"zennrakkan",
+				"zennshi",
+				"zilthuras"
 			],
-			"particles": [],
-			"alias": "",
-			"factor": 0
+			"particles": [
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'"
+			],
+			"alias": "devil",
+			"factor": 2
 		},
 		"primordial": {
 			"title": "primordial",
 			"lexis": [
-				"trarzurjald",
-				"grea",
+				"aav",
+				"alr",
+				"andtur",
+				"askung",
+				"avur",
+				"baksmalk",
 				"bal",
 				"balr",
-				"kyrv",
-				"kyrvr",
-				"jarnjulbort",
-				"ithorm",
-				"ithormr",
-				"ithormr",
-				"orvrutanr",
-				"mimm",
-				"mimmal",
-				"tjuni",
-				"tjunir",
-				"dag",
+				"bjorgart",
+				"bondra",
+				"bort",
+				"bortr",
 				"dagr",
-				"verol",
-				"unnlat",
-				"fraluv",
-				"verold",
-				"veroldr",
 				"dehur",
+				"djerg",
+				"djergr",
+				"dlizik",
+				"druld",
+				"dwjord",
+				"dwjorgumal",
+				"eigur",
+				"erz",
+				"erzan",
+				"erzanr",
+				"fraluv",
+				"gebork",
+				"genogan",
+				"gerkun",
+				"glaek",
+				"gleen",
+				"gog",
+				"gotek",
+				"goth",
+				"gothr",
+				"grazz",
+				"grea",
+				"grethir",
+				"guthavok",
+				"guthavokr",
+				"halkbrelna",
+				"herolstor",
+				"hign",
+				"horukneth",
 				"hrendi",
 				"hrendir",
-				"torth",
-				"slok",
-				"slokspral",
-				"nunoff",
-				"jerklirunslaak",
-				"grethir",
-				"go",
-				"verol",
-				"othruf",
-				"migvulur",
-				"druld",
-				"goth",
-				"halkbrelna",
-				"gothr",
-				"gebork",
-				"gotek",
-				"bjorgart",
-				"herolstor",
-				"eigur",
-				"vavi",
-				"vavir",
+				"humtje",
+				"hvorbl",
 				"inni",
+				"ithorm",
+				"ithormr",
 				"jarlethurkon",
-				"luglaus",
-				"gleen",
-				"ulvunr",
-				"horukneth",
+				"jarnjulbort",
+				"javnung",
+				"jerklirunslaak",
+				"jommok",
 				"jooki",
 				"jookir",
 				"kaeleth",
-				"baksmalk",
-				"varzank",
-				"vargunr",
-				"othyrth",
-				"dlizik",
-				"ungvliz",
-				"ungvlizr",
-				"djerg",
-				"dwjord",
-				"djergr",
-				"dwjorgumal",
-				"hign",
-				"guthavok",
-				"guthavokr",
+				"kjekje",
+				"kralt",
+				"kyrv",
+				"kyrvr",
+				"luglaus",
+				"lurl",
 				"lyr",
 				"lyrglang",
-				"snarla",
 				"lyrr",
-				"ogalthr",
-				"andtur",
-				"jommok",
-				"gog",
-				"erzan",
-				"erzanr",
-				"gerkun",
-				"humtje",
-				"ott",
-				"hvorbl",
-				"olv",
-				"erz",
-				"vlel",
-				"kralt",
-				"genogan",
-				"kjekje",
-				"javnung",
-				"theov",
-				"aav",
-				"alr",
-				"lurl",
-				"glaek",
+				"migvulur",
+				"mimm",
+				"mimmal",
+				"monmur",
 				"nenn",
-				"vromungvro",
-				"bort",
-				"bortr"
+				"nothaar",
+				"nunoff",
+				"ogalthr",
+				"olv",
+				"orvrutanr",
+				"othruf",
+				"othyrth",
+				"ott",
+				"slok",
+				"slokspral",
+				"snarla",
+				"theov",
+				"tjuni",
+				"tjunir",
+				"torth",
+				"trarzurjald",
+				"ulvunr",
+				"ungvliz",
+				"ungvlizr",
+				"unnlat",
+				"vargunr",
+				"varzank",
+				"vavi",
+				"vavir",
+				"verol",
+				"veroldr",
+				"vlel",
+				"vromungvro"
 			],
 			"particles": [],
 			"alias": "auran, aquan, ignan, rettan",
@@ -20677,7 +20777,7 @@ function baseChatLanguages () {
 				"faer",
 				"groef",
 				"hethtalos",
-				"hir",
+				"hirdel",
 				"holimion",
 				"hond",
 				"huan",
@@ -20714,7 +20814,7 @@ function baseChatLanguages () {
 				"ruathimaer",
 				"rum",
 				"rysar",
-				"sabbas",
+				"sablaes",
 				"saece",
 				"sathu",
 				"savalir",
@@ -20747,7 +20847,8 @@ function baseChatLanguages () {
 				"walaxyrvaan",
 				"xiloscient",
 				"yyllethyn",
-				"zenar"
+				"zenar",
+				"zeranas"
 			],
 			"particles": [
 				"ef",
@@ -20841,6 +20942,7 @@ function baseChatLanguages () {
 				"talinth",
 				"talthalra",
 				"thae",
+				"thaerra",
 				"thalack",
 				"thalra",
 				"tinguin",
@@ -20895,6 +20997,7 @@ function baseChatLanguages () {
 				"funyunsetti",
 				"angolo",
 				"apri",
+				"ascoltato",
 				"baciare",
 				"braccia",
 				"buonanotte",
@@ -21049,6 +21152,7 @@ function baseChatLanguages () {
 				"extraño",
 				"fósforo",
 				"frontera",
+				"hombre",
 				"huésped",
 				"jamás",
 				"jardín",
@@ -21130,6 +21234,7 @@ function baseChatLanguages () {
 				"aucun",
 				"autrement",
 				"avons",
+				"beaucoup",
 				"blanche",
 				"certaine",
 				"chez",
@@ -21155,7 +21260,7 @@ function baseChatLanguages () {
 				"formidable",
 				"fort",
 				"fusil",
-				"fusil",
+				"",
 				"garçons",
 				"génial",
 				"genoux",
@@ -21332,7 +21437,8 @@ function baseChatLanguages () {
 				"vstrecha",
 				"zanyatie",
 				"zemlya",
-				"zhena"
+				"zhena",
+				"zhuchara"
 			],
 			"particles": [
 				"da",
@@ -21419,7 +21525,7 @@ function baseChatLanguages () {
 				"schätze",
 				"schreiben",
 				"schuld",
-				"schuld",
+				"freitag",
 				"schwer",
 				"schwierig",
 				"seine",
@@ -21449,7 +21555,8 @@ function baseChatLanguages () {
 				"wollt",
 				"zeiten",
 				"zeug",
-				"zweite"
+				"zweite",
+				"zeitgeist"
 			],
 			"particles": [
 				"ich",
@@ -21478,12 +21585,7 @@ function baseChat () {
 	d20plus.chat.localHistory = [];
 	d20plus.chat.lastRespondent = "";
 	const languages = d20plus.chat.languages;
-	const e = "playerid";
 	let comprehendsAll = false;
-
-	d20plus.chat.toCamelCase = (string, lowercase) => {
-		return string.charAt(0).toUpperCase() + (lowercase ? string.slice(1).toLowerCase() : string.slice(1));
-	}
 
 	function buildLanguageIndex () {
 		d20plus.chat.languageIndex = {};
@@ -21529,7 +21631,7 @@ function baseChat () {
 				return newword + spacing;
 			} else if (src_terms[i].includes("--")) {
 				prev_particle = false;
-				return d20plus.chat.toCamelCase(src_terms[i].replace(/--/gu, "")) + spacing;
+				return d20plus.ut.toSentenceCase(src_terms[i].replace(/--/gu, "")) + spacing;
 			} else if ((index - 1) % 9 + 1 < languages[langId].factor && i < src_words.length - 1 && !prev_particle) {
 				prev_particle = true;
 				const newid = (index.toString().charAt(0) + index - 1) % 9;
@@ -21541,7 +21643,7 @@ function baseChat () {
 				return languages[langId].lexis[parseInt(newid)] + spacing;
 			}
 		});
-		return d20plus.chat.toCamelCase(translation.join(""), false);
+		return d20plus.ut.toSentenceCase(translation.join(""), false);
 	}
 
 	// console.log(gibberish("In publishing and graphic design, --Lorem --ipsum is a placeholder text commonly used to demonstrate the visual form of a document", undefined, false))
@@ -21550,12 +21652,7 @@ function baseChat () {
 	function availableLanguages (charId) {
 		const char = d20.Campaign.characters.get(charId);
 		const langId = d20.journal.customSheets.availableAttributes.repeating_proficiencies_prof_type;
-		const traits = char.attribs.models
-			.filter(prop => {
-				return prop.attributes.name.match(/repeating_proficiencies_(.*?)_prof_type/)
-				&& ![langId, "LANGUAGE"].includes(prop.attributes.current);
-			})
-			.map(trait => trait.attributes.name.replace(/repeating_proficiencies_(.*?)_prof_type/, "$1"));
+		// first check if character sheet is loaded, if not - initialize it
 		if (!char.attribs.length && !char.attribs.fetching) {
 			char.attribs.fetch(char.attribs);
 			char.attribs.fetching = true;
@@ -21567,6 +21664,17 @@ function baseChat () {
 				}
 			}, 20);
 		}
+		// roll20 OGL sheet stores languages differently compared to other traits
+		// by default, they don't have corresponging "proficiency type" attribute
+		// however, if you create a trait and THEN change it to be language, it will have LOCALIZED "language" proficiency type
+		// so to find all languages, we must filter out other named traits, except for the traits named "language" or "(localized word for LANGUAGE)"
+		const traits = char.attribs.models
+			.filter(prop => {
+				return prop.attributes.name.match(/repeating_proficiencies_(.*?)_prof_type/)
+				&& ![langId, "LANGUAGE"].includes(prop.attributes.current);
+			})
+			.map(trait => trait.attributes.name.replace(/repeating_proficiencies_(.*?)_prof_type/, "$1"));
+		// now that we have a list of named non-language traits we can just find what we need
 		const charspeaks = char.attribs.models.map(prop => {
 			const filter = /repeating_proficiencies_(.*?)_name/;
 			if (prop.attributes.name.match(filter)) {
@@ -21596,7 +21704,7 @@ function baseChat () {
 
 	d20plus.chat.getSpeakingIn = (available) => {
 		$("#speakingin").html(available
-			.map(lan => d20plus.chat.toCamelCase(lan))
+			.map(lan => d20plus.ut.toSentenceCase(lan, true))
 			.reduce((html, lan) => `${html}<option>${lan}</option>`, "<option></option>"),
 		);
 	}
@@ -21648,6 +21756,7 @@ function baseChat () {
 		const msg = {};
 		setTimeout(() => {
 			d20.textchat.$textarea.val(src);
+			dialog.find("#soundslike").focus();
 		}, 200);
 		dialog.dialog({
 			title: "Choose transcription",
@@ -21658,8 +21767,8 @@ function baseChat () {
 				msg.sample = dialog.find("#languageeg");
 				$("#soundslike").change(() => {
 					msg.sample.html(gibberish(message, msg.selected.val()));
-					msg.selected.focus();
 				});
+				msg.selected.focus();
 			},
 			close: () => {
 				dialog.off();
@@ -21668,14 +21777,15 @@ function baseChat () {
 			buttons: {
 				[`${__("ui_dialog_submit")}`]: function () {
 					const val = msg.selected.val();
+					const langId = language.normalize().toLowerCase();
 					d20plus.ut.log(`Select language style ${language} to ${val}`);
-					langId = language.normalize().toLowerCase();
-					d20plus.chat.languageAdditions[langId] = val;
-					$("#textchat-input button.btn").get(0).click();
 
 					dialog.off();
 					dialog.dialog("destroy").remove();
 					d20.textchat.$textarea.focus();
+
+					d20plus.chat.languageAdditions[langId] = val;
+					$("#textchat-input button.btn").get(0).click();
 				},
 				[`${__("ui_dialog_cancel")}`]: function () {
 					dialog.off();
@@ -21933,7 +22043,8 @@ function baseChat () {
 	}
 
 	d20plus.chat.onspeakingto = () => {
-		const ttms = $("#speakingto").val() === "ttms";
+		const speakingto = $("#speakingto").val();
+		const ttms = speakingto === "ttms";
 		if (d20.textchat.talktomyself && !ttms) {
 			d20.textchat.doChatInput(`/talktomyself off`);
 			d20plus.chat.localHistory.push(false);
@@ -21943,6 +22054,34 @@ function baseChat () {
 			d20plus.chat.localHistory.push(false);
 			setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
 		}
+		if (speakingto && !ttms) {
+			$("#textchat-social-notifier").addClass("b20-to");
+			$("#textchat-social-notifier-to").text(speakingto);
+		} else {
+			$("#textchat-social-notifier").removeClass("b20-to");
+		}
+	}
+
+	d20plus.chat.onspeakingin = () => {
+		const speakingin = $("#speakingin").val();
+		if (speakingin) {
+			$("#textchat-social-notifier").addClass("b20-in");
+			$("#textchat-social-notifier-in").text(speakingin);
+		} else {
+			$("#textchat-social-notifier").removeClass("b20-in");
+		}
+	}
+
+	d20plus.chat.resetSocial = () => {
+		if (!d20.textchat.talktomyself) $("#speakingto").val("");
+		$("#speakingin").val("");
+		$("#textchat-social-notifier").removeClass("b20-in");
+		$("#textchat-social-notifier").removeClass("b20-to");
+	}
+
+	d20plus.chat.closeSocial = () => {
+		d20plus.chat.social = false;
+		$("#textchat-input").removeClass("social");
 	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
@@ -21991,7 +22130,7 @@ function baseChat () {
 
 	d20plus.chat.incoming = (params) => {
 		// eslint-disable-next-line no-console
-		// console.log(params[1], d20plus.chat.localHistory);
+		console.log(params[1], d20plus.chat.localHistory);
 		const msg = params[1];
 		if (msg.playerid === d20_player_id || msg.type === "system") {
 			const stash = [];
@@ -22076,7 +22215,9 @@ function baseChat () {
 			const speakingin = $("#speakingin").val();
 
 			if (speakingin) {
-				if (!text.match(/^\/(.*?)$/)) text = d20plus.chat.sendInLanguage(text, speakingin);
+				text = text.replace(/^[^/][^{^}]*?$/gm, msg => {
+					return d20plus.chat.sendInLanguage(msg, speakingin);
+				});
 			}
 
 			if (speakingto && speakingto !== "ttms") {
@@ -22087,26 +22228,28 @@ function baseChat () {
 			}
 		}
 
-		const toSend = $.trim(text);
+		let toSend = $.trim(text);
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
+		if ($("#soundslike").get(0)) toSend = "";
 
 		if (toSend.indexOf("|&inlang|") >= 0) {
-			const data = toSend.split("|&inlang|");
-			const msg = data[0];
-			const meta = data[1].split("|&meta|");
-			const transport = {language: meta[0], languageid: meta[1], message: meta[2]};
-			d20.textchat.doChatInput(msg, undefined, transport);
+			toSend.split("\n").forEach((str, i) => {
+				const data = str.split("|&inlang|");
+				if (data.length === 2) {
+					const msg = data[0];
+					const meta = data[1].split("|&meta|");
+					const transport = {language: meta[0], languageid: meta[1], message: meta[2]};
+					d20.textchat.doChatInput(msg, undefined, transport);
+				} else {
+					d20.textchat.doChatInput(str);
+				}
+			})
 			tc.val("").focus();
 		} else {
 			d20.textchat.doChatInput(toSend);
 			tc.val("").focus();
 		}
 
-		if (text !== "" && d20plus.chat.social) {
-			d20plus.chat.onsocial();
-			if (!d20.textchat.talktomyself) $("#speakingto").val("");
-			$("#speakingin").val("");
-		}
 		if (d20plus.cfg.getOrDefault("chat", "highlightttms")) {
 			if (toSend.includes("/talktomyself")) {
 				setTimeout(() => d20plus.chat.checkTTMSStatus(), 20);
@@ -22129,10 +22272,22 @@ function baseChat () {
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "social")) {
-			$("#textchat-input").append(d20plus.html.chatSocial);
+			const $input_container = $("#textchat-input");
+			const $chat_notifier = $("#textchat-notifier");
+			const $chat_textarea = d20.textchat.$textarea;
+
+			$input_container.append(d20plus.html.chatSocial);
+			$input_container.prepend(d20plus.html.chatSocialNotifier);
+			$("#textchat-note-container").append($chat_notifier);
+
+			$chat_textarea.on("focus", d20plus.chat.closeSocial);
+			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
+
 			$("#socialswitch").on("click", d20plus.chat.onsocial);
 			$("#speakingas").on("change", d20plus.chat.onspeakingas);
 			$("#speakingto").on("change", d20plus.chat.onspeakingto);
+			$("#speakingin").on("change", d20plus.chat.onspeakingin);
+
 			d20plus.chat.getSpeakingTo();
 		}
 
