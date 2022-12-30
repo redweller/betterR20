@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.1.31
+// @version      1.33.1.32
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -284,6 +284,30 @@ function baseLanguage () {
 		lang_alias_primordial: [``],
 		lang_alias_sylvan: [``],
 		lang_alias_undercommon: [``],
+		msg_chat_help_w: [`private message (whisper)`],
+		msg_chat_help_wgm: [`private message to your GM`],
+		msg_chat_help_wb: [`reply or whisper to last contact`],
+		msg_chat_help_ws: [`whisper to selected tokens`],
+		msg_chat_help_em: [`emote (action from your POV)`],
+		msg_chat_help_in: [`speak in a language`],
+		msg_chat_help_inname: [`skip word (for in-language)`],
+		msg_chat_help_cl: [`comprehend language switch`],
+		msg_chat_help_sm: [`silent mode on/off`],
+		msg_chat_help_ttms: [`shortcut to /talktomyself`],
+		msg_chat_help_mtms: [`simple message to self`],
+		msg_chat_help_ooc: [`out of character (as player)`],
+		msg_chat_help_r: [`roll dice, e.g. /r 2d6`],
+		msg_chat_help_gr: [`roll only for GM`],
+		msg_chat_help_desc: [`GM-only describe events`],
+		msg_chat_help_as: [`GM-only speak as Name`],
+		msg_chat_help_emas: [`GM-only emote as Name`],
+		msg_chat_help_fi: [`format text: italic`],
+		msg_chat_help_fb: [`format text: bold`],
+		msg_chat_help_fc: [`format text: code`],
+		msg_chat_help_fs: [`format text: strikethrough`],
+		msg_chat_help_fx: [`show visual effect`],
+		msg_chat_help_m: [`run specified macro`],
+		msg_chat_help: [`show this list of chat commands`],
 		msg_chat_lang_title: [`You understand this because one of your characters speaks`],
 		msg_b20_chat_help: [`<li>Full list of chat commands<br>type or press $0<br>or visit <a target='blank' href='$1'>roll20 wiki</a></li>`],
 		msg_b20_chat_help_title: [`<strong>List of chat commands:</strong><br>betteR20 commands marked with &#42;`],
@@ -487,6 +511,30 @@ function baseLanguage () {
 		lang_alias_primordial: [`элементальный, элементалей, акван, игнан, ауран, реттан`],
 		lang_alias_sylvan: [`фейский, фей`],
 		lang_alias_undercommon: [`подземья`],
+		msg_chat_help_w: [`личное сообщение`],
+		msg_chat_help_wgm: [`личное сообщение ГМу`],
+		msg_chat_help_wb: [`ЛС последнему контакту`],
+		msg_chat_help_ws: [`ЛС выбранным токенам`],
+		msg_chat_help_em: [`эмоция (персонаж делает...)`],
+		msg_chat_help_in: [`говорить на языке`],
+		msg_chat_help_inname: [`пропустить слово (в языке)`],
+		msg_chat_help_cl: [`понимание языков`],
+		msg_chat_help_sm: [`только себе вкл/выкл`],
+		msg_chat_help_ttms: [`сокращение /talktomyself`],
+		msg_chat_help_mtms: [`одна команда /ttms`],
+		msg_chat_help_ooc: [`вне персонажа (как игрок)`],
+		msg_chat_help_r: [`кубы, напр. /r 2d6`],
+		msg_chat_help_gr: [`бросок ГМу`],
+		msg_chat_help_desc: [`ГМ: описать события`],
+		msg_chat_help_as: [`ГМ: реплика от персонажа`],
+		msg_chat_help_emas: [`ГМ: эмоция от персонажа`],
+		msg_chat_help_fi: [`формат: курсив`],
+		msg_chat_help_fb: [`формат: полужирный`],
+		msg_chat_help_fc: [`формат: код`],
+		msg_chat_help_fs: [`формат: зачеркнуть`],
+		msg_chat_help_fx: [`визуальные эффекты`],
+		msg_chat_help_m: [`запустить макрос`],
+		msg_chat_help: [`показать этот список`],
 		msg_chat_lang_title: [`Вы понимаете это потому что ваш персонаж знает`],
 		msg_b20_chat_help: [`<li>Полный список команд чата:<br>-нажмите $0<br>-или посетите <a target='blank' href='$1'>roll20 wiki</a></li>`],
 		msg_b20_chat_help_title: [`<strong>Список команд чата:</strong><br>Команды от betteR20 отмечены &#42;`],
@@ -805,10 +853,11 @@ function baseUtil () {
 		const $sidebar = $("#rightsidebar");
 		if (init === "startup" || $sidebar.hasClass("ui-resizable-resizing")) {
 			const sidebarwidth = $sidebar.width();
+			const tabmenuwidth = sidebarwidth < 310 ? 299 : sidebarwidth - 11;
 			let textdelta = 9;
 			if (d20plus.ut.dmscriptDetected) textdelta = 6;
 			$("#textchat-input").width(sidebarwidth - textdelta);
-			$(".tabmenu").width(sidebarwidth - 11);
+			$(".tabmenu").width(tabmenuwidth);
 		}
 	}
 
@@ -21833,37 +21882,37 @@ function baseChat () {
 	`;
 
 	const chatHelp = [
-		["/w (name)", "private message (whisper)"],
-		["/w gm", "private message to your GM"],
-		["/wb", "reply or whisper to last contact", "b20"],
-		["/ws", "whisper to selected tokens", "b20"],
-		["/em, /me", "emote (action from your POV)"],
-		["/in (language)", "speak in a language", "b20"],
-		["--(word)", "skip word (for in-language)", "b20"],
-		// ["/cl on|off", "comprehend language switch", "b20"],
-		["/talktomyself", "silent mode on/off"],
-		["/ttms", "shortcut to /talktomyself", "b20"],
-		["/mtms (text)", "simple message to self", "b20"],
-		["/ooc, /o", "out of character (as player)"],
-		["/roll, /r (XdY)", "roll dice, e.g. /r 2d6"],
-		["/gmroll, /gr (XdY)", "roll only for GM"],
-		["/desc", "GM-only describe events", "gm"],
-		["/as (name)", "GM-only speak as Name", "gm"],
-		["/emas (name)", "GM-only emote as Name", "gm"],
-		["&#42;(text)&#42;", "format text: italic"],
-		["&#42;&#42;(text)&#42;&#42;", "format text: bold"],
-		["&#126;&#126;(text)&#126;&#126;", "format text: strikethrough"],
-		["&#96;&#96;(text)&#96;&#96;", "format text: code"],
-		["/fx (params)", "show visual effect"],
-		["#(macro)", "run specified macro"],
-		["/help", "show this list of chat commands", "b20"],
-		["", "<a style=\"font-variant: diagonal-fractions;font-size: smaller;font-variant-caps: small-caps;\" href=\"https://wiki.roll20.net/Text_Chat\">roll20 wiki</a>"],
+		["/w (name)", __("msg_chat_help_w")],
+		["/w gm", __("msg_chat_help_wgm")],
+		["/wb", __("msg_chat_help_wb"), "b20"],
+		["/ws", __("msg_chat_help_ws"), "b20"],
+		["/em, /me", __("msg_chat_help_em")],
+		["/in (language)", __("msg_chat_help_in"), "b20"],
+		["--(word)", __("msg_chat_help_inname"), "b20"],
+		// ["/cl on|off", __("msg_chat_help_cl"), "b20"],
+		["/talktomyself", __("msg_chat_help_sm")],
+		["/ttms", __("msg_chat_help_ttms"), "b20"],
+		["/mtms (text)", __("msg_chat_help_mtms"), "b20"],
+		["/ooc, /o", __("msg_chat_help_ooc")],
+		["/roll, /r (XdY)", __("msg_chat_help_r")],
+		["/gmroll, /gr (XdY)", __("msg_chat_help_gr")],
+		["/desc", __("msg_chat_help_desc"), "gm"],
+		["/as (name)", __("msg_chat_help_as"), "gm"],
+		["/emas (name)", __("msg_chat_help_emas"), "gm"],
+		["&#42;(text)&#42;", __("msg_chat_help_fi")],
+		["&#42;&#42;(text)&#42;&#42;", __("msg_chat_help_fb")],
+		["&#96;&#96;(text)&#96;&#96;", __("msg_chat_help_fc")],
+		["&#126;&#126;(text)&#126;&#126;", __("msg_chat_help_fs")],
+		["/fx (params)", __("msg_chat_help_fx")],
+		["#(macro)", __("msg_chat_help_m")],
+		["/help", __("msg_chat_help"), "b20"],
+		["", "<a style=\"font-variant: diagonal-fractions; font-size: smaller; font-variant-caps: small-caps;\" href=\"https://wiki.roll20.net/Text_Chat\">roll20 wiki</a>"],
 	];
 
 	d20plus.chat.help = (text, msg) => {
 		d20plus.ut.sendHackerChat(chatHelp.reduce((html, string) => {
 			const isb20 = string[2] === "b20" ? "&#42;" : "";
-			const code = string[0] ? `<code>${string[0]}</code>${isb20}` : "";
+			const code = string[0] ? `<code>${string[0]}</code>${isb20}` : "&nbsp;";
 			const gmcheck = string[2] !== "gm" || window.is_gm;
 			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || string[0].search(/(in \(language\))|(-\(word\))/) === -1;
 			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${string[1]}</span>`;
