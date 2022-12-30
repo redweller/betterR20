@@ -130,7 +130,7 @@ function baseUtil () {
 		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
 		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const classname = !legacytStyle ? "userscript-commandintro" : "userscript-hackerintro";
+		const classname = !legacytStyle ? "userscript-commandintro userscript-b20" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const data = [
 			d20plus.scriptName,
@@ -140,12 +140,12 @@ function baseUtil () {
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
 				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
-				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px;">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 11px;line-height: 15px;">${__("msg_welcome_versions", [b20v, vttv])}</p>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">${__("msg_welcome_versions", [b20v, vttv])}</p>
 				</h1>
-				<p>${__("msg_welcome_faq", [faq])} <a href="https://discord.gg/nGvRCDs">Discord</a>.</p>
+				<p>${__("msg_welcome_faq", [faq])} <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
 				<span title="${__("msg_welcome_sarcasm")}">
 					<p>${__("msg_welcome_p1")}</p>
 					<p>${__("msg_welcome_p2")}</p>
@@ -164,6 +164,11 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
+		if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
+			$("#rightsidebar").on("mouseout", d20plus.ut.resizeSidebar);
+			$("body").on("mouseup", d20plus.ut.resizeSidebar);
+			d20plus.ut.resizeSidebar("startup");
+		}
 		setTimeout(() => {
 			$(`.lamer-chat`).css("height", "0px");
 			setTimeout(() => {
@@ -174,7 +179,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut.showInitMessage = () => {
-		d20plus.ut.consTemplate = `<div class="lamer-chat">
+		const consTemplate = `<div class="lamer-chat">
 			<span><span>&gt;</span>initializing, please wait...</span>
 			<span id="lamer-progress"><span>&gt;</span>loading data</span>
 			<span id="lamer-cursor"><span>&gt;</span><aside>|</aside></span>
@@ -204,7 +209,7 @@ function baseUtil () {
 			}
 			</style>
 		</div>`;
-		$(`#textchat`).prepend(d20plus.ut.consTemplate);
+		$(`#textchat`).prepend(consTemplate);
 		let blink = false;
 		d20plus.ut.cursor = setInterval(() => {
 			$(`.lamer-chat`).append($(`.lamer-cursor`));
@@ -248,8 +253,9 @@ function baseUtil () {
 		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
 		const b20v = encodeURI(d20plus.version);
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
+		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
-		const info = btoa(JSON.stringify({b20n, b20v, vtte, date}));
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
 		thisPlayer.set("script", info, true);
 		thisPlayer.save();
 	}
@@ -268,6 +274,29 @@ function baseUtil () {
 			}
 		}
 		return segmentsA.length - segmentsB.length;
+	}
+
+	d20plus.ut.detectDarkModeScript = () => {
+		d20plus.ut.dmscriptDetected = false;
+		$("style").each((i, el) => {
+			if (el.textContent.indexOf("/*New Characteristics Menu*/") >= 0) {
+				d20plus.ut.dmscriptDetected = true;
+				return false;
+			}
+		});
+		return d20plus.ut.dmscriptDetected;
+	}
+
+	d20plus.ut.resizeSidebar = (init) => {
+		const $sidebar = $("#rightsidebar");
+		if (init === "startup" || $sidebar.hasClass("ui-resizable-resizing")) {
+			const sidebarwidth = $sidebar.width();
+			const tabmenuwidth = sidebarwidth < 310 ? 299 : sidebarwidth - 11;
+			let textdelta = 9;
+			if (d20plus.ut.dmscriptDetected) textdelta = 6;
+			$("#textchat-input").width(sidebarwidth - textdelta);
+			$(".tabmenu").width(tabmenuwidth);
+		}
 	}
 
 	d20plus.ut.addCSS = (sheet, selectors, rules) => {
@@ -467,6 +496,10 @@ function baseUtil () {
 	d20plus.ut.sanitizeFilename = function (str) {
 		return str.trim().replace(/[^-\w]/g, "_");
 	};
+
+	d20plus.ut.toSentenceCase = (string, forcelowercase) => {
+		return string.charAt(0).toUpperCase() + (forcelowercase ? string.slice(1).toLowerCase() : string.slice(1));
+	}
 
 	d20plus.ut.saveAsJson = function (filename, data) {
 		const blob = new Blob([JSON.stringify(data, null, "\t")], {type: "application/json"});

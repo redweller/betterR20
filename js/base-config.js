@@ -189,8 +189,20 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"resizeSidebarElements": {
+			"name": __("cfg_option_resize_sidebar"),
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
 		"showWelcomeMessage": {
 			"name": __("cfg_option_welcome_msg"),
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"languages": {
+			"name": __("cfg_option_languages"),
 			"default": true,
 			"_type": "boolean",
 			"_player": true,
@@ -873,6 +885,7 @@ function baseConfig () {
 
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 
 		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
 		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");

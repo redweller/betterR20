@@ -147,6 +147,115 @@ function initHTMLbaseMisc () {
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.chatSocial = `
+		<div class="btn" id="socialswitch">
+			<span class="pictos">w</span>
+		</div>
+		<div style="float: left;" class="social">
+			<label for="speakingto">To:</label>
+			<select id="speakingto" class="selectize social">
+				<option value="">All</option>
+			</select>
+			<span id="langpanel">
+				<label for="speakingin">In:</label>
+				<select class="selectize social" id="speakingin">
+					<option value=""></option>
+				</select>
+			</span>
+		</div>
+		<style type="text/css">
+			#textchat-input .social {
+				display: none;
+			}
+			#textchat-input.social .social {
+				display: inline-block;
+			}
+			#textchat-input.social textarea {
+				height: 19px;
+			}
+			.selectize.social {
+				width: 100px;
+			}
+			select#speakingto, select#speakingin {
+				height: 22px;
+				padding: 0px 5px;
+			}
+			#socialswitch {
+				height: 18px;
+				margin-left: 5px;
+			}
+			#textchat-input.talkingtoself textarea {
+				border: 2px solid rgba(255,0,0,0.4) !important;
+				background-color: rgba(255,0,0,0.2) !important;
+			}
+		</style>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.chatSocialNotifier = `
+		<div id="textchat-note-container">
+			<div id="textchat-social-notifier" title="Click to reset">
+				<span id="textchat-social-notifier-to"></span>
+				<span id="textchat-social-notifier-in"></span>
+			</div>
+		</div>
+		<style type="text/css">
+			#textchat-note-container {
+				position: absolute;
+				right: 0px;
+				top: -5px;
+			}
+			#textchat-social-notifier {
+				background-color: rgba(70, 50, 70, 0.8);
+				color: white;
+				opacity: 0.6;
+				font-size: 0.9em;
+				font-weight: bold;
+				height: 17px;
+				padding: 5px;
+				float: right;
+				cursor: pointer;
+				display: none;
+			}
+			#textchat-social-notifier.b20-in, #textchat-social-notifier.b20-to {
+				display: block;
+			}
+			#textchat-social-notifier span {
+				padding-left: 5px;
+				display: none;
+				max-width: 70px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+				vertical-align: baseline;
+			}
+			#textchat-social-notifier.b20-in #textchat-social-notifier-in, #textchat-social-notifier.b20-to #textchat-social-notifier-to {
+				display: inline-block;
+			}
+			#textchat-social-notifier-to::before {
+				content: "TO: ";
+			}
+			#textchat-social-notifier-in::before {
+				content: "IN: ";
+			}
+			#textchat-social-notifier::after {
+				content: "*";
+				font-family: pictos;
+				padding-left: 3px;
+				vertical-align: top;
+			}
+			#textchat-notifier {
+				float: right;
+				position: unset;
+			}
+		</style>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
