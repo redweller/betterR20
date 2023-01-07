@@ -447,13 +447,16 @@ function baseChat () {
 	);
 
 	d20plus.chat.onsocial = () => {
-		d20plus.chat.social = !d20plus.chat.social;
-		if (d20plus.chat.social) {
-			$("#textchat-input").addClass("social");
+		const $input_container = $("#textchat-input");
+		if (!d20plus.chat.social) {
+			const resized = $input_container.attr("style").includes("height")
+			if (resized) $input_container.addClass("social-resized");
+			else $input_container.addClass("social-default");
 			d20plus.chat.refreshLanguages();
 			d20plus.chat.getSpeakingTo();
+			d20plus.chat.social = true;
 		} else {
-			$("#textchat-input").removeClass("social");
+			d20plus.chat.closeSocial();
 		}
 	}
 
@@ -499,8 +502,10 @@ function baseChat () {
 	}
 
 	d20plus.chat.closeSocial = () => {
+		const $input_container = $("#textchat-input");
 		d20plus.chat.social = false;
-		$("#textchat-input").removeClass("social");
+		$input_container.removeClass("social-resized");
+		$input_container.removeClass("social-default");
 	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
@@ -697,6 +702,7 @@ function baseChat () {
 
 			$input_container.append(d20plus.html.chatSocial);
 			$input_container.prepend(d20plus.html.chatSocialNotifier);
+			$("#chatSendBtn").after($("#socialswitch"));
 			$("#textchat-note-container").append($chat_notifier);
 
 			$chat_textarea.on("focus", d20plus.chat.closeSocial);
