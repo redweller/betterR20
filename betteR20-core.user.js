@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.1.32
+// @version      1.33.1.33
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -170,6 +170,13 @@ function baseLanguage () {
 		ui_tokened_gmnotes: [`GM Notes`],
 		ui_tokened_dynlight: [`Dynamic Lighting`],
 		ui_tokened_leglight: [`Legacy Lighting`],
+		ui_lang_subst_title: [`Choose transcription`],
+		ui_lang_subst_subtitle: [`What does $0 language sound like?`],
+		ui_lang_subst_p1: [`It seems you're trying to speak language not included in the standard list of D&D 5e PHB.`],
+		ui_lang_subst_p2: [`That's not a problem. Please select one of the languages from the dropdown below, and it will be used for the imitated message.`],
+		ui_lang_subst_p3: [`Your choice is purely cosmetic and will not affect who can or can not understand it. This will be remembered until you refresh the page.`],
+		ui_lang_subst_select: [`Transcribe as:`],
+		ui_lang_subst_p_eg: [`This is what your message will look like with the current selection to those who don't speak $0:`],
 		menu_unlock: [`Unlock...`],
 		menu_card_title: [`Decks`],
 		menu_take_card: [`Take Card`],
@@ -397,6 +404,13 @@ function baseLanguage () {
 		ui_dialog_submit: [`Подтвердить`],
 		ui_dialog_cancel: [`Отмена`],
 		ui_tokened_details: [`Детали`],
+		ui_lang_subst_title: [`Выбрать звучание`],
+		ui_lang_subst_subtitle: [`На что похож $0 по звучанию?`],
+		ui_lang_subst_p1: [`Похоже, вы пытаетесь общаться на языке, который не включён в Книгу Игрока D&D 5e.`],
+		ui_lang_subst_p2: [`Это не проблема. Пожалуйста выберите один из готовых языков в выпадающем списке ниже, и его словарь будет использован для сообщений на вашем языке.`],
+		ui_lang_subst_p3: [`Этот выбор чисто косметический, и не повлияет на то, кто поймёт или не поймёт вашу речь. Выбор будет сохранён до перезагрузки страницы.`],
+		ui_lang_subst_select: [`Выберите словарь:`],
+		ui_lang_subst_p_eg: [`Вот как будет звучать ваша фраза с текущим выбранным словарём для тех, кто не понимает $0:`],
 		menu_unlock: [`Снять блок...`],
 		menu_card_title: [`Колода`],
 		menu_take_card: [`Взять карту`],
@@ -11963,11 +11977,12 @@ function initHTMLbaseMisc () {
 			#textchat-input .social {
 				display: none;
 			}
-			#textchat-input.social .social {
+			#textchat-input.social-resized .social, #textchat-input.social-default .social {
 				display: inline-block;
 			}
-			#textchat-input.social textarea {
+			#textchat-input.social-default textarea {
 				height: 19px;
+				flex: auto;
 			}
 			.selectize.social {
 				width: 100px;
@@ -19165,6 +19180,8 @@ function baseChatLanguages () {
 	d20plus.chat.languages = {
 		"common": {
 			"title": "common",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Common_dictionary
 			"lexis": [
 				"alae",
 				"alavairthae",
@@ -19278,11 +19295,15 @@ function baseChatLanguages () {
 				"do",
 				"per"
 			],
-			"alias": "human",
+			"alias": [
+				"human"
+			],
 			"factor": 4
 		},
 		"dwarvish": {
 			"title": "dwarvish",
+			// Most words copied or modified from
+			// http://www.bugmansbrewery.com/tutorials/article/115-dwarf-language-english-to-khazalid-dictionary/
 			"lexis": [
 				"akrak",
 				"angaz",
@@ -19396,11 +19417,15 @@ function baseChatLanguages () {
 				"ad",
 				"har"
 			],
-			"alias": "dwarven",
+			"alias": [
+				"dwarven"
+			],
 			"factor": 3
 		},
 		"elvish": {
 			"title": "elvish",
+			// Most words copied or modified from
+			// https://www.elfdict.com/w/?language=quenya
 			"lexis": [
 				"alahen",
 				"alamanyar",
@@ -19514,11 +19539,16 @@ function baseChatLanguages () {
 				"lor-",
 				"i-"
 			],
-			"alias": "elven, elf",
+			"alias": [
+				"elven",
+				"elf"
+			],
 			"factor": 5
 		},
 		"giant": {
 			"title": "giant",
+			// Most words copied or modified from
+			// https://www.paolini.net/fans/invented-languages-inheritance-cycle/dwarf-language/dwarf-language-english-dictionary/
 			"lexis": [
 				"arûna",
 				"ascûdgamln",
@@ -19632,11 +19662,15 @@ function baseChatLanguages () {
 				"rr-",
 				"gro"
 			],
-			"alias": "ogre",
+			"alias": [
+				"ogre"
+			],
 			"factor": 3
 		},
 		"gnomish": {
 			"title": "gnomish",
+			// Most words copied or modified from
+			// https://www.elfdict.com/w/?language=telerin
 			"lexis": [
 				"athon",
 				"aumata",
@@ -19750,11 +19784,15 @@ function baseChatLanguages () {
 				"ik",
 				"ro"
 			],
-			"alias": "gnome",
+			"alias": [
+				"gnome"
+			],
 			"factor": 4
 		},
 		"goblin": {
 			"title": "goblin",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Goblin_dictionary
 			"lexis": [
 				"ana",
 				"ari",
@@ -19868,11 +19906,15 @@ function baseChatLanguages () {
 				"mak",
 				"psa"
 			],
-			"alias": "goblinoid",
+			"alias": [
+				"goblinoid"
+			],
 			"factor": 3
 		},
 		"halfling": {
 			"title": "halfling",
+			// Most words copied or modified from
+			// http://www.quicksilver899.com/Tolkien/Hobbitry.html
 			"lexis": [
 				"adaldrida",
 				"balc",
@@ -19986,11 +20028,15 @@ function baseChatLanguages () {
 				"u-",
 				"so-"
 			],
-			"alias": "hobbit",
+			"alias": [
+				"hobbit"
+			],
 			"factor": 4
 		},
-		"orkish": {
-			"title": "orkish",
+		"orcish": {
+			"title": "orcish",
+			// Most words copied or modified from
+			// https://www.angelfire.com/ia/orcishnations/englishorcish.html
 			"lexis": [
 				"arau",
 				"asht",
@@ -20104,11 +20150,15 @@ function baseChatLanguages () {
 				"sud-",
 				"vor-"
 			],
-			"alias": "ork",
+			"alias": [
+				"orc"
+			],
 			"factor": 2
 		},
 		"abyssal": {
 			"title": "abyssal",
+			// Most words copied or modified from
+			// https://www.paolini.net/fans/invented-languages-inheritance-cycle/ancient-language/ancient-language-english-dictionary/
 			"lexis": [
 				"aldanarí",
 				"argetlam",
@@ -20222,11 +20272,15 @@ function baseChatLanguages () {
 				"al'",
 				"al'"
 			],
-			"alias": "demon",
+			"alias": [
+				"demon"
+			],
 			"factor": 2
 		},
 		"celestial": {
 			"title": "celestial",
+			// Most words copied or modified from
+			// https://dndtopics.com/languages/celestial/
 			"lexis": [
 				"aujinn",
 				"aurix",
@@ -20340,11 +20394,13 @@ function baseChatLanguages () {
 				"tha",
 				"aln"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"draconic": {
 			"title": "draconic",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Draconic_dictionary
 			"lexis": [
 				"aesthyr",
 				"aithyas",
@@ -20458,11 +20514,16 @@ function baseChatLanguages () {
 				"iss",
 				"osh"
 			],
-			"alias": "tymantheran, yipyak",
+			"alias": [
+				"tymantheran",
+				"yipyak"
+			],
 			"factor": 3
 		},
 		"deepspeech": {
 			"title": "deepspeech",
+			// Most words copied or modified from
+			// https://lingojam.com/CommontoDwarvishTranslator
 			"lexis": [
 				"aat",
 				"abakavith",
@@ -20566,11 +20627,13 @@ function baseChatLanguages () {
 				"zwatan"
 			],
 			"particles": [],
-			"alias": "",
+			"alias": [],
 			"factor": 0
 		},
 		"infernal": {
 			"title": "infernal",
+			// Most words copied or modified from
+			// https://wowpedia.fandom.com/wiki/Eredun
 			"lexis": [
 				"achor",
 				"adare",
@@ -20684,11 +20747,15 @@ function baseChatLanguages () {
 				"al'",
 				"al'"
 			],
-			"alias": "devil",
+			"alias": [
+				"devil"
+			],
 			"factor": 2
 		},
 		"primordial": {
 			"title": "primordial",
+			// Most words copied or modified from
+			// https://lingojam.com/CommontoDwarvishTranslator
 			"lexis": [
 				"aav",
 				"alr",
@@ -20792,11 +20859,19 @@ function baseChatLanguages () {
 				"vromungvro"
 			],
 			"particles": [],
-			"alias": "auran, aquan, ignan, rettan",
+			"alias": [
+				"elemental",
+				"auran",
+				"aquan",
+				"ignan",
+				"rettan"
+			],
 			"factor": 0
 		},
 		"sylvan": {
 			"title": "sylvan",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Elven_dictionary
 			"lexis": [
 				"aegiskeryn",
 				"aerister",
@@ -20910,11 +20985,15 @@ function baseChatLanguages () {
 				"reb-",
 				"thy-"
 			],
-			"alias": "fey",
+			"alias": [
+				"fey"
+			],
 			"factor": 5
 		},
 		"undercommon": {
 			"title": "undercommon",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Drow_dictionary
 			"lexis": [
 				"abban",
 				"abbil",
@@ -21028,11 +21107,15 @@ function baseChatLanguages () {
 				"uss",
 				"akh-"
 			],
-			"alias": "underdark",
+			"alias": [
+				"underdark"
+			],
 			"factor": 4
 		},
 		"fakeitalian": {
 			"title": "fakeitalian",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-italian-words-generator
 			"lexis": [
 				"abby",
 				"affrontare",
@@ -21146,11 +21229,13 @@ function baseChatLanguages () {
 				"da",
 				"ai"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakespanish": {
 			"title": "fakespanish",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-spanish-words
 			"lexis": [
 				"abajo",
 				"abrazo",
@@ -21264,11 +21349,13 @@ function baseChatLanguages () {
 				"el",
 				"acá"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakefrench": {
 			"title": "fakefrench",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-french-words-generator
 			"lexis": [
 				"aide",
 				"aille",
@@ -21308,8 +21395,8 @@ function baseChatLanguages () {
 				"finir",
 				"formidable",
 				"fort",
+				"frappé",
 				"fusil",
-				"",
 				"garçons",
 				"génial",
 				"genoux",
@@ -21382,11 +21469,13 @@ function baseChatLanguages () {
 				"à",
 				"sur"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakerussian": {
 			"title": "fakerussian",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-russian-words-generator
 			"lexis": [
 				"avtor",
 				"babushka",
@@ -21500,11 +21589,13 @@ function baseChatLanguages () {
 				"pro",
 				"ty"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakegerman": {
 			"title": "fakegerman",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-german-words-generator
 			"lexis": [
 				"allem",
 				"anderer",
@@ -21618,7 +21709,7 @@ function baseChatLanguages () {
 				"wir",
 				"für"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		}
 	};
@@ -21644,12 +21735,12 @@ function baseChat () {
 
 			const alias = `${__(`lang_alias_${id}`)}`
 			language.title = `${__(`lang_${id}`)}`;
-			if (!language.alias) language.alias = alias;
-			else language.alias = "".concat(language.alias, ", ", alias);
+			if (!language.alias) language.alias = alias.split(", ");
+			else language.alias = [].concat(language.alias, alias.split(", "));
 			// RB20 EXCLUDE END
 			d20plus.chat.languageIndex[id] = id;
 			d20plus.chat.languageIndex[language.title.toLowerCase()] = id;
-			language.alias.split(", ").forEach(name => {
+			language.alias.forEach(name => {
 				d20plus.chat.languageIndex[name] = id;
 			})
 		});
@@ -21808,7 +21899,7 @@ function baseChat () {
 			dialog.find("#soundslike").focus();
 		}, 200);
 		dialog.dialog({
-			title: "Choose transcription",
+			title: __("ui_lang_subst_title"),
 			modal: true,
 			width: 365,
 			open: () => {
@@ -21854,17 +21945,17 @@ function baseChat () {
 
 	const languageDialogTemplate = (msg, language) => `
 			<div>
-				<p><strong>What does ${language} language sound like?</strong></p>
-				<p>It seems you're trying to speak language not included in the standard list of D&D 5e PHB.</p>
-				<p>That's not a problem. Please select one of the languages from the dropdown below, and it will be used for the imitated message.</p>
-				<p>Your choice is purely cosmetic and will not affect who can or can not understand it. This will be remembered until you refresh the page.</p>
+				<p><strong>${__("ui_lang_subst_subtitle", [language])}</strong></p>
+				<p>${__("ui_lang_subst_p1")}</p>
+				<p>${__("ui_lang_subst_p2")}</p>
+				<p>${__("ui_lang_subst_p3")}</p>
 				<span style="display:block; height: 40px;">
-					<label style="display: inline-block;" for="soundslike">Transcribe as:</label>
+					<label style="display: inline-block;" for="soundslike">${__("ui_lang_subst_select")}</label>
 					<select id="soundslike" style="float: right; width: 60%;">
 						${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
 					</select>
 				</span>
-				<p>This is what your message will look like with the current selection to those who don't speak ${language}:</p>
+				<p>${__("ui_lang_subst_p_eg", [language])}</p>
 				<p><textarea id="languageeg" disabled="" style="width: 100%; box-sizing: border-box; height: 50px;cursor: default;resize: none; background: rgba(100, 100, 150, 0.2);"
 					>${gibberish(msg, "common")}</textarea>
 				</p>
@@ -22077,13 +22168,16 @@ function baseChat () {
 	);
 
 	d20plus.chat.onsocial = () => {
-		d20plus.chat.social = !d20plus.chat.social;
-		if (d20plus.chat.social) {
-			$("#textchat-input").addClass("social");
+		const $input_container = $("#textchat-input");
+		if (!d20plus.chat.social) {
+			const resized = $input_container.attr("style").includes("height")
+			if (resized) $input_container.addClass("social-resized");
+			else $input_container.addClass("social-default");
 			d20plus.chat.refreshLanguages();
 			d20plus.chat.getSpeakingTo();
+			d20plus.chat.social = true;
 		} else {
-			$("#textchat-input").removeClass("social");
+			d20plus.chat.closeSocial();
 		}
 	}
 
@@ -22129,8 +22223,10 @@ function baseChat () {
 	}
 
 	d20plus.chat.closeSocial = () => {
+		const $input_container = $("#textchat-input");
 		d20plus.chat.social = false;
-		$("#textchat-input").removeClass("social");
+		$input_container.removeClass("social-resized");
+		$input_container.removeClass("social-default");
 	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
@@ -22327,6 +22423,7 @@ function baseChat () {
 
 			$input_container.append(d20plus.html.chatSocial);
 			$input_container.prepend(d20plus.html.chatSocialNotifier);
+			$("#chatSendBtn").after($("#socialswitch"));
 			$("#textchat-note-container").append($chat_notifier);
 
 			$chat_textarea.on("focus", d20plus.chat.closeSocial);
