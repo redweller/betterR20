@@ -136,12 +136,14 @@ function initHTMLbaseMisc () {
 			display: none;
 		}
 
-		#textchat-input.social .social {
+		#textchat-input.social-resized .social,
+		#textchat-input.social-default .social {
 			display: inline-block;
 		}
 
-		#textchat-input.social textarea {
+		#textchat-input.social-default textarea {
 			height: 19px;
+			flex: auto;
 		}
 
 		.selectize.social {
