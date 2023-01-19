@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.1.33
+// @version      1.33.1.34
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -854,6 +854,8 @@ function baseUtil () {
 
 	d20plus.ut.detectDarkModeScript = () => {
 		d20plus.ut.dmscriptDetected = false;
+		// Detect if player is using Roll20 Dark Theme
+		// https://github.com/Pharonix/Roll20-Dark-Theme
 		$("style").each((i, el) => {
 			if (el.textContent.indexOf("/*New Characteristics Menu*/") >= 0) {
 				d20plus.ut.dmscriptDetected = true;
@@ -12627,7 +12629,7 @@ function d20plusEngine () {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
 		}).on("click", ".nav-tabs--beta", () => {
 			d20plus.engine._populateCustomOptions();
-		}).on("click keyup", ".weather input, .weather .slider", () => {
+		}).on("click keyup", ".weather input, .weather .slider, .views input, .views .slider", () => {
 			d20plus.engine._updateCustomOptions();
 		});
 	};
@@ -19296,7 +19298,8 @@ function baseChatLanguages () {
 				"per"
 			],
 			"alias": [
-				"human"
+				"human",
+				"ортанский"
 			],
 			"factor": 4
 		},
@@ -20029,7 +20032,8 @@ function baseChatLanguages () {
 				"so-"
 			],
 			"alias": [
-				"hobbit"
+				"hobbit",
+				"таларийский"
 			],
 			"factor": 4
 		},
@@ -21747,8 +21751,8 @@ function baseChat () {
 	}
 
 	function gibberish (string, langId, incompetent) {
-		if (!Object.keys(languages).includes(langId)) langId = d20plus.chat.languageAdditions[langId];
-		if (!Object.keys(languages).includes(langId)) return string;
+		if (!languages[langId]) langId = d20plus.chat.languageAdditions[langId];
+		if (!languages[langId]) return string;
 		const paragraphs = string.split("\n");
 		if (paragraphs.length > 1) return paragraphs.map(str => gibberish(str, langId, incompetent)).join("\n");
 		const src_words = string.toLowerCase().match(/\p{L}+/gu);
@@ -21879,13 +21883,13 @@ function baseChat () {
 	d20plus.chat.availableAddressees = () => {
 		const players = d20.Campaign.players.models
 			.filter(player => { return player.attributes.online && player.attributes.id !== d20_player_id; })
-			.map(player => [player.attributes.displayname, player.attributes.id]);
+			.map(player => ({name: player.attributes.displayname, id: player.attributes.id}));
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
 				const actors = char.attributes.controlledby.split(",");
-				return actors.some(actor => { return actor && players.map(player => player[1]).includes(actor); })
+				return actors.some(actor => { return actor && players.map(player => player.id).includes(actor); })
 			})
-			.map(char => [char.attributes.name, false]);
+			.map(char => ({name: char.attributes.name}));
 		return players.concat(characters);
 	}
 
@@ -22014,21 +22018,19 @@ function baseChat () {
 
 	d20plus.chat.sendInLanguage = (message, language) => {
 		d20plus.ut.log(message, language);
-		let languageid = d20plus.chat.getLanguageId(language);
-		if (!Object.keys(languages).includes(languageid)) {
-			if (!Object.keys(d20plus.chat.languageAdditions).includes(languageid)) {
-				d20plus.chat.setLanguagePreset(message, language);
-				return "";
-			}
+		let langId = d20plus.chat.getLanguageId(language);
+		if (!languages[langId] && !d20plus.chat.languageAdditions[langId]) {
+			d20plus.chat.setLanguagePreset(message, language);
+			return "";
 		}
-		const knows = window.is_gm || hasLanguageProfeciency(languageid);
-		message = knows ? message : gibberish(message, languageid, true);
+		const knows = window.is_gm || hasLanguageProfeciency(langId);
+		message = knows ? message : gibberish(message, langId, true);
 		// const coded = btoa(encodeURI(string));
 		// const pos = Math.round(Math.random() * (coded.length - 2));
 		// const encoded = coded.slice(0, pos) + btoa(encodeURI(d20_player_id)) + coded.slice(pos);
 		// return `${gibberish(string, lanid)}\n&{template:inlanguage} {{language=${language}}} {{languageid=${languageid}}} {{encoded=${encoded}}}`;
 		// d20plus.chat.msgInLang = {language, languageid, message};
-		return `${gibberish(message, languageid)}|&inlang|${language}|&meta|${languageid}|&meta|${message}`;
+		return `${gibberish(message, langId)}|&inlang|${language}|&meta|${langId}|&meta|${message}`;
 	}
 
 	d20plus.chat.sendReply = (text, msg) => {
@@ -22073,17 +22075,19 @@ function baseChat () {
 	}
 
 	d20plus.chat.sendToSelected = (text, msg) => {
+		const canSpeakTo = d20plus.chat.availableAddressees().map(char => char.name);
 		const addressees = d20.engine.selected()
 			.map(token => token._model.character.attributes?.name)
-			.filter(name => d20plus.chat.availableAddressees().map(char => char[0]).includes(name));
+			.filter(name => canSpeakTo.includes(name));
 		if (addressees.length) return addressees.reduce((result, name) => { return `${result}/w "${name}" ${msg}\n` }, "");
 		else d20plus.ut.sendHackerChat("You have to select tokens belonging to actual players", true);
 		return "";
 	}
 
 	d20plus.chat.sendParsedInLanguage = (text, msg) => {
-		return msg.replace(/^ (?:(\p{L}+)|"(.*?)") (.*?)$/u, (...str) => {
-			return d20plus.chat.sendInLanguage(str[3], str[1] || str[2]);
+		return msg.replace(/^ ("?)(?<lang>[^ ]+|[^"]+)\1 (?<msg>.+)$/u, (...str) => {
+			const inlang = str.last();
+			return d20plus.chat.sendInLanguage(inlang.msg, inlang.lang);
 		});
 	}
 
@@ -22118,9 +22122,9 @@ function baseChat () {
 		const prev = $("#speakingto").val();
 		$("#speakingto").html((() => {
 			return d20plus.chat.availableAddressees().reduce((result, addressee) => {
-				const icon = addressee[1] ? "🗣" : "⚑";
-				const option = `${icon} ${addressee[0]}`;
-				const value = `value="${addressee[0]}"`;
+				const icon = addressee.id ? "🗣" : "⚑";
+				const option = `${icon} ${addressee.name}`;
+				const value = `value="${addressee.name}"`;
 				result += `<option ${value}>${option}</option>`;
 				return result;
 			}, `<option value="">All</option><option value="ttms">None</option>`);
@@ -22275,7 +22279,7 @@ function baseChat () {
 
 	d20plus.chat.incoming = (params) => {
 		// eslint-disable-next-line no-console
-		console.log(params[1], d20plus.chat.localHistory);
+		// console.log(params[1], d20plus.chat.localHistory);
 		const msg = params[1];
 		if (msg.playerid === d20_player_id || msg.type === "system") {
 			const stash = [];
@@ -22367,7 +22371,7 @@ function baseChat () {
 
 			if (speakingto && speakingto !== "ttms") {
 				text = text.replace(/^([^/]*?)$/mgu, (...str) => {
-					const prepared = str[1].replace(/\/(r|roll) ([ \dd+-]*?)$/umg, "[[$2]]");
+					const prepared = str[1].replace(/\/(r|roll) (?<dice>[ \dd+-]*)$/umg, "[[$<dice>]]");
 					return `/w "${speakingto}" ${prepared}`;
 				});
 			}
