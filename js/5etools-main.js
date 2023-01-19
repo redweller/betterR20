@@ -742,15 +742,25 @@ const betteR205etoolsMain = function () {
 								var id = $hlpr.attr("data-itemid");
 								var handout = d20.Campaign.handouts.get(id);
 								var data = "";
+
+								// Take a JSON that may be a URI encoded string and return it in non URI format
+								function decodeIfURI (notes) {
+									if (!notes) return "";
+
+									if (notes.charAt(0) == "%") return decodeURIComponent(notes);
+
+									return notes;
+								}
+
 								if (window.is_gm) {
 									handout._getLatestBlob("gmnotes", function (gmnotes) {
-										data = decodeURIComponent(gmnotes);
+										data = decodeIfURI(gmnotes);
 										handout.updateBlobs({gmnotes: gmnotes});
 										importData(character, JSON.parse(data), t);
 									});
 								} else {
 									handout._getLatestBlob("notes", function (notes) {
-										data = $(decodeURIComponent(notes)).filter("del").html();
+										data = $(decodeIfURI(notes)).filter("del").html();
 										importData(character, JSON.parse(data), t);
 									});
 								}
