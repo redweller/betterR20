@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.1.34
+// @version      1.33.2.35
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -900,9 +900,7 @@ function baseUtil () {
 	d20plus.ut.addAllCss = () => {
 		d20plus.ut.log("Adding CSS");
 
-		const targetSheet = [...window.document.styleSheets]
-			.filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
-			.find(it => it.href.includes("app.css"));
+		const targetSheet = window.document.styleSheets[0];
 
 		_.each(d20plus.css.baseCssRules, function (r) {
 			d20plus.ut.addCSS(targetSheet, r.s, r.r);
