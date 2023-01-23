@@ -346,5 +346,10 @@
 		"ver": "1.33.1",
 		"date": "2022-12-02",
 		"txt": "- Fixed page settings template modification (with proper inputs for dynamic lighting, weather settings, and map size) failing to be applied (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.33.2",
+		"date": "2023-01-23",
+		"txt": "- Fixed crash on load due to bad style injection (thanks @ Redweller)\n- Fixed editing an imported handout breaking drag-drop functionality (thanks @ darthbeep)"
 	}
 ]
