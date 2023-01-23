@@ -174,9 +174,7 @@ function baseUtil () {
 	d20plus.ut.addAllCss = () => {
 		d20plus.ut.log("Adding CSS");
 
-		const targetSheet = [...window.document.styleSheets]
-			.filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
-			.find(it => it.href.includes("app.css"));
+		const targetSheet = window.document.styleSheets[0];
 
 		_.each(d20plus.css.baseCssRules, function (r) {
 			d20plus.ut.addCSS(targetSheet, r.s, r.r);
