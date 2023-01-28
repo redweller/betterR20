@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.2.35
+// @version      1.33.2.36
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -948,6 +948,24 @@ function baseUtil () {
 		}
 		return JSON.parse(journalFolder);
 	};
+
+	d20plus.ut.charFetchAndRetry = ({char, callback, params = []} = {}) => {
+		const attribs = char?.attribs;
+		if (!attribs) return true;
+		if (!attribs.length) {
+			if (attribs.fetching) return true;
+			attribs.fetch(attribs);
+			attribs.fetching = true;
+			const wait = setInterval(function () {
+				if (attribs.length) {
+					clearInterval(wait);
+					delete char.attribs.fetching;
+					callback(...params);
+				}
+			}, 20);
+			return true;
+		}
+	}
 
 	d20plus.ut._lastInput = null;
 	d20plus.ut.getNumberRange = (promptText, min, max) => {
@@ -12957,6 +12975,68 @@ function d20plusEngine () {
 		}
 	}
 
+	/* d20plus.engine.updateTokenBars = async (charID, barID) => {
+		d20.Campaign.pages.models.forEach(page => {
+			page.thegraphics.forEach(item => {
+				if (item.model.get("represents") === charID) {
+					item.model.pullLinkedBar(barID);
+				}
+			})
+		})
+	} */
+
+	d20plus.engine.alterTokensHP = (barID, dmg, selected) => {
+		const bar = {
+			val: `bar${barID}_value`,
+			link: `bar${barID}_link`,
+			max: `bar${barID}_max`,
+		};
+		const calcHP = (token) => {
+			if (!token?.get) return false;
+			const current = token.get(bar.val);
+			const max = token.get(bar.max);
+			if (isNaN(max) || isNaN(current) || current === "") return false;
+			const hp = {old: current, new: current - dmg};
+			if (hp.new > max) hp.new = max;
+			if (hp.new <= -max) hp.dead = true;
+			if (hp.new < 0) hp.new = 0;
+			return hp;
+		}
+		const log = [];
+		selected = selected || d20.engine.selected();
+		d20.engine.unselect();
+		selected.forEach(el => {
+			const token = el.model;
+			const hp = calcHP(token);
+			if (!hp) return;
+			const link = token.get(bar.link);
+			if (link) {
+				const charID = token.character?.id;
+				const fetching = d20plus.ut.charFetchAndRetry({
+					char: token.character,
+					params: [barID, dmg, [el]],
+					callback: d20plus.engine.alterTokensHP,
+				});
+				if (!fetching && charID) {
+					const attrib = token.character.attribs.get(link);
+					attrib.save({current: hp.new});
+					attrib.syncTokenBars();
+					log.push(`${token.get("name")}: character HP ${hp.old} to ${hp.new}`);
+					hp.fulfilled = true;
+				}
+			} else {
+				token.save({[bar.val]: hp.new});
+				log.push(`${token.get("name")}: token HP ${hp.old} to ${hp.new}`);
+				hp.fulfilled = true;
+			}
+			if (hp.fulfilled) {
+				if (hp.dead) log.push(`${token.get("name")} is instantly dead`);
+				else if (hp.new === 0) log.push(`${token.get("name")} falls unconscious`);
+			}
+		})
+		if (log.length) d20plus.ut.sendHackerChat(log.join("<br>"));
+	}
+
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);
 
@@ -16316,6 +16396,23 @@ function baseCss () {
 			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
 			r: "font-size: 12px;",
 		},
+		{
+			s: ".sheet-rolltemplate-atkdmg div.sheet-desc.sheet-info",
+			r: "width: 98%;",
+		},
+		// Color rolls in OGL template subtexts
+		{
+			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult.fullcrit",
+			r: "color: #3FB315",
+		},
+		{
+			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult.fullfail",
+			r: "color: #B31515",
+		},
+		/* {
+			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult",
+			r: "font-size: medium !important; padding-top: 0px;",
+		}, */
 	]);
 
 	// Rewamped page options
@@ -22166,6 +22263,12 @@ function baseChat () {
 				"_type": "boolean",
 				"_player": true,
 			},
+			"clickRollForDmg": {
+				"name": "Double-click on inline roll result to alter token bar",
+				"default": "1",
+				"_type": "_enum",
+				"__values": ["disable", "1", "2", "3"],
+			},
 		},
 	);
 
@@ -22277,7 +22380,7 @@ function baseChat () {
 
 	d20plus.chat.incoming = (params) => {
 		// eslint-disable-next-line no-console
-		// console.log(params[1], d20plus.chat.localHistory);
+		console.log(params[1], d20plus.chat.localHistory);
 		const msg = params[1];
 		if (msg.playerid === d20_player_id || msg.type === "system") {
 			const stash = [];
@@ -22444,6 +22547,17 @@ function baseChat () {
 			const wiki = "https://wiki.roll20.net/Text_Chat#Chat";
 			$(".userscript-commandintro ul").append(__("msg_b20_chat_help", [code, wiki]));
 			$("#textchat").on("click", ".userscript-commandintro ul code", d20plus.chat.help);
+		}
+
+		if (!isNaN(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"))) {
+			const barID = Number(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"));
+			d20.textchat.$textchat.on("dblclick", ".inlinerollresult.showtip", event => {
+				const roll = event.target.getAttribute("original-title");
+				const hp = event.target.innerText;
+				const isHeal = roll.includes("[heal]");
+				const dmg = isHeal ? -hp : +hp;
+				d20plus.engine.alterTokensHP(barID, dmg);
+			})
 		}
 
 		$("#textchat-input").off("click", "button")
