@@ -151,16 +151,16 @@ function baseUtil () {
 		}));
 	};
 
-	d20plus.ut.addCSS = (sheet, selectors, rules) => {
+	d20plus.ut.addCSS = (selectors, rules) => {
 		if (!(selectors instanceof Array)) selectors = [selectors];
 
 		selectors.forEach(selector => {
-			const index = sheet.cssRules.length;
 			try {
-				if ("insertRule" in sheet) {
-					sheet.insertRule(`${selector}{${rules}}`, index);
-				} else if ("addRule" in sheet) {
-					sheet.addRule(selector, rules, index);
+				const index = d20plus.css.sheet.cssRules.length;
+				if ("insertRule" in d20plus.css.sheet) {
+					d20plus.css.sheet.insertRule(`${selector}{${rules}}`, index);
+				} else if ("addRule" in d20plus.css.sheet) {
+					d20plus.css.sheet.addRule(selector, rules, index);
 				}
 			} catch (e) {
 				if ((!selector && selector.startsWith("-webkit-"))) {
@@ -174,20 +174,19 @@ function baseUtil () {
 	d20plus.ut.addAllCss = () => {
 		d20plus.ut.log("Adding CSS");
 
-		$(window.document.head).append("<style id=\"b20-all-css\"></style>");
-		const styleSheets = [...window.document.styleSheets];
-		const targetSheet = styleSheets.find(css => css.ownerNode.id === "b20-all-css");
+		const sheetElement = document.createElement("style");
+		d20plus.css.sheet = document.head.appendChild(sheetElement).sheet;
 
 		_.each(d20plus.css.baseCssRules, function (r) {
-			d20plus.ut.addCSS(targetSheet, r.s, r.r);
+			d20plus.ut.addCSS(r.s, r.r);
 		});
 		if (!window.is_gm) {
 			_.each(d20plus.css.baseCssRulesPlayer, function (r) {
-				d20plus.ut.addCSS(targetSheet, r.s, r.r);
+				d20plus.ut.addCSS(r.s, r.r);
 			});
 		}
 		_.each(d20plus.css.cssRules, function (r) {
-			d20plus.ut.addCSS(targetSheet, r.s, r.r);
+			d20plus.ut.addCSS(r.s, r.r);
 		});
 	};
 
