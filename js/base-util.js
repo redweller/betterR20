@@ -174,7 +174,9 @@ function baseUtil () {
 	d20plus.ut.addAllCss = () => {
 		d20plus.ut.log("Adding CSS");
 
-		const targetSheet = window.document.styleSheets[0];
+		$(window.document.head).append("<style id=\"b20-all-css\"></style>");
+		const styleSheets = [...window.document.styleSheets];
+		const targetSheet = styleSheets.find(css => css.ownerNode.id === "b20-all-css");
 
 		_.each(d20plus.css.baseCssRules, function (r) {
 			d20plus.ut.addCSS(targetSheet, r.s, r.r);
