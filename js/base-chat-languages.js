@@ -5,6 +5,8 @@ function baseChatLanguages () {
 	d20plus.chat.languages = {
 		"common": {
 			"title": "common",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Common_dictionary
 			"lexis": [
 				"alae",
 				"alavairthae",
@@ -118,11 +120,15 @@ function baseChatLanguages () {
 				"do",
 				"per"
 			],
-			"alias": "human",
+			"alias": [
+				"human",
+			],
 			"factor": 4
 		},
 		"dwarvish": {
 			"title": "dwarvish",
+			// Most words copied or modified from
+			// http://www.bugmansbrewery.com/tutorials/article/115-dwarf-language-english-to-khazalid-dictionary/
 			"lexis": [
 				"akrak",
 				"angaz",
@@ -236,11 +242,15 @@ function baseChatLanguages () {
 				"ad",
 				"har"
 			],
-			"alias": "dwarven",
+			"alias": [
+				"dwarven"
+			],
 			"factor": 3
 		},
 		"elvish": {
 			"title": "elvish",
+			// Most words copied or modified from
+			// https://www.elfdict.com/w/?language=quenya
 			"lexis": [
 				"alahen",
 				"alamanyar",
@@ -354,11 +364,16 @@ function baseChatLanguages () {
 				"lor-",
 				"i-"
 			],
-			"alias": "elven, elf",
+			"alias": [
+				"elven",
+				"elf"
+			],
 			"factor": 5
 		},
 		"giant": {
 			"title": "giant",
+			// Most words copied or modified from
+			// https://www.paolini.net/fans/invented-languages-inheritance-cycle/dwarf-language/dwarf-language-english-dictionary/
 			"lexis": [
 				"arûna",
 				"ascûdgamln",
@@ -472,11 +487,15 @@ function baseChatLanguages () {
 				"rr-",
 				"gro"
 			],
-			"alias": "ogre",
+			"alias": [
+				"ogre"
+			],
 			"factor": 3
 		},
 		"gnomish": {
 			"title": "gnomish",
+			// Most words copied or modified from
+			// https://www.elfdict.com/w/?language=telerin
 			"lexis": [
 				"athon",
 				"aumata",
@@ -590,11 +609,15 @@ function baseChatLanguages () {
 				"ik",
 				"ro"
 			],
-			"alias": "gnome",
+			"alias": [
+				"gnome"
+			],
 			"factor": 4
 		},
 		"goblin": {
 			"title": "goblin",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Goblin_dictionary
 			"lexis": [
 				"ana",
 				"ari",
@@ -708,11 +731,15 @@ function baseChatLanguages () {
 				"mak",
 				"psa"
 			],
-			"alias": "goblinoid",
+			"alias": [
+				"goblinoid"
+			],
 			"factor": 3
 		},
 		"halfling": {
 			"title": "halfling",
+			// Most words copied or modified from
+			// http://www.quicksilver899.com/Tolkien/Hobbitry.html
 			"lexis": [
 				"adaldrida",
 				"balc",
@@ -826,11 +853,15 @@ function baseChatLanguages () {
 				"u-",
 				"so-"
 			],
-			"alias": "hobbit",
+			"alias": [
+				"hobbit",
+			],
 			"factor": 4
 		},
-		"orkish": {
-			"title": "orkish",
+		"orcish": {
+			"title": "orcish",
+			// Most words copied or modified from
+			// https://www.angelfire.com/ia/orcishnations/englishorcish.html
 			"lexis": [
 				"arau",
 				"asht",
@@ -944,11 +975,15 @@ function baseChatLanguages () {
 				"sud-",
 				"vor-"
 			],
-			"alias": "ork",
+			"alias": [
+				"orc"
+			],
 			"factor": 2
 		},
 		"abyssal": {
 			"title": "abyssal",
+			// Most words copied or modified from
+			// https://www.paolini.net/fans/invented-languages-inheritance-cycle/ancient-language/ancient-language-english-dictionary/
 			"lexis": [
 				"aldanarí",
 				"argetlam",
@@ -1062,11 +1097,15 @@ function baseChatLanguages () {
 				"al'",
 				"al'"
 			],
-			"alias": "demon",
+			"alias": [
+				"demon"
+			],
 			"factor": 2
 		},
 		"celestial": {
 			"title": "celestial",
+			// Most words copied or modified from
+			// https://dndtopics.com/languages/celestial/
 			"lexis": [
 				"aujinn",
 				"aurix",
@@ -1180,11 +1219,13 @@ function baseChatLanguages () {
 				"tha",
 				"aln"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"draconic": {
 			"title": "draconic",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Draconic_dictionary
 			"lexis": [
 				"aesthyr",
 				"aithyas",
@@ -1298,11 +1339,16 @@ function baseChatLanguages () {
 				"iss",
 				"osh"
 			],
-			"alias": "tymantheran, yipyak",
+			"alias": [
+				"tymantheran",
+				"yipyak"
+			],
 			"factor": 3
 		},
 		"deepspeech": {
 			"title": "deepspeech",
+			// Most words copied or modified from
+			// https://lingojam.com/CommontoDwarvishTranslator
 			"lexis": [
 				"aat",
 				"abakavith",
@@ -1406,11 +1452,13 @@ function baseChatLanguages () {
 				"zwatan"
 			],
 			"particles": [],
-			"alias": "",
+			"alias": [],
 			"factor": 0
 		},
 		"infernal": {
 			"title": "infernal",
+			// Most words copied or modified from
+			// https://wowpedia.fandom.com/wiki/Eredun
 			"lexis": [
 				"achor",
 				"adare",
@@ -1524,11 +1572,15 @@ function baseChatLanguages () {
 				"al'",
 				"al'"
 			],
-			"alias": "devil",
+			"alias": [
+				"devil"
+			],
 			"factor": 2
 		},
 		"primordial": {
 			"title": "primordial",
+			// Most words copied or modified from
+			// https://lingojam.com/CommontoDwarvishTranslator
 			"lexis": [
 				"aav",
 				"alr",
@@ -1632,11 +1684,19 @@ function baseChatLanguages () {
 				"vromungvro"
 			],
 			"particles": [],
-			"alias": "auran, aquan, ignan, rettan",
+			"alias": [
+				"elemental",
+				"auran",
+				"aquan",
+				"ignan",
+				"rettan"
+			],
 			"factor": 0
 		},
 		"sylvan": {
 			"title": "sylvan",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Elven_dictionary
 			"lexis": [
 				"aegiskeryn",
 				"aerister",
@@ -1750,11 +1810,15 @@ function baseChatLanguages () {
 				"reb-",
 				"thy-"
 			],
-			"alias": "fey",
+			"alias": [
+				"fey"
+			],
 			"factor": 5
 		},
 		"undercommon": {
 			"title": "undercommon",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Drow_dictionary
 			"lexis": [
 				"abban",
 				"abbil",
@@ -1868,11 +1932,15 @@ function baseChatLanguages () {
 				"uss",
 				"akh-"
 			],
-			"alias": "underdark",
+			"alias": [
+				"underdark"
+			],
 			"factor": 4
 		},
 		"fakeitalian": {
 			"title": "fakeitalian",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-italian-words-generator
 			"lexis": [
 				"abby",
 				"affrontare",
@@ -1986,11 +2054,13 @@ function baseChatLanguages () {
 				"da",
 				"ai"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakespanish": {
 			"title": "fakespanish",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-spanish-words
 			"lexis": [
 				"abajo",
 				"abrazo",
@@ -2104,11 +2174,13 @@ function baseChatLanguages () {
 				"el",
 				"acá"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakefrench": {
 			"title": "fakefrench",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-french-words-generator
 			"lexis": [
 				"aide",
 				"aille",
@@ -2148,8 +2220,8 @@ function baseChatLanguages () {
 				"finir",
 				"formidable",
 				"fort",
+				"frappé",
 				"fusil",
-				"",
 				"garçons",
 				"génial",
 				"genoux",
@@ -2222,11 +2294,13 @@ function baseChatLanguages () {
 				"à",
 				"sur"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakerussian": {
 			"title": "fakerussian",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-russian-words-generator
 			"lexis": [
 				"avtor",
 				"babushka",
@@ -2340,11 +2414,13 @@ function baseChatLanguages () {
 				"pro",
 				"ty"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		},
 		"fakegerman": {
 			"title": "fakegerman",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-german-words-generator
 			"lexis": [
 				"allem",
 				"anderer",
@@ -2458,7 +2534,7 @@ function baseChatLanguages () {
 				"wir",
 				"für"
 			],
-			"alias": "",
+			"alias": [],
 			"factor": 3
 		}
 	};

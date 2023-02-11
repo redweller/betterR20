@@ -223,7 +223,8 @@ function initHTMLbaseMisc () {
 			content: "IN: ";
 		}
 
-		#textchat-social-notifier::after {
+		#textchat-social-notifier::after,
+		#textchat-notifier::after {
 			content: "*";
 			font-family: pictos;
 			padding-left: 3px;
@@ -233,6 +234,7 @@ function initHTMLbaseMisc () {
 		#textchat-notifier {
 			float: right;
 			position: unset;
+			cursor: pointer;
 		}
 	</style>
 	`;
