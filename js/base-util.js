@@ -52,14 +52,14 @@ function baseUtil () {
 
 	d20plus.ut.injectCode = (object, method, injectedCode) => {
 		const source = object[method];
-		object[method] = function (...params) {
-			const pass = injectedCode(params);
-			if (pass?.through) return source.apply(source, pass.params);
+		object[method] = function (...initParams) {
+			const passParams = injectedCode(initParams);
+			if (passParams === undefined) return source.apply(source, initParams);
+			else if (passParams !== false) return source.apply(source, passParams);
 		}
 	}
 
 	d20plus.ut.checkVersion = () => {
-		d20plus.ut.plantVersionInfo();
 		d20plus.ut.log("Checking current version");
 
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
@@ -213,25 +213,25 @@ function baseUtil () {
 		}));
 	};
 
-	d20plus.ut.plantVersionInfo = () => {
-		const thisPlayer = d20?.Campaign.players.get(d20_player_id);
-		if (!thisPlayer) return;
-		if (!d20plus.cfg.getOrDefault("chat", "shareVersions")) {
-			if (thisPlayer.get("script")) {
-				thisPlayer.set("script", null, true);
-				thisPlayer.save();
-			}
-			return;
-		}
-		d20plus.ut.log("Managing version info");
+	d20plus.ut.generateVersionInfo = () => {
+		d20plus.ut.log("Generating version info");
 		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
 		const b20v = encodeURI(d20plus.version);
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
 		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
 		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
-		thisPlayer.set("script", info, true);
-		thisPlayer.save();
+		return info;
+	}
+
+	d20plus.ut.parseVersionInfo = (raw) => {
+		const info = JSON.parse(decodeURI(atob(raw)));
+		const time = d20plus.ut.timeAgo(info.date);
+		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
+		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+		return html;
 	}
 
 	d20plus.ut.cmpVersions = (present, latest) => {
@@ -252,6 +252,8 @@ function baseUtil () {
 
 	d20plus.ut.detectDarkModeScript = () => {
 		d20plus.ut.dmscriptDetected = false;
+		// Detect if player is using Roll20 Dark Theme
+		// https://github.com/Pharonix/Roll20-Dark-Theme
 		$("style").each((i, el) => {
 			if (el.textContent.indexOf("/*New Characteristics Menu*/") >= 0) {
 				d20plus.ut.dmscriptDetected = true;
@@ -345,6 +347,24 @@ function baseUtil () {
 		}
 		return JSON.parse(journalFolder);
 	};
+
+	d20plus.ut.charFetchAndRetry = ({char, callback, params = []} = {}) => {
+		const attribs = char?.attribs;
+		if (!attribs) return true;
+		if (!attribs.length) {
+			if (attribs.fetching) return true;
+			attribs.fetch(attribs);
+			attribs.fetching = true;
+			const wait = setInterval(function () {
+				if (attribs.length) {
+					clearInterval(wait);
+					delete char.attribs.fetching;
+					callback(...params);
+				}
+			}, 20);
+			return true;
+		}
+	}
 
 	d20plus.ut._lastInput = null;
 	d20plus.ut.getNumberRange = (promptText, min, max) => {
@@ -442,9 +462,17 @@ function baseUtil () {
 		return d20plus.ut._getCanvasElementById(tokenId, "thegraphics");
 	};
 
+	d20plus.ut.getAccountById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.d20userid;
+	};
+
+	d20plus.ut.getPlayerNameById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.displayname;
+	};
+
 	d20plus.ut._getCanvasElementById = (id, prop) => {
-		const foundArr = d20.Campaign.pages.models.map(model => model[prop] && model[prop].models ? model[prop].models.find(it => it.id === id) : null).filter(it => it);
-		return foundArr.length ? foundArr[0] : null;
+		const found = d20.Campaign.pages.models.filter(model => model[prop]?.get(id))[0];
+		return found ? found[prop].get(id) : null;
 	};
 
 	d20plus.ut.getMacroByName = (macroName) => {
@@ -454,6 +482,10 @@ function baseUtil () {
 			return macros[0];
 		}
 		return null;
+	};
+
+	d20plus.ut.getCharAttribByName = (char, attribName) => {
+		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -469,10 +501,6 @@ function baseUtil () {
 	d20plus.ut.sanitizeFilename = function (str) {
 		return str.trim().replace(/[^-\w]/g, "_");
 	};
-
-	d20plus.ut.toSentenceCase = (string, forcelowercase) => {
-		return string.charAt(0).toUpperCase() + (forcelowercase ? string.slice(1).toLowerCase() : string.slice(1));
-	}
 
 	d20plus.ut.saveAsJson = function (filename, data) {
 		const blob = new Blob([JSON.stringify(data, null, "\t")], {type: "application/json"});

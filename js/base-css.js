@@ -181,7 +181,7 @@ function baseCss () {
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;	 border: 1px solid #ccc; max-width: 450px;",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px; border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
@@ -245,8 +245,12 @@ function baseCss () {
 			r: "display: none; font-variant: small-caps; font-size: 12px; padding: 18px 2px 2px 32px; margin-left: -8px; border: 1px solid; border-top: none; margin-top: -16px; background: rgba(100, 100, 100, 0.2); cursor: pointer;",
 		},
 		{
-			s: ".connects-info",
+			s: ".connects-info, .msg-action-button",
 			r: "font-family: pictos; margin-right: 4px; text-decoration: none !important; cursor: pointer; float: right; position: relative; top: -16px;",
+		},
+		{
+			s: ".msg-action-button",
+			r: "top: 0px;",
 		},
 		{
 			s: "input:checked + label .connects-info",
@@ -640,6 +644,31 @@ function baseCss () {
 		{
 			s: ".help--subtle",
 			r: "cursor: help;",
+		},
+	]);
+
+	// QOL fixes
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// Styles for altered messages
+		{
+			s: ".userscript-modify-message",
+			r: "display: none;",
+		},
+		{
+			s: ".message.inlang i",
+			r: "cursor: help;",
+		},
+		{
+			s: ".message.action .avatar, .message.action .by",
+			r: "display: none;",
+		},
+		{
+			s: ".message.general.talktomyself, .message.rollresult.talktomyself, .message.private.talktomyself",
+			r: "filter: sepia(100%);",
+		},
+		{
+			s: ".message.general.disconnect .by::before",
+			r: "font-family: pictos; content: \"[\";",
 		},
 	]);
 
