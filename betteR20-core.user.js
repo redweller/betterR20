@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.2.37
+// @version      1.33.2.38
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -266,7 +266,7 @@ function baseLanguage () {
 		lang_gnomish: [`Gnomish`],
 		lang_goblin: [`Goblin`],
 		lang_halfling: [`Halfling`],
-		lang_orkish: [`Orkish`],
+		lang_orcish: [`Orcish`],
 		lang_abyssal: [`Abyssal`],
 		lang_celestial: [`Celestial`],
 		lang_draconic: [`Draconic`],
@@ -282,7 +282,7 @@ function baseLanguage () {
 		lang_alias_gnomish: [``],
 		lang_alias_goblin: [``],
 		lang_alias_halfling: [``],
-		lang_alias_orkish: [``],
+		lang_alias_orcish: [``],
 		lang_alias_abyssal: [``],
 		lang_alias_celestial: [``],
 		lang_alias_draconic: [``],
@@ -501,7 +501,7 @@ function baseLanguage () {
 		lang_gnomish: [`Гномий`],
 		lang_goblin: [`Гоблинский`],
 		lang_halfling: [`Полуросликов`],
-		lang_orkish: [`Орочий`],
+		lang_orcish: [`Орочий`],
 		lang_abyssal: [`Бездны`],
 		lang_celestial: [`Небесный`],
 		lang_draconic: [`Драконий`],
@@ -517,7 +517,7 @@ function baseLanguage () {
 		lang_alias_gnomish: [`гномский, гномов`],
 		lang_alias_goblin: [`гоблинов`],
 		lang_alias_halfling: [`халфлингский, халфлингов`],
-		lang_alias_orkish: [`оркский, орков`],
+		lang_alias_orcish: [`оркский, орков`],
 		lang_alias_abyssal: [`абиссальный`],
 		lang_alias_celestial: [`целестиалов`],
 		lang_alias_draconic: [`дарконский, драконов`],
@@ -1114,7 +1114,15 @@ function baseUtil () {
 
 	d20plus.ut.sanitizeFilename = function (str) {
 		return str.trim().replace(/[^-\w]/g, "_");
-	};
+	};// RB20 EXCLUDE START
+
+	d20plus.ut.transliterate = (word) => {
+		const a = {"Ё": "YO", "Й": "I", "Ц": "TS", "У": "U", "К": "K", "Е": "E", "Н": "N", "Г": "G", "Ш": "SH", "Щ": "SCH", "З": "Z", "Х": "H", "Ъ": "'", "ё": "yo", "й": "i", "ц": "ts", "у": "u", "к": "k", "е": "e", "н": "n", "г": "g", "ш": "sh", "щ": "sch", "з": "z", "х": "h", "ъ": "'", "Ф": "F", "Ы": "I", "В": "V", "А": "А", "П": "P", "Р": "R", "О": "O", "Л": "L", "Д": "D", "Ж": "ZH", "Э": "E", "ф": "f", "ы": "i", "в": "v", "а": "a", "п": "p", "р": "r", "о": "o", "л": "l", "д": "d", "ж": "zh", "э": "e", "Я": "Ya", "Ч": "CH", "С": "S", "М": "M", "И": "I", "Т": "T", "Ь": "'", "Б": "B", "Ю": "YU", "я": "ya", "ч": "ch", "с": "s", "м": "m", "и": "i", "т": "t", "ь": "'", "б": "b", "ю": "yu"};
+		if (!word.split) return "";
+		return word.split("").map(function (char) {
+			return a[char] || char;
+		}).join("");
+	}// RB20 EXCLUDE END
 
 	d20plus.ut.saveAsJson = function (filename, data) {
 		const blob = new Blob([JSON.stringify(data, null, "\t")], {type: "application/json"});
@@ -2202,16 +2210,23 @@ function baseConfig () {
 			"name": __("cfg_option_whisper_name"),
 			"default": false,
 			"_type": "boolean",
-		},
+		}, // RB20 EXCLUDE START
 		"massRollAssumesOGL": {
 			"name": __("cfg_option_assume_ogl"),
 			"default": true,
 			"_type": "boolean",
-		},
+		}, // RB20 EXCLUDE END
 	});
 	addConfigOptions("canvas", {
 		"_name": __("cfg_tab_canvas"),
 		"_player": true,
+		"gridSnap": {
+			"name": __("cfg_option_grid_snap"),
+			"default": "1",
+			"_type": "_enum",
+			"__values": ["0.25", "0.5", "1"],
+			"_player": true,
+		},
 		"quickLayerButtons": {
 			"name": __("cfg_option_layer_panel"),
 			"default": true,
@@ -2224,13 +2239,13 @@ function baseConfig () {
 			"__sliderMin": 0,
 			"__sliderMax": 1,
 			"__sliderStep": 1,
-		},
+		}, // RB20 EXCLUDE START
 		"showFloors": {
 			"name": __("cfg_option_show_fl"),
 			"default": false,
 			"_type": "boolean",
 			"_player": false,
-		},
+		}, // RB20 EXCLUDE END
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
 			"default": true,
@@ -2242,7 +2257,7 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		},
+		}, // RB20 EXCLUDE START
 		"showRoofs": {
 			"name": __("cfg_option_show_rf"),
 			"default": false,
@@ -2254,20 +2269,13 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		},
+		}, // RB20 EXCLUDE END
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		},
-		"gridSnap": {
-			"name": __("cfg_option_grid_snap"),
-			"default": "1",
-			"_type": "_enum",
-			"__values": ["0.25", "0.5", "1"],
-			"_player": true,
-		},
+		}, // RB20 EXCLUDE START
 		"scaleNamesStatuses": {
 			"name": __("cfg_option_scaled_names"),
 			"default": false,
@@ -2278,7 +2286,7 @@ function baseConfig () {
 			"name": __("cfg_option_neat_menus"),
 			"default": true,
 			"_type": "boolean",
-		},
+		}, // RB20 EXCLUDE END
 	});
 	addConfigOptions("import", {
 		"_name": __("cfg_tab_import"),
@@ -2322,7 +2330,7 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
+		}, // RB20 EXCLUDE START
 		"selectJournalSearchType": {
 			"name": __("cfg_option_select_jrnsearch"),
 			"default": "roll20",
@@ -2340,7 +2348,7 @@ function baseConfig () {
 				"Roll20",
 				"betteR20",
 			],
-		},
+		}, // RB20 EXCLUDE END
 		"quickInitButtons": {
 			"name": __("cfg_option_quick_init_sort"),
 			"default": true,
@@ -2995,7 +3003,7 @@ function baseConfig () {
 			handleProp("weatherEffect1");
 		}
 	};
-	*/
+	*/ // RB20 EXCLUDE START
 
 	d20plus.cfg.handlePlayerImgSize = () => {
 		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
@@ -3013,7 +3021,7 @@ function baseConfig () {
 			`;
 			dynamicStyle.html(setStyle);
 		}
-	}
+	} // RB20 EXCLUDE END
 
 	d20plus.cfg.handleInitiativeShrink = () => {
 		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
@@ -3023,7 +3031,7 @@ function baseConfig () {
 		} else {
 			dynamicStyle.html("");
 		}
-	}
+	} // RB20 EXCLUDE START
 
 	d20plus.cfg.HandleArtLibraryButtons = () => {
 		if (d20plus.cfg.getOrDefault("interface", "selecArtLibraryType") !== "Roll20") {
@@ -3054,7 +3062,7 @@ function baseConfig () {
 				}
 			`);
 		}
-	}
+	} // RB20 EXCLUDE END
 
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg.handlePlayerImgSize();
@@ -12090,7 +12098,7 @@ function initHTMLbaseMisc () {
 			#textchat-social-notifier-in::before {
 				content: "IN: ";
 			}
-			#textchat-social-notifier::after {
+			#textchat-social-notifier::after, #textchat-notifier::after {
 				content: "*";
 				font-family: pictos;
 				padding-left: 3px;
@@ -12099,6 +12107,7 @@ function initHTMLbaseMisc () {
 			#textchat-notifier {
 				float: right;
 				position: unset;
+				cursor: pointer;
 			}
 		</style>
 		`;
@@ -13006,7 +13015,7 @@ function d20plusEngine () {
 		})
 	} */
 
-	d20plus.engine.expendResources = async (expend) => {
+	d20plus.engine.expendResources = (expend) => {
 		const character = d20.Campaign.characters._byId[expend.charID];
 		if (!character || !character?.currentPlayerControls()) return;
 		const fetching = d20plus.ut.charFetchAndRetry({
@@ -13015,27 +13024,36 @@ function d20plusEngine () {
 			callback: d20plus.engine.expendResources,
 		});
 		if (fetching) return;
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
 		const characterName = character.get("name");
 		const changedAtName = `lvl${expend.lvl}_slots_expended`;
 		const attrib = {ref: d20plus.ut.getCharAttribByName(character, changedAtName)};
 		if (!attrib.ref) return;
 		attrib.current = attrib.ref.get("current");
+		expend.amt = expend.amt || 1;
 		if (isNaN(attrib.current)) return;
-		if (attrib.current > 0) {
-			attrib.new = attrib.current - 1;
+		if (expend.restore !== undefined) {
+			attrib.ref.save({current: expend.restore});
+			attrib.author = `${playerName} restored lvl${expend.lvl} slot`;
+			attrib.msg = `/w "${characterName}" ${characterName} has ${expend.restore} lvl${expend.lvl} slots again`;
+		} else if (attrib.current - expend.amt >= 0) {
+			attrib.new = attrib.current - expend.amt;
 			attrib.ref.save({current: attrib.new});
+			attrib.undo = {...expend}; attrib.undo.restore = attrib.current;
 			attrib.msg = `/w "${characterName}" ${characterName} now has ${attrib.new} lvl${expend.lvl} slots left`;
 		} else {
 			attrib.msg = `/w "${characterName}" ${characterName} already had no lvl${expend.lvl} slots`;
 		}
-		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
 		const author = `${playerName} tried using lvl${expend.lvl} slot`;
-		const transport = {type: "automatic", author};
-		d20plus.ut.log(attrib, transport);
+		const transport = {type: "automation", author};
+		if (expend.restore) transport.author = `${playerName} restored lvl${expend.lvl} slots`;
+		else transport.author = `${playerName} tried using lvl${expend.lvl} slot`;
+		if (attrib.undo) transport.undo = attrib.undo;
 		d20.textchat.doChatInput(attrib.msg, undefined, transport);
 	}
 
-	d20plus.engine.alterTokensHP = (barID, dmg, selected) => {
+	d20plus.engine.alterTokensHP = (alter) => { // dmg, selected) => {
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"));
 		const bar = {
 			val: `bar${barID}_value`,
 			link: `bar${barID}_link`,
@@ -13046,22 +13064,27 @@ function d20plusEngine () {
 			const current = token.get(bar.val);
 			const max = token.get(bar.max);
 			if (isNaN(max) || isNaN(current) || current === "") return false;
-			const hp = {old: current, new: current - dmg};
+			const hp = {old: current, new: current - alter.dmg};
 			if (hp.new < 0) hp.new = 0;
 			if (max !== "") {
 				if (hp.new > max) hp.new = max;
 				if (hp.new <= -max) hp.dead = true;
+				if (hp.old <= 0 && hp.new > 0) hp.alive = true;
 			}
 			return hp;
 		}
-		const log = [];
-		selected = selected || d20.engine.selected();
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const author = `${playerName} applied ${alter.dmg} damage`;
+		const transport = {type: "automation", author};
+		const targets = alter.targets || d20.engine.selected();
 		d20.engine.unselect();
-		selected.forEach(el => {
-			const token = el.model;
+		targets.forEach(token => {
+			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
+			else if (token.model) token = token.model;
 			const hp = calcHP(token);
 			if (!hp) return;
 			if (!token.currentPlayerControls()) return;
+			if (alter.restore !== undefined) hp.new = alter.restore;
 			const barLinked = token.get(bar.link);
 			const tokenName = token.get("name");
 			if (barLinked) {
@@ -13069,7 +13092,7 @@ function d20plusEngine () {
 				const charID = token.character?.id;
 				const fetching = d20plus.ut.charFetchAndRetry({
 					char: token.character,
-					params: [barID, dmg, [el]],
+					params: [{dmg: alter.dmg, targets: [token]}],
 					callback: d20plus.engine.alterTokensHP,
 				});
 				if (!fetching && charID) {
@@ -13077,26 +13100,25 @@ function d20plusEngine () {
 					const charName = token.character.get("name");
 					attrib.save({current: hp.new});
 					attrib.syncTokenBars();
-					hp.altered = true;
-					log.push(`/w "${charName}" ${tokenName} HP from ${hp.old} to ${hp.new}`);
+					hp.msg = `/w "${charName}" ${tokenName} from ${hp.old} to ${hp.new} HP`;
+					if (alter.restore !== undefined) hp.msg = `/w "${charName}" ${tokenName} HP back to ${hp.new}`;
 				}
 			} else {
 				token.save({[bar.val]: hp.new});
-				log.push(`/w gm ${tokenName} HP from ${hp.old} to ${hp.new}`);
-				hp.altered = true;
+				hp.msg = `/w gm ${tokenName} from ${hp.old} to ${hp.new} HP`;
+				if (alter.restore !== undefined) hp.msg = `/w gm ${tokenName} HP back to ${hp.new}`;
 			}
-			if (hp.altered) {
-				if (hp.dead) log.push(`${tokenName} is instantly dead`);
-				else if (hp.new === 0) log.push(`${tokenName} falls unconscious`);
+			if (hp.msg) {
+				hp.undo = {type: "hp", dmg: alter.dmg, restore: hp.old, targets: [token.id]};
+				if (alter.restore === undefined) hp.transport = Object.assign({undo: hp.undo}, transport);
+				else transport.author = `${playerName} restored HP to ${alter.restore}`;
+				d20.textchat.doChatInput(hp.msg, undefined, hp.transport || transport);
+				if (hp.dead) d20.textchat.doChatInput(`${tokenName} is instantly dead`, undefined, transport);
+				else if (hp.alive) d20.textchat.doChatInput(`${tokenName} is conscious again`, undefined, transport);
+				else if (hp.new === 0) d20.textchat.doChatInput(`${tokenName} falls unconscious`, undefined, transport);
 			}
 		})
-		if (log.length) {
-			const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
-			const author = `${playerName} applied ${dmg} damage`;
-			const transport = {type: "automatic", author};
-			d20.textchat.doChatInput(log.join("\n"), undefined, transport);
-		}// RB20 EXCLUDE END
-	}
+	}// RB20 EXCLUDE END
 
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);
@@ -16450,12 +16472,12 @@ function baseCss () {
 		},
 		// Tweak OGL roll template styles
 		{
-			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
-			r: "padding-top: 0px",
+			s: ".sheet-rolltemplate-atkdmg .sheet-desc .sheet-savedc",
+			r: "padding-top: 5px",
 		},
 		{
 			s: ".sheet-rolltemplate-simple .sheet-charname, .sheet-rolltemplate-simple3D .sheet-charname, .sheet-rolltemplate-skill .sheet-charname, .sheet-rolltemplate-atk .sheet-charname, .sheet-rolltemplate-dmg .sheet-charname, .sheet-rolltemplate-atkdmg .sheet-charname",
-			r: "margin-top: -8px; padding-bottom: 2px;",
+			r: "margin-top: -8px; padding-bottom: 5px;",
 		},
 		{
 			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
@@ -16474,6 +16496,10 @@ function baseCss () {
 			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult.fullfail",
 			r: "color: #B31515",
 		},
+		{
+			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult",
+			r: "font-size: medium; padding: 5px 0px;",
+		},
 		// Style hit dice rolls for auto-updating HP
 		{
 			s: ".inlinerollresult.showtip.hit-dice",
@@ -16482,6 +16508,27 @@ function baseCss () {
 		{
 			s: ".inlinerollresult.showtip.hit-dice:hover::after",
 			r: "content: \"\\2694\";font-size: initial; color: rgba(250,100,100,0.6); position: absolute;",
+		},
+		// Styles for altered messages
+		{
+			s: ".userscript-modify-message",
+			r: "display: none;",
+		},
+		{
+			s: ".message.inlang i",
+			r: "cursor: help;",
+		},
+		{
+			s: ".message.action .avatar, .message.action .by",
+			r: "display: none;",
+		},
+		{
+			s: ".message.general.talktomyself, .message.rollresult.talktomyself, .message.private.talktomyself",
+			r: "filter: sepia(100%);",
+		},
+		{
+			s: ".message.general.disconnect .by::before",
+			r: "font-family: pictos; content: \"[\";",
 		},
 	]);
 
@@ -21949,7 +21996,8 @@ function baseChat () {
 			const spacing = i < words.length - 1 ? " " : "";
 			if (incompetent && Math.random() > 0.5) {
 				return words[i] + spacing;
-			} else if (words[i].indexOf("--") === 0) {
+			} else if (words[i].indexOf("--") === 0) { // RB20 EXCLUDE START
+				words[i] = d20plus.ut.transliterate(words[i])// RB20 EXCLUDE END
 				return words[i].replace(/--/gu, "").uppercaseFirst() + spacing;
 			} else if (particle.this && !particle.left && i < words.length - 1) {
 				particle.left = true;
@@ -21966,24 +22014,10 @@ function baseChat () {
 		return translations.join("");
 	}
 
-	// console.log(gibberish("In publishing and graphic design, --Lorem --ipsum is a placeholder text commonly used to demonstrate the visual form of a document", undefined, false))
-	// console.log(gibberish("I will kill you", undefined, false))
-
 	function availableLanguages (charId) {
 		const char = d20.Campaign.characters.get(charId);
 		const langId = d20.journal.customSheets.availableAttributes.repeating_proficiencies_prof_type;
-		// first check if character sheet is loaded, if not - initialize it
-		if (!char.attribs.length && !char.attribs.fetching) {
-			char.attribs.fetch(char.attribs);
-			char.attribs.fetching = true;
-			const wait = setInterval(function () {
-				if (char.attribs.length) {
-					clearInterval(wait);
-					delete char.attribs.fetching;
-					d20plus.chat.refreshLanguages();
-				}
-			}, 20);
-		}
+		if (d20plus.ut.charFetchAndRetry({char, callback: d20plus.chat.refreshLanguages})) return [];
 		// roll20 OGL sheet stores languages differently compared to other traits
 		// by default, they don't have corresponging "proficiency type" attribute
 		// however, if you create a trait and THEN change it to be language, it will have LOCALIZED "language" proficiency type
@@ -22123,22 +22157,6 @@ function baseChat () {
 		</script>
 	`;
 
-	const actionsTemplate = () => `
-		<script id="sheet-rolltemplate-actionlog" type="text/html">
-			<span class="showtip tipsy-n-right" style="cursor: help" 
-				title="<img src=&quot;https://app.roll20.net/users/avatar/{{avatar}}/30&quot; height=&quot;20px&quot; width=&quot;20px&quot;> {{title}}">
-				{{displaymessage}}<br>
-			</span>
-			<input type="checkbox" class="connects-state" id="connects{{id}}-state"/>
-			<label for="connects{{id}}-state">
-				<span id="connects{{id}}-info" class="connects-info" title="Show player details">{{icon}}</span>
-				<span id="connects{{id}}" class="connects-log">
-				B20 not responding...
-				</span>
-			</label>
-		</script>
-	`;
-
 	const languageDialogTemplate = (msg, language) => `
 			<div>
 				<p><strong>${__("ui_lang_subst_subtitle", [language])}</strong></p>
@@ -22158,7 +22176,7 @@ function baseChat () {
 			</div>
 	`;
 
-	const playerConnectsTemplate = (id) => `
+	const playerVersionsTemplate = (id) => `
 			<input type="checkbox" class="connects-state" id="connects${id}-state"/>
 			<label for="connects${id}-state">
 				<span id="connects${id}-info" class="connects-info" title="Show player details">0</span>
@@ -22167,19 +22185,6 @@ function baseChat () {
 				</span>
 			</label>
 	`;
-
-	const msgActionButtonTemplate = (data) => {
-		const id = d20plus.ut.generateRowId();
-		const actions = {
-			undo: {title: "Revert action", icon: "r"},
-			request: {title: "Request script info", icon: "?"},
-		};
-		Object.assign(data, actions[data.type]);
-		return `<span id="action${id}-button"
-			class="msg-action-button"
-			data-action="${data.type}|${data.action}" title="${data.title}">${data.icon}
-		</span>`;
-	};
 
 	const chatHelp = [
 		["/w (name)", __("msg_chat_help_w")],
@@ -22222,17 +22227,46 @@ function baseChat () {
 		return "";
 	}
 
-	d20plus.chat.smallActionBtn = (event) => {
-		const $el = $(event.target);
-		const act = {};
-		[act.type, ...act.params] = $el.attr("data-action")?.split("|");
-		if (act.type === "request") {
-			d20plus.chat.requestScriptVersions(null, `"${act.params[0]}"`);
-		}
+	const msgActionButtonTemplate = (data) => {
+		const id = d20plus.ut.generateRowId();
+		const actions = {
+			spell: {title: "Revert action", icon: "r"},
+			request: {title: "Request script info", icon: "?"},
+		};
+		Object.assign(data, actions[data.type]);
+		return `<span id="action${id}-button"
+			class="msg-action-button"
+			data-action="${data.type}|${data.action}" title="${data.title}">${data.icon}
+		</span>`;
+	};
+
+	d20plus.chat.actions = { run: (id) => {
+		d20plus.chat.actions[id]?.callback(d20plus.chat.actions[id]?.params);
+		delete d20plus.chat.actions[id];
+	}};
+
+	d20plus.chat.smallActionBtnAdd = (msg, action) => {
+		const id = d20plus.ut.generateRowId();
+		const actions = {
+			hp: {title: "Revert damage", icon: "r", callback: d20plus.engine.alterTokensHP},
+			spell: {title: "Revert spell slots", icon: "r", callback: d20plus.engine.expendResources},
+			request: {title: "Request script info", icon: "?", callback: d20plus.chat.requestScriptVersions},
+		}[action.type];
+		d20plus.chat.actions[id] = Object.assign({params: action}, actions);
+		msg.append(`<span class="msg-action-button showtip tipsy-n-right"
+			data-action="${id}" title="${actions.title}">${actions.icon}
+		</span>`);
 	}
 
-	d20plus.chat.requestScriptVersions = (text, msg) => {
+	d20plus.chat.smallActionBtnPress = (event) => {
+		const $el = $(event.target);
+		const id = $el.attr("data-action");
+		d20plus.chat.actions.run(id);
+	}
+
+	d20plus.chat.requestScriptVersions = (params, msg) => {
 		const id = d20plus.ut.generateRowId();
+		msg = msg || `"${params.name}"`;
 		msg.replace(/^("?)(?<name>[^ ]+|[^"]+)\1.*$/u, (...str) => {
 			const name = str.last().name;
 			const transport = {type: "handshake", id};
@@ -22241,18 +22275,10 @@ function baseChat () {
 		return "";
 	}
 
-	d20plus.chat.outputChatAction = (id, msg, userID) => {
-		const type = userID ? "general" : "system";
-		const avatar = userID || d20_account_id;
-		// replace ":" with U+789 to separate messages
-		d20plus.chat.drwho = d20plus.chat.drwho ? "" : "꞉꞉"
-		d20.textchat.incoming(false, {
-			type,
-			id,
-			who: d20plus.chat.drwho || "::",
-			avatar: `/users/avatar/${avatar}/30`,
-			content: msg,
-		});
+	d20plus.chat.modifyMsg = (id, mod) => {
+		d20plus.chat.modify = d20plus.chat.modify || {};
+		d20plus.chat.modify[id] = d20plus.chat.modify[id] || {};
+		Object.assign(d20plus.chat.modify[id], mod);
 	}
 
 	d20plus.chat.checkTTMSStatus = () => {
@@ -22266,41 +22292,20 @@ function baseChat () {
 		}
 	}
 
+	d20plus.chat.resetSendMyself = () => {
+		if (d20plus.chat.mtms?.await) {
+			d20.textchat.talktomyself = false;
+			delete d20plus.chat.mtms;
+		}
+	}
+
 	d20plus.chat.sendMyself = (text, msg) => {
-		// This enables talktomyself mode only for the commands in the textarea
-		// and then disables it. Convenient if you're testing some macros while
-		// simultaneously chatting with other people. Thing is, /ttms switches and other
-		// chat commands are done asynchronously, and roll20 doesn't handle promises in this case.
-		// Hence the timeouts on everything, including e.g. if some command had initiated dialog.
-		const resetTTMS = (wait) => {
-			setTimeout(() => {
-				d20.textchat.doChatInput(`/talktomyself off`);
-				d20plus.chat.localHistory.push(false);
-				delete d20plus.chat.mtms;
-				setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
-			}, wait);
-		}
-		const awaitTTMS = (ts) => {
-			if (d20plus.chat.mtms?.success && !d20.textchat.commandInProgress) {
-				resetTTMS(50);
-			} else if (d20plus.chat.mtms?.dialogInProgress && !$(".ui-dialog button:visible").length) {
-				resetTTMS(1000);
-			} else {
-				d20plus.chat.checkTTMSStatus();
-				d20plus.chat.mtms = {await: true};
-				if ($(".ui-dialog button:visible").length) {
-					d20plus.chat.mtms.dialogInProgress = true;
-				}
-				setTimeout(() => {
-					awaitTTMS(ts);
-				}, 20);
-			}
-		}
-		d20.textchat.doChatInput(`/talktomyself on`);
-		d20plus.chat.localHistory.push(false);
+		// This enables talktomyself mode only for the block of commands in the textarea
+		// and then a hook in d20plus.chat.r20outgoing (doChatInput injection) disables it
+		d20.textchat.talktomyself = true;
 		setTimeout(() => {
 			d20.textchat.doChatInput(msg);
-			awaitTTMS(d20.textchat.lastChatBeep);
+			d20plus.chat.mtms = {await: true};
 		}, 20);
 		return "";
 	}
@@ -22330,11 +22335,6 @@ function baseChat () {
 		}
 		const knows = window.is_gm || hasLanguageProfeciency(langId);
 		message = knows ? message : gibberish(message, langId, true);
-		// const coded = btoa(encodeURI(string));
-		// const pos = Math.round(Math.random() * (coded.length - 2));
-		// const encoded = coded.slice(0, pos) + btoa(encodeURI(d20_player_id)) + coded.slice(pos);
-		// return `${gibberish(string, lanid)}\n&{template:inlanguage} {{language=${language}}} {{languageid=${languageid}}} {{encoded=${encoded}}}`;
-		// d20plus.chat.msgInLang = {language, languageid, message};
 		return `${gibberish(message, langId)}|&inlang|${language}|&meta|${langId}|&meta|${message}`;
 	}
 
@@ -22383,13 +22383,13 @@ function baseChat () {
 				"default": true,
 				"_type": "boolean",
 				"_player": true,
-			},
+			}, // RB20 EXCLUDE START
 			"shareVersions": {
 				"name": __("cfg_option_share_version_info"),
 				"default": true,
 				"_type": "boolean",
 				"_player": true,
-			}, // RB20 EXCLUDE START
+			},
 			"clickRollForDmg": {
 				"name": "Process and apply dice rolls to HP bar#",
 				"default": "3",
@@ -22402,8 +22402,8 @@ function baseChat () {
 				"default": "only b20 expressions",
 				"_type": "_enum",
 				"__values": ["disable", "automatic from OGL templates", "only b20 expressions"],
-				"_player": true, // RB20 EXCLUDE END
-			},
+				"_player": true,
+			}, // RB20 EXCLUDE END
 		},
 	);
 
@@ -22462,6 +22462,11 @@ function baseChat () {
 		$("#textchat-social-notifier").removeClass("b20-to");
 	}
 
+	d20plus.chat.resetTTMS = () => {
+		$("#speakingto").val("");
+		d20plus.chat.onspeakingto();
+	}
+
 	d20plus.chat.closeSocial = () => {
 		const $input_container = $("#textchat-input");
 		d20plus.chat.social = false;
@@ -22480,53 +22485,65 @@ function baseChat () {
 			player.name = player.name.length > 17 ? `${player.name.slice(0, 15)}...` : player.name;
 			if (!d20plus.chat.players[current.id]) {
 				d20plus.chat.players[current.id] = { online: player.on };
-				notification = `${player.name} ${__("msg_player_joined")}`;
+				notification = __("msg_player_joined");
 			} else {
 				if (d20plus.chat.players[current.id].online && !player.on) {
-					notification = `${player.name} ${__("msg_player_disconnected")}`;
+					notification = __("msg_player_disconnected");
 					d20plus.chat.players[current.id].online = false;
 				} else if (!d20plus.chat.players[current.id].online && player.on) {
-					notification = `${player.name} ${__("msg_player_connected")}`;
+					notification = __("msg_player_connected");
 					d20plus.chat.players[current.id].online = true;
 				}
 			}
 			if (changelist && notification && d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) {
 				const id = d20plus.ut.generateRowId();
-				d20plus.chat.outputChatAction(id, notification, current.attributes.d20userid);
-				if (!player.on) return;
-				$(`[data-messageid=${id}]`).append(msgActionButtonTemplate({
-					type: "request",
-					action: current.attributes.displayname,
-				}));
+				d20plus.chat.modifyMsg(id, {class: "system connect", decolon: true});
+				if (!player.on) d20plus.chat.modifyMsg(id, {class: "system disconnect"});
+				if (player.on) d20plus.chat.modifyMsg(id, {action: {type: "request", name: player.name}});
+				d20.textchat.incoming(false, { id,
+					type: "general",
+					who: `${player.on ? "" : "&nbsp;"}${player.name}`,
+					avatar: `/users/avatar/${current.attributes.d20userid}/30`,
+					content: `${notification}`,
+				});
 			}
 		})
 	}
 
-	d20plus.chat.incoming = (params) => {
-		const msg = params[1];// RB20 EXCLUDE START
-		const expendSlots = d20plus.cfg.getOrDefault("chat", "expendSlots") !== "disable";// RB20 EXCLUDE END
-		msg.from_me = msg.playerid === d20_player_id;
-		msg.to_me = msg.target?.indexOf(d20_player_id) > -1;
+	d20plus.chat.r20outgoing = (params) => {
+		d20plus.chat.resetSendMyself();// RB20 EXCLUDE START
 
-		// eslint-disable-next-line no-console
-		console.log(Object.assign({p: [params[0], params[2], params[3]]}, msg, {
-			history: d20plus.chat.localHistory}));// RB20 EXCLUDE END
+		if (d20plus.chat.logAll) d20plus.ut.log("OUTGOING!", params);// RB20 EXCLUDE END
+	}
+
+	d20plus.chat.r20incoming = (params) => {
+		const msg = params[1];// RB20 EXCLUDE START
+		const expendSlots = d20plus.cfg.getOrDefault("chat", "expendSlots") !== "disable";
+		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[co\d]?)\|?(?<quantity>\d*)\]/;// RB20 EXCLUDE END
+		msg.from_me = msg.playerid === d20_player_id;
+		msg.to_me = msg.target?.indexOf(d20_player_id) > -1;// RB20 EXCLUDE START
+
+		if (d20plus.chat.logAll) {
+			d20plus.ut.log("INCOMING!", Object.assign({
+				p: [params[0], params[2], params[3]]}, msg, {
+				history: d20plus.chat.localHistory}));
+		}// RB20 EXCLUDE END
 
 		// For rolls &  r20 generates duplicate messages that don't show on the log with
 		// params [sound, msg, true, true]. Hence check params[2]&[3] !== true to avoid double processing
 		if (params[2] === true && params[3] === true) return;
-		if (d20.textchat.chatstartingup) return;// RB20 EXCLUDE START
+		if (d20.textchat.chatstartingup) return;
 
 		if (msg.from_me || msg.type === "system") {
 			const stash = [];
 			while (d20plus.chat.localHistory.length) {
 				const record = d20plus.chat.localHistory.pop();
-				d20.textchat.commandhistory.pop();
-				if (record) stash.push(record);
+				if (record) {
+					stash.push(record);
+					d20.textchat.commandhistory.pop();
+				}
 			}
 			d20.textchat.commandhistory = d20.textchat.commandhistory.concat(stash);
-		} else if (msg.type === "error") {
-			d20plus.chat.localHistory.pop();
 		}
 		if (msg.type === "whisper") {
 			if (msg.from_me) {
@@ -22535,29 +22552,20 @@ function baseChat () {
 				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
 			}
 		}
-		if (d20plus.chat.mtms?.await && params[1]) {
-			if (msg.from_me || msg.type === "error") d20plus.chat.mtms.success = true;
-		}
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
 			const know_language = hasLanguageProfeciency(speech.languageid);
 			if (window.is_gm || msg.from_me || know_language) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
-				msg.content = `
-					{{displaymessage=${msg.content}}}
-					{{displaylanguage=(${speech.language})}}
-					{{titlelanguage=${speech.language}}}
-					{{translated=${translated}}}`;
-				msg.rolltemplate = "inlanguage";
+				msg.content += `<br><i title="You understand this because one of your characters speaks ${speech.language}">
+					<strong>(${speech.language})</strong> ${translated}</i>`;
+				d20plus.chat.modifyMsg(msg.id, {class: "inlang"});
 			}
 		} else if (msg.listenerid?.type === "handshake") {
 			if (msg.from_me && !msg.listenerid.data) {
-				const text = `${msg.target_name} scripts version info`;
-				const accID = d20plus.ut.getAccountById(msg.target);
-				const id = msg.listenerid.id;
-				d20plus.chat.outputChatAction(id, text, accID);
-				$(`[data-messageid=${id}]`).append(playerConnectsTemplate(id));
-				return false;
+				msg.content = `script versions info`;
+				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.target)}/30`;
+				d20plus.chat.modifyMsg(msg.id, {class: "system connects", decolon: true, versions: msg.listenerid.id});
 			} else if (msg.from_me && msg.listenerid.data) {
 				return false;
 			} else if (msg.to_me && !msg.listenerid.data) {
@@ -22571,38 +22579,39 @@ function baseChat () {
 				$(`#connects${msg.listenerid.id}-info`).text("3");
 				return false;
 			}// RB20 EXCLUDE START
-		} else if (msg.listenerid?.type === "automatic") {
+		} else if (msg.listenerid?.type === "automation") {
 			const broadcast = msg.type !== "whisper";
 			if (is_gm || broadcast || msg.to_me) {
-				const id = d20plus.ut.generateRowId();
-				const accID = d20plus.ut.getAccountById(msg.playerid);
+				msg.id = d20plus.ut.generateRowId();
+				msg.who = "b20action";
+				msg.type = "general";
+				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.playerid)}/30`;
 				const span = `class="showtip tipsy-n-right" style="cursor: help;"`;
-				msg.avatar = `https://${window.location.hostname}/users/avatar/${accID}/30`;
-				msg.avatar = accID ? `<img src="${msg.avatar}" height="20px" width="20px"> ` : ``;
-				msg.content = `<span ${span} title='${msg.avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
-				d20plus.chat.outputChatAction(id, msg.content);
-				$(`.message.system`).last().append(msgActionButtonTemplate({type: "undo"}));
-				return false;
+				const avatar = `<img src="${msg.avatar}" height="20px" width="20px"> `;
+				d20plus.chat.modifyMsg(msg.id, {class: "action"});
+				if (msg.listenerid.undo && !msg.listenerid.undo.type) return false; // rare case of two windows open in FF
+				if (msg.listenerid.undo) d20plus.chat.modifyMsg(msg.id, {action: msg.listenerid.undo});
+				msg.content = `<span ${span} title='${avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
 			}
 		} else if (msg.from_me && expendSlots) {
 			const expend = {};
-			const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[co\d]?)\|?(?<quantity>\d*)\]/;
 			const oglStandard = {
 				spellLevel: /{{spelllevel=[\w ]*(?<splvl>\d|cantrip)}}/,
 				addLevelDice: /{{hldmg=\$\[\[(?<addlvl>\d)\]\]}}/,
 				charID: /{{spelldesc_link=\[.*\]\(~(?<charid>.*?)\|/,
 			};
 			msg.content = msg.content.replace(b20expend, (...str) => {
+				$(".btn.btn-danger.canceltargeting:visible").click();
 				const data = str.last();
 				if (data.type === "spl" && data.slot) {
 					expend.type = "spell";
 					({slot: expend.lvl, charid: expend.charID} = data);
-					d20plus.ut.log("Expend", expend)
 				}
 				return "";
 			});
 			if (msg.rolltemplate && msg.inlinerolls && !expend.type) {
 				const data = {};
+				$(".btn.btn-danger.canceltargeting:visible").click();
 				Object.entries(oglStandard).forEach(([param, exp]) => {
 					data[param] = msg.content.match(exp)?.last();
 				});
@@ -22621,11 +22630,47 @@ function baseChat () {
 				msg.id = d20plus.ut.generateRowId(); // this is supposed to trick r20 not to revert msg contents
 				d20plus.engine.expendResources(expend);
 			}
+		} else if (!msg.from_me) {
+			msg.content = msg.content.replace(b20expend, ""); // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
 		}
-		return params;// RB20 EXCLUDE END
+		if (d20.textchat.talktomyself && msg.from_me) {
+			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
+		}
+		return params;
 	}
 
-	d20plus.chat.outgoing = () => {
+	d20plus.chat.displaying = (params) => { // RB20 EXCLUDE START
+		if (d20plus.chat.logAll) d20plus.ut.log("DISPLAY", params); // RB20 EXCLUDE END
+		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
+			const msg = $(`[data-messageid=${id}]`);
+			if (!msg.get(0)) return;
+			if (mods.declass) msg.removeClass(mods.declass);
+			if (mods.class) msg.addClass(mods.class);
+			if (mods.versions) msg.append(playerVersionsTemplate(mods.versions));
+			if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
+			if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
+			delete d20plus.chat.modify[id];
+		});
+		/* $(`.message .userscript-modify-message`).each((i, el) => {
+			const msg = { $el: $(el) };
+			msg.body = msg.$el.closest(".message");
+			msg.by = msg.body.find(".by");
+			msg.$el.text().split("|").forEach(p => {
+				const params = p.split(":");
+				if (params.length === 2) msg[params[0]] = params[1];
+			});
+			if (msg.declass) msg.body.removeClass(msg.class);
+			if (msg.class) msg.body.addClass(msg.class);
+			if (msg.undo) msg.body.append(msgActionButtonTemplate({type: "undo"}));
+			if (msg.request) msg.body.append(msgActionButtonTemplate({type: "request", action: msg.request}));
+			if (msg.versions) msg.body.append(playerVersionsTemplate(msg.versions));
+			if (msg.decolon) msg.by.text(msg.by.text().replace(/(?:\(To |)(.+?)\)?:/, "$1"));
+			msg.$el.remove();
+		}); */
+	}
+
+	d20plus.chat.sending = () => {
+		d20plus.chat.resetSendMyself();
 		const tc = d20.textchat.$textarea;
 
 		if (d20plus.cfg.getOrDefault("chat", "emoji")) {
@@ -22643,8 +22688,8 @@ function baseChat () {
 			text = text.replace(/^\/wb (.*?)$/gm, d20plus.chat.sendReply);
 			text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
 			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
-			text = text.replace(/^\/mtms(.*?)$/s, d20plus.chat.sendMyself);
 			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
+			if (!d20.textchat.talktomyself) text = text.replace(/^\/mtms ?(.*?)$/s, d20plus.chat.sendMyself);
 			if (is_gm) text = text.replace(/^\/v (.*?)$/s, d20plus.chat.requestScriptVersions);
 			if (d20plus.cfg.getOrDefault("chat", "languages")) text = text.replace(/\/in (.*?)$/gm, d20plus.chat.sendParsedInLanguage);
 			// text = text.replace(/^\/cl (on|off)$/sm, comprehendLanguages);
@@ -22771,19 +22816,18 @@ function baseChat () {
 				roll.$el.attr("title", roll.tooltip);
 			})
 			.on("click", ".inlinerollresult.showtip", event => {
-				const barID = Number(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"));
 				const dmg = event.target.getAttribute("data-damage");
-				const targets = event.target.getAttribute("data-targets");
+				const dtargets = event.target.getAttribute("data-targets");
 				if (isNaN(dmg) || !dmg) return;
 				if (event.shiftKey) {
-					d20plus.engine.alterTokensHP(barID, Math.abs(dmg));
+					d20plus.engine.alterTokensHP({dmg: Math.abs(dmg)});
 				} else if (event.ctrlKey) {
-					d20plus.engine.alterTokensHP(barID, -Math.abs(dmg));
-				} else if (targets) {
-					d20plus.engine.alterTokensHP(barID, dmg, targets.split("|")
-						.map(targetID => { return {model: d20plus.ut.getTokenById(targetID)} })
-						.filter(token => !!token?.model),
-					);
+					d20plus.engine.alterTokensHP({dmg: -Math.abs(dmg)});
+				} else if (dtargets) {
+					const targets = dtargets.split("|")
+						.map(targetID => d20plus.ut.getTokenById(targetID))
+						.filter(token => !!token);
+					d20plus.engine.alterTokensHP({dmg, targets});
 				}
 			})
 			.on("mouseover", ".userscript-showtip", event => {
@@ -22808,11 +22852,15 @@ function baseChat () {
 
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
-		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.incoming);
+		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
+		d20plus.ut.injectCode(d20.textchat, "doChatInput", d20plus.chat.r20outgoing);
 
 		$("body").append(languageTemplate());
-		$("body").append(actionsTemplate());
 		buildLanguageIndex();
+
+		const obsconfig = { childList: true, subtree: false };
+		d20plus.cfg.chatWatcher = new MutationObserver(d20plus.chat.displaying);
+		d20plus.cfg.chatWatcher.observe($("#textchat .content").get(0), obsconfig);
 
 		if (window.is_gm) {
 			d20plus.chat.processPlayersList();
@@ -22832,6 +22880,7 @@ function baseChat () {
 			$("#textchat-note-container").append($chat_notifier);
 
 			$chat_textarea.on("focus", d20plus.chat.closeSocial);
+			$chat_notifier.on("click", d20plus.chat.resetTTMS);
 			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
 
 			$("#socialswitch").on("click", d20plus.chat.onsocial);
@@ -22848,7 +22897,7 @@ function baseChat () {
 			$(".userscript-commandintro ul").append(__("msg_b20_chat_help", [code, wiki]));
 			d20.textchat.$textchat
 				.on("click", ".userscript-commandintro ul code", d20plus.chat.help)
-				.on("click", ".msg-action-button", d20plus.chat.smallActionBtn);
+				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
 		}// RB20 EXCLUDE START
 
 		if (!isNaN(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"))) {
@@ -22862,7 +22911,7 @@ function baseChat () {
 		}// RB20 EXCLUDE END
 
 		$("#textchat-input").off("click", "button");
-		$("#textchat-input").on("click", "button", d20plus.chat.outgoing);
+		$("#textchat-input").on("click", "button", d20plus.chat.sending);
 	};
 }
 
