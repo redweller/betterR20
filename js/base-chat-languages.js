@@ -1,6 +1,11 @@
 function baseChatLanguages () {
 	d20plus.chat = d20plus.chat || {};
 
+	// Data for generating fake messages in in-game languages in base-chat gibberish()
+	// lexis: list of 100 fake words for each in-game language;
+	// particles: 9 fake short words imitating parts of speech like prepositions or
+	// conjunctions or interjections etc. adding more "flavor" to generated text
+	// factor: integer that determines the frequency of particle occurrences
 	/* eslint-disable */
 	d20plus.chat.languages = {
 		"common": {
