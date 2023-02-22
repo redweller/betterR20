@@ -10,7 +10,7 @@ function baseUtil () {
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
-		$("#lamer-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
+		$("#boring-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
 	};
 
 	d20plus.ut.error = (...args) => {
@@ -50,12 +50,18 @@ function baseUtil () {
 		});
 	};
 
-	d20plus.ut.injectCode = (object, method, injectedCode) => {
-		const source = object[method];
-		object[method] = function (...initParams) {
-			const passParams = injectedCode(initParams);
-			if (passParams === undefined) return source.apply(source, initParams);
-			else if (passParams !== false) return source.apply(source, passParams);
+	d20plus.ut.injectCode = (object, method, injectedCode, bindAndRun) => {
+		const original = object[method].bind(object);
+		if (bindAndRun) {
+			object[method] = (...initParams) => {
+				return injectedCode.bind(object)(original, initParams);
+			}
+		} else {
+			object[method] = function (...initParams) {
+				const passParams = injectedCode(initParams);
+				if (passParams === undefined) return original.apply(original, initParams);
+				else if (passParams !== false) return original.apply(original, passParams);
+			}
 		}
 	}
 
@@ -104,7 +110,7 @@ function baseUtil () {
 		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
 		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const classname = !legacytStyle ? "userscript-commandintro userscript-b20" : "userscript-hackerintro";
+		const classname = !legacytStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const data = [
 			d20plus.scriptName,
@@ -134,31 +140,29 @@ function baseUtil () {
 			}
 		}
 		if (window.enhancementSuiteEnabled) {
-			$("#lamer-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+			$("#boring-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
-			$("#rightsidebar").on("mouseout", d20plus.ut.resizeSidebar);
-			$("body").on("mouseup", d20plus.ut.resizeSidebar);
-			d20plus.ut.resizeSidebar("startup");
-		}
+		$("#boring-progress")
+			.before(`<span><span>&gt;</span>all systems operational</span>`)
+			.html("");
 		setTimeout(() => {
-			$(`.lamer-chat`).css("height", "0px");
+			$(`.boring-chat`).css("height", "0px");
 			setTimeout(() => {
-				$(".lamer-chat").remove();
+				$(".boring-chat").remove();
 				clearInterval(d20plus.ut.cursor);
 			}, 2000);
 		}, 6000);
 	};
 
 	d20plus.ut.showInitMessage = () => {
-		const consTemplate = `<div class="lamer-chat">
+		const consTemplate = `<div class="boring-chat">
 			<span><span>&gt;</span>initializing, please wait...</span>
-			<span id="lamer-progress"><span>&gt;</span>loading data</span>
-			<span id="lamer-cursor"><span>&gt;</span><aside>|</aside></span>
+			<span id="boring-progress"><span>&gt;</span>loading data</span>
+			<span id="boring-cursor"><span>&gt;</span><aside>|</aside></span>
 			<style type="text/css">
-			.lamer-chat {
+			.boring-chat {
 				font-family: Menlo, Monaco, Consolas, monospace;
 				font-size: small;
 				background: black;
@@ -169,16 +173,16 @@ function baseUtil () {
 				position: sticky;
 				z-index: 1000;
 				top: 0px;
-				height: 100px;
+				height: 110px;
 				transition: height 2s;
 				overflow: hidden;
 				border-bottom: 1px solid rgb(32, 194, 14);
 			}
-			.lamer-chat > span {
+			.boring-chat > span {
 				display: block; white-space: nowrap;
 				padding: 0px 5px 0px 45px;
 			}
-			.lamer-chat > span > span {
+			.boring-chat > span > span {
 				float: left; margin-left: -39px;
 			}
 			</style>
@@ -186,9 +190,9 @@ function baseUtil () {
 		$(`#textchat`).prepend(consTemplate);
 		let blink = false;
 		d20plus.ut.cursor = setInterval(() => {
-			$(`.lamer-chat`).append($(`.lamer-cursor`));
-			if (blink) $(`.lamer-chat aside`).html("|");
-			else $(`.lamer-chat aside`).html("");
+			$(`.boring-chat`).append($(`.boring-cursor`));
+			if (blink) $(`.boring-chat aside`).html("|");
+			else $(`.boring-chat aside`).html("");
 			blink = !blink;
 		}, 300);
 	};
@@ -197,7 +201,7 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const loadmsgtemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
-		if (!isStreamer) $(".lamer-chat > span:first-child").after(loadmsgtemplate);
+		if (!isStreamer) $(".boring-chat > span:first-child").after(loadmsgtemplate);
 		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
 	}
 
@@ -348,22 +352,29 @@ function baseUtil () {
 		return JSON.parse(journalFolder);
 	};
 
-	d20plus.ut.charFetchAndRetry = ({char, callback, params = []} = {}) => {
+	d20plus.ut.fetchCharAttribs = async (char) => {
 		const attribs = char?.attribs;
-		if (!attribs) return true;
-		if (!attribs.length) {
-			if (attribs.fetching) return true;
+		if (!attribs) return false;
+		if (attribs.length) {
+			return char;
+		}
+		if (!attribs.fetching) {
 			attribs.fetch(attribs);
 			attribs.fetching = true;
-			const wait = setInterval(function () {
-				if (attribs.length) {
-					clearInterval(wait);
-					delete char.attribs.fetching;
-					callback(...params);
-				}
-			}, 20);
-			return true;
 		}
+		return new Promise(resolve => {
+			let inProgress = 0;
+			const wait = setInterval(() => {
+				inProgress++;
+				if (attribs.length) resolve(char);
+				if (attribs.length || inProgress > 100) {
+					resolve(false);
+					clearInterval(wait);
+					delete attribs.fetching;
+					d20plus.ut.log(`Tried fetching ${char.attributes.name}`);
+				}
+			}, 30);
+		});
 	}
 
 	d20plus.ut._lastInput = null;
@@ -471,7 +482,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut._getCanvasElementById = (id, prop) => {
-		const found = d20.Campaign.pages.models.filter(model => model[prop]?.get(id))[0];
+		const found = d20.Campaign.pages.models.find(model => model[prop]?.get(id));
 		return found ? found[prop].get(id) : null;
 	};
 

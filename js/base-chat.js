@@ -73,7 +73,11 @@ function baseChat () {
 	function availableLanguages (charId) {
 		const char = d20.Campaign.characters.get(charId);
 		const langId = d20.journal.customSheets.availableAttributes.repeating_proficiencies_prof_type;
-		if (d20plus.ut.charFetchAndRetry({char, callback: d20plus.chat.refreshLanguages})) return [];
+		if (!char) return [];
+		if (!char.attribs.length) {
+			const fetched = d20plus.ut.fetchCharAttribs(char);
+			fetched.then(d20plus.chat.refreshLanguages);
+		}
 		// roll20 OGL sheet stores languages differently compared to other traits
 		// by default, they don't have corresponging "proficiency type" attribute
 		// however, if you create a trait and THEN change it to be language, it will have LOCALIZED "language" proficiency type
@@ -88,13 +92,13 @@ function baseChat () {
 		const charspeaks = char.attribs.models.map(prop => {
 			const filter = /repeating_proficiencies_(.*?)_name/;
 			if (prop.attributes.name.match(filter)) {
-				const exp = new RegExp(filter);
-				if (!traits.includes(exp.exec(prop.attributes.name)[1])) return prop.attributes.current;
+				const isSimpleTrait = traits.includes(filter.exec(prop.attributes.name)[1]);
+				if (!isSimpleTrait) return prop.attributes.current;
 			} else if (prop.attributes.name === "npc_languages") {
 				return prop.attributes.current.split(", ");
 			}
 		}).filter(lang => lang !== undefined);
-		return charspeaks.flatten().map(lan => lan.normalize());
+		return charspeaks.flatten().map(lang => lang.normalize());
 	}
 
 	function availableLanguagesPlayer (playerId) {
@@ -104,45 +108,50 @@ function baseChat () {
 				return actors.includes(playerId);
 			})
 			.map(char => char.id);
-		return characters.map(char => availableLanguages(char)).flatten();
+		return characters
+			.map(charId => availableLanguages(charId))
+			.flatten();
 	}
 
-	function hasLanguageProfeciency (langid) {
-		const profecientIn = availableLanguagesPlayer(d20_player_id).map(lan => d20plus.chat.getLanguageId(lan));
-		return profecientIn.includes(d20plus.chat.getLanguageId(langid));
+	function hasLanguageProficiency (langId) {
+		const profecientIn = availableLanguagesPlayer(d20_player_id)
+			.map(lang => d20plus.chat.getLanguageId(lang));
+		return profecientIn.includes(d20plus.chat.getLanguageId(langId));
 	}
 
-	d20plus.chat.getSpeakingIn = (available) => {
+	d20plus.chat.listSpeakingIn = (available) => {
 		$("#speakingin").html(available
-			.map(lan => lan.toSentenceCase())
-			.reduce((html, lan) => `${html}<option>${lan}</option>`, "<option></option>"),
+			.map(lang => lang.toSentenceCase())
+			.reduce((html, lang) => `${html}<option>${lang}</option>`, "<option></option>"),
 		);
 	}
 
-	d20plus.chat.getLanguageId = (lan) => {
-		if (Array.isArray(lan)) return lan.map(language => d20plus.chat.getLanguageId(language));
-		else return d20plus.chat.languageIndex[lan.normalize().toLowerCase()] || lan.normalize().toLowerCase();
+	d20plus.chat.getLanguageId = (lang) => {
+		if (Array.isArray(lang)) return lang.map(language => d20plus.chat.getLanguageId(language));
+		else return d20plus.chat.languageIndex[lang.normalize().toLowerCase()] || lang.normalize().toLowerCase();
 	}
 
-	d20plus.chat.refreshLanguages = () => {
+	d20plus.chat.refreshLanguages = async () => {
+		const $speakingIn = $("#speakingin");
 		const speakingAs = $("#speakingas").val().split("|");
 		const actorId = speakingAs[1];
 		const actorIsPlayer = speakingAs[0] === "player";
 		if (actorIsPlayer) {
 			if (window.is_gm) {
-				const prev = $("#speakingin").val();
-				d20plus.chat.getSpeakingIn(Object.keys(languages)
-					.filter(lan => !lan.includes("fake"))
-					.map(lan => languages[lan].title));
-				$("#speakingin").val(prev);
+				const prev = $speakingIn.val();
+				d20plus.chat.listSpeakingIn(Object.keys(languages)
+					.filter(lang => !lang.includes("fake"))
+					.map(lang => languages[lang].title));
+				$speakingIn.val(prev);
 			} else {
-				d20plus.chat.getSpeakingIn([]);
-				$("#speakingin").val("<option></option>");
+				d20plus.chat.listSpeakingIn([]);
+				$speakingIn.val("<option></option>");
 			}
 		} else {
-			const prev = $("#speakingin").val();
-			d20plus.chat.getSpeakingIn(availableLanguages(actorId));
-			$("#speakingin").val(prev);
+			const prev = $speakingIn.val();
+			const langs = await availableLanguages(actorId);
+			d20plus.chat.listSpeakingIn(langs);
+			$speakingIn.val(prev);
 		}
 	}
 
@@ -243,58 +252,168 @@ function baseChat () {
 	`;
 
 	const chatHelp = [
-		["/w (name)", "private message (whisper)"],
-		["/w gm", "private message to your GM"],
-		["/wb", "reply or whisper to last contact", "b20"],
-		["/ws", "whisper to selected tokens", "b20"],
-		["/em, /me", "emote (action from your POV)"],
-		["/in (language)", "speak in a language", "b20"],
-		["--(word)", "skip word (for in-language)", "b20"],
-		// ["/cl on|off", "comprehend language switch", "b20"],
-		["/talktomyself", "silent mode on/off"],
-		["/ttms", "shortcut to /talktomyself", "b20"],
-		["/mtms (text)", "simple message to self", "b20"],
-		["/ooc, /o", "out of character (as player)"],
-		["/roll, /r (XdY)", "roll dice, e.g. /r 2d6"],
-		["/gmroll, /gr (XdY)", "roll only for GM"],
-		["/desc", "GM-only describe events", null, "gm"],
-		["/as (name)", "GM-only speak as Name", null, "gm"],
-		["/emas (name)", "GM-only emote as Name", null, "gm"],
-		["/v (name)", "GM-only get script versions", "b20", "gm"],
-		["&#42;(text)&#42;", "format text: italic"],
-		["&#42;&#42;(text)&#42;&#42;", "format text: bold"],
-		["&#96;&#96;(text)&#96;&#96;", "format text: code"],
-		["&#126;&#126;(text)&#126;&#126;", "format text: strikethrough"],
-		["/fx (params)", "show visual effect"],
-		["#(macro)", "run specified macro"],
-		["/help", "show this list of chat commands", "b20"],
-		["", "<a style=\"font-variant: diagonal-fractions; font-size: smaller; font-variant-caps: small-caps;\" href=\"https://wiki.roll20.net/Text_Chat\">roll20 wiki</a>"],
+		{
+			code: "/w %%",
+			descr: "private message (whisper)",
+			param: "name",
+			tip: "Name of a player or a character, put in quotation marks if it contains spaces",
+		},
+		{
+			code: "/w gm",
+			descr: "private message to your GM",
+		},
+		{
+			code: "/wb",
+			descr: "reply or whisper to last contact",
+			b20: true,
+		},
+		{
+			code: "/ws",
+			descr: "whisper to selected tokens",
+			b20: true,
+		},
+		{
+			code: "/em, /me",
+			descr: "emote (action from your POV)",
+		},
+		{
+			code: "/in %%",
+			descr: "speak in a language",
+			param: "language",
+			tip: "Name of a language that you know, put in quotation marks if it contains spaces",
+			b20: true,
+		},
+		{
+			code: "--%%",
+			descr: "skip word (for in-language)",
+			param: "word",
+			tip: "Any single word inside in-language text that you want to keep from being translated, without spaces or hyphens",
+			b20: true,
+		},
+		{
+			code: "/talktomyself",
+			descr: "silent mode on/off",
+		},
+		{
+			code: "/ttms",
+			descr: "shortcut to /talktomyself",
+			b20: true,
+		},
+		{
+			code: "/mtms %%",
+			descr: "execute silently",
+			param: "commands",
+			tip: "Set of commands, separated by line breaks, to be executed in /ttms mode",
+			b20: true,
+		},
+		{
+			code: "/ooc, /o",
+			descr: "out of character (as player)",
+		},
+		{
+			code: "/roll, /r %%",
+			descr: "roll dice, e.g. /r 2d6",
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5",
+		},
+		{
+			code: "/gmroll, /gr %%",
+			descr: "roll only for GM",
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5, the result of which will be visible only to GM",
+		},
+		{
+			code: "/desc",
+			descr: "GM-only describe events",
+			gm: true,
+		},
+		{
+			code: "/as %%",
+			descr: "GM-only speak as Name",
+			param: "name",
+			tip: "Name of the personified character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/emas %%",
+			descr: "GM-only emote as Name",
+			param: "name",
+			tip: "Name of the described character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/v %%",
+			descr: "GM-only get script versions",
+			param: "name",
+			tip: "Name of a player that you want to get version info from, put in quotation marks if it contains spaces",
+			b20: true,
+			gm: true,
+		},
+		{
+			code: "[[%%]]",
+			descr: "inline dice roll",
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5, to be shown inside any other text",
+		},
+		{
+			code: "&#42;%%&#42;",
+			descr: "format text: italic",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#42;&#42;%%&#42;&#42;",
+			descr: "format text: bold",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#96;&#96;%%&#96;&#96;",
+			descr: "format text: code",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#126;&#126;%%&#126;&#126;",
+			descr: "format text: strikethrough",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "/fx %%",
+			descr: "show visual effect",
+			param: "effect",
+			tip: "Effect parameters, using the following syntax: Type-Color SourceID [TargetID]",
+		},
+		{
+			code: "#%%",
+			descr: "run specified macro",
+			param: "macro",
+			tip: "Name of the macro to be executed",
+		},
+		{
+			code: "/help",
+			descr: "show this list of chat commands",
+			b20: true,
+		},
+		{
+			code: "",
+			descr: "<a style=\"font-variant: diagonal-fractions; font-size: smaller; font-variant-caps: small-caps;\" href=\"https://wiki.roll20.net/Text_Chat\">roll20 wiki</a>",
+		},
 	];
 
 	d20plus.chat.help = (text, msg) => {
-		d20plus.ut.sendHackerChat(chatHelp.reduce((html, string) => {
-			const isb20 = string[2] === "b20" ? "&#42;" : "";
-			const code = string[0] ? `<code>${string[0]}</code>${isb20}` : "&nbsp;";
-			const gmcheck = string[3] !== "gm" || window.is_gm;
-			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || string[0].search(/(in \(language\))|(-\(word\))/) === -1;
-			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${string[1]}</span>`;
+		d20plus.ut.sendHackerChat(chatHelp.reduce((html, it) => {
+			const isb20 = it.b20 ? "&#42;" : "";
+			const param = it.param ? `<span style="background: rgba(206, 96, 96, 0.3);" title="${it.tip}">${it.param}</span>` : "";
+			const code = it.code ? `<code>${it.code.replace("%%", param)}</code>${isb20}` : "&nbsp;";
+			const gmcheck = !it.gm || window.is_gm;
+			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || it.code.search(/^\/in|^--/) === -1;
+			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${it.descr}</span>`;
 			return html;
 		}, "<strong>List of chat commands:</strong><br>betteR20 commands marked with &#42;"));
 		return "";
 	}
-
-	const msgActionButtonTemplate = (data) => {
-		const id = d20plus.ut.generateRowId();
-		const actions = {
-			spell: {title: "Revert action", icon: "r"},
-			request: {title: "Request script info", icon: "?"},
-		};
-		Object.assign(data, actions[data.type]);
-		return `<span id="action${id}-button"
-			class="msg-action-button"
-			data-action="${data.type}|${data.action}" title="${data.title}">${data.icon}
-		</span>`;
-	};
 
 	d20plus.chat.actions = { run: (id) => {
 		d20plus.chat.actions[id]?.callback(d20plus.chat.actions[id]?.params);
@@ -360,7 +479,7 @@ function baseChat () {
 		setTimeout(() => {
 			d20.textchat.doChatInput(msg);
 			d20plus.chat.mtms = {await: true};
-		}, 20);
+		}, 100);
 		return "";
 	}
 
@@ -387,7 +506,7 @@ function baseChat () {
 			d20plus.chat.setLanguagePreset(message, language);
 			return "";
 		}
-		const knows = window.is_gm || hasLanguageProfeciency(langId);
+		const knows = window.is_gm || hasLanguageProficiency(langId);
 		message = knows ? message : gibberish(message, langId, true);
 		return `${gibberish(message, langId)}|&inlang|${language}|&meta|${langId}|&meta|${message}`;
 	}
@@ -441,12 +560,12 @@ function baseChat () {
 		},
 	);
 
-	d20plus.chat.onsocial = () => {
-		const $input_container = $("#textchat-input");
+	d20plus.chat.onSocial = () => {
+		const $inputContainer = $("#textchat-input");
 		if (!d20plus.chat.social) {
-			const resized = $input_container.attr("style").includes("height")
-			if (resized) $input_container.addClass("social-resized");
-			else $input_container.addClass("social-default");
+			const resized = $inputContainer.attr("style").includes("height")
+			if (resized) $inputContainer.addClass("social-resized");
+			else $inputContainer.addClass("social-default");
 			d20plus.chat.refreshLanguages();
 			d20plus.chat.getSpeakingTo();
 			d20plus.chat.social = true;
@@ -455,13 +574,13 @@ function baseChat () {
 		}
 	}
 
-	d20plus.chat.onspeakingas = () => {
+	d20plus.chat.onSpeakingAs = () => {
 		d20plus.chat.refreshLanguages();
 	}
 
-	d20plus.chat.onspeakingto = () => {
-		const speakingto = $("#speakingto").val();
-		const ttms = speakingto === "ttms";
+	d20plus.chat.onSpeakingTo = () => {
+		const speakingTo = $("#speakingto").val();
+		const ttms = speakingTo === "ttms";
 		if (d20.textchat.talktomyself && !ttms) {
 			d20.textchat.doChatInput(`/talktomyself off`);
 			d20plus.chat.localHistory.push(false);
@@ -471,19 +590,19 @@ function baseChat () {
 			d20plus.chat.localHistory.push(false);
 			setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
 		}
-		if (speakingto && !ttms) {
+		if (speakingTo && !ttms) {
 			$("#textchat-social-notifier").addClass("b20-to");
-			$("#textchat-social-notifier-to").text(speakingto);
+			$("#textchat-social-notifier-to").text(speakingTo);
 		} else {
 			$("#textchat-social-notifier").removeClass("b20-to");
 		}
 	}
 
-	d20plus.chat.onspeakingin = () => {
-		const speakingin = $("#speakingin").val();
-		if (speakingin) {
+	d20plus.chat.onSpeakingIn = () => {
+		const speakingIn = $("#speakingin").val();
+		if (speakingIn) {
 			$("#textchat-social-notifier").addClass("b20-in");
-			$("#textchat-social-notifier-in").text(speakingin);
+			$("#textchat-social-notifier-in").text(speakingIn);
 		} else {
 			$("#textchat-social-notifier").removeClass("b20-in");
 		}
@@ -498,14 +617,14 @@ function baseChat () {
 
 	d20plus.chat.resetTTMS = () => {
 		$("#speakingto").val("");
-		d20plus.chat.onspeakingto();
+		d20plus.chat.onSpeakingTo();
 	}
 
 	d20plus.chat.closeSocial = () => {
-		const $input_container = $("#textchat-input");
+		const $inputContainer = $("#textchat-input");
 		d20plus.chat.social = false;
-		$input_container.removeClass("social-resized");
-		$input_container.removeClass("social-default");
+		$inputContainer.removeClass("social-resized");
+		$inputContainer.removeClass("social-default");
 	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
@@ -544,41 +663,10 @@ function baseChat () {
 		})
 	}
 
-	d20plus.chat.r20outgoing = (params) => {
-		d20plus.chat.resetSendMyself();
-	}
-
-	d20plus.chat.r20incoming = (params) => {
-		const msg = params[1];
-		msg.from_me = msg.playerid === d20_player_id;
-		msg.to_me = msg.target?.indexOf(d20_player_id) > -1;
-
-		// For rolls &  r20 generates duplicate messages that don't show on the log with
-		// params [sound, msg, true, true]. Hence check params[2]&[3] !== true to avoid double processing
-		if (params[2] === true && params[3] === true) return;
-		if (d20.textchat.chatstartingup) return;
-
-		if (msg.from_me || msg.type === "system") {
-			const stash = [];
-			while (d20plus.chat.localHistory.length) {
-				const record = d20plus.chat.localHistory.pop();
-				if (record) {
-					stash.push(record);
-					d20.textchat.commandhistory.pop();
-				}
-			}
-			d20.textchat.commandhistory = d20.textchat.commandhistory.concat(stash);
-		}
-		if (msg.type === "whisper") {
-			if (msg.from_me) {
-				d20plus.chat.lastRespondent = msg.target_name;
-			} else if (msg.to_me) {
-				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
-			}
-		}
+	d20plus.chat.processIncomingMsg = (msg) => {
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
-			const know_language = hasLanguageProfeciency(speech.languageid);
+			const know_language = hasLanguageProficiency(speech.languageid);
 			if (window.is_gm || msg.from_me || know_language) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
 				msg.content += `<br><i title="You understand this because one of your characters speaks ${speech.language}">
@@ -607,50 +695,91 @@ function baseChat () {
 		if (d20.textchat.talktomyself && msg.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
 		}
-		return params;
+		return true;
+	}
+
+	d20plus.chat.r20outgoing = (params) => {
+		if (!params[2]) {
+			d20plus.chat.resetSendMyself();
+		}
+	}
+
+	d20plus.chat.r20incoming = (r20incoming, params) => {
+		const msg = params[1];
+		msg.from_me = msg.playerid === d20_player_id;
+		msg.to_me = msg.target?.includes(d20_player_id);
+
+		// For rolls &  r20 generates duplicate messages that don't show on the log with
+		// params [sound, msg, true, true]. Hence check params[2]&[3] !== true to avoid double processing
+		const skipProcessing = (
+			(params[2] === true && params[3] === true)
+			|| (d20.textchat.chatstartingup)
+		);
+
+		if (msg.from_me || msg.type === "system") {
+			const stash = [];
+			while (d20plus.chat.localHistory.length) {
+				const record = d20plus.chat.localHistory.pop();
+				if (record) {
+					stash.push(record);
+					d20.textchat.commandhistory.pop();
+				}
+			}
+			d20.textchat.commandhistory = d20.textchat.commandhistory.concat(stash);
+		}
+
+		if (msg.type === "whisper" && !skipProcessing) {
+			if (msg.from_me) {
+				d20plus.chat.lastRespondent = msg.target_name;
+			} else if (msg.to_me) {
+				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
+			}
+		}
+
+		if (skipProcessing || d20plus.chat.processIncomingMsg(msg)) {
+			const result = r20incoming(...params);
+			d20plus.chat.displaying();
+			return result;
+		}
 	}
 
 	d20plus.chat.displaying = (params) => {
 		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
 			const msg = $(`[data-messageid=${id}]`);
-			if (!msg.get(0)) return;
-			if (mods.declass) msg.removeClass(mods.declass);
-			if (mods.class) msg.addClass(mods.class);
-			if (mods.versions) msg.append(playerVersionsTemplate(mods.versions));
-			if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
-			if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
-			delete d20plus.chat.modify[id];
+
+			if (mods.intro) {
+				const code = "<code style='cursor:pointer'>/help</code>";
+				const wiki = "https://wiki.roll20.net/Text_Chat#Chat";
+				const intro = $(".userscript-commandintro ul");
+				if (intro.get(0)) {
+					intro.last().append(`<li>Full list of chat commands<br>type or press ${code}<br>or visit <a target='blank' href='${wiki}'>roll20 wiki</a></li>`);
+					delete d20plus.chat.modify[id];
+				}
+			}
+
+			if (msg.get(0)) {
+				if (mods.declass) msg.removeClass(mods.declass);
+				if (mods.class) msg.addClass(mods.class);
+				if (mods.versions) msg.append(playerVersionsTemplate(mods.versions));
+				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
+				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
+				delete d20plus.chat.modify[id];
+			}
 		});
-		/* $(`.message .userscript-modify-message`).each((i, el) => {
-			const msg = { $el: $(el) };
-			msg.body = msg.$el.closest(".message");
-			msg.by = msg.body.find(".by");
-			msg.$el.text().split("|").forEach(p => {
-				const params = p.split(":");
-				if (params.length === 2) msg[params[0]] = params[1];
-			});
-			if (msg.declass) msg.body.removeClass(msg.class);
-			if (msg.class) msg.body.addClass(msg.class);
-			if (msg.undo) msg.body.append(msgActionButtonTemplate({type: "undo"}));
-			if (msg.request) msg.body.append(msgActionButtonTemplate({type: "request", action: msg.request}));
-			if (msg.versions) msg.body.append(playerVersionsTemplate(msg.versions));
-			if (msg.decolon) msg.by.text(msg.by.text().replace(/(?:\(To |)(.+?)\)?:/, "$1"));
-			msg.$el.remove();
-		}); */
 	}
 
 	d20plus.chat.sending = () => {
 		d20plus.chat.resetSendMyself();
-		const tc = d20.textchat.$textarea;
+		const $tc = d20.textchat.$textarea;
 
 		if (d20plus.cfg.getOrDefault("chat", "emoji")) {
-			tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
+			$tc.val($tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
 				const clean = m1.replace(/:/g, "");
 				return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
 			}));
 		}
 
-		let text = tc.val();
+		let text = $tc.val();
 		const srcText = text;
 
 		if (d20plus.cfg.getOrDefault("chat", "commands")) {
@@ -662,7 +791,6 @@ function baseChat () {
 			if (!d20.textchat.talktomyself) text = text.replace(/^\/mtms ?(.*?)$/s, d20plus.chat.sendMyself);
 			if (is_gm) text = text.replace(/^\/v (.*?)$/s, d20plus.chat.requestScriptVersions);
 			if (d20plus.cfg.getOrDefault("chat", "languages")) text = text.replace(/\/in (.*?)$/gm, d20plus.chat.sendParsedInLanguage);
-			// text = text.replace(/^\/cl (on|off)$/sm, comprehendLanguages);
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "social")) {
@@ -687,7 +815,7 @@ function baseChat () {
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
 		if ($("#soundslike").get(0)) toSend = "";
 
-		if (toSend.indexOf("|&inlang|") >= 0) {
+		if (toSend.includes("|&inlang|")) {
 			toSend.split("\n").forEach((str, i) => {
 				const data = str.split("|&inlang|");
 				if (data.length === 2) {
@@ -699,10 +827,10 @@ function baseChat () {
 					d20.textchat.doChatInput(str);
 				}
 			})
-			tc.val("").focus();
+			$tc.val("").focus();
 		} else {
 			d20.textchat.doChatInput(toSend);
-			tc.val("").focus();
+			$tc.val("").focus();
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "highlightttms")) {
@@ -714,15 +842,11 @@ function baseChat () {
 
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
-		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
+		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming, true);
 		d20plus.ut.injectCode(d20.textchat, "doChatInput", d20plus.chat.r20outgoing);
 
-		$("body").append(languageTemplate());
+		$(document.body).append(languageTemplate());
 		buildLanguageIndex();
-
-		const obsconfig = { childList: true, subtree: false };
-		d20plus.cfg.chatWatcher = new MutationObserver(d20plus.chat.displaying);
-		d20plus.cfg.chatWatcher.observe($("#textchat .content").get(0), obsconfig);
 
 		if (window.is_gm) {
 			d20plus.chat.processPlayersList();
@@ -732,31 +856,29 @@ function baseChat () {
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "social")) {
-			const $input_container = $("#textchat-input");
-			const $chat_notifier = $("#textchat-notifier");
-			const $chat_textarea = d20.textchat.$textarea;
+			const $inputContainer = $("#textchat-input");
+			const $chatNotifier = $("#textchat-notifier");
+			const $chatTextarea = d20.textchat.$textarea;
 
-			$input_container.append(d20plus.html.chatSocial);
-			$input_container.prepend(d20plus.html.chatSocialNotifier);
+			$inputContainer.append(d20plus.html.chatSocial);
+			$inputContainer.prepend(d20plus.html.chatSocialNotifier);
 			$("#chatSendBtn").after($("#socialswitch"));
-			$("#textchat-note-container").append($chat_notifier);
+			$("#textchat-note-container").append($chatNotifier);
 
-			$chat_textarea.on("focus", d20plus.chat.closeSocial);
-			$chat_notifier.on("click", d20plus.chat.resetTTMS);
+			$chatTextarea.on("focus", d20plus.chat.closeSocial);
+			$chatNotifier.on("click", d20plus.chat.resetTTMS);
 			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
 
-			$("#socialswitch").on("click", d20plus.chat.onsocial);
-			$("#speakingas").on("change", d20plus.chat.onspeakingas);
-			$("#speakingto").on("change", d20plus.chat.onspeakingto);
-			$("#speakingin").on("change", d20plus.chat.onspeakingin);
+			$("#socialswitch").on("click", d20plus.chat.onSocial);
+			$("#speakingas").on("change", d20plus.chat.onSpeakingAs);
+			$("#speakingto").on("change", d20plus.chat.onSpeakingTo);
+			$("#speakingin").on("change", d20plus.chat.onSpeakingIn);
 
 			d20plus.chat.getSpeakingTo();
 		}
 
 		if (d20plus.cfg.getOrDefault("chat", "commands")) {
-			const code = "<code style='cursor:pointer'>/help</code>";
-			const wiki = "https://wiki.roll20.net/Text_Chat#Chat";
-			$(".userscript-commandintro ul").append(`<li>Full list of chat commands<br>type or press ${code}<br>or visit <a target='blank' href='${wiki}'>roll20 wiki</a></li>`);
+			d20plus.chat.modifyMsg(null, {intro: true});
 			d20.textchat.$textchat
 				.on("click", ".userscript-commandintro ul code", d20plus.chat.help)
 				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);

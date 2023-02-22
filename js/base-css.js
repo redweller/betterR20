@@ -220,19 +220,19 @@ function baseCss () {
 		},
 		// vttes-style chat tag
 		{
-			s: ".userscript-commandintro img.userscript-b20img",
+			s: ".userscript-b20intro img.userscript-b20img",
 			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
 		},
 		{
-			s: ".userscript-commandintro.userscript-b20",
+			s: ".userscript-b20intro",
 			r: "box-shadow: 0px 0px 10px rgb( 6 , 26 , 45 ); padding: 8px;background: rgb(6, 26, 45);color: whitesmoke;",
 		},
 		{
-			s: ".userscript-commandintro.userscript-b20 strong",
+			s: ".userscript-b20intro strong",
 			r: "color: orange;",
 		},
 		{
-			s: ".userscript-commandintro.userscript-b20 h1",
+			s: ".userscript-b20intro h1",
 			r: "color: whitesmoke;",
 		},
 		{
@@ -664,7 +664,7 @@ function baseCss () {
 		},
 		{
 			s: ".message.general.talktomyself, .message.rollresult.talktomyself, .message.private.talktomyself",
-			r: "filter: sepia(100%);",
+			r: "filter: sepia(70%);",
 		},
 		{
 			s: ".message.general.disconnect .by::before",
