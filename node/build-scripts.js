@@ -1,7 +1,7 @@
 const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 
-const SCRIPT_VERSION = "1.33.1.32";
+const SCRIPT_VERSION = "1.33.2.39";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
@@ -327,7 +327,6 @@ const CHANGED_SCRIPTS = [
 	"templates/template-base-misc",
 	"templates/template-page-views",
 	"templates/template-page-weather",
-	"5etools-bootstrap",
 	"5etools-config",
 	"5etools-main",
 	"5etools-template",
@@ -346,7 +345,6 @@ const CHANGED_SCRIPTS = [
 	"base-ui",
 	"base-util",
 	"base",
-	"core-bootstrap",
 	"header",
 ];
 
@@ -368,7 +366,7 @@ CHANGED_SCRIPTS.forEach((filename) => {
 	script = script.replace(refactorTemplates, template);
 
 	Object.entries(LANG_STRS.en).forEach((string) => {
-		const multiline = (`${string[1]}`).search("\n") !== -1;
+		const multiline = (`${string[1]}`).search("\n") !== -1 || (`${string[1]}`).search(/\$0/) !== -1;
 		let replacement = !multiline ? `"${string[1]}"` : `\`${string[1]}\``;
 		script = script.replace(new RegExp(`\\$\{__\\(["|']${string[0]}["|']\\)}`, "g"), string[1]);
 		script = script.replace(new RegExp(`__\\(["|']${string[0]}["|'],? ?\\[?([\\w, _.]*?)\\]?\\)`, "g"), (...group) => {

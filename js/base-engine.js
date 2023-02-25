@@ -208,7 +208,7 @@ function d20plusEngine () {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
 		}).on("click", ".nav-tabs--beta", () => {
 			d20plus.engine._populateCustomOptions();
-		}).on("click keyup", ".weather input, .weather .slider", () => {
+		}).on("click keyup", ".weather input, .weather .slider, .views input, .views .slider", () => {
 			d20plus.engine._updateCustomOptions();
 		});
 	};
@@ -536,7 +536,114 @@ function d20plusEngine () {
 				else return false;
 			}
 		}
+	}// RB20 EXCLUDE START
+
+	/* d20plus.engine.updateTokenBars = async (charID, barID) => {
+		d20.Campaign.pages.models.forEach(page => {
+			page.thegraphics.forEach(item => {
+				if (item.model.get("represents") === charID) {
+					item.model.pullLinkedBar(barID);
+				}
+			})
+		})
+	} */
+
+	d20plus.engine.expendResources = async (expend) => {
+		const character = d20.Campaign.characters._byId[expend.charID];
+		if (!character || !character?.currentPlayerControls()) return;
+		const fetched = await d20plus.ut.fetchCharAttribs(character);
+		if (!fetched) return;
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const characterName = character.get("name");
+		const changedAtName = `lvl${expend.lvl}_slots_expended`;
+		const attrib = {ref: d20plus.ut.getCharAttribByName(character, changedAtName)};
+		if (!attrib.ref) return;
+		attrib.current = attrib.ref.get("current");
+		expend.amt = expend.amt || 1;
+		if (isNaN(attrib.current)) return;
+		if (expend.restore !== undefined) {
+			attrib.ref.save({current: expend.restore});
+			attrib.author = `${playerName} restored lvl${expend.lvl} slot`;
+			attrib.msg = `/w "${characterName}" ${characterName} has ${expend.restore} lvl${expend.lvl} slots again`;
+		} else if (attrib.current - expend.amt >= 0) {
+			attrib.new = attrib.current - expend.amt;
+			attrib.ref.save({current: attrib.new});
+			attrib.undo = {...expend}; attrib.undo.restore = attrib.current;
+			attrib.msg = `/w "${characterName}" ${characterName} now has ${attrib.new} lvl${expend.lvl} slots left`;
+		} else {
+			attrib.msg = `/w "${characterName}" ${characterName} already had no lvl${expend.lvl} slots`;
+		}
+		const author = `${playerName} tried using lvl${expend.lvl} slot`;
+		const transport = {type: "automation", author};
+		if (expend.restore) transport.author = `${playerName} restored lvl${expend.lvl} slots`;
+		else transport.author = `${playerName} tried using lvl${expend.lvl} slot`;
+		if (attrib.undo) transport.undo = attrib.undo;
+		d20.textchat.doChatInput(attrib.msg, undefined, transport);
 	}
+
+	d20plus.engine.alterTokensHP = (alter) => {
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"));
+		const bar = {
+			val: `bar${barID}_value`,
+			link: `bar${barID}_link`,
+			max: `bar${barID}_max`,
+		};
+		const calcHP = (token) => {
+			if (!token?.get) return false;
+			const current = token.get(bar.val);
+			const max = token.get(bar.max);
+			if (isNaN(max) || isNaN(current) || current === "") return false;
+			const hp = {old: current, new: current - alter.dmg};
+			if (hp.new < 0) hp.new = 0;
+			if (max !== "") {
+				if (hp.new > max) hp.new = max;
+				if (hp.new <= -max) hp.dead = true;
+				if (hp.old <= 0 && hp.new > 0) hp.alive = true;
+			}
+			return hp;
+		}
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const author = `${playerName} applied ${alter.dmg} damage`;
+		const transport = {type: "automation", author};
+		const targets = alter.targets || d20.engine.selected();
+		d20.engine.unselect();
+		targets.forEach(async token => {
+			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
+			else if (token.model) token = token.model;
+			const hp = calcHP(token);
+			if (!hp) return;
+			if (!token.currentPlayerControls()) return;
+			if (alter.restore !== undefined) hp.new = alter.restore;
+			const barLinked = token.get(bar.link);
+			const tokenName = token.get("name");
+			if (barLinked) {
+				if (!token.character?.currentPlayerControls()) return;
+				const charID = token.character?.id;
+				const fetched = await d20plus.ut.fetchCharAttribs(token.character);
+				if (fetched && charID) {
+					const attrib = token.character.attribs.get(barLinked);
+					const charName = token.character.get("name");
+					attrib.save({current: hp.new});
+					attrib.syncTokenBars();
+					hp.msg = `/w "${charName}" ${tokenName} from ${hp.old} to ${hp.new} HP`;
+					if (alter.restore !== undefined) hp.msg = `/w "${charName}" ${tokenName} HP back to ${hp.new}`;
+				}
+			} else {
+				token.save({[bar.val]: hp.new});
+				hp.msg = `/w gm ${tokenName} from ${hp.old} to ${hp.new} HP`;
+				if (alter.restore !== undefined) hp.msg = `/w gm ${tokenName} HP back to ${hp.new}`;
+			}
+			if (hp.msg) {
+				hp.undo = {type: "hp", dmg: alter.dmg, restore: hp.old, targets: [token.id]};
+				if (alter.restore === undefined) hp.transport = Object.assign({undo: hp.undo}, transport);
+				else transport.author = `${playerName} restored HP to ${alter.restore}`;
+				d20.textchat.doChatInput(hp.msg, undefined, hp.transport || transport);
+				if (hp.dead) d20.textchat.doChatInput(`${tokenName} is instantly dead`, undefined, transport);
+				else if (hp.alive) d20.textchat.doChatInput(`${tokenName} is conscious again`, undefined, transport);
+				else if (hp.new === 0) d20.textchat.doChatInput(`${tokenName} falls unconscious`, undefined, transport);
+			}
+		})
+	}// RB20 EXCLUDE END
 
 	d20plus.engine.addLineCutterTool = () => {
 		const $btnTextTool = $(`.choosetext`);

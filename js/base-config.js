@@ -9,16 +9,23 @@ function baseConfig () {
 			"name": __("cfg_option_whisper_name"),
 			"default": false,
 			"_type": "boolean",
-		},
+		}, // RB20 EXCLUDE START
 		"massRollAssumesOGL": {
 			"name": __("cfg_option_assume_ogl"),
 			"default": true,
 			"_type": "boolean",
-		},
+		}, // RB20 EXCLUDE END
 	});
 	addConfigOptions("canvas", {
 		"_name": __("cfg_tab_canvas"),
 		"_player": true,
+		"gridSnap": {
+			"name": __("cfg_option_grid_snap"),
+			"default": "1",
+			"_type": "_enum",
+			"__values": ["0.25", "0.5", "1"],
+			"_player": true,
+		},
 		"quickLayerButtons": {
 			"name": __("cfg_option_layer_panel"),
 			"default": true,
@@ -31,13 +38,13 @@ function baseConfig () {
 			"__sliderMin": 0,
 			"__sliderMax": 1,
 			"__sliderStep": 1,
-		},
+		}, // RB20 EXCLUDE START
 		"showFloors": {
 			"name": __("cfg_option_show_fl"),
 			"default": false,
 			"_type": "boolean",
 			"_player": false,
-		},
+		}, // RB20 EXCLUDE END
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
 			"default": true,
@@ -49,7 +56,7 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		},
+		}, // RB20 EXCLUDE START
 		"showRoofs": {
 			"name": __("cfg_option_show_rf"),
 			"default": false,
@@ -61,20 +68,13 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		},
+		}, // RB20 EXCLUDE END
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		},
-		"gridSnap": {
-			"name": __("cfg_option_grid_snap"),
-			"default": "1",
-			"_type": "_enum",
-			"__values": ["0.25", "0.5", "1"],
-			"_player": true,
-		},
+		}, // RB20 EXCLUDE START
 		"scaleNamesStatuses": {
 			"name": __("cfg_option_scaled_names"),
 			"default": false,
@@ -85,7 +85,7 @@ function baseConfig () {
 			"name": __("cfg_option_neat_menus"),
 			"default": true,
 			"_type": "boolean",
-		},
+		}, // RB20 EXCLUDE END
 	});
 	addConfigOptions("import", {
 		"_name": __("cfg_tab_import"),
@@ -129,7 +129,7 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
+		}, // RB20 EXCLUDE START
 		"selectJournalSearchType": {
 			"name": __("cfg_option_select_jrnsearch"),
 			"default": "roll20",
@@ -147,7 +147,7 @@ function baseConfig () {
 				"Roll20",
 				"betteR20",
 			],
-		},
+		}, // RB20 EXCLUDE END
 		"quickInitButtons": {
 			"name": __("cfg_option_quick_init_sort"),
 			"default": true,
@@ -188,13 +188,13 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
-		"resizeSidebarElements": {
+		}, // RB20 EXCLUDE START
+		/* "resizeSidebarElements": {
 			"name": __("cfg_option_resize_sidebar"),
-			"default": true,
+			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
+		}, */ // RB20 EXCLUDE END
 		"showWelcomeMessage": {
 			"name": __("cfg_option_welcome_msg"),
 			"default": true,
@@ -802,7 +802,7 @@ function baseConfig () {
 			handleProp("weatherEffect1");
 		}
 	};
-	*/
+	*/ // RB20 EXCLUDE START
 
 	d20plus.cfg.handlePlayerImgSize = () => {
 		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
@@ -820,7 +820,7 @@ function baseConfig () {
 			`;
 			dynamicStyle.html(setStyle);
 		}
-	}
+	} // RB20 EXCLUDE END
 
 	d20plus.cfg.handleInitiativeShrink = () => {
 		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
@@ -830,7 +830,7 @@ function baseConfig () {
 		} else {
 			dynamicStyle.html("");
 		}
-	}
+	} // RB20 EXCLUDE START
 
 	d20plus.cfg.HandleArtLibraryButtons = () => {
 		if (d20plus.cfg.getOrDefault("interface", "selecArtLibraryType") !== "Roll20") {
@@ -861,7 +861,7 @@ function baseConfig () {
 				}
 			`);
 		}
-	}
+	} // RB20 EXCLUDE END
 
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg.handlePlayerImgSize();

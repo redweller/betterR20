@@ -10,7 +10,7 @@ function baseUtil () {
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
-		$("#lamer-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
+		$("#boring-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
 	};
 
 	d20plus.ut.error = (...args) => {
@@ -76,16 +76,23 @@ function baseUtil () {
 		});
 	};
 
-	d20plus.ut.injectCode = (object, method, injectedCode) => {
-		const source = object[method];
-		object[method] = function (...params) {
-			const pass = injectedCode(params);
-			if (pass?.through) return source.apply(source, pass.params);
+	d20plus.ut.injectCode = (object, method, injectedCode, bindAndRun) => {
+		const original = object[method].bind(object);
+		if (bindAndRun) {
+			object[method] = (...initParams) => {
+				return injectedCode.bind(object)(original, initParams);
+			}
+		} else {
+			object[method] = function (...initParams) {
+				const passParams = injectedCode(initParams);
+				if (passParams === undefined) return original.apply(original, initParams);
+				else if (passParams !== false) return original.apply(original, passParams);
+			}
 		}
 	}
 
-	d20plus.ut.checkVersion = () => {
-		d20plus.ut.plantVersionInfo();
+	d20plus.ut.checkVersion = () => { // RB20 EXCLUDE START
+		d20plus.ut.plantVersionInfo();// RB20 EXCLUDE END
 		d20plus.ut.log("Checking current version");
 
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
@@ -127,10 +134,10 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = () => {
-		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
+		const legacyStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
 		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const classname = !legacytStyle ? "userscript-commandintro userscript-b20" : "userscript-hackerintro";
+		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const data = [
 			d20plus.scriptName,
@@ -139,7 +146,7 @@ function baseUtil () {
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
-				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
@@ -160,31 +167,35 @@ function baseUtil () {
 			}
 		}
 		if (window.enhancementSuiteEnabled) {
-			$("#lamer-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+			$("#boring-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
+		$("#boring-progress")
+			.before(`<span><span>&gt;</span>all systems operational</span>`)
+			.html("");// RB20 EXCLUDE START
+		/* if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
 			$("#rightsidebar").on("mouseout", d20plus.ut.resizeSidebar);
 			$("body").on("mouseup", d20plus.ut.resizeSidebar);
 			d20plus.ut.resizeSidebar("startup");
-		}
+		} */ // RB20 EXCLUDE END
 		setTimeout(() => {
-			$(`.lamer-chat`).css("height", "0px");
+			const $bored = $(`.boring-chat`);
+			$bored.css("height", "0px");
 			setTimeout(() => {
-				$(".lamer-chat").remove();
+				$bored.remove();
 				clearInterval(d20plus.ut.cursor);
 			}, 2000);
 		}, 6000);
 	};
 
 	d20plus.ut.showInitMessage = () => {
-		const consTemplate = `<div class="lamer-chat">
+		const consTemplate = `<div class="boring-chat">
 			<span><span>&gt;</span>initializing, please wait...</span>
-			<span id="lamer-progress"><span>&gt;</span>loading data</span>
-			<span id="lamer-cursor"><span>&gt;</span><aside>|</aside></span>
+			<span id="boring-progress"><span>&gt;</span>loading data</span>
+			<span id="boring-cursor"><span>&gt;</span><aside>|</aside></span>
 			<style type="text/css">
-			.lamer-chat {
+			.boring-chat {
 				font-family: Menlo, Monaco, Consolas, monospace;
 				font-size: small;
 				background: black;
@@ -195,26 +206,27 @@ function baseUtil () {
 				position: sticky;
 				z-index: 1000;
 				top: 0px;
-				height: 100px;
+				height: 110px;
 				transition: height 2s;
 				overflow: hidden;
 				border-bottom: 1px solid rgb(32, 194, 14);
 			}
-			.lamer-chat > span {
+			.boring-chat > span {
 				display: block; white-space: nowrap;
 				padding: 0px 5px 0px 45px;
 			}
-			.lamer-chat > span > span {
+			.boring-chat > span > span {
 				float: left; margin-left: -39px;
 			}
 			</style>
 		</div>`;
 		$(`#textchat`).prepend(consTemplate);
 		let blink = false;
+		const $bored = $(`.boring-chat`);
 		d20plus.ut.cursor = setInterval(() => {
-			$(`.lamer-chat`).append($(`.lamer-cursor`));
-			if (blink) $(`.lamer-chat aside`).html("|");
-			else $(`.lamer-chat aside`).html("");
+			$bored.append($(`.boring-cursor`));
+			if (blink) $bored.find(`aside`).html("|");
+			else $bored.find(`aside`).html("");
 			blink = !blink;
 		}, 300);
 	};
@@ -222,42 +234,51 @@ function baseUtil () {
 	d20plus.ut.showLoadingMessage = () => {
 		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
-		const loadmsgtemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
-		if (!isStreamer) $(".lamer-chat > span:first-child").after(loadmsgtemplate);
+		const loadMsgTemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
+		if (!isStreamer) $(".boring-chat > span:first-child").after(loadMsgTemplate);
 		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
 	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
-		const legacytStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
+		const legacyStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
 		if (!message) return;
 		d20.textchat.incoming(false, ({
 			who: "system",
-			type: !legacytStyle && error ? "error" : "system",
-			content: (legacytStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			type: !legacyStyle && error ? "error" : "system",
+			content: (legacyStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
 			</span>` : message),
 		}));
-	};
+	};// RB20 EXCLUDE START
 
 	d20plus.ut.plantVersionInfo = () => {
 		const thisPlayer = d20?.Campaign.players.get(d20_player_id);
 		if (!thisPlayer) return;
-		if (!d20plus.cfg.getOrDefault("chat", "shareVersions")) {
-			if (thisPlayer.get("script")) {
-				thisPlayer.set("script", null, true);
-				thisPlayer.save();
-			}
-			return;
+		if (thisPlayer.get("script")) {
+			thisPlayer.set("script", null, true);
+			thisPlayer.save();
 		}
-		d20plus.ut.log("Managing version info");
+	}// RB20 EXCLUDE END
+
+	d20plus.ut.generateVersionInfo = () => {
+		d20plus.ut.log("Generating version info");
 		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
 		const b20v = encodeURI(d20plus.version);
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
 		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
 		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
-		thisPlayer.set("script", info, true);
-		thisPlayer.save();
+		return info;
+	}
+
+	d20plus.ut.parseVersionInfo = (raw) => {
+		const info = JSON.parse(decodeURI(atob(raw)));
+		const time = d20plus.ut.timeAgo(info.date);
+		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
+		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+		return html;
 	}
 
 	d20plus.ut.cmpVersions = (present, latest) => {
@@ -278,6 +299,8 @@ function baseUtil () {
 
 	d20plus.ut.detectDarkModeScript = () => {
 		d20plus.ut.dmscriptDetected = false;
+		// Detect if player is using Roll20 Dark Theme
+		// https://github.com/Pharonix/Roll20-Dark-Theme
 		$("style").each((i, el) => {
 			if (el.textContent.indexOf("/*New Characteristics Menu*/") >= 0) {
 				d20plus.ut.dmscriptDetected = true;
@@ -285,8 +308,8 @@ function baseUtil () {
 			}
 		});
 		return d20plus.ut.dmscriptDetected;
-	}
-
+	}// RB20 EXCLUDE START
+	/*
 	d20plus.ut.resizeSidebar = (init) => {
 		const $sidebar = $("#rightsidebar");
 		if (init === "startup" || $sidebar.hasClass("ui-resizable-resizing")) {
@@ -297,18 +320,18 @@ function baseUtil () {
 			$("#textchat-input").width(sidebarwidth - textdelta);
 			$(".tabmenu").width(tabmenuwidth);
 		}
-	}
+	} */ // RB20 EXCLUDE END
 
-	d20plus.ut.addCSS = (sheet, selectors, rules) => {
+	d20plus.ut.addCSS = (selectors, rules) => {
 		if (!(selectors instanceof Array)) selectors = [selectors];
 
 		selectors.forEach(selector => {
-			const index = sheet.cssRules.length;
 			try {
-				if ("insertRule" in sheet) {
-					sheet.insertRule(`${selector}{${rules}}`, index);
-				} else if ("addRule" in sheet) {
-					sheet.addRule(selector, rules, index);
+				const index = d20plus.css.sheet.cssRules.length;
+				if ("insertRule" in d20plus.css.sheet) {
+					d20plus.css.sheet.insertRule(`${selector}{${rules}}`, index);
+				} else if ("addRule" in d20plus.css.sheet) {
+					d20plus.css.sheet.addRule(selector, rules, index);
 				}
 			} catch (e) {
 				if ((!selector && selector.startsWith("-webkit-"))) {
@@ -322,20 +345,19 @@ function baseUtil () {
 	d20plus.ut.addAllCss = () => {
 		d20plus.ut.log("Adding CSS");
 
-		const targetSheet = [...window.document.styleSheets]
-			.filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
-			.find(it => it.href.includes("app.css"));
+		const sheetElement = document.createElement("style");
+		d20plus.css.sheet = document.head.appendChild(sheetElement).sheet;
 
 		_.each(d20plus.css.baseCssRules, function (r) {
-			d20plus.ut.addCSS(targetSheet, r.s, r.r);
+			d20plus.ut.addCSS(r.s, r.r);
 		});
 		if (!window.is_gm) {
 			_.each(d20plus.css.baseCssRulesPlayer, function (r) {
-				d20plus.ut.addCSS(targetSheet, r.s, r.r);
+				d20plus.ut.addCSS(r.s, r.r);
 			});
 		}
 		_.each(d20plus.css.cssRules, function (r) {
-			d20plus.ut.addCSS(targetSheet, r.s, r.r);
+			d20plus.ut.addCSS(r.s, r.r);
 		});
 	};
 
@@ -371,7 +393,50 @@ function baseUtil () {
 			journalFolder = d20.Campaign.get("journalfolder");
 		}
 		return JSON.parse(journalFolder);
-	};
+	}; // RB20 EXCLUDE START
+
+	d20plus.ut.charFetchAndRetry = ({char, callback, params = []} = {}) => {
+		const attribs = char?.attribs;
+		if (!attribs) return true;
+		if (!attribs.length) {
+			if (attribs.fetching) return true;
+			attribs.fetch(attribs);
+			attribs.fetching = true;
+			const wait = setInterval(function () {
+				if (attribs.length) {
+					clearInterval(wait);
+					delete char.attribs.fetching;
+					callback(...params);
+				}
+			}, 20);
+			return true;
+		}
+	} // RB20 EXCLUDE END
+
+	d20plus.ut.fetchCharAttribs = async (char) => {
+		const attribs = char?.attribs;
+		if (!attribs) return false;
+		if (attribs.length) {
+			return char;
+		}
+		if (!attribs.fetching) {
+			attribs.fetch(attribs);
+			attribs.fetching = true;
+		}
+		return new Promise(resolve => {
+			let inProgress = 0;
+			const wait = setInterval(() => {
+				inProgress++;
+				if (attribs.length) resolve(char);
+				if (attribs.length || inProgress > 100) {
+					resolve(false);
+					clearInterval(wait);
+					delete attribs.fetching;
+					d20plus.ut.log(`Tried fetching ${char.attributes.name}`);
+				}
+			}, 30);
+		});
+	}
 
 	d20plus.ut._lastInput = null;
 	d20plus.ut.getNumberRange = (promptText, min, max) => {
@@ -469,9 +534,17 @@ function baseUtil () {
 		return d20plus.ut._getCanvasElementById(tokenId, "thegraphics");
 	};
 
+	d20plus.ut.getAccountById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.d20userid;
+	};
+
+	d20plus.ut.getPlayerNameById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.displayname;
+	};
+
 	d20plus.ut._getCanvasElementById = (id, prop) => {
-		const foundArr = d20.Campaign.pages.models.map(model => model[prop] && model[prop].models ? model[prop].models.find(it => it.id === id) : null).filter(it => it);
-		return foundArr.length ? foundArr[0] : null;
+		const found = d20.Campaign.pages.models.find(model => model[prop]?.get(id));
+		return found ? found[prop].get(id) : null;
 	};
 
 	d20plus.ut.getMacroByName = (macroName) => {
@@ -481,6 +554,10 @@ function baseUtil () {
 			return macros[0];
 		}
 		return null;
+	};
+
+	d20plus.ut.getCharAttribByName = (char, attribName) => {
+		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -495,11 +572,15 @@ function baseUtil () {
 
 	d20plus.ut.sanitizeFilename = function (str) {
 		return str.trim().replace(/[^-\w]/g, "_");
-	};
+	};// RB20 EXCLUDE START
 
-	d20plus.ut.toSentenceCase = (string, forcelowercase) => {
-		return string.charAt(0).toUpperCase() + (forcelowercase ? string.slice(1).toLowerCase() : string.slice(1));
-	}
+	d20plus.ut.transliterate = (word) => {
+		const a = {"Ё": "YO", "Й": "I", "Ц": "TS", "У": "U", "К": "K", "Е": "E", "Н": "N", "Г": "G", "Ш": "SH", "Щ": "SCH", "З": "Z", "Х": "H", "Ъ": "'", "ё": "yo", "й": "i", "ц": "ts", "у": "u", "к": "k", "е": "e", "н": "n", "г": "g", "ш": "sh", "щ": "sch", "з": "z", "х": "h", "ъ": "'", "Ф": "F", "Ы": "I", "В": "V", "А": "А", "П": "P", "Р": "R", "О": "O", "Л": "L", "Д": "D", "Ж": "ZH", "Э": "E", "ф": "f", "ы": "i", "в": "v", "а": "a", "п": "p", "р": "r", "о": "o", "л": "l", "д": "d", "ж": "zh", "э": "e", "Я": "Ya", "Ч": "CH", "С": "S", "М": "M", "И": "I", "Т": "T", "Ь": "'", "Б": "B", "Ю": "YU", "я": "ya", "ч": "ch", "с": "s", "м": "m", "и": "i", "т": "t", "ь": "'", "б": "b", "ю": "yu"};
+		if (!word.split) return "";
+		return word.split("").map(function (char) {
+			return a[char] || char;
+		}).join("");
+	}// RB20 EXCLUDE END
 
 	d20plus.ut.saveAsJson = function (filename, data) {
 		const blob = new Blob([JSON.stringify(data, null, "\t")], {type: "application/json"});

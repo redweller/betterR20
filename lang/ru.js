@@ -78,6 +78,20 @@ module.exports = {
 
 	ui_tokened_details: ["Детали"],
 
+	/*
+	a
+	d
+	*/
+
+	ui_lang_subst_title: ["Выбрать звучание"],
+
+	ui_lang_subst_subtitle: ["На что похож $0 по звучанию?"],
+	ui_lang_subst_p1: ["Похоже, вы пытаетесь общаться на языке, который не включён в Книгу Игрока D&D 5e."],
+	ui_lang_subst_p2: ["Это не проблема. Пожалуйста выберите один из готовых языков в выпадающем списке ниже, и его словарь будет использован для сообщений на вашем языке."],
+	ui_lang_subst_p3: ["Этот выбор чисто косметический, и не повлияет на то, кто поймёт или не поймёт вашу речь. Выбор будет сохранён до перезагрузки страницы."],
+	ui_lang_subst_select: ["Выберите словарь:"],
+	ui_lang_subst_p_eg: ["Вот как будет звучать ваша фраза с текущим выбранным словарём для тех, кто не понимает $0:"],
+
 	menu_unlock: ["Снять блок..."],
 
 	menu_card_title: ["Колода"],
@@ -181,7 +195,7 @@ module.exports = {
 	lang_gnomish: ["Гномий"],
 	lang_goblin: ["Гоблинский"],
 	lang_halfling: ["Полуросликов"],
-	lang_orkish: ["Орочий"],
+	lang_orcish: ["Орочий"],
 	lang_abyssal: ["Бездны"],
 	lang_celestial: ["Небесный"],
 	lang_draconic: ["Драконий"],
@@ -198,7 +212,7 @@ module.exports = {
 	lang_alias_gnomish: ["гномский, гномов"],
 	lang_alias_goblin: ["гоблинов"],
 	lang_alias_halfling: ["халфлингский, халфлингов"],
-	lang_alias_orkish: ["оркский, орков"],
+	lang_alias_orcish: ["оркский, орков"],
 	lang_alias_abyssal: ["абиссальный"],
 	lang_alias_celestial: ["целестиалов"],
 	lang_alias_draconic: ["дарконский, драконов"],
@@ -225,6 +239,8 @@ module.exports = {
 	msg_chat_help_desc: ["ГМ: описать события"],
 	msg_chat_help_as: ["ГМ: реплика от персонажа"],
 	msg_chat_help_emas: ["ГМ: эмоция от персонажа"],
+	msg_chat_help_versions: ["ГМ: запрос инфо о скриптах"],
+	msg_chat_help_il: ["бросок внутри строки"],
 	msg_chat_help_fi: ["формат: курсив"],
 	msg_chat_help_fb: ["формат: полужирный"],
 	msg_chat_help_fc: ["формат: код"],
@@ -242,7 +258,7 @@ module.exports = {
 	msg_b20_version_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
 	msg_b20_version: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
 
-	msg_welcome_versions: ["$0 загружен<br>VTTES v$1 найден"],
+	msg_welcome_versions: ["VTTES v$1 найден<br>$0 загружен"],
 	msg_welcome_faq: ["Нужна помощь? Посетите <a href=\"$0/index.php/BetteR20_FAQ\"><strong>вики</strong></a> или зайдите в"],
 	msg_welcome_sarcasm: ["Вроде, это должно быть очевидно"],
 	msg_welcome_p1: ["Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20."],

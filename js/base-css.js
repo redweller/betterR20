@@ -190,8 +190,8 @@ function baseCss () {
 		},
 		// "old style" system messages
 		{
-			s: ".userscript-hacker-chat",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
+			s: ".userscript-hacker-chat, .hacker-chat",
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);box-sizing: border-box;",
 		},
 		{
 			s: ".userscript-hacker-chat a",
@@ -220,19 +220,19 @@ function baseCss () {
 		},
 		// vttes-style chat tag
 		{
-			s: ".userscript-commandintro img.userscript-b20img",
+			s: ".userscript-b20intro img.userscript-b20img",
 			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
 		},
 		{
-			s: ".userscript-commandintro.userscript-b20",
+			s: ".userscript-b20intro",
 			r: "box-shadow: 0px 0px 10px rgb( 6 , 26 , 45 ); padding: 8px;background: rgb(6, 26, 45);color: whitesmoke;",
 		},
 		{
-			s: ".userscript-commandintro.userscript-b20 strong",
+			s: ".userscript-b20intro strong",
 			r: "color: orange;",
 		},
 		{
-			s: ".userscript-commandintro.userscript-b20 h1",
+			s: ".userscript-b20intro h1",
 			r: "color: whitesmoke;",
 		},
 		{
@@ -245,8 +245,12 @@ function baseCss () {
 			r: "display: none; font-variant: small-caps; font-size: 12px; padding: 18px 2px 2px 32px; margin-left: -8px; border: 1px solid; border-top: none; margin-top: -16px; background: rgba(100, 100, 100, 0.2); cursor: pointer;",
 		},
 		{
-			s: ".connects-info",
+			s: ".connects-info, .msg-action-button",
 			r: "font-family: pictos; margin-right: 4px; text-decoration: none !important; cursor: pointer; float: right; position: relative; top: -16px;",
+		},
+		{
+			s: ".msg-action-button",
+			r: "top: 0px;",
 		},
 		{
 			s: "input:checked + label .connects-info",
@@ -702,16 +706,63 @@ function baseCss () {
 		},
 		// Tweak OGL roll template styles
 		{
-			s: ".sheet-rolltemplate-atk .sheet-save .sheet-savedc, .sheet-rolltemplate-dmg .sheet-save .sheet-savedc, .sheet-rolltemplate-atkdmg .sheet-save .sheet-savedc",
-			r: "padding-top: 0px",
+			s: ".sheet-rolltemplate-atkdmg .sheet-desc .sheet-savedc",
+			r: "padding-top: 5px",
 		},
 		{
 			s: ".sheet-rolltemplate-simple .sheet-charname, .sheet-rolltemplate-simple3D .sheet-charname, .sheet-rolltemplate-skill .sheet-charname, .sheet-rolltemplate-atk .sheet-charname, .sheet-rolltemplate-dmg .sheet-charname, .sheet-rolltemplate-atkdmg .sheet-charname",
-			r: "margin-top: -8px; padding-bottom: 2px;",
+			r: "margin-top: -8px; padding-bottom: 5px;",
 		},
 		{
 			s: ".sheet-rolltemplate-simple .sheet-charname span, .sheet-rolltemplate-simple3D .sheet-charname span, .sheet-rolltemplate-skill .sheet-charname span, .sheet-rolltemplate-atk .sheet-charname span, .sheet-rolltemplate-dmg .sheet-charname span, .sheet-rolltemplate-atkdmg .sheet-charname span",
 			r: "font-size: 12px;",
+		},
+		{
+			s: ".sheet-rolltemplate-atkdmg div.sheet-desc.sheet-info",
+			r: "width: 98%;",
+		},
+		// Color rolls in OGL template subtexts
+		{
+			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult.fullcrit",
+			r: "color: #3FB315",
+		},
+		{
+			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult.fullfail",
+			r: "color: #B31515",
+		},
+		{
+			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult",
+			r: "font-size: medium; padding: 5px 0px;",
+		},
+		// Style hit dice rolls for auto-updating HP
+		{
+			s: ".inlinerollresult.showtip.hit-dice",
+			r: "cursor: pointer",
+		},
+		{
+			s: ".inlinerollresult.showtip.hit-dice:hover::after",
+			r: "content: \"\\2694\";font-size: initial; color: rgba(250,100,100,0.6); position: absolute;",
+		},
+		// Styles for altered messages
+		{
+			s: ".userscript-modify-message",
+			r: "display: none;",
+		},
+		{
+			s: ".message.inlang i",
+			r: "cursor: help;",
+		},
+		{
+			s: ".message.action .avatar, .message.action .by",
+			r: "display: none;",
+		},
+		{
+			s: ".message.general.talktomyself, .message.rollresult.talktomyself, .message.private.talktomyself",
+			r: "filter: sepia(70%);",
+		},
+		{
+			s: ".message.general.disconnect .by::before",
+			r: "font-family: pictos; content: \"[\";",
 		},
 	]);
 
