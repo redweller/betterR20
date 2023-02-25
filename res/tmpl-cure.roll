@@ -1,0 +1,13 @@
+&{template:simple} {{rname=Cure wounds%NEWLINE%}} {{newline=
+}} ?{Level|
+	level 1, damage [[ 1d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl1] |
+	level 2, damage [[ 2d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl2] |
+	level 3, damage [[ 3d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl3] |
+	level 4, damage [[ 4d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl4] |
+	level 5, damage [[ 5d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl5] |
+	level 6, damage [[ 6d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl6] |
+	level 7, damage [[ 7d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl7] |
+	level 8, damage [[ 8d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl8] |
+	level 9, damage [[ 9d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl9]} {{newline=
+}} {{r1=+$[[0]]}} {{newline=
+}} {{normal=1}} {{charname=@{selected|token_name}%NEWLINE%touch (5 ft.)}} {{mod=on @{target|token_name}}}

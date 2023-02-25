@@ -1,4 +1,5 @@
-var xls = `common	dwarvish	elvish	giant	gnomish	goblin	halfling	orkish	abyssal	celestial	draconic	deepspeech	infernal	primordial	sylvan	undercommon	fakeitalian	fakespanish	fakefrench	fakerussian	fakegerman
+var xls = `common	dwarvish	elvish	giant	gnomish	goblin	halfling	orcish	abyssal	celestial	draconic	deepspeech	infernal	primordial	sylvan	undercommon	fakeitalian	fakespanish	fakefrench	fakerussian	fakegerman
+https://forgottenrealms.fandom.com/wiki/Common_dictionary	http://www.bugmansbrewery.com/tutorials/article/115-dwarf-language-english-to-khazalid-dictionary/	https://www.elfdict.com/w/?language=quenya	https://www.paolini.net/fans/invented-languages-inheritance-cycle/dwarf-language/dwarf-language-english-dictionary/	https://www.elfdict.com/w/?language=telerin	https://forgottenrealms.fandom.com/wiki/Goblin_dictionary	http://www.quicksilver899.com/Tolkien/Hobbitry.html	https://www.angelfire.com/ia/orcishnations/englishorcish.html	https://www.paolini.net/fans/invented-languages-inheritance-cycle/ancient-language/ancient-language-english-dictionary/	https://dndtopics.com/languages/celestial/	https://forgottenrealms.fandom.com/wiki/Draconic_dictionary	https://lingojam.com/CommontoDwarvishTranslator	https://wowpedia.fandom.com/wiki/Eredun	https://lingojam.com/CommontoDwarvishTranslator	https://forgottenrealms.fandom.com/wiki/Elven_dictionary	https://forgottenrealms.fandom.com/wiki/Drow_dictionary	https://www.generatormix.com/random-italian-words-generator	https://www.generatormix.com/random-spanish-words	https://www.generatormix.com/random-french-words-generator	https://www.generatormix.com/random-russian-words-generator	https://www.generatormix.com/random-german-words-generator
 4	3	5	3	4	3	4	2	2	3	3	0	2	0	5	4	3	3	3	3	3
 fol	ha	na	dûr	ae	ta	a	uk	ash'	har	qal	0	al'	0	ef	dro	di	las	en	da	ich
 a	a-	en'	az	et	vo	o	agh	ash'	sa	irn	0	al'	0	byr	duk	del	la	de	na	bin
@@ -9,8 +10,9 @@ fo-	on-	an	rna-	ne	yol	lo	rog	tero-	ma'	qa	0	al'	0	sa	qu-	in	con	d'	po	an
 to-	or	o'	da-	m	mar	u	dru	al'	hal	ia	0	al'	0	ol	uh	su	por	il	do	du
 do	ad	lor-	rr-	ik	mak	u-	sud-	al'	tha	iss	0	al'	0	reb-	uss	da	el	à	pro	wir
 per	har	i-	gro	ro	psa	so-	vor-	al'	aln	osh	0	al'	0	thy-	akh-	ai	acá	sur	ty	für
-human	dwarven	elven	ogre	gnome	goblinoid	hobbit	ork	demon	0	tymantheran	0	devil	auran	fey	underdark	0	0	0	0	0
-0	0	elf	0	0	0	0	0	0	0	yipyak	0	0	aquan	0	0	0	0	0	0	0
+human	dwarven	elven	ogre	gnome	goblinoid	hobbit	orc	demon	0	tymantheran	0	devil	elemental	fey	underdark	0	0	0	0	0
+0	0	elf	0	0	0	0	0	0	0	yipyak	0	0	auran	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0	0	0	0	0	aquan	0	0	0	0	0	0	0
 0	0	0	0	0	0	0	0	0	0	0	0	0	ignan	0	0	0	0	0	0	0
 0	0	0	0	0	0	0	0	0	0	0	0	0	rettan	0	0	0	0	0	0	0
 alae	akrak	alahen	arûna	athon	ana	adaldrida	arau	aldanarí	aujinn	aesthyr	aat	achor	aav	aegiskeryn	abban	abby	abajo	aide	avtor	allem
@@ -51,8 +53,8 @@ lamenor	guzzen	istalima	fanghur	kith	kherek	hamfast	kalush	gëuloth	ghent	potvyc
 lammath	hunk	istare	feldûnost	koilu	kurrauz	harfoots	kapuk	haldthin	ghik	qalli	hjandlom	gular	grea	ilphelkiir	khaless	effetti	dónde	finir	logicheskii	haltet
 lifeblood	karu	lacalima	felfarthen	koiru	kykat	hloth	karash	helgrind	ghontix	qallim	hrut	kamil	grethir	iqua	khazid	ellie	durar	formidable	lopata	hand
 marrado	kazad	laistea	felrast	koitā	laug	hlothran	kartart	herdtha	gixustrat	rach	hverth	kamilgolad	guthavok	irinal	kulg	eroina	ejemplo	fort	mesto	hasst
-mayhap	kazak	laistila	formv	kuinu	lind	isen	kaup	hernskja	grovisv	rasvim	ialdra	kanrethad	guthavokr	ivaebhin	kyone	facesse	enfermo	fusil	metr	heiß
-murdath	kazhunki	laman	frekk	kuitā	lodar	kali	kazorm	hljödhr	hengoth	rauhiss	ialdrar	karaman	halkbrelna	kelytha	kyorl	finestre	entrar		minuta	held
+mayhap	kazak	laistila	formv	kuinu	lind	isen	kaup	hernskja	grovisv	rasvim	ialdra	kanrethad	guthavokr	ivaebhin	kyone	facesse	enfermo	frappé	metr	heiß
+murdath	kazhunki	laman	frekk	kuitā	lodar	kali	kazorm	hljödhr	hengoth	rauhiss	ialdrar	karaman	halkbrelna	kelytha	kyorl	finestre	entrar	fusil	minuta	held
 naed	kazid	lamate	fûthmér	kurwē	lorach	kalimac	kishaulus	hröslvalhr	henich	renthisj	imurt	karkun	herolstor	kerym	kyorlin	fonte	equipaje	garçons	molodaya	hielt
 naeth	khaz	lambion	gáld	lauda	loz	karningul	kishtraum	ikonoka	hesjing	rhyaex	imurtr	kazile	hign	kiira	llar	for	escribir	génial	moloko	hoffentlich
 nandra	khazukan	lamélima	gáldhiem	laudh	mabus	kast	kokan	íllgrathr	hlarn	rhyisj	jarburrir	kieldaz	horukneth	kirthol	lueth	freddo	escuela	genoux	morozhenoe	holen
@@ -123,15 +125,17 @@ xls.split("\n").forEach((str, r) => {
 	if (str) {
 		str.split("\t").forEach((el, i) => {
 			if (r === 0) {
-				lan[el] = { title: el, lexis: [], particles: [], alias: []};
+				lan[el] = { title: el, srcurl: "", lexis: [], particles: [], alias: []};
 				index[i] = el;
 			} else if (r === 1) {
+				lan[index[i]].srcurl = el;
+			} else if (r === 2) {
 				lan[index[i]].factor = Number(el);
-			} else if (r < 11) {
+			} else if (r < 12) {
 				if (!el.match(/\d/)) lan[index[i]].particles.push(el);
-			} else if (r < 15) {
+			} else if (r < 17) {
 				if (!el.match(/\d/)) lan[index[i]].alias.push(el);
-				if (r === 14) lan[index[i]].alias = lan[index[i]].alias.join(", ");
+				//if (r === 15) lasn[index[i]].alias = lan[index[i]].alias.join(", ");
 			} else {
 				lan[index[i]].lexis.push(el);
 				const wordpattern = new RegExp(`\\b${el}\\b`, "gu");
@@ -144,11 +148,13 @@ xls.split("\n").forEach((str, r) => {
 	}
 })
 var tocopy = document.getElementsByTagName("textarea")[0];
-if (!document.getElementsByTagName("textarea")[0]) {
+if (!tocopy) {
 	tocopy = document.createElement("textarea");
 	document.body.append(tocopy);
 }
-tocopy.innerHTML = JSON.stringify(lan, null, "\t");
+var jsready = JSON.stringify(lan, null, "\t")
+	.replace(/"srcurl": "(.*?)",/g, "// Most words copied or modified from\n\t\t// $1");
+tocopy.innerHTML = jsready;
 
 console.log("Finished! Copy the result from textbox");
 console.log(duplicates);

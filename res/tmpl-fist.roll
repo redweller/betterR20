@@ -1,0 +1,7 @@
+&{template:atkdmg} {{rname=Punch}} {{dmg1type=bludgeoning}} {{mod=5 ft.}} {{newline=
+}} {{range=@{selected|token_name}}} {{charname=at @{target|token_name}}} {{newline=
+}} damage 1 [[1+@{selected|strength_mod}[dmg@{target|token_id}]]] crit 1 [[1[dmg@{target|token_id}]]] {{newline=
+}} atk 1 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+4[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} atk 2 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+4[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} {{r1=$[[2]] ($[[6]])}} {{r2=$[[3]] ($[[7]])}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{newline=
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{dmg1flag=1}}

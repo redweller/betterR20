@@ -1,0 +1,42 @@
+&{template:atkdmg} {{rname=Shatter}} {{charname=10 ft. sphere (60 ft.)}} {{newline=
+}} ?{Level|
+	level 2, damage [[ floor([[3d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl2] |
+	level 3, damage [[ floor([[4d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl3] |
+	level 4, damage [[ floor([[5d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl4] |
+	level 5, damage [[ floor([[6d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl5] |
+	level 6, damage [[ floor([[7d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl6] |
+	level 7, damage [[ floor([[8d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl7] |
+	level 8, damage [[ floor([[9d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl8] |
+	level 9, damage [[ floor([[10d8[dmgaoe]]]/2) [sdmgaoe]]] [exp@{selected|character_id}&#124;spl9]} {{newline=
+}} half $[[1]] full $[[0]] {{newline=
+}} target 1 [[ d[[ {13+d0cs>1}<[[@{target|1|d20}+@{target|1|strength_save_bonus}[1chk]]] ]]cs>1cf<0[chk@{target|1|token_id}] ]] {{newline=
+}} target 2 [[ d[[ {13+d0cs>1}<[[@{target|2|d20}+@{target|2|strength_save_bonus}[2chk]]] ]]cs>1cf<0[chk@{target|2|token_id}] ]] {{newline=
+}} target 3 [[ d[[ {13+d0cs>1}<[[@{target|3|d20}+@{target|3|strength_save_bonus}[3chk]]] ]]cs>1cf<0[chk@{target|3|token_id}] ]] {{newline=
+}} target 4 [[ d[[ {13+d0cs>1}<[[@{target|4|d20}+@{target|4|strength_save_bonus}[4chk]]] ]]cs>1cf<0[chk@{target|4|token_id}] ]] {{newline=
+}} target 5 [[ d[[ {13+d0cs>1}<[[@{target|5|d20}+@{target|5|strength_save_bonus}[5chk]]] ]]cs>1cf<0[chk@{target|5|token_id}] ]] {{newline=
+}} target 6 [[ d[[ {13+d0cs>1}<[[@{target|6|d20}+@{target|6|strength_save_bonus}[6chk]]] ]]cs>1cf<0[chk@{target|6|token_id}] ]] {{newline=
+}} {{savedesc=?{Targets|
+	1 target,	$[[2]] ($[[6]]) &nbsp;@{target|1|token_name} |
+	2 targets,	$[[2]] ($[[6]]) &nbsp;@{target|1|token_name}
+				$[[3]] ($[[8]]) &nbsp;@{target|2|token_name} |
+	3 targets,	$[[2]] ($[[6]]) &nbsp;@{target|1|token_name} 
+				$[[3]] ($[[8]]) &nbsp;@{target|2|token_name} 
+				$[[7]] ($[[16]]) &nbsp;@{target|3|token_name} |
+	4 targets,	$[[2]] ($[[6]]) &nbsp;@{target|1|token_name} 
+				$[[3]] ($[[8]]) &nbsp;@{target|2|token_name} 
+				$[[7]] ($[[16]]) &nbsp;@{target|3|token_name} 
+				$[[9]] ($[[17]]) &nbsp;@{target|4|token_name} |
+	5 targets,	$[[2]] ($[[6]]) &nbsp;@{target|1|token_name} 
+				$[[3]] ($[[8]]) &nbsp;@{target|2|token_name} 
+				$[[7]] ($[[16]]) &nbsp;@{target|3|token_name} 
+				$[[9]] ($[[17]]) &nbsp;@{target|4|token_name} 
+				$[[10]] ($[[18]]) &nbsp;@{target|5|token_name} |
+	6 targets,	$[[2]] ($[[6]]) &nbsp;@{target|1|token_name} 
+				$[[3]] ($[[8]]) &nbsp;@{target|2|token_name} 
+				$[[7]] ($[[16]]) &nbsp;@{target|3|token_name} 
+				$[[9]] ($[[17]]) &nbsp;@{target|4|token_name} 
+				$[[10]] ($[[18]]) &nbsp;@{target|5|token_name} 
+				$[[11]] ($[[19]]) &nbsp;@{target|6|token_name} } }} {{newline=
+}} {{damage=1}} {{always=1}} {{save=1}} {{spelllevel=0}} {{crit=}} {{newline=
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{dmg1type=failure}} {{dmg2flag=1}} {{dmg2=$[[1]]}} {{dmg2type=success}} {{newline=
+}} {{savedc=13}} {{range=sound}} {{innate=%NEWLINE%@{selected|token_name}}} {{saveattr=STR}}
