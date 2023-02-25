@@ -34,7 +34,7 @@ function baseChat () {
 		const particle = { left: false };
 		const words = string.toLowerCase().match(/(--\p{L}+|\p{L}+)/gu);
 		if (words === null) return "";
-		if (incompetent) words.sort(() => Math.random() - 0.5);
+		if (incompetent) words.shuffle();
 
 		const calcIndex = (word) => {
 			return Array.from(`${word}`).reduce((index, letter) =>
@@ -114,9 +114,9 @@ function baseChat () {
 	}
 
 	function hasLanguageProficiency (langId) {
-		const profecientIn = availableLanguagesPlayer(d20_player_id)
+		const proficientIn = availableLanguagesPlayer(d20_player_id)
 			.map(lang => d20plus.chat.getLanguageId(lang));
-		return profecientIn.includes(d20plus.chat.getLanguageId(langId));
+		return proficientIn.includes(d20plus.chat.getLanguageId(langId));
 	}
 
 	d20plus.chat.listSpeakingIn = (available) => {
@@ -131,7 +131,7 @@ function baseChat () {
 		else return d20plus.chat.languageIndex[lang.normalize().toLowerCase()] || lang.normalize().toLowerCase();
 	}
 
-	d20plus.chat.refreshLanguages = async () => {
+	d20plus.chat.refreshLanguages = () => {
 		const $speakingIn = $("#speakingin");
 		const speakingAs = $("#speakingas").val().split("|");
 		const actorId = speakingAs[1];
@@ -149,7 +149,7 @@ function baseChat () {
 			}
 		} else {
 			const prev = $speakingIn.val();
-			const langs = await availableLanguages(actorId);
+			const langs = availableLanguages(actorId);
 			d20plus.chat.listSpeakingIn(langs);
 			$speakingIn.val(prev);
 		}
@@ -157,12 +157,12 @@ function baseChat () {
 
 	d20plus.chat.availableAddressees = () => {
 		const players = d20.Campaign.players.models
-			.filter(player => { return player.attributes.online && player.attributes.id !== d20_player_id; })
+			.filter(player => player.attributes.online && player.attributes.id !== d20_player_id)
 			.map(player => ({name: player.attributes.displayname, id: player.attributes.id}));
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
 				const actors = char.attributes.controlledby.split(",");
-				return actors.some(actor => { return actor && players.map(player => player.id).includes(actor); })
+				return actors.some(actor => actor && players.map(player => player.id).includes(actor))
 			})
 			.map(char => ({name: char.attributes.name}));
 		return players.concat(characters);
@@ -250,6 +250,13 @@ function baseChat () {
 				</span>
 			</label>
 	`;
+
+	const removeClassUserscript = (html) => {
+		return html.replace(/class="(?<class>[^""]*)"/g, (...str) => {
+			const cls = str.last().class;
+			return `class="${cls.replaceAll("userscript-", "")}"`
+		});
+	};
 
 	const chatHelp = [
 		{
@@ -383,7 +390,7 @@ function baseChat () {
 			code: "/fx %%",
 			descr: "show visual effect",
 			param: "effect",
-			tip: "Effect parameters, using the following syntax: Type-Color SourceID [TargetID]",
+			tip: "Effect parameters, using the following syntax: Type&#8209;Color&nbsp;SourceID&nbsp;[TargetID]",
 		},
 		{
 			code: "#%%",
@@ -403,9 +410,10 @@ function baseChat () {
 	];
 
 	d20plus.chat.help = (text, msg) => {
+		d20plus.chat.modifyMsg(null, {legalize: true, sys: true});
 		d20plus.ut.sendHackerChat(chatHelp.reduce((html, it) => {
 			const isb20 = it.b20 ? "&#42;" : "";
-			const param = it.param ? `<span style="background: rgba(206, 96, 96, 0.3);" title="${it.tip}">${it.param}</span>` : "";
+			const param = it.param ? `<span class="showtip tipsy-n-right" style="background: rgba(206, 96, 96, 0.3);" title="${it.tip}">${it.param}</span>` : "";
 			const code = it.code ? `<code>${it.code.replace("%%", param)}</code>${isb20}` : "&nbsp;";
 			const gmcheck = !it.gm || window.is_gm;
 			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || it.code.search(/^\/in|^--/) === -1;
@@ -449,6 +457,7 @@ function baseChat () {
 	}
 
 	d20plus.chat.modifyMsg = (id, mod) => {
+		id = id || d20plus.ut.generateRowId();
 		d20plus.chat.modify = d20plus.chat.modify || {};
 		d20plus.chat.modify[id] = d20plus.chat.modify[id] || {};
 		Object.assign(d20plus.chat.modify[id], mod);
@@ -519,8 +528,9 @@ function baseChat () {
 	}
 
 	d20plus.chat.getSpeakingTo = () => {
-		const prev = $("#speakingto").val();
-		$("#speakingto").html((() => {
+		const $speakingTo = $("#speakingto");
+		const prev = $speakingTo.val();
+		$speakingTo.html((() => {
 			return d20plus.chat.availableAddressees().reduce((result, addressee) => {
 				const icon = addressee.id ? "🗣" : "⚑";
 				const option = `${icon} ${addressee.name}`;
@@ -529,7 +539,7 @@ function baseChat () {
 				return result;
 			}, `<option value="">All</option><option value="ttms">None</option>`);
 		})());
-		$("#speakingto").val(prev);
+		$speakingTo.val(prev);
 	}
 
 	addConfigOptions(
@@ -609,22 +619,21 @@ function baseChat () {
 	}
 
 	d20plus.chat.resetSocial = () => {
-		if (!d20.textchat.talktomyself) $("#speakingto").val("");
 		$("#speakingin").val("");
-		$("#textchat-social-notifier").removeClass("b20-in");
-		$("#textchat-social-notifier").removeClass("b20-to");
+		if (!d20.textchat.talktomyself) $("#speakingto").val("");
+		$("#textchat-social-notifier").removeClass("b20-in b20-to");
+		d20plus.chat.closeSocial();
 	}
 
 	d20plus.chat.resetTTMS = () => {
 		$("#speakingto").val("");
+		d20plus.chat.closeSocial();
 		d20plus.chat.onSpeakingTo();
 	}
 
 	d20plus.chat.closeSocial = () => {
-		const $inputContainer = $("#textchat-input");
 		d20plus.chat.social = false;
-		$inputContainer.removeClass("social-resized");
-		$inputContainer.removeClass("social-default");
+		$("#textchat-input").removeClass("social-resized social-default");
 	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
@@ -666,8 +675,8 @@ function baseChat () {
 	d20plus.chat.processIncomingMsg = (msg) => {
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
-			const know_language = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msg.from_me || know_language) {
+			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
+			if (window.is_gm || msg.from_me || inKnownLanguage) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
 				msg.content += `<br><i title="You understand this because one of your characters speaks ${speech.language}">
 					<strong>(${speech.language})</strong> ${translated}</i>`;
@@ -698,10 +707,11 @@ function baseChat () {
 		return true;
 	}
 
-	d20plus.chat.r20outgoing = (params) => {
+	d20plus.chat.r20outgoing = (r20outgoing, params) => {
 		if (!params[2]) {
 			d20plus.chat.resetSendMyself();
 		}
+		return r20outgoing(...params);
 	}
 
 	d20plus.chat.r20incoming = (r20incoming, params) => {
@@ -745,7 +755,7 @@ function baseChat () {
 
 	d20plus.chat.displaying = (params) => {
 		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
-			const msg = $(`[data-messageid=${id}]`);
+			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
 
 			if (mods.intro) {
 				const code = "<code style='cursor:pointer'>/help</code>";
@@ -762,6 +772,7 @@ function baseChat () {
 				if (mods.class) msg.addClass(mods.class);
 				if (mods.versions) msg.append(playerVersionsTemplate(mods.versions));
 				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
+				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
 				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
 				delete d20plus.chat.modify[id];
 			}
@@ -811,6 +822,7 @@ function baseChat () {
 			}
 		}
 
+		// $.trim() instead of .trim() cause it's used in roll20's doChatInput()
 		let toSend = $.trim(text);
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
 		if ($("#soundslike").get(0)) toSend = "";
@@ -842,10 +854,11 @@ function baseChat () {
 
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
-		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming, true);
+		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
 		d20plus.ut.injectCode(d20.textchat, "doChatInput", d20plus.chat.r20outgoing);
 
 		$(document.body).append(languageTemplate());
+		availableLanguagesPlayer(d20_player_id);
 		buildLanguageIndex();
 
 		if (window.is_gm) {

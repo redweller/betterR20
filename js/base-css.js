@@ -190,8 +190,8 @@ function baseCss () {
 		},
 		// "old style" system messages
 		{
-			s: ".userscript-hacker-chat",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
+			s: ".userscript-hacker-chat, .hacker-chat",
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);box-sizing: border-box;",
 		},
 		{
 			s: ".userscript-hacker-chat a",

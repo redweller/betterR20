@@ -50,18 +50,10 @@ function baseUtil () {
 		});
 	};
 
-	d20plus.ut.injectCode = (object, method, injectedCode, bindAndRun) => {
+	d20plus.ut.injectCode = (object, method, injectedCode) => {
 		const original = object[method].bind(object);
-		if (bindAndRun) {
-			object[method] = (...initParams) => {
-				return injectedCode.bind(object)(original, initParams);
-			}
-		} else {
-			object[method] = function (...initParams) {
-				const passParams = injectedCode(initParams);
-				if (passParams === undefined) return original.apply(original, initParams);
-				else if (passParams !== false) return original.apply(original, passParams);
-			}
+		object[method] = (...initParams) => {
+			return injectedCode.bind(object)(original, initParams);
 		}
 	}
 
@@ -107,10 +99,10 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = () => {
-		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
+		const legacyStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
 		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const classname = !legacytStyle ? "userscript-b20intro" : "userscript-hackerintro";
+		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const data = [
 			d20plus.scriptName,
@@ -119,7 +111,7 @@ function baseUtil () {
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
-				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
@@ -148,9 +140,10 @@ function baseUtil () {
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
 			.html("");
 		setTimeout(() => {
-			$(`.boring-chat`).css("height", "0px");
+			const $bored = $(`.boring-chat`);
+			$bored.css("height", "0px");
 			setTimeout(() => {
-				$(".boring-chat").remove();
+				$bored.remove();
 				clearInterval(d20plus.ut.cursor);
 			}, 2000);
 		}, 6000);
@@ -189,10 +182,11 @@ function baseUtil () {
 		</div>`;
 		$(`#textchat`).prepend(consTemplate);
 		let blink = false;
+		const $bored = $(`.boring-chat`);
 		d20plus.ut.cursor = setInterval(() => {
-			$(`.boring-chat`).append($(`.boring-cursor`));
-			if (blink) $(`.boring-chat aside`).html("|");
-			else $(`.boring-chat aside`).html("");
+			$bored.append($(`.boring-cursor`));
+			if (blink) $bored.find(`aside`).html("|");
+			else $bored.find(`aside`).html("");
 			blink = !blink;
 		}, 300);
 	};
@@ -200,18 +194,18 @@ function baseUtil () {
 	d20plus.ut.showLoadingMessage = () => {
 		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
-		const loadmsgtemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
-		if (!isStreamer) $(".boring-chat > span:first-child").after(loadmsgtemplate);
+		const loadMsgTemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
+		if (!isStreamer) $(".boring-chat > span:first-child").after(loadMsgTemplate);
 		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
 	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
-		const legacytStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
+		const legacyStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
 		if (!message) return;
 		d20.textchat.incoming(false, ({
 			who: "system",
-			type: !legacytStyle && error ? "error" : "system",
-			content: (legacytStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			type: !legacyStyle && error ? "error" : "system",
+			content: (legacyStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
 			</span>` : message),
 		}));
@@ -265,18 +259,6 @@ function baseUtil () {
 			}
 		});
 		return d20plus.ut.dmscriptDetected;
-	}
-
-	d20plus.ut.resizeSidebar = (init) => {
-		const $sidebar = $("#rightsidebar");
-		if (init === "startup" || $sidebar.hasClass("ui-resizable-resizing")) {
-			const sidebarwidth = $sidebar.width();
-			const tabmenuwidth = sidebarwidth < 310 ? 299 : sidebarwidth - 11;
-			let textdelta = 9;
-			if (d20plus.ut.dmscriptDetected) textdelta = 6;
-			$("#textchat-input").width(sidebarwidth - textdelta);
-			$(".tabmenu").width(tabmenuwidth);
-		}
 	}
 
 	d20plus.ut.addCSS = (selectors, rules) => {
