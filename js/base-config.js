@@ -109,15 +109,38 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
-		"streamerChatTag": {
-			"name": "Streamer-Friendly Chat Tags",
-			"default": false,
-			"_type": "boolean",
-		},
 		"hideDefaultJournalSearch": {
 			"name": "Hide Default Journal Search Bar",
 			"default": false,
 			"_type": "boolean",
+		},
+	});
+	addConfigOptions("chat", {
+		"_name": "Chat",
+		"_player": true,
+		"streamerChatTag": {
+			"name": "Streamer-Friendly Chat Tags",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"legacySystemMessagesStyle": {
+			"name": "Use green/black style for betteR20 system messages",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showWelcomeMessage": {
+			"name": "Show welcome message on load",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"languages": {
+			"name": "Enable in-game languages (via social panel or /in)",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
 		},
 	});
 
@@ -740,6 +763,7 @@ function baseConfig () {
 		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {

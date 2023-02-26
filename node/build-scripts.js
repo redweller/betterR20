@@ -169,7 +169,9 @@ const SCRIPTS = {
 			"base-ui",
 			"base-mod",
 			"base-macro",
-			"base-emoji",
+			"base-chat-languages",
+			"base-chat-emoji",
+			"base-chat",
 			"base-remote-libre",
 			"base-jukebox-widget",
 
@@ -210,7 +212,9 @@ const SCRIPTS = {
 			"base-ui",
 			"base-mod",
 			"base-macro",
-			"base-emoji",
+			"base-chat-languages",
+			"base-chat-emoji",
+			"base-chat",
 			"base-remote-libre",
 			"base-jukebox-widget",
 

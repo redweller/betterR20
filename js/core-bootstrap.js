@@ -1,10 +1,9 @@
 const betteR20Core = function () {
+	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		const scriptName = `betteR20-core v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-core v${d20plus.version}`;
 		try {
 			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.ut.showLoadingMessage(scriptName);
-			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
 			d20plus.engine.swapTemplates();
@@ -19,6 +18,8 @@ const betteR20Core = function () {
 
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
+
+			d20plus.ut.showLoadingMessage();
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
@@ -61,12 +62,19 @@ const betteR20Core = function () {
 				d20plus.cfg.startPlayerConfigHandler();
 			}
 
-			d20plus.ut.log("All systems operational");
-			d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
+			// output welcome msg when the chat is ready
+			const welcome = setInterval(() => {
+				if (!d20.textchat.chatstartingup) {
+					d20plus.ut.checkVersion();
+					d20plus.ut.log("All systems operational");
+					d20plus.ut.chatTag();
+					clearInterval(welcome);
+				}
+			}, 500);
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error(e);
-			alert(`${scriptName} failed to initialise! See the logs (CTRL-SHIFT-J) for more information.`)
+			alert(`${d20plus.scriptName} failed to initialise! See the logs (CTRL-SHIFT-J) for more information.`)
 		}
 	};
 };
