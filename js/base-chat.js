@@ -464,13 +464,13 @@ function baseChat () {
 	}
 
 	d20plus.chat.checkTTMSStatus = () => {
-		$notifier = $("#textchat-notifier");
+		const $speakingTo = $("#speakingto");
 		if (d20.textchat.talktomyself) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) $("#textchat-input").addClass("talkingtoself");
-			$("#speakingto").val("ttms");
+			$speakingTo.val("ttms");
 		} else {
 			$("#textchat-input").removeClass("talkingtoself");
-			if ($("#speakingto").val() === "ttms") $("#speakingto").val("");
+			if ($speakingTo.val() === "ttms") $speakingTo.val("");
 		}
 	}
 
@@ -875,14 +875,16 @@ function baseChat () {
 
 			$inputContainer.append(d20plus.html.chatSocial);
 			$inputContainer.prepend(d20plus.html.chatSocialNotifier);
-			$("#chatSendBtn").after($("#socialswitch"));
+
+			const $socialSwitch = $("#socialswitch");
+			$("#chatSendBtn").after($socialSwitch);
 			$("#textchat-note-container").append($chatNotifier);
 
 			$chatTextarea.on("focus", d20plus.chat.closeSocial);
 			$chatNotifier.on("click", d20plus.chat.resetTTMS);
 			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
 
-			$("#socialswitch").on("click", d20plus.chat.onSocial);
+			$socialSwitch.on("click", d20plus.chat.onSocial);
 			$("#speakingas").on("change", d20plus.chat.onSpeakingAs);
 			$("#speakingto").on("change", d20plus.chat.onSpeakingTo);
 			$("#speakingin").on("change", d20plus.chat.onSpeakingIn);
@@ -897,8 +899,9 @@ function baseChat () {
 				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
 		}
 
-		$("#textchat-input").off("click", "button");
-		$("#textchat-input").on("click", "button", d20plus.chat.sending);
+		$("#textchat-input")
+			.off("click", "button")
+			.on("click", "button", d20plus.chat.sending);
 	};
 }
 

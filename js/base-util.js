@@ -124,6 +124,7 @@ function baseUtil () {
 				</span>
 			</div>
 		`;
+		const $boringProgress = $("#boring-progress");
 		if (showWelcome) {
 			if (!isStreamer) {
 				d20plus.ut.sendHackerChat(welcomeTemplate(...data));
@@ -132,11 +133,11 @@ function baseUtil () {
 			}
 		}
 		if (window.enhancementSuiteEnabled) {
-			$("#boring-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+			$boringProgress.before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		$("#boring-progress")
+		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
 			.html("");
 		setTimeout(() => {
