@@ -10,6 +10,7 @@ function baseUtil () {
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
+		$("#boring-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
 	};
 
 	d20plus.ut.error = (...args) => {
@@ -49,25 +50,17 @@ function baseUtil () {
 		});
 	};
 
+	d20plus.ut.injectCode = (object, method, injectedCode) => {
+		const original = object[method].bind(object);
+		object[method] = (...initParams) => {
+			return injectedCode.bind(object)(original, initParams);
+		}
+	}
+
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
-		function cmpVersions (a, b) {
-			const regExStrip0 = /(\.0+)+$/;
-			const segmentsA = a.replace(regExStrip0, "").split(".");
-			const segmentsB = b.replace(regExStrip0, "").split(".");
-			const l = Math.min(segmentsA.length, segmentsB.length);
-
-			for (let i = 0; i < l; i++) {
-				const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
-				if (diff) {
-					return diff;
-				}
-			}
-			return segmentsA.length - segmentsB.length;
-		}
-
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
 			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
@@ -75,7 +68,7 @@ function baseUtil () {
 				if (data) {
 					const curr = d20plus.version;
 					const avail = data;
-					const cmp = cmpVersions(curr, avail);
+					const cmp = d20plus.ut.cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
@@ -105,51 +98,169 @@ function baseUtil () {
 		`, true);
 	};
 
-	d20plus.ut.chatTag = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
+	d20plus.ut.chatTag = () => {
+		const legacyStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
+		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
+		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const data = [
+			d20plus.scriptName,
+			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			d20plus.ut.WIKI_URL,
+		];
+		const welcomeTemplate = (b20v, vttv, faq) => `
+			<div class="${classname}">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+					betteR20 
+					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">${b20v} loaded<br>VTTES v${vttv} detected</p>
+				</h1>
+				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
+				<span title="You'd think this would be obvious.">
+					<p>Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.</p>
+					<p>Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.</p>
+				</span>
+			</div>
+		`;
+		const $boringProgress = $("#boring-progress");
+		if (showWelcome) {
+			if (!isStreamer) {
+				d20plus.ut.sendHackerChat(welcomeTemplate(...data));
+			} else {
+				d20plus.ut.sendHackerChat(`VTTE detected and ${scriptName} successfully loaded.<br>`);
+			}
+		}
 		if (window.enhancementSuiteEnabled) {
-			d20plus.ut.sendHackerChat(`
-				VTT Enhancement Suite detected.
-				<br><br>
-				${scriptName} initialised.
-				<br>
-			`);
-		} else d20plus.ut.showHardDickMessage(scriptName);
-		d20plus.ut.sendHackerChat(`
-			${isStreamer ? "" : `
-			<br>
-			Need help? Visit our <a href="${d20plus.ut.WIKI_URL}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="You'd think this would be obvious.">
-			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
-			<br>
-			<br>
-			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
-			</span>
-			`}
-		`);
+			$boringProgress.before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+		} else {
+			d20plus.ut.showHardDickMessage(scriptName);
+		}
+		$boringProgress
+			.before(`<span><span>&gt;</span>all systems operational</span>`)
+			.html("");
+		setTimeout(() => {
+			const $bored = $(`.boring-chat`);
+			$bored.css("height", "0px");
+			setTimeout(() => {
+				$bored.remove();
+				clearInterval(d20plus.ut.cursor);
+			}, 2000);
+		}, 6000);
 	};
 
-	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
-		d20plus.ut.sendHackerChat(`
-			${scriptName} initialising, please wait...<br><br>
-		`);
-		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	d20plus.ut.showInitMessage = () => {
+		const consTemplate = `<div class="boring-chat">
+			<span><span>&gt;</span>initializing, please wait...</span>
+			<span id="boring-progress"><span>&gt;</span>loading data</span>
+			<span id="boring-cursor"><span>&gt;</span><aside>|</aside></span>
+			<style type="text/css">
+			.boring-chat {
+				font-family: Menlo, Monaco, Consolas, monospace;
+				font-size: small;
+				background: black;
+				display: inline-block;
+				font-weight: bold;
+				color: rgb(32, 194, 14);
+				width: 100%;
+				position: sticky;
+				z-index: 1000;
+				top: 0px;
+				height: 110px;
+				transition: height 2s;
+				overflow: hidden;
+				border-bottom: 1px solid rgb(32, 194, 14);
+			}
+			.boring-chat > span {
+				display: block; white-space: nowrap;
+				padding: 0px 5px 0px 45px;
+			}
+			.boring-chat > span > span {
+				float: left; margin-left: -39px;
+			}
+			</style>
+		</div>`;
+		$(`#textchat`).prepend(consTemplate);
+		let blink = false;
+		const $bored = $(`.boring-chat`);
+		d20plus.ut.cursor = setInterval(() => {
+			$bored.append($(`.boring-cursor`));
+			if (blink) $bored.find(`aside`).html("|");
+			else $bored.find(`aside`).html("");
+			blink = !blink;
+		}, 300);
 	};
+
+	d20plus.ut.showLoadingMessage = () => {
+		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const loadMsgTemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
+		if (!isStreamer) $(".boring-chat > span:first-child").after(loadMsgTemplate);
+		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
+		const legacyStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
+		if (!message) return;
 		d20.textchat.incoming(false, ({
 			who: "system",
-			type: "system",
-			content: `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			type: !legacyStyle && error ? "error" : "system",
+			content: (legacyStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
-			</span>`,
+			</span>` : message),
 		}));
 	};
+
+	d20plus.ut.generateVersionInfo = () => {
+		d20plus.ut.log("Generating version info");
+		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
+		const b20v = encodeURI(d20plus.version);
+		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
+		const phdm = d20plus.ut.detectDarkModeScript();
+		const date = Number(new Date());
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
+		return info;
+	}
+
+	d20plus.ut.parseVersionInfo = (raw) => {
+		const info = JSON.parse(decodeURI(atob(raw)));
+		const time = d20plus.ut.timeAgo(info.date);
+		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
+		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+		return html;
+	}
+
+	d20plus.ut.cmpVersions = (present, latest) => {
+		if (!present || !latest) return 0;
+		const regExStrip0 = /(\.0+)+$/;
+		const segmentsA = present.replace(regExStrip0, "").split(".");
+		const segmentsB = latest.replace(regExStrip0, "").split(".");
+		const l = Math.min(segmentsA.length, segmentsB.length);
+
+		for (let i = 0; i < l; i++) {
+			const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
+			if (diff) {
+				return diff;
+			}
+		}
+		return segmentsA.length - segmentsB.length;
+	}
+
+	d20plus.ut.detectDarkModeScript = () => {
+		d20plus.ut.dmscriptDetected = false;
+		// Detect if player is using Roll20 Dark Theme
+		// https://github.com/Pharonix/Roll20-Dark-Theme
+		$("style").each((i, el) => {
+			if (el.textContent.indexOf("/*New Characteristics Menu*/") >= 0) {
+				d20plus.ut.dmscriptDetected = true;
+				return false;
+			}
+		});
+		return d20plus.ut.dmscriptDetected;
+	}
 
 	d20plus.ut.addCSS = (selectors, rules) => {
 		if (!(selectors instanceof Array)) selectors = [selectors];
@@ -190,6 +301,17 @@ function baseUtil () {
 		});
 	};
 
+	d20plus.ut.timeAgo = (ts) => {
+		const difInteger = Number(new Date()) - Number(ts);
+		const difMinutes = Math.ceil((difInteger - 60000) / 60000);
+		const difHours = Math.ceil((difInteger - 3600000) / 3600000);
+		const difDays = Math.ceil((difInteger - 86400000) / 86400000);
+		if (difDays > 0) return `${difDays} d ago`;
+		if (difHours > 0) return `${difHours} hr ago`;
+		if (difMinutes > 0) return `${difMinutes} min ago`;
+		return `0 min ago`;
+	}
+
 	d20plus.ut.getAntiCacheSuffix = () => {
 		return `?${(new Date()).getTime()}`;
 	};
@@ -212,6 +334,31 @@ function baseUtil () {
 		}
 		return JSON.parse(journalFolder);
 	};
+
+	d20plus.ut.fetchCharAttribs = async (char) => {
+		const attribs = char?.attribs;
+		if (!attribs) return false;
+		if (attribs.length) {
+			return char;
+		}
+		if (!attribs.fetching) {
+			attribs.fetch(attribs);
+			attribs.fetching = true;
+		}
+		return new Promise(resolve => {
+			let inProgress = 0;
+			const wait = setInterval(() => {
+				inProgress++;
+				if (attribs.length) resolve(char);
+				if (attribs.length || inProgress > 100) {
+					resolve(false);
+					clearInterval(wait);
+					delete attribs.fetching;
+					d20plus.ut.log(`Tried fetching ${char.attributes.name}`);
+				}
+			}, 30);
+		});
+	}
 
 	d20plus.ut._lastInput = null;
 	d20plus.ut.getNumberRange = (promptText, min, max) => {
@@ -309,9 +456,17 @@ function baseUtil () {
 		return d20plus.ut._getCanvasElementById(tokenId, "thegraphics");
 	};
 
+	d20plus.ut.getAccountById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.d20userid;
+	};
+
+	d20plus.ut.getPlayerNameById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.displayname;
+	};
+
 	d20plus.ut._getCanvasElementById = (id, prop) => {
-		const foundArr = d20.Campaign.pages.models.map(model => model[prop] && model[prop].models ? model[prop].models.find(it => it.id === id) : null).filter(it => it);
-		return foundArr.length ? foundArr[0] : null;
+		const found = d20.Campaign.pages.models.find(model => model[prop]?.get(id));
+		return found ? found[prop].get(id) : null;
 	};
 
 	d20plus.ut.getMacroByName = (macroName) => {
@@ -321,6 +476,10 @@ function baseUtil () {
 			return macros[0];
 		}
 		return null;
+	};
+
+	d20plus.ut.getCharAttribByName = (char, attribName) => {
+		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
