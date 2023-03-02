@@ -115,7 +115,7 @@ function baseUtil () {
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">${b20v} loaded<br>VTTES v${vttv} detected</p>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">VTTES v${vttv} detected<br>${b20v} loaded</p>
 				</h1>
 				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
 				<span title="You'd think this would be obvious.">
@@ -219,7 +219,7 @@ function baseUtil () {
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
 		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
-		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, dnd20: window.b20, date}));
 		return info;
 	}
 
@@ -227,9 +227,10 @@ function baseUtil () {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
 		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
+		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
-		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
 	}
 
