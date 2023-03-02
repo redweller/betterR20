@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.34.0
+// @version      1.34.1
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -208,7 +208,7 @@ function baseUtil () {
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">${b20v} loaded<br>VTTES v${vttv} detected</p>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">VTTES v${vttv} detected<br>${b20v} loaded</p>
 				</h1>
 				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
 				<span title="You'd think this would be obvious.">
@@ -312,7 +312,7 @@ function baseUtil () {
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
 		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
-		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, dnd20: window.b20, date}));
 		return info;
 	}
 
@@ -320,9 +320,10 @@ function baseUtil () {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
 		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
+		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
-		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
 	}
 
@@ -20275,6 +20276,7 @@ function baseChat () {
 			.map(player => ({name: player.attributes.displayname, id: player.attributes.id}));
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
+				if (!char.attributes.inplayerjournals) return false;
 				const actors = char.attributes.controlledby.split(",");
 				return actors.some(actor => actor && players.map(player => player.id).includes(actor))
 			})
@@ -20385,17 +20387,49 @@ function baseChat () {
 		},
 		{
 			code: "/wb",
-			descr: "reply or whisper to last contact",
+			descr: "PM back to last contact",
 			b20: true,
 		},
 		{
 			code: "/ws",
-			descr: "whisper to selected tokens",
+			descr: "PM to selected tokens (GM)",
 			b20: true,
+			gm: true,
+		},
+		{
+			code: "/v %%",
+			descr: "get script versions (GM)",
+			param: "name",
+			tip: "Name of a player that you want to get version info from, put in quotation marks if it contains spaces",
+			b20: true,
+			gm: true,
 		},
 		{
 			code: "/em, /me",
 			descr: "emote (action from your POV)",
+		},
+		{
+			code: "/ooc, /o",
+			descr: "out of character emote",
+		},
+		{
+			code: "/desc",
+			descr: "GM-only describe events",
+			gm: true,
+		},
+		{
+			code: "/as %%",
+			descr: "GM-only speak as Name",
+			param: "name",
+			tip: "Name of the personified character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/emas %%",
+			descr: "GM-only emote as Name",
+			param: "name",
+			tip: "Name of the described character, put in quotation marks if it contains spaces",
+			gm: true,
 		},
 		{
 			code: "/in %%",
@@ -20428,10 +20462,6 @@ function baseChat () {
 			b20: true,
 		},
 		{
-			code: "/ooc, /o",
-			descr: "out of character (as player)",
-		},
-		{
 			code: "/roll, /r %%",
 			descr: "roll dice, e.g. /r 2d6",
 			param: "XdY",
@@ -20442,33 +20472,6 @@ function baseChat () {
 			descr: "roll only for GM",
 			param: "XdY",
 			tip: "Dice roll formula, like 1d20 +5, the result of which will be visible only to GM",
-		},
-		{
-			code: "/desc",
-			descr: "GM-only describe events",
-			gm: true,
-		},
-		{
-			code: "/as %%",
-			descr: "GM-only speak as Name",
-			param: "name",
-			tip: "Name of the personified character, put in quotation marks if it contains spaces",
-			gm: true,
-		},
-		{
-			code: "/emas %%",
-			descr: "GM-only emote as Name",
-			param: "name",
-			tip: "Name of the described character, put in quotation marks if it contains spaces",
-			gm: true,
-		},
-		{
-			code: "/v %%",
-			descr: "GM-only get script versions",
-			param: "name",
-			tip: "Name of a player that you want to get version info from, put in quotation marks if it contains spaces",
-			b20: true,
-			gm: true,
 		},
 		{
 			code: "[[%%]]",
@@ -20786,36 +20789,36 @@ function baseChat () {
 		})
 	}
 
-	d20plus.chat.processIncomingMsg = (msg) => {
+	d20plus.chat.processIncomingMsg = (msg, msgData) => {
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
 			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msg.from_me || inKnownLanguage) {
+			if (window.is_gm || msgData.from_me || inKnownLanguage) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
-				msg.content += `<br><i title="You understand this because one of your characters speaks ${speech.language}">
+				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
 					<strong>(${speech.language})</strong> ${translated}</i>`;
-				d20plus.chat.modifyMsg(msg.id, {class: "inlang"});
+				d20plus.chat.modifyMsg(msg.id, {class: "inlang", legalize: true});
 			}
 		} else if (msg.listenerid?.type === "handshake") {
-			if (msg.from_me && !msg.listenerid.data) {
+			if (msgData.from_me && !msg.listenerid.data) {
 				msg.content = `script versions info`;
 				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.target)}/30`;
 				d20plus.chat.modifyMsg(msg.id, {class: "system connects", decolon: true, versions: msg.listenerid.id});
-			} else if (msg.from_me && msg.listenerid.data) {
+			} else if (msgData.from_me && msg.listenerid.data) {
 				return false;
-			} else if (msg.to_me && !msg.listenerid.data) {
+			} else if (msgData.to_me && !msg.listenerid.data) {
 				const name = d20plus.ut.getPlayerNameById(msg.playerid);
 				msg.listenerid.data = d20plus.ut.generateVersionInfo();
 				d20.textchat.doChatInput(`/w "${name}" &nbsp;`, undefined, msg.listenerid);
 				return false;
-			} else if (msg.to_me && msg.listenerid.data) {
+			} else if (msgData.to_me && msg.listenerid.data) {
 				$(`#connects${msg.listenerid.id}`).html(d20plus.ut.parseVersionInfo(msg.listenerid.data));
 				$(`#connects${msg.listenerid.id}-state`).attr("checked", "true");
 				$(`#connects${msg.listenerid.id}-info`).text("3");
 				return false;
 			}
 		}
-		if (d20.textchat.talktomyself && msg.from_me) {
+		if (d20.textchat.talktomyself && msgData.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
 		}
 		return true;
@@ -20830,8 +20833,9 @@ function baseChat () {
 
 	d20plus.chat.r20incoming = (r20incoming, params) => {
 		const msg = params[1];
-		msg.from_me = msg.playerid === d20_player_id;
-		msg.to_me = msg.target?.includes(d20_player_id);
+		const msgData = {};
+		msgData.from_me = msg.playerid === d20_player_id;
+		msgData.to_me = msg.target?.includes(d20_player_id);
 
 		// For rolls &  r20 generates duplicate messages that don't show on the log with
 		// params [sound, msg, true, true]. Hence check params[2]&[3] !== true to avoid double processing
@@ -20840,7 +20844,7 @@ function baseChat () {
 			|| (d20.textchat.chatstartingup)
 		);
 
-		if (msg.from_me || msg.type === "system") {
+		if (msgData.from_me || msg.type === "system") {
 			const stash = [];
 			while (d20plus.chat.localHistory.length) {
 				const record = d20plus.chat.localHistory.pop();
@@ -20853,14 +20857,14 @@ function baseChat () {
 		}
 
 		if (msg.type === "whisper" && !skipProcessing) {
-			if (msg.from_me) {
+			if (msgData.from_me) {
 				d20plus.chat.lastRespondent = msg.target_name;
-			} else if (msg.to_me) {
+			} else if (msgData.to_me) {
 				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
 			}
 		}
 
-		if (skipProcessing || d20plus.chat.processIncomingMsg(msg)) {
+		if (skipProcessing || d20plus.chat.processIncomingMsg(msg, msgData)) {
 			const result = r20incoming(...params);
 			d20plus.chat.displaying();
 			return result;
@@ -20910,7 +20914,7 @@ function baseChat () {
 		if (d20plus.cfg.getOrDefault("chat", "commands")) {
 			// add custom commands
 			text = text.replace(/^\/wb (.*?)$/gm, d20plus.chat.sendReply);
-			text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
+			if (is_gm) text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
 			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
 			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
 			if (!d20.textchat.talktomyself) text = text.replace(/^\/mtms ?(.*?)$/s, d20plus.chat.sendMyself);
