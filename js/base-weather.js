@@ -84,7 +84,46 @@ function baseWeather () {
 
 		const CTX = {
 			_hasWarned: new Set(),
-		};
+		};// RB20 EXCLUDE START
+
+		const varyingWeather = (() => {
+			const speed = {};
+			speed.val = {};
+			speed.increment = 0.001;
+			speed.interval = 1000;
+
+			speed.get = (page) => {
+				if (!speed.val.current) speed._init(page);
+				if (speed.wait === 0) {
+					if (speed.val.current !== speed.val.next) {
+						speed.increment = speed.val.current > speed.val.next ? -Math.abs(speed.increment) : Math.abs(speed.increment);
+						speed.val.current = speed._round(speed.val.current + speed.increment, 3);
+						d20plus.ut.log("Changing to", speed.val.next);
+					} else {
+						speed.wait = speed.interval;
+						speed.val.next = speed._next();
+						d20plus.ut.log("Next change to", speed.val.next, "now", speed.val.current);
+					}
+				} else --speed.wait;
+				return speed.val.current;
+			};
+			speed._next = () => {
+				const delta = speed.val.to - speed.val.from;
+				return speed._round(speed.val.from + delta * Math.random(), 2);
+			};
+			speed._round = (val, decimal) => {
+				const multiplier = Math.pow(10, decimal);
+				return Math.round(multiplier * val) / multiplier;
+			}
+			speed._init = (page) => {
+				speed.val.from = 0.2;
+				speed.val.to = 0.6;
+				speed.val.current = (speed.val.from + speed.val.to) / 2;
+				speed.wait = speed.interval;
+				speed.val.next = speed._next();
+			};
+			return speed;
+		})();// RB20 EXCLUDE END
 
 		function ofX (x) { // offset X
 			return x - d20.engine.currentCanvasOffset[0];

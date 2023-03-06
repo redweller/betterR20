@@ -168,6 +168,7 @@ function baseChat () {
 			.map(player => ({name: player.attributes.displayname, id: player.attributes.id}));
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
+				if (!char.attributes.inplayerjournals) return false;
 				const actors = char.attributes.controlledby.split(",");
 				return actors.some(actor => actor && players.map(player => player.id).includes(actor))
 			})
@@ -285,10 +286,42 @@ function baseChat () {
 			code: "/ws",
 			descr: __("msg_chat_help_ws"),
 			b20: true,
+			gm: true,
+		},
+		{
+			code: "/v %%",
+			descr: __("msg_chat_help_versions"),
+			param: "name",
+			tip: "Name of a player that you want to get version info from, put in quotation marks if it contains spaces",
+			b20: true,
+			gm: true,
 		},
 		{
 			code: "/em, /me",
 			descr: __("msg_chat_help_em"),
+		},
+		{
+			code: "/ooc, /o",
+			descr: __("msg_chat_help_ooc"),
+		},
+		{
+			code: "/desc",
+			descr: __("msg_chat_help_desc"),
+			gm: true,
+		},
+		{
+			code: "/as %%",
+			descr: __("msg_chat_help_as"),
+			param: "name",
+			tip: "Name of the personified character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/emas %%",
+			descr: __("msg_chat_help_emas"),
+			param: "name",
+			tip: "Name of the described character, put in quotation marks if it contains spaces",
+			gm: true,
 		},
 		{
 			code: "/in %%",
@@ -321,10 +354,6 @@ function baseChat () {
 			b20: true,
 		},
 		{
-			code: "/ooc, /o",
-			descr: __("msg_chat_help_ooc"),
-		},
-		{
 			code: "/roll, /r %%",
 			descr: __("msg_chat_help_r"),
 			param: "XdY",
@@ -335,33 +364,6 @@ function baseChat () {
 			descr: __("msg_chat_help_gr"),
 			param: "XdY",
 			tip: "Dice roll formula, like 1d20 +5, the result of which will be visible only to GM",
-		},
-		{
-			code: "/desc",
-			descr: __("msg_chat_help_desc"),
-			gm: true,
-		},
-		{
-			code: "/as %%",
-			descr: __("msg_chat_help_as"),
-			param: "name",
-			tip: "Name of the personified character, put in quotation marks if it contains spaces",
-			gm: true,
-		},
-		{
-			code: "/emas %%",
-			descr: __("msg_chat_help_emas"),
-			param: "name",
-			tip: "Name of the described character, put in quotation marks if it contains spaces",
-			gm: true,
-		},
-		{
-			code: "/v %%",
-			descr: __("msg_chat_help_versions"),
-			param: "name",
-			tip: "Name of a player that you want to get version info from, put in quotation marks if it contains spaces",
-			b20: true,
-			gm: true,
 		},
 		{
 			code: "[[%%]]",
@@ -440,6 +442,9 @@ function baseChat () {
 		const actions = {
 			hp: {title: "Revert damage", icon: "r", callback: d20plus.engine.alterTokensHP},
 			spell: {title: "Revert spell slots", icon: "r", callback: d20plus.engine.expendResources},
+			item: {title: "Revert item usage", icon: "r", callback: d20plus.engine.expendResources},
+			resource: {title: "Revert spending resources", icon: "r", callback: d20plus.engine.expendResources},
+			repeated: {title: "Revert spending resources", icon: "r", callback: d20plus.engine.expendResources},
 			request: {title: "Request script info", icon: "?", callback: d20plus.chat.requestScriptVersions},
 		}[action.type];
 		d20plus.chat.actions[id] = Object.assign({params: action}, actions);
@@ -473,13 +478,13 @@ function baseChat () {
 	}
 
 	d20plus.chat.checkTTMSStatus = () => {
-		$notifier = $("#textchat-notifier");
+		const $speakingTo = $("#speakingto");
 		if (d20.textchat.talktomyself) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) $("#textchat-input").addClass("talkingtoself");
-			$("#speakingto").val("ttms");
+			$speakingTo.val("ttms");
 		} else {
 			$("#textchat-input").removeClass("talkingtoself");
-			if ($("#speakingto").val() === "ttms") $("#speakingto").val("");
+			if ($speakingTo.val() === "ttms") $speakingTo.val("");
 		}
 	}
 
@@ -582,18 +587,27 @@ function baseChat () {
 				"_type": "boolean",
 				"_player": true,
 			}, */
-			"clickRollForDmg": {
-				"name": "Process and apply dice rolls to HP bar#",
-				"default": "3",
+			"autoExpend": {
+				"name": "Expend spell slots & class resources",
+				"default": "b20",
 				"_type": "_enum",
-				"__values": ["disable", "1", "2", "3"],
+				"__values": ["none", "b20", "auto"],
+				"__texts": ["disabled", "only b20 expressions", "automatic from OGL attack templates"],
 				"_player": true,
 			},
-			"expendSlots": {
-				"name": "Expend spell slots & class resources",
-				"default": "only b20 expressions",
+			"autoDmg": {
+				"name": "Apply damage and attack rolls",
+				"default": "b20mods",
 				"_type": "_enum",
-				"__values": ["disable", "automatic from OGL templates", "only b20 expressions"],
+				"__values": ["none", "b20", "b20mods", "auto"],
+				"__texts": ["disabled", "only b20 expressions", "use b20 expressions & suggest modifiers for every roll", "automatic from OGL attack templates"],
+				"_player": true,
+			},
+			"dmgTokenBar": {
+				"name": "Token bar to apply HP changes to",
+				"default": "3",
+				"_type": "_enum",
+				"__values": ["1", "2", "3"],
 				"_player": true,
 			}, // RB20 EXCLUDE END
 		},
@@ -701,31 +715,31 @@ function baseChat () {
 		})
 	}
 
-	d20plus.chat.processIncomingMsg = (msg) => { // RB20 EXCLUDE START
-		const expendSlots = d20plus.cfg.getOrDefault("chat", "expendSlots") !== "disable";
-		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[co\d]?)\|?(?<quantity>\d*)\]/;// RB20 EXCLUDE END
+	d20plus.chat.processIncomingMsg = (msg, msgData) => { // RB20 EXCLUDE START
+		const expendSlots = d20plus.cfg.getOrDefault("chat", "autoExpend") !== "disabled";
+		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[cor\d]?)-?(?<name>[\p{L}\d _]*)(?:\|(?<quantity>\d*)|)\]/u;// RB20 EXCLUDE END
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
 			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msg.from_me || inKnownLanguage) {
+			if (window.is_gm || msgData.from_me || inKnownLanguage) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
-				msg.content += `<br><i title="You understand this because one of your characters speaks ${speech.language}">
+				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
 					<strong>(${speech.language})</strong> ${translated}</i>`;
-				d20plus.chat.modifyMsg(msg.id, {class: "inlang"});
+				d20plus.chat.modifyMsg(msg.id, {class: "inlang", legalize: true});
 			}
 		} else if (msg.listenerid?.type === "handshake") {
-			if (msg.from_me && !msg.listenerid.data) {
+			if (msgData.from_me && !msg.listenerid.data) {
 				msg.content = `script versions info`;
 				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.target)}/30`;
 				d20plus.chat.modifyMsg(msg.id, {class: "system connects", decolon: true, versions: msg.listenerid.id});
-			} else if (msg.from_me && msg.listenerid.data) {
+			} else if (msgData.from_me && msg.listenerid.data) {
 				return false;
-			} else if (msg.to_me && !msg.listenerid.data) {
+			} else if (msgData.to_me && !msg.listenerid.data) {
 				const name = d20plus.ut.getPlayerNameById(msg.playerid);
 				msg.listenerid.data = d20plus.ut.generateVersionInfo();
 				d20.textchat.doChatInput(`/w "${name}" &nbsp;`, undefined, msg.listenerid);
 				return false;
-			} else if (msg.to_me && msg.listenerid.data) {
+			} else if (msgData.to_me && msg.listenerid.data) {
 				$(`#connects${msg.listenerid.id}`).html(d20plus.ut.parseVersionInfo(msg.listenerid.data));
 				$(`#connects${msg.listenerid.id}-state`).attr("checked", "true");
 				$(`#connects${msg.listenerid.id}-info`).text("3");
@@ -733,7 +747,7 @@ function baseChat () {
 			}// RB20 EXCLUDE START
 		} else if (msg.listenerid?.type === "automation") {
 			const broadcast = msg.type !== "whisper";
-			if (is_gm || broadcast || msg.to_me) {
+			if (is_gm || broadcast || msgData.to_me) {
 				msg.id = d20plus.ut.generateRowId();
 				msg.who = "b20action";
 				msg.type = "general";
@@ -742,11 +756,10 @@ function baseChat () {
 				const avatar = `<img src="${msg.avatar}" height="20px" width="20px"> `;
 				d20plus.chat.modifyMsg(msg.id, {class: "action"});
 				d20plus.chat.modifyMsg(msg.id, {legalize: true});
-				if (msg.listenerid.undo && !msg.listenerid.undo.type) return false; // rare case of two windows open in FF
 				if (msg.listenerid.undo) d20plus.chat.modifyMsg(msg.id, {action: msg.listenerid.undo});
 				msg.content = `<span ${span} title='${avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
 			}
-		} else if (msg.from_me && expendSlots) {
+		} else if (msgData.from_me && expendSlots) {
 			const expend = {};
 			const oglStandard = {
 				spellLevel: /{{spelllevel=[\w ]*(?<splvl>\d|cantrip)}}/,
@@ -759,6 +772,17 @@ function baseChat () {
 				if (data.type === "spl" && data.slot) {
 					expend.type = "spell";
 					({slot: expend.lvl, charid: expend.charID} = data);
+				} else if (data.type === "res" && data.slot) {
+					expend.type = "resource";
+					expend.res = data.slot === "c" ? "class" : "other";
+					if (data.quantity) expend.amt = data.quantity;
+					if (data.slot === "r" && data.name) expend.type = "repeated";
+					({name: expend.name, charid: expend.charID} = data);
+				} else if (data.type === "ammo" && data.name) {
+					expend.type = "item";
+					expend.name = data.name;
+					if (data.quantity) expend.amt = data.quantity;
+					({name: expend.name, charid: expend.charID} = data);
 				}
 				return "";
 			});
@@ -783,27 +807,29 @@ function baseChat () {
 				msg.id = d20plus.ut.generateRowId(); // this is supposed to trick r20 not to revert msg contents
 				d20plus.engine.expendResources(expend);
 			}
-		} else if (!msg.from_me) {
+		} else if (!msgData.from_me) {
 			msg.content = msg.content.replace(b20expend, ""); // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
 		}
-		if (d20.textchat.talktomyself && msg.from_me) {
+		if (d20.textchat.talktomyself && msgData.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
 		}
 		return true;
 	}
 
-	d20plus.chat.r20outgoing = (params) => {
+	d20plus.chat.r20outgoing = (r20outgoing, params) => {
 		if (!params[2]) {
 			d20plus.chat.resetSendMyself();
 		}// RB20 EXCLUDE START
 
 		if (d20plus.chat.logAll) d20plus.ut.log("OUTGOING!", params);// RB20 EXCLUDE END
+		return r20outgoing(...params);
 	}
 
 	d20plus.chat.r20incoming = (r20incoming, params) => {
 		const msg = params[1];
-		msg.from_me = msg.playerid === d20_player_id;
-		msg.to_me = msg.target?.includes(d20_player_id);// RB20 EXCLUDE START
+		const msgData = {};
+		msgData.from_me = msg.playerid === d20_player_id;
+		msgData.to_me = msg.target?.includes(d20_player_id);// RB20 EXCLUDE START
 
 		if (d20plus.chat.logAll) {
 			d20plus.ut.log("INCOMING!", Object.assign({
@@ -818,7 +844,7 @@ function baseChat () {
 			|| (d20.textchat.chatstartingup)
 		);
 
-		if (msg.from_me || msg.type === "system") {
+		if (msgData.from_me || msg.type === "system") {
 			const stash = [];
 			while (d20plus.chat.localHistory.length) {
 				const record = d20plus.chat.localHistory.pop();
@@ -831,14 +857,14 @@ function baseChat () {
 		}
 
 		if (msg.type === "whisper" && !skipProcessing) {
-			if (msg.from_me) {
+			if (msgData.from_me) {
 				d20plus.chat.lastRespondent = msg.target_name;
-			} else if (msg.to_me) {
+			} else if (msgData.to_me) {
 				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
 			}
 		}
 
-		if (skipProcessing || d20plus.chat.processIncomingMsg(msg)) {
+		if (skipProcessing || d20plus.chat.processIncomingMsg(msg, msgData)) {
 			const result = r20incoming(...params);
 			d20plus.chat.displaying();
 			return result;
@@ -889,7 +915,7 @@ function baseChat () {
 		if (d20plus.cfg.getOrDefault("chat", "commands")) {
 			// add custom commands
 			text = text.replace(/^\/wb (.*?)$/gm, d20plus.chat.sendReply);
-			text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
+			if (is_gm) text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
 			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
 			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
 			if (!d20.textchat.talktomyself) text = text.replace(/^\/mtms ?(.*?)$/s, d20plus.chat.sendMyself);
@@ -916,6 +942,7 @@ function baseChat () {
 			}
 		}
 
+		// $.trim() instead of .trim() cause it's used in roll20's doChatInput()
 		let toSend = $.trim(text);
 		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
 		if ($("#soundslike").get(0)) toSend = "";
@@ -987,6 +1014,8 @@ function baseChat () {
 	d20plus.chat.enhanceRolls = () => {
 		d20.textchat.$textchat
 			.on("mouseover", ".inlinerollresult.showtip", event => {
+				const cfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
+				if (cfg === "none") return;
 				const rollData = /\[(\d*)(?<type>chk|dmg|sdmg|heal)(?<targets>[^\]]*)\]/;
 				const roll = {$el: $(event.target)};
 				if (roll.$el.attr("data-damage")) return;
@@ -1022,10 +1051,12 @@ function baseChat () {
 				const dmg = event.target.getAttribute("data-damage");
 				const dtargets = event.target.getAttribute("data-targets");
 				if (isNaN(dmg) || !dmg) return;
-				if (event.shiftKey) {
+				if (event.shiftKey && event.ctrlKey) {
+					d20plus.engine.alterTokensHP({dmg: -Math.abs(dmg)});
+				} else if (event.shiftKey) {
 					d20plus.engine.alterTokensHP({dmg: Math.abs(dmg)});
 				} else if (event.ctrlKey) {
-					d20plus.engine.alterTokensHP({dmg: -Math.abs(dmg)});
+					d20plus.engine.alterTokensHP({dmg: Math.floor(Math.abs(dmg) / 2)});
 				} else if (dtargets) {
 					const targets = dtargets.split("|")
 						.map(targetID => d20plus.ut.getTokenById(targetID))
@@ -1034,7 +1065,7 @@ function baseChat () {
 				}
 			})
 		d20plus.ut.dynamicStyles("hit-dice-tips").html(`
-			.hit-dice-tip::after {display:block; content:"Select targets & hold ctrl/shift"}
+			.hit-dice-tip::after {display:block; font-size:smaller; content:"Select targets & hold ctrl/shift to alter HP"}
 			.hit-dice-tip.hit-targeted::after {content:"Click to apply HP changes"}
 			.hit-dice-tip.hit-aoe::after {content:"Click to auto-dmg targets"}
 			.hit-dice-tip.hit-aoe0::after {content:"This damage affects 0 targets"}
@@ -1044,14 +1075,15 @@ function baseChat () {
 			.hit-dice-tip.hit-aoe4::after {content:"Click to auto-dmg 4 targets"}
 			.hit-dice-tip.hit-aoe5::after {content:"Click to auto-dmg 5 targets"}
 			.hit-dice-tip.hit-aoe6::after {content:"Click to auto-dmg 6 targets"}
-			.shift-pressed .hit-dice-tip::after {content:"Click to decrease HP to selected"}
-			.ctrl-pressed .hit-dice-tip::after {content:"Click to increase HP to selected"}
+			.shift-pressed .hit-dice-tip::after {content:"Shft+Click to decrease HP to selected tokens"}
+			.ctrl-pressed .hit-dice-tip::after {content:"Ctrl+Click to decrease HP/2 to selected tokens"}
+			.ctrl-pressed.shift-pressed .hit-dice-tip::after {content:"Shft+Ctrl+Click to increase HP to selected tokens"}
 		`);
 	}// RB20 EXCLUDE END
 
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
-		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming, true);
+		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
 		d20plus.ut.injectCode(d20.textchat, "doChatInput", d20plus.chat.r20outgoing);
 
 		$(document.body).append(languageTemplate());
@@ -1073,14 +1105,16 @@ function baseChat () {
 
 			$inputContainer.append(d20plus.html.chatSocial);
 			$inputContainer.prepend(d20plus.html.chatSocialNotifier);
-			$("#chatSendBtn").after($("#socialswitch"));
+
+			const $socialSwitch = $("#socialswitch");
+			$("#chatSendBtn").after($socialSwitch);
 			$("#textchat-note-container").append($chatNotifier);
 
 			$chatTextarea.on("focus", d20plus.chat.closeSocial);
 			$chatNotifier.on("click", d20plus.chat.resetTTMS);
 			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
 
-			$("#socialswitch").on("click", d20plus.chat.onSocial);
+			$socialSwitch.on("click", d20plus.chat.onSocial);
 			$("#speakingas").on("change", d20plus.chat.onSpeakingAs);
 			$("#speakingto").on("change", d20plus.chat.onSpeakingTo);
 			$("#speakingin").on("change", d20plus.chat.onSpeakingIn);
@@ -1095,18 +1129,18 @@ function baseChat () {
 				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
 		}// RB20 EXCLUDE START
 
-		if (!isNaN(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"))) {
-			$(window).on("keydown.Shift keydown.Control keyup.Shift keyup.Control", event => {
-				const $root = $(document.body);
-				const modifier = event.shiftKey ? "shift" : event.ctrlKey ? "ctrl" : "";
-				$root.removeClass("shift-pressed ctrl-pressed");
-				if (modifier) $root.addClass(`${modifier}-pressed`);
-			});
-			d20plus.chat.enhanceRolls();
-		}// RB20 EXCLUDE END
+		$(window).on("keydown.Shift keydown.Control keyup.Shift keyup.Control", event => {
+			const $root = $(document.body);
+			["shift", "ctrl"].forEach(mod => {
+				if (event[`${mod}Key`]) $root.addClass(`${mod}-pressed`);
+				else $root.removeClass(`${mod}-pressed`);
+			})
+		});
+		d20plus.chat.enhanceRolls();// RB20 EXCLUDE END
 
-		$("#textchat-input").off("click", "button");
-		$("#textchat-input").on("click", "button", d20plus.chat.sending);
+		$("#textchat-input")
+			.off("click", "button")
+			.on("click", "button", d20plus.chat.sending);
 	};
 }
 

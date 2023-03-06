@@ -76,18 +76,10 @@ function baseUtil () {
 		});
 	};
 
-	d20plus.ut.injectCode = (object, method, injectedCode, bindAndRun) => {
+	d20plus.ut.injectCode = (object, method, injectedCode) => {
 		const original = object[method].bind(object);
-		if (bindAndRun) {
-			object[method] = (...initParams) => {
-				return injectedCode.bind(object)(original, initParams);
-			}
-		} else {
-			object[method] = function (...initParams) {
-				const passParams = injectedCode(initParams);
-				if (passParams === undefined) return original.apply(original, initParams);
-				else if (passParams !== false) return original.apply(original, passParams);
-			}
+		object[method] = (...initParams) => {
+			return injectedCode.bind(object)(original, initParams);
 		}
 	}
 
@@ -159,6 +151,7 @@ function baseUtil () {
 				</span>
 			</div>
 		`;
+		const $boringProgress = $("#boring-progress");
 		if (showWelcome) {
 			if (!isStreamer) {
 				d20plus.ut.sendHackerChat(welcomeTemplate(...data));
@@ -167,11 +160,11 @@ function baseUtil () {
 			}
 		}
 		if (window.enhancementSuiteEnabled) {
-			$("#boring-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+			$boringProgress.before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		$("#boring-progress")
+		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
 			.html("");// RB20 EXCLUDE START
 		/* if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
@@ -237,6 +230,8 @@ function baseUtil () {
 		const loadMsgTemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
 		if (!isStreamer) $(".boring-chat > span:first-child").after(loadMsgTemplate);
 		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+		// to get rid of an uncaught error that keeps appearing on timely basis
+		if (!window.DD_RUM) window.DD_RUM = {addAction: () => {} };
 	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
@@ -267,7 +262,7 @@ function baseUtil () {
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
 		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
-		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, dnd20: window.b20, date}));
 		return info;
 	}
 
@@ -275,9 +270,10 @@ function baseUtil () {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
 		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
+		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
-		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
 	}
 
@@ -559,6 +555,33 @@ function baseUtil () {
 	d20plus.ut.getCharAttribByName = (char, attribName) => {
 		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
+
+	d20plus.ut.getCharMetaAttribByName = (char, attribNamePart, caseInsensitive) => {
+		const extract = /^repeating_(?:attack|inventory|proficiencies|resource|spell_(?:\d?|cantrip)|traits)_[^_]*(?:_resource_(?:right|left)|)/;
+		const toFind = caseInsensitive ? attribNamePart.toLowerCase() : attribNamePart;
+		const metaAttrib = {_ref: {}};
+		char.attribs?.models.forEach(prop => {
+			const find = caseInsensitive
+				? prop.attributes?.name.toLowerCase().includes(toFind)
+				: prop.attributes?.name.includes(toFind);
+			if (!find) return;
+			metaAttrib._ref._id = metaAttrib._ref._id
+				|| prop.attributes.name.match(extract)?.last()
+				|| attribNamePart;
+			const attribName = prop.attributes.name.replace(metaAttrib._ref._id, "").slice(1);
+			metaAttrib[attribName || "current"] = prop.attributes.current;
+			metaAttrib._ref[attribName || "current"] = prop;
+			if (prop.attributes.max) {
+				metaAttrib[`${attribName}max`] = prop.attributes.max;
+				metaAttrib._ref[`${attribName}max`] = prop;
+			}
+		});
+		if (Object.entries(metaAttrib).length > 1) return metaAttrib;
+	}
+
+	d20plus.ut.getCharLinkedAttrib = (attrib) => {
+		const attribs = attrib.collection.models;
+	}
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {

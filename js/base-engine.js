@@ -530,9 +530,9 @@ function d20plusEngine () {
 			token.character.attribs.fetching = true;
 		} else if (token.character.attribs.length) {
 			if (token.character.attribs.fetching) delete token.character.attribs.fetching;
-			const attr = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
-			if (attr) {
-				if (attr.attributes.current === "0") return true;
+			const attrib = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
+			if (attrib) {
+				if (attrib.attributes.current === "0") return true;
 				else return false;
 			}
 		}
@@ -553,36 +553,74 @@ function d20plusEngine () {
 		if (!character || !character?.currentPlayerControls()) return;
 		const fetched = await d20plus.ut.fetchCharAttribs(character);
 		if (!fetched) return;
+		const getAttribVal = () => {
+			const vals = {
+				spell: {cur: "expended", id: `lvl${expend.lvl}_slots`},
+				resource: {cur: "current", link: "itemid", id: `${expend.res}_resource`},
+				repeated: {cur: "current", link: "itemid", exp: /repeating_resource_(.*?)_resource_(?<pos>right|left)_name/},
+				item: {cur: "itemcount", link: "itemresourceid", exp: /repeating_inventory_(.*?)_itemname/},
+			}[expend.type];
+			vals.id = vals.id || character.attribs?.models
+				?.find(prop => prop?.attributes?.current === expend.name && prop?.attributes?.name.match(vals.exp))
+				?.attributes.name.replace(/_(name|itemname)$/, "");
+			return vals;
+		};
+		d20plus.ut.log(expend);
 		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
 		const characterName = character.get("name");
-		const changedAtName = `lvl${expend.lvl}_slots_expended`;
-		const attrib = {ref: d20plus.ut.getCharAttribByName(character, changedAtName)};
-		if (!attrib.ref) return;
-		attrib.current = attrib.ref.get("current");
-		expend.amt = expend.amt || 1;
-		if (isNaN(attrib.current)) return;
-		if (expend.restore !== undefined) {
-			attrib.ref.save({current: expend.restore});
-			attrib.author = `${playerName} restored lvl${expend.lvl} slot`;
-			attrib.msg = `/w "${characterName}" ${characterName} has ${expend.restore} lvl${expend.lvl} slots again`;
-		} else if (attrib.current - expend.amt >= 0) {
-			attrib.new = attrib.current - expend.amt;
-			attrib.ref.save({current: attrib.new});
-			attrib.undo = {...expend}; attrib.undo.restore = attrib.current;
-			attrib.msg = `/w "${characterName}" ${characterName} now has ${attrib.new} lvl${expend.lvl} slots left`;
-		} else {
-			attrib.msg = `/w "${characterName}" ${characterName} already had no lvl${expend.lvl} slots`;
+		const refs = getAttribVal();
+		const attrib = d20plus.ut.getCharMetaAttribByName(character, refs.id);
+		if (!attrib) return;
+		const syncWeight = (ref) => {
+			const ignNonequipped = !!d20plus.ut.getCharAttribByName(character, "ingore_non_equipped_weight")?.attributes.current;
+			const isAccounted = (!ignNonequipped || ref.equipped !== "0") && ref.itemweight > 0;
+			if (!isAccounted) return;
+			const totalWeight = d20plus.ut.getCharAttribByName(character, "weighttotal");
+			if (!totalWeight?.attributes.current) return;
+			const weightDelta = ((expend.restore || attrib._new) - attrib._cur) * ref.itemweight;
+			const weightResult = totalWeight.attributes.current + weightDelta;
+			totalWeight.save({current: weightResult});
 		}
-		const author = `${playerName} tried using lvl${expend.lvl} slot`;
-		const transport = {type: "automation", author};
-		if (expend.restore) transport.author = `${playerName} restored lvl${expend.lvl} slots`;
-		else transport.author = `${playerName} tried using lvl${expend.lvl} slot`;
-		if (attrib.undo) transport.undo = attrib.undo;
-		d20.textchat.doChatInput(attrib.msg, undefined, transport);
+		const syncSheet = () => {
+			if (attrib.itemweight) syncWeight(attrib);
+			if (!refs.link || !attrib[refs.link]) return;
+			const toSync = d20plus.ut.getCharMetaAttribByName(character, attrib[refs.link], true);
+			const toSyncRef = toSync?._ref?.current || toSync?._ref?.itemcount;
+			toSyncRef?.save({current: expend.restore || attrib._new});
+			if (toSync?.itemweight) syncWeight(toSync);
+		}
+		const getMsgText = () => {
+			if (expend.type === "spell") return `lvl${expend.lvl} slots`;
+			else if (expend.name) return `of ${expend.name}`;
+			else if (attrib.name) return `of ${attrib.name}`;
+			else return `class resource`;
+		};
+		expend.amt = expend.amt || 1;
+		attrib._cur = attrib[refs.cur];
+		d20plus.ut.log(attrib);
+		if (isNaN(attrib._cur)) return;
+		if (expend.restore !== undefined) {
+			attrib._ref[refs.cur].save({current: expend.restore});
+			attrib._msg = `/w "${characterName}" ${characterName} has ${expend.restore} ${getMsgText()} again`;
+			syncSheet();
+		} else if (attrib._cur - expend.amt >= 0) {
+			attrib._new = attrib._cur - expend.amt;
+			attrib._ref[refs.cur].save({current: attrib._new});
+			attrib._undo = {...expend}; attrib._undo.restore = attrib._cur;
+			attrib._msg = `/w "${characterName}" ${characterName} now has ${attrib._new} ${getMsgText()} left`;
+			syncSheet();
+		} else {
+			attrib._msg = `/w "${characterName}" ${characterName} already had zero ${getMsgText()}`;
+		}
+		const transport = {type: "automation"};
+		if (expend.restore) transport.author = `${playerName} restored some ${getMsgText()}`;
+		else transport.author = `${playerName} tried using ${expend.amt} ${getMsgText()}`;
+		if (attrib._undo) transport.undo = attrib._undo;
+		d20.textchat.doChatInput(attrib._msg, undefined, transport);
 	}
 
 	d20plus.engine.alterTokensHP = (alter) => {
-		const barID = Number(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"));
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
 		const bar = {
 			val: `bar${barID}_value`,
 			link: `bar${barID}_link`,
@@ -611,7 +649,7 @@ function d20plusEngine () {
 			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
 			else if (token.model) token = token.model;
 			const hp = calcHP(token);
-			if (!hp) return;
+			if (!hp) return d20plus.ut.sendHackerChat("You have to select proper token bar in the settings", true);
 			if (!token.currentPlayerControls()) return;
 			if (alter.restore !== undefined) hp.new = alter.restore;
 			const barLinked = token.get(bar.link);
