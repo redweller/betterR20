@@ -346,5 +346,20 @@
 		"ver": "1.33.1",
 		"date": "2022-12-02",
 		"txt": "- Fixed page settings template modification (with proper inputs for dynamic lighting, weather settings, and map size) failing to be applied (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.33.2",
+		"date": "2023-01-23",
+		"txt": "- Fixed crash on load due to bad style injection (thanks @ Redweller)\n- Fixed editing an imported handout breaking drag-drop functionality (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.34.0",
+		"date": "2023-02-27",
+		"txt": "- Added in-character language system to chat (massive props and thanks @ Redweller)\n  - Includes support for all PHB languages (with the exception of the \"secret\" languages; Druidic and Thieves' Cant), and additional substitute languages (French-like, German-like, Italian-like, Russian-like, and Spanish-like) which can be used for languages and/or regional dialects otherwise not known by the system\n  - Allows chatting in any language known to your character\n  - Messages spoken in-language will appear to other players as flavorful gibberish, translated to the original message if their character knows the language\n  - Added social panel allowing quick selection of language (and `/w` target)\n  - _[Note that this requires the use of the OGL sheet in order to correctly read proficiencies]_\n- Added various quality-of-life features to chat (massive props and thanks @ Redweller)\n  - (Use `/help` in-game to see the full list of available commands, highlights include...)\n    - Added GM-only command to check which players are running the script, and which version\n    - Added GM-only command to speak as a given character\n    - Added shorthand various shortcuts and wrappers for the base \"/talktomyself\" command, allowing easier toggling and/or running of multiple commands\n  - Added optional GM notifications for players going on/offline\n- Tweaked existing chat features (thanks @ Redweller)\n  - Animated initial loading sequence\n  - Overhauled look and feel of other notifications _[the \"retro\" version remains available as a config option]_\n  - Added new \"Chat\" config group, and consolidated existing chat options (emojis; streamer mode) there\n- Fixed custom styling failing to properly apply (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.34.1",
+		"date": "2023-03-02",
+		"txt": "- Various fixes/improvements to the chat system (thanks @ Redweller)\n  - Tweaked `/help` ordering for readability \n  - Added detection of Beyond20\n  - Fixed hiding/revealing messages\n  - Fixed `/w` revealing characters not in players' journals"
 	}
 ]

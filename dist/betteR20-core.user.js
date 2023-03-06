@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.1
+// @version      1.34.1
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -103,6 +103,7 @@ function baseUtil () {
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
 		console.log("%cD20Plus > ", "color: #3076b9; font-size: large", ...args);
+		$("#boring-progress").html(`<span>&gt;</span>${args.join(" ").toLocaleLowerCase()}`);
 	};
 
 	d20plus.ut.error = (...args) => {
@@ -142,25 +143,17 @@ function baseUtil () {
 		});
 	};
 
+	d20plus.ut.injectCode = (object, method, injectedCode) => {
+		const original = object[method].bind(object);
+		object[method] = (...initParams) => {
+			return injectedCode.bind(object)(original, initParams);
+		}
+	}
+
 	d20plus.ut.checkVersion = () => {
 		d20plus.ut.log("Checking current version");
 
-		function cmpVersions (a, b) {
-			const regExStrip0 = /(\.0+)+$/;
-			const segmentsA = a.replace(regExStrip0, "").split(".");
-			const segmentsB = b.replace(regExStrip0, "").split(".");
-			const l = Math.min(segmentsA.length, segmentsB.length);
-
-			for (let i = 0; i < l; i++) {
-				const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
-				if (diff) {
-					return diff;
-				}
-			}
-			return segmentsA.length - segmentsB.length;
-		}
-
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
 			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
@@ -168,7 +161,7 @@ function baseUtil () {
 				if (data) {
 					const curr = d20plus.version;
 					const avail = data;
-					const cmp = cmpVersions(curr, avail);
+					const cmp = d20plus.ut.cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
@@ -198,62 +191,181 @@ function baseUtil () {
 		`, true);
 	};
 
-	d20plus.ut.chatTag = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
+	d20plus.ut.chatTag = () => {
+		const legacyStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
+		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
+		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
+		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const data = [
+			d20plus.scriptName,
+			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			d20plus.ut.WIKI_URL,
+		];
+		const welcomeTemplate = (b20v, vttv, faq) => `
+			<div class="${classname}">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+					betteR20 
+					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">VTTES v${vttv} detected<br>${b20v} loaded</p>
+				</h1>
+				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
+				<span title="You'd think this would be obvious.">
+					<p>Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.</p>
+					<p>Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.</p>
+				</span>
+			</div>
+		`;
+		const $boringProgress = $("#boring-progress");
+		if (showWelcome) {
+			if (!isStreamer) {
+				d20plus.ut.sendHackerChat(welcomeTemplate(...data));
+			} else {
+				d20plus.ut.sendHackerChat(`VTTE detected and ${scriptName} successfully loaded.<br>`);
+			}
+		}
 		if (window.enhancementSuiteEnabled) {
-			d20plus.ut.sendHackerChat(`
-				VTT Enhancement Suite detected.
-				<br><br>
-				${scriptName} initialised.
-				<br>
-			`);
-		} else d20plus.ut.showHardDickMessage(scriptName);
-		d20plus.ut.sendHackerChat(`
-			${isStreamer ? "" : `
-			<br>
-			Need help? Visit our <a href="${d20plus.ut.WIKI_URL}/index.php/BetteR20_FAQ">wiki</a> or join our <a href="https://discord.gg/nGvRCDs">Discord</a>.
-			<br>
-			<br>
-			<span title="You'd think this would be obvious.">
-			Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.
-			<br>
-			<br>
-			Before reporting a bug on the Roll20 forums, please disable the script and check if the problem persists.
-			</span>
-			`}
-		`);
+			$boringProgress.before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+		} else {
+			d20plus.ut.showHardDickMessage(scriptName);
+		}
+		$boringProgress
+			.before(`<span><span>&gt;</span>all systems operational</span>`)
+			.html("");
+		setTimeout(() => {
+			const $bored = $(`.boring-chat`);
+			$bored.css("height", "0px");
+			setTimeout(() => {
+				$bored.remove();
+				clearInterval(d20plus.ut.cursor);
+			}, 2000);
+		}, 6000);
 	};
 
-	d20plus.ut.showLoadingMessage = (message) => {
-		const isStreamer = !!d20plus.cfg.get("interface", "streamerChatTag");
-		const scriptName = isStreamer ? "Script" : message;
-		d20plus.ut.sendHackerChat(`
-			${scriptName} initialising, please wait...<br><br>
-		`);
-		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	d20plus.ut.showInitMessage = () => {
+		const consTemplate = `<div class="boring-chat">
+			<span><span>&gt;</span>initializing, please wait...</span>
+			<span id="boring-progress"><span>&gt;</span>loading data</span>
+			<span id="boring-cursor"><span>&gt;</span><aside>|</aside></span>
+			<style type="text/css">
+			.boring-chat {
+				font-family: Menlo, Monaco, Consolas, monospace;
+				font-size: small;
+				background: black;
+				display: inline-block;
+				font-weight: bold;
+				color: rgb(32, 194, 14);
+				width: 100%;
+				position: sticky;
+				z-index: 1000;
+				top: 0px;
+				height: 110px;
+				transition: height 2s;
+				overflow: hidden;
+				border-bottom: 1px solid rgb(32, 194, 14);
+			}
+			.boring-chat > span {
+				display: block; white-space: nowrap;
+				padding: 0px 5px 0px 45px;
+			}
+			.boring-chat > span > span {
+				float: left; margin-left: -39px;
+			}
+			</style>
+		</div>`;
+		$(`#textchat`).prepend(consTemplate);
+		let blink = false;
+		const $bored = $(`.boring-chat`);
+		d20plus.ut.cursor = setInterval(() => {
+			$bored.append($(`.boring-cursor`));
+			if (blink) $bored.find(`aside`).html("|");
+			else $bored.find(`aside`).html("");
+			blink = !blink;
+		}, 300);
 	};
+
+	d20plus.ut.showLoadingMessage = () => {
+		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
+		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const loadMsgTemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
+		if (!isStreamer) $(".boring-chat > span:first-child").after(loadMsgTemplate);
+		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
+		const legacyStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
+		if (!message) return;
 		d20.textchat.incoming(false, ({
 			who: "system",
-			type: "system",
-			content: `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			type: !legacyStyle && error ? "error" : "system",
+			content: (legacyStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
-			</span>`,
+			</span>` : message),
 		}));
 	};
 
-	d20plus.ut.addCSS = (sheet, selectors, rules) => {
+	d20plus.ut.generateVersionInfo = () => {
+		d20plus.ut.log("Generating version info");
+		const b20n = encodeURI(d20plus.scriptName.split("-")[1].split(" v")[0]);
+		const b20v = encodeURI(d20plus.version);
+		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
+		const phdm = d20plus.ut.detectDarkModeScript();
+		const date = Number(new Date());
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, dnd20: window.b20, date}));
+		return info;
+	}
+
+	d20plus.ut.parseVersionInfo = (raw) => {
+		const info = JSON.parse(decodeURI(atob(raw)));
+		const time = d20plus.ut.timeAgo(info.date);
+		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
+		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
+		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
+		return html;
+	}
+
+	d20plus.ut.cmpVersions = (present, latest) => {
+		if (!present || !latest) return 0;
+		const regExStrip0 = /(\.0+)+$/;
+		const segmentsA = present.replace(regExStrip0, "").split(".");
+		const segmentsB = latest.replace(regExStrip0, "").split(".");
+		const l = Math.min(segmentsA.length, segmentsB.length);
+
+		for (let i = 0; i < l; i++) {
+			const diff = parseInt(segmentsA[i], 10) - parseInt(segmentsB[i], 10);
+			if (diff) {
+				return diff;
+			}
+		}
+		return segmentsA.length - segmentsB.length;
+	}
+
+	d20plus.ut.detectDarkModeScript = () => {
+		d20plus.ut.dmscriptDetected = false;
+		// Detect if player is using Roll20 Dark Theme
+		// https://github.com/Pharonix/Roll20-Dark-Theme
+		$("style").each((i, el) => {
+			if (el.textContent.indexOf("/*New Characteristics Menu*/") >= 0) {
+				d20plus.ut.dmscriptDetected = true;
+				return false;
+			}
+		});
+		return d20plus.ut.dmscriptDetected;
+	}
+
+	d20plus.ut.addCSS = (selectors, rules) => {
 		if (!(selectors instanceof Array)) selectors = [selectors];
 
 		selectors.forEach(selector => {
-			const index = sheet.cssRules.length;
 			try {
-				if ("insertRule" in sheet) {
-					sheet.insertRule(`${selector}{${rules}}`, index);
-				} else if ("addRule" in sheet) {
-					sheet.addRule(selector, rules, index);
+				const index = d20plus.css.sheet.cssRules.length;
+				if ("insertRule" in d20plus.css.sheet) {
+					d20plus.css.sheet.insertRule(`${selector}{${rules}}`, index);
+				} else if ("addRule" in d20plus.css.sheet) {
+					d20plus.css.sheet.addRule(selector, rules, index);
 				}
 			} catch (e) {
 				if ((!selector && selector.startsWith("-webkit-"))) {
@@ -267,22 +379,32 @@ function baseUtil () {
 	d20plus.ut.addAllCss = () => {
 		d20plus.ut.log("Adding CSS");
 
-		const targetSheet = [...window.document.styleSheets]
-			.filter(it => it.href && (!it.href.startsWith("moz-extension") && !it.href.startsWith("chrome-extension")))
-			.find(it => it.href.includes("app.css"));
+		const sheetElement = document.createElement("style");
+		d20plus.css.sheet = document.head.appendChild(sheetElement).sheet;
 
 		_.each(d20plus.css.baseCssRules, function (r) {
-			d20plus.ut.addCSS(targetSheet, r.s, r.r);
+			d20plus.ut.addCSS(r.s, r.r);
 		});
 		if (!window.is_gm) {
 			_.each(d20plus.css.baseCssRulesPlayer, function (r) {
-				d20plus.ut.addCSS(targetSheet, r.s, r.r);
+				d20plus.ut.addCSS(r.s, r.r);
 			});
 		}
 		_.each(d20plus.css.cssRules, function (r) {
-			d20plus.ut.addCSS(targetSheet, r.s, r.r);
+			d20plus.ut.addCSS(r.s, r.r);
 		});
 	};
+
+	d20plus.ut.timeAgo = (ts) => {
+		const difInteger = Number(new Date()) - Number(ts);
+		const difMinutes = Math.ceil((difInteger - 60000) / 60000);
+		const difHours = Math.ceil((difInteger - 3600000) / 3600000);
+		const difDays = Math.ceil((difInteger - 86400000) / 86400000);
+		if (difDays > 0) return `${difDays} d ago`;
+		if (difHours > 0) return `${difHours} hr ago`;
+		if (difMinutes > 0) return `${difMinutes} min ago`;
+		return `0 min ago`;
+	}
 
 	d20plus.ut.getAntiCacheSuffix = () => {
 		return `?${(new Date()).getTime()}`;
@@ -306,6 +428,31 @@ function baseUtil () {
 		}
 		return JSON.parse(journalFolder);
 	};
+
+	d20plus.ut.fetchCharAttribs = async (char) => {
+		const attribs = char?.attribs;
+		if (!attribs) return false;
+		if (attribs.length) {
+			return char;
+		}
+		if (!attribs.fetching) {
+			attribs.fetch(attribs);
+			attribs.fetching = true;
+		}
+		return new Promise(resolve => {
+			let inProgress = 0;
+			const wait = setInterval(() => {
+				inProgress++;
+				if (attribs.length) resolve(char);
+				if (attribs.length || inProgress > 100) {
+					resolve(false);
+					clearInterval(wait);
+					delete attribs.fetching;
+					d20plus.ut.log(`Tried fetching ${char.attributes.name}`);
+				}
+			}, 30);
+		});
+	}
 
 	d20plus.ut._lastInput = null;
 	d20plus.ut.getNumberRange = (promptText, min, max) => {
@@ -403,9 +550,17 @@ function baseUtil () {
 		return d20plus.ut._getCanvasElementById(tokenId, "thegraphics");
 	};
 
+	d20plus.ut.getAccountById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.d20userid;
+	};
+
+	d20plus.ut.getPlayerNameById = (playerId) => {
+		return d20.Campaign.players.get(playerId)?.attributes?.displayname;
+	};
+
 	d20plus.ut._getCanvasElementById = (id, prop) => {
-		const foundArr = d20.Campaign.pages.models.map(model => model[prop] && model[prop].models ? model[prop].models.find(it => it.id === id) : null).filter(it => it);
-		return foundArr.length ? foundArr[0] : null;
+		const found = d20.Campaign.pages.models.find(model => model[prop]?.get(id));
+		return found ? found[prop].get(id) : null;
 	};
 
 	d20plus.ut.getMacroByName = (macroName) => {
@@ -415,6 +570,10 @@ function baseUtil () {
 			return macros[0];
 		}
 		return null;
+	};
+
+	d20plus.ut.getCharAttribByName = (char, attribName) => {
+		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -1615,15 +1774,38 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
-		"streamerChatTag": {
-			"name": "Streamer-Friendly Chat Tags",
-			"default": false,
-			"_type": "boolean",
-		},
 		"hideDefaultJournalSearch": {
 			"name": "Hide Default Journal Search Bar",
 			"default": false,
 			"_type": "boolean",
+		},
+	});
+	addConfigOptions("chat", {
+		"_name": "Chat",
+		"_player": true,
+		"streamerChatTag": {
+			"name": "Streamer-Friendly Chat Tags",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"legacySystemMessagesStyle": {
+			"name": "Use green/black style for betteR20 system messages",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showWelcomeMessage": {
+			"name": "Show welcome message on load",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"languages": {
+			"name": "Enable in-game languages (via social panel or /in)",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
 		},
 	});
 
@@ -2246,6 +2428,7 @@ function baseConfig () {
 		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
+		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
@@ -11086,6 +11269,130 @@ function initHTMLbaseMisc () {
 		</a>
 	</li>
 	`;
+
+	d20plus.html.chatSocial = `
+	<div class="btn" id="socialswitch">
+		<span class="pictos">w</span>
+	</div>
+	<div style="float: left;" class="social">
+		<label for="speakingto">To:</label>
+		<select id="speakingto" class="selectize social">
+			<option value="">All</option>
+		</select>
+		<span id="langpanel">
+			<label for="speakingin">In:</label>
+			<select class="selectize social" id="speakingin">
+				<option value=""></option>
+			</select>
+		</span>
+	</div>
+	<style type="text/css">
+		#textchat-input .social {
+			display: none;
+		}
+
+		#textchat-input.social-resized .social,
+		#textchat-input.social-default .social {
+			display: inline-block;
+		}
+
+		#textchat-input.social-default textarea {
+			height: 19px;
+			flex: auto;
+		}
+
+		.selectize.social {
+			width: 100px;
+		}
+
+		select#speakingto,
+		select#speakingin {
+			height: 22px;
+			padding: 0px 5px;
+		}
+
+		#socialswitch {
+			height: 18px;
+			margin-left: 5px;
+		}
+
+		#textchat-input.talkingtoself textarea {
+			border: 2px solid rgba(255, 0, 0, 0.4) !important;
+			background-color: rgba(255, 0, 0, 0.2) !important;
+		}
+	</style>
+	`;
+
+	d20plus.html.chatSocialNotifier = `
+	<div id="textchat-note-container">
+		<div id="textchat-social-notifier" title="Click to reset">
+			<span id="textchat-social-notifier-to"></span>
+			<span id="textchat-social-notifier-in"></span>
+		</div>
+	</div>
+	<style type="text/css">
+		#textchat-note-container {
+			position: absolute;
+			right: 0px;
+			top: -5px;
+		}
+
+		#textchat-social-notifier {
+			background-color: rgba(70, 50, 70, 0.8);
+			color: white;
+			opacity: 0.6;
+			font-size: 0.9em;
+			font-weight: bold;
+			height: 17px;
+			padding: 5px;
+			float: right;
+			cursor: pointer;
+			display: none;
+		}
+
+		#textchat-social-notifier.b20-in,
+		#textchat-social-notifier.b20-to {
+			display: block;
+		}
+
+		#textchat-social-notifier span {
+			padding-left: 5px;
+			display: none;
+			max-width: 70px;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+			vertical-align: baseline;
+		}
+
+		#textchat-social-notifier.b20-in #textchat-social-notifier-in,
+		#textchat-social-notifier.b20-to #textchat-social-notifier-to {
+			display: inline-block;
+		}
+
+		#textchat-social-notifier-to::before {
+			content: "TO: ";
+		}
+
+		#textchat-social-notifier-in::before {
+			content: "IN: ";
+		}
+
+		#textchat-social-notifier::after,
+		#textchat-notifier::after {
+			content: "*";
+			font-family: pictos;
+			padding-left: 3px;
+			vertical-align: top;
+		}
+
+		#textchat-notifier {
+			float: right;
+			position: unset;
+			cursor: pointer;
+		}
+	</style>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
@@ -13960,17 +14267,17 @@ function baseCss () {
 		// GM hover text
 		{
 			s: ".Vetools-token-hover",
-			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px;	 border: 1px solid #ccc; max-width: 450px;",
+			r: "pointer-events: none; position: fixed; z-index: 100000; background: white; padding: 5px 5px 0 5px; border-radius: 5px; border: 1px solid #ccc; max-width: 450px;",
 		},
 		// drawing tools bar
 		{
 			s: "#drawingtools.line_splitter .currentselection:after",
 			r: "content: '✂️';",
 		},
-		// chat tag
+		// "old style" system messages
 		{
-			s: ".userscript-hacker-chat",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
+			s: ".userscript-hacker-chat, .hacker-chat",
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);box-sizing: border-box;",
 		},
 		{
 			s: ".userscript-hacker-chat a",
@@ -13983,6 +14290,65 @@ function baseCss () {
 		{
 			s: ".userscript-hacker-chat-error a",
 			r: "color: white;",
+		},
+		// "old style" chat tag
+		{
+			s: ".userscript-hackerintro",
+			r: "background: black; padding: 3px;",
+		},
+		{
+			s: ".userscript-hackerintro h1",
+			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: 18px;",
+		},
+		{
+			s: ".userscript-hackerintro p",
+			r: "font-family: \"Lucida Console\", Monaco, monospace; color: rgb(32, 194, 14); font-size: unset; font-weight: bold; line-height: 20px;",
+		},
+		// vttes-style chat tag
+		{
+			s: ".userscript-b20intro img.userscript-b20img",
+			r: "content: url('https://wiki.tercept.net/core-wiki-assets/5etoolslogocircle.png') !important",
+		},
+		{
+			s: ".userscript-b20intro",
+			r: "box-shadow: 0px 0px 10px rgb( 6 , 26 , 45 ); padding: 8px;background: rgb(6, 26, 45);color: whitesmoke;",
+		},
+		{
+			s: ".userscript-b20intro strong",
+			r: "color: orange;",
+		},
+		{
+			s: ".userscript-b20intro h1",
+			r: "color: whitesmoke;",
+		},
+		{
+			s: "code",
+			r: "padding: 1px 2px;color: rgb(73, 45, 32);background-color: #fff4e8;border: 1px solid;",
+		},
+		// "player connects/disconnects" messages
+		{
+			s: ".connects-log",
+			r: "display: none; font-variant: small-caps; font-size: 12px; padding: 18px 2px 2px 32px; margin-left: -8px; border: 1px solid; border-top: none; margin-top: -16px; background: rgba(100, 100, 100, 0.2); cursor: pointer;",
+		},
+		{
+			s: ".connects-info, .msg-action-button",
+			r: "font-family: pictos; margin-right: 4px; text-decoration: none !important; cursor: pointer; float: right; position: relative; top: -16px;",
+		},
+		{
+			s: ".msg-action-button",
+			r: "top: 0px;",
+		},
+		{
+			s: "input:checked + label .connects-info",
+			r: "position: unset;",
+		},
+		{
+			s: "input:checked + label .connects-log",
+			r: "display: block;",
+		},
+		{
+			s: ".connects-state",
+			r: "display: none;",
 		},
 		{
 			s: ".withoutavatars .userscript-hacker-chat",
@@ -14367,6 +14733,31 @@ function baseCss () {
 		},
 	]);
 
+	// QOL fixes
+	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// Styles for altered messages
+		{
+			s: ".userscript-modify-message",
+			r: "display: none;",
+		},
+		{
+			s: ".message.inlang i",
+			r: "cursor: help;",
+		},
+		{
+			s: ".message.action .avatar, .message.action .by",
+			r: "display: none;",
+		},
+		{
+			s: ".message.general.talktomyself, .message.rollresult.talktomyself, .message.private.talktomyself",
+			r: "filter: sepia(70%);",
+		},
+		{
+			s: ".message.general.disconnect .by::before",
+			r: "font-family: pictos; content: \"[\";",
+		},
+	]);
+
 	// Rewamped page options
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
 		{
@@ -14528,7 +14919,7 @@ function baseCss () {
 		},
 		{
 			s: ".artr__side__loading, .artr__main__loading",
-			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;	 font-style: italic;",
+			r: "width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-style: italic;",
 		},
 		{
 			s: ".artr__bread",
@@ -15967,8 +16358,2559 @@ const baseMacro = function () {
 SCRIPT_EXTENSIONS.push(baseMacro);
 
 
-const betteR20Emoji = function () {
-	d20plus.chat = {};
+function baseChatLanguages () {
+	d20plus.chat = d20plus.chat || {};
+
+	// Data for generating fake messages in in-game languages in base-chat gibberish()
+	// lexis: list of 100 fake words for each in-game language;
+	// particles: 9 fake short words imitating parts of speech like prepositions or
+	// conjunctions or interjections etc. adding more "flavor" to generated text
+	// factor: integer that determines the frequency of particle occurrences
+	/* eslint-disable */
+	d20plus.chat.languages = {
+		"common": {
+			"title": "common",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Common_dictionary
+			"lexis": [
+				"alae",
+				"alavairthae",
+				"alehose",
+				"amarast",
+				"anyhail",
+				"badaulder",
+				"darchains",
+				"dathna",
+				"deven",
+				"drios",
+				"durgos",
+				"elsun",
+				"evenfeast",
+				"eventide",
+				"fieldings",
+				"fireseared",
+				"galad",
+				"glim",
+				"haelhard",
+				"harbright",
+				"hardjaws",
+				"harnor",
+				"haularake",
+				"hawksnarl",
+				"highsun",
+				"hrammar",
+				"hrast",
+				"hrasting",
+				"hugor",
+				"hykyath",
+				"jursak",
+				"keghand",
+				"kell",
+				"lalandath",
+				"lamenor",
+				"lammath",
+				"lifeblood",
+				"marrado",
+				"mayhap",
+				"murdath",
+				"naed",
+				"naeth",
+				"nandra",
+				"navalar",
+				"nightjack",
+				"nightmaid",
+				"olor",
+				"orbal",
+				"parharding",
+				"plounce",
+				"potjack",
+				"potmaid",
+				"punnet",
+				"rhambukkya",
+				"rivvim",
+				"roofwrack",
+				"sabbas",
+				"sabruin",
+				"saer",
+				"sark",
+				"scorchkettle",
+				"sel",
+				"shaeling",
+				"sheelie",
+				"sildur",
+				"silverfin",
+				"skaether",
+				"slake",
+				"sorn",
+				"spear",
+				"spurnarmor",
+				"standath",
+				"steading",
+				"stettar",
+				"stlarn",
+				"stomran",
+				"straek",
+				"sumbor",
+				"tantam",
+				"tasmar",
+				"tenday",
+				"thael",
+				"thargur",
+				"tharsun",
+				"thoats",
+				"thruss",
+				"thulsun",
+				"tindertwig",
+				"tluin",
+				"topon",
+				"tumin",
+				"uluvathae",
+				"vasark",
+				"vlandranna",
+				"voh",
+				"waelo",
+				"wanton",
+				"wenich",
+				"winker",
+				"zzar"
+			],
+			"particles": [
+				"fol",
+				"a",
+				"me",
+				"on",
+				"an",
+				"fo-",
+				"to-",
+				"do",
+				"per"
+			],
+			"alias": [
+				"human",
+			],
+			"factor": 4
+		},
+		"dwarvish": {
+			"title": "dwarvish",
+			// Most words copied or modified from
+			// http://www.bugmansbrewery.com/tutorials/article/115-dwarf-language-english-to-khazalid-dictionary/
+			"lexis": [
+				"akrak",
+				"angaz",
+				"azamar",
+				"azgal",
+				"azul",
+				"bakraz",
+				"barag",
+				"barak",
+				"baraz",
+				"binaz",
+				"bolg",
+				"brog",
+				"chuf",
+				"dal",
+				"dar",
+				"dharkhangron",
+				"doh",
+				"drakk",
+				"drazh",
+				"drek",
+				"drongnel",
+				"fleg",
+				"gorak",
+				"gorm",
+				"gorog",
+				"goruz",
+				"grim",
+				"grimaz",
+				"grom",
+				"gromdal",
+				"grongol",
+				"gronit",
+				"grumbak",
+				"guz",
+				"guzzen",
+				"hunk",
+				"karu",
+				"kazad",
+				"kazak",
+				"kazhunki",
+				"kazid",
+				"khaz",
+				"khazukan",
+				"klad",
+				"krink",
+				"kro",
+				"kron",
+				"kruk",
+				"kruti",
+				"migdhal",
+				"mizpal",
+				"muzkhgrum",
+				"naggrund",
+				"nar",
+				"onk",
+				"orrud",
+				"ragarin",
+				"rik",
+				"rikigraz",
+				"rorkaz",
+				"ruf",
+				"runk",
+				"ruvalk",
+				"sar",
+				"skarrenruf",
+				"skruff",
+				"skrund",
+				"skuf",
+				"stok",
+				"thagi",
+				"thingaz",
+				"thongli",
+				"throng",
+				"thrund",
+				"thrynaz",
+				"tiwaz",
+				"trogg",
+				"umanar",
+				"und",
+				"undi",
+				"ungor",
+				"urbaz",
+				"urk",
+				"varaz",
+				"varf",
+				"varn",
+				"vengryn",
+				"vithang",
+				"vlag",
+				"vorkhul",
+				"wan",
+				"wanaz",
+				"wattock",
+				"wazzock",
+				"werit",
+				"wyr",
+				"zak",
+				"zaki",
+				"zan",
+				"zank"
+			],
+			"particles": [
+				"ha",
+				"a-",
+				"un",
+				"um",
+				"dum-",
+				"on-",
+				"or",
+				"ad",
+				"har"
+			],
+			"alias": [
+				"dwarven"
+			],
+			"factor": 3
+		},
+		"elvish": {
+			"title": "elvish",
+			// Most words copied or modified from
+			// https://www.elfdict.com/w/?language=quenya
+			"lexis": [
+				"alahen",
+				"alamanyar",
+				"alaninquitálima",
+				"alasaila",
+				"alaurē",
+				"alcárima",
+				"alcorin",
+				"aleldarin",
+				"alfárima",
+				"alfirin",
+				"alistima",
+				"alómear",
+				"alquettima",
+				"ampanotalea",
+				"ancale",
+				"ancárima",
+				"andúne",
+				"asanye",
+				"avante",
+				"celure",
+				"ceníte",
+				"cirmacin",
+				"ennie",
+				"etya",
+				"etyarin",
+				"farale",
+				"farastea",
+				"himíte",
+				"ilquárea",
+				"induinen",
+				"indyel",
+				"insil",
+				"intin",
+				"isil",
+				"istalima",
+				"istare",
+				"lacalima",
+				"laistea",
+				"laistila",
+				"laman",
+				"lamate",
+				"lambion",
+				"lamélima",
+				"lirale",
+				"líruima",
+				"manar",
+				"mára",
+				"mastima",
+				"mecin",
+				"milyar",
+				"mólome",
+				"nairea",
+				"naitie",
+				"nandor",
+				"nasque",
+				"nefíte",
+				"nemestea",
+				"nengwear",
+				"níríte",
+				"noldorin",
+				"númen",
+				"númerea",
+				"nyárula",
+				"nyelle",
+				"ocamnar",
+				"ólamar",
+				"ontale",
+				"ortalima",
+				"ortare",
+				"perómandar",
+				"púlima",
+				"puntar",
+				"qualme",
+				"quende",
+				"quenderin",
+				"quenelya",
+				"quettima",
+				"raiqua",
+				"símen",
+				"sinan",
+				"sinar",
+				"sindar",
+				"sinome",
+				"sintar",
+				"súrimar",
+				"suryar",
+				"taltea",
+				"tancal",
+				"tauvar",
+				"telerin",
+				"tírima",
+				"turindura",
+				"túvima",
+				"tyen",
+				"úcalima",
+				"úcárima",
+				"umbar",
+				"vanima",
+				"vórear",
+				"yúlima"
+			],
+			"particles": [
+				"na",
+				"en'",
+				"il'",
+				"né",
+				"ol'",
+				"an",
+				"o'",
+				"lor-",
+				"i-"
+			],
+			"alias": [
+				"elven",
+				"elf"
+			],
+			"factor": 5
+		},
+		"giant": {
+			"title": "giant",
+			// Most words copied or modified from
+			// https://www.paolini.net/fans/invented-languages-inheritance-cycle/dwarf-language/dwarf-language-english-dictionary/
+			"lexis": [
+				"arûna",
+				"ascûdgamln",
+				"astim",
+				"athrid",
+				"bahst",
+				"barzûl",
+				"barzûln",
+				"belard",
+				"beor",
+				"borith",
+				"brâgha",
+				"brak",
+				"carharûg",
+				"carkna",
+				"carn",
+				"darm",
+				"delva",
+				"dem",
+				"derûndân",
+				"dômar",
+				"dorzada",
+				"drâth",
+				"dûnost",
+				"dûrgrimst",
+				"dûrmgrist",
+				"ebardac",
+				"edaris",
+				"egraz",
+				"encesti",
+				"erôth",
+				"erôthknurl",
+				"estvarn",
+				"estver",
+				"etal",
+				"fanghur",
+				"feldûnost",
+				"felfarthen",
+				"felrast",
+				"formv",
+				"frekk",
+				"fûthmér",
+				"gáld",
+				"gáldhiem",
+				"gaml",
+				"ganaht",
+				"garth",
+				"gauhnith",
+				"gedthrall",
+				"gerdûm",
+				"ghastgar",
+				"goroth",
+				"grimstnzhadn",
+				"gûntera",
+				"harng",
+				"harûg",
+				"hefthyn",
+				"helzvog",
+				"hert",
+				"hiem",
+				"hírna",
+				"hort",
+				"hrenth",
+				"hrestvog",
+				"hreth",
+				"hrethcarach",
+				"hûthvír",
+				"hûtt",
+				"ingeitum",
+				"knurlcarathn",
+				"ledwonnû",
+				"meitder",
+				"mendûnost",
+				"menknurlan",
+				"mensagh",
+				"menthiv",
+				"menwarrev",
+				"mérna",
+				"mezzintar",
+				"mithrim",
+				"môgh",
+				"môgren",
+				"nal",
+				"narho",
+				"quan",
+				"ragni",
+				"sartos",
+				"sartosvrenht",
+				"sesti",
+				"sheilve",
+				"sweld",
+				"thardsvergûndnzmal",
+				"thargen",
+				"thorv",
+				"thriknzdal",
+				"thrond",
+				"trangnarn",
+				"urzhad",
+				"vrem",
+				"vrenht",
+				"wharn"
+			],
+			"particles": [
+				"dûr",
+				"az",
+				"azt",
+				"og",
+				"rra-",
+				"rna-",
+				"da-",
+				"rr-",
+				"gro"
+			],
+			"alias": [
+				"ogre"
+			],
+			"factor": 3
+		},
+		"gnomish": {
+			"title": "gnomish",
+			// Most words copied or modified from
+			// https://www.elfdict.com/w/?language=telerin
+			"lexis": [
+				"athon",
+				"aumata",
+				"budhu",
+				"burbo",
+				"buspo",
+				"caw",
+				"cewin",
+				"cha",
+				"curunír",
+				"eglath",
+				"ettuli",
+				"ghaik",
+				"ghustil",
+				"gurgof",
+				"hacta",
+				"hadhwa",
+				"haedh",
+				"hamna",
+				"hanin",
+				"hatta",
+				"hauda",
+				"haudh",
+				"hîn",
+				"huine",
+				"jez",
+				"kaincha",
+				"kainu",
+				"kait",
+				"kalach",
+				"kalas",
+				"kel",
+				"kelu",
+				"khamu",
+				"kheru",
+				"kith",
+				"koilu",
+				"koiru",
+				"koitā",
+				"kuinu",
+				"kuitā",
+				"kurwē",
+				"lauda",
+				"laudh",
+				"linna",
+				"liru",
+				"madha",
+				"mascu",
+				"matjā",
+				"matulā",
+				"melā",
+				"mîdh",
+				"mirhanac",
+				"nacte",
+				"nadha",
+				"naedh",
+				"nathu",
+				"natte",
+				"ndilā",
+				"necte",
+				"nette",
+				"nidh",
+				"nîdh",
+				"nídha",
+				"niñkwis",
+				"ōmata",
+				"omnu",
+				"peles",
+				"pelsa",
+				"pentro",
+				"psar",
+				"psára",
+				"raef",
+				"rak",
+				"rakkma",
+				"rathki",
+				"resta",
+				"revrykal",
+				"rîdh",
+				"sedu",
+				"taltas",
+				"tancula",
+				"tañkas",
+				"teles",
+				"telu",
+				"thar",
+				"thillu",
+				"thilnu",
+				"thoron",
+				"tinnúviel",
+				"tithilla",
+				"tolen",
+				"tolu",
+				"tuilu",
+				"tyaz",
+				"uba",
+				"umitl",
+				"varsh",
+				"vlaakith",
+				"xarā",
+				"xenna"
+			],
+			"particles": [
+				"ae",
+				"et",
+				"en",
+				"dam",
+				"bom",
+				"ne",
+				"m",
+				"ik",
+				"ro"
+			],
+			"alias": [
+				"gnome"
+			],
+			"factor": 4
+		},
+		"goblin": {
+			"title": "goblin",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Goblin_dictionary
+			"lexis": [
+				"ana",
+				"ari",
+				"armauk",
+				"auga",
+				"bagal",
+				"banam",
+				"banos",
+				"bauruk",
+				"bizel",
+				"booyahg",
+				"braeunk",
+				"breek",
+				"dabog",
+				"dargrath",
+				"dargum",
+				"daul",
+				"dha",
+				"durbuluk",
+				"fak",
+				"foshnu",
+				"fund",
+				"fushat",
+				"gever",
+				"gog",
+				"golog",
+				"guthash",
+				"hak",
+				"hruggekolohk",
+				"huhak",
+				"hum",
+				"illska",
+				"karanzol",
+				"karkat",
+				"karkitas",
+				"kherek",
+				"kurrauz",
+				"kykat",
+				"laug",
+				"lind",
+				"lodar",
+				"lorach",
+				"loz",
+				"mabus",
+				"magas",
+				"margim",
+				"mub",
+				"mubaram",
+				"mubulat",
+				"mug",
+				"nagransham",
+				"namat",
+				"nixir",
+				"noldo",
+				"nor",
+				"nying",
+				"ovani",
+				"paflok",
+				"pafund",
+				"paken",
+				"palkas",
+				"parat",
+				"parhor",
+				"pik",
+				"plak",
+				"plasas",
+				"plasi",
+				"pluhun",
+				"poni",
+				"porandor",
+				"rup",
+				"ryk",
+				"sapat",
+				"shakab",
+				"shakapon",
+				"shakutarbik",
+				"shat",
+				"skag",
+				"tarthur",
+				"thag",
+				"tharb",
+				"thark",
+				"tharm",
+				"thos",
+				"thur",
+				"tok",
+				"trolkh",
+				"vadoksam",
+				"vadoksog",
+				"vaws",
+				"vaza",
+				"vek",
+				"vhos",
+				"vok",
+				"vosh",
+				"voz",
+				"yark",
+				"zabraz",
+				"zan",
+				"zongot",
+				"zorrat"
+			],
+			"particles": [
+				"ta",
+				"vo",
+				"no",
+				"suk",
+				"ya",
+				"yol",
+				"mar",
+				"mak",
+				"psa"
+			],
+			"alias": [
+				"goblinoid"
+			],
+			"factor": 3
+		},
+		"halfling": {
+			"title": "halfling",
+			// Most words copied or modified from
+			// http://www.quicksilver899.com/Tolkien/Hobbitry.html
+			"lexis": [
+				"adaldrida",
+				"balc",
+				"banakil",
+				"banta",
+				"banzir",
+				"barabatta",
+				"bas",
+				"bilba",
+				"bolgra",
+				"bophîn",
+				"branda",
+				"brandu",
+				"brandugamba",
+				"bree",
+				"carbandur",
+				"carbanga",
+				"cast",
+				"castu",
+				"chet",
+				"cubuc",
+				"cugbagu",
+				"dûkan",
+				"dûkaru",
+				"fallohide",
+				"froda",
+				"gad",
+				"galab",
+				"galbassi",
+				"galpsi",
+				"gamba",
+				"globa",
+				"gluva",
+				"grad",
+				"hamanullas",
+				"hamfast",
+				"harfoots",
+				"hloth",
+				"hlothran",
+				"isen",
+				"kali",
+				"kalimac",
+				"karningul",
+				"kast",
+				"kili",
+				"kûd",
+				"kuduk",
+				"labin",
+				"labingi",
+				"lograd",
+				"loho",
+				"lohtur",
+				"lothran",
+				"luthran",
+				"luthur",
+				"mathom",
+				"maura",
+				"nahald",
+				"nargian",
+				"nec",
+				"nîn",
+				"peppin",
+				"pharë",
+				"phur",
+				"phurunargian",
+				"ram",
+				"ran",
+				"rapha",
+				"rasputa",
+				"raspûta",
+				"raza",
+				"razan",
+				"razanur",
+				"razar",
+				"rog",
+				"sharku",
+				"smial",
+				"soval",
+				"stenr",
+				"stjarna",
+				"stoor",
+				"stydja",
+				"sund",
+				"sûza",
+				"tapuc",
+				"thain",
+				"tharantin",
+				"tharni",
+				"tóbias",
+				"tragu",
+				"trahald",
+				"trahan",
+				"trân",
+				"tuca",
+				"tung",
+				"tur",
+				"turac",
+				"wini",
+				"zara",
+				"zilbirapha",
+				"zir"
+			],
+			"particles": [
+				"a",
+				"o",
+				"ol-",
+				"nî",
+				"ul",
+				"lo",
+				"u",
+				"u-",
+				"so-"
+			],
+			"alias": [
+				"hobbit",
+			],
+			"factor": 4
+		},
+		"orcish": {
+			"title": "orcish",
+			// Most words copied or modified from
+			// https://www.angelfire.com/ia/orcishnations/englishorcish.html
+			"lexis": [
+				"arau",
+				"asht",
+				"bartas",
+				"bashkaum",
+				"blog",
+				"blotaz",
+				"bogi",
+				"bosnauk",
+				"broz",
+				"brulk",
+				"bujukasi",
+				"buk",
+				"bukol",
+				"bungo",
+				"curr",
+				"dajal",
+				"dhaub",
+				"dorr",
+				"doturog",
+				"fatoft",
+				"frib",
+				"fushjalut",
+				"gijak",
+				"gijakpis",
+				"gijakudob",
+				"gogan",
+				"goltur",
+				"gubuk",
+				"hanksar",
+				"inras",
+				"kafsog",
+				"kakok",
+				"kalaum",
+				"kalkan",
+				"kalush",
+				"kapuk",
+				"karash",
+				"kartart",
+				"kaup",
+				"kazorm",
+				"kishaulus",
+				"kishtraum",
+				"kokan",
+				"kokar",
+				"kolaubar",
+				"kolk",
+				"korpaus",
+				"kosh",
+				"krah",
+				"kridash",
+				"krimp",
+				"kular",
+				"kumbon",
+				"lak",
+				"larg",
+				"lavozagh",
+				"lundar",
+				"lup",
+				"lutaum",
+				"mabas",
+				"maush",
+				"mazat",
+				"mikar",
+				"molva",
+				"mosal",
+				"mosh",
+				"moshar",
+				"motsham",
+				"mubarshtaum",
+				"nadar",
+				"nudertog",
+				"pargijakun",
+				"parkulun",
+				"paustar",
+				"pogalm",
+				"rraus",
+				"rung",
+				"shataz",
+				"shaugit",
+				"shendrautsham",
+				"shul",
+				"skalkisham",
+				"skopar",
+				"skort",
+				"skup",
+				"stargush",
+				"staz",
+				"suksh",
+				"sulmog",
+				"sulmus",
+				"tanfuksham",
+				"thoror",
+				"thrak",
+				"ugrukh",
+				"urdanog",
+				"ushtar",
+				"ushtarak",
+				"zagavarr",
+				"zemaraum",
+				"zoshkat"
+			],
+			"particles": [
+				"uk",
+				"agh",
+				"ur",
+				"zug",
+				"rek",
+				"rog",
+				"dru",
+				"sud-",
+				"vor-"
+			],
+			"alias": [
+				"orc"
+			],
+			"factor": 2
+		},
+		"abyssal": {
+			"title": "abyssal",
+			// Most words copied or modified from
+			// https://www.paolini.net/fans/invented-languages-inheritance-cycle/ancient-language/ancient-language-english-dictionary/
+			"lexis": [
+				"aldanarí",
+				"argetlam",
+				"äthalvard",
+				"bjartskular",
+				"bjartstál",
+				"blödhgarm",
+				"blödhren",
+				"brisingr",
+				"dagshelgr",
+				"darmthrell",
+				"dauthdaert",
+				"dauthleikr",
+				"dröttning",
+				"dröttningu",
+				"ebrithil",
+				"edoc’sil",
+				"eïnradhin",
+				"eldhrimner",
+				"eldrvarí",
+				"eldrvarya",
+				"eldunarí",
+				"ellesméra",
+				"elthrimórno",
+				"ethilnadras",
+				"ethildurin",
+				"faelnirv",
+				"fëon",
+				"finiarel",
+				"flutningr",
+				"förn",
+				"framvír",
+				"frethya",
+				"galbatorix",
+				"garjzla",
+				"gëuloth",
+				"haldthin",
+				"helgrind",
+				"herdtha",
+				"hernskja",
+				"hljödhr",
+				"hröslvalhr",
+				"ikonoka",
+				"íllgrathr",
+				"ilumaro",
+				"indlvarn",
+				"islingr",
+				"istalrí",
+				"könungr",
+				"kvaedhí",
+				"kvaedhí",
+				"kveykva",
+				"lámarae",
+				"laufsblädr",
+				"lethrblaka",
+				"loivissa",
+				"malthinae",
+				"midhring",
+				"mor’ranr",
+				"mulabra",
+				"nalgask",
+				"nangoröth",
+				"nángoröth",
+				"nïdhwal",
+				"niernen",
+				"orgetorix",
+				"orothrim",
+				"osthato",
+				"otherúm",
+				"pömnuria",
+				"rextugenos",
+				"ristvak’baen",
+				"sharjalví",
+				"shur’tugal",
+				"silbena",
+				"sköliro",
+				"skulblaka",
+				"snalglí",
+				"sundavar",
+				"sundavrblaka",
+				"svit-kona",
+				"thaefathan",
+				"theirra",
+				"thelduin",
+				"thornessa",
+				"thrautha",
+				"threyja",
+				"thrífask",
+				"thringa",
+				"thrysta",
+				"titlingr",
+				"traevam",
+				"vanyalí",
+				"vercingetorix",
+				"vergandí",
+				"vergarí",
+				"vergathos",
+				"verrunsmal",
+				"vervada",
+				"weldenvarden",
+				"weohnataí"
+			],
+			"particles": [
+				"ash'",
+				"ash'",
+				"ath'",
+				"ath'",
+				"tero-",
+				"tero-",
+				"al'",
+				"al'",
+				"al'"
+			],
+			"alias": [
+				"demon"
+			],
+			"factor": 2
+		},
+		"celestial": {
+			"title": "celestial",
+			// Most words copied or modified from
+			// https://dndtopics.com/languages/celestial/
+			"lexis": [
+				"aujinn",
+				"aurix",
+				"aussit",
+				"austrat",
+				"axun",
+				"baeshran",
+				"bakam",
+				"barb",
+				"bejik",
+				"bensvelk",
+				"caesin",
+				"caex",
+				"chaorkartel",
+				"charchukan",
+				"charil",
+				"chmertehoschta",
+				"ciaptoop",
+				"clax",
+				"darahar",
+				"darastrix",
+				"darastrixethe",
+				"djerad",
+				"eanm",
+				"eesem",
+				"farang",
+				"farothai",
+				"fintir",
+				"fliaot",
+				"flolhwouth",
+				"flonn",
+				"flonna",
+				"frahr",
+				"garurt",
+				"geth",
+				"ghent",
+				"ghik",
+				"ghontix",
+				"gixustrat",
+				"grovisv",
+				"hengoth",
+				"henich",
+				"hesjing",
+				"hlarn",
+				"horthinn",
+				"hwinn",
+				"hwith",
+				"hwoul",
+				"hwulceat",
+				"koshqal",
+				"kosja",
+				"kosjth",
+				"kothan",
+				"kuhri",
+				"kuhroom",
+				"laraek",
+				"lauth",
+				"leirith",
+				"levethix",
+				"levex",
+				"lexi",
+				"litrix",
+				"loerchik",
+				"loex",
+				"loreat",
+				"lovac",
+				"maekrix",
+				"malsvir",
+				"martivir",
+				"miirik",
+				"moonth",
+				"mrith",
+				"munthrek",
+				"nannan",
+				"ner",
+				"noachi",
+				"nurh",
+				"nurthul",
+				"nychaki",
+				"okarthel",
+				"oth",
+				"pehweenm",
+				"saurach",
+				"scithhwo",
+				"setfloom",
+				"siapsceth",
+				"sootn",
+				"svern",
+				"taaldarax",
+				"taloosch",
+				"teack",
+				"terunt",
+				"thaenar",
+				"theethweet",
+				"thlann",
+				"thraenn",
+				"throden",
+				"vegatus",
+				"virlym",
+				"vivex",
+				"volikma"
+			],
+			"particles": [
+				"har",
+				"sa",
+				"hel",
+				"k'",
+				"x'",
+				"ma'",
+				"hal",
+				"tha",
+				"aln"
+			],
+			"alias": [],
+			"factor": 3
+		},
+		"draconic": {
+			"title": "draconic",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Draconic_dictionary
+			"lexis": [
+				"aesthyr",
+				"aithyas",
+				"arcaniss",
+				"aryte",
+				"arytiss",
+				"athear",
+				"bahamuti",
+				"darasv",
+				"darathric",
+				"darss",
+				"ekess",
+				"elaress",
+				"eorikc",
+				"erekess",
+				"faessi",
+				"faestir",
+				"ghoros",
+				"karshoj",
+				"kear",
+				"kepesk",
+				"kethend",
+				"kiskartchi",
+				"korth",
+				"kosjmyrni",
+				"oposs",
+				"ossalur",
+				"osvith",
+				"othokent",
+				"panjar",
+				"persvek",
+				"petisse",
+				"pok",
+				"pothachi",
+				"pothoc",
+				"potvych",
+				"qalli",
+				"qallim",
+				"rach",
+				"rasvim",
+				"rauhiss",
+				"renthisj",
+				"rhyaex",
+				"rhyisj",
+				"rhyvos",
+				"sauriv",
+				"shafaer",
+				"shar",
+				"shuk",
+				"sjach",
+				"sjashukri",
+				"sjek",
+				"sjerit",
+				"sjir",
+				"ssearth",
+				"ssej",
+				"ssifisv",
+				"ssissth",
+				"sthyr",
+				"strix",
+				"strixiki",
+				"sukriya",
+				"sunathaer",
+				"sveargith",
+				"throtominarr",
+				"thurgix",
+				"thurirl",
+				"thurkear",
+				"tiamash",
+				"tiathar",
+				"tibur",
+				"toovir",
+				"troth",
+				"tundar",
+				"tuor",
+				"turalisj",
+				"turalisjth",
+				"turasjir",
+				"vaecaesin",
+				"vaeri",
+				"vaess",
+				"vaex",
+				"valeij",
+				"valignat",
+				"vargach",
+				"vargus",
+				"vayemniri",
+				"versel",
+				"versvesh",
+				"veschik",
+				"vorastrix",
+				"vorel",
+				"vorellim",
+				"vrak",
+				"vur",
+				"vutha",
+				"vyth",
+				"waere",
+				"waeth",
+				"wux",
+				"xorvintaal"
+			],
+			"particles": [
+				"qal",
+				"irn",
+				"orn",
+				"oth'",
+				"va",
+				"qa",
+				"ia",
+				"iss",
+				"osh"
+			],
+			"alias": [
+				"tymantheran",
+				"yipyak"
+			],
+			"factor": 3
+		},
+		"deepspeech": {
+			"title": "deepspeech",
+			// Most words copied or modified from
+			// https://lingojam.com/CommontoDwarvishTranslator
+			"lexis": [
+				"aat",
+				"abakavith",
+				"achthend",
+				"achuak",
+				"adreda",
+				"alor",
+				"alstgrana",
+				"arboth",
+				"arn",
+				"ath",
+				"avglaga",
+				"avka",
+				"avobi",
+				"avrez",
+				"avurtsi",
+				"azlang",
+				"badorank",
+				"bathjert",
+				"bavta",
+				"beal",
+				"blozwatan",
+				"bod",
+				"bodsith",
+				"borla",
+				"bosumr",
+				"djor",
+				"djorr",
+				"dramath",
+				"eom",
+				"ertond",
+				"ezol",
+				"gamlormeth",
+				"gelevan",
+				"gemagal",
+				"gerk",
+				"hjandlom",
+				"hrut",
+				"hverth",
+				"ialdra",
+				"ialdrar",
+				"imurt",
+				"imurtr",
+				"jarburrir",
+				"jektor",
+				"jektorgurd",
+				"jektorigur",
+				"jektraldr",
+				"kolav",
+				"konuxja",
+				"krenl",
+				"krugg",
+				"kruggr",
+				"legjan",
+				"lether",
+				"lurl",
+				"lurlom",
+				"lurlthjold",
+				"lurlurt",
+				"matmurzar",
+				"merklesh",
+				"morz",
+				"morzr",
+				"navlat",
+				"neastlik",
+				"nutha",
+				"ommathur",
+				"orgrad",
+				"orthrumt",
+				"orthrumtr",
+				"orzra",
+				"oved",
+				"ovgathi",
+				"rithar",
+				"rothilr",
+				"skegga",
+				"skjurvjaklud",
+				"slalig",
+				"sloshtar",
+				"sloshtard",
+				"tjorn",
+				"unge",
+				"ungermoth",
+				"ura",
+				"uxja",
+				"valbleth",
+				"valblethr",
+				"vethethaz",
+				"vlitagana",
+				"vold",
+				"voldreg",
+				"vothnak",
+				"vrenka",
+				"vrutan",
+				"withaur",
+				"wundstr",
+				"yrja",
+				"zarathag",
+				"zirund",
+				"zirundr",
+				"zwatan"
+			],
+			"particles": [],
+			"alias": [],
+			"factor": 0
+		},
+		"infernal": {
+			"title": "infernal",
+			// Most words copied or modified from
+			// https://wowpedia.fandom.com/wiki/Eredun
+			"lexis": [
+				"achor",
+				"adare",
+				"akimkurai",
+				"akminkurai",
+				"akreesh",
+				"akris",
+				"amanalar",
+				"amanare",
+				"amanemodas",
+				"arakal",
+				"arakalada",
+				"archim",
+				"archimtiros",
+				"ashjraka",
+				"ashjrakamas",
+				"ashjrethul",
+				"azgala",
+				"azgalada",
+				"azrathud",
+				"ban",
+				"belan",
+				"belankar",
+				"belaros",
+				"benthadoom",
+				"buras",
+				"burasadare",
+				"danashj",
+				"enkil",
+				"enkilgular",
+				"enkilzar",
+				"ered",
+				"faramos",
+				"galar",
+				"golad",
+				"gulamir",
+				"gular",
+				"kamil",
+				"kamilgolad",
+				"kanrethad",
+				"karaman",
+				"karkun",
+				"kazile",
+				"kieldaz",
+				"kirasath",
+				"kirestalak",
+				"kurai",
+				"maev",
+				"maladath",
+				"mannor",
+				"mannorgulan",
+				"matheredor",
+				"melar",
+				"melarnagas",
+				"melarorah",
+				"mishun",
+				"mishunadare",
+				"modas",
+				"mordanas",
+				"nagas",
+				"nagasraka",
+				"nash",
+				"nazthagos",
+				"naztheros",
+				"normenoth",
+				"nortalesh",
+				"pathrebosh",
+				"rakeesh",
+				"rakir",
+				"rakkan",
+				"rakkas",
+				"reesh",
+				"refir",
+				"rethul",
+				"rethule",
+				"revola",
+				"revos",
+				"romathis",
+				"rukadare",
+				"shazakiel",
+				"sheekthrish",
+				"sheetsah",
+				"sheki",
+				"shudas",
+				"soran",
+				"soranaman",
+				"sorankar",
+				"teamanare",
+				"theramas",
+				"thorje",
+				"tichar",
+				"ticharamir",
+				"tiriosh",
+				"tiros",
+				"toralar",
+				"urzul",
+				"zekul",
+				"zekulrakkas",
+				"zennrakkan",
+				"zennshi",
+				"zilthuras"
+			],
+			"particles": [
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'",
+				"al'"
+			],
+			"alias": [
+				"devil"
+			],
+			"factor": 2
+		},
+		"primordial": {
+			"title": "primordial",
+			// Most words copied or modified from
+			// https://lingojam.com/CommontoDwarvishTranslator
+			"lexis": [
+				"aav",
+				"alr",
+				"andtur",
+				"askung",
+				"avur",
+				"baksmalk",
+				"bal",
+				"balr",
+				"bjorgart",
+				"bondra",
+				"bort",
+				"bortr",
+				"dagr",
+				"dehur",
+				"djerg",
+				"djergr",
+				"dlizik",
+				"druld",
+				"dwjord",
+				"dwjorgumal",
+				"eigur",
+				"erz",
+				"erzan",
+				"erzanr",
+				"fraluv",
+				"gebork",
+				"genogan",
+				"gerkun",
+				"glaek",
+				"gleen",
+				"gog",
+				"gotek",
+				"goth",
+				"gothr",
+				"grazz",
+				"grea",
+				"grethir",
+				"guthavok",
+				"guthavokr",
+				"halkbrelna",
+				"herolstor",
+				"hign",
+				"horukneth",
+				"hrendi",
+				"hrendir",
+				"humtje",
+				"hvorbl",
+				"inni",
+				"ithorm",
+				"ithormr",
+				"jarlethurkon",
+				"jarnjulbort",
+				"javnung",
+				"jerklirunslaak",
+				"jommok",
+				"jooki",
+				"jookir",
+				"kaeleth",
+				"kjekje",
+				"kralt",
+				"kyrv",
+				"kyrvr",
+				"luglaus",
+				"lurl",
+				"lyr",
+				"lyrglang",
+				"lyrr",
+				"migvulur",
+				"mimm",
+				"mimmal",
+				"monmur",
+				"nenn",
+				"nothaar",
+				"nunoff",
+				"ogalthr",
+				"olv",
+				"orvrutanr",
+				"othruf",
+				"othyrth",
+				"ott",
+				"slok",
+				"slokspral",
+				"snarla",
+				"theov",
+				"tjuni",
+				"tjunir",
+				"torth",
+				"trarzurjald",
+				"ulvunr",
+				"ungvliz",
+				"ungvlizr",
+				"unnlat",
+				"vargunr",
+				"varzank",
+				"vavi",
+				"vavir",
+				"verol",
+				"veroldr",
+				"vlel",
+				"vromungvro"
+			],
+			"particles": [],
+			"alias": [
+				"elemental",
+				"auran",
+				"aquan",
+				"ignan",
+				"rettan"
+			],
+			"factor": 0
+		},
+		"sylvan": {
+			"title": "sylvan",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Elven_dictionary
+			"lexis": [
+				"aegiskeryn",
+				"aerister",
+				"aethen",
+				"akhiilor",
+				"aloun",
+				"amakiir",
+				"ammur",
+				"ansrivarr",
+				"arakhor",
+				"armiel",
+				"arselu",
+				"auglathla",
+				"bhin",
+				"biir",
+				"bwaelan",
+				"calann",
+				"cinnaelos",
+				"cryshal",
+				"damia",
+				"darrdartha",
+				"dhaerow",
+				"durmista",
+				"ebrath",
+				"elgg",
+				"erdel",
+				"faer",
+				"groef",
+				"hethtalos",
+				"hirdel",
+				"holimion",
+				"hond",
+				"huan",
+				"hurbryn",
+				"huthammuth",
+				"illunathros",
+				"ilphelkiir",
+				"iqua",
+				"irinal",
+				"ivaebhin",
+				"kelytha",
+				"kerym",
+				"kiira",
+				"kirthol",
+				"kyre",
+				"ladrother",
+				"lalala",
+				"laranlors",
+				"liadon",
+				"liyan",
+				"lurleath",
+				"malenti",
+				"meliamne",
+				"naes",
+				"noromath",
+				"nyrhlas",
+				"nyrtlassa",
+				"oloth",
+				"pyesigen",
+				"quessir",
+				"raer",
+				"relthwin",
+				"renyth",
+				"ruathimaer",
+				"rum",
+				"rysar",
+				"sablaes",
+				"saece",
+				"sathu",
+				"savalir",
+				"selu",
+				"shaedar",
+				"shantar",
+				"solicallor",
+				"sreea",
+				"srendaen",
+				"ssussun",
+				"taar",
+				"talibund",
+				"tammin",
+				"taran",
+				"tath",
+				"telere",
+				"tellarier",
+				"tellyath",
+				"thaethiira",
+				"thiil",
+				"tirith",
+				"trazaethe",
+				"uluvathaer",
+				"vaelhar",
+				"vaendaan",
+				"vaendin",
+				"velahr",
+				"vyshaan",
+				"wael",
+				"walaxyrvaan",
+				"xiloscient",
+				"yyllethyn",
+				"zenar",
+				"zeranas"
+			],
+			"particles": [
+				"ef",
+				"byr",
+				"hir",
+				"ath-",
+				"ai",
+				"sa",
+				"ol",
+				"reb-",
+				"thy-"
+			],
+			"alias": [
+				"fey"
+			],
+			"factor": 5
+		},
+		"undercommon": {
+			"title": "undercommon",
+			// Most words copied or modified from
+			// https://forgottenrealms.fandom.com/wiki/Drow_dictionary
+			"lexis": [
+				"abban",
+				"abbil",
+				"angardh",
+				"araj",
+				"asanque",
+				"bae",
+				"bauth",
+				"belbol",
+				"brorn",
+				"caballin",
+				"colbauth",
+				"crinti",
+				"darthiir",
+				"dobluth",
+				"dosst",
+				"dosstan",
+				"draa",
+				"draada",
+				"draghazar",
+				"droc",
+				"elamshin",
+				"elendar",
+				"elghinn",
+				"feleal",
+				"fhaazht",
+				"golhyrr",
+				"harl",
+				"honglath",
+				"hyrr",
+				"ilharess",
+				"ilharn",
+				"ilindith",
+				"inthigg",
+				"jivvin",
+				"khal",
+				"khaless",
+				"khazid",
+				"kulg",
+				"kyone",
+				"kyorl",
+				"kyorlin",
+				"llar",
+				"lueth",
+				"malla",
+				"mzild",
+				"natha",
+				"neideirra",
+				"neirt",
+				"nindyn",
+				"noamuth",
+				"obsul",
+				"olist",
+				"oloth",
+				"orthae",
+				"phindar",
+				"phlar",
+				"pholar",
+				"phuul",
+				"plynn",
+				"qeshel",
+				"qual",
+				"quarthen",
+				"ragar",
+				"rathrae",
+				"rivvil",
+				"sargh",
+				"sargtlin",
+				"shavrak",
+				"shea",
+				"shrome",
+				"streea",
+				"taga",
+				"talinth",
+				"talthalra",
+				"thae",
+				"thaerra",
+				"thalack",
+				"thalra",
+				"tinguin",
+				"tuth",
+				"uente",
+				"ultrin",
+				"ultrinnan",
+				"usstan",
+				"valsharess",
+				"velkyn",
+				"velve",
+				"vidrinath",
+				"wund",
+				"xittalsh",
+				"xorr",
+				"xund",
+				"xundus",
+				"yath",
+				"yathrin",
+				"yathtallar",
+				"yorn",
+				"zedrinset",
+				"zhah",
+				"zhaun"
+			],
+			"particles": [
+				"dro",
+				"duk",
+				"tak",
+				"il",
+				"zin-",
+				"qu-",
+				"uh",
+				"uss",
+				"akh-"
+			],
+			"alias": [
+				"underdark"
+			],
+			"factor": 4
+		},
+		"fakeitalian": {
+			"title": "fakeitalian",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-italian-words-generator
+			"lexis": [
+				"abby",
+				"affrontare",
+				"agenzia",
+				"albert",
+				"andiamo",
+				"fratello",
+				"non",
+				"mastroianni",
+				"tutti",
+				"funyunsetti",
+				"angolo",
+				"apri",
+				"ascoltato",
+				"baciare",
+				"braccia",
+				"buonanotte",
+				"cameriera",
+				"campeggio",
+				"carrie",
+				"cassetto",
+				"cazzata",
+				"chiede",
+				"circostanze",
+				"colonnello",
+				"combinato",
+				"consegnare",
+				"cooper",
+				"corona",
+				"credete",
+				"desiderio",
+				"dire",
+				"distrutta",
+				"dito",
+				"dottor",
+				"dovuto",
+				"effetti",
+				"ellie",
+				"eroina",
+				"facesse",
+				"finestre",
+				"fonte",
+				"for",
+				"freddo",
+				"gentiluomo",
+				"gioca",
+				"gridare",
+				"hey",
+				"incontro",
+				"indizio",
+				"intendi",
+				"jimmy",
+				"leon",
+				"libera",
+				"litigato",
+				"malato",
+				"morirai",
+				"museo",
+				"naomi",
+				"occhio",
+				"offrire",
+				"ottenere",
+				"pesante",
+				"portafoglio",
+				"possano",
+				"preferisco",
+				"preparare",
+				"promessa",
+				"pulizie",
+				"puntata",
+				"puttane",
+				"quartiere",
+				"quelli",
+				"radio",
+				"rende",
+				"revisione",
+				"riuscite",
+				"roma",
+				"rotto",
+				"salire",
+				"saprai",
+				"scoprire",
+				"scorsa",
+				"scusarmi",
+				"sederti",
+				"sembri",
+				"servi",
+				"settembre",
+				"sociale",
+				"sollievo",
+				"sorpreso",
+				"terribili",
+				"torniamo",
+				"trattamento",
+				"troveremo",
+				"utile",
+				"vacanze",
+				"vada",
+				"vari",
+				"vinto",
+				"viviamo"
+			],
+			"particles": [
+				"di",
+				"del",
+				"al",
+				"il",
+				"la",
+				"in",
+				"su",
+				"da",
+				"ai"
+			],
+			"alias": [],
+			"factor": 3
+		},
+		"fakespanish": {
+			"title": "fakespanish",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-spanish-words
+			"lexis": [
+				"abajo",
+				"abrazo",
+				"acabar",
+				"acercarse",
+				"acompañar",
+				"acostarse",
+				"agradecer",
+				"alcalde",
+				"arriba",
+				"atrás",
+				"autoridad",
+				"averiguar",
+				"barrio",
+				"bonito",
+				"bosillo",
+				"broma",
+				"bulto",
+				"caballero",
+				"camarero",
+				"campana",
+				"canción",
+				"claro",
+				"cliente",
+				"cobrar",
+				"conmigo",
+				"corregir",
+				"cosa",
+				"costumbre",
+				"cuaderno",
+				"cuadra",
+				"cuarto",
+				"deporte",
+				"descubrir",
+				"devolver",
+				"dirección",
+				"dónde",
+				"durar",
+				"ejemplo",
+				"enfermo",
+				"entrar",
+				"equipaje",
+				"escribir",
+				"escuela",
+				"estómago",
+				"estudiar",
+				"extrañar",
+				"extraño",
+				"fósforo",
+				"frontera",
+				"hombre",
+				"huésped",
+				"jamás",
+				"jardín",
+				"joven",
+				"juez",
+				"kilómetro",
+				"laudar",
+				"levantar",
+				"listo",
+				"lleno",
+				"mañana",
+				"mediodía",
+				"mentira",
+				"merienda",
+				"método",
+				"mientras",
+				"muerto",
+				"nevar",
+				"norte",
+				"nunca",
+				"obligar",
+				"pariente",
+				"patrón",
+				"permiso",
+				"picante",
+				"pico",
+				"pierna",
+				"píldora",
+				"planchar",
+				"pluma",
+				"pobre",
+				"promesa",
+				"receta",
+				"recuerdo",
+				"regalo",
+				"régimen",
+				"repente",
+				"repitir",
+				"reunión",
+				"rodilla",
+				"según",
+				"señorita",
+				"servir",
+				"siempre",
+				"silla",
+				"sólo",
+				"temprano",
+				"tijeras",
+				"tinta",
+				"vestirse"
+			],
+			"particles": [
+				"las",
+				"la",
+				"de",
+				"des",
+				"a",
+				"con",
+				"por",
+				"el",
+				"acá"
+			],
+			"alias": [],
+			"factor": 3
+		},
+		"fakefrench": {
+			"title": "fakefrench",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-french-words-generator
+			"lexis": [
+				"aide",
+				"aille",
+				"aimait",
+				"allons",
+				"américains",
+				"annonce",
+				"appelles",
+				"appris",
+				"asseoir",
+				"attendre",
+				"aucun",
+				"autrement",
+				"avons",
+				"beaucoup",
+				"blanche",
+				"certaine",
+				"chez",
+				"coffre",
+				"connaissez",
+				"connaître",
+				"conneries",
+				"contraire",
+				"crains",
+				"crime",
+				"dégage",
+				"déjà",
+				"difficile",
+				"emmène",
+				"enfant",
+				"extérieur",
+				"fallait",
+				"félicitations",
+				"femmes",
+				"feras",
+				"file",
+				"finir",
+				"formidable",
+				"fort",
+				"frappé",
+				"fusil",
+				"garçons",
+				"génial",
+				"genoux",
+				"grande",
+				"honneur",
+				"image",
+				"intéressant",
+				"jake",
+				"joie",
+				"leurs",
+				"lycée",
+				"maman",
+				"manqué",
+				"message",
+				"met",
+				"militaire",
+				"moyens",
+				"noire",
+				"nul",
+				"oublier",
+				"ouest",
+				"ouvre",
+				"partez",
+				"pas",
+				"passera",
+				"patron",
+				"pensait",
+				"personnes",
+				"petit",
+				"points",
+				"premier",
+				"presse",
+				"preuves",
+				"prochain",
+				"projet",
+				"puisse",
+				"puissant",
+				"queue",
+				"ravi",
+				"rencontré",
+				"répondu",
+				"reprendre",
+				"retrouve",
+				"revient",
+				"rouge",
+				"salut",
+				"signer",
+				"soldats",
+				"sorte",
+				"souris",
+				"télé",
+				"tenir",
+				"fournir",
+				"trés",
+				"trouver",
+				"tueur",
+				"univers",
+				"vidéo",
+				"vient",
+				"vrais"
+			],
+			"particles": [
+				"en",
+				"de",
+				"pour",
+				"le",
+				"au-",
+				"d'",
+				"il",
+				"à",
+				"sur"
+			],
+			"alias": [],
+			"factor": 3
+		},
+		"fakerussian": {
+			"title": "fakerussian",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-russian-words-generator
+			"lexis": [
+				"avtor",
+				"babushka",
+				"beseda",
+				"chas",
+				"dengi",
+				"devushka",
+				"doktor",
+				"dokument",
+				"dom",
+				"drug",
+				"drugi",
+				"dver",
+				"golos",
+				"golova",
+				"gorod",
+				"groznii",
+				"gusto",
+				"hleb",
+				"hudozhnik",
+				"igra",
+				"imperskii",
+				"institut",
+				"interes",
+				"izbrannii",
+				"kabinet",
+				"kachestvo",
+				"koleno",
+				"komnata",
+				"kompaniya",
+				"konets",
+				"koridor",
+				"kuhnya",
+				"ladon",
+				"leitenant",
+				"litso",
+				"logicheskii",
+				"lopata",
+				"mesto",
+				"metr",
+				"minuta",
+				"molodaya",
+				"moloko",
+				"morozhenoe",
+				"muzhik",
+				"nabratsya",
+				"nachalo",
+				"nastoyaschii",
+				"natknutsya",
+				"nauka",
+				"noch",
+				"noga",
+				"obeschanie",
+				"obraschat",
+				"okno",
+				"otets",
+				"pachka",
+				"polovina",
+				"posol",
+				"pravda",
+				"predshestvennik",
+				"protsessor",
+				"pyatsot",
+				"rabota",
+				"rasskaz",
+				"razvitie",
+				"rebyonok",
+				"reshenie",
+				"rodstvennii",
+				"roman",
+				"ryad",
+				"samolet",
+				"schet",
+				"sila",
+				"slovo",
+				"sluzhba",
+				"spokoistvie",
+				"sponsor",
+				"stalnoi",
+				"stol",
+				"storona",
+				"strana",
+				"supruzheskii",
+				"svet",
+				"techenie",
+				"temperatura",
+				"tezis",
+				"trubka",
+				"vibratsya",
+				"voda",
+				"voina",
+				"voobsche",
+				"vopros",
+				"vosstanovlenie",
+				"vrag",
+				"vsemirnii",
+				"vstrecha",
+				"zanyatie",
+				"zemlya",
+				"zhena",
+				"zhuchara"
+			],
+			"particles": [
+				"da",
+				"na",
+				"ot",
+				"i",
+				"ne",
+				"po",
+				"do",
+				"pro",
+				"ty"
+			],
+			"alias": [],
+			"factor": 3
+		},
+		"fakegerman": {
+			"title": "fakegerman",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-german-words-generator
+			"lexis": [
+				"allem",
+				"anderer",
+				"anders",
+				"angefangen",
+				"beispiel",
+				"bier",
+				"blut",
+				"brauchen",
+				"brüder",
+				"dein",
+				"deshalb",
+				"druck",
+				"durch",
+				"eher",
+				"eigenen",
+				"eingeladen",
+				"erstes",
+				"fand",
+				"fantastisch",
+				"fast",
+				"fehler",
+				"fern",
+				"fertig",
+				"frage",
+				"frank",
+				"freuen",
+				"funktioniert",
+				"gefällt",
+				"geliebt",
+				"geschlafen",
+				"geschlagen",
+				"gewehr",
+				"glaube",
+				"glückwunsch",
+				"gutes",
+				"haltet",
+				"hand",
+				"hasst",
+				"heiß",
+				"held",
+				"hielt",
+				"hoffentlich",
+				"holen",
+				"irgendetwas",
+				"jemandem",
+				"jungen",
+				"kennst",
+				"kennt",
+				"knie",
+				"kommen",
+				"krankenhaus",
+				"lehrer",
+				"leiden",
+				"lhrem",
+				"lst",
+				"monster",
+				"namens",
+				"ohne",
+				"person",
+				"plan",
+				"planeten",
+				"rechte",
+				"rom",
+				"ruhig",
+				"sagten",
+				"schätze",
+				"schreiben",
+				"schuld",
+				"freitag",
+				"schwer",
+				"schwierig",
+				"seine",
+				"seiten",
+				"senator",
+				"solange",
+				"spiel",
+				"steckt",
+				"stimmen",
+				"super",
+				"tag",
+				"taten",
+				"töte",
+				"überleben",
+				"unglaublich",
+				"versuchte",
+				"voller",
+				"völlig",
+				"weib",
+				"weil",
+				"weise",
+				"weisst",
+				"weit",
+				"werd",
+				"werfen",
+				"wohnen",
+				"wollt",
+				"zeiten",
+				"zeug",
+				"zweite",
+				"zeitgeist"
+			],
+			"particles": [
+				"ich",
+				"bin",
+				"sie",
+				"zu",
+				"auf",
+				"an",
+				"du",
+				"wir",
+				"für"
+			],
+			"alias": [],
+			"factor": 3
+		}
+	};
+	/* eslint-enable */
+}
+
+SCRIPT_EXTENSIONS.push(baseChatLanguages);
+
+
+const baseChatEmoji = function () {
+	d20plus.chat = d20plus.chat || {};
 
 	/* eslint-disable */
 
@@ -17155,8 +20097,9 @@ const betteR20Emoji = function () {
 	/* eslint-enable */
 
 	addConfigOptions(
-		"interface", {
-			_name: "Interface",
+		"chat", {
+			_name: "Chat",
+			_player: true,
 			emoji: {
 				name: "Add Emoji Replacement to Chat",
 				default: true,
@@ -17165,30 +20108,922 @@ const betteR20Emoji = function () {
 			},
 		},
 	);
+};
+
+SCRIPT_EXTENSIONS.push(baseChatEmoji);
+
+
+function baseChat () {
+	d20plus.chat = d20plus.chat || {};
+
+	d20plus.chat.localHistory = [];
+	d20plus.chat.lastRespondent = "";
+	const languages = d20plus.chat.languages;
+
+	function buildLanguageIndex () {
+		d20plus.chat.languageIndex = {};
+		d20plus.chat.languageAdditions = {};
+		Object.keys(languages).forEach(id => {
+			const language = languages[id];
+			d20plus.chat.languageIndex[id] = id;
+			d20plus.chat.languageIndex[language.title.toLowerCase()] = id;
+			language.alias.forEach(name => {
+				d20plus.chat.languageIndex[name] = id;
+			})
+		});
+	}
+
+	function gibberish (string, langId, incompetent) {
+		if (!languages[langId]) langId = d20plus.chat.languageAdditions[langId];
+		if (!languages[langId]) return string;
+
+		const paragraphs = string.split("\n");
+		if (paragraphs.length > 1) return paragraphs.map(str => gibberish(str, langId, incompetent)).join("\n");
+
+		// The code below generates pseudo-random text "in selected language".
+		// Each separate word replacement is different in each case, yet chunks of 3 and more
+		// words are always replaced with the same "words" to create an illusion of real translation.
+		// This is done by calculating numerical value for each 3 words, and then using its last 2 digits
+		// as an index to select "translated word" from the dictionary of 100 fake words.
+
+		const particle = { left: false };
+		const words = string.toLowerCase().match(/(--\p{L}+|\p{L}+)/gu);
+		if (words === null) return "";
+		if (incompetent) words.shuffle();
+
+		const calcIndex = (word) => {
+			return Array.from(`${word}`).reduce((index, letter) =>
+				index + letter.charCodeAt(0)
+			, 0);
+		};
+		const indexes = words.map((word, i) => {
+			const left = i ? calcIndex(words[i - 1]) : 0;
+			const right = 2 * calcIndex(words[i + 1]);
+			return left + calcIndex(word) + right;
+		});
+
+		const translations = indexes.map((index, i) => {
+			particle.left = particle.this && particle.left;
+			particle.this = (index - 1) % 9 + 1 < languages[langId].factor;
+			const spacing = i < words.length - 1 ? " " : "";
+			if (incompetent && Math.random() > 0.5) {
+				return words[i] + spacing;
+			} else if (words[i].indexOf("--") === 0) {
+				return words[i].replace(/--/gu, "").uppercaseFirst() + spacing;
+			} else if (particle.this && !particle.left && i < words.length - 1) {
+				particle.left = true;
+				const transId = (index.toString().charAt(0) + index - 1) % 9;
+				const spacing = /['-]$/.test(languages[langId].particles[transId]) ? "" : " ";
+				return languages[langId].particles[transId] + spacing;
+			} else {
+				const transId = index.toString().slice(-2);
+				return languages[langId].lexis[parseInt(transId)] + spacing;
+			}
+		});
+
+		translations[0] = translations[0].uppercaseFirst();
+		return translations.join("");
+	}
+
+	function availableLanguages (charId) {
+		const char = d20.Campaign.characters.get(charId);
+		const langId = d20.journal.customSheets.availableAttributes.repeating_proficiencies_prof_type;
+		if (!char) return [];
+		if (!char.attribs.length) {
+			const fetched = d20plus.ut.fetchCharAttribs(char);
+			fetched.then(d20plus.chat.refreshLanguages);
+		}
+		// roll20 OGL sheet stores languages differently compared to other traits
+		// by default, they don't have corresponging "proficiency type" attribute
+		// however, if you create a trait and THEN change it to be language, it will have LOCALIZED "language" proficiency type
+		// so to find all languages, we must filter out other named traits, except for the traits named "language" or "(localized word for LANGUAGE)"
+		const traits = char.attribs.models
+			.filter(prop => {
+				return prop.attributes.name.match(/repeating_proficiencies_(.*?)_prof_type/)
+				&& ![langId, "LANGUAGE"].includes(prop.attributes.current);
+			})
+			.map(trait => trait.attributes.name.replace(/repeating_proficiencies_(.*?)_prof_type/, "$1"));
+		// now that we have a list of named non-language traits we can just find what we need
+		const charspeaks = char.attribs.models.map(prop => {
+			const filter = /repeating_proficiencies_(.*?)_name/;
+			if (prop.attributes.name.match(filter)) {
+				const isSimpleTrait = traits.includes(filter.exec(prop.attributes.name)[1]);
+				if (!isSimpleTrait) return prop.attributes.current;
+			} else if (prop.attributes.name === "npc_languages") {
+				return prop.attributes.current.split(", ");
+			}
+		}).filter(lang => lang !== undefined);
+		return charspeaks.flatten().map(lang => lang.normalize());
+	}
+
+	function availableLanguagesPlayer (playerId) {
+		const characters = d20.Campaign.characters.models
+			.filter(char => {
+				const actors = char.attributes.controlledby.split(",");
+				return actors.includes(playerId);
+			})
+			.map(char => char.id);
+		return characters
+			.map(charId => availableLanguages(charId))
+			.flatten();
+	}
+
+	function hasLanguageProficiency (langId) {
+		const proficientIn = availableLanguagesPlayer(d20_player_id)
+			.map(lang => d20plus.chat.getLanguageId(lang));
+		return proficientIn.includes(d20plus.chat.getLanguageId(langId));
+	}
+
+	d20plus.chat.listSpeakingIn = (available) => {
+		$("#speakingin").html(available
+			.map(lang => lang.toSentenceCase())
+			.reduce((html, lang) => `${html}<option>${lang}</option>`, "<option></option>"),
+		);
+	}
+
+	d20plus.chat.getLanguageId = (lang) => {
+		if (Array.isArray(lang)) return lang.map(language => d20plus.chat.getLanguageId(language));
+		else return d20plus.chat.languageIndex[lang.normalize().toLowerCase()] || lang.normalize().toLowerCase();
+	}
+
+	d20plus.chat.refreshLanguages = () => {
+		const $speakingIn = $("#speakingin");
+		const speakingAs = $("#speakingas").val().split("|");
+		const actorId = speakingAs[1];
+		const actorIsPlayer = speakingAs[0] === "player";
+		if (actorIsPlayer) {
+			if (window.is_gm) {
+				const prev = $speakingIn.val();
+				d20plus.chat.listSpeakingIn(Object.keys(languages)
+					.filter(lang => !lang.includes("fake"))
+					.map(lang => languages[lang].title));
+				$speakingIn.val(prev);
+			} else {
+				d20plus.chat.listSpeakingIn([]);
+				$speakingIn.val("<option></option>");
+			}
+		} else {
+			const prev = $speakingIn.val();
+			const langs = availableLanguages(actorId);
+			d20plus.chat.listSpeakingIn(langs);
+			$speakingIn.val(prev);
+		}
+	}
+
+	d20plus.chat.availableAddressees = () => {
+		const players = d20.Campaign.players.models
+			.filter(player => player.attributes.online && player.attributes.id !== d20_player_id)
+			.map(player => ({name: player.attributes.displayname, id: player.attributes.id}));
+		const characters = d20.Campaign.characters.models
+			.filter(char => {
+				if (!char.attributes.inplayerjournals) return false;
+				const actors = char.attributes.controlledby.split(",");
+				return actors.some(actor => actor && players.map(player => player.id).includes(actor))
+			})
+			.map(char => ({name: char.attributes.name}));
+		return players.concat(characters);
+	}
+
+	d20plus.chat.setLanguagePreset = (message, language) => {
+		if ($("#soundslike").length) return;
+		const dialog = $(languageDialogTemplate(message, language));
+		const src = d20.textchat.$textarea.val();
+		const msg = {};
+		setTimeout(() => {
+			d20.textchat.$textarea.val(src);
+			dialog.find("#soundslike").focus();
+		}, 200);
+		dialog.dialog({
+			title: "Choose transcription",
+			modal: true,
+			width: 365,
+			open: () => {
+				msg.selected = dialog.find("#soundslike");
+				msg.sample = dialog.find("#languageeg");
+				$("#soundslike").change(() => {
+					msg.sample.html(gibberish(message, msg.selected.val()));
+				});
+				msg.selected.focus();
+			},
+			close: () => {
+				dialog.off();
+				dialog.dialog("destroy").remove();
+			},
+			buttons: {
+				[`Submit`]: function () {
+					const val = msg.selected.val();
+					const langId = language.normalize().toLowerCase();
+					d20plus.ut.log(`Select language style ${language} to ${val}`);
+
+					dialog.off();
+					dialog.dialog("destroy").remove();
+					d20.textchat.$textarea.focus();
+
+					d20plus.chat.languageAdditions[langId] = val;
+					$("#textchat-input button.btn").get(0).click();
+				},
+				[`Cancel`]: function () {
+					dialog.off();
+					dialog.dialog("destroy").remove();
+				},
+			},
+		});
+	}
+
+	const languageTemplate = () => `
+		<script id="sheet-rolltemplate-inlanguage" type="text/html">{{displaymessage}}<br>
+			<span style="font-style:italic" title="You understand this because one of your characters speaks {{titlelanguage}}">
+			<span style="font-weight:bold">{{displaylanguage}}</span> {{translated}}
+			</span>
+		</script>
+	`;
+
+	const languageDialogTemplate = (msg, language) => `
+			<div>
+				<p><strong>What does ${language} language sound like?</strong></p>
+				<p>It seems you're trying to speak language not included in the standard list of D&D 5e PHB.</p>
+				<p>That's not a problem. Please select one of the languages from the dropdown below, and it will be used for the imitated message.</p>
+				<p>Your choice is purely cosmetic and will not affect who can or can not understand it. This will be remembered until you refresh the page.</p>
+				<span style="display:block; height: 40px;">
+					<label style="display: inline-block;" for="soundslike">Transcribe as:</label>
+					<select id="soundslike" style="float: right; width: 60%;">
+						${Object.keys(languages).reduce((options, lang) => `${options}<option value="${lang}">${lang}</option>`, "")}
+					</select>
+				</span>
+				<p>This is what your message will look like with the current selection to those who don't speak ${language}:</p>
+				<p><textarea id="languageeg" disabled="" style="width: 100%; box-sizing: border-box; height: 50px;cursor: default;resize: none; background: rgba(100, 100, 150, 0.2);"
+					>${gibberish(msg, "common")}</textarea>
+				</p>
+			</div>
+	`;
+
+	const playerVersionsTemplate = (id) => `
+			<input type="checkbox" class="connects-state" id="connects${id}-state"/>
+			<label for="connects${id}-state">
+				<span id="connects${id}-info" class="connects-info" title="Show player details">0</span>
+				<span id="connects${id}" class="connects-log">
+				B20 not responding...
+				</span>
+			</label>
+	`;
+
+	const removeClassUserscript = (html) => {
+		return html.replace(/class="(?<class>[^""]*)"/g, (...str) => {
+			const cls = str.last().class;
+			return `class="${cls.replaceAll("userscript-", "")}"`
+		});
+	};
+
+	const chatHelp = [
+		{
+			code: "/w %%",
+			descr: "private message (whisper)",
+			param: "name",
+			tip: "Name of a player or a character, put in quotation marks if it contains spaces",
+		},
+		{
+			code: "/w gm",
+			descr: "private message to your GM",
+		},
+		{
+			code: "/wb",
+			descr: "PM back to last contact",
+			b20: true,
+		},
+		{
+			code: "/ws",
+			descr: "PM to selected tokens (GM)",
+			b20: true,
+			gm: true,
+		},
+		{
+			code: "/v %%",
+			descr: "get script versions (GM)",
+			param: "name",
+			tip: "Name of a player that you want to get version info from, put in quotation marks if it contains spaces",
+			b20: true,
+			gm: true,
+		},
+		{
+			code: "/em, /me",
+			descr: "emote (action from your POV)",
+		},
+		{
+			code: "/ooc, /o",
+			descr: "out of character emote",
+		},
+		{
+			code: "/desc",
+			descr: "GM-only describe events",
+			gm: true,
+		},
+		{
+			code: "/as %%",
+			descr: "GM-only speak as Name",
+			param: "name",
+			tip: "Name of the personified character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/emas %%",
+			descr: "GM-only emote as Name",
+			param: "name",
+			tip: "Name of the described character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/in %%",
+			descr: "speak in a language",
+			param: "language",
+			tip: "Name of a language that you know, put in quotation marks if it contains spaces",
+			b20: true,
+		},
+		{
+			code: "--%%",
+			descr: "skip word (for in-language)",
+			param: "word",
+			tip: "Any single word inside in-language text that you want to keep from being translated, without spaces or hyphens",
+			b20: true,
+		},
+		{
+			code: "/talktomyself",
+			descr: "silent mode on/off",
+		},
+		{
+			code: "/ttms",
+			descr: "shortcut to /talktomyself",
+			b20: true,
+		},
+		{
+			code: "/mtms %%",
+			descr: "execute silently",
+			param: "commands",
+			tip: "Set of commands, separated by line breaks, to be executed in /ttms mode",
+			b20: true,
+		},
+		{
+			code: "/roll, /r %%",
+			descr: "roll dice, e.g. /r 2d6",
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5",
+		},
+		{
+			code: "/gmroll, /gr %%",
+			descr: "roll only for GM",
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5, the result of which will be visible only to GM",
+		},
+		{
+			code: "[[%%]]",
+			descr: "inline dice roll",
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5, to be shown inside any other text",
+		},
+		{
+			code: "&#42;%%&#42;",
+			descr: "format text: italic",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#42;&#42;%%&#42;&#42;",
+			descr: "format text: bold",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#96;&#96;%%&#96;&#96;",
+			descr: "format text: code",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#126;&#126;%%&#126;&#126;",
+			descr: "format text: strikethrough",
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "/fx %%",
+			descr: "show visual effect",
+			param: "effect",
+			tip: "Effect parameters, using the following syntax: Type&#8209;Color&nbsp;SourceID&nbsp;[TargetID]",
+		},
+		{
+			code: "#%%",
+			descr: "run specified macro",
+			param: "macro",
+			tip: "Name of the macro to be executed",
+		},
+		{
+			code: "/help",
+			descr: "show this list of chat commands",
+			b20: true,
+		},
+		{
+			code: "",
+			descr: "<a style=\"font-variant: diagonal-fractions; font-size: smaller; font-variant-caps: small-caps;\" href=\"https://wiki.roll20.net/Text_Chat\">roll20 wiki</a>",
+		},
+	];
+
+	d20plus.chat.help = (text, msg) => {
+		d20plus.chat.modifyMsg(null, {legalize: true, sys: true});
+		d20plus.ut.sendHackerChat(chatHelp.reduce((html, it) => {
+			const isb20 = it.b20 ? "&#42;" : "";
+			const param = it.param ? `<span class="showtip tipsy-n-right" style="background: rgba(206, 96, 96, 0.3);" title="${it.tip}">${it.param}</span>` : "";
+			const code = it.code ? `<code>${it.code.replace("%%", param)}</code>${isb20}` : "&nbsp;";
+			const gmcheck = !it.gm || window.is_gm;
+			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || it.code.search(/^\/in|^--/) === -1;
+			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${it.descr}</span>`;
+			return html;
+		}, "<strong>List of chat commands:</strong><br>betteR20 commands marked with &#42;"));
+		return "";
+	}
+
+	d20plus.chat.actions = { run: (id) => {
+		d20plus.chat.actions[id]?.callback(d20plus.chat.actions[id]?.params);
+		delete d20plus.chat.actions[id];
+	}};
+
+	d20plus.chat.smallActionBtnAdd = (msg, action) => {
+		const id = d20plus.ut.generateRowId();
+		const actions = {
+			request: {title: "Request script info", icon: "?", callback: d20plus.chat.requestScriptVersions},
+		}[action.type];
+		d20plus.chat.actions[id] = Object.assign({params: action}, actions);
+		msg.append(`<span class="msg-action-button showtip tipsy-n-right"
+			data-action="${id}" title="${actions.title}">${actions.icon}
+		</span>`);
+	}
+
+	d20plus.chat.smallActionBtnPress = (event) => {
+		const $el = $(event.target);
+		const id = $el.attr("data-action");
+		d20plus.chat.actions.run(id);
+	}
+
+	d20plus.chat.requestScriptVersions = (params, msg) => {
+		const id = d20plus.ut.generateRowId();
+		msg = msg || `"${params.name}"`;
+		msg.replace(/^("?)(?<name>[^ ]+|[^"]+)\1.*$/u, (...str) => {
+			const name = str.last().name;
+			const transport = {type: "handshake", id};
+			d20.textchat.doChatInput(`/w "${name}" &nbsp;`, undefined, transport);
+		});
+		return "";
+	}
+
+	d20plus.chat.modifyMsg = (id, mod) => {
+		id = id || d20plus.ut.generateRowId();
+		d20plus.chat.modify = d20plus.chat.modify || {};
+		d20plus.chat.modify[id] = d20plus.chat.modify[id] || {};
+		Object.assign(d20plus.chat.modify[id], mod);
+	}
+
+	d20plus.chat.checkTTMSStatus = () => {
+		const $speakingTo = $("#speakingto");
+		if (d20.textchat.talktomyself) {
+			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) $("#textchat-input").addClass("talkingtoself");
+			$speakingTo.val("ttms");
+		} else {
+			$("#textchat-input").removeClass("talkingtoself");
+			if ($speakingTo.val() === "ttms") $speakingTo.val("");
+		}
+	}
+
+	d20plus.chat.resetSendMyself = () => {
+		if (d20plus.chat.mtms?.await) {
+			d20.textchat.talktomyself = false;
+			delete d20plus.chat.mtms;
+		}
+	}
+
+	d20plus.chat.sendMyself = (text, msg) => {
+		// This enables talktomyself mode only for the block of commands in the textarea
+		// and then a hook in d20plus.chat.r20outgoing (doChatInput injection) disables it
+		d20.textchat.talktomyself = true;
+		setTimeout(() => {
+			d20.textchat.doChatInput(msg);
+			d20plus.chat.mtms = {await: true};
+		}, 100);
+		return "";
+	}
+
+	d20plus.chat.sendReply = (text, msg) => {
+		const lastRespondent = d20plus.chat.lastRespondent;
+		if (lastRespondent) return `/w "${lastRespondent}"${msg}`;
+		else d20plus.ut.sendHackerChat("You have to start a private chat with someone first", true);
+		return "";
+	}
+
+	d20plus.chat.sendToSelected = (text, msg) => {
+		const canSpeakTo = d20plus.chat.availableAddressees().map(char => char.name);
+		const addressees = d20.engine.selected()
+			.map(token => token._model.character.attributes?.name)
+			.filter(name => canSpeakTo.includes(name));
+		if (addressees.length) return addressees.reduce((result, name) => { return `${result}/w "${name}"${msg}\n` }, "");
+		else d20plus.ut.sendHackerChat("You have to select tokens belonging to actual players", true);
+		return "";
+	}
+
+	d20plus.chat.sendInLanguage = (message, language) => {
+		let langId = d20plus.chat.getLanguageId(language);
+		if (!languages[langId] && !d20plus.chat.languageAdditions[langId]) {
+			d20plus.chat.setLanguagePreset(message, language);
+			return "";
+		}
+		const knows = window.is_gm || hasLanguageProficiency(langId);
+		message = knows ? message : gibberish(message, langId, true);
+		return `${gibberish(message, langId)}|&inlang|${language}|&meta|${langId}|&meta|${message}`;
+	}
+
+	d20plus.chat.sendParsedInLanguage = (text, msg) => {
+		return msg.replace(/^("?)(?<lang>[^ ]+|[^"]+)\1 (?<msg>.+)$/u, (...str) => {
+			const inlang = str.last();
+			return d20plus.chat.sendInLanguage(inlang.msg, inlang.lang);
+		});
+	}
+
+	d20plus.chat.getSpeakingTo = () => {
+		const $speakingTo = $("#speakingto");
+		const prev = $speakingTo.val();
+		$speakingTo.html((() => {
+			return d20plus.chat.availableAddressees().reduce((result, addressee) => {
+				const icon = addressee.id ? "🗣" : "⚑";
+				const option = `${icon} ${addressee.name}`;
+				const value = `value="${addressee.name}"`;
+				result += `<option ${value}>${option}</option>`;
+				return result;
+			}, `<option value="">All</option><option value="ttms">None</option>`);
+		})());
+		$speakingTo.val(prev);
+	}
+
+	addConfigOptions(
+		"chat", {
+			"social": {
+				"name": "Enable chat social panel (requires restart)",
+				"default": true,
+				"_type": "boolean",
+				"_player": true,
+			},
+			"showPlayerConnects": {
+				"name": "Show player connects messages",
+				"default": true,
+				"_type": "boolean",
+			},
+			"commands": {
+				"name": "Additional text chat commands (/help for full list)",
+				"default": true,
+				"_type": "boolean",
+				"_player": true,
+			},
+			"highlightttms": {
+				"name": "Highlight text box when in TTMS mode",
+				"default": true,
+				"_type": "boolean",
+				"_player": true,
+			},
+		},
+	);
+
+	d20plus.chat.onSocial = () => {
+		const $inputContainer = $("#textchat-input");
+		if (!d20plus.chat.social) {
+			const resized = $inputContainer.attr("style").includes("height")
+			if (resized) $inputContainer.addClass("social-resized");
+			else $inputContainer.addClass("social-default");
+			d20plus.chat.refreshLanguages();
+			d20plus.chat.getSpeakingTo();
+			d20plus.chat.social = true;
+		} else {
+			d20plus.chat.closeSocial();
+		}
+	}
+
+	d20plus.chat.onSpeakingAs = () => {
+		d20plus.chat.refreshLanguages();
+	}
+
+	d20plus.chat.onSpeakingTo = () => {
+		const speakingTo = $("#speakingto").val();
+		const ttms = speakingTo === "ttms";
+		if (d20.textchat.talktomyself && !ttms) {
+			d20.textchat.doChatInput(`/talktomyself off`);
+			d20plus.chat.localHistory.push(false);
+			setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
+		} else if (!d20.textchat.talktomyself && ttms) {
+			d20.textchat.doChatInput(`/talktomyself on`);
+			d20plus.chat.localHistory.push(false);
+			setTimeout(() => d20plus.chat.checkTTMSStatus(), 10);
+		}
+		if (speakingTo && !ttms) {
+			$("#textchat-social-notifier").addClass("b20-to");
+			$("#textchat-social-notifier-to").text(speakingTo);
+		} else {
+			$("#textchat-social-notifier").removeClass("b20-to");
+		}
+	}
+
+	d20plus.chat.onSpeakingIn = () => {
+		const speakingIn = $("#speakingin").val();
+		if (speakingIn) {
+			$("#textchat-social-notifier").addClass("b20-in");
+			$("#textchat-social-notifier-in").text(speakingIn);
+		} else {
+			$("#textchat-social-notifier").removeClass("b20-in");
+		}
+	}
+
+	d20plus.chat.resetSocial = () => {
+		$("#speakingin").val("");
+		if (!d20.textchat.talktomyself) $("#speakingto").val("");
+		$("#textchat-social-notifier").removeClass("b20-in b20-to");
+		d20plus.chat.closeSocial();
+	}
+
+	d20plus.chat.resetTTMS = () => {
+		$("#speakingto").val("");
+		d20plus.chat.closeSocial();
+		d20plus.chat.onSpeakingTo();
+	}
+
+	d20plus.chat.closeSocial = () => {
+		d20plus.chat.social = false;
+		$("#textchat-input").removeClass("social-resized social-default");
+	}
+
+	d20plus.chat.processPlayersList = (changelist) => {
+		if (!d20plus.chat.players) d20plus.chat.players = {};
+		d20.Campaign.players.models.forEach(current => {
+			const player = {
+				on: current.attributes.online,
+				name: current.attributes.displayname,
+			};
+			let notification = false;
+			player.name = player.name.length > 17 ? `${player.name.slice(0, 15)}...` : player.name;
+			if (!d20plus.chat.players[current.id]) {
+				d20plus.chat.players[current.id] = { online: player.on };
+				notification = "joined";
+			} else {
+				if (d20plus.chat.players[current.id].online && !player.on) {
+					notification = "disconnected";
+					d20plus.chat.players[current.id].online = false;
+				} else if (!d20plus.chat.players[current.id].online && player.on) {
+					notification = "connected";
+					d20plus.chat.players[current.id].online = true;
+				}
+			}
+			if (changelist && notification && d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) {
+				const id = d20plus.ut.generateRowId();
+				d20plus.chat.modifyMsg(id, {class: "system connect", decolon: true});
+				if (!player.on) d20plus.chat.modifyMsg(id, {class: "system disconnect"});
+				if (player.on) d20plus.chat.modifyMsg(id, {action: {type: "request", name: player.name}});
+				d20.textchat.incoming(false, { id,
+					type: "general",
+					who: `${player.on ? "" : "&nbsp;"}${player.name}`,
+					avatar: `/users/avatar/${current.attributes.d20userid}/30`,
+					content: `${notification}`,
+				});
+			}
+		})
+	}
+
+	d20plus.chat.processIncomingMsg = (msg, msgData) => {
+		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
+			const speech = msg.listenerid;
+			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
+			if (window.is_gm || msgData.from_me || inKnownLanguage) {
+				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
+				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
+					<strong>(${speech.language})</strong> ${translated}</i>`;
+				d20plus.chat.modifyMsg(msg.id, {class: "inlang", legalize: true});
+			}
+		} else if (msg.listenerid?.type === "handshake") {
+			if (msgData.from_me && !msg.listenerid.data) {
+				msg.content = `script versions info`;
+				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.target)}/30`;
+				d20plus.chat.modifyMsg(msg.id, {class: "system connects", decolon: true, versions: msg.listenerid.id});
+			} else if (msgData.from_me && msg.listenerid.data) {
+				return false;
+			} else if (msgData.to_me && !msg.listenerid.data) {
+				const name = d20plus.ut.getPlayerNameById(msg.playerid);
+				msg.listenerid.data = d20plus.ut.generateVersionInfo();
+				d20.textchat.doChatInput(`/w "${name}" &nbsp;`, undefined, msg.listenerid);
+				return false;
+			} else if (msgData.to_me && msg.listenerid.data) {
+				$(`#connects${msg.listenerid.id}`).html(d20plus.ut.parseVersionInfo(msg.listenerid.data));
+				$(`#connects${msg.listenerid.id}-state`).attr("checked", "true");
+				$(`#connects${msg.listenerid.id}-info`).text("3");
+				return false;
+			}
+		}
+		if (d20.textchat.talktomyself && msgData.from_me) {
+			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
+		}
+		return true;
+	}
+
+	d20plus.chat.r20outgoing = (r20outgoing, params) => {
+		if (!params[2]) {
+			d20plus.chat.resetSendMyself();
+		}
+		return r20outgoing(...params);
+	}
+
+	d20plus.chat.r20incoming = (r20incoming, params) => {
+		const msg = params[1];
+		const msgData = {};
+		msgData.from_me = msg.playerid === d20_player_id;
+		msgData.to_me = msg.target?.includes(d20_player_id);
+
+		// For rolls &  r20 generates duplicate messages that don't show on the log with
+		// params [sound, msg, true, true]. Hence check params[2]&[3] !== true to avoid double processing
+		const skipProcessing = (
+			(params[2] === true && params[3] === true)
+			|| (d20.textchat.chatstartingup)
+		);
+
+		if (msgData.from_me || msg.type === "system") {
+			const stash = [];
+			while (d20plus.chat.localHistory.length) {
+				const record = d20plus.chat.localHistory.pop();
+				if (record) {
+					stash.push(record);
+					d20.textchat.commandhistory.pop();
+				}
+			}
+			d20.textchat.commandhistory = d20.textchat.commandhistory.concat(stash);
+		}
+
+		if (msg.type === "whisper" && !skipProcessing) {
+			if (msgData.from_me) {
+				d20plus.chat.lastRespondent = msg.target_name;
+			} else if (msgData.to_me) {
+				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
+			}
+		}
+
+		if (skipProcessing || d20plus.chat.processIncomingMsg(msg, msgData)) {
+			const result = r20incoming(...params);
+			d20plus.chat.displaying();
+			return result;
+		}
+	}
+
+	d20plus.chat.displaying = (params) => {
+		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
+			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
+
+			if (mods.intro) {
+				const code = "<code style='cursor:pointer'>/help</code>";
+				const wiki = "https://wiki.roll20.net/Text_Chat#Chat";
+				const intro = $(".userscript-commandintro ul");
+				if (intro.get(0)) {
+					intro.last().append(`<li>Full list of chat commands<br>type or press ${code}<br>or visit <a target='blank' href='${wiki}'>roll20 wiki</a></li>`);
+					delete d20plus.chat.modify[id];
+				}
+			}
+
+			if (msg.get(0)) {
+				if (mods.declass) msg.removeClass(mods.declass);
+				if (mods.class) msg.addClass(mods.class);
+				if (mods.versions) msg.append(playerVersionsTemplate(mods.versions));
+				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
+				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
+				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
+				delete d20plus.chat.modify[id];
+			}
+		});
+	}
+
+	d20plus.chat.sending = () => {
+		d20plus.chat.resetSendMyself();
+		const $tc = d20.textchat.$textarea;
+
+		if (d20plus.cfg.getOrDefault("chat", "emoji")) {
+			$tc.val($tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
+				const clean = m1.replace(/:/g, "");
+				return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
+			}));
+		}
+
+		let text = $tc.val();
+		const srcText = text;
+
+		if (d20plus.cfg.getOrDefault("chat", "commands")) {
+			// add custom commands
+			text = text.replace(/^\/wb (.*?)$/gm, d20plus.chat.sendReply);
+			if (is_gm) text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
+			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
+			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
+			if (!d20.textchat.talktomyself) text = text.replace(/^\/mtms ?(.*?)$/s, d20plus.chat.sendMyself);
+			if (is_gm) text = text.replace(/^\/v (.*?)$/s, d20plus.chat.requestScriptVersions);
+			if (d20plus.cfg.getOrDefault("chat", "languages")) text = text.replace(/\/in (.*?)$/gm, d20plus.chat.sendParsedInLanguage);
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "social")) {
+			const speakingto = $("#speakingto").val();
+			const speakingin = $("#speakingin").val();
+
+			if (speakingin) {
+				text = text.replace(/^[^/][^{^}]*?$/gm, msg => {
+					return d20plus.chat.sendInLanguage(msg, speakingin);
+				});
+			}
+
+			if (speakingto && speakingto !== "ttms") {
+				text = text.replace(/^([^/]*?)$/mgu, (...str) => {
+					const prepared = str[1].replace(/\/(r|roll) (?<dice>[ \dd+-]*)$/umg, "[[$<dice>]]");
+					return `/w "${speakingto}" ${prepared}`;
+				});
+			}
+		}
+
+		// $.trim() instead of .trim() cause it's used in roll20's doChatInput()
+		let toSend = $.trim(text);
+		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
+		if ($("#soundslike").get(0)) toSend = "";
+
+		if (toSend.includes("|&inlang|")) {
+			toSend.split("\n").forEach((str, i) => {
+				const data = str.split("|&inlang|");
+				if (data.length === 2) {
+					const msg = data[0];
+					const meta = data[1].split("|&meta|");
+					const transport = {language: meta[0], languageid: meta[1], message: meta[2]};
+					d20.textchat.doChatInput(msg, undefined, transport);
+				} else {
+					d20.textchat.doChatInput(str);
+				}
+			})
+			$tc.val("").focus();
+		} else {
+			d20.textchat.doChatInput(toSend);
+			$tc.val("").focus();
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "highlightttms")) {
+			if (toSend.includes("/talktomyself")) {
+				setTimeout(() => d20plus.chat.checkTTMSStatus(), 20);
+			}
+		}
+	}
 
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
-		const tc = d20.textchat.$textarea;
-		$("#textchat-input").off("click", "button")
-		$("#textchat-input").on("click", "button", function () {
-			if (d20plus.cfg.getOrDefault("interface", "emoji")) {
-				tc.val(tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
-					const clean = m1.replace(/:/g, "");
-					return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
-				}));
-			}
+		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
+		d20plus.ut.injectCode(d20.textchat, "doChatInput", d20plus.chat.r20outgoing);
 
-			// add custom commands
-			tc.val(tc.val().replace(/^\/ttms( |$)/, "/talktomyself$1"));
+		$(document.body).append(languageTemplate());
+		availableLanguagesPlayer(d20_player_id);
+		buildLanguageIndex();
 
-			const toSend = $.trim(tc.val());
-			d20.textchat.doChatInput(toSend);
-			tc.val("").focus();
-		});
+		if (window.is_gm) {
+			d20plus.chat.processPlayersList();
+			const obsconfig = { childList: true, subtree: false };
+			d20plus.cfg.playerWatcher = new MutationObserver(d20plus.chat.processPlayersList);
+			d20plus.cfg.playerWatcher.observe($("#avatarContainer").get(0), obsconfig);
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "social")) {
+			const $inputContainer = $("#textchat-input");
+			const $chatNotifier = $("#textchat-notifier");
+			const $chatTextarea = d20.textchat.$textarea;
+
+			$inputContainer.append(d20plus.html.chatSocial);
+			$inputContainer.prepend(d20plus.html.chatSocialNotifier);
+
+			const $socialSwitch = $("#socialswitch");
+			$("#chatSendBtn").after($socialSwitch);
+			$("#textchat-note-container").append($chatNotifier);
+
+			$chatTextarea.on("focus", d20plus.chat.closeSocial);
+			$chatNotifier.on("click", d20plus.chat.resetTTMS);
+			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
+
+			$socialSwitch.on("click", d20plus.chat.onSocial);
+			$("#speakingas").on("change", d20plus.chat.onSpeakingAs);
+			$("#speakingto").on("change", d20plus.chat.onSpeakingTo);
+			$("#speakingin").on("change", d20plus.chat.onSpeakingIn);
+
+			d20plus.chat.getSpeakingTo();
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "commands")) {
+			d20plus.chat.modifyMsg(null, {intro: true});
+			d20.textchat.$textchat
+				.on("click", ".userscript-commandintro ul code", d20plus.chat.help)
+				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
+		}
+
+		$("#textchat-input")
+			.off("click", "button")
+			.on("click", "button", d20plus.chat.sending);
 	};
-};
+}
 
-SCRIPT_EXTENSIONS.push(betteR20Emoji);
+SCRIPT_EXTENSIONS.push(baseChat);
 
 
 function remoteLibre () {
@@ -17457,12 +21292,11 @@ SCRIPT_EXTENSIONS.push(jukeboxWidget);
 
 
 const betteR20Core = function () {
+	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		const scriptName = `betteR20-core v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-core v${d20plus.version}`;
 		try {
 			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.ut.showLoadingMessage(scriptName);
-			d20plus.ut.checkVersion();
 			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
 
 			d20plus.engine.swapTemplates();
@@ -17477,6 +21311,8 @@ const betteR20Core = function () {
 
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
+
+			d20plus.ut.showLoadingMessage();
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
@@ -17519,12 +21355,19 @@ const betteR20Core = function () {
 				d20plus.cfg.startPlayerConfigHandler();
 			}
 
-			d20plus.ut.log("All systems operational");
-			d20plus.ut.chatTag(`betteR20-core v${d20plus.version}`);
+			// output welcome msg when the chat is ready
+			const welcome = setInterval(() => {
+				if (!d20.textchat.chatstartingup) {
+					d20plus.ut.checkVersion();
+					d20plus.ut.log("All systems operational");
+					d20plus.ut.chatTag();
+					clearInterval(welcome);
+				}
+			}, 500);
 		} catch (e) {
 			// eslint-disable-next-line no-console
 			console.error(e);
-			alert(`${scriptName} failed to initialise! See the logs (CTRL-SHIFT-J) for more information.`)
+			alert(`${d20plus.scriptName} failed to initialise! See the logs (CTRL-SHIFT-J) for more information.`)
 		}
 	};
 };
@@ -17570,6 +21413,7 @@ const D20plus = function (version) {
 				// r20es will expose the d20 variable if we wait
 				// this should always trigger after window.onload has fired, but track init state just in case
 				(function waitForD20 () {
+					if ($("#textchat").get(0) && !$(".boring-chat").get(0)) d20plus.ut.showInitMessage();
 					if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 						hasRunInit = true;
 						d20plus.Init();
@@ -17579,7 +21423,7 @@ const D20plus = function (version) {
 				})();
 
 				window.d20plus = d20plus;
-				d20plus.ut.log("Injected");
+				d20plus.ut.log("Injection successful...");
 			} else {
 				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
 					alert("betteR20 requires the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");

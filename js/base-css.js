@@ -1399,6 +1399,12 @@ function baseCss () {
 			padding: 0 3px;
 		}
 	`;
+
+	d20plus.css.deserifyDarkmode = `
+		.sheet-darkmode #tab-content {
+			font-family: unset;
+		}
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);

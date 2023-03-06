@@ -1,5 +1,6 @@
 const fs = require("fs");
 const beautify_html = require("js-beautify").html;
+const lzstring = require("./lz-string");
 
 const SCRIPT_VERSION = "1.33.2.39";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
@@ -79,6 +80,8 @@ function getDataDirPaths () {
 
 function wrapLibData (filePath, data) {
 	data = JSON.stringify(JSON.parse(data));
+	// data = lzstring.compressToBase64(data);
+	// JSON_DATA[\`${filePath}\`] = JSON.parse(LZString.decompressFromBase64(${JSON.stringify(data)}));
 	return `
 JSON_DATA[\`${filePath}\`] = JSON.parse(${JSON.stringify(data)});
 `

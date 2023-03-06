@@ -72,7 +72,7 @@ const betteR20Core = function () {
 				d20plus.cfg.startPlayerConfigHandler();
 			}
 
-			// output welcome msg when chat is ready
+			// output welcome msg when the chat is ready
 			const welcome = setInterval(() => {
 				if (!d20.textchat.chatstartingup) {
 					d20plus.ut.checkVersion();
