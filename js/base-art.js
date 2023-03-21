@@ -333,7 +333,7 @@ function d20plusArt () {
 
 			const deck = d20.Campaign.decks.get(dId);
 
-			const cleanTemplate = d20plus.addArtMassAdderHTML.replace(/id="[^"]+"/gi, "");
+			const cleanTemplate = d20plus.html.addArtMassAdderHTML.replace(/id="[^"]+"/gi, "");
 			const $dialog = $(cleanTemplate).appendTo($("body"));
 			const $iptTxt = $dialog.find(`textarea`);
 			const $btnAdd = $dialog.find(`button`).click(() => {
