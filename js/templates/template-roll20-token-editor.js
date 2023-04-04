@@ -3,7 +3,7 @@ function initHTMLTokenEditor () {
 
 	// no mods; just switched in to grant full features to non-pro
 	d20plus.html.tokenEditor = `
-	<script id='tmpl_tokeneditor' type='text/html'>
+	<script id="tmpl_tokeneditor" type="text/html">
 		<div class='dialog largedialog tokeneditor' style='display: block;'>
 			<ul class='nav nav-tabs tokeneditor_navigation'>
 				<li class='active'>
@@ -17,16 +17,8 @@ function initHTMLTokenEditor () {
 					</a>
 				</li>
 				<li class='nav-tabs--beta'>
-					<span class='label label-info'>
-						Updated
-					</span>
 					<a data-tab='prototype' href='javascript:void(0);'>
 						<h2>Dynamic Lighting</h2>
-					</a>
-				</li>
-				<li>
-					<a data-tab='advanced' href='javascript:void(0);'>
-						<h2>Legacy Lighting</h2>
 					</a>
 				</li>
 			</ul>
@@ -170,7 +162,7 @@ function initHTMLTokenEditor () {
 								<div class='col tokeneditor__bar-select align-items-center'>
 									<div class='tokeneditor__subheader help-icon'>
 										<h4 class='text-capitalize'>attribute</h4>
-										<a class='pictos showtip' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
+										<a class='pictos showtip' title='You can choose to have the bar represent an attribute from the character sheet like health, mana, or an expendable resource.'>?</a>
 									</div>
 									<div class='tokeneditor__container'>
 										<label title='select a character sheet attribute to link to bar 1'>
@@ -652,57 +644,10 @@ function initHTMLTokenEditor () {
 						<textarea class='gmnotes summernote'></textarea>
 					</div>
 				</div>
-				<!-- Legacy Lighting -->
-				<div class='advanced tab-pane'>
-					<div class='row-fluid'>
-						<div class='emits-light'>
-							<h4>Emits Light</h4>
-							<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-								<input class='light_radius' type='text'>
-								<$!window.Campaign.activePage().get("scale_units")$>.
-								<input class='light_dimradius' type='text'>
-								<$!window.Campaign.activePage().get("scale_units")$>.
-								<input class='light_angle' placeholder='360' type='text'>
-								<span style='font-size: 2.0em;'>&deg;</span>
-							</div>
-							<span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
-							<div class='inlineinputs' style='margin-top: 5px;'>
-								<label style='margin-left: 7px;'>
-									<input class='light_otherplayers' type='checkbox'>
-									All Players See Light
-								</label>
-							</div>
-							<div class='inlineinputs' style='margin-top: 2px;'>
-								<label style='margin-left: 7px;'>
-									<input class='light_hassight' type='checkbox'>
-									Has Sight
-								</label>
-								<span style="margin-left: 9px; margin-right: 28px;">/</span>
-								Angle:
-								<input class='light_losangle' placeholder='360' type='text'>
-								<span style='font-size: 2.0em;'>&deg;</span>
-							</div>
-							<div class='inlineinputs' style='margin-left: 90px; margin-top: 5px;'>
-								<span style="margin-left: 8px; margin-right: 12px;">/</span>
-								Multiplier:
-								<input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
-							</div>
-							<h4>Advanced Fog of War</h4>
-							<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-								<input class='advfow_viewdistance' type='text'>
-								<$!window.Campaign.activePage().get("scale_units")$>.
-							</div>
-							<span style='color: #888; padding-left: 5px;'>Reveal Distance</span>
-						</div>
-					</div>
-					<div class='alert alert-info' role='alert' style='margin-top: 5%'>
-						<p><strong>Legacy</strong> - in the coming months, Advanced Fog of War and Dynamic Lighting will be replaced with Updated Dynamic Lighting.</p>
-					</div>
-				</div>
-				<!-- Updated Dynamic Lighting -->
+				<!-- Dynamic Lighting -- Legacy lighting is under Advanced within this. -->
 				<div class='prototype tab-pane'>
 					<div class='alert alert-info' role='alert'>
-						<p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other. Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
+						<p><a href="https://help.roll20.net/hc/en-us/articles/360051754954-Token-Settings" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
 					</div>
 					<div class='token_vision'>
 						<p class='token_vision_title'>Token Vision</p>
@@ -773,7 +718,7 @@ function initHTMLTokenEditor () {
 									<label class='vision-color'>Tint Color</label>
 								</div>
 								<div class='span4 dyn_fog_switch'>
-									<input class='dyn_fog_dark_vision_color colorpicker' type='text'>
+									<input class='dyn_fog_dark_vision_color colorpicker' type='text' value='transparent'>
 								</div>
 							</div>
 							<div class='row-fluid clearfix toggle-element dark_vision_input' style='padding-top: 10px'>
@@ -1022,12 +967,12 @@ function initHTMLTokenEditor () {
 								</div>
 							</div>
 							<hr>
-							<div class="row-fluid clearfix">
-								<div class="span8">
-									<label class="light_title">Light Color</label>
+							<div class='row-fluid clearfix'>
+								<div class='span8'>
+									<label class='light_title'>Light Color</label>
 								</div>
-								<div class="span4 dyn_fog_switch">
-									<input class="dyn_fog_light_color colorpicker" type="text" value="transparent" style="display: none;">
+								<div class='span4 dyn_fog_switch'>
+									<input class='dyn_fog_light_color colorpicker' type='text' value='transparent'>
 								</div>
 							</div>
 							<hr>
@@ -1055,7 +1000,7 @@ function initHTMLTokenEditor () {
 						<hr>
 						<div class='token_light'>
 							<div aria-expanded='false' class='span8' data-target='.collapse_dyn_fog_advance' data-toggle='collapse' style='display:flex'>
-								<p class='token_light_title' style='flex:1'>Advanced Settings</p>
+								<p class='token_light_title' style='flex:1'>Advanced & Legacy Settings</p>
 								<i aria-expanded='false' class='fa fa-chevron-up collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
 								<i aria-expanded='false' class='fa fa-chevron-down collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
 							</div>
@@ -1077,6 +1022,62 @@ function initHTMLTokenEditor () {
 								<div class='row-fluid clearfix'>
 									<div class='span8'>
 										<p class='description'>This changes the effective radius of light for this player. A setting of 200% will let this player see light from twice it’s set radius.</p>
+									</div>
+								</div>
+								<hr>
+								<div class='row-fluid clearfix'>
+									<div class='span8'>
+										<p class='light_title'>Legacy Lighting</p>
+									</div>
+									<div class='span4 dyn_fog_switch'>
+										<label class='switch'>
+											<input class='dyn_fog_enable_legacy_lighting feature_toggle' data-target='.toggle_legacy_light_section' data-toggle='toggle' type='checkbox'>
+											<span class='slider round'></span>
+											</input>
+										</label>
+									</div>
+								</div>
+								<div class='row-fluid toggle-element toggle_legacy_light_section'>
+									<div class='emits-light'>
+										<div class='clear'></div>
+										<h4>Emits Light</h4>
+										<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+											<input class='light_radius' type='text'>
+											<$!window.Campaign.activePage().get("scale_units")$>.
+											<input class='light_dimradius' type='text'>
+											<$!window.Campaign.activePage().get("scale_units")$>.
+											<input class='light_angle' placeholder='360' type='text'>
+											<span style='font-size: 2.0em;'>&deg;</span>
+										</div>
+										<span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
+										<div class='inlineinputs' style='margin-top: 5px;'>
+											<label style='margin-left: 7px;'>
+												<input class='light_otherplayers' type='checkbox'>
+												All Players See Light
+											</label>
+										</div>
+										<div class='inlineinputs' style='margin-top: 2px;'>
+											<label style='margin-left: 7px;'>
+												<input class='light_hassight' type='checkbox'>
+												Has Sight
+											</label>
+											<span style="margin-left: 9px; margin-right: 28px;">/</span>
+											Angle:
+											<input class='light_losangle' placeholder='360' type='text'>
+											<span style='font-size: 2.0em;'>&deg;</span>
+											<span style="margin-left: 8px; margin-right: 12px;">/</span>
+											Multiplier:
+											<input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
+										</div>
+										<h4>Advanced Fog of War</h4>
+										<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+											<input class='advfow_viewdistance' type='text'>
+											<$!window.Campaign.activePage().get("scale_units")$>.
+										</div>
+										<span style='color: #888; padding-left: 5px;'>Reveal Distance</span>
+									</div>
+									<div class='alert alert-info' role='alert' style='margin-top: 5%'>
+										<p><a href=" https://blog.roll20.net/posts/retiring-legacy-dynamic-lighting-what-you-need-to-know/" target='' _blank''>The sunset has started for Legacy Dynamic Lighting. Convert to Dynamic Lighting now; click to learn more.</a></p>
 									</div>
 								</div>
 							</div>

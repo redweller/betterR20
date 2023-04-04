@@ -50,13 +50,46 @@ function d20plusEngine () {
 				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
 			}
 
-			// add light placement tool
+			// add DL objects tool
 			if (!$(`#placelight`).length) {
-				const $torchMode = $(`<li class="placelight" tip="Place Light"><img id="placelighticon" src="/images/editor/torch.png" width="20" height="20"></li>`);
-				$torchMode.on("click", () => {
+				const $placeControl = $(`<li id="placeObject">
+					<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+					<use href="#place-object-icon"></use>
+					</svg>
+					<div class="submenu"><ul>
+						<li id="placelight" tip="Place Light">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#torch-icon"></use>
+							</svg>
+							Place Light
+						</li>
+						<li id="placeWindow">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#window-icon"></use>
+							</svg>
+							Place Window
+						</li>
+						<li id="placeDoor">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#door-icon"></use>
+							</svg>
+							Place Door
+						</li>
+					</ul></div>
+				</li>`);
+				$placeControl.find(`#placelight`).on("click", () => {
 					d20plus.setMode("placelight");
+					$placeControl.addClass("activebutton");
 				});
-				$(`#measure`).after($torchMode);
+				$placeControl.find(`#placeWindow`).on("click", () => {
+					d20plus.setMode("placeWindow");
+					$placeControl.addClass("activebutton");
+				});
+				$placeControl.find(`#placeDoor`).on("click", () => {
+					d20plus.setMode("placeDoor");
+					$placeControl.addClass("activebutton");
+				});
+				$(`#measure`).after($placeControl);
 			}
 
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
