@@ -1457,7 +1457,7 @@ function baseChatLanguages () {
 				"zwatan"
 			],
 			"particles": [],
-			"alias": [],
+			"alias": ["deep speech"],
 			"factor": 0
 		},
 		"infernal": {
