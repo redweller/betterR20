@@ -511,6 +511,7 @@ function d20plusEngine () {
 	/* eslint-enable */
 
 	d20plus.engine.addLineCutterTool = () => {
+		// The code in /overwrites/canvas-handler.js doesn't work
 		const $btnTextTool = $(`.choosetext`);
 
 		const $btnSplitTool = $(`<li class="choosesplitter">✂️ Line Splitter</li>`).click(() => {
