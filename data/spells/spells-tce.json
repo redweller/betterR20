@@ -56,26 +56,7 @@
 			],
 			"areaTags": [
 				"MT"
-			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Booming Blade",
@@ -145,51 +126,12 @@
 				"thunder"
 			],
 			"miscTags": [
+				"AAD",
 				"SCL"
 			],
 			"areaTags": [
 				"ST"
-			],
-			"classes": {
-				"fromClassList": [
-					{
-						"name": "Artificer",
-						"source": "TCE"
-					},
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Dream of the Blue Veil",
@@ -232,30 +174,10 @@
 			"conditionInflict": [
 				"unconscious"
 			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Bard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			},
+			"miscTags": [
+				"PS",
+				"TP"
+			],
 			"hasFluff": true
 		},
 		{
@@ -322,53 +244,14 @@
 				"fire"
 			],
 			"miscTags": [
+				"AAD",
 				"SCL",
 				"SGT"
 			],
 			"areaTags": [
 				"ST",
 				"MT"
-			],
-			"classes": {
-				"fromClassList": [
-					{
-						"name": "Artificer",
-						"source": "TCE"
-					},
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Intellect Fortress",
@@ -420,36 +303,6 @@
 			"miscTags": [
 				"SGT"
 			],
-			"classes": {
-				"fromClassList": [
-					{
-						"name": "Artificer",
-						"source": "TCE"
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Bard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			},
 			"hasFluffImages": true
 		},
 		{
@@ -511,47 +364,7 @@
 			],
 			"areaTags": [
 				"ST"
-			],
-			"classes": {
-				"fromClassList": [
-					{
-						"name": "Artificer",
-						"source": "TCE"
-					},
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Mind Sliver",
@@ -610,37 +423,6 @@
 			"areaTags": [
 				"ST"
 			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				],
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Sorcerer",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Aberrant Mind",
-							"source": "TCE"
-						}
-					}
-				]
-			},
 			"hasFluffImages": true
 		},
 		{
@@ -696,31 +478,7 @@
 			],
 			"miscTags": [
 				"SGT"
-			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Cleric",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Paladin",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Summon Aberration",
@@ -775,33 +533,7 @@
 			"miscTags": [
 				"SGT",
 				"SMN"
-			],
-			"classes": {
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Sorcerer",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Aberrant Mind",
-							"source": "TCE"
-						}
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Summon Beast",
@@ -856,21 +588,7 @@
 			"miscTags": [
 				"SGT",
 				"SMN"
-			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Druid",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Ranger",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Summon Celestial",
@@ -926,20 +644,6 @@
 				"SGT",
 				"SMN"
 			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Cleric",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Paladin",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			},
 			"hasFluffImages": true
 		},
 		{
@@ -995,34 +699,7 @@
 			"miscTags": [
 				"SGT",
 				"SMN"
-			],
-			"classes": {
-				"fromClassList": [
-					{
-						"name": "Artificer",
-						"source": "TCE"
-					}
-				],
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Sorcerer",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Clockwork Soul",
-							"source": "TCE"
-						}
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Summon Elemental",
@@ -1077,38 +754,7 @@
 			"miscTags": [
 				"SGT",
 				"SMN"
-			],
-			"classes": {
-				"fromSubclass": [
-					{
-						"class": {
-							"name": "Warlock",
-							"source": "PHB"
-						},
-						"subclass": {
-							"name": "Fathomless",
-							"source": "TCE"
-						}
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Druid",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Ranger",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Summon Fey",
@@ -1163,31 +809,7 @@
 			"miscTags": [
 				"SGT",
 				"SMN"
-			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Druid",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Ranger",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Summon Fiend",
@@ -1242,21 +864,7 @@
 			"miscTags": [
 				"SGT",
 				"SMN"
-			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Summon Shadowspawn",
@@ -1312,20 +920,6 @@
 				"SGT",
 				"SMN"
 			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			},
 			"hasFluffImages": true
 		},
 		{
@@ -1381,21 +975,7 @@
 			"miscTags": [
 				"SGT",
 				"SMN"
-			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Sword Burst",
@@ -1454,47 +1034,7 @@
 			],
 			"areaTags": [
 				"S"
-			],
-			"classes": {
-				"fromClassList": [
-					{
-						"name": "Artificer",
-						"source": "TCE"
-					},
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "SCAG"
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Tasha's Caustic Brew",
@@ -1547,27 +1087,7 @@
 			],
 			"savingThrow": [
 				"dexterity"
-			],
-			"classes": {
-				"fromClassList": [
-					{
-						"name": "Artificer",
-						"source": "TCE"
-					}
-				],
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		},
 		{
 			"name": "Tasha's Mind Whip",
@@ -1624,20 +1144,6 @@
 			"areaTags": [
 				"ST"
 			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			},
 			"hasFluffImages": true
 		},
 		{
@@ -1702,26 +1208,7 @@
 			],
 			"miscTags": [
 				"MAC"
-			],
-			"classes": {
-				"fromClassListVariant": [
-					{
-						"name": "Sorcerer",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Warlock",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					},
-					{
-						"name": "Wizard",
-						"source": "PHB",
-						"definedInSource": "TCE"
-					}
-				]
-			}
+			]
 		}
 	]
 }

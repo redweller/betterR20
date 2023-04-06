@@ -13,7 +13,7 @@ function d20plusMonsters () {
 		<span class="cr col-1" title="cr">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
 		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-1">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.monsters._listIndexConverter = (m) => {
-		m.__pType = m.__pType || Parser.monTypeToFullObj(m.type).type; // only filter using primary type
+		m.__pType = m.__pType || Parser.monTypeToFullObj(m.type).types.find(Boolean); // only filter using first primary type
 		return {
 			name: m.name.toLowerCase(),
 			type: m.__pType.toLowerCase(),
