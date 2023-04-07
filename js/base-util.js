@@ -198,6 +198,8 @@ function baseUtil () {
 		const loadMsgTemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
 		if (!isStreamer) $(".boring-chat > span:first-child").after(loadMsgTemplate);
 		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+		// to get rid of an uncaught error that keeps appearing on timely basis
+		if (!window.DD_RUM) window.DD_RUM = {addAction: () => {} };
 	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
