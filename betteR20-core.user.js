@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.33.2.39
+// @version      1.34.1.40
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -293,22 +293,23 @@ function baseLanguage () {
 		lang_alias_undercommon: [``],
 		msg_chat_help_w: [`private message (whisper)`],
 		msg_chat_help_wgm: [`private message to your GM`],
-		msg_chat_help_wb: [`reply or whisper to last contact`],
-		msg_chat_help_ws: [`whisper to selected tokens`],
+		msg_chat_help_wb: [`PM back to last contact`],
+		msg_chat_help_ws: [`PM to selected tokens (GM)`],
+		msg_chat_help_versions: [`get script versions (GM)`],
 		msg_chat_help_em: [`emote (action from your POV)`],
 		msg_chat_help_in: [`speak in a language`],
 		msg_chat_help_inname: [`skip word (for in-language)`],
 		msg_chat_help_cl: [`comprehend language switch`],
 		msg_chat_help_sm: [`silent mode on/off`],
 		msg_chat_help_ttms: [`shortcut to /talktomyself`],
-		msg_chat_help_mtms: [`simple message to self`],
-		msg_chat_help_ooc: [`out of character (as player)`],
+		msg_chat_help_mtms: [`execute silently`],
+		msg_chat_help_ooc: [`out of character emote`],
 		msg_chat_help_r: [`roll dice, e.g. /r 2d6`],
 		msg_chat_help_gr: [`roll only for GM`],
 		msg_chat_help_desc: [`GM-only describe events`],
 		msg_chat_help_as: [`GM-only speak as Name`],
 		msg_chat_help_emas: [`GM-only emote as Name`],
-		msg_chat_help_versions: [`GM-only get script versions`],
+		msg_chat_help_il: [`inline dice roll`],
 		msg_chat_help_fi: [`format text: italic`],
 		msg_chat_help_fb: [`format text: bold`],
 		msg_chat_help_fc: [`format text: code`],
@@ -322,7 +323,7 @@ function baseLanguage () {
 		msg_b20_vtte_init: [`VTTE detected and $0 successfully loaded.<br>`],
 		msg_b20_version_stream: [`<br>A newer version of $0 is available.<br><br>`],
 		msg_b20_version: [`<br>A newer version of $0 is available.<br>Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>`],
-		msg_welcome_versions: [`$0 loaded<br>VTTES v$1 detected`],
+		msg_welcome_versions: [`VTTES v$1 detected<br>$0 loaded`],
 		msg_welcome_faq: [`Need help? Visit our <a href="$0/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our`],
 		msg_welcome_sarcasm: [`You'd think this would be obvious.`],
 		msg_welcome_p1: [`Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.`],
@@ -529,7 +530,8 @@ function baseLanguage () {
 		msg_chat_help_w: [`личное сообщение`],
 		msg_chat_help_wgm: [`личное сообщение ГМу`],
 		msg_chat_help_wb: [`ЛС последнему контакту`],
-		msg_chat_help_ws: [`ЛС выбранным токенам`],
+		msg_chat_help_ws: [`ЛС выбранным токенам (ГМ)`],
+		msg_chat_help_versions: [`запрос инфо скриптов (ГМ)`],
 		msg_chat_help_em: [`эмоция (персонаж делает...)`],
 		msg_chat_help_in: [`говорить на языке`],
 		msg_chat_help_inname: [`пропустить слово (в языке)`],
@@ -543,7 +545,7 @@ function baseLanguage () {
 		msg_chat_help_desc: [`ГМ: описать события`],
 		msg_chat_help_as: [`ГМ: реплика от персонажа`],
 		msg_chat_help_emas: [`ГМ: эмоция от персонажа`],
-		msg_chat_help_versions: [`ГМ: запрос инфо о скриптах`],
+		msg_chat_help_il: [`бросок внутри строки`],
 		msg_chat_help_fi: [`формат: курсив`],
 		msg_chat_help_fb: [`формат: полужирный`],
 		msg_chat_help_fc: [`формат: код`],
@@ -557,7 +559,7 @@ function baseLanguage () {
 		msg_b20_vtte_init: [`VTTE обнаружен и $0 успешно загрузился.<br>`],
 		msg_b20_version_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
 		msg_b20_version: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
-		msg_welcome_versions: [`$0 загружен<br>VTTES v$1 найден`],
+		msg_welcome_versions: [`VTTES v$1 найден<br>$0 загружен`],
 		msg_welcome_faq: [`Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ"><strong>вики</strong></a> или зайдите в`],
 		msg_welcome_sarcasm: [`Вроде, это должно быть очевидно`],
 		msg_welcome_p1: [`Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.`],
@@ -654,20 +656,20 @@ function baseUtil () {
 		});
 	};
 
-	d20plus.ut.injectCode = (object, method, injectedCode, bindAndRun) => {
+	d20plus.ut.injectCode = (object, method, injectedCode) => {
 		const original = object[method].bind(object);
-		if (bindAndRun) {
-			object[method] = (...initParams) => {
-				return injectedCode.bind(object)(original, initParams);
-			}
-		} else {
-			object[method] = function (...initParams) {
-				const passParams = injectedCode(initParams);
-				if (passParams === undefined) return original.apply(original, initParams);
-				else if (passParams !== false) return original.apply(original, passParams);
-			}
+		object[method] = (...initParams) => {
+			return injectedCode.bind(object)(original, initParams);
 		}
-	}
+	}// RB20 EXCLUDE START
+
+	d20plus.ut.interceptCode = (object, method, injectedCode) => {
+		const original = object[method].bind(object);
+		object[method] = (...initParams) => {
+			const passParams = injectedCode(initParams);
+			return original.apply(original, initParams);
+		}
+	}// RB20 EXCLUDE END
 
 	d20plus.ut.checkVersion = () => { // RB20 EXCLUDE START
 		d20plus.ut.plantVersionInfo();// RB20 EXCLUDE END
@@ -712,10 +714,10 @@ function baseUtil () {
 	};
 
 	d20plus.ut.chatTag = () => {
-		const legacytStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
+		const legacyStyle = !!d20plus.cfg.getOrDefault("chat", "legacySystemMessagesStyle");
 		const showWelcome = !!d20plus.cfg.getOrDefault("chat", "showWelcomeMessage");
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
-		const classname = !legacytStyle ? "userscript-b20intro" : "userscript-hackerintro";
+		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
 		const data = [
 			d20plus.scriptName,
@@ -724,7 +726,7 @@ function baseUtil () {
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
-				<img src="" class="userscript-b20img" style="content: unset; width:40px;position: relative;top: 10px;float: right;">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
@@ -737,6 +739,7 @@ function baseUtil () {
 				</span>
 			</div>
 		`;
+		const $boringProgress = $("#boring-progress");
 		if (showWelcome) {
 			if (!isStreamer) {
 				d20plus.ut.sendHackerChat(welcomeTemplate(...data));
@@ -745,22 +748,23 @@ function baseUtil () {
 			}
 		}
 		if (window.enhancementSuiteEnabled) {
-			$("#boring-progress").before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
+			$boringProgress.before(`<span><span>&gt;</span>vtt enhancement suite detected</span>`)
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		$("#boring-progress")
+		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
-			.html("");
-		if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
+			.html("");// RB20 EXCLUDE START
+		/* if (d20plus.cfg.getOrDefault("chat", "resizeSidebarElements")) {
 			$("#rightsidebar").on("mouseout", d20plus.ut.resizeSidebar);
 			$("body").on("mouseup", d20plus.ut.resizeSidebar);
 			d20plus.ut.resizeSidebar("startup");
-		}
+		} */ // RB20 EXCLUDE END
 		setTimeout(() => {
-			$(`.boring-chat`).css("height", "0px");
+			const $bored = $(`.boring-chat`);
+			$bored.css("height", "0px");
 			setTimeout(() => {
-				$(".boring-chat").remove();
+				$bored.remove();
 				clearInterval(d20plus.ut.cursor);
 			}, 2000);
 		}, 6000);
@@ -799,10 +803,11 @@ function baseUtil () {
 		</div>`;
 		$(`#textchat`).prepend(consTemplate);
 		let blink = false;
+		const $bored = $(`.boring-chat`);
 		d20plus.ut.cursor = setInterval(() => {
-			$(`.boring-chat`).append($(`.boring-cursor`));
-			if (blink) $(`.boring-chat aside`).html("|");
-			else $(`.boring-chat aside`).html("");
+			$bored.append($(`.boring-cursor`));
+			if (blink) $bored.find(`aside`).html("|");
+			else $bored.find(`aside`).html("");
 			blink = !blink;
 		}, 300);
 	};
@@ -810,18 +815,20 @@ function baseUtil () {
 	d20plus.ut.showLoadingMessage = () => {
 		const isStreamer = !!d20plus.cfg?.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
-		const loadmsgtemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
-		if (!isStreamer) $(".boring-chat > span:first-child").after(loadmsgtemplate);
+		const loadMsgTemplate = `<span><span>&gt;</span>loading ${d20plus.scriptName}</span>`;
+		if (!isStreamer) $(".boring-chat > span:first-child").after(loadMsgTemplate);
 		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
+		// to get rid of an uncaught error that keeps appearing on timely basis
+		if (!window.DD_RUM) window.DD_RUM = {addAction: () => {} };
 	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
-		const legacytStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
+		const legacyStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
 		if (!message) return;
 		d20.textchat.incoming(false, ({
 			who: "system",
-			type: !legacytStyle && error ? "error" : "system",
-			content: (legacytStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
+			type: !legacyStyle && error ? "error" : "system",
+			content: (legacyStyle ? `<span class="${error ? "hacker-chat-error" : "hacker-chat"}">
 				${message}
 			</span>` : message),
 		}));
@@ -843,7 +850,7 @@ function baseUtil () {
 		const vtte = encodeURI(window.r20es?.hooks?.welcomeScreen?.config?.previousVersion);
 		const phdm = d20plus.ut.detectDarkModeScript();
 		const date = Number(new Date());
-		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, date}));
+		const info = btoa(JSON.stringify({b20n, b20v, vtte, phdm, dnd20: window.b20, date}));
 		return info;
 	}
 
@@ -851,9 +858,10 @@ function baseUtil () {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
 		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}<br>Info updated ${time}`;
+		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
-		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's betteR20 may be outdated`;
+		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
 	}
 
@@ -884,8 +892,8 @@ function baseUtil () {
 			}
 		});
 		return d20plus.ut.dmscriptDetected;
-	}
-
+	}// RB20 EXCLUDE START
+	/*
 	d20plus.ut.resizeSidebar = (init) => {
 		const $sidebar = $("#rightsidebar");
 		if (init === "startup" || $sidebar.hasClass("ui-resizable-resizing")) {
@@ -896,7 +904,7 @@ function baseUtil () {
 			$("#textchat-input").width(sidebarwidth - textdelta);
 			$(".tabmenu").width(tabmenuwidth);
 		}
-	}
+	} */ // RB20 EXCLUDE END
 
 	d20plus.ut.addCSS = (selectors, rules) => {
 		if (!(selectors instanceof Array)) selectors = [selectors];
@@ -969,7 +977,7 @@ function baseUtil () {
 			journalFolder = d20.Campaign.get("journalfolder");
 		}
 		return JSON.parse(journalFolder);
-	};
+	}; // RB20 EXCLUDE START
 
 	d20plus.ut.charFetchAndRetry = ({char, callback, params = []} = {}) => {
 		const attribs = char?.attribs;
@@ -987,6 +995,31 @@ function baseUtil () {
 			}, 20);
 			return true;
 		}
+	} // RB20 EXCLUDE END
+
+	d20plus.ut.fetchCharAttribs = async (char) => {
+		const attribs = char?.attribs;
+		if (!attribs) return false;
+		if (attribs.length) {
+			return char;
+		}
+		if (!attribs.fetching) {
+			attribs.fetch(attribs);
+			attribs.fetching = true;
+		}
+		return new Promise(resolve => {
+			let inProgress = 0;
+			const wait = setInterval(() => {
+				inProgress++;
+				if (attribs.length) resolve(char);
+				if (attribs.length || inProgress > 100) {
+					resolve(false);
+					clearInterval(wait);
+					delete attribs.fetching;
+					d20plus.ut.log(`Tried fetching ${char.attributes.name}`);
+				}
+			}, 30);
+		});
 	}
 
 	d20plus.ut._lastInput = null;
@@ -1094,7 +1127,7 @@ function baseUtil () {
 	};
 
 	d20plus.ut._getCanvasElementById = (id, prop) => {
-		const found = d20.Campaign.pages.models.filter(model => model[prop]?.get(id))[0];
+		const found = d20.Campaign.pages.models.find(model => model[prop]?.get(id));
 		return found ? found[prop].get(id) : null;
 	};
 
@@ -1107,9 +1140,157 @@ function baseUtil () {
 		return null;
 	};
 
+	d20plus.ut.getCharacter = (charRef) => {
+		if (charRef === "selected") return d20.engine.selected()[0]?.model?.character;
+		const characters = d20.Campaign.characters;
+		if (charRef.id) return characters._byId[charRef.id];
+		return characters._byId[charRef]
+			|| characters.models.find(char => char.attributes.name === charRef);
+	}
+
 	d20plus.ut.getCharAttribByName = (char, attribName) => {
 		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
+
+	d20plus.ut.getCharAbilityByName = (char, abilbName) => {
+		return char.abilities?.models?.find(prop => prop?.attributes?.name === abilbName);
+	};
+
+	d20plus.ut.getCharMetaAttribByName = (char, attribNamePart, caseInsensitive) => {
+		const extract = /^repeating_(?:attack|inventory|proficiencies|resource|spell_(?:\d?|cantrip)|traits)_[^_]*(?:_resource_(?:right|left)|)/;
+		const toFind = caseInsensitive ? attribNamePart.toLowerCase() : attribNamePart;
+		const metaAttrib = {_ref: {}};
+		char.attribs?.models.forEach(prop => {
+			const find = caseInsensitive
+				? prop.attributes?.name.toLowerCase().includes(toFind)
+				: prop.attributes?.name.includes(toFind);
+			if (!find) return;
+			metaAttrib._ref._id = metaAttrib._ref._id
+				|| prop.attributes.name.match(extract)?.last()
+				|| attribNamePart;
+			const attribName = prop.attributes.name.replace(metaAttrib._ref._id, "").slice(1);
+			metaAttrib[attribName || "current"] = prop.attributes.current;
+			metaAttrib._ref[attribName || "current"] = prop;
+			if (prop.attributes.max) {
+				metaAttrib[`${attribName}max`] = prop.attributes.max;
+				metaAttrib._ref[`${attribName}max`] = prop;
+			}
+		});
+		if (Object.entries(metaAttrib).length > 1) return metaAttrib;
+	}
+
+	d20plus.ut.getActionTmpl = (template) => {
+		const res = {noDice: template};
+		const getIndex = () => {
+			const index = res.path[2]?.slice(1);
+			if (!res.path[2] || res.path[2][0] !== "$" || isNaN(index)) return;
+			const repquery = ["_reporder"].concat(res.path.slice(0, 2)).join("_");
+			const reporder = d20plus.ut.getCharAttribByName(res.char, repquery)?.attributes.current;
+			if (reporder) {
+				res.path[2] = reporder.split(",")[index];
+			} else {
+				const reporder = res.char.attribs?.models?.filter(prop => {
+					const check = prop?.attributes?.name.split("_");
+					return check[1] === res.path[1] && check.last() === "name";
+				}).map(prop => prop.attributes.name.split("_")[2]);
+				res.path[2] = reporder[index] || res.path[2];
+			}
+		}
+		const getRoll = (tmpl) => `${tmpl}`.replace(/@\{(?<attr>\w*)\}/g, (...group) => {
+			const prop = group.last().attr;
+			const subAttr = res.action[prop];
+			const preserveRef = ["_mod", "d20", "npc_name_flag"].some(ref => prop.includes(ref));
+			const preloadRef = prop === "show_desc"
+				? res.action.description || ""
+				: d20plus.ut.getCharAttribByName(res.char, prop)?.attributes.current;
+			d20plus.ut.log("--REPLACING", group[0], " FOR ", (subAttr !== undefined ? getRoll(subAttr) : preloadRef) || (preserveRef ? `@{${prop}}` : ""))
+			return (subAttr !== undefined ? getRoll(subAttr) : preloadRef) || (preserveRef ? `@{${prop}}` : "");
+		}).replace("repeating_attack_spelldesc_link", () => {
+			return [`${res.char.id}|`, "repeating_attack_", res.path[2], "_spelldesc_link"].join("");
+		});
+		const getTemplate = (template) => {
+			const [charRef, actionId] = template.slice(2, -1).split("|");
+			if (!charRef || !actionId) return;
+			res.char = res.char || d20plus.ut.getCharacter(charRef);
+			res.path = actionId?.split("_");
+			getIndex();
+			d20plus.ut.log("Evaluating template", charRef, actionId);
+			if (["link", "output"].includes(res.path.last())) {
+				return;
+			}
+			if (res.path[0] !== "repeating") {
+				const abil = d20plus.ut.getCharAbilityByName(res.char, actionId)?.attributes.action;
+				if (abil && abil.includes("template:")) res.tmpl = abil;
+				else if (abil) getTemplate(abil);
+			} else if (res.path[1].includes("spell-")) {
+				const spellname = res.path.slice(0, 3).join("_");
+				res.action = d20plus.ut.getCharMetaAttribByName(res.char, spellname);
+				const spell = res.action?.rollcontent;
+				if (spell && spell.includes("template:")) res.tmpl = getRoll(spell);
+				else if (spell) getTemplate(spell);
+			} else if (res.path[1] === "attack" || res.path[1] === "npcaction") {
+				const actionId = res.path.slice(0, 3).join("_");
+				res.action = d20plus.ut.getCharMetaAttribByName(res.char, actionId);
+				if (res.action?.rollbase && res.action.rollbase.includes("template:")) {
+					res.tmpl = getRoll(res.action.rollbase);
+				}
+			}
+		}
+		getTemplate(template);
+		res.tmpl = res.tmpl
+			?.replace(/@{([^|^}^{]*?)}/g, `@{${res.char.attributes.name}|$1}`);
+		return res.tmpl || res.noDice;
+	}
+
+	/*
+	const char = d20plus.ut.getCharacter(charRef);
+	if (!char) return noDice;
+	const addName = tmpl => tmpl.replace(/@{([^|^}^{]*?)}/g, `@{${char.attributes.name}|$1}`);
+	const abil = d20plus.ut.getCharAbilityByName(char, actionId)?.attributes.action;
+	if (abil && abil.includes("template:")) return addName(abil);
+	else if (abil) actionId = abil.split("|")[1]?.split("_").slice(0, -1).join("_");
+	const path = actionId.split("_");
+	d20plus.ut.log("Evaluating template", abil, path)
+	if (path[0] !== "repeating") return noDice;
+	if (path[2][0] === "$") {
+		const index = path[2].slice(1);
+		const repquery = ["_reporder"].concat(path.slice(0, 2)).join("_");
+		const reporder = d20plus.ut.getCharAttribByName(char, repquery)?.attributes.current;
+		if (reporder) {
+			path[2] = reporder.split(",")[index];
+		} else {
+			const reporder = char.attribs?.models?.filter(prop => {
+				const path = prop?.attributes?.name.split("_");
+				return path[1] === "npcaction" && path.last() === "name"
+			}).map(prop => prop.attributes.name.split("_")[2]);
+			path[2] = reporder[index] || path[2];
+		}
+	}
+	if (path[1] === "npcaction") {
+		actionId = path.slice(0, 3).join("_");
+	} else if (path.last() === "spell") {
+		const spellname = path.slice(0, -1).concat(["rollcontent"]).join("_");
+		const spell = d20plus.ut.getCharAttribByName(char, spellname)?.attributes.current;
+		d20plus.ut.log("Query spell", spellname, spell)
+		if (spell && spell.includes("template:")) return addName(spell);
+		else if (spell) actionId = spell.split("|")[1]?.split("_").slice(0, -1).join("_");
+	} else if (path.last() === "attack") {
+		actionId = path.slice(0, -1).join("_");
+	} else return noDice;
+	d20plus.ut.log("Search action", actionId)
+	const attr = d20plus.ut.getCharMetaAttribByName(char, actionId);
+	if (!attr?.rollbase) return noDice;
+	const getRoll1 = (tmpl) => `${tmpl}`.replace(/@\{(?<attr>\w*)\}/g, (...group) => {
+		const prop = group.last().attr;
+		const subAttr = attr[prop];
+		const preserveRef = ["_mod", "d20", "npc_name_flag"].some(ref => prop.includes(ref));
+		const preloadRef = prop === "show_desc"
+			? attr.description || ""
+			: d20plus.ut.getCharAttribByName(char, prop)?.attributes.current;
+		d20plus.ut.log("--CHECKING", prop, subAttr, preserveRef, preloadRef)
+		return (subAttr !== undefined ? getRoll(subAttr) : preloadRef) || (preserveRef ? `@{${prop}}` : "");
+	});
+	// return getRoll(attr.rollbase); */
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {
@@ -2272,12 +2453,6 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 			"_player": false,
-		},
-		"showLight": {
-			"name": __("cfg_option_show_light"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
 		}, // RB20 EXCLUDE END
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
@@ -2330,12 +2505,6 @@ function baseConfig () {
 		},
 		"hideHelpButton": {
 			"name": __("cfg_option_hide_help"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideLineSplitter": {
-			"name": __("cfg_option_hide_linesplit"),
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
@@ -2398,13 +2567,13 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
-		"resizeSidebarElements": {
+		}, // RB20 EXCLUDE START
+		/* "resizeSidebarElements": {
 			"name": __("cfg_option_resize_sidebar"),
-			"default": true,
+			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
+		}, */ // RB20 EXCLUDE END
 		"showWelcomeMessage": {
 			"name": __("cfg_option_welcome_msg"),
 			"default": true,
@@ -2880,7 +3049,10 @@ function baseConfig () {
 							break;
 						}
 						case "_enum": { // for generic String enums not covered above
-							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.cfg.getCfgEnumVals(cfgK, grpK).map(it => `<option value="${it}">${it}</option>`)}</select>`);
+							const texts = CONFIG_OPTIONS[cfgK][grpK]?.__texts;
+							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.cfg.getCfgEnumVals(cfgK, grpK).map((it, i) => {
+								return `<option value="${it}">${texts ? texts[i] : it}</option>`
+							})}</select>`);
 
 							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {
@@ -9556,1089 +9728,1090 @@ function initHTMLTokenEditor () {
 	// no mods; just switched in to grant full features to non-pro
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.tokenEditor = `
-        <script id='tmpl_tokeneditor' type='text/html'>
-        <div class='dialog largedialog tokeneditor' style='display: block;'>
-        <ul class='nav nav-tabs tokeneditor_navigation'>
-            <li class='active'>
-                <a data-tab='basic' href='javascript:void(0);'>
-                    <h2>${__("ui_tokened_details")}</h2>
-                </a>
-            </li>
-            <li>
-                <a data-tab='notes' href='javascript:void(0);'>
-                    <h2>${__("ui_tokened_gmnotes")}</h2>
-                </a>
-            </li>
-            <li class='nav-tabs--beta'>
-                <span class='label label-info'>
-					${__("ui_updated")}
-                </span>
-                <a data-tab='prototype' href='javascript:void(0);'>
-                    <h2>${__("ui_tokened_dynlight")}</h2>
-                </a>
-            </li>
-            <li>
-                <a data-tab='advanced' href='javascript:void(0);'>
-                    <h2>${__("ui_tokened_leglight")}</h2>
-                </a>
-            </li>
-        </ul>
-        <div class='tab-content'>
-            <div class='basic tab-pane tokeneditor__details'>
-                <div class='w-100 d-inline-flex flex-wrap'>
-                    <!-- General -->
-                    <div class='tokeneditor__col general'>
-                        <div class='tokeneditor__row--general d-grid'>
-                            <div class='tokeneditor__header'>
-                                <h3 class='page_title text-capitalize'>general</h3>
-                            </div>
-                            <div class='tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>nameplate player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to see name plate'>
-                                                    <input class='showplayers_name' type='checkbox'>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit name plate'>
-                                                    <input class='playersedit_name' type='checkbox'>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Represents Character -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader help-icon'>
-                                <h4>Represents Character</h4>
-                                <a class='showtip pictos' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
-                            </div>
-                            <div class='tokeneditor__container'>
-                                <label title='select which token this character represents'>
-                                    <span class='sr-only'>select which token this character represents</span>
-                                    <select class='represents'>
-                                        <option value=''>None/Generic Token</option>
-                                        <$ _.each(window.Campaign.activeCharacters(), function(char) { $>
-                                        <option value="<$!char.id$>"><$!char.get("name")$></option>
-                                        <$ }); $>
-                                    </select>
-                                </label>
-                            </div>
-                        </div>
-                        <!-- Name -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader'>
-                                <h4>Name</h4>
-                            </div>
-                            <div class='tokeneditor__container tokeneditor__container-name tokeneditor__border d-inline-grid'>
-                                <div class='d-flex'>
-                                    <label class='sr-only' for='token-general-character-name'>character name</label>
-                                    <input class='name' id='token-general-character-name' type='text'>
-                                </div>
-                                <div class='tokeneditor__container-nameplate disable_box'>
-                                    <div class='d-flex justify-content-center align-items-center'>
-                                        <label class='sr-only' for='token-general-nameplate'>show nameplate on token</label>
-                                        <input class='showname' id='token-general-nameplate' type='checkbox' value='1'>
-                                    </div>
-                                    <h4 class='text-capitalize'>nameplate</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Controlled By -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader'>
-                                <h4>Controlled By</h4>
-                            </div>
-                            <div class='tokeneditor__container'>
-                                <$ if(this.character) { $>
-                                <p>(Determined by Character settings)</p>
-                                <$ } else { $>
-                                <select class='controlledby selectize' multiple='true'>
-                                    <option value='all'>All Players</option>
-                                    <$ window.Campaign.players.each(function(player) { $>
-                                    <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-                                    <$ }); $>
-                                </select>
-                                <$ } $>
-                            </div>
-                        </div>
-						<!-- Update default token button -->
-						<$ if(!this.isDefaultToken) { $>
-						<div class='tokeneditor__row'>
-							<button class='btn btn-primary update_default_token'>Update Default Token</button>
-							<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
-						</div>
-						<$ } $>
-                        <!-- Tint Color -->
-                        <div class='tokeneditor__row'>
-                            <div class='tokeneditor__subheader'>
-                                <h4>Tint Color</h4>
-                            </div>
-                            <div class='tokeneditor__container'>
-                                <label class='sr-only' for='token-general-tint-color'>choose a tint color of the token</label>
-                                <input class='tint_color colorpicker' id='token-general-tint-color' type='text'>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Token Settings -->
-                    <div class='tokeneditor__col token-settings'>
-                        <div class='tokeneditor__header'>
-                            <h3 class='page_title text-capitalize'>token bars</h3>
-                        </div>
-                        <div class='tokeneditor__row tokeneditor__row--bar d-grid'>
-                            <div class='col tokeneditor__bar-inputs d-grid'>
-                                <div class='tokeneditor__subheader align-items-center d-grid'>
-                                    <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar1_color')$>'></span>
-                                    <h4>Bar 1</h4>
-                                </div>
-                                <div class='tokeneditor__container align-items-center d-grid'>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 1 value'>
-                                            <input class='bar1_value' placeholder='Value' type='text'>
-                                        </label>
-                                    </div>
-                                    <span>/</span>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 1 maximum value'>
-                                            <input class='bar1_max' placeholder='Max' type='text'>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__bar-select align-items-center'>
-                                <div class='tokeneditor__subheader help-icon'>
-                                    <h4 class='text-capitalize'>attribute</h4>
-                                    <a class='pictos showtip' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
-                                </div>
-                                <div class='tokeneditor__container'>
-                                    <label title='select a character sheet attribute to link to bar 1'>
-                                        <span class='sr-only'>select a character sheet attribute to link to bar 1</span>
-                                        <select class='bar1_link'>
-                                            <option value=''>None</option>
-                                            <$ _.each(this.availAttribs(), function(attrib) { $>
-											<option value="<$!attrib.id$>"><$!attrib.name$>
-                                                <$ }); $>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>bar 1 player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar1' id='myDropdown'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='show players bar 1'>
-                                                    <input class='showplayers_bar1' type='checkbox' value=''>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit bar 1'>
-                                                    <input class='playersedit_bar1' type='checkbox' value=''>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <label class='bar_val_permission'>
-                                                Text Overlay:
-                                                <select class='bar1options'>
-                                                    <option value='hidden'>
-                                                        Hidden
-                                                    </option>
-                                                    <option selected value='editors'>
-                                                        Visible to Editors
-                                                    </option>
-                                                    <option value='everyone'>
-                                                        Visible to Everyone
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__row tokeneditor__row--bar d-grid'>
-                            <div class='col tokeneditor__bar-inputs d-grid'>
-                                <div class='tokeneditor__subheader align-items-center d-grid'>
-                                    <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar2_color')$>'></span>
-                                    <h4>Bar 2</h4>
-                                </div>
-                                <div class='tokeneditor__container align-items-center d-grid'>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 2 value'>
-                                            <input class='bar2_value' placeholder='Value' type='text'>
-                                        </label>
-                                    </div>
-                                    <span>/</span>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 2 maximum value'>
-                                            <input class='bar2_max' placeholder='Max' type='text'>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__bar-select align-items-center'>
-                                <div class='tokeneditor__subheader help-icon'>
-                                    <h4 class='text-capitalize'>attribute</h4>
-                                </div>
-                                <div class='tokeneditor__container'>
-                                    <label title='select a character sheet attribute to link to bar 2'>
-                                        <span class='sr-only'>select a character sheet attribute to link to bar 2</span>
-                                        <select class='bar2_link'>
-                                            <option value=''>None</option>
-                                            <$ _.each(this.availAttribs(), function(attrib) { $>
-											<option value="<$!attrib.id$>"><$!attrib.name$>
-                                                <$ }); $>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>bar 2 player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar2' id='myDropdown'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='show players bar 2'>
-                                                    <input class='showplayers_bar2' type='checkbox' value=''>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit bar 2'>
-                                                    <input class='playersedit_bar2' type='checkbox' value=''>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <label class='bar_val_permission'>
-                                                Text Overlay:
-                                                <select class='bar2options'>
-                                                    <option value='hidden'>
-                                                        Hidden
-                                                    </option>
-                                                    <option selected value='editors'>
-                                                        Visible to Editors
-                                                    </option>
-                                                    <option value='everyone'>
-                                                        Visible to Everyone
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__row tokeneditor__row--bar d-grid'>
-                            <div class='col tokeneditor__bar-inputs d-grid'>
-                                <div class='tokeneditor__subheader align-items-center d-grid'>
-                                    <span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar3_color')$>'></span>
-                                    <h4>Bar 3</h4>
-                                </div>
-                                <div class='tokeneditor__container align-items-center d-grid'>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 3 value'>
-                                            <input class='bar3_value' placeholder='Value' type='text'>
-                                        </label>
-                                    </div>
-                                    <span>/</span>
-                                    <div class='tokeneditor__border'>
-                                        <label title='enter bar 3 maximum value'>
-                                            <input class='bar3_max' placeholder='Max' type='text'>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__bar-select align-items-center'>
-                                <div class='tokeneditor__subheader help-icon'>
-                                    <h4 class='text-capitalize'>attribute</h4>
-                                </div>
-                                <div class='tokeneditor__container'>
-                                    <label title='select a character sheet attribute to link to bar 3'>
-                                        <span class='sr-only'>select a character sheet attribute to link to bar 3</span>
-                                        <select class='bar3_link'>
-                                            <option value=''>None</option>
-                                            <$ _.each(this.availAttribs(), function(attrib) { $>
-												<option value="<$!attrib.id$>"><$!attrib.name$>
-                                                <$ }); $>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class='col tokeneditor__dropdown d-grid'>
-                                <div class='dropdown keep-open'>
-                                    <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                        <span class='sr-only'>bar 3 player permissions menu</span>
-                                        <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                            <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                        </svg>
-                                    </button>
-                                    <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar3' id='myDropdown'>
-                                        <h4>Player Permissions</h4>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='show players bar 3'>
-                                                    <input class='showplayers_bar3' type='checkbox' value=''>
-                                                    See
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <div class='checkbox'>
-                                                <label title='allow players to edit bar 3'>
-                                                    <input class='playersedit_bar3' type='checkbox' value=''>
-                                                    Edit
-                                                </label>
-                                            </div>
-                                        </li>
-                                        <li class='dropdown-item'>
-                                            <label class='bar_val_permission'>
-                                                Text Overlay:
-                                                <select class='bar3options'>
-                                                    <option value='hidden'>
-                                                        Hidden
-                                                    </option>
-                                                    <option selected value='editors'>
-                                                        Visible to Editors
-                                                    </option>
-                                                    <option value='everyone'>
-                                                        Visible to Everyone
-                                                    </option>
-                                                </select>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <!-- Token Tooltip -->
-                <div class='tokendescription w-100'>
-                    <div class='w-100 d-inline-flex flex-wrap tokeneditor__container tokeneditor__tooltip-title'>
-                        <div class='flex-col'>
-                            <div class='tokeneditor__header w-100'>
-                                <h3 class='page_title text-capitalize'>Tooltip</h3>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__container-tooltip tooltip_disable_box'>
-                            <div class='d-flex justify-content-center align-items-center'>
-                                <label class='sr-only' for='token-general-description-toggle'>show tooltip on token</label>
-                                <input class='show_tooltip' id='token-general-tooltip-toggle' type='checkbox' value='1'>
-                            </div>
-                            <h4 class='text-capitalize'>Show</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class='tokeneditor__row'>
-                    <div class='tokeneditor__container'>
-                        <div class='d-flex'>
-                            <textarea class='token-tooltip' id='token-general-description' maxlength='150' type='text'></textarea>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <small>
-                <span class='tooltip-count'>0</span>
-                /150
-                </small>
-                <hr>
-                <!-- Token Bar Options -->
-                <div class='tokenbaroptions w-100'>
-                    <div class='tokeneditor__header w-100'>
-                        <h3 class='page_title text-capitalize'>token bar options</h3>
-                    </div>
-                    <div class='w-100 d-inline-flex flex-wrap'>
-                        <div class='tokeneditor__col'>
-                            <div class='tokeneditor__subheader help-icon'>
-                                <h4 class='text-capitalize'>location</h4>
-                                <a class='showtip pictos' title='&lt;b&gt;Above:&lt;/b&gt; &lt;br&gt; All bars are above the token. (Default for new games) &lt;br&gt; &lt;b&gt;Top Overlapping:&lt;/b&gt; &lt;br&gt; The bottom-most bar overlaps the top of the token. Other bars float above it. &lt;br&gt; &lt;b&gt;Bottom Overlapping:&lt;/b&gt; &lt;br&gt; Bars fill the token from the bottom up. &lt;br&gt; &lt;b&gt;Below:&lt;/b&gt; &lt;br&gt; All bars are below the token.'>?</a>
-                            </div>
-                            <div class='tokeneditor__container player-permissions'>
-                                <div class='permission_section barLocation'>
-                                    <label class='movable_token_bar' title='select the token bar location'>
-                                        <span class='sr-only'>select the token bar location</span>
-                                        <select class='token_bar_location'>
-                                            <option selected value='above'>
-                                                Above
-                                            </option>
-                                            <option value='overlap_top'>
-                                                Top Overlapping
-                                            </option>
-                                            <option value='overlap_bottom'>
-                                                Bottom Overlapping
-                                            </option>
-                                            <option value='below'>
-                                                Below
-                                            </option>
-                                        </select>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__col'>
-                            <div class='tokeneditor__subheader help-icon'>
-                                <h4 class='text-capitalize'>style</h4>
-                                <a class='showtip pictos' title='&lt;b&gt;Standard:&lt;/b&gt;&lt;br&gt; Full sized token bar, displays text overlays. &lt;br&gt; &lt;b&gt;Compact:&lt;/b&gt; &lt;br&gt;Narrow token bars. No text overlay.'>?</a>
-                            </div>
-                            <div class='tokeneditor__container player-permissions'>
-                                <div class='permission_section barLocation tokenbaroptions__style d-grid'>
-                                    <label class='compact_bar align-items-center' title='Standard token bar style'>
-                                        <input checked name='barStyle' type='radio' value='standard'>
-                                        <span class='sr-only'>choose token bar style</span>
-                                        Standard
-                                    </label>
-                                    <label class='compact_bar align-items-center' title='Compact token bar style'>
-                                        <span class='sr-only'>choose token bar style</span>
-                                        <input name='barStyle' type='radio' value='compact'>
-                                        Compact
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <!-- Token Aura -->
-                <div class='tokenaura w-100'>
-                    <div class='tokeneditor__header w-100'>
-                        <h3 class='page_title text-capitalize'>token aura</h3>
-                    </div>
-                    <div class='w-100 d-inline-flex flex-wrap'>
-                        <div class='tokeneditor__col'>
-                            <div class='tokenaura__header d-grid'>
-                                <div class='tokeneditor__subheader'>
-                                    <h4 class='text-capitalize'>Aura 1</h4>
-                                </div>
-                                <div class='tokeneditor__dropdown d-grid'>
-                                    <div class='dropdown keep-open dropup'>
-                                        <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                            <span class='sr-only'>aura 1 player permissions menu</span>
-                                            <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                                <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                            </svg>
-                                        </button>
-                                        <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
-                                            <h4>Player Permissions</h4>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='show players aura 1'>
-                                                        <input class='showplayers_aura1' type='checkbox' value=''>
-                                                        See
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='allow players to edit aura 1'>
-                                                        <input class='playersedit_aura1' type='checkbox' value=''>
-                                                        Edit
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='tokenaura__container d-grid'>
-                                <!-- Token Aura Diameter -->
-                                <div class='tokenaura__diameter'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>radius</h4>
-                                    </div>
-                                    <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 1 radius'>
-                                            <input class='aura1_radius' type='text'>
-                                        </label>
-                                        <div class='disable_box d-block'>
-                                            <$!window.Campaign.activePage().get("scale_units")$>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Shape -->
-                                <div class='tokenaura__shape'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>shape</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <label title='select aura 1 shape'>
-                                            <select class='text-capitalize aura1_options'>
-                                                <option selected value='circle'>circle</option>
-                                                <option value='square'>square</option>
-                                            </select>
-                                        </label>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Tint Color -->
-                                <div class='tokeneditor__tint'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>tint color</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <input class='colorpicker aura1_color' type='text'>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='tokeneditor__col'>
-                            <div class='tokenaura__header d-grid'>
-                                <div class='tokeneditor__subheader'>
-                                    <h4 class='text-capitalize'>Aura 2</h4>
-                                </div>
-                                <div class='tokeneditor__dropdown d-grid'>
-                                    <div class='dropdown keep-open dropup'>
-                                        <button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
-                                            <span class='sr-only'>aura 2 player permissions menu</span>
-                                            <svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
-                                                <path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
-                                            </svg>
-                                        </button>
-                                        <ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
-                                            <h4>Player Permissions</h4>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='show players aura 2'>
-                                                        <input class='showplayers_aura2' type='checkbox' value=''>
-                                                        See
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li class='dropdown-item'>
-                                                <div class='checkbox'>
-                                                    <label title='allow players to edit aura 2'>
-                                                        <input class='playersedit_aura2' type='checkbox' value=''>
-                                                        Edit
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='tokenaura__container d-grid'>
-                                <!-- Token Aura Diameter -->
-                                <div class='tokenaura__diameter'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>radius</h4>
-                                    </div>
-                                    <div class='tokeneditor__container tokeneditor__border'>
-                                        <label title='input aura 2 radius'>
-                                            <input class='aura2_radius' type='text'>
-                                        </label>
-                                        <div class='disable_box d-block'>
-                                            <$!window.Campaign.activePage().get("scale_units")$>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Shape -->
-                                <div class='tokenaura__shape'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>shape</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <label title='select aura 2 shape'>
-                                            <select class='text-capitalize aura2_options'>
-                                                <option selected value='circle'>circle</option>
-                                                <option value='square'>square</option>
-                                            </select>
-                                        </label>
-                                    </div>
-                                </div>
-                                <!-- Token Aura Tint Color -->
-                                <div class='tokeneditor__tint'>
-                                    <div class='tokeneditor__subheader'>
-                                        <h4 class='text-capitalize'>tint color</h4>
-                                    </div>
-                                    <div class='tokeneditor__container'>
-                                        <input class='colorpicker aura2_color' type='text'>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- GM Notes -->
-            <div class='notes tab-pane'>
-                <div class='tokeneditor__header'>
-                    <h3 class='d-inline'>GM Notes</h3>
-                    <span>(Only visible to GMs)</span>
-                </div>
-                <div>
-                    <textarea class='gmnotes summernote'></textarea>
-                </div>
-            </div>
-            <!-- Legacy Lighting -->
-            <div class='advanced tab-pane'>
-                <div class='row-fluid'>
-                    <div class='emits-light'>
-                        <h4>Emits Light</h4>
-                        <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                            <input class='light_radius' type='text'>
-                            <$!window.Campaign.activePage().get("scale_units")$>.
-                            <input class='light_dimradius' type='text'>
-                            <$!window.Campaign.activePage().get("scale_units")$>.
-                            <input class='light_angle' placeholder='360' type='text'>
-                            <span style='font-size: 2.0em;'>&deg;</span>
-                        </div>
-                        <span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
-                        <div class='inlineinputs' style='margin-top: 5px;'>
-                            <label style='margin-left: 7px;'>
-                                <input class='light_otherplayers' type='checkbox'>
-                                All Players See Light
-                            </label>
-                        </div>
-                        <div class='inlineinputs' style='margin-top: 2px;'>
-                            <label style='margin-left: 7px;'>
-                                <input class='light_hassight' type='checkbox'>
-                                Has Sight
-                            </label>
-                            <span style="margin-left: 9px; margin-right: 28px;">/</span>
-                            Angle:
-                            <input class='light_losangle' placeholder='360' type='text'>
-                            <span style='font-size: 2.0em;'>&deg;</span>
-                        </div>
-                        <div class='inlineinputs' style='margin-left: 90px; margin-top: 5px;'>
-                            <span style="margin-left: 8px; margin-right: 12px;">/</span>
-                            Multiplier:
-                            <input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
-                        </div>
-                        <h4>Advanced Fog of War</h4>
-                        <div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
-                            <input class='advfow_viewdistance' type='text'>
-                            <$!window.Campaign.activePage().get("scale_units")$>.
-                        </div>
-                        <span style='color: #888; padding-left: 5px;'>Reveal Distance</span>
-                    </div>
-                </div>
-                <div class='alert alert-info' role='alert' style='margin-top: 5%'>
-                    <p><strong>Legacy</strong> - in the coming months, Advanced Fog of War and Dynamic Lighting will be replaced with Updated Dynamic Lighting.</p>
-                </div>
-            </div>
-            <!-- Updated Dynamic Lighting -->
-            <div class='prototype tab-pane'>
-                <div class='alert alert-info' role='alert'>
-                    <p>This feature is in Active Development: Turning on Updated Dynamic Lighting will turn off Legacy Dynamic Lighting for this page. If you want to go back, you’ll need to turn on Legacy back on for the Page. Revealed areas in one system will not be revealed in the other.  Consider testing the feature in a copy or new game. <a href="https://app.roll20.net/forum/permalink/8422745" target='_blank'>Read More…</a></p>
-                </div>
-                <div class='token_vision'>
-                    <p class='token_vision_title'>Token Vision</p>
-                    <div class='dyn_fog_vision' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='vision_title'>Vision</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_vision feature_toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Gives the ability to see, if there is light or if Night Vision is enabled. Tokens with vision can see to the edge of the available light.</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='hidden'>
-                                    <input class='dyn_fog_vision_range' type='number'>
-                                    <input class='dyn_fog_dim_vision_range' type='number'>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='dyn_fog_dark_vision' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='vision_title'>Night Vision</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_dark_vision feature_toggle' data-target='.dark_vision_input' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span12'>
-                                <p class='description'>Give this token the ability to see without any light.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input'>
-                            <div class='span8'>
-                                <label class='distance'>Night Vision Distance</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_dark_vision_range' min='0' type='number'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_night_vision hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input'>
-                            <div class='span8'>
-                                <label class='vision-color'>Tint Color</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <input class='dyn_fog_dark_vision_color colorpicker' type='text'>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input' style='padding-top: 10px'>
-                            <div class='span8'>
-                                <label>Night Vision Effect</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group' style='float:right;'>
-                                    <div class='input-group'>
-                                        <label class='dyn_fog_dropdown'>
-                                            <select class='dyn_fog_dark_vision_effect form-control'>
-                                                <option value=''>None</option>
-                                                <option value='Nocturnal'>Nocturnal</option>
-                                                <option value='Dimming'>Dimming</option>
-                                            </select>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element dark_vision_input dyn_fog_dark_fx_dimming_row hidden' style='padding-top: 10px'>
-                            <div class='span8'>
-                                <label class='dyn_fog_dark_vision_color'>Dimming Start</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_dark_vision_effect_dimming' max='100' min='0' step='0.01' type='number' value='5'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_night_vision_dimming hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='limit_field_of_vision hidden' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='vision_title'>Limit Field of Vision</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='field_of_vision feature_toggle' data-target='.field_of_vision_inputs' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span12'>
-                                <p class='description'>Limit the field revealed for the token.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element field_of_vision_inputs'>
-                            <div class='span3'>
-                                <label class='distance'>Total</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='field_of_vision_total' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='span3'>
-                                <label class='distance'>Center</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='field_of_vision_center' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'></div>
-                            <div class='row-fluid clearfix'>
-                                <div class='alert alert-danger wrong_number_alert_vision hidden' role='alert'>
-                                    <p>Please enter a number between 0-360.</p>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'>
-                                <div class='span6'>
-                                    <p class='description'>Total size of the Field of Vision.</p>
-                                </div>
-                                <div class='span6'>
-                                    <p class='description'>50% of Vision is before the Center, 50% is after.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                </div>
-                <div class='token_light'>
-                    <p class='token_light_title'>Token Emits Light</p>
-                    <div class='dyn_fog_light' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Bright Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_light feature_toggle' data-target='.bright_light_input' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Makes the token emit Bright Light. Enable this to set its Distance.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element bright_light_input'>
-                            <div class='span8'>
-                                <label class='distance'>Bright Light Distance</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_light_range' min='0' type='number'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_bright_light hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='dyn_fog_dim_light' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Low Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='dyn_fog_emits_dim_light feature_toggle' data-target='.low_light_input' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Makes the token emit Low Light, in addition to any Bright Light set above. Enable this to set its Distance.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element low_light_input'>
-                            <div class='span8'>
-                                <label class='distance'>Low Light Distance</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='dyn_fog_dim_light_range' min='0' type='number'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element low_light_input'>
-                            <div class='span8'>
-                                <label class='distance'>Brightness</label>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group flex-group'>
-                                        <img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
-                                        <input class='dyn_fog_dim_light_opacity flex-item' max='1' min='0.2' step='0.05' type='range'>
-                                        <img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='alert alert-danger negative_number_alert_dim_light hidden' role='alert'>
-                                <p>Please enter a positive number.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='directional_bright_light hidden' style='padding-top: 10px;'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Directional Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <label class='switch'>
-                                    <input class='directional_bright_light_toggle feature_toggle' data-target='.directional_bright_light_inputs' data-toggle='toggle' type='checkbox'>
-                                    <span class='slider round'></span>
-                                    </input>
-                                </label>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span12'>
-                                <p class='description'>Set the direction of the Light emitting from this token.</p>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix toggle-element directional_bright_light_inputs'>
-                            <div class='span3'>
-                                <label class='distance'>Total</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='directional_bright_light_total' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='span3'>
-                                <label class='distance'>Center</label>
-                            </div>
-                            <div class='span3 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='directional_bright_light_center' max='360' min='0' type='number'>
-                                        <span class='input-group-addon'>&deg;</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'></div>
-                            <div class='row-fluid clearfix'>
-                                <div class='alert alert-danger wrong_number_alert_bright hidden' role='alert'>
-                                    <p>Please enter a number between 0-360.</p>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'>
-                                <div class='span6'>
-                                    <p class='description'>Total size of the Field of Light.</p>
-                                </div>
-                                <div class='span6'>
-                                    <p class='description'>50% of Light is before the Center, 50% is after.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row-fluid clearfix">
-                            <div class="span8">
-                                <label class="light_title">Light Color</label>
-                            </div>
-                            <div class="span4 dyn_fog_switch">
-                                <input class="dyn_fog_light_color colorpicker" type="text" value="transparent" style="display: none;">
-                            </div>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class='total_light'>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='light_title'>Total Light</p>
-                            </div>
-                            <div class='span4 dyn_fog_switch'>
-                                <div class='form-group'>
-                                    <div class='input-group'>
-                                        <input class='total_light_input' disabled type='number' value='0'>
-                                        <span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row-fluid clearfix'>
-                            <div class='span8'>
-                                <p class='description'>Amount of light emitting from this token.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class='token_light'>
-                        <div aria-expanded='false' class='span8' data-target='.collapse_dyn_fog_advance' data-toggle='collapse' style='display:flex'>
-                            <p class='token_light_title' style='flex:1'>Advanced Settings</p>
-                            <i aria-expanded='false' class='fa fa-chevron-up collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
-                            <i aria-expanded='false' class='fa fa-chevron-down collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
-                        </div>
-                        <div class='dyn_fog_light' style='padding-top: 10px;'></div>
-                        <div class='total_light collapse collapse_dyn_fog_advance'>
-                            <div class='row-fluid clearfix'>
-                                <div class='span8'>
-                                    <p class='light_title'>Light Multiplier</p>
-                                </div>
-                                <div class='span4 dyn_fog_switch'>
-                                    <div class='form-group'>
-                                        <div class='input-group'>
-                                            <input class='light_multi_input' min='1' type='number' value='100'>
-                                            <span class='input-group-addon'>%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='row-fluid clearfix'>
-                                <div class='span8'>
-                                    <p class='description'>This changes the effective radius of light for this player. A setting of 200% will let this player see light from twice it’s set radius.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-        </script>
+		<script id="tmpl_tokeneditor" type="text/html">
+		<div class='dialog largedialog tokeneditor' style='display: block;'>
+		<ul class='nav nav-tabs tokeneditor_navigation'>
+		<li class='active'>
+		<a data-tab='basic' href='javascript:void(0);'>
+		<h2>Details</h2>
+		</a>
+		</li>
+		<li>
+		<a data-tab='notes' href='javascript:void(0);'>
+		<h2>GM Notes</h2>
+		</a>
+		</li>
+		<li class='nav-tabs--beta'>
+		<a data-tab='prototype' href='javascript:void(0);'>
+		<h2>Dynamic Lighting</h2>
+		</a>
+		</li>
+		</ul>
+		<div class='tab-content'>
+		<div class='basic tab-pane tokeneditor__details'>
+		<div class='w-100 d-inline-flex flex-wrap'>
+		<!-- General -->
+		<div class='tokeneditor__col general'>
+		<div class='tokeneditor__row--general d-grid'>
+		<div class='tokeneditor__header'>
+		<h3 class='page_title text-capitalize'>general</h3>
+		</div>
+		<div class='tokeneditor__dropdown d-grid'>
+		<div class='dropdown keep-open'>
+		<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+		<span class='sr-only'>nameplate player permissions menu</span>
+		<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+		<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+		</svg>
+		</button>
+		<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right'>
+		<h4>Player Permissions</h4>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='allow players to see name plate'>
+		<input class='showplayers_name' type='checkbox'>
+		See
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='allow players to edit name plate'>
+		<input class='playersedit_name' type='checkbox'>
+		Edit
+		</label>
+		</div>
+		</li>
+		</ul>
+		</div>
+		</div>
+		</div>
+		<!-- Represents Character -->
+		<div class='tokeneditor__row'>
+		<div class='tokeneditor__subheader help-icon'>
+		<h4>Represents Character</h4>
+		<a class='showtip pictos' title='You can choose to have the token represent a Character from the Journal. If you do, the token&#39;s name, controlling players, and bar values will be based on the Character. Most times you&#39;ll just leave this set to None/Generic.'>?</a>
+		</div>
+		<div class='tokeneditor__container'>
+		<label title='select which token this character represents'>
+		<span class='sr-only'>select which token this character represents</span>
+		<select class='represents'>
+		<option value=''>None/Generic Token</option>
+		<$ _.each(window.Campaign.activeCharacters(), function(char) { $>
+		<option value="<$!char.id$>"><$!char.get("name")$></option>
+		<$ }); $>
+		</select>
+		</label>
+		</div>
+		</div>
+		<!-- Name -->
+		<div class='tokeneditor__row'>
+		<div class='tokeneditor__subheader'>
+		<h4>Name</h4>
+		</div>
+		<div class='tokeneditor__container tokeneditor__container-name tokeneditor__border d-inline-grid'>
+		<div class='d-flex'>
+		<label class='sr-only' for='token-general-character-name'>character name</label>
+		<input class='name' id='token-general-character-name' type='text'>
+		</div>
+		<div class='tokeneditor__container-nameplate disable_box'>
+		<div class='d-flex justify-content-center align-items-center'>
+		<label class='sr-only' for='token-general-nameplate'>show nameplate on token</label>
+		<input class='showname' id='token-general-nameplate' type='checkbox' value='1'>
+		</div>
+		<h4 class='text-capitalize'>nameplate</h4>
+		</div>
+		</div>
+		</div>
+		<!-- Controlled By -->
+		<div class='tokeneditor__row'>
+		<div class='tokeneditor__subheader'>
+		<h4>Controlled By</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<$ if(this.character) { $>
+		<p>(Determined by Character settings)</p>
+		<$ } else { $>
+		<select class='controlledby selectize' multiple='true'>
+		<option value='all'>All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<$ } $>
+		</div>
+		</div>
+		<!-- Update default token button -->
+		<$ if(!this.isDefaultToken) { $>
+		<div class='tokeneditor__row'>
+		<button class='btn btn-primary update_default_token'>Update Default Token</button>
+		<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
+		</div>
+		<$ } $>
+		<!-- Tint Color -->
+		<div class='tokeneditor__row'>
+		<div class='tokeneditor__subheader'>
+		<h4>Tint Color</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<label class='sr-only' for='token-general-tint-color'>choose a tint color of the token</label>
+		<input class='tint_color colorpicker' id='token-general-tint-color' type='text'>
+		</div>
+		</div>
+		</div>
+		<!-- Token Settings -->
+		<div class='tokeneditor__col token-settings'>
+		<div class='tokeneditor__header'>
+		<h3 class='page_title text-capitalize'>token bars</h3>
+		</div>
+		<div class='tokeneditor__row tokeneditor__row--bar d-grid'>
+		<div class='col tokeneditor__bar-inputs d-grid'>
+		<div class='tokeneditor__subheader align-items-center d-grid'>
+		<span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar1_color')$>'></span>
+		<h4>Bar 1</h4>
+		</div>
+		<div class='tokeneditor__container align-items-center d-grid'>
+		<div class='tokeneditor__border'>
+		<label title='enter bar 1 value'>
+		<input class='bar1_value' placeholder='Value' type='text'>
+		</label>
+		</div>
+		<span>/</span>
+		<div class='tokeneditor__border'>
+		<label title='enter bar 1 maximum value'>
+		<input class='bar1_max' placeholder='Max' type='text'>
+		</label>
+		</div>
+		</div>
+		</div>
+		<div class='col tokeneditor__bar-select align-items-center'>
+		<div class='tokeneditor__subheader help-icon'>
+		<h4 class='text-capitalize'>attribute</h4>
+		<a class='pictos showtip' title='You can choose to have the bar represent an attribute from the character sheet like health, mana, or an expendable resource.'>?</a>
+		</div>
+		<div class='tokeneditor__container'>
+		<label title='select a character sheet attribute to link to bar 1'>
+		<span class='sr-only'>select a character sheet attribute to link to bar 1</span>
+		<select class='bar1_link'>
+		<option value=''>None</option>
+		<$ _.each(this.availAttribs(), function(attrib) { $>
+		<option value="<$!attrib.id$>"><$!attrib.name$>
+		<$ }); $>
+		</select>
+		</label>
+		</div>
+		</div>
+		<div class='col tokeneditor__dropdown d-grid'>
+		<div class='dropdown keep-open'>
+		<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+		<span class='sr-only'>bar 1 player permissions menu</span>
+		<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+		<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+		</svg>
+		</button>
+		<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar1' id='myDropdown'>
+		<h4>Player Permissions</h4>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='show players bar 1'>
+		<input class='showplayers_bar1' type='checkbox' value=''>
+		See
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='allow players to edit bar 1'>
+		<input class='playersedit_bar1' type='checkbox' value=''>
+		Edit
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<label class='bar_val_permission'>
+		Text Overlay:
+		<select class='bar1options'>
+		<option value='hidden'>
+		Hidden
+		</option>
+		<option selected value='editors'>
+		Visible to Editors
+		</option>
+		<option value='everyone'>
+		Visible to Everyone
+		</option>
+		</select>
+		</label>
+		</li>
+		</ul>
+		</div>
+		</div>
+		</div>
+		<div class='tokeneditor__row tokeneditor__row--bar d-grid'>
+		<div class='col tokeneditor__bar-inputs d-grid'>
+		<div class='tokeneditor__subheader align-items-center d-grid'>
+		<span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar2_color')$>'></span>
+		<h4>Bar 2</h4>
+		</div>
+		<div class='tokeneditor__container align-items-center d-grid'>
+		<div class='tokeneditor__border'>
+		<label title='enter bar 2 value'>
+		<input class='bar2_value' placeholder='Value' type='text'>
+		</label>
+		</div>
+		<span>/</span>
+		<div class='tokeneditor__border'>
+		<label title='enter bar 2 maximum value'>
+		<input class='bar2_max' placeholder='Max' type='text'>
+		</label>
+		</div>
+		</div>
+		</div>
+		<div class='col tokeneditor__bar-select align-items-center'>
+		<div class='tokeneditor__subheader help-icon'>
+		<h4 class='text-capitalize'>attribute</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<label title='select a character sheet attribute to link to bar 2'>
+		<span class='sr-only'>select a character sheet attribute to link to bar 2</span>
+		<select class='bar2_link'>
+		<option value=''>None</option>
+		<$ _.each(this.availAttribs(), function(attrib) { $>
+		<option value="<$!attrib.id$>"><$!attrib.name$>
+		<$ }); $>
+		</select>
+		</label>
+		</div>
+		</div>
+		<div class='col tokeneditor__dropdown d-grid'>
+		<div class='dropdown keep-open'>
+		<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+		<span class='sr-only'>bar 2 player permissions menu</span>
+		<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+		<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+		</svg>
+		</button>
+		<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar2' id='myDropdown'>
+		<h4>Player Permissions</h4>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='show players bar 2'>
+		<input class='showplayers_bar2' type='checkbox' value=''>
+		See
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='allow players to edit bar 2'>
+		<input class='playersedit_bar2' type='checkbox' value=''>
+		Edit
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<label class='bar_val_permission'>
+		Text Overlay:
+		<select class='bar2options'>
+		<option value='hidden'>
+		Hidden
+		</option>
+		<option selected value='editors'>
+		Visible to Editors
+		</option>
+		<option value='everyone'>
+		Visible to Everyone
+		</option>
+		</select>
+		</label>
+		</li>
+		</ul>
+		</div>
+		</div>
+		</div>
+		<div class='tokeneditor__row tokeneditor__row--bar d-grid'>
+		<div class='col tokeneditor__bar-inputs d-grid'>
+		<div class='tokeneditor__subheader align-items-center d-grid'>
+		<span class='bar_color_indicator' style='background-color: <$!window.Campaign.get('bar3_color')$>'></span>
+		<h4>Bar 3</h4>
+		</div>
+		<div class='tokeneditor__container align-items-center d-grid'>
+		<div class='tokeneditor__border'>
+		<label title='enter bar 3 value'>
+		<input class='bar3_value' placeholder='Value' type='text'>
+		</label>
+		</div>
+		<span>/</span>
+		<div class='tokeneditor__border'>
+		<label title='enter bar 3 maximum value'>
+		<input class='bar3_max' placeholder='Max' type='text'>
+		</label>
+		</div>
+		</div>
+		</div>
+		<div class='col tokeneditor__bar-select align-items-center'>
+		<div class='tokeneditor__subheader help-icon'>
+		<h4 class='text-capitalize'>attribute</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<label title='select a character sheet attribute to link to bar 3'>
+		<span class='sr-only'>select a character sheet attribute to link to bar 3</span>
+		<select class='bar3_link'>
+		<option value=''>None</option>
+		<$ _.each(this.availAttribs(), function(attrib) { $>
+		<option value="<$!attrib.id$>"><$!attrib.name$>
+		<$ }); $>
+		</select>
+		</label>
+		</div>
+		</div>
+		<div class='col tokeneditor__dropdown d-grid'>
+		<div class='dropdown keep-open'>
+		<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+		<span class='sr-only'>bar 3 player permissions menu</span>
+		<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+		<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+		</svg>
+		</button>
+		<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right permission_section bar3' id='myDropdown'>
+		<h4>Player Permissions</h4>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='show players bar 3'>
+		<input class='showplayers_bar3' type='checkbox' value=''>
+		See
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='allow players to edit bar 3'>
+		<input class='playersedit_bar3' type='checkbox' value=''>
+		Edit
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<label class='bar_val_permission'>
+		Text Overlay:
+		<select class='bar3options'>
+		<option value='hidden'>
+		Hidden
+		</option>
+		<option selected value='editors'>
+		Visible to Editors
+		</option>
+		<option value='everyone'>
+		Visible to Everyone
+		</option>
+		</select>
+		</label>
+		</li>
+		</ul>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<!-- Token Tooltip -->
+		<div class='tokendescription w-100'>
+		<div class='w-100 d-inline-flex flex-wrap tokeneditor__container tokeneditor__tooltip-title'>
+		<div class='flex-col'>
+		<div class='tokeneditor__header w-100'>
+		<h3 class='page_title text-capitalize'>Tooltip</h3>
+		</div>
+		</div>
+		<div class='tokeneditor__container-tooltip tooltip_disable_box'>
+		<div class='d-flex justify-content-center align-items-center'>
+		<label class='sr-only' for='token-general-description-toggle'>show tooltip on token</label>
+		<input class='show_tooltip' id='token-general-tooltip-toggle' type='checkbox' value='1'>
+		</div>
+		<h4 class='text-capitalize'>Show</h4>
+		</div>
+		</div>
+		</div>
+		<div class='tokeneditor__row'>
+		<div class='tokeneditor__container'>
+		<div class='d-flex'>
+		<textarea class='token-tooltip' id='token-general-description' maxlength='150' type='text'></textarea>
+		</div>
+		</div>
+		</div>
+		<br>
+		<small>
+		<span class='tooltip-count'>0</span>
+		/150
+		</small>
+		<hr>
+		<!-- Token Bar Options -->
+		<div class='tokenbaroptions w-100'>
+		<div class='tokeneditor__header w-100'>
+		<h3 class='page_title text-capitalize'>token bar options</h3>
+		</div>
+		<div class='w-100 d-inline-flex flex-wrap'>
+		<div class='tokeneditor__col'>
+		<div class='tokeneditor__subheader help-icon'>
+		<h4 class='text-capitalize'>location</h4>
+		<a class='showtip pictos' title='&lt;b&gt;Above:&lt;/b&gt; &lt;br&gt; All bars are above the token. (Default for new games) &lt;br&gt; &lt;b&gt;Top Overlapping:&lt;/b&gt; &lt;br&gt; The bottom-most bar overlaps the top of the token. Other bars float above it. &lt;br&gt; &lt;b&gt;Bottom Overlapping:&lt;/b&gt; &lt;br&gt; Bars fill the token from the bottom up. &lt;br&gt; &lt;b&gt;Below:&lt;/b&gt; &lt;br&gt; All bars are below the token.'>?</a>
+		</div>
+		<div class='tokeneditor__container player-permissions'>
+		<div class='permission_section barLocation'>
+		<label class='movable_token_bar' title='select the token bar location'>
+		<span class='sr-only'>select the token bar location</span>
+		<select class='token_bar_location'>
+		<option selected value='above'>
+		Above
+		</option>
+		<option value='overlap_top'>
+		Top Overlapping
+		</option>
+		<option value='overlap_bottom'>
+		Bottom Overlapping
+		</option>
+		<option value='below'>
+		Below
+		</option>
+		</select>
+		</label>
+		</div>
+		</div>
+		</div>
+		<div class='tokeneditor__col'>
+		<div class='tokeneditor__subheader help-icon'>
+		<h4 class='text-capitalize'>style</h4>
+		<a class='showtip pictos' title='&lt;b&gt;Standard:&lt;/b&gt;&lt;br&gt; Full sized token bar, displays text overlays. &lt;br&gt; &lt;b&gt;Compact:&lt;/b&gt; &lt;br&gt;Narrow token bars. No text overlay.'>?</a>
+		</div>
+		<div class='tokeneditor__container player-permissions'>
+		<div class='permission_section barLocation tokenbaroptions__style d-grid'>
+		<label class='compact_bar align-items-center' title='Standard token bar style'>
+		<input checked name='barStyle' type='radio' value='standard'>
+		<span class='sr-only'>choose token bar style</span>
+		Standard
+		</label>
+		<label class='compact_bar align-items-center' title='Compact token bar style'>
+		<span class='sr-only'>choose token bar style</span>
+		<input name='barStyle' type='radio' value='compact'>
+		Compact
+		</label>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<!-- Token Aura -->
+		<div class='tokenaura w-100'>
+		<div class='tokeneditor__header w-100'>
+		<h3 class='page_title text-capitalize'>token aura</h3>
+		</div>
+		<div class='w-100 d-inline-flex flex-wrap'>
+		<div class='tokeneditor__col'>
+		<div class='tokenaura__header d-grid'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>Aura 1</h4>
+		</div>
+		<div class='tokeneditor__dropdown d-grid'>
+		<div class='dropdown keep-open dropup'>
+		<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+		<span class='sr-only'>aura 1 player permissions menu</span>
+		<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+		<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+		</svg>
+		</button>
+		<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
+		<h4>Player Permissions</h4>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='show players aura 1'>
+		<input class='showplayers_aura1' type='checkbox' value=''>
+		See
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='allow players to edit aura 1'>
+		<input class='playersedit_aura1' type='checkbox' value=''>
+		Edit
+		</label>
+		</div>
+		</li>
+		</ul>
+		</div>
+		</div>
+		</div>
+		<div class='tokenaura__container d-grid'>
+		<!-- Token Aura Diameter -->
+		<div class='tokenaura__diameter'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>radius</h4>
+		</div>
+		<div class='tokeneditor__container tokeneditor__border'>
+		<label title='input aura 1 radius'>
+		<input class='aura1_radius' type='text'>
+		</label>
+		<div class='disable_box d-block'>
+		<$!window.Campaign.activePage().get("scale_units")$>
+		</div>
+		</div>
+		</div>
+		<!-- Token Aura Shape -->
+		<div class='tokenaura__shape'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>shape</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<label title='select aura 1 shape'>
+		<select class='text-capitalize aura1_options'>
+		<option selected value='circle'>circle</option>
+		<option value='square'>square</option>
+		</select>
+		</label>
+		</div>
+		</div>
+		<!-- Token Aura Tint Color -->
+		<div class='tokeneditor__tint'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>tint color</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<input class='colorpicker aura1_color' type='text'>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='tokeneditor__col'>
+		<div class='tokenaura__header d-grid'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>Aura 2</h4>
+		</div>
+		<div class='tokeneditor__dropdown d-grid'>
+		<div class='dropdown keep-open dropup'>
+		<button aria-expanded='false' aria-haspopup='true' class='btn btn-default btn--circle' data-toggle='dropdown' type='button'>
+		<span class='sr-only'>aura 2 player permissions menu</span>
+		<svg aria-hidden='true' class='svg-inline--fa' data-icon='ellipsis-v' data-prefix='fas' height='12' viewBox='0 0 192 512' width='12' xmlns='http://www.w3.org/2000/svg'>
+		<path d='M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z' fill='000000'></path>
+		</svg>
+		</button>
+		<ul aria-labelledby='dLabel' class='dropdown-menu dropdown-menu--right' id='myDropdown'>
+		<h4>Player Permissions</h4>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='show players aura 2'>
+		<input class='showplayers_aura2' type='checkbox' value=''>
+		See
+		</label>
+		</div>
+		</li>
+		<li class='dropdown-item'>
+		<div class='checkbox'>
+		<label title='allow players to edit aura 2'>
+		<input class='playersedit_aura2' type='checkbox' value=''>
+		Edit
+		</label>
+		</div>
+		</li>
+		</ul>
+		</div>
+		</div>
+		</div>
+		<div class='tokenaura__container d-grid'>
+		<!-- Token Aura Diameter -->
+		<div class='tokenaura__diameter'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>radius</h4>
+		</div>
+		<div class='tokeneditor__container tokeneditor__border'>
+		<label title='input aura 2 radius'>
+		<input class='aura2_radius' type='text'>
+		</label>
+		<div class='disable_box d-block'>
+		<$!window.Campaign.activePage().get("scale_units")$>
+		</div>
+		</div>
+		</div>
+		<!-- Token Aura Shape -->
+		<div class='tokenaura__shape'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>shape</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<label title='select aura 2 shape'>
+		<select class='text-capitalize aura2_options'>
+		<option selected value='circle'>circle</option>
+		<option value='square'>square</option>
+		</select>
+		</label>
+		</div>
+		</div>
+		<!-- Token Aura Tint Color -->
+		<div class='tokeneditor__tint'>
+		<div class='tokeneditor__subheader'>
+		<h4 class='text-capitalize'>tint color</h4>
+		</div>
+		<div class='tokeneditor__container'>
+		<input class='colorpicker aura2_color' type='text'>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<!-- GM Notes -->
+		<div class='notes tab-pane'>
+		<div class='tokeneditor__header'>
+		<h3 class='d-inline'>GM Notes</h3>
+		<span>(Only visible to GMs)</span>
+		</div>
+		<div>
+		<textarea class='gmnotes summernote'></textarea>
+		</div>
+		</div>
+		<!-- Dynamic Lighting -- Legacy lighting is under Advanced within this. -->
+		<div class='prototype tab-pane'>
+		<div class='alert alert-info' role='alert'>
+		<p><a href="https://help.roll20.net/hc/en-us/articles/360051754954-Token-Settings" target=''_blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
+		</div>
+		<div class='token_vision'>
+		<p class='token_vision_title'>Token Vision</p>
+		<div class='dyn_fog_vision' style='padding-top: 10px;'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='vision_title'>Vision</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_emits_vision feature_toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='description'>Gives the ability to see, if there is light or if Night Vision is enabled. Tokens with vision can see to the edge of the available light.</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='hidden'>
+		<input class='dyn_fog_vision_range' type='number'>
+		<input class='dyn_fog_dim_vision_range' type='number'>
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='dyn_fog_dark_vision' style='padding-top: 10px;'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='vision_title'>Night Vision</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_emits_dark_vision feature_toggle' data-target='.dark_vision_input' data-toggle='toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span12'>
+		<p class='description'>Give this token the ability to see without any light.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element dark_vision_input'>
+		<div class='span8'>
+		<label class='distance'>Night Vision Distance</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='dyn_fog_dark_vision_range' min='0' type='number'>
+		<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='alert alert-danger negative_number_alert_night_vision hidden' role='alert'>
+		<p>Please enter a positive number.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element dark_vision_input'>
+		<div class='span8'>
+		<label class='vision-color'>Tint Color</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<input class='dyn_fog_dark_vision_color colorpicker' type='text' value='transparent'>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element dark_vision_input' style='padding-top: 10px'>
+		<div class='span8'>
+		<label>Night Vision Effect</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group' style='float:right;'>
+		<div class='input-group'>
+		<label class='dyn_fog_dropdown'>
+		<select class='dyn_fog_dark_vision_effect form-control'>
+		<option value=''>None</option>
+		<option value='Nocturnal'>Nocturnal</option>
+		<option value='Dimming'>Dimming</option>
+		</select>
+		</label>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element dark_vision_input dyn_fog_dark_fx_dimming_row hidden' style='padding-top: 10px'>
+		<div class='span8'>
+		<label class='dyn_fog_dark_vision_color'>Dimming Start</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='dyn_fog_dark_vision_effect_dimming' max='100' min='0' step='0.01' type='number' value='5'>
+		<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='alert alert-danger negative_number_alert_night_vision_dimming hidden' role='alert'>
+		<p>Please enter a positive number.</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='limit_field_of_vision hidden' style='padding-top: 10px;'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='vision_title'>Limit Field of Vision</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='field_of_vision feature_toggle' data-target='.field_of_vision_inputs' data-toggle='toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span12'>
+		<p class='description'>Limit the field revealed for the token.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element field_of_vision_inputs'>
+		<div class='span3'>
+		<label class='distance'>Total</label>
+		</div>
+		<div class='span3 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='field_of_vision_total' max='360' min='0' type='number'>
+		<span class='input-group-addon'>&deg;</span>
+		</div>
+		</div>
+		</div>
+		<div class='span3'>
+		<label class='distance'>Center</label>
+		</div>
+		<div class='span3 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='field_of_vision_center' max='360' min='0' type='number'>
+		<span class='input-group-addon'>&deg;</span>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'></div>
+		<div class='row-fluid clearfix'>
+		<div class='alert alert-danger wrong_number_alert_vision hidden' role='alert'>
+		<p>Please enter a number between 0-360.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span6'>
+		<p class='description'>Total size of the Field of Vision.</p>
+		</div>
+		<div class='span6'>
+		<p class='description'>50% of Vision is before the Center, 50% is after.</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		</div>
+		</div>
+		<div class='token_light'>
+		<p class='token_light_title'>Token Emits Light</p>
+		<div class='dyn_fog_light' style='padding-top: 10px;'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='light_title'>Bright Light</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_emits_light feature_toggle' data-target='.bright_light_input' data-toggle='toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='description'>Makes the token emit Bright Light. Enable this to set its Distance.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element bright_light_input'>
+		<div class='span8'>
+		<label class='distance'>Bright Light Distance</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='dyn_fog_light_range' min='0' type='number'>
+		<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='alert alert-danger negative_number_alert_bright_light hidden' role='alert'>
+		<p>Please enter a positive number.</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='dyn_fog_dim_light' style='padding-top: 10px;'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='light_title'>Low Light</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_emits_dim_light feature_toggle' data-target='.low_light_input' data-toggle='toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='description'>Makes the token emit Low Light, in addition to any Bright Light set above. Enable this to set its Distance.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element low_light_input'>
+		<div class='span8'>
+		<label class='distance'>Low Light Distance</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='dyn_fog_dim_light_range' min='0' type='number'>
+		<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element low_light_input'>
+		<div class='span8'>
+		<label class='distance'>Brightness</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group flex-group'>
+		<img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
+		<input class='dyn_fog_dim_light_opacity flex-item' max='1' min='0.2' step='0.05' type='range'>
+		<img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='alert alert-danger negative_number_alert_dim_light hidden' role='alert'>
+		<p>Please enter a positive number.</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='directional_bright_light hidden' style='padding-top: 10px;'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='light_title'>Directional Light</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='directional_bright_light_toggle feature_toggle' data-target='.directional_bright_light_inputs' data-toggle='toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span12'>
+		<p class='description'>Set the direction of the Light emitting from this token.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix toggle-element directional_bright_light_inputs'>
+		<div class='span3'>
+		<label class='distance'>Total</label>
+		</div>
+		<div class='span3 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='directional_bright_light_total' max='360' min='0' type='number'>
+		<span class='input-group-addon'>&deg;</span>
+		</div>
+		</div>
+		</div>
+		<div class='span3'>
+		<label class='distance'>Center</label>
+		</div>
+		<div class='span3 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='directional_bright_light_center' max='360' min='0' type='number'>
+		<span class='input-group-addon'>&deg;</span>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'></div>
+		<div class='row-fluid clearfix'>
+		<div class='alert alert-danger wrong_number_alert_bright hidden' role='alert'>
+		<p>Please enter a number between 0-360.</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span6'>
+		<p class='description'>Total size of the Field of Light.</p>
+		</div>
+		<div class='span6'>
+		<p class='description'>50% of Light is before the Center, 50% is after.</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<label class='light_title'>Light Color</label>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<input class='dyn_fog_light_color colorpicker' type='text' value='transparent'>
+		</div>
+		</div>
+		<hr>
+		</div>
+		<div class='total_light'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='light_title'>Total Light</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='total_light_input' disabled type='number' value='0'>
+		<span class='input-group-addon'><$!window.Campaign.activePage().get("scale_units")$></span>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='description'>Amount of light emitting from this token.</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='token_light'>
+		<div aria-expanded='false' class='span8' data-target='.collapse_dyn_fog_advance' data-toggle='collapse' style='display:flex'>
+		<p class='token_light_title' style='flex:1'>Advanced & Legacy Settings</p>
+		<i aria-expanded='false' class='fa fa-chevron-up collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
+		<i aria-expanded='false' class='fa fa-chevron-down collapse_dyn_fog_advance' style='font-size:20px;cursor: pointer;'></i>
+		</div>
+		<div class='dyn_fog_light' style='padding-top: 10px;'></div>
+		<div class='total_light collapse collapse_dyn_fog_advance'>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='light_title'>Light Multiplier</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<div class='form-group'>
+		<div class='input-group'>
+		<input class='light_multi_input' min='1' type='number' value='100'>
+		<span class='input-group-addon'>%</span>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='description'>This changes the effective radius of light for this player. A setting of 200% will let this player see light from twice it’s set radius.</p>
+		</div>
+		</div>
+		<hr>
+		<div class='row-fluid clearfix'>
+		<div class='span8'>
+		<p class='light_title'>Legacy Lighting</p>
+		</div>
+		<div class='span4 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_enable_legacy_lighting feature_toggle' data-target='.toggle_legacy_light_section' data-toggle='toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row-fluid toggle-element toggle_legacy_light_section'>
+		<div class='emits-light'>
+		<div class='clear'></div>
+		<h4>Emits Light</h4>
+		<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+		<input class='light_radius' type='text'>
+		<$!window.Campaign.activePage().get("scale_units")$>.
+		<input class='light_dimradius' type='text'>
+		<$!window.Campaign.activePage().get("scale_units")$>.
+		<input class='light_angle' placeholder='360' type='text'>
+		<span style='font-size: 2.0em;'>&deg;</span>
+		</div>
+		<span style='color: #888; padding-left: 5px;'>Light Radius / (optional) Start of Dim / Angle</span>
+		<div class='inlineinputs' style='margin-top: 5px;'>
+		<label style='margin-left: 7px;'>
+		<input class='light_otherplayers' type='checkbox'>
+		All Players See Light
+		</label>
+		</div>
+		<div class='inlineinputs' style='margin-top: 2px;'>
+		<label style='margin-left: 7px;'>
+		<input class='light_hassight' type='checkbox'>
+		Has Sight
+		</label>
+		<span style="margin-left: 9px; margin-right: 28px;">/</span>
+		Angle:
+		<input class='light_losangle' placeholder='360' type='text'>
+		<span style='font-size: 2.0em;'>&deg;</span>
+		<span style="margin-left: 8px; margin-right: 12px;">/</span>
+		Multiplier:
+		<input class='light_multiplier' placeholder='1.0' style='margin-right: 10px;' type='text'>x</input>
+		</div>
+		<h4>Advanced Fog of War</h4>
+		<div class='inlineinputs' style='margin-top: 5px; margin-bottom: 5px;'>
+		<input class='advfow_viewdistance' type='text'>
+		<$!window.Campaign.activePage().get("scale_units")$>.
+		</div>
+		<span style='color: #888; padding-left: 5px;'>Reveal Distance</span>
+		</div>
+		<div class='alert alert-info' role='alert' style='margin-top: 5%'>
+		<p><a href=" https://blog.roll20.net/posts/retiring-legacy-dynamic-lighting-what-you-need-to-know/" target=''_blank''>The sunset has started for Legacy Dynamic Lighting. Convert to Dynamic Lighting now; click to learn more.</a></p>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</script>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -11515,143 +11688,102 @@ function initHTMLroll20EditorsMisc () {
 
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.handoutEditor = `
-<script id='tmpl_handouteditor' type='text/html'>
-  <div class='dialog largedialog handouteditor' style='display: block;'>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <label>
-          <strong>Name</strong>
-        </label>
-        <input class='name' type='text'>
-        <div class='clear'></div>
-        <$ if (window.is_gm) { $>
-        <label>
-          <strong>In Player's Journals</strong>
-        </label>
-        <select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Can Be Edited By</strong>
-        </label>
-        <select class='controlledby chosen' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Tags</strong>
-        </label>
-        <input class='tags'>
-        <div class='clear'></div>
-        <$ } $>
-      </div>
-    </div>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-        <div class="status"></div>
-        <div class="inner">
-          <$ if(this.get("avatar") == "") { $>
-          <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
-          <br /> or
-          <button class="btn">Choose a file...</button>
-          <input class="manual" type="file" />
-          <$ } else { $>
-          <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-          <video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
-          <$ } else { $>
-          <img src="<$!this.get("avatar")$>" />
-          <$ } $>
-          <div class='remove'><a href='#'>Remove</a></div>
-          <$ } $>
-        </div>
-      </div>
-      <div class='clear'></div>
-    </div>
-  </div>
-  <!-- BEGIN MOD -->
-  <div class='row-fluid'>
-  <button class="btn handout-image-by-url">Set Image from URL</button>
-  <div class='clear'></div>
-  </div>
-  <!-- END MOD -->
-  <div class='row-fluid'>
-    <div class='span12'>
-      <label>
-        <strong>Description & Notes</strong>
-      </label>
-      <textarea class='notes'></textarea>
-      <div class='clear'></div>
-      <$ if(window.is_gm) { $>
-      <label>
-        <strong>GM Notes (Only visible to GM)</strong>
-      </label>
-      <textarea class='gmnotes'></textarea>
-      <div class='clear'></div>
-      <hr>
-      <button class='delete btn btn-danger' style='float: right;'>
-        Delete Handout
-      </button>
-      <button class='duplicate btn' style='margin-right: 10px;'>
-        Duplicate
-      </button>
-      <button class='archive btn'>
-        <$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive<$ } $>
-      </button>
-      <div class='clear'></div>
-      <$ } $>
-    </div>
-  </div>
-  </div>
-</script>
-<script id='tmpl_handoutviewer' type='text/html'>
-  <div class='dialog largedialog handoutviewer' style='display: block;'>
-    <div style='padding: 10px;'>
-      <$ if(this.get("avatar") != "") { $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <div class='avatar'>
-            <a class="lightly" target="_blank" href="<$!(this.get("avatar").indexOf("d20.io/") !== -1 ? this.get("avatar").replace(/\\/med\\.(?!webm)/, "/max.") : this.get("avatar"))$>">
-            <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-            <video src="<$!this.get("avatar")$>" draggable="false" loop muted autoplay />
-            <$ } else { $>
-            <img src="<$!this.get("avatar")$>" draggable="false" />
-            <$ } $>
-            <div class='mag-glass pictos'>s</div></a>
-            </a>
-          </div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ } $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <div class='content note-editor notes'></div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ if(window.is_gm) { $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <hr>
-          <label>
-            <strong>GM Notes (Only visible to GM)</strong>
-          </label>
-          <div class='content note-editor gmnotes'></div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ } $>
-    </div>
-  </div>
-</script>
+		<script id="tmpl_handouteditor" type="text/html">
+		<div class='dialog largedialog handouteditor' style='display: block;'>
+		<div class='row-fluid'>
+		<div class='span12'>
+		<label>
+		<strong>Name</strong>
+		</label>
+		<input class='name' type='text'>
+		<div class='clear'></div>
+		<$ if (window.is_gm) { $>
+		<label>
+		<strong>In Player's Journals</strong>
+		</label>
+		<select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Can Be Edited By</strong>
+		</label>
+		<select class='controlledby chosen' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Tags</strong>
+		</label>
+		<input class='tags'>
+		<div class='clear'></div>
+		<$ } $>
+		</div>
+		</div>
+		<div class='row-fluid'>
+		<div class='span12'>
+		<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+		<div class="status"></div>
+		<div class="inner">
+		<$ if(this.get("avatar") == "") { $>
+		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+		<br /> or
+		<button class="btn">Choose a file...</button>
+		<input class="manual" type="file" />
+		<$ } else { $>
+		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+		<video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+		<$ } else { $>
+		<img src="<$!this.get("avatar")$>" />
+		<$ } $>
+		<div class='remove'><a href='#'>Remove</a></div>
+		<$ } $>
+		</div>
+		</div>
+		<div class='clear'></div>
+		</div>
+		</div>
+		<!-- BEGIN MOD -->
+		<div class='row-fluid'>
+			<button class="btn handout-image-by-url">Set Image from URL</button>
+			<div class='clear'></div>
+		</div>
+		<!-- END MOD -->
+		<div class='row-fluid'>
+		<div class='span12'>
+		<label>
+		<strong>Description & Notes</strong>
+		</label>
+		<textarea class='notes'></textarea>
+		<div class='clear'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		<strong>GM Notes (Only visible to GM)</strong>
+		</label>
+		<textarea class='gmnotes'></textarea>
+		<div class='clear'></div>
+		<hr>
+		<button class='delete btn btn-danger' style='float: right;'>
+		Delete Handout
+		</button>
+		<button class='duplicate btn' style='margin-right: 10px;'>
+		Duplicate
+		</button>
+		<button class='archive btn'>
+		<$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive<$ } $>
+		</button>
+		<div class='clear'></div>
+		<$ } $>
+		</div>
+		</div>
+		</div>
+		</script>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -11854,6 +11986,66 @@ function initHTMLroll20EditorsMisc () {
         <button class='deletecard btn btn-danger'>Delete Card</button>
       </div>
     </script>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.macroEditor = `
+		<script id="tmpl_macroeditor" type="text/html">
+		<div>
+		<label>
+		Name
+		<span style='color: #777;'> (Don't include the <code>#</code> or spaces in the name)</span>
+		</label>
+		<input class='name' type='text'>
+		<div class='clear'></div>
+		<!-- BEGIN MOD -->
+		<label>
+		Actions
+		<span class='actionhelp r20' style='color: #777;'>&nbsp;(One command/roll per line)</span>
+		<span class='actionhelp js' style='color: #777;'>&nbsp;(Regular javascript commands)</span>
+		</label>
+		<textarea class='macro tokenizer' style='width: 100%; min-height: 75px; margin-top: 5px;'></textarea>
+		<div class='clear'></div>
+		<div class='btn testmacro' style='float: right;'>Test Macro</div>
+		<p class='commandhelp r20' style='color: #777;'>
+		Type <code>@</code> to insert variables from Characters
+		<br>
+		Type <code>#</code> to insert other macros
+		</p>
+		<p class='commandhelp js' style='color: #777;'>
+		JS <code>strict</code> mode directive is enabled
+		<br>
+		JS <code>#macro</code> can't be nested in other macros
+		<br>
+		Type <code>return</code> to output results to chat
+		</p>
+		<div class='clear'></div>
+		<label>
+		<input class='isjs' style='margin-right: 10px;' type='checkbox' value='1'>Execute as JS userscript</input>
+		</label>
+		<!-- END MOD -->
+		<label>
+		<input class='istokenaction' style='margin-right: 10px;' type='checkbox' value='1'>Show as Token Action?</input>
+		</label>
+		<div class='clear' style='height: 15px;'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		Visible To Players
+		<span style='color: #777;'>(Optional)</span>
+		</label>
+		<select class='visibleto chosen' multiple='true' style='width: 100%;'>
+		<option value='all'>All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<$ } $>
+		<button class='btn btn-danger delete'>Delete Macro</button>
+		</div>
+		</script>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -12526,21 +12718,51 @@ function d20plusEngine () {
 				$(`#editinglayer .choosegmlayer`).after(`
 					<li class="choosewalls">
 						<span class="pictostwo">r</span> 
-						${d20plus.cfg.get("canvas", "showLight") ? __("ui_bar_light_n_barriers") : __("ui_bar_barriers")}
+						${__("ui_bar_barriers")}
 					</li>
 				`);
 			}
 
-			// add light placement tool
-			if (d20plus.cfg.get("canvas", "showLight")) {
-				if (!$(`#placelight`).length) {
-					const $torchMode = $(`<li class="placelight" tip="Place Light"><span class="pictostwo">t</span></li>`);
-					$torchMode.on("click", () => {
-						d20plus.setMode("placelight");
-						$torchMode.addClass("activebutton");
-					});
-					$(`#measure`).after($torchMode);
-				}
+			// add DL objects tool
+			if (!$(`#placelight`).length) {
+				const $placeControl = $(`<li id="placeObject">
+					<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+					<use href="#place-object-icon"></use>
+					</svg>
+					<div class="submenu"><ul>
+						<li id="placelight" tip="Place Light">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#torch-icon"></use>
+							</svg>
+							Place Light
+						</li>
+						<li id="placeWindow">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#window-icon"></use>
+							</svg>
+							Place Window
+						</li>
+						<li id="placeDoor">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#door-icon"></use>
+							</svg>
+							Place Door
+						</li>
+					</ul></div>
+				</li>`);
+				$placeControl.find(`#placelight`).on("click", () => {
+					d20plus.setMode("placelight");
+					$placeControl.addClass("activebutton");
+				});
+				$placeControl.find(`#placeWindow`).on("click", () => {
+					d20plus.setMode("placeWindow");
+					$placeControl.addClass("activebutton");
+				});
+				$placeControl.find(`#placeDoor`).on("click", () => {
+					d20plus.setMode("placeDoor");
+					$placeControl.addClass("activebutton");
+				});
+				$(`#measure`).after($placeControl);
 			}
 
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
@@ -12580,6 +12802,7 @@ function d20plusEngine () {
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		$("#tmpl_macroeditor").html($(d20plus.html.macroEditor).html());
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
 		// show dynamic lighting/etc page settings
@@ -12688,6 +12911,70 @@ function d20plusEngine () {
 			d20plus.engine._updateCustomOptions();
 		});
 	};
+
+	d20plus.engine.enhanceMacros = () => {
+		const $dialog = $(`.dialog[data-macroid=${d20plus.engine._lastOpenedMacroId}]`);
+		if (!d20plus.engine._lastOpenedMacroId || !$dialog[0]) return;
+		const $macro = $dialog.find(`.macro.tokenizer`);
+		const $name = $dialog.find("input.name");
+		const $checkbox = $dialog.find(".isjs")
+			.on("change", (evt) => {
+				if ($(evt.target).prop("checked")) $macro.parent().addClass("jsdialog");
+				else $macro.parent().removeClass("jsdialog");
+			});
+		const script = d20plus.engine.decodeScript($macro.val());
+		if (script) {
+			$macro.parent().addClass("jsdialog");
+			$macro.val(script);
+			$checkbox.prop("checked", true);
+		}
+		$dialog.find(".btn.testmacro").on("click", () => {
+			if (!$checkbox.prop("checked")) return;
+			const script = $macro.val();
+			$macro.val(d20plus.engine.runScript(script));
+			setTimeout(() => $macro.val(script), 100);
+		});
+		const $buttons = $dialog.parent()
+			.find(".ui-dialog-buttonpane button:not(.active)")
+			.addClass("active");
+		$buttons.on("mouseup", (evt) => {
+			if (!$name.val()) {
+				let i = 0;
+				while (d20plus.ut.getMacroByName(`Untitled${i}`)) i++;
+				$name.val(`Untitled${i}`);
+			}
+			if (!$checkbox.prop("checked") || evt.which !== 1) return;
+			$macro.val(d20plus.engine.encodeScript($macro.val()));
+		});
+	}
+
+	d20plus.engine.decodeScript = (macro) => {
+		const parts = macro.split("...");
+		if (parts.length !== 3
+			|| parts[0] !== "bs``<``"
+			|| parts[2] !== "``>``") return;
+		const script = decodeURIComponent(atob(parts[1]));
+		return script;
+	}
+
+	d20plus.engine.encodeScript = (script) => {
+		const saved = btoa(encodeURIComponent(script));
+		return `bs\`\`<\`\`...${saved}...\`\`>\`\``;
+	}
+
+	d20plus.engine.runScript = (script) => {
+		const vuln = /\b(XMLHttpRequest|eval|Function|document|window|Window)\b/g;
+		const insecure = script.replace(vuln, str => str.replace("o", "о").replace("e", "е"));
+		const toRun = `"use ${"strict"}";\n${insecure}`;
+		try {
+			// eslint-disable-next-line no-new-func
+			return Function(toRun)() || "";
+		} catch (e) {
+			d20plus.ut.sendHackerChat(`Script executed with errors`, true);
+			d20plus.ut.error(e);
+			return "";
+		}
+	}
 
 	d20plus.engine.enhancePageSettings = () => {
 		if (!d20plus.engine._lastSettingsPageId) return;
@@ -13006,9 +13293,9 @@ function d20plusEngine () {
 			token.character.attribs.fetching = true;
 		} else if (token.character.attribs.length) {
 			if (token.character.attribs.fetching) delete token.character.attribs.fetching;
-			const attr = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
-			if (attr) {
-				if (attr.attributes.current === "0") return true;
+			const attrib = token.character.attribs.models.find(atrib => atrib.attributes.name === "npc");
+			if (attrib) {
+				if (attrib.attributes.current === "0") return true;
 				else return false;
 			}
 		}
@@ -13024,45 +13311,79 @@ function d20plusEngine () {
 		})
 	} */
 
-	d20plus.engine.expendResources = (expend) => {
+	d20plus.engine.expendResources = async (expend) => {
 		const character = d20.Campaign.characters._byId[expend.charID];
 		if (!character || !character?.currentPlayerControls()) return;
-		const fetching = d20plus.ut.charFetchAndRetry({
-			char: character,
-			params: [expend],
-			callback: d20plus.engine.expendResources,
-		});
-		if (fetching) return;
+		const fetched = await d20plus.ut.fetchCharAttribs(character);
+		if (!fetched) return;
+		const getAttribVal = () => {
+			const vals = {
+				spell: {cur: "expended", id: `lvl${expend.lvl}_slots`},
+				resource: {cur: "current", link: "itemid", id: `${expend.res}_resource`},
+				repeated: {cur: "current", link: "itemid", exp: /repeating_resource_(.*?)_resource_(?<pos>right|left)_name/},
+				item: {cur: "itemcount", link: "itemresourceid", exp: /repeating_inventory_(.*?)_itemname/},
+			}[expend.type];
+			vals.id = vals.id || character.attribs?.models
+				?.find(prop => prop?.attributes?.current === expend.name && prop?.attributes?.name.match(vals.exp))
+				?.attributes.name.replace(/_(name|itemname)$/, "");
+			return vals;
+		};
+		d20plus.ut.log(expend);
 		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
 		const characterName = character.get("name");
-		const changedAtName = `lvl${expend.lvl}_slots_expended`;
-		const attrib = {ref: d20plus.ut.getCharAttribByName(character, changedAtName)};
-		if (!attrib.ref) return;
-		attrib.current = attrib.ref.get("current");
-		expend.amt = expend.amt || 1;
-		if (isNaN(attrib.current)) return;
-		if (expend.restore !== undefined) {
-			attrib.ref.save({current: expend.restore});
-			attrib.author = `${playerName} restored lvl${expend.lvl} slot`;
-			attrib.msg = `/w "${characterName}" ${characterName} has ${expend.restore} lvl${expend.lvl} slots again`;
-		} else if (attrib.current - expend.amt >= 0) {
-			attrib.new = attrib.current - expend.amt;
-			attrib.ref.save({current: attrib.new});
-			attrib.undo = {...expend}; attrib.undo.restore = attrib.current;
-			attrib.msg = `/w "${characterName}" ${characterName} now has ${attrib.new} lvl${expend.lvl} slots left`;
-		} else {
-			attrib.msg = `/w "${characterName}" ${characterName} already had no lvl${expend.lvl} slots`;
+		const refs = getAttribVal();
+		const attrib = d20plus.ut.getCharMetaAttribByName(character, refs.id);
+		if (!attrib) return;
+		const syncWeight = (ref) => {
+			const ignNonequipped = !!d20plus.ut.getCharAttribByName(character, "ingore_non_equipped_weight")?.attributes.current;
+			const isAccounted = (!ignNonequipped || ref.equipped !== "0") && ref.itemweight > 0;
+			if (!isAccounted) return;
+			const totalWeight = d20plus.ut.getCharAttribByName(character, "weighttotal");
+			if (!totalWeight?.attributes.current) return;
+			const weightDelta = ((expend.restore || attrib._new) - attrib._cur) * ref.itemweight;
+			const weightResult = totalWeight.attributes.current + weightDelta;
+			totalWeight.save({current: weightResult});
 		}
-		const author = `${playerName} tried using lvl${expend.lvl} slot`;
-		const transport = {type: "automation", author};
-		if (expend.restore) transport.author = `${playerName} restored lvl${expend.lvl} slots`;
-		else transport.author = `${playerName} tried using lvl${expend.lvl} slot`;
-		if (attrib.undo) transport.undo = attrib.undo;
-		d20.textchat.doChatInput(attrib.msg, undefined, transport);
+		const syncSheet = () => {
+			if (attrib.itemweight) syncWeight(attrib);
+			if (!refs.link || !attrib[refs.link]) return;
+			const toSync = d20plus.ut.getCharMetaAttribByName(character, attrib[refs.link], true);
+			const toSyncRef = toSync?._ref?.current || toSync?._ref?.itemcount;
+			toSyncRef?.save({current: expend.restore || attrib._new});
+			if (toSync?.itemweight) syncWeight(toSync);
+		}
+		const getMsgText = () => {
+			if (expend.type === "spell") return `lvl${expend.lvl} slots`;
+			else if (expend.name) return `of ${expend.name}`;
+			else if (attrib.name) return `of ${attrib.name}`;
+			else return `class resource`;
+		};
+		expend.amt = expend.amt || 1;
+		attrib._cur = attrib[refs.cur];
+		d20plus.ut.log(attrib);
+		if (isNaN(attrib._cur)) return;
+		if (expend.restore !== undefined) {
+			attrib._ref[refs.cur].save({current: expend.restore});
+			attrib._msg = `/w "${characterName}" ${characterName} has ${expend.restore} ${getMsgText()} again`;
+			syncSheet();
+		} else if (attrib._cur - expend.amt >= 0) {
+			attrib._new = attrib._cur - expend.amt;
+			attrib._ref[refs.cur].save({current: attrib._new});
+			attrib._undo = {...expend}; attrib._undo.restore = attrib._cur;
+			attrib._msg = `/w "${characterName}" ${characterName} now has ${attrib._new} ${getMsgText()} left`;
+			syncSheet();
+		} else {
+			attrib._msg = `/w "${characterName}" ${characterName} already had zero ${getMsgText()}`;
+		}
+		const transport = {type: "automation"};
+		if (expend.restore) transport.author = `${playerName} restored some ${getMsgText()}`;
+		else transport.author = `${playerName} tried using ${expend.amt} ${getMsgText()}`;
+		if (attrib._undo) transport.undo = attrib._undo;
+		d20.textchat.doChatInput(attrib._msg, undefined, transport);
 	}
 
-	d20plus.engine.alterTokensHP = (alter) => { // dmg, selected) => {
-		const barID = Number(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"));
+	d20plus.engine.alterTokensHP = (alter) => {
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
 		const bar = {
 			val: `bar${barID}_value`,
 			link: `bar${barID}_link`,
@@ -13087,11 +13408,11 @@ function d20plusEngine () {
 		const transport = {type: "automation", author};
 		const targets = alter.targets || d20.engine.selected();
 		d20.engine.unselect();
-		targets.forEach(token => {
+		targets.forEach(async token => {
 			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
 			else if (token.model) token = token.model;
 			const hp = calcHP(token);
-			if (!hp) return;
+			if (!hp) return d20plus.ut.sendHackerChat("You have to select proper token bar in the settings", true);
 			if (!token.currentPlayerControls()) return;
 			if (alter.restore !== undefined) hp.new = alter.restore;
 			const barLinked = token.get(bar.link);
@@ -13099,12 +13420,8 @@ function d20plusEngine () {
 			if (barLinked) {
 				if (!token.character?.currentPlayerControls()) return;
 				const charID = token.character?.id;
-				const fetching = d20plus.ut.charFetchAndRetry({
-					char: token.character,
-					params: [{dmg: alter.dmg, targets: [token]}],
-					callback: d20plus.engine.alterTokensHP,
-				});
-				if (!fetching && charID) {
+				const fetched = await d20plus.ut.fetchCharAttribs(token.character);
+				if (fetched && charID) {
 					const attrib = token.character.attribs.get(barLinked);
 					const charName = token.character.get("name");
 					attrib.save({current: hp.new});
@@ -13130,6 +13447,7 @@ function d20plusEngine () {
 	}// RB20 EXCLUDE END
 
 	d20plus.engine.addLineCutterTool = () => {
+		// The code in /overwrites/canvas-handler.js doesn't work
 		const $btnTextTool = $(`.choosetext`);
 
 		const $btnSplitTool = $(`<li class="choosesplitter">✂️ Line Splitter</li>`).click(() => {
@@ -15965,8 +16283,8 @@ function baseCss () {
 		},
 		// "old style" system messages
 		{
-			s: ".userscript-hacker-chat",
-			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);",
+			s: ".userscript-hacker-chat, .hacker-chat",
+			r: "margin-left: -45px; margin-right: -5px; margin-bottom: -7px; margin-top: -15px; display: inline-block; font-weight: bold; font-family: 'Lucida Console', Monaco, monospace; color: #20C20E; background: black; padding: 3px; min-width: calc(100% + 60px);box-sizing: border-box;",
 		},
 		{
 			s: ".userscript-hacker-chat a",
@@ -16427,6 +16745,19 @@ function baseCss () {
 			s: `#page-toolbar`,
 			r: `display: block;`,
 		},
+		// Macro editor styles
+		{
+			s: `.jsdialog .actionhelp.r20, .jsdialog .commandhelp.r20`,
+			r: `display: none;`,
+		},
+		{
+			s: `.jsdialog .actionhelp.js, .jsdialog .commandhelp.js`,
+			r: `display: inline-block;`,
+		},
+		{
+			s: `.actionhelp.js, .commandhelp.js`,
+			r: `display: none;`,
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
@@ -16513,6 +16844,10 @@ function baseCss () {
 		{
 			s: ".inlinerollresult.showtip.hit-dice",
 			r: "cursor: pointer",
+		},
+		{
+			s: ".inlinerollresult.showtip.hit-dice.heal-dice::before",
+			r: "content: \"+\"",
 		},
 		{
 			s: ".inlinerollresult.showtip.hit-dice:hover::after",
@@ -17629,7 +17964,9 @@ function d20plusMod () {
 			$("#floatingtoolbar").trigger("blur");
 		}
 		// END MOD
-		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
+		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#babylonCanvas').addClass('torch-cursor')) : $('#babylonCanvas').removeClass('torch-cursor'),
+		'placeWindow' === e ? ($('#placeWindow').addClass('activebutton'), $('#babylonCanvas').addClass('window-cursor')) : $('#babylonCanvas').removeClass('window-cursor'),
+		'placeDoor' === e ? ($('#placeDoor').addClass('activebutton'), $('#babylonCanvas').addClass('door-cursor')) : $('#babylonCanvas').removeClass('door-cursor'),
 		d20.engine.redrawScreenNextTick()
 	};
 	// END ROLL20 CODE
@@ -20857,7 +21194,7 @@ function baseChatLanguages () {
 				"zwatan"
 			],
 			"particles": [],
-			"alias": [],
+			"alias": ["deep speech"],
 			"factor": 0
 		},
 		"infernal": {
@@ -21991,7 +22328,7 @@ function baseChat () {
 		const particle = { left: false };
 		const words = string.toLowerCase().match(/(--\p{L}+|\p{L}+)/gu);
 		if (words === null) return "";
-		if (incompetent) words.sort(() => Math.random() - 0.5);
+		if (incompetent) words.shuffle();
 
 		const calcIndex = (word) => {
 			return Array.from(`${word}`).reduce((index, letter) =>
@@ -22031,7 +22368,11 @@ function baseChat () {
 	function availableLanguages (charId) {
 		const char = d20.Campaign.characters.get(charId);
 		const langId = d20.journal.customSheets.availableAttributes.repeating_proficiencies_prof_type;
-		if (d20plus.ut.charFetchAndRetry({char, callback: d20plus.chat.refreshLanguages})) return [];
+		if (!char) return [];
+		if (!char.attribs.length) {
+			const fetched = d20plus.ut.fetchCharAttribs(char);
+			fetched.then(d20plus.chat.refreshLanguages);
+		}
 		// roll20 OGL sheet stores languages differently compared to other traits
 		// by default, they don't have corresponging "proficiency type" attribute
 		// however, if you create a trait and THEN change it to be language, it will have LOCALIZED "language" proficiency type
@@ -22062,15 +22403,18 @@ function baseChat () {
 				return actors.includes(playerId);
 			})
 			.map(char => char.id);
-		return characters.map(char => availableLanguages(char)).flatten();
+		return characters
+			.map(charId => availableLanguages(charId))
+			.flatten();
 	}
 
 	function hasLanguageProficiency (langId) {
-		const profecientIn = availableLanguagesPlayer(d20_player_id).map(lang => d20plus.chat.getLanguageId(lang));
-		return profecientIn.includes(d20plus.chat.getLanguageId(langId));
+		const proficientIn = availableLanguagesPlayer(d20_player_id)
+			.map(lang => d20plus.chat.getLanguageId(lang));
+		return proficientIn.includes(d20plus.chat.getLanguageId(langId));
 	}
 
-	d20plus.chat.getSpeakingIn = (available) => {
+	d20plus.chat.listSpeakingIn = (available) => {
 		$("#speakingin").html(available
 			.map(lang => lang.toSentenceCase())
 			.reduce((html, lang) => `${html}<option>${lang}</option>`, "<option></option>"),
@@ -22090,29 +22434,31 @@ function baseChat () {
 		if (actorIsPlayer) {
 			if (window.is_gm) {
 				const prev = $speakingIn.val();
-				d20plus.chat.getSpeakingIn(Object.keys(languages)
+				d20plus.chat.listSpeakingIn(Object.keys(languages)
 					.filter(lang => !lang.includes("fake"))
 					.map(lang => languages[lang].title));
 				$speakingIn.val(prev);
 			} else {
-				d20plus.chat.getSpeakingIn([]);
+				d20plus.chat.listSpeakingIn([]);
 				$speakingIn.val("<option></option>");
 			}
 		} else {
 			const prev = $speakingIn.val();
-			d20plus.chat.getSpeakingIn(availableLanguages(actorId));
+			const langs = availableLanguages(actorId);
+			d20plus.chat.listSpeakingIn(langs);
 			$speakingIn.val(prev);
 		}
 	}
 
 	d20plus.chat.availableAddressees = () => {
 		const players = d20.Campaign.players.models
-			.filter(player => { return player.attributes.online && player.attributes.id !== d20_player_id; })
+			.filter(player => player.attributes.online && player.attributes.id !== d20_player_id)
 			.map(player => ({name: player.attributes.displayname, id: player.attributes.id}));
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
+				if (!char.attributes.inplayerjournals) return false;
 				const actors = char.attributes.controlledby.split(",");
-				return actors.some(actor => { return actor && players.map(player => player.id).includes(actor); })
+				return actors.some(actor => actor && players.map(player => player.id).includes(actor))
 			})
 			.map(char => ({name: char.attributes.name}));
 		return players.concat(characters);
@@ -22201,42 +22547,174 @@ function baseChat () {
 			</label>
 	`;
 
+	const removeClassUserscript = (html) => {
+		return html.replace(/class="(?<class>[^""]*)"/g, (...str) => {
+			const cls = str.last().class;
+			return `class="${cls.replaceAll("userscript-", "")}"`
+		});
+	};
+
 	const chatHelp = [
-		["/w (name)", __("msg_chat_help_w")],
-		["/w gm", __("msg_chat_help_wgm")],
-		["/wb", __("msg_chat_help_wb"), "b20"],
-		["/ws", __("msg_chat_help_ws"), "b20"],
-		["/em, /me", __("msg_chat_help_em")],
-		["/in (language)", __("msg_chat_help_in"), "b20"],
-		["--(word)", __("msg_chat_help_inname"), "b20"],
-		// ["/cl on|off", __("msg_chat_help_cl"), "b20"],
-		["/talktomyself", __("msg_chat_help_sm")],
-		["/ttms", __("msg_chat_help_ttms"), "b20"],
-		["/mtms (text)", __("msg_chat_help_mtms"), "b20"],
-		["/ooc, /o", __("msg_chat_help_ooc")],
-		["/roll, /r (XdY)", __("msg_chat_help_r")],
-		["/gmroll, /gr (XdY)", __("msg_chat_help_gr")],
-		["/desc", __("msg_chat_help_desc"), null, "gm"],
-		["/as (name)", __("msg_chat_help_as"), null, "gm"],
-		["/emas (name)", __("msg_chat_help_emas"), null, "gm"],
-		["/v (name)", __("msg_chat_help_versions"), "b20", "gm"],
-		["&#42;(text)&#42;", __("msg_chat_help_fi")],
-		["&#42;&#42;(text)&#42;&#42;", __("msg_chat_help_fb")],
-		["&#96;&#96;(text)&#96;&#96;", __("msg_chat_help_fc")],
-		["&#126;&#126;(text)&#126;&#126;", __("msg_chat_help_fs")],
-		["/fx (params)", __("msg_chat_help_fx")],
-		["#(macro)", __("msg_chat_help_m")],
-		["/help", __("msg_chat_help"), "b20"],
-		["", "<a style=\"font-variant: diagonal-fractions; font-size: smaller; font-variant-caps: small-caps;\" href=\"https://wiki.roll20.net/Text_Chat\">roll20 wiki</a>"],
+		{
+			code: "/w %%",
+			descr: __("msg_chat_help_w"),
+			param: "name",
+			tip: "Name of a player or a character, put in quotation marks if it contains spaces",
+		},
+		{
+			code: "/w gm",
+			descr: __("msg_chat_help_wgm"),
+		},
+		{
+			code: "/wb",
+			descr: __("msg_chat_help_wb"),
+			b20: true,
+		},
+		{
+			code: "/ws",
+			descr: __("msg_chat_help_ws"),
+			b20: true,
+			gm: true,
+		},
+		{
+			code: "/v %%",
+			descr: __("msg_chat_help_versions"),
+			param: "name",
+			tip: "Name of a player that you want to get version info from, put in quotation marks if it contains spaces",
+			b20: true,
+			gm: true,
+		},
+		{
+			code: "/em, /me",
+			descr: __("msg_chat_help_em"),
+		},
+		{
+			code: "/ooc, /o",
+			descr: __("msg_chat_help_ooc"),
+		},
+		{
+			code: "/desc",
+			descr: __("msg_chat_help_desc"),
+			gm: true,
+		},
+		{
+			code: "/as %%",
+			descr: __("msg_chat_help_as"),
+			param: "name",
+			tip: "Name of the personified character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/emas %%",
+			descr: __("msg_chat_help_emas"),
+			param: "name",
+			tip: "Name of the described character, put in quotation marks if it contains spaces",
+			gm: true,
+		},
+		{
+			code: "/in %%",
+			descr: __("msg_chat_help_in"),
+			param: "language",
+			tip: "Name of a language that you know, put in quotation marks if it contains spaces",
+			b20: true,
+		},
+		{
+			code: "--%%",
+			descr: __("msg_chat_help_inname"),
+			param: "word",
+			tip: "Any single word inside in-language text that you want to keep from being translated, without spaces or hyphens",
+			b20: true,
+		},
+		{
+			code: "/talktomyself",
+			descr: __("msg_chat_help_sm"),
+		},
+		{
+			code: "/ttms",
+			descr: __("msg_chat_help_ttms"),
+			b20: true,
+		},
+		{
+			code: "/mtms %%",
+			descr: __("msg_chat_help_mtms"),
+			param: "commands",
+			tip: "Set of commands, separated by line breaks, to be executed in /ttms mode",
+			b20: true,
+		},
+		{
+			code: "/roll, /r %%",
+			descr: __("msg_chat_help_r"),
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5",
+		},
+		{
+			code: "/gmroll, /gr %%",
+			descr: __("msg_chat_help_gr"),
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5, the result of which will be visible only to GM",
+		},
+		{
+			code: "[[%%]]",
+			descr: __("msg_chat_help_il"),
+			param: "XdY",
+			tip: "Dice roll formula, like 1d20 +5, to be shown inside any other text",
+		},
+		{
+			code: "&#42;%%&#42;",
+			descr: __("msg_chat_help_fi"),
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#42;&#42;%%&#42;&#42;",
+			descr: __("msg_chat_help_fb"),
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#96;&#96;%%&#96;&#96;",
+			descr: __("msg_chat_help_fc"),
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "&#126;&#126;%%&#126;&#126;",
+			descr: __("msg_chat_help_fs"),
+			param: "text",
+			tip: "Any formatted text without line breaks",
+		},
+		{
+			code: "/fx %%",
+			descr: __("msg_chat_help_fx"),
+			param: "effect",
+			tip: "Effect parameters, using the following syntax: Type&#8209;Color&nbsp;SourceID&nbsp;[TargetID]",
+		},
+		{
+			code: "#%%",
+			descr: __("msg_chat_help_m"),
+			param: "macro",
+			tip: "Name of the macro to be executed",
+		},
+		{
+			code: "/help",
+			descr: __("msg_chat_help"),
+			b20: true,
+		},
+		{
+			code: "",
+			descr: "<a style=\"font-variant: diagonal-fractions; font-size: smaller; font-variant-caps: small-caps;\" href=\"https://wiki.roll20.net/Text_Chat\">roll20 wiki</a>",
+		},
 	];
 
 	d20plus.chat.help = (text, msg) => {
-		d20plus.ut.sendHackerChat(chatHelp.reduce((html, string) => {
-			const isb20 = string[2] === "b20" ? "&#42;" : "";
-			const code = string[0] ? `<code>${string[0]}</code>${isb20}` : "&nbsp;";
-			const gmcheck = string[3] !== "gm" || window.is_gm;
-			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || string[0].search(/(in \(language\))|(-\(word\))/) === -1;
-			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${string[1]}</span>`;
+		d20plus.chat.modifyMsg(null, {legalize: true, sys: true});
+		d20plus.ut.sendHackerChat(chatHelp.reduce((html, it) => {
+			const isb20 = it.b20 ? `<span class="showtip tipsy-n-right" style="cursor:help;font-weight: bold;" title="This command was added by betteR20">&#42;</span>` : "";
+			const param = it.param ? `<span class="showtip tipsy-n-right" style="background: rgba(206, 96, 96, 0.3);" title="${it.tip}">${it.param}</span>` : "";
+			const code = it.code ? `<code>${it.code.replace("%%", param)}</code>${isb20}` : "&nbsp;";
+			const gmcheck = !it.gm || window.is_gm;
+			const langcheck = d20plus.cfg.getOrDefault("chat", "languages") || it.code.search(/^\/in|^--/) === -1;
+			if (gmcheck && langcheck) return `${html}<br>${code}<span style="float:right"> ${it.descr}</span>`;
 			return html;
 		}, __("msg_b20_chat_help_title")));
 		return "";
@@ -22252,6 +22730,9 @@ function baseChat () {
 		const actions = {
 			hp: {title: "Revert damage", icon: "r", callback: d20plus.engine.alterTokensHP},
 			spell: {title: "Revert spell slots", icon: "r", callback: d20plus.engine.expendResources},
+			item: {title: "Revert item usage", icon: "r", callback: d20plus.engine.expendResources},
+			resource: {title: "Revert spending resources", icon: "r", callback: d20plus.engine.expendResources},
+			repeated: {title: "Revert spending resources", icon: "r", callback: d20plus.engine.expendResources},
 			request: {title: "Request script info", icon: "?", callback: d20plus.chat.requestScriptVersions},
 		}[action.type];
 		d20plus.chat.actions[id] = Object.assign({params: action}, actions);
@@ -22278,19 +22759,20 @@ function baseChat () {
 	}
 
 	d20plus.chat.modifyMsg = (id, mod) => {
+		id = id || d20plus.ut.generateRowId();
 		d20plus.chat.modify = d20plus.chat.modify || {};
 		d20plus.chat.modify[id] = d20plus.chat.modify[id] || {};
 		Object.assign(d20plus.chat.modify[id], mod);
 	}
 
 	d20plus.chat.checkTTMSStatus = () => {
-		$notifier = $("#textchat-notifier");
+		const $speakingTo = $("#speakingto");
 		if (d20.textchat.talktomyself) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) $("#textchat-input").addClass("talkingtoself");
-			$("#speakingto").val("ttms");
+			$speakingTo.val("ttms");
 		} else {
 			$("#textchat-input").removeClass("talkingtoself");
-			if ($("#speakingto").val() === "ttms") $("#speakingto").val("");
+			if ($speakingTo.val() === "ttms") $speakingTo.val("");
 		}
 	}
 
@@ -22348,8 +22830,9 @@ function baseChat () {
 	}
 
 	d20plus.chat.getSpeakingTo = () => {
-		const prev = $("#speakingto").val();
-		$("#speakingto").html((() => {
+		const $speakingTo = $("#speakingto");
+		const prev = $speakingTo.val();
+		$speakingTo.html((() => {
 			return d20plus.chat.availableAddressees().reduce((result, addressee) => {
 				const icon = addressee.id ? "🗣" : "⚑";
 				const option = `${icon} ${addressee.name}`;
@@ -22358,7 +22841,7 @@ function baseChat () {
 				return result;
 			}, `<option value="">All</option><option value="ttms">None</option>`);
 		})());
-		$("#speakingto").val(prev);
+		$speakingTo.val(prev);
 	}
 
 	addConfigOptions(
@@ -22386,26 +22869,47 @@ function baseChat () {
 				"_type": "boolean",
 				"_player": true,
 			}, // RB20 EXCLUDE START
-			"shareVersions": {
+			/* "shareVersions": {
 				"name": __("cfg_option_share_version_info"),
 				"default": true,
 				"_type": "boolean",
 				"_player": true,
+			}, */
+			"autoExpend": {
+				"name": "Expend spell slots & class resources",
+				"default": "b20",
+				"_type": "_enum",
+				"__values": ["none", "b20", "auto", "debug"],
+				"__texts": ["disabled", "only b20 expressions", "b20 expressions and OGL attack templates", "debug mode (not for actual game!)"],
+				"_player": true,
 			},
-			"clickRollForDmg": {
-				"name": "Process and apply dice rolls to HP bar#",
+			"autoDmg": {
+				"name": "Apply damage and attack rolls",
+				"default": "b20mods",
+				"_type": "_enum",
+				"__values": ["none", "b20", "b20mods", "auto", "debug"],
+				"__texts": ["disabled", "only b20 expressions", "use b20 expressions & suggest actions for every roll", "b20 expressions and OGL attack templates", "debug mode (not for actual game!)"],
+				"_player": true,
+			},
+			"dmgTokenBar": {
+				"name": "Token bar to apply HP changes to",
 				"default": "3",
 				"_type": "_enum",
-				"__values": ["disable", "1", "2", "3"],
-				"_player": true,
-			},
-			"expendSlots": {
-				"name": "Expend spell slots & class resources",
-				"default": "only b20 expressions",
-				"_type": "_enum",
-				"__values": ["disable", "automatic from OGL templates", "only b20 expressions"],
+				"__values": ["1", "2", "3"],
 				"_player": true,
 			}, // RB20 EXCLUDE END
+			"executeJSMacro": {
+				"name": "Execute JS script in macros",
+				"default": "own",
+				"_type": "_enum",
+				"__values": ["none", "own", "all"],
+				"__texts": [
+					"disabled",
+					"run your own scripts",
+					"run all scripts (only enable this if you trust your GM!)",
+				],
+				"_player": true,
+			},
 		},
 	);
 
@@ -22458,300 +22962,21 @@ function baseChat () {
 	}
 
 	d20plus.chat.resetSocial = () => {
-		if (!d20.textchat.talktomyself) $("#speakingto").val("");
 		$("#speakingin").val("");
-		$("#textchat-social-notifier").removeClass("b20-in");
-		$("#textchat-social-notifier").removeClass("b20-to");
+		if (!d20.textchat.talktomyself) $("#speakingto").val("");
+		$("#textchat-social-notifier").removeClass("b20-in b20-to");
+		d20plus.chat.closeSocial();
 	}
 
 	d20plus.chat.resetTTMS = () => {
 		$("#speakingto").val("");
+		d20plus.chat.closeSocial();
 		d20plus.chat.onSpeakingTo();
 	}
 
 	d20plus.chat.closeSocial = () => {
-		const $inputContainer = $("#textchat-input");
 		d20plus.chat.social = false;
-		$inputContainer.removeClass("social-resized");
-		$inputContainer.removeClass("social-default");
-	}
-
-	d20plus.chat.processPlayersList = (changelist) => {
-		if (!d20plus.chat.players) d20plus.chat.players = {};
-		d20.Campaign.players.models.forEach(current => {
-			const player = {
-				on: current.attributes.online,
-				name: current.attributes.displayname,
-			};
-			let notification = false;
-			player.name = player.name.length > 17 ? `${player.name.slice(0, 15)}...` : player.name;
-			if (!d20plus.chat.players[current.id]) {
-				d20plus.chat.players[current.id] = { online: player.on };
-				notification = __("msg_player_joined");
-			} else {
-				if (d20plus.chat.players[current.id].online && !player.on) {
-					notification = __("msg_player_disconnected");
-					d20plus.chat.players[current.id].online = false;
-				} else if (!d20plus.chat.players[current.id].online && player.on) {
-					notification = __("msg_player_connected");
-					d20plus.chat.players[current.id].online = true;
-				}
-			}
-			if (changelist && notification && d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) {
-				const id = d20plus.ut.generateRowId();
-				d20plus.chat.modifyMsg(id, {class: "system connect", decolon: true});
-				if (!player.on) d20plus.chat.modifyMsg(id, {class: "system disconnect"});
-				if (player.on) d20plus.chat.modifyMsg(id, {action: {type: "request", name: player.name}});
-				d20.textchat.incoming(false, { id,
-					type: "general",
-					who: `${player.on ? "" : "&nbsp;"}${player.name}`,
-					avatar: `/users/avatar/${current.attributes.d20userid}/30`,
-					content: `${notification}`,
-				});
-			}
-		})
-	}
-
-	d20plus.chat.processIncomingMsg = (msg) => { // RB20 EXCLUDE START
-		const expendSlots = d20plus.cfg.getOrDefault("chat", "expendSlots") !== "disable";
-		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[co\d]?)\|?(?<quantity>\d*)\]/;// RB20 EXCLUDE END
-		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
-			const speech = msg.listenerid;
-			const know_language = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msg.from_me || know_language) {
-				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
-				msg.content += `<br><i title="You understand this because one of your characters speaks ${speech.language}">
-					<strong>(${speech.language})</strong> ${translated}</i>`;
-				d20plus.chat.modifyMsg(msg.id, {class: "inlang"});
-			}
-		} else if (msg.listenerid?.type === "handshake") {
-			if (msg.from_me && !msg.listenerid.data) {
-				msg.content = `script versions info`;
-				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.target)}/30`;
-				d20plus.chat.modifyMsg(msg.id, {class: "system connects", decolon: true, versions: msg.listenerid.id});
-			} else if (msg.from_me && msg.listenerid.data) {
-				return false;
-			} else if (msg.to_me && !msg.listenerid.data) {
-				const name = d20plus.ut.getPlayerNameById(msg.playerid);
-				msg.listenerid.data = d20plus.ut.generateVersionInfo();
-				d20.textchat.doChatInput(`/w "${name}" &nbsp;`, undefined, msg.listenerid);
-				return false;
-			} else if (msg.to_me && msg.listenerid.data) {
-				$(`#connects${msg.listenerid.id}`).html(d20plus.ut.parseVersionInfo(msg.listenerid.data));
-				$(`#connects${msg.listenerid.id}-state`).attr("checked", "true");
-				$(`#connects${msg.listenerid.id}-info`).text("3");
-				return false;
-			}// RB20 EXCLUDE START
-		} else if (msg.listenerid?.type === "automation") {
-			const broadcast = msg.type !== "whisper";
-			if (is_gm || broadcast || msg.to_me) {
-				msg.id = d20plus.ut.generateRowId();
-				msg.who = "b20action";
-				msg.type = "general";
-				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.playerid)}/30`;
-				const span = `class="showtip tipsy-n-right" style="cursor: help;"`;
-				const avatar = `<img src="${msg.avatar}" height="20px" width="20px"> `;
-				d20plus.chat.modifyMsg(msg.id, {class: "action"});
-				if (msg.listenerid.undo && !msg.listenerid.undo.type) return false; // rare case of two windows open in FF
-				if (msg.listenerid.undo) d20plus.chat.modifyMsg(msg.id, {action: msg.listenerid.undo});
-				msg.content = `<span ${span} title='${avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
-			}
-		} else if (msg.from_me && expendSlots) {
-			const expend = {};
-			const oglStandard = {
-				spellLevel: /{{spelllevel=[\w ]*(?<splvl>\d|cantrip)}}/,
-				addLevelDice: /{{hldmg=\$\[\[(?<addlvl>\d)\]\]}}/,
-				charID: /{{spelldesc_link=\[.*\]\(~(?<charid>.*?)\|/,
-			};
-			msg.content = msg.content.replace(b20expend, (...str) => {
-				$(".btn.btn-danger.canceltargeting:visible").click();
-				const data = str.last();
-				if (data.type === "spl" && data.slot) {
-					expend.type = "spell";
-					({slot: expend.lvl, charid: expend.charID} = data);
-				}
-				return "";
-			});
-			if (msg.rolltemplate && msg.inlinerolls && !expend.type) {
-				const data = {};
-				$(".btn.btn-danger.canceltargeting:visible").click();
-				Object.entries(oglStandard).forEach(([param, exp]) => {
-					data[param] = msg.content.match(exp)?.last();
-				});
-				if (data.charID) {
-					expend.lvl = data.spellLevel || 1;
-					expend.charID = data.charID;
-					if (!isNaN(expend.lvl)) expend.type = "spell";
-					if (data.addLevelDice) {
-						const raise = msg.inlinerolls[data.addLevelDice]
-							?.expression.match(/\(\d+\*(?<addlvl>\d)\)/).last();
-						if (!isNaN(raise)) expend.lvl -= -raise;
-					}
-				}
-			}
-			if (expend.type) {
-				msg.id = d20plus.ut.generateRowId(); // this is supposed to trick r20 not to revert msg contents
-				d20plus.engine.expendResources(expend);
-			}
-		} else if (!msg.from_me) {
-			msg.content = msg.content.replace(b20expend, ""); // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
-		}
-		if (d20.textchat.talktomyself && msg.from_me) {
-			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
-		}
-		return true;
-	}
-
-	d20plus.chat.r20outgoing = (params) => {
-		if (!params[2]) {
-			d20plus.chat.resetSendMyself();
-		}// RB20 EXCLUDE START
-
-		if (d20plus.chat.logAll) d20plus.ut.log("OUTGOING!", params);// RB20 EXCLUDE END
-	}
-
-	d20plus.chat.r20incoming = (r20incoming, params) => {
-		const msg = params[1];
-		msg.from_me = msg.playerid === d20_player_id;
-		msg.to_me = msg.target?.includes(d20_player_id);// RB20 EXCLUDE START
-
-		if (d20plus.chat.logAll) {
-			d20plus.ut.log("INCOMING!", Object.assign({
-				p: [params[0], params[2], params[3]]}, msg, {
-				history: d20plus.chat.localHistory}));
-		}// RB20 EXCLUDE END
-
-		// For rolls &  r20 generates duplicate messages that don't show on the log with
-		// params [sound, msg, true, true]. Hence check params[2]&[3] !== true to avoid double processing
-		const skipProcessing = (
-			(params[2] === true && params[3] === true)
-			|| (d20.textchat.chatstartingup)
-		);
-
-		if (msg.from_me || msg.type === "system") {
-			const stash = [];
-			while (d20plus.chat.localHistory.length) {
-				const record = d20plus.chat.localHistory.pop();
-				if (record) {
-					stash.push(record);
-					d20.textchat.commandhistory.pop();
-				}
-			}
-			d20.textchat.commandhistory = d20.textchat.commandhistory.concat(stash);
-		}
-
-		if (msg.type === "whisper" && !skipProcessing) {
-			if (msg.from_me) {
-				d20plus.chat.lastRespondent = msg.target_name;
-			} else if (msg.to_me) {
-				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
-			}
-		}
-
-		if (skipProcessing || d20plus.chat.processIncomingMsg(msg)) {
-			const result = r20incoming(...params);
-			d20plus.chat.displaying();
-			return result;
-		}
-	}
-
-	d20plus.chat.displaying = (params) => { // RB20 EXCLUDE START
-		if (d20plus.chat.logAll) d20plus.ut.log("DISPLAY", params); // RB20 EXCLUDE END
-		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
-			const msg = $(`[data-messageid=${id}]`);
-
-			if (mods.intro) {
-				const code = "<code style='cursor:pointer'>/help</code>";
-				const wiki = "https://wiki.roll20.net/Text_Chat#Chat";
-				const intro = $(".userscript-commandintro ul");
-				if (intro.get(0)) {
-					intro.last().append(__("msg_b20_chat_help", [code, wiki]));
-					delete d20plus.chat.modify[id];
-				}
-			}
-
-			if (msg.get(0)) {
-				if (mods.declass) msg.removeClass(mods.declass);
-				if (mods.class) msg.addClass(mods.class);
-				if (mods.versions) msg.append(playerVersionsTemplate(mods.versions));
-				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
-				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
-				delete d20plus.chat.modify[id];
-			}
-		});
-	}
-
-	d20plus.chat.sending = () => {
-		d20plus.chat.resetSendMyself();
-		const $tc = d20.textchat.$textarea;
-
-		if (d20plus.cfg.getOrDefault("chat", "emoji")) {
-			$tc.val($tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
-				const clean = m1.replace(/:/g, "");
-				return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
-			}));
-		}
-
-		let text = $tc.val();
-		const srcText = text;
-
-		if (d20plus.cfg.getOrDefault("chat", "commands")) {
-			// add custom commands
-			text = text.replace(/^\/wb (.*?)$/gm, d20plus.chat.sendReply);
-			text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
-			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
-			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
-			if (!d20.textchat.talktomyself) text = text.replace(/^\/mtms ?(.*?)$/s, d20plus.chat.sendMyself);
-			if (is_gm) text = text.replace(/^\/v (.*?)$/s, d20plus.chat.requestScriptVersions);
-			if (d20plus.cfg.getOrDefault("chat", "languages")) text = text.replace(/\/in (.*?)$/gm, d20plus.chat.sendParsedInLanguage);// RB20 EXCLUDE START
-			// text = text.replace(/^\/cl (on|off)$/sm, comprehendLanguages);// RB20 EXCLUDE END
-		}
-
-		if (d20plus.cfg.getOrDefault("chat", "social")) {
-			const speakingto = $("#speakingto").val();
-			const speakingin = $("#speakingin").val();
-
-			if (speakingin) {
-				text = text.replace(/^[^/][^{^}]*?$/gm, msg => {
-					return d20plus.chat.sendInLanguage(msg, speakingin);
-				});
-			}
-
-			if (speakingto && speakingto !== "ttms") {
-				text = text.replace(/^([^/]*?)$/mgu, (...str) => {
-					const prepared = str[1].replace(/\/(r|roll) (?<dice>[ \dd+-]*)$/umg, "[[$<dice>]]");
-					return `/w "${speakingto}" ${prepared}`;
-				});
-			}
-		}
-
-		let toSend = $.trim(text);
-		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
-		if ($("#soundslike").get(0)) toSend = "";
-
-		if (toSend.includes("|&inlang|")) {
-			toSend.split("\n").forEach((str, i) => {
-				const data = str.split("|&inlang|");
-				if (data.length === 2) {
-					const msg = data[0];
-					const meta = data[1].split("|&meta|");
-					const transport = {language: meta[0], languageid: meta[1], message: meta[2]};
-					d20.textchat.doChatInput(msg, undefined, transport);
-				} else {
-					d20.textchat.doChatInput(str);
-				}
-			})
-			$tc.val("").focus();
-		} else {
-			d20.textchat.doChatInput(toSend);
-			$tc.val("").focus();
-		}
-
-		if (d20plus.cfg.getOrDefault("chat", "highlightttms")) {
-			if (toSend.includes("/talktomyself")) {
-				setTimeout(() => d20plus.chat.checkTTMSStatus(), 20);
-			}
-		}
+		$("#textchat-input").removeClass("social-resized social-default");
 	}// RB20 EXCLUDE START
 
 	d20plus.chat.parseAOE = ($el) => {
@@ -22793,61 +23018,420 @@ function baseChat () {
 		});
 	}
 
-	d20plus.chat.enhanceRolls = () => {
-		d20.textchat.$textchat
-			.on("mouseover", ".inlinerollresult.showtip", event => {
-				const rollData = /\[(\d*)(?<type>chk|dmg|sdmg|heal)(?<targets>[^\]]*)\]/;
-				const roll = {$el: $(event.target)};
-				if (roll.$el.attr("data-damage")) return;
-				const tooltipsrc = roll.$el.attr("title") || roll.$el.attr("original-title");
-				roll.dmg = roll.$el.text();
-				roll.tooltip = tooltipsrc.replace(rollData, (...parsed) => {
-					Object.assign(roll, parsed.last());
-					roll.$el.attr("data-targets", roll.targets);
-					return "";
-				});
-				if (roll.type === "chk" || isNaN(roll.dmg)) {
-					if (roll.targets) {
-						d20plus.chat.parseAOE(roll.$el);
-						return;
-					}
-					roll.$el.attr("data-damage", "check");
-				} else if (roll.type) {
-					if (roll.targets === "aoe") {
-						d20plus.chat.parseAOE(roll.$el);
-						return;
-					}
-					roll.$el.attr("data-damage", roll.type === "heal" ? -roll.dmg : +roll.dmg);
-					if (roll.targets) roll.tooltip += "<span class=\"hit-dice-tip hit-targeted\"></span>";
-					else roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
-					roll.$el.addClass("hit-dice");
-				} else {
-					roll.$el.attr("data-damage", roll.dmg);
-					roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
-				}
-				roll.$el.attr("title", roll.tooltip);
-			})
-			.on("click", ".inlinerollresult.showtip", event => {
-				const dmg = event.target.getAttribute("data-damage");
-				const dtargets = event.target.getAttribute("data-targets");
-				if (isNaN(dmg) || !dmg) return;
-				if (event.shiftKey) {
-					d20plus.engine.alterTokensHP({dmg: Math.abs(dmg)});
-				} else if (event.ctrlKey) {
-					d20plus.engine.alterTokensHP({dmg: -Math.abs(dmg)});
-				} else if (dtargets) {
-					const targets = dtargets.split("|")
-						.map(targetID => d20plus.ut.getTokenById(targetID))
-						.filter(token => !!token);
-					d20plus.engine.alterTokensHP({dmg, targets});
-				}
-			})
-			.on("mouseover", ".userscript-showtip", event => {
-				const tip = $(event.target);
-				tip.attr("class", tip.attr("class").replace(/userscript-/g, ""));
+	d20plus.chat.processDice = ($msg) => {
+		const dmgCfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
+		const rollData = /\[(\d*)(?<type>chk|dmg|sdmg|heal)(?<targets>[^\]]*)\]/;
+		$msg.find(".inlinerollresult").each((i, el) => {
+			const roll = {$el: $(el)};
+			if (roll.$el.attr("data-damage")) return;
+			const tooltipsrc = roll.$el.attr("title") || roll.$el.attr("original-title");
+			roll.dmg = roll.$el.text();
+			roll.tooltip = tooltipsrc.replace(rollData, (...parsed) => {
+				Object.assign(roll, parsed.last());
+				roll.$el.attr("data-targets", roll.targets);
+				return "";
 			});
+			// d20plus.ut.log("DICE!!!", roll);
+			if (dmgCfg === "none") {
+				if (roll.type) roll.$el.attr("title", roll.tooltip);
+				return;
+			} else if (roll.type === "chk" || isNaN(roll.dmg)) {
+				if (roll.targets.length > 2) {
+					d20plus.chat.parseAOE(roll.$el);
+					return;
+				}
+				roll.$el.attr("data-damage", "check");
+			} else if (roll.type) {
+				if (roll.targets === "aoe") {
+					d20plus.chat.parseAOE(roll.$el);
+					return;
+				}
+				roll.$el.attr("data-damage", roll.type === "heal" ? -roll.dmg : +roll.dmg);
+				if (roll.type === "heal") roll.$el.addClass("heal-dice");
+				if (roll.targets) roll.tooltip += "<span class=\"hit-dice-tip hit-targeted\"></span>";
+				else roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
+				roll.$el.addClass("hit-dice");
+			} else {
+				if (dmgCfg === "b20") return;
+				roll.$el.attr("data-damage", roll.dmg);
+				roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
+				roll.$el.addClass("mod-dice");
+			}
+			roll.$el.attr("title", roll.tooltip);
+		});
+	}// RB20 EXCLUDE END
+
+	d20plus.chat.processPlayersList = (changelist) => {
+		if (!d20plus.chat.players) d20plus.chat.players = {};
+		d20.Campaign.players.models.forEach(current => {
+			const player = {
+				on: current.attributes.online,
+				name: current.attributes.displayname,
+			};
+			let notification = false;
+			player.name = player.name.length > 17 ? `${player.name.slice(0, 15)}...` : player.name;
+			if (!d20plus.chat.players[current.id]) {
+				d20plus.chat.players[current.id] = { online: player.on };
+				notification = __("msg_player_joined");
+			} else {
+				if (d20plus.chat.players[current.id].online && !player.on) {
+					notification = __("msg_player_disconnected");
+					d20plus.chat.players[current.id].online = false;
+				} else if (!d20plus.chat.players[current.id].online && player.on) {
+					notification = __("msg_player_connected");
+					d20plus.chat.players[current.id].online = true;
+				}
+			}
+			if (changelist && notification && d20plus.cfg.getOrDefault("chat", "showPlayerConnects")) {
+				const id = d20plus.ut.generateRowId();
+				d20plus.chat.modifyMsg(id, {class: "system connect", decolon: true});
+				if (!player.on) d20plus.chat.modifyMsg(id, {class: "system disconnect"});
+				if (player.on) d20plus.chat.modifyMsg(id, {action: {type: "request", name: player.name}});
+				d20.textchat.incoming(false, { id,
+					type: "general",
+					who: `${player.on ? "" : "&nbsp;"}${player.name}`,
+					avatar: `/users/avatar/${current.attributes.d20userid}/30`,
+					content: `${notification}`,
+				});
+			}
+		})
+	}
+
+	d20plus.chat.processIncomingMsg = (msg, msgData) => { // RB20 EXCLUDE START
+		const expendSlots = d20plus.cfg.getOrDefault("chat", "autoExpend") !== "none";
+		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[cor\d]?)-?(?<name>[\p{L}\d _]*)(?:\|(?<quantity>\d*)|)\]/u;// RB20 EXCLUDE END
+		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
+			const speech = msg.listenerid;
+			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
+			if (window.is_gm || msgData.from_me || inKnownLanguage) {
+				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
+				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
+					<strong>(${speech.language})</strong> ${translated}</i>`;
+				d20plus.chat.modifyMsg(msg.id, {class: "inlang", legalize: true});
+			}
+		} else if (msg.listenerid?.type === "handshake") {
+			if (msgData.from_me && !msg.listenerid.data) {
+				msg.content = `script versions info`;
+				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.target)}/30`;
+				d20plus.chat.modifyMsg(msg.id, {class: "system connects", decolon: true, versions: msg.listenerid.id});
+			} else if (msgData.from_me && msg.listenerid.data) {
+				return false;
+			} else if (msgData.to_me && !msg.listenerid.data) {
+				const name = d20plus.ut.getPlayerNameById(msg.playerid);
+				msg.listenerid.data = d20plus.ut.generateVersionInfo();
+				d20.textchat.doChatInput(`/w "${name}" &nbsp;`, undefined, msg.listenerid);
+				return false;
+			} else if (msgData.to_me && msg.listenerid.data) {
+				$(`#connects${msg.listenerid.id}`).html(d20plus.ut.parseVersionInfo(msg.listenerid.data));
+				$(`#connects${msg.listenerid.id}-state`).attr("checked", "true");
+				$(`#connects${msg.listenerid.id}-info`).text("3");
+				return false;
+			}// RB20 EXCLUDE START
+		} else if (msg.listenerid?.type === "automation") {
+			const broadcast = msg.type !== "whisper";
+			if (is_gm || broadcast || msgData.to_me) {
+				msg.id = d20plus.ut.generateRowId();
+				msg.who = "b20action";
+				msg.type = "general";
+				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.playerid)}/30`;
+				const span = `class="showtip tipsy-n-right" style="cursor: help;"`;
+				const avatar = `<img src="${msg.avatar}" height="20px" width="20px"> `;
+				d20plus.chat.modifyMsg(msg.id, {class: "action"});
+				d20plus.chat.modifyMsg(msg.id, {legalize: true});
+				if (msg.listenerid.undo) d20plus.chat.modifyMsg(msg.id, {action: msg.listenerid.undo});
+				msg.content = `<span ${span} title='${avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
+			}
+		} else if (msgData.from_me && expendSlots) {
+			const expend = {};
+			const oglStandard = {
+				spellLevel: /{{spelllevel=[\w ]*(?<splvl>\d|cantrip)}}/,
+				addLevelDice: /{{hldmg=\$\[\[(?<addlvl>\d)\]\]}}/,
+				charID: /{{spelldesc_link=\[.*\]\(~(?<charid>.*?)\|/,
+			};
+			msg.content = msg.content.replace(b20expend, (...str) => {
+				$(".btn.btn-danger.canceltargeting:visible").click();
+				const data = str.last();
+				if (data.type === "spl" && data.slot) {
+					expend.type = "spell";
+					({slot: expend.lvl, charid: expend.charID} = data);
+				} else if (data.type === "res" && data.slot) {
+					expend.type = "resource";
+					expend.res = data.slot === "c" ? "class" : "other";
+					if (data.quantity) expend.amt = data.quantity;
+					if (data.slot === "r" && data.name) expend.type = "repeated";
+					({name: expend.name, charid: expend.charID} = data);
+				} else if (data.type === "ammo" && data.name) {
+					expend.type = "item";
+					expend.name = data.name;
+					if (data.quantity) expend.amt = data.quantity;
+					({name: expend.name, charid: expend.charID} = data);
+				}
+				return "";
+			});
+			if (msg.rolltemplate && msg.inlinerolls && !expend.type) {
+				const data = {};
+				$(".btn.btn-danger.canceltargeting:visible").click();
+				Object.entries(oglStandard).forEach(([param, exp]) => {
+					data[param] = msg.content.match(exp)?.last();
+				});
+				if (data.charID) {
+					expend.lvl = data.spellLevel || 1;
+					expend.charID = data.charID;
+					if (!isNaN(expend.lvl)) expend.type = "spell";
+					if (data.addLevelDice) {
+						const raise = msg.inlinerolls[data.addLevelDice]
+							?.expression.match(/\(\d+\*(?<addlvl>\d)\)/).last();
+						if (!isNaN(raise)) expend.lvl -= -raise;
+					}
+				}
+			}
+			if (expend.type) {
+				msg.id = d20plus.ut.generateRowId(); // this is supposed to trick r20 not to revert msg contents
+				d20plus.engine.expendResources(expend);
+			}
+		} else if (!msgData.from_me) {
+			msg.content = msg.content.replace(b20expend, ""); // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
+		}// RB20 EXCLUDE START
+		if (msg.inlinerolls) {
+			d20plus.chat.modifyMsg(msg.id, {dice: true});
+		}// RB20 EXCLUDE END
+		if (d20.textchat.talktomyself && msgData.from_me) {
+			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
+		}
+		return true;
+	}
+
+	d20plus.chat.r20outgoing = (r20outgoing, params) => {
+		if (!params[2]) {
+			d20plus.chat.resetSendMyself();
+		}// RB20 EXCLUDE START
+		const dmgCfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
+		const expCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
+		const macroJS = d20plus.cfg.getOrDefault("chat", "executeJSMacro");
+
+		if (d20plus.chat.logAll) d20plus.ut.log("OUTGOING!", params);
+
+		if (dmgCfg !== "none" || expCfg !== "none") {
+			const template = /^%\{(?<charRef>[^|^}^{]*)\|(?<ability>[^|^}^{]*)\}$/mg;
+			params[0] = params[0].replace(template, (...string) => {
+				const found = string[0];
+				if (dmgCfg === "auto" || expCfg === "auto") {
+					return d20plus.ut.getActionTmpl(found);
+				} else if (dmgCfg === "debug" || expCfg === "debug") {
+					const resolved = d20plus.ut.getActionTmpl(found);
+					const debugOutput = resolved.substr(0, 80).replaceAll("{", "&#123;").concat(resolved.length > 100 ? "..." : "");
+					if (found === resolved) return found;
+					return `${found.replaceAll("{", "&#123;")}\n${found}\n\n${debugOutput}\n${resolved}`;
+				} else {
+					return found;
+				}
+			});
+		}
+
+		// %{Archmage|0: Dagger}
+		// %{selected|repeating_npcaction_$0_npc_action}
+		// %{selected|repeating_spell-cantrip_-NQ2lfNWgVG3czB5jPsq_spell}
+		// {{savedc=[[[[(@{Книжник|wisdom_mod}+8+@{Книжник|spell_dc_mod}+@{Книжник|pb})]][SAVE]]]}}
+		// {{savedc=[[[[(+8++@{Книжник|pb})]][SAVE]]]}}
+
+		// [Show Spell Description](~-N9de-OdA-r__6AwN_sc|repeating_attack_-NPHrzBGDu7rZ10z9hMJ_spelldesc_link)
+		// [Show Spell Description](~-N9de-OdA-r__6AwN_sc|repeating_spell-1_-nphrusyez3giymyggvq_output)
+
+		//  d20plus.ut.getCharMetaAttribByName(d20plus.ut.getCharacter("Книжник"), "repeating_attack_-NPHrzBGDu7rZ10z9hMJ")
+		// RB20 EXCLUDE END
+
+		if (macroJS !== "none") {
+			const template = /#(?<macroid>[^ ^#]+)/g;
+			params[0] = params[0].replace(template, (...string) => {
+				const macroId = string.last().macroid;
+				const macroObj = d20plus.ut.getMacroByName(macroId);
+				if (!macroObj) return string[0];
+				const macro = macroObj.attributes.action;
+				const script = d20plus.engine.decodeScript(macro);
+				if (!script) return string[0];
+				if (macroObj.collection.player.id !== d20_player_id && macroJS !== "all") {
+					d20plus.ut.sendHackerChat(`
+						Enable execution for scripts shared by other players
+						(select Execute All in betteR20 options for JS Script).
+						You should do this only if you trust your GM
+					`, true);
+					return "";
+				}
+				return d20plus.engine.runScript(script);
+			});
+		}
+
+		return r20outgoing(...params);
+	}
+
+	d20plus.chat.r20incoming = (r20incoming, params) => {
+		const msg = params[1];
+		const msgData = {};
+		msgData.from_me = msg.playerid === d20_player_id;
+		msgData.to_me = msg.target?.includes(d20_player_id);// RB20 EXCLUDE START
+
+		if (d20plus.chat.logAll) {
+			d20plus.ut.log("INCOMING!", Object.assign({
+				p: [params[0], params[2], params[3]]}, msg, {
+				history: d20plus.chat.localHistory}));
+		}// RB20 EXCLUDE END
+
+		// For rolls &  r20 generates duplicate messages that don't show on the log with
+		// params [sound, msg, true, true]. Hence check params[2]&[3] !== true to avoid double processing
+		const skipProcessing = (
+			(params[2] === true && params[3] === true)
+			|| (d20.textchat.chatstartingup)
+		);
+
+		if (msgData.from_me || msg.type === "system") {
+			const stash = [];
+			while (d20plus.chat.localHistory.length) {
+				const record = d20plus.chat.localHistory.pop();
+				if (record) {
+					stash.push(record);
+					d20.textchat.commandhistory.pop();
+				}
+			}
+			d20.textchat.commandhistory = d20.textchat.commandhistory.concat(stash);
+		}
+
+		if (msg.type === "whisper" && !skipProcessing) {
+			if (msgData.from_me) {
+				d20plus.chat.lastRespondent = msg.target_name;
+			} else if (msgData.to_me) {
+				d20plus.chat.lastRespondent = d20plus.ut.getPlayerNameById(msg.playerid);
+			}
+		}
+
+		if (skipProcessing || d20plus.chat.processIncomingMsg(msg, msgData)) {
+			const result = r20incoming(...params);
+			d20plus.chat.displaying();
+			return result;
+		}
+	}
+
+	d20plus.chat.displaying = () => { // RB20 EXCLUDE START
+		if (d20plus.chat.logAll) d20plus.ut.log("DISPLAY", JSON.stringify(d20plus.chat.modify)); // RB20 EXCLUDE END
+		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
+			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
+
+			if (mods.intro) {
+				const code = "<code style='cursor:pointer'>/help</code>";
+				const wiki = "https://wiki.roll20.net/Text_Chat#Chat";
+				const intro = $(".userscript-commandintro ul");
+				if (intro.get(0)) {
+					intro.last().append(__("msg_b20_chat_help", [code, wiki]));
+					delete d20plus.chat.modify[id];
+				}
+			}
+
+			if (msg.get(0)) {
+				if (mods.declass) msg.removeClass(mods.declass);
+				if (mods.class) msg.addClass(mods.class);
+				if (mods.versions) msg.append(playerVersionsTemplate(mods.versions));
+				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
+				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
+				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
+				if (mods.dice) d20plus.chat.processDice(msg);
+				delete d20plus.chat.modify[id];
+			}
+		});
+	}
+
+	d20plus.chat.sending = () => {
+		d20plus.chat.resetSendMyself();
+		const $tc = d20.textchat.$textarea;
+
+		if (d20plus.cfg.getOrDefault("chat", "emoji")) {
+			$tc.val($tc.val().replace(/(:\w*?:)/g, (m0, m1) => {
+				const clean = m1.replace(/:/g, "");
+				return d20plus.chat.emojiIndex && d20plus.chat.emojiIndex[clean] ? `[${clean}](https://github.com/TheGiddyLimit/emoji-dump/raw/master/out/${clean}.png)` : m1;
+			}));
+		}
+
+		let text = $tc.val();
+		const srcText = text;
+
+		if (d20plus.cfg.getOrDefault("chat", "commands")) {
+			// add custom commands
+			text = text.replace(/^\/wb (.*?)$/gm, d20plus.chat.sendReply);
+			if (is_gm) text = text.replace(/^\/ws (.*?)$/gm, d20plus.chat.sendToSelected);
+			text = text.replace(/^\/ttms( |$)/s, "/talktomyself$1");
+			text = text.replace(/^\/help(.*?)$/s, d20plus.chat.help);
+			if (!d20.textchat.talktomyself) text = text.replace(/^\/mtms ?(.*?)$/s, d20plus.chat.sendMyself);
+			if (is_gm) text = text.replace(/^\/v (.*?)$/s, d20plus.chat.requestScriptVersions);
+			if (d20plus.cfg.getOrDefault("chat", "languages")) text = text.replace(/\/in (.*?)$/gm, d20plus.chat.sendParsedInLanguage);// RB20 EXCLUDE START
+			// text = text.replace(/^\/cl (on|off)$/sm, comprehendLanguages);// RB20 EXCLUDE END
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "social")) {
+			const speakingto = $("#speakingto").val();
+			const speakingin = $("#speakingin").val();
+
+			if (speakingin) {
+				text = text.replace(/^[^/][^{^}]*?$/gm, msg => {
+					return d20plus.chat.sendInLanguage(msg, speakingin);
+				});
+			}
+
+			if (speakingto && speakingto !== "ttms") {
+				text = text.replace(/^([^/]*?)$/mgu, (...str) => {
+					const prepared = str[1].replace(/\/(r|roll) (?<dice>[ \dd+-]*)$/umg, "[[$<dice>]]");
+					return `/w "${speakingto}" ${prepared}`;
+				});
+			}
+		}
+
+		// $.trim() instead of .trim() cause it's used in roll20's doChatInput()
+		let toSend = $.trim(text);
+		if (text !== srcText && text) d20plus.chat.localHistory.push($.trim(srcText));
+		if ($("#soundslike").get(0)) toSend = "";
+
+		if (toSend.includes("|&inlang|")) {
+			toSend.split("\n").forEach((str, i) => {
+				const data = str.split("|&inlang|");
+				if (data.length === 2) {
+					const msg = data[0];
+					const meta = data[1].split("|&meta|");
+					const transport = {language: meta[0], languageid: meta[1], message: meta[2]};
+					d20.textchat.doChatInput(msg, undefined, transport);
+				} else {
+					d20.textchat.doChatInput(str);
+				}
+			})
+			$tc.val("").focus();
+		} else {
+			d20.textchat.doChatInput(toSend);
+			$tc.val("").focus();
+		}
+
+		if (d20plus.cfg.getOrDefault("chat", "highlightttms")) {
+			if (toSend.includes("/talktomyself")) {
+				setTimeout(() => d20plus.chat.checkTTMSStatus(), 20);
+			}
+		}
+	}// RB20 EXCLUDE START
+
+	d20plus.chat.enhanceRolls = () => {
+		d20.textchat.$textchat.on("click", ".inlinerollresult.showtip", event => {
+			const dmg = event.target.getAttribute("data-damage");
+			const dtargets = event.target.getAttribute("data-targets");
+			if (isNaN(dmg) || !dmg) return;
+			if (event.shiftKey && event.ctrlKey) {
+				d20plus.engine.alterTokensHP({dmg: -Math.abs(dmg)});
+			} else if (event.shiftKey) {
+				d20plus.engine.alterTokensHP({dmg: Math.abs(dmg)});
+			} else if (event.ctrlKey) {
+				d20plus.engine.alterTokensHP({dmg: Math.floor(Math.abs(dmg) / 2)});
+			} else if (dtargets) {
+				const targets = dtargets.split("|")
+					.map(targetID => d20plus.ut.getTokenById(targetID))
+					.filter(token => !!token);
+				d20plus.engine.alterTokensHP({dmg, targets});
+			}
+		})
 		d20plus.ut.dynamicStyles("hit-dice-tips").html(`
-			.hit-dice-tip::after {display:block; content:"Select targets & hold ctrl/shift"}
+			.hit-dice-tip::after {display:block; font-size:smaller; content:"Select targets & hold ctrl/shift (or both) to alter HP"}
 			.hit-dice-tip.hit-targeted::after {content:"Click to apply HP changes"}
 			.hit-dice-tip.hit-aoe::after {content:"Click to auto-dmg targets"}
 			.hit-dice-tip.hit-aoe0::after {content:"This damage affects 0 targets"}
@@ -22857,17 +23441,26 @@ function baseChat () {
 			.hit-dice-tip.hit-aoe4::after {content:"Click to auto-dmg 4 targets"}
 			.hit-dice-tip.hit-aoe5::after {content:"Click to auto-dmg 5 targets"}
 			.hit-dice-tip.hit-aoe6::after {content:"Click to auto-dmg 6 targets"}
-			.shift-pressed .hit-dice-tip::after {content:"Click to decrease HP to selected"}
-			.ctrl-pressed .hit-dice-tip::after {content:"Click to increase HP to selected"}
+			.shift-pressed .mod-dice, .ctrl-pressed .mod-dice {cursor: pointer}
+			.shift-pressed .hit-dice-tip::after {content:"Shft+Click to decrease HP to selected tokens"}
+			.ctrl-pressed .hit-dice-tip::after {content:"Ctrl+Click to decrease HP (halved value) to selected tokens"}
+			.ctrl-pressed.shift-pressed .hit-dice-tip::after {content:"Shft+Ctrl+Click to increase HP to selected tokens"}
 		`);
 	}// RB20 EXCLUDE END
 
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
-		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming, true);
+		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
 		d20plus.ut.injectCode(d20.textchat, "doChatInput", d20plus.chat.r20outgoing);
 
-		$(document.body).append(languageTemplate());
+		$(document.body)
+			.append(languageTemplate())
+			.on("click", ".macro > .name", (evt) => {
+				const {currentTarget: target} = evt;
+				d20plus.engine._lastOpenedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
+				d20plus.engine.enhanceMacros();
+			});
+		availableLanguagesPlayer(d20_player_id);
 		buildLanguageIndex();// RB20 EXCLUDE START
 		/// d20plus.chat.logAll = true// RB20 EXCLUDE END
 
@@ -22885,14 +23478,16 @@ function baseChat () {
 
 			$inputContainer.append(d20plus.html.chatSocial);
 			$inputContainer.prepend(d20plus.html.chatSocialNotifier);
-			$("#chatSendBtn").after($("#socialswitch"));
+
+			const $socialSwitch = $("#socialswitch");
+			$("#chatSendBtn").after($socialSwitch);
 			$("#textchat-note-container").append($chatNotifier);
 
 			$chatTextarea.on("focus", d20plus.chat.closeSocial);
 			$chatNotifier.on("click", d20plus.chat.resetTTMS);
 			$("#textchat-social-notifier").on("click", d20plus.chat.resetSocial);
 
-			$("#socialswitch").on("click", d20plus.chat.onSocial);
+			$socialSwitch.on("click", d20plus.chat.onSocial);
 			$("#speakingas").on("change", d20plus.chat.onSpeakingAs);
 			$("#speakingto").on("change", d20plus.chat.onSpeakingTo);
 			$("#speakingin").on("change", d20plus.chat.onSpeakingIn);
@@ -22907,18 +23502,18 @@ function baseChat () {
 				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
 		}// RB20 EXCLUDE START
 
-		if (!isNaN(d20plus.cfg.getOrDefault("chat", "clickRollForDmg"))) {
-			$(window).on("keydown.Shift keydown.Control keyup.Shift keyup.Control", event => {
-				const $root = $(document.body);
-				const modifier = event.shiftKey ? "shift" : event.ctrlKey ? "ctrl" : "";
-				$root.removeClass("shift-pressed ctrl-pressed");
-				if (modifier) $root.addClass(`${modifier}-pressed`);
-			});
-			d20plus.chat.enhanceRolls();
-		}// RB20 EXCLUDE END
+		$(window).on("keydown.Shift keydown.Control keyup.Shift keyup.Control", event => {
+			const $root = $(document.body);
+			["shift", "ctrl"].forEach(mod => {
+				if (event[`${mod}Key`]) $root.addClass(`${mod}-pressed`);
+				else $root.removeClass(`${mod}-pressed`);
+			})
+		});
+		d20plus.chat.enhanceRolls();// RB20 EXCLUDE END
 
-		$("#textchat-input").off("click", "button");
-		$("#textchat-input").on("click", "button", d20plus.chat.sending);
+		$("#textchat-input")
+			.off("click", "button")
+			.on("click", "button", d20plus.chat.sending);
 	};
 }
 
@@ -23206,8 +23801,6 @@ const betteR20Core = function () {
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
-			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
-
 			d20plus.ut.showLoadingMessage();
 
 			d20plus.engine.swapTemplates();
@@ -23229,7 +23822,8 @@ const betteR20Core = function () {
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.enhanceStatusEffects();
-			if (showLineSpl) d20plus.engine.addLineCutterTool();
+			// It doesn't work with current version of roll20
+			// d20plus.engine.addLineCutterTool();
 			d20plus.ui.addHtmlHeader();
 			d20plus.ui.addHtmlFooter();
 			d20plus.art.initArtFromUrlButtons();
@@ -23264,7 +23858,7 @@ const betteR20Core = function () {
 				d20plus.cfg.startPlayerConfigHandler();
 			}
 
-			// output welcome msg when chat is ready
+			// output welcome msg when the chat is ready
 			const welcome = setInterval(() => {
 				if (!d20.textchat.chatstartingup) {
 					d20plus.ut.checkVersion();
