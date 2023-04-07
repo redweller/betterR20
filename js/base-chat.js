@@ -414,7 +414,7 @@ function baseChat () {
 	d20plus.chat.help = (text, msg) => {
 		d20plus.chat.modifyMsg(null, {legalize: true, sys: true});
 		d20plus.ut.sendHackerChat(chatHelp.reduce((html, it) => {
-			const isb20 = it.b20 ? "&#42;" : "";
+			const isb20 = it.b20 ? `<span class="showtip tipsy-n-right" style="cursor:help;font-weight: bold;" title="This command was added by betteR20">&#42;</span>` : "";
 			const param = it.param ? `<span class="showtip tipsy-n-right" style="background: rgba(206, 96, 96, 0.3);" title="${it.tip}">${it.param}</span>` : "";
 			const code = it.code ? `<code>${it.code.replace("%%", param)}</code>${isb20}` : "&nbsp;";
 			const gmcheck = !it.gm || window.is_gm;
@@ -756,7 +756,7 @@ function baseChat () {
 		}
 	}
 
-	d20plus.chat.displaying = (params) => {
+	d20plus.chat.displaying = () => {
 		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
 			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
 

@@ -154,7 +154,7 @@ function initHTMLroll20EditorsMisc () {
 	`;
 
 	d20plus.html.handoutEditor = `
-	<script id='tmpl_handouteditor' type='text/html'>
+	<script id="tmpl_handouteditor" type="text/html">
 		<div class='dialog largedialog handouteditor' style='display: block;'>
 			<div class='row-fluid'>
 				<div class='span12'>
@@ -247,48 +247,6 @@ function initHTMLroll20EditorsMisc () {
 					<div class='clear'></div>
 					<$ } $>
 				</div>
-			</div>
-		</div>
-	</script>
-	<script id='tmpl_handoutviewer' type='text/html'>
-		<div class='dialog largedialog handoutviewer' style='display: block;'>
-			<div style='padding: 10px;'>
-				<$ if(this.get("avatar") != "") { $>
-				<div class='row-fluid'>
-					<div class='span12'>
-						<div class='avatar'>
-							<a class="lightly" target="_blank" href="<$!(this.get("avatar").indexOf("d20.io/") !== -1 ? this.get("avatar").replace(/\\/med\\.(?!webm)/, "/max.") : this.get("avatar"))$>">
-								<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-								<video src="<$!this.get("avatar")$>" draggable="false" loop muted autoplay />
-								<$ } else { $>
-								<img src="<$!this.get("avatar")$>" draggable="false" />
-								<$ } $>
-								<div class='mag-glass pictos'>s</div>
-							</a>
-							</a>
-						</div>
-						<div class='clear'></div>
-					</div>
-				</div>
-				<$ } $>
-				<div class='row-fluid'>
-					<div class='span12'>
-						<div class='content note-editor notes'></div>
-						<div class='clear'></div>
-					</div>
-				</div>
-				<$ if(window.is_gm) { $>
-				<div class='row-fluid'>
-					<div class='span12'>
-						<hr>
-						<label>
-							<strong>GM Notes (Only visible to GM)</strong>
-						</label>
-						<div class='content note-editor gmnotes'></div>
-						<div class='clear'></div>
-					</div>
-				</div>
-				<$ } $>
 			</div>
 		</div>
 	</script>

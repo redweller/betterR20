@@ -74,7 +74,9 @@ function d20plusMod () {
 			$("#floatingtoolbar").trigger("blur");
 		}
 		// END MOD
-		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
+		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#babylonCanvas').addClass('torch-cursor')) : $('#babylonCanvas').removeClass('torch-cursor'),
+		'placeWindow' === e ? ($('#placeWindow').addClass('activebutton'), $('#babylonCanvas').addClass('window-cursor')) : $('#babylonCanvas').removeClass('window-cursor'),
+		'placeDoor' === e ? ($('#placeDoor').addClass('activebutton'), $('#babylonCanvas').addClass('door-cursor')) : $('#babylonCanvas').removeClass('door-cursor'),
 		d20.engine.redrawScreenNextTick()
 	};
 	// END ROLL20 CODE
