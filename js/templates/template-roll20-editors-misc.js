@@ -489,6 +489,63 @@ function initHTMLroll20EditorsMisc () {
 		</div>
 	</script>
 	`;
+
+	d20plus.html.macroEditor = `
+	<script id="tmpl_macroeditor" type="text/html">
+		<div>
+			<label>
+				Name
+				<span style='color: #777;'> (Don't include the <code>#</code> or spaces in the name)</span>
+			</label>
+			<input class='name' type='text'>
+			<div class='clear'></div>
+			<!-- BEGIN MOD -->
+			<label>
+				Actions
+				<span class='actionhelp r20' style='color: #777;'>&nbsp;(One command/roll per line)</span>
+				<span class='actionhelp js' style='color: #777;'>&nbsp;(Regular javascript commands)</span>
+			</label>
+			<textarea class='macro tokenizer' style='width: 100%; min-height: 75px; margin-top: 5px;'></textarea>
+			<div class='clear'></div>
+			<div class='btn testmacro' style='float: right;'>Test Macro</div>
+			<p class='commandhelp r20' style='color: #777;'>
+				Type <code>@</code> to insert variables from Characters
+				<br>
+				Type <code>#</code> to insert other macros
+			</p>
+			<p class='commandhelp js' style='color: #777;'>
+				JS <code>strict</code> mode directive is enabled
+				<br>
+				JS <code>#macro</code> can't be nested in other macros
+				<br>
+				Type <code>return</code> to output results to chat
+			</p>
+			<div class='clear'></div>
+			<label>
+				<input class='isjs' style='margin-right: 10px;' type='checkbox' value='1'>Execute as JS userscript</input>
+			</label>
+			<!-- END MOD -->
+			<label>
+				<input class='istokenaction' style='margin-right: 10px;' type='checkbox' value='1'>Show as Token Action?</input>
+			</label>
+			<div class='clear' style='height: 15px;'></div>
+			<$ if(window.is_gm) { $>
+			<label>
+				Visible To Players
+				<span style='color: #777;'>(Optional)</span>
+			</label>
+			<select class='visibleto chosen' multiple='true' style='width: 100%;'>
+				<option value='all'>All Players</option>
+				<$ window.Campaign.players.each(function(player) { $>
+				<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+				<$ }); $>
+			</select>
+			<div class='clear'></div>
+			<$ } $>
+			<button class='btn btn-danger delete'>Delete Macro</button>
+		</div>
+	</script>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLroll20EditorsMisc);

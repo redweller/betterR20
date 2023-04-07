@@ -95,6 +95,7 @@ function d20plusEngine () {
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		$("#tmpl_macroeditor").html($(d20plus.html.macroEditor).html());
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
 		// show dynamic lighting/etc page settings
@@ -202,6 +203,70 @@ function d20plusEngine () {
 			d20plus.engine._updateCustomOptions();
 		});
 	};
+
+	d20plus.engine.enhanceMacros = () => {
+		const $dialog = $(`.dialog[data-macroid=${d20plus.engine._lastOpenedMacroId}]`);
+		if (!d20plus.engine._lastOpenedMacroId || !$dialog[0]) return;
+		const $macro = $dialog.find(`.macro.tokenizer`);
+		const $name = $dialog.find("input.name");
+		const $checkbox = $dialog.find(".isjs")
+			.on("change", (evt) => {
+				if ($(evt.target).prop("checked")) $macro.parent().addClass("jsdialog");
+				else $macro.parent().removeClass("jsdialog");
+			});
+		const script = d20plus.engine.decodeScript($macro.val());
+		if (script) {
+			$macro.parent().addClass("jsdialog");
+			$macro.val(script);
+			$checkbox.prop("checked", true);
+		}
+		$dialog.find(".btn.testmacro").on("click", () => {
+			if (!$checkbox.prop("checked")) return;
+			const script = $macro.val();
+			$macro.val(d20plus.engine.runScript(script));
+			setTimeout(() => $macro.val(script), 100);
+		});
+		const $buttons = $dialog.parent()
+			.find(".ui-dialog-buttonpane button:not(.active)")
+			.addClass("active");
+		$buttons.on("mouseup", (evt) => {
+			if (!$name.val()) {
+				let i = 0;
+				while (d20plus.ut.getMacroByName(`Untitled${i}`)) i++;
+				$name.val(`Untitled${i}`);
+			}
+			if (!$checkbox.prop("checked") || evt.which !== 1) return;
+			$macro.val(d20plus.engine.encodeScript($macro.val()));
+		});
+	}
+
+	d20plus.engine.decodeScript = (macro) => {
+		const parts = macro.split("...");
+		if (parts.length !== 3
+			|| parts[0] !== "bs``<``"
+			|| parts[2] !== "``>``") return;
+		const script = decodeURIComponent(atob(parts[1]));
+		return script;
+	}
+
+	d20plus.engine.encodeScript = (script) => {
+		const saved = btoa(encodeURIComponent(script));
+		return `bs\`\`<\`\`...${saved}...\`\`>\`\``;
+	}
+
+	d20plus.engine.runScript = (script) => {
+		const vuln = /\b(XMLHttpRequest|eval|Function|document|window|Window)\b/g;
+		const insecure = script.replace(vuln, str => str.replace("o", "о").replace("e", "е"));
+		const toRun = `"use ${"strict"}";\n${insecure}`;
+		try {
+			// eslint-disable-next-line no-new-func
+			return Function(toRun)() || "";
+		} catch (e) {
+			d20plus.ut.sendHackerChat(`Script executed with errors`, true);
+			d20plus.ut.error(e);
+			return "";
+		}
+	}
 
 	d20plus.engine.enhancePageSettings = () => {
 		if (!d20plus.engine._lastSettingsPageId) return;

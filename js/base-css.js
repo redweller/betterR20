@@ -611,6 +611,19 @@ function baseCss () {
 			s: `#page-toolbar`,
 			r: `display: block;`,
 		},
+		// Macro editor styles
+		{
+			s: `.jsdialog .actionhelp.r20, .jsdialog .commandhelp.r20`,
+			r: `display: none;`,
+		},
+		{
+			s: `.jsdialog .actionhelp.js, .jsdialog .commandhelp.js`,
+			r: `display: inline-block;`,
+		},
+		{
+			s: `.actionhelp.js, .commandhelp.js`,
+			r: `display: none;`,
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [

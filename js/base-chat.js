@@ -569,6 +569,18 @@ function baseChat () {
 				"_type": "boolean",
 				"_player": true,
 			},
+			"executeJSMacro": {
+				"name": "Execute JS script in macros",
+				"default": "own",
+				"_type": "_enum",
+				"__values": ["none", "own", "all"],
+				"__texts": [
+					"disabled",
+					"run your own scripts",
+					"run all scripts (only enable this if you trust your GM!)",
+				],
+				"_player": true,
+			},
 		},
 	);
 
@@ -713,6 +725,29 @@ function baseChat () {
 		if (!params[2]) {
 			d20plus.chat.resetSendMyself();
 		}
+		const macroJS = d20plus.cfg.getOrDefault("chat", "executeJSMacro");
+
+		if (macroJS !== "none") {
+			const template = /#(?<macroid>[^ ^#]+)/g;
+			params[0] = params[0].replace(template, (...string) => {
+				const macroId = string.last().macroid;
+				const macroObj = d20plus.ut.getMacroByName(macroId);
+				if (!macroObj) return string[0];
+				const macro = macroObj.attributes.action;
+				const script = d20plus.engine.decodeScript(macro);
+				if (!script) return string[0];
+				if (macroObj.collection.player.id !== d20_player_id && macroJS !== "all") {
+					d20plus.ut.sendHackerChat(`
+						Enable execution for scripts shared by other players
+						(select Execute All in betteR20 options for JS Script).
+						You should do this only if you trust your GM
+					`, true);
+					return "";
+				}
+				return d20plus.engine.runScript(script);
+			});
+		}
+
 		return r20outgoing(...params);
 	}
 
@@ -860,7 +895,13 @@ function baseChat () {
 		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
 		d20plus.ut.injectCode(d20.textchat, "doChatInput", d20plus.chat.r20outgoing);
 
-		$(document.body).append(languageTemplate());
+		$(document.body)
+			.append(languageTemplate())
+			.on("click", ".macro > .name", (evt) => {
+				const {currentTarget: target} = evt;
+				d20plus.engine._lastOpenedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
+				d20plus.engine.enhanceMacros();
+			});
 		availableLanguagesPlayer(d20_player_id);
 		buildLanguageIndex();
 
