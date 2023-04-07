@@ -28,7 +28,8 @@ const betteR20Core = function () {
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.enhanceStatusEffects();
-			d20plus.engine.addLineCutterTool();
+			// It doesn't work with current version of roll20
+			// d20plus.engine.addLineCutterTool();
 			d20plus.ui.addHtmlHeader();
 			d20plus.ui.addHtmlFooter();
 			d20plus.art.initArtFromUrlButtons();
