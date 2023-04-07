@@ -361,5 +361,10 @@
 		"ver": "1.34.1",
 		"date": "2023-03-02",
 		"txt": "- Various fixes/improvements to the chat system (thanks @ Redweller)\n  - Tweaked `/help` ordering for readability \n  - Added detection of Beyond20\n  - Fixed hiding/revealing messages\n  - Fixed `/w` revealing characters not in players' journals"
+	},
+	{
+		"ver": "1.34.2",
+		"date": "2023-04-07",
+		"txt": "- Updated UI templates to match latest Roll20 \"Doors & Windows\" update (thanks @ Redweller)\n- Disabled/removed non-functional Line Cutter tool (thanks @ Redweller)\n- Fixed crash when using \"Set image from URL...\" button in deck editor (thanks @ darthbeep)\n- Fixed misc Roll20 console spam when running an adblocker (thanks @ Redweller)"
 	}
 ]
