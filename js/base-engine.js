@@ -204,39 +204,45 @@ function d20plusEngine () {
 		});
 	};
 
-	d20plus.engine.enhanceMacros = () => {
-		const $dialog = $(`.dialog[data-macroid=${d20plus.engine._lastOpenedMacroId}]`);
-		if (!d20plus.engine._lastOpenedMacroId || !$dialog[0]) return;
+	d20plus.engine.enhanceMacros = (openedMacroId) => {
+		const $dialog = $(`.dialog[data-macroid=${openedMacroId}]`);
+		if (!openedMacroId || !$dialog[0]) return;
 		const $macro = $dialog.find(`.macro.tokenizer`);
+		const $b20macro = $dialog.find(`.tokenizer.b20`);
 		const $name = $dialog.find("input.name");
 		const $checkbox = $dialog.find(".isjs")
-			.on("change", (evt) => {
-				if ($(evt.target).prop("checked")) $macro.parent().addClass("jsdialog");
+			.on("change", () => {
+				if ($checkbox.prop("checked")) $macro.parent().addClass("jsdialog");
 				else $macro.parent().removeClass("jsdialog");
 			});
+		const macro = currentPlayer.macros._byId[openedMacroId];
 		const script = d20plus.engine.decodeScript($macro.val());
 		if (script) {
 			$macro.parent().addClass("jsdialog");
-			$macro.val(script);
+			$b20macro.val(script);
 			$checkbox.prop("checked", true);
+		} else {
+			$b20macro.val($macro.val());
 		}
 		$dialog.find(".btn.testmacro").on("click", () => {
-			if (!$checkbox.prop("checked")) return;
-			const script = $macro.val();
-			$macro.val(d20plus.engine.runScript(script));
-			setTimeout(() => $macro.val(script), 100);
+			if (!$checkbox.prop("checked")) {
+				$macro.val($b20macro.val());
+			} else {
+				$macro.val(d20plus.engine.runScript($b20macro.val(), macro));
+			}
 		});
 		const $buttons = $dialog.parent()
 			.find(".ui-dialog-buttonpane button:not(.active)")
 			.addClass("active");
-		$buttons.on("mouseup", (evt) => {
-			if (!$name.val()) {
-				let i = 0;
-				while (d20plus.ut.getMacroByName(`Untitled${i}`)) i++;
-				$name.val(`Untitled${i}`);
-			}
-			if (!$checkbox.prop("checked") || evt.which !== 1) return;
-			$macro.val(d20plus.engine.encodeScript($macro.val()));
+		$buttons.on("mouseup", () => {
+			let name = $name.val() || "Untitled";
+			const existing = d20.Campaign.players.map(p => p.macros
+				.filter(m => m.id !== openedMacroId && (p.id === d20_player_id || m.visibleToCurrentPlayer()))
+				.map(m => m.get("name"))).flat();
+			while (existing.includes(name)) name = name.replace(/(\d*?)$/, id => 1 * id + 1);
+			if ($name.val() !== name) $name.val(name);
+			if (!$checkbox.prop("checked")) $macro.val($b20macro.val());
+			else $macro.val(d20plus.engine.encodeScript($b20macro.val()));
 		});
 	}
 
@@ -254,13 +260,12 @@ function d20plusEngine () {
 		return `bs\`\`<\`\`...${saved}...\`\`>\`\``;
 	}
 
-	d20plus.engine.runScript = (script) => {
-		const vuln = /\b(XMLHttpRequest|eval|Function|document|window|Window)\b/g;
-		const insecure = script.replace(vuln, str => str.replace("o", "о").replace("e", "е"));
-		const toRun = `"use ${"strict"}";\n${insecure}`;
+	d20plus.engine.runScript = (script, macro) => {
+		const fnBody = `"use ${"strict"}";\n${script}`;
 		try {
 			// eslint-disable-next-line no-new-func
-			return Function(toRun)() || "";
+			const fn = new Function(fnBody);
+			return fn.call(macro) || "";
 		} catch (e) {
 			d20plus.ut.sendHackerChat(`Script executed with errors`, true);
 			d20plus.ut.error(e);

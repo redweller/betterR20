@@ -503,9 +503,21 @@ function initHTMLroll20EditorsMisc () {
 			<label>
 				Actions
 				<span class='actionhelp r20' style='color: #777;'>&nbsp;(One command/roll per line)</span>
-				<span class='actionhelp js' style='color: #777;'>&nbsp;(Regular javascript commands)</span>
+				<span class='actionhelp js' style='color: #777;'>
+					&nbsp;(Regular javascript commands)
+					&nbsp;<a class="tipsy-n-right showtip pictos" original-title="<div style='background:black;width:300px;margin:-5px;padding:5px;text-align:left'>
+				<strong>Notes on JS code usage:</strong><br>
+				<code>use&nbsp;strict</code> directive enabled<br>
+				<code>this</code> refers to this r20 macro object<br>
+				<code>d20</code> object can be used to access game data:<br>
+				<code>.textchat.doChatInput()</code> sends text to chat<br>
+				<code>.engine.selected()</code> gets selected tokens<br>
+				<code>.Campaign.activePage()</code> gets current map<br>
+			</div>">?</a>
+				</span>
 			</label>
-			<textarea class='macro tokenizer' style='width: 100%; min-height: 75px; margin-top: 5px;'></textarea>
+			<textarea class='macro tokenizer' style='display:none'></textarea>
+			<textarea class='tokenizer b20' style='width: 100%; min-height: 75px; margin-top: 5px'></textarea>
 			<div class='clear'></div>
 			<div class='btn testmacro' style='float: right;'>Test Macro</div>
 			<p class='commandhelp r20' style='color: #777;'>
@@ -514,9 +526,7 @@ function initHTMLroll20EditorsMisc () {
 				Type <code>#</code> to insert other macros
 			</p>
 			<p class='commandhelp js' style='color: #777;'>
-				JS <code>strict</code> mode directive is enabled
-				<br>
-				JS <code>#macro</code> can't be nested in other macros
+				This <code>#macro</code> can't be nested in macros or actions
 				<br>
 				Type <code>return</code> to output results to chat
 			</p>
