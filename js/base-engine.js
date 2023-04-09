@@ -236,10 +236,10 @@ function d20plusEngine () {
 			.addClass("active");
 		$buttons.on("mouseup", () => {
 			let name = $name.val() || "Untitled";
-			const existing = d20.Campaign.players.map(p => p.macros
+			const existing = new Set(d20.Campaign.players.map(p => p.macros
 				.filter(m => m.id !== openedMacroId && (p.id === d20_player_id || m.visibleToCurrentPlayer()))
-				.map(m => m.get("name"))).flat();
-			while (existing.includes(name)) name = name.replace(/(\d*?)$/, id => 1 * id + 1);
+				.map(m => m.get("name"))).flat());
+			while (existing.has(name)) name = name.replace(/(\d*?)$/, id => Number(id) + 1);
 			if ($name.val() !== name) $name.val(name);
 			if (!$checkbox.prop("checked")) $macro.val($b20macro.val());
 			else $macro.val(d20plus.engine.encodeScript($b20macro.val()));
@@ -261,7 +261,8 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.runScript = (script, macro) => {
-		const fnBody = `"use ${"strict"}";\n${script}`;
+		// b20 fails to load if it has words use and strict separated by space ANYWHERE (right, even in comments)
+		const fnBody = `"use\u0020strict";\n${script}`;
 		try {
 			// eslint-disable-next-line no-new-func
 			const fn = new Function(fnBody);
