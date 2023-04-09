@@ -962,7 +962,7 @@ function d20plusImporter () {
 						break;
 					case "Type":
 					default:
-						folderName = Parser.monTypeToFullObj(it.type).types.map(t => t.uppercaseFirst()).join(" / ");
+						folderName = Parser.monTypeToFullObj(it.type).types.map(t => t.uppercaseFirst()).join("/");
 						break;
 				}
 				return folderName;

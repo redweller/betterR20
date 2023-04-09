@@ -12,8 +12,11 @@ const _LIBS = new Set([
 	"render.js",
 	"render-dice.js",
 	"scalecreature.js",
+	"filter.js",
 	"utils.js",
 	"utils-ui.js",
+	"utils-brew.js",
+	"utils-dataloader.js"
 ]);
 
 async function main () {

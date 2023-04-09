@@ -152,9 +152,7 @@ const betteR205etoolsMain = function () {
 			name: "class",
 			plural: "classes",
 			playerImport: true,
-			allImport: true,
 			baseUrl: CLASS_DATA_DIR,
-			defaultSource: "",
 		},
 		{
 			name: "deity",
