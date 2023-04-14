@@ -366,5 +366,10 @@
 		"ver": "1.34.2",
 		"date": "2023-04-07",
 		"txt": "- Updated UI templates to match latest Roll20 \"Doors & Windows\" update (thanks @ Redweller)\n- Disabled/removed non-functional Line Cutter tool (thanks @ Redweller)\n- Fixed crash when using \"Set image from URL...\" button in deck editor (thanks @ darthbeep)\n- Fixed misc Roll20 console spam when running an adblocker (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.34.3",
+		"date": "2023-04-14",
+		"txt": "- Temporarily (until a better solution is found) disabled extra layers, to prevent crashes (thanks @ darthbeep)"
 	}
 ]

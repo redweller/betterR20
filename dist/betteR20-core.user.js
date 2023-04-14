@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.34.2
+// @version      1.34.3
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -21339,7 +21339,7 @@ const betteR20Core = function () {
 			}
 			d20plus.engine.enhancePathWidths();
 			d20plus.ut.fix3dDice();
-			d20plus.engine.addLayers();
+			// d20plus.engine.addLayers(); // FIXME(163) re-enable when we have a better solution
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
