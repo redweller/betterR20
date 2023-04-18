@@ -63,7 +63,7 @@ function d20plusClass () {
 			{
 				forcePlayer,
 				builderOptions: {
-					isHomebrew: true,
+					isHomebrew: url !== CLASS_DATA_DIR,
 				},
 			},
 		);

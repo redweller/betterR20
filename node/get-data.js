@@ -7,8 +7,11 @@ if (!process.argv[2]) {
 	process.exit(1);
 }
 
-const _BLACKLIST_FILENAMES_JSON = new Set([
+const _BLOCKLIST_FILENAMES_JSON = new Set([
 	"changelog.json",
+	"roll20-items.json",
+	"roll20-tables.json",
+	"roll20.json",
 ]);
 
 // region https://stackoverflow.com/a/55566081
@@ -24,10 +27,10 @@ async function main () {
 
 	for (const pth of curListing) {
 		if (!pth.endsWith(".json")) continue;
-		if (_BLACKLIST_FILENAMES_JSON.has(path.basename(pth))) continue;
+		if (_BLOCKLIST_FILENAMES_JSON.has(path.basename(pth))) continue;
 		const pathSiteDir = path.join(process.argv[2], pth);
-		if (!fs.existsSync(pathSiteDir)) console.log(`File ${pth} does not exist in 5etools data!`);
-		else fs.copyFileSync(pathSiteDir, pth);
+		if (!fs.existsSync(pathSiteDir)) throw new Error(`File ${pth} does not exist in 5etools data!`);
+		fs.copyFileSync(pathSiteDir, pth);
 	}
 }
 
