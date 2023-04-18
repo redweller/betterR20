@@ -527,7 +527,10 @@ function d20plusMod () {
 			}
 			// END MOD
 			$("#editinglayer").addClass(window.currentEditingLayer);
-			$(document).trigger("d20:editingLayerChanged");
+
+			// BEGIN MOD
+			d20.Campaign.activePage().onLayerChange();
+			// END MOD
 		});
 	};
 	// END ROLL20 CODE
