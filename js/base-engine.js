@@ -35,6 +35,8 @@ function d20plusEngine () {
 		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
 		$("#ellipse").unbind(clicktype).bind(clicktype, () => setMode("ellipse"));
 		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
+		$("#select").unbind(clicktype).bind(clicktype, () => setMode("select"));
+		$("#select .chooseselect").unbind(clicktype).bind(clicktype, () => setMode("select"));
 
 		if (!$(`#fxtools`).length) {
 			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
