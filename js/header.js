@@ -28,12 +28,12 @@ addConfigOptions = function (category, options) {
 	else CONFIG_OPTIONS[category] = Object.assign(CONFIG_OPTIONS[category], options);
 };
 
-//OBJECT_DEFINE_PROPERTY = Object.defineProperty;
+//OBJECT_DEFINE_PROPERTY = Object.defineProperty; // FIXME(165) re-enable when we have a better solution
 ACCOUNT_ORIGINAL_PERMS = {
 	largefeats: false,
 	xlfeats: false,
 };
-/* Disabled temporarily due to breaking better20
+/* Disabled temporarily due to breaking better20 // FIXME(165) re-enable when we have a better solution
 Object.defineProperty = function (obj, prop, vals) {
 	try {
 		if (prop === "largefeats" || prop === "xlfeats") {
