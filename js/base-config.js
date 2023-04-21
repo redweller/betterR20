@@ -605,7 +605,10 @@ function baseConfig () {
 							break;
 						}
 						case "_enum": { // for generic String enums not covered above
-							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.cfg.getCfgEnumVals(cfgK, grpK).map(it => `<option value="${it}">${it}</option>`)}</select>`);
+							const texts = CONFIG_OPTIONS[cfgK][grpK]?.__texts;
+							const $field = $(`<select id="conf_field_${idx}" class="cfg_grp_${cfgK}" data-item="${grpK}">${d20plus.cfg.getCfgEnumVals(cfgK, grpK).map((it, i) => {
+								return `<option value="${it}">${texts ? texts[i] : it}</option>`
+							})}</select>`);
 
 							const cur = d20plus.cfg.get(cfgK, grpK);
 							if (cur !== undefined) {

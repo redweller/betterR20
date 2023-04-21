@@ -447,6 +447,73 @@ function initHTMLroll20EditorsMisc () {
 		</div>
 	</script>
 	`;
+
+	d20plus.html.macroEditor = `
+	<script id="tmpl_macroeditor" type="text/html">
+		<div>
+			<label>
+				Name
+				<span style='color: #777;'> (Don't include the <code>#</code> or spaces in the name)</span>
+			</label>
+			<input class='name' type='text'>
+			<div class='clear'></div>
+			<!-- BEGIN MOD -->
+			<label>
+				Actions
+				<span class='actionhelp r20' style='color: #777;'>&nbsp;(One command/roll per line)</span>
+				<span class='actionhelp js' style='color: #777;'>
+					&nbsp;(Regular javascript commands)
+					&nbsp;<a class="tipsy-n-right showtip pictos" original-title="<div style='background:black;width:300px;margin:-5px;padding:5px;text-align:left'>
+				<strong>Notes on JS code usage:</strong><br>
+				<code>use&nbsp;strict</code> directive enabled<br>
+				<code>this</code> refers to this r20 macro object<br>
+				<code>d20</code> object can be used to access game data:<br>
+				<code>.textchat.doChatInput()</code> sends text to chat<br>
+				<code>.engine.selected()</code> gets selected tokens<br>
+				<code>.Campaign.activePage()</code> gets current map<br>
+			</div>">?</a>
+				</span>
+			</label>
+			<textarea class='macro tokenizer' style='display:none'></textarea>
+			<textarea class='tokenizer b20' style='width: 100%; min-height: 75px; margin-top: 5px'></textarea>
+			<div class='clear'></div>
+			<div class='btn testmacro' style='float: right;'>Test Macro</div>
+			<p class='commandhelp r20' style='color: #777;'>
+				Type <code>@</code> to insert variables from Characters
+				<br>
+				Type <code>#</code> to insert other macros
+			</p>
+			<p class='commandhelp js' style='color: #777;'>
+				This <code>#macro</code> can't be nested in macros or actions
+				<br>
+				Type <code>return</code> to output results to chat
+			</p>
+			<div class='clear'></div>
+			<label>
+				<input class='isjs' style='margin-right: 10px;' type='checkbox' value='1'>Execute as JS userscript</input>
+			</label>
+			<!-- END MOD -->
+			<label>
+				<input class='istokenaction' style='margin-right: 10px;' type='checkbox' value='1'>Show as Token Action?</input>
+			</label>
+			<div class='clear' style='height: 15px;'></div>
+			<$ if(window.is_gm) { $>
+			<label>
+				Visible To Players
+				<span style='color: #777;'>(Optional)</span>
+			</label>
+			<select class='visibleto chosen' multiple='true' style='width: 100%;'>
+				<option value='all'>All Players</option>
+				<$ window.Campaign.players.each(function(player) { $>
+				<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+				<$ }); $>
+			</select>
+			<div class='clear'></div>
+			<$ } $>
+			<button class='btn btn-danger delete'>Delete Macro</button>
+		</div>
+	</script>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLroll20EditorsMisc);
