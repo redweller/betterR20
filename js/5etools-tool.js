@@ -224,18 +224,18 @@ function tools5eTool () {
 				$win.find(`button`).on("click", () => {
 					function getSizeInTiles (size) {
 						switch (size) {
-							case SZ_TINY:
+							case Parser.SZ_TINY:
 								return 0.5;
-							case SZ_SMALL:
-							case SZ_MEDIUM:
+							case Parser.SZ_SMALL:
+							case Parser.SZ_MEDIUM:
 								return 1;
-							case SZ_LARGE:
+							case Parser.SZ_LARGE:
 								return 2;
-							case SZ_HUGE:
+							case Parser.SZ_HUGE:
 								return 3;
-							case SZ_GARGANTUAN:
+							case Parser.SZ_GARGANTUAN:
 								return 4;
-							case SZ_COLOSSAL:
+							case Parser.SZ_COLOSSAL:
 								return 5;
 						}
 					}

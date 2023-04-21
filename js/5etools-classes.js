@@ -21,71 +21,52 @@ function d20plusClass () {
 		}
 	};
 
-	d20plus.classes.getDataForImport = async function (oldData) {
-		await d20plus.importer.pAddBrew(oldData);
-		const data = MiscUtil.copy(oldData);
-		data.class = data.class || [];
-		for (let i = 0; i < data.class.length; ++i) {
-			data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
-		}
-
-		if (data.subclass) {
-			for (let i = 0; i < data.subclass.length; ++i) {
-				data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
-			}
-		}
-
-		d20plus.classes._doAttachChildSubclasses(data);
-
-		return data;
-	}
-
 	// Import Classes button was clicked
-	d20plus.classes.button = function (forcePlayer) {
+	d20plus.classes.button = async function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-classes-url-player").val() : $("#import-classes-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
-			const officialClassUrls = Object.values(classDataUrls).map(v => d20plus.formSrcUrl(CLASS_DATA_DIR, v));
 
-			DataUtil.loadJSON(url).then(async (data) => {
-				if (!data.class) return;
+		if (!url || !url.trim()) return;
 
-				data = await d20plus.classes.getDataForImport(data);
+		const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
-				d20plus.importer.showImportList(
-					"class",
-					data.class,
-					handoutBuilder,
-					{
-						forcePlayer,
-						builderOptions: {
-							isHomebrew: !officialClassUrls.includes(url),
-						},
-					},
-				);
-			});
+		// make sure the homebrew system knows about it
+		await BrewUtil2.pAddBrewFromUrl(url)
+
+		// If the url is for the official classes, combine them into the correct data structure
+		let classesDeref;
+		let subclassesDeref;
+		if (url === CLASS_DATA_DIR) {
+			classesDeref = await DataLoader.pCacheAndGetAllSite("class");
+			subclassesDeref = await DataLoader.pCacheAndGetAllSite("subclass");
 		}
-	};
+		else {
+			// get the semi-processed data (this will merge `_copy` etc., but not dereference `ref*`)
+			const data = await DataUtil.loadJSON(url)
+			// From the semi-processed data, get the final dereferenced data, by asking the `DataLoader` (which has a pipeline to resolve all refs) for it
+			classesDeref = await data.class
+				.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("class", cls.source, UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](cls), {isCopy: true}))
+			subclassesDeref = await data.subclass
+				.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("subclass", cls.source, UrlUtil.URL_TO_HASH_BUILDER["subclass"](cls), {isCopy: true}));
+		}
 
-	// Import All Classes button was clicked
-	d20plus.classes.buttonAll = function (forcePlayer) {
-		const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.classes.handoutBuilder : d20plus.classes.playerImportBuilder;
+		// Make it so you get subclasses as well as classes
+		const subclassLoader = {"class": classesDeref, "subclass": subclassesDeref};
+		d20plus.classes._doAttachChildSubclasses(subclassLoader);
 
-		d20plus.classes._pLoadMergedClassJON()
-			.then(data => {
-				d20plus.importer.showImportList(
-					"class",
-					data.class,
-					handoutBuilder,
-					{
-						forcePlayer,
-						builderOptions: {
-							isHomebrew: false,
-						},
-					},
-				);
-			});
+		if (!classesDeref?.length) return;
+
+		await d20plus.importer.showImportList(
+			"class",
+			classesDeref,
+			handoutBuilder,
+			{
+				forcePlayer,
+				builderOptions: {
+					isHomebrew: url !== CLASS_DATA_DIR,
+				},
+			},
+		);
 	};
 
 	d20plus.classes.handoutBuilder = function (data, overwrite, inJournals, folderName, saveIdsTo, options) {
@@ -391,7 +372,7 @@ function d20plusClass () {
 		importClassGeneral(attrs, clss, maxLevel);
 
 		let featureSourceBlacklist = await d20plus.ui.chooseCheckboxList(
-			[SRC_TCE, SRC_UACFV],
+			[Parser.SRC_TCE, Parser.SRC_UACFV],
 			"Choose Variant/Optional Feature Sources to Exclude",
 			{
 				note: "Choosing to exclude a source will prevent its features from being added to your sheet.",
@@ -540,49 +521,44 @@ function d20plusClass () {
 	}
 
 	// Import Subclasses button was clicked
-	d20plus.subclasses.button = function (forcePlayer) {
+	d20plus.subclasses.button = async function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-subclasses-url-player").val() : $("#import-subclasses-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
 
-			DataUtil.loadJSON(url).then(async (data) => {
-				const allData = await d20plus.subclasses.getDataForImport(data);
+		if (!url || !url.trim()) return;
 
-				d20plus.importer.showImportList(
-					"subclass",
-					allData,
-					handoutBuilder,
-					{
-						groupOptions: d20plus.subclasses._groupOptions,
-						forcePlayer,
-						listItemBuilder: d20plus.subclasses._listItemBuilder,
-						listIndex: d20plus.subclasses._listCols,
-						listIndexConverter: d20plus.subclasses._listIndexConverter,
-					},
-				);
-			});
+		const handoutBuilder = playerMode ? d20plus.subclasses.playerImportBuilder : d20plus.subclasses.handoutBuilder;
+
+		// make sure the homebrew system knows about it
+		await BrewUtil2.pAddBrewFromUrl(url);
+
+		// If the url is for the official classes, combine them into the correct data structure
+		let subclassesDeref;
+		if (url === CLASS_DATA_DIR) {
+			subclassesDeref = await DataLoader.pCacheAndGetAllSite("subclass");
 		}
-	};
-
-	/**
-	 * @param subclass
-	 * @param baseClass Will be defined if importing as part of a class, undefined otherwise.
-	 */
-	d20plus.subclasses._preloadClass = function (subclass, baseClass) {
-		if (!subclass.className) return Promise.resolve();
-
-		if (baseClass || subclass._baseClass) {
-			return Promise.resolve();
-		} else {
-			d20plus.ut.log("Preloading class...");
-			return d20plus.classes._pLoadMergedClassJON().then((data) => {
-				const clazz = data.class.find(it => it.name.toLowerCase() === subclass.className.toLowerCase() && it.source.toLowerCase() === (subclass.classSource || SRC_PHB).toLowerCase());
-				if (!clazz) {
-					throw new Error(`Could not find class for subclass ${subclass.name}::${subclass.source} with class ${subclass.className}::${subclass.classSource || SRC_PHB}`);
-				}
-			});
+		else {
+			// get the semi-processed data (this will merge `_copy` etc., but not dereference `ref*`)
+			const data = await DataUtil.loadJSON(url);
+			// From the semi-processed data, get the final dereferenced data, by asking the `DataLoader` (which has a pipeline to resolve all refs) for it
+			subclassesDeref = await data.subclass
+				.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("subclass", cls.source, UrlUtil.URL_TO_HASH_BUILDER["subclass"](cls), {isCopy: true}));
 		}
+
+		if (!subclassesDeref?.length) return;
+
+		await d20plus.importer.showImportList(
+			"subclass",
+			subclassesDeref,
+			handoutBuilder,
+			{
+				groupOptions: d20plus.subclasses._groupOptions,
+				forcePlayer,
+				listItemBuilder: d20plus.subclasses._listItemBuilder,
+				listIndex: d20plus.subclasses._listCols,
+				listIndexConverter: d20plus.subclasses._listIndexConverter,
+			},
+		);
 	};
 
 	/**
@@ -602,25 +578,23 @@ function d20plusClass () {
 		// handle duplicates/overwrites
 		if (!d20plus.importer._checkHandleDuplicate(path, overwrite)) return;
 
-		d20plus.subclasses._preloadClass(data, baseClass).then(() => {
-			const name = `${data.shortName} (${data.className})`;
-			d20.Campaign.handouts.create({
-				name: name,
-				tags: d20plus.importer.getTagString([
-					data.className,
-					Parser.sourceJsonToFull(data.source),
-				], "subclass"),
-			}, {
-				success: function (handout) {
-					if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
+		const name = `${data.shortName} (${data.className})`;
+		d20.Campaign.handouts.create({
+			name: name,
+			tags: d20plus.importer.getTagString([
+				data.className,
+				Parser.sourceJsonToFull(data.source),
+			], "subclass"),
+		}, {
+			success: function (handout) {
+				if (saveIdsTo) saveIdsTo[UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](data)] = {name: data.name, source: data.source, type: "handout", roll20Id: handout.id};
 
-					const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
+				const [noteContents, gmNotes] = d20plus.subclasses._getHandoutData(data);
 
-					handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
-					handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
-					d20.journal.addItemToFolderStructure(handout.id, folder.id);
-				},
-			});
+				handout.updateBlobs({notes: noteContents, gmnotes: gmNotes});
+				handout.save({notes: (new Date()).getTime(), inplayerjournals: inJournals});
+				d20.journal.addItemToFolderStructure(handout.id, folder.id);
+			},
 		});
 	};
 
@@ -629,14 +603,12 @@ function d20plusClass () {
 	 * @param baseClass Will be defined if importing as part of a class, undefined otherwise.
 	 */
 	d20plus.subclasses.playerImportBuilder = function (data, baseClass) {
-		d20plus.subclasses._preloadClass(data, baseClass).then(() => {
-			const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
+		const [notecontents, gmnotes] = d20plus.subclasses._getHandoutData(data);
 
-			const importId = d20plus.ut.generateRowId();
-			d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
-			const name = `${data.className ? `${data.className} \u2014 ` : ""}${data.name}`;
-			d20plus.importer.makePlayerDraggable(importId, name);
-		});
+		const importId = d20plus.ut.generateRowId();
+		d20plus.importer.storePlayerImport(importId, JSON.parse(gmnotes));
+		const name = `${data.className ? `${data.className} \u2014 ` : ""}${data.name}`;
+		d20plus.importer.makePlayerDraggable(importId, name);
 	};
 
 	d20plus.subclasses._getHandoutData = function (data) {

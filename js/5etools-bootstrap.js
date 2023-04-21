@@ -72,6 +72,9 @@ const betteR205etools = function () {
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
 
+			// Clear BrewUtil cache
+			BrewUtil2._storage = new StorageUtilMemory();
+
 			// apply config
 			if (window.is_gm) {
 				d20plus.cfg.baseHandleConfigChange();

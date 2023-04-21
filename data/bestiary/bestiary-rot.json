@@ -20,6 +20,12 @@
 			"name": "Animated Tile Chimera",
 			"source": "RoT",
 			"page": 42,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 128
+				}
+			],
 			"_copy": {
 				"name": "Chimera",
 				"source": "MM",
@@ -69,6 +75,10 @@
 			"page": 36,
 			"otherSources": [
 				{
+					"source": "ToD",
+					"page": 112
+				},
+				{
 					"source": "PotA",
 					"page": 88
 				}
@@ -106,6 +116,12 @@
 			"name": "Carnivorous Flower",
 			"source": "RoT",
 			"page": 67,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 153
+				}
+			],
 			"_copy": {
 				"name": "Otyugh",
 				"source": "MM",
@@ -129,6 +145,12 @@
 			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 40,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 131
+				}
+			],
 			"_copy": {
 				"name": "Mummy Lord",
 				"source": "MM",
@@ -141,6 +163,62 @@
 					}
 				}
 			},
+			"int": 18,
+			"spellcasting": [
+				{
+					"name": "Spellcasting",
+					"headerEntries": [
+						"Diderius is a 10th-level spellcaster. His spellcasting ability is Intelligence (spell save {@dc 17}, {@hit 9} to hit with spell attacks). He has the following wizard spells prepared:"
+					],
+					"spells": {
+						"0": {
+							"spells": [
+								"{@spell minor illusion}",
+								"{@spell ray of frost}"
+							]
+						},
+						"1": {
+							"slots": 4,
+							"spells": [
+								"{@spell charm person}",
+								"{@spell detect magic}",
+								"{@spell shield}",
+								"{@spell thunderwave}"
+							]
+						},
+						"2": {
+							"slots": 3,
+							"spells": [
+								"{@spell cloud of daggers}",
+								"{@spell hold person}",
+								"{@spell see invisibility}"
+							]
+						},
+						"3": {
+							"slots": 3,
+							"spells": [
+								"{@spell animate dead}",
+								"{@spell dispel magic}"
+							]
+						},
+						"4": {
+							"slots": 3,
+							"spells": [
+								"{@spell fire shield}",
+								"{@spell greater invisibility}"
+							]
+						},
+						"5": {
+							"slots": 2,
+							"spells": [
+								"{@spell cloudkill}",
+								"{@spell wall of stone}"
+							]
+						}
+					},
+					"ability": "int"
+				}
+			],
 			"hasToken": true
 		},
 		{
@@ -399,6 +477,7 @@
 				"Pack Tactics"
 			],
 			"actionTags": [
+				"Breath Weapon",
 				"Multiattack"
 			],
 			"languageTags": [
@@ -417,8 +496,15 @@
 		{
 			"name": "Galvan",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 9,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 12
+				}
+			],
 			"_copy": {
 				"name": "Dragonsoul",
 				"source": "RoT",
@@ -501,6 +587,10 @@
 			"otherSources": [
 				{
 					"source": "DC"
+				},
+				{
+					"source": "ToD",
+					"page": 141
 				}
 			],
 			"_copy": {
@@ -549,6 +639,12 @@
 			"name": "Half-Green Dragon Assassin",
 			"source": "RoT",
 			"page": 56,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 142
+				}
+			],
 			"_copy": {
 				"name": "Assassin",
 				"source": "MM",
@@ -589,6 +685,12 @@
 			"name": "Half-Red Dragon Gladiator",
 			"source": "RoT",
 			"page": 56,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 142
+				}
+			],
 			"_copy": {
 				"name": "Gladiator",
 				"source": "MM",
@@ -737,6 +839,12 @@
 			"name": "Ice Troll",
 			"source": "RoT",
 			"page": 30,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 121
+				}
+			],
 			"_copy": {
 				"name": "Troll",
 				"source": "MM"
@@ -749,8 +857,15 @@
 		{
 			"name": "Iskander",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 62,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 148
+				}
+			],
 			"_copy": {
 				"name": "Mage",
 				"source": "MM",
@@ -781,8 +896,15 @@
 		{
 			"name": "Maccath the Crimson",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 33,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 111
+				}
+			],
 			"_copy": {
 				"name": "Mage",
 				"source": "MM",
@@ -818,8 +940,15 @@
 		{
 			"name": "Marfulb",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 35,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 121
+				}
+			],
 			"_copy": {
 				"name": "Ice Toad",
 				"source": "RoT"
@@ -830,8 +959,15 @@
 		{
 			"name": "Mend-nets",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 32,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 116
+				}
+			],
 			"_copy": {
 				"name": "Tribal Warrior",
 				"source": "MM"
@@ -847,6 +983,7 @@
 		{
 			"name": "Naergoth Bladelord",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 90,
 			"otherSources": [
@@ -984,6 +1121,7 @@
 		{
 			"name": "Neronvain",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 91,
 			"otherSources": [
@@ -1122,6 +1260,12 @@
 			"name": "Paper Whirlwind",
 			"source": "RoT",
 			"page": 72,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 158
+				}
+			],
 			"_copy": {
 				"name": "Swarm of Ravens",
 				"source": "MM"
@@ -1139,6 +1283,12 @@
 			"name": "Red Wizard",
 			"source": "RoT",
 			"page": 76,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 171
+				}
+			],
 			"_copy": {
 				"name": "Mage",
 				"source": "MM"
@@ -1337,6 +1487,12 @@
 			"name": "Sled Dog",
 			"source": "RoT",
 			"page": 27,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 113
+				}
+			],
 			"_copy": {
 				"name": "Wolf",
 				"source": "MM",
@@ -1354,6 +1510,12 @@
 			"name": "Snake Horror",
 			"source": "RoT",
 			"page": 46,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 132
+				}
+			],
 			"_copy": {
 				"name": "Helmed Horror",
 				"source": "MM",
@@ -1393,7 +1555,7 @@
 				},
 				{
 					"source": "ToD",
-					"page": 180
+					"page": 190
 				}
 			],
 			"size": [
@@ -1641,8 +1803,15 @@
 		{
 			"name": "Varram",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "RoT",
 			"page": 9,
+			"otherSources": [
+				{
+					"source": "ToD",
+					"page": 8
+				}
+			],
 			"_copy": {
 				"name": "Dragonsoul",
 				"source": "RoT",

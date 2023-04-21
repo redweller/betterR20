@@ -38,6 +38,7 @@
 		{
 			"name": "Boilerdrak",
 			"source": "DSotDQ",
+			"page": 189,
 			"size": "L",
 			"objectType": "SW",
 			"ac": 15,
@@ -291,6 +292,7 @@
 		{
 			"name": "Gnomeflinger",
 			"source": "DSotDQ",
+			"page": 189,
 			"size": "L",
 			"objectType": "SW",
 			"ac": 15,
@@ -501,6 +503,7 @@
 		{
 			"name": "Spirit Blister",
 			"source": "JttRC",
+			"page": 142,
 			"size": "M",
 			"objectType": "SW",
 			"ac": 17,
