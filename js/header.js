@@ -28,11 +28,12 @@ addConfigOptions = function (category, options) {
 	else CONFIG_OPTIONS[category] = Object.assign(CONFIG_OPTIONS[category], options);
 };
 
-OBJECT_DEFINE_PROPERTY = Object.defineProperty;
+//OBJECT_DEFINE_PROPERTY = Object.defineProperty;
 ACCOUNT_ORIGINAL_PERMS = {
 	largefeats: false,
 	xlfeats: false,
 };
+/* Disabled temporarily due to breaking better20
 Object.defineProperty = function (obj, prop, vals) {
 	try {
 		if (prop === "largefeats" || prop === "xlfeats") {
@@ -45,6 +46,7 @@ Object.defineProperty = function (obj, prop, vals) {
 		console.log("failed to define property:", e, obj, prop, vals);
 	}
 };
+*/
 
 FINAL_CANVAS_MOUSEDOWN_LIST = [];
 FINAL_CANVAS_MOUSEMOVE_LIST = [];
