@@ -74,13 +74,16 @@ function tools5eTool () {
 					// Handle special cases where certain items need extra data
 					switch (lastDataType) {
 						case "class":
-							overrideData = (await d20plus.classes.getDataForImport(lastLoadedData)).class;
+							x = lastLoadedData
+							overrideData = await lastLoadedData.class
+								.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("class", cls.source, UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](cls), {isCopy: true}));
 							extraOptions["builderOptions"] = {
 								isHomebrew: true,
 							}
 							break;
 						case "subclass":
-							overrideData = await d20plus.subclasses.getDataForImport(lastLoadedData);
+							overrideData = await lastLoadedData.subclass
+								.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("subclass", cls.source, UrlUtil.URL_TO_HASH_BUILDER["subclass"](cls), {isCopy: true}));
 							break;
 						default:
 							break;

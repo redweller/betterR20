@@ -11,8 +11,8 @@ function d20plusDeities () {
 		const url = $("#import-deities-url").val();
 
 		if (url && url.trim()) {
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addBrewMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				await d20plus.importer.pAddBrew(url);
 				d20plus.importer.showImportList(
 					"deity",
 					data.deity,

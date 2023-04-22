@@ -30,8 +30,8 @@ function d20plusSpells () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addBrewMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				await d20plus.importer.pAddBrew(url);
 				if (data.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(data.roll20Spell);
 				d20plus.importer.showImportList(
 					"spell",
@@ -150,7 +150,7 @@ function d20plusSpells () {
 			},
 		);
 
-		if (data.range.type === "point" && (data.range.distance.type === UNT_FEET || data.range.distance.type === UNT_MILES)) {
+		if (data.range.type === "point" && (data.range.distance.type === Parser.UNT_FEET || data.range.distance.type === Parser.UNT_MILES)) {
 			r20Data["data-RangeNum"] = `${data.range.distance.amount}`;
 		}
 

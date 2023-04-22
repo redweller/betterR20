@@ -8,8 +8,8 @@ function d20plusFeats () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.feats.playerImportBuilder : d20plus.feats.handoutBuilder;
 
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addBrewMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				await d20plus.importer.pAddBrew(url);
 				d20plus.importer.showImportList(
 					"feat",
 					data.feat,
@@ -60,7 +60,7 @@ function d20plusFeats () {
 	d20plus.feats._getHandoutData = function (data) {
 		const renderer = new Renderer();
 		renderer.setBaseUrl(BASE_SITE_URL);
-		const prerequisite = Renderer.utils.getPrerequisiteHtml(data.prerequisite);
+		const prerequisite = Renderer.utils.prerequisite.getHtml(data.prerequisite);
 		Renderer.feat.initFullEntries(data);
 
 		const renderStack = [];
