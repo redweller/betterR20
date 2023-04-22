@@ -167,8 +167,8 @@ function d20plusMonsters () {
 		const url = $("#import-monsters-url").val();
 		if (url && url.trim()) {
 			DataUtil.loadJSON(url).then(async data => {
-				const doShowList = () => {
-					d20plus.importer.addBrewMeta(data._meta);
+				const doShowList = async () => {
+					await d20plus.importer.pAddBrew(url);
 					d20plus.importer.showImportList(
 						"monster",
 						data.monster,

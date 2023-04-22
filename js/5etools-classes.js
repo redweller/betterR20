@@ -31,7 +31,7 @@ function d20plusClass () {
 		const handoutBuilder = playerMode ? d20plus.classes.playerImportBuilder : d20plus.classes.handoutBuilder;
 
 		// make sure the homebrew system knows about it
-		await BrewUtil2.pAddBrewFromUrl(url)
+		await BrewUtil2.pAddBrewFromUrl(url);
 
 		// If the url is for the official classes, combine them into the correct data structure
 		let classesDeref;
@@ -42,10 +42,10 @@ function d20plusClass () {
 		}
 		else {
 			// get the semi-processed data (this will merge `_copy` etc., but not dereference `ref*`)
-			const data = await DataUtil.loadJSON(url)
+			const data = await DataUtil.loadJSON(url);
 			// From the semi-processed data, get the final dereferenced data, by asking the `DataLoader` (which has a pipeline to resolve all refs) for it
 			classesDeref = await data.class
-				.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("class", cls.source, UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](cls), {isCopy: true}))
+				.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("class", cls.source, UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](cls), {isCopy: true}));
 			subclassesDeref = await data.subclass
 				.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("subclass", cls.source, UrlUtil.URL_TO_HASH_BUILDER["subclass"](cls), {isCopy: true}));
 		}
@@ -489,36 +489,6 @@ function d20plusClass () {
 			source: Parser.sourceJsonToAbv(sc.source).toLowerCase(),
 		};
 	};
-
-	d20plus.subclasses.getDataForImport = async function (data) {
-		await d20plus.importer.pAddBrew(data);
-
-		data = MiscUtil.copy(data);
-		for (let i = 0; i < (data.class || []).length; ++i) {
-			data.class[i] = await DataUtil.class.pGetDereferencedClassData(data.class[i]);
-		}
-		for (let i = 0; i < (data.subclass || []).length; ++i) {
-			data.subclass[i] = await DataUtil.class.pGetDereferencedSubclassData(data.subclass[i]);
-		}
-
-		// merge in any subclasses contained in class data
-		const allData = MiscUtil.copy(data.subclass || []);
-		(data.class || []).map(c => {
-			if (c.subclasses) {
-				// make a copy without subclasses to prevent circular references
-				const cpy = MiscUtil.copy(c);
-				delete cpy.subclasses;
-				c.subclasses.forEach(sc => {
-					sc.className = c.name;
-					sc.source = sc.source || c.source;
-					sc._baseClass = cpy;
-				});
-				return c.subclasses;
-			} else return false;
-		}).filter(Boolean).forEach(sc => allData.push(sc));
-
-		return allData.flat();
-	}
 
 	// Import Subclasses button was clicked
 	d20plus.subclasses.button = async function (forcePlayer) {

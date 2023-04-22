@@ -16,7 +16,7 @@ function d20plusRaces () {
 					// i found none in the existing homebrew at the time of doing this, so propably won't be such an issue
 					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))
 				}
-				d20plus.importer.addBrewMeta(data._meta);
+				await d20plus.importer.pAddBrew(url);
 				d20plus.importer.showImportList(
 					"race",
 					Renderer.race.mergeSubraces(toImport),
