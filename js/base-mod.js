@@ -4,12 +4,34 @@
 function d20plusMod () {
 	d20plus.mod = {};
 
-	/* eslint-disable */
+	d20plus.mod.setMode = function (t) {
+		d20plus.ut.log(`Setting mode ${t}`);
+		const preserveDrawingColor = (stash) => {
+			const drawingTools = ["rect", "ellipse", "text", "path", "polygon"];
+			const drawingProps = [{nm: "fill", el: "fillcolor"}, {nm: "color", el: "strokecolor"}];
+			if (!drawingTools.includes(t)) return;
+			drawingProps.forEach(prop => {
+				if (stash) d20plus.mod[`drawing${prop.nm}`] = d20.engine.canvas.freeDrawingBrush[prop.nm];
+				else {
+					if (d20plus.mod[`drawingcolor`] === "rgb(0, 0, 0)" || !d20plus.mod[`drawingcolor`]) return;
+					$(`#path_${prop.el}`).val(d20plus.mod[`drawing${prop.nm}`]).trigger("change");
+				}
+			});
+		}
+		try {
+			preserveDrawingColor(true);
+			d20.Campaign.activePage().setModeRef(t);
+			preserveDrawingColor();
+		} catch (e) {
+			d20plus.ut.log(`Switching using legacy because ${e.message}`);
+			d20plus.mod.setModeLegacy(t);
+		}
+	}
 
 	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
+	/* eslint-disable */
 	// BEGIN ROLL20 CODE
-	d20plus.mod.setMode = function (e) {
-		d20plus.ut.log("Setting mode " + e);
+	d20plus.mod.setModeLegacy = function (e) {
 		// BEGIN MOD
 		// "text" === e || "rect" === e || "ellipse" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
 		// END MOD
@@ -51,7 +73,6 @@ function d20plusMod () {
 			}),
 				d20.engine.canvas.hoverCursor = "move"),
 			// BEGIN MOD
-			// console.log("Switch mode to " + e),
 			d20.engine.mode = e,
 		"measure" !== e && window.currentPlayer && d20.engine.measurements[window.currentPlayer.id] && !d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.announceEndMeasure({
 			player: window.currentPlayer.id
@@ -346,165 +367,107 @@ function d20plusMod () {
 	};
 	// END ROLL20 CODE
 
-	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background", "foreground"]);
 	// BEGIN ROLL20 CODE
-	d20plus.mod.renderAll = function (e) {
-		const t = e && e.context || this.contextContainer
-			, i = this.getActiveGroup()
-			, n = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
-			, o = new d20.math.Rectangle(...d20.math.add(d20.engine.currentCanvasOffset, d20.math.div(n, 2)),...n,0);
-		i && !window.is_gm && (i.hideResizers = !0),
-			this.clipTo ? fabric.util.clipContext(this, t) : t.save();
-		const r = {
+	d20plus.mod.renderAll = function(v) {
+		const p = v && v.context || this.contextContainer
+		  , e = this.getActiveGroup()
+		  , u = this.sortTokens();
+		e && !window.is_gm && (e.hideResizers = !0),
+		this.clipTo ? fabric.util.clipContext(this, p) : p.save(),
+		v.tokens = u.map,
+		this.drawMapLayer(p, v);
+		const n = v && v.grid_before_afow
+		  , y = !d20.Campaign.activePage().get("adv_fow_enabled") || v && v.disable_afow
+		  , d = !d20.Campaign.activePage().get("showgrid") || v && v.disable_grid;
+		return n && !d && d20.canvas_overlay.drawGrid(p),
+		!y && window.largefeats && d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context),
+		!n && !d && d20.canvas_overlay.drawGrid(p),
+		// BEGIN MOD
+		["background", "objects", "foreground"].forEach(layer => {
+			v.tokens = u[layer],
+			this.drawAnyLayer(p, v, layer);
+		}),
+		window.is_gm && (v.tokens = u.gmlayer,
+		this.drawAnyLayer(p, v, "gmlayer")),
+		window.is_gm && window.currentEditingLayer === "walls" && (v.tokens = u.walls,
+		this.drawDynamicLightingLayer(p, v)),
+		window.currentEditingLayer === "weather" && (v.tokens = u.weather,
+		this.drawAnyLayer(p, v, "weather")),
+		// END MOD
+		p.restore(),
+		this
+	}
+	// END ROLL20 CODE
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.sortTokens = function() {
+		const v = {
 			map: [],
 			// BEGIN MOD
 			background: [],
-			// END MOD
-			walls: [],
 			objects: [],
-			// BEGIN MOD
 			foreground: [],
+			gmlayer: [],
+			weather: [],
 			// END MOD
-			gmlayer: []
-			// BEGIN MOD
-			, weather: [],
-			// END MOD
-			_save_map_layer: this._save_map_layer
+			walls: []
 		};
-		r[Symbol.iterator] = this._layerIteratorGenerator.bind(r, e);
-		const a = e && e.tokens_to_render || this._objects;
-		for (let e of a)
-			if (e.model) {
-				const t = e.model.get("layer");
-				if (!r[t])
-					continue;
-				r[t].push(e)
-			} else
-				r[window.currentEditingLayer].push(e);
-
-		// BEGIN MOD
-		// Here we get the layers and look if there's a foreground in the current map
-		let layers = d20.engine.canvas._objects.map(it => it.model?.get("layer") || window.currentEditingLayer)
-		const noForegroundLayer = !layers.some(it => it === 'foreground');
-		// END MOD
-
-		for (const [n,a] of r) {
-			switch (a) {
-				case "lighting and fog":
-					d20.engine.drawHighlights(this.contextContainer), d20.dyn_fog.render({
-						main_canvas: this.contextContainer.canvas
-					});
-					continue;
-				case "grid":
-					d20.canvas_overlay.drawGrid(t);
-					continue;
-				case "afow":
-					d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context);
-					continue;
-				case "gmlayer":
-					t.globalAlpha = d20.engine.gm_layer_opacity;
-					break;
-				// BEGIN MOD
-				case "background":
-				case "foreground":
-					if (d20plus.mod._renderAll_middleLayers.has(window.currentEditingLayer) && window.currentEditingLayer !== a && window.currentEditingLayer !== "objects") {
-						t.globalAlpha = .45;
-						break;
-					}
-				// END MOD
-				case "objects":
-					if ("map" === window.currentEditingLayer || "walls" === window.currentEditingLayer) {
-						t.globalAlpha = .45;
-						break
-					}
-				default:
-					t.globalAlpha = 1
-			}
-			_.chain(n).filter(n=>{
-					let r;
-					return i && n && i.contains(n) ? (n.renderingInGroup = i,
-						n.hasControls = !1) : (n.renderingInGroup = null,
-						n.hasControls = !0,
-						"text" !== n.type && window.is_gm ? n.hideResizers = !1 : n.hideResizers = !0),
-						e && e.invalid_rects ? (r = n.intersects([o]) && (n.needsToBeDrawn || n.intersects(e.invalid_rects)),
-						!e.skip_prerender && n.renderPre && n.renderPre(t)) : (r = n.needsRender(o),
-						(!e || !e.skip_prerender) && r && n.renderPre && n.renderPre(t, {
-							should_update: !0
-						})),
-						r
-				}
-			).each(i=> {
-				// BEGIN MOD
-				let toRender = false;
-				// END MOD
-
-				const n = "image" === i.type.toLowerCase() && i.model.controlledByPlayer(window.currentPlayer.id)
-
-				// BEGIN MOD
-				// If there is a foreground layer, do not give "owned tokens with sight" special treatment;
-				//   render them during the normal render flow (rather than skipping them)
-				 const o = noForegroundLayer ? e && e.owned_with_sight_auras_only : false;
-				// END MOD
-
-				let r = i._model;
-				r && d20.dyn_fog.ready() ? r = i._model.get("has_bright_light_vision") || i._model.get("has_low_light_vision") || i._model.get("has_night_vision") : r && (r = i._model.get("light_hassight")),
-				// BEGIN MOD
-				// We don't draw immediately the token. Instead, we mark it as "to render"
-				o && (!o || n && r) || (toRender = true);
-
-				if (toRender) {
-					// For the token checked "to render", we draw them if
-					//  - we're in a "render everything" call (i.e. no specific `tokens_to_render`), rather than a "render own tokens" call
-					//  - there isn't a foreground layer for the map or
-					//  - is everything but an object
-					if (!e.tokens_to_render || noForegroundLayer || a !== 'objects') {
-						this._draw(t, i);
-					}
-					i.renderingInGroup = null;
-				}
-				// END MOD
-			})
+		for (const p of this._objects) {
+			const e = v[p.model.get("layer")];
+			e && e.push(p)
 		}
-		return t.restore(),
-			this
-	};
+		return v
+	}
 	// END ROLL20 CODE
 
-	// shoutouts to Roll20 for making me learn how `yield` works
+	d20plus.mod.setAlpha = function (layer) {
+		const l = ["map", "walls", "weather", "background", "objects", "foreground", "gmlayer"];
+		const o = ["background", "objects", "foreground"];
+		return !window.is_gm 
+			|| (o.includes(layer) && o.includes(window.currentEditingLayer))
+			|| (l.indexOf(window.currentEditingLayer) >= l.indexOf(layer)
+				&& !(o.includes(layer) && window.currentEditingLayer === "gmlayer"))
+			? 1 : (layer === "gmlayer" ? d20.engine.gm_layer_opacity : .5);
+	}
+
 	// BEGIN ROLL20 CODE
-	d20plus.mod.layerIteratorGenerator = function*(e) {
-		yield [this.map, "map"],
-		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
-			this._save_map_layer = !1);
-		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
-
-		const grid_before_afow = e && e.grid_before_afow;
-		const adv_fow_disabled = !d20.Campaign.activePage().get("adv_fow_enabled") || e && e.disable_afow;
-		const grid_hide = !d20.Campaign.activePage().get("showgrid") || e && e.disable_grid;
-
-		if (grid_before_afow && !grid_hide) yield [null, "grid"];
-		if (!adv_fow_disabled) yield [null, "afow"];
-		if (!grid_before_afow && !grid_hide) yield [null, "grid"];
-
+	d20plus.mod.drawAnyLayer = function(v, p={}, layer) {
+		const e = p.tokens || this._objects.filter(u=>{
+			const n = u.model;
+			// BEGIN MOD
+			return n && n.get("layer") === layer
+			// END MOD
+		});
+		v.save(),
 		// BEGIN MOD
-		yield [this.background, "background"];
+		v.globalAlpha = d20plus.mod.setAlpha(layer),
 		// END MOD
+		this.drawTokenList(v, e, p),
+		v.restore()
+	},
+	// END ROLL20 CODE
 
-		yield [this.objects, "objects"];
-
-		// BEGIN MOD
-		yield [this.foreground, "foreground"];
-		// END MOD
-
-		if (window.is_gm) yield [this.gmlayer, "gmlayer"];
-
-		const enable_dynamic_fog = e && e.enable_dynamic_fog;
-		if (d20.dyn_fog.ready() && enable_dynamic_fog) yield [null, "lighting and fog"];
-
-		// BEGIN MOD
-		if (window.is_gm && "weather" === window.currentEditingLayer) yield [this.weather, "weather"];
-		// END MOD
-	};
+	// BEGIN ROLL20 CODE
+	d20plus.mod.drawTokensWithoutAuras = function (v, p) {
+		const e = this.getActiveGroup();
+		v.save(),
+		p.forEach(u=>{
+			e && u && e.contains(u) ? (u.renderingInGroup = e,
+			u.hasControls = !1) : (u.renderingInGroup = null,
+			u.hasControls = !0,
+			u.hideResizers = !window.is_gm);
+			// BEGIN MOD
+			v.globalAlpha = d20plus.mod.setAlpha(u.model.get("layer")),
+			// END MOD
+			u.renderPre(v, {
+				noAuras: !0,
+				should_update: !0
+			}),
+			this._draw(v, u)
+		}
+		),
+		v.restore()
+	},
 	// END ROLL20 CODE
 
 	// BEGIN ROLL20 CODE
