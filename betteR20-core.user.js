@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.1.41
+// @version      1.35.1.42
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -57,6 +57,7 @@ addConfigOptions = function (category, options) {
 };
 
 OBJECT_DEFINE_PROPERTY = Object.defineProperty;
+OBJECT_DEFINED_COUNT = 0;
 ACCOUNT_ORIGINAL_PERMS = {
 	isPro: false,
 	largefeats: false,
@@ -67,13 +68,15 @@ Object.defineProperty = function (obj, prop, vals) {
 		if (prop === "largefeats" || prop === "xlfeats" || prop === "isPro") {
 			ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
 			vals.value = true;
+			OBJECT_DEFINED_COUNT++;
 		}
-		OBJECT_DEFINE_PROPERTY(obj, prop, vals);
+		OBJECT_DEFINE_PROPERTY.bind(Object)(obj, prop, vals);
+		if (OBJECT_DEFINED_COUNT === 3) Object.defineProperty = OBJECT_DEFINE_PROPERTY.bind(Object);
 	} catch (e) {
 		// eslint-disable-next-line no-console
 		console.log("failed to define property:", e, obj, prop, vals);
 	}
-}; // */
+};
 
 FINAL_CANVAS_MOUSEDOWN_LIST = [];
 FINAL_CANVAS_MOUSEMOVE_LIST = [];
