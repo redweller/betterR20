@@ -158,143 +158,102 @@ function initHTMLroll20EditorsMisc () {
 
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.handoutEditor = `
-<script id='tmpl_handouteditor' type='text/html'>
-  <div class='dialog largedialog handouteditor' style='display: block;'>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <label>
-          <strong>Name</strong>
-        </label>
-        <input class='name' type='text'>
-        <div class='clear'></div>
-        <$ if (window.is_gm) { $>
-        <label>
-          <strong>In Player's Journals</strong>
-        </label>
-        <select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Can Be Edited By</strong>
-        </label>
-        <select class='controlledby chosen' multiple='true' style='width: 100%;'>
-          <option value="all">All Players</option>
-          <$ window.Campaign.players.each(function(player) { $>
-          <option value="<$!player.id$>"><$!player.get("displayname")$></option>
-          <$ }); $>
-        </select>
-        <div class='clear'></div>
-        <label>
-          <strong>Tags</strong>
-        </label>
-        <input class='tags'>
-        <div class='clear'></div>
-        <$ } $>
-      </div>
-    </div>
-    <div class='row-fluid'>
-      <div class='span12'>
-        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-        <div class="status"></div>
-        <div class="inner">
-          <$ if(this.get("avatar") == "") { $>
-          <h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
-          <br /> or
-          <button class="btn">Choose a file...</button>
-          <input class="manual" type="file" />
-          <$ } else { $>
-          <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-          <video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
-          <$ } else { $>
-          <img src="<$!this.get("avatar")$>" />
-          <$ } $>
-          <div class='remove'><a href='#'>Remove</a></div>
-          <$ } $>
-        </div>
-      </div>
-      <div class='clear'></div>
-    </div>
-  </div>
-  <!-- BEGIN MOD -->
-  <div class='row-fluid'>
-  <button class="btn handout-image-by-url">Set Image from URL</button>
-  <div class='clear'></div>
-  </div>
-  <!-- END MOD -->
-  <div class='row-fluid'>
-    <div class='span12'>
-      <label>
-        <strong>Description & Notes</strong>
-      </label>
-      <textarea class='notes'></textarea>
-      <div class='clear'></div>
-      <$ if(window.is_gm) { $>
-      <label>
-        <strong>GM Notes (Only visible to GM)</strong>
-      </label>
-      <textarea class='gmnotes'></textarea>
-      <div class='clear'></div>
-      <hr>
-      <button class='delete btn btn-danger' style='float: right;'>
-        Delete Handout
-      </button>
-      <button class='duplicate btn' style='margin-right: 10px;'>
-        Duplicate
-      </button>
-      <button class='archive btn'>
-        <$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive<$ } $>
-      </button>
-      <div class='clear'></div>
-      <$ } $>
-    </div>
-  </div>
-  </div>
-</script>
-<script id='tmpl_handoutviewer' type='text/html'>
-  <div class='dialog largedialog handoutviewer' style='display: block;'>
-    <div style='padding: 10px;'>
-      <$ if(this.get("avatar") != "") { $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <div class='avatar'>
-            <a class="lightly" target="_blank" href="<$!(this.get("avatar").indexOf("d20.io/") !== -1 ? this.get("avatar").replace(/\\/med\\.(?!webm)/, "/max.") : this.get("avatar"))$>">
-            <$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
-            <video src="<$!this.get("avatar")$>" draggable="false" loop muted autoplay />
-            <$ } else { $>
-            <img src="<$!this.get("avatar")$>" draggable="false" />
-            <$ } $>
-            <div class='mag-glass pictos'>s</div></a>
-            </a>
-          </div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ } $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <div class='content note-editor notes'></div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ if(window.is_gm) { $>
-      <div class='row-fluid'>
-        <div class='span12'>
-          <hr>
-          <label>
-            <strong>GM Notes (Only visible to GM)</strong>
-          </label>
-          <div class='content note-editor gmnotes'></div>
-          <div class='clear'></div>
-        </div>
-      </div>
-      <$ } $>
-    </div>
-  </div>
-</script>
+		<script id="tmpl_handouteditor" type="text/html">
+		<div class='dialog largedialog handouteditor' style='display: block;'>
+		<div class='row-fluid'>
+		<div class='span12'>
+		<label>
+		<strong>Name</strong>
+		</label>
+		<input class='name' type='text'>
+		<div class='clear'></div>
+		<$ if (window.is_gm) { $>
+		<label>
+		<strong>In Player's Journals</strong>
+		</label>
+		<select class='inplayerjournals chosen' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Can Be Edited By</strong>
+		</label>
+		<select class='controlledby chosen' multiple='true' style='width: 100%;'>
+		<option value="all">All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<label>
+		<strong>Tags</strong>
+		</label>
+		<input class='tags'>
+		<div class='clear'></div>
+		<$ } $>
+		</div>
+		</div>
+		<div class='row-fluid'>
+		<div class='span12'>
+		<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+		<div class="status"></div>
+		<div class="inner">
+		<$ if(this.get("avatar") == "") { $>
+		<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+		<br /> or
+		<button class="btn">Choose a file...</button>
+		<input class="manual" type="file" />
+		<$ } else { $>
+		<$ if(/.+\\.webm(\\?.*)?$/i.test(this.get("avatar"))) { $>
+		<video src="<$!this.get("avatar")$>" draggable="false" muted autoplay loop />
+		<$ } else { $>
+		<img src="<$!this.get("avatar")$>" />
+		<$ } $>
+		<div class='remove'><a href='#'>Remove</a></div>
+		<$ } $>
+		</div>
+		</div>
+		<div class='clear'></div>
+		</div>
+		</div>
+		<!-- BEGIN MOD -->
+		<div class='row-fluid'>
+			<button class="btn handout-image-by-url">Set Image from URL</button>
+			<div class='clear'></div>
+		</div>
+		<!-- END MOD -->
+		<div class='row-fluid'>
+		<div class='span12'>
+		<label>
+		<strong>Description & Notes</strong>
+		</label>
+		<textarea class='notes'></textarea>
+		<div class='clear'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		<strong>GM Notes (Only visible to GM)</strong>
+		</label>
+		<textarea class='gmnotes'></textarea>
+		<div class='clear'></div>
+		<hr>
+		<button class='delete btn btn-danger' style='float: right;'>
+		Delete Handout
+		</button>
+		<button class='duplicate btn' style='margin-right: 10px;'>
+		Duplicate
+		</button>
+		<button class='archive btn'>
+		<$ if(this.get("archived")) { $>Restore Handout from Archive<$ } else { $>Archive<$ } $>
+		</button>
+		<div class='clear'></div>
+		<$ } $>
+		</div>
+		</div>
+		</div>
+		</script>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -497,6 +456,76 @@ function initHTMLroll20EditorsMisc () {
         <button class='deletecard btn btn-danger'>Delete Card</button>
       </div>
     </script>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.macroEditor = `
+		<script id="tmpl_macroeditor" type="text/html">
+		<div>
+		<label>
+		Name
+		<span style='color: #777;'> (Don't include the <code>#</code> or spaces in the name)</span>
+		</label>
+		<input class='name' type='text'>
+		<div class='clear'></div>
+		<!-- BEGIN MOD -->
+		<label>
+		Actions
+		<span class='actionhelp r20' style='color: #777;'>&nbsp;(One command/roll per line)</span>
+		<span class='actionhelp js' style='color: #777;'>
+			&nbsp;(Regular javascript commands)
+			&nbsp;<a class="tipsy-n-right showtip pictos" original-title="<div style='background:black;width:300px;margin:-5px;padding:5px;text-align:left'>
+				<strong>Notes on JS code usage:</strong><br>
+				<code>use&nbsp;strict</code> directive enabled<br>
+				<code>this</code> refers to this r20 macro object<br>
+				<code>d20</code> object can be used to access game data:<br>
+				<code>.textchat.doChatInput()</code> sends text to chat<br>
+				<code>.engine.selected()</code> gets selected tokens<br>
+				<code>.Campaign.activePage()</code> gets current map<br>
+			</div>">?</a>
+		</span>
+		</label>
+		<textarea class='macro tokenizer' style='display:none'></textarea>
+		<textarea class='tokenizer b20' style='width: 100%; min-height: 75px; margin-top: 5px'></textarea>
+		<div class='clear'></div>
+		<div class='btn testmacro' style='float: right;'>Test Macro</div>
+		<p class='commandhelp r20' style='color: #777;'>
+		Type <code>@</code> to insert variables from Characters
+		<br>
+		Type <code>#</code> to insert other macros
+		</p>
+		<p class='commandhelp js' style='color: #777;'>
+		This <code>#macro</code> can't be nested in macros or actions
+		<br>
+		Type <code>return</code> to output results to chat
+		</p>
+		<div class='clear'></div>
+		<label>
+		<input class='isjs' style='margin-right: 10px;' type='checkbox' value='1'>Execute as JS userscript</input>
+		</label>
+		<!-- END MOD -->
+		<label>
+		<input class='istokenaction' style='margin-right: 10px;' type='checkbox' value='1'>Show as Token Action?</input>
+		</label>
+		<div class='clear' style='height: 15px;'></div>
+		<$ if(window.is_gm) { $>
+		<label>
+		Visible To Players
+		<span style='color: #777;'>(Optional)</span>
+		</label>
+		<select class='visibleto chosen' multiple='true' style='width: 100%;'>
+		<option value='all'>All Players</option>
+		<$ window.Campaign.players.each(function(player) { $>
+		<option value="<$!player.id$>"><$!player.get("displayname")$></option>
+		<$ }); $>
+		</select>
+		<div class='clear'></div>
+		<$ } $>
+		<button class='btn btn-danger delete'>Delete Macro</button>
+		</div>
+		</script>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});

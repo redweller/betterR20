@@ -81,7 +81,15 @@ function baseUtil () {
 		object[method] = (...initParams) => {
 			return injectedCode.bind(object)(original, initParams);
 		}
-	}
+	}// RB20 EXCLUDE START
+
+	d20plus.ut.interceptCode = (object, method, injectedCode) => {
+		const original = object[method].bind(object);
+		object[method] = (...initParams) => {
+			const passParams = injectedCode(initParams);
+			return original.apply(original, initParams);
+		}
+	}// RB20 EXCLUDE END
 
 	d20plus.ut.checkVersion = () => { // RB20 EXCLUDE START
 		d20plus.ut.plantVersionInfo();// RB20 EXCLUDE END
@@ -552,8 +560,20 @@ function baseUtil () {
 		return null;
 	};
 
+	d20plus.ut.getCharacter = (charRef) => {
+		if (charRef === "selected") return d20.engine.selected()[0]?.model?.character;
+		const characters = d20.Campaign.characters;
+		if (charRef.id) return characters._byId[charRef.id];
+		return characters._byId[charRef]
+			|| characters.models.find(char => char.attributes.name === charRef);
+	}
+
 	d20plus.ut.getCharAttribByName = (char, attribName) => {
 		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
+	};
+
+	d20plus.ut.getCharAbilityByName = (char, abilbName) => {
+		return char.abilities?.models?.find(prop => prop?.attributes?.name === abilbName);
 	};
 
 	d20plus.ut.getCharMetaAttribByName = (char, attribNamePart, caseInsensitive) => {
@@ -579,9 +599,118 @@ function baseUtil () {
 		if (Object.entries(metaAttrib).length > 1) return metaAttrib;
 	}
 
-	d20plus.ut.getCharLinkedAttrib = (attrib) => {
-		const attribs = attrib.collection.models;
+	d20plus.ut.getActionTmpl = (template) => {
+		const res = {noDice: template};
+		const getIndex = () => {
+			const index = res.path[2]?.slice(1);
+			if (!res.path[2] || res.path[2][0] !== "$" || isNaN(index)) return;
+			const repquery = ["_reporder"].concat(res.path.slice(0, 2)).join("_");
+			const reporder = d20plus.ut.getCharAttribByName(res.char, repquery)?.attributes.current;
+			if (reporder) {
+				res.path[2] = reporder.split(",")[index];
+			} else {
+				const reporder = res.char.attribs?.models?.filter(prop => {
+					const check = prop?.attributes?.name.split("_");
+					return check[1] === res.path[1] && check.last() === "name";
+				}).map(prop => prop.attributes.name.split("_")[2]);
+				res.path[2] = reporder[index] || res.path[2];
+			}
+		}
+		const getRoll = (tmpl) => `${tmpl}`.replace(/@\{(?<attr>\w*)\}/g, (...group) => {
+			const prop = group.last().attr;
+			const subAttr = res.action[prop];
+			const preserveRef = ["_mod", "d20", "npc_name_flag"].some(ref => prop.includes(ref));
+			const preloadRef = prop === "show_desc"
+				? res.action.description || ""
+				: d20plus.ut.getCharAttribByName(res.char, prop)?.attributes.current;
+			d20plus.ut.log("--REPLACING", group[0], " FOR ", (subAttr !== undefined ? getRoll(subAttr) : preloadRef) || (preserveRef ? `@{${prop}}` : ""))
+			return (subAttr !== undefined ? getRoll(subAttr) : preloadRef) || (preserveRef ? `@{${prop}}` : "");
+		}).replace("repeating_attack_spelldesc_link", () => {
+			return [`${res.char.id}|`, "repeating_attack_", res.path[2], "_spelldesc_link"].join("");
+		});
+		const getTemplate = (template) => {
+			const [charRef, actionId] = template.slice(2, -1).split("|");
+			if (!charRef || !actionId) return;
+			res.char = res.char || d20plus.ut.getCharacter(charRef);
+			res.path = actionId?.split("_");
+			getIndex();
+			d20plus.ut.log("Evaluating template", charRef, actionId);
+			if (["link", "output"].includes(res.path.last())) {
+				return;
+			}
+			if (res.path[0] !== "repeating") {
+				const abil = d20plus.ut.getCharAbilityByName(res.char, actionId)?.attributes.action;
+				if (abil && abil.includes("template:")) res.tmpl = abil;
+				else if (abil) getTemplate(abil);
+			} else if (res.path[1].includes("spell-")) {
+				const spellname = res.path.slice(0, 3).join("_");
+				res.action = d20plus.ut.getCharMetaAttribByName(res.char, spellname);
+				const spell = res.action?.rollcontent;
+				if (spell && spell.includes("template:")) res.tmpl = getRoll(spell);
+				else if (spell) getTemplate(spell);
+			} else if (res.path[1] === "attack" || res.path[1] === "npcaction") {
+				const actionId = res.path.slice(0, 3).join("_");
+				res.action = d20plus.ut.getCharMetaAttribByName(res.char, actionId);
+				if (res.action?.rollbase && res.action.rollbase.includes("template:")) {
+					res.tmpl = getRoll(res.action.rollbase);
+				}
+			}
+		}
+		getTemplate(template);
+		res.tmpl = res.tmpl
+			?.replace(/@{([^|^}^{]*?)}/g, `@{${res.char.attributes.name}|$1}`);
+		return res.tmpl || res.noDice;
 	}
+
+	/*
+	const char = d20plus.ut.getCharacter(charRef);
+	if (!char) return noDice;
+	const addName = tmpl => tmpl.replace(/@{([^|^}^{]*?)}/g, `@{${char.attributes.name}|$1}`);
+	const abil = d20plus.ut.getCharAbilityByName(char, actionId)?.attributes.action;
+	if (abil && abil.includes("template:")) return addName(abil);
+	else if (abil) actionId = abil.split("|")[1]?.split("_").slice(0, -1).join("_");
+	const path = actionId.split("_");
+	d20plus.ut.log("Evaluating template", abil, path)
+	if (path[0] !== "repeating") return noDice;
+	if (path[2][0] === "$") {
+		const index = path[2].slice(1);
+		const repquery = ["_reporder"].concat(path.slice(0, 2)).join("_");
+		const reporder = d20plus.ut.getCharAttribByName(char, repquery)?.attributes.current;
+		if (reporder) {
+			path[2] = reporder.split(",")[index];
+		} else {
+			const reporder = char.attribs?.models?.filter(prop => {
+				const path = prop?.attributes?.name.split("_");
+				return path[1] === "npcaction" && path.last() === "name"
+			}).map(prop => prop.attributes.name.split("_")[2]);
+			path[2] = reporder[index] || path[2];
+		}
+	}
+	if (path[1] === "npcaction") {
+		actionId = path.slice(0, 3).join("_");
+	} else if (path.last() === "spell") {
+		const spellname = path.slice(0, -1).concat(["rollcontent"]).join("_");
+		const spell = d20plus.ut.getCharAttribByName(char, spellname)?.attributes.current;
+		d20plus.ut.log("Query spell", spellname, spell)
+		if (spell && spell.includes("template:")) return addName(spell);
+		else if (spell) actionId = spell.split("|")[1]?.split("_").slice(0, -1).join("_");
+	} else if (path.last() === "attack") {
+		actionId = path.slice(0, -1).join("_");
+	} else return noDice;
+	d20plus.ut.log("Search action", actionId)
+	const attr = d20plus.ut.getCharMetaAttribByName(char, actionId);
+	if (!attr?.rollbase) return noDice;
+	const getRoll1 = (tmpl) => `${tmpl}`.replace(/@\{(?<attr>\w*)\}/g, (...group) => {
+		const prop = group.last().attr;
+		const subAttr = attr[prop];
+		const preserveRef = ["_mod", "d20", "npc_name_flag"].some(ref => prop.includes(ref));
+		const preloadRef = prop === "show_desc"
+			? attr.description || ""
+			: d20plus.ut.getCharAttribByName(char, prop)?.attributes.current;
+		d20plus.ut.log("--CHECKING", prop, subAttr, preserveRef, preloadRef)
+		return (subAttr !== undefined ? getRoll(subAttr) : preloadRef) || (preserveRef ? `@{${prop}}` : "");
+	});
+	// return getRoll(attr.rollbase); */
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {

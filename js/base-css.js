@@ -652,6 +652,19 @@ function baseCss () {
 			s: `#page-toolbar`,
 			r: `display: block;`,
 		},
+		// Macro editor styles
+		{
+			s: `.jsdialog .actionhelp.r20, .jsdialog .commandhelp.r20`,
+			r: `display: none;`,
+		},
+		{
+			s: `.jsdialog .actionhelp.js, .jsdialog .commandhelp.js`,
+			r: `display: inline-block;`,
+		},
+		{
+			s: `.actionhelp.js, .commandhelp.js`,
+			r: `display: none;`,
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [
@@ -738,6 +751,10 @@ function baseCss () {
 		{
 			s: ".inlinerollresult.showtip.hit-dice",
 			r: "cursor: pointer",
+		},
+		{
+			s: ".inlinerollresult.showtip.hit-dice.heal-dice::before",
+			r: "content: \"+\"",
 		},
 		{
 			s: ".inlinerollresult.showtip.hit-dice:hover::after",

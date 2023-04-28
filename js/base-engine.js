@@ -35,6 +35,8 @@ function d20plusEngine () {
 		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
 		$("#ellipse").unbind(clicktype).bind(clicktype, () => setMode("ellipse"));
 		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
+		$("#select").unbind(clicktype).bind(clicktype, () => setMode("select"));
+		$("#select .chooseselect").unbind(clicktype).bind(clicktype, () => setMode("select"));
 
 		if (!$(`#fxtools`).length) {
 			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
@@ -50,21 +52,51 @@ function d20plusEngine () {
 				$(`#editinglayer .choosegmlayer`).after(`
 					<li class="choosewalls">
 						<span class="pictostwo">r</span> 
-						${d20plus.cfg.get("canvas", "showLight") ? __("ui_bar_light_n_barriers") : __("ui_bar_barriers")}
+						${__("ui_bar_barriers")}
 					</li>
 				`);
 			}
 
-			// add light placement tool
-			if (d20plus.cfg.get("canvas", "showLight")) {
-				if (!$(`#placelight`).length) {
-					const $torchMode = $(`<li class="placelight" tip="Place Light"><span class="pictostwo">t</span></li>`);
-					$torchMode.on("click", () => {
-						d20plus.setMode("placelight");
-						$torchMode.addClass("activebutton");
-					});
-					$(`#measure`).after($torchMode);
-				}
+			// add DL objects tool
+			if (!$(`#placelight`).length) {
+				const $placeControl = $(`<li id="placeObject">
+					<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+					<use href="#place-object-icon"></use>
+					</svg>
+					<div class="submenu"><ul>
+						<li id="placelight" tip="Place Light">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#torch-icon"></use>
+							</svg>
+							Place Light
+						</li>
+						<li id="placeWindow">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#window-icon"></use>
+							</svg>
+							Place Window
+						</li>
+						<li id="placeDoor">
+							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+							<use href="#door-icon"></use>
+							</svg>
+							Place Door
+						</li>
+					</ul></div>
+				</li>`);
+				$placeControl.find(`#placelight`).on("click", () => {
+					d20plus.setMode("placelight");
+					$placeControl.addClass("activebutton");
+				});
+				$placeControl.find(`#placeWindow`).on("click", () => {
+					d20plus.setMode("placeWindow");
+					$placeControl.addClass("activebutton");
+				});
+				$placeControl.find(`#placeDoor`).on("click", () => {
+					d20plus.setMode("placeDoor");
+					$placeControl.addClass("activebutton");
+				});
+				$(`#measure`).after($placeControl);
 			}
 
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
@@ -104,6 +136,7 @@ function d20plusEngine () {
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		$("#tmpl_macroeditor").html($(d20plus.html.macroEditor).html());
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
 		// show dynamic lighting/etc page settings
@@ -213,6 +246,76 @@ function d20plusEngine () {
 		});
 	};
 
+	d20plus.engine.enhanceMacros = (openedMacroId) => {
+		const $dialog = $(`.dialog[data-macroid=${openedMacroId}]`);
+		if (!openedMacroId || !$dialog[0]) return;
+		const $macro = $dialog.find(`.macro.tokenizer`);
+		const $b20macro = $dialog.find(`.tokenizer.b20`);
+		const $name = $dialog.find("input.name");
+		const $checkbox = $dialog.find(".isjs")
+			.on("change", () => {
+				if ($checkbox.prop("checked")) $macro.parent().addClass("jsdialog");
+				else $macro.parent().removeClass("jsdialog");
+			});
+		const macro = currentPlayer.macros._byId[openedMacroId];
+		const script = d20plus.engine.decodeScript($macro.val());
+		if (script) {
+			$macro.parent().addClass("jsdialog");
+			$b20macro.val(script);
+			$checkbox.prop("checked", true);
+		} else {
+			$b20macro.val($macro.val());
+		}
+		$dialog.find(".btn.testmacro").on("click", () => {
+			if (!$checkbox.prop("checked")) {
+				$macro.val($b20macro.val());
+			} else {
+				$macro.val(d20plus.engine.runScript($b20macro.val(), macro));
+			}
+		});
+		const $buttons = $dialog.parent()
+			.find(".ui-dialog-buttonpane button:not(.active)")
+			.addClass("active");
+		$buttons.on("mouseup", () => {
+			let name = $name.val() || "Untitled";
+			const existing = new Set(d20.Campaign.players.map(p => p.macros
+				.filter(m => m.id !== openedMacroId && (p.id === d20_player_id || m.visibleToCurrentPlayer()))
+				.map(m => m.get("name"))).flat());
+			while (existing.has(name)) name = name.replace(/(\d*?)$/, id => Number(id) + 1);
+			if ($name.val() !== name) $name.val(name);
+			if (!$checkbox.prop("checked")) $macro.val($b20macro.val());
+			else $macro.val(d20plus.engine.encodeScript($b20macro.val()));
+		});
+	}
+
+	d20plus.engine.decodeScript = (macro) => {
+		const parts = macro.split("...");
+		if (parts.length !== 3
+			|| parts[0] !== "bs``<``"
+			|| parts[2] !== "``>``") return;
+		const script = decodeURIComponent(atob(parts[1]));
+		return script;
+	}
+
+	d20plus.engine.encodeScript = (script) => {
+		const saved = btoa(encodeURIComponent(script));
+		return `bs\`\`<\`\`...${saved}...\`\`>\`\``;
+	}
+
+	d20plus.engine.runScript = (script, macro) => {
+		// b20 fails to load if it has words use and strict separated by space ANYWHERE (right, even in comments)
+		const fnBody = `"use\u0020strict";\n${script}`;
+		try {
+			// eslint-disable-next-line no-new-func
+			const fn = new Function(fnBody);
+			return fn.call(macro) || "";
+		} catch (e) {
+			d20plus.ut.sendHackerChat(`Script executed with errors`, true);
+			d20plus.ut.error(e);
+			return "";
+		}
+	}
+
 	d20plus.engine.enhancePageSettings = () => {
 		if (!d20plus.engine._lastSettingsPageId) return;
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
@@ -291,6 +394,9 @@ function d20plusEngine () {
 		width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
 		height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
 		background_color: {class: ".pagebackground"},
+		wrapperColor: {class: ".wrappercolor"},
+		useAutoWrapper: {id: "page-wrapper-color-from-map-toggle", class: ".useautowrapper"},
+
 		scale_number: {id: "page-size-height-input", class: ".scale_number"},
 		scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
 		gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
@@ -684,6 +790,7 @@ function d20plusEngine () {
 	}// RB20 EXCLUDE END
 
 	d20plus.engine.addLineCutterTool = () => {
+		// The code in /overwrites/canvas-handler.js doesn't work
 		const $btnTextTool = $(`.choosetext`);
 
 		const $btnSplitTool = $(`<li class="choosesplitter">✂️ Line Splitter</li>`).click(() => {
@@ -1050,7 +1157,11 @@ function d20plusEngine () {
 		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
-		d20.engine.canvas._layerIteratorGenerator = d20plus.mod.layerIteratorGenerator;
+		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
+		d20.engine.canvas.drawAnyLayer = _.bind(d20plus.mod.drawAnyLayer, d20.engine.canvas);
+		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);// RB20 EXCLUDE START
+		// d20.engine.canvas._renderAll = _.bind(d20plus.mod.legacy_renderAll, d20.engine.canvas);
+		// d20.engine.canvas._layerIteratorGenerator = d20plus.mod.legacy_layerIteratorGenerator;// RB20 EXCLUDE END
 	};
 
 	d20plus.engine.removeLinkConfirmation = function () {

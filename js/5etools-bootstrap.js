@@ -14,8 +14,6 @@ const betteR205etools = function () {
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
-			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
-
 			d20plus.ut.showLoadingMessage();
 
 			d20plus.engine.swapTemplates();
@@ -68,7 +66,8 @@ const betteR205etools = function () {
 			d20plus.engine.enhanceStatusEffects();
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
-			if (showLineSpl) d20plus.engine.addLineCutterTool();
+			// It doesn't work with current version of roll20
+			// d20plus.engine.addLineCutterTool();
 			d20plus.engine.enhancePathWidths();
 			d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();

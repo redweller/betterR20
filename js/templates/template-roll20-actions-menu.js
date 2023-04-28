@@ -101,11 +101,21 @@ function initHTMLroll20actionsMenu () {
 							<ul class='submenu' data-menuname='positioning'>
 								<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'><span class="pictos ctx__layer-icon">@</span> Map Layer</li>
 								<!-- BEGIN MOD -->
+								<$ if(this?.get && this.get("layer") == "floors" || d20plus.cfg.getOrDefault("canvas", "showFloors")) { $>
+								<li data-action-type="tolayer_floors" class='<$ if(this && this.get && this.get("layer") == "floors") { $>active<$ } $>'><span class="pictos ctx__layer-icon">I</span> Floors Layer</li>
+								<$ } $>
+								<$ if(this?.get && this.get("layer") == "background" || d20plus.cfg.getOrDefault("canvas", "showBackground")) { $>
 								<li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'><span class="pictos ctx__layer-icon">a</span> Background Layer</li>
+								<$ } $>
 								<!-- END MOD -->
 								<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'><span class="pictos ctx__layer-icon">b</span> Token Layer</li>
 								<!-- BEGIN MOD -->
+								<$ if(this?.get && this.get("layer") == "roofs" || d20plus.cfg.getOrDefault("canvas", "showRoofs")) { $>
+								<li data-action-type="tolayer_roofs" class='<$ if(this && this.get && this.get("layer") == "roofs") { $>active<$ } $>'><span class="pictos ctx__layer-icon">H</span> Roofs Layer</li>
+								<$ } $>
+								<$ if(this?.get && this.get("layer") == "foreground" || d20plus.cfg.getOrDefault("canvas", "showForeground")) { $>
 								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'><span class="pictos ctx__layer-icon">B</span> Foreground Layer</li>
+								<$ } $>
 								<!-- END MOD -->
 								<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'><span class="pictos ctx__layer-icon">E</span> GM Layer</li>
 								<li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'><span class="pictostwo ctx__layer-icon">r</span> Lighting Layer</li>

@@ -69,6 +69,8 @@ Shit ?{huh|hits|avoids} the fan
 [[@{selected|d20}+@{selected|charisma_save_bonus}]] &nbsp; &nbsp; &nbsp; &nbsp; Харизма &nbsp; &nbsp; &nbsp; &nbsp; [[@{selected|d20}+@{selected|charisma_save_bonus}]]
 }}
 
+&{template:default} {{name=Характеристики}} {{[[4d6kh3]]=Выбор}}{{[[4d6kh3]]=Выбор}}{{[[4d6kh3]]=Выбор}}{{[[4d6kh3]]=Выбор}}{{[[4d6kh3]]=Выбор}}{{[[4d6kh3]]=Выбор}}
+
 &{template:simple} {{rname=Инициатива}} {{charname=@{selected|token_name}}} {{mod=@{selected|initiative_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|initiative_bonus} &{tracker}]]}} {{r2=[[@{selected|d20}+@{selected|initiative_bonus}]]}}
 
 &{template:atkdmg} {{rname=Удар книгой}} {{charname=@{selected|token_name}}} {{mod=6}} {{always=1}} {{r1=[[1d20cs=20+6-@{target|AC}]]}} {{r2=[[1d20cs=20+6-@{target|AC}]]}} {{damage=1}} {{attack=1}} {{save=1}} {{dmg1flag=1}} {{dmg1=[[2d4+2]]}} {{dmg1type=дробящий}} {{saveattr=(14) ЛОВКОСТЬ}} {{savedesc=При провале сбит с ног}} {{savedc=&nbsp;[[@{target|d20}+@{target|dexterity_save_bonus}-14]]}} {{crit1=[[2d4]]}}
@@ -214,6 +216,60 @@ Shit ?{huh|hits|avoids} the fan
 --)
 
 
+
+
+(-- // Зомби ---------------------------------------------
+
+	//! Кулак
+&{template:atkdmg} {{rname=Удар кулаком}} {{dmg1type=дробящий}} {{mod=5 фт.}} {{newline=
+}} {{range=@{selected|token_name}}} {{charname=по @{target|token_name}}} {{newline=
+}} damage 1 [[1d4[dmg@{target|token_id}]]] crit 1 [[1d4[dmg@{target|token_id}]]] {{newline=
+}} atk 1 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+3[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} atk 2 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+3[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} {{r1=$[[2]] ($[[5]])}} {{r2=$[[3]] ($[[7]])}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{newline=
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{dmg1flag=1}}
+
+	//! Укус
+&{template:atkdmg} {{rname=Укус}} {{dmg1type=рубящий}} {{newline=
+}} {{mod=5 фт.}} {{saveattr=ЛОВК}} {{savedc=12}} {{newline=
+}} {{range=@{selected|token_name}}} {{charname=по @{target|token_name}}} {{newline=
+}} damage 1 [[1d4[dmg@{target|token_id}]]] crit 1 [[1d4[dmg@{target|token_id}]]] {{newline=
+}} atk 1 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+2[chk]]] ]]cs>1cf<0 [chk1]]] {{newline=
+}} atk 2 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+2[chk]]] ]]cs>1cf<0 [chk2]]] {{newline=
+}} save 1 [[ d[[ {12+d0cs>1}<[[@{target|d20}+@{target|dexterity_save_bonus}[chk]]] ]]cs>1cf<0[chk3]]] {{newline=
+}} save 2 [[ d[[ {12+d0cs>1}<[[@{target|d20}+@{target|dexterity_save_bonus}[chk]]] ]]cs>1cf<0[chk4]]] {{newline=
+}} {{savedesc=$[[4]] ($[[11]]) &nbsp; $[[7]] ($[[13]])%NEWLINE%При провале цель отравлена и совершает броски с помехой}} {{newline=
+}} {{r1=$[[2]] ($[[6]])}} {{r2=$[[3]] ($[[10]])}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{newline=
+}} {{save=1}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{dmg1flag=1}}
+
+--)
+
+
+
+(-- // Кердера -------------------------------------------
+
+	//! Касание
+&{template:atkdmg} {{rname=Касание}} {{dmg1type=некротический}} {{mod=5 фт.}} {{newline=
+}} {{range=@{selected|token_name}}} {{charname=по @{target|token_name}}} {{newline=
+}} damage 1 [[1d6[dmg@{target|token_id}]]] crit 1 [[1d6[dmg@{target|token_id}]]] {{newline=
+}} atk 1 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+2[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} atk 2 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+2[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} {{r1=$[[2]] ($[[5]])}} {{r2=$[[3]] ($[[7]])}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{newline=
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{dmg1flag=1}}
+
+	//! Страх
+&{template:atkdmg} {{rname=Леденящий образ}} {{range=При провале цель испугана, не может приблизиться и совершает броски с помехой}} {{newline=
+}} {{innate=%NEWLINE%60 фт.}} {{savedc=13}} {{saveattr=МУДР}} {{newline=
+}} {{charname=@{selected|token_name} по @{target|token_name}}} {{newline=
+}} damage [[ floor([[2d8[dmg@{target|token_id}]]]/2)[dmg@{target|token_id}] ]] half $[[1]] full $[[0]] {{newline=
+}} save 1 [[ d[[ {13+d0cs>1}<[[@{target|d20}+@{target|wisdom_save_bonus}[chk]]] ]]cs>1cf<0[chk]]] {{newline=
+}} save 2 [[ d[[ {13+d0cs>1}<[[@{target|d20}+@{target|wisdom_save_bonus}[chk]]] ]]cs>1cf<0[chk]]] {{newline=
+}} {{savedesc=$[[2]] ($[[6]]) &nbsp; $[[3]] ($[[7]])}} {{dmg1=$[[0]]}} {{dmg1type=провал}} {{dmg2type=успех}} {{newline=
+}} {{dmg1flag=}} {{damage=1}} {{always=1}} {{save=1}} {{crit=}} {{dmg2flag=}} {{dmg2=0}}
+
+--)
+
+
 (-- // Пустынный стражник -------------------------------
 
 	// Кулак по силе !!!THIS
@@ -296,8 +352,8 @@ Shit ?{huh|hits|avoids} the fan
 }} {{dmg1flag=1}} {{dmg1=DC 15 vs АТЛ @{target|athletics_bonus}}} {{dmg1type=При провале остаётся схваченным}}
 	// а потом оборачиваем всё кроме названия темплейта в запрос, с заменой спец.символов
 &{template:atkdmg} ?{Проверка|
-	Атлетика, {{rname=Пытается&#160;вырваться&#125;&#125;&#160;{{charname=от&#160;@{selected|token_name}&#160;&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|athletics_bonus}]]&#160;]]&#160;{{r1=$[[0]]&#160;($[[1]])&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|athletics_bonus}]]&#160;]]&#160;{{r2=$[[2]]&#160;($[[3]])&#125;&#125;&#160;{{damage=1&#125;&#125;&#160;{{attack=1&#125;&#125;&#160;{{mod=15&#125;&#125;&#160;{{always=1&#125;&#125;&#160;{{crit=&#125;&#125;&#160;{{range=@{target|token_name}&#125;&#125;&#160;{{dmg1flag=1&#125;&#125;&#160;{{dmg1=по&#160;Атлетике&#160;@{target|athletics_bonus}&#125;&#125;&#160;{{dmg1type=При&#160;провале&#160;остаётся&#160;схваченным&#125;&#125;|
-	Акробатика, {{rname=Пытается&#160;вырваться&#125;&#125;&#160;{{charname=от&#160;@{selected|token_name}&#160;&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|acrobatics_bonus}]]&#160;]]&#160;{{r1=$[[0]]&#160;($[[1]])&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|acrobatics_bonus}]]&#160;]]&#160;{{r2=$[[2]]&#160;($[[3]])&#125;&#125;&#160;{{damage=1&#125;&#125;&#160;{{attack=1&#125;&#125;&#160;{{mod=15&#125;&#125;&#160;{{always=1&#125;&#125;&#160;{{crit=&#125;&#125;&#160;{{range=@{target|token_name}&#125;&#125;&#160;{{dmg1flag=1&#125;&#125;&#160;{{dmg1=по&#160;Акробатике&#160;@{target|acrobatics_bonus}&#125;&#125;&#160;{{dmg1type=При&#160;провале&#160;остаётся&#160;схваченным&#125;&#125;}
+	Атлетика, {{rname=Попытка&#160;вырваться&#125;&#125;&#160;{{charname=от&#160;@{selected|token_name}&#160;&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|athletics_bonus}]]&#160;]]&#160;{{r1=$[[0]]&#160;($[[1]])&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|athletics_bonus}]]&#160;]]&#160;{{r2=$[[2]]&#160;($[[3]])&#125;&#125;&#160;{{damage=1&#125;&#125;&#160;{{attack=1&#125;&#125;&#160;{{mod=15&#125;&#125;&#160;{{always=1&#125;&#125;&#160;{{crit=&#125;&#125;&#160;{{range=@{target|token_name}&#125;&#125;&#160;{{dmg1flag=1&#125;&#125;&#160;{{dmg1=по&#160;Атлетике&#160;@{target|athletics_bonus}&#125;&#125;&#160;{{dmg1type=При&#160;провале&#160;остаётся&#160;схваченным&#125;&#125;|
+	Акробатика, {{rname=Попытка&#160;вырваться&#125;&#125;&#160;{{charname=от&#160;@{selected|token_name}&#160;&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|acrobatics_bonus}]]&#160;]]&#160;{{r1=$[[0]]&#160;($[[1]])&#125;&#125;&#160;[[&#160;{15-d0cs>1&#125;<[[d20cs>21+@{target|acrobatics_bonus}]]&#160;]]&#160;{{r2=$[[2]]&#160;($[[3]])&#125;&#125;&#160;{{damage=1&#125;&#125;&#160;{{attack=1&#125;&#125;&#160;{{mod=15&#125;&#125;&#160;{{always=1&#125;&#125;&#160;{{crit=&#125;&#125;&#160;{{range=@{target|token_name}&#125;&#125;&#160;{{dmg1flag=1&#125;&#125;&#160;{{dmg1=по&#160;Акробатике&#160;@{target|acrobatics_bonus}&#125;&#125;&#160;{{dmg1type=При&#160;провале&#160;остаётся&#160;схваченным&#125;&#125;}
 
 
 	// Простой удар с двумя видами урона
@@ -325,6 +381,36 @@ Shit ?{huh|hits|avoids} the fan
 /w gm &{template:simple} {{rname=@{selected|token_name}%NEWLINE%Закапывание}} {{mod=4-6}} {{newline=
 }} roll spell 1 [[ d[[ {4+d0cs>1}<[[1d6[1]]] ]]cs>1cf<0[1] ]] {{newline=
 }} {{r1=$[[0]] ($[[2]])}} {{normal=1}} {{charname=перезарядка}}
+
+--)
+
+
+(-- // Имп ------------------------------------
+
+	// Два вида урона и спасбросок
+&{template:atkdmg} {{rname=Выпад хвостом}} {{charname=по @{target|token_name} }} {{newline=
+}} [[ {@{target|AC}-d0cs>1}<[[d20+5]] ]] {{r1=$[[0]] ($[[1]])}} {{newline=
+}} [[ {@{target|AC}-d0cs>1}<[[d20+5]] ]] {{r2=$[[2]] ($[[8]])}} {{newline=
+}} {{damage=1}} {{attack=1}} {{mod=6}} {{always=1}} {{crit=1}} {{save=1}} {{range=@{selected|token_name}}} {{newline=
+}} {{dmg1flag=1}} {{dmg1=[[1d4+1]]}} {{crit1=[[1d4]]}} {{dmg1type=колющий}} {{newline=
+}} {{dmg2flag=1}} {{dmg2=[[1d4]]}} {{crit2=[[1d4]]}} {{dmg2type=яд}} {{newline=
+}} {{saveattr=ТЕЛО}} {{savedesc=При провале отравлен}} {{newline=
+}} [[ {15-d0cs>1}<[[@{target|d20}+@{target|constitution_save_bonus}]] ]] {{savedc=&nbsp;15 vs $[[7]] ($[[9]])}}
+
+	//! Спасбросок с выбором стата
+&{template:atkdmg} ?{Проверка|
+	Атлетика, {{rname=Попытка&#160;вырваться&#125;&#125;&#160;{{charname=от&#160;@{selected|token_name}&#160;&#125;&#125;&#160;[[&#160;{18-d0cs>1&#125;<[[d20cs>21+@{target|athletics_bonus}]]&#160;]]&#160;{{r1=$[[0]]&#160;($[[1]])&#125;&#125;&#160;[[&#160;{18-d0cs>1&#125;<[[d20cs>21+@{target|athletics_bonus}]]&#160;]]&#160;{{r2=$[[2]]&#160;($[[3]])&#125;&#125;&#160;{{damage=1&#125;&#125;&#160;{{attack=1&#125;&#125;&#160;{{mod=18&#125;&#125;&#160;{{always=1&#125;&#125;&#160;{{crit=&#125;&#125;&#160;{{range=@{target|token_name}&#125;&#125;&#160;{{dmg1flag=1&#125;&#125;&#160;{{dmg1=по&#160;Атлетике&#160;@{target|athletics_bonus}&#125;&#125;&#160;{{dmg1type=При&#160;провале&#160;остаётся&#160;схваченным&#125;&#125;|
+	Акробатика, {{rname=Попытка&#160;вырваться&#125;&#125;&#160;{{charname=от&#160;@{selected|token_name}&#160;&#125;&#125;&#160;[[&#160;{18-d0cs>1&#125;<[[d20cs>21+@{target|acrobatics_bonus}]]&#160;]]&#160;{{r1=$[[0]]&#160;($[[1]])&#125;&#125;&#160;[[&#160;{18-d0cs>1&#125;<[[d20cs>21+@{target|acrobatics_bonus}]]&#160;]]&#160;{{r2=$[[2]]&#160;($[[3]])&#125;&#125;&#160;{{damage=1&#125;&#125;&#160;{{attack=1&#125;&#125;&#160;{{mod=18&#125;&#125;&#160;{{always=1&#125;&#125;&#160;{{crit=&#125;&#125;&#160;{{range=@{target|token_name}&#125;&#125;&#160;{{dmg1flag=1&#125;&#125;&#160;{{dmg1=по&#160;Акробатике&#160;@{target|acrobatics_bonus}&#125;&#125;&#160;{{dmg1type=При&#160;провале&#160;остаётся&#160;схваченным&#125;&#125;}
+
+
+		//! Бросание огня
+&{template:atkdmg} {{rname=Огненный снаряд}} {{dmg1type=огонь}} {{mod=60 фт.}} {{newline=
+}} {{range=@{selected|token_name}}} {{charname=по @{target|token_name}}} {{newline=
+}} damage 1 [[1d4[dmg@{target|token_id}]]] crit 1 [[1d4[dmg@{target|token_id}]]] {{newline=
+}} atk 1 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+2[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} atk 2 [[ 1d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+2[chk]]] ]]cs>1cf<0 [chk]]] {{newline=
+}} {{r1=$[[2]] ($[[5]])}} {{r2=$[[3]] ($[[7]])}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{newline=
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{dmg1flag=1}}
 
 --)
 
@@ -596,6 +682,156 @@ Shit ?{huh|hits|avoids} the fan
 	level 9, damage [[ 9d8cs>1cf<0 + @{selected|wisdom_mod} [heal@{target|token_id}] ]] [exp@{selected|character_id}&#124;spl9]} {{newline=
 }} {{r1=+$[[0]]}} {{newline=
 }} {{normal=1}} {{charname=@{selected|token_name}%NEWLINE%касание (5 фт.)}} {{mod=на @{target|token_name}}}
+
+
+(-- // Куки
+
+// ЦИ
+&{template:simple} {{r1=Ци}} {{mod=?{Способность|
+	Поступь ветра,Отход или рывок бонусным действием&#125;&#125;{{rname=Поступь ветра|
+	Терпеливая оборона,Уклонение бонусным действием&#125;&#125;{{rname=Терпеливая оборона|
+	Шквал ударов,Две безоружные атаки бонусным действием&#125;&#125;{{rname=Шквал ударов}%NEWLINE%}} {{
+}} [exp@{selected|character_id}|resc] {{
+}} {{normal=1}} {{charname=@{selected|token_name}}}
+
+
+// Боевой посох
+&{template:atkdmg} {{dmg1type=дробящий}} {{mod=5 фт.}} {{rname=Боевой посох%NEWLINE%?{Использование|
+	Одной рукой, одноручный&#125;&#125;damage 1 [[1d6+@{selected|dexterity_mod}[dmg@{target|token_id}]]] crit 1 [[1d6[dmg@{target|token_id}]]]|
+	Двумя руками, двуручный&#125;&#125;damage 1 [[1d8+@{selected|dexterity_mod}[dmg@{target|token_id}]]] crit 1 [[1d8[dmg@{target|token_id}]]]} {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[2]] ($[[5]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[3]] ($[[7]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}}
+
+// Безоружный
+&{template:atkdmg} {{dmg1type=дробящий}} {{mod=5 фт.}} {{rname=Ладонь}} {{
+}} [[ 1d[[2+2*round((@{selected|level} + 1) / 6 + 0.5)]] + @{selected|dexterity_mod}[dmg@{target|token_id}]]] crit 1 [[1d[[2+2*round((@{selected|level} + 1) / 6 + 0.5)]] [dmg@{target|token_id}]]]} {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[4]] ($[[7]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[5]] ($[[10]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[1]]}} {{crit1=$[[3]]}} {{charname=по @{target|token_name}}}
+
+
+// Дротик
+&{template:atkdmg} {{dmg1type=колющий}} {{mod=20/60 фт.}} {{rname=Дротик}} {{
+}} damage 1 [[1d4+@{selected|dexterity_mod}[dmg@{target|token_id}]]] crit 1 [[1d4[dmg@{target|token_id}]]] {{
+}} [exp@{selected|character_id}|ammo-Дротик] {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[2]] ($[[5]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[3]] ($[[7]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}}
+
+--)
+
+
+(-- // Феликс
+
+// Короткий меч
+&{template:atkdmg} {{dmg1type=колющий}} {{mod=5 фт.}} {{rname=Короткий меч}} {{
+}} damage 1 [[1d6+@{selected|dexterity_mod}[dmg@{target|token_id}]]] crit 1 [[1d6[dmg@{target|token_id}]]] {{
+}} damage 2 [[ [[round(@{selected|base_level}/2)]]d6 [dmg@{target|token_id}]]] crit 2 [[ [[round(@{selected|base_level}/2)]]d6 [dmg@{target|token_id}]]] {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[6]] ($[[9]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[7]] ($[[11]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}} {{
+}} {{dmg2flag=1}} {{dmg2=$[[3]]}} {{crit2=$[[5]]}} {{dmg2type=скрытая атака}}
+
+// Короткий лук
+&{template:atkdmg} {{dmg1type=колющий}} {{mod=80/320 фт.}} {{rname=Короткий лук}} {{
+}} damage 1 [[1d6+@{selected|dexterity_mod}[dmg@{target|token_id}]]] crit 1 [[1d6[dmg@{target|token_id}]]] {{
+}} damage 2 [[ [[round(@{selected|base_level}/2)]]d6 [dmg@{target|token_id}]]] crit 2 [[ [[round(@{selected|base_level}/2)]]d6 [dmg@{target|token_id}]]] {{
+}} [exp@{selected|character_id}|ammo-Стрела] {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[6]] ($[[9]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[7]] ($[[11]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}} {{
+}} {{dmg2flag=1}} {{dmg2=$[[3]]}} {{crit2=$[[5]]}} {{dmg2type=скрытая атака}}
+
+// Кинжал
+&{template:atkdmg} {{dmg1type=колющий}} {{rname=?{Использование|
+	Основной рукой, Кинжал&#125;&#125; {{mod=5 фт.&#125;&#125; damage 1 [[1d6+@{selected|dexterity_mod}[dmg@{target|token_id}]]]|
+	Второй рукой, Доп. атака кинжалом%NEWLINE%&#125;&#125; {{mod=5 фт.&#125;&#125; damage 1 [[1d6[dmg@{target|token_id}]]]|
+	Бросок основной рукой, Бросок кинжала&#125;&#125; {{mod=20/60 фт.&#125;&#125; [exp@{selected|character_id}&#124;ammo-Кинжал] damage 1 [[1d6+@{selected|dexterity_mod}[dmg@{target|token_id}]]]|
+	Бросок второй рукой, Доп. бросок кинжала%NEWLINE%&#125;&#125; {{mod=20/60 фт.&#125;&#125; [exp@{selected|character_id}&#124;ammo-Кинжал] damage 1 [[1d6[dmg@{target|token_id}]]]|} {{
+}} crit 1 [[1d6[dmg@{target|token_id}]]] {{
+}} damage 2 [[ [[round(@{selected|base_level}/2)]]d6 [dmg@{target|token_id}]]] crit 2 [[ [[round(@{selected|base_level}/2)]]d6 [dmg@{target|token_id}]]] {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[6]] ($[[9]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[7]] ($[[11]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}} {{
+}} {{dmg2flag=1}} {{dmg2=$[[3]]}} {{crit2=$[[5]]}} {{dmg2type=скрытая атака}}
+
+--)
+
+
+(-- // Еверард
+
+&{template:atkdmg} {{dmg1type=поле}} {{mod=120 фт.}} {{rname=Мистический заряд}} {{
+}} damage 1 [[1d10[dmg@{target|token_id}]]] crit 1 [[1d10[dmg@{target|token_id}]]] {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|charisma_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[2]] ($[[5]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|charisma_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[3]] ($[[7]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}}
+
+// Заклинания
+&{template:simple} {{mod=?{Заклинание|
+	Невидимый слуга,Призыв невидимого слуги&#125;&#125;{{r1=Невидимый слуга|
+	Очарование личности,Цель расположена к заклинателю&#125;&#125;{{r1=Очарование}}} {{
+}} [exp@{selected|character_id}|spl1] {{
+}} {{normal=1}} {{charname=@{selected|token_name}}}
+
+--)
+
+
+
+(-- // Камнеслав
+
+// Молот
+&{template:atkdmg} {{dmg1type=дробящий}} {{mod=5 фт.}} {{rname=Боевой молот%NEWLINE%?{Использование|
+	Одной рукой, одноручный&#125;&#125;damage 1 [[1d8+@{selected|strength_mod}[dmg@{target|token_id}]]] crit 1 [[1d8[dmg@{target|token_id}]]]|
+	Двумя руками, двуручный&#125;&#125;damage 1 [[1d10+@{selected|strength_mod}[dmg@{target|token_id}]]] crit 1 [[1d10[dmg@{target|token_id}]]]} {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|strength_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[2]] ($[[5]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|strength_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[3]] ($[[7]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}}
+
+// Легкий арбалет
+&{template:atkdmg} {{dmg1type=колющий}} {{mod=80/320 фт.}} {{rname=Лёгкий арбалет}} {{
+}} damage 1 [[1d8+@{selected|dexterity_mod}[dmg@{target|token_id}]]] crit 1 [[1d8[dmg@{target|token_id}]]] {{
+}} [exp@{selected|character_id}|ammo-Болт] {{
+}} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[2]] ($[[5]])}} {{
+}} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|dexterity_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[3]] ($[[7]])}} {{
+}} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
+}} {{dmg1flag=1}} {{dmg1=$[[0]]}} {{crit1=$[[1]]}} {{charname=по @{target|token_name}}}
+
+// Заклинания
+&{template:simple} {{mod=?{Заклинание|
+	Церемония,Набор ритуалов для последователей&#125;&#125;{{r1=Церемония|
+	Благословение,Бонус 1d4 к атакам и спасброскам&#125;&#125;{{r1=Благословение}}} {{
+}} [exp@{selected|character_id}|spl1] {{
+}} {{normal=1}} {{charname=@{selected|token_name}}}
+
+// Божественный канал
+&{template:simple} {{r1=?{Эффект канала|
+	Изгнание нежити,Изгнание нежити&#125;&#125;{{mod=действие&#125;&#125;{{rname=Нежить в пределах 30 фт. изгоняется если провалит СП мудрости СЛ@{selected|spell_save_dc}|
+	Сохранение жизни,Сохранение жизни&#125;&#125;{{mod=действие&#125;&#125;{{rname=Распределить [[@{selected|base_level}*5]] ХП существам в 30 фт. до половины их макс. ХП|
+	Божественная сила,Божественная сила&#125;&#125;{{mod=бонусное действие&#125;&#125;[exp@{selected|character_id}&#124;reso]{{rname=Восстановить ячейку не более [[round(@{selected|pb}/2)]] уровня}%NEWLINE%}} {{
+}} [exp@{selected|character_id}|resc] {{
+}} {{normal=1}} {{charname=@{selected|token_name}}}
+
+// Священное пламя
+&{template:atkdmg} {{rname=Священное пламя}} {{range=излучением}} {{newline=
+}} {{innate=%NEWLINE%60 фт.}} {{savedc=13}} {{saveattr=ЛОВК}} {{newline=
+}} {{charname=@{selected|token_name} по @{target|token_name}}} {{newline=
+}} damage [[ floor([[2d8[dmg@{target|token_id}]]]/2)[dmg@{target|token_id}] ]] half $[[1]] full $[[0]] {{newline=
+}} save 1 [[ d[[ {13+d0cs>1}<[[@{target|d20}+@{target|dexterity_save_bonus}[chk]]] ]]cs>1cf<0[chk]]] {{newline=
+}} save 2 [[ d[[ {13+d0cs>1}<[[@{target|d20}+@{target|dexterity_save_bonus}[chk]]] ]]cs>1cf<0[chk]]] {{newline=
+}} {{savedesc=$[[2]] ($[[6]]) &nbsp; $[[3]] ($[[7]])}} {{dmg1=$[[0]]}} {{dmg1type=провал}} {{dmg2type=успех}} {{newline=
+}} {{dmg1flag=1}} {{damage=1}} {{always=1}} {{save=1}} {{crit=}} {{dmg2flag=1}} {{dmg2=0}}
+
+--)
+
 
 
 [You MUST have done these to recieve help.  Please see Rule 4/5]

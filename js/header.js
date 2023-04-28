@@ -30,12 +30,13 @@ addConfigOptions = function (category, options) {
 
 OBJECT_DEFINE_PROPERTY = Object.defineProperty;
 ACCOUNT_ORIGINAL_PERMS = {
+	isPro: false,
 	largefeats: false,
 	xlfeats: false,
 };
 Object.defineProperty = function (obj, prop, vals) {
 	try {
-		if (prop === "largefeats" || prop === "xlfeats") {
+		if (prop === "largefeats" || prop === "xlfeats" || prop === "isPro") {
 			ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
 			vals.value = true;
 		}
@@ -44,7 +45,7 @@ Object.defineProperty = function (obj, prop, vals) {
 		// eslint-disable-next-line no-console
 		console.log("failed to define property:", e, obj, prop, vals);
 	}
-};
+}; // */
 
 FINAL_CANVAS_MOUSEDOWN_LIST = [];
 FINAL_CANVAS_MOUSEMOVE_LIST = [];

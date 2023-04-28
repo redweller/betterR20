@@ -14,8 +14,6 @@ const betteR20Core = function () {
 			if (window.is_gm) await d20plus.cfg.pLoadConfig();
 			else await d20plus.cfg.pLoadPlayerConfig();
 
-			const showLineSpl = !d20plus.cfg.getOrDefault("interface", "hideLineSplitter");
-
 			d20plus.ut.showLoadingMessage();
 
 			d20plus.engine.swapTemplates();
@@ -37,7 +35,8 @@ const betteR20Core = function () {
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
 			d20plus.engine.enhanceStatusEffects();
-			if (showLineSpl) d20plus.engine.addLineCutterTool();
+			// It doesn't work with current version of roll20
+			// d20plus.engine.addLineCutterTool();
 			d20plus.ui.addHtmlHeader();
 			d20plus.ui.addHtmlFooter();
 			d20plus.art.initArtFromUrlButtons();
@@ -56,7 +55,7 @@ const betteR20Core = function () {
 				d20plus.jukeboxWidget.init();
 			}
 			d20plus.engine.enhancePathWidths();
-			d20plus.ut.fix3dDice();
+			// d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.views.addViews();

@@ -4,12 +4,34 @@
 function d20plusMod () {
 	d20plus.mod = {};
 
-	/* eslint-disable */
+	d20plus.mod.setMode = function (t) {
+		d20plus.ut.log(`Setting mode ${t}`);
+		const preserveDrawingColor = (stash) => {
+			const drawingTools = ["rect", "ellipse", "text", "path", "polygon"];
+			const drawingProps = [{nm: "fill", el: "fillcolor"}, {nm: "color", el: "strokecolor"}];
+			if (!drawingTools.includes(t)) return;
+			drawingProps.forEach(prop => {
+				if (stash) d20plus.mod[`drawing${prop.nm}`] = d20.engine.canvas.freeDrawingBrush[prop.nm];
+				else {
+					if (d20plus.mod[`drawingcolor`] === "rgb(0, 0, 0)" || !d20plus.mod[`drawingcolor`]) return;
+					$(`#path_${prop.el}`).val(d20plus.mod[`drawing${prop.nm}`]).trigger("change");
+				}
+			});
+		}
+		try {
+			preserveDrawingColor(true);
+			d20.Campaign.activePage().setModeRef(t);
+			preserveDrawingColor();
+		} catch (e) {
+			d20plus.ut.log(`Switching using legacy because ${e.message}`);
+			d20plus.mod.setModeLegacy(t);
+		}
+	}
 
 	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
+	/* eslint-disable */
 	// BEGIN ROLL20 CODE
-	d20plus.mod.setMode = function (e) {
-		d20plus.ut.log("Setting mode " + e);
+	d20plus.mod.setModeLegacy = function (e) {
 		// BEGIN MOD
 		// "text" === e || "rect" === e || "ellipse" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
 		// END MOD
@@ -51,7 +73,6 @@ function d20plusMod () {
 			}),
 				d20.engine.canvas.hoverCursor = "move"),
 			// BEGIN MOD
-			// console.log("Switch mode to " + e),
 			d20.engine.mode = e,
 		"measure" !== e && window.currentPlayer && d20.engine.measurements[window.currentPlayer.id] && !d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.announceEndMeasure({
 			player: window.currentPlayer.id
@@ -74,7 +95,9 @@ function d20plusMod () {
 			$("#floatingtoolbar").trigger("blur");
 		}
 		// END MOD
-		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#finalcanvas').addClass('torch-cursor')) : $('#finalcanvas').removeClass('torch-cursor'),
+		'placelight' === e ? ($('#placelight').addClass('activebutton'), $('#babylonCanvas').addClass('torch-cursor')) : $('#babylonCanvas').removeClass('torch-cursor'),
+		'placeWindow' === e ? ($('#placeWindow').addClass('activebutton'), $('#babylonCanvas').addClass('window-cursor')) : $('#babylonCanvas').removeClass('window-cursor'),
+		'placeDoor' === e ? ($('#placeDoor').addClass('activebutton'), $('#babylonCanvas').addClass('door-cursor')) : $('#babylonCanvas').removeClass('door-cursor'),
 		d20.engine.redrawScreenNextTick()
 	};
 	// END ROLL20 CODE
@@ -342,12 +365,12 @@ function d20plusMod () {
 			}
 		}
 	};
-	// END ROLL20 CODE
+	// END ROLL20 CODE// RB20 EXCLUDE START
 
 	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background"]);
 	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
 	// BEGIN ROLL20 CODE
-	d20plus.mod.renderAll = function (e) {
+	d20plus.mod.legacy_renderAll = function (e) {
 		const t = e && e.context || this.contextContainer
 			, i = this.getActiveGroup()
 			, n = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
@@ -486,7 +509,7 @@ function d20plusMod () {
 
 	// shoutouts to Roll20 for making me learn how `yield` works
 	// BEGIN ROLL20 CODE
-	d20plus.mod.layerIteratorGenerator = function*(e) {
+	d20plus.mod.legacy_layerIteratorGenerator = function*(e) {
 		yield [this.map, "map"],
 		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
 			this._save_map_layer = !1);
@@ -524,6 +547,123 @@ function d20plusMod () {
 		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 		// END MOD
 	};
+	// END ROLL20 CODE// RB20 EXCLUDE END
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.renderAll = function(v) {
+		const p = v && v.context || this.contextContainer
+		  , e = this.getActiveGroup()
+		  , u = this.sortTokens();
+		e && !window.is_gm && (e.hideResizers = !0),
+		this.clipTo ? fabric.util.clipContext(this, p) : p.save(),
+		v.tokens = u.map,
+		this.drawMapLayer(p, v),
+		// BEGIN MOD
+		v.tokens = u.floors,
+		this.drawAnyLayer(p, v, "floors");
+		// END MOD
+		const n = v && v.grid_before_afow
+		  , y = !d20.Campaign.activePage().get("adv_fow_enabled") || v && v.disable_afow
+		  , d = !d20.Campaign.activePage().get("showgrid") || v && v.disable_grid;
+		return n && !d && d20.canvas_overlay.drawGrid(p),
+		!y && window.largefeats && d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context),
+		!n && !d && d20.canvas_overlay.drawGrid(p),
+		// BEGIN MOD
+		["background", "objects", "roofs", "foreground"].forEach(layer => {
+			v.tokens = u[layer],
+			this.drawAnyLayer(p, v, layer);
+		}),// RB20 EXCLUDE START 
+		/* this.renderAbove = function (p, v) {
+			["roofs", "foreground"].forEach(layer => {
+				v.tokens = u[layer],
+				this.drawAnyLayer(p, v, layer);
+			}),
+			window.is_gm && (v.tokens = u.gmlayer,
+			this.drawAnyLayer(p, v, "gmlayer"))
+		},*/ // RB20 EXCLUDE END
+		window.is_gm && (v.tokens = u.gmlayer,
+		this.drawAnyLayer(p, v, "gmlayer")),
+		window.is_gm && window.currentEditingLayer === "walls" && (v.tokens = u.walls,
+		this.drawDynamicLightingLayer(p, v)),
+		window.currentEditingLayer === "weather" && (v.tokens = u.weather,
+		this.drawAnyLayer(p, v, "weather")),
+		// END MOD
+		p.restore(),
+		this
+	}
+	// END ROLL20 CODE
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.sortTokens = function() {
+		const v = {
+			map: [],
+			// BEGIN MOD
+			floors: [],
+			background: [],
+			objects: [],
+			roofs: [],
+			foreground: [],
+			gmlayer: [],
+			weather: [],
+			// END MOD
+			walls: []
+		};
+		for (const p of this._objects) {
+			const e = v[p.model.get("layer")];
+			e && e.push(p)
+		}
+		return v
+	}
+	// END ROLL20 CODE
+
+	d20plus.mod.setAlpha = function (layer) {
+		const l = ["map", "floors", "walls", "weather", "background", "objects", "roofs", "foreground", "gmlayer"];
+		const o = ["background", "objects", "foreground"];
+		return !window.is_gm 
+			|| (o.includes(layer) && o.includes(window.currentEditingLayer))
+			|| (l.indexOf(window.currentEditingLayer) >= l.indexOf(layer)
+				&& !((layer === "roofs" || o.includes(layer)) && window.currentEditingLayer === "gmlayer"))
+			? 1 : (layer === "gmlayer" ? d20.engine.gm_layer_opacity : .5);
+	}
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.drawAnyLayer = function(v, p={}, layer) {
+		const e = p.tokens || this._objects.filter(u=>{
+			const n = u.model;
+			// BEGIN MOD
+			return n && n.get("layer") === layer
+			// END MOD
+		});
+		v.save(),
+		// BEGIN MOD
+		v.globalAlpha = d20plus.mod.setAlpha(layer),
+		// END MOD
+		this.drawTokenList(v, e, p),
+		v.restore()
+	},
+	// END ROLL20 CODE
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.drawTokensWithoutAuras = function (v, p) {
+		const e = this.getActiveGroup();
+		v.save(),
+		p.forEach(u=>{
+			e && u && e.contains(u) ? (u.renderingInGroup = e,
+			u.hasControls = !1) : (u.renderingInGroup = null,
+			u.hasControls = !0,
+			u.hideResizers = !window.is_gm);
+			// BEGIN MOD
+			v.globalAlpha = d20plus.mod.setAlpha(u.model.get("layer")),
+			// END MOD
+			u.renderPre(v, {
+				noAuras: !0,
+				should_update: !0
+			}),
+			this._draw(v, u)
+		}
+		),
+		v.restore()
+	},
 	// END ROLL20 CODE
 
 	// BEGIN ROLL20 CODE
@@ -546,7 +686,9 @@ function d20plusMod () {
 			}
 			// END MOD
 			$("#editinglayer").addClass(window.currentEditingLayer);
-			$(document).trigger("d20:editingLayerChanged");
+			// BEGIN MOD
+			d20.Campaign.activePage().onLayerChange();
+			// END MOD
 		});
 	};
 	// END ROLL20 CODE

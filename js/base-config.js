@@ -38,16 +38,22 @@ function baseConfig () {
 			"__sliderMin": 0,
 			"__sliderMax": 1,
 			"__sliderStep": 1,
-		}, // RB20 EXCLUDE START
+		},
 		"showFloors": {
 			"name": __("cfg_option_show_fl"),
 			"default": false,
 			"_type": "boolean",
 			"_player": false,
-		}, // RB20 EXCLUDE END
+		},
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
 			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showRoofs": {
+			"name": __("cfg_option_show_rf"),
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
@@ -56,19 +62,7 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		}, // RB20 EXCLUDE START
-		"showRoofs": {
-			"name": __("cfg_option_show_rf"),
-			"default": false,
-			"_type": "boolean",
-			"_player": false,
 		},
-		"showLight": {
-			"name": __("cfg_option_show_light"),
-			"default": true,
-			"_type": "boolean",
-			"_player": false,
-		}, // RB20 EXCLUDE END
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
 			"default": true,
@@ -120,12 +114,6 @@ function baseConfig () {
 		},
 		"hideHelpButton": {
 			"name": __("cfg_option_hide_help"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideLineSplitter": {
-			"name": __("cfg_option_hide_linesplit"),
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
