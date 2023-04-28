@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.34.1.40
+// @version      1.35.1.41
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -58,12 +58,13 @@ addConfigOptions = function (category, options) {
 
 OBJECT_DEFINE_PROPERTY = Object.defineProperty;
 ACCOUNT_ORIGINAL_PERMS = {
+	isPro: false,
 	largefeats: false,
 	xlfeats: false,
 };
 Object.defineProperty = function (obj, prop, vals) {
 	try {
-		if (prop === "largefeats" || prop === "xlfeats") {
+		if (prop === "largefeats" || prop === "xlfeats" || prop === "isPro") {
 			ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
 			vals.value = true;
 		}
@@ -72,7 +73,7 @@ Object.defineProperty = function (obj, prop, vals) {
 		// eslint-disable-next-line no-console
 		console.log("failed to define property:", e, obj, prop, vals);
 	}
-};
+}; // */
 
 FINAL_CANVAS_MOUSEDOWN_LIST = [];
 FINAL_CANVAS_MOUSEMOVE_LIST = [];
@@ -2429,16 +2430,22 @@ function baseConfig () {
 			"__sliderMin": 0,
 			"__sliderMax": 1,
 			"__sliderStep": 1,
-		}, // RB20 EXCLUDE START
+		},
 		"showFloors": {
 			"name": __("cfg_option_show_fl"),
 			"default": false,
 			"_type": "boolean",
 			"_player": false,
-		}, // RB20 EXCLUDE END
+		},
 		"showBackground": {
 			"name": __("cfg_option_show_bg"),
 			"default": true,
+			"_type": "boolean",
+			"_player": false,
+		},
+		"showRoofs": {
+			"name": __("cfg_option_show_rf"),
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
@@ -2447,13 +2454,7 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
-		}, // RB20 EXCLUDE START
-		"showRoofs": {
-			"name": __("cfg_option_show_rf"),
-			"default": false,
-			"_type": "boolean",
-			"_player": false,
-		}, // RB20 EXCLUDE END
+		},
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
 			"default": true,
@@ -8630,7 +8631,7 @@ function d20plusArt () {
 
 			const deck = d20.Campaign.decks.get(dId);
 
-			const cleanTemplate = d20plus.addArtMassAdderHTML.replace(/id="[^"]+"/gi, "");
+			const cleanTemplate = d20plus.html.addArtMassAdderHTML.replace(/id="[^"]+"/gi, "");
 			const $dialog = $(cleanTemplate).appendTo($("body"));
 			const $iptTxt = $dialog.find(`textarea`);
 			const $btnAdd = $dialog.find(`button`).click(() => {
@@ -10827,538 +10828,575 @@ function initHTMLPageSettings () {
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.pageSettings = `
 		<div class='pagedetails tab-pane' style='display:block;'>
-			<!-- * SIZE */ -->
-			<div class='size_settings' id='size_settings'>
-				<div class='pagedetails__header'>
-					<h3 class='page_title'>Size</h3>
-				</div>
-				<div class='pagedetails__subheader'>
-					<h4>Width</h4>
-				</div>
-				<div class='pagedetails__container grid_settings-input--list input-group'>
-					<div class='pagedetails-input size_settings-input'>
-						<div>
-							<label class='sr-only' for='page-size-width-input'>enter a custom page width in pixels</label>
-							<input id="page-size-width-input" type="number" class="width units page_setting_item" value="<$!this.model.get("width")$>" />
-						</div>
-						<div class='disable_box'>cells</div>
-					</div>
-					<div class='col pagedetails-symbol'>
-						<span class='page_setting_item'>X</span>
-					</div>
-					<div class='pagedetails-input size_settings-input'>
-						<div>
-							<label class='sr-only' for='page-size-width-multiplier'>custom page width will be multiplied by 70</label>
-							<input id='page-size-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
-						</div>
-						<div class='disable_box'>px</div>
-					</div>
-					<div class='col pagedetails-symbol'>
-						<span class='page_setting_item'>=</span>
-					</div>
-					<div class='pagedetails-input size_settings-input'>
-						<div>
-							<label class='sr-only' for='page-size-width-total'>total page width in pixels after being multiplied by 70</label>
-							<input id='page-size-width-total' type="number" class="px_width pixels page_setting_item" value="<$!this.model.get("width")*70$>" />
-						</div>
-						<div class='disable_box'>px</div>
-					</div>
-				</div>
-				<div class='pagedetails__subheader'>
-					<h4>Height</h4>
-				</div>
-				<div class='pagedetails__container grid_settings-input--list input-group'>
-					<div class='pagedetails-input size_settings-input'>
-						<div>
-							<label class='sr-only' for='page-size-height-input'>enter a custom page height in pixels</label>
-							<input id="page-size-height-input" type="number" class="height units page_setting_item" value="<$!this.model.get("height")$>" />
-						</div>
-						<div class='disable_box'>cells</div>
-					</div>
-					<div class='col pagedetails-symbol'>
-						<span class='page_setting_item'>X</span>
-					</div>
-					<div class='pagedetails-input size_settings-input'>
-						<div>
-							<label class='sr-only' for='page-size-height-multiplier'>custom page height will be multiplied by 70</label>
-							<input id='page-size-height-multiplier' type="text" value="70" class="page_setting_item" disabled>
-						</div>
-						<div class='disable_box'>px</div>
-					</div>
-					<div class='col pagedetails-symbol'>
-						<span class='page_setting_item'>=</span>
-					</div>
-					<div class='pagedetails-input size_settings-input'>
-						<div>
-							<label class='sr-only' for='page-size-height-total'>total page height in pixels after being multiplied by 70</label>
-							<input id='page-size-height-total' type="number" class="px_height pixels page_setting_item" value="<$!this.model.get("height")*70$>" />
-						</div>
-						<div class='disable_box'>px</div>
-					</div>
-				</div>
-				<div class='fine-print text-muted'>
-					<p>The height and width are true to size when zoom is set to 100%.</p>
-				</div>
-			</div>
-			<hr>
-			<!-- * BACKGROUND */ -->
-			<div class='background_settings'>
-				<div class='pagedetails__header'>
-					<h3 class='page_title'>Background</h3>
-				</div>
-				<div class='pagedetails__subheader'>
-					<h4>Color</h4>
-				</div>
-				<input class='pagebackground' type='text'>
-			</div>
-			<hr>
-			<!-- * SCALE */ -->
-			<div class='scale_settings'>
-				<div class='pagedetails__header'>
-					<h3 class='page_title'>Scale</h3>
-				</div>
-				<div class='pagedetails__subheader'>
-					<h4 class='text-capitalize'>grid cell distance</h4>
-				</div>
-				<div class='pagedetails__container'>
-					<div class='pagedetails-input scale_settings-input'>
-						<div>
-							<label class='sr-only' for='page-scale-grid-cell-distance'>enter a custom distance for each grid cell</label>
-							<input id='page-scale-grid-cell-distance' type="number" class="scale_number" value="<$!this.model.get("scale_number")$>" />
-						</div>
-						<div class='scale_settings-select'>
-							<label class='sr-only' for='page-scale-grid-cell-label-select'>choose a label for your grid cells</label>
-							<select class='scale_units' id='page-scale-grid-cell-label-select'>
-								<option value='ft'>ft.</option>
-								<option value='m'>m.</option>
-								<option value='km'>km.</option>
-								<option value='mi'>mi.</option>
-								<option value='in'>in.</option>
-								<option value='cm'>cm.</option>
-								<option value='un'>un.</option>
-								<option value='hex'>hex</option>
-								<option value='sq'>sq.</option>
-								<option value='custom'>Custom</option>
-							</select>
-						</div>
-					</div>
-				</div>
-				<div class='hidden' id='custom_scale_units'>
-					<div class='pagedetails__subheader'>
-						<h4>custom label</h4>
-					</div>
-					<div class='pagedetails__container'>
-						<div class='pagedetails-input custom_scale_units-input'>
-							<label class='sr-only' for='page-scale-grid-cell-custom-label'>enter a custom label for your grid cells</label>
-							<input id="page-scale-grid-cell-custom-label" type="text" value="<$!this.model.get("scale_units")$>" />
-						</div>
-					</div>
-				</div>
-			</div>
-			<hr>
-			<!-- * GRID */ -->
-			<div class='grid_settings' data-feature_enabled='showgrid' id='grid_settings'>
-				<div class='row'>
-					<div class='col-xs-7 pagedetails__header'>
-						<h3 class='page_title'>Grid</h3>
-					</div>
-					<div class='col-xs-3 grid_switch'>
-						<label class='switch'>
-							<label class='sr-only' for='page-grid-display-toggle'>toggle the page grid</label>
-							<input class='gridenabled feature_enabled' id='page-grid-display-toggle' type='checkbox' value='1'>
-							<span class='slider round'></span>
-							</input>
-						</label>
-					</div>
-				</div>
-				<div class='grid_subsettings' id='grid_subsettings'>
-					<div class='pagedetails__container'>
-						<div class='pagedetails__subheader'>
-							<h4>Type</h4>
-						</div>
-						<div class='grid_settings-select'>
-							<label class='sr-only' for='gridtype'>select the grid type</label>
-							<select id='gridtype'>
-								<option selected value='square'>Square</option>
-								<option value='hex'>Hex (V)</option>
-								<option value='hexr'>Hex (H)</option>
-								<option value='dimetric'>Dimetric</option>
-								<option value='isometric'>Isometric</option>
-							</select>
-						</div>
-					</div>
-					<div class='pagedetails__container grid_settings-row--hex flex-wrap align-items-center' id='hexlabels'>
-						<div class='col-xs-7 pagedetails__subheader'>
-							<h4>show hex labels</h4>
-						</div>
-						<div class='col-xs-3 grid_switch'>
-							<label class='switch'>
-								<label class='sr-only' for='page-grid-hex-label-toggle'>toggle display labels inside of hexes</label>
-								<input class='gridlabels' id='page-grid-hex-label-toggle' type='checkbox' value='1'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-					<div class='pagedetails__subheader help-icon'>
-						<h4>Measurement</h4>
-						<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039674913-Ruler' target='_blank' title='Controls how diagonal cells are measured.'>?</a>
-					</div>
-					<div class='pagedetails__container'>
-						<div class='grid_settings-select'>
-							<select id='diagonaltype'>
-								<option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
-								<option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
-								<option class='squareonly' value='manhattan'>Manhattan</option>
-								<option class='hexonly' value='hex'>Hex Path</option>
-								<option value='pythagorean'>Euclidean</option>
-							</select>
-						</div>
-					</div>
-					<div class='pagedetails__subheader help-icon'>
-						<h4>Cell Width</h4>
-						<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039675373-Page-Settings' target='_blank' title='The number of cells per 70 pixels in your grid. Ex .5 = 35 pixels per cell.'>?</a>
-					</div>
-					<div class='pagedetails__container grid_settings-input--list'>
-						<div class='pagedetails-input grid_settings-input'>
-							<label class='sr-only' for='page-grid-cell-width-input'>enter a custom cell width</label>
-							<input id="page-grid-cell-width-input" type="number" class="grid-cell-width snappingincrement units" value="<$!this.model.get("snapping_increment")$>" />
-						</div>
-						<div class='col pagedetails-symbol'>
-							<span class='page_setting_item'>X</span>
-						</div>
-						<div class='pagedetails-input grid_settings-input'>
-							<div>
-								<label class='sr-only' for='page-grid-cell-width-multiplier'>custom cell width will be multiplied by 70</label>
-								<input id='page-grid-cell-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
-							</div>
-							<div class='disable_box'>px</div>
-						</div>
-						<div class='col pagedetails-symbol'>
-							<span class='page_setting_item'>=</span>
-						</div>
-						<div class='pagedetails-input grid_settings-input'>
-							<div>
-								<label class='sr-only' for='page-grid-cell-width-total'>total cell width in pixels after being multiplied by 70</label>
-								<input id="page-grid-cell-width-total" type="number" class="px_snappingincrement pixels" value="<$!this.model.get("snapping_increment")*70$>" />
-							</div>
-							<div class='disable_box'>px</div>
-						</div>
-					</div>
-					<div class='pagedetails__subheader'>
-						<h4>Color</h4>
-					</div>
-					<div class='pagedetails__container'>
-						<div>
-							<input class='gridcolor' type='text'>
-						</div>
-					</div>
-					<div class='pagedetails__subheader'>
-						<h4>Opacity</h4>
-					</div>
-					<div class='pagedetails__container'>
-						<div>
-							<div class='gridopacity'></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- * Movement */ -->
-			<hr>
-			<div class='restrict_movement lighting_feature' id='restict_movement'>
-				<div class='pagedetails__header w-100'>
-					<h3 class='page_title text-capitalize'>movement</h3>
-				</div>
-				<div class='pagedetails__container d-flex'>
-					<div class='row'>
-						<div class='col-xs-7 pagedetails__subheader'>
-							<h4 class='text-capitalize'>dynamic lighting barriers restrict movement</h4>
-						</div>
-						<div class='col-xs-3 grid_switch'>
-							<label class='switch'>
-								<label class='sr-only' for='page-dynamic-lighting-line-restrict-movement-toggle'>dynamic lighting lines restrict movement toggle</label>
-								<input class='lightrestrictmove showtip' id='page-dynamic-lighting-line-restrict-movement-toggle' title='Don&#39;t allow player tokens to move through Dynamic Lighting walls. Can be enabled even if lighting is not used.' type='checkbox' value='1'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-				</div>
-			</div>
-			<hr>
-			<div class='standard_fog lighting_feature' id='standard_fog'>
-				<div class='pagedetails__header w-100'>
-					<h3 class='page_title text-capitalize'>Fog of War</h3>
-				</div>
-				<div class='pagedetails__container d-flex'>
-					<div class='row'>
-						<div class='col-xs-7 pagedetails__subheader'>
-							<h4 class='text-capitalize'>Standard Fog of War</h4>
-							<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039674913-Ruler' target='_blank' title='Enabling Fog of War will disable Updated Dynamic Lighting'>?</a>
-						</div>
-						<div class='col-xs-3 grid_switch'>
-							<label class='switch'>
-								<label class='sr-only' for='page-standard-fog-basic-toggle'>fog</label>
-								<input class='darknessenabled feature_enabled showtip' id='page-standard-fog-basic-toggle' title='Simplest method of adding fog of war to your games. Use in conjunction with the hide/reveal tool' type='checkbox' value='1'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-				</div>
-			</div>
-			</hr>
-			<hr>
-			<div class='gm_darkness_opacity'>
-				<div class='row'>
-					<div class='col-xs-12'>
-						<p class='opacity_title'>GM Darkness Opacity</p>
-					</div>
-				</div>
-			</div>
-			<div class='row'>
-				<div class='col-xs-8'>
-					<div class='fogopacity'></div>
-				</div>
-				<div class='col-xs-1'>
-					<input class='opacity_percentage' disabled type='text'>
-				</div>
-			</div>
-			</hr>
-			<!-- * Audio */ -->
-			<hr>
-			<div class='audio_settings'>
-				<div class='pagedetails__header'>
-					<h3 class='page_title'>Audio</h3>
-				</div>
-				<div class='pagedetails__subheader'>
-					<h4>Play on Load</h4>
-				</div>
-				<div class='pagedetails__container'>
-					<label class='sr-only' for='page-audio-play-on-load'>play an audio track on page load</label>
-					<select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
-				</div>
-			</div>
-			<!-- * Archive & Delete Buttons */ -->
-			<hr>
-			<div class='page-buttons d-flex flex-wrap justify-content-between'>
-				<button class='archive btn'>Archive Page</button>
-				<button class='delete btn btn-danger'>Delete Page</button>
-			</div>
+		<!-- * SIZE */ -->
+		<div class='size_settings' id='size_settings'>
+		<div class='pagedetails__header'>
+		<h3 class='page_title'>Size</h3>
 		</div>
-
+		<div class='pagedetails__subheader'>
+		<h4>Width</h4>
+		</div>
+		<div class='pagedetails__container grid_settings-input--list input-group'>
+		<div class='pagedetails-input size_settings-input'>
+		<div>
+		<label class='sr-only' for='page-size-width-input'>enter a custom page width in pixels</label>
+		<input id="page-size-width-input" type="number" class="width units page_setting_item" value="<$!this.model.get("width")$>" />
+		</div>
+		<div class='disable_box'>cells</div>
+		</div>
+		<div class='col pagedetails-symbol'>
+		<span class='page_setting_item'>X</span>
+		</div>
+		<div class='pagedetails-input size_settings-input'>
+		<div>
+		<label class='sr-only' for='page-size-width-multiplier'>custom page width will be multiplied by 70</label>
+		<input id='page-size-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
+		</div>
+		<div class='disable_box'>px</div>
+		</div>
+		<div class='col pagedetails-symbol'>
+		<span class='page_setting_item'>=</span>
+		</div>
+		<div class='pagedetails-input size_settings-input'>
+		<div>
+		<label class='sr-only' for='page-size-width-total'>total page width in pixels after being multiplied by 70</label>
+		<input id='page-size-width-total' type="number" class="px_width pixels page_setting_item" value="<$!this.model.get("width")*70$>" />
+		</div>
+		<div class='disable_box'>px</div>
+		</div>
+		</div>
+		<div class='pagedetails__subheader'>
+		<h4>Height</h4>
+		</div>
+		<div class='pagedetails__container grid_settings-input--list input-group'>
+		<div class='pagedetails-input size_settings-input'>
+		<div>
+		<label class='sr-only' for='page-size-height-input'>enter a custom page height in pixels</label>
+		<input id="page-size-height-input" type="number" class="height units page_setting_item" value="<$!this.model.get("height")$>" />
+		</div>
+		<div class='disable_box'>cells</div>
+		</div>
+		<div class='col pagedetails-symbol'>
+		<span class='page_setting_item'>X</span>
+		</div>
+		<div class='pagedetails-input size_settings-input'>
+		<div>
+		<label class='sr-only' for='page-size-height-multiplier'>custom page height will be multiplied by 70</label>
+		<input id='page-size-height-multiplier' type="text" value="70" class="page_setting_item" disabled>
+		</div>
+		<div class='disable_box'>px</div>
+		</div>
+		<div class='col pagedetails-symbol'>
+		<span class='page_setting_item'>=</span>
+		</div>
+		<div class='pagedetails-input size_settings-input'>
+		<div>
+		<label class='sr-only' for='page-size-height-total'>total page height in pixels after being multiplied by 70</label>
+		<input id='page-size-height-total' type="number" class="px_height pixels page_setting_item" value="<$!this.model.get("height")*70$>" />
+		</div>
+		<div class='disable_box'>px</div>
+		</div>
+		</div>
+		<div class='fine-print text-muted'>
+		<p>The height and width are true to size when zoom is set to 100%.</p>
+		</div>
+		</div>
+		<hr>
+		<!-- * BACKGROUND */ -->
+		<div class='background_settings'>
+		<div class='pagedetails__header'>
+		<h3 class='page_title'>Background</h3>
+		</div>
+		<div class='pagedetails__subheader'>
+		<div class='row'>
+		<div class='col-xs-5' style='display: flex; flex-direction: column; align-items: center; gap: 4px;'>
+		<div class='pagedetails__container'>
+		<h4>Board Color</h4>
+		</div>
+		<div class='pagedetails__container'>
+		<div>
+		<input class='pagebackground' type='text'>
+		</div>
+		</div>
+		</div>
+		<div class='col-xs-5' style='display: flex; flex-direction: column; align-items: center; gap: 4px;'>
+		<div class='pagedetails__container'>
+		<h4>Backdrop Color</h4>
+		</div>
+		<div class='pagedetails__container'>
+		<div>
+		<input class='wrappercolor' type='text'>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='pagedetails__subheader'>
+		<div class='row'>
+		<div class='col-xs-7 pagedetails__subheader'>
+		<h4 class='text-capitalize'>Apply dominant color from map layer</h4>
+		</div>
+		<div class='col-xs-3 grid_switch'>
+		<label class='switch'>
+		<label class='sr-only' for='page-wrapper-color-from-map-toggle'>apply dominant color from map layer</label>
+		<input class='useautowrapper showtip' id='page-wrapper-color-from-map-toggle' title='Automatically update the backdrop to match the map layer' type='checkbox' value='1'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<!-- * SCALE */ -->
+		<div class='scale_settings'>
+		<div class='pagedetails__header'>
+		<h3 class='page_title'>Scale</h3>
+		</div>
+		<div class='pagedetails__subheader'>
+		<h4 class='text-capitalize'>grid cell distance</h4>
+		</div>
+		<div class='pagedetails__container'>
+		<div class='pagedetails-input scale_settings-input'>
+		<div>
+		<label class='sr-only' for='page-scale-grid-cell-distance'>enter a custom distance for each grid cell</label>
+		<input id='page-scale-grid-cell-distance' type="number" class="scale_number" value="<$!this.model.get("scale_number")$>" />
+		</div>
+		<div class='scale_settings-select'>
+		<label class='sr-only' for='page-scale-grid-cell-label-select'>choose a label for your grid cells</label>
+		<select class='scale_units' id='page-scale-grid-cell-label-select'>
+		<option value='ft'>ft.</option>
+		<option value='m'>m.</option>
+		<option value='km'>km.</option>
+		<option value='mi'>mi.</option>
+		<option value='in'>in.</option>
+		<option value='cm'>cm.</option>
+		<option value='un'>un.</option>
+		<option value='hex'>hex</option>
+		<option value='sq'>sq.</option>
+		<option value='custom'>Custom</option>
+		</select>
+		</div>
+		</div>
+		</div>
+		<div class='hidden' id='custom_scale_units'>
+		<div class='pagedetails__subheader'>
+		<h4>custom label</h4>
+		</div>
+		<div class='pagedetails__container'>
+		<div class='pagedetails-input custom_scale_units-input'>
+		<label class='sr-only' for='page-scale-grid-cell-custom-label'>enter a custom label for your grid cells</label>
+		<input id="page-scale-grid-cell-custom-label" type="text" value="<$!this.model.get("scale_units")$>" />
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<!-- * GRID */ -->
+		<div class='grid_settings' data-feature_enabled='showgrid' id='grid_settings'>
+		<div class='row'>
+		<div class='col-xs-7 pagedetails__header'>
+		<h3 class='page_title'>Grid</h3>
+		</div>
+		<div class='col-xs-3 grid_switch'>
+		<label class='switch'>
+		<label class='sr-only' for='page-grid-display-toggle'>toggle the page grid</label>
+		<input class='gridenabled feature_enabled' id='page-grid-display-toggle' type='checkbox' value='1'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='grid_subsettings' id='grid_subsettings'>
+		<div class='pagedetails__container'>
+		<div class='pagedetails__subheader'>
+		<h4>Type</h4>
+		</div>
+		<div class='grid_settings-select'>
+		<label class='sr-only' for='gridtype'>select the grid type</label>
+		<select id='gridtype'>
+		<option selected value='square'>Square</option>
+		<option value='hex'>Hex (V)</option>
+		<option value='hexr'>Hex (H)</option>
+		<option value='dimetric'>Dimetric</option>
+		<option value='isometric'>Isometric</option>
+		</select>
+		</div>
+		</div>
+		<div class='pagedetails__container grid_settings-row--hex flex-wrap align-items-center' id='hexlabels'>
+		<div class='col-xs-7 pagedetails__subheader'>
+		<h4>show hex labels</h4>
+		</div>
+		<div class='col-xs-3 grid_switch'>
+		<label class='switch'>
+		<label class='sr-only' for='page-grid-hex-label-toggle'>toggle display labels inside of hexes</label>
+		<input class='gridlabels' id='page-grid-hex-label-toggle' type='checkbox' value='1'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='pagedetails__subheader help-icon'>
+		<h4>Measurement</h4>
+		<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039674913-Ruler' target='_blank' title='Controls how diagonal cells are measured.'>?</a>
+		</div>
+		<div class='pagedetails__container'>
+		<div class='grid_settings-select'>
+		<select id='diagonaltype'>
+		<option class='squareonly' selected value='foure'>D&D 5E/4E Compatible</option>
+		<option class='squareonly' value='threefive'>Pathfinder/3.5E Compatible</option>
+		<option class='squareonly' value='manhattan'>Manhattan</option>
+		<option class='hexonly' value='hex'>Hex Path</option>
+		<option value='pythagorean'>Euclidean</option>
+		</select>
+		</div>
+		</div>
+		<div class='pagedetails__subheader help-icon'>
+		<h4>Cell Width</h4>
+		<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039675373-Page-Settings' target='_blank' title='The number of cells per 70 pixels in your grid. Ex .5 = 35 pixels per cell.'>?</a>
+		</div>
+		<div class='pagedetails__container grid_settings-input--list'>
+		<div class='pagedetails-input grid_settings-input'>
+		<label class='sr-only' for='page-grid-cell-width-input'>enter a custom cell width</label>
+		<input id="page-grid-cell-width-input" type="number" class="grid-cell-width snappingincrement units" value="<$!this.model.get("snapping_increment")$>" />
+		</div>
+		<div class='col pagedetails-symbol'>
+		<span class='page_setting_item'>X</span>
+		</div>
+		<div class='pagedetails-input grid_settings-input'>
+		<div>
+		<label class='sr-only' for='page-grid-cell-width-multiplier'>custom cell width will be multiplied by 70</label>
+		<input id='page-grid-cell-width-multiplier' type="text" value="70" class="page_setting_item" disabled>
+		</div>
+		<div class='disable_box'>px</div>
+		</div>
+		<div class='col pagedetails-symbol'>
+		<span class='page_setting_item'>=</span>
+		</div>
+		<div class='pagedetails-input grid_settings-input'>
+		<div>
+		<label class='sr-only' for='page-grid-cell-width-total'>total cell width in pixels after being multiplied by 70</label>
+		<input id="page-grid-cell-width-total" type="number" class="px_snappingincrement pixels" value="<$!this.model.get("snapping_increment")*70$>" />
+		</div>
+		<div class='disable_box'>px</div>
+		</div>
+		</div>
+		<div class='col' style='display: flex; flex-direction: column; gap: 4px;'>
+		<div class='pagedetails__subheader'>
+		<h4>Color</h4>
+		</div>
+		<div class='pagedetails__container'>
+		<div>
+		<input class='gridcolor' type='text'>
+		</div>
+		</div>
+		</div>
+		<div class='pagedetails__subheader'>
+		<h4>Opacity</h4>
+		</div>
+		<div class='pagedetails__container'>
+		<div>
+		<div class='gridopacity'></div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<!-- * Movement */ -->
+		<hr>
+		<div class='restrict_movement lighting_feature' id='restict_movement'>
+		<div class='pagedetails__header w-100'>
+		<h3 class='page_title text-capitalize'>movement</h3>
+		</div>
+		<div class='pagedetails__container d-flex'>
+		<div class='row'>
+		<div class='col-xs-7 pagedetails__subheader'>
+		<h4 class='text-capitalize'>dynamic lighting barriers restrict movement</h4>
+		</div>
+		<div class='col-xs-3 grid_switch'>
+		<label class='switch'>
+		<label class='sr-only' for='page-dynamic-lighting-line-restrict-movement-toggle'>dynamic lighting lines restrict movement toggle</label>
+		<input class='lightrestrictmove showtip' id='page-dynamic-lighting-line-restrict-movement-toggle' title='Don&#39;t allow player tokens to move through Dynamic Lighting walls. Can be enabled even if lighting is not used.' type='checkbox' value='1'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='standard_fog lighting_feature' id='standard_fog'>
+		<div class='pagedetails__header w-100'>
+		<h3 class='page_title text-capitalize'>Fog of War</h3>
+		</div>
+		<div class='pagedetails__container d-flex'>
+		<div class='row'>
+		<div class='col-xs-7 pagedetails__subheader'>
+		<h4 class='text-capitalize'>Standard Fog of War</h4>
+		<a class='tipsy-w showtip pictos' href='https://roll20.zendesk.com/hc/en-us/articles/360039674913-Ruler' target='_blank' title='Enabling Fog of War will disable Updated Dynamic Lighting'>?</a>
+		</div>
+		<div class='col-xs-3 grid_switch'>
+		<label class='switch'>
+		<label class='sr-only' for='page-standard-fog-basic-toggle'>fog</label>
+		<input class='darknessenabled feature_enabled showtip' id='page-standard-fog-basic-toggle' title='Simplest method of adding fog of war to your games. Use in conjunction with the hide/reveal tool' type='checkbox' value='1'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		</div>
+		</div>
+		</hr>
+		<hr>
+		<div class='gm_darkness_opacity'>
+		<div class='row'>
+		<div class='col-xs-12'>
+		<p class='opacity_title'>GM Darkness Opacity</p>
+		</div>
+		</div>
+		</div>
+		<div class='row'>
+		<div class='col-xs-8'>
+		<div class='fogopacity'></div>
+		</div>
+		<div class='col-xs-1'>
+		<input class='opacity_percentage' disabled type='text'>
+		</div>
+		</div>
+		</hr>
+		<!-- * Audio */ -->
+		<hr>
+		<div class='audio_settings'>
+		<div class='pagedetails__header'>
+		<h3 class='page_title'>Audio</h3>
+		</div>
+		<div class='pagedetails__subheader'>
+		<h4>Play on Load</h4>
+		</div>
+		<div class='pagedetails__container'>
+		<label class='sr-only' for='page-audio-play-on-load'>play an audio track on page load</label>
+		<select class='pagejukeboxtrigger' id='page-audio-play-on-load'></select>
+		</div>
+		</div>
+		<!-- * Archive & Delete Buttons */ -->
+		<hr>
+		<div class='page-buttons d-flex flex-wrap justify-content-between'>
+		<button class='archive btn'>Archive Page</button>
+		<button class='delete btn btn-danger'>Delete Page</button>
+		</div>
+		</div>
+		
 		<div class='lighting tab-pane' style='display:none;'>
-			<!-- BEGIN MOD -->
-				<strong style="display: block; margin-bottom: 10px;">
-					<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
-					Requires a paid Roll20 subscription or all players to use a betteR20 script
-				</strong>
-			<!-- END MOD -->
-			<div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
-				<div class='alert alert-info' role='alert'>
-					<p><a href="https://help.roll20.net/hc/en-us/articles/360052521913" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
-				</div>
-				<div class='dyn_fog_settings'>
-					<div class='row'>
-						<div class='col-xs-6'>
-							<p class='dynamic_lighting_title'>Dynamic Lighting</p>
-						</div>
-						<div class='col-xs-3 dyn_fog_switch'>
-							<label class='switch'>
-								<input class='dyn_fog_enabled feature_enabled' type='checkbox'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-				</div>
-				<hr>
-				<div class='explorer_mode'>
-					<div class='row'>
-						<div class='col-xs-6'>
-							<p class='explorer_mode_title'>Explorer Mode</p>
-						</div>
-						<div class='col-xs-3 dyn_fog_switch'>
-							<label class='switch'>
-								<input class='dyn_fog_autofog_mode' type='checkbox'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-					<div class='row'>
-						<div class='col-xs-11'>
-							<p class='description'>Reveals areas of the Map Layer that Players have already explored. Does not reveal areas that were revealed when Explorer Mode is disabled. Previously called "Advanced Fog of War".</p>
-						</div>
-					</div>
-				</div>
-				<hr>
-				<div class='daylight_mode'>
-					<div class='row'>
-						<div class='col-xs-6'>
-							<p class='explorer_mode_title'>Daylight Mode</p>
-						</div>
-						<div class='col-xs-3 dyn_fog_switch'>
-							<label class='switch'>
-								<input class='dyn_fog_global_illum' type='checkbox'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-					<div class='row'>
-						<div class='col-xs-11'>
-							<p class='description'>Adds Light to the whole Page, good for a sunny day or well lit room or GMs who don't want to place a bunch of torches. Previously called "Global Illumination".</p>
-						</div>
-					</div>
-					<div class='row-fluid clearfix daylight_slider_row' style='display: none;'>
-						<div class='span2' style='float:left'>
-							<label class='distance'>Brightness</label>
-						</div>
-						<div class='span8 dyn_fog_switch' style='float:right'>
-							<div class='form-group'>
-								<div class='input-group flex-group'>
-									<img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
-									<input class='dyn_fog_daylight_slider flex-item' max='1' min='0.05' step='0.05' type='range' value='1'>
-									<img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<hr>
-				<div class='update_on_drop_mode'>
-					<div class='row'>
-						<div class='col-xs-6'>
-							<p class='update_on_drop_title'>Update when Token Drop</p>
-						</div>
-						<div class='col-xs-3 dyn_fog_switch'>
-							<label class='switch'>
-								<input class='dyn_fog_update_on_drop' type='checkbox'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-					<div class='row'>
-						<div class='col-xs-11'>
-							<p class='description'>When dragging and dropping a token, the lighting will only change after a player has dropped, not while dragging.</p>
-						</div>
-					</div>
-				</div>
-				<hr>
-				<div class='gm_darkness_opacity'>
-					<div class='row'>
-						<div class='col-xs-12'>
-							<p class='opacity_title'>GM Darkness Opacity</p>
-						</div>
-					</div>
-					<div class='row'>
-						<div class='col-xs-11'>
-							<p class='description'>The GM can see through dark areas hidden from the Players when using Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.</p>
-						</div>
-					</div>
-					<div class='row'>
-						<div class='col-xs-8'>
-							<div class='fogopacity'></div>
-						</div>
-						<div class='col-xs-1'>
-							<input class='opacity_percentage' disabled type='text'>
-						</div>
-					</div>
-				</div>
-				<hr>
-			</div>
-			<div id='legacy_section'>
-				<div aria-expanded='false' class='span8' data-target='.collapse_legacy_lighting' data-toggle='collapse' style='display:flex'>
-					<p class='token_light_title' style='flex:1'>Advanced & Legacy Settings</p>
-					<i aria-expanded='false' class='fa fa-chevron-up collapse_legacy_lighting' style='font-size:20px;cursor: pointer;'></i>
-					<i aria-expanded='false' class='fa fa-chevron-down collapse_legacy_lighting' style='font-size:20px;cursor: pointer;'></i>
-				</div>
-				<div class='collapse collapse_legacy_lighting'>
-					<div class='clearfix'>
-						<div class='col-xs-7'>
-							<p class='light_title'>Legacy Lighting</p>
-						</div>
-						<div class='col-xs-2 dyn_fog_switch'>
-							<label class='switch'>
-								<input class='page_settings_enable_legacy_lighting lighting_feature feature_toggle' data-feature_enabled='showlighting' data-target='.legacy_only_section' data-toggle='toggle' type='checkbox'>
-								<span class='slider round'></span>
-								</input>
-							</label>
-						</div>
-					</div>
-					<div class='toggle-element legacy_only_section'>
-						<hr>
-						<div class='lighting_feature' data-feature_enabled='adv_fow_enabled' id='afow_settings'>
-							<label class='feature_name'>
-								<strong>Advanced Fog of War</strong>
-							</label>
-							<div class='feature_options'>
-								<input class='advancedfowenabled feature_enabled showtip' type='checkbox' value='1'>
-								<label class='checkbox'>&nbsp; Enabled</label>
-								<div class='subsettings'>
-									<div>
-										<input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>
-										<label class='checkbox'>&nbsp; Show Grid</label>
-									</div>
-									<div>
-										<input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>
-										<label class='checkbox'>&nbsp; Dim Light Reveals</label>
-									</div>
-									<div>
-										<input class='showtip' id='afow_gm_see_all' title='By default, Advanced Fog of War is only revealed by tokens with sight that are controlled by at least one player.&lt;br&gt;This option allows tokens with sight which are not controlled by anyone to reveal Advanced Fog of War for the GM only.' type='checkbox' value='0'>
-										<label class='checkbox'>&nbsp; All Tokens Reveal (GM)</label>
-									</div>
-									<div id='afow_grid_size' style='width: 180px; line-height: 30px;'>
-										<span id='cell_measurement'>Cell Width:</span>
-										<input type="number" class="advancedfowgridsize units" value="<$!this.model.get("adv_fow_grid_size")$>" />
-										<br>
-										<span>x 70 px =</span>
-										<input type="number" class="px_advancedfowgridsize pixels" value="<$!this.model.get("adv_fow_grid_size")*70$>" />
-										<span>px<sup>*</sup></span>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class='lighting_feature' data-feature_enabled='showlighting' id='dynamic_lighting_settings'>
-							<label class='feature_name'>
-								<strong>Dynamic Lighting</strong>
-							</label>
-							<div class='feature_options'>
-								<input class='lightingenabled feature_enabled showtip' type='checkbox' value='1'>
-								<label class='checkbox'>&nbsp; Enabled</label>
-								<div class='subsettings'>
-									<div>
-										<input class='lightenforcelos showtip' title='Player&#39;s line of sight set by what tokens they can control.' type='checkbox' value='1'>
-										<label class='checkbox'>&nbsp; Enforce Line of Sight</label>
-									</div>
-									<div>
-										<input class='lightingupdate' type='checkbox' value='1'>
-										<label class='checkbox'>&nbsp; Only Update on Drop</label>
-									</div>
-									<div>
-										<input class='lightglobalillum showtip' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>
-										<label class='checkbox'>&nbsp; Global Illumination</label>
-									</div>
-								</div>
-							</div>
-						</div>
-						<hr>
-						<div class='alert alert-info' role='alert'>
-							<p><a href=" https://blog.roll20.net/posts/retiring-legacy-dynamic-lighting-what-you-need-to-know/" target='' _blank''>The sunset has started for Legacy Dynamic Lighting. Convert to Dynamic Lighting now; click to learn more.</a></p>
-						</div>
-						<hr>
-						<div id='gm_darkness_opacity'>
-							<label class='feature_name'>
-								<strong>Darkness Opacity (GM)</strong>
-							</label>
-							<div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
-						</div>
-					</div>
-				</div>
-			</div>
+		<!-- BEGIN MOD -->
+		<strong style="display: block; margin-bottom: 10px;">
+		<a class="tipsy-w showtip pictos" title="Requires subscription or players to use a betteR20 script">!</a>
+		Requires a paid Roll20 subscription or all players to use a betteR20 script
+		</strong>
+		<!-- END MOD -->
+		<div class='border_box lighting_feature' data-feature_enabled='dyn_fog_prototype_enabled' id='dyn_fog_prototype_settings'>
+		<div class='alert alert-info' role='alert'>
+		<p><a href="https://help.roll20.net/hc/en-us/articles/360052521913" target=''_blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
 		</div>
+		<div class='dyn_fog_settings'>
+		<div class='row'>
+		<div class='col-xs-6'>
+		<p class='dynamic_lighting_title'>Dynamic Lighting</p>
+		</div>
+		<div class='col-xs-3 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_enabled feature_enabled' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='explorer_mode'>
+		<div class='row'>
+		<div class='col-xs-6'>
+		<p class='explorer_mode_title'>Explorer Mode</p>
+		</div>
+		<div class='col-xs-3 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_autofog_mode' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row'>
+		<div class='col-xs-11'>
+		<p class='description'>Reveals areas of the Map Layer that Players have already explored. Does not reveal areas that were revealed when Explorer Mode is disabled. Previously called "Advanced Fog of War".</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='daylight_mode'>
+		<div class='row'>
+		<div class='col-xs-6'>
+		<p class='explorer_mode_title'>Daylight Mode</p>
+		</div>
+		<div class='col-xs-3 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_global_illum' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row'>
+		<div class='col-xs-11'>
+		<p class='description'>Adds Light to the whole Page, good for a sunny day or well lit room or GMs who don't want to place a bunch of torches. Previously called "Global Illumination".</p>
+		</div>
+		</div>
+		<div class='row-fluid clearfix daylight_slider_row' style='display: none;'>
+		<div class='span2' style='float:left'>
+		<label class='distance'>Brightness</label>
+		</div>
+		<div class='span8 dyn_fog_switch' style='float:right'>
+		<div class='form-group'>
+		<div class='input-group flex-group'>
+		<img class='dyn_fog_img_left flex-item' src='/images/editor/lightbulb_low.svg'>
+		<input class='dyn_fog_daylight_slider flex-item' max='1' min='0.05' step='0.05' type='range' value='1'>
+		<img class='dyn_fog_img_right flex-item' src='/images/editor/lightbulb_high.svg'>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='update_on_drop_mode'>
+		<div class='row'>
+		<div class='col-xs-6'>
+		<p class='update_on_drop_title'>Update when Token Drop</p>
+		</div>
+		<div class='col-xs-3 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='dyn_fog_update_on_drop' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='row'>
+		<div class='col-xs-11'>
+		<p class='description'>When dragging and dropping a token, the lighting will only change after a player has dropped, not while dragging.</p>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='gm_darkness_opacity'>
+		<div class='row'>
+		<div class='col-xs-12'>
+		<p class='opacity_title'>GM Darkness Opacity</p>
+		</div>
+		</div>
+		<div class='row'>
+		<div class='col-xs-11'>
+		<p class='description'>The GM can see through dark areas hidden from the Players when using Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.</p>
+		</div>
+		</div>
+		<div class='row'>
+		<div class='col-xs-8'>
+		<div class='fogopacity'></div>
+		</div>
+		<div class='col-xs-1'>
+		<input class='opacity_percentage' disabled type='text'>
+		</div>
+		</div>
+		</div>
+		<hr>
+		</div>
+		<div id='legacy_section'>
+		<div aria-expanded='false' class='span8' data-target='.collapse_legacy_lighting' data-toggle='collapse' style='display:flex'>
+		<p class='token_light_title' style='flex:1'>Advanced & Legacy Settings</p>
+		<i aria-expanded='false' class='fa fa-chevron-up collapse_legacy_lighting' style='font-size:20px;cursor: pointer;'></i>
+		<i aria-expanded='false' class='fa fa-chevron-down collapse_legacy_lighting' style='font-size:20px;cursor: pointer;'></i>
+		</div>
+		<div class='collapse collapse_legacy_lighting'>
+		<div class='clearfix'>
+		<div class='col-xs-7'>
+		<p class='light_title'>Legacy Lighting</p>
+		</div>
+		<div class='col-xs-2 dyn_fog_switch'>
+		<label class='switch'>
+		<input class='page_settings_enable_legacy_lighting lighting_feature feature_toggle' data-feature_enabled='showlighting' data-target='.legacy_only_section' data-toggle='toggle' type='checkbox'>
+		<span class='slider round'></span>
+		</input>
+		</label>
+		</div>
+		</div>
+		<div class='toggle-element legacy_only_section'>
+		<hr>
+		<div class='lighting_feature' data-feature_enabled='adv_fow_enabled' id='afow_settings'>
+		<label class='feature_name'>
+		<strong>Advanced Fog of War</strong>
+		</label>
+		<div class='feature_options'>
+		<input class='advancedfowenabled feature_enabled showtip' type='checkbox' value='1'>
+		<label class='checkbox'>&nbsp; Enabled</label>
+		<div class='subsettings'>
+		<div>
+		<input class='advancedfowshowgrid showtip' title='By default the Advanced Fog of War hides the map grid anywhere revealed but the player can no longer see because of Dynamic Lighting. This option makes the grid always visible.' type='checkbox' value='1'>
+		<label class='checkbox'>&nbsp; Show Grid</label>
+		</div>
+		<div>
+		<input class='dimlightreveals showtip' title='By default the Advanced Fog of War will not be permanently revealed by Dynamic Lighting that is not bright. This option allows dim lighting to also reveal the fog.' type='checkbox' value='1'>
+		<label class='checkbox'>&nbsp; Dim Light Reveals</label>
+		</div>
+		<div>
+		<input class='showtip' id='afow_gm_see_all' title='By default, Advanced Fog of War is only revealed by tokens with sight that are controlled by at least one player.&lt;br&gt;This option allows tokens with sight which are not controlled by anyone to reveal Advanced Fog of War for the GM only.' type='checkbox' value='0'>
+		<label class='checkbox'>&nbsp; All Tokens Reveal (GM)</label>
+		</div>
+		<div id='afow_grid_size' style='width: 180px; line-height: 30px;'>
+		<span id='cell_measurement'>Cell Width:</span>
+		<input type="number" class="advancedfowgridsize units" value="<$!this.model.get("adv_fow_grid_size")$>" />
+		<br>
+		<span>x 70 px =</span>
+		<input type="number" class="px_advancedfowgridsize pixels" value="<$!this.model.get("adv_fow_grid_size")*70$>" />
+		<span>px<sup>*</sup></span>
+		</div>
+		</div>
+		</div>
+		</div>
+		<div class='lighting_feature' data-feature_enabled='showlighting' id='dynamic_lighting_settings'>
+		<label class='feature_name'>
+		<strong>Dynamic Lighting</strong>
+		</label>
+		<div class='feature_options'>
+		<input class='lightingenabled feature_enabled showtip' type='checkbox' value='1'>
+		<label class='checkbox'>&nbsp; Enabled</label>
+		<div class='subsettings'>
+		<div>
+		<input class='lightenforcelos showtip' title='Player&#39;s line of sight set by what tokens they can control.' type='checkbox' value='1'>
+		<label class='checkbox'>&nbsp; Enforce Line of Sight</label>
+		</div>
+		<div>
+		<input class='lightingupdate' type='checkbox' value='1'>
+		<label class='checkbox'>&nbsp; Only Update on Drop</label>
+		</div>
+		<div>
+		<input class='lightglobalillum showtip' title='Instead of darkness show light in all places players can see.' type='checkbox' value='1'>
+		<label class='checkbox'>&nbsp; Global Illumination</label>
+		</div>
+		</div>
+		</div>
+		</div>
+		<hr>
+		<div class='alert alert-info' role='alert'>
+		<p><a href=" https://blog.roll20.net/posts/retiring-legacy-dynamic-lighting-what-you-need-to-know/" target=''_blank''>The sunset has started for Legacy Dynamic Lighting. Convert to Dynamic Lighting now; click to learn more.</a></p>
+		</div>
+		<hr>
+		<div id='gm_darkness_opacity'>
+		<label class='feature_name'>
+		<strong>Darkness Opacity (GM)</strong>
+		</label>
+		<div class='fogopacity showtip' title='The GM can see through dark areas hidden from the players when using Fog of War, Advanced Fog of War, and/or Dynamic Lighting. This setting adjusts the opacity of those dark areas for the GM only.'></div>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>		
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -11470,11 +11508,21 @@ function initHTMLroll20actionsMenu () {
 							<ul class='submenu' data-menuname='positioning'>
 								<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'><span class="pictos ctx__layer-icon">@</span> Map Layer</li>
 								<!-- BEGIN MOD -->
+								<$ if(this?.get && this.get("layer") == "floors" || d20plus.cfg.getOrDefault("canvas", "showFloors")) { $>
+								<li data-action-type="tolayer_floors" class='<$ if(this && this.get && this.get("layer") == "floors") { $>active<$ } $>'><span class="pictos ctx__layer-icon">I</span> Floors Layer</li>
+								<$ } $>
+								<$ if(this?.get && this.get("layer") == "background" || d20plus.cfg.getOrDefault("canvas", "showBackground")) { $>
 								<li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'><span class="pictos ctx__layer-icon">a</span> Background Layer</li>
+								<$ } $>
 								<!-- END MOD -->
 								<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'><span class="pictos ctx__layer-icon">b</span> Token Layer</li>
 								<!-- BEGIN MOD -->
+								<$ if(this?.get && this.get("layer") == "roofs" || d20plus.cfg.getOrDefault("canvas", "showRoofs")) { $>
+								<li data-action-type="tolayer_roofs" class='<$ if(this && this.get && this.get("layer") == "roofs") { $>active<$ } $>'><span class="pictos ctx__layer-icon">H</span> Roofs Layer</li>
+								<$ } $>
+								<$ if(this?.get && this.get("layer") == "foreground" || d20plus.cfg.getOrDefault("canvas", "showForeground")) { $>
 								<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'><span class="pictos ctx__layer-icon">B</span> Foreground Layer</li>
+								<$ } $>
 								<!-- END MOD -->
 								<li data-action-type="tolayer_gmlayer" class='<$ if(this && this.get && this.get("layer") == "gmlayer") { $>active<$ } $>'><span class="pictos ctx__layer-icon">E</span> GM Layer</li>
 								<li data-action-type="tolayer_walls" class='<$ if(this && this.get && this.get("layer") == "walls") { $>active<$ } $>'><span class="pictostwo ctx__layer-icon">r</span> Lighting Layer</li>
@@ -12004,9 +12052,21 @@ function initHTMLroll20EditorsMisc () {
 		<label>
 		Actions
 		<span class='actionhelp r20' style='color: #777;'>&nbsp;(One command/roll per line)</span>
-		<span class='actionhelp js' style='color: #777;'>&nbsp;(Regular javascript commands)</span>
+		<span class='actionhelp js' style='color: #777;'>
+			&nbsp;(Regular javascript commands)
+			&nbsp;<a class="tipsy-n-right showtip pictos" original-title="<div style='background:black;width:300px;margin:-5px;padding:5px;text-align:left'>
+				<strong>Notes on JS code usage:</strong><br>
+				<code>use&nbsp;strict</code> directive enabled<br>
+				<code>this</code> refers to this r20 macro object<br>
+				<code>d20</code> object can be used to access game data:<br>
+				<code>.textchat.doChatInput()</code> sends text to chat<br>
+				<code>.engine.selected()</code> gets selected tokens<br>
+				<code>.Campaign.activePage()</code> gets current map<br>
+			</div>">?</a>
+		</span>
 		</label>
-		<textarea class='macro tokenizer' style='width: 100%; min-height: 75px; margin-top: 5px;'></textarea>
+		<textarea class='macro tokenizer' style='display:none'></textarea>
+		<textarea class='tokenizer b20' style='width: 100%; min-height: 75px; margin-top: 5px'></textarea>
 		<div class='clear'></div>
 		<div class='btn testmacro' style='float: right;'>Test Macro</div>
 		<p class='commandhelp r20' style='color: #777;'>
@@ -12015,9 +12075,7 @@ function initHTMLroll20EditorsMisc () {
 		Type <code>#</code> to insert other macros
 		</p>
 		<p class='commandhelp js' style='color: #777;'>
-		JS <code>strict</code> mode directive is enabled
-		<br>
-		JS <code>#macro</code> can't be nested in other macros
+		This <code>#macro</code> can't be nested in macros or actions
 		<br>
 		Type <code>return</code> to output results to chat
 		</p>
@@ -12703,6 +12761,8 @@ function d20plusEngine () {
 		$("#rect").unbind(clicktype).bind(clicktype, () => setMode("rect"));
 		$("#ellipse").unbind(clicktype).bind(clicktype, () => setMode("ellipse"));
 		$("#path").unbind(clicktype).bind(clicktype, () => setMode("path"));
+		$("#select").unbind(clicktype).bind(clicktype, () => setMode("select"));
+		$("#select .chooseselect").unbind(clicktype).bind(clicktype, () => setMode("select"));
 
 		if (!$(`#fxtools`).length) {
 			const $fxMode = $(`<li id="fxtools"/>`).append(`<span class="pictos">e</span>`);
@@ -12912,39 +12972,45 @@ function d20plusEngine () {
 		});
 	};
 
-	d20plus.engine.enhanceMacros = () => {
-		const $dialog = $(`.dialog[data-macroid=${d20plus.engine._lastOpenedMacroId}]`);
-		if (!d20plus.engine._lastOpenedMacroId || !$dialog[0]) return;
+	d20plus.engine.enhanceMacros = (openedMacroId) => {
+		const $dialog = $(`.dialog[data-macroid=${openedMacroId}]`);
+		if (!openedMacroId || !$dialog[0]) return;
 		const $macro = $dialog.find(`.macro.tokenizer`);
+		const $b20macro = $dialog.find(`.tokenizer.b20`);
 		const $name = $dialog.find("input.name");
 		const $checkbox = $dialog.find(".isjs")
-			.on("change", (evt) => {
-				if ($(evt.target).prop("checked")) $macro.parent().addClass("jsdialog");
+			.on("change", () => {
+				if ($checkbox.prop("checked")) $macro.parent().addClass("jsdialog");
 				else $macro.parent().removeClass("jsdialog");
 			});
+		const macro = currentPlayer.macros._byId[openedMacroId];
 		const script = d20plus.engine.decodeScript($macro.val());
 		if (script) {
 			$macro.parent().addClass("jsdialog");
-			$macro.val(script);
+			$b20macro.val(script);
 			$checkbox.prop("checked", true);
+		} else {
+			$b20macro.val($macro.val());
 		}
 		$dialog.find(".btn.testmacro").on("click", () => {
-			if (!$checkbox.prop("checked")) return;
-			const script = $macro.val();
-			$macro.val(d20plus.engine.runScript(script));
-			setTimeout(() => $macro.val(script), 100);
+			if (!$checkbox.prop("checked")) {
+				$macro.val($b20macro.val());
+			} else {
+				$macro.val(d20plus.engine.runScript($b20macro.val(), macro));
+			}
 		});
 		const $buttons = $dialog.parent()
 			.find(".ui-dialog-buttonpane button:not(.active)")
 			.addClass("active");
-		$buttons.on("mouseup", (evt) => {
-			if (!$name.val()) {
-				let i = 0;
-				while (d20plus.ut.getMacroByName(`Untitled${i}`)) i++;
-				$name.val(`Untitled${i}`);
-			}
-			if (!$checkbox.prop("checked") || evt.which !== 1) return;
-			$macro.val(d20plus.engine.encodeScript($macro.val()));
+		$buttons.on("mouseup", () => {
+			let name = $name.val() || "Untitled";
+			const existing = new Set(d20.Campaign.players.map(p => p.macros
+				.filter(m => m.id !== openedMacroId && (p.id === d20_player_id || m.visibleToCurrentPlayer()))
+				.map(m => m.get("name"))).flat());
+			while (existing.has(name)) name = name.replace(/(\d*?)$/, id => Number(id) + 1);
+			if ($name.val() !== name) $name.val(name);
+			if (!$checkbox.prop("checked")) $macro.val($b20macro.val());
+			else $macro.val(d20plus.engine.encodeScript($b20macro.val()));
 		});
 	}
 
@@ -12962,13 +13028,13 @@ function d20plusEngine () {
 		return `bs\`\`<\`\`...${saved}...\`\`>\`\``;
 	}
 
-	d20plus.engine.runScript = (script) => {
-		const vuln = /\b(XMLHttpRequest|eval|Function|document|window|Window)\b/g;
-		const insecure = script.replace(vuln, str => str.replace("o", "о").replace("e", "е"));
-		const toRun = `"use ${"strict"}";\n${insecure}`;
+	d20plus.engine.runScript = (script, macro) => {
+		// b20 fails to load if it has words use and strict separated by space ANYWHERE (right, even in comments)
+		const fnBody = `"use\u0020strict";\n${script}`;
 		try {
 			// eslint-disable-next-line no-new-func
-			return Function(toRun)() || "";
+			const fn = new Function(fnBody);
+			return fn.call(macro) || "";
 		} catch (e) {
 			d20plus.ut.sendHackerChat(`Script executed with errors`, true);
 			d20plus.ut.error(e);
@@ -13054,6 +13120,9 @@ function d20plusEngine () {
 		width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
 		height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
 		background_color: {class: ".pagebackground"},
+		wrapperColor: {class: ".wrappercolor"},
+		useAutoWrapper: {id: "page-wrapper-color-from-map-toggle", class: ".useautowrapper"},
+
 		scale_number: {id: "page-size-height-input", class: ".scale_number"},
 		scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
 		gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
@@ -13814,7 +13883,11 @@ function d20plusEngine () {
 		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
-		d20.engine.canvas._layerIteratorGenerator = d20plus.mod.layerIteratorGenerator;
+		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
+		d20.engine.canvas.drawAnyLayer = _.bind(d20plus.mod.drawAnyLayer, d20.engine.canvas);
+		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);// RB20 EXCLUDE START
+		// d20.engine.canvas._renderAll = _.bind(d20plus.mod.legacy_renderAll, d20.engine.canvas);
+		// d20.engine.canvas._layerIteratorGenerator = d20plus.mod.legacy_layerIteratorGenerator;// RB20 EXCLUDE END
 	};
 
 	d20plus.engine.removeLinkConfirmation = function () {
@@ -17599,7 +17672,7 @@ function baseUi () {
 			.css({
 				width: 30,
 				position: "absolute",
-				left: 20,
+				left: 10,
 				top: $wrpBtnsMain.height() + 90,
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
@@ -17894,12 +17967,34 @@ SCRIPT_EXTENSIONS.push(baseUi);
 function d20plusMod () {
 	d20plus.mod = {};
 
-	/* eslint-disable */
+	d20plus.mod.setMode = function (t) {
+		d20plus.ut.log(`Setting mode ${t}`);
+		const preserveDrawingColor = (stash) => {
+			const drawingTools = ["rect", "ellipse", "text", "path", "polygon"];
+			const drawingProps = [{nm: "fill", el: "fillcolor"}, {nm: "color", el: "strokecolor"}];
+			if (!drawingTools.includes(t)) return;
+			drawingProps.forEach(prop => {
+				if (stash) d20plus.mod[`drawing${prop.nm}`] = d20.engine.canvas.freeDrawingBrush[prop.nm];
+				else {
+					if (d20plus.mod[`drawingcolor`] === "rgb(0, 0, 0)" || !d20plus.mod[`drawingcolor`]) return;
+					$(`#path_${prop.el}`).val(d20plus.mod[`drawing${prop.nm}`]).trigger("change");
+				}
+			});
+		}
+		try {
+			preserveDrawingColor(true);
+			d20.Campaign.activePage().setModeRef(t);
+			preserveDrawingColor();
+		} catch (e) {
+			d20plus.ut.log(`Switching using legacy because ${e.message}`);
+			d20plus.mod.setModeLegacy(t);
+		}
+	}
 
 	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool
+	/* eslint-disable */
 	// BEGIN ROLL20 CODE
-	d20plus.mod.setMode = function (e) {
-		d20plus.ut.log("Setting mode " + e);
+	d20plus.mod.setModeLegacy = function (e) {
 		// BEGIN MOD
 		// "text" === e || "rect" === e || "ellipse" === e || "polygon" === e || "path" === e || "pan" === e || "select" === e || "targeting" === e || "measure" === e || window.is_gm || (e = "select"),
 		// END MOD
@@ -17941,7 +18036,6 @@ function d20plusMod () {
 			}),
 				d20.engine.canvas.hoverCursor = "move"),
 			// BEGIN MOD
-			// console.log("Switch mode to " + e),
 			d20.engine.mode = e,
 		"measure" !== e && window.currentPlayer && d20.engine.measurements[window.currentPlayer.id] && !d20.engine.measurements[window.currentPlayer.id].sticky && (d20.engine.announceEndMeasure({
 			player: window.currentPlayer.id
@@ -18234,12 +18328,12 @@ function d20plusMod () {
 			}
 		}
 	};
-	// END ROLL20 CODE
+	// END ROLL20 CODE// RB20 EXCLUDE START
 
 	d20plus.mod._renderAll_middleLayers = new Set(["objects", "background"]);
 	d20plus.mod._renderAll_serviceLayers = new Set(["map", "floors", "walls", "gmlayer"]);
 	// BEGIN ROLL20 CODE
-	d20plus.mod.renderAll = function (e) {
+	d20plus.mod.legacy_renderAll = function (e) {
 		const t = e && e.context || this.contextContainer
 			, i = this.getActiveGroup()
 			, n = [d20.engine.canvasWidth / d20.engine.canvasZoom, d20.engine.canvasHeight / d20.engine.canvasZoom]
@@ -18378,7 +18472,7 @@ function d20plusMod () {
 
 	// shoutouts to Roll20 for making me learn how `yield` works
 	// BEGIN ROLL20 CODE
-	d20plus.mod.layerIteratorGenerator = function*(e) {
+	d20plus.mod.legacy_layerIteratorGenerator = function*(e) {
 		yield [this.map, "map"],
 		this._save_map_layer && (d20.dyn_fog.setMapTexture(d20.engine.canvas.contextContainer),
 			this._save_map_layer = !1);
@@ -18416,6 +18510,123 @@ function d20plusMod () {
 		if (window.is_gm && "walls" === window.currentEditingLayer) yield [this.walls, "walls"];
 		// END MOD
 	};
+	// END ROLL20 CODE// RB20 EXCLUDE END
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.renderAll = function(v) {
+		const p = v && v.context || this.contextContainer
+		  , e = this.getActiveGroup()
+		  , u = this.sortTokens();
+		e && !window.is_gm && (e.hideResizers = !0),
+		this.clipTo ? fabric.util.clipContext(this, p) : p.save(),
+		v.tokens = u.map,
+		this.drawMapLayer(p, v),
+		// BEGIN MOD
+		v.tokens = u.floors,
+		this.drawAnyLayer(p, v, "floors");
+		// END MOD
+		const n = v && v.grid_before_afow
+		  , y = !d20.Campaign.activePage().get("adv_fow_enabled") || v && v.disable_afow
+		  , d = !d20.Campaign.activePage().get("showgrid") || v && v.disable_grid;
+		return n && !d && d20.canvas_overlay.drawGrid(p),
+		!y && window.largefeats && d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context),
+		!n && !d && d20.canvas_overlay.drawGrid(p),
+		// BEGIN MOD
+		["background", "objects", "roofs", "foreground"].forEach(layer => {
+			v.tokens = u[layer],
+			this.drawAnyLayer(p, v, layer);
+		}),// RB20 EXCLUDE START 
+		/* this.renderAbove = function (p, v) {
+			["roofs", "foreground"].forEach(layer => {
+				v.tokens = u[layer],
+				this.drawAnyLayer(p, v, layer);
+			}),
+			window.is_gm && (v.tokens = u.gmlayer,
+			this.drawAnyLayer(p, v, "gmlayer"))
+		},*/ // RB20 EXCLUDE END
+		window.is_gm && (v.tokens = u.gmlayer,
+		this.drawAnyLayer(p, v, "gmlayer")),
+		window.is_gm && window.currentEditingLayer === "walls" && (v.tokens = u.walls,
+		this.drawDynamicLightingLayer(p, v)),
+		window.currentEditingLayer === "weather" && (v.tokens = u.weather,
+		this.drawAnyLayer(p, v, "weather")),
+		// END MOD
+		p.restore(),
+		this
+	}
+	// END ROLL20 CODE
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.sortTokens = function() {
+		const v = {
+			map: [],
+			// BEGIN MOD
+			floors: [],
+			background: [],
+			objects: [],
+			roofs: [],
+			foreground: [],
+			gmlayer: [],
+			weather: [],
+			// END MOD
+			walls: []
+		};
+		for (const p of this._objects) {
+			const e = v[p.model.get("layer")];
+			e && e.push(p)
+		}
+		return v
+	}
+	// END ROLL20 CODE
+
+	d20plus.mod.setAlpha = function (layer) {
+		const l = ["map", "floors", "walls", "weather", "background", "objects", "roofs", "foreground", "gmlayer"];
+		const o = ["background", "objects", "foreground"];
+		return !window.is_gm 
+			|| (o.includes(layer) && o.includes(window.currentEditingLayer))
+			|| (l.indexOf(window.currentEditingLayer) >= l.indexOf(layer)
+				&& !((layer === "roofs" || o.includes(layer)) && window.currentEditingLayer === "gmlayer"))
+			? 1 : (layer === "gmlayer" ? d20.engine.gm_layer_opacity : .5);
+	}
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.drawAnyLayer = function(v, p={}, layer) {
+		const e = p.tokens || this._objects.filter(u=>{
+			const n = u.model;
+			// BEGIN MOD
+			return n && n.get("layer") === layer
+			// END MOD
+		});
+		v.save(),
+		// BEGIN MOD
+		v.globalAlpha = d20plus.mod.setAlpha(layer),
+		// END MOD
+		this.drawTokenList(v, e, p),
+		v.restore()
+	},
+	// END ROLL20 CODE
+
+	// BEGIN ROLL20 CODE
+	d20plus.mod.drawTokensWithoutAuras = function (v, p) {
+		const e = this.getActiveGroup();
+		v.save(),
+		p.forEach(u=>{
+			e && u && e.contains(u) ? (u.renderingInGroup = e,
+			u.hasControls = !1) : (u.renderingInGroup = null,
+			u.hasControls = !0,
+			u.hideResizers = !window.is_gm);
+			// BEGIN MOD
+			v.globalAlpha = d20plus.mod.setAlpha(u.model.get("layer")),
+			// END MOD
+			u.renderPre(v, {
+				noAuras: !0,
+				should_update: !0
+			}),
+			this._draw(v, u)
+		}
+		),
+		v.restore()
+	},
 	// END ROLL20 CODE
 
 	// BEGIN ROLL20 CODE
@@ -18438,7 +18649,9 @@ function d20plusMod () {
 			}
 			// END MOD
 			$("#editinglayer").addClass(window.currentEditingLayer);
-			$(document).trigger("d20:editingLayerChanged");
+			// BEGIN MOD
+			d20.Campaign.activePage().onLayerChange();
+			// END MOD
 		});
 	};
 	// END ROLL20 CODE
@@ -22904,9 +23117,9 @@ function baseChat () {
 				"_type": "_enum",
 				"__values": ["none", "own", "all"],
 				"__texts": [
-					"disabled",
-					"run your own scripts",
-					"run all scripts (only enable this if you trust your GM!)",
+					"Disabled",
+					"Run your own scripts",
+					"Run all scripts (only if you trust your GM!)",
 				],
 				"_player": true,
 			},
@@ -23099,7 +23312,7 @@ function baseChat () {
 
 	d20plus.chat.processIncomingMsg = (msg, msgData) => { // RB20 EXCLUDE START
 		const expendSlots = d20plus.cfg.getOrDefault("chat", "autoExpend") !== "none";
-		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[cor\d]?)-?(?<name>[\p{L}\d _]*)(?:\|(?<quantity>\d*)|)\]/u;// RB20 EXCLUDE END
+		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[cor\d]?)-?(?<name>[\p{L}\d _]*)(?:\|(?<quantity>\d*)|)\]/ug;// RB20 EXCLUDE END
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
 			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
@@ -23150,21 +23363,26 @@ function baseChat () {
 			};
 			msg.content = msg.content.replace(b20expend, (...str) => {
 				$(".btn.btn-danger.canceltargeting:visible").click();
+				const exp = {};
 				const data = str.last();
 				if (data.type === "spl" && data.slot) {
-					expend.type = "spell";
-					({slot: expend.lvl, charid: expend.charID} = data);
+					exp.type = "spell";
+					({slot: exp.lvl, charid: exp.charID} = data);
 				} else if (data.type === "res" && data.slot) {
-					expend.type = "resource";
-					expend.res = data.slot === "c" ? "class" : "other";
-					if (data.quantity) expend.amt = data.quantity;
-					if (data.slot === "r" && data.name) expend.type = "repeated";
-					({name: expend.name, charid: expend.charID} = data);
+					exp.type = "resource";
+					exp.res = data.slot === "c" ? "class" : "other";
+					if (data.quantity) exp.amt = data.quantity;
+					if (data.slot === "r" && data.name) exp.type = "repeated";
+					({name: exp.name, charid: exp.charID} = data);
 				} else if (data.type === "ammo" && data.name) {
-					expend.type = "item";
-					expend.name = data.name;
-					if (data.quantity) expend.amt = data.quantity;
-					({name: expend.name, charid: expend.charID} = data);
+					exp.type = "item";
+					exp.name = data.name;
+					if (data.quantity) exp.amt = data.quantity;
+					({name: exp.name, charid: exp.charID} = data);
+				}
+				if (exp.type) {
+					d20plus.engine.expendResources(exp);
+					expend.type = exp.type;
 				}
 				return "";
 			});
@@ -23184,10 +23402,12 @@ function baseChat () {
 						if (!isNaN(raise)) expend.lvl -= -raise;
 					}
 				}
+				if (expend.type) {
+					d20plus.engine.expendResources(expend);
+				}
 			}
 			if (expend.type) {
 				msg.id = d20plus.ut.generateRowId(); // this is supposed to trick r20 not to revert msg contents
-				d20plus.engine.expendResources(expend);
 			}
 		} else if (!msgData.from_me) {
 			msg.content = msg.content.replace(b20expend, ""); // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
@@ -23204,10 +23424,10 @@ function baseChat () {
 	d20plus.chat.r20outgoing = (r20outgoing, params) => {
 		if (!params[2]) {
 			d20plus.chat.resetSendMyself();
-		}// RB20 EXCLUDE START
+		}
+		const macroJS = d20plus.cfg.getOrDefault("chat", "executeJSMacro");// RB20 EXCLUDE START
 		const dmgCfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
 		const expCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
-		const macroJS = d20plus.cfg.getOrDefault("chat", "executeJSMacro");
 
 		if (d20plus.chat.logAll) d20plus.ut.log("OUTGOING!", params);
 
@@ -23242,13 +23462,13 @@ function baseChat () {
 
 		if (macroJS !== "none") {
 			const template = /#(?<macroid>[^ ^#]+)/g;
-			params[0] = params[0].replace(template, (...string) => {
-				const macroId = string.last().macroid;
+			params[0] = params[0].replace(template, (...match) => {
+				const macroId = match.last().macroid;
 				const macroObj = d20plus.ut.getMacroByName(macroId);
-				if (!macroObj) return string[0];
+				if (!macroObj) return match[0];
 				const macro = macroObj.attributes.action;
 				const script = d20plus.engine.decodeScript(macro);
-				if (!script) return string[0];
+				if (!script) return match[0];
 				if (macroObj.collection.player.id !== d20_player_id && macroJS !== "all") {
 					d20plus.ut.sendHackerChat(`
 						Enable execution for scripts shared by other players
@@ -23257,7 +23477,7 @@ function baseChat () {
 					`, true);
 					return "";
 				}
-				return d20plus.engine.runScript(script);
+				return d20plus.engine.runScript(script, macroObj);
 			});
 		}
 
@@ -23457,8 +23677,8 @@ function baseChat () {
 			.append(languageTemplate())
 			.on("click", ".macro > .name", (evt) => {
 				const {currentTarget: target} = evt;
-				d20plus.engine._lastOpenedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
-				d20plus.engine.enhanceMacros();
+				const openedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
+				d20plus.engine.enhanceMacros(openedMacroId);
 			});
 		availableLanguagesPlayer(d20_player_id);
 		buildLanguageIndex();// RB20 EXCLUDE START
@@ -23842,7 +24062,7 @@ const betteR20Core = function () {
 				d20plus.jukeboxWidget.init();
 			}
 			d20plus.engine.enhancePathWidths();
-			d20plus.ut.fix3dDice();
+			// d20plus.ut.fix3dDice();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
 			d20plus.views.addViews();
@@ -24006,8 +24226,11 @@ EXT_LIB_SCRIPTS.push((function lib_script_2 () {
 
 
 EXT_LIB_SCRIPTS.push((function lib_script_3 () {
+"use strict";
+
 // PARSING =============================================================================================================
-Parser = {};
+globalThis.Parser = {};
+
 Parser._parse_aToB = function (abMap, a, fallback) {
 	if (a === undefined || a === null) throw new TypeError("undefined or null object passed to parser");
 	if (typeof a === "string") a = a.trim();
@@ -24242,7 +24465,7 @@ Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false} = {}) =
 		return stack.join(joiner) + (ent.speed.note ? ` ${ent.speed.note}` : "");
 	}
 
-	return (isMetric ? Parser.metric.getMetricNumber({originalValue: ent.speed, originalUnit: UNT_FEET}) : ent.speed)
+	return (isMetric ? Parser.metric.getMetricNumber({originalValue: ent.speed, originalUnit: Parser.UNT_FEET}) : ent.speed)
 		+ (ent.speed === "Varies" ? "" : ` ${unit} `);
 };
 Parser._getSpeedString_addSpeedMode = ({ent, prop, stack, isMetric, isSkipZeroWalk, unit}) => {
@@ -24263,7 +24486,7 @@ Parser._getSpeedString_getVal = ({prop, speed, isMetric}) => {
 		? 0
 		: speed.number != null ? speed.number : speed;
 
-	return isMetric ? Parser.metric.getMetricNumber({originalValue: num, originalUnit: UNT_FEET}) : num;
+	return isMetric ? Parser.metric.getMetricNumber({originalValue: num, originalUnit: Parser.UNT_FEET}) : num;
 };
 Parser._getSpeedString_getCondition = ({speed}) => speed.condition ? ` ${Renderer.get().render(speed.condition)}` : "";
 
@@ -24289,10 +24512,10 @@ Parser.raceCreatureTypesToFull = function (creatureTypes) {
 	const hasSubOptions = creatureTypes.some(it => it.choose);
 	return creatureTypes
 		.map(it => {
-			if (!it.choose) return Parser.monTypeToFullObj(it).asText.toTitleCase();
+			if (!it.choose) return Parser.monTypeToFullObj(it).asText;
 			return [...it.choose]
 				.sort(SortUtil.ascSortLower)
-				.map(sub => Parser.monTypeToFullObj(sub).asText.toTitleCase())
+				.map(sub => Parser.monTypeToFullObj(sub).asText)
 				.joinConjunct(", ", " or ");
 		})
 		.joinConjunct(hasSubOptions ? "; " : ", ", " and ");
@@ -24315,18 +24538,18 @@ Parser.crToXpNumber = function (cr) {
 	return Parser.XP_CHART_ALT[toConvert] ?? null;
 };
 
-LEVEL_TO_XP_EASY = [0, 25, 50, 75, 125, 250, 300, 350, 450, 550, 600, 800, 1000, 1100, 1250, 1400, 1600, 2000, 2100, 2400, 2800];
-LEVEL_TO_XP_MEDIUM = [0, 50, 100, 150, 250, 500, 600, 750, 900, 1100, 1200, 1600, 2000, 2200, 2500, 2800, 3200, 3900, 4100, 4900, 5700];
-LEVEL_TO_XP_HARD = [0, 75, 150, 225, 375, 750, 900, 1100, 1400, 1600, 1900, 2400, 3000, 3400, 3800, 4300, 4800, 5900, 6300, 7300, 8500];
-LEVEL_TO_XP_DEADLY = [0, 100, 200, 400, 500, 1100, 1400, 1700, 2100, 2400, 2800, 3600, 4500, 5100, 5700, 6400, 7200, 8800, 9500, 10900, 12700];
-LEVEL_TO_XP_DAILY = [0, 300, 600, 1200, 1700, 3500, 4000, 5000, 6000, 7500, 9000, 10500, 11500, 13500, 15000, 18000, 20000, 25000, 27000, 30000, 40000];
+Parser.LEVEL_TO_XP_EASY = [0, 25, 50, 75, 125, 250, 300, 350, 450, 550, 600, 800, 1000, 1100, 1250, 1400, 1600, 2000, 2100, 2400, 2800];
+Parser.LEVEL_TO_XP_MEDIUM = [0, 50, 100, 150, 250, 500, 600, 750, 900, 1100, 1200, 1600, 2000, 2200, 2500, 2800, 3200, 3900, 4100, 4900, 5700];
+Parser.LEVEL_TO_XP_HARD = [0, 75, 150, 225, 375, 750, 900, 1100, 1400, 1600, 1900, 2400, 3000, 3400, 3800, 4300, 4800, 5900, 6300, 7300, 8500];
+Parser.LEVEL_TO_XP_DEADLY = [0, 100, 200, 400, 500, 1100, 1400, 1700, 2100, 2400, 2800, 3600, 4500, 5100, 5700, 6400, 7200, 8800, 9500, 10900, 12700];
+Parser.LEVEL_TO_XP_DAILY = [0, 300, 600, 1200, 1700, 3500, 4000, 5000, 6000, 7500, 9000, 10500, 11500, 13500, 15000, 18000, 20000, 25000, 27000, 30000, 40000];
 
 Parser.LEVEL_XP_REQUIRED = [0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000];
 
 Parser.CRS = ["0", "1/8", "1/4", "1/2", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"];
 
 Parser.levelToXpThreshold = function (level) {
-	return [LEVEL_TO_XP_EASY[level], LEVEL_TO_XP_MEDIUM[level], LEVEL_TO_XP_HARD[level], LEVEL_TO_XP_DEADLY[level]];
+	return [Parser.LEVEL_TO_XP_EASY[level], Parser.LEVEL_TO_XP_MEDIUM[level], Parser.LEVEL_TO_XP_HARD[level], Parser.LEVEL_TO_XP_DEADLY[level]];
 };
 
 Parser.isValidCr = function (cr) {
@@ -24523,11 +24746,11 @@ Parser.acToFull = function (ac, renderer) {
 	return stack.trim();
 };
 
-MONSTER_COUNT_TO_XP_MULTIPLIER = [1, 1.5, 2, 2, 2, 2, 2.5, 2.5, 2.5, 2.5, 3, 3, 3, 3, 4];
+Parser.MONSTER_COUNT_TO_XP_MULTIPLIER = [1, 1.5, 2, 2, 2, 2, 2.5, 2.5, 2.5, 2.5, 3, 3, 3, 3, 4];
 Parser.numMonstersToXpMult = function (num, playerCount = 3) {
 	const baseVal = (() => {
-		if (num >= MONSTER_COUNT_TO_XP_MULTIPLIER.length) return 4;
-		return MONSTER_COUNT_TO_XP_MULTIPLIER[num - 1];
+		if (num >= Parser.MONSTER_COUNT_TO_XP_MULTIPLIER.length) return 4;
+		return Parser.MONSTER_COUNT_TO_XP_MULTIPLIER[num - 1];
 	})();
 
 	if (playerCount < 3) return baseVal >= 3 ? baseVal + 1 : baseVal + 0.5;
@@ -24553,6 +24776,11 @@ Parser._buildSourceCache = function (dict) {
 	Object.entries(dict).forEach(([k, v]) => out[k.toLowerCase()] = v);
 	return out;
 };
+Parser._sourceJsonCache = null;
+Parser.hasSourceJson = function (source) {
+	Parser._sourceJsonCache = Parser._sourceJsonCache || Parser._buildSourceCache(Object.keys(Parser.SOURCE_JSON_TO_FULL).mergeMap(k => ({[k]: k})));
+	return !!Parser._sourceJsonCache[source.toLowerCase()];
+};
 Parser._sourceFullCache = null;
 Parser.hasSourceFull = function (source) {
 	Parser._sourceFullCache = Parser._sourceFullCache || Parser._buildSourceCache(Parser.SOURCE_JSON_TO_FULL);
@@ -24568,33 +24796,60 @@ Parser.hasSourceDate = function (source) {
 	Parser._sourceDateCache = Parser._sourceDateCache || Parser._buildSourceCache(Parser.SOURCE_JSON_TO_DATE);
 	return !!Parser._sourceDateCache[source.toLowerCase()];
 };
+Parser.sourceJsonToJson = function (source) {
+	source = Parser._getSourceStringFromSource(source);
+	if (Parser.hasSourceJson(source)) return Parser._sourceJsonCache[source.toLowerCase()];
+	if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return PrereleaseUtil.sourceJsonToSource(source).json;
+	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToSource(source).json;
+	return source;
+};
 Parser.sourceJsonToFull = function (source) {
 	source = Parser._getSourceStringFromSource(source);
 	if (Parser.hasSourceFull(source)) return Parser._sourceFullCache[source.toLowerCase()].replace(/'/g, "\u2019");
+	if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return PrereleaseUtil.sourceJsonToFull(source).replace(/'/g, "\u2019");
 	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToFull(source).replace(/'/g, "\u2019");
 	return Parser._parse_aToB(Parser.SOURCE_JSON_TO_FULL, source).replace(/'/g, "\u2019");
 };
 Parser.sourceJsonToFullCompactPrefix = function (source) {
 	return Parser.sourceJsonToFull(source)
-		.replace(UA_PREFIX, UA_PREFIX_SHORT)
-		.replace(AL_PREFIX, AL_PREFIX_SHORT)
-		.replace(PS_PREFIX, PS_PREFIX_SHORT);
+		.replace(Parser.UA_PREFIX, Parser.UA_PREFIX_SHORT)
+		.replace(/^Unearthed Arcana (\d+): /, "UA$1: ")
+		.replace(Parser.AL_PREFIX, Parser.AL_PREFIX_SHORT)
+		.replace(Parser.PS_PREFIX, Parser.PS_PREFIX_SHORT);
 };
 Parser.sourceJsonToAbv = function (source) {
 	source = Parser._getSourceStringFromSource(source);
 	if (Parser.hasSourceAbv(source)) return Parser._sourceAbvCache[source.toLowerCase()];
+	if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return PrereleaseUtil.sourceJsonToAbv(source);
 	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToAbv(source);
 	return Parser._parse_aToB(Parser.SOURCE_JSON_TO_ABV, source);
 };
 Parser.sourceJsonToDate = function (source) {
 	source = Parser._getSourceStringFromSource(source);
 	if (Parser.hasSourceDate(source)) return Parser._sourceDateCache[source.toLowerCase()];
+	if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return PrereleaseUtil.sourceJsonToDate(source);
 	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToDate(source);
 	return Parser._parse_aToB(Parser.SOURCE_JSON_TO_DATE, source, null);
 };
 
 Parser.sourceJsonToColor = function (source) {
 	return `source${Parser.sourceJsonToAbv(source)}`;
+};
+
+Parser.sourceJsonToStyle = function (source) {
+	source = Parser._getSourceStringFromSource(source);
+	if (Parser.hasSourceJson(source)) return "";
+	if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return PrereleaseUtil.sourceJsonToStyle(source);
+	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToStyle(source);
+	return "";
+};
+
+Parser.sourceJsonToStylePart = function (source) {
+	source = Parser._getSourceStringFromSource(source);
+	if (Parser.hasSourceJson(source)) return "";
+	if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return PrereleaseUtil.sourceJsonToStylePart(source);
+	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToStylePart(source);
+	return "";
 };
 
 Parser.stringToSlug = function (str) {
@@ -24611,7 +24866,7 @@ Parser.itemValueToFull = function (item, opts = {isShortForm: false, isSmallUnit
 	return Parser._moneyToFull(item, "value", "valueMult", opts);
 };
 
-Parser.itemValueToFullMultiCurrency = function (item, opts = {isShortForm: false, isSmallUnits: false, multiplier: 1}) {
+Parser.itemValueToFullMultiCurrency = function (item, opts = {isShortForm: false, isSmallUnits: false}) {
 	return Parser._moneyToFullMultiCurrency(item, "value", "valueMult", opts);
 };
 
@@ -24641,23 +24896,31 @@ Parser._moneyToFull = function (it, prop, propMult, opts = {isShortForm: false, 
 
 Parser._moneyToFullMultiCurrency = function (it, prop, propMult, {isShortForm, multiplier} = {}) {
 	if (it[prop]) {
-		const simplified = CurrencyUtil.doSimplifyCoins(
-			{
-				cp: it[prop] * (multiplier ?? 1),
-			},
-			{
-				currencyConversionId: it.currencyConversion,
-			},
-		);
-
 		const conversionTable = Parser.getCurrencyConversionTable(it.currencyConversion);
+
+		const simplified = it.currencyConversion
+			? CurrencyUtil.doSimplifyCoins(
+				{
+					// Assume the e.g. item's value is in the lowest available denomination
+					[conversionTable[0]?.coin || "cp"]: it[prop] * (multiplier ?? conversionTable[0]?.mult ?? 1),
+				},
+				{
+					currencyConversionId: it.currencyConversion,
+				},
+			)
+			: CurrencyUtil.doSimplifyCoins({
+				cp: it[prop] * (multiplier ?? 1),
+			});
 
 		return [...conversionTable]
 			.reverse()
 			.filter(meta => simplified[meta.coin])
 			.map(meta => `${simplified[meta.coin].toLocaleString(undefined, {maximumFractionDigits: 5})} ${meta.coin}`)
 			.join(", ");
-	} else if (it[propMult]) return isShortForm ? `×${it[propMult]}` : `base value ×${it[propMult]}`;
+	}
+
+	if (it[propMult]) return isShortForm ? `×${it[propMult]}` : `base value ×${it[propMult]}`;
+
 	return "";
 };
 
@@ -24700,8 +24963,13 @@ Parser.FULL_CURRENCY_CONVERSION_TABLE = [
 	},
 ];
 Parser.getCurrencyConversionTable = function (currencyConversionId) {
+	const fromPrerelease = currencyConversionId ? PrereleaseUtil.getMetaLookup("currencyConversions")?.[currencyConversionId] : null;
 	const fromBrew = currencyConversionId ? BrewUtil2.getMetaLookup("currencyConversions")?.[currencyConversionId] : null;
-	const conversionTable = fromBrew && fromBrew.length ? fromBrew : Parser.DEFAULT_CURRENCY_CONVERSION_TABLE;
+	const conversionTable = fromPrerelease?.length
+		? fromPrerelease
+		: fromBrew?.length
+			? fromBrew
+			: Parser.DEFAULT_CURRENCY_CONVERSION_TABLE;
 	if (conversionTable !== Parser.DEFAULT_CURRENCY_CONVERSION_TABLE) conversionTable.sort((a, b) => SortUtil.ascSort(b.mult, a.mult));
 	return conversionTable;
 };
@@ -24818,7 +25086,7 @@ Parser.dmgTypeToFull = function (dmgType) {
 Parser.skillProficienciesToFull = function (skillProficiencies) {
 	function renderSingle (skProf) {
 		if (skProf.any) {
-			skProf = MiscUtil.copy(skProf);
+			skProf = MiscUtil.copyFast(skProf);
 			skProf.choose = {"from": Object.keys(Parser.SKILL_TO_ATB_ABV), "count": skProf.any};
 			delete skProf.any;
 		}
@@ -24861,6 +25129,7 @@ Parser.spSchoolAndSubschoolsAbvsToFull = function (school, subschools) {
 Parser.spSchoolAbvToFull = function (schoolOrSubschool) {
 	const out = Parser._parse_aToB(Parser.SP_SCHOOL_ABV_TO_FULL, schoolOrSubschool);
 	if (Parser.SP_SCHOOL_ABV_TO_FULL[schoolOrSubschool]) return out;
+	if (PrereleaseUtil.getMetaLookup("spellSchools")?.[schoolOrSubschool]) return PrereleaseUtil.getMetaLookup("spellSchools")?.[schoolOrSubschool].full;
 	if (BrewUtil2.getMetaLookup("spellSchools")?.[schoolOrSubschool]) return BrewUtil2.getMetaLookup("spellSchools")?.[schoolOrSubschool].full;
 	return out;
 };
@@ -24873,22 +25142,28 @@ Parser.spSchoolAndSubschoolsAbvsShort = function (school, subschools) {
 Parser.spSchoolAbvToShort = function (school) {
 	const out = Parser._parse_aToB(Parser.SP_SCHOOL_ABV_TO_SHORT, school);
 	if (Parser.SP_SCHOOL_ABV_TO_SHORT[school]) return out;
+	if (PrereleaseUtil.getMetaLookup("spellSchools")?.[school]) return PrereleaseUtil.getMetaLookup("spellSchools")?.[school].short;
 	if (BrewUtil2.getMetaLookup("spellSchools")?.[school]) return BrewUtil2.getMetaLookup("spellSchools")?.[school].short;
 	return out;
 };
 
-Parser.spSchoolAbvToStyle = function (school) { // For homebrew
+Parser.spSchoolAbvToStyle = function (school) { // For prerelease/homebrew
 	const stylePart = Parser.spSchoolAbvToStylePart(school);
 	if (!stylePart) return stylePart;
 	return `style="${stylePart}"`;
 };
 
-Parser.spSchoolAbvToStylePart = function (school) { // For homebrew
-	const rawColor = BrewUtil2.getMetaLookup("spellSchools")?.[school]?.color;
+Parser.spSchoolAbvToStylePart = function (school) { // For prerelease/homebrew
+	return Parser._spSchoolAbvToStylePart_prereleaseBrew({school, brewUtil: PrereleaseUtil})
+		|| Parser._spSchoolAbvToStylePart_prereleaseBrew({school, brewUtil: BrewUtil2})
+		|| "";
+};
+
+Parser._spSchoolAbvToStylePart_prereleaseBrew = function ({school, brewUtil}) {
+	const rawColor = brewUtil.getMetaLookup("spellSchools")?.[school]?.color;
 	if (!rawColor || !rawColor.trim()) return "";
-	const validColor = BrewUtil2.getValidColor(rawColor);
+	const validColor = BrewUtilShared.getValidColor(rawColor);
 	if (validColor.length) return `color: #${validColor};`;
-	return "";
 };
 
 Parser.getOrdinalForm = function (i) {
@@ -24960,51 +25235,53 @@ Parser.getTimeToFull = function (time) {
 	return `${time.number ? `${time.number} ` : ""}${time.unit === "bonus" ? "bonus action" : time.unit}${time.number > 1 ? "s" : ""}`;
 };
 
-RNG_SPECIAL = "special";
-RNG_POINT = "point";
-RNG_LINE = "line";
-RNG_CUBE = "cube";
-RNG_CONE = "cone";
-RNG_RADIUS = "radius";
-RNG_SPHERE = "sphere";
-RNG_HEMISPHERE = "hemisphere";
-RNG_CYLINDER = "cylinder"; // homebrew only
-RNG_SELF = "self";
-RNG_SIGHT = "sight";
-RNG_UNLIMITED = "unlimited";
-RNG_UNLIMITED_SAME_PLANE = "plane";
-RNG_TOUCH = "touch";
+Parser.RNG_SPECIAL = "special";
+Parser.RNG_POINT = "point";
+Parser.RNG_LINE = "line";
+Parser.RNG_CUBE = "cube";
+Parser.RNG_CONE = "cone";
+Parser.RNG_RADIUS = "radius";
+Parser.RNG_SPHERE = "sphere";
+Parser.RNG_HEMISPHERE = "hemisphere";
+Parser.RNG_CYLINDER = "cylinder"; // homebrew only
+Parser.RNG_SELF = "self";
+Parser.RNG_SIGHT = "sight";
+Parser.RNG_UNLIMITED = "unlimited";
+Parser.RNG_UNLIMITED_SAME_PLANE = "plane";
+Parser.RNG_TOUCH = "touch";
 Parser.SP_RANGE_TYPE_TO_FULL = {
-	[RNG_SPECIAL]: "Special",
-	[RNG_POINT]: "Point",
-	[RNG_LINE]: "Line",
-	[RNG_CUBE]: "Cube",
-	[RNG_CONE]: "Cone",
-	[RNG_RADIUS]: "Radius",
-	[RNG_SPHERE]: "Sphere",
-	[RNG_HEMISPHERE]: "Hemisphere",
-	[RNG_CYLINDER]: "Cylinder",
-	[RNG_SELF]: "Self",
-	[RNG_SIGHT]: "Sight",
-	[RNG_UNLIMITED]: "Unlimited",
-	[RNG_UNLIMITED_SAME_PLANE]: "Unlimited on the same plane",
-	[RNG_TOUCH]: "Touch",
+	[Parser.RNG_SPECIAL]: "Special",
+	[Parser.RNG_POINT]: "Point",
+	[Parser.RNG_LINE]: "Line",
+	[Parser.RNG_CUBE]: "Cube",
+	[Parser.RNG_CONE]: "Cone",
+	[Parser.RNG_RADIUS]: "Radius",
+	[Parser.RNG_SPHERE]: "Sphere",
+	[Parser.RNG_HEMISPHERE]: "Hemisphere",
+	[Parser.RNG_CYLINDER]: "Cylinder",
+	[Parser.RNG_SELF]: "Self",
+	[Parser.RNG_SIGHT]: "Sight",
+	[Parser.RNG_UNLIMITED]: "Unlimited",
+	[Parser.RNG_UNLIMITED_SAME_PLANE]: "Unlimited on the same plane",
+	[Parser.RNG_TOUCH]: "Touch",
 };
 
 Parser.spRangeTypeToFull = function (range) {
 	return Parser._parse_aToB(Parser.SP_RANGE_TYPE_TO_FULL, range);
 };
 
-UNT_FEET = "feet";
-UNT_MILES = "miles";
+Parser.UNT_FEET = "feet";
+Parser.UNT_YARDS = "yards";
+Parser.UNT_MILES = "miles";
 Parser.SP_DIST_TYPE_TO_FULL = {
-	[UNT_FEET]: "Feet",
-	[UNT_MILES]: "Miles",
-	[RNG_SELF]: Parser.SP_RANGE_TYPE_TO_FULL[RNG_SELF],
-	[RNG_TOUCH]: Parser.SP_RANGE_TYPE_TO_FULL[RNG_TOUCH],
-	[RNG_SIGHT]: Parser.SP_RANGE_TYPE_TO_FULL[RNG_SIGHT],
-	[RNG_UNLIMITED]: Parser.SP_RANGE_TYPE_TO_FULL[RNG_UNLIMITED],
-	[RNG_UNLIMITED_SAME_PLANE]: Parser.SP_RANGE_TYPE_TO_FULL[RNG_UNLIMITED_SAME_PLANE],
+	[Parser.UNT_FEET]: "Feet",
+	[Parser.UNT_YARDS]: "Yards",
+	[Parser.UNT_MILES]: "Miles",
+	[Parser.RNG_SELF]: Parser.SP_RANGE_TYPE_TO_FULL[Parser.RNG_SELF],
+	[Parser.RNG_TOUCH]: Parser.SP_RANGE_TYPE_TO_FULL[Parser.RNG_TOUCH],
+	[Parser.RNG_SIGHT]: Parser.SP_RANGE_TYPE_TO_FULL[Parser.RNG_SIGHT],
+	[Parser.RNG_UNLIMITED]: Parser.SP_RANGE_TYPE_TO_FULL[Parser.RNG_UNLIMITED],
+	[Parser.RNG_UNLIMITED_SAME_PLANE]: Parser.SP_RANGE_TYPE_TO_FULL[Parser.RNG_UNLIMITED_SAME_PLANE],
 };
 
 Parser.spDistanceTypeToFull = function (range) {
@@ -25012,20 +25289,20 @@ Parser.spDistanceTypeToFull = function (range) {
 };
 
 Parser.SP_RANGE_TO_ICON = {
-	[RNG_SPECIAL]: "fa-star",
-	[RNG_POINT]: "",
-	[RNG_LINE]: "fa-grip-lines-vertical",
-	[RNG_CUBE]: "fa-cube",
-	[RNG_CONE]: "fa-traffic-cone",
-	[RNG_RADIUS]: "fa-hockey-puck",
-	[RNG_SPHERE]: "fa-globe",
-	[RNG_HEMISPHERE]: "fa-globe",
-	[RNG_CYLINDER]: "fa-database",
-	[RNG_SELF]: "fa-street-view",
-	[RNG_SIGHT]: "fa-eye",
-	[RNG_UNLIMITED_SAME_PLANE]: "fa-globe-americas",
-	[RNG_UNLIMITED]: "fa-infinity",
-	[RNG_TOUCH]: "fa-hand-paper",
+	[Parser.RNG_SPECIAL]: "fa-star",
+	[Parser.RNG_POINT]: "",
+	[Parser.RNG_LINE]: "fa-grip-lines-vertical",
+	[Parser.RNG_CUBE]: "fa-cube",
+	[Parser.RNG_CONE]: "fa-traffic-cone",
+	[Parser.RNG_RADIUS]: "fa-hockey-puck",
+	[Parser.RNG_SPHERE]: "fa-globe",
+	[Parser.RNG_HEMISPHERE]: "fa-globe",
+	[Parser.RNG_CYLINDER]: "fa-database",
+	[Parser.RNG_SELF]: "fa-street-view",
+	[Parser.RNG_SIGHT]: "fa-eye",
+	[Parser.RNG_UNLIMITED_SAME_PLANE]: "fa-globe-americas",
+	[Parser.RNG_UNLIMITED]: "fa-infinity",
+	[Parser.RNG_TOUCH]: "fa-hand-paper",
 };
 
 Parser.spRangeTypeToIcon = function (range) {
@@ -25034,36 +25311,37 @@ Parser.spRangeTypeToIcon = function (range) {
 
 Parser.spRangeToShortHtml = function (range) {
 	switch (range.type) {
-		case RNG_SPECIAL: return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(range.type)} help-subtle" title="Special"></span>`;
-		case RNG_POINT: return Parser.spRangeToShortHtml._renderPoint(range);
-		case RNG_LINE:
-		case RNG_CUBE:
-		case RNG_CONE:
-		case RNG_RADIUS:
-		case RNG_SPHERE:
-		case RNG_HEMISPHERE:
-		case RNG_CYLINDER:
+		case Parser.RNG_SPECIAL: return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(range.type)} help-subtle" title="Special"></span>`;
+		case Parser.RNG_POINT: return Parser.spRangeToShortHtml._renderPoint(range);
+		case Parser.RNG_LINE:
+		case Parser.RNG_CUBE:
+		case Parser.RNG_CONE:
+		case Parser.RNG_RADIUS:
+		case Parser.RNG_SPHERE:
+		case Parser.RNG_HEMISPHERE:
+		case Parser.RNG_CYLINDER:
 			return Parser.spRangeToShortHtml._renderArea(range);
 	}
 };
 Parser.spRangeToShortHtml._renderPoint = function (range) {
 	const dist = range.distance;
 	switch (dist.type) {
-		case RNG_SELF:
-		case RNG_SIGHT:
-		case RNG_UNLIMITED:
-		case RNG_UNLIMITED_SAME_PLANE:
-		case RNG_SPECIAL:
-		case RNG_TOUCH: return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(dist.type)} help-subtle" title="${Parser.spRangeTypeToFull(dist.type)}"></span>`;
-		case UNT_FEET:
-		case UNT_MILES:
+		case Parser.RNG_SELF:
+		case Parser.RNG_SIGHT:
+		case Parser.RNG_UNLIMITED:
+		case Parser.RNG_UNLIMITED_SAME_PLANE:
+		case Parser.RNG_SPECIAL:
+		case Parser.RNG_TOUCH: return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(dist.type)} help-subtle" title="${Parser.spRangeTypeToFull(dist.type)}"></span>`;
+		case Parser.UNT_FEET:
+		case Parser.UNT_YARDS:
+		case Parser.UNT_MILES:
 		default:
 			return `${dist.amount} <span class="ve-small">${Parser.getSingletonUnit(dist.type, true)}</span>`;
 	}
 };
 Parser.spRangeToShortHtml._renderArea = function (range) {
 	const size = range.distance;
-	return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(RNG_SELF)} help-subtle" title="Self"></span> ${size.amount}<span class="ve-small">-${Parser.getSingletonUnit(size.type, true)}</span> ${Parser.spRangeToShortHtml._getAreaStyleString(range)}`;
+	return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(Parser.RNG_SELF)} help-subtle" title="Self"></span> ${size.amount}<span class="ve-small">-${Parser.getSingletonUnit(size.type, true)}</span> ${Parser.spRangeToShortHtml._getAreaStyleString(range)}`;
 };
 Parser.spRangeToShortHtml._getAreaStyleString = function (range) {
 	return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(range.type)} help-subtle" title="${Parser.spRangeTypeToFull(range.type)}"></span>`;
@@ -25071,85 +25349,98 @@ Parser.spRangeToShortHtml._getAreaStyleString = function (range) {
 
 Parser.spRangeToFull = function (range) {
 	switch (range.type) {
-		case RNG_SPECIAL: return Parser.spRangeTypeToFull(range.type);
-		case RNG_POINT: return Parser.spRangeToFull._renderPoint(range);
-		case RNG_LINE:
-		case RNG_CUBE:
-		case RNG_CONE:
-		case RNG_RADIUS:
-		case RNG_SPHERE:
-		case RNG_HEMISPHERE:
-		case RNG_CYLINDER:
+		case Parser.RNG_SPECIAL: return Parser.spRangeTypeToFull(range.type);
+		case Parser.RNG_POINT: return Parser.spRangeToFull._renderPoint(range);
+		case Parser.RNG_LINE:
+		case Parser.RNG_CUBE:
+		case Parser.RNG_CONE:
+		case Parser.RNG_RADIUS:
+		case Parser.RNG_SPHERE:
+		case Parser.RNG_HEMISPHERE:
+		case Parser.RNG_CYLINDER:
 			return Parser.spRangeToFull._renderArea(range);
 	}
 };
 Parser.spRangeToFull._renderPoint = function (range) {
 	const dist = range.distance;
 	switch (dist.type) {
-		case RNG_SELF:
-		case RNG_SIGHT:
-		case RNG_UNLIMITED:
-		case RNG_UNLIMITED_SAME_PLANE:
-		case RNG_SPECIAL:
-		case RNG_TOUCH: return Parser.spRangeTypeToFull(dist.type);
-		case UNT_FEET:
-		case UNT_MILES:
+		case Parser.RNG_SELF:
+		case Parser.RNG_SIGHT:
+		case Parser.RNG_UNLIMITED:
+		case Parser.RNG_UNLIMITED_SAME_PLANE:
+		case Parser.RNG_SPECIAL:
+		case Parser.RNG_TOUCH: return Parser.spRangeTypeToFull(dist.type);
+		case Parser.UNT_FEET:
+		case Parser.UNT_YARDS:
+		case Parser.UNT_MILES:
 		default:
 			return `${dist.amount} ${dist.amount === 1 ? Parser.getSingletonUnit(dist.type) : dist.type}`;
 	}
 };
 Parser.spRangeToFull._renderArea = function (range) {
 	const size = range.distance;
-	return `Self (${size.amount}-${Parser.getSingletonUnit(size.type)}${Parser.spRangeToFull._getAreaStyleString(range)}${range.type === RNG_CYLINDER ? `${size.amountSecondary != null && size.typeSecondary != null ? `, ${size.amountSecondary}-${Parser.getSingletonUnit(size.typeSecondary)}-high` : ""} cylinder` : ""})`;
+	return `Self (${size.amount}-${Parser.getSingletonUnit(size.type)}${Parser.spRangeToFull._getAreaStyleString(range)}${range.type === Parser.RNG_CYLINDER ? `${size.amountSecondary != null && size.typeSecondary != null ? `, ${size.amountSecondary}-${Parser.getSingletonUnit(size.typeSecondary)}-high` : ""} cylinder` : ""})`;
 };
 Parser.spRangeToFull._getAreaStyleString = function (range) {
 	switch (range.type) {
-		case RNG_SPHERE: return " radius";
-		case RNG_HEMISPHERE: return `-radius ${range.type}`;
-		case RNG_CYLINDER: return "-radius";
+		case Parser.RNG_SPHERE: return " radius";
+		case Parser.RNG_HEMISPHERE: return `-radius ${range.type}`;
+		case Parser.RNG_CYLINDER: return "-radius";
 		default: return ` ${range.type}`;
 	}
 };
 
 Parser.getSingletonUnit = function (unit, isShort) {
 	switch (unit) {
-		case UNT_FEET:
+		case Parser.UNT_FEET:
 			return isShort ? "ft." : "foot";
-		case UNT_MILES:
+		case Parser.UNT_YARDS:
+			return isShort ? "yd." : "yard";
+		case Parser.UNT_MILES:
 			return isShort ? "mi." : "mile";
 		default: {
-			const fromBrew = BrewUtil2.getMetaLookup("spellDistanceUnits")?.[unit]?.["singular"];
+			const fromPrerelease = Parser._getSingletonUnit_prereleaseBrew({unit, isShort, brewUtil: PrereleaseUtil});
+			if (fromPrerelease) return fromPrerelease;
+
+			const fromBrew = Parser._getSingletonUnit_prereleaseBrew({unit, isShort, brewUtil: BrewUtil2});
 			if (fromBrew) return fromBrew;
+
 			if (unit.charAt(unit.length - 1) === "s") return unit.slice(0, -1);
 			return unit;
 		}
 	}
 };
 
+Parser._getSingletonUnit_prereleaseBrew = function ({unit, isShort, brewUtil}) {
+	const fromBrew = brewUtil.getMetaLookup("spellDistanceUnits")?.[unit]?.["singular"];
+	if (fromBrew) return fromBrew;
+};
+
 Parser.RANGE_TYPES = [
-	{type: RNG_POINT, hasDistance: true, isRequireAmount: false},
+	{type: Parser.RNG_POINT, hasDistance: true, isRequireAmount: false},
 
-	{type: RNG_LINE, hasDistance: true, isRequireAmount: true},
-	{type: RNG_CUBE, hasDistance: true, isRequireAmount: true},
-	{type: RNG_CONE, hasDistance: true, isRequireAmount: true},
-	{type: RNG_RADIUS, hasDistance: true, isRequireAmount: true},
-	{type: RNG_SPHERE, hasDistance: true, isRequireAmount: true},
-	{type: RNG_HEMISPHERE, hasDistance: true, isRequireAmount: true},
-	{type: RNG_CYLINDER, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_LINE, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_CUBE, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_CONE, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_RADIUS, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_SPHERE, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_HEMISPHERE, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_CYLINDER, hasDistance: true, isRequireAmount: true},
 
-	{type: RNG_SPECIAL, hasDistance: false, isRequireAmount: false},
+	{type: Parser.RNG_SPECIAL, hasDistance: false, isRequireAmount: false},
 ];
 
 Parser.DIST_TYPES = [
-	{type: RNG_SELF, hasAmount: false},
-	{type: RNG_TOUCH, hasAmount: false},
+	{type: Parser.RNG_SELF, hasAmount: false},
+	{type: Parser.RNG_TOUCH, hasAmount: false},
 
-	{type: UNT_FEET, hasAmount: true},
-	{type: UNT_MILES, hasAmount: true},
+	{type: Parser.UNT_FEET, hasAmount: true},
+	{type: Parser.UNT_YARDS, hasAmount: true},
+	{type: Parser.UNT_MILES, hasAmount: true},
 
-	{type: RNG_SIGHT, hasAmount: false},
-	{type: RNG_UNLIMITED_SAME_PLANE, hasAmount: false},
-	{type: RNG_UNLIMITED, hasAmount: false},
+	{type: Parser.RNG_SIGHT, hasAmount: false},
+	{type: Parser.RNG_UNLIMITED_SAME_PLANE, hasAmount: false},
+	{type: Parser.RNG_UNLIMITED, hasAmount: false},
 ];
 
 Parser.spComponentsToFull = function (comp, level, {isPlainText = false} = {}) {
@@ -25227,7 +25518,11 @@ Parser.spMainClassesToFull = function (fromClassList, {isTextOnly = false} = {})
 		.map(c => ({hash: UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c), c}))
 		.filter(it => !ExcludeUtil.isInitialised || !ExcludeUtil.isExcluded(it.hash, "class", it.c.source))
 		.sort((a, b) => SortUtil.ascSort(a.c.name, b.c.name))
-		.map(it => isTextOnly ? it.c.name : `<a title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}" href="${Renderer.get().baseUrl}${UrlUtil.PG_CLASSES}#${it.hash}">${it.c.name}</a>`)
+		.map(it => {
+			if (isTextOnly) return it.c.name;
+
+			return `<span title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}">${Renderer.get().render(`{@class ${it.c.name}|${it.c.source}}`)}</span>`;
+		})
 		.join(", ") || "";
 };
 
@@ -25261,10 +25556,12 @@ Parser.spSubclassesToFull = function (fromSubclassList, {isTextOnly = false, sub
 Parser._spSubclassItem = function ({fromSubclass, isTextOnly}) {
 	const c = fromSubclass.class;
 	const sc = fromSubclass.subclass;
-	const text = `${sc.name}${sc.subSubclass ? ` (${sc.subSubclass})` : ""}`;
+	const text = `${sc.shortName}${sc.subSubclass ? ` (${sc.subSubclass})` : ""}`;
 	if (isTextOnly) return text;
-	const classPart = `<a href="${Renderer.get().baseUrl}${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}" title="Source: ${Parser.sourceJsonToFull(c.source)}${c.definedInSource ? ` From a class spell list defined in: ${Parser.sourceJsonToFull(c.definedInSource)}` : ""}">${c.name}</a>`;
-	return `<a class="italic" href="${Renderer.get().baseUrl}${UrlUtil.PG_CLASSES}#${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c)}${HASH_PART_SEP}${UrlUtil.getClassesPageStatePart({subclass: {shortName: sc.name, source: sc.source}})}" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${text}</a> ${classPart}`;
+
+	const classPart = `<span title="Source: ${Parser.sourceJsonToFull(c.source)}${c.definedInSource ? ` From a class spell list defined in: ${Parser.sourceJsonToFull(c.definedInSource)}` : ""}">${Renderer.get().render(`{@class ${c.name}|${c.source}}`)}</span>`;
+
+	return `<span class="italic" title="Source: ${Parser.sourceJsonToFull(fromSubclass.subclass.source)}">${Renderer.get().render(`{@class ${c.name}|${c.source}|${text}|${sc.shortName}|${sc.source}}`)}</span> ${classPart}`;
 };
 
 Parser.SPELL_ATTACK_TYPE_TO_FULL = {};
@@ -25307,6 +25604,11 @@ Parser.SP_MISC_TAG_TO_FULL = {
 	LGTS: "Creates Sunlight",
 	LGT: "Creates Light",
 	UBA: "Uses Bonus Action",
+	PS: "Plane Shifting",
+	OBS: "Obscures Vision",
+	DFT: "Difficult Terrain",
+	AAD: "Additional Attack Damage",
+	OBJ: "Affects Objects",
 };
 Parser.spMiscTagToFull = function (type) {
 	return Parser._parse_aToB(Parser.SP_MISC_TAG_TO_FULL, type);
@@ -25325,36 +25627,49 @@ Parser.spCasterProgressionToFull = function (type) {
 // mon-prefix functions are for parsing monster data, and shared with the roll20 script
 Parser.monTypeToFullObj = function (type) {
 	const out = {
-		type: "",
+		types: [],
 		tags: [],
 		asText: "",
+		asTextShort: "",
 
 		typeSidekick: null,
 		tagsSidekick: [],
 		asTextSidekick: null,
 	};
 
+	// handles e.g. "fey"
 	if (typeof type === "string") {
-		// handles e.g. "fey"
-		out.type = type;
-		out.asText = type;
+		out.types = [type];
+		out.asText = type.toTitleCase();
+		out.asTextShort = out.asText;
 		return out;
 	}
 
-	out.type = type.type;
+	if (type.type?.choose) {
+		out.types = type.type.choose;
+	} else {
+		out.types = [type.type];
+	}
+
 	if (type.swarmSize) {
 		out.tags.push("swarm");
-		out.asText = `swarm of ${Parser.sizeAbvToFull(type.swarmSize).toLowerCase()} ${Parser.monTypeToPlural(type.type)}`;
+		out.asText = `swarm of ${Parser.sizeAbvToFull(type.swarmSize)} ${out.types.map(typ => Parser.monTypeToPlural(typ).toTitleCase()).joinConjunct(", ", " or ")}`;
+		out.asTextShort = out.asText;
 		out.swarmSize = type.swarmSize;
 	} else {
-		out.asText = `${type.type}`;
+		out.asText = out.types.map(typ => typ.toTitleCase()).joinConjunct(", ", " or ");
+		out.asTextShort = out.asText;
 	}
 
 	const tagMetas = Parser.monTypeToFullObj._getTagMetas(type.tags);
 	if (tagMetas.length) {
 		out.tags.push(...tagMetas.map(({filterTag}) => filterTag));
-		out.asText += ` (${tagMetas.map(({displayTag}) => displayTag).join(", ")})`;
+		const ptTags = ` (${tagMetas.map(({displayTag}) => displayTag).join(", ")})`;
+		out.asText += ptTags;
+		out.asTextShort += ptTags;
 	}
+
+	if (type.note) out.asText += ` ${type.note}`;
 
 	// region Sidekick
 	if (type.sidekickType) {
@@ -25375,15 +25690,15 @@ Parser.monTypeToFullObj = function (type) {
 Parser.monTypeToFullObj._getTagMetas = (tags) => {
 	return tags
 		? tags.map(tag => {
-			if (typeof tag === "string") { // handles e.g. "fiend (devil)"
+			if (typeof tag === "string") { // handles e.g. "Fiend (Devil)"
 				return {
 					filterTag: tag.toLowerCase(),
-					displayTag: tag,
+					displayTag: tag.toTitleCase(),
 				};
-			} else { // handles e.g. "humanoid (Chondathan human)"
+			} else { // handles e.g. "Humanoid (Chondathan Human)"
 				return {
 					filterTag: tag.tag.toLowerCase(),
-					displayTag: `${tag.prefix} ${tag.tag}`,
+					displayTag: `${tag.prefix} ${tag.tag}`.toTitleCase(),
 				};
 			}
 		})
@@ -25564,7 +25879,8 @@ Parser.psiTypeToMeta = type => {
 	let out = {};
 	if (type === Parser.PSI_ABV_TYPE_TALENT) out = {hasOrder: false, full: "Talent"};
 	else if (type === Parser.PSI_ABV_TYPE_DISCIPLINE) out = {hasOrder: true, full: "Discipline"};
-	else if (BrewUtil2.getMetaLookup("psionicTypes")?.[type]) out = MiscUtil.copy(BrewUtil2.getMetaLookup("psionicTypes")[type]);
+	else if (PrereleaseUtil.getMetaLookup("psionicTypes")?.[type]) out = MiscUtil.copyFast(PrereleaseUtil.getMetaLookup("psionicTypes")[type]);
+	else if (BrewUtil2.getMetaLookup("psionicTypes")?.[type]) out = MiscUtil.copyFast(BrewUtil2.getMetaLookup("psionicTypes")[type]);
 	out.full = out.full || "Unknown";
 	out.short = out.short || out.full;
 	return out;
@@ -25623,6 +25939,7 @@ Parser.OPT_FEATURE_TYPE_TO_FULL = {
 
 Parser.optFeatureTypeToFull = function (type) {
 	if (Parser.OPT_FEATURE_TYPE_TO_FULL[type]) return Parser.OPT_FEATURE_TYPE_TO_FULL[type];
+	if (PrereleaseUtil.getMetaLookup("optionalFeatureTypes")?.[type]) return PrereleaseUtil.getMetaLookup("optionalFeatureTypes")[type];
 	if (BrewUtil2.getMetaLookup("optionalFeatureTypes")?.[type]) return BrewUtil2.getMetaLookup("optionalFeatureTypes")[type];
 	return type;
 };
@@ -25637,6 +25954,7 @@ Parser.CHAR_OPTIONAL_FEATURE_TYPE_TO_FULL = {
 
 Parser.charCreationOptionTypeToFull = function (type) {
 	if (Parser.CHAR_OPTIONAL_FEATURE_TYPE_TO_FULL[type]) return Parser.CHAR_OPTIONAL_FEATURE_TYPE_TO_FULL[type];
+	if (PrereleaseUtil.getMetaLookup("charOption")?.[type]) return PrereleaseUtil.getMetaLookup("charOption")[type];
 	if (BrewUtil2.getMetaLookup("charOption")?.[type]) return BrewUtil2.getMetaLookup("charOption")[type];
 	return type;
 };
@@ -25776,6 +26094,8 @@ Parser.CAT_ID_RECIPES = 48;
 Parser.CAT_ID_STATUS = 49;
 Parser.CAT_ID_SKILLS = 50;
 Parser.CAT_ID_SENSES = 51;
+Parser.CAT_ID_DECK = 52;
+Parser.CAT_ID_CARD = 53;
 
 Parser.CAT_ID_TO_FULL = {};
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CREATURE] = "Bestiary";
@@ -25828,6 +26148,8 @@ Parser.CAT_ID_TO_FULL[Parser.CAT_ID_LEGENDARY_GROUP] = "Legendary Group";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CHAR_CREATION_OPTIONS] = "Character Creation Option";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_RECIPES] = "Recipe";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_STATUS] = "Status";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DECK] = "Deck";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CARD] = "Card";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SKILLS] = "Skill";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SENSES] = "Sense";
 
@@ -25882,10 +26204,12 @@ Parser.CAT_ID_TO_PROP[Parser.CAT_ID_ACTION] = "action";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_LANGUAGE] = "language";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_BOOK] = "book";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_PAGE] = null;
-Parser.CAT_ID_TO_PROP[Parser.CAT_ID_LEGENDARY_GROUP] = null;
+Parser.CAT_ID_TO_PROP[Parser.CAT_ID_LEGENDARY_GROUP] = "legendaryGroup";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_CHAR_CREATION_OPTIONS] = "charoption";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_RECIPES] = "recipe";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_STATUS] = "status";
+Parser.CAT_ID_TO_PROP[Parser.CAT_ID_DECK] = "deck";
+Parser.CAT_ID_TO_PROP[Parser.CAT_ID_CARD] = "card";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SKILLS] = "skill";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SENSES] = "sense";
 
@@ -25941,7 +26265,7 @@ Parser._spSubclassesToCurrentAndLegacyFull = ({sp, subclassLookup, prop}) => {
 
 			const excludeSubclass = ExcludeUtil.isExcluded(
 				UrlUtil.URL_TO_HASH_BUILDER["subclass"]({
-					shortName: c.subclass.name,
+					shortName: c.subclass.shortName,
 					source: c.subclass.source,
 					className: c.class.name,
 					classSource: c.class.source,
@@ -26012,7 +26336,7 @@ Parser.spVariantClassesToCurrentAndLegacy = function (fromVariantClassList) {
 	const current = [];
 	const legacy = [];
 	fromVariantClassList.forEach(cls => {
-		if (cls.definedInSource === SRC_UACFV) legacy.push(cls);
+		if (cls.definedInSource === Parser.SRC_UACFV) legacy.push(cls);
 		else current.push(cls);
 	});
 	return [current, legacy];
@@ -26095,25 +26419,25 @@ Parser.bytesToHumanReadable = function (bytes, {fixedDigits = 2} = {}) {
 	return `${(bytes / Math.pow(1024, e)).toFixed(fixedDigits)} ${`\u200bKMGTP`.charAt(e)}B`;
 };
 
-SKL_ABV_ABJ = "A";
-SKL_ABV_EVO = "V";
-SKL_ABV_ENC = "E";
-SKL_ABV_ILL = "I";
-SKL_ABV_DIV = "D";
-SKL_ABV_NEC = "N";
-SKL_ABV_TRA = "T";
-SKL_ABV_CON = "C";
-SKL_ABV_PSI = "P";
+Parser.SKL_ABV_ABJ = "A";
+Parser.SKL_ABV_EVO = "V";
+Parser.SKL_ABV_ENC = "E";
+Parser.SKL_ABV_ILL = "I";
+Parser.SKL_ABV_DIV = "D";
+Parser.SKL_ABV_NEC = "N";
+Parser.SKL_ABV_TRA = "T";
+Parser.SKL_ABV_CON = "C";
+Parser.SKL_ABV_PSI = "P";
 Parser.SKL_ABVS = [
-	SKL_ABV_ABJ,
-	SKL_ABV_CON,
-	SKL_ABV_DIV,
-	SKL_ABV_ENC,
-	SKL_ABV_EVO,
-	SKL_ABV_ILL,
-	SKL_ABV_NEC,
-	SKL_ABV_PSI,
-	SKL_ABV_TRA,
+	Parser.SKL_ABV_ABJ,
+	Parser.SKL_ABV_CON,
+	Parser.SKL_ABV_DIV,
+	Parser.SKL_ABV_ENC,
+	Parser.SKL_ABV_EVO,
+	Parser.SKL_ABV_ILL,
+	Parser.SKL_ABV_NEC,
+	Parser.SKL_ABV_PSI,
+	Parser.SKL_ABV_TRA,
 ];
 
 Parser.SP_TM_ACTION = "action";
@@ -26163,37 +26487,37 @@ Parser.spTimeToShort = function (time, isHtml) {
 		: `${time.number} ${isHtml ? `<span class="ve-small">` : ""}${Parser.spTimeUnitToAbv(time.unit)}${isHtml ? `</span>` : ""}${time.condition ? "*" : ""}`;
 };
 
-SKL_ABJ = "Abjuration";
-SKL_EVO = "Evocation";
-SKL_ENC = "Enchantment";
-SKL_ILL = "Illusion";
-SKL_DIV = "Divination";
-SKL_NEC = "Necromancy";
-SKL_TRA = "Transmutation";
-SKL_CON = "Conjuration";
-SKL_PSI = "Psionic";
+Parser.SKL_ABJ = "Abjuration";
+Parser.SKL_EVO = "Evocation";
+Parser.SKL_ENC = "Enchantment";
+Parser.SKL_ILL = "Illusion";
+Parser.SKL_DIV = "Divination";
+Parser.SKL_NEC = "Necromancy";
+Parser.SKL_TRA = "Transmutation";
+Parser.SKL_CON = "Conjuration";
+Parser.SKL_PSI = "Psionic";
 
 Parser.SP_SCHOOL_ABV_TO_FULL = {};
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_ABJ] = SKL_ABJ;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_EVO] = SKL_EVO;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_ENC] = SKL_ENC;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_ILL] = SKL_ILL;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_DIV] = SKL_DIV;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_NEC] = SKL_NEC;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_TRA] = SKL_TRA;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_CON] = SKL_CON;
-Parser.SP_SCHOOL_ABV_TO_FULL[SKL_ABV_PSI] = SKL_PSI;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_ABJ] = Parser.SKL_ABJ;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_EVO] = Parser.SKL_EVO;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_ENC] = Parser.SKL_ENC;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_ILL] = Parser.SKL_ILL;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_DIV] = Parser.SKL_DIV;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_NEC] = Parser.SKL_NEC;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_TRA] = Parser.SKL_TRA;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_CON] = Parser.SKL_CON;
+Parser.SP_SCHOOL_ABV_TO_FULL[Parser.SKL_ABV_PSI] = Parser.SKL_PSI;
 
 Parser.SP_SCHOOL_ABV_TO_SHORT = {};
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_ABJ] = "Abj.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_EVO] = "Evoc.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_ENC] = "Ench.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_ILL] = "Illu.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_DIV] = "Divin.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_NEC] = "Necro.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_TRA] = "Trans.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_CON] = "Conj.";
-Parser.SP_SCHOOL_ABV_TO_SHORT[SKL_ABV_PSI] = "Psi.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_ABJ] = "Abj.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_EVO] = "Evoc.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_ENC] = "Ench.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_ILL] = "Illu.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_DIV] = "Divin.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_NEC] = "Necro.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_TRA] = "Trans.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_CON] = "Conj.";
+Parser.SP_SCHOOL_ABV_TO_SHORT[Parser.SKL_ABV_PSI] = "Psi.";
 
 Parser.ATB_ABV_TO_FULL = {
 	"str": "Strength",
@@ -26204,59 +26528,59 @@ Parser.ATB_ABV_TO_FULL = {
 	"cha": "Charisma",
 };
 
-TP_ABERRATION = "aberration";
-TP_BEAST = "beast";
-TP_CELESTIAL = "celestial";
-TP_CONSTRUCT = "construct";
-TP_DRAGON = "dragon";
-TP_ELEMENTAL = "elemental";
-TP_FEY = "fey";
-TP_FIEND = "fiend";
-TP_GIANT = "giant";
-TP_HUMANOID = "humanoid";
-TP_MONSTROSITY = "monstrosity";
-TP_OOZE = "ooze";
-TP_PLANT = "plant";
-TP_UNDEAD = "undead";
-Parser.MON_TYPES = [TP_ABERRATION, TP_BEAST, TP_CELESTIAL, TP_CONSTRUCT, TP_DRAGON, TP_ELEMENTAL, TP_FEY, TP_FIEND, TP_GIANT, TP_HUMANOID, TP_MONSTROSITY, TP_OOZE, TP_PLANT, TP_UNDEAD];
+Parser.TP_ABERRATION = "aberration";
+Parser.TP_BEAST = "beast";
+Parser.TP_CELESTIAL = "celestial";
+Parser.TP_CONSTRUCT = "construct";
+Parser.TP_DRAGON = "dragon";
+Parser.TP_ELEMENTAL = "elemental";
+Parser.TP_FEY = "fey";
+Parser.TP_FIEND = "fiend";
+Parser.TP_GIANT = "giant";
+Parser.TP_HUMANOID = "humanoid";
+Parser.TP_MONSTROSITY = "monstrosity";
+Parser.TP_OOZE = "ooze";
+Parser.TP_PLANT = "plant";
+Parser.TP_UNDEAD = "undead";
+Parser.MON_TYPES = [Parser.TP_ABERRATION, Parser.TP_BEAST, Parser.TP_CELESTIAL, Parser.TP_CONSTRUCT, Parser.TP_DRAGON, Parser.TP_ELEMENTAL, Parser.TP_FEY, Parser.TP_FIEND, Parser.TP_GIANT, Parser.TP_HUMANOID, Parser.TP_MONSTROSITY, Parser.TP_OOZE, Parser.TP_PLANT, Parser.TP_UNDEAD];
 Parser.MON_TYPE_TO_PLURAL = {};
-Parser.MON_TYPE_TO_PLURAL[TP_ABERRATION] = "aberrations";
-Parser.MON_TYPE_TO_PLURAL[TP_BEAST] = "beasts";
-Parser.MON_TYPE_TO_PLURAL[TP_CELESTIAL] = "celestials";
-Parser.MON_TYPE_TO_PLURAL[TP_CONSTRUCT] = "constructs";
-Parser.MON_TYPE_TO_PLURAL[TP_DRAGON] = "dragons";
-Parser.MON_TYPE_TO_PLURAL[TP_ELEMENTAL] = "elementals";
-Parser.MON_TYPE_TO_PLURAL[TP_FEY] = "fey";
-Parser.MON_TYPE_TO_PLURAL[TP_FIEND] = "fiends";
-Parser.MON_TYPE_TO_PLURAL[TP_GIANT] = "giants";
-Parser.MON_TYPE_TO_PLURAL[TP_HUMANOID] = "humanoids";
-Parser.MON_TYPE_TO_PLURAL[TP_MONSTROSITY] = "monstrosities";
-Parser.MON_TYPE_TO_PLURAL[TP_OOZE] = "oozes";
-Parser.MON_TYPE_TO_PLURAL[TP_PLANT] = "plants";
-Parser.MON_TYPE_TO_PLURAL[TP_UNDEAD] = "undead";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_ABERRATION] = "aberrations";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_BEAST] = "beasts";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_CELESTIAL] = "celestials";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_CONSTRUCT] = "constructs";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_DRAGON] = "dragons";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_ELEMENTAL] = "elementals";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_FEY] = "fey";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_FIEND] = "fiends";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_GIANT] = "giants";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_HUMANOID] = "humanoids";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_MONSTROSITY] = "monstrosities";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_OOZE] = "oozes";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_PLANT] = "plants";
+Parser.MON_TYPE_TO_PLURAL[Parser.TP_UNDEAD] = "undead";
 
-SZ_FINE = "F";
-SZ_DIMINUTIVE = "D";
-SZ_TINY = "T";
-SZ_SMALL = "S";
-SZ_MEDIUM = "M";
-SZ_LARGE = "L";
-SZ_HUGE = "H";
-SZ_GARGANTUAN = "G";
-SZ_COLOSSAL = "C";
-SZ_VARIES = "V";
-Parser.SIZE_ABVS = [SZ_TINY, SZ_SMALL, SZ_MEDIUM, SZ_LARGE, SZ_HUGE, SZ_GARGANTUAN, SZ_VARIES];
+Parser.SZ_FINE = "F";
+Parser.SZ_DIMINUTIVE = "D";
+Parser.SZ_TINY = "T";
+Parser.SZ_SMALL = "S";
+Parser.SZ_MEDIUM = "M";
+Parser.SZ_LARGE = "L";
+Parser.SZ_HUGE = "H";
+Parser.SZ_GARGANTUAN = "G";
+Parser.SZ_COLOSSAL = "C";
+Parser.SZ_VARIES = "V";
+Parser.SIZE_ABVS = [Parser.SZ_TINY, Parser.SZ_SMALL, Parser.SZ_MEDIUM, Parser.SZ_LARGE, Parser.SZ_HUGE, Parser.SZ_GARGANTUAN, Parser.SZ_VARIES];
 Parser.SIZE_ABV_TO_FULL = {};
-Parser.SIZE_ABV_TO_FULL[SZ_FINE] = "Fine";
-Parser.SIZE_ABV_TO_FULL[SZ_DIMINUTIVE] = "Diminutive";
-Parser.SIZE_ABV_TO_FULL[SZ_TINY] = "Tiny";
-Parser.SIZE_ABV_TO_FULL[SZ_SMALL] = "Small";
-Parser.SIZE_ABV_TO_FULL[SZ_MEDIUM] = "Medium";
-Parser.SIZE_ABV_TO_FULL[SZ_LARGE] = "Large";
-Parser.SIZE_ABV_TO_FULL[SZ_HUGE] = "Huge";
-Parser.SIZE_ABV_TO_FULL[SZ_GARGANTUAN] = "Gargantuan";
-Parser.SIZE_ABV_TO_FULL[SZ_COLOSSAL] = "Colossal";
-Parser.SIZE_ABV_TO_FULL[SZ_VARIES] = "Varies";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_FINE] = "Fine";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_DIMINUTIVE] = "Diminutive";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_TINY] = "Tiny";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_SMALL] = "Small";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_MEDIUM] = "Medium";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_LARGE] = "Large";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_HUGE] = "Huge";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_GARGANTUAN] = "Gargantuan";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_COLOSSAL] = "Colossal";
+Parser.SIZE_ABV_TO_FULL[Parser.SZ_VARIES] = "Varies";
 
 Parser.XP_CHART_ALT = {
 	"0": 10,
@@ -26358,1140 +26682,1143 @@ Parser.vehicleTypeToFull = function (vehicleType) {
 	return Parser._parse_aToB(Parser.VEHICLE_TYPE_TO_FULL, vehicleType);
 };
 
-SRC_5ETOOLS_TMP = "SRC_5ETOOLS_TMP"; // Temp source, used as a placeholder value
+// SOURCES =============================================================================================================
 
-SRC_CoS = "CoS";
-SRC_DMG = "DMG";
-SRC_EEPC = "EEPC";
-SRC_EET = "EET";
-SRC_HotDQ = "HotDQ";
-SRC_LMoP = "LMoP";
-SRC_MM = "MM";
-SRC_OotA = "OotA";
-SRC_PHB = "PHB";
-SRC_PotA = "PotA";
-SRC_RoT = "RoT";
-SRC_RoTOS = "RoTOS";
-SRC_SCAG = "SCAG";
-SRC_SKT = "SKT";
-SRC_ToA = "ToA";
-SRC_TLK = "TLK";
-SRC_ToD = "ToD";
-SRC_TTP = "TTP";
-SRC_TYP = "TftYP";
-SRC_TYP_AtG = "TftYP-AtG";
-SRC_TYP_DiT = "TftYP-DiT";
-SRC_TYP_TFoF = "TftYP-TFoF";
-SRC_TYP_THSoT = "TftYP-THSoT";
-SRC_TYP_TSC = "TftYP-TSC";
-SRC_TYP_ToH = "TftYP-ToH";
-SRC_TYP_WPM = "TftYP-WPM";
-SRC_VGM = "VGM";
-SRC_XGE = "XGE";
-SRC_OGA = "OGA";
-SRC_MTF = "MTF";
-SRC_WDH = "WDH";
-SRC_WDMM = "WDMM";
-SRC_GGR = "GGR";
-SRC_KKW = "KKW";
-SRC_LLK = "LLK";
-SRC_AZfyT = "AZfyT";
-SRC_GoS = "GoS";
-SRC_AI = "AI";
-SRC_OoW = "OoW";
-SRC_ESK = "ESK";
-SRC_DIP = "DIP";
-SRC_HftT = "HftT";
-SRC_DC = "DC";
-SRC_SLW = "SLW";
-SRC_SDW = "SDW";
-SRC_BGDIA = "BGDIA";
-SRC_LR = "LR";
-SRC_AL = "AL";
-SRC_SAC = "SAC";
-SRC_ERLW = "ERLW";
-SRC_EFR = "EFR";
-SRC_RMBRE = "RMBRE";
-SRC_RMR = "RMR";
-SRC_MFF = "MFF";
-SRC_AWM = "AWM";
-SRC_IMR = "IMR";
-SRC_SADS = "SADS";
-SRC_EGW = "EGW";
-SRC_EGW_ToR = "ToR";
-SRC_EGW_DD = "DD";
-SRC_EGW_FS = "FS";
-SRC_EGW_US = "US";
-SRC_MOT = "MOT";
-SRC_IDRotF = "IDRotF";
-SRC_TCE = "TCE";
-SRC_VRGR = "VRGR";
-SRC_HoL = "HoL";
-SRC_XMtS = "XMtS";
-SRC_RtG = "RtG";
-SRC_AitFR = "AitFR";
-SRC_AitFR_ISF = "AitFR-ISF";
-SRC_AitFR_THP = "AitFR-THP";
-SRC_AitFR_AVT = "AitFR-AVT";
-SRC_AitFR_DN = "AitFR-DN";
-SRC_AitFR_FCD = "AitFR-FCD";
-SRC_WBtW = "WBtW";
-SRC_DoD = "DoD";
-SRC_MaBJoV = "MaBJoV";
-SRC_FTD = "FTD";
-SRC_SCC = "SCC";
-SRC_SCC_CK = "SCC-CK";
-SRC_SCC_HfMT = "SCC-HfMT";
-SRC_SCC_TMM = "SCC-TMM";
-SRC_SCC_ARiR = "SCC-ARiR";
-SRC_MPMM = "MPMM";
-SRC_CRCotN = "CRCotN";
-SRC_JttRC = "JttRC";
-SRC_SAiS = "SAiS";
-SRC_AAG = "AAG";
-SRC_BAM = "BAM";
-SRC_LoX = "LoX";
-SRC_DoSI = "DoSI";
-SRC_DSotDQ = "DSotDQ";
-SRC_SCREEN = "Screen";
-SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
-SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
-SRC_HEROES_FEAST = "HF";
-SRC_CM = "CM";
-SRC_NRH = "NRH";
-SRC_NRH_TCMC = "NRH-TCMC";
-SRC_NRH_AVitW = "NRH-AVitW";
-SRC_NRH_ASS = "NRH-ASS"; // lmao
-SRC_NRH_CoI = "NRH-CoI";
-SRC_NRH_TLT = "NRH-TLT";
-SRC_NRH_AWoL = "NRH-AWoL";
-SRC_NRH_AT = "NRH-AT";
-SRC_MGELFT = "MGELFT";
-SRC_VD = "VD";
-SRC_SjA = "SjA";
+Parser.SRC_5ETOOLS_TMP = "Parser.SRC_5ETOOLS_TMP"; // Temp source, used as a placeholder value
 
-SRC_AL_PREFIX = "AL";
+Parser.SRC_CoS = "CoS";
+Parser.SRC_DMG = "DMG";
+Parser.SRC_EEPC = "EEPC";
+Parser.SRC_EET = "EET";
+Parser.SRC_HotDQ = "HotDQ";
+Parser.SRC_LMoP = "LMoP";
+Parser.SRC_MM = "MM";
+Parser.SRC_OotA = "OotA";
+Parser.SRC_PHB = "PHB";
+Parser.SRC_PotA = "PotA";
+Parser.SRC_RoT = "RoT";
+Parser.SRC_RoTOS = "RoTOS";
+Parser.SRC_SCAG = "SCAG";
+Parser.SRC_SKT = "SKT";
+Parser.SRC_ToA = "ToA";
+Parser.SRC_TLK = "TLK";
+Parser.SRC_ToD = "ToD";
+Parser.SRC_TTP = "TTP";
+Parser.SRC_TYP = "TftYP";
+Parser.SRC_TYP_AtG = "TftYP-AtG";
+Parser.SRC_TYP_DiT = "TftYP-DiT";
+Parser.SRC_TYP_TFoF = "TftYP-TFoF";
+Parser.SRC_TYP_THSoT = "TftYP-THSoT";
+Parser.SRC_TYP_TSC = "TftYP-TSC";
+Parser.SRC_TYP_ToH = "TftYP-ToH";
+Parser.SRC_TYP_WPM = "TftYP-WPM";
+Parser.SRC_VGM = "VGM";
+Parser.SRC_XGE = "XGE";
+Parser.SRC_OGA = "OGA";
+Parser.SRC_MTF = "MTF";
+Parser.SRC_WDH = "WDH";
+Parser.SRC_WDMM = "WDMM";
+Parser.SRC_GGR = "GGR";
+Parser.SRC_KKW = "KKW";
+Parser.SRC_LLK = "LLK";
+Parser.SRC_AZfyT = "AZfyT";
+Parser.SRC_GoS = "GoS";
+Parser.SRC_AI = "AI";
+Parser.SRC_OoW = "OoW";
+Parser.SRC_ESK = "ESK";
+Parser.SRC_DIP = "DIP";
+Parser.SRC_HftT = "HftT";
+Parser.SRC_DC = "DC";
+Parser.SRC_SLW = "SLW";
+Parser.SRC_SDW = "SDW";
+Parser.SRC_BGDIA = "BGDIA";
+Parser.SRC_LR = "LR";
+Parser.SRC_AL = "AL";
+Parser.SRC_SAC = "SAC";
+Parser.SRC_ERLW = "ERLW";
+Parser.SRC_EFR = "EFR";
+Parser.SRC_RMBRE = "RMBRE";
+Parser.SRC_RMR = "RMR";
+Parser.SRC_MFF = "MFF";
+Parser.SRC_AWM = "AWM";
+Parser.SRC_IMR = "IMR";
+Parser.SRC_SADS = "SADS";
+Parser.SRC_EGW = "EGW";
+Parser.SRC_EGW_ToR = "ToR";
+Parser.SRC_EGW_DD = "DD";
+Parser.SRC_EGW_FS = "FS";
+Parser.SRC_EGW_US = "US";
+Parser.SRC_MOT = "MOT";
+Parser.SRC_IDRotF = "IDRotF";
+Parser.SRC_TCE = "TCE";
+Parser.SRC_VRGR = "VRGR";
+Parser.SRC_HoL = "HoL";
+Parser.SRC_XMtS = "XMtS";
+Parser.SRC_RtG = "RtG";
+Parser.SRC_AitFR = "AitFR";
+Parser.SRC_AitFR_ISF = "AitFR-ISF";
+Parser.SRC_AitFR_THP = "AitFR-THP";
+Parser.SRC_AitFR_AVT = "AitFR-AVT";
+Parser.SRC_AitFR_DN = "AitFR-DN";
+Parser.SRC_AitFR_FCD = "AitFR-FCD";
+Parser.SRC_WBtW = "WBtW";
+Parser.SRC_DoD = "DoD";
+Parser.SRC_MaBJoV = "MaBJoV";
+Parser.SRC_FTD = "FTD";
+Parser.SRC_SCC = "SCC";
+Parser.SRC_SCC_CK = "SCC-CK";
+Parser.SRC_SCC_HfMT = "SCC-HfMT";
+Parser.SRC_SCC_TMM = "SCC-TMM";
+Parser.SRC_SCC_ARiR = "SCC-ARiR";
+Parser.SRC_MPMM = "MPMM";
+Parser.SRC_CRCotN = "CRCotN";
+Parser.SRC_JttRC = "JttRC";
+Parser.SRC_SAiS = "SAiS";
+Parser.SRC_AAG = "AAG";
+Parser.SRC_BAM = "BAM";
+Parser.SRC_LoX = "LoX";
+Parser.SRC_DoSI = "DoSI";
+Parser.SRC_DSotDQ = "DSotDQ";
+Parser.SRC_KftGV = "KftGV";
+Parser.SRC_SCREEN = "Screen";
+Parser.SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
+Parser.SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
+Parser.SRC_SCREEN_SPELLJAMMER = "ScreenSpelljammer";
+Parser.SRC_HEROES_FEAST = "HF";
+Parser.SRC_CM = "CM";
+Parser.SRC_NRH = "NRH";
+Parser.SRC_NRH_TCMC = "NRH-TCMC";
+Parser.SRC_NRH_AVitW = "NRH-AVitW";
+Parser.SRC_NRH_ASS = "NRH-ASS"; // lmao
+Parser.SRC_NRH_CoI = "NRH-CoI";
+Parser.SRC_NRH_TLT = "NRH-TLT";
+Parser.SRC_NRH_AWoL = "NRH-AWoL";
+Parser.SRC_NRH_AT = "NRH-AT";
+Parser.SRC_MGELFT = "MGELFT";
+Parser.SRC_VD = "VD";
+Parser.SRC_SjA = "SjA";
+Parser.SRC_HAT_TG = "HAT-TG";
+Parser.SRC_HAT_LMI = "HAT-LMI";
 
-SRC_ALCoS = `${SRC_AL_PREFIX}CurseOfStrahd`;
-SRC_ALEE = `${SRC_AL_PREFIX}ElementalEvil`;
-SRC_ALRoD = `${SRC_AL_PREFIX}RageOfDemons`;
+Parser.SRC_AL_PREFIX = "AL";
 
-SRC_PS_PREFIX = "PS";
+Parser.SRC_ALCoS = `${Parser.SRC_AL_PREFIX}CurseOfStrahd`;
+Parser.SRC_ALEE = `${Parser.SRC_AL_PREFIX}ElementalEvil`;
+Parser.SRC_ALRoD = `${Parser.SRC_AL_PREFIX}RageOfDemons`;
 
-SRC_PSA = `${SRC_PS_PREFIX}A`;
-SRC_PSI = `${SRC_PS_PREFIX}I`;
-SRC_PSK = `${SRC_PS_PREFIX}K`;
-SRC_PSZ = `${SRC_PS_PREFIX}Z`;
-SRC_PSX = `${SRC_PS_PREFIX}X`;
-SRC_PSD = `${SRC_PS_PREFIX}D`;
+Parser.SRC_PS_PREFIX = "PS";
 
-SRC_UA_PREFIX = "UA";
-SRC_MCVX_PREFIX = "MCV";
+Parser.SRC_PSA = `${Parser.SRC_PS_PREFIX}A`;
+Parser.SRC_PSI = `${Parser.SRC_PS_PREFIX}I`;
+Parser.SRC_PSK = `${Parser.SRC_PS_PREFIX}K`;
+Parser.SRC_PSZ = `${Parser.SRC_PS_PREFIX}Z`;
+Parser.SRC_PSX = `${Parser.SRC_PS_PREFIX}X`;
+Parser.SRC_PSD = `${Parser.SRC_PS_PREFIX}D`;
 
-SRC_UAA = `${SRC_UA_PREFIX}Artificer`;
-SRC_UAEAG = `${SRC_UA_PREFIX}EladrinAndGith`;
-SRC_UAEBB = `${SRC_UA_PREFIX}Eberron`;
-SRC_UAFFR = `${SRC_UA_PREFIX}FeatsForRaces`;
-SRC_UAFFS = `${SRC_UA_PREFIX}FeatsForSkills`;
-SRC_UAFO = `${SRC_UA_PREFIX}FiendishOptions`;
-SRC_UAFT = `${SRC_UA_PREFIX}Feats`;
-SRC_UAGH = `${SRC_UA_PREFIX}GothicHeroes`;
-SRC_UAMDM = `${SRC_UA_PREFIX}ModernMagic`;
-SRC_UASSP = `${SRC_UA_PREFIX}StarterSpells`;
-SRC_UATMC = `${SRC_UA_PREFIX}TheMysticClass`;
-SRC_UATOBM = `${SRC_UA_PREFIX}ThatOldBlackMagic`;
-SRC_UATRR = `${SRC_UA_PREFIX}TheRangerRevised`;
-SRC_UAWA = `${SRC_UA_PREFIX}WaterborneAdventures`;
-SRC_UAVR = `${SRC_UA_PREFIX}VariantRules`;
-SRC_UALDR = `${SRC_UA_PREFIX}LightDarkUnderdark`;
-SRC_UARAR = `${SRC_UA_PREFIX}RangerAndRogue`;
-SRC_UAATOSC = `${SRC_UA_PREFIX}ATrioOfSubclasses`;
-SRC_UABPP = `${SRC_UA_PREFIX}BarbarianPrimalPaths`;
-SRC_UARSC = `${SRC_UA_PREFIX}RevisedSubclasses`;
-SRC_UAKOO = `${SRC_UA_PREFIX}KitsOfOld`;
-SRC_UABBC = `${SRC_UA_PREFIX}BardBardColleges`;
-SRC_UACDD = `${SRC_UA_PREFIX}ClericDivineDomains`;
-SRC_UAD = `${SRC_UA_PREFIX}Druid`;
-SRC_UARCO = `${SRC_UA_PREFIX}RevisedClassOptions`;
-SRC_UAF = `${SRC_UA_PREFIX}Fighter`;
-SRC_UAM = `${SRC_UA_PREFIX}Monk`;
-SRC_UAP = `${SRC_UA_PREFIX}Paladin`;
-SRC_UAMC = `${SRC_UA_PREFIX}ModifyingClasses`;
-SRC_UAS = `${SRC_UA_PREFIX}Sorcerer`;
-SRC_UAWAW = `${SRC_UA_PREFIX}WarlockAndWizard`;
-SRC_UATF = `${SRC_UA_PREFIX}TheFaithful`;
-SRC_UAWR = `${SRC_UA_PREFIX}WizardRevisited`;
-SRC_UAESR = `${SRC_UA_PREFIX}ElfSubraces`;
-SRC_UAMAC = `${SRC_UA_PREFIX}MassCombat`;
-SRC_UA3PE = `${SRC_UA_PREFIX}ThreePillarExperience`;
-SRC_UAGHI = `${SRC_UA_PREFIX}GreyhawkInitiative`;
-SRC_UATSC = `${SRC_UA_PREFIX}ThreeSubclasses`;
-SRC_UAOD = `${SRC_UA_PREFIX}OrderDomain`;
-SRC_UACAM = `${SRC_UA_PREFIX}CentaursMinotaurs`;
-SRC_UAGSS = `${SRC_UA_PREFIX}GiantSoulSorcerer`;
-SRC_UARoE = `${SRC_UA_PREFIX}RacesOfEberron`;
-SRC_UARoR = `${SRC_UA_PREFIX}RacesOfRavnica`;
-SRC_UAWGE = `${SRC_UA_PREFIX}WGE`;
-SRC_UAOSS = `${SRC_UA_PREFIX}OfShipsAndSea`;
-SRC_UASIK = `${SRC_UA_PREFIX}Sidekicks`;
-SRC_UAAR = `${SRC_UA_PREFIX}ArtificerRevisited`;
-SRC_UABAM = `${SRC_UA_PREFIX}BarbarianAndMonk`;
-SRC_UASAW = `${SRC_UA_PREFIX}SorcererAndWarlock`;
-SRC_UABAP = `${SRC_UA_PREFIX}BardAndPaladin`;
-SRC_UACDW = `${SRC_UA_PREFIX}ClericDruidWizard`;
-SRC_UAFRR = `${SRC_UA_PREFIX}FighterRangerRogue`;
-SRC_UACFV = `${SRC_UA_PREFIX}ClassFeatureVariants`;
-SRC_UAFRW = `${SRC_UA_PREFIX}FighterRogueWizard`;
-SRC_UAPCRM = `${SRC_UA_PREFIX}PrestigeClassesRunMagic`;
-SRC_UAR = `${SRC_UA_PREFIX}Ranger`;
-SRC_UA2020SC1 = `${SRC_UA_PREFIX}2020SubclassesPt1`;
-SRC_UA2020SC2 = `${SRC_UA_PREFIX}2020SubclassesPt2`;
-SRC_UA2020SC3 = `${SRC_UA_PREFIX}2020SubclassesPt3`;
-SRC_UA2020SC4 = `${SRC_UA_PREFIX}2020SubclassesPt4`;
-SRC_UA2020SC5 = `${SRC_UA_PREFIX}2020SubclassesPt5`;
-SRC_UA2020SMT = `${SRC_UA_PREFIX}2020SpellsAndMagicTattoos`;
-SRC_UA2020POR = `${SRC_UA_PREFIX}2020PsionicOptionsRevisited`;
-SRC_UA2020SCR = `${SRC_UA_PREFIX}2020SubclassesRevisited`;
-SRC_UA2020F = `${SRC_UA_PREFIX}2020Feats`;
-SRC_UA2021GL = `${SRC_UA_PREFIX}2021GothicLineages`;
-SRC_UA2021FF = `${SRC_UA_PREFIX}2021FolkOfTheFeywild`;
-SRC_UA2021DO = `${SRC_UA_PREFIX}2021DraconicOptions`;
-SRC_UA2021MoS = `${SRC_UA_PREFIX}2021MagesOfStrixhaven`;
-SRC_UA2021TotM = `${SRC_UA_PREFIX}2021TravelersOfTheMultiverse`;
-SRC_UA2022HoK = `${SRC_UA_PREFIX}2022HeroesOfKrynn`;
-SRC_UA2022HoKR = `${SRC_UA_PREFIX}2022HeroesOfKrynnRevisited`;
-SRC_UA2022GO = `${SRC_UA_PREFIX}2022GiantOptions`;
-SRC_UA2022WotM = `${SRC_UA_PREFIX}2022WondersOfTheMultiverse`;
-SRC_MCV1SC = `${SRC_MCVX_PREFIX}1SC`;
+Parser.SRC_UA_PREFIX = "UA";
+Parser.SRC_UA_ONE_PREFIX = "XUA";
+Parser.SRC_MCVX_PREFIX = "MCV";
 
-SRC_3PP_SUFFIX = " 3pp";
+Parser.SRC_UAA = `${Parser.SRC_UA_PREFIX}Artificer`;
+Parser.SRC_UAEAG = `${Parser.SRC_UA_PREFIX}EladrinAndGith`;
+Parser.SRC_UAEBB = `${Parser.SRC_UA_PREFIX}Eberron`;
+Parser.SRC_UAFFR = `${Parser.SRC_UA_PREFIX}FeatsForRaces`;
+Parser.SRC_UAFFS = `${Parser.SRC_UA_PREFIX}FeatsForSkills`;
+Parser.SRC_UAFO = `${Parser.SRC_UA_PREFIX}FiendishOptions`;
+Parser.SRC_UAFT = `${Parser.SRC_UA_PREFIX}Feats`;
+Parser.SRC_UAGH = `${Parser.SRC_UA_PREFIX}GothicHeroes`;
+Parser.SRC_UAMDM = `${Parser.SRC_UA_PREFIX}ModernMagic`;
+Parser.SRC_UASSP = `${Parser.SRC_UA_PREFIX}StarterSpells`;
+Parser.SRC_UATMC = `${Parser.SRC_UA_PREFIX}TheMysticClass`;
+Parser.SRC_UATOBM = `${Parser.SRC_UA_PREFIX}ThatOldBlackMagic`;
+Parser.SRC_UATRR = `${Parser.SRC_UA_PREFIX}TheRangerRevised`;
+Parser.SRC_UAWA = `${Parser.SRC_UA_PREFIX}WaterborneAdventures`;
+Parser.SRC_UAVR = `${Parser.SRC_UA_PREFIX}VariantRules`;
+Parser.SRC_UALDR = `${Parser.SRC_UA_PREFIX}LightDarkUnderdark`;
+Parser.SRC_UARAR = `${Parser.SRC_UA_PREFIX}RangerAndRogue`;
+Parser.SRC_UAATOSC = `${Parser.SRC_UA_PREFIX}ATrioOfSubclasses`;
+Parser.SRC_UABPP = `${Parser.SRC_UA_PREFIX}BarbarianPrimalPaths`;
+Parser.SRC_UARSC = `${Parser.SRC_UA_PREFIX}RevisedSubclasses`;
+Parser.SRC_UAKOO = `${Parser.SRC_UA_PREFIX}KitsOfOld`;
+Parser.SRC_UABBC = `${Parser.SRC_UA_PREFIX}BardBardColleges`;
+Parser.SRC_UACDD = `${Parser.SRC_UA_PREFIX}ClericDivineDomains`;
+Parser.SRC_UAD = `${Parser.SRC_UA_PREFIX}Druid`;
+Parser.SRC_UARCO = `${Parser.SRC_UA_PREFIX}RevisedClassOptions`;
+Parser.SRC_UAF = `${Parser.SRC_UA_PREFIX}Fighter`;
+Parser.SRC_UAM = `${Parser.SRC_UA_PREFIX}Monk`;
+Parser.SRC_UAP = `${Parser.SRC_UA_PREFIX}Paladin`;
+Parser.SRC_UAMC = `${Parser.SRC_UA_PREFIX}ModifyingClasses`;
+Parser.SRC_UAS = `${Parser.SRC_UA_PREFIX}Sorcerer`;
+Parser.SRC_UAWAW = `${Parser.SRC_UA_PREFIX}WarlockAndWizard`;
+Parser.SRC_UATF = `${Parser.SRC_UA_PREFIX}TheFaithful`;
+Parser.SRC_UAWR = `${Parser.SRC_UA_PREFIX}WizardRevisited`;
+Parser.SRC_UAESR = `${Parser.SRC_UA_PREFIX}ElfSubraces`;
+Parser.SRC_UAMAC = `${Parser.SRC_UA_PREFIX}MassCombat`;
+Parser.SRC_UA3PE = `${Parser.SRC_UA_PREFIX}ThreePillarExperience`;
+Parser.SRC_UAGHI = `${Parser.SRC_UA_PREFIX}GreyhawkInitiative`;
+Parser.SRC_UATSC = `${Parser.SRC_UA_PREFIX}ThreeSubclasses`;
+Parser.SRC_UAOD = `${Parser.SRC_UA_PREFIX}OrderDomain`;
+Parser.SRC_UACAM = `${Parser.SRC_UA_PREFIX}CentaursMinotaurs`;
+Parser.SRC_UAGSS = `${Parser.SRC_UA_PREFIX}GiantSoulSorcerer`;
+Parser.SRC_UARoE = `${Parser.SRC_UA_PREFIX}RacesOfEberron`;
+Parser.SRC_UARoR = `${Parser.SRC_UA_PREFIX}RacesOfRavnica`;
+Parser.SRC_UAWGE = `${Parser.SRC_UA_PREFIX}WGE`;
+Parser.SRC_UAOSS = `${Parser.SRC_UA_PREFIX}OfShipsAndSea`;
+Parser.SRC_UASIK = `${Parser.SRC_UA_PREFIX}Sidekicks`;
+Parser.SRC_UAAR = `${Parser.SRC_UA_PREFIX}ArtificerRevisited`;
+Parser.SRC_UABAM = `${Parser.SRC_UA_PREFIX}BarbarianAndMonk`;
+Parser.SRC_UASAW = `${Parser.SRC_UA_PREFIX}SorcererAndWarlock`;
+Parser.SRC_UABAP = `${Parser.SRC_UA_PREFIX}BardAndPaladin`;
+Parser.SRC_UACDW = `${Parser.SRC_UA_PREFIX}ClericDruidWizard`;
+Parser.SRC_UAFRR = `${Parser.SRC_UA_PREFIX}FighterRangerRogue`;
+Parser.SRC_UACFV = `${Parser.SRC_UA_PREFIX}ClassFeatureVariants`;
+Parser.SRC_UAFRW = `${Parser.SRC_UA_PREFIX}FighterRogueWizard`;
+Parser.SRC_UAPCRM = `${Parser.SRC_UA_PREFIX}PrestigeClassesRunMagic`;
+Parser.SRC_UAR = `${Parser.SRC_UA_PREFIX}Ranger`;
+Parser.SRC_UA2020SC1 = `${Parser.SRC_UA_PREFIX}2020SubclassesPt1`;
+Parser.SRC_UA2020SC2 = `${Parser.SRC_UA_PREFIX}2020SubclassesPt2`;
+Parser.SRC_UA2020SC3 = `${Parser.SRC_UA_PREFIX}2020SubclassesPt3`;
+Parser.SRC_UA2020SC4 = `${Parser.SRC_UA_PREFIX}2020SubclassesPt4`;
+Parser.SRC_UA2020SC5 = `${Parser.SRC_UA_PREFIX}2020SubclassesPt5`;
+Parser.SRC_UA2020SMT = `${Parser.SRC_UA_PREFIX}2020SpellsAndMagicTattoos`;
+Parser.SRC_UA2020POR = `${Parser.SRC_UA_PREFIX}2020PsionicOptionsRevisited`;
+Parser.SRC_UA2020SCR = `${Parser.SRC_UA_PREFIX}2020SubclassesRevisited`;
+Parser.SRC_UA2020F = `${Parser.SRC_UA_PREFIX}2020Feats`;
+Parser.SRC_UA2021GL = `${Parser.SRC_UA_PREFIX}2021GothicLineages`;
+Parser.SRC_UA2021FF = `${Parser.SRC_UA_PREFIX}2021FolkOfTheFeywild`;
+Parser.SRC_UA2021DO = `${Parser.SRC_UA_PREFIX}2021DraconicOptions`;
+Parser.SRC_UA2021MoS = `${Parser.SRC_UA_PREFIX}2021MagesOfStrixhaven`;
+Parser.SRC_UA2021TotM = `${Parser.SRC_UA_PREFIX}2021TravelersOfTheMultiverse`;
+Parser.SRC_UA2022HoK = `${Parser.SRC_UA_PREFIX}2022HeroesOfKrynn`;
+Parser.SRC_UA2022HoKR = `${Parser.SRC_UA_PREFIX}2022HeroesOfKrynnRevisited`;
+Parser.SRC_UA2022GO = `${Parser.SRC_UA_PREFIX}2022GiantOptions`;
+Parser.SRC_UA2022WotM = `${Parser.SRC_UA_PREFIX}2022WondersOfTheMultiverse`;
+Parser.SRC_MCV1SC = `${Parser.SRC_MCVX_PREFIX}1SC`;
+Parser.SRC_MCV2DC = `${Parser.SRC_MCVX_PREFIX}2DC`;
+Parser.SRC_MCV3MC = `${Parser.SRC_MCVX_PREFIX}3MC`;
 
-AL_PREFIX = "Adventurers League: ";
-AL_PREFIX_SHORT = "AL: ";
-PS_PREFIX = "Plane Shift: ";
-PS_PREFIX_SHORT = "PS: ";
-UA_PREFIX = "Unearthed Arcana: ";
-UA_PREFIX_SHORT = "UA: ";
-TftYP_NAME = "Tales from the Yawning Portal";
-AitFR_NAME = "Adventures in the Forgotten Realms";
-NRH_NAME = "NERDS Restoring Harmony";
-MCVX_PREFIX = "Monster Compendium Volume ";
+Parser.AL_PREFIX = "Adventurers League: ";
+Parser.AL_PREFIX_SHORT = "AL: ";
+Parser.PS_PREFIX = "Plane Shift: ";
+Parser.PS_PREFIX_SHORT = "PS: ";
+Parser.UA_PREFIX = "Unearthed Arcana: ";
+Parser.UA_PREFIX_SHORT = "UA: ";
+Parser.TftYP_NAME = "Tales from the Yawning Portal";
+Parser.AitFR_NAME = "Adventures in the Forgotten Realms";
+Parser.NRH_NAME = "NERDS Restoring Harmony";
+Parser.MCVX_PREFIX = "Monstrous Compendium Volume ";
 
 Parser.SOURCE_JSON_TO_FULL = {};
-Parser.SOURCE_JSON_TO_FULL[SRC_CoS] = "Curse of Strahd";
-Parser.SOURCE_JSON_TO_FULL[SRC_DMG] = "Dungeon Master's Guide";
-Parser.SOURCE_JSON_TO_FULL[SRC_EEPC] = "Elemental Evil Player's Companion";
-Parser.SOURCE_JSON_TO_FULL[SRC_EET] = "Elemental Evil: Trinkets";
-Parser.SOURCE_JSON_TO_FULL[SRC_HotDQ] = "Hoard of the Dragon Queen";
-Parser.SOURCE_JSON_TO_FULL[SRC_LMoP] = "Lost Mine of Phandelver";
-Parser.SOURCE_JSON_TO_FULL[SRC_MM] = "Monster Manual";
-Parser.SOURCE_JSON_TO_FULL[SRC_OotA] = "Out of the Abyss";
-Parser.SOURCE_JSON_TO_FULL[SRC_PHB] = "Player's Handbook";
-Parser.SOURCE_JSON_TO_FULL[SRC_PotA] = "Princes of the Apocalypse";
-Parser.SOURCE_JSON_TO_FULL[SRC_RoT] = "The Rise of Tiamat";
-Parser.SOURCE_JSON_TO_FULL[SRC_RoTOS] = "The Rise of Tiamat Online Supplement";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCAG] = "Sword Coast Adventurer's Guide";
-Parser.SOURCE_JSON_TO_FULL[SRC_SKT] = "Storm King's Thunder";
-Parser.SOURCE_JSON_TO_FULL[SRC_ToA] = "Tomb of Annihilation";
-Parser.SOURCE_JSON_TO_FULL[SRC_TLK] = "The Lost Kenku";
-Parser.SOURCE_JSON_TO_FULL[SRC_ToD] = "Tyranny of Dragons";
-Parser.SOURCE_JSON_TO_FULL[SRC_TTP] = "The Tortle Package";
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP] = TftYP_NAME;
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP_AtG] = `${TftYP_NAME}: Against the Giants`;
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP_DiT] = `${TftYP_NAME}: Dead in Thay`;
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP_TFoF] = `${TftYP_NAME}: The Forge of Fury`;
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP_THSoT] = `${TftYP_NAME}: The Hidden Shrine of Tamoachan`;
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP_TSC] = `${TftYP_NAME}: The Sunless Citadel`;
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP_ToH] = `${TftYP_NAME}: Tomb of Horrors`;
-Parser.SOURCE_JSON_TO_FULL[SRC_TYP_WPM] = `${TftYP_NAME}: White Plume Mountain`;
-Parser.SOURCE_JSON_TO_FULL[SRC_VGM] = "Volo's Guide to Monsters";
-Parser.SOURCE_JSON_TO_FULL[SRC_XGE] = "Xanathar's Guide to Everything";
-Parser.SOURCE_JSON_TO_FULL[SRC_OGA] = "One Grung Above";
-Parser.SOURCE_JSON_TO_FULL[SRC_MTF] = "Mordenkainen's Tome of Foes";
-Parser.SOURCE_JSON_TO_FULL[SRC_WDH] = "Waterdeep: Dragon Heist";
-Parser.SOURCE_JSON_TO_FULL[SRC_WDMM] = "Waterdeep: Dungeon of the Mad Mage";
-Parser.SOURCE_JSON_TO_FULL[SRC_GGR] = "Guildmasters' Guide to Ravnica";
-Parser.SOURCE_JSON_TO_FULL[SRC_KKW] = "Krenko's Way";
-Parser.SOURCE_JSON_TO_FULL[SRC_LLK] = "Lost Laboratory of Kwalish";
-Parser.SOURCE_JSON_TO_FULL[SRC_AZfyT] = "A Zib for your Thoughts";
-Parser.SOURCE_JSON_TO_FULL[SRC_GoS] = "Ghosts of Saltmarsh";
-Parser.SOURCE_JSON_TO_FULL[SRC_AI] = "Acquisitions Incorporated";
-Parser.SOURCE_JSON_TO_FULL[SRC_OoW] = "The Orrery of the Wanderer";
-Parser.SOURCE_JSON_TO_FULL[SRC_ESK] = "Essentials Kit";
-Parser.SOURCE_JSON_TO_FULL[SRC_DIP] = "Dragon of Icespire Peak";
-Parser.SOURCE_JSON_TO_FULL[SRC_HftT] = "Hunt for the Thessalhydra";
-Parser.SOURCE_JSON_TO_FULL[SRC_DC] = "Divine Contention";
-Parser.SOURCE_JSON_TO_FULL[SRC_SLW] = "Storm Lord's Wrath";
-Parser.SOURCE_JSON_TO_FULL[SRC_SDW] = "Sleeping Dragon's Wake";
-Parser.SOURCE_JSON_TO_FULL[SRC_BGDIA] = "Baldur's Gate: Descent Into Avernus";
-Parser.SOURCE_JSON_TO_FULL[SRC_LR] = "Locathah Rising";
-Parser.SOURCE_JSON_TO_FULL[SRC_AL] = "Adventurers' League";
-Parser.SOURCE_JSON_TO_FULL[SRC_SAC] = "Sage Advice Compendium";
-Parser.SOURCE_JSON_TO_FULL[SRC_ERLW] = "Eberron: Rising from the Last War";
-Parser.SOURCE_JSON_TO_FULL[SRC_EFR] = "Eberron: Forgotten Relics";
-Parser.SOURCE_JSON_TO_FULL[SRC_RMBRE] = "The Lost Dungeon of Rickedness: Big Rick Energy";
-Parser.SOURCE_JSON_TO_FULL[SRC_RMR] = "Dungeons & Dragons vs. Rick and Morty: Basic Rules";
-Parser.SOURCE_JSON_TO_FULL[SRC_MFF] = "Mordenkainen's Fiendish Folio";
-Parser.SOURCE_JSON_TO_FULL[SRC_AWM] = "Adventure with Muk";
-Parser.SOURCE_JSON_TO_FULL[SRC_IMR] = "Infernal Machine Rebuild";
-Parser.SOURCE_JSON_TO_FULL[SRC_SADS] = "Sapphire Anniversary Dice Set";
-Parser.SOURCE_JSON_TO_FULL[SRC_EGW] = "Explorer's Guide to Wildemount";
-Parser.SOURCE_JSON_TO_FULL[SRC_EGW_ToR] = "Tide of Retribution";
-Parser.SOURCE_JSON_TO_FULL[SRC_EGW_DD] = "Dangerous Designs";
-Parser.SOURCE_JSON_TO_FULL[SRC_EGW_FS] = "Frozen Sick";
-Parser.SOURCE_JSON_TO_FULL[SRC_EGW_US] = "Unwelcome Spirits";
-Parser.SOURCE_JSON_TO_FULL[SRC_MOT] = "Mythic Odysseys of Theros";
-Parser.SOURCE_JSON_TO_FULL[SRC_IDRotF] = "Icewind Dale: Rime of the Frostmaiden";
-Parser.SOURCE_JSON_TO_FULL[SRC_TCE] = "Tasha's Cauldron of Everything";
-Parser.SOURCE_JSON_TO_FULL[SRC_VRGR] = "Van Richten's Guide to Ravenloft";
-Parser.SOURCE_JSON_TO_FULL[SRC_HoL] = "The House of Lament";
-Parser.SOURCE_JSON_TO_FULL[SRC_RtG] = "Return to Glory";
-Parser.SOURCE_JSON_TO_FULL[SRC_AitFR] = AitFR_NAME;
-Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_ISF] = `${AitFR_NAME}: In Scarlet Flames`;
-Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_THP] = `${AitFR_NAME}: The Hidden Page`;
-Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_AVT] = `${AitFR_NAME}: A Verdant Tomb`;
-Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_DN] = `${AitFR_NAME}: Deepest Night`;
-Parser.SOURCE_JSON_TO_FULL[SRC_AitFR_FCD] = `${AitFR_NAME}: From Cyan Depths`;
-Parser.SOURCE_JSON_TO_FULL[SRC_WBtW] = "The Wild Beyond the Witchlight";
-Parser.SOURCE_JSON_TO_FULL[SRC_DoD] = "Domains of Delight";
-Parser.SOURCE_JSON_TO_FULL[SRC_MaBJoV] = "Minsc and Boo's Journal of Villainy";
-Parser.SOURCE_JSON_TO_FULL[SRC_FTD] = "Fizban's Treasury of Dragons";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCC] = "Strixhaven: A Curriculum of Chaos";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCC_CK] = "Campus Kerfuffle";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCC_HfMT] = "Hunt for Mage Tower";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCC_TMM] = "The Magister's Masquerade";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCC_ARiR] = "A Reckoning in Ruins";
-Parser.SOURCE_JSON_TO_FULL[SRC_MPMM] = "Mordenkainen Presents: Monsters of the Multiverse";
-Parser.SOURCE_JSON_TO_FULL[SRC_CRCotN] = "Critical Role: Call of the Netherdeep";
-Parser.SOURCE_JSON_TO_FULL[SRC_JttRC] = "Journeys through the Radiant Citadel";
-Parser.SOURCE_JSON_TO_FULL[SRC_SAiS] = "Spelljammer: Adventures in Space";
-Parser.SOURCE_JSON_TO_FULL[SRC_AAG] = "Astral Adventurer's Guide";
-Parser.SOURCE_JSON_TO_FULL[SRC_BAM] = "Boo's Astral Menagerie";
-Parser.SOURCE_JSON_TO_FULL[SRC_LoX] = "Light of Xaryxis";
-Parser.SOURCE_JSON_TO_FULL[SRC_DoSI] = "Dragons of Stormwreck Isle";
-Parser.SOURCE_JSON_TO_FULL[SRC_DSotDQ] = "Dragonlance: Shadow of the Dragon Queen";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN] = "Dungeon Master's Screen";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
-Parser.SOURCE_JSON_TO_FULL[SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
-Parser.SOURCE_JSON_TO_FULL[SRC_HEROES_FEAST] = "Heroes' Feast";
-Parser.SOURCE_JSON_TO_FULL[SRC_CM] = "Candlekeep Mysteries";
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH] = NRH_NAME;
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH_TCMC] = `${NRH_NAME}: The Candy Mountain Caper`;
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH_AVitW] = `${NRH_NAME}: A Voice in the Wilderness`;
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH_ASS] = `${NRH_NAME}: A Sticky Situation`;
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH_CoI] = `${NRH_NAME}: Circus of Illusions`;
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH_TLT] = `${NRH_NAME}: The Lost Tomb`;
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH_AWoL] = `${NRH_NAME}: A Web of Lies`;
-Parser.SOURCE_JSON_TO_FULL[SRC_NRH_AT] = `${NRH_NAME}: Adventure Together`;
-Parser.SOURCE_JSON_TO_FULL[SRC_MGELFT] = "Muk's Guide To Everything He Learned From Tasha";
-Parser.SOURCE_JSON_TO_FULL[SRC_VD] = "Vecna Dossier";
-Parser.SOURCE_JSON_TO_FULL[SRC_SjA] = "Spelljammer Academy";
-Parser.SOURCE_JSON_TO_FULL[SRC_ALCoS] = `${AL_PREFIX}Curse of Strahd`;
-Parser.SOURCE_JSON_TO_FULL[SRC_ALEE] = `${AL_PREFIX}Elemental Evil`;
-Parser.SOURCE_JSON_TO_FULL[SRC_ALRoD] = `${AL_PREFIX}Rage of Demons`;
-Parser.SOURCE_JSON_TO_FULL[SRC_PSA] = `${PS_PREFIX}Amonkhet`;
-Parser.SOURCE_JSON_TO_FULL[SRC_PSI] = `${PS_PREFIX}Innistrad`;
-Parser.SOURCE_JSON_TO_FULL[SRC_PSK] = `${PS_PREFIX}Kaladesh`;
-Parser.SOURCE_JSON_TO_FULL[SRC_PSZ] = `${PS_PREFIX}Zendikar`;
-Parser.SOURCE_JSON_TO_FULL[SRC_PSX] = `${PS_PREFIX}Ixalan`;
-Parser.SOURCE_JSON_TO_FULL[SRC_PSD] = `${PS_PREFIX}Dominaria`;
-Parser.SOURCE_JSON_TO_FULL[SRC_XMtS] = `X Marks the Spot`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAA] = `${UA_PREFIX}Artificer`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAEAG] = `${UA_PREFIX}Eladrin and Gith`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAEBB] = `${UA_PREFIX}Eberron`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAFFR] = `${UA_PREFIX}Feats for Races`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAFFS] = `${UA_PREFIX}Feats for Skills`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAFO] = `${UA_PREFIX}Fiendish Options`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAFT] = `${UA_PREFIX}Feats`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAGH] = `${UA_PREFIX}Gothic Heroes`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAMDM] = `${UA_PREFIX}Modern Magic`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UASSP] = `${UA_PREFIX}Starter Spells`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UATMC] = `${UA_PREFIX}The Mystic Class`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UATOBM] = `${UA_PREFIX}That Old Black Magic`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UATRR] = `${UA_PREFIX}The Ranger, Revised`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAWA] = `${UA_PREFIX}Waterborne Adventures`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAVR] = `${UA_PREFIX}Variant Rules`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UALDR] = `${UA_PREFIX}Light, Dark, Underdark!`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UARAR] = `${UA_PREFIX}Ranger and Rogue`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAATOSC] = `${UA_PREFIX}A Trio of Subclasses`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UABPP] = `${UA_PREFIX}Barbarian Primal Paths`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UARSC] = `${UA_PREFIX}Revised Subclasses`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAKOO] = `${UA_PREFIX}Kits of Old`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UABBC] = `${UA_PREFIX}Bard: Bard Colleges`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UACDD] = `${UA_PREFIX}Cleric: Divine Domains`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAD] = `${UA_PREFIX}Druid`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UARCO] = `${UA_PREFIX}Revised Class Options`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAF] = `${UA_PREFIX}Fighter`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAM] = `${UA_PREFIX}Monk`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAP] = `${UA_PREFIX}Paladin`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAMC] = `${UA_PREFIX}Modifying Classes`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAS] = `${UA_PREFIX}Sorcerer`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAWAW] = `${UA_PREFIX}Warlock and Wizard`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UATF] = `${UA_PREFIX}The Faithful`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAWR] = `${UA_PREFIX}Wizard Revisited`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAESR] = `${UA_PREFIX}Elf Subraces`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAMAC] = `${UA_PREFIX}Mass Combat`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA3PE] = `${UA_PREFIX}Three-Pillar Experience`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAGHI] = `${UA_PREFIX}Greyhawk Initiative`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UATSC] = `${UA_PREFIX}Three Subclasses`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAOD] = `${UA_PREFIX}Order Domain`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UACAM] = `${UA_PREFIX}Centaurs and Minotaurs`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAGSS] = `${UA_PREFIX}Giant Soul Sorcerer`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UARoE] = `${UA_PREFIX}Races of Eberron`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UARoR] = `${UA_PREFIX}Races of Ravnica`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAWGE] = "Wayfinder's Guide to Eberron";
-Parser.SOURCE_JSON_TO_FULL[SRC_UAOSS] = `${UA_PREFIX}Of Ships and the Sea`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UASIK] = `${UA_PREFIX}Sidekicks`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAAR] = `${UA_PREFIX}Artificer Revisited`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UABAM] = `${UA_PREFIX}Barbarian and Monk`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UASAW] = `${UA_PREFIX}Sorcerer and Warlock`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UABAP] = `${UA_PREFIX}Bard and Paladin`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UACDW] = `${UA_PREFIX}Cleric, Druid, and Wizard`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAFRR] = `${UA_PREFIX}Fighter, Ranger, and Rogue`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UACFV] = `${UA_PREFIX}Class Feature Variants`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAFRW] = `${UA_PREFIX}Fighter, Rogue, and Wizard`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAPCRM] = `${UA_PREFIX}Prestige Classes and Rune Magic`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UAR] = `${UA_PREFIX}Ranger`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020SC1] = `${UA_PREFIX}2020 Subclasses, Part 1`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020SC2] = `${UA_PREFIX}2020 Subclasses, Part 2`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020SC3] = `${UA_PREFIX}2020 Subclasses, Part 3`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020SC4] = `${UA_PREFIX}2020 Subclasses, Part 4`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020SC5] = `${UA_PREFIX}2020 Subclasses, Part 5`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020SMT] = `${UA_PREFIX}2020 Spells and Magic Tattoos`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020POR] = `${UA_PREFIX}2020 Psionic Options Revisited`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020SCR] = `${UA_PREFIX}2020 Subclasses Revisited`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2020F] = `${UA_PREFIX}2020 Feats`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2021GL] = `${UA_PREFIX}2021 Gothic Lineages`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2021FF] = `${UA_PREFIX}2021 Folk of the Feywild`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2021DO] = `${UA_PREFIX}2021 Draconic Options`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2021MoS] = `${UA_PREFIX}2021 Mages of Strixhaven`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2021TotM] = `${UA_PREFIX}2021 Travelers of the Multiverse`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2022HoK] = `${UA_PREFIX}2022 Heroes of Krynn`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2022HoKR] = `${UA_PREFIX}2022 Heroes of Krynn Revisited`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2022GO] = `${UA_PREFIX}2022 Giant Options`;
-Parser.SOURCE_JSON_TO_FULL[SRC_UA2022WotM] = `${UA_PREFIX}2022 Wonders of the Multiverse`;
-Parser.SOURCE_JSON_TO_FULL[SRC_MCV1SC] = `${MCVX_PREFIX}1: Spelljammer Creatures`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CoS] = "Curse of Strahd";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DMG] = "Dungeon Master's Guide";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EEPC] = "Elemental Evil Player's Companion";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EET] = "Elemental Evil: Trinkets";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HotDQ] = "Hoard of the Dragon Queen";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LMoP] = "Lost Mine of Phandelver";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MM] = "Monster Manual";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_OotA] = "Out of the Abyss";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PHB] = "Player's Handbook";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PotA] = "Princes of the Apocalypse";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RoT] = "The Rise of Tiamat";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RoTOS] = "The Rise of Tiamat Online Supplement";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCAG] = "Sword Coast Adventurer's Guide";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SKT] = "Storm King's Thunder";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ToA] = "Tomb of Annihilation";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TLK] = "The Lost Kenku";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ToD] = "Tyranny of Dragons";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TTP] = "The Tortle Package";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP] = Parser.TftYP_NAME;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP_AtG] = `${Parser.TftYP_NAME}: Against the Giants`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP_DiT] = `${Parser.TftYP_NAME}: Dead in Thay`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP_TFoF] = `${Parser.TftYP_NAME}: The Forge of Fury`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP_THSoT] = `${Parser.TftYP_NAME}: The Hidden Shrine of Tamoachan`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP_TSC] = `${Parser.TftYP_NAME}: The Sunless Citadel`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP_ToH] = `${Parser.TftYP_NAME}: Tomb of Horrors`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TYP_WPM] = `${Parser.TftYP_NAME}: White Plume Mountain`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_VGM] = "Volo's Guide to Monsters";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XGE] = "Xanathar's Guide to Everything";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_OGA] = "One Grung Above";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MTF] = "Mordenkainen's Tome of Foes";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_WDH] = "Waterdeep: Dragon Heist";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_WDMM] = "Waterdeep: Dungeon of the Mad Mage";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_GGR] = "Guildmasters' Guide to Ravnica";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_KKW] = "Krenko's Way";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LLK] = "Lost Laboratory of Kwalish";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AZfyT] = "A Zib for your Thoughts";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_GoS] = "Ghosts of Saltmarsh";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AI] = "Acquisitions Incorporated";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_OoW] = "The Orrery of the Wanderer";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ESK] = "Essentials Kit";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DIP] = "Dragon of Icespire Peak";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HftT] = "Hunt for the Thessalhydra";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DC] = "Divine Contention";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SLW] = "Storm Lord's Wrath";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SDW] = "Sleeping Dragon's Wake";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_BGDIA] = "Baldur's Gate: Descent Into Avernus";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LR] = "Locathah Rising";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AL] = "Adventurers' League";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SAC] = "Sage Advice Compendium";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ERLW] = "Eberron: Rising from the Last War";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EFR] = "Eberron: Forgotten Relics";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RMBRE] = "The Lost Dungeon of Rickedness: Big Rick Energy";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RMR] = "Dungeons & Dragons vs. Rick and Morty: Basic Rules";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MFF] = "Mordenkainen's Fiendish Folio";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AWM] = "Adventure with Muk";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_IMR] = "Infernal Machine Rebuild";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SADS] = "Sapphire Anniversary Dice Set";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EGW] = "Explorer's Guide to Wildemount";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EGW_ToR] = "Tide of Retribution";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EGW_DD] = "Dangerous Designs";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EGW_FS] = "Frozen Sick";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EGW_US] = "Unwelcome Spirits";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MOT] = "Mythic Odysseys of Theros";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_IDRotF] = "Icewind Dale: Rime of the Frostmaiden";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TCE] = "Tasha's Cauldron of Everything";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_VRGR] = "Van Richten's Guide to Ravenloft";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HoL] = "The House of Lament";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RtG] = "Return to Glory";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AitFR] = Parser.AitFR_NAME;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AitFR_ISF] = `${Parser.AitFR_NAME}: In Scarlet Flames`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AitFR_THP] = `${Parser.AitFR_NAME}: The Hidden Page`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AitFR_AVT] = `${Parser.AitFR_NAME}: A Verdant Tomb`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AitFR_DN] = `${Parser.AitFR_NAME}: Deepest Night`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AitFR_FCD] = `${Parser.AitFR_NAME}: From Cyan Depths`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_WBtW] = "The Wild Beyond the Witchlight";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DoD] = "Domains of Delight";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MaBJoV] = "Minsc and Boo's Journal of Villainy";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_FTD] = "Fizban's Treasury of Dragons";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCC] = "Strixhaven: A Curriculum of Chaos";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCC_CK] = "Campus Kerfuffle";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCC_HfMT] = "Hunt for Mage Tower";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCC_TMM] = "The Magister's Masquerade";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCC_ARiR] = "A Reckoning in Ruins";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MPMM] = "Mordenkainen Presents: Monsters of the Multiverse";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CRCotN] = "Critical Role: Call of the Netherdeep";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_JttRC] = "Journeys through the Radiant Citadel";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SAiS] = "Spelljammer: Adventures in Space";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AAG] = "Astral Adventurer's Guide";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_BAM] = "Boo's Astral Menagerie";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LoX] = "Light of Xaryxis";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DoSI] = "Dragons of Stormwreck Isle";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DSotDQ] = "Dragonlance: Shadow of the Dragon Queen";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_KftGV] = "Keys from the Golden Vault";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN] = "Dungeon Master's Screen";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_SPELLJAMMER] = "Dungeon Master's Screen: Spelljammer";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HEROES_FEAST] = "Heroes' Feast";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CM] = "Candlekeep Mysteries";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH] = Parser.NRH_NAME;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_TCMC] = `${Parser.NRH_NAME}: The Candy Mountain Caper`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_AVitW] = `${Parser.NRH_NAME}: A Voice in the Wilderness`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_ASS] = `${Parser.NRH_NAME}: A Sticky Situation`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_CoI] = `${Parser.NRH_NAME}: Circus of Illusions`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_TLT] = `${Parser.NRH_NAME}: The Lost Tomb`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_AWoL] = `${Parser.NRH_NAME}: A Web of Lies`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_AT] = `${Parser.NRH_NAME}: Adventure Together`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MGELFT] = "Muk's Guide To Everything He Learned From Tasha";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_VD] = "Vecna Dossier";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SjA] = "Spelljammer Academy";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HAT_TG] = "Honor Among Thieves: Thieves' Gallery";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HAT_LMI] = "Honor Among Thieves: Legendary Magic Items";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALCoS] = `${Parser.AL_PREFIX}Curse of Strahd`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALEE] = `${Parser.AL_PREFIX}Elemental Evil`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALRoD] = `${Parser.AL_PREFIX}Rage of Demons`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PSA] = `${Parser.PS_PREFIX}Amonkhet`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PSI] = `${Parser.PS_PREFIX}Innistrad`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PSK] = `${Parser.PS_PREFIX}Kaladesh`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PSZ] = `${Parser.PS_PREFIX}Zendikar`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PSX] = `${Parser.PS_PREFIX}Ixalan`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PSD] = `${Parser.PS_PREFIX}Dominaria`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XMtS] = `X Marks the Spot`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAA] = `${Parser.UA_PREFIX}Artificer`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAEAG] = `${Parser.UA_PREFIX}Eladrin and Gith`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAEBB] = `${Parser.UA_PREFIX}Eberron`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAFFR] = `${Parser.UA_PREFIX}Feats for Races`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAFFS] = `${Parser.UA_PREFIX}Feats for Skills`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAFO] = `${Parser.UA_PREFIX}Fiendish Options`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAFT] = `${Parser.UA_PREFIX}Feats`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAGH] = `${Parser.UA_PREFIX}Gothic Heroes`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAMDM] = `${Parser.UA_PREFIX}Modern Magic`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UASSP] = `${Parser.UA_PREFIX}Starter Spells`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UATMC] = `${Parser.UA_PREFIX}The Mystic Class`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UATOBM] = `${Parser.UA_PREFIX}That Old Black Magic`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UATRR] = `${Parser.UA_PREFIX}The Ranger, Revised`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAWA] = `${Parser.UA_PREFIX}Waterborne Adventures`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAVR] = `${Parser.UA_PREFIX}Variant Rules`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UALDR] = `${Parser.UA_PREFIX}Light, Dark, Underdark!`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UARAR] = `${Parser.UA_PREFIX}Ranger and Rogue`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAATOSC] = `${Parser.UA_PREFIX}A Trio of Subclasses`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UABPP] = `${Parser.UA_PREFIX}Barbarian Primal Paths`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UARSC] = `${Parser.UA_PREFIX}Revised Subclasses`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAKOO] = `${Parser.UA_PREFIX}Kits of Old`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UABBC] = `${Parser.UA_PREFIX}Bard: Bard Colleges`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UACDD] = `${Parser.UA_PREFIX}Cleric: Divine Domains`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAD] = `${Parser.UA_PREFIX}Druid`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UARCO] = `${Parser.UA_PREFIX}Revised Class Options`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAF] = `${Parser.UA_PREFIX}Fighter`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAM] = `${Parser.UA_PREFIX}Monk`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAP] = `${Parser.UA_PREFIX}Paladin`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAMC] = `${Parser.UA_PREFIX}Modifying Classes`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAS] = `${Parser.UA_PREFIX}Sorcerer`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAWAW] = `${Parser.UA_PREFIX}Warlock and Wizard`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UATF] = `${Parser.UA_PREFIX}The Faithful`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAWR] = `${Parser.UA_PREFIX}Wizard Revisited`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAESR] = `${Parser.UA_PREFIX}Elf Subraces`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAMAC] = `${Parser.UA_PREFIX}Mass Combat`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA3PE] = `${Parser.UA_PREFIX}Three-Pillar Experience`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAGHI] = `${Parser.UA_PREFIX}Greyhawk Initiative`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UATSC] = `${Parser.UA_PREFIX}Three Subclasses`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAOD] = `${Parser.UA_PREFIX}Order Domain`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UACAM] = `${Parser.UA_PREFIX}Centaurs and Minotaurs`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAGSS] = `${Parser.UA_PREFIX}Giant Soul Sorcerer`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UARoE] = `${Parser.UA_PREFIX}Races of Eberron`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UARoR] = `${Parser.UA_PREFIX}Races of Ravnica`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAWGE] = "Wayfinder's Guide to Eberron";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAOSS] = `${Parser.UA_PREFIX}Of Ships and the Sea`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UASIK] = `${Parser.UA_PREFIX}Sidekicks`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAAR] = `${Parser.UA_PREFIX}Artificer Revisited`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UABAM] = `${Parser.UA_PREFIX}Barbarian and Monk`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UASAW] = `${Parser.UA_PREFIX}Sorcerer and Warlock`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UABAP] = `${Parser.UA_PREFIX}Bard and Paladin`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UACDW] = `${Parser.UA_PREFIX}Cleric, Druid, and Wizard`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAFRR] = `${Parser.UA_PREFIX}Fighter, Ranger, and Rogue`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UACFV] = `${Parser.UA_PREFIX}Class Feature Variants`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAFRW] = `${Parser.UA_PREFIX}Fighter, Rogue, and Wizard`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAPCRM] = `${Parser.UA_PREFIX}Prestige Classes and Rune Magic`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UAR] = `${Parser.UA_PREFIX}Ranger`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020SC1] = `${Parser.UA_PREFIX}2020 Subclasses, Part 1`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020SC2] = `${Parser.UA_PREFIX}2020 Subclasses, Part 2`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020SC3] = `${Parser.UA_PREFIX}2020 Subclasses, Part 3`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020SC4] = `${Parser.UA_PREFIX}2020 Subclasses, Part 4`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020SC5] = `${Parser.UA_PREFIX}2020 Subclasses, Part 5`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020SMT] = `${Parser.UA_PREFIX}2020 Spells and Magic Tattoos`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020POR] = `${Parser.UA_PREFIX}2020 Psionic Options Revisited`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020SCR] = `${Parser.UA_PREFIX}2020 Subclasses Revisited`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2020F] = `${Parser.UA_PREFIX}2020 Feats`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2021GL] = `${Parser.UA_PREFIX}2021 Gothic Lineages`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2021FF] = `${Parser.UA_PREFIX}2021 Folk of the Feywild`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2021DO] = `${Parser.UA_PREFIX}2021 Draconic Options`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2021MoS] = `${Parser.UA_PREFIX}2021 Mages of Strixhaven`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2021TotM] = `${Parser.UA_PREFIX}2021 Travelers of the Multiverse`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2022HoK] = `${Parser.UA_PREFIX}2022 Heroes of Krynn`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2022HoKR] = `${Parser.UA_PREFIX}2022 Heroes of Krynn Revisited`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2022GO] = `${Parser.UA_PREFIX}2022 Giant Options`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UA2022WotM] = `${Parser.UA_PREFIX}2022 Wonders of the Multiverse`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MCV1SC] = `${Parser.MCVX_PREFIX}1: Spelljammer Creatures`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MCV2DC] = `${Parser.MCVX_PREFIX}2: Dragonlance Creatures`;
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MCV3MC] = `${Parser.MCVX_PREFIX}3: Minecraft Creatures`;
 
 Parser.SOURCE_JSON_TO_ABV = {};
-Parser.SOURCE_JSON_TO_ABV[SRC_CoS] = "CoS";
-Parser.SOURCE_JSON_TO_ABV[SRC_DMG] = "DMG";
-Parser.SOURCE_JSON_TO_ABV[SRC_EEPC] = "EEPC";
-Parser.SOURCE_JSON_TO_ABV[SRC_EET] = "EET";
-Parser.SOURCE_JSON_TO_ABV[SRC_HotDQ] = "HotDQ";
-Parser.SOURCE_JSON_TO_ABV[SRC_LMoP] = "LMoP";
-Parser.SOURCE_JSON_TO_ABV[SRC_MM] = "MM";
-Parser.SOURCE_JSON_TO_ABV[SRC_OotA] = "OotA";
-Parser.SOURCE_JSON_TO_ABV[SRC_PHB] = "PHB";
-Parser.SOURCE_JSON_TO_ABV[SRC_PotA] = "PotA";
-Parser.SOURCE_JSON_TO_ABV[SRC_RoT] = "RoT";
-Parser.SOURCE_JSON_TO_ABV[SRC_RoTOS] = "RoTOS";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCAG] = "SCAG";
-Parser.SOURCE_JSON_TO_ABV[SRC_SKT] = "SKT";
-Parser.SOURCE_JSON_TO_ABV[SRC_ToA] = "ToA";
-Parser.SOURCE_JSON_TO_ABV[SRC_TLK] = "TLK";
-Parser.SOURCE_JSON_TO_ABV[SRC_ToD] = "ToD";
-Parser.SOURCE_JSON_TO_ABV[SRC_TTP] = "TTP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP_AtG] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP_DiT] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP_TFoF] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP_THSoT] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP_TSC] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP_ToH] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_TYP_WPM] = "TftYP";
-Parser.SOURCE_JSON_TO_ABV[SRC_VGM] = "VGM";
-Parser.SOURCE_JSON_TO_ABV[SRC_XGE] = "XGE";
-Parser.SOURCE_JSON_TO_ABV[SRC_OGA] = "OGA";
-Parser.SOURCE_JSON_TO_ABV[SRC_MTF] = "MTF";
-Parser.SOURCE_JSON_TO_ABV[SRC_WDH] = "WDH";
-Parser.SOURCE_JSON_TO_ABV[SRC_WDMM] = "WDMM";
-Parser.SOURCE_JSON_TO_ABV[SRC_GGR] = "GGR";
-Parser.SOURCE_JSON_TO_ABV[SRC_KKW] = "KKW";
-Parser.SOURCE_JSON_TO_ABV[SRC_LLK] = "LLK";
-Parser.SOURCE_JSON_TO_ABV[SRC_AZfyT] = "AZfyT";
-Parser.SOURCE_JSON_TO_ABV[SRC_GoS] = "GoS";
-Parser.SOURCE_JSON_TO_ABV[SRC_AI] = "AI";
-Parser.SOURCE_JSON_TO_ABV[SRC_OoW] = "OoW";
-Parser.SOURCE_JSON_TO_ABV[SRC_ESK] = "ESK";
-Parser.SOURCE_JSON_TO_ABV[SRC_DIP] = "DIP";
-Parser.SOURCE_JSON_TO_ABV[SRC_HftT] = "HftT";
-Parser.SOURCE_JSON_TO_ABV[SRC_DC] = "DC";
-Parser.SOURCE_JSON_TO_ABV[SRC_SLW] = "SLW";
-Parser.SOURCE_JSON_TO_ABV[SRC_SDW] = "SDW";
-Parser.SOURCE_JSON_TO_ABV[SRC_BGDIA] = "BGDIA";
-Parser.SOURCE_JSON_TO_ABV[SRC_LR] = "LR";
-Parser.SOURCE_JSON_TO_ABV[SRC_AL] = "AL";
-Parser.SOURCE_JSON_TO_ABV[SRC_SAC] = "SAC";
-Parser.SOURCE_JSON_TO_ABV[SRC_ERLW] = "ERLW";
-Parser.SOURCE_JSON_TO_ABV[SRC_EFR] = "EFR";
-Parser.SOURCE_JSON_TO_ABV[SRC_RMBRE] = "RMBRE";
-Parser.SOURCE_JSON_TO_ABV[SRC_RMR] = "RMR";
-Parser.SOURCE_JSON_TO_ABV[SRC_MFF] = "MFF";
-Parser.SOURCE_JSON_TO_ABV[SRC_AWM] = "AWM";
-Parser.SOURCE_JSON_TO_ABV[SRC_IMR] = "IMR";
-Parser.SOURCE_JSON_TO_ABV[SRC_SADS] = "SADS";
-Parser.SOURCE_JSON_TO_ABV[SRC_EGW] = "EGW";
-Parser.SOURCE_JSON_TO_ABV[SRC_EGW_ToR] = "ToR";
-Parser.SOURCE_JSON_TO_ABV[SRC_EGW_DD] = "DD";
-Parser.SOURCE_JSON_TO_ABV[SRC_EGW_FS] = "FS";
-Parser.SOURCE_JSON_TO_ABV[SRC_EGW_US] = "US";
-Parser.SOURCE_JSON_TO_ABV[SRC_MOT] = "MOT";
-Parser.SOURCE_JSON_TO_ABV[SRC_IDRotF] = "IDRotF";
-Parser.SOURCE_JSON_TO_ABV[SRC_TCE] = "TCE";
-Parser.SOURCE_JSON_TO_ABV[SRC_VRGR] = "VRGR";
-Parser.SOURCE_JSON_TO_ABV[SRC_HoL] = "HoL";
-Parser.SOURCE_JSON_TO_ABV[SRC_RtG] = "RtG";
-Parser.SOURCE_JSON_TO_ABV[SRC_AitFR] = "AitFR";
-Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_ISF] = "AitFR-ISF";
-Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_THP] = "AitFR-THP";
-Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_AVT] = "AitFR-AVT";
-Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_DN] = "AitFR-DN";
-Parser.SOURCE_JSON_TO_ABV[SRC_AitFR_FCD] = "AitFR-FCD";
-Parser.SOURCE_JSON_TO_ABV[SRC_WBtW] = "WBtW";
-Parser.SOURCE_JSON_TO_ABV[SRC_DoD] = "DoD";
-Parser.SOURCE_JSON_TO_ABV[SRC_MaBJoV] = "MaBJoV";
-Parser.SOURCE_JSON_TO_ABV[SRC_FTD] = "FTD";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCC] = "SCC";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCC_CK] = "SCC-CK";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCC_HfMT] = "SCC-HfMT";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCC_TMM] = "SCC-TMM";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCC_ARiR] = "SCC-ARiR";
-Parser.SOURCE_JSON_TO_ABV[SRC_MPMM] = "MPMM";
-Parser.SOURCE_JSON_TO_ABV[SRC_CRCotN] = "CRCotN";
-Parser.SOURCE_JSON_TO_ABV[SRC_JttRC] = "JttRC";
-Parser.SOURCE_JSON_TO_ABV[SRC_SAiS] = "SAiS";
-Parser.SOURCE_JSON_TO_ABV[SRC_AAG] = "AAG";
-Parser.SOURCE_JSON_TO_ABV[SRC_BAM] = "BAM";
-Parser.SOURCE_JSON_TO_ABV[SRC_LoX] = "LoX";
-Parser.SOURCE_JSON_TO_ABV[SRC_DoSI] = "DoSI";
-Parser.SOURCE_JSON_TO_ABV[SRC_DSotDQ] = "DSotDQ";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN] = "Screen";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
-Parser.SOURCE_JSON_TO_ABV[SRC_SCREEN_DUNGEON_KIT] = "ScDun";
-Parser.SOURCE_JSON_TO_ABV[SRC_HEROES_FEAST] = "HF";
-Parser.SOURCE_JSON_TO_ABV[SRC_CM] = "CM";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH] = "NRH";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH_TCMC] = "NRH-TCMC";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH_AVitW] = "NRH-AVitW";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH_ASS] = "NRH-ASS";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH_CoI] = "NRH-CoI";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH_TLT] = "NRH-TLT";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH_AWoL] = "NRH-AWoL";
-Parser.SOURCE_JSON_TO_ABV[SRC_NRH_AT] = "NRH-AT";
-Parser.SOURCE_JSON_TO_ABV[SRC_MGELFT] = "MGELFT";
-Parser.SOURCE_JSON_TO_ABV[SRC_VD] = "VD";
-Parser.SOURCE_JSON_TO_ABV[SRC_SjA] = "SjA";
-Parser.SOURCE_JSON_TO_ABV[SRC_ALCoS] = "ALCoS";
-Parser.SOURCE_JSON_TO_ABV[SRC_ALEE] = "ALEE";
-Parser.SOURCE_JSON_TO_ABV[SRC_ALRoD] = "ALRoD";
-Parser.SOURCE_JSON_TO_ABV[SRC_PSA] = "PSA";
-Parser.SOURCE_JSON_TO_ABV[SRC_PSI] = "PSI";
-Parser.SOURCE_JSON_TO_ABV[SRC_PSK] = "PSK";
-Parser.SOURCE_JSON_TO_ABV[SRC_PSZ] = "PSZ";
-Parser.SOURCE_JSON_TO_ABV[SRC_PSX] = "PSX";
-Parser.SOURCE_JSON_TO_ABV[SRC_PSD] = "PSD";
-Parser.SOURCE_JSON_TO_ABV[SRC_XMtS] = "XMtS";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAA] = "UAA";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAEAG] = "UAEaG";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAEBB] = "UAEB";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAFFR] = "UAFFR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAFFS] = "UAFFS";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAFO] = "UAFO";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAFT] = "UAFT";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAGH] = "UAGH";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAMDM] = "UAMM";
-Parser.SOURCE_JSON_TO_ABV[SRC_UASSP] = "UASS";
-Parser.SOURCE_JSON_TO_ABV[SRC_UATMC] = "UAMy";
-Parser.SOURCE_JSON_TO_ABV[SRC_UATOBM] = "UAOBM";
-Parser.SOURCE_JSON_TO_ABV[SRC_UATRR] = "UATRR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAWA] = "UAWA";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAVR] = "UAVR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UALDR] = "UALDU";
-Parser.SOURCE_JSON_TO_ABV[SRC_UARAR] = "UARAR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAATOSC] = "UAATOSC";
-Parser.SOURCE_JSON_TO_ABV[SRC_UABPP] = "UABPP";
-Parser.SOURCE_JSON_TO_ABV[SRC_UARSC] = "UARSC";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAKOO] = "UAKoO";
-Parser.SOURCE_JSON_TO_ABV[SRC_UABBC] = "UABBC";
-Parser.SOURCE_JSON_TO_ABV[SRC_UACDD] = "UACDD";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAD] = "UAD";
-Parser.SOURCE_JSON_TO_ABV[SRC_UARCO] = "UARCO";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAF] = "UAF";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAM] = "UAMk";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAP] = "UAP";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAMC] = "UAMC";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAS] = "UAS";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAWAW] = "UAWAW";
-Parser.SOURCE_JSON_TO_ABV[SRC_UATF] = "UATF";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAWR] = "UAWR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAESR] = "UAESR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAMAC] = "UAMAC";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA3PE] = "UA3PE";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAGHI] = "UAGHI";
-Parser.SOURCE_JSON_TO_ABV[SRC_UATSC] = "UATSC";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAOD] = "UAOD";
-Parser.SOURCE_JSON_TO_ABV[SRC_UACAM] = "UACAM";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAGSS] = "UAGSS";
-Parser.SOURCE_JSON_TO_ABV[SRC_UARoE] = "UARoE";
-Parser.SOURCE_JSON_TO_ABV[SRC_UARoR] = "UARoR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAWGE] = "WGE";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAOSS] = "UAOSS";
-Parser.SOURCE_JSON_TO_ABV[SRC_UASIK] = "UASIK";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAAR] = "UAAR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UABAM] = "UABAM";
-Parser.SOURCE_JSON_TO_ABV[SRC_UASAW] = "UASAW";
-Parser.SOURCE_JSON_TO_ABV[SRC_UABAP] = "UABAP";
-Parser.SOURCE_JSON_TO_ABV[SRC_UACDW] = "UACDW";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAFRR] = "UAFRR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UACFV] = "UACFV";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAFRW] = "UAFRW";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAPCRM] = "UAPCRM";
-Parser.SOURCE_JSON_TO_ABV[SRC_UAR] = "UAR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020SC1] = "UA20S1";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020SC2] = "UA20S2";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020SC3] = "UA20S3";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020SC4] = "UA20S4";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020SC5] = "UA20S5";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020SMT] = "UA20SMT";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020POR] = "UA20POR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020SCR] = "UA20SCR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2020F] = "UA20F";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2021GL] = "UA21GL";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2021FF] = "UA21FF";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2021DO] = "UA21DO";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2021MoS] = "UA21MoS";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2021TotM] = "UA21TotM";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2022HoK] = "UA22HoK";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2022HoKR] = "UA22HoKR";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2022GO] = "UA22GO";
-Parser.SOURCE_JSON_TO_ABV[SRC_UA2022WotM] = "UA22WotM";
-Parser.SOURCE_JSON_TO_ABV[SRC_MCV1SC] = "MCV1SC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CoS] = "CoS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DMG] = "DMG";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EEPC] = "EEPC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EET] = "EET";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HotDQ] = "HotDQ";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LMoP] = "LMoP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MM] = "MM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_OotA] = "OotA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PHB] = "PHB";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PotA] = "PotA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RoT] = "RoT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RoTOS] = "RoTOS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCAG] = "SCAG";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SKT] = "SKT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ToA] = "ToA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TLK] = "TLK";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ToD] = "ToD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TTP] = "TTP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP_AtG] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP_DiT] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP_TFoF] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP_THSoT] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP_TSC] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP_ToH] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TYP_WPM] = "TftYP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_VGM] = "VGM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XGE] = "XGE";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_OGA] = "OGA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MTF] = "MTF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_WDH] = "WDH";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_WDMM] = "WDMM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_GGR] = "GGR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_KKW] = "KKW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LLK] = "LLK";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AZfyT] = "AZfyT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_GoS] = "GoS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AI] = "AI";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_OoW] = "OoW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ESK] = "ESK";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DIP] = "DIP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HftT] = "HftT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DC] = "DC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SLW] = "SLW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SDW] = "SDW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_BGDIA] = "BGDIA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LR] = "LR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AL] = "AL";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SAC] = "SAC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ERLW] = "ERLW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EFR] = "EFR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RMBRE] = "RMBRE";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RMR] = "RMR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MFF] = "MFF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AWM] = "AWM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_IMR] = "IMR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SADS] = "SADS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EGW] = "EGW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EGW_ToR] = "ToR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EGW_DD] = "DD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EGW_FS] = "FS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EGW_US] = "US";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MOT] = "MOT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_IDRotF] = "IDRotF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TCE] = "TCE";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_VRGR] = "VRGR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HoL] = "HoL";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RtG] = "RtG";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AitFR] = "AitFR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AitFR_ISF] = "AitFR-ISF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AitFR_THP] = "AitFR-THP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AitFR_AVT] = "AitFR-AVT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AitFR_DN] = "AitFR-DN";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AitFR_FCD] = "AitFR-FCD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_WBtW] = "WBtW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DoD] = "DoD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MaBJoV] = "MaBJoV";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_FTD] = "FTD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCC] = "SCC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCC_CK] = "SCC-CK";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCC_HfMT] = "SCC-HfMT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCC_TMM] = "SCC-TMM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCC_ARiR] = "SCC-ARiR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MPMM] = "MPMM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CRCotN] = "CRCotN";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_JttRC] = "JttRC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SAiS] = "SAiS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AAG] = "AAG";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_BAM] = "BAM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LoX] = "LoX";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DoSI] = "DoSI";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DSotDQ] = "DSotDQ";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_KftGV] = "KftGV";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN] = "Screen";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_DUNGEON_KIT] = "ScDun";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_SPELLJAMMER] = "ScSJ";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HEROES_FEAST] = "HF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CM] = "CM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH] = "NRH";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_TCMC] = "NRH-TCMC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_AVitW] = "NRH-AVitW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_ASS] = "NRH-ASS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_CoI] = "NRH-CoI";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_TLT] = "NRH-TLT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_AWoL] = "NRH-AWoL";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_AT] = "NRH-AT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MGELFT] = "MGELFT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_VD] = "VD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SjA] = "SjA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HAT_TG] = "HAT-TG";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HAT_LMI] = "HAT-LMI";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALCoS] = "ALCoS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALEE] = "ALEE";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALRoD] = "ALRoD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PSA] = "PSA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PSI] = "PSI";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PSK] = "PSK";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PSZ] = "PSZ";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PSX] = "PSX";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PSD] = "PSD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XMtS] = "XMtS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAA] = "UAA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAEAG] = "UAEaG";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAEBB] = "UAEB";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAFFR] = "UAFFR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAFFS] = "UAFFS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAFO] = "UAFO";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAFT] = "UAFT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAGH] = "UAGH";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAMDM] = "UAMM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UASSP] = "UASS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UATMC] = "UAMy";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UATOBM] = "UAOBM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UATRR] = "UATRR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAWA] = "UAWA";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAVR] = "UAVR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UALDR] = "UALDU";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UARAR] = "UARAR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAATOSC] = "UAATOSC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UABPP] = "UABPP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UARSC] = "UARSC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAKOO] = "UAKoO";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UABBC] = "UABBC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UACDD] = "UACDD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAD] = "UAD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UARCO] = "UARCO";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAF] = "UAF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAM] = "UAMk";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAP] = "UAP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAMC] = "UAMC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAS] = "UAS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAWAW] = "UAWAW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UATF] = "UATF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAWR] = "UAWR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAESR] = "UAESR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAMAC] = "UAMAC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA3PE] = "UA3PE";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAGHI] = "UAGHI";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UATSC] = "UATSC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAOD] = "UAOD";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UACAM] = "UACAM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAGSS] = "UAGSS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UARoE] = "UARoE";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UARoR] = "UARoR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAWGE] = "WGE";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAOSS] = "UAOSS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UASIK] = "UASIK";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAAR] = "UAAR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UABAM] = "UABAM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UASAW] = "UASAW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UABAP] = "UABAP";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UACDW] = "UACDW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAFRR] = "UAFRR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UACFV] = "UACFV";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAFRW] = "UAFRW";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAPCRM] = "UAPCRM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UAR] = "UAR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020SC1] = "UA20S1";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020SC2] = "UA20S2";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020SC3] = "UA20S3";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020SC4] = "UA20S4";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020SC5] = "UA20S5";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020SMT] = "UA20SMT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020POR] = "UA20POR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020SCR] = "UA20SCR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2020F] = "UA20F";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2021GL] = "UA21GL";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2021FF] = "UA21FF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2021DO] = "UA21DO";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2021MoS] = "UA21MoS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2021TotM] = "UA21TotM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2022HoK] = "UA22HoK";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2022HoKR] = "UA22HoKR";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2022GO] = "UA22GO";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UA2022WotM] = "UA22WotM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MCV1SC] = "MCV1SC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MCV2DC] = "MCV2DC";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MCV3MC] = "MCV3MC";
 
 Parser.SOURCE_JSON_TO_DATE = {};
-Parser.SOURCE_JSON_TO_DATE[SRC_CoS] = "2016-03-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_DMG] = "2014-12-09";
-Parser.SOURCE_JSON_TO_DATE[SRC_EEPC] = "2015-03-10";
-Parser.SOURCE_JSON_TO_DATE[SRC_EET] = "2015-03-10";
-Parser.SOURCE_JSON_TO_DATE[SRC_HotDQ] = "2014-08-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_LMoP] = "2014-07-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_MM] = "2014-09-30";
-Parser.SOURCE_JSON_TO_DATE[SRC_OotA] = "2015-09-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_PHB] = "2014-08-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_PotA] = "2015-04-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_RoT] = "2014-11-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_RoTOS] = "2014-11-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCAG] = "2015-11-03";
-Parser.SOURCE_JSON_TO_DATE[SRC_SKT] = "2016-09-06";
-Parser.SOURCE_JSON_TO_DATE[SRC_ToA] = "2017-09-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_TLK] = "2017-11-28";
-Parser.SOURCE_JSON_TO_DATE[SRC_ToD] = "2019-10-22";
-Parser.SOURCE_JSON_TO_DATE[SRC_TTP] = "2017-09-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP_AtG] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP_DiT] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP_TFoF] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP_THSoT] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP_TSC] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP_ToH] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_TYP_WPM] = "2017-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_VGM] = "2016-11-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_XGE] = "2017-11-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_OGA] = "2017-10-11";
-Parser.SOURCE_JSON_TO_DATE[SRC_MTF] = "2018-05-29";
-Parser.SOURCE_JSON_TO_DATE[SRC_WDH] = "2018-09-18";
-Parser.SOURCE_JSON_TO_DATE[SRC_WDMM] = "2018-11-20";
-Parser.SOURCE_JSON_TO_DATE[SRC_GGR] = "2018-11-20";
-Parser.SOURCE_JSON_TO_DATE[SRC_KKW] = "2018-11-20";
-Parser.SOURCE_JSON_TO_DATE[SRC_LLK] = "2018-11-10";
-Parser.SOURCE_JSON_TO_DATE[SRC_AZfyT] = "2019-03-05";
-Parser.SOURCE_JSON_TO_DATE[SRC_GoS] = "2019-05-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_AI] = "2019-06-18";
-Parser.SOURCE_JSON_TO_DATE[SRC_OoW] = "2019-06-18";
-Parser.SOURCE_JSON_TO_DATE[SRC_ESK] = "2019-06-24";
-Parser.SOURCE_JSON_TO_DATE[SRC_DIP] = "2019-06-24";
-Parser.SOURCE_JSON_TO_DATE[SRC_HftT] = "2019-05-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_DC] = "2019-06-24";
-Parser.SOURCE_JSON_TO_DATE[SRC_SLW] = "2019-06-24";
-Parser.SOURCE_JSON_TO_DATE[SRC_SDW] = "2019-06-24";
-Parser.SOURCE_JSON_TO_DATE[SRC_BGDIA] = "2019-09-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_LR] = "2019-09-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_SAC] = "2019-01-31";
-Parser.SOURCE_JSON_TO_DATE[SRC_ERLW] = "2019-11-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_EFR] = "2019-11-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_RMBRE] = "2019-11-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_RMR] = "2019-11-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_MFF] = "2019-11-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_AWM] = "2019-11-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_IMR] = "2019-11-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_SADS] = "2019-12-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_EGW] = "2020-03-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_EGW_ToR] = "2020-03-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_EGW_DD] = "2020-03-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_EGW_FS] = "2020-03-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_EGW_US] = "2020-03-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_MOT] = "2020-06-02";
-Parser.SOURCE_JSON_TO_DATE[SRC_IDRotF] = "2020-09-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_TCE] = "2020-11-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_VRGR] = "2021-05-18";
-Parser.SOURCE_JSON_TO_DATE[SRC_HoL] = "2021-05-18";
-Parser.SOURCE_JSON_TO_DATE[SRC_RtG] = "2021-05-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_AitFR] = "2021-06-30";
-Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_ISF] = "2021-06-30";
-Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_THP] = "2021-07-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_AVT] = "2021-07-14";
-Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_DN] = "2021-07-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_AitFR_FCD] = "2021-07-28";
-Parser.SOURCE_JSON_TO_DATE[SRC_WBtW] = "2021-09-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_DoD] = "2021-09-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_MaBJoV] = "2021-10-05";
-Parser.SOURCE_JSON_TO_DATE[SRC_FTD] = "2021-11-26";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCC] = "2021-12-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCC_CK] = "2021-12-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCC_HfMT] = "2021-12-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCC_TMM] = "2021-12-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCC_ARiR] = "2021-12-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_MPMM] = "2022-01-25";
-Parser.SOURCE_JSON_TO_DATE[SRC_CRCotN] = "2022-03-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_JttRC] = "2022-07-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_SAiS] = "2022-08-16";
-Parser.SOURCE_JSON_TO_DATE[SRC_AAG] = "2022-08-16";
-Parser.SOURCE_JSON_TO_DATE[SRC_BAM] = "2022-08-16";
-Parser.SOURCE_JSON_TO_DATE[SRC_LoX] = "2022-08-16";
-Parser.SOURCE_JSON_TO_DATE[SRC_DoSI] = "2022-07-31";
-Parser.SOURCE_JSON_TO_DATE[SRC_DSotDQ] = "2022-11-22";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN] = "2015-01-20";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_HEROES_FEAST] = "2020-10-27";
-Parser.SOURCE_JSON_TO_DATE[SRC_CM] = "2021-03-16";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH_TCMC] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH_AVitW] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH_ASS] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH_CoI] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH_TLT] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH_AWoL] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_NRH_AT] = "2021-09-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_MGELFT] = "2020-12-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_VD] = "2022-06-09";
-Parser.SOURCE_JSON_TO_DATE[SRC_SjA] = "2022-07-11"; // pt1; pt2 2022-07-18; pt3 2022-07-25; pt4 2022-08-01
-Parser.SOURCE_JSON_TO_DATE[SRC_ALCoS] = "2016-03-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_ALEE] = "2015-04-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_ALRoD] = "2015-09-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_PSA] = "2017-07-06";
-Parser.SOURCE_JSON_TO_DATE[SRC_PSI] = "2016-07-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_PSK] = "2017-02-16";
-Parser.SOURCE_JSON_TO_DATE[SRC_PSZ] = "2016-04-27";
-Parser.SOURCE_JSON_TO_DATE[SRC_PSX] = "2018-01-09";
-Parser.SOURCE_JSON_TO_DATE[SRC_PSD] = "2018-07-31";
-Parser.SOURCE_JSON_TO_DATE[SRC_XMtS] = "2017-12-11";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAEBB] = "2015-02-02";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAA] = "2017-01-09";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAEAG] = "2017-09-11";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAFFR] = "2017-04-24";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAFFS] = "2017-04-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAFO] = "2017-10-09";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAFT] = "2016-06-06";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAGH] = "2016-04-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAMDM] = "2015-08-03";
-Parser.SOURCE_JSON_TO_DATE[SRC_UASSP] = "2017-04-03";
-Parser.SOURCE_JSON_TO_DATE[SRC_UATMC] = "2017-03-13";
-Parser.SOURCE_JSON_TO_DATE[SRC_UATOBM] = "2015-12-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_UATRR] = "2016-09-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAWA] = "2015-05-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAVR] = "2015-06-08";
-Parser.SOURCE_JSON_TO_DATE[SRC_UALDR] = "2015-11-02";
-Parser.SOURCE_JSON_TO_DATE[SRC_UARAR] = "2017-01-16";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAATOSC] = "2017-03-27";
-Parser.SOURCE_JSON_TO_DATE[SRC_UABPP] = "2016-11-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_UARSC] = "2017-05-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAKOO] = "2016-01-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_UABBC] = "2016-11-14";
-Parser.SOURCE_JSON_TO_DATE[SRC_UACDD] = "2016-11-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAD] = "2016-11-28";
-Parser.SOURCE_JSON_TO_DATE[SRC_UARCO] = "2017-06-05";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAF] = "2016-12-5";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAM] = "2016-12-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAP] = "2016-12-19";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAMC] = "2015-04-06";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAS] = "2017-02-06";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAWAW] = "2017-02-13";
-Parser.SOURCE_JSON_TO_DATE[SRC_UATF] = "2016-08-01";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAWR] = "2017-03-20";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAESR] = "2017-11-13";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAMAC] = "2017-02-21";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA3PE] = "2017-08-07";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAGHI] = "2017-07-10";
-Parser.SOURCE_JSON_TO_DATE[SRC_UATSC] = "2018-01-08";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAOD] = "2018-04-09";
-Parser.SOURCE_JSON_TO_DATE[SRC_UACAM] = "2018-05-14";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAGSS] = "2018-06-11";
-Parser.SOURCE_JSON_TO_DATE[SRC_UARoE] = "2018-07-23";
-Parser.SOURCE_JSON_TO_DATE[SRC_UARoR] = "2018-08-13";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAWGE] = "2018-07-23";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAOSS] = "2018-11-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_UASIK] = "2018-12-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAAR] = "2019-02-28";
-Parser.SOURCE_JSON_TO_DATE[SRC_UABAM] = "2019-08-15";
-Parser.SOURCE_JSON_TO_DATE[SRC_UASAW] = "2019-09-05";
-Parser.SOURCE_JSON_TO_DATE[SRC_UABAP] = "2019-09-18";
-Parser.SOURCE_JSON_TO_DATE[SRC_UACDW] = "2019-10-03";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAFRR] = "2019-10-17";
-Parser.SOURCE_JSON_TO_DATE[SRC_UACFV] = "2019-11-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAFRW] = "2019-11-25";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAPCRM] = "2015-10-05";
-Parser.SOURCE_JSON_TO_DATE[SRC_UAR] = "2015-09-09";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020SC1] = "2020-01-14";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020SC2] = "2020-02-04";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020SC3] = "2020-02-24";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020SC4] = "2020-08-05";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020SC5] = "2020-10-26";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020SMT] = "2020-03-26";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020POR] = "2020-04-14";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020SCR] = "2020-05-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2020F] = "2020-07-13";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2021GL] = "2020-01-26";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2021FF] = "2020-03-12";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2021DO] = "2021-04-14";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2021MoS] = "2021-06-08";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2021TotM] = "2021-10-08";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2022HoK] = "2022-03-08";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2022HoKR] = "2022-04-25";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2022GO] = "2022-05-26";
-Parser.SOURCE_JSON_TO_DATE[SRC_UA2022WotM] = "2022-07-18";
-Parser.SOURCE_JSON_TO_DATE[SRC_MCV1SC] = "2022-04-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CoS] = "2016-03-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DMG] = "2014-12-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EEPC] = "2015-03-10";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EET] = "2015-03-10";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HotDQ] = "2014-08-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LMoP] = "2014-07-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MM] = "2014-09-30";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_OotA] = "2015-09-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PHB] = "2014-08-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PotA] = "2015-04-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RoT] = "2014-11-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RoTOS] = "2014-11-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCAG] = "2015-11-03";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SKT] = "2016-09-06";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ToA] = "2017-09-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TLK] = "2017-11-28";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ToD] = "2019-10-22";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TTP] = "2017-09-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP_AtG] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP_DiT] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP_TFoF] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP_THSoT] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP_TSC] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP_ToH] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TYP_WPM] = "2017-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_VGM] = "2016-11-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XGE] = "2017-11-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_OGA] = "2017-10-11";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MTF] = "2018-05-29";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_WDH] = "2018-09-18";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_WDMM] = "2018-11-20";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_GGR] = "2018-11-20";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_KKW] = "2018-11-20";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LLK] = "2018-11-10";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AZfyT] = "2019-03-05";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_GoS] = "2019-05-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AI] = "2019-06-18";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_OoW] = "2019-06-18";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ESK] = "2019-06-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DIP] = "2019-06-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HftT] = "2019-05-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DC] = "2019-06-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SLW] = "2019-06-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SDW] = "2019-06-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_BGDIA] = "2019-09-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LR] = "2019-09-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SAC] = "2019-01-31";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ERLW] = "2019-11-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EFR] = "2019-11-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RMBRE] = "2019-11-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RMR] = "2019-11-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MFF] = "2019-11-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AWM] = "2019-11-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_IMR] = "2019-11-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SADS] = "2019-12-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EGW] = "2020-03-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EGW_ToR] = "2020-03-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EGW_DD] = "2020-03-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EGW_FS] = "2020-03-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EGW_US] = "2020-03-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MOT] = "2020-06-02";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_IDRotF] = "2020-09-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TCE] = "2020-11-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_VRGR] = "2021-05-18";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HoL] = "2021-05-18";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RtG] = "2021-05-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AitFR] = "2021-06-30";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AitFR_ISF] = "2021-06-30";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AitFR_THP] = "2021-07-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AitFR_AVT] = "2021-07-14";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AitFR_DN] = "2021-07-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AitFR_FCD] = "2021-07-28";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_WBtW] = "2021-09-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DoD] = "2021-09-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MaBJoV] = "2021-10-05";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_FTD] = "2021-11-26";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCC] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCC_CK] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCC_HfMT] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCC_TMM] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCC_ARiR] = "2021-12-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MPMM] = "2022-01-25";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CRCotN] = "2022-03-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_JttRC] = "2022-07-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SAiS] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AAG] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_BAM] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LoX] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DoSI] = "2022-07-31";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DSotDQ] = "2022-11-22";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_KftGV] = "2023-02-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN] = "2015-01-20";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_SPELLJAMMER] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HEROES_FEAST] = "2020-10-27";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CM] = "2021-03-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_TCMC] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_AVitW] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_ASS] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_CoI] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_TLT] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_AWoL] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_AT] = "2021-09-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MGELFT] = "2020-12-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_VD] = "2022-06-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SjA] = "2022-07-11"; // pt1; pt2 2022-07-18; pt3 2022-07-25; pt4 2022-08-01
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HAT_TG] = "2023-03-06";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HAT_LMI] = "2023-03-31";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALCoS] = "2016-03-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALEE] = "2015-04-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALRoD] = "2015-09-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PSA] = "2017-07-06";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PSI] = "2016-07-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PSK] = "2017-02-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PSZ] = "2016-04-27";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PSX] = "2018-01-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PSD] = "2018-07-31";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XMtS] = "2017-12-11";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAEBB] = "2015-02-02";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAA] = "2017-01-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAEAG] = "2017-09-11";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAFFR] = "2017-04-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAFFS] = "2017-04-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAFO] = "2017-10-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAFT] = "2016-06-06";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAGH] = "2016-04-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAMDM] = "2015-08-03";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UASSP] = "2017-04-03";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UATMC] = "2017-03-13";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UATOBM] = "2015-12-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UATRR] = "2016-09-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAWA] = "2015-05-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAVR] = "2015-06-08";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UALDR] = "2015-11-02";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UARAR] = "2017-01-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAATOSC] = "2017-03-27";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UABPP] = "2016-11-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UARSC] = "2017-05-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAKOO] = "2016-01-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UABBC] = "2016-11-14";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UACDD] = "2016-11-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAD] = "2016-11-28";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UARCO] = "2017-06-05";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAF] = "2016-12-5";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAM] = "2016-12-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAP] = "2016-12-19";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAMC] = "2015-04-06";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAS] = "2017-02-06";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAWAW] = "2017-02-13";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UATF] = "2016-08-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAWR] = "2017-03-20";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAESR] = "2017-11-13";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAMAC] = "2017-02-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA3PE] = "2017-08-07";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAGHI] = "2017-07-10";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UATSC] = "2018-01-08";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAOD] = "2018-04-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UACAM] = "2018-05-14";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAGSS] = "2018-06-11";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UARoE] = "2018-07-23";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UARoR] = "2018-08-13";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAWGE] = "2018-07-23";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAOSS] = "2018-11-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UASIK] = "2018-12-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAAR] = "2019-02-28";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UABAM] = "2019-08-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UASAW] = "2019-09-05";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UABAP] = "2019-09-18";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UACDW] = "2019-10-03";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAFRR] = "2019-10-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UACFV] = "2019-11-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAFRW] = "2019-11-25";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAPCRM] = "2015-10-05";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UAR] = "2015-09-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020SC1] = "2020-01-14";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020SC2] = "2020-02-04";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020SC3] = "2020-02-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020SC4] = "2020-08-05";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020SC5] = "2020-10-26";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020SMT] = "2020-03-26";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020POR] = "2020-04-14";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020SCR] = "2020-05-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2020F] = "2020-07-13";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2021GL] = "2020-01-26";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2021FF] = "2020-03-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2021DO] = "2021-04-14";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2021MoS] = "2021-06-08";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2021TotM] = "2021-10-08";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2022HoK] = "2022-03-08";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2022HoKR] = "2022-04-25";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2022GO] = "2022-05-26";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UA2022WotM] = "2022-07-18";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MCV1SC] = "2022-04-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MCV2DC] = "2022-12-05";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MCV3MC] = "2023-03-28";
 
 Parser.SOURCES_ADVENTURES = new Set([
-	SRC_LMoP,
-	SRC_HotDQ,
-	SRC_RoT,
-	SRC_RoTOS,
-	SRC_PotA,
-	SRC_OotA,
-	SRC_CoS,
-	SRC_SKT,
-	SRC_TYP,
-	SRC_TYP_AtG,
-	SRC_TYP_DiT,
-	SRC_TYP_TFoF,
-	SRC_TYP_THSoT,
-	SRC_TYP_TSC,
-	SRC_TYP_ToH,
-	SRC_TYP_WPM,
-	SRC_ToA,
-	SRC_TLK,
-	SRC_TTP,
-	SRC_WDH,
-	SRC_LLK,
-	SRC_WDMM,
-	SRC_KKW,
-	SRC_AZfyT,
-	SRC_GoS,
-	SRC_HftT,
-	SRC_OoW,
-	SRC_DIP,
-	SRC_SLW,
-	SRC_SDW,
-	SRC_DC,
-	SRC_BGDIA,
-	SRC_LR,
-	SRC_EFR,
-	SRC_RMBRE,
-	SRC_IMR,
-	SRC_EGW_ToR,
-	SRC_EGW_DD,
-	SRC_EGW_FS,
-	SRC_EGW_US,
-	SRC_IDRotF,
-	SRC_CM,
-	SRC_HoL,
-	SRC_XMtS,
-	SRC_RtG,
-	SRC_AitFR,
-	SRC_AitFR_ISF,
-	SRC_AitFR_THP,
-	SRC_AitFR_AVT,
-	SRC_AitFR_DN,
-	SRC_AitFR_FCD,
-	SRC_WBtW,
-	SRC_NRH,
-	SRC_NRH_TCMC,
-	SRC_NRH_AVitW,
-	SRC_NRH_ASS,
-	SRC_NRH_CoI,
-	SRC_NRH_TLT,
-	SRC_NRH_AWoL,
-	SRC_NRH_AT,
-	SRC_SCC,
-	SRC_SCC_CK,
-	SRC_SCC_HfMT,
-	SRC_SCC_TMM,
-	SRC_SCC_ARiR,
-	SRC_CRCotN,
-	SRC_JttRC,
-	SRC_SjA,
-	SRC_LoX,
-	SRC_DoSI,
-	SRC_DSotDQ,
+	Parser.SRC_LMoP,
+	Parser.SRC_HotDQ,
+	Parser.SRC_RoT,
+	Parser.SRC_RoTOS,
+	Parser.SRC_PotA,
+	Parser.SRC_OotA,
+	Parser.SRC_CoS,
+	Parser.SRC_SKT,
+	Parser.SRC_TYP,
+	Parser.SRC_TYP_AtG,
+	Parser.SRC_TYP_DiT,
+	Parser.SRC_TYP_TFoF,
+	Parser.SRC_TYP_THSoT,
+	Parser.SRC_TYP_TSC,
+	Parser.SRC_TYP_ToH,
+	Parser.SRC_TYP_WPM,
+	Parser.SRC_ToA,
+	Parser.SRC_TLK,
+	Parser.SRC_TTP,
+	Parser.SRC_WDH,
+	Parser.SRC_LLK,
+	Parser.SRC_WDMM,
+	Parser.SRC_KKW,
+	Parser.SRC_AZfyT,
+	Parser.SRC_GoS,
+	Parser.SRC_HftT,
+	Parser.SRC_OoW,
+	Parser.SRC_DIP,
+	Parser.SRC_SLW,
+	Parser.SRC_SDW,
+	Parser.SRC_DC,
+	Parser.SRC_BGDIA,
+	Parser.SRC_LR,
+	Parser.SRC_EFR,
+	Parser.SRC_RMBRE,
+	Parser.SRC_IMR,
+	Parser.SRC_EGW_ToR,
+	Parser.SRC_EGW_DD,
+	Parser.SRC_EGW_FS,
+	Parser.SRC_EGW_US,
+	Parser.SRC_IDRotF,
+	Parser.SRC_CM,
+	Parser.SRC_HoL,
+	Parser.SRC_XMtS,
+	Parser.SRC_RtG,
+	Parser.SRC_AitFR,
+	Parser.SRC_AitFR_ISF,
+	Parser.SRC_AitFR_THP,
+	Parser.SRC_AitFR_AVT,
+	Parser.SRC_AitFR_DN,
+	Parser.SRC_AitFR_FCD,
+	Parser.SRC_WBtW,
+	Parser.SRC_NRH,
+	Parser.SRC_NRH_TCMC,
+	Parser.SRC_NRH_AVitW,
+	Parser.SRC_NRH_ASS,
+	Parser.SRC_NRH_CoI,
+	Parser.SRC_NRH_TLT,
+	Parser.SRC_NRH_AWoL,
+	Parser.SRC_NRH_AT,
+	Parser.SRC_SCC,
+	Parser.SRC_SCC_CK,
+	Parser.SRC_SCC_HfMT,
+	Parser.SRC_SCC_TMM,
+	Parser.SRC_SCC_ARiR,
+	Parser.SRC_CRCotN,
+	Parser.SRC_JttRC,
+	Parser.SRC_SjA,
+	Parser.SRC_LoX,
+	Parser.SRC_DoSI,
+	Parser.SRC_DSotDQ,
+	Parser.SRC_KftGV,
 
-	SRC_AWM,
+	Parser.SRC_AWM,
 ]);
 Parser.SOURCES_CORE_SUPPLEMENTS = new Set(Object.keys(Parser.SOURCE_JSON_TO_FULL).filter(it => !Parser.SOURCES_ADVENTURES.has(it)));
 Parser.SOURCES_NON_STANDARD_WOTC = new Set([
-	SRC_OGA,
-	SRC_LLK,
-	SRC_AZfyT,
-	SRC_LR,
-	SRC_TLK,
-	SRC_TTP,
-	SRC_AWM,
-	SRC_IMR,
-	SRC_SADS,
-	SRC_MFF,
-	SRC_XMtS,
-	SRC_RtG,
-	SRC_AitFR,
-	SRC_AitFR_ISF,
-	SRC_AitFR_THP,
-	SRC_AitFR_AVT,
-	SRC_AitFR_DN,
-	SRC_AitFR_FCD,
-	SRC_DoD,
-	SRC_MaBJoV,
-	SRC_NRH,
-	SRC_NRH_TCMC,
-	SRC_NRH_AVitW,
-	SRC_NRH_ASS,
-	SRC_NRH_CoI,
-	SRC_NRH_TLT,
-	SRC_NRH_AWoL,
-	SRC_NRH_AT,
-	SRC_MGELFT,
-	SRC_VD,
-	SRC_SjA,
+	Parser.SRC_OGA,
+	Parser.SRC_LLK,
+	Parser.SRC_AZfyT,
+	Parser.SRC_LR,
+	Parser.SRC_TLK,
+	Parser.SRC_TTP,
+	Parser.SRC_AWM,
+	Parser.SRC_IMR,
+	Parser.SRC_SADS,
+	Parser.SRC_MFF,
+	Parser.SRC_XMtS,
+	Parser.SRC_RtG,
+	Parser.SRC_AitFR,
+	Parser.SRC_AitFR_ISF,
+	Parser.SRC_AitFR_THP,
+	Parser.SRC_AitFR_AVT,
+	Parser.SRC_AitFR_DN,
+	Parser.SRC_AitFR_FCD,
+	Parser.SRC_DoD,
+	Parser.SRC_MaBJoV,
+	Parser.SRC_NRH,
+	Parser.SRC_NRH_TCMC,
+	Parser.SRC_NRH_AVitW,
+	Parser.SRC_NRH_ASS,
+	Parser.SRC_NRH_CoI,
+	Parser.SRC_NRH_TLT,
+	Parser.SRC_NRH_AWoL,
+	Parser.SRC_NRH_AT,
+	Parser.SRC_MGELFT,
+	Parser.SRC_VD,
+	Parser.SRC_SjA,
+	Parser.SRC_HAT_TG,
+	Parser.SRC_HAT_LMI,
+	Parser.SRC_MCV3MC,
 ]);
 // region Source categories
 
 // An opinionated set of source that could be considered "core-core"
 Parser.SOURCES_VANILLA = new Set([
-	SRC_DMG,
-	SRC_MM,
-	SRC_PHB,
-	SRC_SCAG,
-	// SRC_TTP, // "Legacy" source, removed in favor of MPMM
-	// SRC_VGM, // "Legacy" source, removed in favor of MPMM
-	SRC_XGE,
-	// SRC_MTF, // "Legacy" source, removed in favor of MPMM
-	SRC_SAC,
-	SRC_MFF,
-	SRC_SADS,
-	SRC_TCE,
-	SRC_FTD,
-	SRC_MPMM,
-	SRC_SCREEN,
-	SRC_SCREEN_WILDERNESS_KIT,
-	SRC_SCREEN_DUNGEON_KIT,
-	SRC_VD,
+	Parser.SRC_DMG,
+	Parser.SRC_MM,
+	Parser.SRC_PHB,
+	Parser.SRC_SCAG,
+	// Parser.SRC_TTP, // "Legacy" source, removed in favor of MPMM
+	// Parser.SRC_VGM, // "Legacy" source, removed in favor of MPMM
+	Parser.SRC_XGE,
+	// Parser.SRC_MTF, // "Legacy" source, removed in favor of MPMM
+	Parser.SRC_SAC,
+	Parser.SRC_MFF,
+	Parser.SRC_SADS,
+	Parser.SRC_TCE,
+	Parser.SRC_FTD,
+	Parser.SRC_MPMM,
+	Parser.SRC_SCREEN,
+	Parser.SRC_SCREEN_WILDERNESS_KIT,
+	Parser.SRC_SCREEN_DUNGEON_KIT,
+	Parser.SRC_VD,
 ]);
 
 // Any opinionated set of sources that are """hilarious, dude"""
 Parser.SOURCES_COMEDY = new Set([
-	SRC_AI,
-	SRC_OoW,
-	SRC_RMR,
-	SRC_RMBRE,
-	SRC_HftT,
-	SRC_AWM,
-	SRC_MGELFT,
+	Parser.SRC_AI,
+	Parser.SRC_OoW,
+	Parser.SRC_RMR,
+	Parser.SRC_RMBRE,
+	Parser.SRC_HftT,
+	Parser.SRC_AWM,
+	Parser.SRC_MGELFT,
+	Parser.SRC_HAT_TG,
+	Parser.SRC_HAT_LMI,
+	Parser.SRC_MCV3MC,
 ]);
 
 // Any opinionated set of sources that are "other settings"
 Parser.SOURCES_NON_FR = new Set([
-	SRC_GGR,
-	SRC_KKW,
-	SRC_ERLW,
-	SRC_EFR,
-	SRC_UAWGE,
-	SRC_EGW,
-	SRC_EGW_ToR,
-	SRC_EGW_DD,
-	SRC_EGW_FS,
-	SRC_EGW_US,
-	SRC_MOT,
-	SRC_XMtS,
-	SRC_AZfyT,
-	SRC_SCC,
-	SRC_SCC_CK,
-	SRC_SCC_HfMT,
-	SRC_SCC_TMM,
-	SRC_SCC_ARiR,
-	SRC_CRCotN,
-	SRC_SjA,
-	SRC_SAiS,
-	SRC_AAG,
-	SRC_BAM,
-	SRC_LoX,
-	SRC_DSotDQ,
+	Parser.SRC_GGR,
+	Parser.SRC_KKW,
+	Parser.SRC_ERLW,
+	Parser.SRC_EFR,
+	Parser.SRC_UAWGE,
+	Parser.SRC_EGW,
+	Parser.SRC_EGW_ToR,
+	Parser.SRC_EGW_DD,
+	Parser.SRC_EGW_FS,
+	Parser.SRC_EGW_US,
+	Parser.SRC_MOT,
+	Parser.SRC_XMtS,
+	Parser.SRC_AZfyT,
+	Parser.SRC_SCC,
+	Parser.SRC_SCC_CK,
+	Parser.SRC_SCC_HfMT,
+	Parser.SRC_SCC_TMM,
+	Parser.SRC_SCC_ARiR,
+	Parser.SRC_CRCotN,
+	Parser.SRC_SjA,
+	Parser.SRC_SAiS,
+	Parser.SRC_AAG,
+	Parser.SRC_BAM,
+	Parser.SRC_LoX,
+	Parser.SRC_DSotDQ,
 ]);
 
 // endregion
 Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 [
-	SRC_PHB,
-	SRC_MM,
-	SRC_DMG,
-	SRC_SCAG,
-	SRC_VGM,
-	SRC_OGA,
-	SRC_XGE,
-	SRC_MTF,
-	SRC_GGR,
-	SRC_AI,
-	SRC_ERLW,
-	SRC_RMR,
-	SRC_EGW,
-	SRC_MOT,
-	SRC_TCE,
-	SRC_VRGR,
-	SRC_DoD,
-	SRC_MaBJoV,
-	SRC_FTD,
-	SRC_SCC,
-	SRC_MPMM,
-	SRC_AAG,
-	SRC_BAM,
+	Parser.SRC_PHB,
+	Parser.SRC_MM,
+	Parser.SRC_DMG,
+	Parser.SRC_SCAG,
+	Parser.SRC_VGM,
+	Parser.SRC_OGA,
+	Parser.SRC_XGE,
+	Parser.SRC_MTF,
+	Parser.SRC_GGR,
+	Parser.SRC_AI,
+	Parser.SRC_ERLW,
+	Parser.SRC_RMR,
+	Parser.SRC_EGW,
+	Parser.SRC_MOT,
+	Parser.SRC_TCE,
+	Parser.SRC_VRGR,
+	Parser.SRC_DoD,
+	Parser.SRC_MaBJoV,
+	Parser.SRC_FTD,
+	Parser.SRC_SCC,
+	Parser.SRC_MPMM,
+	Parser.SRC_AAG,
+	Parser.SRC_BAM,
+	Parser.SRC_HAT_TG,
+	Parser.SRC_SCREEN,
+	Parser.SRC_SCREEN_WILDERNESS_KIT,
+	Parser.SRC_SCREEN_DUNGEON_KIT,
+	Parser.SRC_SCREEN_SPELLJAMMER,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src.toLowerCase()] = src;
 });
 [
-	{src: SRC_PSA, id: "PS-A"},
-	{src: SRC_PSI, id: "PS-I"},
-	{src: SRC_PSK, id: "PS-K"},
-	{src: SRC_PSZ, id: "PS-Z"},
-	{src: SRC_PSX, id: "PS-X"},
-	{src: SRC_PSD, id: "PS-D"},
+	{src: Parser.SRC_PSA, id: "PS-A"},
+	{src: Parser.SRC_PSI, id: "PS-I"},
+	{src: Parser.SRC_PSK, id: "PS-K"},
+	{src: Parser.SRC_PSZ, id: "PS-Z"},
+	{src: Parser.SRC_PSX, id: "PS-X"},
+	{src: Parser.SRC_PSD, id: "PS-D"},
 ].forEach(({src, id}) => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = id;
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src.toLowerCase()] = id;
 });
 Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 [
-	SRC_LMoP,
-	SRC_HotDQ,
-	SRC_RoT,
-	SRC_PotA,
-	SRC_OotA,
-	SRC_CoS,
-	SRC_SKT,
-	SRC_TYP_AtG,
-	SRC_TYP_DiT,
-	SRC_TYP_TFoF,
-	SRC_TYP_THSoT,
-	SRC_TYP_TSC,
-	SRC_TYP_ToH,
-	SRC_TYP_WPM,
-	SRC_ToA,
-	SRC_TLK,
-	SRC_TTP,
-	SRC_WDH,
-	SRC_LLK,
-	SRC_WDMM,
-	SRC_KKW,
-	SRC_AZfyT,
-	SRC_GoS,
-	SRC_HftT,
-	SRC_OoW,
-	SRC_DIP,
-	SRC_SLW,
-	SRC_SDW,
-	SRC_DC,
-	SRC_BGDIA,
-	SRC_LR,
-	SRC_EFR,
-	SRC_RMBRE,
-	SRC_IMR,
-	SRC_EGW_ToR,
-	SRC_EGW_DD,
-	SRC_EGW_FS,
-	SRC_EGW_US,
-	SRC_IDRotF,
-	SRC_CM,
-	SRC_HoL,
-	SRC_XMtS,
-	SRC_RtG,
-	SRC_AitFR_ISF,
-	SRC_AitFR_THP,
-	SRC_AitFR_AVT,
-	SRC_AitFR_DN,
-	SRC_AitFR_FCD,
-	SRC_WBtW,
-	SRC_NRH,
-	SRC_NRH_TCMC,
-	SRC_NRH_AVitW,
-	SRC_NRH_ASS,
-	SRC_NRH_CoI,
-	SRC_NRH_TLT,
-	SRC_NRH_AWoL,
-	SRC_NRH_AT,
-	SRC_SCC_CK,
-	SRC_SCC_HfMT,
-	SRC_SCC_TMM,
-	SRC_SCC_ARiR,
-	SRC_CRCotN,
-	SRC_JttRC,
-	SRC_LoX,
-	SRC_DoSI,
-	SRC_DSotDQ,
+	Parser.SRC_LMoP,
+	Parser.SRC_HotDQ,
+	Parser.SRC_RoT,
+	Parser.SRC_PotA,
+	Parser.SRC_OotA,
+	Parser.SRC_CoS,
+	Parser.SRC_SKT,
+	Parser.SRC_TYP_AtG,
+	Parser.SRC_TYP_DiT,
+	Parser.SRC_TYP_TFoF,
+	Parser.SRC_TYP_THSoT,
+	Parser.SRC_TYP_TSC,
+	Parser.SRC_TYP_ToH,
+	Parser.SRC_TYP_WPM,
+	Parser.SRC_ToA,
+	Parser.SRC_TLK,
+	Parser.SRC_TTP,
+	Parser.SRC_WDH,
+	Parser.SRC_LLK,
+	Parser.SRC_WDMM,
+	Parser.SRC_KKW,
+	Parser.SRC_AZfyT,
+	Parser.SRC_GoS,
+	Parser.SRC_HftT,
+	Parser.SRC_OoW,
+	Parser.SRC_DIP,
+	Parser.SRC_SLW,
+	Parser.SRC_SDW,
+	Parser.SRC_DC,
+	Parser.SRC_BGDIA,
+	Parser.SRC_LR,
+	Parser.SRC_EFR,
+	Parser.SRC_RMBRE,
+	Parser.SRC_IMR,
+	Parser.SRC_EGW_ToR,
+	Parser.SRC_EGW_DD,
+	Parser.SRC_EGW_FS,
+	Parser.SRC_EGW_US,
+	Parser.SRC_IDRotF,
+	Parser.SRC_CM,
+	Parser.SRC_HoL,
+	Parser.SRC_XMtS,
+	Parser.SRC_RtG,
+	Parser.SRC_AitFR_ISF,
+	Parser.SRC_AitFR_THP,
+	Parser.SRC_AitFR_AVT,
+	Parser.SRC_AitFR_DN,
+	Parser.SRC_AitFR_FCD,
+	Parser.SRC_WBtW,
+	Parser.SRC_NRH,
+	Parser.SRC_NRH_TCMC,
+	Parser.SRC_NRH_AVitW,
+	Parser.SRC_NRH_ASS,
+	Parser.SRC_NRH_CoI,
+	Parser.SRC_NRH_TLT,
+	Parser.SRC_NRH_AWoL,
+	Parser.SRC_NRH_AT,
+	Parser.SRC_SCC_CK,
+	Parser.SRC_SCC_HfMT,
+	Parser.SRC_SCC_TMM,
+	Parser.SRC_SCC_ARiR,
+	Parser.SRC_CRCotN,
+	Parser.SRC_JttRC,
+	Parser.SRC_LoX,
+	Parser.SRC_DoSI,
+	Parser.SRC_DSotDQ,
+	Parser.SRC_KftGV,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
 });
 
-Parser.TAG_TO_DEFAULT_SOURCE = {
-	"spell": SRC_PHB,
-	"item": SRC_DMG,
-	"class": SRC_PHB,
-	"subclass": SRC_PHB,
-	"creature": SRC_MM,
-	"condition": SRC_PHB,
-	"disease": SRC_DMG,
-	"status": SRC_DMG,
-	"background": SRC_PHB,
-	"race": SRC_PHB,
-	"optfeature": SRC_PHB,
-	"reward": SRC_DMG,
-	"feat": SRC_PHB,
-	"psionic": SRC_UATMC,
-	"object": SRC_DMG,
-	"cult": SRC_MTF,
-	"boon": SRC_MTF,
-	"trap": SRC_DMG,
-	"hazard": SRC_DMG,
-	"deity": SRC_PHB,
-	"variantrule": SRC_DMG,
-	"vehicle": SRC_GoS,
-	"vehupgrade": SRC_GoS,
-	"action": SRC_PHB,
-	"classFeature": SRC_PHB,
-	"subclassFeature": SRC_PHB,
-	"table": SRC_DMG,
-	"language": SRC_PHB,
-	"charoption": SRC_MOT,
-	"recipe": SRC_HEROES_FEAST,
-	"itemEntry": SRC_DMG,
-	"quickref": SRC_PHB,
-	"skill": SRC_PHB,
-	"sense": SRC_PHB,
-};
 Parser.getTagSource = function (tag, source) {
 	if (source && source.trim()) return source;
 
 	tag = tag.trim();
-	if (tag.startsWith("@")) tag = tag.slice(1);
 
-	if (!Parser.TAG_TO_DEFAULT_SOURCE[tag]) throw new Error(`Unhandled tag "${tag}"`);
-	return Parser.TAG_TO_DEFAULT_SOURCE[tag];
+	const tagMeta = Renderer.tag.TAG_LOOKUP[tag];
+
+	if (!tagMeta) throw new Error(`Unhandled tag "${tag}"`);
+	return tagMeta.defaultSource;
 };
 
 Parser.PROP_TO_TAG = {
@@ -27510,7 +27837,7 @@ Parser.getPropTag = function (prop) {
 
 Parser.PROP_TO_DISPLAY_NAME = {
 	"variantrule": "Variant Rule",
-	"optionalfeature": "Optional Feature",
+	"optionalfeature": "Option/Feature",
 	"magicvariant": "Magic Item Variant",
 	"baseitem": "Item (Base)",
 	"item": "Item",
@@ -27595,10 +27922,10 @@ Parser.DMG_TYPES = ["acid", "bludgeoning", "cold", "fire", "force", "lightning",
 Parser.CONDITIONS = ["blinded", "charmed", "deafened", "exhaustion", "frightened", "grappled", "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", "prone", "restrained", "stunned", "unconscious"];
 
 Parser.SENSES = [
-	{"name": "blindsight", "source": "PHB"},
-	{"name": "darkvision", "source": "PHB"},
-	{"name": "tremorsense", "source": "MM"},
-	{"name": "truesight", "source": "PHB"},
+	{"name": "blindsight", "source": Parser.SRC_PHB},
+	{"name": "darkvision", "source": Parser.SRC_PHB},
+	{"name": "tremorsense", "source": Parser.SRC_MM},
+	{"name": "truesight", "source": Parser.SRC_PHB},
 ];
 
 Parser.NUMBERS_ONES = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
@@ -27610,6 +27937,7 @@ Parser.metric = {
 	// See MPMB's breakdown: https://old.reddit.com/r/dndnext/comments/6gkuec
 	MILES_TO_KILOMETRES: 1.6,
 	FEET_TO_METRES: 0.3, // 5 ft = 1.5 m
+	YARDS_TO_METRES: 0.9, // (as above)
 	POUNDS_TO_KILOGRAMS: 0.5, // 2 lb = 1 kg
 
 	getMetricNumber ({originalValue, originalUnit, toFixed = null}) {
@@ -27619,8 +27947,9 @@ Parser.metric = {
 
 		let out = null;
 		switch (originalUnit) {
-			case "mi.": case "mi": case UNT_MILES: out = originalValue * Parser.metric.MILES_TO_KILOMETRES; break;
-			case "ft.": case "ft": case UNT_FEET: out = originalValue * Parser.metric.FEET_TO_METRES; break;
+			case "ft.": case "ft": case Parser.UNT_FEET: out = originalValue * Parser.metric.FEET_TO_METRES; break;
+			case "yd.": case "yd": case Parser.UNT_YARDS: out = originalValue * Parser.metric.YARDS_TO_METRES; break;
+			case "mi.": case "mi": case Parser.UNT_MILES: out = originalValue * Parser.metric.MILES_TO_KILOMETRES; break;
 			case "lb.": case "lb": case "lbs": out = originalValue * Parser.metric.POUNDS_TO_KILOGRAMS; break;
 			default: return originalValue;
 		}
@@ -27630,12 +27959,27 @@ Parser.metric = {
 
 	getMetricUnit ({originalUnit, isShortForm = false, isPlural = true}) {
 		switch (originalUnit) {
-			case "mi.": case "mi": case UNT_MILES: return isShortForm ? "km" : `kilometre${isPlural ? "s" : ""}`;
-			case "ft.": case "ft": case UNT_FEET: return isShortForm ? "m" : `meter${isPlural ? "s" : ""}`;
+			case "ft.": case "ft": case Parser.UNT_FEET: return isShortForm ? "m" : `meter${isPlural ? "s" : ""}`;
+			case "yd.": case "yd": case Parser.UNT_YARDS: return isShortForm ? "m" : `meter${isPlural ? "s" : ""}`;
+			case "mi.": case "mi": case Parser.UNT_MILES: return isShortForm ? "km" : `kilometre${isPlural ? "s" : ""}`;
 			case "lb.": case "lb": case "lbs": return isShortForm ? "kg" : `kilogram${isPlural ? "s" : ""}`;
 			default: return originalUnit;
 		}
 	},
+};
+// endregion
+// region Map grids
+
+Parser.MAP_GRID_TYPE_TO_FULL = {};
+Parser.MAP_GRID_TYPE_TO_FULL["none"] = "None";
+Parser.MAP_GRID_TYPE_TO_FULL["square"] = "Square";
+Parser.MAP_GRID_TYPE_TO_FULL["hexRowsOdd"] = "Hex Rows (Odd)";
+Parser.MAP_GRID_TYPE_TO_FULL["hexRowsEven"] = "Hex Rows (Even)";
+Parser.MAP_GRID_TYPE_TO_FULL["hexColsOdd"] = "Hex Columns (Odd)";
+Parser.MAP_GRID_TYPE_TO_FULL["hexColsEven"] = "Hex Columns (Even)";
+
+Parser.mapGridTypeToFull = function (gridType) {
+	return Parser._parse_aToB(Parser.MAP_GRID_TYPE_TO_FULL, gridType);
 };
 // endregion
 
@@ -27644,31 +27988,27 @@ Parser.metric = {
 
 
 EXT_LIB_SCRIPTS.push((function lib_script_4 () {
-// ************************************************************************* //
-// Strict mode should not be used, as the roll20 script depends on this file //
-// Do not use classes                                                        //
-// ************************************************************************* //
-IS_NODE = typeof module !== "undefined";
-if (IS_NODE) require("./parser.js");
+"use strict";
 
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
-IS_DEPLOYED = undefined;
-VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.170.0"/* 5ETOOLS_VERSION__CLOSE */;
-DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
+globalThis.IS_DEPLOYED = undefined;
+globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.179.0"/* 5ETOOLS_VERSION__CLOSE */;
+globalThis.DEPLOYED_STATIC_ROOT = ""; // "https://static.5etools.com/"; // FIXME re-enable this when we have a CDN again
+globalThis.DEPLOYED_IMG_ROOT = undefined;
 // for the roll20 script to set
-IS_VTT = false;
+globalThis.IS_VTT = false;
 
-IMGUR_CLIENT_ID = `abdea4de492d3b0`;
+globalThis.IMGUR_CLIENT_ID = `abdea4de492d3b0`;
 
 // TODO refactor into VeCt
-HASH_PART_SEP = ",";
-HASH_LIST_SEP = "_";
-HASH_SUB_LIST_SEP = "~";
-HASH_SUB_KV_SEP = ":";
-HASH_BLANK = "blankhash";
-HASH_SUB_NONE = "null";
+globalThis.HASH_PART_SEP = ",";
+globalThis.HASH_LIST_SEP = "_";
+globalThis.HASH_SUB_LIST_SEP = "~";
+globalThis.HASH_SUB_KV_SEP = ":";
+globalThis.HASH_BLANK = "blankhash";
+globalThis.HASH_SUB_NONE = "null";
 
-VeCt = {
+globalThis.VeCt = {
 	STR_NONE: "None",
 	STR_SEE_CONSOLE: "See the console (CTRL+SHIFT+J) for details.",
 
@@ -27678,7 +28018,8 @@ VeCt = {
 
 	FILTER_BOX_SUB_HASH_SEARCH_PREFIX: "fbsr",
 
-	JSON_HOMEBREW_INDEX: `homebrew/index.json`,
+	JSON_PRERELEASE_INDEX: `prerelease/index.json`,
+	JSON_BREW_INDEX: `homebrew/index.json`,
 
 	STORAGE_HOMEBREW: "HOMEBREW_STORAGE",
 	STORAGE_HOMEBREW_META: "HOMEBREW_META_STORAGE",
@@ -27705,6 +28046,8 @@ VeCt = {
 
 	URL_BREW: `https://github.com/TheGiddyLimit/homebrew`,
 	URL_ROOT_BREW: `https://raw.githubusercontent.com/TheGiddyLimit/homebrew/master/`, // N.b. must end with a slash
+	URL_PRERELEASE: `https://github.com/TheGiddyLimit/unearthed-arcana`,
+	URL_ROOT_PRERELEASE: `https://raw.githubusercontent.com/TheGiddyLimit/unearthed-arcana/master/`, // As above
 
 	STR_NO_ATTUNEMENT: "No Attunement Required",
 
@@ -27925,7 +28268,7 @@ Array.prototype.joinConjunct || Object.defineProperty(Array.prototype, "joinConj
 	},
 });
 
-StrUtil = {
+globalThis.StrUtil = {
 	COMMAS_NOT_IN_PARENTHESES_REGEX: /,\s?(?![^(]*\))/g,
 	COMMA_SPACE_NOT_IN_PARENTHESES_REGEX: /, (?![^(]*\))/g,
 
@@ -27961,7 +28304,7 @@ StrUtil = {
 	qq (str) { return (str = str || "").qq(); },
 };
 
-CleanUtil = {
+globalThis.CleanUtil = {
 	getCleanJson (data, {isMinify = false, isFast = true} = {}) {
 		data = MiscUtil.copy(data);
 		data = MiscUtil.getWalker().walk(data, {string: (str) => CleanUtil.getCleanString(str, {isFast})});
@@ -28012,7 +28355,6 @@ CleanUtil.SHARED_REPLACEMENTS = {
 	"‘": "'",
 	"": "'",
 	"…": "...",
-	" ": " ", // non-breaking space
 	"\u200B": ``, // zero-width space
 	"ﬀ": "ff",
 	"ﬃ": "ffi",
@@ -28035,6 +28377,7 @@ CleanUtil.STR_REPLACEMENTS = {
 	"—": "\\u2014",
 	"–": "\\u2013",
 	"−": "\\u2212",
+	" ": "\\u00A0",
 };
 CleanUtil.SHARED_REPLACEMENTS_REGEX = new RegExp(Object.keys(CleanUtil.SHARED_REPLACEMENTS).join("|"), "g");
 CleanUtil.STR_REPLACEMENTS_REGEX = new RegExp(Object.keys(CleanUtil.STR_REPLACEMENTS).join("|"), "g");
@@ -28043,12 +28386,13 @@ CleanUtil._ELLIPSIS_COLLAPSE_REGEX = /\s*(\.\s*\.\s*\.)/g;
 CleanUtil._DASH_COLLAPSE_REGEX = /[ ]*([\u2014\u2013])[ ]*/g;
 
 // SOURCES =============================================================================================================
-SourceUtil = {
+globalThis.SourceUtil = {
 	ADV_BOOK_GROUPS: [
 		{group: "core", displayName: "Core"},
 		{group: "supplement", displayName: "Supplements"},
 		{group: "setting", displayName: "Settings"},
 		{group: "supplement-alt", displayName: "Extras"},
+		{group: "prerelease", displayName: "Prerelease"},
 		{group: "homebrew", displayName: "Homebrew"},
 		{group: "screen", displayName: "Screens"},
 		{group: "other", displayName: "Miscellaneous"},
@@ -28078,18 +28422,31 @@ SourceUtil = {
 	},
 
 	isNonstandardSource (source) {
-		return source != null
-			&& (typeof BrewUtil2 === "undefined" || !BrewUtil2.hasSourceJson(source))
-			&& SourceUtil.isNonstandardSourceWotc(source);
+		if (source == null) return false;
+		return (
+			(typeof BrewUtil2 === "undefined" || !BrewUtil2.hasSourceJson(source))
+				&& SourceUtil.isNonstandardSourceWotc(source)
+		)
+			|| SourceUtil.isPrereleaseSource(source);
+	},
+
+	// TODO(Future) remove this in favor of simply checking existence in `PrereleaseUtil`
+	// TODO(Future) cleanup uses of `PrereleaseUtil.hasSourceJson` to match
+	isPrereleaseSource (source) {
+		if (source == null) return false;
+		if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return true;
+		return source.startsWith(Parser.SRC_UA_PREFIX)
+			|| source.startsWith(Parser.SRC_UA_ONE_PREFIX);
 	},
 
 	isNonstandardSourceWotc (source) {
-		return source.startsWith(SRC_UA_PREFIX) || source.startsWith(SRC_PS_PREFIX) || source.startsWith(SRC_AL_PREFIX) || source.startsWith(SRC_MCVX_PREFIX) || Parser.SOURCES_NON_STANDARD_WOTC.has(source);
+		return source.startsWith(Parser.SRC_UA_PREFIX) || source.startsWith(Parser.SRC_UA_ONE_PREFIX) || source.startsWith(Parser.SRC_PS_PREFIX) || source.startsWith(Parser.SRC_AL_PREFIX) || source.startsWith(Parser.SRC_MCVX_PREFIX) || Parser.SOURCES_NON_STANDARD_WOTC.has(source);
 	},
 
 	getFilterGroup (source) {
 		if (source instanceof FilterItem) source = source.item;
-		if (BrewUtil2.hasSourceJson(source)) return 2;
+		if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return 1;
+		if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return 2;
 		return Number(SourceUtil.isNonstandardSource(source));
 	},
 
@@ -28117,7 +28474,7 @@ SourceUtil = {
 };
 
 // CURRENCY ============================================================================================================
-CurrencyUtil = {
+globalThis.CurrencyUtil = {
 	/**
 	 * Convert 10 gold -> 1 platinum, etc.
 	 * @param obj Object of the form {cp: 123, sp: 456, ...} (values optional)
@@ -28158,7 +28515,7 @@ CurrencyUtil = {
 
 		// Note: this assumes that we, overall, lost money.
 		if (opts.originalCurrency) {
-			const normalizedHighToLow = MiscUtil.copy(normalized).reverse();
+			const normalizedHighToLow = MiscUtil.copyFast(normalized).reverse();
 
 			// For each currency, look at the previous coin's diff. Say, for gp, that it is -1pp. That means we could have
 			//   gained up to 10gp as change. So we can have <original gold or 0> + <10gp> max gold; the rest is converted
@@ -28219,6 +28576,31 @@ CurrencyUtil = {
 			.map(currencyMeta => (obj[currencyMeta.coin] || 0) * (1 / currencyMeta.mult))
 			.reduce((a, b) => a + b, 0);
 	},
+
+	/**
+	 * Convert a collection of coins into an equivalent number of coins of the highest denomination.
+	 * @param obj Object of the form {cp: 123, sp: 456, ...} (values optional)
+	 */
+	getAsSingleCurrency (obj) {
+		const simplified = CurrencyUtil.doSimplifyCoins({...obj});
+
+		if (Object.keys(simplified).length === 1) return simplified;
+
+		const out = {};
+
+		const targetDemonination = Parser.FULL_CURRENCY_CONVERSION_TABLE.find(it => simplified[it.coin]);
+
+		out[targetDemonination.coin] = simplified[targetDemonination.coin];
+		delete simplified[targetDemonination.coin];
+
+		Object.entries(simplified)
+			.forEach(([coin, amt]) => {
+				const denom = Parser.FULL_CURRENCY_CONVERSION_TABLE.find(it => it.coin === coin);
+				out[targetDemonination.coin] = (out[targetDemonination.coin] || 0) + (amt / denom.mult) * targetDemonination.mult;
+			});
+
+		return out;
+	},
 };
 
 // CONVENIENCE/ELEMENTS ================================================================================================
@@ -28229,7 +28611,7 @@ Math.seed = Math.seed || function (s) {
 	};
 };
 
-JqueryUtil = {
+globalThis.JqueryUtil = {
 	_isEnhancementsInit: false,
 	initEnhancements () {
 		if (JqueryUtil._isEnhancementsInit) return;
@@ -28365,7 +28747,7 @@ JqueryUtil = {
 		const duration = bubble ? 250 + seed * 200 : 250;
 		const offsetY = bubble ? 16 : 0;
 
-		const $dispCopied = $(`<div class="clp__disp-copied"></div>`);
+		const $dispCopied = $(`<div class="clp__disp-copied ve-flex-vh-center py-2 px-4"></div>`);
 		$dispCopied
 			.html(text)
 			.css({
@@ -28398,9 +28780,10 @@ JqueryUtil = {
 		$ele.click(() => setTimeout(() => $ele.parent().addClass("open"), 1)); // defer to allow the above to complete
 	},
 
+	_WRP_TOAST: null,
 	_ACTIVE_TOAST: [],
 	/**
-	 * @param {{content: jQuery|string, type?: string, autoHideTime?: number} | string} options The options for the toast.
+	 * @param {{content: jQuery|string, type?: string, autoHideTime?: boolean} | string} options The options for the toast.
 	 * @param {(jQuery|string)} options.content Toast contents. Supports jQuery objects.
 	 * @param {string} options.type Toast type. Can be any Bootstrap alert type ("success", "info", "warning", or "danger").
 	 * @param {number} options.autoHideTime The time in ms before the toast will be automatically hidden.
@@ -28409,6 +28792,14 @@ JqueryUtil = {
 	 */
 	doToast (options) {
 		if (typeof window === "undefined") return;
+
+		if (JqueryUtil._WRP_TOAST == null) {
+			JqueryUtil._WRP_TOAST = e_({
+				tag: "div",
+				clazz: "toast__container no-events w-100 overflow-y-hidden ve-flex-col",
+			});
+			document.body.appendChild(JqueryUtil._WRP_TOAST);
+		}
 
 		if (typeof options === "string") {
 			options = {
@@ -28421,45 +28812,80 @@ JqueryUtil = {
 		options.isAutoHide = options.isAutoHide ?? true;
 		options.autoHideTime = options.autoHideTime ?? 5000;
 
-		const doCleanup = ($toast) => {
-			$toast.removeClass("toast--animate");
-			setTimeout(() => $toast.remove(), 85);
-			JqueryUtil._ACTIVE_TOAST.splice(JqueryUtil._ACTIVE_TOAST.indexOf($toast), 1);
-		};
-
-		const $btnToastDismiss = $(`<button class="btn toast__btn-close"><span class="glyphicon glyphicon-remove"></span></button>`);
-
-		const $toast = $$`
-		<div class="toast toast--type-${options.type}">
-			<div class="toast__wrp-content">${options.content}</div>
-			<div class="toast__wrp-control">${$btnToastDismiss}</div>
-		</div>`
-			.prependTo(document.body)
-			.data("pos", 0)
-			.mousedown(evt => {
+		const eleToast = e_({
+			tag: "div",
+			clazz: `toast toast--type-${options.type} events-initial relative my-2 mx-auto`,
+			children: [
+				e_({
+					tag: "div",
+					clazz: "toast__wrp-content",
+					children: [
+						options.content instanceof $ ? options.content[0] : options.content,
+					],
+				}),
+				e_({
+					tag: "div",
+					clazz: "toast__wrp-control",
+					children: [
+						e_({
+							tag: "button",
+							clazz: "btn toast__btn-close",
+							children: [
+								e_({
+									tag: "span",
+									clazz: "glyphicon glyphicon-remove",
+								}),
+							],
+						}),
+					],
+				}),
+			],
+			mousedown: evt => {
 				evt.preventDefault();
-			})
-			.click(evt => {
+			},
+			click: evt => {
 				evt.preventDefault();
-				doCleanup($toast);
+				JqueryUtil._doToastCleanup(toastMeta);
+
+				// Close all on SHIFT-click
+				if (!evt.shiftKey) return;
+				[...JqueryUtil._ACTIVE_TOAST].forEach(toastMeta => JqueryUtil._doToastCleanup(toastMeta));
+			},
+		});
+
+		// FIXME(future) this could be smoother; when stacking multiple tooltips, the incoming tooltip bumps old tooltips
+		//   down instantly (should be animated).
+		//   See e.g.:
+		//   `[...new Array(10)].forEach((_, i) => MiscUtil.pDelay(i * 50).then(() => JqueryUtil.doToast(`test ${i}`)))`
+		eleToast.prependTo(JqueryUtil._WRP_TOAST);
+
+		const toastMeta = {isAutoHide: !!options.isAutoHide, eleToast};
+		JqueryUtil._ACTIVE_TOAST.push(toastMeta);
+
+		AnimationUtil.pRecomputeStyles()
+			.then(() => {
+				eleToast.addClass(`toast--animate`);
+
+				if (options.isAutoHide) {
+					setTimeout(() => {
+						JqueryUtil._doToastCleanup(toastMeta);
+					}, options.autoHideTime);
+				}
+
+				if (JqueryUtil._ACTIVE_TOAST.length >= 3) {
+					JqueryUtil._ACTIVE_TOAST
+						.filter(({isAutoHide}) => !isAutoHide)
+						.forEach(toastMeta => {
+							JqueryUtil._doToastCleanup(toastMeta);
+						});
+				}
 			});
+	},
 
-		setTimeout(() => $toast.addClass(`toast--animate`), 5);
-		if (options.isAutoHide) {
-			setTimeout(() => {
-				doCleanup($toast);
-			}, options.autoHideTime);
-		}
-
-		if (JqueryUtil._ACTIVE_TOAST.length) {
-			JqueryUtil._ACTIVE_TOAST.forEach($oldToast => {
-				const pos = $oldToast.data("pos");
-				$oldToast.data("pos", pos + 1);
-				if (pos === 2) doCleanup($oldToast);
-			});
-		}
-
-		JqueryUtil._ACTIVE_TOAST.push($toast);
+	_doToastCleanup (toastMeta) {
+		toastMeta.eleToast.removeClass("toast--animate");
+		JqueryUtil._ACTIVE_TOAST.splice(JqueryUtil._ACTIVE_TOAST.indexOf(toastMeta), 1);
+		setTimeout(() => toastMeta.eleToast.parentElement && toastMeta.eleToast.remove(), 85);
 	},
 
 	isMobile () {
@@ -28471,7 +28897,12 @@ JqueryUtil = {
 
 if (typeof window !== "undefined") window.addEventListener("load", JqueryUtil.initEnhancements);
 
-ElementUtil = {
+globalThis.ElementUtil = {
+	_ATTRS_NO_FALSY: new Set([
+		"checked",
+		"disabled",
+	]),
+
 	getOrModify ({
 		tag,
 		clazz,
@@ -28497,6 +28928,7 @@ ElementUtil = {
 		href,
 		type,
 		attrs,
+		data,
 	}) {
 		ele = ele || (outer ? (new DOMParser()).parseFromString(outer, "text/html").body.childNodes[0] : document.createElement(tag));
 
@@ -28517,7 +28949,17 @@ ElementUtil = {
 		if (href != null) ele.setAttribute("href", href);
 		if (val != null) ele.setAttribute("value", val);
 		if (type != null) ele.setAttribute("type", type);
-		if (attrs != null) { for (const k in attrs) { if (attrs[k] === undefined) continue; ele.setAttribute(k, attrs[k]); } }
+
+		if (attrs != null) {
+			for (const k in attrs) {
+				if (attrs[k] === undefined) continue;
+				if (!attrs[k] && ElementUtil._ATTRS_NO_FALSY.has(k)) continue;
+				ele.setAttribute(k, attrs[k]);
+			}
+		}
+
+		if (data != null) { for (const k in data) { if (data[k] === undefined) continue; ele.dataset[k] = data[k]; } }
+
 		if (children) for (let i = 0, len = children.length; i < len; ++i) if (children[i] != null) ele.append(children[i]);
 
 		ele.appends = ele.appends || ElementUtil._appends.bind(ele);
@@ -28686,7 +29128,7 @@ ElementUtil = {
 
 if (typeof window !== "undefined") window.e_ = ElementUtil.getOrModify;
 
-ObjUtil = {
+globalThis.ObjUtil = {
 	async pForEachDeep (source, pCallback, options = {depth: Infinity, callEachLevel: false}) {
 		const path = [];
 		const pDiveDeep = async function (val, path, depth = 0) {
@@ -28706,7 +29148,7 @@ ObjUtil = {
 };
 
 // TODO refactor other misc utils into this
-MiscUtil = {
+globalThis.MiscUtil = {
 	COLOR_HEALTHY: "#00bb20",
 	COLOR_HURT: "#c5ca00",
 	COLOR_BLOODIED: "#f7a100",
@@ -28721,6 +29163,16 @@ MiscUtil = {
 	copy (obj, {isSafe = false, isPreserveUndefinedValueKeys = false} = {}) {
 		if (isSafe && obj === undefined) return undefined; // Generally use "unsafe," as this helps identify bugs.
 		return JSON.parse(JSON.stringify(obj));
+	},
+
+	copyFast (obj) {
+		if ((typeof obj !== "object") || obj == null) return obj;
+
+		if (obj instanceof Array) return obj.map(MiscUtil.copyFast);
+
+		const cpy = {};
+		for (const k of Object.keys(obj)) cpy[k] = MiscUtil.copyFast(obj[k]);
+		return cpy;
 	},
 
 	async pCopyTextToClipboard (text) {
@@ -28784,7 +29236,7 @@ MiscUtil = {
 
 	getThenSetCopy (object1, object2, ...path) {
 		const val = MiscUtil.get(object1, ...path);
-		return MiscUtil.set(object2, ...path, MiscUtil.copy(val, {isSafe: true}));
+		return MiscUtil.set(object2, ...path, MiscUtil.copyFast(val, {isSafe: true}));
 	},
 
 	delete (object, ...path) {
@@ -28816,7 +29268,7 @@ MiscUtil = {
 	},
 
 	merge (obj1, obj2) {
-		obj2 = MiscUtil.copy(obj2);
+		obj2 = MiscUtil.copyFast(obj2);
 
 		Object.entries(obj2)
 			.forEach(([k, v]) => {
@@ -28921,59 +29373,49 @@ MiscUtil = {
 	},
 
 	parseNumberRange (input, min = Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER) {
-		function errInvalid (input) {
-			throw new Error(`Could not parse range input "${input}"`);
-		}
+		if (!input || !input.trim()) return null;
 
-		function errOutOfRange () {
-			throw new Error(`Number was out of range! Range was ${min}-${max} (inclusive).`);
-		}
+		const errInvalid = input => { throw new Error(`Could not parse range input "${input}"`); };
 
-		function isOutOfRange (num) {
-			return num < min || num > max;
-		}
+		const errOutOfRange = () => { throw new Error(`Number was out of range! Range was ${min}-${max} (inclusive).`); };
 
-		function addToRangeVal (range, num) {
-			range.add(num);
-		}
+		const isOutOfRange = (num) => num < min || num > max;
 
-		function addToRangeLoHi (range, lo, hi) {
+		const addToRangeVal = (range, num) => range.add(num);
+
+		const addToRangeLoHi = (range, lo, hi) => {
 			for (let i = lo; i <= hi; ++i) range.add(i);
+		};
+
+		const clean = input.replace(/\s*/g, "");
+		if (!/^((\d+-\d+|\d+),)*(\d+-\d+|\d+)$/.exec(clean)) errInvalid();
+
+		const parts = clean.split(",");
+		const out = new Set();
+
+		for (const part of parts) {
+			if (part.includes("-")) {
+				const spl = part.split("-");
+				const numLo = Number(spl[0]);
+				const numHi = Number(spl[1]);
+
+				if (isNaN(numLo) || isNaN(numHi) || numLo === 0 || numHi === 0 || numLo > numHi) errInvalid();
+
+				if (isOutOfRange(numLo) || isOutOfRange(numHi)) errOutOfRange();
+
+				if (numLo === numHi) addToRangeVal(out, numLo);
+				else addToRangeLoHi(out, numLo, numHi);
+				continue;
+			}
+
+			const num = Number(part);
+			if (isNaN(num) || num === 0) errInvalid();
+
+			if (isOutOfRange(num)) errOutOfRange();
+			addToRangeVal(out, num);
 		}
 
-		while (true) {
-			if (input && input.trim()) {
-				const clean = input.replace(/\s*/g, "");
-				if (/^((\d+-\d+|\d+),)*(\d+-\d+|\d+)$/.exec(clean)) {
-					const parts = clean.split(",");
-					const out = new Set();
-
-					for (const part of parts) {
-						if (part.includes("-")) {
-							const spl = part.split("-");
-							const numLo = Number(spl[0]);
-							const numHi = Number(spl[1]);
-
-							if (isNaN(numLo) || isNaN(numHi) || numLo === 0 || numHi === 0 || numLo > numHi) errInvalid();
-
-							if (isOutOfRange(numLo) || isOutOfRange(numHi)) errOutOfRange();
-
-							if (numLo === numHi) addToRangeVal(out, numLo);
-							else addToRangeLoHi(out, numLo, numHi);
-						} else {
-							const num = Number(part);
-							if (isNaN(num) || num === 0) errInvalid();
-							else {
-								if (isOutOfRange(num)) errOutOfRange();
-								addToRangeVal(out, num);
-							}
-						}
-					}
-
-					return out;
-				} else errInvalid();
-			} else return null;
-		}
+		return out;
 	},
 
 	findCommonPrefix (strArr, {isRespectWordBoundaries} = {}) {
@@ -29177,27 +29619,25 @@ MiscUtil = {
 		};
 
 		const doObjectRecurse = (obj, primitiveHandlers, stack) => {
-			const didBreak = Object.keys(obj).some(k => {
-				const v = obj[k];
-				if (keyBlocklist.has(k)) return;
+			for (const k of Object.keys(obj)) {
+				if (keyBlocklist.has(k)) continue;
 
-				const out = fn(v, primitiveHandlers, k, stack);
-				if (out === VeCt.SYM_WALKER_BREAK) return true;
+				const out = fn(obj[k], primitiveHandlers, k, stack);
+				if (out === VeCt.SYM_WALKER_BREAK) return VeCt.SYM_WALKER_BREAK;
 				if (!opts.isNoModification) obj[k] = out;
-			});
-			if (didBreak) return VeCt.SYM_WALKER_BREAK;
+			}
 		};
 
 		const fn = (obj, primitiveHandlers, lastKey, stack) => {
 			if (obj === null) return getMappedPrimitive(obj, primitiveHandlers, lastKey, stack, "null", "preNull", "postNull");
 
-			const to = typeof obj;
-			switch (to) {
+			switch (typeof obj) {
 				case "undefined": return getMappedPrimitive(obj, primitiveHandlers, lastKey, stack, "undefined", "preUndefined", "postUndefined");
 				case "boolean": return getMappedPrimitive(obj, primitiveHandlers, lastKey, stack, "boolean", "preBoolean", "postBoolean");
 				case "number": return getMappedPrimitive(obj, primitiveHandlers, lastKey, stack, "number", "preNumber", "postNumber");
 				case "string": return getMappedPrimitive(obj, primitiveHandlers, lastKey, stack, "string", "preString", "postString");
 				case "object": {
+					// region Array
 					if (obj instanceof Array) {
 						if (primitiveHandlers.preArray) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers.preArray, obj, lastKey, stack});
 						if (opts.isDepthFirst) {
@@ -29239,42 +29679,45 @@ MiscUtil = {
 						}
 						if (primitiveHandlers.postArray) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers.postArray, obj, lastKey, stack});
 						return obj;
+					}
+					// endregion
+
+					// region Object
+					if (primitiveHandlers.preObject) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers.preObject, obj, lastKey, stack});
+					if (opts.isDepthFirst) {
+						if (stack) stack.push(obj);
+						const flag = doObjectRecurse(obj, primitiveHandlers, stack);
+						if (stack) stack.pop();
+						if (flag === VeCt.SYM_WALKER_BREAK) return flag;
+
+						if (primitiveHandlers.object) {
+							const out = MiscUtil._getWalker_applyHandlers({opts, handlers: primitiveHandlers.object, obj, lastKey, stack});
+							if (out === VeCt.SYM_WALKER_BREAK) return out;
+							if (!opts.isNoModification) obj = out;
+						}
+						if (obj == null) {
+							if (!opts.isAllowDeleteObjects) throw new Error(`Object handler(s) returned null!`);
+						}
 					} else {
-						if (primitiveHandlers.preObject) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers.preObject, obj, lastKey, stack});
-						if (opts.isDepthFirst) {
+						if (primitiveHandlers.object) {
+							const out = MiscUtil._getWalker_applyHandlers({opts, handlers: primitiveHandlers.object, obj, lastKey, stack});
+							if (out === VeCt.SYM_WALKER_BREAK) return out;
+							if (!opts.isNoModification) obj = out;
+						}
+						if (obj == null) {
+							if (!opts.isAllowDeleteObjects) throw new Error(`Object handler(s) returned null!`);
+						} else {
 							if (stack) stack.push(obj);
 							const flag = doObjectRecurse(obj, primitiveHandlers, stack);
 							if (stack) stack.pop();
 							if (flag === VeCt.SYM_WALKER_BREAK) return flag;
-
-							if (primitiveHandlers.object) {
-								const out = MiscUtil._getWalker_applyHandlers({opts, handlers: primitiveHandlers.object, obj, lastKey, stack});
-								if (out === VeCt.SYM_WALKER_BREAK) return out;
-								if (!opts.isNoModification) obj = out;
-							}
-							if (obj == null) {
-								if (!opts.isAllowDeleteObjects) throw new Error(`Object handler(s) returned null!`);
-							}
-						} else {
-							if (primitiveHandlers.object) {
-								const out = MiscUtil._getWalker_applyHandlers({opts, handlers: primitiveHandlers.object, obj, lastKey, stack});
-								if (out === VeCt.SYM_WALKER_BREAK) return out;
-								if (!opts.isNoModification) obj = out;
-							}
-							if (obj == null) {
-								if (!opts.isAllowDeleteObjects) throw new Error(`Object handler(s) returned null!`);
-							} else {
-								if (stack) stack.push(obj);
-								const flag = doObjectRecurse(obj, primitiveHandlers, stack);
-								if (stack) stack.pop();
-								if (flag === VeCt.SYM_WALKER_BREAK) return flag;
-							}
 						}
-						if (primitiveHandlers.postObject) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers.postObject, obj, lastKey, stack});
-						return obj;
 					}
+					if (primitiveHandlers.postObject) MiscUtil._getWalker_runHandlers({handlers: primitiveHandlers.postObject, obj, lastKey, stack});
+					return obj;
+					// endregion
 				}
-				default: throw new Error(`Unhandled type "${to}"`);
+				default: throw new Error(`Unhandled type "${typeof obj}"`);
 			}
 		};
 
@@ -29448,19 +29891,31 @@ MiscUtil = {
 };
 
 // EVENT HANDLERS ======================================================================================================
-EventUtil = {
+globalThis.EventUtil = {
 	_mouseX: 0,
 	_mouseY: 0,
 	_isUsingTouch: false,
+	_isSetCssVars: false,
 
 	init () {
 		document.addEventListener("mousemove", evt => {
 			EventUtil._mouseX = evt.clientX;
 			EventUtil._mouseY = evt.clientY;
+			EventUtil._onMouseMove_setCssVars();
 		});
 		document.addEventListener("touchstart", () => {
 			EventUtil._isUsingTouch = true;
 		});
+	},
+
+	_eleDocRoot: null,
+	_onMouseMove_setCssVars () {
+		if (!EventUtil._isSetCssVars) return;
+
+		EventUtil._eleDocRoot = EventUtil._eleDocRoot || document.querySelector(":root");
+
+		EventUtil._eleDocRoot.style.setProperty("--mouse-position-x", EventUtil._mouseX);
+		EventUtil._eleDocRoot.style.setProperty("--mouse-position-y", EventUtil._mouseY);
 	},
 
 	getClientX (evt) { return evt.touches && evt.touches.length ? evt.touches[0].clientX : evt.clientX; },
@@ -29471,6 +29926,10 @@ EventUtil = {
 
 		const bounds = evt.target.getBoundingClientRect();
 		return evt.targetTouches[0].clientY - bounds.y;
+	},
+
+	getMousePos () {
+		return {x: EventUtil._mouseX, y: EventUtil._mouseY};
 	},
 
 	isUsingTouch () { return !!EventUtil._isUsingTouch; },
@@ -29497,8 +29956,38 @@ EventUtil = {
 
 if (typeof window !== "undefined") window.addEventListener("load", EventUtil.init);
 
+// ANIMATIONS ==========================================================================================================
+globalThis.AnimationUtil = class {
+	/**
+	 * See: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Tips
+	 *
+	 * requestAnimationFrame() [...] gets executed just before the next repaint of the document. [...] because it's
+	 * before the repaint, the style recomputation hasn't actually happened yet!
+	 * [...] calls requestAnimationFrame() a second time! This time, the callback is run before the next repaint,
+	 * which is after the style recomputation has occurred.
+	 */
+	static async pRecomputeStyles () {
+		return new Promise(resolve => {
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					resolve();
+				});
+			});
+		});
+	}
+
+	static pLoadImage (uri) {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.onerror = err => reject(err);
+			img.onload = () => resolve(img);
+			img.src = uri;
+		});
+	}
+};
+
 // CONTEXT MENUS =======================================================================================================
-ContextUtil = {
+globalThis.ContextUtil = {
 	_isInit: false,
 	_menus: [],
 
@@ -29540,7 +30029,7 @@ ContextUtil = {
 	Menu: function (actions) {
 		this._actions = actions;
 		this._pResult = null;
-		this._resolveResult = null;
+		this.resolveResult_ = null;
 
 		this.userData = null;
 
@@ -29558,9 +30047,9 @@ ContextUtil = {
 
 			this._initLazy();
 
-			if (this._resolveResult) this._resolveResult(null);
+			if (this.resolveResult_) this.resolveResult_(null);
 			this._pResult = new Promise(resolve => {
-				this._resolveResult = resolve;
+				this.resolveResult_ = resolve;
 			});
 			this.userData = userData;
 
@@ -29669,7 +30158,7 @@ ContextUtil = {
 					menu.close();
 
 					const result = await this.fnAction(evt, menu.userData);
-					if (this._resolveResult) this._resolveResult(result);
+					if (menu.resolveResult_) menu.resolveResult_(result);
 				})
 				.keydown(evt => {
 					if (evt.key !== "Enter") return;
@@ -29693,7 +30182,7 @@ ContextUtil = {
 					menu.close();
 
 					const result = await this.fnActionAlt(evt, menu.userData);
-					if (this._resolveResult) this._resolveResult(result);
+					if (menu.resolveResult_) menu.resolveResult_(result);
 				});
 			if (this.titleAlt) $btnActionAlt.title(this.titleAlt);
 
@@ -29723,7 +30212,7 @@ ContextUtil = {
 };
 
 // LIST AND SEARCH =====================================================================================================
-SearchUtil = {
+globalThis.SearchUtil = {
 	removeStemmer (elasticSearch) {
 		const stemmer = elasticlunr.Pipeline.getRegisteredFunction("stemmer");
 		elasticSearch.pipeline.remove(stemmer);
@@ -29731,10 +30220,14 @@ SearchUtil = {
 };
 
 // ENCODING/DECODING ===================================================================================================
-UrlUtil = {
+globalThis.UrlUtil = {
 	encodeForHash (toEncode) {
 		if (toEncode instanceof Array) return toEncode.map(it => `${it}`.toUrlified()).join(HASH_LIST_SEP);
 		else return `${toEncode}`.toUrlified();
+	},
+
+	encodeArrayForHash (...toEncodes) {
+		return toEncodes.map(UrlUtil.encodeForHash).join(HASH_LIST_SEP);
 	},
 
 	autoEncodeHash (obj) {
@@ -29921,7 +30414,7 @@ UrlUtil = {
 		},
 	},
 
-	getStateKeySubclass (sc) { return Parser.stringToSlug(`sub ${sc.shortName || sc.name} ${Parser.sourceJsonToAbv(sc.source)}`); },
+	getStateKeySubclass (sc) { return Parser.stringToSlug(`sub ${sc.shortName || sc.name} ${sc.source}`); },
 
 	/**
 	 * @param opts Options object.
@@ -29929,12 +30422,22 @@ UrlUtil = {
 	 * @param [opts.feature] Object of the form `{ixLevel: 0, ixFeature: 0}`
 	 */
 	getClassesPageStatePart (opts) {
-		const stateParts = [
-			opts.subclass ? `${UrlUtil.getStateKeySubclass(opts.subclass)}=${UrlUtil.mini.compress(true)}` : null,
-			opts.feature ? `feature=${UrlUtil.mini.compress(`${opts.feature.ixLevel}-${opts.feature.ixFeature}`)}` : "",
-		].filter(Boolean);
-		return stateParts.length ? UrlUtil.packSubHash("state", stateParts) : "";
+		if (!opts.subclass && !opts.feature) return "";
+
+		if (!opts.feature) return UrlUtil.packSubHash("state", [UrlUtil._getClassesPageStatePart_subclass(opts.subclass)]);
+		if (!opts.subclass) return UrlUtil.packSubHash("state", [UrlUtil._getClassesPageStatePart_feature(opts.feature)]);
+
+		return UrlUtil.packSubHash(
+			"state",
+			[
+				UrlUtil._getClassesPageStatePart_subclass(opts.subclass),
+				UrlUtil._getClassesPageStatePart_feature(opts.feature),
+			],
+		);
 	},
+
+	_getClassesPageStatePart_subclass (sc) { return `${UrlUtil.getStateKeySubclass(sc)}=${UrlUtil.mini.compress(true)}`; },
+	_getClassesPageStatePart_feature (feature) { return `feature=${UrlUtil.mini.compress(`${feature.ixLevel}-${feature.ixFeature}`)}`; },
 };
 
 UrlUtil.PG_BESTIARY = "bestiary.html";
@@ -29959,6 +30462,7 @@ UrlUtil.PG_OBJECTS = "objects.html";
 UrlUtil.PG_TRAPS_HAZARDS = "trapshazards.html";
 UrlUtil.PG_QUICKREF = "quickreference.html";
 UrlUtil.PG_MANAGE_BREW = "managebrew.html";
+UrlUtil.PG_MANAGE_PRERELEASE = "manageprerelease.html";
 UrlUtil.PG_MAKE_BREW = "makebrew.html";
 UrlUtil.PG_DEMO_RENDER = "renderdemo.html";
 UrlUtil.PG_TABLES = "tables.html";
@@ -29980,8 +30484,9 @@ UrlUtil.PG_RECIPES = "recipes.html";
 UrlUtil.PG_CLASS_SUBCLASS_FEATURES = "classfeatures.html";
 UrlUtil.PG_MAPS = "maps.html";
 UrlUtil.PG_SEARCH = "search.html";
+UrlUtil.PG_DECKS = "decks.html";
 
-UrlUtil.URL_TO_HASH_GENERIC = (it) => UrlUtil.encodeForHash([it.name, it.source]);
+UrlUtil.URL_TO_HASH_GENERIC = (it) => UrlUtil.encodeArrayForHash(it.name, it.source);
 
 UrlUtil.URL_TO_HASH_BUILDER = {};
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BESTIARY] = UrlUtil.URL_TO_HASH_GENERIC;
@@ -30000,7 +30505,7 @@ UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ADVENTURE] = (it) => UrlUtil.encodeForHas
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ADVENTURES] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ADVENTURE];
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BOOK] = (it) => UrlUtil.encodeForHash(it.id);
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BOOKS] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BOOK];
-UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DEITIES] = (it) => UrlUtil.encodeForHash([it.name, it.pantheon, it.source]);
+UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DEITIES] = (it) => UrlUtil.encodeArrayForHash(it.name, it.pantheon, it.source);
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CULTS_BOONS] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_OBJECTS] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_TRAPS_HAZARDS] = UrlUtil.URL_TO_HASH_GENERIC;
@@ -30009,7 +30514,8 @@ UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_VEHICLES] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ACTIONS] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_LANGUAGES] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CHAR_CREATION_OPTIONS] = UrlUtil.URL_TO_HASH_GENERIC;
-UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES] = (it) => `${UrlUtil.encodeForHash([it.name, it.source])}${it._scaleFactor ? `${HASH_PART_SEP}${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}${it._scaleFactor}` : ""}`;
+UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES] = (it) => `${UrlUtil.encodeArrayForHash(it.name, it.source)}${it._scaleFactor ? `${HASH_PART_SEP}${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}${it._scaleFactor}` : ""}`;
+UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DECKS] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASS_SUBCLASS_FEATURES] = (it) => (it.__prop === "subclassFeature" || it.subclassSource) ? UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"](it) : UrlUtil.URL_TO_HASH_BUILDER["classFeature"](it);
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_QUICKREF] = ({name, ixChapter, ixHeader}) => {
 	const hashParts = ["bookref-quick", ixChapter, UrlUtil.encodeForHash(name.toLowerCase())];
@@ -30054,18 +30560,21 @@ UrlUtil.URL_TO_HASH_BUILDER["action"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_A
 UrlUtil.URL_TO_HASH_BUILDER["language"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_LANGUAGES];
 UrlUtil.URL_TO_HASH_BUILDER["charoption"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CHAR_CREATION_OPTIONS];
 UrlUtil.URL_TO_HASH_BUILDER["recipe"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES];
+UrlUtil.URL_TO_HASH_BUILDER["deck"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DECKS];
 
 UrlUtil.URL_TO_HASH_BUILDER["subclass"] = it => {
-	const hashParts = [
-		UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES]({name: it.className, source: it.classSource}),
-		UrlUtil.getClassesPageStatePart({subclass: it}),
-	].filter(Boolean);
-	return Hist.util.getCleanHash(hashParts.join(HASH_PART_SEP));
+	return Hist.util.getCleanHash(
+		`${UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES]({name: it.className, source: it.classSource})}${HASH_PART_SEP}${UrlUtil.getClassesPageStatePart({subclass: it})}`,
+	);
 };
-UrlUtil.URL_TO_HASH_BUILDER["classFeature"] = (it) => UrlUtil.encodeForHash([it.name, it.className, it.classSource, it.level, it.source]);
-UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"] = (it) => UrlUtil.encodeForHash([it.name, it.className, it.classSource, it.subclassShortName, it.subclassSource, it.level, it.source]);
+UrlUtil.URL_TO_HASH_BUILDER["classFeature"] = (it) => UrlUtil.encodeArrayForHash(it.name, it.className, it.classSource, it.level, it.source);
+UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"] = (it) => UrlUtil.encodeArrayForHash(it.name, it.className, it.classSource, it.subclassShortName, it.subclassSource, it.level, it.source);
+UrlUtil.URL_TO_HASH_BUILDER["card"] = (it) => UrlUtil.encodeArrayForHash(it.name, it.set, it.source);
 UrlUtil.URL_TO_HASH_BUILDER["legendaryGroup"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemEntry"] = UrlUtil.URL_TO_HASH_GENERIC;
+UrlUtil.URL_TO_HASH_BUILDER["itemProperty"] = (it) => UrlUtil.encodeArrayForHash(it.abbreviation, it.source);
+UrlUtil.URL_TO_HASH_BUILDER["itemType"] = (it) => UrlUtil.encodeArrayForHash(it.abbreviation, it.source);
+UrlUtil.URL_TO_HASH_BUILDER["itemTypeAdditionalEntries"] = (it) => UrlUtil.encodeArrayForHash(it.appliesTo, it.source);
 UrlUtil.URL_TO_HASH_BUILDER["skill"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["sense"] = UrlUtil.URL_TO_HASH_GENERIC;
 
@@ -30073,6 +30582,11 @@ UrlUtil.URL_TO_HASH_BUILDER["sense"] = UrlUtil.URL_TO_HASH_GENERIC;
 Object.keys(UrlUtil.URL_TO_HASH_BUILDER)
 	.filter(k => !k.endsWith(".html") && k.toLowerCase() !== k)
 	.forEach(k => UrlUtil.URL_TO_HASH_BUILDER[k.toLowerCase()] = UrlUtil.URL_TO_HASH_BUILDER[k]);
+
+// Add raw aliases
+Object.keys(UrlUtil.URL_TO_HASH_BUILDER)
+	.filter(k => !k.endsWith(".html"))
+	.forEach(k => UrlUtil.URL_TO_HASH_BUILDER[`raw_${k}`] = UrlUtil.URL_TO_HASH_BUILDER[k]);
 
 // Add fluff aliases
 Object.keys(UrlUtil.URL_TO_HASH_BUILDER)
@@ -30101,6 +30615,7 @@ UrlUtil.PG_TO_NAME[UrlUtil.PG_OBJECTS] = "Objects";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_TRAPS_HAZARDS] = "Traps & Hazards";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_QUICKREF] = "Quick Reference";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MANAGE_BREW] = "Homebrew Manager";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_MANAGE_PRERELEASE] = "Prerelease Content Manager";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MAKE_BREW] = "Homebrew Builder";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_DEMO_RENDER] = "Renderer Demo";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_TABLES] = "Tables";
@@ -30121,6 +30636,7 @@ UrlUtil.PG_TO_NAME[UrlUtil.PG_CHAR_CREATION_OPTIONS] = "Other Character Creation
 UrlUtil.PG_TO_NAME[UrlUtil.PG_RECIPES] = "Recipes";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_CLASS_SUBCLASS_FEATURES] = "Class & Subclass Features";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MAPS] = "Maps";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_DECKS] = "Decks";
 
 UrlUtil.CAT_TO_PAGE = {};
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CREATURE] = UrlUtil.PG_BESTIARY;
@@ -30173,14 +30689,19 @@ UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_LEGENDARY_GROUP] = null;
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CHAR_CREATION_OPTIONS] = UrlUtil.PG_CHAR_CREATION_OPTIONS;
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_RECIPES] = UrlUtil.PG_RECIPES;
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_STATUS] = UrlUtil.PG_CONDITIONS_DISEASES;
+UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_DECK] = UrlUtil.PG_DECKS;
+UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CARD] = "card";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SKILLS] = "skill";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SENSES] = "sense";
+UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_LEGENDARY_GROUP] = "legendaryGroup";
 
 UrlUtil.CAT_TO_HOVER_PAGE = {};
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_CLASS_FEATURE] = "classfeature";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_SUBCLASS_FEATURE] = "subclassfeature";
+UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_CARD] = "card";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_SKILLS] = "skill";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_SENSES] = "sense";
+UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_LEGENDARY_GROUP] = "legendaryGroup";
 
 UrlUtil.HASH_START_CREATURE_SCALED = `${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}`;
 UrlUtil.HASH_START_CREATURE_SCALED_SPELL_SUMMON = `${VeCt.HASH_SCALED_SPELL_SUMMON}${HASH_SUB_KV_SEP}`;
@@ -30208,7 +30729,12 @@ UrlUtil.SUBLIST_PAGES = {
 	[UrlUtil.PG_LANGUAGES]: true,
 	[UrlUtil.PG_CHAR_CREATION_OPTIONS]: true,
 	[UrlUtil.PG_RECIPES]: true,
+	[UrlUtil.PG_DECKS]: true,
 };
+
+UrlUtil.PAGE_TO_PROPS = {};
+UrlUtil.PAGE_TO_PROPS[UrlUtil.PG_SPELLS] = ["spell"];
+UrlUtil.PAGE_TO_PROPS[UrlUtil.PG_ITEMS] = ["item", "itemGroup", "itemType", "itemEntry", "itemProperty", "itemTypeAdditionalEntries", "baseitem", "magicvariant"];
 
 if (!IS_DEPLOYED && !IS_VTT && typeof window !== "undefined") {
 	// for local testing, hotkey to get a link to the current page on the main site
@@ -30223,7 +30749,7 @@ if (!IS_DEPLOYED && !IS_VTT && typeof window !== "undefined") {
 }
 
 // SORTING =============================================================================================================
-SortUtil = {
+globalThis.SortUtil = {
 	ascSort: (a, b) => {
 		if (typeof FilterItem !== "undefined") {
 			if (a instanceof FilterItem) a = a.item;
@@ -30445,6 +30971,18 @@ SortUtil = {
 			|| SortUtil.ascSortLower(a.name, b.name);
 	},
 
+	ascSortGenericEntity (a, b) {
+		return SortUtil.ascSortLower(a.name, b.name) || SortUtil.ascSortLower(a.source, b.source);
+	},
+
+	ascSortDeity (a, b) {
+		return SortUtil.ascSortLower(a.name, b.name) || SortUtil.ascSortLower(a.source, b.source) || SortUtil.ascSortLower(a.pantheon, b.pantheon);
+	},
+
+	ascSortCard (a, b) {
+		return SortUtil.ascSortLower(a.set, b.set) || SortUtil.ascSortLower(a.source, b.source) || SortUtil.ascSortLower(a.name, b.name);
+	},
+
 	_ITEM_RARITY_ORDER: ["none", "common", "uncommon", "rare", "very rare", "legendary", "artifact", "varies", "unknown (magic)", "unknown"],
 	ascSortItemRarity (a, b) {
 		const ixA = SortUtil._ITEM_RARITY_ORDER.indexOf(a);
@@ -30478,6 +31016,16 @@ class _DataUtilPropConfigSingleSource extends _DataUtilPropConfig {
 class _DataUtilPropConfigMultiSource extends _DataUtilPropConfig {
 	static _DIR = null;
 	static _PROP = null;
+	static _IS_MUT_ENTITIES = false;
+
+	static get _isFluff () { return this._PROP.endsWith("Fluff"); }
+
+	static _P_INDEX = null;
+
+	static pLoadIndex () {
+		this._P_INDEX = this._P_INDEX || DataUtil.loadJSON(`${Renderer.get().baseUrl}data/${this._DIR}/${this._isFluff ? `fluff-` : ""}index.json`);
+		return this._P_INDEX;
+	}
 
 	static async pLoadAll () {
 		const json = await this.loadJSON();
@@ -30487,20 +31035,46 @@ class _DataUtilPropConfigMultiSource extends _DataUtilPropConfig {
 	static async loadJSON () { return this._loadJSON({isUnmerged: false}); }
 	static async loadUnmergedJSON () { return this._loadJSON({isUnmerged: true}); }
 
-	static async _loadJSON ({isUnmerged}) {
-		const isFluff = this._PROP.endsWith("Fluff");
+	static async _loadJSON ({isUnmerged = false} = {}) {
+		const index = await this.pLoadIndex();
 
-		const index = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/${this._DIR}/${isFluff ? `fluff-` : ""}index.json`);
-
-		const fnLoad = isUnmerged ? DataUtil.loadRawJSON.bind(DataUtil) : DataUtil.loadJSON.bind(DataUtil);
 		const allData = await Object.entries(index)
-			.pMap(async ([source, file]) => {
-				const data = await fnLoad(`${Renderer.get().baseUrl}data/${this._DIR}/${file}`);
-				return data[this._PROP].filter(it => it.source === source);
-			});
+			.pMap(async ([source, file]) => this._pLoadSourceEntities({source, isUnmerged, file}));
 
 		return {[this._PROP]: allData.flat()};
 	}
+
+	static async pLoadSingleSource (source) {
+		const index = await this.pLoadIndex();
+
+		const file = index[source];
+		if (!file) return null;
+
+		return {[this._PROP]: await this._pLoadSourceEntities({source, file})};
+	}
+
+	static async _pLoadSourceEntities ({source, isUnmerged = false, file}) {
+		await this._pInitPreData();
+
+		const fnLoad = isUnmerged ? DataUtil.loadRawJSON.bind(DataUtil) : DataUtil.loadJSON.bind(DataUtil);
+
+		let data = await fnLoad(`${Renderer.get().baseUrl}data/${this._DIR}/${file}`);
+		data = data[this._PROP].filter(it => it.source === source);
+
+		if (!this._IS_MUT_ENTITIES) return data;
+
+		return data.map(ent => this._mutEntity(ent));
+	}
+
+	static _P_INIT_PRE_DATA = null;
+
+	static async _pInitPreData () {
+		return (this._P_INIT_PRE_DATA = this._P_INIT_PRE_DATA || this._pInitPreData_());
+	}
+
+	static async _pInitPreData_ () { /* Implement as required */ }
+
+	static _mutEntity (ent) { return ent; }
 }
 
 class _DataUtilPropConfigCustom extends _DataUtilPropConfig {
@@ -30508,7 +31082,47 @@ class _DataUtilPropConfigCustom extends _DataUtilPropConfig {
 	static async loadUnmergedJSON () { throw new Error("Unimplemented!"); }
 }
 
-DataUtil = {
+class _DataUtilBrewHelper {
+	constructor ({defaultUrlRoot}) {
+		this._defaultUrlRoot = defaultUrlRoot;
+	}
+
+	_getCleanUrlRoot (urlRoot) {
+		if (urlRoot && urlRoot.trim()) {
+			urlRoot = urlRoot.trim();
+			if (!urlRoot.endsWith("/")) urlRoot = `${urlRoot}/`;
+			return urlRoot;
+		}
+		return this._defaultUrlRoot;
+	}
+
+	async pLoadTimestamps (urlRoot) {
+		urlRoot = this._getCleanUrlRoot(urlRoot);
+		return DataUtil.loadJSON(`${urlRoot}_generated/index-timestamps.json`);
+	}
+
+	async pLoadPropIndex (urlRoot) {
+		urlRoot = this._getCleanUrlRoot(urlRoot);
+		return DataUtil.loadJSON(`${urlRoot}_generated/index-props.json`);
+	}
+
+	async pLoadMetaIndex (urlRoot) {
+		urlRoot = this._getCleanUrlRoot(urlRoot);
+		return DataUtil.loadJSON(`${urlRoot}_generated/index-meta.json`);
+	}
+
+	async pLoadSourceIndex (urlRoot) {
+		urlRoot = this._getCleanUrlRoot(urlRoot);
+		return DataUtil.loadJSON(`${urlRoot}_generated/index-sources.json`);
+	}
+
+	getFileUrl (path, urlRoot) {
+		urlRoot = this._getCleanUrlRoot(urlRoot);
+		return `${urlRoot}${path}`;
+	}
+}
+
+globalThis.DataUtil = {
 	_loading: {},
 	_loaded: {},
 	_merging: {},
@@ -30555,8 +31169,9 @@ DataUtil = {
 		if (data && typeof data === "object") {
 			for (const k in data) {
 				if (data[k] instanceof Array) {
-					for (let i = 0, len = data[k].length; i < len; ++i) {
-						data[k][i].__prop = k;
+					for (const it of data[k]) {
+						if (typeof it !== "object") continue;
+						it.__prop = k;
 					}
 				}
 			}
@@ -30627,7 +31242,7 @@ DataUtil = {
 
 					const dependencyData = await Promise.all(sourceIds.map(sourceId => DataUtil.pLoadByMeta(dataProp, sourceId)));
 
-					const flatDependencyData = dependencyData.map(dd => dd[dataProp]).flat();
+					const flatDependencyData = dependencyData.map(dd => dd[dataProp]).flat().filter(Boolean);
 					await Promise.all(data[dataProp].map(entry => DataUtil._pDoMetaMerge_handleCopyProp(dataProp, flatDependencyData, entry, {...options, isErrorOnMissing: !isHasInternalCopies})));
 				}));
 				delete data._meta.dependencies;
@@ -30653,7 +31268,7 @@ DataUtil = {
 
 					const includesData = await Promise.all(sourceIds.map(sourceId => DataUtil.pLoadByMeta(dataProp, sourceId)));
 
-					const flatIncludesData = includesData.map(dd => dd[dataProp]).flat();
+					const flatIncludesData = includesData.map(dd => dd[dataProp]).flat().filter(Boolean);
 					return {dataProp, flatIncludesData};
 				}));
 				delete data._meta.includes;
@@ -30838,10 +31453,6 @@ DataUtil = {
 		"subclassFeature": "class",
 	},
 	_MULTI_SOURCE_PROP_TO_INDEX_NAME: {
-		"monster": "index.json",
-		"spell": "index.json",
-		"monsterFluff": "fluff-index.json",
-		"spellFluff": "fluff-index.json",
 		"class": "index.json",
 		"subclass": "index.json",
 		"classFeature": "index.json",
@@ -30851,11 +31462,19 @@ DataUtil = {
 		// TODO(future) expand support
 
 		switch (prop) {
-			// region Multi-source
+			// region Predefined multi-source
 			case "monster":
 			case "spell":
 			case "monsterFluff":
-			case "spellFluff":
+			case "spellFluff": {
+				const data = await DataUtil[prop].pLoadSingleSource(source);
+				if (data) return data;
+
+				return DataUtil._pLoadByMeta_pGetPrereleaseBrewUrl(source);
+			}
+			// endregion
+
+			// region Multi-source
 			case "class":
 			case "subclass":
 			case "classFeature":
@@ -30864,7 +31483,7 @@ DataUtil = {
 				const index = await DataUtil.loadJSON(`${baseUrlPart}/${DataUtil._MULTI_SOURCE_PROP_TO_INDEX_NAME[prop]}`);
 				if (index[source]) return DataUtil.loadJSON(`${baseUrlPart}/${index[source]}`);
 
-				return DataUtil.pLoadBrewBySource(source);
+				return DataUtil._pLoadByMeta_pGetPrereleaseBrewUrl(source);
 			}
 			// endregion
 
@@ -30873,12 +31492,12 @@ DataUtil = {
 			case "itemGroup": {
 				const data = await DataUtil.item.loadRawJSON();
 				if (data[prop] && data[prop].some(it => it.source === source)) return data;
-				return DataUtil.pLoadBrewBySource(source);
+				return DataUtil._pLoadByMeta_pGetPrereleaseBrewUrl(source);
 			}
 			case "race": {
 				const data = await DataUtil.race.loadJSON({isAddBaseRaces: true});
 				if (data[prop] && data[prop].some(it => it.source === source)) return data;
-				return DataUtil.pLoadBrewBySource(source);
+				return DataUtil._pLoadByMeta_pGetPrereleaseBrewUrl(source);
 			}
 			// endregion
 
@@ -30889,7 +31508,7 @@ DataUtil = {
 					const data = await (impl.loadJSON ? impl.loadJSON() : DataUtil.loadJSON(impl.getDataUrl()));
 					if (data[prop] && data[prop].some(it => it.source === source)) return data;
 
-					return DataUtil.pLoadBrewBySource(source);
+					return DataUtil._pLoadByMeta_pGetPrereleaseBrewUrl(source);
 				}
 
 				throw new Error(`Could not get loadable URL for \`${JSON.stringify({key: prop, value: source})}\``);
@@ -30898,29 +31517,28 @@ DataUtil = {
 		}
 	},
 
-	// TODO(Future) Note that a case-insensitive variant of this is built into the renderer, which could be factored out
-	//   to this level if required.
-	async pLoadBrewBySource (source, {isSilent = true} = {}) {
-		const brewUrl = await DataUtil._pLoadAddBrewBySource_pGetUrl({source, isSilent});
-		if (!brewUrl) return null;
-		return DataUtil.loadJSON(brewUrl);
+	async _pLoadByMeta_pGetPrereleaseBrewUrl (source) {
+		const fromPrerelease = await DataUtil.pLoadPrereleaseBySource(source);
+		if (fromPrerelease) return fromPrerelease;
+
+		const fromBrew = await DataUtil.pLoadBrewBySource(source);
+		if (fromBrew) return fromBrew;
+
+		throw new Error(`Could not find prerelease/brew URL for source "${source}"`);
 	},
 
-	async pAddBrewBySource (source, {isSilent = true} = {}) {
-		const brewUrl = await DataUtil._pLoadAddBrewBySource_pGetUrl({source, isSilent});
-		if (!brewUrl) return null;
-		return BrewUtil2.pAddBrewFromUrl(brewUrl);
+	async pLoadPrereleaseBySource (source) {
+		if (typeof PrereleaseUtil === "undefined") return null;
+		const url = await PrereleaseUtil.pGetSourceUrl(source);
+		if (!url) return null;
+		return DataUtil.loadJSON(url);
 	},
 
-	async _pLoadAddBrewBySource_pGetUrl ({source, isSilent = true}) {
-		const brewIndex = await DataUtil.brew.pLoadSourceIndex(typeof BrewUtil2 !== "undefined" ? await BrewUtil2.pGetCustomUrl() : null);
-		if (!brewIndex[source]) {
-			if (isSilent) return null;
-			throw new Error(`Neither base nor brew index contained source "${source}"`);
-		}
-
-		const urlRoot = await StorageUtil.pGet(`HOMEBREW_CUSTOM_REPO_URL`);
-		return DataUtil.brew.getFileUrl(brewIndex[source], urlRoot);
+	async pLoadBrewBySource (source) {
+		if (typeof BrewUtil2 === "undefined") return null;
+		const url = await BrewUtil2.pGetSourceUrl(source);
+		if (!url) return null;
+		return DataUtil.loadJSON(url);
 	},
 
 	// region Dbg
@@ -30935,6 +31553,7 @@ DataUtil = {
 			otherSources: true,
 			srd: true,
 			basicRules: true,
+			reprintedAs: true,
 			hasFluff: true,
 			hasFluffImages: true,
 			hasToken: true,
@@ -31014,7 +31633,7 @@ DataUtil = {
 			const traitData = entry._copy?._trait
 				? (await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/bestiary/traits.json`))
 				: null;
-			return DataUtil.generic._applyCopy(impl, MiscUtil.copy(it), entry, traitData, options);
+			return DataUtil.generic._applyCopy(impl, MiscUtil.copyFast(it), entry, traitData, options);
 		},
 
 		_pMergeCopy_search (impl, page, entryList, entry, options) {
@@ -31031,7 +31650,7 @@ DataUtil = {
 			"actionHeader", "bonusHeader", "reactionHeader", "legendaryHeader", "mythicHeader",
 		],
 		_applyCopy (impl, copyFrom, copyTo, traitData, options = {}) {
-			if (options.doKeepCopy) copyTo.__copy = MiscUtil.copy(copyFrom);
+			if (options.doKeepCopy) copyTo.__copy = MiscUtil.copyFast(copyFrom);
 
 			// convert everything to arrays
 			function normaliseMods (obj) {
@@ -31051,7 +31670,7 @@ DataUtil = {
 			if (copyMeta._trait) {
 				racials = traitData.trait.find(t => t.name.toLowerCase() === copyMeta._trait.name.toLowerCase() && t.source.toLowerCase() === copyMeta._trait.source.toLowerCase());
 				if (!racials) throw new Error(`${msgPtFailed} Could not find traits to apply with name "${copyMeta._trait.name}" and source "${copyMeta._trait.source}"`);
-				racials = MiscUtil.copy(racials);
+				racials = MiscUtil.copyFast(racials);
 
 				if (racials.apply._mod) {
 					normaliseMods(racials.apply);
@@ -31546,41 +32165,7 @@ DataUtil = {
 			if (copyMeta._mod) {
 				// pre-convert any dynamic text
 				Object.entries(copyMeta._mod).forEach(([k, v]) => {
-					copyMeta._mod[k] = JSON.parse(
-						JSON.stringify(v)
-							.replace(/<\$([^$]+)\$>/g, (...m) => {
-								const parts = m[1].split("__");
-
-								switch (parts[0]) {
-									case "name": return copyTo.name;
-									case "short_name":
-									case "title_short_name": {
-										return Renderer.monster.getShortName(copyTo, {isTitleCase: parts[0] === "title_short_name"});
-									}
-									case "spell_dc": {
-										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`${msgPtFailed} Unknown ability score "${parts[1]}"`);
-										return 8 + Parser.getAbilityModNumber(Number(copyTo[parts[1]])) + Parser.crToPb(copyTo.cr);
-									}
-									case "to_hit": {
-										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`${msgPtFailed} Unknown ability score "${parts[1]}"`);
-										const total = Parser.crToPb(copyTo.cr) + Parser.getAbilityModNumber(Number(copyTo[parts[1]]));
-										return total >= 0 ? `+${total}` : total;
-									}
-									case "damage_mod": {
-										if (!Parser.ABIL_ABVS.includes(parts[1])) throw new Error(`${msgPtFailed} Unknown ability score "${parts[1]}"`);
-										const total = Parser.getAbilityModNumber(Number(copyTo[parts[1]]));
-										return total === 0 ? "" : total > 0 ? ` +${total}` : ` ${total}`;
-									}
-									case "damage_avg": {
-										const replaced = parts[1].replace(/(str|dex|con|int|wis|cha)/gi, (...m2) => Parser.getAbilityModNumber(Number(copyTo[m2[0]])));
-										const clean = replaced.replace(/[^-+/*0-9.,]+/g, "");
-										// eslint-disable-next-line no-eval
-										return Math.floor(eval(clean));
-									}
-									default: return m[0];
-								}
-							}),
-					);
+					copyMeta._mod[k] = DataUtil.generic.variableResolver.resolve({obj: v, ent: copyTo});
 				});
 
 				Object.entries(copyMeta._mod).forEach(([prop, modInfos]) => {
@@ -31595,6 +32180,75 @@ DataUtil = {
 
 			// cleanup
 			delete copyTo._copy;
+		},
+
+		variableResolver: class {
+			static _getSize ({ent}) { return ent.size?.[0] || Parser.SZ_MEDIUM; }
+
+			static _SIZE_TO_MULT = {
+				[Parser.SZ_LARGE]: 2,
+				[Parser.SZ_HUGE]: 3,
+				[Parser.SZ_GARGANTUAN]: 4,
+			};
+
+			static _getSizeMult (size) { return this._SIZE_TO_MULT[size] ?? 1; }
+
+			static _getCleanMathExpression (str) { return str.replace(/[^-+/*0-9.,]+/g, ""); }
+
+			static resolve ({obj, ent, msgPtFailed = null}) {
+				return JSON.parse(
+					JSON.stringify(obj)
+						.replace(/<\$(?<variable>[^$]+)\$>/g, (...m) => {
+							const [mode, detail] = m.last().variable.split("__");
+
+							switch (mode) {
+								case "name": return ent.name;
+								case "short_name":
+								case "title_short_name": {
+									return Renderer.monster.getShortName(ent, {isTitleCase: mode === "title_short_name"});
+								}
+
+								case "dc":
+								case "spell_dc": {
+									if (!Parser.ABIL_ABVS.includes(detail)) throw new Error(`${msgPtFailed ? `${msgPtFailed} ` : ""} Unknown ability score "${detail}"`);
+									return 8 + Parser.getAbilityModNumber(Number(ent[detail])) + Parser.crToPb(ent.cr);
+								}
+
+								case "to_hit": {
+									if (!Parser.ABIL_ABVS.includes(detail)) throw new Error(`${msgPtFailed ? `${msgPtFailed} ` : ""} Unknown ability score "${detail}"`);
+									const total = Parser.crToPb(ent.cr) + Parser.getAbilityModNumber(Number(ent[detail]));
+									return total >= 0 ? `+${total}` : total;
+								}
+
+								case "damage_mod": {
+									if (!Parser.ABIL_ABVS.includes(detail)) throw new Error(`${msgPtFailed ? `${msgPtFailed} ` : ""} Unknown ability score "${detail}"`);
+									const total = Parser.getAbilityModNumber(Number(ent[detail]));
+									return total === 0 ? "" : total > 0 ? ` + ${total}` : ` - ${Math.abs(total)}`;
+								}
+
+								case "damage_avg": {
+									const replaced = detail
+										.replace(/\b(?<abil>str|dex|con|int|wis|cha)\b/gi, (...m) => Parser.getAbilityModNumber(Number(ent[m.last().abil])))
+										.replace(/\bsize_mult\b/g, () => this._getSizeMult(this._getSize({ent})));
+
+									// eslint-disable-next-line no-eval
+									return Math.floor(eval(this._getCleanMathExpression(replaced)));
+								}
+
+								case "size_mult": {
+									const mult = this._getSizeMult(this._getSize({ent}));
+
+									if (!detail) return mult;
+
+									// eslint-disable-next-line no-eval
+									return Math.floor(eval(`${mult} * ${this._getCleanMathExpression(detail)}`));
+								}
+
+								default: return m[0];
+							}
+						}),
+				);
+			}
 		},
 
 		getVersions (parent) {
@@ -31612,8 +32266,8 @@ DataUtil = {
 		_getVersions_template ({ver}) {
 			return ver._implementations
 				.map(impl => {
-					let cpyTemplate = MiscUtil.copy(ver._template);
-					const cpyImpl = MiscUtil.copy(impl);
+					let cpyTemplate = MiscUtil.copyFast(ver._template);
+					const cpyImpl = MiscUtil.copyFast(impl);
 
 					DataUtil.generic._getVersions_mutExpandCopy({ent: cpyTemplate});
 
@@ -31635,7 +32289,7 @@ DataUtil = {
 		},
 
 		_getVersions_basic ({ver}) {
-			const cpyVer = MiscUtil.copy(ver);
+			const cpyVer = MiscUtil.copyFast(ver);
 			DataUtil.generic._getVersions_mutExpandCopy({ent: cpyVer});
 			return cpyVer;
 		},
@@ -31658,7 +32312,7 @@ DataUtil = {
 				_versionBase_hasFluff: parentEntity.hasFluff,
 				_versionBase_hasFluffImages: parentEntity.hasFluffImages,
 			};
-			const cpyParentEntity = MiscUtil.copy(parentEntity);
+			const cpyParentEntity = MiscUtil.copyFast(parentEntity);
 
 			delete cpyParentEntity._versions;
 			delete cpyParentEntity.hasToken;
@@ -31722,7 +32376,7 @@ DataUtil = {
 		static getVersions (mon) {
 			const additionalVersionData = DataUtil.monster._getAdditionalVersionsData(mon);
 			if (additionalVersionData.length) {
-				mon = MiscUtil.copy(mon);
+				mon = MiscUtil.copyFast(mon);
 				(mon._versions = mon._versions || []).push(...additionalVersionData);
 			}
 			return DataUtil.generic.getVersions(mon);
@@ -31741,7 +32395,7 @@ DataUtil = {
 					};
 
 					if (it._version.addAs) {
-						const cpy = MiscUtil.copy(it);
+						const cpy = MiscUtil.copyFast(it);
 						delete cpy._version;
 						delete cpy.type;
 						delete cpy.source;
@@ -31758,7 +32412,7 @@ DataUtil = {
 					}
 
 					if (it._version.addHeadersAs) {
-						const cpy = MiscUtil.copy(it);
+						const cpy = MiscUtil.copyFast(it);
 						cpy.entries = cpy.entries.filter(it => it.name && it.entries);
 						cpy.entries.forEach(cpyEnt => {
 							delete cpyEnt.type;
@@ -31810,6 +32464,186 @@ DataUtil = {
 		static _PAGE = UrlUtil.PG_SPELLS;
 		static _DIR = "spells";
 		static _PROP = "spell";
+		static _IS_MUT_ENTITIES = true;
+
+		static _SPELL_SOURCE_LOOKUP = null;
+
+		// region Utilities for external applications (i.e., the spell source generation script) to use
+		static setSpellSourceLookup (lookup, {isExternalApplication = false} = {}) {
+			if (!isExternalApplication) throw new Error("Should not be calling this!");
+			this._SPELL_SOURCE_LOOKUP = MiscUtil.copyFast(lookup);
+		}
+
+		static mutEntity (sp, {isExternalApplication = false} = {}) {
+			if (!isExternalApplication) throw new Error("Should not be calling this!");
+			return this._mutEntity(sp);
+		}
+
+		static unmutEntity (sp, {isExternalApplication = false} = {}) {
+			if (!isExternalApplication) throw new Error("Should not be calling this!");
+			delete sp.classes;
+			delete sp.races;
+			delete sp.optionalfeatures;
+			delete sp.backgrounds;
+			delete sp.feats;
+			delete sp.charoptions;
+			delete sp.rewards;
+			delete sp._isMutEntity;
+		}
+		// endregion
+
+		static async _pInitPreData_ () {
+			this._SPELL_SOURCE_LOOKUP = await DataUtil.loadRawJSON(`${Renderer.get().baseUrl}data/generated/gendata-spell-source-lookup.json`);
+		}
+
+		static _mutEntity (sp) {
+			if (sp._isMutEntity) return sp;
+
+			const spSources = this._SPELL_SOURCE_LOOKUP[sp.source.toLowerCase()]?.[sp.name.toLowerCase()];
+			if (!spSources) return;
+
+			this._mutSpell_class({sp, spSources, propSources: "class", propClasses: "fromClassList"});
+			this._mutSpell_class({sp, spSources, propSources: "classVariant", propClasses: "fromClassListVariant"});
+			this._mutSpell_subclass({sp, spSources});
+			this._mutSpell_race({sp, spSources});
+			this._mutSpell_optionalfeature({sp, spSources});
+			this._mutSpell_background({sp, spSources});
+			this._mutSpell_feat({sp, spSources});
+			this._mutSpell_charoption({sp, spSources});
+			this._mutSpell_reward({sp, spSources});
+
+			sp._isMutEntity = true;
+
+			return sp;
+		}
+
+		static _mutSpell_class ({sp, spSources, propSources, propClasses}) {
+			if (!spSources[propSources]) return;
+
+			Object.entries(spSources[propSources])
+				.forEach(([source, nameTo]) => {
+					const tgt = MiscUtil.getOrSet(sp, "classes", propClasses, []);
+
+					Object.entries(nameTo)
+						.forEach(([name, val]) => {
+							if (tgt.some(it => it.name === nameTo && it.source === source)) return;
+
+							const toAdd = {name, source};
+							if (val === true) return tgt.push(toAdd);
+
+							if (val.definedInSource) {
+								toAdd.definedInSource = val.definedInSource;
+								tgt.push(toAdd);
+								return;
+							}
+
+							if (val.definedInSources) {
+								val.definedInSources
+									.forEach(definedInSource => {
+										const cpyToAdd = MiscUtil.copyFast(toAdd);
+
+										if (definedInSource == null) {
+											return tgt.push(cpyToAdd);
+										}
+
+										cpyToAdd.definedInSource = definedInSource;
+										tgt.push(cpyToAdd);
+									});
+
+								return;
+							}
+
+							throw new Error("Unimplemented!");
+						});
+				});
+		}
+
+		static _mutSpell_subclass ({sp, spSources}) {
+			if (!spSources.subclass) return;
+
+			Object.entries(spSources.subclass)
+				.forEach(([classSource, classNameTo]) => {
+					Object.entries(classNameTo)
+						.forEach(([className, sourceTo]) => {
+							Object.entries(sourceTo)
+								.forEach(([source, nameTo]) => {
+									const tgt = MiscUtil.getOrSet(sp, "classes", "fromSubclass", []);
+
+									Object.entries(nameTo)
+										.forEach(([name, val]) => {
+											if (val === true) throw new Error("Unimplemented!");
+
+											if (tgt.some(it => it.class.name === className && it.class.source === classSource && it.subclass.name === name && it.subclass.source === source && ((it.subclass.subSubclass == null && val.subSubclasses == null) || val.subSubclasses.includes(it.subclass.subSubclass)))) return;
+
+											const toAdd = {
+												class: {
+													name: className,
+													source: classSource,
+												},
+												subclass: {
+													name: val.name,
+													shortName: name,
+													source,
+												},
+											};
+
+											if (!val.subSubclasses?.length) return tgt.push(toAdd);
+
+											val.subSubclasses
+												.forEach(subSubclass => {
+													const cpyToAdd = MiscUtil.copyFast(toAdd);
+													cpyToAdd.subclass.subSubclass = subSubclass;
+													tgt.push(cpyToAdd);
+												});
+										});
+								});
+						});
+				});
+		}
+
+		static _mutSpell_race ({sp, spSources}) {
+			this._mutSpell_generic({sp, spSources, propSources: "race", propSpell: "races"});
+		}
+
+		static _mutSpell_optionalfeature ({sp, spSources}) {
+			this._mutSpell_generic({sp, spSources, propSources: "optionalfeature", propSpell: "optionalfeatures"});
+		}
+
+		static _mutSpell_background ({sp, spSources}) {
+			this._mutSpell_generic({sp, spSources, propSources: "background", propSpell: "backgrounds"});
+		}
+
+		static _mutSpell_feat ({sp, spSources}) {
+			this._mutSpell_generic({sp, spSources, propSources: "feat", propSpell: "feats"});
+		}
+
+		static _mutSpell_charoption ({sp, spSources}) {
+			this._mutSpell_generic({sp, spSources, propSources: "charoption", propSpell: "charoptions"});
+		}
+
+		static _mutSpell_reward ({sp, spSources}) {
+			this._mutSpell_generic({sp, spSources, propSources: "reward", propSpell: "rewards"});
+		}
+
+		static _mutSpell_generic ({sp, spSources, propSources, propSpell}) {
+			if (!spSources[propSources]) return;
+
+			Object.entries(spSources[propSources])
+				.forEach(([source, nameTo]) => {
+					const tgt = MiscUtil.getOrSet(sp, propSpell, []);
+
+					Object.entries(nameTo)
+						.forEach(([name, val]) => {
+							if (tgt.some(it => it.name === nameTo && it.source === source)) return;
+
+							const toAdd = {name, source};
+							if (val === true) return tgt.push(toAdd);
+
+							Object.assign(toAdd, {...val});
+							tgt.push(toAdd);
+						});
+				});
+		}
 	},
 
 	spellFluff: class extends _DataUtilPropConfigMultiSource {
@@ -31885,10 +32719,10 @@ DataUtil = {
 				]);
 
 				DataUtil.item._loadedRawJson = {
-					item: MiscUtil.copy(dataItems.item),
-					itemGroup: MiscUtil.copy(dataItems.itemGroup),
-					magicvariant: MiscUtil.copy(dataVariants.magicvariant),
-					baseitem: MiscUtil.copy(dataItemsBase.baseitem),
+					item: MiscUtil.copyFast(dataItems.item),
+					itemGroup: MiscUtil.copyFast(dataItems.itemGroup),
+					magicvariant: MiscUtil.copyFast(dataVariants.magicvariant),
+					baseitem: MiscUtil.copyFast(dataItemsBase.baseitem),
 				};
 			})();
 			await DataUtil.item._pLoadingRawJson;
@@ -31897,12 +32731,15 @@ DataUtil = {
 		}
 
 		static async loadJSON () {
-			return {item: await Renderer.item.pBuildList({isAddGroups: true})};
+			return {item: await Renderer.item.pBuildList()};
+		}
+
+		static async loadPrerelease () {
+			return {item: await Renderer.item.pGetItemsFromPrerelease()};
 		}
 
 		static async loadBrew () {
-			const brew = await BrewUtil2.pGetBrewProcessed();
-			return {item: await Renderer.item.pGetItemsFromHomebrew(brew)};
+			return {item: await Renderer.item.pGetItemsFromBrew()};
 		}
 	},
 
@@ -31933,7 +32770,7 @@ DataUtil = {
 			const scriptLookup = {};
 			(rawData.languageScript || []).forEach(script => scriptLookup[script.name] = script);
 
-			const out = {language: MiscUtil.copy(rawData.language)};
+			const out = {language: MiscUtil.copyFast(rawData.language)};
 			out.language.forEach(lang => {
 				if (!lang.script || lang.fonts === false) return;
 
@@ -31983,11 +32820,11 @@ DataUtil = {
 		}
 
 		static getPostProcessedSiteJson (rawRaceData, {isAddBaseRaces = false} = {}) {
-			rawRaceData = MiscUtil.copy(rawRaceData);
+			rawRaceData = MiscUtil.copyFast(rawRaceData);
 			(rawRaceData.subrace || []).forEach(sr => {
 				const r = rawRaceData.race.find(it => it.name === sr.raceName && it.source === sr.raceSource);
 				if (!r) return JqueryUtil.doToast({content: `Failed to find race "${sr.raceName}" (${sr.raceSource})`, type: "danger"});
-				const cpySr = MiscUtil.copy(sr);
+				const cpySr = MiscUtil.copyFast(sr);
 				delete cpySr.raceName;
 				delete cpySr.raceSource;
 				(r.subraces = r.subraces || []).push(sr);
@@ -31998,16 +32835,25 @@ DataUtil = {
 			return {race: raceData};
 		}
 
-		static async loadBrew ({isAddBaseRaces = true} = {}) {
-			if (typeof BrewUtil2 === "undefined") return {};
-			const rawSite = await DataUtil.race.loadRawJSON();
-			const brew = await BrewUtil2.pGetBrewProcessed();
-			return DataUtil.race.getPostProcessedBrewJson(rawSite, brew, {isAddBaseRaces});
+		static async loadPrerelease ({isAddBaseRaces = true} = {}) {
+			return DataUtil.race._loadPrereleaseBrew({isAddBaseRaces, brewUtil: typeof PrereleaseUtil !== "undefined" ? PrereleaseUtil : null});
 		}
 
-		static getPostProcessedBrewJson (rawSite, brew, {isAddBaseRaces = false} = {}) {
-			rawSite = MiscUtil.copy(rawSite);
-			brew = MiscUtil.copy(brew);
+		static async loadBrew ({isAddBaseRaces = true} = {}) {
+			return DataUtil.race._loadPrereleaseBrew({isAddBaseRaces, brewUtil: typeof BrewUtil2 !== "undefined" ? BrewUtil2 : null});
+		}
+
+		static async _loadPrereleaseBrew ({isAddBaseRaces = true, brewUtil} = {}) {
+			if (!brewUtil) return {};
+
+			const rawSite = await DataUtil.race.loadRawJSON();
+			const brew = await brewUtil.pGetBrewProcessed();
+			return DataUtil.race.getPostProcessedPrereleaseBrewJson(rawSite, brew, {isAddBaseRaces});
+		}
+
+		static getPostProcessedPrereleaseBrewJson (rawSite, brew, {isAddBaseRaces = false} = {}) {
+			rawSite = MiscUtil.copyFast(rawSite);
+			brew = MiscUtil.copyFast(brew);
 
 			const rawSiteUsed = [];
 			(brew.subrace || []).forEach(sr => {
@@ -32015,7 +32861,7 @@ DataUtil = {
 				const rBrew = (brew.race || []).find(it => it.name === sr.raceName && it.source === sr.raceSource);
 				if (!rSite && !rBrew) return JqueryUtil.doToast({content: `Failed to find race "${sr.raceName}" (${sr.raceSource})`, type: "danger"});
 				const rTgt = rSite || rBrew;
-				const cpySr = MiscUtil.copy(sr);
+				const cpySr = MiscUtil.copyFast(sr);
 				delete cpySr.raceName;
 				delete cpySr.raceSource;
 				(rTgt.subraces = rTgt.subraces || []).push(sr);
@@ -32038,18 +32884,18 @@ DataUtil = {
 		static _FILENAME = "fluff-races.json";
 
 		static _getApplyUncommonMonstrous (data) {
-			data = MiscUtil.copy(data);
+			data = MiscUtil.copyFast(data);
 			data.raceFluff
 				.forEach(raceFluff => {
 					if (raceFluff.uncommon) {
 						raceFluff.entries = raceFluff.entries || [];
-						raceFluff.entries.push(MiscUtil.copy(data.raceFluffMeta.uncommon));
+						raceFluff.entries.push(MiscUtil.copyFast(data.raceFluffMeta.uncommon));
 						delete raceFluff.uncommon;
 					}
 
 					if (raceFluff.monstrous) {
 						raceFluff.entries = raceFluff.entries || [];
-						raceFluff.entries.push(MiscUtil.copy(data.raceFluffMeta.monstrous));
+						raceFluff.entries.push(MiscUtil.copyFast(data.raceFluffMeta.monstrous));
 						delete raceFluff.monstrous;
 					}
 				});
@@ -32091,8 +32937,8 @@ DataUtil = {
 					continue;
 				}
 
-				const cpyR = MiscUtil.copy(r);
-				cpyR.fluff = MiscUtil.copy(fluff);
+				const cpyR = MiscUtil.copyFast(r);
+				cpyR.fluff = MiscUtil.copyFast(fluff);
 				delete cpyR.fluff.name;
 				delete cpyR.fluff.source;
 				out.push(cpyR);
@@ -32109,8 +32955,18 @@ DataUtil = {
 			data.recipe.forEach(r => Renderer.recipe.populateFullIngredients(r));
 		}
 
+		static async loadPrerelease () {
+			return this._loadPrereleaseBrew({brewUtil: typeof PrereleaseUtil !== "undefined" ? PrereleaseUtil : null});
+		}
+
 		static async loadBrew () {
-			const brew = typeof BrewUtil2 !== "undefined" ? await BrewUtil2.pGetBrewProcessed() : {};
+			return this._loadPrereleaseBrew({brewUtil: typeof BrewUtil2 !== "undefined" ? BrewUtil2 : null});
+		}
+
+		static async _loadPrereleaseBrew ({brewUtil}) {
+			if (!brewUtil) return {};
+
+			const brew = await brewUtil.pGetBrewProcessed();
 			DataUtil.recipe.postProcessData(brew);
 			return brew;
 		}
@@ -32139,50 +32995,44 @@ DataUtil = {
 	class: class clazz extends _DataUtilPropConfigCustom {
 		static _PAGE = UrlUtil.PG_CLASSES;
 
-		static _pLoadingJson = null;
-		static _pLoadingRawJson = null;
-		static _loadedJson = null;
-		static _loadedRawJson = null;
-		static async loadJSON () {
-			if (DataUtil.class._loadedJson) return DataUtil.class._loadedJson;
+		static _pLoadJson = null;
+		static _pLoadRawJson = null;
 
-			DataUtil.class._pLoadingJson = DataUtil.class._pLoadingJson || (async () => {
-				const index = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/class/index.json`);
-
-				const allData = (
-					await Object.values(index)
-						.pSerialAwaitMap(it => DataUtil.loadJSON(`${Renderer.get().baseUrl}data/class/${it}`))
-				)
-					.map(it => MiscUtil.copy(it));
-
-				const allDereferencedClassData = (await Promise.all(allData.map(json => Promise.all((json.class || []).map(cls => DataUtil.class.pGetDereferencedClassData(cls)))))).flat();
-
-				const allDereferencedSubclassData = (await Promise.all(allData.map(json => Promise.all((json.subclass || []).map(sc => DataUtil.class.pGetDereferencedSubclassData(sc)))))).flat();
-
-				DataUtil.class._loadedJson = {class: allDereferencedClassData, subclass: allDereferencedSubclassData};
+		static loadJSON () {
+			return DataUtil.class._pLoadJson = DataUtil.class._pLoadJson || (async () => {
+				return {
+					class: await DataLoader.pCacheAndGetAllSite("class"),
+					subclass: await DataLoader.pCacheAndGetAllSite("subclass"),
+				};
 			})();
-			await DataUtil.class._pLoadingJson;
-
-			return DataUtil.class._loadedJson;
 		}
 
-		static async loadRawJSON () {
-			if (DataUtil.class._loadedRawJson) return DataUtil.class._loadedRawJson;
-
-			DataUtil.class._pLoadingRawJson = DataUtil.class._pLoadingRawJson || (async () => {
+		static loadRawJSON () {
+			return DataUtil.class._pLoadRawJson = DataUtil.class._pLoadRawJson || (async () => {
 				const index = await DataUtil.loadJSON(`${Renderer.get().baseUrl}data/class/index.json`);
 				const allData = await Promise.all(Object.values(index).map(it => DataUtil.loadJSON(`${Renderer.get().baseUrl}data/class/${it}`)));
 
-				DataUtil.class._loadedRawJson = {
-					class: MiscUtil.copy(allData.map(it => it.class || []).flat()),
-					subclass: MiscUtil.copy(allData.map(it => it.subclass || []).flat()),
+				return {
+					class: MiscUtil.copyFast(allData.map(it => it.class || []).flat()),
+					subclass: MiscUtil.copyFast(allData.map(it => it.subclass || []).flat()),
 					classFeature: allData.map(it => it.classFeature || []).flat(),
 					subclassFeature: allData.map(it => it.subclassFeature || []).flat(),
 				};
 			})();
-			await DataUtil.class._pLoadingRawJson;
+		}
 
-			return DataUtil.class._loadedRawJson;
+		static async loadPrerelease () {
+			return {
+				class: await DataLoader.pCacheAndGetAllPrerelease("class"),
+				subclass: await DataLoader.pCacheAndGetAllPrerelease("subclass"),
+			};
+		}
+
+		static async loadBrew () {
+			return {
+				class: await DataLoader.pCacheAndGetAllBrew("class"),
+				subclass: await DataLoader.pCacheAndGetAllBrew("subclass"),
+			};
 		}
 
 		static packUidSubclass (it) {
@@ -32205,7 +33055,7 @@ DataUtil = {
 			opts = opts || {};
 			if (opts.isLower) uid = uid.toLowerCase();
 			let [name, className, classSource, level, source, displayText] = uid.split("|").map(it => it.trim());
-			classSource = classSource || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
+			classSource = classSource || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
 			source = source || classSource;
 			level = Number(level);
 			return {
@@ -32228,7 +33078,7 @@ DataUtil = {
 			return [
 				f.name,
 				f.className,
-				f.classSource === SRC_PHB ? "" : f.classSource, // assume the class has PHB source
+				f.classSource === Parser.SRC_PHB ? "" : f.classSource, // assume the class has PHB source
 				f.level,
 				f.source === f.classSource ? "" : f.source, // assume the class feature has the class source
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
@@ -32243,8 +33093,8 @@ DataUtil = {
 			opts = opts || {};
 			if (opts.isLower) uid = uid.toLowerCase();
 			let [name, className, classSource, subclassShortName, subclassSource, level, source, displayText] = uid.split("|").map(it => it.trim());
-			classSource = classSource || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
-			subclassSource = subclassSource || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
+			classSource = classSource || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
+			subclassSource = subclassSource || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
 			source = source || subclassSource;
 			level = Number(level);
 			return {
@@ -32269,118 +33119,12 @@ DataUtil = {
 			return [
 				f.name,
 				f.className,
-				f.classSource === SRC_PHB ? "" : f.classSource, // assume the class has the PHB source
+				f.classSource === Parser.SRC_PHB ? "" : f.classSource, // assume the class has the PHB source
 				f.subclassShortName,
-				f.subclassSource === SRC_PHB ? "" : f.subclassSource, // assume the subclass has the PHB source
+				f.subclassSource === Parser.SRC_PHB ? "" : f.subclassSource, // assume the subclass has the PHB source
 				f.level,
 				f.source === f.subclassSource ? "" : f.source, // assume the feature has the same source as the subclass
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
-		}
-
-		static _mutEntryNestLevel (feature) {
-			const depth = (feature.header == null ? 1 : feature.header) - 1;
-			for (let i = 0; i < depth; ++i) {
-				const nxt = MiscUtil.copy(feature);
-				feature.entries = [nxt];
-				delete feature.name;
-				delete feature.page;
-				delete feature.source;
-			}
-		}
-
-		static async pGetDereferencedClassData (cls) {
-			// Gracefully handle legacy class data
-			if (cls.classFeatures && cls.classFeatures.every(it => typeof it !== "string" && !it.classFeature)) return cls;
-
-			cls = MiscUtil.copy(cls);
-
-			const byLevel = {}; // Build a map of `level: [classFeature]`
-			for (const classFeatureRef of (cls.classFeatures || [])) {
-				const uid = classFeatureRef.classFeature ? classFeatureRef.classFeature : classFeatureRef;
-				const {name, className, classSource, level, source, displayText} = DataUtil.class.unpackUidClassFeature(uid);
-				if (!name || !className || !level || isNaN(level)) continue; // skip over broken links
-
-				if (source === SRC_5ETOOLS_TMP) continue; // Skip over temp/nonexistent links
-
-				const hash = UrlUtil.URL_TO_HASH_BUILDER["classFeature"]({name, className, classSource, level, source});
-
-				// Skip blocklisted
-				if (ExcludeUtil.isInitialised && ExcludeUtil.isExcluded(hash, "classFeature", source, {isNoCount: true})) continue;
-
-				const classFeature = await Renderer.hover.pCacheAndGet("classFeature", source, hash, {isCopy: true});
-				// skip over missing links
-				if (!classFeature) {
-					JqueryUtil.doToast({type: "danger", content: `Failed to find <code>classFeature</code> <code>${uid}</code>`});
-					continue;
-				}
-
-				if (displayText) classFeature._displayName = displayText;
-				if (classFeatureRef.tableDisplayName) classFeature._displayNameTable = classFeatureRef.tableDisplayName;
-
-				if (classFeatureRef.gainSubclassFeature) classFeature.gainSubclassFeature = true;
-				if (classFeatureRef.gainSubclassFeatureHasContent) classFeature.gainSubclassFeatureHasContent = true;
-
-				if (cls.otherSources && cls.source === classFeature.source) classFeature.otherSources = MiscUtil.copy(cls.otherSources);
-
-				DataUtil.class._mutEntryNestLevel(classFeature);
-
-				const key = `${classFeature.level || 1}`;
-				(byLevel[key] = byLevel[key] || []).push(classFeature);
-			}
-
-			const outClassFeatures = [];
-			const maxLevel = Math.max(...Object.keys(byLevel).map(it => Number(it)));
-			for (let i = 1; i <= maxLevel; ++i) {
-				outClassFeatures[i - 1] = byLevel[i] || [];
-			}
-			cls.classFeatures = outClassFeatures;
-
-			return cls;
-		}
-
-		static async pGetDereferencedSubclassData (sc) {
-			// Gracefully handle legacy class data
-			if (sc.subclassFeatures && sc.subclassFeatures.every(it => typeof it !== "string" && !it.subclassFeature)) return sc;
-
-			sc = MiscUtil.copy(sc);
-
-			const byLevel = {}; // Build a map of `level: [subclassFeature]`
-
-			for (const subclassFeatureRef of (sc.subclassFeatures || [])) {
-				const uid = subclassFeatureRef.subclassFeature ? subclassFeatureRef.subclassFeature : subclassFeatureRef;
-				const {name, className, classSource, subclassShortName, subclassSource, level, source, displayText} = DataUtil.class.unpackUidSubclassFeature(uid);
-				if (!name || !className || !subclassShortName || !level || isNaN(level)) continue; // skip over broken links
-
-				if (source === SRC_5ETOOLS_TMP) continue; // Skip over temp/nonexistent links
-
-				const hash = UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"]({name, className, classSource, subclassShortName, subclassSource, level, source});
-
-				// Skip blocklisted
-				if (ExcludeUtil.isInitialised && ExcludeUtil.isExcluded(hash, "subclassFeature", source, {isNoCount: true})) continue;
-
-				const subclassFeature = await Renderer.hover.pCacheAndGet("subclassFeature", source, hash, {isCopy: true});
-				// skip over missing links
-				if (!subclassFeature) {
-					JqueryUtil.doToast({type: "danger", content: `Failed to find <code>subclassFeature</code> <code>${uid}</code>`});
-					continue;
-				}
-
-				if (displayText) subclassFeature._displayName = displayText;
-
-				if (sc.otherSources && sc.source === subclassFeature.source) subclassFeature.otherSources = MiscUtil.copy(sc.otherSources);
-
-				DataUtil.class._mutEntryNestLevel(subclassFeature);
-
-				const key = `${subclassFeature.level || 1}`;
-				(byLevel[key] = byLevel[key] || []).push(subclassFeature);
-			}
-
-			sc.subclassFeatures = Object.keys(byLevel)
-				.map(it => Number(it))
-				.sort(SortUtil.ascSort)
-				.map(k => byLevel[k]);
-
-			return sc;
 		}
 
 		// region Subclass lookup
@@ -32408,12 +33152,12 @@ DataUtil = {
 
 		static doPostLoad (data) {
 			const PRINT_ORDER = [
-				SRC_PHB,
-				SRC_DMG,
-				SRC_SCAG,
-				SRC_VGM,
-				SRC_MTF,
-				SRC_ERLW,
+				Parser.SRC_PHB,
+				Parser.SRC_DMG,
+				Parser.SRC_SCAG,
+				Parser.SRC_VGM,
+				Parser.SRC_MTF,
+				Parser.SRC_ERLW,
 			];
 
 			const inSource = {};
@@ -32531,6 +33275,59 @@ DataUtil = {
 		}
 	},
 
+	deck: class extends _DataUtilPropConfigCustom {
+		static _PAGE = UrlUtil.PG_DECKS;
+
+		static _pLoadJson = null;
+		static _pLoadRawJson = null;
+
+		static loadJSON () {
+			return DataUtil.deck._pLoadJson = DataUtil.deck._pLoadJson || (async () => {
+				return {
+					deck: await DataLoader.pCacheAndGetAllSite("deck"),
+					card: await DataLoader.pCacheAndGetAllSite("card"),
+				};
+			})();
+		}
+
+		static loadRawJSON () {
+			return DataUtil.deck._pLoadRawJson = DataUtil.deck._pLoadRawJson || DataUtil.loadJSON(`${Renderer.get().baseUrl}data/decks.json`);
+		}
+
+		static async loadPrerelease () {
+			return {
+				deck: await DataLoader.pCacheAndGetAllPrerelease("deck"),
+				card: await DataLoader.pCacheAndGetAllPrerelease("card"),
+			};
+		}
+
+		static async loadBrew () {
+			return {
+				deck: await DataLoader.pCacheAndGetAllBrew("deck"),
+				card: await DataLoader.pCacheAndGetAllBrew("card"),
+			};
+		}
+
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		static unpackUidCard (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [name, set, source, displayText] = uid.split("|").map(it => it.trim());
+			set = set || "none";
+			source = source || Parser.getTagSource("card", source)[opts.isLower ? "toLowerCase" : "toString"]();
+			return {
+				name,
+				set,
+				source,
+				displayText,
+			};
+		}
+	},
+
 	quickreference: {
 		/**
 		 * @param uid
@@ -32541,7 +33338,7 @@ DataUtil = {
 			opts = opts || {};
 			if (opts.isLower) uid = uid.toLowerCase();
 			let [name, source, ixChapter, ixHeader, displayText] = uid.split("|").map(it => it.trim());
-			source = source || (opts.isLower ? SRC_PHB.toLowerCase() : SRC_PHB);
+			source = source || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
 			ixChapter = Number(ixChapter || 0);
 			return {
 				name,
@@ -32553,55 +33350,12 @@ DataUtil = {
 		},
 	},
 
-	brew: {
-		_getCleanUrlRoot (urlRoot) {
-			if (urlRoot && urlRoot.trim()) {
-				urlRoot = urlRoot.trim();
-				if (!urlRoot.endsWith("/")) urlRoot = `${urlRoot}/`;
-				return urlRoot;
-			}
-			return VeCt.URL_ROOT_BREW;
-		},
-
-		async pLoadTimestamps (urlRoot) {
-			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
-			return DataUtil.loadJSON(`${urlRoot}_generated/index-timestamps.json`);
-		},
-
-		async pLoadPropIndex (urlRoot) {
-			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
-			return DataUtil.loadJSON(`${urlRoot}_generated/index-props.json`);
-		},
-
-		async pLoadNameIndex (urlRoot) {
-			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
-			return DataUtil.loadJSON(`${urlRoot}_generated/index-names.json`);
-		},
-
-		async pLoadAbbreviationIndex (urlRoot) {
-			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
-			return DataUtil.loadJSON(`${urlRoot}_generated/index-abbreviations.json`);
-		},
-
-		async pLoadMetaIndex (urlRoot) {
-			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
-			return DataUtil.loadJSON(`${urlRoot}_generated/index-meta.json`);
-		},
-
-		async pLoadSourceIndex (urlRoot) {
-			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
-			return DataUtil.loadJSON(`${urlRoot}_generated/index-sources.json`);
-		},
-
-		getFileUrl (path, urlRoot) {
-			urlRoot = DataUtil.brew._getCleanUrlRoot(urlRoot);
-			return `${urlRoot}${path}`;
-		},
-	},
+	brew: new _DataUtilBrewHelper({defaultUrlRoot: VeCt.URL_ROOT_BREW}),
+	prerelease: new _DataUtilBrewHelper({defaultUrlRoot: VeCt.URL_ROOT_PRERELEASE}),
 };
 
 // ROLLING =============================================================================================================
-RollerUtil = {
+globalThis.RollerUtil = {
 	isCrypto () {
 		return typeof window !== "undefined" && typeof window.crypto !== "undefined";
 	},
@@ -32624,6 +33378,8 @@ RollerUtil = {
 	 * Cryptographically secure RNG
 	 */
 	_randomise: (min, max) => {
+		if (isNaN(min) || isNaN(max)) throw new Error(`Invalid min/max!`);
+
 		const range = max - min;
 		const bytesNeeded = Math.ceil(Math.log2(range) / 8);
 		const randomBytes = new Uint8Array(bytesNeeded);
@@ -32688,8 +33444,8 @@ RollerUtil = {
 	_DICE_REGEX_STR: "((([1-9]\\d*)?d([1-9]\\d*)(\\s*?[-+×x*÷/]\\s*?(\\d,\\d|\\d)+(\\.\\d+)?)?))+?",
 };
 RollerUtil.DICE_REGEX = new RegExp(RollerUtil._DICE_REGEX_STR, "g");
-RollerUtil.REGEX_DAMAGE_DICE = /(\d+)( \((?:{@dice |{@damage ))([-+0-9d ]*)(}\)(?:\s*\+\s*the spell's level)? [a-z]+( \([-a-zA-Z0-9 ]+\))?( or [a-z]+( \([-a-zA-Z0-9 ]+\))?)? damage)/gi;
-RollerUtil.REGEX_DAMAGE_FLAT = /(Hit: |{@h})([0-9]+)( [a-z]+( \([-a-zA-Z0-9 ]+\))?( or [a-z]+( \([-a-zA-Z0-9 ]+\))?)? damage)/gi;
+RollerUtil.REGEX_DAMAGE_DICE = /(?<average>\d+)(?<prefix> \((?:{@dice |{@damage ))(?<diceExp>[-+0-9d ]*)(?<suffix>}\)(?:\s*\+\s*the spell's level)? [a-z]+( \([-a-zA-Z0-9 ]+\))?( or [a-z]+( \([-a-zA-Z0-9 ]+\))?)? damage)/gi;
+RollerUtil.REGEX_DAMAGE_FLAT = /(?<prefix>Hit: |{@h})(?<flatVal>[0-9]+)(?<suffix> [a-z]+( \([-a-zA-Z0-9 ]+\))?( or [a-z]+( \([-a-zA-Z0-9 ]+\))?)? damage)/gi;
 RollerUtil._REGEX_ROLLABLE_COL_LABEL = /^(.*?\d)(\s*[-+/*^×÷]\s*)([a-zA-Z0-9 ]+)$/;
 RollerUtil.ROLL_COL_NONE = 0;
 RollerUtil.ROLL_COL_STANDARD = 1;
@@ -32858,6 +33614,8 @@ function StorageUtilMemory () {
 	};
 }
 
+globalThis.StorageUtilMemory = StorageUtilMemory;
+
 function StorageUtilBacked () {
 	StorageUtilBase.call(this);
 
@@ -32922,10 +33680,10 @@ function StorageUtilBacked () {
 	};
 }
 
-StorageUtil = new StorageUtilBacked();
+globalThis.StorageUtil = new StorageUtilBacked();
 
 // TODO transition cookie-like storage items over to this
-SessionStorageUtil = {
+globalThis.SessionStorageUtil = {
 	_fakeStorage: {},
 	__storage: null,
 	getStorage: () => {
@@ -32983,7 +33741,7 @@ SessionStorageUtil = {
 };
 
 // ID GENERATION =======================================================================================================
-CryptUtil = {
+globalThis.CryptUtil = {
 	// region md5 internals
 	// stolen from http://www.myersdaily.org/joseph/javascript/md5.js
 	_md5cycle: (x, k) => {
@@ -33178,7 +33936,7 @@ CryptUtil = {
 };
 
 // COLLECTIONS =========================================================================================================
-CollectionUtil = {
+globalThis.CollectionUtil = {
 	ObjectSet: class ObjectSet {
 		constructor () {
 			this.map = new Map();
@@ -33490,6 +34248,17 @@ Array.prototype.pSerialAwaitSome || Object.defineProperty(Array.prototype, "pSer
 	},
 });
 
+Array.prototype.pSerialAwaitFirst || Object.defineProperty(Array.prototype, "pSerialAwaitFirst", {
+	enumerable: false,
+	writable: true,
+	value: async function (fnMapFind) {
+		for (let i = 0, len = this.length; i < len; ++i) {
+			const result = await fnMapFind(this[i], i, this);
+			if (result) return result;
+		}
+	},
+});
+
 Array.prototype.unique || Object.defineProperty(Array.prototype, "unique", {
 	enumerable: false,
 	writable: true,
@@ -33583,6 +34352,16 @@ Array.prototype.meanAbsoluteDeviation || Object.defineProperty(Array.prototype, 
 	value: function () {
 		const mean = this.mean();
 		return (this.map(num => Math.abs(num - mean)) || []).mean();
+	},
+});
+
+Map.prototype.getOrSet || Object.defineProperty(Map.prototype, "getOrSet", {
+	enumerable: false,
+	writable: true,
+	value: function (k, orV) {
+		if (this.has(k)) return this.get(k);
+		this.set(k, orV);
+		return orV;
 	},
 });
 
@@ -33762,7 +34541,7 @@ function BookModeView (opts) {
 BookModeView._BOOK_VIEW_COLUMNS_K = "bookViewColumns";
 
 // CONTENT EXCLUSION ===================================================================================================
-ExcludeUtil = {
+globalThis.ExcludeUtil = {
 	isInitialised: false,
 	_excludes: null,
 	_cache_excludesLookup: null,
@@ -33802,7 +34581,7 @@ ExcludeUtil = {
 	},
 
 	getList () {
-		return MiscUtil.copy(ExcludeUtil._excludes || []);
+		return MiscUtil.copyFast(ExcludeUtil._excludes || []);
 	},
 
 	async pSetList (toSet) {
@@ -33824,8 +34603,8 @@ ExcludeUtil = {
 		await ExcludeUtil.pInitialise({lockToken});
 		this._doBuildCache();
 
-		const out = MiscUtil.copy(ExcludeUtil._excludes || []);
-		MiscUtil.copy(toAdd || [])
+		const out = MiscUtil.copyFast(ExcludeUtil._excludes || []);
+		MiscUtil.copyFast(toAdd || [])
 			.filter(({hash, category, source}) => {
 				if (!hash || !category || !source) return false;
 				const cacheUid = ExcludeUtil._getCacheUids(hash, category, source, true);
@@ -33850,7 +34629,7 @@ ExcludeUtil = {
 	_getCacheUids (hash, category, source, isExact) {
 		hash = (hash || "").toLowerCase();
 		category = (category || "").toLowerCase();
-		source = (source.source || source || "").toLowerCase();
+		source = (source?.source || source || "").toLowerCase();
 
 		const exact = `${hash}__${category}__${source}`;
 		if (isExact) return [exact];
@@ -33913,11 +34692,11 @@ ExcludeUtil = {
 };
 
 // EXTENSIONS ==========================================================================================================
-ExtensionUtil = {
+globalThis.ExtensionUtil = {
 	ACTIVE: false,
 
 	_doSend (type, data) {
-		const detail = MiscUtil.copy({type, data});
+		const detail = MiscUtil.copy({type, data}); // Note that this needs to include `JSON.parse` to function
 		window.dispatchEvent(new CustomEvent("rivet.send", {detail}));
 	},
 
@@ -33925,7 +34704,8 @@ ExtensionUtil = {
 		const {page, source, hash, extensionData} = ExtensionUtil._getElementData({ele});
 
 		if (page && source && hash) {
-			let toSend = await Renderer.hover.pCacheAndGet(page, source, hash);
+			let toSend = ExtensionUtil._getEmbeddedFromCache(page, source, hash)
+				|| await DataLoader.pCacheAndGet(page, source, hash);
 
 			if (extensionData) {
 				switch (page) {
@@ -33974,11 +34754,25 @@ ExtensionUtil = {
 	doSendRoll (data) { ExtensionUtil._doSend("roll", data); },
 
 	pDoSend ({type, data}) { ExtensionUtil._doSend(type, data); },
+
+	/* -------------------------------------------- */
+
+	_CACHE_EMBEDDED_STATS: {},
+
+	addEmbeddedToCache (page, source, hash, ent) {
+		MiscUtil.set(ExtensionUtil._CACHE_EMBEDDED_STATS, page.toLowerCase(), source.toLowerCase(), hash.toLowerCase(), MiscUtil.copyFast(ent));
+	},
+
+	_getEmbeddedFromCache (page, source, hash) {
+		return MiscUtil.get(ExtensionUtil._CACHE_EMBEDDED_STATS, page.toLowerCase(), source.toLowerCase(), hash.toLowerCase());
+	},
+
+	/* -------------------------------------------- */
 };
 if (typeof window !== "undefined") window.addEventListener("rivet.active", () => ExtensionUtil.ACTIVE = true);
 
 // TOKENS ==============================================================================================================
-TokenUtil = {
+globalThis.TokenUtil = {
 	handleStatblockScroll (event, ele) {
 		$(`#token_image`)
 			.toggle(ele.scrollTop < 32)
@@ -33990,7 +34784,12 @@ TokenUtil = {
 };
 
 // LOCKS ===============================================================================================================
-VeLock = function ({name = null, isDbg = false} = {}) {
+/**
+ * @param {string} name
+ * @param {boolean} isDbg
+ * @constructor
+ */
+globalThis.VeLock = function ({name = null, isDbg = false} = {}) {
 	this._name = name;
 	this._isDbg = isDbg;
 	this._lockMeta = null;
@@ -34044,7 +34843,7 @@ VeLock = function ({name = null, isDbg = false} = {}) {
 ExcludeUtil._lock = new VeLock();
 
 // DATETIME ============================================================================================================
-DatetimeUtil = {
+globalThis.DatetimeUtil = {
 	getDateStr ({date, isShort = false, isPad = false} = {}) {
 		const month = DatetimeUtil._MONTHS[date.getMonth()];
 		return `${isShort ? month.substring(0, 3) : month} ${isPad && date.getDate() < 10 ? "\u00A0" : ""}${Parser.getOrdinalForm(date.getDate())}, ${date.getFullYear()}`;
@@ -34103,7 +34902,7 @@ DatetimeUtil._SECS_PER_DAY = 86400;
 DatetimeUtil._SECS_PER_HOUR = 3600;
 DatetimeUtil._SECS_PER_MINUTE = 60;
 
-EditorUtil = {
+globalThis.EditorUtil = {
 	getTheme () {
 		const {isNight} = styleSwitcher.getSummary();
 		return isNight ? "ace/theme/tomorrow_night" : "ace/theme/textmate";
@@ -34130,6 +34929,22 @@ EditorUtil = {
 
 // MISC WEBPAGE ONLOADS ================================================================================================
 if (!IS_VTT && typeof window !== "undefined") {
+	window.addEventListener("load", () => {
+		const docRoot = document.querySelector(":root");
+
+		if (CSS?.supports("top: constant(safe-area-inset-top)")) {
+			docRoot.style.setProperty("--safe-area-inset-top", "constant(safe-area-inset-top, 0)");
+			docRoot.style.setProperty("--safe-area-inset-right", "constant(safe-area-inset-right, 0)");
+			docRoot.style.setProperty("--safe-area-inset-bottom", "constant(safe-area-inset-bottom, 0)");
+			docRoot.style.setProperty("--safe-area-inset-left", "constant(safe-area-inset-left, 0)");
+		} else if (CSS?.supports("top: env(safe-area-inset-top)")) {
+			docRoot.style.setProperty("--safe-area-inset-top", "env(safe-area-inset-top, 0)");
+			docRoot.style.setProperty("--safe-area-inset-right", "env(safe-area-inset-right, 0)");
+			docRoot.style.setProperty("--safe-area-inset-bottom", "env(safe-area-inset-bottom, 0)");
+			docRoot.style.setProperty("--safe-area-inset-left", "env(safe-area-inset-left, 0)");
+		}
+	});
+
 	window.addEventListener("load", () => {
 		$(document.body)
 			.on("click", `[data-packed-dice]`, evt => {
@@ -34195,7 +35010,7 @@ if (!IS_VTT && typeof window !== "undefined") {
 	// });
 }
 
-_Donate = {
+globalThis._Donate = {
 	// TAG Disabled until further notice
 	/*
 	init () {
@@ -34368,6 +35183,7 @@ function MixinProxyBase (Cls) {
 		_addHook (hookProp, prop, hook) {
 			ProxyBase._addHook_to(this.__hooks, hookProp, prop, hook);
 			if (this.__hooksTmp) ProxyBase._addHook_to(this.__hooksTmp, hookProp, prop, hook);
+			return hook;
 		}
 
 		static _addHook_to (obj, hookProp, prop, hook) {
@@ -34473,6 +35289,8 @@ function MixinProxyBase (Cls) {
 }
 
 class ProxyBase extends MixinProxyBase(class {}) {}
+
+globalThis.ProxyBase = ProxyBase;
 
 class UiUtil {
 	/**
@@ -34783,6 +35601,10 @@ class UiUtil {
 		});
 	}
 
+	static isAnyModalOpen () {
+		return !!UiUtil._MODAL_STACK?.length;
+	}
+
 	static addModalSep ($modalInner) {
 		$modalInner.append(`<hr class="ui-modal__row-sep">`);
 	}
@@ -34856,11 +35678,15 @@ class UiUtil {
 	static bindTypingEnd ({$ipt, fnKeyup, fnKeypress, fnKeydown, fnClick} = {}) {
 		let timerTyping;
 		$ipt
-			// Trigger on blur, as tabbing out of a field triggers the keyup on the element which was tabbed into. Our
-			//   intent. however, is to trigger on any keyup which began in this field.
-			.on("keyup search paste blur", evt => {
+			.on("keyup search paste", evt => {
 				clearTimeout(timerTyping);
 				timerTyping = setTimeout(() => { fnKeyup(evt); }, UiUtil.TYPE_TIMEOUT_MS);
+			})
+			// Trigger on blur, as tabbing out of a field triggers the keyup on the element which was tabbed into. Our
+			//   intent. however, is to trigger on any keyup which began in this field.
+			.on("blur", evt => {
+				clearTimeout(timerTyping);
+				fnKeyup(evt);
 			})
 			.on("keypress", evt => {
 				if (fnKeypress) fnKeypress(evt);
@@ -34896,14 +35722,41 @@ UiUtil.TYPE_TIMEOUT_MS = 100; // auto-search after 100ms
 UiUtil._MODAL_STACK = null;
 UiUtil._MODAL_LAST_MOUSEDOWN = null;
 
-class ListUiUtil {
+class ListSelectClickHandlerBase {
 	static _EVT_PASS_THOUGH_TAGS = new Set(["A", "BUTTON"]);
+
+	constructor () {
+		this._firstSelection = null;
+		this._lastSelection = null;
+
+		this._selectionInitialValue = null;
+	}
+
+	/**
+	 * @abstract
+	 * @return {Array}
+	 */
+	get _visibleItems () { throw new Error("Unimplemented!"); }
+
+	/**
+	 * @abstract
+	 * @return {Array}
+	 */
+	get _allItems () { throw new Error("Unimplemented!"); }
+
+	/** @abstract */
+	_getCb (item, opts) { throw new Error("Unimplemented!"); }
+
+	/** @abstract */
+	_setCheckbox (item, opts) { throw new Error("Unimplemented!"); }
+
+	/** @abstract */
+	_setHighlighted (item, opts) { throw new Error("Unimplemented!"); }
 
 	/**
 	 * (Public method for Plutonium use)
 	 * Handle doing a checkbox-based selection toggle on a list.
-	 * @param list
-	 * @param item List item. Must have a "data" property with a "cbSel" (the checkbox).
+	 * @param item List item.
 	 * @param evt Click event.
 	 * @param [opts] Options object.
 	 * @param [opts.isNoHighlightSelection] If highlighting selected rows should be skipped.
@@ -34911,12 +35764,13 @@ class ListUiUtil {
 	 * @param [opts.fnGetCb] Function which gets the checkbox from a list item.
 	 * @param [opts.isPassThroughEvents] If e.g. click events to links/buttons in the list item should be allowed/ignored.
 	 */
-	static handleSelectClick (list, item, evt, opts) {
+	handleSelectClick (item, evt, opts) {
 		opts = opts || {};
 
 		if (opts.isPassThroughEvents) {
-			const subEles = evt.path.slice(0, evt.path.indexOf(evt.currentTarget));
-			if (subEles.some(ele => ListUiUtil._EVT_PASS_THOUGH_TAGS.has(ele?.tagName))) return;
+			const evtPath = evt.composedPath();
+			const subEles = evtPath.slice(0, evtPath.indexOf(evt.currentTarget));
+			if (subEles.some(ele => this.constructor._EVT_PASS_THOUGH_TAGS.has(ele?.tagName))) return;
 		}
 
 		evt.preventDefault();
@@ -34925,56 +35779,58 @@ class ListUiUtil {
 		const cb = this._getCb(item, opts);
 		if (cb.disabled) return true;
 
-		if (evt && evt.shiftKey && list.__firstListSelection) {
-			if (list.__lastListSelection === item) {
+		if (evt && evt.shiftKey && this._firstSelection) {
+			if (this._lastSelection === item) {
 				// on double-tapping the end of the selection, toggle it on/off
 
-				this.setCheckbox(item, {...opts, toVal: !cb.checked});
-			} else if (list.__firstListSelection === item && list.__lastListSelection) {
+				this._setCheckbox(item, {...opts, toVal: !cb.checked});
+			} else if (this._firstSelection === item && this._lastSelection) {
 				// If the item matches the last clicked, clear all checkboxes from our last selection
 
-				const ix1 = list.visibleItems.indexOf(list.__firstListSelection);
-				const ix2 = list.visibleItems.indexOf(list.__lastListSelection);
+				const ix1 = this._visibleItems.indexOf(this._firstSelection);
+				const ix2 = this._visibleItems.indexOf(this._lastSelection);
 
 				const [ixStart, ixEnd] = [ix1, ix2].sort(SortUtil.ascSort);
 				for (let i = ixStart; i <= ixEnd; ++i) {
-					const it = list.visibleItems[i];
-					this.setCheckbox(it, {...opts, toVal: false});
+					const it = this._visibleItems[i];
+					this._setCheckbox(it, {...opts, toVal: false});
 				}
 
-				this.setCheckbox(item, opts);
+				this._setCheckbox(item, opts);
 			} else {
-				// on a shift-click, toggle all the checkboxes to true...
+				// on a shift-click, toggle all the checkboxes to the value of the initial item...
+				this._selectionInitialValue = this._getCb(this._firstSelection, opts).checked;
 
-				const ix1 = list.visibleItems.indexOf(list.__firstListSelection);
-				const ix2 = list.visibleItems.indexOf(item);
-				const ix2Prev = list.__lastListSelection ? list.visibleItems.indexOf(list.__lastListSelection) : null;
+				const ix1 = this._visibleItems.indexOf(this._firstSelection);
+				const ix2 = this._visibleItems.indexOf(item);
+				const ix2Prev = this._lastSelection ? this._visibleItems.indexOf(this._lastSelection) : null;
 
 				const [ixStart, ixEnd] = [ix1, ix2].sort(SortUtil.ascSort);
+				const nxtOpts = {...opts, toVal: this._selectionInitialValue};
 				for (let i = ixStart; i <= ixEnd; ++i) {
-					const it = list.visibleItems[i];
-					this.setCheckbox(it, opts);
+					const it = this._visibleItems[i];
+					this._setCheckbox(it, nxtOpts);
 				}
 
-				// ...except those between the last selection and this selection, set those to false
-				if (ix2Prev != null) {
+				// ...except when selecting; for those between the last selection and this selection, those to unchecked
+				if (this._selectionInitialValue && ix2Prev != null) {
 					if (ix2Prev > ixEnd) {
-						const nxtOpts = {...opts, toVal: false};
+						const nxtOpts = {...opts, toVal: !this._selectionInitialValue};
 						for (let i = ixEnd + 1; i <= ix2Prev; ++i) {
-							const it = list.visibleItems[i];
-							this.setCheckbox(it, nxtOpts);
+							const it = this._visibleItems[i];
+							this._setCheckbox(it, nxtOpts);
 						}
 					} else if (ix2Prev < ixStart) {
-						const nxtOpts = {...opts, toVal: false};
+						const nxtOpts = {...opts, toVal: !this._selectionInitialValue};
 						for (let i = ix2Prev; i < ixStart; ++i) {
-							const it = list.visibleItems[i];
-							this.setCheckbox(it, nxtOpts);
+							const it = this._visibleItems[i];
+							this._setCheckbox(it, nxtOpts);
 						}
 					}
 				}
 			}
 
-			list.__lastListSelection = item;
+			this._lastSelection = item;
 		} else {
 			// on a normal click, or if there's been no initial selection, just toggle the checkbox
 
@@ -34985,48 +35841,74 @@ class ListUiUtil {
 				if (opts.fnOnSelectionChange) opts.fnOnSelectionChange(item, cbMaster.checked);
 
 				if (!opts.isNoHighlightSelection) {
-					if (cbMaster.checked) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
-					else item.ele instanceof $ ? item.ele.removeClass("list-multi-selected") : item.ele.classList.remove("list-multi-selected");
+					this._setHighlighted(item, cbMaster.checked);
 				}
 			} else {
 				if (!opts.isNoHighlightSelection) {
-					item.ele instanceof $ ? item.ele.removeClass("list-multi-selected") : item.ele.classList.remove("list-multi-selected");
+					this._setHighlighted(item, false);
 				}
 			}
 
-			list.__firstListSelection = item;
-			list.__lastListSelection = null;
+			this._firstSelection = item;
+			this._lastSelection = null;
+			this._selectionInitialValue = null;
 		}
 	}
 
 	/**
 	 * Handle doing a radio-based selection toggle on a list.
-	 * @param list
-	 * @param item List item. Must have a "data" property with a "cbSel" (the radio input).
+	 * @param item List item.
 	 * @param evt Click event.
 	 */
-	static handleSelectClickRadio (list, item, evt) {
+	handleSelectClickRadio (item, evt) {
 		evt.preventDefault();
 		evt.stopPropagation();
 
-		list.items.forEach(it => {
-			if (it === item) {
+		this._allItems.forEach(itemOther => {
+			const cb = this._getCb(itemOther);
+
+			if (itemOther === item) {
 				// Setting this to true *should* cause the browser to update the rest for us, but since list items can
 				//   be filtered/hidden, the browser won't necessarily update them all. Therefore, forcibly set
 				//   `checked = false` below.
-				it.data.cbSel.checked = true;
-				it.ele.classList.add("list-multi-selected");
+				cb.checked = true;
+				this._setHighlighted(itemOther, true);
 			} else {
-				it.data.cbSel.checked = false;
-				it.ele.classList.remove("list-multi-selected");
+				cb.checked = false;
+				this._setHighlighted(itemOther, false);
 			}
 		});
 	}
+}
 
-	static _getCb (item, opts) { return opts.fnGetCb ? opts.fnGetCb(item) : item.data.cbSel; }
+globalThis.ListSelectClickHandlerBase = ListSelectClickHandlerBase;
 
-	static setCheckbox (item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal = true} = {}) {
+class ListSelectClickHandler extends ListSelectClickHandlerBase {
+	constructor ({list}) {
+		super();
+		this._list = list;
+	}
+
+	get _visibleItems () { return this._list.visibleItems; }
+
+	get _allItems () { return this._list.items; }
+
+	_getCb (item, opts = {}) { return opts.fnGetCb ? opts.fnGetCb(item) : item.data.cbSel; }
+
+	_setCheckbox (item, opts = {}) { return this.setCheckbox(item, opts); }
+
+	_setHighlighted (item, isHighlighted) {
+		if (isHighlighted) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
+		else item.ele instanceof $ ? item.ele.removeClass("list-multi-selected") : item.ele.classList.remove("list-multi-selected");
+	}
+
+	/* -------------------------------------------- */
+
+	setCheckbox (item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal = true} = {}) {
 		const cbSlave = this._getCb(item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection});
+
+		if (cbSlave?.disabled) return;
+
 		if (cbSlave) {
 			cbSlave.checked = toVal;
 			if (fnOnSelectionChange) fnOnSelectionChange(item, toVal);
@@ -35034,29 +35916,34 @@ class ListUiUtil {
 
 		if (isNoHighlightSelection) return;
 
-		if (toVal) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
-		else item.ele instanceof $ ? item.ele.removeClass("list-multi-selected") : item.ele.classList.remove("list-multi-selected");
+		this._setHighlighted(item, toVal);
 	}
 
 	/**
 	 * (Public method for Plutonium use)
 	 */
-	static bindSelectAllCheckbox ($cbAll, list) {
+	bindSelectAllCheckbox ($cbAll) {
 		$cbAll.change(() => {
 			const isChecked = $cbAll.prop("checked");
-			this.setCheckboxes({isChecked, list});
+			this.setCheckboxes({isChecked});
 		});
 	}
 
-	static setCheckboxes ({isChecked, isIncludeHidden, list}) {
-		(isIncludeHidden ? list.items : list.visibleItems).forEach(item => {
-			if (item.data.cbSel) item.data.cbSel.checked = isChecked;
+	setCheckboxes ({isChecked, isIncludeHidden}) {
+		(isIncludeHidden ? this._list.items : this._list.visibleItems)
+			.forEach(item => {
+				if (item.data.cbSel?.disabled) return;
 
-			if (isChecked) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
-			else item.ele instanceof $ ? item.ele.removeClass("list-multi-selected") : item.ele.classList.remove("list-multi-selected");
-		});
+				if (item.data.cbSel) item.data.cbSel.checked = isChecked;
+
+				this._setHighlighted(item, isChecked);
+			});
 	}
+}
 
+globalThis.ListSelectClickHandler = ListSelectClickHandler;
+
+class ListUiUtil {
 	static bindPreviewButton (page, allData, item, btnShowHidePreview, {$fnGetPreviewStats} = {}) {
 		btnShowHidePreview.addEventListener("click", evt => {
 			const entity = allData[item.ix];
@@ -35146,9 +36033,122 @@ class ListUiUtil {
 				});
 			});
 	}
+
+	// ==================
+
+	static ListSyntax = class {
+		static _READONLY_WALKER = null;
+
+		constructor (
+			{
+				fnGetDataList,
+				pFnGetFluff,
+			},
+		) {
+			this._fnGetDataList = fnGetDataList;
+			this._pFnGetFluff = pFnGetFluff;
+		}
+
+		get _dataList () { return this._fnGetDataList(); }
+
+		build () {
+			return {
+				stats: {
+					help: `"stats:<text>" ("/text/" for regex) to search within stat blocks.`,
+					fn: (listItem, searchTerm) => {
+						if (listItem.data._textCacheStats == null) listItem.data._textCacheStats = this._getSearchCacheStats(this._dataList[listItem.ix]);
+						return this._listSyntax_isTextMatch(listItem.data._textCacheStats, searchTerm);
+					},
+				},
+				info: {
+					help: `"info:<text>" ("/text/" for regex) to search within info.`,
+					fn: async (listItem, searchTerm) => {
+						if (listItem.data._textCacheFluff == null) listItem.data._textCacheFluff = await this._pGetSearchCacheFluff(this._dataList[listItem.ix]);
+						return this._listSyntax_isTextMatch(listItem.data._textCacheFluff, searchTerm);
+					},
+					isAsync: true,
+				},
+				text: {
+					help: `"text:<text>" ("/text/" for regex) to search within stat blocks plus info.`,
+					fn: async (listItem, searchTerm) => {
+						if (listItem.data._textCacheAll == null) {
+							const {textCacheStats, textCacheFluff, textCacheAll} = await this._pGetSearchCacheAll(this._dataList[listItem.ix], {textCacheStats: listItem.data._textCacheStats, textCacheFluff: listItem.data._textCacheFluff});
+							listItem.data._textCacheStats = listItem.data._textCacheStats || textCacheStats;
+							listItem.data._textCacheFluff = listItem.data._textCacheFluff || textCacheFluff;
+							listItem.data._textCacheAll = textCacheAll;
+						}
+						return this._listSyntax_isTextMatch(listItem.data._textCacheAll, searchTerm);
+					},
+					isAsync: true,
+				},
+			};
+		}
+
+		_listSyntax_isTextMatch (str, searchTerm) {
+			if (!str) return false;
+			if (searchTerm instanceof RegExp) return searchTerm.test(str);
+			return str.includes(searchTerm);
+		}
+
+		// TODO(Future) the ideal solution to this is to render every entity to plain text (or failing that, Markdown) and
+		//   indexing that text with e.g. elasticlunr.
+		_getSearchCacheStats (entity) {
+			return this._getSearchCache_entries(entity);
+		}
+
+		static _INDEXABLE_PROPS_ENTRIES = [
+			"entries",
+		];
+
+		_getSearchCache_entries (entity, {indexableProps = null} = {}) {
+			if ((indexableProps || this.constructor._INDEXABLE_PROPS_ENTRIES).every(it => !entity[it])) return "";
+			const ptrOut = {_: ""};
+			(indexableProps || this.constructor._INDEXABLE_PROPS_ENTRIES).forEach(it => this._getSearchCache_handleEntryProp(entity, it, ptrOut));
+			return ptrOut._;
+		}
+
+		_getSearchCache_handleEntryProp (entity, prop, ptrOut) {
+			if (!entity[prop]) return;
+
+			this.constructor._READONLY_WALKER = this.constructor._READONLY_WALKER || MiscUtil.getWalker({
+				keyBlocklist: new Set(["type", "colStyles", "style"]),
+				isNoModification: true,
+			});
+
+			this.constructor._READONLY_WALKER.walk(
+				entity[prop],
+				{
+					string: (str) => this._getSearchCache_handleString(ptrOut, str),
+				},
+			);
+		}
+
+		_getSearchCache_handleString (ptrOut, str) {
+			ptrOut._ += `${Renderer.stripTags(str).toLowerCase()} -- `;
+		}
+
+		async _pGetSearchCacheFluff (entity) {
+			const fluff = this._pFnGetFluff ? await this._pFnGetFluff(entity) : null;
+			return fluff ? this._getSearchCache_entries(fluff, {indexableProps: ["entries"]}) : "";
+		}
+
+		async _pGetSearchCacheAll (entity, {textCacheStats = null, textCacheFluff = null}) {
+			textCacheStats = textCacheStats || this._getSearchCacheStats(entity);
+			textCacheFluff = textCacheFluff || await this._pGetSearchCacheFluff(entity);
+			return {
+				textCacheStats,
+				textCacheFluff,
+				textCacheAll: [textCacheStats, textCacheFluff].filter(Boolean).join(" -- "),
+			};
+		}
+	};
+
+	// ==================
 }
 ListUiUtil.HTML_GLYPHICON_EXPAND = `[+]`;
 ListUiUtil.HTML_GLYPHICON_CONTRACT = `[\u2012]`;
+
+globalThis.ListUiUtil = ListUiUtil;
 
 class ProfUiUtil {
 	/**
@@ -35424,6 +36424,9 @@ class TabUiUtil extends TabUiUtilBase {
 		obj.__$getDispTabTitle = function () { return null; };
 	}
 }
+
+globalThis.TabUiUtil = TabUiUtil;
+
 TabUiUtil.TabMeta = class extends TabUiUtilBase.TabMeta {
 	constructor (opts) {
 		super(opts);
@@ -35489,11 +36492,13 @@ class TabUiUtilSide extends TabUiUtilBase {
 	}
 }
 
+globalThis.TabUiUtilSide = TabUiUtilSide;
+
 // TODO have this respect the blocklist?
 class SearchUiUtil {
 	static async pDoGlobalInit () {
 		elasticlunr.clearStopWords();
-		await Renderer.item.populatePropertyAndTypeReference();
+		await Renderer.item.pPopulatePropertyAndTypeReference();
 	}
 
 	static _isNoHoverCat (cat) {
@@ -35517,6 +36522,10 @@ class SearchUiUtil {
 			await Promise.all(options.additionalIndices.map(async add => {
 				additionalData[add] = Omnidexer.decompressIndex(await DataUtil.loadJSON(`${Renderer.get().baseUrl}search/index-${add}.json`));
 				const maxId = additionalData[add].last().id;
+
+				const prereleaseIndex = await PrereleaseUtil.pGetAdditionalSearchIndices(maxId, add);
+				if (prereleaseIndex.length) additionalData[add] = additionalData[add].concat(prereleaseIndex);
+
 				const brewIndex = await BrewUtil2.pGetAdditionalSearchIndices(maxId, add);
 				if (brewIndex.length) additionalData[add] = additionalData[add].concat(brewIndex);
 			}));
@@ -35527,6 +36536,10 @@ class SearchUiUtil {
 			await Promise.all(options.alternateIndices.map(async alt => {
 				alternateData[alt] = Omnidexer.decompressIndex(await DataUtil.loadJSON(`${Renderer.get().baseUrl}search/index-alt-${alt}.json`));
 				const maxId = alternateData[alt].last().id;
+
+				const prereleaseIndex = await BrewUtil2.pGetAlternateSearchIndices(maxId, alt);
+				if (prereleaseIndex.length) alternateData[alt] = alternateData[alt].concat(prereleaseIndex);
+
 				const brewIndex = await BrewUtil2.pGetAlternateSearchIndices(maxId, alt);
 				if (brewIndex.length) alternateData[alt] = alternateData[alt].concat(brewIndex);
 			}));
@@ -35573,16 +36586,21 @@ class SearchUiUtil {
 		Object.values(additionalData).forEach(arr => arr.forEach(d => handleDataItem(d)));
 		Object.values(alternateData).forEach(arr => arr.forEach(d => handleDataItem(d, true)));
 
-		const brewIndex = await BrewUtil2.pGetSearchIndex({id: availContent.ALL.documentStore.length});
+		const pAddPrereleaseBrewIndex = async ({brewUtil}) => {
+			const brewIndex = await brewUtil.pGetSearchIndex({id: availContent.ALL.documentStore.length});
 
-		brewIndex.forEach(d => {
-			if (SearchUiUtil._isNoHoverCat(d.c) || fromDeepIndex(d)) return;
-			d.cf = Parser.pageCategoryToFull(d.c);
-			d.cf = d.c === Parser.CAT_ID_CREATURE ? "Creature" : Parser.pageCategoryToFull(d.c);
-			initIndexForFullCat(d);
-			availContent.ALL.addDoc(d);
-			availContent[d.cf].addDoc(d);
-		});
+			brewIndex.forEach(d => {
+				if (SearchUiUtil._isNoHoverCat(d.c) || fromDeepIndex(d)) return;
+				d.cf = Parser.pageCategoryToFull(d.c);
+				d.cf = d.c === Parser.CAT_ID_CREATURE ? "Creature" : Parser.pageCategoryToFull(d.c);
+				initIndexForFullCat(d);
+				availContent.ALL.addDoc(d);
+				availContent[d.cf].addDoc(d);
+			});
+		};
+
+		await pAddPrereleaseBrewIndex({brewUtil: PrereleaseUtil});
+		await pAddPrereleaseBrewIndex({brewUtil: BrewUtil2});
 
 		return availContent;
 	}
@@ -35592,7 +36610,6 @@ SearchUiUtil.NO_HOVER_CATEGORIES = new Set([
 	Parser.CAT_ID_BOOK,
 	Parser.CAT_ID_QUICKREF,
 	Parser.CAT_ID_PAGE,
-	Parser.CAT_ID_LEGENDARY_GROUP,
 ]);
 
 // based on DM screen's AddMenuSearchTab
@@ -35623,35 +36640,54 @@ class SearchWidget {
 	static bindAutoSearch ($iptSearch, opts) {
 		UiUtil.bindTypingEnd({
 			$ipt: $iptSearch,
-			fnKeyup: () => {
+			fnKeyup: evt => {
+				if (evt.type === "blur") return;
+
+				// Handled in `fnKeydown`
+				switch (evt.key) {
+					case "ArrowDown": {
+						evt.preventDefault();
+						return;
+					}
+					case "Enter": return;
+				}
+
 				opts.fnSearch && opts.fnSearch();
 			},
 			fnKeypress: evt => {
-				if (evt.which === 13) {
-					opts.flags.doClickFirst = true;
-					opts.fnSearch && opts.fnSearch();
+				switch (evt.key) {
+					case "ArrowDown": {
+						evt.preventDefault();
+						return;
+					}
+					case "Enter": {
+						opts.flags.doClickFirst = true;
+						opts.fnSearch && opts.fnSearch();
+					}
 				}
 			},
 			fnKeydown: evt => {
 				if (opts.flags.isWait) {
 					opts.flags.isWait = false;
 					opts.fnShowWait && opts.fnShowWait();
-				} else {
-					switch (evt.which) {
-						case 40: { // down
-							if (opts.$ptrRows && opts.$ptrRows._[0]) {
-								evt.preventDefault();
-								opts.$ptrRows._[0].focus();
-							}
-							break;
+					return;
+				}
+
+				switch (evt.key) {
+					case "ArrowDown": {
+						if (opts.$ptrRows && opts.$ptrRows._[0]) {
+							evt.stopPropagation();
+							evt.preventDefault();
+							opts.$ptrRows._[0][0].focus();
 						}
-						case 13: { // enter
-							if (opts.$ptrRows && opts.$ptrRows._[0]) {
-								evt.preventDefault();
-								opts.$ptrRows._[0].click();
-							}
-							break;
+						break;
+					}
+					case "Enter": {
+						if (opts.$ptrRows && opts.$ptrRows._[0]) {
+							evt.preventDefault();
+							opts.$ptrRows._[0].click();
 						}
+						break;
 					}
 				}
 			},
@@ -35661,7 +36697,7 @@ class SearchWidget {
 		});
 	}
 
-	static bindRowHandlers ({result, $row, $ptrRows, fnHandleClick}) {
+	static bindRowHandlers ({result, $row, $ptrRows, fnHandleClick, $iptSearch}) {
 		return $row
 			.keydown(evt => {
 				switch (evt.which) {
@@ -35673,7 +36709,7 @@ class SearchWidget {
 						const ixRow = $ptrRows._.indexOf($row);
 						const $prev = $ptrRows._[ixRow - 1];
 						if ($prev) $prev.focus();
-						else $ptrRows.focus();
+						else $iptSearch.focus();
 						break;
 					}
 					case 40: { // down
@@ -35846,7 +36882,7 @@ class SearchWidget {
 
 			res.forEach(r => {
 				const $row = this.__$getRow(r).appendTo(this._$wrpResults);
-				SearchWidget.bindRowHandlers({result: r, $row, $ptrRows: this._$ptrRows, fnHandleClick: handleClick});
+				SearchWidget.bindRowHandlers({result: r, $row, $ptrRows: this._$ptrRows, fnHandleClick: handleClick, $iptSearch: this._$iptSearch});
 				this._$ptrRows._.push($row);
 			});
 
@@ -35932,9 +36968,9 @@ class SearchWidget {
 
 		const nxtOpts = {
 			fnTransform: doc => {
-				const cpy = MiscUtil.copy(doc);
+				const cpy = MiscUtil.copyFast(doc);
 				Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-				cpy.tag = `{@spell ${doc.n.toSpellCase()}${doc.s !== SRC_PHB ? `|${doc.s}` : ""}}`;
+				cpy.tag = `{@spell ${doc.n.toSpellCase()}${doc.s !== Parser.SRC_PHB ? `|${doc.s}` : ""}}`;
 				return cpy;
 			},
 		};
@@ -35967,7 +37003,7 @@ class SearchWidget {
 			"entity_LegendaryGroups",
 			{
 				fnTransform: doc => {
-					const cpy = MiscUtil.copy(doc);
+					const cpy = MiscUtil.copyFast(doc);
 					Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
 					cpy.page = "legendaryGroup";
 					return cpy;
@@ -35996,9 +37032,9 @@ class SearchWidget {
 			"entity_Feats",
 			{
 				fnTransform: doc => {
-					const cpy = MiscUtil.copy(doc);
+					const cpy = MiscUtil.copyFast(doc);
 					Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-					cpy.tag = `{@feat ${doc.n}${doc.s !== SRC_PHB ? `|${doc.s}` : ""}}`;
+					cpy.tag = `{@feat ${doc.n}${doc.s !== Parser.SRC_PHB ? `|${doc.s}` : ""}}`;
 					return cpy;
 				},
 			},
@@ -36025,9 +37061,9 @@ class SearchWidget {
 			"entity_Backgrounds",
 			{
 				fnTransform: doc => {
-					const cpy = MiscUtil.copy(doc);
+					const cpy = MiscUtil.copyFast(doc);
 					Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-					cpy.tag = `{@background ${doc.n}${doc.s !== SRC_PHB ? `|${doc.s}` : ""}}`;
+					cpy.tag = `{@background ${doc.n}${doc.s !== Parser.SRC_PHB ? `|${doc.s}` : ""}}`;
 					return cpy;
 				},
 			},
@@ -36057,9 +37093,9 @@ class SearchWidget {
 			"entity_Races",
 			{
 				fnTransform: doc => {
-					const cpy = MiscUtil.copy(doc);
+					const cpy = MiscUtil.copyFast(doc);
 					Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-					cpy.tag = `{@race ${doc.n}${doc.s !== SRC_PHB ? `|${doc.s}` : ""}}`;
+					cpy.tag = `{@race ${doc.n}${doc.s !== Parser.SRC_PHB ? `|${doc.s}` : ""}}`;
 					return cpy;
 				},
 			},
@@ -36086,9 +37122,9 @@ class SearchWidget {
 			"entity_OptionalFeatures",
 			{
 				fnTransform: doc => {
-					const cpy = MiscUtil.copy(doc);
+					const cpy = MiscUtil.copyFast(doc);
 					Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-					cpy.tag = `{@optfeature ${doc.n}${doc.s !== SRC_PHB ? `|${doc.s}` : ""}}`;
+					cpy.tag = `{@optfeature ${doc.n}${doc.s !== Parser.SRC_PHB ? `|${doc.s}` : ""}}`;
 					return cpy;
 				},
 			},
@@ -36157,9 +37193,9 @@ class SearchWidget {
 
 		const nxtOpts = {
 			fnTransform: doc => {
-				const cpy = MiscUtil.copy(doc);
+				const cpy = MiscUtil.copyFast(doc);
 				Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-				cpy.tag = `{@creature ${doc.n}${doc.s !== SRC_MM ? `|${doc.s}` : ""}}`;
+				cpy.tag = `{@creature ${doc.n}${doc.s !== Parser.SRC_MM ? `|${doc.s}` : ""}}`;
 				return cpy;
 			},
 		};
@@ -36173,7 +37209,7 @@ class SearchWidget {
 
 	static async __pLoadItemIndex (isBasicIndex) {
 		const dataSource = async () => {
-			const allItems = await Renderer.item.pBuildList();
+			const allItems = (await Renderer.item.pBuildList()).filter(it => !it._isItemGroup);
 			return {
 				item: allItems.filter(it => {
 					if (it.type === "GV") return false;
@@ -36206,9 +37242,9 @@ class SearchWidget {
 			indexName,
 			{
 				fnTransform: doc => {
-					const cpy = MiscUtil.copy(doc);
+					const cpy = MiscUtil.copyFast(doc);
 					Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-					cpy.tag = `{@item ${doc.n}${doc.s !== SRC_DMG ? `|${doc.s}` : ""}}`;
+					cpy.tag = `{@item ${doc.n}${doc.s !== Parser.SRC_DMG ? `|${doc.s}` : ""}}`;
 					return cpy;
 				},
 			},
@@ -36304,14 +37340,19 @@ class SearchWidget {
 
 		let id = 0;
 		for (const subSpec of customIndexSubSpecs) {
-			const [json, homebrew] = await Promise.all([
+			const [json, prerelease, brew] = await Promise.all([
 				typeof subSpec.dataSource === "string"
 					? DataUtil.loadJSON(subSpec.dataSource)
 					: subSpec.dataSource(),
+				PrereleaseUtil.pGetBrewProcessed(),
 				BrewUtil2.pGetBrewProcessed(),
 			]);
 
-			await [...json[subSpec.prop], ...(homebrew[subSpec.prop] || [])]
+			await [
+				...json[subSpec.prop],
+				...(prerelease[subSpec.prop] || []),
+				...(brew[subSpec.prop] || []),
+			]
 				.pSerialAwaitMap(async ent => {
 					const doc = {
 						id: id++,
@@ -37201,6 +38242,7 @@ class DragReorderUiUtil {
 	 * @param opts.swapRowPositions
 	 * @param [opts.$children] An array of row elements.
 	 * @param [opts.$getChildren] Should return an array as described in the "$children" option.
+	 * @param [opts.fnOnDragComplete] A function to run when dragging is completed.
 	 */
 	static $getDragPadOpts ($fnGetRow, opts) {
 		if (!opts.$parent || !opts.swapRowPositions || (!opts.$children && !opts.$getChildren)) throw new Error("Missing required option(s)!");
@@ -37211,6 +38253,7 @@ class DragReorderUiUtil {
 			dragMeta.$wrap.remove();
 			dragMeta.$dummies.forEach($d => $d.remove());
 			$(document.body).off(`mouseup.drag__stop`);
+			if (opts.fnOnDragComplete) opts.fnOnDragComplete();
 		};
 
 		const doDragRender = () => {
@@ -37229,7 +38272,7 @@ class DragReorderUiUtil {
 
 			$children.forEach(($child, i) => {
 				const dimensions = {w: $child.outerWidth(true), h: $child.outerHeight(true)};
-				const $dummy = $(`<div class="${i === ixRow ? "ui-drag__wrp-drag-dummy--highlight" : "ui-drag__wrp-drag-dummy--lowlight"}"></div>`)
+				const $dummy = $(`<div class="no-shrink ${i === ixRow ? "ui-drag__wrp-drag-dummy--highlight" : "ui-drag__wrp-drag-dummy--lowlight"}"></div>`)
 					.width(dimensions.w).height(dimensions.h)
 					.mouseup(() => {
 						if (dragMeta.on) doDragCleanup();
@@ -37311,6 +38354,11 @@ class SourceUiUtil {
 				$iptJson.removeClass("form-control--error");
 			});
 		if (options.source) $iptJson.val(options.source.json);
+		let hasColor = false;
+		const $iptColor = $(`<input type="color" class="w-100 b-0">`)
+			.keydown(evt => { if (evt.key === "Escape") $iptColor.blur(); })
+			.change(() => hasColor = true);
+		if (options.source?.color != null) (hasColor = true) && $iptColor.val(options.source.color);
 		const $iptUrl = $(`<input class="form-control ui-source__ipt-named">`)
 			.keydown(evt => { if (evt.key === "Escape") $iptUrl.blur(); });
 		if (options.source) $iptUrl.val(options.source.url);
@@ -37342,6 +38390,7 @@ class SourceUiUtil {
 					abbreviation: $iptAbv.val().trim(),
 					full: $iptName.val().trim(),
 					url: $iptUrl.val().trim(),
+					color: $iptColor.val().trim(),
 					authors: $iptAuthors.val().trim().split(",").map(it => it.trim()).filter(Boolean),
 					convertedBy: $iptConverters.val().trim().split(",").map(it => it.trim()).filter(Boolean),
 				};
@@ -37375,6 +38424,10 @@ class SourceUiUtil {
 			<div class="ui-source__row mb-2"><div class="col-12 ve-flex-v-center">
 				<span class="mr-2 ui-source__name help" title="This will be used to identify your homebrew universally, so should be unique to you and you alone">JSON Identifier</span>
 				${$iptJson}
+			</div></div>
+			<div class="ui-source__row mb-2"><div class="col-12 ve-flex-v-center">
+				<span class="mr-2 ui-source__name help" title="A color which should be used when displaying the source abbreviation">Color</span>
+				${$iptColor}
 			</div></div>
 			<div class="ui-source__row mb-2"><div class="col-12 ve-flex-v-center">
 				<span class="mr-2 ui-source__name help" title="A link to the original homebrew, e.g. a GM Binder page">Source URL</span>
@@ -37479,7 +38532,7 @@ function MixinBaseComponent (Cls) {
 			return value;
 		}
 
-		_getState () { return MiscUtil.copy(this.__state); }
+		_getState () { return MiscUtil.copyFast(this.__state); }
 
 		getPod () {
 			this.__pod = this.__pod || {
@@ -37506,7 +38559,7 @@ function MixinBaseComponent (Cls) {
 
 		getBaseSaveableState () {
 			return {
-				state: MiscUtil.copy(this.__state),
+				state: MiscUtil.copyFast(this.__state),
 			};
 		}
 
@@ -37737,7 +38790,7 @@ function MixinBaseComponent (Cls) {
 
 		static fromObject (obj, ...noModCollections) {
 			const comp = new this();
-			Object.entries(MiscUtil.copy(obj)).forEach(([k, v]) => {
+			Object.entries(MiscUtil.copyFast(obj)).forEach(([k, v]) => {
 				if (v == null) comp.__state[k] = v;
 				else if (noModCollections.includes(k) || noModCollections.includes("*")) comp.__state[k] = v;
 				else if (typeof v === "object" && v instanceof Array) comp.__state[k] = BaseComponent._toCollection(v);
@@ -37749,7 +38802,7 @@ function MixinBaseComponent (Cls) {
 		static fromObjectNoMod (obj) { return this.fromObject(obj, "*"); }
 
 		toObject (...noModCollections) {
-			const cpy = MiscUtil.copy(this.__state);
+			const cpy = MiscUtil.copyFast(this.__state);
 			Object.entries(cpy).forEach(([k, v]) => {
 				if (v == null) return;
 
@@ -37766,6 +38819,8 @@ function MixinBaseComponent (Cls) {
 }
 
 class BaseComponent extends MixinBaseComponent(ProxyBase) {}
+
+globalThis.BaseComponent = BaseComponent;
 
 class RenderableCollectionBase {
 	/**
@@ -37930,8 +38985,8 @@ class BaseLayeredComponent extends BaseComponent {
 
 	getBaseSaveableState () {
 		return {
-			state: MiscUtil.copy(this.__state),
-			layers: MiscUtil.copy(this._layers.map(l => l.getSaveableState())),
+			state: MiscUtil.copyFast(this.__state),
+			layers: MiscUtil.copyFast(this._layers.map(l => l.getSaveableState())),
 		};
 	}
 
@@ -37982,7 +39037,7 @@ class CompLayer extends ProxyBase {
 	getSaveableState () {
 		return {
 			name: this._name,
-			data: MiscUtil.copy(this.__data),
+			data: MiscUtil.copyFast(this.__data),
 		};
 	}
 
@@ -38014,7 +39069,7 @@ function MixinComponentHistory (Cls) {
 		 */
 		initHistory () {
 			// Track the initial state, and watch for further modifications
-			this._histInitialState = MiscUtil.copy(this._state);
+			this._histInitialState = MiscUtil.copyFast(this._state);
 			this._isHistDisabled = false;
 
 			this._addHookAll("state", prop => {
@@ -38027,7 +39082,7 @@ function MixinComponentHistory (Cls) {
 		}
 
 		recordHistory () {
-			const stateCopy = MiscUtil.copy(this._state);
+			const stateCopy = MiscUtil.copyFast(this._state);
 
 			// remove any un-tracked properties
 			this._histPropBlocklist.forEach(prop => delete stateCopy[prop]);
@@ -38051,7 +39106,7 @@ function MixinComponentHistory (Cls) {
 
 				const curState = this._histStackUndo.pop();
 				this._histStackRedo.push(curState);
-				const toApply = MiscUtil.copy(this._histStackUndo.last() || this._histInitialState);
+				const toApply = MiscUtil.copyFast(this._histStackUndo.last() || this._histInitialState);
 				this._histAddExcludedProperties(toApply);
 				this._setState(toApply);
 
@@ -38060,7 +39115,7 @@ function MixinComponentHistory (Cls) {
 				const lastHistDisabled = this._isHistDisabled;
 				this._isHistDisabled = true;
 
-				const toApply = MiscUtil.copy(this._histInitialState);
+				const toApply = MiscUtil.copyFast(this._histInitialState);
 				this._histAddExcludedProperties(toApply);
 				this._setState(toApply);
 
@@ -38076,7 +39131,7 @@ function MixinComponentHistory (Cls) {
 
 			const toApplyRaw = this._histStackRedo.pop();
 			this._histStackUndo.push(toApplyRaw);
-			const toApply = MiscUtil.copy(toApplyRaw);
+			const toApply = MiscUtil.copyFast(toApplyRaw);
 			this._histAddExcludedProperties(toApply);
 			this._setState(toApply);
 
@@ -38115,7 +39170,7 @@ function MixinComponentGlobalState (Cls) {
 
 MixinComponentGlobalState._Singleton = class {
 	static async _pSaveState () {
-		return StorageUtil.pSet(VeCt.STORAGE_GLOBAL_COMPONENT_STATE, MiscUtil.copy(MixinComponentGlobalState._Singleton.__stateGlobal));
+		return StorageUtil.pSet(VeCt.STORAGE_GLOBAL_COMPONENT_STATE, MiscUtil.copyFast(MixinComponentGlobalState._Singleton.__stateGlobal));
 	}
 
 	static async _pLoadState () {
@@ -38582,7 +39637,8 @@ class ComponentUiUtil {
 						break;
 					}
 
-					case "Enter": {
+					case "Enter":
+					case "Tab": {
 						const visibleMetaOptions = metaOptions.filter(it => it.isVisible && !it.isForceHidden);
 						if (!visibleMetaOptions.length) return;
 						comp._state[prop] = visibleMetaOptions[0].value;
@@ -38615,7 +39671,7 @@ class ComponentUiUtil {
 			const display = v == null ? (opts.displayNullAs || "\u2014") : opts.fnDisplay ? opts.fnDisplay(v) : v;
 			const additionalStyleClasses = opts.fnGetAdditionalStyleClasses ? opts.fnGetAdditionalStyleClasses(v) : null;
 
-			const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""} ${additionalStyleClasses ? additionalStyleClasses.join(" ") : ""}" tabindex="${i}">${display}</div>`)
+			const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""} ${additionalStyleClasses ? additionalStyleClasses.join(" ") : ""}" tabindex="0">${display}</div>`)
 				.click(() => {
 					if (opts.isDisabled) return;
 
@@ -38838,7 +39894,7 @@ class ComponentUiUtil {
 		opts = opts || {};
 
 		const getSubcompValues = () => {
-			const initialValuesArray = (opts.values || []).concat(opts.isFreeText ? MiscUtil.copy((component._state[prop] || [])) : []);
+			const initialValuesArray = (opts.values || []).concat(opts.isFreeText ? MiscUtil.copyFast((component._state[prop] || [])) : []);
 			const initialValsCompWith = opts.isCaseInsensitive ? component._state[prop].map(it => it.toLowerCase()) : component._state[prop];
 			return initialValuesArray
 				.map(v => opts.isCaseInsensitive ? v.toLowerCase() : v)
@@ -38975,6 +40031,7 @@ class ComponentUiUtil {
 
 		const cntRequired = ((opts.required || []).length) + ((opts.ixsRequired || []).length);
 		const count = opts.count != null ? opts.count - cntRequired : null;
+		const countIncludingRequired = opts.count != null ? count + cntRequired : null;
 		const min = opts.min != null ? opts.min - cntRequired : null;
 		const max = opts.max != null ? opts.max - cntRequired : null;
 
@@ -39027,7 +40084,7 @@ class ComponentUiUtil {
 
 						if (count != null) {
 							// If we're above the max allowed count, deselect a checkbox in FIFO order
-							if (activeRows.length > count) {
+							if (activeRows.length > countIncludingRequired) {
 								// FIFO (`.shift`) makes logical sense, but FILO (`.splice` second-from-last) _feels_ better
 								const ixFirstSelected = ixsSelectionOrder.splice(ixsSelectionOrder.length - 2, 1)[0];
 								if (ixFirstSelected != null) {
@@ -39042,7 +40099,7 @@ class ComponentUiUtil {
 
 						let isAcceptable = false;
 						if (count != null) {
-							if (activeRows.length === count) isAcceptable = true;
+							if (activeRows.length === countIncludingRequired) isAcceptable = true;
 						} else {
 							if (activeRows.length >= (min || 0) && activeRows.length <= (max || Number.MAX_SAFE_INTEGER)) isAcceptable = true;
 						}
@@ -39648,24 +40705,54 @@ ComponentUiUtil.RangeSlider._W_THUMB_PX = 16;
 ComponentUiUtil.RangeSlider._W_LABEL_PX = 24;
 ComponentUiUtil.RangeSlider._MAX_PIPS = 40;
 
-// Expose classes for Node/VTTs as appropriate
-const utilsUiExports = {
-	ProxyBase,
-	UiUtil,
-	ListUiUtil,
-	ProfUiUtil,
-	TabUiUtil,
-	SearchUiUtil,
-	SearchWidget,
-	InputUiUtil,
-	DragReorderUiUtil,
-	SourceUiUtil,
-	BaseComponent,
-	ComponentUiUtil,
-	RenderableCollectionBase,
-};
-if (typeof module !== "undefined") module.exports = utilsUiExports;
-else Object.assign(window, utilsUiExports);
+class SettingsUtil {
+	static Setting = class {
+		constructor (
+			{
+				type,
+				name,
+				help,
+				defaultVal,
+			},
+		) {
+			this.type = type;
+			this.name = name;
+			this.help = help;
+			this.defaultVal = defaultVal;
+		}
+	};
+
+	static EnumSetting = class extends SettingsUtil.Setting {
+		constructor (
+			{
+				enumVals,
+				...rest
+			},
+		) {
+			super(rest);
+			this.enumVals = enumVals;
+		}
+	};
+
+	static getDefaultSettings (settings) {
+		return Object.entries(settings)
+			.mergeMap(([prop, {defaultVal}]) => ({[prop]: defaultVal}));
+	}
+}
+
+globalThis.ProxyBase = ProxyBase;
+globalThis.UiUtil = UiUtil;
+globalThis.ListUiUtil = ListUiUtil;
+globalThis.ProfUiUtil = ProfUiUtil;
+globalThis.TabUiUtil = TabUiUtil;
+globalThis.SearchUiUtil = SearchUiUtil;
+globalThis.SearchWidget = SearchWidget;
+globalThis.InputUiUtil = InputUiUtil;
+globalThis.DragReorderUiUtil = DragReorderUiUtil;
+globalThis.SourceUiUtil = SourceUiUtil;
+globalThis.BaseComponent = BaseComponent;
+globalThis.ComponentUiUtil = ComponentUiUtil;
+globalThis.RenderableCollectionBase = RenderableCollectionBase;
 
 }).toString());
 
