@@ -2,7 +2,7 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.34.1.41";
+const SCRIPT_VERSION = "1.35.1.41";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
 
 const matchString = `
@@ -164,6 +164,9 @@ const LIB_SCRIPTS = {
 		"parser.js",
 		"utils.js",
 		"utils-ui.js",
+		"filter.js",
+		"utils-brew.js",
+		"utils-dataloader.js",
 		"hist-port.js",
 		"render.js",
 		"render-dice.js",
@@ -277,7 +280,6 @@ const SCRIPTS = {
 			"5etools-bootstrap",
 			"5etools-config",
 			"5etools-main",
-			"5etools-utils-brew-shim",
 			"5etools-importer",
 			"5etools-monsters",
 			"5etools-spells",

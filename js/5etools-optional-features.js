@@ -8,8 +8,8 @@ function d20plusOptionalFeatures () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.optionalfeatures.playerImportBuilder : d20plus.optionalfeatures.handoutBuilder;
 
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addBrewMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				await d20plus.importer.pAddBrew(url);
 				d20plus.importer.showImportList(
 					"optionalfeature",
 					data.optionalfeature,
@@ -66,7 +66,7 @@ function d20plusOptionalFeatures () {
 		renderer.recursiveRender({entries: data.entries}, renderStack, {depth: 1});
 
 		const rendered = renderStack.join("");
-		const prereqs = Renderer.utils.getPrerequisiteHtml(data.prerequisites);
+		const prereqs = Renderer.utils.prerequisite.getHtml(data.prerequisite);
 
 		const r20json = {
 			"name": data.name,

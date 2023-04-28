@@ -19,14 +19,9 @@ function d20plusImporter () {
 		d20plus.importer._playerImports = {};
 	};
 
-	d20plus.importer.addBrewMeta = function (meta) {
-		if (!meta) return;
-		d20plus.brewShim.addBrewMeta(meta);
-	};
-
-	d20plus.importer.pAddBrew = async function (data) {
-		if (!data) return;
-		d20plus.brewShim.addBrew(data);
+	d20plus.importer.pAddBrew = async function (url) {
+		if (!url) return;
+		await BrewUtil2.pAddBrewFromUrl(url);
 	};
 
 	d20plus.importer.getCleanText = function (str) {
@@ -962,7 +957,7 @@ function d20plusImporter () {
 						break;
 					case "Type":
 					default:
-						folderName = Parser.monTypeToFullObj(it.type).type.uppercaseFirst();
+						folderName = Parser.monTypeToFullObj(it.type).types.map(t => t.uppercaseFirst()).join("/");
 						break;
 				}
 				return folderName;

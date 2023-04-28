@@ -90,7 +90,7 @@
 				{
 					"name": "Summon Air Elemental",
 					"entries": [
-						"Five aarakocra within 30 feet of each other can magically summon an {@creature air elemental}. Each of the five must use its action and movement on three consecutive turns to perform an aerial dance and must maintain concentration while doing so (as if concentrating on a spell). When all five have finished their third turn of the dance, the elemental appears in an unoccupied space within 60 feet of them. It is friendly toward them and obeys their spoken commands. It remains for 1 hour, until it or all its summoners die, or until any of its summoners dismisses it as a bonus action. A summoner can't perform the dance again until it finishes a short rest. When the elemental returns to the Elemental Plane of Air, any aarakocra within 5 feet of it can return with it."
+						"Five aarakocra within 30 feet of each other can magically summon an {@creature air elemental}. Each of the five must use its action and movement on three consecutive turns to perform an aerial dance and must maintain {@status concentration} while doing so (as if {@status concentration||concentrating} on a spell). When all five have finished their third turn of the dance, the elemental appears in an unoccupied space within 60 feet of them. It is friendly toward them and obeys their spoken commands. It remains for 1 hour, until it or all its summoners die, or until any of its summoners dismisses it as a bonus action. A summoner can't perform the dance again until it finishes a short rest. When the elemental returns to the Elemental Plane of Air, any aarakocra within 5 feet of it can return with it."
 					]
 				}
 			],
@@ -631,6 +631,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -3855,6 +3858,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -3994,6 +4000,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -7300,6 +7309,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -7424,6 +7436,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -7694,6 +7709,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -8014,6 +8032,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -8309,6 +8330,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -8729,6 +8753,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -8847,6 +8874,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -9249,6 +9279,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -9408,6 +9441,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -9900,6 +9936,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -10189,6 +10228,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -10444,6 +10486,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -10596,6 +10641,9 @@
 				},
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -11518,6 +11566,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -13350,6 +13401,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -13866,6 +13920,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -14821,6 +14878,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -15260,6 +15320,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -15421,6 +15484,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -15708,7 +15774,7 @@
 							"name": "Wind Aura",
 							"type": "entries",
 							"entries": [
-								"A magical aura of wind surrounds the giant. The aura is a 10-foot-radius sphere that lasts as long as the giant maintains concentration on it (as if concentrating on a spell). While the aura is in effect, the giant gains a +2 bonus to its AC against ranged weapon attacks, and all open flames within the aura are extinguished unless they are magical."
+								"A magical aura of wind surrounds the giant. The aura is a 10-foot-radius sphere that lasts as long as the giant maintains {@status concentration} on it (as if {@status concentration||concentrating} on a spell). While the aura is in effect, the giant gains a +2 bonus to its AC against ranged weapon attacks, and all open flames within the aura are extinguished unless they are magical."
 							]
 						}
 					],
@@ -15930,6 +15996,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -16613,6 +16682,9 @@
 				},
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -16730,6 +16802,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -16876,6 +16951,9 @@
 				},
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -17091,6 +17169,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -17587,6 +17668,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -17647,7 +17731,7 @@
 				{
 					"name": "Darkness Aura (1/Day)",
 					"entries": [
-						"A 15-foot radius of magical darkness extends out from the darkmantle, moves with it, and spreads around corners. The darkness lasts as long as the darkmantle maintains concentration, up to 10 minutes (as if concentrating on a spell). Darkvision can't penetrate this darkness, and no natural light can illuminate it. If any of the darkness overlaps with an area of light created by a spell of 2nd level or lower, the spell creating the light is dispelled."
+						"A 15-foot radius of magical darkness extends out from the darkmantle, moves with it, and spreads around corners. The darkness lasts as long as the darkmantle maintains {@status concentration}, up to 10 minutes (as if {@status concentration||concentrating} on a spell). Darkvision can't penetrate this darkness, and no natural light can illuminate it. If any of the darkness overlaps with an area of light created by a spell of 2nd level or lower, the spell creating the light is dispelled."
 					]
 				}
 			],
@@ -18466,6 +18550,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -18935,6 +19022,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -19220,6 +19310,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -19435,7 +19528,7 @@
 				{
 					"name": "Create Whirlwind",
 					"entries": [
-						"A 5-foot-radius, 30-foot-tall cylinder of swirling air magically forms on a point the djinni can see within 120 feet of it. The whirlwind lasts as long as the djinni maintains concentration (as if concentrating on a spell). Any creature but the djinni that enters the whirlwind must succeed on a {@dc 18} Strength saving throw or be {@condition restrained} by it. The djinni can move the whirlwind up to 60 feet as an action, and creatures {@condition restrained} by the whirlwind move with it. The whirlwind ends if the djinni loses sight of it.",
+						"A 5-foot-radius, 30-foot-tall cylinder of swirling air magically forms on a point the djinni can see within 120 feet of it. The whirlwind lasts as long as the djinni maintains {@status concentration} (as if {@status concentration||concentrating} on a spell). Any creature but the djinni that enters the whirlwind must succeed on a {@dc 18} Strength saving throw or be {@condition restrained} by it. The djinni can move the whirlwind up to 60 feet as an action, and creatures {@condition restrained} by the whirlwind move with it. The whirlwind ends if the djinni loses sight of it.",
 						"A creature can use its action to free a creature {@condition restrained} by the whirlwind, including itself, by succeeding on a {@dc 18} Strength check. If the check succeeds, the creature is no longer {@condition restrained} and moves to the nearest space outside the whirlwind."
 					]
 				}
@@ -19605,6 +19698,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -19686,7 +19782,7 @@
 				{
 					"name": "Read Thoughts",
 					"entries": [
-						"The doppelganger magically reads the surface thoughts of one creature within 60 feet of it. The effect can penetrate barriers, but 3 feet of wood or dirt, 2 feet of stone, 2 inches of metal, or a thin sheet of lead blocks it. While the target is in range, the doppelganger can continue reading its thoughts, as long as the doppelganger's concentration isn't broken (as if concentrating on a spell). While reading the target's mind, the doppelganger has advantage on Wisdom ({@skill Insight}) and Charisma ({@skill Deception}, {@skill Intimidation}, and {@skill Persuasion}) checks against the target."
+						"The doppelganger magically reads the surface thoughts of one creature within 60 feet of it. The effect can penetrate barriers, but 3 feet of wood or dirt, 2 feet of stone, 2 inches of metal, or a thin sheet of lead blocks it. While the target is in range, the doppelganger can continue reading its thoughts, as long as the doppelganger's {@status concentration} isn't broken (as if {@status concentration||concentrating} on a spell). While reading the target's mind, the doppelganger has advantage on Wisdom ({@skill Insight}) and Charisma ({@skill Deception}, {@skill Intimidation}, and {@skill Persuasion}) checks against the target."
 					]
 				}
 			],
@@ -21135,7 +21231,7 @@
 						"3": {
 							"slots": 3,
 							"spells": [
-								"{@spell conjure animals} (2 giant spiders)",
+								"{@spell conjure animals} (2 {@creature giant spider|mm|giant spiders})",
 								"{@spell dispel magic}"
 							]
 						},
@@ -21497,6 +21593,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -21662,6 +21761,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -21747,7 +21849,7 @@
 				{
 					"name": "Invisibility (Recharges after a Short or Long Rest)",
 					"entries": [
-						"The duergar magically turns {@condition invisible} until it attacks, casts a spell, or uses its Enlarge, or until its concentration is broken, up to 1 hour (as if concentrating on a spell). Any equipment the duergar wears or carries is {@condition invisible} with it."
+						"The duergar magically turns {@condition invisible} until it attacks, casts a spell, or uses its Enlarge, or until its {@status concentration} is broken, up to 1 hour (as if {@status concentration||concentrating} on a spell). Any equipment the duergar wears or carries is {@condition invisible} with it."
 					]
 				}
 			],
@@ -21790,6 +21892,11 @@
 			],
 			"source": "MM",
 			"page": 225,
+			"otherSources": [
+				{
+					"source": "KftGV"
+				}
+			],
 			"size": [
 				"M"
 			],
@@ -22323,6 +22430,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -22938,6 +23048,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -23507,7 +23620,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"As a bonus action, the dragon can magically turn {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
+						"As a bonus action, the dragon can magically turn {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
 					]
 				},
 				{
@@ -23667,7 +23780,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"As a bonus action, the dragon can magically turn {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
+						"As a bonus action, the dragon can magically turn {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
 					]
 				},
 				{
@@ -23824,7 +23937,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"As a bonus action, the dragon can magically turn {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
+						"As a bonus action, the dragon can magically turn {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
 					]
 				},
 				{
@@ -23977,7 +24090,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"As a bonus action, the dragon can magically turn {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
+						"As a bonus action, the dragon can magically turn {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
 					]
 				},
 				{
@@ -24133,7 +24246,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"As a bonus action, the dragon can magically turn {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
+						"As a bonus action, the dragon can magically turn {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
 					]
 				},
 				{
@@ -24298,7 +24411,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"As a bonus action, the dragon can magically turn {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
+						"As a bonus action, the dragon can magically turn {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
 					]
 				},
 				{
@@ -24452,7 +24565,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"As a bonus action, the dragon can magically turn {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
+						"As a bonus action, the dragon can magically turn {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the dragon wears or carries is {@condition invisible} with it."
 					]
 				},
 				{
@@ -25522,6 +25635,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -25645,6 +25761,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -25875,6 +25994,12 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "PSX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -26099,6 +26224,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -26185,7 +26313,7 @@
 				{
 					"name": "Animate Boulders (1/Day)",
 					"entries": [
-						"The galeb duhr magically animates up to two boulders it can see within 60 feet of it. A boulder has statistics like those of a galeb duhr, except it has Intelligence 1 and Charisma 1, it can't be {@condition charmed} or {@condition frightened}, and it lacks this action option. A boulder remains animated as long as the galeb duhr maintains concentration, up to 1 minute (as if concentrating on a spell)."
+						"The galeb duhr magically animates up to two boulders it can see within 60 feet of it. A boulder has statistics like those of a galeb duhr, except it has Intelligence 1 and Charisma 1, it can't be {@condition charmed} or {@condition frightened}, and it lacks this action option. A boulder remains animated as long as the galeb duhr maintains {@status concentration}, up to 1 minute (as if {@status concentration||concentrating} on a spell)."
 					]
 				}
 			],
@@ -26831,6 +26959,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -27033,6 +27164,9 @@
 				},
 				{
 					"source": "DoSI"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -27320,6 +27454,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -27514,6 +27651,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -28137,6 +28277,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -28541,6 +28684,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -29381,6 +29527,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -29526,6 +29675,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -29658,6 +29810,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -29890,6 +30045,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -30057,6 +30215,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -30184,6 +30345,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -30998,6 +31162,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -31812,6 +31979,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -32459,6 +32629,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -32582,7 +32755,7 @@
 					"name": "Gray Ooze (Psychic)",
 					"source": "MM",
 					"_mod": {
-						"trait": {
+						"action": {
 							"mode": "appendArr",
 							"items": {
 								"name": "Psychic Crush {@recharge 5}",
@@ -32610,6 +32783,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -33132,7 +33308,7 @@
 				{
 					"name": "Invisible Passage",
 					"entries": [
-						"The hag magically turns {@condition invisible} until she attacks or casts a spell, or until her concentration ends (as if concentrating on a spell). While {@condition invisible}, she leaves no physical evidence of her passage, so she can be tracked only by magic. Any equipment she wears or carries is {@condition invisible} with her."
+						"The hag magically turns {@condition invisible} until she attacks or casts a spell, or until her {@status concentration} ends (as if {@status concentration||concentrating} on a spell). While {@condition invisible}, she leaves no physical evidence of her passage, so she can be tracked only by magic. Any equipment she wears or carries is {@condition invisible} with her."
 					]
 				}
 			],
@@ -33556,6 +33732,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -33688,6 +33867,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -34216,6 +34398,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -35211,6 +35396,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -35352,6 +35540,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -36453,6 +36644,9 @@
 				},
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -36734,6 +36928,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -37259,6 +37456,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -37434,6 +37634,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -37530,7 +37733,7 @@
 				{
 					"name": "Invisibility",
 					"entries": [
-						"The imp magically turns {@condition invisible} until it attacks, or until its concentration ends (as if concentrating on a spell). Any equipment the imp wears or carries is {@condition invisible} with it."
+						"The imp magically turns {@condition invisible} until it attacks, or until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the imp wears or carries is {@condition invisible} with it."
 					]
 				}
 			],
@@ -37616,6 +37819,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -37941,6 +38147,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -38754,6 +38963,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -40464,6 +40676,9 @@
 				},
 				{
 					"source": "ToA"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -40574,6 +40789,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -41330,6 +41548,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -42633,6 +42854,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -43334,6 +43558,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -43487,6 +43714,9 @@
 				},
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -44022,6 +44252,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -44140,6 +44373,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -44414,6 +44650,9 @@
 				},
 				{
 					"source": "GoS"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -44922,6 +45161,9 @@
 				},
 				{
 					"source": "DoSI"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -45072,6 +45314,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -45638,6 +45883,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -46141,6 +46389,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -46263,6 +46514,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -46394,6 +46648,9 @@
 				},
 				{
 					"source": "TCE"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -46898,6 +47155,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -47135,6 +47395,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -48501,6 +48764,9 @@
 			"otherSources": [
 				{
 					"source": "ToA"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -49230,6 +49496,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -49304,7 +49573,7 @@
 				{
 					"name": "Superior Invisibility",
 					"entries": [
-						"The pixie magically turns {@condition invisible} until its concentration ends (as if concentrating on a spell). Any equipment the pixie wears or carries is {@condition invisible} with it."
+						"The pixie magically turns {@condition invisible} until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the pixie wears or carries is {@condition invisible} with it."
 					]
 				}
 			],
@@ -49829,6 +50098,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -50587,6 +50859,9 @@
 				"type": "internal",
 				"path": "bestiary/purple-worm.mp3"
 			},
+			"traitTags": [
+				"Tunneler"
+			],
 			"senseTags": [
 				"B",
 				"T"
@@ -50625,6 +50900,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -51133,6 +51411,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -51226,7 +51507,7 @@
 				{
 					"name": "Invisibility",
 					"entries": [
-						"The quasit magically turns {@condition invisible} until it attacks or uses Scare, or until its concentration ends (as if concentrating on a spell). Any equipment the quasit wears or carries is {@condition invisible} with it."
+						"The quasit magically turns {@condition invisible} until it attacks or uses Scare, or until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the quasit wears or carries is {@condition invisible} with it."
 					]
 				}
 			],
@@ -51665,6 +51946,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -52271,7 +52555,7 @@
 					"name": "Swallow",
 					"entries": [
 						"The remorhaz makes one bite attack against a Medium or smaller creature it is grappling. If the attack hits, that creature takes the bite's damage and is swallowed, and the grapple ends. While swallowed, the creature is {@condition blinded} and {@condition restrained}, it has total cover against attacks and other effects outside the remorhaz, and it takes 21 ({@damage 6d6}) acid damage at the start of each of the remorhaz's turns.",
-						"If the remorhaz takes 30 damage or more on a single turn from a creature inside it, the remorhaz must succeed on a {@dc 15} Constitution saving throw at the end of that turn or regurgitate all swallowed creatures, which fall {@condition prone} in a space within 10 feet oft he remorhaz. If the remorhaz dies, a swallowed creature is no longer {@condition restrained} by it and can escape from the corpse using 15 feet of movement, exiting {@condition prone}."
+						"If the remorhaz takes 30 damage or more on a single turn from a creature inside it, the remorhaz must succeed on a {@dc 15} Constitution saving throw at the end of that turn or regurgitate all swallowed creatures, which fall {@condition prone} in a space within 10 feet of the remorhaz. If the remorhaz dies, a swallowed creature is no longer {@condition restrained} by it and can escape from the corpse using 15 feet of movement, exiting {@condition prone}."
 					]
 				}
 			],
@@ -52609,6 +52893,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -52988,6 +53275,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -53798,6 +54088,9 @@
 				},
 				{
 					"source": "DoSI"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -53941,6 +54234,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -54100,6 +54396,9 @@
 				},
 				{
 					"source": "CM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -54229,6 +54528,9 @@
 			"otherSources": [
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -54359,6 +54661,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -55027,6 +55332,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -55199,6 +55507,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -55345,6 +55656,9 @@
 				},
 				{
 					"source": "CRCotN"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -55825,6 +56139,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -55930,6 +56247,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -56033,6 +56353,9 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -56425,6 +56748,9 @@
 				},
 				{
 					"source": "SjA"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -56636,6 +56962,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -56770,6 +57099,12 @@
 				},
 				{
 					"source": "WDMM"
+				},
+				{
+					"source": "PSX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -56868,6 +57203,9 @@
 				},
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -57229,6 +57567,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -57294,7 +57635,7 @@
 				{
 					"name": "Invisibility",
 					"entries": [
-						"The sprite magically turns {@condition invisible} until it attacks or casts a spell, or until its concentration ends (as if concentrating on a spell). Any equipment the sprite wears or carries is {@condition invisible} with it."
+						"The sprite magically turns {@condition invisible} until it attacks or casts a spell, or until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the sprite wears or carries is {@condition invisible} with it."
 					]
 				}
 			],
@@ -57393,6 +57734,9 @@
 				},
 				{
 					"source": "JttRC"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -57694,6 +58038,9 @@
 				},
 				{
 					"source": "DoSI"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -57986,6 +58333,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -58850,6 +59200,9 @@
 				},
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "PSX"
 				}
 			],
 			"size": [
@@ -59103,6 +59456,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -60203,6 +60559,9 @@
 				},
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -60805,6 +61164,9 @@
 			"otherSources": [
 				{
 					"source": "ToA"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -61934,6 +62296,9 @@
 				"type": "internal",
 				"path": "bestiary/umber-hulk.mp3"
 			},
+			"traitTags": [
+				"Tunneler"
+			],
 			"senseTags": [
 				"SD",
 				"T"
@@ -61977,6 +62342,9 @@
 				},
 				{
 					"source": "WBtW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -63165,6 +63533,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -64505,6 +64876,9 @@
 				},
 				{
 					"source": "EGW"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -65899,7 +66273,7 @@
 				{
 					"name": "Invisibility",
 					"entries": [
-						"The will-o'-wisp and its light magically become {@condition invisible} until it attacks or uses its Consume Life, or until its concentration ends (as if concentrating on a spell)."
+						"The will-o'-wisp and its light magically become {@condition invisible} until it attacks or uses its Consume Life, or until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell)."
 					]
 				}
 			],
@@ -66079,6 +66453,9 @@
 				},
 				{
 					"source": "IDRotF"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -66488,6 +66865,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -68912,6 +69292,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [
@@ -70918,6 +71301,9 @@
 				},
 				{
 					"source": "DSotDQ"
+				},
+				{
+					"source": "KftGV"
 				}
 			],
 			"size": [

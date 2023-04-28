@@ -6,8 +6,8 @@ function d20plusObjects () {
 		const url = $("#import-objects-url").val();
 
 		if (url && url.trim()) {
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addBrewMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				await d20plus.importer.pAddBrew(url);
 				d20plus.importer.showImportList(
 					"object",
 					data.object,

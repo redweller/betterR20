@@ -75,8 +75,8 @@ function d20plusVehicles () {
 		const url = $("#import-vehicles-url").val();
 
 		if (url && url.trim()) {
-			DataUtil.loadJSON(url).then((data) => {
-				d20plus.importer.addBrewMeta(data._meta);
+			DataUtil.loadJSON(url).then(async (data) => {
+				await d20plus.importer.pAddBrew(url);
 				d20plus.importer.showImportList(
 					"vehicle",
 					data.vehicle,
@@ -122,8 +122,8 @@ function d20plusVehicles () {
 						renderer.setBaseUrl(BASE_SITE_URL);
 
 						character.attribs.create({name: "npc", current: 1});
-						character.attribs.create({name: "npc_options-flag", current: 0});
-						character.attribs.create({name: "is_vehicle", current: 1});
+						character.attribs.create({name: "npc_options-flag", current: "on"});
+						character.attribs.create({name: "is_vehicle", current: "1"});
 						// region disable charachtermancer
 						character.attribs.create({name: "mancer_confirm_flag", current: ""});
 						character.attribs.create({name: "l1mancer_status", current: "completed"});

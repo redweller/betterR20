@@ -361,5 +361,25 @@
 		"ver": "1.34.1",
 		"date": "2023-03-02",
 		"txt": "- Various fixes/improvements to the chat system (thanks @ Redweller)\n  - Tweaked `/help` ordering for readability \n  - Added detection of Beyond20\n  - Fixed hiding/revealing messages\n  - Fixed `/w` revealing characters not in players' journals"
+	},
+	{
+		"ver": "1.34.2",
+		"date": "2023-04-07",
+		"txt": "- Updated UI templates to match latest Roll20 \"Doors & Windows\" update (thanks @ Redweller)\n- Disabled/removed non-functional Line Cutter tool (thanks @ Redweller)\n- Fixed crash when using \"Set image from URL...\" button in deck editor (thanks @ darthbeep)\n- Fixed misc Roll20 console spam when running an adblocker (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.34.3",
+		"date": "2023-04-14",
+		"txt": "- Temporarily (until a better solution is found) disabled extra layers, to prevent crashes (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.35.0",
+		"date": "2023-04-21",
+		"txt": "- Added \"script\" mode to chat macros, allowing JavaScript to be executed (thanks @ Redweller)\n- Fixed script failing to load (thanks @ darthbeep); note that this comes with some caveats (until a better solution is found):\n  - 3d Dice are (probably) broken\n  - Subscriber-only Roll20 features (dynamic lighting, SFX, etc.) are (probably) no longer available unless you have the appropriate subscription _[previously, b20 enabled these even for \"Free\" users, provided all players were running the script]_\n- Re-enabled additional b20-specific layers (thanks @ darthbeep)\n- Fixed selecting \"freehand\" in drawing mode preventing further mode switches (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.35.1",
+		"date": "2023-04-22",
+		"txt": "- Fixed various Importer crashes (thanks @ darthbeep)"
 	}
 ]

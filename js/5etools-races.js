@@ -16,7 +16,7 @@ function d20plusRaces () {
 					// i found none in the existing homebrew at the time of doing this, so propably won't be such an issue
 					toImport.push(...d20plus.races.adoptSubraces(allraces.race, data.subrace, false))
 				}
-				d20plus.importer.addBrewMeta(data._meta);
+				await d20plus.importer.pAddBrew(url);
 				d20plus.importer.showImportList(
 					"race",
 					Renderer.race.mergeSubraces(toImport),
@@ -41,7 +41,7 @@ function d20plusRaces () {
 		d20.Campaign.handouts.create({
 			name: name,
 			tags: d20plus.importer.getTagString([
-				(data.size || [SZ_VARIES]).map(sz => Renderer.utils.getRenderedSize(sz)).join("/"),
+				(data.size || [Parser.SZ_VARIES]).map(sz => Renderer.utils.getRenderedSize(sz)).join("/"),
 				Parser.sourceJsonToFull(data.source),
 			], "race"),
 		}, {
@@ -75,7 +75,7 @@ function d20plusRaces () {
 		<h3>${data.name}</h3>
 		<p>
 			<strong>Ability Scores:</strong> ${ability.asText}<br>
-			<strong>Size:</strong> ${(data.size || [SZ_VARIES]).map(sz => Renderer.utils.getRenderedSize(sz)).join("/")}<br>
+			<strong>Size:</strong> ${(data.size || [Parser.SZ_VARIES]).map(sz => Renderer.utils.getRenderedSize(sz)).join("/")}<br>
 			<strong>Speed:</strong> ${Parser.getSpeedString(data)}<br>
 		</p>
 	`);
@@ -171,7 +171,7 @@ function d20plusRaces () {
 			}
 		} else if (d20plus.sheet === "shaped") {
 			attrs.addOrUpdate("race", race.name);
-			attrs.addOrUpdate("size", (race.size || [SZ_VARIES]).map(sz => Parser.sizeAbvToFull(sz)).join("/").toUpperCase());
+			attrs.addOrUpdate("size", (race.size || [Parser.SZ_VARIES]).map(sz => Parser.sizeAbvToFull(sz)).join("/").toUpperCase());
 			attrs.addOrUpdate("speed_string", Parser.getSpeedString(race));
 
 			if (race.speed instanceof Object) {

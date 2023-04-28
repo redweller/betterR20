@@ -74,13 +74,16 @@ function tools5eTool () {
 					// Handle special cases where certain items need extra data
 					switch (lastDataType) {
 						case "class":
-							overrideData = (await d20plus.classes.getDataForImport(lastLoadedData)).class;
+							x = lastLoadedData
+							overrideData = await lastLoadedData.class
+								.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("class", cls.source, UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](cls), {isCopy: true}));
 							extraOptions["builderOptions"] = {
 								isHomebrew: true,
 							}
 							break;
 						case "subclass":
-							overrideData = await d20plus.subclasses.getDataForImport(lastLoadedData);
+							overrideData = await lastLoadedData.subclass
+								.pSerialAwaitMap(cls => DataLoader.pCacheAndGet("subclass", cls.source, UrlUtil.URL_TO_HASH_BUILDER["subclass"](cls), {isCopy: true}));
 							break;
 						default:
 							break;
@@ -224,18 +227,18 @@ function tools5eTool () {
 				$win.find(`button`).on("click", () => {
 					function getSizeInTiles (size) {
 						switch (size) {
-							case SZ_TINY:
+							case Parser.SZ_TINY:
 								return 0.5;
-							case SZ_SMALL:
-							case SZ_MEDIUM:
+							case Parser.SZ_SMALL:
+							case Parser.SZ_MEDIUM:
 								return 1;
-							case SZ_LARGE:
+							case Parser.SZ_LARGE:
 								return 2;
-							case SZ_HUGE:
+							case Parser.SZ_HUGE:
 								return 3;
-							case SZ_GARGANTUAN:
+							case Parser.SZ_GARGANTUAN:
 								return 4;
-							case SZ_COLOSSAL:
+							case Parser.SZ_COLOSSAL:
 								return 5;
 						}
 					}

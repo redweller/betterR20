@@ -2,7 +2,7 @@ function d20plusItems () {
 	d20plus.items = {};
 
 	d20plus.items._groupOptions = ["Type", "Rarity", "Alphabetical", "Source"];
-	d20plus.items._listCols = ["name", "type", "rarity", "source"];
+	d20plus.items._listCols = ["name", "_typeHtml", "rarity", "source"];
 	d20plus.items._listItemBuilder = (it) => {
 		if (!it._isEnhanced) Renderer.item.enhanceItem(it);
 
@@ -23,7 +23,7 @@ function d20plusItems () {
 	};
 	// Import Items button was clicked
 	d20plus.items.button = async function (forcePlayer) {
-		await Renderer.item.populatePropertyAndTypeReference();
+		await Renderer.item.pPopulatePropertyAndTypeReference();
 
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-items-url-player").val() : $("#import-items-url").val();
@@ -31,82 +31,77 @@ function d20plusItems () {
 			const handoutBuilder = playerMode ? d20plus.items.playerImportBuilder : d20plus.items.handoutBuilder;
 
 			if (url.trim() === `${DATA_URL}items.json`) {
-				Renderer.item.pBuildList(
-					{
-						fnCallback: itemList => {
-							const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
+				const itemList = await Renderer.item.pBuildList();
 
-							const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
-							packs.forEach(p => {
-								if (!p._r20SubItemData) {
-									const contents = p.entries.find(it => it.type === "list").items;
+				function showItemList (itemList) {
+					const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
 
-									const out = [];
-									contents.forEach(line => {
-										if (line.includes("@item")) {
-											const [pre, tag, item] = line.split(/({@item)/g);
-											const tagItem = `${tag}${item}`;
+					const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
+					packs.forEach(p => {
+						if (!p._r20SubItemData) {
+							const contents = p.entries.find(it => it.type === "list").items;
 
-											let [n, src] = item.split("}")[0].trim().split("|");
-											if (!src) src = "dmg";
+							const out = [];
+							contents.forEach(line => {
+								if (line.includes("@item")) {
+									const [pre, tag, item] = line.split(/({@item)/g);
+									const tagItem = `${tag}${item}`;
 
-											n = n.toLowerCase();
-											src = src.toLowerCase();
+									let [n, src] = item.split("}")[0].trim().split("|");
+									if (!src) src = "dmg";
 
-											const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
+									n = n.toLowerCase();
+									src = src.toLowerCase();
 
-											let count = 1;
-											pre.replace(/\d+/g, (m) => count = Number(m));
+									const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
 
-											out.push({
-												type: "item",
-												count,
-												data: subItem,
-											})
-										} else {
-											out.push({
-												type: "misc",
-												data: {
-													name: line.toTitleCase(),
-													data: {
-														Category: "Items",
-														"Item Type": "Adventuring Gear",
-													},
-												},
-											})
-										}
-									});
+									let count = 1;
+									pre.replace(/\d+/g, (m) => count = Number(m));
 
-									p._r20SubItemData = out;
+									out.push({
+										_typeHtml: "item",
+										count,
+										data: subItem,
+									})
+								} else {
+									out.push({
+										type: "misc",
+										data: {
+											name: line.toTitleCase(),
+											data: {
+												Category: "Items",
+												"Item Type": "Adventuring Gear",
+											},
+										},
+									})
 								}
 							});
 
-							d20plus.importer.showImportList(
-								"item",
-								itemList,
-								handoutBuilder,
-								{
-									groupOptions: d20plus.items._groupOptions,
-									forcePlayer,
-									listItemBuilder: d20plus.items._listItemBuilder,
-									listIndex: d20plus.items._listCols,
-									listIndexConverter: d20plus.items._listIndexConverter,
-								},
-							);
-						},
-						urls: {
-							items: `${DATA_URL}items.json`,
-							baseitems: `${DATA_URL}items-base.json`,
-							magicvariants: `${DATA_URL}magicvariants.json`,
-						},
-						isAddGroups: true,
+							p._r20SubItemData = out;
+						}
 					});
+
+					d20plus.importer.showImportList(
+						"item",
+						itemList,
+						handoutBuilder,
+						{
+							groupOptions: d20plus.items._groupOptions,
+							forcePlayer,
+							listItemBuilder: d20plus.items._listItemBuilder,
+							listIndex: d20plus.items._listCols,
+							listIndexConverter: d20plus.items._listIndexConverter,
+						},
+					);
+				}
+
+				showItemList(itemList);
 			} else {
 				// for non-standard URLs, do a generic import
-				DataUtil.loadJSON(url).then((data) => {
+				DataUtil.loadJSON(url).then(async (data) => {
 					(data.itemProperty || []).forEach(p => Renderer.item._addProperty(p));
 					(data.itemType || []).forEach(t => Renderer.item._addType(t));
-					d20plus.importer.addBrewMeta(data._meta);
+					await d20plus.importer.pAddBrew(url);
 					d20plus.importer.showImportList(
 						"item",
 						data.item,
