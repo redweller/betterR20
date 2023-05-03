@@ -30,7 +30,7 @@ function d20plusSpells () {
 		if (url && url.trim()) {
 			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
-			DataUtil.loadJSON(url).then(async (data) => {
+			DataUtil.spell.loadJSON(url).then(async (data) => {
 				await d20plus.importer.pAddBrew(url);
 				if (data.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(data.roll20Spell);
 				d20plus.importer.showImportList(
@@ -56,7 +56,7 @@ function d20plusSpells () {
 		if (toLoad.length) {
 			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
 
-			const dataStack = (await Promise.all(toLoad.map(async url => DataUtil.loadJSON(url)))).flat();
+			const dataStack = (await Promise.all(toLoad.map(async url => DataUtil.spell.loadJSON(url)))).flat();
 
 			let toAdd = [];
 			dataStack.forEach(d => {
