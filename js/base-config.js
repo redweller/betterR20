@@ -831,9 +831,9 @@ function baseConfig () {
 			$(`#button-browse-external-art`).parent().parent().toggle(false);
 			$(`#button-add-external-art`).detach().appendTo($(`.addlibraryfolder`).parent());
 		}
-	}
+	} // RB20 EXCLUDE END
 
-	d20plus.cfg.HandleCss = () => {
+	d20plus.cfg.HandleCss = () => { // RB20 EXCLUDE START
 		// ugly hook to move VTTES menu items
 		if (d20plus.cfg.getOrDefault("canvas", "enableNeatMenus")) {
 			d20plus.ut.dynamicStyles("vttesHide").html(`
@@ -851,13 +851,19 @@ function baseConfig () {
 					background-image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
 				}
 			`);
-		}
-	} // RB20 EXCLUDE END
+		} // RB20 EXCLUDE END
+		// properly align layer toolbar
+		const $wrpDmModeSw = $(`.dark-mode-switch`);
+		const $wrpBtnsMain = $(`#floatingtoolbar`);
+		const $ulBtns = $(`#floatinglayerbar`);
+		const darkModeShift = $wrpDmModeSw.css("display") === "none" || $wrpDmModeSw.css("visibility") === "hidden" ? 0 : 54;
+		$ulBtns.css({top: $wrpBtnsMain.height() + darkModeShift + 40});
+		$wrpDmModeSw.css({top: $wrpBtnsMain.height() + 40});
+	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
-		d20plus.cfg.HandleCss();
 
 		if (window.is_gm) {
 			d20plus.cfg.HandleArtLibraryButtons();
@@ -881,6 +887,8 @@ function baseConfig () {
 		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
 		$(`.content > #player-search`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
 		$(`#journal > div.content > br`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") !== "Roll20");
+
+		d20plus.cfg.HandleCss();
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
