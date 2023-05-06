@@ -752,6 +752,16 @@ function baseConfig () {
 		}
 	}
 
+	d20plus.cfg.HandleCss = () => {
+		// properly align layer toolbar
+		const $wrpDmModeSw = $(`.dark-mode-switch`);
+		const $wrpBtnsMain = $(`#floatingtoolbar`);
+		const $ulBtns = $(`#floatinglayerbar`);
+		const darkModeShift = $wrpDmModeSw.css("display") === "none" || $wrpDmModeSw.css("visibility") === "hidden" ? 0 : 54;
+		$ulBtns.css({top: $wrpBtnsMain.height() + darkModeShift + 40});
+		$wrpDmModeSw.css({top: $wrpBtnsMain.height() + 40});
+	}
+
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg.handleInitiativeShrink();
 
@@ -767,6 +777,8 @@ function baseConfig () {
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
+
+		d20plus.cfg.HandleCss();
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
