@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.1.42
+// @version      1.35.1.167.3
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -56,27 +56,20 @@ addConfigOptions = function (category, options) {
 	else CONFIG_OPTIONS[category] = Object.assign(CONFIG_OPTIONS[category], options);
 };
 
-OBJECT_DEFINE_PROPERTY = Object.defineProperty;
-OBJECT_DEFINED_COUNT = 0;
+// Grant PRO features to every user
+OBJECT_DEFINE_PROPERTY = Object.defineProperty.bind(Object);
 ACCOUNT_ORIGINAL_PERMS = {
 	isPro: false,
 	largefeats: false,
 	xlfeats: false,
 };
 Object.defineProperty = function (obj, prop, vals) {
-	try {
-		if (prop === "largefeats" || prop === "xlfeats" || prop === "isPro") {
-			ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
-			vals.value = true;
-			OBJECT_DEFINED_COUNT++;
-		}
-		OBJECT_DEFINE_PROPERTY.bind(Object)(obj, prop, vals);
-		if (OBJECT_DEFINED_COUNT === 3) Object.defineProperty = OBJECT_DEFINE_PROPERTY.bind(Object);
-	} catch (e) {
-		// eslint-disable-next-line no-console
-		console.log("failed to define property:", e, obj, prop, vals);
+	if (prop === "largefeats" || prop === "xlfeats" || prop === "isPro") {
+		ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
+		vals.value = true;
 	}
-}; // */
+	return OBJECT_DEFINE_PROPERTY(obj, prop, vals);
+};
 
 FINAL_CANVAS_MOUSEDOWN_LIST = [];
 FINAL_CANVAS_MOUSEMOVE_LIST = [];
@@ -2423,6 +2416,16 @@ function baseConfig () {
 		}
 	}
 
+	d20plus.cfg.HandleCss = () => {
+		// properly align layer toolbar
+		const $wrpDmModeSw = $(`.dark-mode-switch`);
+		const $wrpBtnsMain = $(`#floatingtoolbar`);
+		const $ulBtns = $(`#floatinglayerbar`);
+		const darkModeShift = $wrpDmModeSw.css("display") === "none" || $wrpDmModeSw.css("visibility") === "hidden" ? 0 : 54;
+		$ulBtns.css({top: $wrpBtnsMain.height() + darkModeShift + 40});
+		$wrpDmModeSw.css({top: $wrpBtnsMain.height() + 40});
+	}
+
 	d20plus.cfg.baseHandleConfigChange = () => {
 		d20plus.cfg.handleInitiativeShrink();
 
@@ -2438,6 +2441,8 @@ function baseConfig () {
 		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
 		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
+
+		d20plus.cfg.HandleCss();
 	};
 
 	d20plus.cfg.startPlayerConfigHandler = () => {
@@ -15668,7 +15673,7 @@ function baseUi () {
 			.css({
 				width: 30,
 				position: "absolute",
-				left: 20,
+				left: 10,
 				top: $wrpBtnsMain.height() + 90,
 				border: "1px solid #666",
 				boxShadow: "1px 1px 3px #666",
