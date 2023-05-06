@@ -28,27 +28,20 @@ addConfigOptions = function (category, options) {
 	else CONFIG_OPTIONS[category] = Object.assign(CONFIG_OPTIONS[category], options);
 };
 
-OBJECT_DEFINE_PROPERTY = Object.defineProperty;
-OBJECT_DEFINED_COUNT = 0;
+// Grant PRO features to every user
+OBJECT_DEFINE_PROPERTY = Object.defineProperty.bind(Object);
 ACCOUNT_ORIGINAL_PERMS = {
 	isPro: false,
 	largefeats: false,
 	xlfeats: false,
 };
 Object.defineProperty = function (obj, prop, vals) {
-	try {
-		if (prop === "largefeats" || prop === "xlfeats" || prop === "isPro") {
-			ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
-			vals.value = true;
-			OBJECT_DEFINED_COUNT++;
-		}
-		OBJECT_DEFINE_PROPERTY.bind(Object)(obj, prop, vals);
-		if (OBJECT_DEFINED_COUNT === 3) Object.defineProperty = OBJECT_DEFINE_PROPERTY.bind(Object);
-	} catch (e) {
-		// eslint-disable-next-line no-console
-		console.log("failed to define property:", e, obj, prop, vals);
+	if (prop === "largefeats" || prop === "xlfeats" || prop === "isPro") {
+		ACCOUNT_ORIGINAL_PERMS[prop] = vals.value;
+		vals.value = true;
 	}
-}; // */
+	return OBJECT_DEFINE_PROPERTY(obj, prop, vals);
+};
 
 FINAL_CANVAS_MOUSEDOWN_LIST = [];
 FINAL_CANVAS_MOUSEMOVE_LIST = [];
