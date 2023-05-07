@@ -328,6 +328,16 @@ function d20plusArt () {
 			}
 		});
 
+		$(`.card-backing-by-url`).live("click", function () {
+			const cId = $(this).attr("data-card-id");
+			const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+			if (url) {
+				d20plus.art.setLastImageUrl(url);
+				const card = d20.Campaign.decks.find(it => it.cards.find(c => c.id === cId)).cards.find(c => c.id === cId);
+				card.set("card_back", url);
+			}
+		});
+
 		$(`.deck-mass-cards-by-url`).live("click", function () {
 			const dId = $(this).attr("data-deck-id");
 
@@ -338,30 +348,58 @@ function d20plusArt () {
 			const $iptTxt = $dialog.find(`textarea`);
 			const $btnAdd = $dialog.find(`button`).click(() => {
 				const lines = ($iptTxt.val() || "").split("\n");
-				const toSaveAll = [];
+				const addCardsParams = [];
 				lines.filter(it => it && it.trim()).forEach(l => {
 					const split = l.split("---").map(it => it.trim()).filter(Boolean);
-					if (split.length >= 2) {
+					if (split.length === 2) {
 						const [name, url] = split;
-						const toSave = deck.cards.push({
-							avatar: url,
-							id: d20plus.ut.generateRowId(),
-							name,
-							placement: 99,
-						});
-						toSaveAll.push(toSave);
+						const params = [
+							name.includes(".") ? name : `${name}.png`,
+							url,
+							0,
+						];
+						addCardsParams.push(params);
 					}
 				});
 				$dialog.dialog("close");
 
-				toSaveAll.forEach(s => s.save());
-				deck.save();
+				if (addCardsParams.length) {
+					deck.uploader.libraryCards = {};
+					deck.uploader.libraryCardIndex = 0;
+					addCardsParams.forEach(params => deck.uploader.addCardFromLibrary(...params));
+				}
 			});
 
 			$dialog.dialog({
 				width: 800,
 				height: 650,
 			});
+		});
+
+		$("tr.card").live("click", event => {
+			if (!event.target.dataset.cardId) return;
+			event.preventDefault();
+			const cId = event.target.dataset.cardId;
+			const card = d20.Campaign.decks.find(it => it.cards.find(c => c.id === cId)).cards.find(c => c.id === cId)?.editor;
+			const confirm = $("<div>Are you sure you want to delete this card? This cannot be undone.</div>");
+			if (!card) return;
+			card.$el.dialog("destroy");
+			confirm.dialog({
+				modal: !0,
+				title: "Confirm Deletion",
+				buttons: {
+					Delete () {
+						card.model.destroy();
+						confirm.dialog("destroy").remove();
+					},
+					Cancel () {
+						confirm.dialog("destroy").remove();
+					},
+				},
+				beforeClose () {
+					confirm.dialog("destroy").remove();
+				},
+			})
 		});
 	};
 

@@ -253,175 +253,217 @@ function initHTMLroll20EditorsMisc () {
 	`;
 
 	d20plus.html.deckEditor = `
-	<script id='tmpl_deckeditor' type='text/html'>
-		<div class='dialog largedialog deckeditor' style='display: block;'>
+	<script id="tmpl_deckeditor" type="text/html">
+		<div class="dialog largedialog deckeditor" style="display: block;">
 			<label>Name</label>
-			<input class='name' type='text'>
-			<div class='clear' style='height: 14px;'></div>
+			<input class="name" type="text" />
+			<div class="clear" style="height: 14px;"></div>
 			<label>
-				<input class='showplayers' type='checkbox'>
+				<input class="showplayers" type="checkbox" />
 				Show deck to players?
 			</label>
-			<div class='clear' style='height: 7px;'></div>
+			<div class="clear" style="height: 7px;"></div>
 			<label>
-				<input class='playerscandraw' type='checkbox'>
+				<input class="showtooltips" type="checkbox" />
+				Show card tooltips?
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				<input class="playerscandraw" type="checkbox" />
 				Players can draw cards?
 			</label>
-			<div class='clear' style='height: 7px;'></div>
+			<div class="clear" style="height: 7px;"></div>
 			<label>
-				<input class='infinitecards' type='checkbox'>
+				<input class="infinitecards" type="checkbox" />
 				Cards in deck are infinite?
 			</label>
-			<p class='infinitecardstype'>
+			<p class="infinitecardstype">
+				<$ var deckId = this.get('id'); $>
+				<$ var deckInfiniteTypeName = \`\${deckId}infinitecardstype\`; $>
 				<label>
-					<input name='infinitecardstype' type='radio' value='random'>
+					<input type="radio" name="<$! deckInfiniteTypeName $>" value="random" />
 					Always a random card
 				</label>
 				<label>
-					<input name='infinitecardstype' type='radio' value='cycle'>
+					<input type="radio" name="<$! deckInfiniteTypeName $>" value="cycle" />
 					Draw through deck, shuffle, repeat
 				</label>
 			</p>
-			<div class='clear' style='height: 7px;'></div>
+			<div class="clear" style="height: 7px;"></div>
 			<label>
 				Allow choosing specific cards from deck:
-				<select class='deckpilemode'>
-					<option value='none'>Disabled</option>
-					<option value='choosebacks_gm'>GM Choose: Show Backs</option>
-					<option value='choosefronts_gm'>GM Choose: Show Fronts</option>
-					<option value='choosebacks'>GM + Players Choose: Show Backs</option>
-					<option value='choosefronts'>GM + Players Choose: Show Fronts</option>
+				<br>
+				<select class="deckpilemode">
+					<option value="none">Disabled</option>
+					<option value="choosebacks_gm">GM Choose: Show Backs</option>
+					<option value="choosefronts_gm">GM Choose: Show Fronts</option>
+					<option value="choosebacks">GM + Players Choose: Show Backs</option>
+					<option value="choosefronts">GM + Players Choose: Show Fronts</option>
 				</select>
 			</label>
-			<div class='clear' style='height: 7px;'></div>
+			<div class="clear" style="height: 7px;"></div>
 			<label>
 				Discard Pile:
-				<select class='discardpilemode'>
-					<option value='none'>No discard pile</option>
-					<option value='choosebacks'>Choose: Show Backs</option>
-					<option value='choosefronts'>Choose: Show Fronts</option>
-					<option value='drawtop'>Draw most recent/top card</option>
-					<option value='drawbottom'>Draw oldest/bottom card</option>
+				<br>
+				<select class="discardpilemode">
+					<option value="none">No discard pile</option>
+					<option value="choosebacks">Choose: Show Backs</option>
+					<option value="choosefronts">Choose: Show Fronts</option>
+					<option value="drawtop">Draw most recent/top card</option>
+					<option value="drawbottom">Draw oldest/bottom card</option>
 				</select>
 			</label>
-			<div class='clear' style='height: 7px;'></div>
-			<hr>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				Removed Cards Pile:
+				<br>
+				<select class="removedcardsmode">
+					<option value="none">No Removed Cards Pile</option>
+					<option value="choosebacks">Choose: Show Backs</option>
+					<option value="choosefronts">Choose: Show Fronts</option>
+				</select>
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<hr />
 			<strong>When played to the tabletop...</strong>
-			<div class='clear' style='height: 5px;'></div>
+			<div class="clear" style="height: 5px;"></div>
 			<label>
 				Played Facing:
-				<select class='cardsplayed' style='display: inline-block; width: auto; position: relative; top: 3px;'>
-					<option value='facedown'>Face Down</option>
-					<option value='faceup'>Face Up</option>
+				<select class="cardsplayed" style="display: inline-block; width: auto; position: relative; top: 3px;">
+					<option value="facedown">Face Down</option>
+					<option value="faceup">Face Up</option>
 				</select>
 			</label>
-			<div class='clear' style='height: 7px;'></div>
+			<div class="clear" style="height: 7px;"></div>
 			<label>
 				Considered:
-				<select class='treatasdrawing' style='display: inline-block; width: auto; position: relative; top: 3px;'>
-					<option value='true'>Drawings (No Bubbles/Stats)</option>
-					<option value='false'>Tokens (Including Bubbles and Stats)</option>
+				<select class="treatasdrawing" style="display: inline-block; width: auto; position: relative; top: 3px;">
+					<option value="true">Drawings (No Bubbles/Stats)</option>
+					<option value="false">Tokens (Including Bubbles and Stats)</option>
 				</select>
 			</label>
-			<div class='clear' style='height: 7px;'></div>
-			<div class='inlineinputs'>
+			<div class="clear" style="height: 7px;"></div>
+			<div class="inlineinputs">
 				Card Size:
-				<input class='defaultwidth' type='text'>
+				<input class="defaultwidth" type="text" />
 				x
-				<input class='defaultheight' type='text'>
+				<input class="defaultheight" type="text" />
 				px
 			</div>
-			<small style='text-align: left; padding-left: 135px; width: auto;'>Leave blank for default auto-sizing</small>
-			<div class='clear' style='height: 7px;'></div>
-			<!-- %label -->
-			<!-- %input.showalldrawn(type="checkbox") -->
-			<!-- Everyone sees what card is drawn onto top of deck? -->
-			<!-- .clear(style="height: 7px;") -->
-			<hr>
+			<small style="text-align: left; padding-left: 135px; width: auto;">Leave blank for default auto-sizing</small>
+			<div class="clear" style="height: 7px;"></div>
+			<hr />
 			<strong>In other's hands...</strong>
-			<div class='clear' style='height: 5px;'></div>
-			<div class='inlineinputs'>
-				<label style='width: 75px;'>Players see:</label>
+			<div class="clear" style="height: 5px;"></div>
+			<div class="inlineinputs">
+				<label style="width: 75px;"> Players see:</label>
 				<label>
-					<input class='players_seenumcards' type='checkbox'>
+					<input class="players_seenumcards" type="checkbox" />
 					Number of Cards
 				</label>
 				<label>
-					<input class='players_seefrontofcards' type='checkbox'>
+					<input class="players_seefrontofcards" type="checkbox" />
 					Front of Cards
 				</label>
 			</div>
-			<div class='clear' style='height: 5px;'></div>
-			<div class='inlineinputs'>
-				<label style='width: 75px;'>GM sees:</label>
+			<div class="clear" style="height: 5px;"></div>
+			<div class="inlineinputs">
+				<label style="width: 75px;">GM sees:</label>
 				<label>
-					<input class='gm_seenumcards' type='checkbox'>
+					<input class="gm_seenumcards" type="checkbox" />
 					Number of Cards
 				</label>
 				<label>
-					<input class='gm_seefrontofcards' type='checkbox'>
+					<input class="gm_seefrontofcards" type="checkbox" />
 					Front of Cards
 				</label>
 			</div>
-			<div class='clear' style='height: 5px;'></div>
-			<hr>
-			<!-- BEGIN MOD -->
-			<button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px;' data-deck-id="<$!this.id$>">
-				Add Cards from URLs
+			<div class="clear" style="height: 5px;"></div>
+			<hr />
+			<button class="addmultiplecards btn" style="float: right;">
+				<span class="pictos">&</span>
+				Add Multiple
 			</button>
-			<!-- END MOD -->
-			<button class='addcard btn' style='float: right;'>
-				<span class='pictos'>&</span>
+			<button class="addcard btn" style="float: right;">
+				<span class="pictos">&</span>
 				Add Card
 			</button>
 			<h3>Cards</h3>
-			<div class='clear' style='height: 7px;'></div>
-			<table class='table table-striped'>
+			<div class="clear" style="height: 7px;"></div>
+			<table class="table table-striped">
 				<tbody></tbody>
 			</table>
-			<div class='clear' style='height: 15px;'></div>
+			<div class="clear" style="height: 15px;"></div>
 			<label>
 				<strong>Card Backing (Required)</strong>
 			</label>
-			<div class='clear' style='height: 7px;'></div>
+			<div class="clear" style="height: 7px;"></div>
 			<!-- BEGIN MOD -->
 			<button class='btn deck-image-by-url' style="margin-bottom: 10px" data-deck-id="<$!this.id$>">Set image from URL...</button>
 			<!-- END MOD -->
-			<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-				<div class='status'></div>
-				<div class='inner'></div>
-				<$ if(this.get("avatar") == "") { $>
-				<h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
-				<br>or</br>
-				<button class='btn'>Choose a file...</button>
-				<input class='manual' type='file'>
-				<$ } else { $>
-				<img src="<$!this.get("avatar")$>" />
-				<div class='remove'>
-					<a href='javascript:void(0);'>Remove</a>
+			<div class="avatar dropbox <$!this.get("avatar") != "" ? "filled" : "" $>">
+				<div class="status"></div>
+				<div class="inner">
+					<$ if(this.get("avatar") == "") { $>
+					<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;"> Drop a file</h4>
+					<br />
+					<button class="btn">Choose a file...</button>
+					<input class="manual" type="file" />
+					<$ } else { $>
+					<$ if(/[\\w\\-]+\\.webm/i.test(this.get("avatar"))) { $>
+					<video src="<$!this.get("avatar")$>" autoplay muted loop />
+					<$ } else { $>
+					<img src="<$!this.get("avatar")$>" />
+					<$ } $>
+					<div class="remove">
+						<a href='javascript:void(0);'>Remove</a>
+					</div>
+					<$ } $>
 				</div>
-				<$ } $>
 			</div>
-		</div>
-		<div class='clear' style='height: 20px;'></div>
-		<p style='float: left;'>
-			<button class='btn dupedeck'>Duplicate Deck</button>
-		</p>
-		<$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
-		<p style='text-align: right;'>
-			<button class='btn btn-danger deletedeck'>Delete Deck</button>
-		</p>
-		<$ } $>
+			<div class="clear" style="height: 20px;"></div>
+			<p style="float: left;">
+				<button class="btn dupedeck">Duplicate Deck</button>
+			</p>
+			<$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
+			<p style="text-align: right;">
+				<button class="btn btn-danger deletedeck">Delete Deck</button>
+			</p>
+			<$ } $>
 		</div>
 	</script>
 	`;
 
 	d20plus.html.cardEditor = `
-	<script id='tmpl_cardeditor' type='text/html'>
-		<div class='dialog largedialog cardeditor' style='display: block;'>
-			<label>Name</label>
-			<input class='name' type='text'>
-			<div class='clear'></div>
+	<script id="tmpl_cardeditor" type="text/html">
+		<div class="dialog largedialog cardeditor" style="display: block;">
+			<h3 class="page_title text-capitalize">Name</h3>
+			<input class="name" type="text"></input>
+
+			<div class="card_tooltip w-100">
+				<div class="w-100 flex-wrap cardeditor__container cardeditor__tooltip-title">
+					<div class="flex-col">
+						<div class="cardeditor__header w-100">
+							<h3 class="page_title text-capitalize">Tooltip</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="cardeditor__row">
+				<div class="cardeditor__container">
+					<div class="d-flex">
+						<textarea class="card-tooltip" id="card-general-tooltip" type="text" maxlength="150"></textarea>
+					</div>
+				</div>
+			</div>
+			<br />
+			<small>
+				<span class="tooltip-count">0</span>
+				/150
+			</small>
+			<hr />
+
+			<div class="clear"></div>
 			<!-- BEGIN MOD -->
 			<button class='btn card-image-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
 			<!-- END MOD -->
@@ -429,21 +471,83 @@ function initHTMLroll20EditorsMisc () {
 				<div class="status"></div>
 				<div class="inner">
 					<$ if(this.get("avatar") == "") { $>
-					<h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
-					<br>or</br>
-					<button class='btn'>Choose a file...</button>
-					<input class='manual' type='file'>
+					<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+					<br />
+					<button class="btn">Choose a file...</button>
+					<input class="manual" type="file"></input>
+					<$ } else { $>
+					<$ if(/[\\w\\-]+\\.webm/i.test(this.get("avatar"))) { $>
+					<video src="<$!this.get("avatar")$>" autoplay muted loop />
 					<$ } else { $>
 					<img src="<$!this.get("avatar")$>" />
-					<div class='remove'>
+					<$ } $>
+					<div class="remove">
 						<a href='javascript:void(0);'>Remove</a>
 					</div>
 					<$ } $>
 				</div>
 			</div>
-			<div class='clear'></div>
+			<div class="clear" style="height: 15px;"></div>
+			<label>
+				<strong>Card Backing (Optional)</strong>
+			</label>
+			<div class="clear" style="height: 15px;"></div>
+			<!-- BEGIN MOD -->
+			<button class='btn card-backing-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
+			<!-- END MOD -->
+			<div class="card_back dropbox <$! this.get("card_back") != "" ? "filled" : "" $>">
+				<div class="status"></div>
+				<div class="inner">
+					<$ if(this.get("card_back") == "") { $>
+					<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+					<br />
+					<button class="btn">Choose a file...</button>
+					<input class="manual" type="file"></input>
+					<$ } else { $>
+					<$ if(/[\\w\\-]+\\.webm/i.test(this.get("card_back"))) { $>
+					<video src="<$!this.get("card_back")$>" autoplay muted loop />
+					<$ } else { $>
+					<img src="<$!this.get("card_back")$>" />
+					<$ } $>
+					<div class="remove">
+						<a href='javascript:void(0);'>Remove</a>
+					</div>
+					<$ } $>
+				</div>
+			</div>
+			<div class="clear"></div>
 			<label>&nbsp;</label>
-			<button class='deletecard btn btn-danger'>Delete Card</button>
+			<button class="deletecard btn btn-danger">Delete Card</button>
+		</div>
+	</script>
+	`;
+
+	d20plus.html.cardUploader = `
+	<script id="tmpl_cardupload" type="text/html">
+		<div class="dialog largedialog cardupload" style="display: block; height: 100%;">
+			<div class="row-fluid" style="height: calc(100% - 35px);">
+				<div class="span12" style="height: 100%;">
+					<div class="carduploader dropzone" style="border:2px dashed #88888888; position: relative; min-height: 100%;">
+						<div class="dz-message">
+							Drop image files here
+							<div class="dz-messagebox btn btn-primary">Or Click to Upload</div>
+							<em>By uploading, you affirm you have the rights to use each file.</em>
+						</div>
+					</div>
+					<div class="carduploader-converting" style="display: none;">
+						<p>Your files are being processed.</p>
+						<em>Waiting...</em>
+						<div class="carduploader_progress card-progress">
+							<div class="card-progress-bar card-progress-bar-striped card-progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- BEGIN MOD -->
+			<button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px; margin-top: 5px;' data-deck-id="<$!this.id$>">
+				Add Cards from URLs
+			</button>
+			<!-- END MOD -->
 		</div>
 	</script>
 	`;

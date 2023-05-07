@@ -130,6 +130,7 @@ function d20plusEngine () {
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		$("#tmpl_cardupload").html($(d20plus.html.cardUploader).html());
 		$("#tmpl_macroeditor").html($(d20plus.html.macroEditor).html());
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
