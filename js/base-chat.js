@@ -104,8 +104,12 @@ function baseChat () {
 	function availableLanguagesPlayer (playerId) {
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
-				const actors = char.attributes.controlledby.split(",");
-				return actors.includes(playerId);
+				if (playerId) {
+					const actors = char.attributes.controlledby.split(",");
+					return actors.includes(playerId) || actors.includes("all");
+				} else {
+					return char.currentPlayerControls();
+				}
 			})
 			.map(char => char.id);
 		return characters
@@ -114,7 +118,7 @@ function baseChat () {
 	}
 
 	function hasLanguageProficiency (langId) {
-		const proficientIn = availableLanguagesPlayer(d20_player_id)
+		const proficientIn = availableLanguagesPlayer()
 			.map(lang => d20plus.chat.getLanguageId(lang));
 		return proficientIn.includes(d20plus.chat.getLanguageId(langId));
 	}
@@ -902,7 +906,7 @@ function baseChat () {
 				const openedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
 				d20plus.engine.enhanceMacros(openedMacroId);
 			});
-		availableLanguagesPlayer(d20_player_id);
+		availableLanguagesPlayer();
 		buildLanguageIndex();
 
 		if (window.is_gm) {
