@@ -114,6 +114,12 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
+		"journalCommands": {
+			"name": "Additional journal context menu commands",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
 	});
 	addConfigOptions("chat", {
 		"_name": "Chat",
