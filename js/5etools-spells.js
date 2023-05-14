@@ -24,58 +24,36 @@ function d20plusSpells () {
 	};
 
 	// Import Spells button was clicked
-	d20plus.spells.button = function (forcePlayer) {
+	d20plus.spells.button = async function (forcePlayer) {
 		const playerMode = forcePlayer || !window.is_gm;
 		const url = playerMode ? $("#import-spells-url-player").val() : $("#import-spells-url").val();
-		if (url && url.trim()) {
-			const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
 
-			DataUtil.spell.loadJSON(url).then(async (data) => {
-				await d20plus.importer.pAddBrew(url);
-				if (data.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(data.roll20Spell);
-				d20plus.importer.showImportList(
-					"spell",
-					data.spell,
-					handoutBuilder,
-					{
-						groupOptions: d20plus.spells._groupOptions,
-						forcePlayer,
-						listItemBuilder: d20plus.spells._listItemBuilder,
-						listIndex: d20plus.spells._listCols,
-						listIndexConverter: d20plus.spells._listIndexConverter,
-					},
-				);
-			});
+		if (!url || !url.trim()) return;
+
+		let data;
+		if (url === SPELL_DATA_DIR) {
+			data = await DataUtil.spell.loadJSON();
 		}
-	};
-
-	// Import All Spells button was clicked
-	d20plus.spells.buttonAll = async function (forcePlayer) {
-		const toLoad = Object.keys(spellDataUrls).filter(src => !SourceUtil.isNonstandardSource(src)).map(src => d20plus.spells.formSpellUrl(spellDataUrls[src]));
-
-		if (toLoad.length) {
-			const handoutBuilder = !forcePlayer && window.is_gm ? d20plus.spells.handoutBuilder : d20plus.spells.playerImportBuilder;
-
-			const dataStack = (await Promise.all(toLoad.map(async url => DataUtil.spell.loadJSON(url)))).flat();
-
-			let toAdd = [];
-			dataStack.forEach(d => {
-				toAdd = toAdd.concat(d.spell);
-				if (d.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(d.roll20Spell);
-			});
-			d20plus.importer.showImportList(
-				"spell",
-				toAdd,
-				handoutBuilder,
-				{
-					groupOptions: d20plus.spells._groupOptions,
-					forcePlayer,
-					listItemBuilder: d20plus.spells._listItemBuilder,
-					listIndex: d20plus.spells._listCols,
-					listIndexConverter: d20plus.spells._listIndexConverter,
-				},
-			);
+		else {
+			data = await DataUtil.loadJSON(url);
+			await d20plus.importer.pAddBrew(url);
 		}
+
+		const handoutBuilder = playerMode ? d20plus.spells.playerImportBuilder : d20plus.spells.handoutBuilder;
+
+		if (data.roll20Spell) spellMetaData.spell = spellMetaData.spell.concat(data.roll20Spell);
+		d20plus.importer.showImportList(
+			"spell",
+			data.spell,
+			handoutBuilder,
+			{
+				groupOptions: d20plus.spells._groupOptions,
+				forcePlayer,
+				listItemBuilder: d20plus.spells._listItemBuilder,
+				listIndex: d20plus.spells._listCols,
+				listIndexConverter: d20plus.spells._listIndexConverter,
+			},
+		);
 	};
 
 	// Create spell handout from js data object
