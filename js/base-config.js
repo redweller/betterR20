@@ -115,7 +115,7 @@ function baseConfig () {
 			"_type": "boolean",
 		},
 		"journalCommands": {
-			"name": "Additional journal context menu commands",
+			"name": "Add Custom Journal Context Menu Options",
 			"default": true,
 			"_type": "boolean",
 			"_player": true,

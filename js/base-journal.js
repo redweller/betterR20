@@ -7,22 +7,22 @@ function d20plusJournal () {
 		// Create new Journal commands
 		// stash the folder ID of the last folder clicked
 		$("#journalfolderroot").on("contextmenu", ".dd-content", function (e) {
-			const showing = d20plus.cfg.getOrDefault("interface", "journalCommands");
-			const itemHandle = $(this).parent();
+			const isShowCustom = d20plus.cfg.getOrDefault("interface", "journalCommands");
+			const $itemHandle = $(this).parent();
 
-			if (itemHandle.hasClass("dd-folder")) {
-				d20plus.journal.lastClickedFolderId = itemHandle.data("globalfolderid");
-			} else if (itemHandle.hasClass("dd-item")) {
-				d20plus.journal.lastClickedJournalItemId = itemHandle.data("itemid");
+			if ($itemHandle.hasClass("dd-folder")) {
+				d20plus.journal.lastClickedFolderId = $itemHandle.data("globalfolderid");
+			} else if ($itemHandle.hasClass("dd-item")) {
+				d20plus.journal.lastClickedJournalItemId = $itemHandle.data("itemid");
 			}
 
-			if (itemHandle.hasClass("character") && showing) {
+			if ($itemHandle.hasClass("character") && isShowCustom) {
 				$(`.Vetools-make-tokenactions`).show();
 			} else {
 				$(`.Vetools-make-tokenactions`).hide();
 			}
 
-			if ((itemHandle.hasClass("character") || (itemHandle.hasClass("handout"))) && showing) {
+			if (($itemHandle.hasClass("character") || ($itemHandle.hasClass("handout"))) && isShowCustom) {
 				$(`.b20-change-avatar`).show();
 			} else {
 				$(`.b20-change-avatar`).hide();
@@ -139,7 +139,10 @@ function d20plusJournal () {
 			const id = d20plus.journal.lastClickedJournalItemId;
 			const item = d20.Campaign.characters.get(id) || d20.Campaign.handouts.get(id);
 			const name = item?.attributes.name || "Unnamed";
-			if (!item?.attributes.hasOwnProperty("name") || !item?.attributes.hasOwnProperty("avatar")) return;
+			if (!item?.attributes.hasOwnProperty("name") || !item?.attributes.hasOwnProperty("avatar")) {
+				// TODO user-visible feedback? Toast message?
+				return console.error(`Selected journal item does not have a "name" and/or "avatar" field!`);
+			}
 			d20plus.ut.log(`Setting avatar for ${name}`);
 			const $dialog = $(`
 				<div class="dialog largedialog journalavatareditor">
@@ -161,7 +164,7 @@ function d20plusJournal () {
 				} else {
 					$dropbox.removeClass("filled");
 					avatar.url = "";
-					$inner.html(`<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4><br>`);
+					$inner.html(`<h4 style="padding-bottom: 0; margin-bottom: 0; color: #777;">Drop a file</h4><br>`);
 				}
 			};
 			$dialog.dialog({
@@ -178,11 +181,11 @@ function d20plusJournal () {
 						classes: {
 							"ui-droppable": "drop-highlight",
 						},
-						drop: (e, d) => {
-							e.originalEvent.dropHandled = !0;
-							e.stopPropagation();
-							e.preventDefault();
-							setImagePreview(d.draggable.data("fullsizeurl") || d.draggable.data("url"));
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							setImagePreview($d.draggable.data("fullsizeurl") || $d.draggable.data("url"));
 						},
 					}).on("click", ".remove", () => {
 						setImagePreview();
