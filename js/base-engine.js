@@ -130,6 +130,7 @@ function d20plusEngine () {
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		$("#tmpl_cardupload").html($(d20plus.html.cardUploader).html());
 		$("#tmpl_macroeditor").html($(d20plus.html.macroEditor).html());
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
@@ -387,6 +388,9 @@ function d20plusEngine () {
 		width: {id: "page-size-width-input", class: ".width.units.page_setting_item"},
 		height: {id: "page-size-height-input", class: ".height.units.page_setting_item"},
 		background_color: {class: ".pagebackground"},
+		wrapperColor: {class: ".wrappercolor"},
+		useAutoWrapper: {id: "page-wrapper-color-from-map-toggle", class: ".useautowrapper"},
+
 		scale_number: {id: "page-size-height-input", class: ".scale_number"},
 		scale_units: {id: "page-scale-grid-cell-label-select", class: ".scale_units"},
 		gridlabels: {id: "page-grid-hex-label-toggle", class: ".gridlabels"},
@@ -810,7 +814,9 @@ function d20plusEngine () {
 		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
-		d20.engine.canvas._layerIteratorGenerator = d20plus.mod.layerIteratorGenerator;
+		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
+		d20.engine.canvas.drawAnyLayer = _.bind(d20plus.mod.drawAnyLayer, d20.engine.canvas);
+		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);
 	};
 
 	d20plus.engine.removeLinkConfirmation = function () {

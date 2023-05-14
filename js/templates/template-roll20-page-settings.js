@@ -84,9 +84,44 @@ function initHTMLPageSettings () {
 				<h3 class='page_title'>Background</h3>
 			</div>
 			<div class='pagedetails__subheader'>
-				<h4>Color</h4>
+				<div class='row'>
+					<div class='col-xs-5' style='display: flex; flex-direction: column; align-items: center; gap: 4px;'>
+						<div class='pagedetails__container'>
+							<h4>Board Color</h4>
+						</div>
+						<div class='pagedetails__container'>
+							<div>
+								<input class='pagebackground' type='text'>
+							</div>
+						</div>
+					</div>
+					<div class='col-xs-5' style='display: flex; flex-direction: column; align-items: center; gap: 4px;'>
+						<div class='pagedetails__container'>
+							<h4>Backdrop Color</h4>
+						</div>
+						<div class='pagedetails__container'>
+							<div>
+								<input class='wrappercolor' type='text'>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<input class='pagebackground' type='text'>
+			<div class='pagedetails__subheader'>
+				<div class='row'>
+					<div class='col-xs-7 pagedetails__subheader'>
+						<h4 class='text-capitalize'>Apply dominant color from map layer</h4>
+					</div>
+					<div class='col-xs-3 grid_switch'>
+						<label class='switch'>
+							<label class='sr-only' for='page-wrapper-color-from-map-toggle'>apply dominant color from map layer</label>
+							<input class='useautowrapper showtip' id='page-wrapper-color-from-map-toggle' title='Automatically update the backdrop to match the map layer' type='checkbox' value='1'>
+							<span class='slider round'></span>
+							</input>
+						</label>
+					</div>
+				</div>
+			</div>
 		</div>
 		<hr>
 		<!-- * SCALE */ -->
@@ -222,12 +257,14 @@ function initHTMLPageSettings () {
 						<div class='disable_box'>px</div>
 					</div>
 				</div>
-				<div class='pagedetails__subheader'>
-					<h4>Color</h4>
-				</div>
-				<div class='pagedetails__container'>
-					<div>
-						<input class='gridcolor' type='text'>
+				<div class='col' style='display: flex; flex-direction: column; gap: 4px;'>
+					<div class='pagedetails__subheader'>
+						<h4>Color</h4>
+					</div>
+					<div class='pagedetails__container'>
+						<div>
+							<input class='gridcolor' type='text'>
+						</div>
 					</div>
 				</div>
 				<div class='pagedetails__subheader'>
