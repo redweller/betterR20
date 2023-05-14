@@ -65,7 +65,7 @@ function d20plusItems () {
 									})
 								} else {
 									out.push({
-										type: "misc",
+										_typeHtml: "misc",
 										data: {
 											name: line.toTitleCase(),
 											data: {
@@ -258,7 +258,7 @@ function d20plusItems () {
 
 		if (data._r20SubItemData) {
 			roll20Data._subItems = data._r20SubItemData.map(subItem => {
-				if (subItem.type === "item") {
+				if (subItem._typeHtml === "item") {
 					const [subNote, subGm] = d20plus.items._getHandoutData(subItem.data);
 					return {subItem: subGm, count: subItem.count};
 				} else {
