@@ -665,6 +665,15 @@ function baseCss () {
 			s: `.actionhelp.js, .commandhelp.js`,
 			r: `display: none;`,
 		},
+		// Deck editor styles
+		{
+			s: `tr.card:hover::after`,
+			r: `background: rgba(200, 200, 200, 0.4);`,
+		},
+		{
+			s: `tr.card::after`,
+			r: `content: "D";font-family: pictos;display: block;float: right;padding: 3px;border-radius: 5px;background: var(--dark-primary);margin: 10px 3px;`,
+		},
 	];
 
 	d20plus.css.baseCssRulesPlayer = [

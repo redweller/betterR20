@@ -4,24 +4,31 @@
 function d20plusMod () {
 	d20plus.mod = {};
 
-	d20plus.mod.setMode = function (t) {
-		d20plus.ut.log(`Setting mode ${t}`);
-		const preserveDrawingColor = (stash) => {
-			const drawingTools = ["rect", "ellipse", "text", "path", "polygon"];
-			const drawingProps = [{nm: "fill", el: "fillcolor"}, {nm: "color", el: "strokecolor"}];
+	d20plus.mod.preserveDrawingColor = (() => {
+		const drawingTools = ["rect", "ellipse", "text", "path", "polygon"];
+		const drawingProps = [{nm: "fill", el: "fillcolor"}, {nm: "color", el: "strokecolor"}];
+		return (t) => {
 			if (!drawingTools.includes(t)) return;
 			drawingProps.forEach(prop => {
-				if (stash) d20plus.mod[`drawing${prop.nm}`] = d20.engine.canvas.freeDrawingBrush[prop.nm];
-				else {
-					if (d20plus.mod[`drawingcolor`] === "rgb(0, 0, 0)" || !d20plus.mod[`drawingcolor`]) return;
-					$(`#path_${prop.el}`).val(d20plus.mod[`drawing${prop.nm}`]).trigger("change");
+				d20plus.ut.log(`Preserving color`, prop);
+				if (!prop.stashed) {
+					prop.stashed = true;
+					prop.value = d20.engine.canvas.freeDrawingBrush[prop.nm];
+				} else {
+					prop.stashed = false;
+					if (drawingProps[1].value === "rgb(0, 0, 0)" || !drawingProps[1].value) return;
+					$(`#path_${prop.el}`).val(prop.value).trigger("change");
 				}
 			});
 		}
+	})();
+
+	d20plus.mod.setMode = function (t) {
+		d20plus.ut.log(`Setting mode ${t}`);
 		try {
-			preserveDrawingColor(true);
+			d20plus.mod.preserveDrawingColor(t);
 			d20.Campaign.activePage().setModeRef(t);
-			preserveDrawingColor();
+			d20plus.mod.preserveDrawingColor(t);
 		} catch (e) {
 			d20plus.ut.log(`Switching using legacy because ${e.message}`);
 			d20plus.mod.setModeLegacy(t);
