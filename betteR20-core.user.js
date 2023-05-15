@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.1.43
+// @version      1.35.2.44
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -133,6 +133,7 @@ function baseLanguage () {
 		cfg_option_quick_3: [`-- Quick action 3`],
 		cfg_option_minify_tracker: [`Shrink Initiative Tracker Text`],
 		cfg_option_interiors_toggle: [`Add interior/outside mode switch`],
+		cfg_option_journal_context: [`Add Custom Journal Context Menu Options`],
 		cfg_option_legacy_chat: [`Use green/black style for betteR20 system messages`],
 		cfg_option_resize_sidebar: [`Resize textbox & tabs with sidebar (requires restart)`],
 		cfg_option_welcome_msg: [`Show welcome message on load`],
@@ -213,6 +214,7 @@ function baseLanguage () {
 		menu_adv_flv: [`Flip Vertical`],
 		menu_adv_dimens: [`Set Dimensions`],
 		menu_adv_align: [`Align to Grid`],
+		menu_adv_edit: [`Edit image`],
 		menu_adv_lock: [`Lock`],
 		menu_adv_unlock: [`Unlock`],
 		menu_adv_tokenid: [`View Token ID`],
@@ -226,7 +228,7 @@ function baseLanguage () {
 		menu_multi_title: [`Multi-Sided`],
 		menu_multi_rnd: [`Random Side`],
 		menu_multi_select: [`Choose Side`],
-		menu_multi_size: [`Set Side Size`],
+		menu_multi_edit: [`Edit Sides`],
 		menu_quick_togm: [`Hide from layer`],
 		menu_quick_tofg: [`To visible layer`],
 		menu_quick_toback: [`Move behind`],
@@ -373,6 +375,7 @@ function baseLanguage () {
 		cfg_option_quick_3: [`-- Быстрое действие 3`],
 		cfg_option_minify_tracker: [`Уменьшить размер элементов трекера инициативы`],
 		cfg_option_interiors_toggle: [`Добавить переключатель режима в помещении/снаружи`],
+		cfg_option_journal_context: [`Добавить действия в контекстное меню журнала`],
 		cfg_option_legacy_chat: [`Черно-зелёный (классический) стиль уведомлений betteR20`],
 		cfg_option_resize_sidebar: [`Подгонять размер текстбокса под панель (нужен перезапуск)`],
 		cfg_option_welcome_msg: [`Выводить в чат приветствие при загрузке`],
@@ -448,6 +451,7 @@ function baseLanguage () {
 		menu_adv_flh: [`Отразить гор.`],
 		menu_adv_flv: [`Отразить верт.`],
 		menu_adv_dimens: [`Размеры`],
+		menu_adv_edit: [`Изображение`],
 		menu_adv_align: [`Выровнять`],
 		menu_adv_lock: [`Блокировать`],
 		menu_adv_unlock: [`Разблокировать`],
@@ -462,7 +466,7 @@ function baseLanguage () {
 		menu_multi_title: [`Мультитокен`],
 		menu_multi_rnd: [`Случайно`],
 		menu_multi_select: [`Выбрать`],
-		menu_multi_size: [`Размер`],
+		menu_multi_edit: [`Редактировать`],
 		menu_quick_togm: [`Спрятать токен`],
 		menu_quick_tofg: [`Вернуть на слой`],
 		menu_quick_toback: [`Уровень вниз`],
@@ -2537,6 +2541,12 @@ function baseConfig () {
 		"minifyTracker": {
 			"name": __("cfg_option_minify_tracker"),
 			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"journalCommands": {
+			"name": __("cfg_option_journal_context"),
+			"default": true,
 			"_type": "boolean",
 			"_player": true,
 		},
@@ -8630,6 +8640,16 @@ function d20plusArt () {
 			}
 		});
 
+		$(`.card-backing-by-url`).live("click", function () {
+			const cId = $(this).attr("data-card-id");
+			const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+			if (url) {
+				d20plus.art.setLastImageUrl(url);
+				const card = d20.Campaign.decks.find(it => it.cards.find(c => c.id === cId)).cards.find(c => c.id === cId);
+				card.set("card_back", url);
+			}
+		});
+
 		$(`.deck-mass-cards-by-url`).live("click", function () {
 			const dId = $(this).attr("data-deck-id");
 
@@ -8640,30 +8660,58 @@ function d20plusArt () {
 			const $iptTxt = $dialog.find(`textarea`);
 			const $btnAdd = $dialog.find(`button`).click(() => {
 				const lines = ($iptTxt.val() || "").split("\n");
-				const toSaveAll = [];
+				const addCardsParams = [];
 				lines.filter(it => it && it.trim()).forEach(l => {
 					const split = l.split("---").map(it => it.trim()).filter(Boolean);
-					if (split.length >= 2) {
+					if (split.length === 2) {
 						const [name, url] = split;
-						const toSave = deck.cards.push({
-							avatar: url,
-							id: d20plus.ut.generateRowId(),
-							name,
-							placement: 99,
-						});
-						toSaveAll.push(toSave);
+						const params = [
+							name.includes(".") ? name : `${name}.png`,
+							url,
+							0,
+						];
+						addCardsParams.push(params);
 					}
 				});
 				$dialog.dialog("close");
 
-				toSaveAll.forEach(s => s.save());
-				deck.save();
+				if (addCardsParams.length) {
+					deck.uploader.libraryCards = {};
+					deck.uploader.libraryCardIndex = 0;
+					addCardsParams.forEach(params => deck.uploader.addCardFromLibrary(...params));
+				}
 			});
 
 			$dialog.dialog({
 				width: 800,
 				height: 650,
 			});
+		});
+
+		$("tr.card").live("click", event => {
+			if (!event.target.dataset.cardId) return;
+			event.preventDefault();
+			const cId = event.target.dataset.cardId;
+			const card = d20.Campaign.decks.find(it => it.cards.find(c => c.id === cId)).cards.find(c => c.id === cId)?.editor;
+			const confirm = $("<div>Are you sure you want to delete this card? This cannot be undone.</div>");
+			if (!card) return;
+			card.$el.dialog("destroy");
+			confirm.dialog({
+				modal: !0,
+				title: "Confirm Deletion",
+				buttons: {
+					Delete () {
+						card.model.destroy();
+						confirm.dialog("destroy").remove();
+					},
+					Cancel () {
+						confirm.dialog("destroy").remove();
+					},
+				},
+				beforeClose () {
+					confirm.dialog("destroy").remove();
+				},
+			})
 		});
 	};
 
@@ -11495,6 +11543,7 @@ function initHTMLroll20actionsMenu () {
 								<$ } $>
 
 								<$ if(this.view) { $>
+									<li data-action-type='edittokenimages'>Edit Image</li>
 									<li data-action-type='lock-token'>Lock/Unlock Position</li>
 								<$ } $>
 
@@ -11565,7 +11614,7 @@ function initHTMLroll20actionsMenu () {
 							<ul class='submenu' data-menuname='multiside'>
 								<li data-action-type='side_random'>Random Side</li>
 								<li data-action-type='side_choose'>Choose Side</li>
-								<li data-action-type='rollertokenresize'>Set Side Size</li>
+								<li data-action-type='edittokenimages'>Edit Sides</li>
 							</ul>
 						</li>
 					<$ } $>
@@ -11842,202 +11891,309 @@ function initHTMLroll20EditorsMisc () {
 
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.deckEditor = `
-    <script id='tmpl_deckeditor' type='text/html'>
-      <div class='dialog largedialog deckeditor' style='display: block;'>
-        <label>Name</label>
-        <input class='name' type='text'>
-        <div class='clear' style='height: 14px;'></div>
-        <label>
-          <input class='showplayers' type='checkbox'>
-          Show deck to players?
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          <input class='playerscandraw' type='checkbox'>
-          Players can draw cards?
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          <input class='infinitecards' type='checkbox'>
-          Cards in deck are infinite?
-        </label>
-        <p class='infinitecardstype'>
-          <label>
-            <input name='infinitecardstype' type='radio' value='random'>
-            Always a random card
-          </label>
-          <label>
-            <input name='infinitecardstype' type='radio' value='cycle'>
-            Draw through deck, shuffle, repeat
-          </label>
-        </p>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          Allow choosing specific cards from deck:
-          <select class='deckpilemode'>
-            <option value='none'>Disabled</option>
-            <option value='choosebacks_gm'>GM Choose: Show Backs</option>
-            <option value='choosefronts_gm'>GM Choose: Show Fronts</option>
-            <option value='choosebacks'>GM + Players Choose: Show Backs</option>
-            <option value='choosefronts'>GM + Players Choose: Show Fronts</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          Discard Pile:
-          <select class='discardpilemode'>
-            <option value='none'>No discard pile</option>
-            <option value='choosebacks'>Choose: Show Backs</option>
-            <option value='choosefronts'>Choose: Show Fronts</option>
-            <option value='drawtop'>Draw most recent/top card</option>
-            <option value='drawbottom'>Draw oldest/bottom card</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <hr>
-        <strong>When played to the tabletop...</strong>
-        <div class='clear' style='height: 5px;'></div>
-        <label>
-          Played Facing:
-          <select class='cardsplayed' style='display: inline-block; width: auto; position: relative; top: 3px;'>
-            <option value='facedown'>Face Down</option>
-            <option value='faceup'>Face Up</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <label>
-          Considered:
-          <select class='treatasdrawing' style='display: inline-block; width: auto; position: relative; top: 3px;'>
-            <option value='true'>Drawings (No Bubbles/Stats)</option>
-            <option value='false'>Tokens (Including Bubbles and Stats)</option>
-          </select>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <div class='inlineinputs'>
-          Card Size:
-          <input class='defaultwidth' type='text'>
-          x
-          <input class='defaultheight' type='text'>
-          px
-        </div>
-        <small style='text-align: left; padding-left: 135px; width: auto;'>Leave blank for default auto-sizing</small>
-        <div class='clear' style='height: 7px;'></div>
-        <!-- %label -->
-        <!-- %input.showalldrawn(type="checkbox") -->
-        <!-- Everyone sees what card is drawn onto top of deck? -->
-        <!-- .clear(style="height: 7px;") -->
-        <hr>
-        <strong>In other's hands...</strong>
-        <div class='clear' style='height: 5px;'></div>
-        <div class='inlineinputs'>
-          <label style='width: 75px;'>Players see:</label>
-          <label>
-            <input class='players_seenumcards' type='checkbox'>
-            Number of Cards
-          </label>
-          <label>
-            <input class='players_seefrontofcards' type='checkbox'>
-            Front of Cards
-          </label>
-        </div>
-        <div class='clear' style='height: 5px;'></div>
-        <div class='inlineinputs'>
-          <label style='width: 75px;'>GM sees:</label>
-          <label>
-            <input class='gm_seenumcards' type='checkbox'>
-            Number of Cards
-          </label>
-          <label>
-            <input class='gm_seefrontofcards' type='checkbox'>
-            Front of Cards
-          </label>
-        </div>
-        <div class='clear' style='height: 5px;'></div>
-        <hr>
-        <!-- BEGIN MOD -->
-        <button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px;' data-deck-id="<$!this.id$>">
-          Add Cards from URLs
-        </button>
-        <!-- END MOD -->
-        <button class='addcard btn' style='float: right;'>
-          <span class='pictos'>&</span>
-          Add Card
-        </button>
-        <h3>Cards</h3>
-        <div class='clear' style='height: 7px;'></div>
-        <table class='table table-striped'>
-          <tbody></tbody>
-        </table>
-        <div class='clear' style='height: 15px;'></div>
-        <label>
-          <strong>Card Backing (Required)</strong>
-        </label>
-        <div class='clear' style='height: 7px;'></div>
-        <!-- BEGIN MOD -->
-        <button class='btn deck-image-by-url' style="margin-bottom: 10px" data-deck-id="<$!this.id$>">Set image from URL...</button>
-        <!-- END MOD -->
-        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-        <div class='status'></div>
-        <div class='inner'></div>
-        <$ if(this.get("avatar") == "") { $>
-        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
-        <br>or</br>
-        <button class='btn'>Choose a file...</button>
-        <input class='manual' type='file'>
-        <$ } else { $>
-        <img src="<$!this.get("avatar")$>" />
-        <div class='remove'>
-          <a href='javascript:void(0);'>Remove</a>
-        </div>
-        <$ } $>
-        </div>
-        </div>
-        <div class='clear' style='height: 20px;'></div>
-        <p style='float: left;'>
-          <button class='btn dupedeck'>Duplicate Deck</button>
-        </p>
-        <$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
-        <p style='text-align: right;'>
-          <button class='btn btn-danger deletedeck'>Delete Deck</button>
-        </p>
-        <$ } $>
-      </div>
-    </script>
+		<script id="tmpl_deckeditor" type="text/html">
+		<div class="dialog largedialog deckeditor" style="display: block;">
+			<label>Name</label>
+			<input class="name" type="text"/>
+			<div class="clear" style="height: 14px;"></div>
+			<label>
+				<input class="showplayers" type="checkbox"/>
+				Show deck to players?
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				<input class="showtooltips" type="checkbox"/>
+				Show card tooltips?
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				<input class="playerscandraw" type="checkbox"/>
+				Players can draw cards?
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				<input class="infinitecards" type="checkbox"/>
+				Cards in deck are infinite?
+			</label>
+			<p class="infinitecardstype">
+				<$ var deckId = this.get('id'); $>
+				<$ var deckInfiniteTypeName = \`\${deckId}infinitecardstype\`; $>
+				<label>
+					<input type="radio" name="<$! deckInfiniteTypeName $>" value="random"/>
+					Always a random card
+				</label>
+				<label>
+					<input type="radio" name="<$! deckInfiniteTypeName $>" value="cycle"/>
+					Draw through deck, shuffle, repeat
+				</label>
+			</p>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				Allow choosing specific cards from deck:
+				<br>
+				<select class="deckpilemode">
+					<option value="none">Disabled</option>
+					<option value="choosebacks_gm">GM Choose: Show Backs</option>
+					<option value="choosefronts_gm">GM Choose: Show Fronts</option>
+					<option value="choosebacks">GM + Players Choose: Show Backs</option>
+					<option value="choosefronts">GM + Players Choose: Show Fronts</option>
+				</select>
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				Discard Pile:
+				<br>
+				<select class="discardpilemode">
+					<option value="none">No discard pile</option>
+					<option value="choosebacks">Choose: Show Backs</option>
+					<option value="choosefronts">Choose: Show Fronts</option>
+					<option value="drawtop">Draw most recent/top card</option>
+					<option value="drawbottom">Draw oldest/bottom card</option>
+				</select>
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				Removed Cards Pile:
+				<br>
+				<select class="removedcardsmode">
+					<option value="none">No Removed Cards Pile</option>
+					<option value="choosebacks">Choose: Show Backs</option>
+					<option value="choosefronts">Choose: Show Fronts</option>
+				</select>
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<hr/>
+			<strong>When played to the tabletop...</strong>
+			<div class="clear" style="height: 5px;"></div>
+			<label>
+				Played Facing:
+				<select class="cardsplayed" style="display: inline-block; width: auto; position: relative; top: 3px;">
+					<option value="facedown">Face Down</option>
+					<option value="faceup">Face Up</option>
+				</select>
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<label>
+				Considered:
+				<select class="treatasdrawing" style="display: inline-block; width: auto; position: relative; top: 3px;">
+					<option value="true">Drawings (No Bubbles/Stats)</option>
+					<option value="false">Tokens (Including Bubbles and Stats)</option>
+				</select>
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<div class="inlineinputs">
+				Card Size:
+				<input class="defaultwidth" type="text"/>
+				x
+				<input class="defaultheight" type="text"/>
+				px
+			</div>
+			<small style="text-align: left; padding-left: 135px; width: auto;">Leave blank for default auto-sizing</small>
+			<div class="clear" style="height: 7px;"></div>
+			<hr/>
+			<strong>In other's hands...</strong>
+			<div class="clear" style="height: 5px;"></div>
+			<div class="inlineinputs">
+				<label style="width: 75px;"> Players see:</label>
+				<label>
+					<input class="players_seenumcards" type="checkbox"/>
+					Number of Cards
+				</label>
+				<label>
+					<input class="players_seefrontofcards" type="checkbox"/>
+					Front of Cards
+				</label>
+			</div>
+			<div class="clear" style="height: 5px;"></div>
+			<div class="inlineinputs">
+				<label style="width: 75px;">GM sees:</label>
+				<label>
+					<input class="gm_seenumcards" type="checkbox"/>
+					Number of Cards
+				</label>
+				<label>
+					<input class="gm_seefrontofcards" type="checkbox"/>
+					Front of Cards
+				</label>
+			</div>
+			<div class="clear" style="height: 5px;"></div>
+			<hr/>
+			<button class="addmultiplecards btn" style="float: right;">
+				<span class="pictos">&</span>
+				Add Multiple
+			</button>
+			<button class="addcard btn" style="float: right;">
+				<span class="pictos">&</span>
+				Add Card
+			</button>
+			<h3>Cards</h3>
+			<div class="clear" style="height: 7px;"></div>
+			<table class="table table-striped">
+				<tbody></tbody>
+			</table>
+			<div class="clear" style="height: 15px;"></div>
+			<label>
+				<strong>Card Backing (Required)</strong>
+			</label>
+			<div class="clear" style="height: 7px;"></div>
+			<!-- BEGIN MOD -->
+			<button class='btn deck-image-by-url' style="margin-bottom: 10px" data-deck-id="<$!this.id$>">Set image from URL...</button>
+			<!-- END MOD -->
+			<div class="avatar dropbox <$!this.get("avatar") != "" ? "filled" : "" $>">
+				<div class="status"></div>
+				<div class="inner">
+					<$ if(this.get("avatar") == "") { $>
+						<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;"> Drop a file</h4>
+						<br/>
+						<button class="btn">Choose a file...</button>
+						<input class="manual" type="file"/>
+					<$ } else { $>
+						<$ if(/[\\w\\-]+\\.webm/i.test(this.get("avatar"))) { $>
+							<video src="<$!this.get("avatar")$>" autoplay muted loop />
+						<$ } else { $>
+							<img src="<$!this.get("avatar")$>" />
+						<$ } $>
+						<div class="remove">
+							<a href='javascript:void(0);'>Remove</a>
+						</div>
+					<$ } $>
+				</div>
+			</div>
+			<div class="clear" style="height: 20px;"></div>
+			<p style="float: left;">
+				<button class="btn dupedeck">Duplicate Deck</button>
+			</p>
+			<$ if(this.id != "A778E120-672D-49D0-BAF8-8646DA3D3FAC") { $>
+				<p style="text-align: right;">
+					<button class="btn btn-danger deletedeck">Delete Deck</button>
+				</p>
+			<$ } $>
+		</div>
+		</script>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.cardEditor = `
-    <script id='tmpl_cardeditor' type='text/html'>
-      <div class='dialog largedialog cardeditor' style='display: block;'>
-        <label>Name</label>
-        <input class='name' type='text'>
-        <div class='clear'></div>
-        <!-- BEGIN MOD -->
-        <button class='btn card-image-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
-        <!-- END MOD -->
-        <div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
-        <div class="status"></div>
-        <div class="inner">
-        <$ if(this.get("avatar") == "") { $>
-        <h4 style='padding-bottom: 0px; marigin-bottom: 0px; color: #777;'>Drop a file</h4>
-        <br>or</br>
-        <button class='btn'>Choose a file...</button>
-        <input class='manual' type='file'>
-        <$ } else { $>
-        <img src="<$!this.get("avatar")$>" />
-        <div class='remove'>
-          <a href='javascript:void(0);'>Remove</a>
-        </div>
-        <$ } $>
-        </div>
-        </div>
-        <div class='clear'></div>
-        <label>&nbsp;</label>
-        <button class='deletecard btn btn-danger'>Delete Card</button>
-      </div>
-    </script>
+		<script id="tmpl_cardeditor" type="text/html">
+		<div class="dialog largedialog cardeditor" style="display: block;">
+			<h3 class="page_title text-capitalize">Name</h3>
+			<input class="name" type="text"></input>
+	
+			<div class="card_tooltip w-100">
+				<div class="w-100 flex-wrap cardeditor__container cardeditor__tooltip-title">
+					<div class="flex-col">
+						<div class="cardeditor__header w-100">
+							<h3 class="page_title text-capitalize">Tooltip</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="cardeditor__row">
+				<div class="cardeditor__container">
+					<div class="d-flex">
+						<textarea class="card-tooltip" id="card-general-tooltip" type="text" maxlength="150"></textarea>
+					</div>
+				</div>
+			</div>
+			<br/>
+			<small>
+				<span class="tooltip-count">0</span>
+				/150
+			</small>
+			<hr/>
+	
+			<div class="clear"></div>
+			<!-- BEGIN MOD -->
+			<button class='btn card-image-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
+			<!-- END MOD -->
+			<div class="avatar dropbox <$! this.get("avatar") != "" ? "filled" : "" $>">
+			<div class="status"></div>
+				<div class="inner">
+					<$ if(this.get("avatar") == "") { $>
+						<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+						<br/>
+						<button class="btn">Choose a file...</button>
+						<input class="manual" type="file"></input>
+					<$ } else { $>
+						<$ if(/[\\w\\-]+\\.webm/i.test(this.get("avatar"))) { $>
+							<video src="<$!this.get("avatar")$>" autoplay muted loop />
+						<$ } else { $>
+							<img src="<$!this.get("avatar")$>" />
+						<$ } $>
+						<div class="remove">
+							<a href='javascript:void(0);'>Remove</a>
+						</div>
+					<$ } $>
+				</div>
+			</div>
+			<div class="clear" style="height: 15px;"></div>
+			<label>
+				<strong>Card Backing (Optional)</strong>
+			</label>
+			<div class="clear" style="height: 15px;"></div>
+			<!-- BEGIN MOD -->
+			<button class='btn card-backing-by-url' style="margin-bottom: 10px" data-card-id="<$!this.id$>">Set image from URL...</button>
+			<!-- END MOD -->
+			<div class="card_back dropbox <$! this.get("card_back") != "" ? "filled" : "" $>">
+			<div class="status"></div>
+				<div class="inner">
+					<$ if(this.get("card_back") == "") { $>
+						<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4>
+						<br/>
+						<button class="btn">Choose a file...</button>
+						<input class="manual" type="file"></input>
+					<$ } else { $>
+						<$ if(/[\\w\\-]+\\.webm/i.test(this.get("card_back"))) { $>
+							<video src="<$!this.get("card_back")$>" autoplay muted loop />
+						<$ } else { $>
+							<img src="<$!this.get("card_back")$>" />
+						<$ } $>
+						<div class="remove">
+							<a href='javascript:void(0);'>Remove</a>
+						</div>
+					<$ } $>
+				</div>
+			</div>
+			<div class="clear"></div>
+			<label>&nbsp;</label>
+			<button class="deletecard btn btn-danger">Delete Card</button>
+		</div>
+		</script>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.cardUploader = `
+		<script id="tmpl_cardupload" type="text/html">
+		<div class="dialog largedialog cardupload" style="display: block; height: 100%;">
+			<div class="row-fluid" style="height: calc(100% - 35px);">
+			<div class="span12" style="height: 100%;">
+				<div class="carduploader dropzone" style="border:2px dashed #88888888; position: relative; min-height: 100%;">
+				<div class="dz-message">
+					Drop image files here
+					<div class="dz-messagebox btn btn-primary">Or Click to Upload</div>
+					<em>By uploading, you affirm you have the rights to use each file.</em>
+				</div>
+				</div>
+				<div class="carduploader-converting" style="display: none;">
+				<p>Your files are being processed.</p>
+				<em>Waiting...</em>
+				<div class="carduploader_progress card-progress">
+					<div class="card-progress-bar card-progress-bar-striped card-progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+				</div>
+				</div>
+			</div>
+			</div>
+			<!-- BEGIN MOD -->
+			<button class='btn deck-mass-cards-by-url' style='float: right; margin-left: 5px; margin-top: 5px;' data-deck-id="<$!this.id$>">
+				Add Cards from URLs
+			</button>
+			<!-- END MOD -->
+		</div>
+		</script>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -12373,6 +12529,81 @@ function initHTMLbaseMisc () {
 				cursor: pointer;
 			}
 		</style>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.tokenImageEditor = `
+		<div class="dialog largedialog edittokenimages">
+			<h4 class="edittitle">Token names</h4>
+			<span class="editlabel">Currently this token is represented by a single image. Add more images to convert it to multi-sided token</span>
+			<hr>
+			<button class="addimageurl btn" style="float: right;margin-left:5px;">Add From URL...</button>
+			<button class="addimage btn" style="float: right;"><span class="pictos">&amp;</span> Add Image</button>
+			<h4>Images</h4>
+			<div class="clear" style="height: 7px;"></div>
+			<table class="table table-striped tokenimagelist"><tbody>
+			</tbody></table>
+			<style>
+				.tokenimage img {
+					max-width: 70px;
+					max-height: 70px;
+				}
+				.tokenimage select {
+					width: auto;
+					margin-right: 10px;
+				}
+				.tokenimage input {
+					width: 25px;
+				}
+				.tokenimage input[type="checkbox"] {
+					margin: 30px 0px 0px 5px;
+					width: unset;
+				}
+				.tokenimage input[type="checkbox"]:indeterminate {
+					opacity: 0.8;
+					filter: grayscale(0.7);
+				}
+				.tokenimage .btn {
+					font-family: pictos;
+					margin-top: 26px;
+				}
+				.tokenimage .dropbox {
+					height: 70px;
+					width: 70px;
+					padding: 0px;
+					box-sizing: content-box;
+				}
+				.tokenimage .inner {
+					display: inline-block;
+					vertical-align: middle;
+					line-height: 67px;
+				}
+				.tokenimage .remove {
+					background: none;
+				}
+				.tokenimage .remove span {
+					line-height: initial;
+					display: inline-block;
+					font-weight: bold;
+					background: white;
+					vertical-align: bottom;
+				}
+				.tokenimage .dropbox.filled {
+					border: 4px solid transparent;
+				}
+				.tokenimage .ui-droppable.drop-highlight {
+					border: 4px dashed;
+				}
+				.tokenimage .custom {
+					visibility: hidden;
+				}
+				.tokenimage .custom.set {
+					visibility: visible;
+				}
+			</style>
+		</div>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -12866,6 +13097,7 @@ function d20plusEngine () {
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
 		$("#tmpl_deckeditor").html($(d20plus.html.deckEditor).html());
 		$("#tmpl_cardeditor").html($(d20plus.html.cardEditor).html());
+		$("#tmpl_cardupload").html($(d20plus.html.cardUploader).html());
 		$("#tmpl_macroeditor").html($(d20plus.html.macroEditor).html());
 		// ensure tokens have editable sight
 		$("#tmpl_tokeneditor").replaceWith(d20plus.html.tokenEditor);
@@ -14242,9 +14474,9 @@ function baseMenu () {
 										, i = d20.textchat.diceengine.random(n);
 									// BEGIN MOD
 									const imgUrl = unescape(t[i]);
-									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+									const trueUrl = getRollableTokenUpdate(imgUrl, i, e.model);
+									d.push(trueUrl);
 									// END MOD
-										d.push(t[i])
 								}
 							}),
 								d20.textchat.rawChatInput({
@@ -14266,7 +14498,7 @@ function baseMenu () {
 										const imgUrl = unescape(o[r]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
 											// BEGIN MOD
-											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											getRollableTokenUpdate(imgUrl, r, e.model),
 											// END MOD
 											a.off("slide"),
 											a.dialog("destroy").remove()
@@ -14357,7 +14589,7 @@ function baseMenu () {
 								for (const i in loc_options) out_options.push(i);
 								showRollOptions(
 									(token, val) => {
-										return `&{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
+										return `@{selected|wtype} &{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
 									},
 									out_options
 								);
@@ -14519,8 +14751,8 @@ function baseMenu () {
 						} else if ("back-one" === e) {
 							d20plus.engine.backwardOneLayer(n);
 							i();
-						} else if ("rollertokenresize" === e) {
-							resizeToken();
+						} else if ("edittokenimages" === e) {
+							editToken();
 							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
@@ -14758,67 +14990,244 @@ function baseMenu () {
 		// END ROLL20 CODE
 
 		/* eslint-enable */
+		const tag = "?roll20_token_size=";
 
-		function getRollableTokenUpdate (imgUrl, curSide) {
-			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
+		function getRollableTokenUpdate (imgUrl, currentSide, token) {
+			const [imgsrc, m] = (imgUrl || "").split(tag);
 			const toSave = {
-				currentSide: curSide,
-				imgsrc: imgUrl,
+				currentSide,
+				imgsrc,
 			};
 			if (m) {
-				toSave.width = 70 * Number(m[1]);
-				toSave.height = 70 * Number(m[1])
+				if (isNaN(m) && m?.split) {
+					const [w, h] = m.split("x");
+					if (!isNaN(w) && !isNaN(h)) {
+						toSave.width = Number(w);
+						toSave.height = Number(h);
+					}
+				} else {
+					toSave.width = 70 * Number(m);
+					toSave.height = 70 * Number(m)
+				}
 			}
-			return toSave;
+			token.save(toSave);
+			return imgsrc;
 		}
 
-		function resizeToken () {
-			const sel = d20.engine.selected();
-
-			const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
-			const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
-			dialog.dialog({
-				title: "New Size",
-				beforeClose: function () {
-					return false;
+		function editToken () {
+			const selection = d20.engine.selected().filter(t => t.type === "image");
+			if (!selection.length) return;
+			const images = [];
+			const added = [];
+			const sizes = [["tiny", "0.5"], ["small", "1.0"], ["medium", "1"], ["large", "2"], ["huge", "3"], ["gargantuan", "4"], ["colossal", "5"], ["custom", "0"]];
+			const name = selection.map(t => t.model.attributes.name || "Unnamed").join(", ");
+			selection.forEach(t => {
+				const sides = t.model.attributes.sides?.split("|");
+				const token = t.model.attributes.imgsrc;
+				const {width: tw, height: th} = t.model.attributes;
+				if (sides.length > 1) {
+					const curSide = sides[t.model.attributes.currentSide] || token;
+					sides.forEach((s, k) => {
+						const listed = added.indexOf(s);
+						const [url, size] = unescape(s).split(tag);
+						const [sw, sh] = (size || "").split("x");
+						const image = {url, face: unescape(curSide).includes(url), w: tw, h: th};
+						if (listed !== -1) {
+							if (k === t.model.attributes.currentSide) images[listed].face = true;
+							return;
+						} else if (!isNaN(size)) {
+							Object.merge(image, {size, w: size * 70, h: size * 70});
+						} else if (!isNaN(sw) && !isNaN(sh)) {
+							Object.merge(image, {size: "0", w: sw, h: sh});
+						}
+						images.push(image);
+						added.push(s);
+					});
+				} else {
+					const listed = added.indexOf(t.model.attributes.imgsrc);
+					if (listed !== -1) images[listed].face = true;
+					else {
+						images.push({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
+						added.push(t.model.attributes.imgsrc);
+					}
+				}
+			});
+			const description = selection.length > 1 ? `
+				You have selected multiple tokens. If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you will have multiple images on the list below
+			` : selection[0].model.attributes.sides ? `
+				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
+			` : `
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			`;
+			const $dialog = $(d20plus.html.tokenImageEditor);
+			const $list = $dialog.find(".tokenimagelist tbody");
+			const buildList = () => {
+				if (images.length === 1) {
+					$list.someImageSelected = true;
+					images[0].selected = true;
+				}
+				$list.html(images.reduce((r, i, k) => `${r}
+					<tr class="tokenimage" data-index="${(i.id = k, k)}">
+						<td style="padding:0px;" title="Current image"><input type="checkbox"${i.selected ? " checked" : ""}></td>
+						<td>
+							<div class="dropbox filled">
+							<div class="inner"><img src="${i.url}"><div class="remove"><span>Drop a file</span></div></div>
+							</div>
+						</td>
+						<td>
+							<label>Select size:</label><select>${sizes.reduce((o, s) => `${o}
+								<option value="${s[1]}"${s[1] === i.size ? " selected" : ""}>${s[0]}</option>
+							`, `<option>default</option>`)}</select>
+							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</class>
+						</td>
+						<td style="padding:0px;">
+							<span class="btn url" title="Set from URL...">j</span>
+							${images.length === 1 ? `` : `<span class="btn delete" title="Delete">#</span>`}
+						</td>
+					</tr>
+				`, ""));
+				$list.find(".dropbox").droppable({
+					accept: ".resultimage, .library-item",
+					greedy: true,
+					scope: "default",
+					tolerance: "pointer",
+					hoverClass: "drop-highlight",
+					drop: (evt, $d) => {
+						evt.originalEvent.dropHandled = !0;
+						evt.stopPropagation();
+						evt.preventDefault();
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const url = $d.draggable.data("fullsizeurl") || $d.draggable.data("url");
+						if (url) {
+							images[id].url = url;
+							$token.find("img").attr("src", url);
+						}
+					},
+				});
+				if (!$list.someImageSelected) {
+					images.forEach((i, k) => {
+						if (i.face) $list.find("[type=checkbox]").eq(k).prop({indeterminate: true});
+					});
+				}
+			}
+			$dialog.dialog({
+				autoopen: true,
+				title: "Edit token image(s)",
+				width: 450,
+				open: () => {
+					buildList();
+					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
+					$dialog.find(".edittitle").text(name);
+					$dialog.find(".editlabel").text(description);
+					$dialog.on("change", "select", (evt) => {
+						const $changed = $(evt.target);
+						const $token = $changed.parent();
+						const $custom = $token.find(".custom").removeClass("set");
+						const newSize = $changed.val();
+						const id = $changed.closest(".tokenimage").data("index");
+						if (newSize > 0) {
+							$token.find(".w, .h").val(newSize * 70);
+							images[id].size = newSize;
+						} else {
+							delete images[id].size;
+							if (newSize === "0") {
+								images[id].size = newSize;
+								images[id].w = $token.find(".w").val();
+								images[id].h = $token.find(".h").val();
+								$custom.addClass("set");
+							}
+						}
+					}).on("change", "input[type=checkbox]", (evt) => {
+						const id = $(evt.target).closest(".tokenimage").data("index");
+						const isChecked = $(evt.target).prop("checked");
+						const $allBoxes = $list.find("[type=checkbox]");
+						if (isChecked) {
+							$list.someImageSelected = true;
+							$allBoxes.prop({checked: false}).prop({indeterminate: false});
+							$(evt.target).prop({checked: true});
+							images.forEach((i, k) => {
+								if (k === id) i.selected = true;
+								else i.selected = false;
+							});
+						} else {
+							$list.someImageSelected = false;
+							images[id].selected = false;
+							images.forEach((i, k) => {
+								if (i.face) $allBoxes.eq(k).prop({indeterminate: true});
+							});
+						}
+					}).on("change", "input .w, input.h", (evt) => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const set = {w: $token.find(".w").val(), h: $token.find(".h").val()};
+						if (isNaN(set.w) || isNaN(set.h)) return;
+						images[id].w = set.w;
+						images[id].h = set.h;
+					}).on(window.mousedowntype, ".url", (evt) => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images[id].url = url;
+						$token.find("img").attr("src", url);
+					}).on(window.mousedowntype, ".delete", (evt) => {
+						const $deleted = $(evt.target).closest(".tokenimage");
+						const id = $deleted.data("index");
+						if (images.length <= 1) return;
+						images.splice(id, 1);
+						buildList();
+					}).on(window.mousedowntype, ".addimage", (evt) => {
+						images.push({url: "https://app.roll20.net/images/character.png", w: 70, h: 70})
+						buildList();
+					}).on(window.mousedowntype, ".addimageurl", (evt) => {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images.push({url, w: 70, h: 70});
+						buildList();
+					})
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
 				},
 				buttons: {
-					Submit: function () {
-						const size = dialog.find("select").val();
-						d20.engine.unselect();
-						sel.forEach(it => {
-							const nxtSize = size * 70;
-							const sides = it.model.get("sides");
-							if (sides) {
-								const ueSides = unescape(sides);
-								const cur = it.model.get("currentSide");
-								const split = ueSides.split("|");
-								if (split[cur].includes("roll20_token_size")) {
-									split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
-								} else {
-									split[cur] += `?roll20_token_size=${size}`;
+					"Save changes": () => {
+						const save = {};
+						if (images.length > 1) {
+							save.sides = images.map(i => escape(i.url + (i.size ? tag + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : ""))).join("|");
+						} else {
+							save.sides = "";
+						}
+						if ($list.someImageSelected) {
+							const selected = images.find(i => i.selected);
+							if (selected) {
+								save.imgsrc = selected.url;
+								save.currentSide = selected.id;
+								if (selected.size === "0") {
+									save.width = Number(selected.w);
+									save.height = Number(selected.h);
+								} else if (selected.size) {
+									save.width = selected.size * 70;
+									save.height = selected.size * 70;
 								}
-								const toSaveSides = split.map(it => escape(it)).join("|");
-								const toSave = {
-									sides: toSaveSides,
-									width: nxtSize,
-									height: nxtSize,
-								};
-								// eslint-disable-next-line no-console
-								console.log(`Updating token:`, toSave);
-								it.model.save(toSave);
-							} else {
-								// eslint-disable-next-line no-console
-								console.warn("Token had no side data!")
 							}
+						}
+						if (selection.length > 1) {
+							d20.engine.unselect();
+						}
+						selection.forEach(t => {
+							t.model.save(save);
 						});
-						dialog.off();
-						dialog.dialog("destroy").remove();
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
 						d20.textchat.$textarea.focus();
 					},
-					Cancel: function () {
-						dialog.off();
-						dialog.dialog("destroy").remove();
+					"Cancel": () => {
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
 					},
 				},
 			});
@@ -14875,6 +15284,7 @@ function baseMenu () {
 		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
 		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
 		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"edittokenimage": { ln: __("menu_adv_edit"), condition: "this.view && this.get && this.get(\"cardid\") === \"\"", action: "edittokenimages" },
 		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
 		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
 		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
@@ -14886,7 +15296,7 @@ function baseMenu () {
 		"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
 		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"edittokenimages": { ln: __("menu_multi_edit"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
 		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
 		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
@@ -14954,6 +15364,7 @@ function baseMenu () {
 				"togglefliph",
 				"toggleflipv",
 				"setdimensions",
+				"edittokenimage",
 				"aligntogrid",
 				"copy-tokenid",
 				"copy-pathid",
@@ -14977,7 +15388,7 @@ function baseMenu () {
 				"side_random",
 				"side_choose",
 				"-",
-				"rollertokenresize",
+				"edittokenimages",
 			] },
 		"card": {
 			ln: __("menu_card_title"),
@@ -15834,23 +16245,34 @@ function d20plusJournal () {
 		// Create new Journal commands
 		// stash the folder ID of the last folder clicked
 		$("#journalfolderroot").on("contextmenu", ".dd-content", function (e) {
-			if ($(this).parent().hasClass("dd-folder")) {
-				const lastClicked = $(this).parent();
-				d20plus.journal.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
+			const isShowCustom = d20plus.cfg.getOrDefault("interface", "journalCommands");
+			const $itemHandle = $(this).parent();
+
+			if ($itemHandle.hasClass("dd-folder")) {
+				d20plus.journal.lastClickedFolderId = $itemHandle.data("globalfolderid");
+			} else if ($itemHandle.hasClass("dd-item")) {
+				d20plus.journal.lastClickedJournalItemId = $itemHandle.data("itemid");
 			}
 
-			if ($(this).parent().hasClass("character")) {
+			if ($itemHandle.hasClass("character") && isShowCustom) {
 				$(`.Vetools-make-tokenactions`).show();
 			} else {
 				$(`.Vetools-make-tokenactions`).hide();
 			}
+
+			if (($itemHandle.hasClass("character") || ($itemHandle.hasClass("handout"))) && isShowCustom) {
+				$(`.b20-change-avatar`).show();
+			} else {
+				$(`.b20-change-avatar`).hide();
+			}
 		});
 
 		let first = $("#journalitemmenu ul li").first();
+
 		// "Make Tokenactions" option
 		first.after(`<li class="Vetools-make-tokenactions" data-action-type="additem">Make Tokenactions</li>`);
 		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=additem]", function () {
-			let id = $currentItemTarget.attr("data-itemid");
+			let id = d20plus.journal.lastClickedJournalItemId;
 			let character = d20.Campaign.characters.get(id);
 			d20plus.ut.log("Making Token Actions..");
 			if (character) {
@@ -15948,6 +16370,89 @@ function d20plusJournal () {
 				});
 			}
 		});
+
+		// "Set avatar" option
+		first.after(`<li class="b20-change-avatar" data-action-type="changeavatar">Set Avatar</li>`);
+		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=changeavatar]", function () {
+			const id = d20plus.journal.lastClickedJournalItemId;
+			const item = d20.Campaign.characters.get(id) || d20.Campaign.handouts.get(id);
+			const name = item?.attributes.name || "Unnamed";
+			if (!item?.attributes.hasOwnProperty("name") || !item?.attributes.hasOwnProperty("avatar")) {
+				// TODO user-visible feedback? Toast message?
+				return console.error(`Selected journal item does not have a "name" and/or "avatar" field!`);
+			}
+			d20plus.ut.log(`Setting avatar for ${name}`);
+			const $dialog = $(`
+				<div class="dialog largedialog journalavatareditor">
+					<button class="btn avatar-image-by-url" style="margin-bottom: 10px">Set image from URL...</button>
+					<div class="avatar dropbox" style="background: white; min-height:100px;">
+						<div class="status"></div>
+						<div class="inner"></div>
+					</div>
+				</div>
+			`);
+			const avatar = {url: item?.attributes.avatar || ""};
+			const $dropbox = $dialog.find(".dropbox");
+			const setImagePreview = (img) => {
+				const $inner = $dropbox.find(".inner");
+				if (img) {
+					$dropbox.addClass("filled");
+					avatar.url = img;
+					$inner.html(`<img src="${img}"><div class="remove"><a href="javascript:void(0);">Remove</a></div>`);
+				} else {
+					$dropbox.removeClass("filled");
+					avatar.url = "";
+					$inner.html(`<h4 style="padding-bottom: 0; margin-bottom: 0; color: #777;">Drop a file</h4><br>`);
+				}
+			};
+			$dialog.dialog({
+				resizable: true,
+				autoopen: true,
+				title: "Set avatar from URL",
+				open: () => {
+					setImagePreview(avatar.url);
+					$dropbox.droppable({
+						accept: ".resultimage, .library-item",
+						greedy: true,
+						scope: "default",
+						tolerance: "pointer",
+						classes: {
+							"ui-droppable": "drop-highlight",
+						},
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							setImagePreview($d.draggable.data("fullsizeurl") || $d.draggable.data("url"));
+						},
+					}).on("click", ".remove", () => {
+						setImagePreview();
+					});
+					$dialog.find(".avatar-image-by-url").on("click", function () {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (url) {
+							d20plus.art.setLastImageUrl(url);
+							setImagePreview(url);
+						}
+					});
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
+				},
+				buttons: {
+					OK: () => {
+						item.save({avatar: avatar.url});
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
+					},
+					Cancel: () => {
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
+					},
+				},
+			});
+		})
 
 		// New command on FOLDERS
 		const last = $("#journalmenu ul li").last();
@@ -16834,6 +17339,15 @@ function baseCss () {
 		{
 			s: `.actionhelp.js, .commandhelp.js`,
 			r: `display: none;`,
+		},
+		// Deck editor styles
+		{
+			s: `tr.card:hover::after`,
+			r: `background: rgba(200, 200, 200, 0.4);`,
+		},
+		{
+			s: `tr.card::after`,
+			r: `content: "D";font-family: pictos;display: block;float: right;padding: 3px;border-radius: 5px;background: var(--dark-primary);margin: 10px 3px;`,
 		},
 	];
 
@@ -17971,24 +18485,31 @@ SCRIPT_EXTENSIONS.push(baseUi);
 function d20plusMod () {
 	d20plus.mod = {};
 
-	d20plus.mod.setMode = function (t) {
-		d20plus.ut.log(`Setting mode ${t}`);
-		const preserveDrawingColor = (stash) => {
-			const drawingTools = ["rect", "ellipse", "text", "path", "polygon"];
-			const drawingProps = [{nm: "fill", el: "fillcolor"}, {nm: "color", el: "strokecolor"}];
+	d20plus.mod.preserveDrawingColor = (() => {
+		const drawingTools = ["rect", "ellipse", "text", "path", "polygon"];
+		const drawingProps = [{nm: "fill", el: "fillcolor"}, {nm: "color", el: "strokecolor"}];
+		return (t) => {
 			if (!drawingTools.includes(t)) return;
 			drawingProps.forEach(prop => {
-				if (stash) d20plus.mod[`drawing${prop.nm}`] = d20.engine.canvas.freeDrawingBrush[prop.nm];
-				else {
-					if (d20plus.mod[`drawingcolor`] === "rgb(0, 0, 0)" || !d20plus.mod[`drawingcolor`]) return;
-					$(`#path_${prop.el}`).val(d20plus.mod[`drawing${prop.nm}`]).trigger("change");
+				d20plus.ut.log(`Preserving color`, prop);
+				if (!prop.stashed) {
+					prop.stashed = true;
+					prop.value = d20.engine.canvas.freeDrawingBrush[prop.nm];
+				} else {
+					prop.stashed = false;
+					if (drawingProps[1].value === "rgb(0, 0, 0)" || !drawingProps[1].value) return;
+					$(`#path_${prop.el}`).val(prop.value).trigger("change");
 				}
 			});
 		}
+	})();
+
+	d20plus.mod.setMode = function (t) {
+		d20plus.ut.log(`Setting mode ${t}`);
 		try {
-			preserveDrawingColor(true);
+			d20plus.mod.preserveDrawingColor(t);
 			d20.Campaign.activePage().setModeRef(t);
-			preserveDrawingColor();
+			d20plus.mod.preserveDrawingColor(t);
 		} catch (e) {
 			d20plus.ut.log(`Switching using legacy because ${e.message}`);
 			d20plus.mod.setModeLegacy(t);
@@ -22616,8 +23137,12 @@ function baseChat () {
 	function availableLanguagesPlayer (playerId) {
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
-				const actors = char.attributes.controlledby.split(",");
-				return actors.includes(playerId);
+				if (playerId) {
+					const actors = char.attributes.controlledby.split(",");
+					return actors.includes(playerId) || actors.includes("all");
+				} else {
+					return char.currentPlayerControls();
+				}
 			})
 			.map(char => char.id);
 		return characters
@@ -22626,7 +23151,7 @@ function baseChat () {
 	}
 
 	function hasLanguageProficiency (langId) {
-		const proficientIn = availableLanguagesPlayer(d20_player_id)
+		const proficientIn = availableLanguagesPlayer()
 			.map(lang => d20plus.chat.getLanguageId(lang));
 		return proficientIn.includes(d20plus.chat.getLanguageId(langId));
 	}
@@ -23684,7 +24209,7 @@ function baseChat () {
 				const openedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
 				d20plus.engine.enhanceMacros(openedMacroId);
 			});
-		availableLanguagesPlayer(d20_player_id);
+		availableLanguagesPlayer();
 		buildLanguageIndex();// RB20 EXCLUDE START
 		/// d20plus.chat.logAll = true// RB20 EXCLUDE END
 
