@@ -152,6 +152,12 @@ function baseConfig () {
 			"_type": "boolean",
 			"_player": true,
 		},
+		"journalCommands": {
+			"name": "Additional journal context menu commands",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
 	});
 	addConfigOptions("chat", {
 		"_name": __("cfg_tab_chat"),

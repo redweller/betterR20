@@ -7,23 +7,34 @@ function d20plusJournal () {
 		// Create new Journal commands
 		// stash the folder ID of the last folder clicked
 		$("#journalfolderroot").on("contextmenu", ".dd-content", function (e) {
-			if ($(this).parent().hasClass("dd-folder")) {
-				const lastClicked = $(this).parent();
-				d20plus.journal.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
+			const showing = d20plus.cfg.getOrDefault("interface", "journalCommands");
+			const itemHandle = $(this).parent();
+
+			if (itemHandle.hasClass("dd-folder")) {
+				d20plus.journal.lastClickedFolderId = itemHandle.data("globalfolderid");
+			} else if (itemHandle.hasClass("dd-item")) {
+				d20plus.journal.lastClickedJournalItemId = itemHandle.data("itemid");
 			}
 
-			if ($(this).parent().hasClass("character")) {
+			if (itemHandle.hasClass("character") && showing) {
 				$(`.Vetools-make-tokenactions`).show();
 			} else {
 				$(`.Vetools-make-tokenactions`).hide();
 			}
+
+			if ((itemHandle.hasClass("character") || (itemHandle.hasClass("handout"))) && showing) {
+				$(`.b20-change-avatar`).show();
+			} else {
+				$(`.b20-change-avatar`).hide();
+			}
 		});
 
 		let first = $("#journalitemmenu ul li").first();
+
 		// "Make Tokenactions" option
 		first.after(`<li class="Vetools-make-tokenactions" data-action-type="additem">Make Tokenactions</li>`);
 		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=additem]", function () {
-			let id = $currentItemTarget.attr("data-itemid");
+			let id = d20plus.journal.lastClickedJournalItemId;
 			let character = d20.Campaign.characters.get(id);
 			d20plus.ut.log("Making Token Actions..");
 			if (character) {
@@ -121,6 +132,86 @@ function d20plusJournal () {
 				});
 			}
 		});
+
+		// "Set avatar" option
+		first.after(`<li class="b20-change-avatar" data-action-type="changeavatar">Set Avatar</li>`);
+		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=changeavatar]", function () {
+			const id = d20plus.journal.lastClickedJournalItemId;
+			const item = d20.Campaign.characters.get(id) || d20.Campaign.handouts.get(id);
+			const name = item?.attributes.name || "Unnamed";
+			if (!item?.attributes.hasOwnProperty("name") || !item?.attributes.hasOwnProperty("avatar")) return;
+			d20plus.ut.log(`Setting avatar for ${name}`);
+			const $dialog = $(`
+				<div class="dialog largedialog journalavatareditor">
+					<button class="btn avatar-image-by-url" style="margin-bottom: 10px">Set image from URL...</button>
+					<div class="avatar dropbox" style="background: white; min-height:100px;">
+						<div class="status"></div>
+						<div class="inner"></div>
+					</div>
+				</div>
+			`);
+			const avatar = {url: item?.attributes.avatar || ""};
+			const $dropbox = $dialog.find(".dropbox");
+			const setImagePreview = (img) => {
+				const $inner = $dropbox.find(".inner");
+				if (img) {
+					$dropbox.addClass("filled");
+					avatar.url = img;
+					$inner.html(`<img src="${img}"><div class="remove"><a href="javascript:void(0);">Remove</a></div>`);
+				} else {
+					$dropbox.removeClass("filled");
+					avatar.url = "";
+					$inner.html(`<h4 style="padding-bottom: 0px; marigin-bottom: 0px; color: #777;">Drop a file</h4><br>`);
+				}
+			};
+			$dialog.dialog({
+				resizable: true,
+				autoopen: true,
+				title: "Set avatar from URL",
+				open: () => {
+					setImagePreview(avatar.url);
+					$dropbox.droppable({
+						accept: ".resultimage, .library-item",
+						greedy: true,
+						scope: "default",
+						tolerance: "pointer",
+						classes: {
+							"ui-droppable": "drop-highlight",
+						},
+						drop: (e, d) => {
+							e.originalEvent.dropHandled = !0;
+							e.stopPropagation();
+							e.preventDefault();
+							setImagePreview(d.draggable.data("fullsizeurl") || d.draggable.data("url"));
+						},
+					}).on("click", ".remove", () => {
+						setImagePreview();
+					});
+					$dialog.find(".avatar-image-by-url").on("click", function () {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (url) {
+							d20plus.art.setLastImageUrl(url);
+							setImagePreview(url);
+						}
+					});
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
+				},
+				buttons: {
+					OK: () => {
+						item.save({avatar: avatar.url});
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
+					},
+					Cancel: () => {
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
+					},
+				},
+			});
+		})
 
 		// New command on FOLDERS
 		const last = $("#journalmenu ul li").last();
