@@ -8,18 +8,36 @@ function d20plusMonsters () {
 	d20plus.monsters._listCols = ["name", "type", "environment", "cr", "source"];
 	d20plus.monsters._listItemBuilder = (it) => `
 		<span class="name col-3" title="name">${it.name}</span>
-		<span class="type col-2" title="type">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
+		<span class="type col-2" title="type (tag)">TYP[${Parser.monTypeToFullObj(it.type).asText.uppercaseFirst()}]</span>
 		<span class="environment col-3" title="environment">${(it.environment || []).map(c => `ENV[${c.uppercaseFirst()}]`).join(", ")}</span>
 		<span class="cr col-1" title="cr">${it.cr === undefined ? "CR[Unknown]" : `CR[${(it.cr.cr || it.cr)}]`}</span>
 		<span title="source [Full source name is ${Parser.sourceJsonToFull(it.source)}]" class="source col-1">SRC[${Parser.sourceJsonToAbv(it.source)}]</span>`;
 	d20plus.monsters._listIndexConverter = (m) => {
 		m.__pType = m.__pType || Parser.monTypeToFullObj(m.type).types[0]; // only filter using first primary type
+		m.__pTags = {} // additional filters (include conditional traits and all related items)
+		m.__pTags.resist = (m.resist || []).map(c => c.resist?.map(c => c.resist || c) || (typeof c === "string" ? c : []));
+		m.__pTags.immune = [].concat(m.immune || [], m.conditionImmune || []).map(c => c.immune?.map(c => c.immune || c) || (typeof c === "string" ? c : []));
+		m.__pTags.conditions = [].concat(m.conditionInflict || [], m.conditionInflictSpell || [], m.conditionInflictLegendary || []);
+		m.__pTags.inflict = [].concat(m.__pTags.conditions, m.damageTags?.map(c => Parser.DMGTYPE_JSON_TO_FULL[c]) || []);
+		m.__pTags.languageList = {...Parser.MON_LANGUAGE_TAG_TO_FULL, CS: "mute", LF: "any", X: "any"};
+		m.__pTags.language = m.languageTags?.map(c => m.__pTags.languageList[c]) || m.languages || ["none"];
+		m.__pTags.sense = m.senseTags?.map(c => Parser.MON_SENSE_TAG_TO_FULL[c]) || m.senses?.map(c => c.split ? c.split(" ")[0] : []) || ["none"];
 		return {
 			name: m.name.toLowerCase(),
 			type: m.__pType.toLowerCase(),
 			environment: (m.environment || []).map(c => c.toLowerCase()),
 			cr: m.cr === undefined ? "unknown" : (m.cr.cr || m.cr).toLowerCase(),
 			source: Parser.sourceJsonToAbv(m.source).toLowerCase(),
+			tag: (m.type.tags || []).map(c => c.tag?.toLowerCase() || c.toLowerCase()),
+			size: (m.size || []).flatten().map(c => c.toString().toLowerCase()),
+			movement: m.speed ? Object.keys(m.speed) : [],
+			save: m.save ? Object.keys(m.save) : [],
+			skill: m.skill ? Object.keys(m.skill) : [],
+			language: m.__pTags.language.map(c => c.toString().toLowerCase()),
+			immune: m.__pTags.immune.flatten().map(c => c.toString().toLowerCase()),
+			resist: m.__pTags.resist.flatten().map(c => c.toString().toLowerCase()),
+			inflict: m.__pTags.inflict.flatten().map(c => c.toString().toLowerCase()),
+			sense: m.__pTags.sense.flatten().map(c => c.toString().toLowerCase()),
 		};
 	};
 	d20plus.monsters._doScale = (doImport, origImportQueue) => {
