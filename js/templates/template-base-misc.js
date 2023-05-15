@@ -258,6 +258,81 @@ function initHTMLbaseMisc () {
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.tokenImageEditor = `
+		<div class="dialog largedialog edittokenimages">
+			<h4 class="edittitle">Token names</h4>
+			<span class="editlabel">Currently this token is represented by a single image. Add more images to convert it to multi-sided token</span>
+			<hr>
+			<button class="addimageurl btn" style="float: right;margin-left:5px;">Add From URL...</button>
+			<button class="addimage btn" style="float: right;"><span class="pictos">&amp;</span> Add Image</button>
+			<h4>Images</h4>
+			<div class="clear" style="height: 7px;"></div>
+			<table class="table table-striped tokenimagelist"><tbody>
+			</tbody></table>
+			<style>
+				.tokenimage img {
+					max-width: 70px;
+					max-height: 70px;
+				}
+				.tokenimage select {
+					width: auto;
+					margin-right: 10px;
+				}
+				.tokenimage input {
+					width: 25px;
+				}
+				.tokenimage input[type="checkbox"] {
+					margin: 30px 0px 0px 5px;
+					width: unset;
+				}
+				.tokenimage input[type="checkbox"]:indeterminate {
+					opacity: 0.8;
+					filter: grayscale(0.7);
+				}
+				.tokenimage .btn {
+					font-family: pictos;
+					margin-top: 26px;
+				}
+				.tokenimage .dropbox {
+					height: 70px;
+					width: 70px;
+					padding: 0px;
+					box-sizing: content-box;
+				}
+				.tokenimage .inner {
+					display: inline-block;
+					vertical-align: middle;
+					line-height: 67px;
+				}
+				.tokenimage .remove {
+					background: none;
+				}
+				.tokenimage .remove span {
+					line-height: initial;
+					display: inline-block;
+					font-weight: bold;
+					background: white;
+					vertical-align: bottom;
+				}
+				.tokenimage .dropbox.filled {
+					border: 4px solid transparent;
+				}
+				.tokenimage .ui-droppable.drop-highlight {
+					border: 4px dashed;
+				}
+				.tokenimage .custom {
+					visibility: hidden;
+				}
+				.tokenimage .custom.set {
+					visibility: visible;
+				}
+			</style>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);

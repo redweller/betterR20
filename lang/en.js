@@ -137,6 +137,7 @@ module.exports = {
 	menu_adv_flv: ["Flip Vertical"],
 	menu_adv_dimens: ["Set Dimensions"],
 	menu_adv_align: ["Align to Grid"],
+	menu_adv_edit: ["Edit image"],
 	menu_adv_lock: ["Lock"],
 	menu_adv_unlock: ["Unlock"],
 	menu_adv_tokenid: ["View Token ID"],
@@ -153,7 +154,7 @@ module.exports = {
 	menu_multi_title: ["Multi-Sided"],
 	menu_multi_rnd: ["Random Side"],
 	menu_multi_select: ["Choose Side"],
-	menu_multi_size: ["Set Side Size"],
+	menu_multi_edit: ["Edit Sides"],
 
 	menu_quick_togm: ["Hide from layer"],
 	menu_quick_tofg: ["To visible layer"],

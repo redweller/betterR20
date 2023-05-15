@@ -136,6 +136,7 @@ module.exports = {
 	menu_adv_flh: ["Отразить гор."],
 	menu_adv_flv: ["Отразить верт."],
 	menu_adv_dimens: ["Размеры"],
+	menu_adv_edit: ["Изображение"],
 	menu_adv_align: ["Выровнять"],
 	menu_adv_lock: ["Блокировать"],
 	menu_adv_unlock: ["Разблокировать"],
@@ -153,7 +154,7 @@ module.exports = {
 	menu_multi_title: ["Мультитокен"],
 	menu_multi_rnd: ["Случайно"],
 	menu_multi_select: ["Выбрать"],
-	menu_multi_size: ["Размер"],
+	menu_multi_edit: ["Редактировать"],
 
 	menu_quick_togm: ["Спрятать токен"],
 	menu_quick_tofg: ["Вернуть на слой"],

@@ -325,9 +325,9 @@ function baseMenu () {
 										, i = d20.textchat.diceengine.random(n);
 									// BEGIN MOD
 									const imgUrl = unescape(t[i]);
-									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+									const trueUrl = getRollableTokenUpdate(imgUrl, i, e.model);
+									d.push(trueUrl);
 									// END MOD
-										d.push(t[i])
 								}
 							}),
 								d20.textchat.rawChatInput({
@@ -349,7 +349,7 @@ function baseMenu () {
 										const imgUrl = unescape(o[r]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
 											// BEGIN MOD
-											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											getRollableTokenUpdate(imgUrl, r, e.model),
 											// END MOD
 											a.off("slide"),
 											a.dialog("destroy").remove()
@@ -440,7 +440,7 @@ function baseMenu () {
 								for (const i in loc_options) out_options.push(i);
 								showRollOptions(
 									(token, val) => {
-										return `&{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
+										return `@{selected|wtype} &{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
 									},
 									out_options
 								);
@@ -602,8 +602,8 @@ function baseMenu () {
 						} else if ("back-one" === e) {
 							d20plus.engine.backwardOneLayer(n);
 							i();
-						} else if ("rollertokenresize" === e) {
-							resizeToken();
+						} else if ("edittokenimages" === e) {
+							editToken();
 							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
@@ -841,67 +841,244 @@ function baseMenu () {
 		// END ROLL20 CODE
 
 		/* eslint-enable */
+		const tag = "?roll20_token_size=";
 
-		function getRollableTokenUpdate (imgUrl, curSide) {
-			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
+		function getRollableTokenUpdate (imgUrl, currentSide, token) {
+			const [imgsrc, m] = (imgUrl || "").split(tag);
 			const toSave = {
-				currentSide: curSide,
-				imgsrc: imgUrl,
+				currentSide,
+				imgsrc,
 			};
 			if (m) {
-				toSave.width = 70 * Number(m[1]);
-				toSave.height = 70 * Number(m[1])
+				if (isNaN(m) && m?.split) {
+					const [w, h] = m.split("x");
+					if (!isNaN(w) && !isNaN(h)) {
+						toSave.width = Number(w);
+						toSave.height = Number(h);
+					}
+				} else {
+					toSave.width = 70 * Number(m);
+					toSave.height = 70 * Number(m)
+				}
 			}
-			return toSave;
+			token.save(toSave);
+			return imgsrc;
 		}
 
-		function resizeToken () {
-			const sel = d20.engine.selected();
-
-			const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
-			const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
-			dialog.dialog({
-				title: "New Size",
-				beforeClose: function () {
-					return false;
+		function editToken () {
+			const selection = d20.engine.selected().filter(t => t.type === "image");
+			if (!selection.length) return;
+			const images = [];
+			const added = [];
+			const sizes = [["tiny", "0.5"], ["small", "1.0"], ["medium", "1"], ["large", "2"], ["huge", "3"], ["gargantuan", "4"], ["colossal", "5"], ["custom", "0"]];
+			const name = selection.map(t => t.model.attributes.name || "Unnamed").join(", ");
+			selection.forEach(t => {
+				const sides = t.model.attributes.sides?.split("|");
+				const token = t.model.attributes.imgsrc;
+				const {width: tw, height: th} = t.model.attributes;
+				if (sides.length > 1) {
+					const curSide = sides[t.model.attributes.currentSide] || token;
+					sides.forEach((s, k) => {
+						const listed = added.indexOf(s);
+						const [url, size] = unescape(s).split(tag);
+						const [sw, sh] = (size || "").split("x");
+						const image = {url, face: unescape(curSide).includes(url), w: tw, h: th};
+						if (listed !== -1) {
+							if (k === t.model.attributes.currentSide) images[listed].face = true;
+							return;
+						} else if (!isNaN(size)) {
+							Object.merge(image, {size, w: size * 70, h: size * 70});
+						} else if (!isNaN(sw) && !isNaN(sh)) {
+							Object.merge(image, {size: "0", w: sw, h: sh});
+						}
+						images.push(image);
+						added.push(s);
+					});
+				} else {
+					const listed = added.indexOf(t.model.attributes.imgsrc);
+					if (listed !== -1) images[listed].face = true;
+					else {
+						images.push({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
+						added.push(t.model.attributes.imgsrc);
+					}
+				}
+			});
+			const description = selection.length > 1 ? `
+				You have selected multiple tokens. If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you will have multiple images on the list below
+			` : selection[0].model.attributes.sides ? `
+				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
+			` : `
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			`;
+			const $dialog = $(d20plus.html.tokenImageEditor);
+			const $list = $dialog.find(".tokenimagelist tbody");
+			const buildList = () => {
+				if (images.length === 1) {
+					$list.someImageSelected = true;
+					images[0].selected = true;
+				}
+				$list.html(images.reduce((r, i, k) => `${r}
+					<tr class="tokenimage" data-index="${(i.id = k, k)}">
+						<td style="padding:0px;" title="Current image"><input type="checkbox"${i.selected ? " checked" : ""}></td>
+						<td>
+							<div class="dropbox filled">
+							<div class="inner"><img src="${i.url}"><div class="remove"><span>Drop a file</span></div></div>
+							</div>
+						</td>
+						<td>
+							<label>Select size:</label><select>${sizes.reduce((o, s) => `${o}
+								<option value="${s[1]}"${s[1] === i.size ? " selected" : ""}>${s[0]}</option>
+							`, `<option>default</option>`)}</select>
+							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</class>
+						</td>
+						<td style="padding:0px;">
+							<span class="btn url" title="Set from URL...">j</span>
+							${images.length === 1 ? `` : `<span class="btn delete" title="Delete">#</span>`}
+						</td>
+					</tr>
+				`, ""));
+				$list.find(".dropbox").droppable({
+					accept: ".resultimage, .library-item",
+					greedy: true,
+					scope: "default",
+					tolerance: "pointer",
+					hoverClass: "drop-highlight",
+					drop: (evt, $d) => {
+						evt.originalEvent.dropHandled = !0;
+						evt.stopPropagation();
+						evt.preventDefault();
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const url = $d.draggable.data("fullsizeurl") || $d.draggable.data("url");
+						if (url) {
+							images[id].url = url;
+							$token.find("img").attr("src", url);
+						}
+					},
+				});
+				if (!$list.someImageSelected) {
+					images.forEach((i, k) => {
+						if (i.face) $list.find("[type=checkbox]").eq(k).prop({indeterminate: true});
+					});
+				}
+			}
+			$dialog.dialog({
+				autoopen: true,
+				title: "Edit token image(s)",
+				width: 450,
+				open: () => {
+					buildList();
+					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
+					$dialog.find(".edittitle").text(name);
+					$dialog.find(".editlabel").text(description);
+					$dialog.on("change", "select", (evt) => {
+						const $changed = $(evt.target);
+						const $token = $changed.parent();
+						const $custom = $token.find(".custom").removeClass("set");
+						const newSize = $changed.val();
+						const id = $changed.closest(".tokenimage").data("index");
+						if (newSize > 0) {
+							$token.find(".w, .h").val(newSize * 70);
+							images[id].size = newSize;
+						} else {
+							delete images[id].size;
+							if (newSize === "0") {
+								images[id].size = newSize;
+								images[id].w = $token.find(".w").val();
+								images[id].h = $token.find(".h").val();
+								$custom.addClass("set");
+							}
+						}
+					}).on("change", "input[type=checkbox]", (evt) => {
+						const id = $(evt.target).closest(".tokenimage").data("index");
+						const isChecked = $(evt.target).prop("checked");
+						const $allBoxes = $list.find("[type=checkbox]");
+						if (isChecked) {
+							$list.someImageSelected = true;
+							$allBoxes.prop({checked: false}).prop({indeterminate: false});
+							$(evt.target).prop({checked: true});
+							images.forEach((i, k) => {
+								if (k === id) i.selected = true;
+								else i.selected = false;
+							});
+						} else {
+							$list.someImageSelected = false;
+							images[id].selected = false;
+							images.forEach((i, k) => {
+								if (i.face) $allBoxes.eq(k).prop({indeterminate: true});
+							});
+						}
+					}).on("change", "input .w, input.h", (evt) => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const set = {w: $token.find(".w").val(), h: $token.find(".h").val()};
+						if (isNaN(set.w) || isNaN(set.h)) return;
+						images[id].w = set.w;
+						images[id].h = set.h;
+					}).on(window.mousedowntype, ".url", (evt) => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images[id].url = url;
+						$token.find("img").attr("src", url);
+					}).on(window.mousedowntype, ".delete", (evt) => {
+						const $deleted = $(evt.target).closest(".tokenimage");
+						const id = $deleted.data("index");
+						if (images.length <= 1) return;
+						images.splice(id, 1);
+						buildList();
+					}).on(window.mousedowntype, ".addimage", (evt) => {
+						images.push({url: "https://app.roll20.net/images/character.png", w: 70, h: 70})
+						buildList();
+					}).on(window.mousedowntype, ".addimageurl", (evt) => {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images.push({url, w: 70, h: 70});
+						buildList();
+					})
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
 				},
 				buttons: {
-					Submit: function () {
-						const size = dialog.find("select").val();
-						d20.engine.unselect();
-						sel.forEach(it => {
-							const nxtSize = size * 70;
-							const sides = it.model.get("sides");
-							if (sides) {
-								const ueSides = unescape(sides);
-								const cur = it.model.get("currentSide");
-								const split = ueSides.split("|");
-								if (split[cur].includes("roll20_token_size")) {
-									split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
-								} else {
-									split[cur] += `?roll20_token_size=${size}`;
+					"Save changes": () => {
+						const save = {};
+						if (images.length > 1) {
+							save.sides = images.map(i => escape(i.url + (i.size ? tag + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : ""))).join("|");
+						} else {
+							save.sides = "";
+						}
+						if ($list.someImageSelected) {
+							const selected = images.find(i => i.selected);
+							if (selected) {
+								save.imgsrc = selected.url;
+								save.currentSide = selected.id;
+								if (selected.size === "0") {
+									save.width = Number(selected.w);
+									save.height = Number(selected.h);
+								} else if (selected.size) {
+									save.width = selected.size * 70;
+									save.height = selected.size * 70;
 								}
-								const toSaveSides = split.map(it => escape(it)).join("|");
-								const toSave = {
-									sides: toSaveSides,
-									width: nxtSize,
-									height: nxtSize,
-								};
-								// eslint-disable-next-line no-console
-								console.log(`Updating token:`, toSave);
-								it.model.save(toSave);
-							} else {
-								// eslint-disable-next-line no-console
-								console.warn("Token had no side data!")
 							}
+						}
+						if (selection.length > 1) {
+							d20.engine.unselect();
+						}
+						selection.forEach(t => {
+							t.model.save(save);
 						});
-						dialog.off();
-						dialog.dialog("destroy").remove();
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
 						d20.textchat.$textarea.focus();
 					},
-					Cancel: function () {
-						dialog.off();
-						dialog.dialog("destroy").remove();
+					"Cancel": () => {
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
 					},
 				},
 			});
@@ -958,6 +1135,7 @@ function baseMenu () {
 		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
 		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
 		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
+		"edittokenimage": { ln: __("menu_adv_edit"), condition: "this.view && this.get && this.get(\"cardid\") === \"\"", action: "edittokenimages" },
 		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
 		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
 		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
@@ -969,7 +1147,7 @@ function baseMenu () {
 		"rollskills": { ln: __("menu_mass_skill"), condition: "this.character && (d20plus.settingsHtmlHeader.search(\"5etools\") > 0 || d20plus.cfg.getOrDefault(\"token\", \"massRollAssumesOGL\"))" },
 		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"rollertokenresize": { ln: __("menu_multi_size"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
+		"edittokenimages": { ln: __("menu_multi_edit"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
 		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
 		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
@@ -1037,6 +1215,7 @@ function baseMenu () {
 				"togglefliph",
 				"toggleflipv",
 				"setdimensions",
+				"edittokenimage",
 				"aligntogrid",
 				"copy-tokenid",
 				"copy-pathid",
@@ -1060,7 +1239,7 @@ function baseMenu () {
 				"side_random",
 				"side_choose",
 				"-",
-				"rollertokenresize",
+				"edittokenimages",
 			] },
 		"card": {
 			ln: __("menu_card_title"),

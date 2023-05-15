@@ -84,6 +84,7 @@ function initHTMLroll20actionsMenu () {
 								<$ } $>
 
 								<$ if(this.view) { $>
+									<li data-action-type='edittokenimages'>Edit Image</li>
 									<li data-action-type='lock-token'>Lock/Unlock Position</li>
 								<$ } $>
 
@@ -154,7 +155,7 @@ function initHTMLroll20actionsMenu () {
 							<ul class='submenu' data-menuname='multiside'>
 								<li data-action-type='side_random'>Random Side</li>
 								<li data-action-type='side_choose'>Choose Side</li>
-								<li data-action-type='rollertokenresize'>Set Side Size</li>
+								<li data-action-type='edittokenimages'>Edit Sides</li>
 							</ul>
 						</li>
 					<$ } $>
