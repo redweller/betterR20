@@ -2,8 +2,17 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.1.43";
-const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/"
+const SCRIPT_VERSION = "1.35.1.44";
+const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
+
+const SCRIPT_BETA = "1.35.171.1";
+const SCRIPT_BETA_REPO = "https://github.com/redweller/betterR20/raw/beta/";
+const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
+-- v.171.1 changes:
+Add Edit Token dialog to context menu
+⦁ manage token images at any moment
+⦁ create and edit multisided tokens on the fly
+⦁ the new dialog replaces Set Side Size`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -58,7 +67,8 @@ ${analyticsBlocking}
 const JS_DIR = "./js/";
 const LIB_DIR = "./lib/";
 const BUILD_DIR = "./dist";
-const MAIN_DIR = "./.main/js/";
+const UPSTREAM_DIR = "./.main/";
+const UPSTREAM_JS = "./.main/js/";
 
 const LANG_STRS = {};
 
@@ -324,6 +334,10 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	fs.writeFileSync(metaFilename, v.header);
 });
 
+fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
+
+// UPDATE SCRIPTS IN .main REPO FOR UPSTREAM PRs
+
 const CHANGED_SCRIPTS = [
 	"templates/template-roll20-token-editor",
 	"templates/template-roll20-page-settings",
@@ -342,6 +356,7 @@ const CHANGED_SCRIPTS = [
 	"base-chat-emoji",
 	"base-chat",
 	"base-engine",
+	"base-journal",
 	"base-qpi",
 	"base-mod",
 	"base-views",
@@ -382,10 +397,47 @@ CHANGED_SCRIPTS.forEach((filename) => {
 			return replacement;
 		});
 	});
-	fs.writeFileSync(`${MAIN_DIR}${filename}.js`, script);
-})
+	fs.writeFileSync(`${UPSTREAM_JS}${filename}.js`, script);
+});
 
-fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
+let upstream_build = `${UPSTREAM_DIR}/node/build-scripts.js`
+let upstream_bs_file = fs.readFileSync(upstream_build, "utf-8").toString();
+
+upstream_bs_file = upstream_bs_file
+	.replace(/const SCRIPT_VERSION = "([\d.]+?)";/, `const SCRIPT_VERSION = "${SCRIPT_BETA}";`)
+	.replaceAll("https://github.com/TheGiddyLimit/betterR20/raw/development/", SCRIPT_BETA_REPO)
+	.replaceAll("// @name         betteR20-", "// @name         betteR20-beta-")
+	.replace(`=> fs.readFileSync(\`\${JS_DIR}\${filename}.js\`, "utf-8").toString())`, `=> filename === "base-util"
+			? fs.readFileSync(\`\${JS_DIR}\${filename}.js\`, "utf-8").toString().replace("}, 6000);", \`
+			d20plus.ut.sendHackerChat(\\\`
+				<div class="userscript-b20intro">
+					<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+						Notes on b20 beta
+						<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">
+							<span style="color: rgb(194, 32, 14)">You are using preview version of betteR20</span><br>
+							Please read this carefully and give feedback in official betteR20 Discord server, 
+							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
+						</p>
+					</h1>
+					<p>${SCRIPT_BETA_DESCRIPTION.replaceAll("\n", "<br>").replace(/--([^<^>^-]*?)<br>/g, "<code>--$1</code><br>")}</p>
+				</div>
+			\\\`);
+			if (d20plus.ut.cmpVersions("${SCRIPT_VERSION}", avail) < 0) d20plus.ut.sendHackerChat(\\\`
+			<div class="userscript-b20intro">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+					The testing was completed
+					<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">You can now switch back to release version</p>
+				</h1>
+				<p>It appears the current public version of betteR20 is newer then the version of this beta's origin.
+				It most probably means that the testing is over and the new features were successfully released.<br><br>
+				You can switch back to released script version in TamperMonkey. 
+				Check the <code>#testing</code> channel in Discord from time to time, if you want to participate in the future tests.</p>
+			</div>
+			\\\`);
+		}, 6000);\`)
+				.replace(/(const |)\\bavail\\b/g, "d20plus.ut.avail")
+			: fs.readFileSync(\`\${JS_DIR}\${filename}.js\`, "utf-8").toString())`);
+fs.writeFileSync(upstream_build, upstream_bs_file);
 
 // eslint-disable-next-line no-console
 console.log(`v${SCRIPT_VERSION}: Build completed at ${(new Date()).toLocaleString().slice(12, 20)}`);
