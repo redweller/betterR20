@@ -209,10 +209,7 @@ const betteR205etoolsMain = function () {
 			name: "spell",
 			plural: "spells",
 			playerImport: true,
-			allImport: true,
 			baseUrl: SPELL_DATA_DIR,
-			defaultSource: "PHB",
-			finalText: `The "Import Spells From All Sources" button presents a list containing spells from official sources only.<br>To import from third-party sources, either individually select one available in the list or enter a custom URL, and "Import Spells."`,
 		},
 		{
 			name: "subclass",

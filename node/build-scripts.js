@@ -2,7 +2,7 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.1.44";
+const SCRIPT_VERSION = "1.35.2.44";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
 const SCRIPT_BETA = "1.35.171.1";
