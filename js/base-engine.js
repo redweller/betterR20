@@ -438,7 +438,9 @@ function d20plusEngine () {
 		}
 		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
 			const $e = dialog.find(option.class || option.id);
-			const val = getVal($e);
+			// this is needed to properly process custom scale label which is represented by 2 inputs instead of 1
+			const isCustomScale = name === "scale_units" && $e.val() === "custom";
+			const val = !isCustomScale ? getVal($e) : getVal(dialog.find("#page-scale-grid-cell-custom-label"));
 			if (val !== undefined) page.attributes[name] = val;
 		});
 	}
