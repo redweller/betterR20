@@ -2,9 +2,9 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.1.167.4
-// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
-// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
+// @version      1.35.172.1
+// @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
+// @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 
@@ -157,14 +157,14 @@ function baseUtil () {
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;
-					const avail = data;
-					const cmp = d20plus.ut.cmpVersions(curr, avail);
+					d20plus.ut.avail = data;
+					const cmp = d20plus.ut.cmpVersions(curr, d20plus.ut.avail);
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
 								const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
 								const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
-								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
+								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${d20plus.ut.avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
 							} else {
 								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br><br>`);
 							}
@@ -237,6 +237,32 @@ function baseUtil () {
 				$bored.remove();
 				clearInterval(d20plus.ut.cursor);
 			}, 2000);
+		
+			d20plus.ut.sendHackerChat(`
+				<div class="userscript-b20intro">
+					<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+						Notes on b20 beta
+						<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">
+							<span style="color: rgb(194, 32, 14)">You are using preview version of betteR20</span><br>
+							Please read this carefully and give feedback in official betteR20 Discord server, 
+							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
+						</p>
+					</h1>
+					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br>⦁ fix custom grid labels in Page Settings<br><strong>In-game language changes</strong><br>(requires testing the language subsystem, but it should be OK)<br>⦁ fix issue that led to fetching ALL characters on game load for GMs<br>⦁ add fake_latin to available in-game languages substitution list<br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment<br>⦁ create and edit multisided tokens on the fly<br>⦁ the new dialog replaces Set Side Size<br>⦁ exclude some images from Random Side selection<br>⦁ update Random Side randomizer (gives different images in a row)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20</p>
+				</div>
+			`);
+			if (d20plus.ut.cmpVersions("1.35.2.44", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			<div class="userscript-b20intro">
+				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+					The testing was completed
+					<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">You can now switch back to release version</p>
+				</h1>
+				<p>It appears the current public version of betteR20 is newer then the version of this beta's origin.
+				It most probably means that the testing is over and the new features were successfully released.<br><br>
+				You can switch back to released script version in TamperMonkey. 
+				Check the <code>#testing</code> channel in Discord from time to time, if you want to participate in the future tests.</p>
+			</div>
+			`);
 		}, 6000);
 	};
 
@@ -1777,6 +1803,12 @@ function baseConfig () {
 			"name": "Hide Default Journal Search Bar",
 			"default": false,
 			"_type": "boolean",
+		},
+		"journalCommands": {
+			"name": "Add Custom Journal Context Menu Options",
+			"default": true,
+			"_type": "boolean",
+			"_player": true,
 		},
 	});
 	addConfigOptions("chat", {
@@ -10700,6 +10732,7 @@ function initHTMLroll20actionsMenu () {
 						<$ } $>
 
 						<$ if(this.get && this.get("type") == "image") { $>
+						<li data-action-type='edittokenimages'>Edit Image</li>
 						<li data-action-type='copy-tokenid'>View Token ID</li>
 						<$ } $>
 						<$ if(this.get && this.get("type") == "path") { $>
@@ -10738,7 +10771,7 @@ function initHTMLroll20actionsMenu () {
 					<ul class='submenu' data-menuname='multiside'>
 						<li data-action-type='side_random'>Random Side</li>
 						<li data-action-type='side_choose'>Choose Side</li>
-						<li data-action-type='rollertokenresize'>Set Side Size</li>
+						<li data-action-type='edittokenimages'>Edit Sides</li>
 					</ul>
 				</li>
 				<$ } $>
@@ -11616,6 +11649,180 @@ function initHTMLbaseMisc () {
 		}
 	</style>
 	`;
+
+	d20plus.html.tokenImageEditor = `
+	<div class="dialog largedialog edittokenimages">
+		<h4 class="edittitle">Token name</h4>
+		<span class="editlabel">
+			Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+		</span>
+		<div class="tokenlist"></div>
+		<hr>
+		<button class="addimageurl btn" style="float: right;margin-left:5px;">Add From URL...</button>
+		<h4>Images</h4>
+		You can drop a file or a character below
+		<div class="clear" style="height: 7px;"></div>
+		<table class="table table-striped tokenimagelist">
+			<tbody>
+			</tbody>
+		</table>
+		<style>
+			.tokenimage img {
+				max-width: 70px;
+				max-height: 70px;
+			}
+
+			.tokenimage select {
+				width: 100px;
+				margin-right: 10px;
+			}
+
+			.tokenimage input {
+				width: 25px;
+			}
+
+			.tokenimage input.face {
+				margin: 30px 0px 0px 5px;
+				width: unset;
+			}
+
+			.tokenimage input.face:indeterminate {
+				opacity: 0.8;
+				filter: grayscale(0.7);
+			}
+
+			.tokenimage .btn {
+				font-family: pictos;
+				margin-top: 26px;
+			}
+
+			.tokenimage .dropbox {
+				height: 70px;
+				width: 70px;
+				padding: 0px;
+				box-sizing: content-box;
+			}
+
+			.tokenimage .inner {
+				display: inline-block;
+				vertical-align: middle;
+				line-height: 67px;
+			}
+
+			.tokenimage .remove {
+				background: none;
+			}
+
+			.tokenimage .remove span {
+				line-height: initial;
+				display: inline-block;
+				font-weight: bold;
+				background: white;
+				vertical-align: bottom;
+			}
+
+			.tokenimage .dropbox.filled {
+				border: 4px solid transparent;
+			}
+
+			.ui-dropping .dropbox.filled {
+				border: 4px dashed #d1d1d1;
+			}
+
+			.tokenimagelist .ui-dropping .tokenimage {
+				background: rgba(155, 155, 155, 0.5);
+			}
+
+			.tokenimagelist .ui-dropping .dropbox {
+				background: gray;
+				border: 4px dashed rgba(155, 155, 155, 0.5);
+			}
+
+			.tokenimage .ui-droppable.drop-highlight {
+				border: 4px dashed;
+			}
+
+			.tokenimage.lastone .face,
+			.tokenimage.lastone .skippable,
+			.tokenimage.lastone .btn.delete {
+				display: none;
+			}
+
+			.tokenimage .custom {
+				visibility: hidden;
+			}
+
+			.tokenimage .custom.set {
+				visibility: visible;
+			}
+
+			.tokenimage input.toskip {
+				margin: 0px;
+				width: unset;
+			}
+
+			.tokenimage .skippable {
+				display: block;
+				margin: 0px;
+			}
+
+			.tokenimagelist .tokenimage:not(.lastone).skipped td {
+				background-color: rgba(155, 0, 0, 0.1);
+			}
+
+			.tokenlist {
+				position: sticky;
+				top: -11px;
+				padding: 5px 0px;
+				background: inherit;
+				z-index: 1;
+				overflow-x: auto;
+				white-space: nowrap;
+			}
+
+			.tokenlist .tokenbox {
+				display: inline-block;
+				position: relative;
+				border: 4px solid transparent;
+				width: 60px;
+				height: 60px;
+				cursor: pointer;
+				vertical-align: bottom;
+			}
+
+			.tokenlist .tokenbox img {
+				max-width: 60px;
+				max-height: 60px;
+			}
+
+			.tokenlist .tokenbox .inner {
+				text-align: center;
+			}
+
+			.tokenbox .name {
+				display: none;
+				position: absolute;
+				bottom: 0px;
+				background-color: rgba(155, 155, 155, 0.7);
+				padding: 3px;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+				box-sizing: border-box;
+				color: white;
+				width: 100%;
+			}
+
+			.tokenbox:hover .name {
+				display: block;
+			}
+
+			.tokenbox.selected {
+				border: 4px solid gray;
+			}
+		</style>
+	</div>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
@@ -12246,7 +12453,9 @@ function d20plusEngine () {
 		}
 		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
 			const $e = dialog.find(option.class || option.id);
-			const val = getVal($e);
+			// this is needed to properly process custom scale label which is represented by 2 inputs instead of 1
+			const isCustomScale = name === "scale_units" && $e.val() === "custom";
+			const val = !isCustomScale ? getVal($e) : getVal(dialog.find("#page-scale-grid-cell-custom-label"));
 			if (val !== undefined) page.attributes[name] = val;
 		});
 	}
@@ -12696,6 +12905,9 @@ function baseMenu () {
 			lastSceneUid: null,
 		};
 
+		const tagSize = "?roll20_token_size=";
+		const tagSkip = "?roll20_skip_token=";
+
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
@@ -12952,17 +13164,27 @@ function baseMenu () {
 									i();
 						else if ("side_random" == e) {
 							d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
-							var d = [];
+							var d = []
+								// BEGIN MOD
+								, prevUrl = "none";
+								// END MOD
 							_.each(n, function(e) {
 								if (e.model && "" != e.model.get("sides")) {
 									var t = e.model.get("sides").split("|")
 										, n = t.length
-										, i = d20.textchat.diceengine.random(n);
 									// BEGIN MOD
-									const imgUrl = unescape(t[i]);
-									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+										, i = -1
+										, imgUrl = tagSkip;
+									const tweakRandom = t.filter(j => !unescape(j).includes(tagSkip)).length > 1;
+									while (imgUrl.includes(tagSkip)) {
+										i = d20.textchat.diceengine.random(n);
+										const tUrl = unescape(t[i]);
+										imgUrl = tweakRandom && tUrl === prevUrl ? tagSkip : tUrl;
+									}
+									prevUrl = imgUrl;
+									const trueUrl = getRollableTokenUpdate(imgUrl, i, e.model);
+									d.push(trueUrl);
 									// END MOD
-										d.push(t[i])
 								}
 							}),
 								d20.textchat.rawChatInput({
@@ -12984,7 +13206,7 @@ function baseMenu () {
 										const imgUrl = unescape(o[r]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
 											// BEGIN MOD
-											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											getRollableTokenUpdate(imgUrl, r, e.model),
 											// END MOD
 											a.off("slide"),
 											a.dialog("destroy").remove()
@@ -13179,8 +13401,8 @@ function baseMenu () {
 						} else if ("back-one" === e) {
 							d20plus.engine.backwardOneLayer(n);
 							i();
-						} else if ("rollertokenresize" === e) {
-							resizeToken();
+						} else if ("edittokenimages" === e) {
+							editToken();
 							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
@@ -13405,66 +13627,332 @@ function baseMenu () {
 
 		/* eslint-enable */
 
-		function getRollableTokenUpdate (imgUrl, curSide) {
-			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
+		function getRollableTokenUpdate (imgUrl, currentSide, token) {
+			const [imgsrc, m] = (imgUrl || "").replace(tagSkip).split(tagSize);
 			const toSave = {
-				currentSide: curSide,
-				imgsrc: imgUrl,
+				currentSide,
+				imgsrc,
 			};
 			if (m) {
-				toSave.width = 70 * Number(m[1]);
-				toSave.height = 70 * Number(m[1])
+				if (isNaN(m) && m?.split) {
+					const [w, h] = m.split("x");
+					if (!isNaN(w) && !isNaN(h)) {
+						toSave.width = Number(w);
+						toSave.height = Number(h);
+					}
+				} else {
+					toSave.width = 70 * Number(m);
+					toSave.height = 70 * Number(m)
+				}
 			}
-			return toSave;
+			token.save(toSave);
+			return imgsrc;
 		}
 
-		function resizeToken () {
-			const sel = d20.engine.selected();
-
-			const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
-			const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
-			dialog.dialog({
-				title: "New Size",
-				beforeClose: function () {
-					return false;
+		function editToken () {
+			const selection = d20.engine.selected().filter(t => t.type === "image");
+			if (!selection.length) return;
+			const images = [];
+			const added = [];
+			const $dialog = $(d20plus.html.tokenImageEditor);
+			const $list = $dialog.find(".tokenimagelist tbody");
+			const $tokenList = $dialog.find(".tokenlist");
+			const sizes = [["tiny", "0.5"], ["small", "1.0"], ["medium", "1"], ["large", "2"], ["huge", "3"], ["gargantuan", "4"], ["colossal", "5"], ["custom", "0"]];
+			const findStandardSize = (w, h) => {
+				return (w === h && sizes.find(s => s[1] === `${w / 70}`)?.last()) || "0";
+			}
+			const addImageOnInit = (img, add) => {
+				const sizeChanged = img.w !== images.last()?.w || img.h !== images.last()?.h;
+				if (images.length && sizeChanged) $list.variedSizes = true;
+				images.push(img);
+				added.push(add || img.url);
+			}
+			selection.forEach(t => {
+				const sides = t.model.attributes.sides?.split("|");
+				const token = t.model.attributes.imgsrc;
+				const {width: tw, height: th} = t.model.attributes;
+				if (sides.length > 1) {
+					const curSide = sides[t.model.attributes.currentSide] || token;
+					sides.forEach((s, k) => {
+						const checked = unescape(s);
+						const listed = added.indexOf(checked);
+						const [url, size] = checked.split(tagSize);
+						const [sw, sh] = (size || "").split("x");
+						const image = {
+							url: url.replaceAll(tagSkip, ""),
+							skip: url.includes(tagSkip),
+							face: unescape(curSide).includes(url),
+							w: tw,
+							h: th,
+						};
+						if (listed !== -1) {
+							if (k === t.model.attributes.currentSide) images[listed].face = true;
+							return;
+						} else if (!isNaN(size)) {
+							Object.merge(image, {size, w: size * 70, h: size * 70});
+						} else if (!isNaN(sw) && !isNaN(sh)) {
+							Object.merge(image, {size: "0", w: sw, h: sh});
+						}
+						addImageOnInit(image, checked);
+					});
+				} else {
+					const listed = added.indexOf(t.model.attributes.imgsrc);
+					if (listed !== -1) images[listed].face = true;
+					else addImageOnInit({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
+				}
+			});
+			if ($list.variedSizes) {
+				images.forEach(i => { if (i.size === undefined) i.size = findStandardSize(i.w, i.h); });
+			}
+			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
+			const description = selection.length > 1 ? `
+				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
+			` : selection[0].model.attributes.sides ? `
+				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
+			` : `
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			`;
+			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
+				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
+					<div class="inner">
+						<img src="${t.model.attributes.imgsrc}">
+						<div class="name">${t.model.attributes.name}</div>
+					</div>
+				</div>
+			`, "");
+			const resetTokens = () => {
+				$tokenList.find(".selected").each((k, t) => {
+					const $token = $(t);
+					const $tokenimage = $token.find("img");
+					$tokenimage.attr("src", $token.data("tokenimg"));
+				});
+			}
+			const buildList = () => {
+				if (images.length === 1) {
+					$list.someImageSelected = true;
+					images[0].selected = true;
+				}
+				$list.html(images.reduce((r, i, k) => `${r}
+					<tr class="tokenimage${images.length === 1 ? " lastone" : ""}${i.skip ? " skipped" : ""}" data-index="${(i.id = k, k)}">
+						<td style="padding:0px;" title="Current image">
+							<input class="face" type="checkbox"${i.selected ? " checked" : ""}>
+						</td>
+						<td>
+							<div class="dropbox filled">
+							<div class="inner"><img src="${i.url}"><div class="remove"><span>Drop a file</span></div></div>
+							</div>
+						</td>
+						<td>
+							<label>Select size:</label><select>${sizes.reduce((o, s) => `${o}
+								<option value="${s[1]}"${s[1] === i.size ? " selected" : ""}>${s[0]}</option>
+							`, `<option>default (keep as is)</option>`)}</select>
+							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</span>
+							<label class="skippable"><input class="toskip" type="checkbox"${i.skip ? " checked" : ""}> Skip side on randomize</label>
+						</td>
+						<td style="padding:0px;">
+							<span class="btn url" title="Edit URL...">j</span>
+							<span class="btn delete" title="Delete">#</span>
+						</td>
+					</tr>
+				`, ""));
+				if (!$list.someImageSelected) {
+					images.forEach((i, k) => {
+						if (i.face) $list.find("input.face").eq(k).prop({indeterminate: true});
+					});
+				}
+			}
+			$dialog.dialog({
+				autoopen: true,
+				title: "Edit token image(s)",
+				width: 450,
+				open: () => {
+					buildList();
+					$tokenList.html(tokenList);
+					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
+					$dialog.find(".edittitle").text(name);
+					$dialog.find(".editlabel").text(description);
+					$list.droppable({
+						greedy: true,
+						tolerance: "pointer",
+						hoverClass: "ui-dropping",
+						scope: "default",
+						accept: ".resultimage, .library-item, .journalitem.character",
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							$d.helper.detach();
+							const char = d20.Campaign.characters.get($d.draggable.data("itemid"));
+							const dtoken = JSON.parse(char?._blobcache.defaulttoken || "{}");
+							const url = $d.draggable.data("fullsizeurl")
+								|| $d.draggable.data("url")
+								|| dtoken.imgsrc;
+							const img = document.elementFromPoint(evt.clientX, evt.clientY);
+							const id = img.tagName === "IMG" ? $(img).closest(".tokenimage").data("index") : undefined;
+							if (images[id]?.url && url) {
+								images[id].url = url;
+								$list.find(".dropbox img").eq(id).attr("src", url);
+								if (images[id].selected) $tokenList.find(".selected img").attr("src", images[id].url);
+							} else if (url) {
+								if ($list.variedSizes && dtoken.width) {
+									const [w, h] = [dtoken.width, dtoken.height];
+									const size = findStandardSize(w, h);
+									images.push({url, size, w, h});
+								} else {
+									images.push({url, w: 70, h: 70});
+								}
+								buildList();
+							}
+						},
+					});
+					$dialog.on(window.mousedowntype, ".tokenbox", evt => {
+						const $token = $(evt.currentTarget);
+						if ($token.hasClass("selected")) {
+							if ($tokenList.find(".selected").length > 1) {
+								$token.removeClass("selected");
+								$token.find("img").attr("src", $token.data("tokenimg"));
+							}
+						} else {
+							$token.addClass("selected");
+							if ($list.someImageSelected) $token.find("img").attr("src", images.find(i => i.selected)?.url);
+						}
+					}).on("change", "select", evt => {
+						const $changed = $(evt.target);
+						const $token = $changed.parent();
+						const $custom = $token.find(".custom").removeClass("set");
+						const newSize = $changed.val();
+						const id = $changed.closest(".tokenimage").data("index");
+						if (newSize > 0) {
+							$token.find(".w, .h").val(newSize * 70);
+							images[id].size = newSize;
+							$list.variedSizes = true;
+						} else {
+							delete images[id].size;
+							if (newSize === "0") {
+								$list.variedSizes = true;
+								images[id].size = newSize;
+								images[id].w = $token.find(".w").val();
+								images[id].h = $token.find(".h").val();
+								$custom.addClass("set");
+							}
+						}
+					}).on("change", "input.face", evt => {
+						const id = $(evt.target).closest(".tokenimage").data("index");
+						const isChecked = $(evt.target).prop("checked");
+						const $allBoxes = $list.find("input.face");
+						if (isChecked) {
+							$list.someImageSelected = true;
+							$allBoxes.prop({checked: false}).prop({indeterminate: false});
+							$(evt.target).prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[id].url);
+							images.forEach((i, k) => {
+								if (k === id) i.selected = true;
+								else i.selected = false;
+							});
+						} else {
+							$list.someImageSelected = false;
+							images[id].selected = false;
+							resetTokens();
+							images.forEach((i, k) => {
+								if (i.face) $allBoxes.eq(k).prop({indeterminate: true});
+							});
+						}
+					}).on("change", "input.toskip", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const isChecked = $(evt.target).prop("checked");
+						if (isChecked) {
+							$token.addClass("skipped");
+							images[id].skip = true;
+						} else {
+							$token.removeClass("skipped");
+							images[id].skip = false;
+						}
+					}).on("change", "input .w, input.h", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const set = {w: $token.find(".w").val(), h: $token.find(".h").val()};
+						if (isNaN(set.w) || isNaN(set.h)) return;
+						images[id].w = set.w;
+						images[id].h = set.h;
+					}).on(window.mousedowntype, ".url", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const $image = $token.find("img");
+						const id = $token.data("index");
+						const url = window.prompt("Edit URL", $image.attr("src"));
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images[id].url = url;
+						$image.attr("src", url);
+					}).on(window.mousedowntype, ".delete", evt => {
+						const $deleted = $(evt.target).closest(".tokenimage");
+						const id = $deleted.data("index");
+						if (images.length <= 1) return;
+						if (images[id].selected) {
+							$list.someImageSelected = false;
+							resetTokens();
+						}
+						images.splice(id, 1);
+						buildList();
+						if (images.length === 1) {
+							$list.someImageSelected = true;
+							$list.find("input.face").prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[0].url);
+						}
+					}).on(window.mousedowntype, ".addimageurl", () => {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images.push({url, w: 70, h: 70});
+						buildList();
+					})
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
 				},
 				buttons: {
-					Submit: function () {
-						const size = dialog.find("select").val();
-						d20.engine.unselect();
-						sel.forEach(it => {
-							const nxtSize = size * 70;
-							const sides = it.model.get("sides");
-							if (sides) {
-								const ueSides = unescape(sides);
-								const cur = it.model.get("currentSide");
-								const split = ueSides.split("|");
-								if (split[cur].includes("roll20_token_size")) {
-									split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
-								} else {
-									split[cur] += `?roll20_token_size=${size}`;
+					"Save changes": () => {
+						const save = {};
+						if (images.length > 1) {
+							save.sides = images.map(i => {
+								const skipped = i.skip ? tagSkip : "";
+								const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
+								return escape(i.url + skipped + size);
+							}).join("|");
+						} else {
+							save.sides = "";
+						}
+						if ($list.someImageSelected) {
+							const selected = images.find(i => i.selected);
+							if (selected) {
+								save.imgsrc = selected.url;
+								save.currentSide = selected.id;
+								if (selected.size === "0") {
+									save.width = Number(selected.w);
+									save.height = Number(selected.h);
+								} else if (selected.size) {
+									save.width = selected.size * 70;
+									save.height = selected.size * 70;
 								}
-								const toSaveSides = split.map(it => escape(it)).join("|");
-								const toSave = {
-									sides: toSaveSides,
-									width: nxtSize,
-									height: nxtSize,
-								};
-								// eslint-disable-next-line no-console
-								console.log(`Updating token:`, toSave);
-								it.model.save(toSave);
-							} else {
-								// eslint-disable-next-line no-console
-								console.warn("Token had no side data!")
+							}
+						}
+						if (selection.length > 1) {
+							d20.engine.unselect();
+						}
+						selection.forEach(t => {
+							if (selection.length === 1
+								|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
+								t.model.save(save);
 							}
 						});
-						dialog.off();
-						dialog.dialog("destroy").remove();
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
 						d20.textchat.$textarea.focus();
 					},
-					Cancel: function () {
-						dialog.off();
-						dialog.dialog("destroy").remove();
+					"Cancel": () => {
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
 					},
 				},
 			});
@@ -14086,23 +14574,34 @@ function d20plusJournal () {
 		// Create new Journal commands
 		// stash the folder ID of the last folder clicked
 		$("#journalfolderroot").on("contextmenu", ".dd-content", function (e) {
-			if ($(this).parent().hasClass("dd-folder")) {
-				const lastClicked = $(this).parent();
-				d20plus.journal.lastClickedFolderId = lastClicked.attr("data-globalfolderid");
+			const isShowCustom = d20plus.cfg.getOrDefault("interface", "journalCommands");
+			const $itemHandle = $(this).parent();
+
+			if ($itemHandle.hasClass("dd-folder")) {
+				d20plus.journal.lastClickedFolderId = $itemHandle.data("globalfolderid");
+			} else if ($itemHandle.hasClass("dd-item")) {
+				d20plus.journal.lastClickedJournalItemId = $itemHandle.data("itemid");
 			}
 
-			if ($(this).parent().hasClass("character")) {
+			if ($itemHandle.hasClass("character") && isShowCustom) {
 				$(`.Vetools-make-tokenactions`).show();
 			} else {
 				$(`.Vetools-make-tokenactions`).hide();
 			}
+
+			if (($itemHandle.hasClass("character") || ($itemHandle.hasClass("handout"))) && isShowCustom) {
+				$(`.b20-change-avatar`).show();
+			} else {
+				$(`.b20-change-avatar`).hide();
+			}
 		});
 
 		let first = $("#journalitemmenu ul li").first();
+
 		// "Make Tokenactions" option
 		first.after(`<li class="Vetools-make-tokenactions" data-action-type="additem">Make Tokenactions</li>`);
 		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=additem]", function () {
-			let id = $currentItemTarget.attr("data-itemid");
+			let id = d20plus.journal.lastClickedJournalItemId;
 			let character = d20.Campaign.characters.get(id);
 			d20plus.ut.log("Making Token Actions..");
 			if (character) {
@@ -14200,6 +14699,89 @@ function d20plusJournal () {
 				});
 			}
 		});
+
+		// "Set avatar" option
+		first.after(`<li class="b20-change-avatar" data-action-type="changeavatar">Set Avatar</li>`);
+		$("#journalitemmenu ul").on(window.mousedowntype, "li[data-action-type=changeavatar]", function () {
+			const id = d20plus.journal.lastClickedJournalItemId;
+			const item = d20.Campaign.characters.get(id) || d20.Campaign.handouts.get(id);
+			const name = item?.attributes.name || "Unnamed";
+			if (!item?.attributes.hasOwnProperty("name") || !item?.attributes.hasOwnProperty("avatar")) {
+				// TODO user-visible feedback? Toast message?
+				return console.error(`Selected journal item does not have a "name" and/or "avatar" field!`);
+			}
+			d20plus.ut.log(`Setting avatar for ${name}`);
+			const $dialog = $(`
+				<div class="dialog largedialog journalavatareditor">
+					<button class="btn avatar-image-by-url" style="margin-bottom: 10px">Set image from URL...</button>
+					<div class="avatar dropbox" style="background: white; min-height:100px;">
+						<div class="status"></div>
+						<div class="inner"></div>
+					</div>
+				</div>
+			`);
+			const avatar = {url: item?.attributes.avatar || ""};
+			const $dropbox = $dialog.find(".dropbox");
+			const setImagePreview = (img) => {
+				const $inner = $dropbox.find(".inner");
+				if (img) {
+					$dropbox.addClass("filled");
+					avatar.url = img;
+					$inner.html(`<img src="${img}"><div class="remove"><a href="javascript:void(0);">Remove</a></div>`);
+				} else {
+					$dropbox.removeClass("filled");
+					avatar.url = "";
+					$inner.html(`<h4 style="padding-bottom: 0; margin-bottom: 0; color: #777;">Drop a file</h4><br>`);
+				}
+			};
+			$dialog.dialog({
+				resizable: true,
+				autoopen: true,
+				title: "Set avatar from URL",
+				open: () => {
+					setImagePreview(avatar.url);
+					$dropbox.droppable({
+						accept: ".resultimage, .library-item",
+						greedy: true,
+						scope: "default",
+						tolerance: "pointer",
+						classes: {
+							"ui-droppable": "drop-highlight",
+						},
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							setImagePreview($d.draggable.data("fullsizeurl") || $d.draggable.data("url"));
+						},
+					}).on("click", ".remove", () => {
+						setImagePreview();
+					});
+					$dialog.find(".avatar-image-by-url").on("click", function () {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (url) {
+							d20plus.art.setLastImageUrl(url);
+							setImagePreview(url);
+						}
+					});
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
+				},
+				buttons: {
+					OK: () => {
+						item.save({avatar: avatar.url});
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
+					},
+					Cancel: () => {
+						$dialog.off();
+						$dialog.dialog("destroy").remove();
+					},
+				},
+			});
+		})
 
 		// New command on FOLDERS
 		const last = $("#journalmenu ul li").last();
@@ -18149,7 +18731,9 @@ function baseChatLanguages () {
 				"zwatan"
 			],
 			"particles": [],
-			"alias": ["deep speech"],
+			"alias": [
+				"deep speech"
+			],
 			"factor": 0
 		},
 		"infernal": {
@@ -18634,6 +19218,246 @@ function baseChatLanguages () {
 			],
 			"factor": 4
 		},
+		"fakefrench": {
+			"title": "fakefrench",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-french-words-generator
+			"lexis": [
+				"aide",
+				"aille",
+				"aimait",
+				"allons",
+				"américains",
+				"annonce",
+				"appelles",
+				"appris",
+				"asseoir",
+				"attendre",
+				"aucun",
+				"autrement",
+				"avons",
+				"beaucoup",
+				"blanche",
+				"certaine",
+				"chez",
+				"coffre",
+				"connaissez",
+				"connaître",
+				"conneries",
+				"contraire",
+				"crains",
+				"crime",
+				"dégage",
+				"déjà",
+				"difficile",
+				"emmène",
+				"enfant",
+				"extérieur",
+				"fallait",
+				"félicitations",
+				"femmes",
+				"feras",
+				"file",
+				"finir",
+				"formidable",
+				"fort",
+				"frappé",
+				"fusil",
+				"garçons",
+				"génial",
+				"genoux",
+				"grande",
+				"honneur",
+				"image",
+				"intéressant",
+				"jake",
+				"joie",
+				"leurs",
+				"lycée",
+				"maman",
+				"manqué",
+				"message",
+				"met",
+				"militaire",
+				"moyens",
+				"noire",
+				"nul",
+				"oublier",
+				"ouest",
+				"ouvre",
+				"partez",
+				"pas",
+				"passera",
+				"patron",
+				"pensait",
+				"personnes",
+				"petit",
+				"points",
+				"premier",
+				"presse",
+				"preuves",
+				"prochain",
+				"projet",
+				"puisse",
+				"puissant",
+				"queue",
+				"ravi",
+				"rencontré",
+				"répondu",
+				"reprendre",
+				"retrouve",
+				"revient",
+				"rouge",
+				"salut",
+				"signer",
+				"soldats",
+				"sorte",
+				"souris",
+				"télé",
+				"tenir",
+				"fournir",
+				"trés",
+				"trouver",
+				"tueur",
+				"univers",
+				"vidéo",
+				"vient",
+				"vrais"
+			],
+			"particles": [
+				"en",
+				"de",
+				"pour",
+				"le",
+				"au-",
+				"d'",
+				"il",
+				"à",
+				"sur"
+			],
+			"alias": [],
+			"factor": 3
+		},
+		"fakegerman": {
+			"title": "fakegerman",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-german-words-generator
+			"lexis": [
+				"allem",
+				"anderer",
+				"anders",
+				"angefangen",
+				"beispiel",
+				"bier",
+				"blut",
+				"brauchen",
+				"brüder",
+				"dein",
+				"deshalb",
+				"druck",
+				"durch",
+				"eher",
+				"eigenen",
+				"eingeladen",
+				"erstes",
+				"fand",
+				"fantastisch",
+				"fast",
+				"fehler",
+				"fern",
+				"fertig",
+				"frage",
+				"frank",
+				"freuen",
+				"funktioniert",
+				"gefällt",
+				"geliebt",
+				"geschlafen",
+				"geschlagen",
+				"gewehr",
+				"glaube",
+				"glückwunsch",
+				"gutes",
+				"haltet",
+				"hand",
+				"hasst",
+				"heiß",
+				"held",
+				"hielt",
+				"hoffentlich",
+				"holen",
+				"irgendetwas",
+				"jemandem",
+				"jungen",
+				"kennst",
+				"kennt",
+				"knie",
+				"kommen",
+				"krankenhaus",
+				"lehrer",
+				"leiden",
+				"lhrem",
+				"lst",
+				"monster",
+				"namens",
+				"ohne",
+				"person",
+				"plan",
+				"planeten",
+				"rechte",
+				"rom",
+				"ruhig",
+				"sagten",
+				"schätze",
+				"schreiben",
+				"schuld",
+				"freitag",
+				"schwer",
+				"schwierig",
+				"seine",
+				"seiten",
+				"senator",
+				"solange",
+				"spiel",
+				"steckt",
+				"stimmen",
+				"super",
+				"tag",
+				"taten",
+				"töte",
+				"überleben",
+				"unglaublich",
+				"versuchte",
+				"voller",
+				"völlig",
+				"weib",
+				"weil",
+				"weise",
+				"weisst",
+				"weit",
+				"werd",
+				"werfen",
+				"wohnen",
+				"wollt",
+				"zeiten",
+				"zeug",
+				"zweite",
+				"zeitgeist"
+			],
+			"particles": [
+				"ich",
+				"bin",
+				"sie",
+				"zu",
+				"auf",
+				"an",
+				"du",
+				"wir",
+				"für"
+			],
+			"alias": [],
+			"factor": 3
+		},
 		"fakeitalian": {
 			"title": "fakeitalian",
 			// Most words copied or modified from
@@ -18754,242 +19578,122 @@ function baseChatLanguages () {
 			"alias": [],
 			"factor": 3
 		},
-		"fakespanish": {
-			"title": "fakespanish",
+		"fakelatin": {
+			"title": "fakelatin",
 			// Most words copied or modified from
-			// https://www.generatormix.com/random-spanish-words
+			// https://www.generatormix.com/random-latin-words-generator
 			"lexis": [
-				"abajo",
-				"abrazo",
-				"acabar",
-				"acercarse",
-				"acompañar",
-				"acostarse",
-				"agradecer",
-				"alcalde",
-				"arriba",
-				"atrás",
-				"autoridad",
-				"averiguar",
-				"barrio",
-				"bonito",
-				"bosillo",
-				"broma",
-				"bulto",
-				"caballero",
-				"camarero",
-				"campana",
-				"canción",
-				"claro",
-				"cliente",
-				"cobrar",
-				"conmigo",
-				"corregir",
-				"cosa",
-				"costumbre",
-				"cuaderno",
-				"cuadra",
-				"cuarto",
-				"deporte",
-				"descubrir",
-				"devolver",
-				"dirección",
-				"dónde",
-				"durar",
-				"ejemplo",
-				"enfermo",
-				"entrar",
-				"equipaje",
-				"escribir",
-				"escuela",
-				"estómago",
-				"estudiar",
-				"extrañar",
-				"extraño",
-				"fósforo",
-				"frontera",
-				"hombre",
-				"huésped",
-				"jamás",
-				"jardín",
-				"joven",
-				"juez",
-				"kilómetro",
-				"laudar",
-				"levantar",
-				"listo",
-				"lleno",
-				"mañana",
-				"mediodía",
-				"mentira",
-				"merienda",
-				"método",
-				"mientras",
-				"muerto",
-				"nevar",
-				"norte",
-				"nunca",
-				"obligar",
-				"pariente",
-				"patrón",
-				"permiso",
-				"picante",
-				"pico",
-				"pierna",
-				"píldora",
-				"planchar",
-				"pluma",
-				"pobre",
-				"promesa",
-				"receta",
-				"recuerdo",
-				"regalo",
-				"régimen",
-				"repente",
-				"repitir",
-				"reunión",
-				"rodilla",
-				"según",
-				"señorita",
-				"servir",
-				"siempre",
-				"silla",
-				"sólo",
-				"temprano",
-				"tijeras",
-				"tinta",
-				"vestirse"
+				"adsum",
+				"aegrotatio",
+				"aegrus",
+				"ager",
+				"aliquis",
+				"brevitas",
+				"cicuta",
+				"comburo",
+				"comminuo",
+				"conculco",
+				"concupisco",
+				"conscientia",
+				"constupro",
+				"contemplor",
+				"corripio",
+				"crepusculum",
+				"defessus",
+				"defetiscor",
+				"defigo",
+				"delecto",
+				"demens",
+				"derelinquo",
+				"deus",
+				"duro",
+				"ego",
+				"egrotatio",
+				"emiror",
+				"excrucio",
+				"exigo",
+				"expedio",
+				"facio",
+				"fas",
+				"grando",
+				"hesito",
+				"hortor",
+				"illis",
+				"immanitas",
+				"improbus",
+				"impunitus",
+				"incido",
+				"infidus",
+				"influo",
+				"influxum",
+				"insula",
+				"insurgi",
+				"insurgo",
+				"insurrectum",
+				"intumesco",
+				"lacero",
+				"lacerta",
+				"maculosus",
+				"mansuetus",
+				"mellitus",
+				"mens",
+				"mentis",
+				"ministro",
+				"munimentum",
+				"nasci",
+				"nascor",
+				"natus",
+				"obdormio",
+				"omnipotens",
+				"onis",
+				"opinio",
+				"pactus",
+				"peregrinus",
+				"pia",
+				"pica",
+				"pium",
+				"plebis",
+				"posthabeo",
+				"potens",
+				"proletarius",
+				"proprie",
+				"propugnaculum",
+				"purgatio",
+				"quamquam",
+				"quatenus",
+				"quatinus",
+				"rex",
+				"rodoenus",
+				"sanctus",
+				"serius",
+				"socius",
+				"sophismata",
+				"speciosus",
+				"subito",
+				"supernus",
+				"surgo",
+				"surrectum",
+				"surrexi",
+				"taedium",
+				"temperantia",
+				"teneo",
+				"terminus",
+				"uter",
+				"utrius",
+				"vociferor",
+				"vulgus",
+				"vulnus"
 			],
 			"particles": [
-				"las",
-				"la",
-				"de",
-				"des",
-				"a",
-				"con",
-				"por",
-				"el",
-				"acá"
-			],
-			"alias": [],
-			"factor": 3
-		},
-		"fakefrench": {
-			"title": "fakefrench",
-			// Most words copied or modified from
-			// https://www.generatormix.com/random-french-words-generator
-			"lexis": [
-				"aide",
-				"aille",
-				"aimait",
-				"allons",
-				"américains",
-				"annonce",
-				"appelles",
-				"appris",
-				"asseoir",
-				"attendre",
-				"aucun",
-				"autrement",
-				"avons",
-				"beaucoup",
-				"blanche",
-				"certaine",
-				"chez",
-				"coffre",
-				"connaissez",
-				"connaître",
-				"conneries",
-				"contraire",
-				"crains",
-				"crime",
-				"dégage",
-				"déjà",
-				"difficile",
-				"emmène",
-				"enfant",
-				"extérieur",
-				"fallait",
-				"félicitations",
-				"femmes",
-				"feras",
-				"file",
-				"finir",
-				"formidable",
-				"fort",
-				"frappé",
-				"fusil",
-				"garçons",
-				"génial",
-				"genoux",
-				"grande",
-				"honneur",
-				"image",
-				"intéressant",
-				"jake",
-				"joie",
-				"leurs",
-				"lycée",
-				"maman",
-				"manqué",
-				"message",
-				"met",
-				"militaire",
-				"moyens",
-				"noire",
-				"nul",
-				"oublier",
-				"ouest",
-				"ouvre",
-				"partez",
-				"pas",
-				"passera",
-				"patron",
-				"pensait",
-				"personnes",
-				"petit",
-				"points",
-				"premier",
-				"presse",
-				"preuves",
-				"prochain",
-				"projet",
-				"puisse",
-				"puissant",
-				"queue",
-				"ravi",
-				"rencontré",
-				"répondu",
-				"reprendre",
-				"retrouve",
-				"revient",
-				"rouge",
-				"salut",
-				"signer",
-				"soldats",
-				"sorte",
-				"souris",
-				"télé",
-				"tenir",
-				"fournir",
-				"trés",
-				"trouver",
-				"tueur",
-				"univers",
-				"vidéo",
-				"vient",
-				"vrais"
-			],
-			"particles": [
-				"en",
-				"de",
-				"pour",
-				"le",
-				"au-",
-				"d'",
-				"il",
-				"à",
-				"sur"
+				"et",
+				"hic",
+				"quo",
+				"ad",
+				"ex",
+				"ab",
+				"ob",
+				"per",
+				"pro"
 			],
 			"alias": [],
 			"factor": 3
@@ -19114,126 +19818,126 @@ function baseChatLanguages () {
 			"alias": [],
 			"factor": 3
 		},
-		"fakegerman": {
-			"title": "fakegerman",
+		"fakespanish": {
+			"title": "fakespanish",
 			// Most words copied or modified from
-			// https://www.generatormix.com/random-german-words-generator
+			// https://www.generatormix.com/random-spanish-words
 			"lexis": [
-				"allem",
-				"anderer",
-				"anders",
-				"angefangen",
-				"beispiel",
-				"bier",
-				"blut",
-				"brauchen",
-				"brüder",
-				"dein",
-				"deshalb",
-				"druck",
-				"durch",
-				"eher",
-				"eigenen",
-				"eingeladen",
-				"erstes",
-				"fand",
-				"fantastisch",
-				"fast",
-				"fehler",
-				"fern",
-				"fertig",
-				"frage",
-				"frank",
-				"freuen",
-				"funktioniert",
-				"gefällt",
-				"geliebt",
-				"geschlafen",
-				"geschlagen",
-				"gewehr",
-				"glaube",
-				"glückwunsch",
-				"gutes",
-				"haltet",
-				"hand",
-				"hasst",
-				"heiß",
-				"held",
-				"hielt",
-				"hoffentlich",
-				"holen",
-				"irgendetwas",
-				"jemandem",
-				"jungen",
-				"kennst",
-				"kennt",
-				"knie",
-				"kommen",
-				"krankenhaus",
-				"lehrer",
-				"leiden",
-				"lhrem",
-				"lst",
-				"monster",
-				"namens",
-				"ohne",
-				"person",
-				"plan",
-				"planeten",
-				"rechte",
-				"rom",
-				"ruhig",
-				"sagten",
-				"schätze",
-				"schreiben",
-				"schuld",
-				"freitag",
-				"schwer",
-				"schwierig",
-				"seine",
-				"seiten",
-				"senator",
-				"solange",
-				"spiel",
-				"steckt",
-				"stimmen",
-				"super",
-				"tag",
-				"taten",
-				"töte",
-				"überleben",
-				"unglaublich",
-				"versuchte",
-				"voller",
-				"völlig",
-				"weib",
-				"weil",
-				"weise",
-				"weisst",
-				"weit",
-				"werd",
-				"werfen",
-				"wohnen",
-				"wollt",
-				"zeiten",
-				"zeug",
-				"zweite",
-				"zeitgeist"
+				"abajo",
+				"abrazo",
+				"acabar",
+				"acercarse",
+				"acompañar",
+				"acostarse",
+				"agradecer",
+				"alcalde",
+				"arriba",
+				"atrás",
+				"autoridad",
+				"averiguar",
+				"barrio",
+				"bonito",
+				"bosillo",
+				"broma",
+				"bulto",
+				"caballero",
+				"camarero",
+				"campana",
+				"canción",
+				"claro",
+				"cliente",
+				"cobrar",
+				"conmigo",
+				"corregir",
+				"cosa",
+				"costumbre",
+				"cuaderno",
+				"cuadra",
+				"cuarto",
+				"deporte",
+				"descubrir",
+				"devolver",
+				"dirección",
+				"dónde",
+				"durar",
+				"ejemplo",
+				"enfermo",
+				"entrar",
+				"equipaje",
+				"escribir",
+				"escuela",
+				"estómago",
+				"estudiar",
+				"extrañar",
+				"extraño",
+				"fósforo",
+				"frontera",
+				"hombre",
+				"huésped",
+				"jamás",
+				"jardín",
+				"joven",
+				"juez",
+				"kilómetro",
+				"laudar",
+				"levantar",
+				"listo",
+				"lleno",
+				"mañana",
+				"mediodía",
+				"mentira",
+				"merienda",
+				"método",
+				"mientras",
+				"muerto",
+				"nevar",
+				"norte",
+				"nunca",
+				"obligar",
+				"pariente",
+				"patrón",
+				"permiso",
+				"picante",
+				"pico",
+				"pierna",
+				"píldora",
+				"planchar",
+				"pluma",
+				"pobre",
+				"promesa",
+				"receta",
+				"recuerdo",
+				"regalo",
+				"régimen",
+				"repente",
+				"repitir",
+				"reunión",
+				"rodilla",
+				"según",
+				"señorita",
+				"servir",
+				"siempre",
+				"silla",
+				"sólo",
+				"temprano",
+				"tijeras",
+				"tinta",
+				"vestirse"
 			],
 			"particles": [
-				"ich",
-				"bin",
-				"sie",
-				"zu",
-				"auf",
-				"an",
-				"du",
-				"wir",
-				"für"
+				"las",
+				"la",
+				"de",
+				"des",
+				"a",
+				"con",
+				"por",
+				"el",
+				"acá"
 			],
 			"alias": [],
 			"factor": 3
-		}
+		},
 	};
 	/* eslint-enable */
 }
@@ -20551,8 +21255,12 @@ function baseChat () {
 	function availableLanguagesPlayer (playerId) {
 		const characters = d20.Campaign.characters.models
 			.filter(char => {
-				const actors = char.attributes.controlledby.split(",");
-				return actors.includes(playerId);
+				if (playerId) {
+					const actors = char.attributes.controlledby.split(",");
+					return actors.includes(playerId) || actors.includes("all");
+				} else {
+					return char.currentPlayerControls();
+				}
 			})
 			.map(char => char.id);
 		return characters
@@ -20561,7 +21269,7 @@ function baseChat () {
 	}
 
 	function hasLanguageProficiency (langId) {
-		const proficientIn = availableLanguagesPlayer(d20_player_id)
+		const proficientIn = availableLanguagesPlayer()
 			.map(lang => d20plus.chat.getLanguageId(lang));
 		return proficientIn.includes(d20plus.chat.getLanguageId(langId));
 	}
@@ -21136,8 +21844,8 @@ function baseChat () {
 	d20plus.chat.processIncomingMsg = (msg, msgData) => {
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
-			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msgData.from_me || inKnownLanguage) {
+			const inKnownLanguage = window.is_gm || hasLanguageProficiency(speech.languageid);
+			if (msgData.from_me || inKnownLanguage) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
 				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
 					<strong>(${speech.language})</strong> ${translated}</i>`;
@@ -21349,7 +22057,7 @@ function baseChat () {
 				const openedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
 				d20plus.engine.enhanceMacros(openedMacroId);
 			});
-		availableLanguagesPlayer(d20_player_id);
+		is_gm || availableLanguagesPlayer();
 		buildLanguageIndex();
 
 		if (window.is_gm) {
