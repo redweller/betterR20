@@ -693,8 +693,8 @@ function baseChat () {
 	d20plus.chat.processIncomingMsg = (msg, msgData) => {
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
-			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msgData.from_me || inKnownLanguage) {
+			const inKnownLanguage = window.is_gm || hasLanguageProficiency(speech.languageid);
+			if (msgData.from_me || inKnownLanguage) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
 				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
 					<strong>(${speech.language})</strong> ${translated}</i>`;
@@ -906,7 +906,7 @@ function baseChat () {
 				const openedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
 				d20plus.engine.enhanceMacros(openedMacroId);
 			});
-		availableLanguagesPlayer();
+		is_gm || availableLanguagesPlayer();
 		buildLanguageIndex();
 
 		if (window.is_gm) {
