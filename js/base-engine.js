@@ -233,8 +233,8 @@ function d20plusEngine () {
 			if (target.name) $(`.${target.name}`).val(target.value);
 		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
-		}).on("click", ".nav-tabs--beta", () => {
-			d20plus.engine._populateCustomOptions();
+		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
+			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider", () => {
 			d20plus.engine._updateCustomOptions();
 		});
@@ -457,7 +457,7 @@ function d20plusEngine () {
 		}));
 	}
 
-	d20plus.engine._populateCustomOptions = (page, dialog) => {
+	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (!d20plus.engine._customOptions[page.id]) return;
