@@ -386,5 +386,10 @@
 		"ver": "1.35.2",
 		"date": "2023-05-14",
 		"txt": "- Added \"Set Avatar\" journal item context menu option (thanks @ redweller)\n- Fixed journal item \"Make Tokenactions\" context menu option (thanks @ redweller)\n- Fixed Item Importer failing to split packs of items (thanks @ darthbeep)\n- Fixed \"Controlled by: All players\" character languages failing to register in list of languages a player can understand (thanks @ redweller)\n- Fixed Monster Importer crash when importing by \"CR -> Type\" (thanks @ darthbeep)\n- Fixed Spell Importer failing to load spellcaster classes for spells (thanks @ darthbeep)\n- Fixed Dynamic Lighting features being disabled for non-pro users (thanks @ redweller)\n- Updated page editor to match latest Roll20 version, and restored \"auto background color\" feature (thanks @ redweller)\n- Fixed deck and card editors, and added additional \"from URL\"/delete buttons (thanks @ redweller)\n- Fixed quick layers toolbar positioning (thanks @ redweller)\n- Fixed layers which are disabled in the config showing in the token right-click menu (thanks @ redweller)"
+	},
+	{
+		"ver": "1.35.3",
+		"date": "2023-05-18",
+		"txt": "- Added \"Fake Latin\" as a transcription language (thanks @ redweller)\n- Fixed excessive loading of sheets for GMs when initializing language system (thanks @ redweller)\n- Fixed custom grid units being un-saveable in page settings (thanks @ redweller)"
 	}
 ]
