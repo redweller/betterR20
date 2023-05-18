@@ -233,8 +233,8 @@ function d20plusEngine () {
 			if (target.name) $(`.${target.name}`).val(target.value);
 		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
-		}).on("click", ".nav-tabs--beta", () => {
-			d20plus.engine._populateCustomOptions();
+		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
+			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider", () => {
 			d20plus.engine._updateCustomOptions();
 		});
@@ -438,7 +438,9 @@ function d20plusEngine () {
 		}
 		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
 			const $e = dialog.find(option.class || option.id);
-			const val = getVal($e);
+			// this is needed to properly process custom scale label which is represented by 2 inputs instead of 1
+			const isCustomScale = name === "scale_units" && $e.val() === "custom";
+			const val = !isCustomScale ? getVal($e) : getVal(dialog.find("#page-scale-grid-cell-custom-label"));
 			if (val !== undefined) page.attributes[name] = val;
 		});
 	}
@@ -455,7 +457,7 @@ function d20plusEngine () {
 		}));
 	}
 
-	d20plus.engine._populateCustomOptions = (page, dialog) => {
+	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (!d20plus.engine._customOptions[page.id]) return;
