@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.172.2
+// @version      1.35.172.3
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -248,10 +248,10 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br>⦁ fix custom grid labels in Page Settings<br><strong>In-game language changes</strong><br>(requires testing the language subsystem, but it should be OK)<br>⦁ fix issue that led to fetching ALL characters on game load for GMs<br>⦁ add fake_latin to available in-game languages substitution list<br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment<br>⦁ create and edit multisided tokens on the fly<br>⦁ the new dialog replaces Set Side Size<br>⦁ exclude some images from Random Side selection<br>⦁ update Random Side randomizer (gives different images in a row)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20</p>
+					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section</p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.2.44", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.3.44", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					The testing was completed
@@ -2449,6 +2449,45 @@ function baseConfig () {
 	}
 
 	d20plus.cfg.HandleCss = () => {
+		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
+		const hintStyle = d20plus.ut.dynamicStyles("tracker");
+		if (showHints) {
+			hintStyle.html(`
+			.hinted.showtip,
+			.message .hinted.showtip,
+			.message .sheet-container .hinted.showtip {
+				color: #b85f74;
+				cursor: help;
+				font-weight: bold;
+			}
+			.b20-condition-hint div, .b20-condition-hint p {
+				text-align: left;
+				max-height: 50vh;
+				overflow-y: auto;
+				font-size: 12px;
+				line-height: normal;
+			}
+			.b20-condition-hint h2, .b20-condition-hint h3 {
+				font-size: 14px;
+				line-height: normal;
+				display: inline-block;
+				width: 100%;
+			}
+			.b20-condition-hint {
+				text-align: left;
+			}
+			.b20-condition-hint .rd__h-toggle {
+				display: none;
+			}
+			.b20-condition-hint .ve-flex-vh-center {
+				font-weight: 100;
+				line-height: normal;
+				font-size: smaller;
+				float: right;
+			}`);
+		} else {
+			hintStyle.html("");
+		}
 		// properly align layer toolbar
 		const $wrpDmModeSw = $(`.dark-mode-switch`);
 		const $wrpBtnsMain = $(`#floatingtoolbar`);
@@ -12248,8 +12287,8 @@ function d20plusEngine () {
 			if (target.name) $(`.${target.name}`).val(target.value);
 		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
-		}).on("click", ".nav-tabs--beta", () => {
-			d20plus.engine._populateCustomOptions();
+		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
+			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider", () => {
 			d20plus.engine._updateCustomOptions();
 		});
@@ -12472,7 +12511,7 @@ function d20plusEngine () {
 		}));
 	}
 
-	d20plus.engine._populateCustomOptions = (page, dialog) => {
+	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
 		if (!d20plus.engine._customOptions[page.id]) return;
@@ -21724,6 +21763,12 @@ function baseChat () {
 				"_type": "boolean",
 				"_player": true,
 			},
+			"showDNDHints": {
+				"name": "Show DND status hints in chat",
+				"default": true,
+				"_type": "boolean",
+				"_player": true,
+			},
 			"executeJSMacro": {
 				"name": "Execute JS script in macros",
 				"default": "own",
@@ -21842,6 +21887,7 @@ function baseChat () {
 	}
 
 	d20plus.chat.processIncomingMsg = (msg, msgData) => {
+		const replaceHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
 			const inKnownLanguage = window.is_gm || hasLanguageProficiency(speech.languageid);
@@ -21869,6 +21915,9 @@ function baseChat () {
 				$(`#connects${msg.listenerid.id}-info`).text("3");
 				return false;
 			}
+		}
+		if (replaceHints) {
+			d20plus.chat.modifyMsg(msg.id, {hints: true});
 		}
 		if (d20.textchat.talktomyself && msgData.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
@@ -21947,8 +21996,9 @@ function baseChat () {
 	}
 
 	d20plus.chat.displaying = () => {
+		const lastDisplayedSysMsg = $(`#textchat .message.system`).last();
 		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
-			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
+			const msg = mods.sys ? lastDisplayedSysMsg : $(`[data-messageid=${id}]`);
 
 			if (mods.intro) {
 				const code = "<code style='cursor:pointer'>/help</code>";
@@ -21967,8 +22017,36 @@ function baseChat () {
 				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
 				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
 				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
+				if (mods.hints) d20plus.chat.giveHints(msg);
 				delete d20plus.chat.modify[id];
 			}
+		});
+	}
+
+	d20plus.chat.giveHints = async (msg) => {
+		if (!JSON_DATA["data/conditionsdiseases.json"]) return;
+		msg.html(function () {
+			d20plus.chat.htmlRenderer = d20plus.chat.htmlRenderer || new Renderer();
+			const prepareItems = (type) => JSON_DATA["data/conditionsdiseases.json"][type].map(i => {
+				return {
+					"0": i.name.toLowerCase(),
+					"1": Object.assign({}, i, {
+						category: type,
+						page: `${i.page}<br>${type.toSentenceCase()}`,
+					})}
+			});
+			const condIndex = Object.fromEntries([].concat(prepareItems("condition"), prepareItems("disease"), prepareItems("status")));
+			const listToSearch = new RegExp(`(?<cond>${Object.keys(condIndex).join("|")})`, "gi");
+			return this.innerHTML.replace(/(?:(?:"|\w)>|^)[^<>]*?(?<t>\p{L}+)[^<>]*?</ug, (...m) => {
+				return m[0].replace(listToSearch, (...s) => {
+					const condObj = condIndex[s.last()?.cond.toLowerCase()];
+					const resHtml = d20plus.chat.htmlRenderer.render(condObj);
+					// console.log(condObj, resHtml);
+					return `
+						<span class="hinted showtip tipsy-e" title="<div class=&quot;b20-condition-hint&quot;>${resHtml.replaceAll("\"", "&quot;")}</div>">${s.last()?.cond}</span>
+					`;
+				});
+			})
 		});
 	}
 
