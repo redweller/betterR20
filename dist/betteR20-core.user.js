@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.172.3
+// @version      1.35.172.4
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -248,7 +248,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section</p>
+					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section<br><code>-- v.172.4 changes:</code><br>⦁ condition names with hints are now clickable and send the description to chat</p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.3.44", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -2451,43 +2451,8 @@ function baseConfig () {
 	d20plus.cfg.HandleCss = () => {
 		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
 		const hintStyle = d20plus.ut.dynamicStyles("tracker");
-		if (showHints) {
-			hintStyle.html(`
-			.hinted.showtip,
-			.message .hinted.showtip,
-			.message .sheet-container .hinted.showtip {
-				color: #b85f74;
-				cursor: help;
-				font-weight: bold;
-			}
-			.b20-condition-hint div, .b20-condition-hint p {
-				text-align: left;
-				max-height: 50vh;
-				overflow-y: auto;
-				font-size: 12px;
-				line-height: normal;
-			}
-			.b20-condition-hint h2, .b20-condition-hint h3 {
-				font-size: 14px;
-				line-height: normal;
-				display: inline-block;
-				width: 100%;
-			}
-			.b20-condition-hint {
-				text-align: left;
-			}
-			.b20-condition-hint .rd__h-toggle {
-				display: none;
-			}
-			.b20-condition-hint .ve-flex-vh-center {
-				font-weight: 100;
-				line-height: normal;
-				font-size: smaller;
-				float: right;
-			}`);
-		} else {
-			hintStyle.html("");
-		}
+		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
+		else hintStyle.html("");
 		// properly align layer toolbar
 		const $wrpDmModeSw = $(`.dark-mode-switch`);
 		const $wrpBtnsMain = $(`#floatingtoolbar`);
@@ -16362,6 +16327,48 @@ function baseCss () {
 			padding: 0 3px;
 		}
 	`;
+
+	d20plus.css.clickableConditionHints = `
+		.hinted.showtip,
+		.message .hinted.showtip,
+		.message .sheet-container .hinted.showtip {
+			color: #b85f74;
+			cursor: help;
+			font-weight: bold;
+			display: inline-block;
+		}
+		.hinted.showtip.clickable,
+		.message .hinted.showtip.clickable,
+		.message .sheet-container .hinted.showtip.clickable {
+			cursor: pointer;
+		}
+		.b20-condition-hint div, .b20-condition-hint p {
+			text-align: left;
+			max-height: 400px;
+			overflow-y: hidden;
+			font-size: 12px;
+			line-height: normal;
+		}
+		.b20-condition-hint h2, .b20-condition-hint h3 {
+			font-size: 14px;
+			line-height: normal;
+			display: inline-block;
+			width: 100%;
+		}
+		.b20-condition-hint {
+			text-align: left;
+		}
+		.b20-condition-hint .rd__h-toggle {
+			display: none;
+		}
+		.b20-condition-hint .ve-flex-vh-center {
+			font-weight: 100;
+			line-height: normal;
+			font-size: smaller;
+			float: right;
+		}
+	`;
+
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);
@@ -21917,7 +21924,8 @@ function baseChat () {
 			}
 		}
 		if (replaceHints) {
-			d20plus.chat.modifyMsg(msg.id, {hints: true});
+			const fromHint = msg.listenerid?.excludeHint;
+			d20plus.chat.modifyMsg(msg.id, {hints: true, excludeHint: fromHint});
 		}
 		if (d20.textchat.talktomyself && msgData.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
@@ -22017,33 +22025,33 @@ function baseChat () {
 				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
 				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
 				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
-				if (mods.hints) d20plus.chat.giveHints(msg);
+				if (mods.hints) d20plus.chat.giveHints(msg, mods.excludeHint);
 				delete d20plus.chat.modify[id];
 			}
 		});
 	}
 
-	d20plus.chat.giveHints = async (msg) => {
+	d20plus.chat.giveHints = async (msg, exclude) => {
 		if (!JSON_DATA["data/conditionsdiseases.json"]) return;
 		msg.html(function () {
 			d20plus.chat.htmlRenderer = d20plus.chat.htmlRenderer || new Renderer();
 			const prepareItems = (type) => JSON_DATA["data/conditionsdiseases.json"][type].map(i => {
-				return {
-					"0": i.name.toLowerCase(),
-					"1": Object.assign({}, i, {
+				if (i.name.toLowerCase() === exclude) return ["b20-skip-this-entry", ""];
+				return [
+					i.name.toLowerCase(),
+					Object.assign({}, i, {
 						category: type,
 						page: `${i.page}<br>${type.toSentenceCase()}`,
-					})}
+					})];
 			});
 			const condIndex = Object.fromEntries([].concat(prepareItems("condition"), prepareItems("disease"), prepareItems("status")));
 			const listToSearch = new RegExp(`(?<cond>${Object.keys(condIndex).join("|")})`, "gi");
-			return this.innerHTML.replace(/(?:(?:"|\w)>|^)[^<>]*?(?<t>\p{L}+)[^<>]*?</ug, (...m) => {
+			return this.innerHTML.replace(/(?:(?:"|\w)>|^)[^<>]*?(?<t>\p{L}+)[^<>]*?(?:<|$)/ug, (...m) => {
 				return m[0].replace(listToSearch, (...s) => {
 					const condObj = condIndex[s.last()?.cond.toLowerCase()];
 					const resHtml = d20plus.chat.htmlRenderer.render(condObj);
-					// console.log(condObj, resHtml);
 					return `
-						<span class="hinted showtip tipsy-e" title="<div class=&quot;b20-condition-hint&quot;>${resHtml.replaceAll("\"", "&quot;")}</div>">${s.last()?.cond}</span>
+						<span class="hinted clickable showtip tipsy-e" title="<div class=&quot;b20-condition-hint&quot;>${resHtml.replaceAll("\"", "&quot;")}</div>">${s.last()?.cond}</span>
 					`;
 				});
 			})
@@ -22123,6 +22131,18 @@ function baseChat () {
 		}
 	}
 
+	d20plus.chat.clickableHints = () => {
+		d20.textchat.$textchat.on("click", ".hinted.clickable", (evt) => {
+			const clicked = $(evt.target);
+			const name = clicked.text();
+			const splDescr = (clicked.attr("original-title") || clicked.attr("title") || "").split(/<\/(?:p|li|h2)>/);
+			const source = splDescr[0].split(/<(?:\/span|br)>/).splice(1).join(" ").replace(/<([^<]*?)>|\[–\]/g, "");
+			const descr = splDescr.splice(1).join("%NEWLINE%").replace(/<li([^<]*?)>/g, "- ").replace(/<([^<]*?)>/g, "");
+			const builtTemplate = `&{template:traits} {{name=${name.toSentenceCase()} }} {{source=${source} }} {{description=${descr} }}`;
+			d20.textchat.doChatInput(builtTemplate, null, {excludeHint: name.toLowerCase()});
+		});
+	}
+
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
 		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
@@ -22175,6 +22195,7 @@ function baseChat () {
 				.on("click", ".userscript-commandintro ul code", d20plus.chat.help)
 				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
 		}
+		d20plus.chat.clickableHints();
 
 		$("#textchat-input")
 			.off("click", "button")
