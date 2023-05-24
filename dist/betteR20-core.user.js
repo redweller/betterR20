@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.172.4
+// @version      1.35.172.5
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -248,7 +248,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section<br><code>-- v.172.4 changes:</code><br>⦁ condition names with hints are now clickable and send the description to chat</p>
+					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section<br><code>-- v.172.4 changes:</code><br>⦁ condition names with hints are now clickable and send the description to chat<br><code>-- v.172.5 changes:</code><br><strong>Filter Imports by List</strong><br>⦁ When importing, you can filter by a list of items. This means that when importing, if you press Import by list and enter the items that you want to import, it will automatically choose all of them for you.<br>⦁ The UX, explaining, and labeling needs work. Please give suggestions.</p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.3.44", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
