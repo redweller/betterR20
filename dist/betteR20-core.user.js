@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.172.5
+// @version      1.35.172.6
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -248,7 +248,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section<br><code>-- v.172.4 changes:</code><br>⦁ condition names with hints are now clickable and send the description to chat<br><code>-- v.172.5 changes:</code><br><strong>Filter Imports by List</strong><br>⦁ When importing, you can filter by a list of items. This means that when importing, if you press Import by list and enter the items that you want to import, it will automatically choose all of them for you.<br>⦁ The UX, explaining, and labeling needs work. Please give suggestions.</p>
+					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section<br><code>-- v.172.4 changes:</code><br>⦁ condition names with hints are now clickable and send the description to chat<br><code>-- v.172.5 changes:</code><br><strong>Filter Imports by List</strong><br>⦁ When importing, you can filter by a list of items. This means that when importing, if you press Import by list and enter the items that you want to import, it will automatically choose all of them for you.<br>⦁ The UX, explaining, and labeling needs work. Please give suggestions<br><code>-- v.172.6 changes:</code><br>⦁ You can now filter by source. This means the filter is fully compatible with copying csvs from table view in 5etools<br>⦁ Some "Filter by List" labeling improvements<br>⦁ (not related to Filter) Change players' avatars size</p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.3.44", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -1814,6 +1814,15 @@ function baseConfig () {
 	addConfigOptions("chat", {
 		"_name": "Chat",
 		"_player": true,
+		"playerPortraitSize": {
+			"name": "Set Player List size (0 - don't change)",
+			"default": 30,
+			"_type": "_slider",
+			"__sliderMin": 30,
+			"__sliderMax": 250,
+			"__sliderStep": 20,
+			"_player": true,
+		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
 			"default": false,
@@ -2438,6 +2447,25 @@ function baseConfig () {
 	};
 	*/
 
+	d20plus.cfg.handlePlayerImgSize = () => {
+		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
+		const dynamicStyle = d20plus.ut.dynamicStyles("players");
+		if (setSize === 30) {
+			dynamicStyle.html("");
+		} else {
+			// the "magic numbers" are just quotients handpicked so that resulting sizes look good together
+			const setFont = Math.round((setSize / 150) * 16);
+			const setCol = Math.round((setSize / 150) * 24);
+			const setLine = Math.round((setSize / 150) * 18);
+			const setStyle = `
+				#playerzone .player .playername {width: ${setSize}px !important; font-size: ${setFont}px !important;line-height:${setLine}px}
+				#playerzone .player .video {width: ${setSize}px; height: ${setSize}px; }
+				#playerzone .player .playercolor, .player .color_picker {width: ${setCol}px; height: ${setCol}px; }
+			`;
+			dynamicStyle.html(setStyle);
+		}
+	}
+
 	d20plus.cfg.handleInitiativeShrink = () => {
 		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
 		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
@@ -2463,6 +2491,7 @@ function baseConfig () {
 	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
+		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
 
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
