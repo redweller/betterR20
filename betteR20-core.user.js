@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.2.44
+// @version      1.35.3.45
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -2401,6 +2401,19 @@ function baseConfig () {
 			"name": __("cfg_option_whisper_name"),
 			"default": false,
 			"_type": "boolean",
+		},
+		"showTokenMenu": {
+			"name": "Add Quick Token Actions",
+			"default": "char",
+			"_type": "_enum",
+			"_player": true,
+			"__values": ["none", "char-anim", "char", "anim"],
+			"__texts": [
+				"Disabled",
+				"Enabled",
+				"Only character menu",
+				"Only animation menu",
+			],
 		}, // RB20 EXCLUDE START
 		"massRollAssumesOGL": {
 			"name": __("cfg_option_assume_ogl"),
@@ -2592,7 +2605,13 @@ function baseConfig () {
 			"default": true,
 			"_type": "boolean",
 			"_player": true,
-		},
+		}, // RB20 EXCLUDE START
+		"showDNDHints": {
+			"name": "Show DND status hints in chat",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		}, // RB20 EXCLUDE END
 	});
 
 	d20plus.cfg.pLoadConfig = async () => {
@@ -3191,7 +3210,7 @@ function baseConfig () {
 			handleProp("weatherEffect1");
 		}
 	};
-	*/ // RB20 EXCLUDE START
+	*/
 
 	d20plus.cfg.handlePlayerImgSize = () => {
 		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
@@ -3199,6 +3218,7 @@ function baseConfig () {
 		if (setSize === 30) {
 			dynamicStyle.html("");
 		} else {
+			// the "magic numbers" are just quotients handpicked so that resulting sizes look good together
 			const setFont = Math.round((setSize / 150) * 16);
 			const setCol = Math.round((setSize / 150) * 24);
 			const setLine = Math.round((setSize / 150) * 18);
@@ -3209,7 +3229,7 @@ function baseConfig () {
 			`;
 			dynamicStyle.html(setStyle);
 		}
-	} // RB20 EXCLUDE END
+	}
 
 	d20plus.cfg.handleInitiativeShrink = () => {
 		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
@@ -3249,7 +3269,15 @@ function baseConfig () {
 					background-image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
 				}
 			`);
-		} // RB20 EXCLUDE END
+		}
+		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
+		const hintStyle = d20plus.ut.dynamicStyles("hints");
+		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
+		else hintStyle.html(""); // RB20 EXCLUDE END
+		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
+		const amStyle = d20plus.ut.dynamicStyles("tracker");
+		if (amOn) amStyle.html(d20plus.css.actionMenu);
+		else amStyle.html("");
 		// properly align layer toolbar
 		const $wrpDmModeSw = $(`.dark-mode-switch`);
 		const $wrpBtnsMain = $(`#floatingtoolbar`);
@@ -11543,11 +11571,11 @@ function initHTMLroll20actionsMenu () {
 								<$ } $>
 
 								<$ if(this.view) { $>
-									<li data-action-type='edittokenimages'>Edit Image</li>
 									<li data-action-type='lock-token'>Lock/Unlock Position</li>
 								<$ } $>
 
 								<$ if(this.get && this.get("type") == "image") { $>
+									<li data-action-type='edittokenimages'>Edit Image</li>
 									<li data-action-type='copy-tokenid'>View Token ID</li>
 								<$ } $>
 								<$ if(this.get && this.get("type") == "path") { $>
@@ -12536,12 +12564,15 @@ function initHTMLbaseMisc () {
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.tokenImageEditor = `
 		<div class="dialog largedialog edittokenimages">
-			<h4 class="edittitle">Token names</h4>
-			<span class="editlabel">Currently this token is represented by a single image. Add more images to convert it to multi-sided token</span>
+			<h4 class="edittitle">Token name</h4>
+			<span class="editlabel">
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			</span>
+			<div class="tokenlist"></div>
 			<hr>
 			<button class="addimageurl btn" style="float: right;margin-left:5px;">Add From URL...</button>
-			<button class="addimage btn" style="float: right;"><span class="pictos">&amp;</span> Add Image</button>
 			<h4>Images</h4>
+			You can drop a file or a character below
 			<div class="clear" style="height: 7px;"></div>
 			<table class="table table-striped tokenimagelist"><tbody>
 			</tbody></table>
@@ -12551,17 +12582,17 @@ function initHTMLbaseMisc () {
 					max-height: 70px;
 				}
 				.tokenimage select {
-					width: auto;
+					width: 100px;
 					margin-right: 10px;
 				}
 				.tokenimage input {
 					width: 25px;
 				}
-				.tokenimage input[type="checkbox"] {
+				.tokenimage input.face {
 					margin: 30px 0px 0px 5px;
 					width: unset;
 				}
-				.tokenimage input[type="checkbox"]:indeterminate {
+				.tokenimage input.face:indeterminate {
 					opacity: 0.8;
 					filter: grayscale(0.7);
 				}
@@ -12593,8 +12624,23 @@ function initHTMLbaseMisc () {
 				.tokenimage .dropbox.filled {
 					border: 4px solid transparent;
 				}
+				.ui-dropping .dropbox.filled {
+					border: 4px dashed #d1d1d1;
+				}
+				.tokenimagelist .ui-dropping .tokenimage {
+					background: rgba(155, 155, 155, 0.5);
+				}
+				.tokenimagelist .ui-dropping .dropbox {
+					background: gray;
+					border: 4px dashed rgba(155, 155, 155, 0.5);
+				}
 				.tokenimage .ui-droppable.drop-highlight {
 					border: 4px dashed;
+				}
+				.tokenimage.lastone .face,
+				.tokenimage.lastone .skippable,
+				.tokenimage.lastone .btn.delete {
+					display: none;
 				}
 				.tokenimage .custom {
 					visibility: hidden;
@@ -12602,8 +12648,94 @@ function initHTMLbaseMisc () {
 				.tokenimage .custom.set {
 					visibility: visible;
 				}
+				.tokenimage input.toskip {
+					margin: 0px;
+					width: unset;
+				}
+				.tokenimage .skippable {
+					display: block;
+					margin: 0px;
+				}
+				.tokenimagelist .tokenimage:not(.lastone).skipped td {
+					background-color: rgba(155, 0, 0, 0.1);
+				}
+				.tokenlist {
+					position: sticky;
+					top: -11px;
+					padding: 5px 0px;
+					background: inherit;
+					z-index: 1;
+					overflow-x: auto;
+					white-space: nowrap;
+				}
+				.tokenlist .tokenbox {
+					display: inline-block;
+					position: relative;
+					border: 4px solid transparent;
+					width: 60px;
+					height: 60px;
+					cursor: pointer;
+					vertical-align: bottom;
+				}
+				.tokenlist .tokenbox img {
+					max-width: 60px;
+					max-height: 60px;
+				}
+				.tokenlist .tokenbox .inner {
+					text-align: center;
+				}
+				.tokenbox .name {
+					display: none;
+					position: absolute;
+					bottom: 0px;
+					background-color: rgba(155, 155, 155, 0.7);
+					padding: 3px;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					white-space: nowrap;
+					box-sizing: border-box;
+					color: white;
+					width: 100%;
+				}
+				.tokenbox:hover .name {
+					display: block;
+				}
+				.tokenbox.selected {
+					border: 4px solid gray;
+				}
 			</style>
 		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.bActionsButtons = `
+		<ul style="display: inline-block;" class="b20-token-menu">
+			<li style="color:unset!important;">
+				<span style="position:relative;">
+					<button class="btn" data-type="rolls">Rolls</button>
+					<div class="b20-rolls d20contextmenu">
+						<ul></ul>
+					</div>
+				</span>
+				<span style="position:relative;">
+					<button class="btn" data-type="stats">Stats</button>
+					<div class="b20-stats d20contextmenu">
+						<ul></ul>
+					</div>
+				</span>
+				<span style="position:relative; display: none">
+					<button class="btn" data-type="effects">Effects</button>
+				</span>
+				<span style="position:relative;">
+					<button class="btn" data-type="animate">Animate</button>
+					<div class="b20-animations d20contextmenu">
+						<ul></ul>
+					</div>
+				</span>
+			</li>
+		</ul>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -13201,10 +13333,10 @@ function d20plusEngine () {
 			if (target.name) $(`.${target.name}`).val(target.value);
 		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
-		}).on("click", ".nav-tabs--beta", () => {
-			d20plus.engine._populateCustomOptions();
+		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
+			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider, .views input, .views .slider", () => {
-			d20plus.engine._updateCustomOptions();
+			d20plus.engine._updatePageCustomOptions();
 		});
 	};
 
@@ -13294,17 +13426,17 @@ function d20plusEngine () {
 					$overlay.remove();
 				}
 				$saveBtn.before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
+				$(`.btn-apply`).on("click", d20plus.engine.applyPageSettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._preserveCustomOptions(page);
-				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preservePageCustomOptions(page);
+				d20plus.engine._populatePageCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
 					$saveBtn.off("click");
-					$saveBtn.on("click", d20plus.engine.applySettings);
+					$saveBtn.on("click", d20plus.engine.applyPageSettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
@@ -13323,7 +13455,7 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.applySettings = (evt) => {
+	d20plus.engine.applyPageSettings = (evt) => {
 		evt.stopPropagation();
 		evt.preventDefault();
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
@@ -13336,8 +13468,8 @@ function d20plusEngine () {
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
 		const $settings = $dialog.find(`.dialog .tab-content`);
 
-		d20plus.engine._saveCustomOptions(page);
-		d20plus.engine._saveNativeOptions(page, $settings);
+		d20plus.engine._savePageCustomOptions(page);
+		d20plus.engine._savePageNativeOptions(page, $settings);
 
 		page.save();
 
@@ -13348,7 +13480,7 @@ function d20plusEngine () {
 			// page.save resets current dialog, so we need to restore status quo
 			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
 			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-			d20plus.engine._populateCustomOptions();
+			d20plus.engine._populatePageCustomOptions();
 		}
 	}
 
@@ -13388,7 +13520,7 @@ function d20plusEngine () {
 		lightglobalillum: {class: ".lightglobalillum"},
 	};
 
-	d20plus.engine._saveNativeOptions = (page, dialog) => {
+	d20plus.engine._savePageNativeOptions = (page, dialog) => {
 		if (!page || !page.get) return;
 		const getSlider = (el) => {
 			if (el.style.left?.search("%") > 0) return el.style.left.slice(0, -1) / 100;
@@ -13406,29 +13538,31 @@ function d20plusEngine () {
 		}
 		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
 			const $e = dialog.find(option.class || option.id);
-			const val = getVal($e);
+			// this is needed to properly process custom scale label which is represented by 2 inputs instead of 1
+			const isCustomScale = name === "scale_units" && $e.val() === "custom";
+			const val = !isCustomScale ? getVal($e) : getVal(dialog.find("#page-scale-grid-cell-custom-label"));
 			if (val !== undefined) page.attributes[name] = val;
 		});
 	}
 
-	d20plus.engine._preserveCustomOptions = (page) => {
+	d20plus.engine._preservePageCustomOptions = (page) => {
 		if (!page || !page.get) return;
-		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
-		d20plus.engine._customOptions[page.id] = { _defaults: {} };
+		d20plus.engine._customPageOptions = d20plus.engine._customPageOptions || {};
+		d20plus.engine._customPageOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
 			"views",
 		].forEach(category => Object.entries(d20plus[category].props).forEach(([name, deflt]) => {
-			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
-			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
+			d20plus.engine._customPageOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customPageOptions[page.id]._defaults[name] = deflt;
 		}));
 	}
 
-	d20plus.engine._populateCustomOptions = (page, dialog) => {
+	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				if ($e.is(":checkbox")) {
@@ -13442,24 +13576,24 @@ function d20plusEngine () {
 			});
 		});
 		// ensure all Select elements will update options on change
-		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updatePageCustomOptions() });
 	}
 
-	d20plus.engine._updateCustomOptions = (page, dialog) => {
+	d20plus.engine._updatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-				d20plus.engine._customOptions[page.id][name] = val;
+				d20plus.engine._customPageOptions[page.id][name] = val;
 			});
 		});
 	}
 
-	d20plus.engine._saveCustomOptions = (page) => {
-		const values = d20plus.engine._customOptions[page.id];
+	d20plus.engine._savePageCustomOptions = (page) => {
+		const values = d20plus.engine._customPageOptions[page.id];
 		Object.entries(values).forEach(([name, val]) => {
 			if (name === "_defaults") return;
 			if (val && val !== values._defaults[name]) {
@@ -13815,43 +13949,39 @@ function d20plusEngine () {
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
-		window.Markdown.parse = function(e) {
-			{
-				var t = e
-					, n = []
-					, i = [];
-				-1 != t.indexOf("\r\n") ? "\r\n" : -1 != t.indexOf("\n") ? "\n" : ""
-			}
-			return t = t.replace(/{{{([\s\S]*?)}}}/g, function(e) {
-				return n.push(e.substring(3, e.length - 3)),
-					"{{{}}}"
+		window.Markdown.parse = function(x) {
+			var g = x, l, t = [], m = [], v = g.indexOf(`\r\n`) != -1 ? `\r\n` : g.indexOf(`\n`) != -1 ? `\n` : "";
+			return g = g.replace(/{{{([\s\S]*?)}}}/g, function(h) {
+				return t.push(h.substring(3, h.length - 3)),
+				"{{{}}}"
 			}),
-				t = t.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(e) {
-					return i.push(e.substring(5, e.length - 6)),
-						"<pre></pre>"
-				}),
-				// BEGIN MOD
-				t = t.replace(/~~(.*?)~~/g, OUT_STRIKE),
-				// END MOD
-				t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-				t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
-				t = t.replace(/``(.*?)``/g, "<code>$1</code>"),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
-				t = t.replace(new RegExp("<pre></pre>","g"), function() {
-					return "<pre>" + i.shift() + "</pre>"
-				}),
-				t = t.replace(/{{{}}}/g, function() {
-					return n.shift()
-				})
-		};
+			g = g.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(h) {
+				return m.push(h.substring(5, h.length - 6)),
+				"<pre></pre>"
+			}),
+			// BEGIN MOD
+			g = g.replace(/~~(.*?)~~/g, OUT_STRIKE),
+			// END MOD
+			g = g.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+			g = g.replace(/\*(.*?)\*/g, "<em>$1</em>"),
+			g = g.replace(/``(.*?)``/g, "<code>$1</code>"),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
+			g = g.replace(new RegExp("<pre></pre>","g"), function(h) {
+				return "<pre>" + m.shift() + "</pre>"
+			}),
+			g = g.replace(/{{{}}}/g, function(h) {
+				return t.shift()
+			}),
+			g
+		},
 		// END ROLL20 CODE
 
 		/* eslint-enable */
 
 		// after a short delay, replace any old content in the chat
 		setTimeout(() => {
-			$(`.message`).each(function () {
+			$(`.message.general`).each(function () {
 				$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
 			})
 		}, 2500);
@@ -14199,6 +14329,9 @@ function baseMenu () {
 			lastSceneUid: null,
 		};
 
+		const tagSize = "?roll20_token_size=";
+		const tagSkip = "?roll20_skip_token=";
+
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
@@ -14466,14 +14599,24 @@ function baseMenu () {
 									i();
 						else if ("side_random" == e) {
 							d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
-							var d = [];
+							var d = []
+								// BEGIN MOD
+								, prevUrl = "none";
+								// END MOD
 							_.each(n, function(e) {
 								if (e.model && "" != e.model.get("sides")) {
 									var t = e.model.get("sides").split("|")
 										, n = t.length
-										, i = d20.textchat.diceengine.random(n);
 									// BEGIN MOD
-									const imgUrl = unescape(t[i]);
+										, i = -1
+										, imgUrl = tagSkip;
+									const tweakRandom = t.filter(j => !unescape(j).includes(tagSkip)).length > 1;
+									while (imgUrl.includes(tagSkip)) {
+										i = d20.textchat.diceengine.random(n);
+										const tUrl = unescape(t[i]);
+										imgUrl = tweakRandom && tUrl === prevUrl ? tagSkip : tUrl;
+									}
+									prevUrl = imgUrl;
 									const trueUrl = getRollableTokenUpdate(imgUrl, i, e.model);
 									d.push(trueUrl);
 									// END MOD
@@ -14990,10 +15133,9 @@ function baseMenu () {
 		// END ROLL20 CODE
 
 		/* eslint-enable */
-		const tag = "?roll20_token_size=";
 
 		function getRollableTokenUpdate (imgUrl, currentSide, token) {
-			const [imgsrc, m] = (imgUrl || "").split(tag);
+			const [imgsrc, m] = (imgUrl || "").replace(tagSkip, "").split(tagSize);
 			const toSave = {
 				currentSide,
 				imgsrc,
@@ -15019,8 +15161,19 @@ function baseMenu () {
 			if (!selection.length) return;
 			const images = [];
 			const added = [];
+			const $dialog = $(d20plus.html.tokenImageEditor);
+			const $list = $dialog.find(".tokenimagelist tbody");
+			const $tokenList = $dialog.find(".tokenlist");
 			const sizes = [["tiny", "0.5"], ["small", "1.0"], ["medium", "1"], ["large", "2"], ["huge", "3"], ["gargantuan", "4"], ["colossal", "5"], ["custom", "0"]];
-			const name = selection.map(t => t.model.attributes.name || "Unnamed").join(", ");
+			const findStandardSize = (w, h) => {
+				return (w === h && sizes.find(s => s[1] === `${w / 70}`)?.last()) || "0";
+			}
+			const addImageOnInit = (img, add) => {
+				const sizeChanged = img.w !== images.last()?.w || img.h !== images.last()?.h;
+				if (images.length && sizeChanged) $list.variedSizes = true;
+				images.push(img);
+				added.push(add || img.url);
+			}
 			selection.forEach(t => {
 				const sides = t.model.attributes.sides?.split("|");
 				const token = t.model.attributes.imgsrc;
@@ -15028,10 +15181,17 @@ function baseMenu () {
 				if (sides.length > 1) {
 					const curSide = sides[t.model.attributes.currentSide] || token;
 					sides.forEach((s, k) => {
-						const listed = added.indexOf(s);
-						const [url, size] = unescape(s).split(tag);
+						const checked = unescape(s);
+						const listed = added.indexOf(checked);
+						const [url, size] = checked.split(tagSize);
 						const [sw, sh] = (size || "").split("x");
-						const image = {url, face: unescape(curSide).includes(url), w: tw, h: th};
+						const image = {
+							url: url.replaceAll(tagSkip, ""),
+							skip: url.includes(tagSkip),
+							face: unescape(curSide).includes(url),
+							w: tw,
+							h: th,
+						};
 						if (listed !== -1) {
 							if (k === t.model.attributes.currentSide) images[listed].face = true;
 							return;
@@ -15040,35 +15200,50 @@ function baseMenu () {
 						} else if (!isNaN(sw) && !isNaN(sh)) {
 							Object.merge(image, {size: "0", w: sw, h: sh});
 						}
-						images.push(image);
-						added.push(s);
+						addImageOnInit(image, checked);
 					});
 				} else {
 					const listed = added.indexOf(t.model.attributes.imgsrc);
 					if (listed !== -1) images[listed].face = true;
-					else {
-						images.push({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
-						added.push(t.model.attributes.imgsrc);
-					}
+					else addImageOnInit({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
 				}
 			});
+			if ($list.variedSizes) {
+				images.forEach(i => { if (i.size === undefined) i.size = findStandardSize(i.w, i.h); });
+			}
+			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
 			const description = selection.length > 1 ? `
-				You have selected multiple tokens. If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you will have multiple images on the list below
+				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
 			` : selection[0].model.attributes.sides ? `
 				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
 			` : `
 				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
 			`;
-			const $dialog = $(d20plus.html.tokenImageEditor);
-			const $list = $dialog.find(".tokenimagelist tbody");
+			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
+				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
+					<div class="inner">
+						<img src="${t.model.attributes.imgsrc}">
+						<div class="name">${t.model.attributes.name}</div>
+					</div>
+				</div>
+			`, "");
+			const resetTokens = () => {
+				$tokenList.find(".selected").each((k, t) => {
+					const $token = $(t);
+					const $tokenimage = $token.find("img");
+					$tokenimage.attr("src", $token.data("tokenimg"));
+				});
+			}
 			const buildList = () => {
 				if (images.length === 1) {
 					$list.someImageSelected = true;
 					images[0].selected = true;
 				}
 				$list.html(images.reduce((r, i, k) => `${r}
-					<tr class="tokenimage" data-index="${(i.id = k, k)}">
-						<td style="padding:0px;" title="Current image"><input type="checkbox"${i.selected ? " checked" : ""}></td>
+					<tr class="tokenimage${images.length === 1 ? " lastone" : ""}${i.skip ? " skipped" : ""}" data-index="${(i.id = k, k)}">
+						<td style="padding:0px;" title="Current image">
+							<input class="face" type="checkbox"${i.selected ? " checked" : ""}>
+						</td>
 						<td>
 							<div class="dropbox filled">
 							<div class="inner"><img src="${i.url}"><div class="remove"><span>Drop a file</span></div></div>
@@ -15077,37 +15252,19 @@ function baseMenu () {
 						<td>
 							<label>Select size:</label><select>${sizes.reduce((o, s) => `${o}
 								<option value="${s[1]}"${s[1] === i.size ? " selected" : ""}>${s[0]}</option>
-							`, `<option>default</option>`)}</select>
-							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</class>
+							`, `<option>default (keep as is)</option>`)}</select>
+							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</span>
+							<label class="skippable"><input class="toskip" type="checkbox"${i.skip ? " checked" : ""}> Skip side on randomize</label>
 						</td>
 						<td style="padding:0px;">
-							<span class="btn url" title="Set from URL...">j</span>
-							${images.length === 1 ? `` : `<span class="btn delete" title="Delete">#</span>`}
+							<span class="btn url" title="Edit URL...">j</span>
+							<span class="btn delete" title="Delete">#</span>
 						</td>
 					</tr>
 				`, ""));
-				$list.find(".dropbox").droppable({
-					accept: ".resultimage, .library-item",
-					greedy: true,
-					scope: "default",
-					tolerance: "pointer",
-					hoverClass: "drop-highlight",
-					drop: (evt, $d) => {
-						evt.originalEvent.dropHandled = !0;
-						evt.stopPropagation();
-						evt.preventDefault();
-						const $token = $(evt.target).closest(".tokenimage");
-						const id = $token.data("index");
-						const url = $d.draggable.data("fullsizeurl") || $d.draggable.data("url");
-						if (url) {
-							images[id].url = url;
-							$token.find("img").attr("src", url);
-						}
-					},
-				});
 				if (!$list.someImageSelected) {
 					images.forEach((i, k) => {
-						if (i.face) $list.find("[type=checkbox]").eq(k).prop({indeterminate: true});
+						if (i.face) $list.find("input.face").eq(k).prop({indeterminate: true});
 					});
 				}
 			}
@@ -15117,10 +15274,56 @@ function baseMenu () {
 				width: 450,
 				open: () => {
 					buildList();
+					$tokenList.html(tokenList);
 					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
 					$dialog.find(".edittitle").text(name);
 					$dialog.find(".editlabel").text(description);
-					$dialog.on("change", "select", (evt) => {
+					$list.droppable({
+						greedy: true,
+						tolerance: "pointer",
+						hoverClass: "ui-dropping",
+						scope: "default",
+						accept: ".resultimage, .library-item, .journalitem.character",
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							$d.helper.detach();
+							const char = d20.Campaign.characters.get($d.draggable.data("itemid"));
+							const dtoken = JSON.parse(char?._blobcache.defaulttoken || "{}");
+							const url = $d.draggable.data("fullsizeurl")
+								|| $d.draggable.data("url")
+								|| dtoken.imgsrc;
+							const img = document.elementFromPoint(evt.clientX, evt.clientY);
+							const id = img.tagName === "IMG" ? $(img).closest(".tokenimage").data("index") : undefined;
+							if (images[id]?.url && url) {
+								images[id].url = url;
+								$list.find(".dropbox img").eq(id).attr("src", url);
+								if (images[id].selected) $tokenList.find(".selected img").attr("src", images[id].url);
+							} else if (url) {
+								if ($list.variedSizes && dtoken.width) {
+									const [w, h] = [dtoken.width, dtoken.height];
+									const size = findStandardSize(w, h);
+									images.push({url, size, w, h});
+								} else {
+									images.push({url, w: 70, h: 70});
+								}
+								buildList();
+							}
+						},
+					});
+					$dialog.on(window.mousedowntype, ".tokenbox", evt => {
+						const $token = $(evt.currentTarget);
+						if ($token.hasClass("selected")) {
+							if ($tokenList.find(".selected").length > 1) {
+								$token.removeClass("selected");
+								$token.find("img").attr("src", $token.data("tokenimg"));
+							}
+						} else {
+							$token.addClass("selected");
+							if ($list.someImageSelected) $token.find("img").attr("src", images.find(i => i.selected)?.url);
+						}
+					}).on("change", "select", evt => {
 						const $changed = $(evt.target);
 						const $token = $changed.parent();
 						const $custom = $token.find(".custom").removeClass("set");
@@ -15129,23 +15332,26 @@ function baseMenu () {
 						if (newSize > 0) {
 							$token.find(".w, .h").val(newSize * 70);
 							images[id].size = newSize;
+							$list.variedSizes = true;
 						} else {
 							delete images[id].size;
 							if (newSize === "0") {
+								$list.variedSizes = true;
 								images[id].size = newSize;
 								images[id].w = $token.find(".w").val();
 								images[id].h = $token.find(".h").val();
 								$custom.addClass("set");
 							}
 						}
-					}).on("change", "input[type=checkbox]", (evt) => {
+					}).on("change", "input.face", evt => {
 						const id = $(evt.target).closest(".tokenimage").data("index");
 						const isChecked = $(evt.target).prop("checked");
-						const $allBoxes = $list.find("[type=checkbox]");
+						const $allBoxes = $list.find("input.face");
 						if (isChecked) {
 							$list.someImageSelected = true;
 							$allBoxes.prop({checked: false}).prop({indeterminate: false});
 							$(evt.target).prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[id].url);
 							images.forEach((i, k) => {
 								if (k === id) i.selected = true;
 								else i.selected = false;
@@ -15153,35 +15359,54 @@ function baseMenu () {
 						} else {
 							$list.someImageSelected = false;
 							images[id].selected = false;
+							resetTokens();
 							images.forEach((i, k) => {
 								if (i.face) $allBoxes.eq(k).prop({indeterminate: true});
 							});
 						}
-					}).on("change", "input .w, input.h", (evt) => {
+					}).on("change", "input.toskip", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const isChecked = $(evt.target).prop("checked");
+						if (isChecked) {
+							$token.addClass("skipped");
+							images[id].skip = true;
+						} else {
+							$token.removeClass("skipped");
+							images[id].skip = false;
+						}
+					}).on("change", "input .w, input.h", evt => {
 						const $token = $(evt.target).closest(".tokenimage");
 						const id = $token.data("index");
 						const set = {w: $token.find(".w").val(), h: $token.find(".h").val()};
 						if (isNaN(set.w) || isNaN(set.h)) return;
 						images[id].w = set.w;
 						images[id].h = set.h;
-					}).on(window.mousedowntype, ".url", (evt) => {
+					}).on(window.mousedowntype, ".url", evt => {
 						const $token = $(evt.target).closest(".tokenimage");
+						const $image = $token.find("img");
 						const id = $token.data("index");
-						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						const url = window.prompt("Edit URL", $image.attr("src"));
 						if (!url) return;
 						d20plus.art.setLastImageUrl(url);
 						images[id].url = url;
-						$token.find("img").attr("src", url);
-					}).on(window.mousedowntype, ".delete", (evt) => {
+						$image.attr("src", url);
+					}).on(window.mousedowntype, ".delete", evt => {
 						const $deleted = $(evt.target).closest(".tokenimage");
 						const id = $deleted.data("index");
 						if (images.length <= 1) return;
+						if (images[id].selected) {
+							$list.someImageSelected = false;
+							resetTokens();
+						}
 						images.splice(id, 1);
 						buildList();
-					}).on(window.mousedowntype, ".addimage", (evt) => {
-						images.push({url: "https://app.roll20.net/images/character.png", w: 70, h: 70})
-						buildList();
-					}).on(window.mousedowntype, ".addimageurl", (evt) => {
+						if (images.length === 1) {
+							$list.someImageSelected = true;
+							$list.find("input.face").prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[0].url);
+						}
+					}).on(window.mousedowntype, ".addimageurl", () => {
 						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
 						if (!url) return;
 						d20plus.art.setLastImageUrl(url);
@@ -15197,7 +15422,11 @@ function baseMenu () {
 					"Save changes": () => {
 						const save = {};
 						if (images.length > 1) {
-							save.sides = images.map(i => escape(i.url + (i.size ? tag + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : ""))).join("|");
+							save.sides = images.map(i => {
+								const skipped = i.skip ? tagSkip : "";
+								const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
+								return escape(i.url + skipped + size);
+							}).join("|");
 						} else {
 							save.sides = "";
 						}
@@ -15219,7 +15448,10 @@ function baseMenu () {
 							d20.engine.unselect();
 						}
 						selection.forEach(t => {
-							t.model.save(save);
+							if (selection.length === 1
+								|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
+								t.model.save(save);
+							}
 						});
 						$dialog.off();
 						$dialog.dialog("destroy").remove();
@@ -15284,7 +15516,7 @@ function baseMenu () {
 		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
 		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
 		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"edittokenimage": { ln: __("menu_adv_edit"), condition: "this.view && this.get && this.get(\"cardid\") === \"\"", action: "edittokenimages" },
+		"edittokenimage": { ln: __("menu_adv_edit"), condition: "this.view && this.get && this.get(\"type\") == \"image\" && this.get(\"cardid\") === \"\"", action: "edittokenimages" },
 		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
 		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
 		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
@@ -17396,11 +17628,6 @@ function baseCss () {
 			s: ".initiativedialog .ui-dialog-buttonpane span.difficulty",
 			r: "width: 40%; margin-top: -9px; font-size: 14px;",
 		},
-		// Spacing between token-actions
-		{
-			s: "#secondary-toolbar .tokenactions .btn",
-			r: "margin-left: 2px;",
-		},
 		// Tweak OGL roll template styles
 		{
 			s: ".sheet-rolltemplate-atkdmg .sheet-desc .sheet-savedc",
@@ -18098,6 +18325,234 @@ function baseCss () {
 
 		#initiativewindow ul li .controls {
 			padding: 0 3px;
+		}
+	`;// RB20 EXCLUDE START
+
+	d20plus.css.clickableConditionHints = `
+		.hinted.showtip,
+		.message .hinted.showtip,
+		.message .sheet-container .hinted.showtip {
+			color: #b85f74;
+			cursor: help;
+			font-weight: bold;
+			display: inline-block;
+		}
+		.hinted.showtip.clickable,
+		.message .hinted.showtip.clickable,
+		.message .sheet-container .hinted.showtip.clickable {
+			cursor: pointer;
+		}
+		.b20-condition-hint {
+			text-align: left;
+		}
+		.b20-condition-hint div, .b20-condition-hint p {
+			text-align: left;
+			max-height: 400px;
+			overflow-y: hidden;
+			font-size: 12px;
+			line-height: normal;
+		}
+		.b20-condition-hint h2, .b20-condition-hint h3 {
+			color: var(--link-text);
+			font-size: 14px;
+			line-height: normal;
+			display: inline-block;
+			width: 100%;
+		}
+		.b20-condition-hint ul {
+			margin-left: 15px;
+		}
+		.b20-condition-hint td, .b20-condition-hint th {
+			padding-right: 4px;
+		}
+		.b20-condition-hint .rd__h-toggle {
+			display: none;
+		}
+		.b20-condition-hint .ve-flex-vh-center {
+			font-weight: 100;
+			line-height: normal;
+			font-size: smaller;
+			float: right;
+		}
+	`;// RB20 EXCLUDE END
+
+	d20plus.css.actionMenu = `
+		#secondary-toolbar {
+			height: 40px;
+			line-height: 40px;
+		}
+		#secondary-toolbar .btn {
+			margin-right: 1px;
+		}
+		#secondary-toolbar .tokenactions:not([style*="display: none"]) {
+			display: inline-block !important;
+		}
+		#secondary-toolbar .b20-token-menu {
+			vertical-align: top;
+			position: relative;
+			top: -5px;
+		}
+		#secondary-toolbar .b20-token-menu > li {
+			overflow: visible;
+			font-size: 0px;
+		}
+		#secondary-toolbar .b20-token-menu span .d20contextmenu {
+			display: none;
+			left: 0px;
+		}
+		#secondary-toolbar .b20-token-menu span:hover .d20contextmenu {
+			display: block;
+		}
+		.b20-token-menu li.head.hasSub > span::after {
+			content: " »";
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu > ul,
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul li ul.submenu {
+			top: 0px;
+			left: 100px;
+			width: 100px;
+			height: unset;
+			border: 2px solid black;
+			margin: 0;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul li > ul.submenu {
+			display: none;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul li:hover > ul.submenu {
+			display: inline-block;
+			overflow: visible;
+		}
+		#secondary-toolbar .b20-token-menu ul > li {
+			display: block;
+			overflow: visible;
+			padding: 2px 3px 2px 3px;
+			font-size: 13px;
+			line-height: 18px;
+			height: 18px;
+			text-align: left;
+			color: inherit;
+		}
+		#secondary-toolbar .b20-token-menu ul > li.hasSub:hover {
+			line-height: 28px;
+			height: 29px;
+		}
+		#secondary-toolbar .b20-token-menu ul > li.hasSub.selector:hover {
+			height: unset;
+			padding-bottom: 0px;
+			line-height: 18px;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector:hover > ul.submenu {
+			position: relative;
+			left: -3px;
+			border: none;
+			border-radius: unset;
+			display: block;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li {
+			display: inline-block;
+			width: 70px;
+			border-left: unset;
+			box-sizing: border-box;
+			border-radius: unset;
+			height: 25px;
+			text-align: center;
+			margin: 0px;
+			line-height: 25px;
+			border-bottom: unset;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu {
+			display: inline-flex;
+			flex-wrap: wrap;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li {
+			flex-basis: 32%;
+			height: 28px;
+			flex-grow: 1;
+			margin-top: 2px;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child {
+			flex-basis: 75px;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child::first-letter {
+			font-size: 24px;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:last-child {
+			flex-basis: 25px;
+			flex-grow: 0;
+		}
+		#secondary-toolbar .b20-token-menu .spellaction > ul > li {
+			font-weight: bolder;
+			font-size: 18px;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li:first-child {
+			width: 30px;
+		}
+		#secondary-toolbar .b20-token-menu li.selector.variable > ul > li:last-child {
+			width: 22px;
+			vertical-align: top;
+			border-right: none;
+			font-size: 16px;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector.variable > ul > li {
+			width: 44px;
+		}
+		#secondary-toolbar .b20-token-menu .spellaction.variable > ul > li > .submenu {
+			left: 23px;
+		}
+		.dark .b20-token-menu ul li.hasSub:hover {
+			background: var(--dark-primary-highlight);
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu label input[type="checkbox"] {
+			vertical-align: top;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li:not(.hasSub),
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
+			max-width: 100px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats > ul,
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
+			max-width: unset;
+			width: 210px;
+			font-size: 12px;
+			line-height: 14px;
+			cursor: default;
+			height: unset;
+			min-height: 15px;
+			white-space: unset;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
+			width: 203px;
+		}
+		#secondary-toolbar .b20-token-menu .b20-stats strong {
+			font-weight: bolder;
+		}
+		#secondary-toolbar .d20contextmenu li > label {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		#secondary-toolbar .mods > li:not(.last-in-group) {
+			border-bottom: none;
+		}
+		#secondary-toolbar .b20-stats button {
+			font-family:pictos;
+			background: var(--dark-primary);
+			line-height: 1;
+			border-radius: 5px;
+			margin-left: -2px;
+			vertical-align: super;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li > span {
+			width: unset;
+			max-width: unset;
+			padding-left: 5px;
+			white-space: unset;
+			line-height: 12px;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
+			display: inline-block;
 		}
 	`;
 
@@ -21932,7 +22387,9 @@ function baseChatLanguages () {
 				"zwatan"
 			],
 			"particles": [],
-			"alias": ["deep speech"],
+			"alias": [
+				"deep speech"
+			],
 			"factor": 0
 		},
 		"infernal": {
@@ -22417,6 +22874,246 @@ function baseChatLanguages () {
 			],
 			"factor": 4
 		},
+		"fakefrench": {
+			"title": "fakefrench",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-french-words-generator
+			"lexis": [
+				"aide",
+				"aille",
+				"aimait",
+				"allons",
+				"américains",
+				"annonce",
+				"appelles",
+				"appris",
+				"asseoir",
+				"attendre",
+				"aucun",
+				"autrement",
+				"avons",
+				"beaucoup",
+				"blanche",
+				"certaine",
+				"chez",
+				"coffre",
+				"connaissez",
+				"connaître",
+				"conneries",
+				"contraire",
+				"crains",
+				"crime",
+				"dégage",
+				"déjà",
+				"difficile",
+				"emmène",
+				"enfant",
+				"extérieur",
+				"fallait",
+				"félicitations",
+				"femmes",
+				"feras",
+				"file",
+				"finir",
+				"formidable",
+				"fort",
+				"frappé",
+				"fusil",
+				"garçons",
+				"génial",
+				"genoux",
+				"grande",
+				"honneur",
+				"image",
+				"intéressant",
+				"jake",
+				"joie",
+				"leurs",
+				"lycée",
+				"maman",
+				"manqué",
+				"message",
+				"met",
+				"militaire",
+				"moyens",
+				"noire",
+				"nul",
+				"oublier",
+				"ouest",
+				"ouvre",
+				"partez",
+				"pas",
+				"passera",
+				"patron",
+				"pensait",
+				"personnes",
+				"petit",
+				"points",
+				"premier",
+				"presse",
+				"preuves",
+				"prochain",
+				"projet",
+				"puisse",
+				"puissant",
+				"queue",
+				"ravi",
+				"rencontré",
+				"répondu",
+				"reprendre",
+				"retrouve",
+				"revient",
+				"rouge",
+				"salut",
+				"signer",
+				"soldats",
+				"sorte",
+				"souris",
+				"télé",
+				"tenir",
+				"fournir",
+				"trés",
+				"trouver",
+				"tueur",
+				"univers",
+				"vidéo",
+				"vient",
+				"vrais"
+			],
+			"particles": [
+				"en",
+				"de",
+				"pour",
+				"le",
+				"au-",
+				"d'",
+				"il",
+				"à",
+				"sur"
+			],
+			"alias": [],
+			"factor": 3
+		},
+		"fakegerman": {
+			"title": "fakegerman",
+			// Most words copied or modified from
+			// https://www.generatormix.com/random-german-words-generator
+			"lexis": [
+				"allem",
+				"anderer",
+				"anders",
+				"angefangen",
+				"beispiel",
+				"bier",
+				"blut",
+				"brauchen",
+				"brüder",
+				"dein",
+				"deshalb",
+				"druck",
+				"durch",
+				"eher",
+				"eigenen",
+				"eingeladen",
+				"erstes",
+				"fand",
+				"fantastisch",
+				"fast",
+				"fehler",
+				"fern",
+				"fertig",
+				"frage",
+				"frank",
+				"freuen",
+				"funktioniert",
+				"gefällt",
+				"geliebt",
+				"geschlafen",
+				"geschlagen",
+				"gewehr",
+				"glaube",
+				"glückwunsch",
+				"gutes",
+				"haltet",
+				"hand",
+				"hasst",
+				"heiß",
+				"held",
+				"hielt",
+				"hoffentlich",
+				"holen",
+				"irgendetwas",
+				"jemandem",
+				"jungen",
+				"kennst",
+				"kennt",
+				"knie",
+				"kommen",
+				"krankenhaus",
+				"lehrer",
+				"leiden",
+				"lhrem",
+				"lst",
+				"monster",
+				"namens",
+				"ohne",
+				"person",
+				"plan",
+				"planeten",
+				"rechte",
+				"rom",
+				"ruhig",
+				"sagten",
+				"schätze",
+				"schreiben",
+				"schuld",
+				"freitag",
+				"schwer",
+				"schwierig",
+				"seine",
+				"seiten",
+				"senator",
+				"solange",
+				"spiel",
+				"steckt",
+				"stimmen",
+				"super",
+				"tag",
+				"taten",
+				"töte",
+				"überleben",
+				"unglaublich",
+				"versuchte",
+				"voller",
+				"völlig",
+				"weib",
+				"weil",
+				"weise",
+				"weisst",
+				"weit",
+				"werd",
+				"werfen",
+				"wohnen",
+				"wollt",
+				"zeiten",
+				"zeug",
+				"zweite",
+				"zeitgeist"
+			],
+			"particles": [
+				"ich",
+				"bin",
+				"sie",
+				"zu",
+				"auf",
+				"an",
+				"du",
+				"wir",
+				"für"
+			],
+			"alias": [],
+			"factor": 3
+		},
 		"fakeitalian": {
 			"title": "fakeitalian",
 			// Most words copied or modified from
@@ -22537,242 +23234,122 @@ function baseChatLanguages () {
 			"alias": [],
 			"factor": 3
 		},
-		"fakespanish": {
-			"title": "fakespanish",
+		"fakelatin": {
+			"title": "fakelatin",
 			// Most words copied or modified from
-			// https://www.generatormix.com/random-spanish-words
+			// https://www.generatormix.com/random-latin-words-generator
 			"lexis": [
-				"abajo",
-				"abrazo",
-				"acabar",
-				"acercarse",
-				"acompañar",
-				"acostarse",
-				"agradecer",
-				"alcalde",
-				"arriba",
-				"atrás",
-				"autoridad",
-				"averiguar",
-				"barrio",
-				"bonito",
-				"bosillo",
-				"broma",
-				"bulto",
-				"caballero",
-				"camarero",
-				"campana",
-				"canción",
-				"claro",
-				"cliente",
-				"cobrar",
-				"conmigo",
-				"corregir",
-				"cosa",
-				"costumbre",
-				"cuaderno",
-				"cuadra",
-				"cuarto",
-				"deporte",
-				"descubrir",
-				"devolver",
-				"dirección",
-				"dónde",
-				"durar",
-				"ejemplo",
-				"enfermo",
-				"entrar",
-				"equipaje",
-				"escribir",
-				"escuela",
-				"estómago",
-				"estudiar",
-				"extrañar",
-				"extraño",
-				"fósforo",
-				"frontera",
-				"hombre",
-				"huésped",
-				"jamás",
-				"jardín",
-				"joven",
-				"juez",
-				"kilómetro",
-				"laudar",
-				"levantar",
-				"listo",
-				"lleno",
-				"mañana",
-				"mediodía",
-				"mentira",
-				"merienda",
-				"método",
-				"mientras",
-				"muerto",
-				"nevar",
-				"norte",
-				"nunca",
-				"obligar",
-				"pariente",
-				"patrón",
-				"permiso",
-				"picante",
-				"pico",
-				"pierna",
-				"píldora",
-				"planchar",
-				"pluma",
-				"pobre",
-				"promesa",
-				"receta",
-				"recuerdo",
-				"regalo",
-				"régimen",
-				"repente",
-				"repitir",
-				"reunión",
-				"rodilla",
-				"según",
-				"señorita",
-				"servir",
-				"siempre",
-				"silla",
-				"sólo",
-				"temprano",
-				"tijeras",
-				"tinta",
-				"vestirse"
+				"adsum",
+				"aegrotatio",
+				"aegrus",
+				"ager",
+				"aliquis",
+				"brevitas",
+				"cicuta",
+				"comburo",
+				"comminuo",
+				"conculco",
+				"concupisco",
+				"conscientia",
+				"constupro",
+				"contemplor",
+				"corripio",
+				"crepusculum",
+				"defessus",
+				"defetiscor",
+				"defigo",
+				"delecto",
+				"demens",
+				"derelinquo",
+				"deus",
+				"duro",
+				"ego",
+				"egrotatio",
+				"emiror",
+				"excrucio",
+				"exigo",
+				"expedio",
+				"facio",
+				"fas",
+				"grando",
+				"hesito",
+				"hortor",
+				"illis",
+				"immanitas",
+				"improbus",
+				"impunitus",
+				"incido",
+				"infidus",
+				"influo",
+				"influxum",
+				"insula",
+				"insurgi",
+				"insurgo",
+				"insurrectum",
+				"intumesco",
+				"lacero",
+				"lacerta",
+				"maculosus",
+				"mansuetus",
+				"mellitus",
+				"mens",
+				"mentis",
+				"ministro",
+				"munimentum",
+				"nasci",
+				"nascor",
+				"natus",
+				"obdormio",
+				"omnipotens",
+				"onis",
+				"opinio",
+				"pactus",
+				"peregrinus",
+				"pia",
+				"pica",
+				"pium",
+				"plebis",
+				"posthabeo",
+				"potens",
+				"proletarius",
+				"proprie",
+				"propugnaculum",
+				"purgatio",
+				"quamquam",
+				"quatenus",
+				"quatinus",
+				"rex",
+				"rodoenus",
+				"sanctus",
+				"serius",
+				"socius",
+				"sophismata",
+				"speciosus",
+				"subito",
+				"supernus",
+				"surgo",
+				"surrectum",
+				"surrexi",
+				"taedium",
+				"temperantia",
+				"teneo",
+				"terminus",
+				"uter",
+				"utrius",
+				"vociferor",
+				"vulgus",
+				"vulnus"
 			],
 			"particles": [
-				"las",
-				"la",
-				"de",
-				"des",
-				"a",
-				"con",
-				"por",
-				"el",
-				"acá"
-			],
-			"alias": [],
-			"factor": 3
-		},
-		"fakefrench": {
-			"title": "fakefrench",
-			// Most words copied or modified from
-			// https://www.generatormix.com/random-french-words-generator
-			"lexis": [
-				"aide",
-				"aille",
-				"aimait",
-				"allons",
-				"américains",
-				"annonce",
-				"appelles",
-				"appris",
-				"asseoir",
-				"attendre",
-				"aucun",
-				"autrement",
-				"avons",
-				"beaucoup",
-				"blanche",
-				"certaine",
-				"chez",
-				"coffre",
-				"connaissez",
-				"connaître",
-				"conneries",
-				"contraire",
-				"crains",
-				"crime",
-				"dégage",
-				"déjà",
-				"difficile",
-				"emmène",
-				"enfant",
-				"extérieur",
-				"fallait",
-				"félicitations",
-				"femmes",
-				"feras",
-				"file",
-				"finir",
-				"formidable",
-				"fort",
-				"frappé",
-				"fusil",
-				"garçons",
-				"génial",
-				"genoux",
-				"grande",
-				"honneur",
-				"image",
-				"intéressant",
-				"jake",
-				"joie",
-				"leurs",
-				"lycée",
-				"maman",
-				"manqué",
-				"message",
-				"met",
-				"militaire",
-				"moyens",
-				"noire",
-				"nul",
-				"oublier",
-				"ouest",
-				"ouvre",
-				"partez",
-				"pas",
-				"passera",
-				"patron",
-				"pensait",
-				"personnes",
-				"petit",
-				"points",
-				"premier",
-				"presse",
-				"preuves",
-				"prochain",
-				"projet",
-				"puisse",
-				"puissant",
-				"queue",
-				"ravi",
-				"rencontré",
-				"répondu",
-				"reprendre",
-				"retrouve",
-				"revient",
-				"rouge",
-				"salut",
-				"signer",
-				"soldats",
-				"sorte",
-				"souris",
-				"télé",
-				"tenir",
-				"fournir",
-				"trés",
-				"trouver",
-				"tueur",
-				"univers",
-				"vidéo",
-				"vient",
-				"vrais"
-			],
-			"particles": [
-				"en",
-				"de",
-				"pour",
-				"le",
-				"au-",
-				"d'",
-				"il",
-				"à",
-				"sur"
+				"et",
+				"hic",
+				"quo",
+				"ad",
+				"ex",
+				"ab",
+				"ob",
+				"per",
+				"pro"
 			],
 			"alias": [],
 			"factor": 3
@@ -22897,126 +23474,126 @@ function baseChatLanguages () {
 			"alias": [],
 			"factor": 3
 		},
-		"fakegerman": {
-			"title": "fakegerman",
+		"fakespanish": {
+			"title": "fakespanish",
 			// Most words copied or modified from
-			// https://www.generatormix.com/random-german-words-generator
+			// https://www.generatormix.com/random-spanish-words
 			"lexis": [
-				"allem",
-				"anderer",
-				"anders",
-				"angefangen",
-				"beispiel",
-				"bier",
-				"blut",
-				"brauchen",
-				"brüder",
-				"dein",
-				"deshalb",
-				"druck",
-				"durch",
-				"eher",
-				"eigenen",
-				"eingeladen",
-				"erstes",
-				"fand",
-				"fantastisch",
-				"fast",
-				"fehler",
-				"fern",
-				"fertig",
-				"frage",
-				"frank",
-				"freuen",
-				"funktioniert",
-				"gefällt",
-				"geliebt",
-				"geschlafen",
-				"geschlagen",
-				"gewehr",
-				"glaube",
-				"glückwunsch",
-				"gutes",
-				"haltet",
-				"hand",
-				"hasst",
-				"heiß",
-				"held",
-				"hielt",
-				"hoffentlich",
-				"holen",
-				"irgendetwas",
-				"jemandem",
-				"jungen",
-				"kennst",
-				"kennt",
-				"knie",
-				"kommen",
-				"krankenhaus",
-				"lehrer",
-				"leiden",
-				"lhrem",
-				"lst",
-				"monster",
-				"namens",
-				"ohne",
-				"person",
-				"plan",
-				"planeten",
-				"rechte",
-				"rom",
-				"ruhig",
-				"sagten",
-				"schätze",
-				"schreiben",
-				"schuld",
-				"freitag",
-				"schwer",
-				"schwierig",
-				"seine",
-				"seiten",
-				"senator",
-				"solange",
-				"spiel",
-				"steckt",
-				"stimmen",
-				"super",
-				"tag",
-				"taten",
-				"töte",
-				"überleben",
-				"unglaublich",
-				"versuchte",
-				"voller",
-				"völlig",
-				"weib",
-				"weil",
-				"weise",
-				"weisst",
-				"weit",
-				"werd",
-				"werfen",
-				"wohnen",
-				"wollt",
-				"zeiten",
-				"zeug",
-				"zweite",
-				"zeitgeist"
+				"abajo",
+				"abrazo",
+				"acabar",
+				"acercarse",
+				"acompañar",
+				"acostarse",
+				"agradecer",
+				"alcalde",
+				"arriba",
+				"atrás",
+				"autoridad",
+				"averiguar",
+				"barrio",
+				"bonito",
+				"bosillo",
+				"broma",
+				"bulto",
+				"caballero",
+				"camarero",
+				"campana",
+				"canción",
+				"claro",
+				"cliente",
+				"cobrar",
+				"conmigo",
+				"corregir",
+				"cosa",
+				"costumbre",
+				"cuaderno",
+				"cuadra",
+				"cuarto",
+				"deporte",
+				"descubrir",
+				"devolver",
+				"dirección",
+				"dónde",
+				"durar",
+				"ejemplo",
+				"enfermo",
+				"entrar",
+				"equipaje",
+				"escribir",
+				"escuela",
+				"estómago",
+				"estudiar",
+				"extrañar",
+				"extraño",
+				"fósforo",
+				"frontera",
+				"hombre",
+				"huésped",
+				"jamás",
+				"jardín",
+				"joven",
+				"juez",
+				"kilómetro",
+				"laudar",
+				"levantar",
+				"listo",
+				"lleno",
+				"mañana",
+				"mediodía",
+				"mentira",
+				"merienda",
+				"método",
+				"mientras",
+				"muerto",
+				"nevar",
+				"norte",
+				"nunca",
+				"obligar",
+				"pariente",
+				"patrón",
+				"permiso",
+				"picante",
+				"pico",
+				"pierna",
+				"píldora",
+				"planchar",
+				"pluma",
+				"pobre",
+				"promesa",
+				"receta",
+				"recuerdo",
+				"regalo",
+				"régimen",
+				"repente",
+				"repitir",
+				"reunión",
+				"rodilla",
+				"según",
+				"señorita",
+				"servir",
+				"siempre",
+				"silla",
+				"sólo",
+				"temprano",
+				"tijeras",
+				"tinta",
+				"vestirse"
 			],
 			"particles": [
-				"ich",
-				"bin",
-				"sie",
-				"zu",
-				"auf",
-				"an",
-				"du",
-				"wir",
-				"für"
+				"las",
+				"la",
+				"de",
+				"des",
+				"a",
+				"con",
+				"por",
+				"el",
+				"acá"
 			],
 			"alias": [],
 			"factor": 3
-		}
+		},
 	};
 	/* eslint-enable */
 }
@@ -23424,6 +24001,7 @@ function baseChat () {
 			descr: __("msg_chat_help_fs"),
 			param: "text",
 			tip: "Any formatted text without line breaks",
+			b20: true,
 		},
 		{
 			code: "/fx %%",
@@ -23762,7 +24340,7 @@ function baseChat () {
 
 	d20plus.chat.processDice = ($msg) => {
 		const dmgCfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
-		const rollData = /\[(\d*)(?<type>chk|dmg|sdmg|heal)(?<targets>[^\]]*)\]/;
+		const rollData = /\[(\d*)(?<type>chk|dmg|sdmg|heal)(?<targets>[^\]]*)\]/g;
 		$msg.find(".inlinerollresult").each((i, el) => {
 			const roll = {$el: $(el)};
 			if (roll.$el.attr("data-damage")) return;
@@ -23773,7 +24351,6 @@ function baseChat () {
 				roll.$el.attr("data-targets", roll.targets);
 				return "";
 			});
-			// d20plus.ut.log("DICE!!!", roll);
 			if (dmgCfg === "none") {
 				if (roll.type) roll.$el.attr("title", roll.tooltip);
 				return;
@@ -23839,13 +24416,14 @@ function baseChat () {
 		})
 	}
 
-	d20plus.chat.processIncomingMsg = (msg, msgData) => { // RB20 EXCLUDE START
+	d20plus.chat.processIncomingMsg = (msg, msgData) => {
+		const replaceHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");// RB20 EXCLUDE START
 		const expendSlots = d20plus.cfg.getOrDefault("chat", "autoExpend") !== "none";
 		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[cor\d]?)-?(?<name>[\p{L}\d _]*)(?:\|(?<quantity>\d*)|)\]/ug;// RB20 EXCLUDE END
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
-			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msgData.from_me || inKnownLanguage) {
+			const inKnownLanguage = window.is_gm || hasLanguageProficiency(speech.languageid);
+			if (msgData.from_me || inKnownLanguage) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
 				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
 					<strong>(${speech.language})</strong> ${translated}</i>`;
@@ -23940,6 +24518,10 @@ function baseChat () {
 			}
 		} else if (!msgData.from_me) {
 			msg.content = msg.content.replace(b20expend, ""); // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
+		}
+		if (replaceHints) {
+			const fromHint = msg.listenerid?.excludeHint;
+			d20plus.chat.modifyMsg(msg.id, {hints: true, excludeHint: fromHint});
 		}// RB20 EXCLUDE START
 		if (msg.inlinerolls) {
 			d20plus.chat.modifyMsg(msg.id, {dice: true});
@@ -24059,10 +24641,11 @@ function baseChat () {
 		}
 	}
 
-	d20plus.chat.displaying = () => { // RB20 EXCLUDE START
+	d20plus.chat.displaying = () => {
+		const lastDisplayedSysMsg = $(`#textchat .message.system`).last();// RB20 EXCLUDE START
 		if (d20plus.chat.logAll) d20plus.ut.log("DISPLAY", JSON.stringify(d20plus.chat.modify)); // RB20 EXCLUDE END
 		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
-			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
+			const msg = mods.sys ? lastDisplayedSysMsg : $(`[data-messageid=${id}]`);
 
 			if (mods.intro) {
 				const code = "<code style='cursor:pointer'>/help</code>";
@@ -24082,8 +24665,36 @@ function baseChat () {
 				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
 				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
 				if (mods.dice) d20plus.chat.processDice(msg);
+				if (mods.hints) d20plus.chat.giveHints(msg, mods.excludeHint);
 				delete d20plus.chat.modify[id];
 			}
+		});
+	}
+
+	d20plus.chat.giveHints = async (msg, exclude) => {
+		if (!JSON_DATA["data/conditionsdiseases.json"]) return;
+		msg.html(function () {
+			d20plus.chat.htmlRenderer = d20plus.chat.htmlRenderer || new Renderer();
+			const prepareItems = (type) => JSON_DATA["data/conditionsdiseases.json"][type].map(i => {
+				if (i.name.toLowerCase() === exclude) return ["b20-skip-this-entry", ""];
+				return [
+					i.name.toLowerCase(),
+					Object.assign({}, i, {
+						category: type,
+						page: `${i.page}<br>${type.toSentenceCase()}`,
+					})];
+			});
+			const condIndex = Object.fromEntries([].concat(prepareItems("condition"), prepareItems("disease"), prepareItems("status")));
+			const listToSearch = new RegExp(`(?<cond>${Object.keys(condIndex).join("|")})`, "gi");
+			return this.innerHTML.replace(/(?:(?:"|\w)>|^)[^<>]*?(?<t>\p{L}+)[^<>]*?(?:<|$)/ug, (...m) => {
+				return m[0].replace(listToSearch, (...s) => {
+					const condObj = condIndex[s.last()?.cond.toLowerCase()];
+					const resHtml = d20plus.chat.htmlRenderer.render(condObj);
+					return `
+						<span class="hinted clickable showtip tipsy-e" title="<div class=&quot;b20-condition-hint&quot;>${resHtml.replaceAll("\"", "&quot;")}</div>">${s.last()?.cond}</span>
+					`;
+				});
+			})
 		});
 	}
 
@@ -24197,6 +24808,19 @@ function baseChat () {
 		`);
 	}// RB20 EXCLUDE END
 
+	d20plus.chat.clickableHints = () => {
+		d20.textchat.$textchat.on("click", ".hinted.clickable", (evt) => {
+			const clicked = $(evt.target);
+			const name = clicked.text();
+			const dstyle = `]("style="display: block;max-height: 300px;color: inherit;text-decoration: none;overflow-y: auto;"`;
+			const splDescr = (clicked.attr("original-title") || clicked.attr("title") || "").split(/<\/(?:p|li|h2|tr)>/);
+			const source = splDescr[0].split(/<(?:\/span|br)>/).splice(1).join(" ").replace(/<([^<]*?)>|\[–\]/g, "");
+			const descr = splDescr.splice(1).join("%NEWLINE%").replace(/<(?:li|td|th)([^<]*?)>/g, "- ").replace(/<([^<]*?)>/g, "");
+			const builtTemplate = `&{template:traits} {{name=${name.toSentenceCase()} }} {{source=${source} }} {{description=[${descr}${dstyle}) }}`;
+			d20.textchat.doChatInput(builtTemplate, null, {excludeHint: name.toLowerCase()});
+		});
+	}
+
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
 		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
@@ -24209,7 +24833,7 @@ function baseChat () {
 				const openedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
 				d20plus.engine.enhanceMacros(openedMacroId);
 			});
-		availableLanguagesPlayer();
+		is_gm || availableLanguagesPlayer();
 		buildLanguageIndex();// RB20 EXCLUDE START
 		/// d20plus.chat.logAll = true// RB20 EXCLUDE END
 
@@ -24259,6 +24883,7 @@ function baseChat () {
 			})
 		});
 		d20plus.chat.enhanceRolls();// RB20 EXCLUDE END
+		d20plus.chat.clickableHints();
 
 		$("#textchat-input")
 			.off("click", "button")
@@ -24267,6 +24892,785 @@ function baseChat () {
 }
 
 SCRIPT_EXTENSIONS.push(baseChat);
+
+
+function baseBetterActions () {
+	d20plus.ba = {};
+
+	const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
+	let skills = "acrobatics,animal_handling,arcana,athletics,deception,history,insight,intimidation,investigation,medicine,nature,perception,performance,persuasion,religion,sleight_of_hand,stealth,survival";
+
+	const buildAnimations = () => {
+		Object.keys(d20plus.anim.animatorTool?._anims || {}).forEach(i => {
+			d20plus.ba.tree.anims.push({
+				name: d20plus.anim.animatorTool._anims[i].name
+					.toSentenceCase()
+					.replace("_", " "),
+				action: "animation",
+				spec: i,
+			});
+		})
+	}
+
+	const prepareResources = () => {
+		const char = getSingleChar();
+		["other", "class"].forEach(r => {
+			const tag = char.stats[`${r}_resource_name`];
+			const num = char.stats[`${r}_resource`];
+			if (num !== undefined && tag) {
+				char.resources = char.resources || {};
+				char.resources[tag] = num;
+			}
+		});
+		Object.entries(char.rawResources || {}).forEach(([id, r]) => {
+			["left", "right"].forEach(n => {
+				const tag = r[`resource_${n}_name`];
+				const num = r[`resource_${n}`];
+				if (num !== undefined && tag) {
+					char.resources = char.resources || {};
+					char.resources[tag] = num;
+				}
+			});
+		})
+	}
+
+	const prepareAttacks = () => {
+		const char = getSingleChar();
+		char.attacks = {};
+		Object.entries(char.rawAttacks || {}).filter(([id, at]) => {
+			return !at.spellid;
+		}).forEach(([id, at]) => {
+			at.id = id;
+			char.attacks[id] = at;
+		});
+		char.isNpc && Object.entries(char.rawActions || {}).filter(([id, at]) => {
+			return at.attack_flag === "on";
+		}).forEach(([id, at]) => {
+			at.id = id;
+			char.attacks[id] = at;
+		});
+	}
+
+	const prepareStats = (stats, vals, tag) => {
+		if (tag === "hp") stats.hpMax = vals.max;
+		stats[tag] = vals.current;
+	}
+
+	const prepareTreeStats = (obj, lvls, attr, val) => {
+		lvls.forEach(lvl => {
+			obj[lvl] = obj[lvl] || {};
+			obj = obj[lvl];
+		});
+		obj[attr] = val;
+	}
+
+	const prepareChar = async (t) => {
+		const tokenRef = t || d20plus.ba.tTokens[0];
+		const charRef = tokenRef?.character;
+		const name = charRef?.attributes.name;
+		const isUp2Date = d20plus.ba.chars[charRef.id]?.lastGroup === d20plus.ba.thisGroup;
+		if (!charRef || isUp2Date) return;
+		await d20plus.ut.fetchCharAttribs(charRef);
+		d20plus.ba.chars[charRef.id] = {id: charRef.id, name, isNpc: false, stats: {}};
+		const char = d20plus.ba.chars[charRef.id];
+		char.hp = {val: tokenRef.attributes.bar1_value, max: tokenRef.attributes.bar1_max};
+		charRef.attribs?.models.forEach(prop => {
+			const [tag, type, id, ...attrPath] = prop.attributes.name.split("_");
+			const attr = attrPath.join("_");
+			const current = prop.attributes.current;
+			if (type === undefined) {
+				if (tag === "npc" && current === "1") char.isNpc = true;
+				else prepareStats(char.stats, prop.attributes, tag);
+			} else if (tag === "npc" && attr === "") {
+				char.npcStats = char.npcStats || {};
+				prepareStats(char.npcStats, prop.attributes, [type].concat(id || []).join("_"));
+			} else if (type === "slots") {
+				const lvl = tag.slice(-1);
+				prepareTreeStats(char, ["spellslots", lvl], id, current);
+			} else if (attr === "") {
+				if (prop.attributes.name === "charactersheet_type" && current === "npc") char.isNpc = true;
+				prepareStats(char.stats, prop.attributes, [tag].concat(type || [], id || []).join("_"));
+			} else if (tag === "repeating") {
+				const [stype, lvl] = type.split("-");
+				if (stype === "spell") {
+					if (lvl) {
+						prepareTreeStats(char, ["spells", lvl, id], attr, current);
+					} else {
+						char.stats = char.stats || {};
+						prepareStats(char.stats, prop.attributes, [type].concat(id || []).join("_"));
+					}
+				} else if (stype === "npcaction") {
+					prepareTreeStats(char, ["rawActions", id], attr, current);
+					if (lvl) char.rawActions[id].actionType = lvl;
+				} else if (type === "attack") {
+					prepareTreeStats(char, ["rawAttacks", id], attr, current);
+				} else if (type === "item") {
+					prepareTreeStats(char, ["rawItems", id], attr, current);
+				} else if (["proficiencies", "tool", "resource"].includes(type)) {
+					const stype = type === "proficiencies" ? "rawProficiencies" : `raw${type.toSentenceCase()}s`;
+					prepareTreeStats(char, [stype, id], attr, current);
+				} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
+					const stype = type.split("mod")[0].replace("tohit", "attack");
+					prepareTreeStats(char, ["mods", stype, id], attr, current);
+				} else if (type === "npctrait" || type === "trait") {
+					prepareTreeStats(char, ["rawTraits", id], attr, current);
+				}
+			} else if (type === "reporder") {
+				char.order = char.order || {};
+				char.order[attr] = current.split(",");
+			} else if (tag === "global" && id === "mod" && attr === "flag") {
+				prepareTreeStats(char, ["mods", "active"], type, current);
+			}
+		});
+		prepareAttacks();
+		prepareResources();
+		char.hp.val = char.hp.val || char.stats.hp || char.npcStats?.hpbase;
+		char.hp.max = char.hp.max || char.stats.hpMax;
+	}
+
+	const prepareAllChars = async () => {
+		for (const t of d20plus.ba.tTokens) {
+			await prepareChar(t);
+		}
+	}
+
+	const buildGroup = (name, subtree) => {
+		d20plus.ba.tree.rolls.push({
+			name,
+			type: "head",
+			items: subtree,
+		});
+	}
+
+	const buildAbilities = () => {
+		const subtree = abilities.map(ab => {
+			return {
+				name: i18n(ab, ab.toSentenceCase()),
+				type: "selector",
+				items: [{
+					name: "🗹",
+					action: "roll",
+					spec: "ability",
+					flags: ab,
+				}, {
+					name: "Save",
+					action: "roll",
+					spec: "save",
+					flags: ab,
+				}],
+			}
+		});
+		buildGroup("Abilities", subtree);
+	}
+
+	const buildSkills = () => {
+		buildGroup("Skills", skills.map(sk => {
+			return {
+				name: i18n(sk, sk.toSentenceCase().replaceAll("_", " ")),
+				action: "roll",
+				spec: "skill",
+				flags: sk,
+			};
+		}));
+	}
+
+	const buildSpellVariants = (lvl, id) => {
+		const items = [];
+		const char = getSingleChar();
+		const ritual = char.spells[lvl][id]?.spellritual;
+		const upcast = !isNaN(lvl)
+			&& char.spells[lvl][id].spellathigherlevels;
+		ritual && items.push({
+			name: "As ritual",
+			action: "cast",
+			spec: id,
+		});
+		upcast && [...Array(9 - lvl)].map((k, i) => {
+			const upLvl = i + lvl + 1;
+			const hasSlots = char.isNpc || char?.spellslots[upLvl].total;
+			hasSlots && items.push({
+				name: `Upcast at lvl ${upLvl}`,
+				action: "cast",
+				spec: id,
+			});
+		});
+		return items.length ? items : null;
+	}
+
+	const buildSpells = () => {
+		const subtree = [];
+		for (let i = 0; i <= 9; i++) {
+			const lvl = i || "cantrip";
+			const char = getSingleChar();
+			const spells = char?.spells && char.spells[lvl];
+			const items = Object.keys(spells || {}).map(id => {
+				const spell = spells[id];
+				const isAttack = spell.spellattack
+					&& spell.spellattack !== "None";
+				const hasVariants = (spell.spellathigherlevels
+					|| spell.spellritual)
+					&& i !== "cantrip";
+				const variants = hasVariants ? buildSpellVariants(lvl, id) : null;
+				return {
+					name: spell.spellname,
+					type: `spellaction selector ${variants ? "variable" : ""}`,
+					items: [{
+						name: "🕮",
+						action: "spelldescription",
+						spec: id,
+					}, {
+						name: isAttack ? "⚔" : "⚕",
+						action: "cast",
+						flags: `${lvl}`,
+						spec: id,
+					}].concat(variants ? {
+						name: "↪",
+						type: "parameters",
+						items: variants,
+					} : []),
+				}
+			});
+			items.length && subtree.push({
+				name: !i ? "Cantrips" : `Level ${lvl}`,
+				type: "head",
+				items,
+			});
+		}
+		buildGroup("Spells", subtree);
+	}
+
+	const buildAttacks = () => {
+		const char = getSingleChar();
+		buildGroup("Attacks", Object.entries(char.attacks || {}).filter(([id, at]) => {
+			return !at.spellid;
+		}).map(([id, at]) => {
+			const rangeField = char.isNpc ? at.attack_range : at.atkrange;
+			const isCast = !!at.saveflag || at.atkflag === "0";
+			const isRanged = !isCast && ((char.isNpc && at.attack_type === "Ranged")
+				|| (!char.isNpc && rangeField?.includes("/")));
+			const isVersatile = !isCast && rangeField?.includes("[V]");
+			const isOffhandable = !isCast && rangeField?.includes("[O]");
+			const types = `${isCast ? " cast" : ""}${isRanged ? " ranged" : ""}${isOffhandable ? " offhand" : ""}${isVersatile ? " versatile" : ""}`;
+			return {
+				name: at.atkname || at.name,
+				type: `atkaction selector${types}`,
+				items: [{
+					name: isCast ? "⚕" : isRanged ? "➹" : isVersatile ? "🗡🖑🖑" : "🗡",
+					action: "attack",
+					spec: id,
+					flags: "V",
+				}].concat(isOffhandable ? {
+					name: "⚔",
+					action: "attack",
+					spec: id,
+					flags: "V",
+				} : []).concat(isVersatile ? {
+					name: `🗡🖑`,
+					action: "attack",
+					spec: id,
+					flags: "V",
+				} : []).concat({
+					name: "🕮",
+					action: "attackdescription",
+					spec: id,
+				}),
+			}
+		}));
+	}
+
+	const buildActions = () => {
+		void 0;
+	}
+
+	const addCommonRolls = () => {
+		d20plus.ba.tree.rolls.push(
+			{name: "Initiative", action: "roll", spec: "initiative"},
+		);
+		if (!d20plus.ba.singleSelected
+			|| !(getSingleChar()?.isNpc === false)) return;
+		d20plus.ba.tree.rolls = d20plus.ba.tree.rolls.concat([
+			{name: "Death save", action: "roll", spec: "death save"},
+			{name: "Hit die", action: "roll", spec: "hit dice"},
+		]);
+	}
+
+	const buildTag = (title, txt, close) => {
+		if (txt !== undefined && txt !== "") {
+			title = title.last() !== ":" && !close ? `${title}:` : title;
+			return close ? `<span><b>${title}</b>&nbsp;${txt}&nbsp;<b>${close}</b></span>`
+				: `<span><strong>${title}</strong>&nbsp;${txt}</span>`;
+		} else return "";
+	}
+
+	const buildHtml = (tree) => {
+		tree = tree || d20plus.ba.tree.rolls;
+		return tree.reduce((html, it) => {
+			if (it.items) {
+				if (!it.items.length) return html;
+				return `${html}
+				<li class="hasSub ${it.type}">
+					<span>${it.name}</span>
+					<ul class="submenu">
+						${buildHtml(it.items)}
+					</ul>
+				</li>`;
+			} else if (it.type === "mods") {
+				return `${html}
+				<li class="head hasSub">
+					<span><span style="font-family:Pictos">y</span> Mods</span>
+					<ul class="mods submenu">
+						<li><label><input type="checkbox"> Token name</label></li>
+						<li><label><input type="checkbox"> Char name</label></li>
+						<li class="last-in-group"><label><input type="checkbox"> Hide name</label></li>
+						<li><label><input type="checkbox"> Advantage</label></li>
+						<li class="last-in-group"><label><input type="checkbox"> Disadvantage</label></li>
+						<li><label><input type="checkbox"> To GM</label></li>
+						<li class="last-in-group"><label><input type="checkbox"> To self</label></li>
+						<li class="last-in-group"><label><input type="checkbox"> Auro-roll damage</label></li>
+						<li><label><input type="checkbox"> Hide mods</label></li>
+					</ul>
+				</li>`;
+			} else {
+				return `${html}<li data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}>${it.name}</li>`;
+			}
+		}, "");
+	}
+
+	const buildStatsHtml = () => {
+		const char = getSingleChar();
+
+		const baseStats = (char.isNpc ? [
+			buildTag("HP:", `${char.hp.val || ""}&nbsp;${buildTag("/", char.hp.max, " ")}`),
+			buildTag("(", char.npcStats.hpformula, ")"),
+			"<br>",
+			buildTag("AC:", char.npcStats.ac),
+			buildTag("", char.npcStats.actype, ""),
+			buildTag("CR:", char.npcStats.challenge),
+			buildTag("Speed", char.npcStats.speed),
+		] : [
+			buildTag("HP:", `${char.hp.val}&nbsp;${buildTag("/", char.hp.max, " ")}`),
+			buildTag("AC:", char.stats.ac),
+			buildTag("PB", char.stats.pb),
+			buildTag("Speed", char.stats.speed),
+		]).concat([
+			buildTag("Initiative", char.stats.initiative_bonus),
+			buildTag("Passive Perception", char.stats.passive_wisdom),
+		]).join(" ");
+
+		const baseAbilities = abilities.map(a => {
+			const rawMod = char.stats[`${a}_mod`];
+			const mod = rawMod !== undefined ? (rawMod > 0 ? `+${rawMod}` : rawMod) : "";
+			return buildTag(`${a.slice(0, 3).toUpperCase()}:`, `${char.stats[a] || ""}${buildTag(" (", mod, ")")}`);
+		}).join(" ");
+		const spellStats = Object.keys(char.spells || {}).length ? `<li>${[
+			buildTag("Caster Level", char.stats.caster_level),
+			buildTag("Spell Save DC", char.stats.spell_save_dc),
+			buildTag("Spell Attack Bonus", char.stats.spell_attack_bonus),
+		].join(" ")}</li>` : "";
+
+		const classDetails = char.stats.class_display
+			?.split(" ").map(c => isNaN(c) && c ? i18n(c.toLowerCase(), c) : c)
+			.join(" ") || "";
+		const currency = !char.isNpc ? `<li>${["cp", "sp", "ep", "gp", "pp"].map(c => {
+			return buildTag(`${c.toUpperCase()}:`, char.stats[c] || "0");
+		}).join(" ")}</li>` : "";
+
+		const npcDetails = char.isNpc ? [
+			buildTag("Speaks:", char.npcStats.languages),
+			buildTag("Senses:", char.npcStats.senses),
+			buildTag("Vulnerable to:", char.npcStats.vulnerabilities),
+			buildTag("Resists:", char.npcStats.resistances),
+			buildTag("Immune to:", char.npcStats.condition_immunities),
+			buildTag("Immunities:", char.npcStats.immunities),
+		].join(" ") : "";
+
+		return `
+			<li><span style="font-size:15px; font-weight: bold;line-height: 16px;width:110px">${char.name}</span>
+				<span style="float: right">
+					<button data-action="speakas" title="Speak as character">w</button>
+					<button data-action="opensheet" title="Open character sheet">U</button>
+					<button data-action="openchar" title="Open character settings">x</button><br>
+				</span>
+				<span>${char.isNpc ? char.npcStats.type : `${char.stats.race_display}, ${classDetails}`}</span>
+			</li><li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}${currency}
+			${npcDetails ? `<li>${npcDetails}</li>` : ""}
+		`;
+	}
+
+	const getAmConfig = () => {
+		const cfg = d20plus.cfg.getOrDefault("token", "showTokenMenu");
+		d20plus.ba.enabled = cfg !== "none";
+		d20plus.ba.enabledCharMenu = cfg.includes("char");
+		d20plus.ba.enabledAnimation = cfg.includes("anim");
+		return d20plus.ba.enabled;
+	}
+
+	const getSingleChar = () => {
+		const id = d20plus.ba.singleSelected?.character.id;
+		return id && d20plus.ba.chars[id];
+	}
+
+	const normalizeStyle = `color: inherit;text-decoration: none;cursor: auto;`;
+	const getTemplatePart = ([tag, val, props], subtree) => {
+		if ((!tag && !subtree) || props === false || props?.q === false) return "";
+		if (Array.isArray(val)) val = val.reduce((s, v) => s + getTemplatePart([null].concat(v), true), "");
+		else val = props?.css ? `[${val || " "}]("style="${normalizeStyle}${props.css}")` : val;
+		const left = props?.left || (props?.lcss ? `[ ]("style="${props?.lcss}")` : "");
+		const right = props?.right || (props?.rcss ? `[ ]("style="${props?.rcss}")` : "");
+		return `${tag ? `${tag}=` : ""}${left}${val}${right}`;
+	}
+
+	const buildTemplateModel = (type, v) => {
+		console.log(type, v);
+		const dmgTag = `[dmg@{target|token_id}]`;
+		if (type === "ability") {
+			const tmplModel = [
+				[v.rMode,	`1`],
+				[`name`,	v.subTitle],
+				[`rname`,	v.title, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};`}], //	{left: `[E]("style="${normalizeStyle}font-family:pictos;") `}],
+				[`r1`,		v.r1,		{lcss: `display: inline-block;margin-left:-8px;`}],
+				[`r2`,		v.r2,		{q: v.rMode !== "normal", rcss: `display: inline-block;margin-right:-10px;`}],
+				[`type`,	v.attrName,	{css: `display:inline-block;width:50%;font-style: normal;margin: 2px 0px;vertical-align: middle;text-align: right;padding-right: 5px;line-height: 14px;letter-spacing: -1px;`}],
+			].map(getTemplatePart).filter(s => !!s).join("}} {{");
+			return `&{template:npc} ${v.hidden} {{${tmplModel}}}`;
+		} else if (type === "attack") {
+			const tmplModel = [
+				[`attack`,	 "1"],
+				[`crit`,	 "1"],
+				[`damage`,	 "1"],
+				[v.rMode,	 "1"],
+				[`rname`,	 v.title, {css: `font-size: 13px;line-height: 16px;` }],
+				[`charname`, v.subTitle, {css: `${v.isSpell ? "color:#3737ff;" : ""}margin-bottom:8px;display:inline-block;`}],
+				[`mod`,		 `[[${v.atkMod}]]`],
+				[`range`,	[
+					[`^{target:} ${v.target}`, {css: `display: block;font-style: normal;border-bottom: 1px solid grey;padding-bottom: 8px;`}],
+					[v.charName, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-weight:bold;`}],
+				]],
+				[`dmg1flag`, "1"],
+				[`dmg1type`, v.dmg1type],
+				[`dmg1`,	 `[[${v.dmg1roll || 0}${dmgTag}]]`],
+				["crit1",	 `[[${v.crit1roll || 0}${dmgTag}]]`],
+				[`dmg2flag`, "1", !!v.dmg2on],
+				[`dmg2type`, v.dmg2type],
+				[`dmg2`,	 `[[${v.dmg2roll || 0}${dmgTag}]]`, !!v.dmg2on],
+				["crit2",	 `[[${v.crit2roll || 0}${dmgTag}]]`, !!v.dmg2on],
+				[`r1`, 		 `[[@{selected|d20}cs>@{selected|default_critical_range} + ${v.atkMod}]]`],
+				[`r2`, 		 `[[@{selected|d20}cs>@{selected|default_critical_range} + ${v.atkMod}]]`, v.rMode !== "normal"],
+			].map(getTemplatePart).filter(s => !!s).join("}} {{");
+			return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}}`;
+		} else if (type === "cast") {
+			const tmplModel = [
+				[`save`,	"1"],
+				[`damage`,	"1"],
+				[`saveattr`, [
+					[v.charName, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-style: italic;font-weight: bold;display: block;border-top: 1px solid #8B8B8B;padding-top: 7px;`}],
+					[v.title, {css: `display: block;width: 180px;font-size: 13px;line-height: 16px;`}],
+					[v.subTitle, {q: !!v.subTitle, css: `display: block;width: 175px;color: #8B8B8B;${v.isSpell ? "color:#3737ff;" : ""}font-weight: normal;`}],
+				], !!v.dc],
+				[`savedesc`,	`${v.saveRoll} [${v.target}]("style="${normalizeStyle}font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;")`],
+				[`savedc`,		`[[${v.dc}]] [${v.saveAttr}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")`],
+				[`range`,		v.dmg1type ? `${v.dmg1type} ${v.dmg2type || ""}` : "", !!v.dmg1type],
+				[`dmg1type`, `^{failures-u}`, {css: "font-size: smaller;vertical-align: sub;"}],
+				[`dmg2type`, `^{successes-u}`, {css: "font-size: smaller;vertical-align: sub;"}],
+				[`dmg1flag`, "1"],
+				[`dmg2flag`, "1"],
+				["dmg1", v.dmgOnFail],
+				["dmg2", v.dmgOnSuccess],
+			].map(getTemplatePart).filter(s => !!s).join("}} {{");
+			v.hidden = v.hidden || `[[ floor([[${v.dmg1roll}${v.dmg1type ? `[${v.dmg1type}]` : ""} ${v.dmg2roll ? `+ ${v.dmg2roll}${v.dmg2type ? `[${v.dmg2type}]` : ""}` : ""}${dmgTag}]]/2) ${dmgTag} ]]`;
+			return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}} {{save=1}}`;
+		} else if (type === "action") {
+			const tmplModel = [
+				[v.rMode,	 "1", !!v.dmg1on],
+				[`attack`,	 "1", !!v.dmg1on],
+				[`rname`, [
+					[`DC[[${v.dc}]] [${v.saveAttr}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")`, !!v.dc],
+					[`${v.saveRoll} [${v.target}]("style="${normalizeStyle}font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;")`, !!v.saveRoll],
+					[`^{target:} ${v.target}`, {q: !!v.target, css: `color: #8B8B8B;font-weight: normal;`}],
+					[v.charName, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-style: italic;font-weight: bold;display: block;${(v.dmg1on || v.dc || "") && `border-top: 1px solid #8B8B8B;`}padding-top: 7px;`}],
+					[v.title, {css: `display: block;width: 180px;font-size: 13px;line-height: 16px;`}],
+					[v.subTitle, {q: !!v.subTitle, css: `padding-bottom:8px;display: block;width: 175px;color: #8B8B8B;${v.isSpell ? "color:#3737ff;" : ""}font-weight: normal;`}],
+				], !!v.title],
+				[`r1`,	[
+					[`[[${v.dmg1roll}${dmgTag}]]`],
+					[v.dmg1type, {css: `display: block;font-size:12px;color: #8B8B8B;font-weight:normal`, q: !!v.dmg1type}],
+				], !!v.dmg1on],
+				[`r2`,	[
+					[`[[${v.dmg2roll}${dmgTag}]]`],
+					[v.dmg2type, {css: `display: block;font-size:12px;color: #8B8B8B;font-weight:normal`, q: !!v.dmg2type}],
+				], !!v.dmg2on],
+			].map(getTemplatePart).filter(s => !!s).join("}} {{");
+			return `&{template:simple} ${v.hidden || ""} {{${tmplModel}}} {{save=1}}`;
+		}
+	}
+
+	const getAbilityTemplate = (spec, attr) => {
+		const char = getSingleChar();
+		const type = attr || "roll"
+		attr = attr || spec;
+		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
+		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
+		const attrName = spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(spec) ? attr.split(" ").concat("u").join("-") : attrBase);
+
+		const abbr = attr.slice(0, 3).toUpperCase();
+		const typeName = spec === "ability" ? "abilities" : ["skill", "save"].includes(spec) ? spec : type;
+		const roll = spec !== "hit dice" ? `@{selected|d20}` : `1d@{selected|hitdietype}`;
+
+		const mods = {base: [
+			spec === "hit dice" ? ["@{selected|constitution_mod}", "CON"] : [`@{selected|${attrId}}`, abbr],
+			type === "ability" && "!isNpc" ? ["@{selected|jack_bonus}", "JACK"] : null,
+		]};
+		mods.r1 = mods.base.concat([
+			spec === "initiative" ? ["&{tracker}"] : null,	// should be the last one
+		]).filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");		// TODO proper Initiative adding and NPCs
+		mods.r2 = mods.base.concat([])
+			.filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");
+		mods.title = mods.base.concat([
+			spec === "hit dice" ? ["+ D@{selected|hitdietype}"] : null,
+		]).filter(s => !!s).map(s => s[0]).join(" ");
+
+		const hiddenVars = [
+			`@{selected|global_skill_mod}`,
+		].filter(s => !!s).join(" ");
+
+		const tmplVars = {
+			rMode: "normal",
+			title: `@{selected|token_name}`,
+			subTitle: `^{${typeName}} (${mods.title})`,
+			attrName: `^{${attrName}}`,
+			r1: `[[${roll}+${mods.r1}]]`, // +$[[0]]`,
+			r2: `[[${roll}+${mods.r2}]]`, // +$[[0]]`,
+			hidden: hiddenVars,
+			isNpc: char.isNpc,
+		}
+
+		return buildTemplateModel("ability", tmplVars);
+	};
+
+	const getAttackTemplate = (id, flags) => {
+		const char = getSingleChar();
+		const atk = char?.attacks[id];
+		const atkProp = (attr) => atk[`${char.isNpc ? "attack_" : "atk"}${attr}`] || "";
+		const ammo = atk.ammo;
+		const dmg = atk.rollbase_crit?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
+		const tmplVars = {
+			title: atk.name || atk.atkname || "",
+			subTitle: atkProp("range"),
+			subtitle: [atkProp("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
+				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
+			isNpc:	char.isNpc,
+			charName:	char.name,
+			dmg2on: atk.attack_damage2 || atk.dmg2base || "",
+			dmg1type:	atk.attack_damagetype || atk.dmgtype || "",
+			dmg2type:	atk.attack_damagetype2 || atk.dmg2type || "",
+			dmg1roll:	atk.attack_damage || dmg.dmg1 || "",
+			dmg2roll:	atk.attack_damage2 || dmg.dmg2 || "",
+			rMode: "normal",
+			crit1roll:	atk.attack_crit || dmg.crit1 || "",
+			crit2roll:	atk.attack_crit2 || dmg.crit2 || "",
+			atkMod:	atk.attack_tohit || (atk.atkflag !== "0" ? `${atk.atkattr_base ? `${atk.atkattr_base?.replaceAll("@{", "@{selected|")}+` : ""}@{selected|pb}[PB]` : ""),
+			saveAttr: atk.saveattr ? `^{${atk.saveattr?.toLowerCase().slice(0, 3)}-u}` : "",
+			dc: atk.savedc?.replaceAll("@{", "@{selected|") || "",
+			target: `@{target|token_name}`,
+		}
+		const model = tmplVars.atkMod ? "attack" : tmplVars.dc && tmplVars.dmg1roll ? "cast" : "action";
+		return buildTemplateModel(model, tmplVars);
+	}
+
+	const getSpellTemplate = (id, flags) => {
+		const char = getSingleChar();
+		const [lvl, upcast] = String(flags).split("|");
+		const spell = char.spells[lvl][id];
+		const hasAttack = spell.spellattack
+			&& spell.spellattack !== "None";
+		const hasSave = spell.spellsave
+			&& spell.spellsave !== "";
+		const hasDmg = spell.spelldamage
+			&& spell.spelldamage !== "";
+		const model = hasAttack ? "attack" : hasSave && hasDmg ? "cast" : "action";
+		const spellAbility = spell.spell_ability && spell.spell_ability?.length > 2
+			? spell.spell_ability !== "spell" ? spell.spell_ability.replace("@{", "@{selected|") : "@{selected|spell_attack_bonus}"
+			: "";
+		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
+			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
+		const onSelf = spell.spellrange?.includes("[S]");
+		const tmplVars = {
+			rMode: model !== "attack" ? "always" : "normal",
+			title:	spell.spellname,
+			subTitle,
+			charName:	char.name,
+			isNpc:	char.isNpc,
+			isSpell: spell.spell_ability === "spell",
+			dmg1on: !!spell.spelldamage,
+			dmg2on: !!spell.spelldamage2,
+			dmg1type:	spell.spelldamagetype,
+			dmg2type:	spell.spelldamagetype2,
+			dmg1roll:	`${spell.spelldamage}${spell.spelldmgmod === "Yes" ? `+${spellAbility}[ABIL]` : ""}`,
+			dmg2roll:	`${spell.spelldamage2}${spell.spelldmgmod === "Yes" ? `+${spellAbility}[ABIL]` : ""}`,
+			target: !onSelf ? `@{target|token_name}` : "",
+
+			crit1roll:	spell.spelldamage,
+			crit2roll:	spell.spelldamage2,
+			atkMod:	spell.spell_ability !== "spell" ? `@{selected|spell_attack_mod}[MOD]+${spellAbility}[ABIL]@{selected|pb}[PB]` : `@{selected|spell_attack_bonus}`,
+
+			dc: spell.spell_ability !== "spell" ? `(8+@{selected|spell_dc_mod}[MOD]+${spellAbility}[ABIL]@{selected|pb}[PB])` : `@{selected|spell_save_dc}`,
+			saveAttr: `^{${spell.spellsave?.toLowerCase().slice(0, 3)}-u}`,
+			saveRoll: `[[@{target|d20}+@{target|${spell.spellsave?.toLowerCase()}_save_bonus}[chk]]]`,
+			dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
+			dmgOnFail: `$[[0]]`,
+			dmgOnSuccess: lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
+		}
+		return buildTemplateModel(model, tmplVars);
+	}
+
+	const getActions = {
+		animation: (model, spec) => {
+			d20plus.anim.animator.startAnimation(model, spec);
+		},
+		roll: (model, spec, flags) => {
+			d20.textchat.doChatInput(getAbilityTemplate(spec, flags));
+		},
+		attack: (model, spec, flags) => {
+			d20.textchat.doChatInput(getAttackTemplate(spec, flags));
+		},
+		cast: (model, spec, flags) => {
+			d20.textchat.doChatInput(getSpellTemplate(spec, flags));
+		},
+	};
+
+	const amExecute = async (action, spec, flags) => {
+		const selected = action === "animation"//s
+			? d20.engine.selected().filter(it => it.type === "image")
+			: d20.engine.selected().filter(it => it._model?.character);
+		const isMultiple = selected.length > 1;
+		const singleAction = ["death", "hitdie"].includes(spec)
+			|| !["ability", "save", "skill"].includes(flags)
+			|| !["animation"].includes(action);
+		const allowReSelect = !["animation"].includes(action);
+		if (isMultiple && !singleAction && getActions[action]) {
+			d20plus.ba.executing = true;
+			const tokens = [...selected];
+			d20.engine.unselect();
+			tokens.forEach(t => {
+				d20.engine.select(t);
+				getActions[action](t._model, spec, flags);
+				d20.engine.unselect();
+			});
+			if (allowReSelect) tokens.forEach(t => d20.engine.select(t));
+			d20plus.ba.executing = false;
+		} else if (!isMultiple && getActions[action]) {
+			getActions[action](selected[0]._model, spec, flags);
+		} else {
+			d20plus.ut.sendHackerChat("Unrecognized error applying menu command", true);
+		}
+	}
+
+	const amDo = (action) => {
+		const amCharId = d20plus.ba.chars[0]?.id;
+		if (action === "opensheet") d20plus.ba.tTokens[0].character.view.showDialog();
+		else if (action === "openchar") d20plus.tTokens[0].character.editview.showDialog();
+		else if (action === "speakas") {
+			const $speagingas = $("#speakingas");
+			const [type, speakAsId] = $speagingas.val().split("|");
+			if (speakAsId === amCharId) $speagingas.val(["player", d20_player_id].join("|"));
+			else $speagingas.val(["character", amCharId].join("|"));
+		}
+	}
+
+	const amShow = async () => {
+		if (d20plus.ba.executing) return;
+		d20plus.ba.tree = {rolls: [{type: "mods"}], stats: [], anims: []};
+		d20plus.ba.$buttons.anim.toggle(false);
+		d20plus.ba.$buttons.roll.toggle(false);
+		d20plus.ba.$buttons.stat.toggle(false);
+		if (d20plus.ba.hasChars) {
+			if (!d20plus.ba.singleSelected) prepareAllChars();
+			else await prepareChar();
+			buildAbilities();
+			buildSkills();
+			if (d20plus.ba.singleSelected) {
+				buildAttacks();
+				buildSpells();
+				buildActions();
+				d20plus.ba.$stats.html(buildStatsHtml());
+				d20plus.ba.$buttons.stat.toggle(true);
+			}
+			addCommonRolls();
+			d20plus.ba.$rolls.html(buildHtml());
+			d20plus.ba.$buttons.roll.toggle(true);
+		}
+		if (d20plus.ba.hasAnimatable) {
+			buildAnimations();
+			d20plus.ba.$animations.html(buildHtml(d20plus.ba.tree.anims));
+			if (d20plus.ba.tree.anims.length) d20plus.ba.$buttons.anim.toggle(true);
+		}
+		d20plus.ba.$buttons.toggle(true);
+		if (d20plus.ba.$r20toolbar.css("display") === "none") {
+			d20plus.ba.$r20toolbar.toggle(true);
+			d20plus.ba.$r20tokenActions.css("display", "none");
+		} else {
+			d20plus.ba.$r20tokenActions.css("display", "inline-block");
+		}
+	}
+
+	const amHide = () => {
+		d20plus.ba.$buttons.toggle(false);
+	}
+
+	d20plus.ba.initBetterActions = () => {
+		d20plus.ba.chars = {};
+		skills = i18n("skills-list", skills).split(",");
+
+		d20plus.ba.$buttons = $(d20plus.html.bActionsButtons);
+
+		d20plus.ba.$buttons.roll = d20plus.ba.$buttons.find(`[data-type=rolls]`);
+		d20plus.ba.$buttons.stat = d20plus.ba.$buttons.find(`[data-type=stats]`);
+		d20plus.ba.$buttons.anim = d20plus.ba.$buttons.find(`[data-type=animate]`);
+		d20plus.ba.$rolls = d20plus.ba.$buttons.find(`.b20-rolls > ul`);
+		d20plus.ba.$stats = d20plus.ba.$buttons.find(`.b20-stats > ul`);
+		d20plus.ba.$animations = d20plus.ba.$buttons.find(`.b20-animations > ul`);
+		d20plus.ba.$r20toolbar = $("#secondary-toolbar");
+		d20plus.ba.$r20toolbar.prepend(d20plus.ba.$buttons);
+		d20plus.ba.$r20tokenActions = d20plus.ba.$r20toolbar.find(".mode.tokenactions");
+
+		$("body").on("shape_selected", "#editor", evt => {
+			const enabled = getAmConfig();
+			const selected = d20.engine.selected();
+			if (!enabled) return;
+			d20plus.ba.tTokens = selected
+				.filter(it => it._model?.character)
+				.map(it => it._model);
+			d20plus.ba.tAnims = selected
+				.filter(it => it.type === "image");
+			d20plus.ba.thisGroup = d20plus.ut.generateRowId();
+			d20plus.ba.singleSelected = d20plus.ba.tTokens.length > 1
+				? false
+				: d20plus.ba.tTokens[0]; // am.multipleTargets // hasMultiple
+			d20plus.ba.hasChars = d20plus.ba.enabledCharMenu
+				&& d20plus.ba.tTokens.length > 0;
+			d20plus.ba.hasAnimatable = is_gm
+				&& d20plus.ba.enabledAnimation
+				&& d20plus.ba.tAnims.length > 0
+				&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length;
+			if (d20plus.ba.hasChars || d20plus.ba.hasAnimatable) amShow();
+			else amHide();
+		}).on("nothing_selected", "#editor", evt => {
+			amHide();
+		});
+
+		d20plus.ba.$buttons.on("click", "[data-action], [data-spec]", evt => {
+			const $clicked = $(evt.target);
+			const action = $clicked.data("action");
+			const spec = $clicked.data("spec");
+			const flags = $clicked.data("flags");
+			if (spec && action) amExecute(action, spec, flags);
+			else if (action && mod) amSet(mod);
+			else if (!spec && action) amDo(action);
+		})
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseBetterActions);
 
 
 function remoteLibre () {
@@ -24566,7 +25970,7 @@ const betteR20Core = function () {
 
 			if (window.is_gm) await d20plus.art.pLoadArt();
 
-			d20plus.engine.enhanceMarkdown();
+			// d20plus.engine.enhanceMarkdown();
 			d20plus.engine.addProFeatures();
 			d20plus.engine.enhanceMouseDown();
 			d20plus.engine.enhanceMouseMove();
@@ -24599,6 +26003,7 @@ const betteR20Core = function () {
 			d20plus.engine.disableFrameRecorder();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
+			d20plus.ba.initBetterActions();
 
 			// apply config
 			if (window.is_gm) {
