@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.3.45
+// @version      1.35.3.46
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -18480,12 +18480,16 @@ function baseCss () {
 			flex-basis: 25px;
 			flex-grow: 0;
 		}
+		.spellaction.unprepared > span {
+			color: #929292;
+		}
 		#secondary-toolbar .b20-token-menu .spellaction > ul > li {
 			font-weight: bolder;
 			font-size: 18px;
 		}
 		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li:first-child {
 			width: 30px;
+			font-weight: normal;
 		}
 		#secondary-toolbar .b20-token-menu li.selector.variable > ul > li:last-child {
 			width: 22px;
@@ -18504,6 +18508,13 @@ function baseCss () {
 		}
 		#secondary-toolbar .b20-token-menu .d20contextmenu label input[type="checkbox"] {
 			vertical-align: top;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span > i {
+			font-style: normal;
+			width: 30px;
+			display: inline-block;
+			font-size: 8px;
+			font-weight: normal;
 		}
 		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li:not(.hasSub),
 		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
@@ -24951,6 +24962,18 @@ function baseBetterActions () {
 		});
 	}
 
+	const prepareSpells = () => {
+		const char = getSingleChar();
+		char.spells = {};
+		Object.entries(char.rawSpells || {}).forEach(([lvl, list]) => {
+			Object.entries(list || {}).forEach(([id, spl]) => {
+				spl.id = id;
+				spl.lvl = lvl;
+				char.spells[id] = spl;
+			})
+		});
+	}
+
 	const prepareStats = (stats, vals, tag) => {
 		if (tag === "hp") stats.hpMax = vals.max;
 		stats[tag] = vals.current;
@@ -24994,7 +25017,7 @@ function baseBetterActions () {
 				const [stype, lvl] = type.split("-");
 				if (stype === "spell") {
 					if (lvl) {
-						prepareTreeStats(char, ["spells", lvl, id], attr, current);
+						prepareTreeStats(char, ["rawSpells", lvl, id], attr, current);
 					} else {
 						char.stats = char.stats || {};
 						prepareStats(char.stats, prop.attributes, [type].concat(id || []).join("_"));
@@ -25022,6 +25045,7 @@ function baseBetterActions () {
 				prepareTreeStats(char, ["mods", "active"], type, current);
 			}
 		});
+		prepareSpells();
 		prepareAttacks();
 		prepareResources();
 		char.hp.val = char.hp.val || char.stats.hp || char.npcStats?.hpbase;
@@ -25048,7 +25072,8 @@ function baseBetterActions () {
 				name: i18n(ab, ab.toSentenceCase()),
 				type: "selector",
 				items: [{
-					name: "🗹",
+					name: "Roll plain check",
+					icon: "🗹",
 					action: "roll",
 					spec: "ability",
 					flags: ab,
@@ -25077,9 +25102,9 @@ function baseBetterActions () {
 	const buildSpellVariants = (lvl, id) => {
 		const items = [];
 		const char = getSingleChar();
-		const ritual = char.spells[lvl][id]?.spellritual;
+		const ritual = char.rawSpells[lvl][id]?.spellritual;
 		const upcast = !isNaN(lvl)
-			&& char.spells[lvl][id].spellathigherlevels;
+			&& char.rawSpells[lvl][id].spellathigherlevels;
 		ritual && items.push({
 			name: "As ritual",
 			action: "cast",
@@ -25097,12 +25122,25 @@ function baseBetterActions () {
 		return items.length ? items : null;
 	}
 
+	const buildSpellSlots = (char, lvl) => {
+		if (char.spellslots && char.spellslots[lvl] && char.spellslots[lvl].total) {
+			const has = Number(char.spellslots[lvl].expended) || 0;
+			const total = Number(char.spellslots[lvl].total) || 0;
+			if (char.spellslots[lvl].total <= 4 && has >= 0) {
+				return [...Array(total)].reduce((k, s, i) => {
+					return i <= has - 1 ? `${k}⬤` : `${k}◎`;
+				}, "");
+			} else return `${has}/${char.spellslots[lvl].total}`;
+		}
+	}
+
 	const buildSpells = () => {
 		const subtree = [];
 		for (let i = 0; i <= 9; i++) {
 			const lvl = i || "cantrip";
-			const char = getSingleChar();
-			const spells = char?.spells && char.spells[lvl];
+			const char = getSingleChar(); // Clerics, Druids, Paladins, and Wizards
+			const shouldPrepare = ["Cleric", "Druid", "Paladin", "Wizard"].includes(char.class);
+			const spells = !!char?.rawSpells && char.rawSpells[lvl];
 			const items = Object.keys(spells || {}).map(id => {
 				const spell = spells[id];
 				const isAttack = spell.spellattack
@@ -25111,26 +25149,30 @@ function baseBetterActions () {
 					|| spell.spellritual)
 					&& i !== "cantrip";
 				const variants = hasVariants ? buildSpellVariants(lvl, id) : null;
+				const unprepared = !shouldPrepare || !i || spell.spellprepared === "1" ? "" : " unprepared";
 				return {
 					name: spell.spellname,
-					type: `spellaction selector ${variants ? "variable" : ""}`,
+					type: `spellaction selector${unprepared} ${variants ? "variable" : ""}`,
 					items: [{
-						name: "🕮",
+						name: "Show description",
+						icon: "🕮",
 						action: "spelldescription",
 						spec: id,
 					}, {
-						name: isAttack ? "⚔" : "⚕",
+						name: "Cast spell",
+						icon: isAttack ? "⚔" : "⚕",
 						action: "cast",
 						flags: `${lvl}`,
 						spec: id,
 					}].concat(variants ? {
-						name: "↪",
+						icon: "↪",
 						type: "parameters",
 						items: variants,
 					} : []),
 				}
 			});
 			items.length && subtree.push({
+				resource: buildSpellSlots(char, lvl),
 				name: !i ? "Cantrips" : `Level ${lvl}`,
 				type: "head",
 				items,
@@ -25155,22 +25197,25 @@ function baseBetterActions () {
 				name: at.atkname || at.name,
 				type: `atkaction selector${types}`,
 				items: [{
-					name: isCast ? "⚕" : isRanged ? "➹" : isVersatile ? "🗡🖑🖑" : "🗡",
+					name: "Attack",
+					icon: isCast ? "⚕" : isRanged ? "➹" : isVersatile ? "🗡🖑🖑" : "🗡",
 					action: "attack",
 					spec: id,
-					flags: "V",
 				}].concat(isOffhandable ? {
-					name: "⚔",
+					name: "Attack with offhand",
+					icon: "⚔",
 					action: "attack",
 					spec: id,
-					flags: "V",
+					flags: "O",
 				} : []).concat(isVersatile ? {
-					name: `🗡🖑`,
+					name: "Attack with single hand (versatile)",
+					icon: `🗡🖑`,
 					action: "attack",
 					spec: id,
 					flags: "V",
 				} : []).concat({
-					name: "🕮",
+					name: "Show description",
+					icon: "🕮",
 					action: "attackdescription",
 					spec: id,
 				}),
@@ -25209,29 +25254,40 @@ function baseBetterActions () {
 				if (!it.items.length) return html;
 				return `${html}
 				<li class="hasSub ${it.type}">
-					<span>${it.name}</span>
+					<span${it.name?.length > 15 ? ` title="${it.name}"` : ""}>
+						${it.resource ? `<i>${it.resource}</i>` : ""}${it.icon || it.name}
+					</span>
 					<ul class="submenu">
 						${buildHtml(it.items)}
 					</ul>
 				</li>`;
 			} else if (it.type === "mods") {
-				return `${html}
+				const willBe = `${html}
 				<li class="head hasSub">
 					<span><span style="font-family:Pictos">y</span> Mods</span>
 					<ul class="mods submenu">
 						<li><label><input type="checkbox"> Token name</label></li>
 						<li><label><input type="checkbox"> Char name</label></li>
 						<li class="last-in-group"><label><input type="checkbox"> Hide name</label></li>
-						<li><label><input type="checkbox"> Advantage</label></li>
-						<li class="last-in-group"><label><input type="checkbox"> Disadvantage</label></li>
+						<li><label class="mod advantage"><input type="checkbox"> Advantage</label></li>
+						<li class="last-in-group"><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
 						<li><label><input type="checkbox"> To GM</label></li>
 						<li class="last-in-group"><label><input type="checkbox"> To self</label></li>
 						<li class="last-in-group"><label><input type="checkbox"> Auro-roll damage</label></li>
 						<li><label><input type="checkbox"> Hide mods</label></li>
 					</ul>
 				</li>`;
+				return `${html}
+				<li class="head hasSub">
+					<span><span style="font-family:Pictos">y</span> Mods</span>
+					<ul class="mods submenu">
+						<li><label class="mod advantage"><input type="checkbox"> Advantage</label></li>
+						<li><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
+					</ul>
+				</li>`;
 			} else {
-				return `${html}<li data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}>${it.name}</li>`;
+				const dataAttribs = `data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}`;
+				return `${html}<li ${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>${it.icon || it.name}</li>`;
 			}
 		}, "");
 	}
@@ -25297,6 +25353,12 @@ function baseBetterActions () {
 		`;
 	}
 
+	const withMod = () => {
+		const adv = d20plus.ba.$buttons.find(".b20-rolls .mods .advantage input").prop("checked");
+		const dis = d20plus.ba.$buttons.find(".b20-rolls .mods .disadvantage input").prop("checked");
+		return adv ? "advantage" : dis ? "disadvantage" : "normal";
+	}
+
 	const getAmConfig = () => {
 		const cfg = d20plus.cfg.getOrDefault("token", "showTokenMenu");
 		d20plus.ba.enabled = cfg !== "none";
@@ -25322,7 +25384,8 @@ function baseBetterActions () {
 
 	const buildTemplateModel = (type, v) => {
 		console.log(type, v);
-		const dmgTag = `[dmg@{target|token_id}]`;
+		const targTag = v.onSelf ? "selected" : "target";
+		const dmgTag = `[${v.healroll ? "heal" : "dmg"}@{${targTag}|token_id}]`;
 		if (type === "ability") {
 			const tmplModel = [
 				[v.rMode,	`1`],
@@ -25343,7 +25406,7 @@ function baseBetterActions () {
 				[`charname`, v.subTitle, {css: `${v.isSpell ? "color:#3737ff;" : ""}margin-bottom:8px;display:inline-block;`}],
 				[`mod`,		 `[[${v.atkMod}]]`],
 				[`range`,	[
-					[`^{target:} ${v.target}`, {css: `display: block;font-style: normal;border-bottom: 1px solid grey;padding-bottom: 8px;`}],
+					[`^{target:} @{${targTag}|token_name}`, {css: `display: block;font-style: normal;border-bottom: 1px solid grey;padding-bottom: 8px;`}],
 					[v.charName, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-weight:bold;`}],
 				]],
 				[`dmg1flag`, "1"],
@@ -25367,8 +25430,11 @@ function baseBetterActions () {
 					[v.title, {css: `display: block;width: 180px;font-size: 13px;line-height: 16px;`}],
 					[v.subTitle, {q: !!v.subTitle, css: `display: block;width: 175px;color: #8B8B8B;${v.isSpell ? "color:#3737ff;" : ""}font-weight: normal;`}],
 				], !!v.dc],
-				[`savedesc`,	`${v.saveRoll} [${v.target}]("style="${normalizeStyle}font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;")`],
-				[`savedc`,		`[[${v.dc}]] [${v.saveAttr}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")`],
+				[`savedesc`,	[
+					[`[[@{${targTag}|d20}+@{${targTag}|${v.saveAttr}_save_bonus}[chk]]]`],
+					[` @{${targTag}|token_name}`, {css: `font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;`}],
+				], !!v.dc],
+				[`savedc`,		`[[${v.dc}]] [^{${v.saveAttr?.slice(0, 3)}-u}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")`, !!v.dc],
 				[`range`,		v.dmg1type ? `${v.dmg1type} ${v.dmg2type || ""}` : "", !!v.dmg1type],
 				[`dmg1type`, `^{failures-u}`, {css: "font-size: smaller;vertical-align: sub;"}],
 				[`dmg2type`, `^{successes-u}`, {css: "font-size: smaller;vertical-align: sub;"}],
@@ -25384,15 +25450,15 @@ function baseBetterActions () {
 				[v.rMode,	 "1", !!v.dmg1on],
 				[`attack`,	 "1", !!v.dmg1on],
 				[`rname`, [
-					[`DC[[${v.dc}]] [${v.saveAttr}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")`, !!v.dc],
-					[`${v.saveRoll} [${v.target}]("style="${normalizeStyle}font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;")`, !!v.saveRoll],
-					[`^{target:} ${v.target}`, {q: !!v.target, css: `color: #8B8B8B;font-weight: normal;`}],
-					[v.charName, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-style: italic;font-weight: bold;display: block;${(v.dmg1on || v.dc || "") && `border-top: 1px solid #8B8B8B;`}padding-top: 7px;`}],
+					[`DC[[${v.dc}]] [^{${v.saveAttr?.slice(0, 3)}-u}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")`, !!v.saveAttr],
+					[`[[@{${targTag}|d20}+@{${targTag}|${v.saveAttr}_save_bonus}[chk]]] [@{${targTag}|token_name}]("style="${normalizeStyle}font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;")`, !!v.saveAttr],
+					[`^{target:} @{${targTag}|token_name}`, {q: !v.onSelf, css: `color: #8B8B8B;font-weight: normal;`}],
+					[v.charName, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-style: italic;font-weight: bold;display: block;${(v.dmg1on || v.saveAttr || "") && `border-top: 1px solid #8B8B8B;`}padding-top: 7px;`}],
 					[v.title, {css: `display: block;width: 180px;font-size: 13px;line-height: 16px;`}],
 					[v.subTitle, {q: !!v.subTitle, css: `padding-bottom:8px;display: block;width: 175px;color: #8B8B8B;${v.isSpell ? "color:#3737ff;" : ""}font-weight: normal;`}],
 				], !!v.title],
 				[`r1`,	[
-					[`[[${v.dmg1roll}${dmgTag}]]`],
+					[`[[${v.dmg1roll || v.healroll}${dmgTag}]]`],
 					[v.dmg1type, {css: `display: block;font-size:12px;color: #8B8B8B;font-weight:normal`, q: !!v.dmg1type}],
 				], !!v.dmg1on],
 				[`r2`,	[
@@ -25402,6 +25468,15 @@ function baseBetterActions () {
 			].map(getTemplatePart).filter(s => !!s).join("}} {{");
 			return `&{template:simple} ${v.hidden || ""} {{${tmplModel}}} {{save=1}}`;
 		}
+	}
+
+	const getDescriptionTemplate = (id, type) => {
+		const char = getSingleChar();
+		const cat = char[type] || [];
+		const obj = cat[id];
+		if (!obj) return;
+		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
+		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
 	}
 
 	const getAbilityTemplate = (spec, attr) => {
@@ -25434,7 +25509,7 @@ function baseBetterActions () {
 		].filter(s => !!s).join(" ");
 
 		const tmplVars = {
-			rMode: "normal",
+			rMode: withMod(),
 			title: `@{selected|token_name}`,
 			subTitle: `^{${typeName}} (${mods.title})`,
 			attrName: `^{${attrName}}`,
@@ -25465,13 +25540,12 @@ function baseBetterActions () {
 			dmg2type:	atk.attack_damagetype2 || atk.dmg2type || "",
 			dmg1roll:	atk.attack_damage || dmg.dmg1 || "",
 			dmg2roll:	atk.attack_damage2 || dmg.dmg2 || "",
-			rMode: "normal",
+			rMode: withMod(),
 			crit1roll:	atk.attack_crit || dmg.crit1 || "",
 			crit2roll:	atk.attack_crit2 || dmg.crit2 || "",
 			atkMod:	atk.attack_tohit || (atk.atkflag !== "0" ? `${atk.atkattr_base ? `${atk.atkattr_base?.replaceAll("@{", "@{selected|")}+` : ""}@{selected|pb}[PB]` : ""),
 			saveAttr: atk.saveattr ? `^{${atk.saveattr?.toLowerCase().slice(0, 3)}-u}` : "",
 			dc: atk.savedc?.replaceAll("@{", "@{selected|") || "",
-			target: `@{target|token_name}`,
 		}
 		const model = tmplVars.atkMod ? "attack" : tmplVars.dc && tmplVars.dmg1roll ? "cast" : "action";
 		return buildTemplateModel(model, tmplVars);
@@ -25480,7 +25554,7 @@ function baseBetterActions () {
 	const getSpellTemplate = (id, flags) => {
 		const char = getSingleChar();
 		const [lvl, upcast] = String(flags).split("|");
-		const spell = char.spells[lvl][id];
+		const spell = char.spells[id];
 		const hasAttack = spell.spellattack
 			&& spell.spellattack !== "None";
 		const hasSave = spell.spellsave
@@ -25493,32 +25567,32 @@ function baseBetterActions () {
 			: "";
 		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
 			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
-		const onSelf = spell.spellrange?.includes("[S]");
+		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
 		const tmplVars = {
-			rMode: model !== "attack" ? "always" : "normal",
+			rMode: model !== "attack" && !spell.spellhealing ? "always" : model === "attack" ? withMod() : "normal",
 			title:	spell.spellname,
 			subTitle,
 			charName:	char.name,
 			isNpc:	char.isNpc,
 			isSpell: spell.spell_ability === "spell",
-			dmg1on: !!spell.spelldamage,
+			dmg1on: !!spell.spelldamage || !!spell.spellhealing,
 			dmg2on: !!spell.spelldamage2,
 			dmg1type:	spell.spelldamagetype,
 			dmg2type:	spell.spelldamagetype2,
-			dmg1roll:	`${spell.spelldamage}${spell.spelldmgmod === "Yes" ? `+${spellAbility}[ABIL]` : ""}`,
-			dmg2roll:	`${spell.spelldamage2}${spell.spelldmgmod === "Yes" ? `+${spellAbility}[ABIL]` : ""}`,
-			target: !onSelf ? `@{target|token_name}` : "",
+			dmg1roll:	(spell.spelldamage || "") && `${spell.spelldamage}${spell.spelldmgmod === "Yes" ? `+${spellAbility}[ABIL]` : ""}`,
+			dmg2roll:	(spell.spelldamage2 || "") && `${spell.spelldamage2}${spell.spelldmgmod === "Yes" ? `+${spellAbility}[ABIL]` : ""}`,
+			healroll:	(spell.spellhealing || "") && `${spell.spellhealing}${spell.spelldmgmod === "Yes" ? `+${spellAbility}[ABIL]` : ""}`,
+			onSelf,
 
 			crit1roll:	spell.spelldamage,
 			crit2roll:	spell.spelldamage2,
 			atkMod:	spell.spell_ability !== "spell" ? `@{selected|spell_attack_mod}[MOD]+${spellAbility}[ABIL]@{selected|pb}[PB]` : `@{selected|spell_attack_bonus}`,
 
 			dc: spell.spell_ability !== "spell" ? `(8+@{selected|spell_dc_mod}[MOD]+${spellAbility}[ABIL]@{selected|pb}[PB])` : `@{selected|spell_save_dc}`,
-			saveAttr: `^{${spell.spellsave?.toLowerCase().slice(0, 3)}-u}`,
-			saveRoll: `[[@{target|d20}+@{target|${spell.spellsave?.toLowerCase()}_save_bonus}[chk]]]`,
+			saveAttr: spell.spellsave?.toLowerCase() || "",
 			dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
 			dmgOnFail: `$[[0]]`,
-			dmgOnSuccess: lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
+			dmgOnSuccess: spell.lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
 		}
 		return buildTemplateModel(model, tmplVars);
 	}
@@ -25535,6 +25609,12 @@ function baseBetterActions () {
 		},
 		cast: (model, spec, flags) => {
 			d20.textchat.doChatInput(getSpellTemplate(spec, flags));
+		},
+		spelldescription: (model, spec, flags) => {
+			getDescriptionTemplate(spec, "spells");
+		},
+		attackdescription: (model, spec, flags) => {
+			getDescriptionTemplate(spec, "attacks");
 		},
 	};
 
@@ -25664,7 +25744,7 @@ function baseBetterActions () {
 			const spec = $clicked.data("spec");
 			const flags = $clicked.data("flags");
 			if (spec && action) amExecute(action, spec, flags);
-			else if (action && mod) amSet(mod);
+			// else if (action && mod) amSet(mod);
 			else if (!spec && action) amDo(action);
 		})
 	}
