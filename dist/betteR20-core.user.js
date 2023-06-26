@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.172.7
+// @version      1.35.172.8
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -248,7 +248,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section<br><code>-- v.172.4 changes:</code><br>⦁ condition names with hints are now clickable and send the description to chat<br><code>-- v.172.5 changes:</code><br><strong>Filter Imports by List</strong><br>⦁ When importing, you can filter by a list of items. This means that when importing, if you press Import by list and enter the items that you want to import, it will automatically choose all of them for you.<br>⦁ The UX, explaining, and labeling needs work. Please give suggestions<br><code>-- v.172.6 changes:</code><br>⦁ You can now filter by source. This means the filter is fully compatible with copying csvs from table view in 5etools<br>⦁ Some "Filter by List" labeling improvements<br>⦁ (not related to Filter) Change players' avatars size<br><code>-- v.172.7 changes:</code><br><strong>Better token Actions & Automation</strong><br>⦁ New automatic token action buttons appear whenever you select a character:<br>Rolls, Stats and Animation (the latter appears only if you've set up animations in current Campaign)<br>⦁ Rolls lets you select available actions, including spells and attacks, and send the roll to chat.<br>The roll templates have slightly updated look and let you select the target whenever it's required<br>⦁ Stats show basic character info. The buttons at the top of the menu let you quickly open character sheet,<br>and let you toggle "Speaking as" this character mode<br>⦁ Whenever you roll using Better Actions menu, you gain several benefits:<br>- the damage/healing values are clickable and are applied on click<br>- spell slots are spent automatically when you use a spell<br>- both actions give brief chat reminders that allow reverting the changes<br>The system is in an extremely unfinished state, so use with caution!</p>
+					<p>This version contains following changes<br><code>-- v.172.1 changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ create and edit Multi-Sided tokens on the fly<br>⦁ the new dialog replaces Set Side Size (and can set any custom size instead)<br>⦁ option to exclude any image from Random Side selection<br>⦁ update Random Side randomizer (to give seemingly more random results)<br>NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20<br><code>-- v.172.3 changes:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions, diseases and statuses<br>⦁ works with 5etools version only, and uses 5etools data<br>⦁ can be disabled in b20 Config in Chat section<br><code>-- v.172.4 changes:</code><br>⦁ condition names with hints are now clickable and send the description to chat<br><code>-- v.172.5 changes:</code><br><strong>Filter Imports by List</strong><br>⦁ When importing, you can filter by a list of items. This means that when importing, if you press Import by list and enter the items that you want to import, it will automatically choose all of them for you.<br>⦁ The UX, explaining, and labeling needs work. Please give suggestions<br><code>-- v.172.6 changes:</code><br>⦁ You can now filter by source. This means the filter is fully compatible with copying csvs from table view in 5etools<br>⦁ Some "Filter by List" labeling improvements<br>⦁ (not related to Filter) Change players' avatars size<br><code>-- v.172.7 changes:</code><br><strong>Better token Actions & Automation</strong><br>⦁ New automatic token action buttons appear whenever you select a character:<br>Rolls, Stats and Animation (the latter appears only if you've set up animations in current Campaign)<br>⦁ Rolls lets you select available actions, including spells and attacks, and send the roll to chat.<br>The roll templates have slightly updated look and let you select the target whenever it's required<br>⦁ Stats show basic character info. The buttons at the top of the menu let you quickly open character sheet, and let you toggle "Speaking as" this character mode<br>⦁ Whenever you roll using Better Actions menu, you gain several benefits:<br>- the damage/healing values are clickable and are applied on click<br>- spell slots are spent automatically when you use a spell<br>- both actions give brief chat reminders that allow reverting the changes<br><code>-- v.172.8 changes:</code><br>⦁ Multiple bug fixes & general refactoring<br>⦁ Proper display of hit dice and death saves, also added Concentration<br>⦁ Auto roll saves, and show save/attack success or failure<br>⦁ Item tracking (enable Ammo tracking and type item name in Ammo field)<br>The system is still in an unfinished state, so use with caution!</p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.3.46", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -564,6 +564,26 @@ function baseUtil () {
 				d20plus.ut._lastInput = null;
 				return null;
 			}
+		}
+	};
+
+	d20plus.ut.getTokensDistanceText = (tokenAmodel, tokenBmodel) => {
+		if (!tokenAmodel?.attributes || !tokenBmodel?.attributes) return "";
+		const page = d20.Campaign.activePage().attributes;
+		const tokenA = tokenAmodel.attributes;
+		const tokenB = tokenBmodel.attributes;
+		const distX = Math.abs(tokenA.left - tokenB.left) - tokenA.width / 2 - tokenB.width / 2 + 70;
+		const distY = Math.abs(tokenA.top - tokenB.top) - tokenA.height / 2 - tokenB.height / 2 + 70;
+		const distMapUnits = (dist) => Math.round(dist / 70 * (page.scale_number || 5));
+		if (page.diagonaltype === "foure") {
+			const maxDist = Math.max(distX, distY);
+			return `${distMapUnits(maxDist)} ${page.scale_units || "ft."}`;
+		} else if (page.diagonaltype === "manhattan") {
+			const totDist = distX + distY;
+			return `${distMapUnits(totDist)} ${page.scale_units || "ft."}`;
+		} else {
+			const distPixels = Math.sqrt(distX ** 2 + distY ** 2);
+			return `${distMapUnits(distPixels)} ${page.scale_units || "ft."}`;
 		}
 	};
 
@@ -11917,7 +11937,7 @@ function initHTMLbaseMisc () {
 	d20plus.html.bActionsButtons = `
 	<ul style="display: inline-block;" class="b20-token-menu">
 		<li style="color:unset!important;">
-			<span style="position:relative;">
+			<span style="position:relative;display: inline-block;">
 				<button class="btn" data-type="rolls">Rolls</button>
 				<div class="b20-rolls d20contextmenu">
 					<ul></ul>
@@ -12954,43 +12974,39 @@ function d20plusEngine () {
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
-		window.Markdown.parse = function(e) {
-			{
-				var t = e
-					, n = []
-					, i = [];
-				-1 != t.indexOf("\r\n") ? "\r\n" : -1 != t.indexOf("\n") ? "\n" : ""
-			}
-			return t = t.replace(/{{{([\s\S]*?)}}}/g, function(e) {
-				return n.push(e.substring(3, e.length - 3)),
-					"{{{}}}"
+		window.Markdown.parse = function(x) {
+			var g = x, l, t = [], m = [], v = g.indexOf(`\r\n`) != -1 ? `\r\n` : g.indexOf(`\n`) != -1 ? `\n` : "";
+			return g = g.replace(/{{{([\s\S]*?)}}}/g, function(h) {
+				return t.push(h.substring(3, h.length - 3)),
+				"{{{}}}"
 			}),
-				t = t.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(e) {
-					return i.push(e.substring(5, e.length - 6)),
-						"<pre></pre>"
-				}),
-				// BEGIN MOD
-				t = t.replace(/~~(.*?)~~/g, OUT_STRIKE),
-				// END MOD
-				t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-				t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
-				t = t.replace(/``(.*?)``/g, "<code>$1</code>"),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
-				t = t.replace(new RegExp("<pre></pre>","g"), function() {
-					return "<pre>" + i.shift() + "</pre>"
-				}),
-				t = t.replace(/{{{}}}/g, function() {
-					return n.shift()
-				})
-		};
+			g = g.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(h) {
+				return m.push(h.substring(5, h.length - 6)),
+				"<pre></pre>"
+			}),
+			// BEGIN MOD
+			g = g.replace(/~~(.*?)~~/g, OUT_STRIKE),
+			// END MOD
+			g = g.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+			g = g.replace(/\*(.*?)\*/g, "<em>$1</em>"),
+			g = g.replace(/``(.*?)``/g, "<code>$1</code>"),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
+			g = g.replace(new RegExp("<pre></pre>","g"), function(h) {
+				return "<pre>" + m.shift() + "</pre>"
+			}),
+			g = g.replace(/{{{}}}/g, function(h) {
+				return t.shift()
+			}),
+			g
+		},
 		// END ROLL20 CODE
 
 		/* eslint-enable */
 
 		// after a short delay, replace any old content in the chat
 		setTimeout(() => {
-			$(`.message`).each(function () {
+			$(`.message.general`).each(function () {
 				$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
 			})
 		}, 2500);
@@ -15940,6 +15956,34 @@ function baseCss () {
 		{
 			s: ".inlinerollresult.showtip.hit-dice:hover::after",
 			r: "content: \"\\2694\";font-size: initial; color: rgba(250,100,100,0.6); position: absolute;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check::after",
+			r: "content: \"\\2612\";font-size: 15px;color: #b21a1a;position:absolute;background:inherit;margin-top: 4px;line-height: 15px;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.success::after",
+			r: "content: \"\\2611\";color: #009c00;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.attack-failure::after",
+			r: "content: \"\\26E8\"; padding-top: 2px;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.attack-success::after",
+			r: "content: \"\\2694\";color: #009c00;border: 1px solid;display: inline-block;border-radius: 10px;padding: 2px;font-size: 11px;line-height: 8px;margin-top: 5px;",
+		},
+		{
+			s: ".sheet-grey .inlinerollresult.showtip.check::after",
+			r: "content: \"\";border: none;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check",
+			r: "margin-right: 8px;display: inline-block;height: 24px;line-height: 24px;margin-top: -4px;",
+		},
+		{
+			s: ".sheet-grey .inlinerollresult.showtip.check, .inlinerollresult.showtip.check.attack-success, .inlinerollresult.showtip.attack-fail",
+			r: "margin-right: unset;",
 		},
 		// Styles for altered messages
 		{
@@ -22386,12 +22430,12 @@ function baseChat () {
 
 	d20plus.chat.processDice = ($msg) => {
 		const dmgCfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
-		const rollData = /\[(\d*)(?<type>chk|dmg|sdmg|heal)(?<targets>[^\]]*)\]/g;
+		const rollData = /\[(\d*)(?<type>chk|atk|dmg|sdmg|heal|init)(?<targets>[^\]]*)\]/g;
 		$msg.find(".inlinerollresult").each((i, el) => {
 			const roll = {$el: $(el)};
 			if (roll.$el.attr("data-damage")) return;
 			const tooltipsrc = roll.$el.attr("title") || roll.$el.attr("original-title");
-			roll.dmg = roll.$el.text();
+			roll.val = roll.$el.text();
 			roll.tooltip = tooltipsrc.replace(rollData, (...parsed) => {
 				Object.assign(roll, parsed.last());
 				roll.$el.attr("data-targets", roll.targets);
@@ -22400,25 +22444,38 @@ function baseChat () {
 			if (dmgCfg === "none") {
 				if (roll.type) roll.$el.attr("title", roll.tooltip);
 				return;
-			} else if (roll.type === "chk" || isNaN(roll.dmg)) {
-				if (roll.targets.length > 2) {
-					d20plus.chat.parseAOE(roll.$el);
-					return;
+			} else if (roll.type === "chk") { //  || isNaN(roll.val)
+				if (!isNaN(roll.targets) && !isNaN(roll.val)) {
+					if (Number(roll.targets) > roll.val) roll.$el.addClass("check failure");
+					else roll.$el.addClass("check success");
+					roll.tooltip += ` vs&nbsp;DC&nbsp;${roll.targets}`;
 				}
 				roll.$el.attr("data-damage", "check");
+			} else if (roll.type === "init") {
+				if (!roll.$el.closest(".sheet-grey").length && is_gm) {
+					d20plus.ba.addTurn(roll.targets, roll.val);
+				}
+			} else if (roll.type === "atk") {
+				const ac = atob(roll.targets);
+				if (!isNaN(ac) && !isNaN(roll.val)) {
+					if (Number(ac) < roll.val) roll.$el.addClass("check attack-success");
+					else roll.$el.addClass("check attack-failure");
+					if (is_gm) roll.tooltip += ` vs&nbsp;AC&nbsp;${ac}`;
+				}
+				roll.$el.attr("data-damage", "attack");
 			} else if (roll.type) {
 				if (roll.targets === "aoe") {
 					d20plus.chat.parseAOE(roll.$el);
 					return;
 				}
-				roll.$el.attr("data-damage", roll.type === "heal" ? -roll.dmg : +roll.dmg);
+				roll.$el.attr("data-damage", roll.type === "heal" ? -roll.val : +roll.val);
 				if (roll.type === "heal") roll.$el.addClass("heal-dice");
 				if (roll.targets) roll.tooltip += "<span class=\"hit-dice-tip hit-targeted\"></span>";
 				else roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
 				roll.$el.addClass("hit-dice");
 			} else {
 				if (dmgCfg === "b20") return;
-				roll.$el.attr("data-damage", roll.dmg);
+				roll.$el.attr("data-damage", roll.val);
 				roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
 				roll.$el.addClass("mod-dice");
 			}
@@ -22505,13 +22562,13 @@ function baseChat () {
 				if (msg.listenerid.undo) d20plus.chat.modifyMsg(msg.id, {action: msg.listenerid.undo});
 				msg.content = `<span ${span} title='${avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
 			}
+		} else if (msg.inlinerolls && msg.rolltemplate) {				// for some reason r20 refreshes roll template html after a sec
+			msg.id = d20plus.ut.generateRowId();						// this is supposed to trick r20 not to revert msg contents
+			d20plus.chat.modifyMsg(msg.id, {dice: true});
 		}
 		if (replaceHints) {
 			const fromHint = msg.listenerid?.excludeHint;
 			d20plus.chat.modifyMsg(msg.id, {hints: true, excludeHint: fromHint});
-		}
-		if (msg.inlinerolls) {
-			d20plus.chat.modifyMsg(msg.id, {dice: true});
 		}
 		if (d20.textchat.talktomyself && msgData.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
@@ -22839,8 +22896,544 @@ function baseChat () {
 SCRIPT_EXTENSIONS.push(baseChat);
 
 
+function baseBARollTemplates () {
+	d20plus.ba = d20plus.ba || {};
+
+	const targetTag = `@{target|token_id}`;
+	const targetName = `@{target|token_name}`;
+	const normalizeStyle = `color: inherit;text-decoration: none;cursor: auto;`;
+
+	const getRollMode = () => {
+		const adv = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .advantage input").prop("checked");
+		const dis = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .disadvantage input").prop("checked");
+		return adv ? "advantage" : dis ? "disadvantage" : "normal";
+	}
+
+	const getWMode = () => {
+		const togm = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .togm input").prop("checked");
+		return togm ? "/w gm " : "";
+	}
+
+	const getDisplayName = (char) => {
+
+	}
+
+	const getTemplatePart = ([tag, val, props], subtree) => {
+		if ((!tag && !subtree) || props === false || props?.q === false) return "";
+		if (Array.isArray(val)) val = val.reduce((s, v) => s + getTemplatePart([null].concat(v), true), "");
+		else val = props?.css ? `[${val || " "}]("style="${normalizeStyle}${props.css}")` : val;
+		const left = props?.left || (props?.lcss ? `[ ]("style="${props?.lcss}")` : "");
+		const right = props?.right || (props?.rcss ? `[ ]("style="${props?.rcss}")` : "");
+		return `${tag ? `${tag}=` : ""}${left}${val}${right}`;
+	}
+
+	const getTemplateVar = (v) => {
+		if (v.q === false || (!v.tag && !v.isSubStr) || (!v.val && v.q === undefined)) return "";
+		if (Array.isArray(v.val)) {
+			const getSubVal = (s, v) => s + getTemplateVar(Object.assign(v, {isSubStr: true}));
+			const subVal = v.val.reduce(getSubVal, "");
+			v.val = v.css ? `[${subVal}]("style="${normalizeStyle}${v.css}")` : subVal;
+		} else {
+			if (v.css) v.val = (v.val || " ").replaceAll("]", "&#93;");
+			v.val = v.css ? `[${v.val}]("style="${normalizeStyle}${v.css}")` : v.val;
+		}
+		return `${v.tag ? `${v.tag}=` : ""}${v.val}`;
+	}
+
+	/* eslint-disable object-property-newline */
+	const buildAbilityTemplate = (v) => {
+		const tmplModel = [
+			{tag: v.rMode,	val: `1`},
+			{tag: `rname`,	val: v.title, css: `color:${v._isNpc ? "#9a384f" : "#607429"};`},
+			{tag: `name`,	val: `${v.subTitle || ""} (${v.mod || 0})`},
+			{tag: `type`,	val: v.attrName, css: `display:inline-block;width:50%;font-style: normal;margin: 2px 0px;vertical-align: middle;text-align: right;padding-right: 5px;line-height: 14px;letter-spacing: -1px;`},
+			{tag: `r1`,	val: [
+				{val: ` `, css: `display: inline-block;margin-left:-8px;`},
+				{val: `[[${v.r1}${v.dc ? `[chk${v.dc}]` : ""}]]`},
+			]},
+			{tag: `r2`,	val: [
+				{val: `[[${v.r2 || v.r1}${v.dc ? `[chk${v.dc}]` : ""}]]`},
+				{val: ` `, css: `display: inline-block;margin-right:-10px;`},
+			], q: v.rMode !== "normal"},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:npc} ${v.hidden} {{${tmplModel}}}`;
+	}
+
+	const buildAttackTemplate = (v) => {
+		const tmplModel = [
+			{tag: `attack`,	 val: "1"},
+			{tag: `crit`,	 val: "1"},
+			{tag: `damage`,	 val: "1"},
+			{tag: v.rMode,	 val: "1", q: !!v.atk1},
+			{tag: `range`,	 val: v.charName, css: `color:${v._isNpc ? "#9a384f" : "#607429"};${!v.atk1 || v.rMode === "" ? "margin-top: 12px;" : ""}font-weight:bold;display: inline-block;font-family: 'Times New Roman', Times;font-style: normal;font-variant: small-caps;font-size: 14px;`},
+			{tag: `rname`,	 val: v.title, css: `font-size: 13px;line-height: 16px;`},
+			{tag: `charname`, val: [
+				{val: v.subTitle, q: !!v.subTitle},
+				{val: ` `, q: !!v.targetName || !!v.saveAttr, css: `display: block;padding-bottom: 3px;`},
+				{val: [
+					{val: `^{on-hit:-u}`, css: `font-style: normal;display: block;`},
+					{val: `^{save} **^{difficulty-class-abv}${v.dc} ^{${v.saveAttr?.slice(0, 3)}-u}**`, css: `font-style: normal;display: block;`},
+				], q: !!v.saveAttr},
+				{val: [
+					{val: `^{target:} ${v.targetName}`},
+					{val: ` (${v.distance})`, q: !!v.distance},
+				], q: !!v.targetName},
+				{val: ` `, css: `display: block;padding-bottom: 8px;`},
+			]},
+			{tag: `mod`, val: [
+				{val: v.atkMod, q: v.rMode !== "" && !!v.atkMod},
+				{val: v.mod, q: !!v.mod},
+				{val: "⚕", q: !!v._isSpell, css: `color:#3737ff;font-weight:bold;`},
+			]},
+			{tag: `dmg1flag`, val: "1"},
+			{tag: `dmg1type`, val: v.dmg1type},
+			{tag: `dmg1`,	val: `[[${v.dmg1roll || 0}[${v.dmg1tag}${v.targetId}]]]`},
+			{tag: `crit1`,	val: `[[${v.crit1roll || 0}[${v.dmg1tag}${v.targetId}]]]`},
+			{tag: `dmg2flag`, val: "1", q: !!v.dmg2on},
+			{tag: `dmg2type`, val: v.dmg2type},
+			{tag: `dmg2`,	val: `[[${v.dmg2roll || 0}[${v.dmg2tag}${v.targetId}]]]`, q: !!v.dmg2on},
+			{tag: `crit2`,	val: `[[${v.crit2roll || 0}[${v.dmg2tag}${v.targetId}]]]`, q: !!v.dmg2on},
+			{tag: `r1`,		val: `[[${v.atk1}[atk${btoa(v.targetAc || "")}]]]`, q: !!v.atk1},
+			{tag: `r2`,		val: `[[${v.atk2 || v.atk1}[atk${btoa(v.targetAc || "")}]]]`, q: v.rMode !== "normal"},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}}`;
+	}
+
+	const buildCastTemplate = (v) => {
+		const tmplModel = [
+			{tag: `attack`,	 val: "1"},
+			{tag: `damage`,	 val: "1"},
+			{tag: `mod`,	 val: "⚕", css: `color:#3737ff;font-weight:bold;`},
+			{tag: `range`,	 val: v.charName, css: `color:${v._isNpc ? "#9a384f" : "#607429"};margin-top: 12px;font-weight:bold;display: inline-block;font-family: 'Times New Roman', Times;font-style: normal;font-variant: small-caps;font-size: 14px;`},
+			{tag: `rname`,	 val: v.title, css: `font-size: 13px;line-height: 16px;`},
+			{tag: `charname`, val: [
+				{val: v.subTitle, css: `display:inline-block;`},
+				{val: [
+					{val: ` `, css: `display: block;padding-bottom: 7px;`},
+					{val: `^{difficulty-class-abv}${v.dc} ^{${v.saveAttr?.slice(0, 3)}-u}`, css: `display: block;font-weight:bold;font-size:13px;`},
+					{val: [
+						{val: `^{target:} ${v.targetName}`},
+						{val: ` (${v.distance})`, q: !!v.distance},
+					], q: !!v.targetName, css: `display: block;`},
+					{val: `^{save}`, css: `display: block;`},
+					{val: ` `, css: `display: block;padding-bottom: 7px;`},
+				]},
+			]},
+			// {tag: `mod`,	 val: v.atkMod},
+			{tag: `dmg1type`,	val: [
+				{val: `^{damage:-u}%NEWLINE%^{failures-u}`, css: "font-size:8px;line-height:8px;display:block;padding:4px 0px;"},
+				{val: v.dmg1type ? `${v.dmg1type || ""} ${v.dmg2type || ""}` : "", q: !!v.dmg1type || !!v.dmg2type, css: `display: block;padding-bottom: 7px;width: 180px;font-style: normal;`},
+			]},
+			{tag: `dmg2type`,	val: `^{damage:-u}%NEWLINE%^{successes-u}`, css: "font-size:8px;line-height:8px;display:block;padding:4px 0px;"},
+			{tag: `dmg1flag`,	val: "1"},
+			{tag: `dmg2flag`,	val: "1"},
+			{tag: "dmg1", val: v.dmgOnFail},
+			{tag: "dmg2", val: v.dmgOnSuccess},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		v.hidden = v.hidden || `[[ floor([[${v.dmg1roll}${v.dmg1type ? `[${v.dmg1type}]` : ""} ${v.dmg2roll ? `+ ${v.dmg2roll}${v.dmg2type ? `[${v.dmg2type}]` : ""}` : ""}[dmg${v.targetId}]]]/2) [dmg${v.targetId}] ]]`;
+		return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}}`;
+	}
+
+	const buildActionTemplate = (v) => {
+		const tmplModel = [
+			// {tag: v.rMode,	val: "1", q: !!v.dmg1on},
+			// {tag: `attack`,	val: "1", q: !!v.dmg1on},
+			{tag: `mod`,	 val: "⚕", css: `color:#3737ff;font-weight:bold;`},
+			{tag: `rname`,	 val: [
+				{val: v.charName, css: `color:${v._isNpc ? "#9a384f" : "#607429"};margin-top: 12px;font-weight:bold;display:block;font-family: 'Times New Roman', Times;font-style: normal;font-variant: small-caps;font-size: 14px;`},
+				{val: v.title, css: `font-size: 13px;line-height: 16px;`},
+			]},
+			{tag: `charname`, val: [
+				{val: v.subTitle, css: `margin-bottom:8px;display:inline-block;`},
+				{val: [
+					{val: `^{difficulty-class-abv}${v.dc} ^{${v.saveAttr?.slice(0, 3)}-u}`, q: !!v.saveAttr, css: `display: block;font-weight:bold;font-size:13px;`},
+					{val: [
+						{val: `^{target:} ${v.targetName}`},
+						{val: ` (${v.distance})`, q: !!v.distance},
+					], q: !!v.targetName, css: `display: block;`},
+					{val: `^{save}`, q: !!v.saveAttr, css: `display: block;`},
+					{val: ` `, css: `display: block;padding-bottom: 7px;`},
+				]},
+			]},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:simple} ${v.hidden || ""} {{${tmplModel}}}`;
+	}
+
+	const buildDescriptionTemplate = (v) => {
+		void 0;
+	}
+	/* eslint-enable object-property-newline */
+
+	const outputTemplate = (values) => {
+		const templateModel = {
+			ability: buildAbilityTemplate,
+			attack: buildAttackTemplate,
+			cast: buildCastTemplate,
+			action: buildActionTemplate,
+			description: buildDescriptionTemplate,
+		}[values?._modelType];
+
+		const template = templateModel && templateModel(values);
+		if (!template) return d20plus.ba.rollError();
+
+		d20.textchat.doChatInput(`${getWMode()}${template}`);
+		console.log(values, template)
+		if (values._expend) d20plus.engine.expendResources(values._expend);
+	}
+
+	const buildRollModifier = (r) => {
+		const char = d20plus.ba.getSingleChar();
+		const r20q = /.*@{(?<attr>[^}]*)}.*/g;
+		return r?.split("+").reduce((res, attr) => {
+			return res + (Number(attr.replace(r20q, (...s) => char.stats[s.last().attr])) || 0);
+		}, 0) || 0;
+	}
+
+	const buildRollModel = (r) => {
+		console.log(r);
+		const critrange = r.critrange && Number(r.critrange) !== 20 ? `cs>${r.critrange}` : "";
+		const base = !r.base ? ""
+			: r.base.toLowerCase().includes("d") ? r.base : `1d${r.base}${critrange}`;
+		const mods = r.mods?.reduce((s, m) => {
+			if (!m) return s;
+			const attr = m[1] ? `[${m[1]}]` : "";
+			const raw = String(m[0] || "0").split("+").map(d => {
+				if (!d) return "";
+				d = d.trim();
+				if (d[0] === "-" || (s === "" && !r.base) || d === "") return `${d}`;
+				else return `+${d}`;
+			}).join("");
+			return `${s} ${raw}${attr}`;
+		}, "")
+		const dmg = r.type ? `[${r.type}${r.target || "@{target|token_id"}]` : "";
+		return `${base}${mods}${dmg}`;
+	}
+
+	const buildDisplayMod = (r) => {
+		const base = !r.base || r.base === "20" ? ""
+			: r.base.toLowerCase().includes("d") ? "" : `D${r.base} `;
+		const mods = r.mods?.reduce((s, m) => {
+			if (!m) return s;
+			return s + (Number(m[0]) || 0);
+		}, 0) || 0;
+		const sign = mods < 0 || !r.base ? "" : "+";
+		return `${base}${sign}${mods}`;
+	}
+
+	const getDescriptionTemplate = (token, id, type) => {
+		const char = d20plus.ba.getSingleChar(token);
+		const cat = char[type] || [];
+		const obj = cat[id];
+		if (!obj) return;
+		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
+		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
+	}
+
+	const getAbilityTemplate = (spec, attr, dc) => {
+		const char = d20plus.ba.getSingleChar();
+		if (!dc) [attr, dc] = (attr).split("|");
+
+		const abbr = attr.slice(0, 3).toUpperCase();
+		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
+		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
+		const attrIdNpc = spec === "save" ? `${abbr.toLowerCase()}_save` : (spec === "skill" ? attrBase : "");
+		const attrVal = (char.isNpc && char.npcStats[attrIdNpc]) || char.stats[attrId];
+
+		const roll = {
+			base: attr !== "hit dice" ? `20` : `${char.stats.hitdietype}`,
+			// type: spec === "hit dice" ? `heal` : null,
+			// target: spec === "hit dice" ? token.id : null,
+			mods: [
+				attr === "hit dice" || attr === "concentration" ? [char.stats.constitution_mod, "CON"] : [attrVal, abbr],
+				attr === "initiative" ? [` `, `init${char.lastTokenId}`] : null,
+				spec === "ability" && !char.isNpc ? [`${char.stats.jack_bonus}`, "JACK"] : null,
+			],
+		}
+
+		const tmplVals = {
+			_thisId: char.id,
+			_isNpc: char.isNpc,
+			_modelType: attr !== "hit dice" ? "ability" : "attack",
+			_onSelf: true,
+			dc,
+			chId: char.id,
+			rMode: getRollMode(),
+			title: attr !== "hit dice" ? char.name.tk : `^{hit-dice-u}`,
+			subTitle: `^{${spec === "ability" ? "abilities" : ["skill", "save", "roll"].includes(spec) ? spec : attr}}`,
+			attrName: `^{${spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(attr) ? attr.split(" ").concat("u").join("-") : attrBase)}}`,
+			mod: buildDisplayMod(roll),
+			r1: buildRollModel(roll), // +$[[0]]`,
+			// r2: `[[${buildRollModel(roll)}]]`, // +$[[0]]`,
+
+			dmg1on: true,
+			dmg1tag: "heal",
+			dmg1type: `^{hp}`,
+			dmg1roll: buildRollModel(roll),
+			charName: char.name.tk,
+			targetId: char.lastTokenId,
+		}
+
+		return tmplVals;
+	};
+
+	const getAbilityTemplateOld = (token, spec, attr) => {
+		const char = getSingleChar(token);
+		const type = attr || "roll"
+		// const roll = spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype}`;
+		const typeName = spec === "ability" ? "abilities" : ["skill", "save"].includes(spec) ? spec : type;
+
+		attr = attr || spec;
+		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
+		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
+		const attrName = spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(spec) ? attr.split(" ").concat("u").join("-") : attrBase);
+		const abbr = attr.slice(0, 3).toUpperCase();
+
+		const roll = {
+			base: spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype || 20}`,
+			type: spec !== "hit dice" ? `heal` : undefined,
+			self: spec !== "hit dice" ? true : undefined,
+			mods: [
+				spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
+				type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
+			],
+		}
+		const mods = {base: [
+			spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
+			type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
+		]};
+		mods.r1 = mods.base.concat([
+			spec === "initiative" ? ["&{tracker}"] : null,	// should be the last one
+		]).filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");		// TODO proper Initiative adding and NPCs
+		mods.r2 = mods.base.concat([])
+			.filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");
+		mods.title = mods.base.concat([
+			spec === "hit dice" ? [`+ D${char.stats.hitdietype}`] : null,
+		]).filter(s => !!s).map(s => s[0]).join(" ");
+
+		const hiddenVars = [
+			`${char.stats.global_skill_mod}`,
+		].filter(s => !!s).join(" ");
+
+		const tmplVars = {
+			chId: char.id,
+			rMode: getRollMode(),
+			title: char.name,
+			subTitle: `^{${typeName}} (${mods.title})`,
+			attrName: `^{${attrName}}`,
+			r1: `[[${roll}+${mods.r1}]]`, // +$[[0]]`,
+			r2: `[[${roll}+${mods.r2}]]`, // +$[[0]]`,
+			hidden: hiddenVars,
+			isNpc: char.isNpc,
+		}
+
+		return d20plus.ba.templateModel("ability", tmplVars);
+	};
+
+	const getAttackTemplate = (id, flags) => {
+		const char = d20plus.ba.getSingleChar();
+		const atk = char?.attacks[id];
+		const ammo = atk.ammo;
+		const dmg = atk.rollbase_crit?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
+		const atkattr = atk.atkattr_base?.replace(/@{(.*?)}/, "$1");
+
+		const atkRoll = {
+			base: `20`,
+			critrange: atk.atkcritrange || char.stats.default_critical_range || "20",
+			mods: [
+				char.isNpc ? [atk.attack_tohit, "MOD"] : undefined,
+				atk.atkattr_base ? [char.stats[atkattr], atkattr?.slice(0, 3).toUpperCase()] : undefined,
+				atk._getVar("profbonus") && !char.isNpc ? [char.stats.pb, "PB"] : undefined,
+			],
+		}
+
+		const tmplVals = {
+			_thisId: char.id,
+			_isNpc: char.isNpc,
+			_onSelf: atk._getVar("range")?.includes("[S]"),
+			_targeted: !!atk._getVar("hasattack") || !!atk._getVar("hasdamage") || !!atk._getVar("hasdamage2") || !!atk.savedc,
+			_modelType: atk._getVar("hasattack") ? "attack" : atk.savedc && atk._getVar("hasdamage") ? "cast" : "action",
+			_expend: atk.ammo ? {type: "item", name: atk.ammo, charID: char.id} : undefined,
+
+			chId: char.id, // !
+			title: atk._getVar("name") || "^{attack-u}",
+			subTitle: [atk._getVar("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
+				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
+			charName: char.name.tk,
+			dmg2on: atk._getVar("hasdamage2"),
+			dmg1tag:	atk._getVar("damagetype")?.includes("Healing") ? "heal" : "dmg",
+			dmg2tag:	atk._getVar("damagetype2")?.includes("Healing") ? "heal" : "dmg",
+			dmg1type:	atk._getVar("damagetype") || "",
+			dmg2type:	atk._getVar("damagetype2") || "",
+			dmg1roll:	atk.attack_damage || dmg.dmg1 || 0,
+			dmg2roll:	atk.attack_damage2 || dmg.dmg2 || 0,
+			rMode: getRollMode(),
+			crit1roll:	atk.attack_crit || dmg.crit1 || 0,
+			crit2roll:	atk.attack_crit2 || dmg.crit2 || 0,
+			atk1: buildRollModel(atkRoll),
+			atkMod:	buildDisplayMod(atkRoll),
+			saveAttr: atk.saveattr || "",
+			dc: atk.savedc && buildRollModifier(atk.savedc),
+		}
+		return tmplVals;
+	}
+
+	const getSpellTemplate = (id, flags) => {
+		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
+		const char = d20plus.ba.getSingleChar();
+		const [lvl, upcast] = String(flags).split("|");
+		const spell = char.spells[id];
+		const spellAbility = spell.spell_ability && spell.spell_ability?.length > 2
+			? (spell.spell_ability !== "spell" ? spell.spell_ability : char.stats.spellcasting_ability)?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
+			: "";
+		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
+			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
+		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
+		const spelldmgmod = spell.spelldmgmod === "Yes" ? char.stats[`${spellAbility}_mod`] || 0 : "";
+
+		const atkRoll = {
+			base: `20`,
+			// type: `atk`,
+			// target: targetTag,
+			critrange: char.stats.default_critical_range || "20",
+			mods: [
+				spell.spell_ability === "spell" && [char.stats.spell_attack_bonus, "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
+				spell.spell_ability !== "spell" && [char.stats.spell_attack_mod, "MOD"],
+				spell.spell_ability !== "spell" && [char.stats[`${spellAbility}_mod`], spellAbility.slice(0, 3).toUpperCase()],
+				spell.spell_ability !== "spell" && [char.stats.pb, "PB"],
+			],
+		}
+
+		const tmplVals = {
+			_thisId: char.id,
+			_isNpc:	char.isNpc,
+			_isSpell: spell.spell_ability === "spell",
+			_save: spell.spellsave?.toLowerCase() || false,
+			_expend: spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: char.id} : undefined,
+			_onSelf: spell.spellrange?.includes("[S]"),
+			_targeted: !!spell._getVar("hasattack") || !!spell._getVar("hasdamageorhealing") || !!spell._getVar("hassave"),
+			_modelType: spell._getVar("hasattack") || (!spell._getVar("hassave") && spell._getVar("hasdamageorhealing")) ? "attack" : (spell._getVar("hassave") && spell._getVar("hasdamage") ? "cast" : "action"),
+
+			rMode: spell._getVar("hasattack") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
+			chId: char.id,
+			charName: char.name.tk,
+			title:	spell.spellname,
+			subTitle,
+
+			dmg1on: !!spell.spelldamage || !!spell.spellhealing,
+			dmg2on: !!spell.spelldamage2,
+			dmg1tag:	spell.spelldamage || spell.spelldamage2 ? "dmg" : spell.spellhealing ? "heal" : "",
+			dmg2tag:	spell.spelldamage2 ? "dmg" : spell.spelldamage && spell.spellhealing ? "heal" : "",
+			dmg1type:	spell.spelldamagetype || (spell.spellhealing ? "healing" : ""),
+			dmg2type:	spell.spelldamagetype2 || (spell.spelldamage && spell.spellhealing ? "healing" : ""),
+			dmg1roll:	spell.spelldamage ? buildRollModel({base: spell.spelldamage, mods: [[spelldmgmod]]})
+				: spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
+			dmg2roll:	spell.spelldamage2 ? buildRollModel({base: spell.spelldamage2, mods: [[spelldmgmod]]})
+				: spell.spelldamage && spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
+
+			crit1roll:	spell.spelldamage,
+			crit2roll:	spell.spelldamage2,
+			atk1: buildRollModel(atkRoll),
+			atkMod:	buildDisplayMod(atkRoll),
+
+			dc: spell.spell_ability !== "spell"
+				? buildDisplayMod({mods: [[8], [char.stats.spell_dc_mod], [char.stats[`${spellAbility}_mod`]], [char.stats.pb]]})
+				: (char.stats.spell_save_dc || "10"),
+			saveAttr: spell.spellsave?.toLowerCase() || "",
+			// dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
+			dmgOnFail: `$[[0]]`,
+			dmgOnSuccess: spell.lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
+		}
+		return tmplVals;
+	}
+
+	const switchTargeting = (mode) => {
+		const on = mode === "on";
+		d20.engine.mode	= on ? "targeting" : "select";
+		d20.engine.canvas.hoverCursor = on ? "crosshair" : "move";
+		d20plus.ba.$dom.targetingNote[on ? "show" : "hide"]();
+		$("#babylonCanvas")[on ? "addClass" : "removeClass"]("targeting");
+	}
+
+	d20plus.ba.getTarget = async (vals, target) => {
+		if (target === false) { // user Closed targeting dialog
+			switchTargeting("off");
+			return d20.engine.nextTargetCallback = false;
+		} else if (!target) {
+			console.log("START TARGETING", vals);
+			switchTargeting("on");
+			d20.engine.nextTargetCallback = (t) => { d20plus.ba.getTarget(vals, t); };
+		} else if (vals._aoe) {
+			// console.log(target);
+		} else {
+			if (!target._model?.character) return d20plus.ut.sendHackerChat("Target the token that represents a PC or NPC", true);
+			const targetChar = await d20plus.ba.fetchChar(target._model);
+			const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
+			const distance = d20plus.ut.getTokensDistanceText(target._model, thisToken);
+
+			console.log("Getting target", vals);
+			switchTargeting("off");
+			d20.engine.nextTargetCallback = false;
+
+			if (vals._save) {
+				d20plus.ba.currentToken = target._model;
+				d20plus.ba.singleSelected = target._model;
+				outputTemplate(getAbilityTemplate("save", vals._save, vals.dc));
+			}
+
+			vals.targetId = target._model.id;
+			vals.targetName = target._model.attributes.name;
+			vals.targetAc = targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
+			vals.distance = distance;
+			outputTemplate(vals);
+			console.log("END TARGETING", vals);
+		}
+	}
+
+	d20plus.ba.getConcentrationDC = (vals) => {
+		const $dc = $(`
+			<div>
+				Enter incoming damage
+				<input type="number" style="width:45px;">
+			</div>
+		`).dialog({
+			title: "Concentration roll",
+			autoopen: true,
+			close: () => { $dc.off(); $dc.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $dc.off(); $dc.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $dc.find("input");
+					const dmg = $input.val();
+					if (!isNaN(dmg)) {
+						vals.dc = Math.max(10, Math.floor(dmg / 2));
+						outputTemplate(vals);
+					}
+					$dc.off(); $dc.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.makeRoll = (action, spec, flags) => {
+		const getTmplVals = {
+			roll: getAbilityTemplate,
+			attack: getAttackTemplate,
+			cast: getSpellTemplate,
+		}[action];
+
+		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		if (!tmplVals) return d20plus.ba.rollError();
+		else if (flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
+		else if (tmplVals._targeted) d20plus.ba.getTarget(tmplVals);
+		else outputTemplate(tmplVals);
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseBARollTemplates);
+
+
 function baseBetterActions () {
-	d20plus.ba = {};
+	d20plus.ba = d20plus.ba || {};
 
 	const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
 	let skills = "acrobatics,animal_handling,arcana,athletics,deception,history,insight,intimidation,investigation,medicine,nature,perception,performance,persuasion,religion,sleight_of_hand,stealth,survival";
@@ -22857,8 +23450,43 @@ function baseBetterActions () {
 		})
 	}
 
-	const prepareResources = () => {
-		const char = getSingleChar();
+	const getVar = {
+		attack: function (param) {
+			const char = d20plus.ba.getSingleChar();
+			const attr = {
+				name: {pc: "atkname", npc: "name"},
+				range: {pc: "atkrange", npc: "attack_range"},
+				hasattack: {pc: "atkflag", npc: "attack_flag", q: {false: ["0"]}},
+				hasdamage: {get: (at) => char.isNpc ? !!at.attack_damage : !!at.dmgbase && at.dmgflag !== "0"},
+				hasdamage2: {get: (at) => char.isNpc ? !!at.attack_damage2 : !!at.dmg2base && at.dmg2flag !== "0"},
+				damagetype: {pc: "dmgtype", npc: "attack_damagetype"},
+				damagetype2: {pc: "dmg2type", npc: "attack_damagetype2"},
+				profbonus: {pc: "atkprofflag", q: {false: ["0"]}},
+			}[param];
+			const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+			if (attr.get) return attr.get(this);
+			else if (!attr.q) return val;
+			else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
+		},
+		spell: function (param) {
+			const char = d20plus.ba.getSingleChar();
+			const attr = {
+				hasattack: {get: (sp) => !!sp.spellattack && sp.spellattack !== "None"},
+				hasdamage: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2},
+				hasdamageorhealing: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2 || !!sp.spellhealing},
+				hassave: {get: (sp) => !!sp.spellsave && sp.spellsave !== ""},
+			}[param];
+			const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+			if (attr.get) return attr.get(this);
+			else if (!attr.q) return val;
+			else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
+		},
+		char: function (param) {
+			void 0;
+		},
+	}
+
+	const prepareResources = (char) => {
 		["other", "class"].forEach(r => {
 			const tag = char.stats[`${r}_resource_name`];
 			const num = char.stats[`${r}_resource`];
@@ -22867,7 +23495,7 @@ function baseBetterActions () {
 				char.resources[tag] = num;
 			}
 		});
-		Object.entries(char.rawResources || {}).forEach(([id, r]) => {
+		Object.entries(char.raw.resources || {}).forEach(([id, r]) => {
 			["left", "right"].forEach(n => {
 				const tag = r[`resource_${n}_name`];
 				const num = r[`resource_${n}`];
@@ -22879,33 +23507,43 @@ function baseBetterActions () {
 		})
 	}
 
-	const prepareAttacks = () => {
-		const char = getSingleChar();
+	const prepareAttacks = (char) => {
 		char.attacks = {};
-		Object.entries(char.rawAttacks || {}).filter(([id, at]) => {
+		Object.entries(char.raw.attacks || {}).filter(([id, at]) => {
 			return !at.spellid;
 		}).forEach(([id, at]) => {
 			at.id = id;
 			char.attacks[id] = at;
+			char.attacks[id]._getVar = getVar["attack"];
 		});
-		char.isNpc && Object.entries(char.rawActions || {}).filter(([id, at]) => {
+		char.isNpc && Object.entries(char.raw.actions || {}).filter(([id, at]) => {
 			return at.attack_flag === "on";
 		}).forEach(([id, at]) => {
 			at.id = id;
 			char.attacks[id] = at;
+			char.attacks[id]._getVar = getVar["attack"];
 		});
 	}
 
-	const prepareSpells = () => {
-		const char = getSingleChar();
+	const prepareSpells = (char) => {
 		char.spells = {};
-		Object.entries(char.rawSpells || {}).forEach(([lvl, list]) => {
+		char.spells._byLvl = {};
+		/* Object.entries(char.raw.spells || {}).forEach(([lvl, list]) => {
 			Object.entries(list || {}).forEach(([id, spl]) => {
 				spl.id = id;
 				spl.lvl = lvl;
 				char.spells[id] = spl;
+				char.spells[id]._getVar = getVar["spell"];
 			})
-		});
+		}); */
+		Object.entries(char.raw.spells || {}).forEach(([id, spl]) => {
+			spl.id = id;
+			// spl.lvl = lvl;
+			char.spells[id] = spl;
+			char.spells[id]._getVar = getVar["spell"];
+			char.spells._byLvl[spl.lvl] = char.spells._byLvl[spl.lvl] || {};
+			char.spells._byLvl[spl.lvl][id] = char.spells[id];
+		})
 	}
 
 	const prepareStats = (stats, vals, tag) => {
@@ -22921,16 +23559,9 @@ function baseBetterActions () {
 		obj[attr] = val;
 	}
 
-	const prepareChar = async (t) => {
-		const tokenRef = t || d20plus.ba.tTokens[0];
-		const charRef = tokenRef?.character;
-		const name = charRef?.attributes.name;
-		const isUp2Date = d20plus.ba.chars[charRef.id]?.lastGroup === d20plus.ba.thisGroup;
-		if (!charRef || isUp2Date) return;
-		await d20plus.ut.fetchCharAttribs(charRef);
-		d20plus.ba.chars[charRef.id] = {id: charRef.id, name, isNpc: false, stats: {}};
-		const char = d20plus.ba.chars[charRef.id];
-		char.hp = {val: tokenRef.attributes.bar1_value, max: tokenRef.attributes.bar1_max};
+	const prepareChar = (char, charRef) => {
+		char.stats = {};
+		char.isNpc = false;
 		charRef.attribs?.models.forEach(prop => {
 			const [tag, type, id, ...attrPath] = prop.attributes.name.split("_");
 			const attr = attrPath.join("_");
@@ -22940,37 +23571,39 @@ function baseBetterActions () {
 				else prepareStats(char.stats, prop.attributes, tag);
 			} else if (tag === "npc" && attr === "") {
 				char.npcStats = char.npcStats || {};
-				prepareStats(char.npcStats, prop.attributes, [type].concat(id || []).join("_"));
+				if (type === "name") char.name = {ch: prop.attributes.current, tk: char.name.tk, npc: char.name.ch};
+				else prepareStats(char.npcStats, prop.attributes, [type].concat(id || []).join("_"));
 			} else if (type === "slots") {
 				const lvl = tag.slice(-1);
 				prepareTreeStats(char, ["spellslots", lvl], id, current);
 			} else if (attr === "") {
 				if (prop.attributes.name === "charactersheet_type" && current === "npc") char.isNpc = true;
 				prepareStats(char.stats, prop.attributes, [tag].concat(type || [], id || []).join("_"));
-			} else if (tag === "repeating") {
+			} else if (tag === "repeating" && d20plus.ba.singleSelected) {
 				const [stype, lvl] = type.split("-");
 				if (stype === "spell") {
 					if (lvl) {
-						prepareTreeStats(char, ["rawSpells", lvl, id], attr, current);
+						prepareTreeStats(char, ["raw", "spells", id], attr, current);
+						char.raw.spells[id].lvl = lvl;
 					} else {
 						char.stats = char.stats || {};
 						prepareStats(char.stats, prop.attributes, [type].concat(id || []).join("_"));
 					}
 				} else if (stype === "npcaction") {
-					prepareTreeStats(char, ["rawActions", id], attr, current);
-					if (lvl) char.rawActions[id].actionType = lvl;
+					prepareTreeStats(char, ["raw", "actions", id], attr, current);
+					if (lvl) char.raw.actions[id].actionType = lvl;
 				} else if (type === "attack") {
-					prepareTreeStats(char, ["rawAttacks", id], attr, current);
-				} else if (type === "item") {
-					prepareTreeStats(char, ["rawItems", id], attr, current);
+					prepareTreeStats(char, ["raw", "attacks", id], attr, current);
+				} else if (type === "inventory") {
+					prepareTreeStats(char, ["raw", "items", id], attr, current);
 				} else if (["proficiencies", "tool", "resource"].includes(type)) {
-					const stype = type === "proficiencies" ? "rawProficiencies" : `raw${type.toSentenceCase()}s`;
-					prepareTreeStats(char, [stype, id], attr, current);
+					const stype = type === "proficiencies" ? "proficiencies" : `${type}s`;
+					prepareTreeStats(char, ["raw", stype, id], attr, current);
 				} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
 					const stype = type.split("mod")[0].replace("tohit", "attack");
 					prepareTreeStats(char, ["mods", stype, id], attr, current);
 				} else if (type === "npctrait" || type === "trait") {
-					prepareTreeStats(char, ["rawTraits", id], attr, current);
+					prepareTreeStats(char, ["raw", "traits", id], attr, current);
 				}
 			} else if (type === "reporder") {
 				char.order = char.order || {};
@@ -22979,16 +23612,19 @@ function baseBetterActions () {
 				prepareTreeStats(char, ["mods", "active"], type, current);
 			}
 		});
-		prepareSpells();
-		prepareAttacks();
-		prepareResources();
+		if (d20plus.ba.singleSelected) {
+			prepareSpells(char);
+			prepareAttacks(char);
+			prepareResources(char);
+		}
 		char.hp.val = char.hp.val || char.stats.hp || char.npcStats?.hpbase;
 		char.hp.max = char.hp.max || char.stats.hpMax;
+		return char;
 	}
 
 	const prepareAllChars = async () => {
 		for (const t of d20plus.ba.tTokens) {
-			await prepareChar(t);
+			await d20plus.ba.fetchChar(t);
 		}
 	}
 
@@ -23035,10 +23671,10 @@ function baseBetterActions () {
 
 	const buildSpellVariants = (lvl, id) => {
 		const items = [];
-		const char = getSingleChar();
-		const ritual = char.rawSpells[lvl][id]?.spellritual;
+		const char = d20plus.ba.getSingleChar();
+		const ritual = char.raw.spells[id]?.spellritual;
 		const upcast = !isNaN(lvl)
-			&& char.rawSpells[lvl][id].spellathigherlevels;
+			&& char.raw.spells[id].spellathigherlevels;
 		ritual && items.push({
 			name: "As ritual",
 			action: "cast",
@@ -23050,6 +23686,7 @@ function baseBetterActions () {
 			hasSlots && items.push({
 				name: `Upcast at lvl ${upLvl}`,
 				action: "cast",
+				tag: `${upLvl}`,
 				spec: id,
 			});
 		});
@@ -23072,9 +23709,9 @@ function baseBetterActions () {
 		const subtree = [];
 		for (let i = 0; i <= 9; i++) {
 			const lvl = i || "cantrip";
-			const char = getSingleChar(); // Clerics, Druids, Paladins, and Wizards
+			const char = d20plus.ba.getSingleChar();
 			const shouldPrepare = ["Cleric", "Druid", "Paladin", "Wizard"].includes(char.stats.class);
-			const spells = !!char?.rawSpells && char.rawSpells[lvl];
+			const spells = char?.spells?._byLvl[lvl];
 			const items = Object.keys(spells || {}).map(id => {
 				const spell = spells[id];
 				const isAttack = spell.spellattack
@@ -23096,7 +23733,6 @@ function baseBetterActions () {
 						name: "Cast spell",
 						icon: isAttack ? "⚔" : "⚕",
 						action: "cast",
-						flags: `${lvl}`,
 						spec: id,
 					}].concat(variants ? {
 						icon: "↪",
@@ -23111,12 +23747,17 @@ function baseBetterActions () {
 				type: "head",
 				items,
 			});
+			!items.length && (char.spellslots || {})[lvl]?.total && subtree.push({
+				resource: buildSpellSlots(char, lvl),
+				name: `Level ${lvl}`,
+				type: "head",
+			})
 		}
 		buildGroup("Spells", subtree);
 	}
 
 	const buildAttacks = () => {
-		const char = getSingleChar();
+		const char = d20plus.ba.getSingleChar();
 		buildGroup("Attacks", Object.entries(char.attacks || {}).filter(([id, at]) => {
 			return !at.spellid;
 		}).map(([id, at]) => {
@@ -23126,7 +23767,12 @@ function baseBetterActions () {
 				|| (!char.isNpc && rangeField?.includes("/")));
 			const isVersatile = !isCast && rangeField?.includes("[V]");
 			const isOffhandable = !isCast && rangeField?.includes("[O]");
-			const types = `${isCast ? " cast" : ""}${isRanged ? " ranged" : ""}${isOffhandable ? " offhand" : ""}${isVersatile ? " versatile" : ""}`;
+			const types = [
+				isCast ? " cast" : "",
+				isRanged ? " ranged" : "",
+				isOffhandable ? " offhand" : "",
+				isVersatile ? " versatile" : "",
+			].join("");
 			return {
 				name: at.atkname || at.name,
 				type: `atkaction selector${types}`,
@@ -23163,13 +23809,14 @@ function baseBetterActions () {
 
 	const addCommonRolls = () => {
 		d20plus.ba.tree.rolls.push(
-			{name: "Initiative", action: "roll", spec: "initiative"},
+			{name: "Initiative", action: "roll", spec: "roll", flags: "initiative"},
+			{name: "Concentration", action: "roll", spec: "roll", flags: "concentration"},
 		);
 		if (!d20plus.ba.singleSelected
-			|| !(getSingleChar()?.isNpc === false)) return;
+			|| !(d20plus.ba.getSingleChar()?.isNpc === false)) return;
 		d20plus.ba.tree.rolls = d20plus.ba.tree.rolls.concat([
-			{name: "Death save", action: "roll", spec: "death save"},
-			{name: "Hit die", action: "roll", spec: "hit dice"},
+			{name: "Death save", action: "roll", spec: "roll", flags: "death save|10"},
+			{name: "Hit dice", action: "roll", spec: "roll", flags: "hit dice"},
 		]);
 	}
 
@@ -23188,7 +23835,7 @@ function baseBetterActions () {
 				if (!it.items.length) return html;
 				return `${html}
 				<li class="hasSub ${it.type}">
-					<span${it.name?.length > 15 ? ` title="${it.name}"` : ""}>
+					<span${it.name?.length > 14 ? ` title="${it.name}"` : ""}>
 						${it.resource ? `<i>${it.resource}</i>` : ""}${it.icon || it.name}
 					</span>
 					<ul class="submenu">
@@ -23216,18 +23863,22 @@ function baseBetterActions () {
 					<span><span style="font-family:Pictos">y</span> Mods</span>
 					<ul class="mods submenu">
 						<li><label class="mod advantage"><input type="checkbox"> Advantage</label></li>
-						<li><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
+						<li class="last-in-group"><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
+						<li><label class="mod togm"><input type="checkbox" ${d20plus.ba.singleSelected.attributes.layer === "gmlayer" ? "checked" : ""}> To GM</label></li>
 					</ul>
 				</li>`;
 			} else {
 				const dataAttribs = `data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}`;
-				return `${html}<li ${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>${it.icon || it.name}</li>`;
+				return `${html}<li ${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>
+					${it.resource ? `<span><i>${it.resource}</i>` : ""}
+					${it.icon || it.name}${it.resource ? `</span>` : ""}
+				</li>`;
 			}
 		}, "");
 	}
 
 	const buildStatsHtml = () => {
-		const char = getSingleChar();
+		const char = d20plus.ba.getSingleChar();
 
 		const baseStats = (char.isNpc ? [
 			buildTag("HP:", `${char.hp.val || ""}&nbsp;${buildTag("/", char.hp.max, " ")}`),
@@ -23244,7 +23895,7 @@ function baseBetterActions () {
 			buildTag("Speed", char.stats.speed),
 		]).concat([
 			buildTag("Initiative", char.stats.initiative_bonus),
-			buildTag("Passive Perception", char.stats.passive_wisdom),
+			buildTag("Passive Perception", char.isNpc ? (char.stats.passive || char.stats.passive_wisdom) : char.stats.passive_wisdom),
 		]).join(" ");
 
 		const baseAbilities = abilities.map(a => {
@@ -23275,7 +23926,7 @@ function baseBetterActions () {
 		].join(" ") : "";
 
 		return `
-			<li><span style="font-size:15px; font-weight: bold;line-height: 16px;width:110px">${char.name}</span>
+			<li><span style="font-size:15px; font-weight: bold;line-height: 16px;width:110px">${char.name.ch || char.name.tk}</span>
 				<span style="float: right">
 					<button data-action="speakas" title="Speak as character">w</button>
 					<button data-action="opensheet" title="Open character sheet">U</button>
@@ -23287,12 +23938,6 @@ function baseBetterActions () {
 		`;
 	}
 
-	const withMod = () => {
-		const adv = d20plus.ba.$buttons.find(".b20-rolls .mods .advantage input").prop("checked");
-		const dis = d20plus.ba.$buttons.find(".b20-rolls .mods .disadvantage input").prop("checked");
-		return adv ? "advantage" : dis ? "disadvantage" : "normal";
-	}
-
 	const getAmConfig = () => {
 		const cfg = d20plus.cfg.getOrDefault("token", "showTokenMenu");
 		d20plus.ba.enabled = cfg !== "none";
@@ -23301,299 +23946,46 @@ function baseBetterActions () {
 		return d20plus.ba.enabled;
 	}
 
-	const getSingleChar = () => {
-		const id = d20plus.ba.singleSelected?.character?.id;
-		return id && d20plus.ba.chars[id];
-	}
-
-	const normalizeStyle = `color: inherit;text-decoration: none;cursor: auto;`;
-	const getTemplatePart = ([tag, val, props], subtree) => {
-		if ((!tag && !subtree) || props === false || props?.q === false) return "";
-		if (Array.isArray(val)) val = val.reduce((s, v) => s + getTemplatePart([null].concat(v), true), "");
-		else val = props?.css ? `[${val || " "}]("style="${normalizeStyle}${props.css}")` : val;
-		const left = props?.left || (props?.lcss ? `[ ]("style="${props?.lcss}")` : "");
-		const right = props?.right || (props?.rcss ? `[ ]("style="${props?.rcss}")` : "");
-		return `${tag ? `${tag}=` : ""}${left}${val}${right}`;
-	}
-
-	const buildRollModel = (char, act, rolls) => {
-		void 0;
-	}
-
-	const buildTemplateModel = (type, v) => {
-		d20plus.ut.log(type, v);
-		const targTag = v.onSelf ? "selected" : "target";
-		const dmgTag = `[${v.healroll ? "heal" : "dmg"}@{${targTag}|token_id}]`;
-		if (type === "ability") {
-			const tmplModel = [
-				[v.rMode,	`1`],
-				[`name`,	v.subTitle],
-				[`rname`,	v.title, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};`}], //	{left: `[E]("style="${normalizeStyle}font-family:pictos;") `}],
-				[`r1`,		v.r1,		{lcss: `display: inline-block;margin-left:-8px;`}],
-				[`r2`,		v.r2,		{q: v.rMode !== "normal", rcss: `display: inline-block;margin-right:-10px;`}],
-				[`type`,	v.attrName,	{css: `display:inline-block;width:50%;font-style: normal;margin: 2px 0px;vertical-align: middle;text-align: right;padding-right: 5px;line-height: 14px;letter-spacing: -1px;`}],
-			].map(getTemplatePart).filter(s => !!s).join("}} {{");
-			return `&{template:npc} ${v.hidden} {{${tmplModel}}}`;
-		} else if (type === "attack") {
-			const tmplModel = [
-				[`attack`,	 "1"],
-				[`crit`,	 "1"],
-				[`damage`,	 "1"],
-				[v.rMode,	 "1"],
-				[`rname`,	 v.title, {css: `font-size: 13px;line-height: 16px;` }],
-				[`charname`, v.subTitle, {css: `${v.isSpell ? "color:#3737ff;" : ""}margin-bottom:8px;display:inline-block;`}],
-				[`mod`,		 `[[${v.atkMod}]]`],
-				[`range`,	[
-					[`^{target:} @{${targTag}|token_name}`, {css: `display: block;font-style: normal;border-bottom: 1px solid grey;padding-bottom: 8px;`}],
-					[`@{selected|token_name}`, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-weight:bold;`}],
-				]],
-				[`dmg1flag`, "1"],
-				[`dmg1type`, v.dmg1type],
-				[`dmg1`,	 `[[${v.dmg1roll || 0}${dmgTag}]]`],
-				["crit1",	 `[[${v.crit1roll || 0}${dmgTag}]]`],
-				[`dmg2flag`, "1", !!v.dmg2on],
-				[`dmg2type`, v.dmg2type],
-				[`dmg2`,	 `[[${v.dmg2roll || 0}${dmgTag}]]`, !!v.dmg2on],
-				["crit2",	 `[[${v.crit2roll || 0}${dmgTag}]]`, !!v.dmg2on],
-				[`r1`, 		 `[[@{selected|d20}cs>${v.critRange} + ${v.atkMod}]]`],
-				[`r2`, 		 `[[@{selected|d20}cs>${v.critRange} + ${v.atkMod}]]`, v.rMode !== "normal"],
-			].map(getTemplatePart).filter(s => !!s).join("}} {{");
-			return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}}`;
-		} else if (type === "cast") {
-			const tmplModel = [
-				[`save`,	"1"],
-				[`damage`,	"1"],
-				[`saveattr`, [
-					[`@{selected|token_name}`, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-style: italic;font-weight: bold;display: block;border-top: 1px solid #8B8B8B;padding-top: 7px;`}],
-					[v.title, {css: `display: block;width: 180px;font-size: 13px;line-height: 16px;`}],
-					[v.subTitle, {q: !!v.subTitle, css: `display: block;width: 175px;color: #8B8B8B;${v.isSpell ? "color:#3737ff;" : ""}font-weight: normal;`}],
-				], !!v.dc],
-				[`savedesc`,	[
-					[`[[@{${targTag}|d20}+@{${targTag}|${v.saveAttr}_save_bonus}[chk]]] `],
-					[`@{${targTag}|token_name}`, {css: `font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;`}],
-				], !!v.dc],
-				[`savedc`,		`[[${v.dc}]] [^{${v.saveAttr?.slice(0, 3)}-u}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")`, !!v.dc],
-				[`range`,		v.dmg1type ? `${v.dmg1type} ${v.dmg2type || ""}` : "", !!v.dmg1type],
-				[`dmg1type`, `^{failures-u}`, {css: "font-size: smaller;vertical-align: sub;"}],
-				[`dmg2type`, `^{successes-u}`, {css: "font-size: smaller;vertical-align: sub;"}],
-				[`dmg1flag`, "1"],
-				[`dmg2flag`, "1"],
-				["dmg1", v.dmgOnFail],
-				["dmg2", v.dmgOnSuccess],
-			].map(getTemplatePart).filter(s => !!s).join("}} {{");
-			v.hidden = v.hidden || `[[ floor([[${v.dmg1roll}${v.dmg1type ? `[${v.dmg1type}]` : ""} ${v.dmg2roll ? `+ ${v.dmg2roll}${v.dmg2type ? `[${v.dmg2type}]` : ""}` : ""}${dmgTag}]]/2) ${dmgTag} ]]`;
-			return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}} {{save=1}}`;
-		} else if (type === "action") {
-			const tmplModel = [
-				[v.rMode,	 "1", !!v.dmg1on],
-				[`attack`,	 "1", !!v.dmg1on],
-				[`rname`, [
-					[`DC[[${v.dc}]] [^{${v.saveAttr?.slice(0, 3)}-u}]("style="${normalizeStyle}font-size:12px;color: #8B8B8B;")%NEWLINE%`, !!v.saveAttr],
-					[`[[@{${targTag}|d20}+@{${targTag}|${v.saveAttr}_save_bonus}[chk]]] [@{${targTag}|token_name}]("style="${normalizeStyle}font-size:12px;font-style: normal;padding-bottom:9px;display: inline-block;")%NEWLINE%`, !!v.saveAttr],
-					[`^{target:} @{${targTag}|token_name}`, {q: !v.onSelf && !v.saveAttr, css: `color: #8B8B8B;font-weight: normal;`}],
-					[`@{selected|token_name}`, {css: `color:${v.isNpc ? "#9a384f" : "#607429"};font-style: italic;font-weight: bold;display: block;${(v.dmg1on || v.saveAttr || "") && `border-top: 1px solid #8B8B8B;`}padding-top: 7px;`}],
-					[v.title, {css: `display: block;width: 180px;font-size: 13px;line-height: 16px;`}],
-					[v.subTitle, {q: !!v.subTitle, css: `padding-bottom:8px;display: block;width: 175px;color: #8B8B8B;${v.isSpell ? "color:#3737ff;" : ""}font-weight: normal;`}],
-				], !!v.title],
-				[`r1`,	[
-					[`[[${v.dmg1roll || v.healroll}${dmgTag}]]`],
-					[v.dmg1type, {css: `display: block;font-size:12px;color: #8B8B8B;font-weight:normal`, q: !!v.dmg1type}],
-				], !!v.dmg1on],
-				[`r2`,	[
-					[`[[${v.dmg2roll}${dmgTag}]]`],
-					[v.dmg2type, {css: `display: block;font-size:12px;color: #8B8B8B;font-weight:normal`, q: !!v.dmg2type}],
-				], !!v.dmg2on],
-			].map(getTemplatePart).filter(s => !!s).join("}} {{");
-			return `&{template:simple} ${v.hidden || ""} {{${tmplModel}}} {{save=1}}`;
+	const getActions = (action, token, spec, flags) => {
+		if (action === "animation") {
+			d20plus.anim.animator.startAnimation(token, spec);
+		} else if (action === "description") {
+			getDescriptionTemplate(token, spec, "attacks");
+		} else {
+			d20plus.ba.makeRoll(action, spec, flags);
 		}
-	}
-
-	const getDescriptionTemplate = (id, type) => {
-		const char = getSingleChar();
-		const cat = char[type] || [];
-		const obj = cat[id];
-		if (!obj) return;
-		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
-		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
-	}
-
-	const getAbilityTemplate = (spec, attr) => {
-		const char = getSingleChar();
-		const type = attr || "roll"
-		attr = attr || spec;
-		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
-		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
-		const attrName = spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(spec) ? attr.split(" ").concat("u").join("-") : attrBase);
-
-		const abbr = attr.slice(0, 3).toUpperCase();
-		const typeName = spec === "ability" ? "abilities" : ["skill", "save"].includes(spec) ? spec : type;
-		const roll = spec !== "hit dice" ? `@{selected|d20}` : `1d@{selected|hitdietype}`;
-
-		const mods = {base: [
-			spec === "hit dice" ? ["@{selected|constitution_mod}", "CON"] : [`@{selected|${attrId}}`, abbr],
-			type === "ability" && "!isNpc" ? ["@{selected|jack_bonus}", "JACK"] : null,
-		]};
-		mods.r1 = mods.base.concat([
-			spec === "initiative" ? ["&{tracker}"] : null,	// should be the last one
-		]).filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");		// TODO proper Initiative adding and NPCs
-		mods.r2 = mods.base.concat([])
-			.filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");
-		mods.title = mods.base.concat([
-			spec === "hit dice" ? ["+ D@{selected|hitdietype}"] : null,
-		]).filter(s => !!s).map(s => s[0]).join(" ");
-
-		const hiddenVars = [
-			`@{selected|global_skill_mod}`,
-		].filter(s => !!s).join(" ");
-
-		const tmplVars = {
-			rMode: withMod(),
-			title: `@{selected|token_name}`,
-			subTitle: `^{${typeName}} (${mods.title})`,
-			attrName: `^{${attrName}}`,
-			r1: `[[${roll}+${mods.r1}]]`, // +$[[0]]`,
-			r2: `[[${roll}+${mods.r2}]]`, // +$[[0]]`,
-			hidden: hiddenVars,
-			isNpc: char.isNpc,
-		}
-
-		return buildTemplateModel("ability", tmplVars);
-	};
-
-	const getAttackTemplate = (id, flags) => {
-		const char = getSingleChar();
-		const atk = char?.attacks[id];
-		const atkProp = (attr) => atk[`${char.isNpc ? "attack_" : "atk"}${attr}`] || "";
-		const ammo = atk.ammo;
-		const dmg = atk.rollbase_crit?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
-		const tmplVars = {
-			title: atk.name || atk.atkname || "",
-			subTitle: [atkProp("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
-				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
-			isNpc:	char.isNpc,
-			dmg2on: atk.attack_damage2 || atk.dmg2base || "",
-			dmg1type:	atk.attack_damagetype || atk.dmgtype || "",
-			dmg2type:	atk.attack_damagetype2 || atk.dmg2type || "",
-			dmg1roll:	atk.attack_damage || dmg.dmg1 || "",
-			dmg2roll:	atk.attack_damage2 || dmg.dmg2 || "",
-			critRange:	atk.atkcritrange || `@{selected|default_critical_range}`,
-			rMode: withMod(),
-			crit1roll:	atk.attack_crit || dmg.crit1 || "",
-			crit2roll:	atk.attack_crit2 || dmg.crit2 || "",
-			atkMod:	atk.attack_tohit || (atk.atkflag !== "0" ? `${atk.atkattr_base ? `${atk.atkattr_base?.replaceAll("@{", "@{selected|")}+` : ""}@{selected|pb}[PB]` : ""),
-			saveAttr: atk.saveattr ? `^{${atk.saveattr?.toLowerCase().slice(0, 3)}-u}` : "",
-			dc: atk.savedc?.replaceAll("@{", "@{selected|") || "",
-		}
-		const model = tmplVars.atkMod ? "attack" : tmplVars.dc && tmplVars.dmg1roll ? "cast" : "action";
-		return buildTemplateModel(model, tmplVars);
-	}
-
-	const getSpellTemplate = (id, flags) => {
-		const char = getSingleChar();
-		const [lvl, upcast] = String(flags).split("|");
-		const spell = char.spells[id];
-		const hasAttack = spell.spellattack
-			&& spell.spellattack !== "None";
-		const hasSave = spell.spellsave
-			&& spell.spellsave !== "";
-		const hasDmg = spell.spelldamage
-			&& spell.spelldamage !== "";
-		const model = hasAttack ? "attack" : hasSave && hasDmg ? "cast" : "action";
-		const spellAbility = spell.spell_ability && spell.spell_ability?.length > 2
-			? spell.spell_ability !== "spell" ? spell.spell_ability.replace("@{", "@{selected|") : "@{selected|spellcasting_ability}"
-			: "";
-		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
-			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
-		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
-		const tmplVars = {
-			// rMode: model !== "attack" && !spell.spellhealing ? "always" : model === "attack" ? withMod() : "normal",
-			rMode: hasAttack ? withMod() : hasSave || !!spell.spelldamage2 ? "always" : "normal",
-			title:	spell.spellname,
-			subTitle,
-			isNpc:	char.isNpc,
-			isSpell: spell.spell_ability === "spell",
-			dmg1on: !!spell.spelldamage || !!spell.spellhealing,
-			dmg2on: !!spell.spelldamage2,
-			dmg1type:	spell.spelldamagetype,
-			dmg2type:	spell.spelldamagetype2,
-			dmg1roll:	(spell.spelldamage || "") && `${spell.spelldamage}${spell.spelldmgmod === "Yes" ? `+ ${spellAbility} 0` : ""}`,
-			dmg2roll:	(spell.spelldamage2 || "") && `${spell.spelldamage2}${spell.spelldmgmod === "Yes" ? `+ ${spellAbility} 0` : ""}`,
-			healroll:	(spell.spellhealing || "") && `${spell.spellhealing}${spell.spelldmgmod === "Yes" ? `+ ${spellAbility} 0` : ""}`,
-			critRange:	`@{selected|default_critical_range}`,
-			onSelf,
-
-			crit1roll:	spell.spelldamage,
-			crit2roll:	spell.spelldamage2,
-			atkMod:	spell.spell_ability !== "spell" ? `@{selected|spell_attack_mod}[MOD]+${spellAbility}@{selected|pb}[PB]` : `@{selected|spell_attack_bonus}`,
-
-			dc: spell.spell_ability !== "spell" ? `(8+@{selected|spell_dc_mod}[MOD]+${spellAbility}@{selected|pb}[PB])` : `@{selected|spell_save_dc}`,
-			saveAttr: spell.spellsave?.toLowerCase() || "",
-			dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
-			dmgOnFail: `$[[0]]`,
-			dmgOnSuccess: spell.lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
-		}
-		const config = d20plus.cfg.getOrDefault("chat", "autoExpend");
-		if (spell.lvl !== "cantrip" && config !== "none") {
-			setTimeout(() => d20plus.engine.expendResources({
-				type: "spell",
-				lvl: spell.lvl,
-				charID: char.id,
-			}), 2000);
-		}
-		return buildTemplateModel(model, tmplVars);
-	}
-
-	const getActions = {
-		animation: (model, spec) => {
-			d20plus.anim.animator.startAnimation(model, spec);
-		},
-		roll: (model, spec, flags) => {
-			d20.textchat.doChatInput(getAbilityTemplate(spec, flags));
-		},
-		attack: (model, spec, flags) => {
-			d20.textchat.doChatInput(getAttackTemplate(spec, flags));
-		},
-		cast: (model, spec, flags) => {
-			d20.textchat.doChatInput(getSpellTemplate(spec, flags));
-		},
-		spelldescription: (model, spec, flags) => {
-			getDescriptionTemplate(spec, "spells");
-		},
-		attackdescription: (model, spec, flags) => {
-			getDescriptionTemplate(spec, "attacks");
-		},
 	};
 
 	const amExecute = async (action, spec, flags) => {
-		d20plus.ut.log(action, getSingleChar());
 		const selected = action === "animation"
 			? d20.engine.selected().filter(it => it.type === "image")
 			: d20.engine.selected().filter(it => it._model?.character);
 		const isMultiple = selected.length > 1;
-		const singleAction = ["death", "hitdie"].includes(spec)
-			|| !["ability", "save", "skill"].includes(flags)
-			|| !["animation"].includes(action);
-		const allowReSelect = !["animation"].includes(action);
-		if (isMultiple && !singleAction && getActions[action]) {
+		const singleAction = !["animation"].includes(action)
+			&& !["ability", "save", "skill", "initiative", "roll"].includes(spec);
+		const iterateSelected = (token) => {
+			d20plus.ba.currentToken = !d20plus.ba.currentToken && token._model;
+			return ["initiative"].includes(spec) || ["animation"].includes(action);
+		}
+		d20plus.ut.log({action, spec, singleAction, iterateSelected});
+		if (!isMultiple || !singleAction) {
 			d20plus.ba.executing = true;
 			const tokens = [...selected];
 			d20.engine.unselect();
 			tokens.forEach(t => {
-				d20.engine.select(t);
-				getActions[action](t._model, spec, flags);
-				d20.engine.unselect();
+				iterateSelected(t) && d20.engine.select(t);
+				getActions(action, t._model, spec, flags);
+				iterateSelected(t) && d20.engine.unselect();
 			});
-			if (allowReSelect) tokens.forEach(t => d20.engine.select(t));
+			// if (!iterateSelected) tokens.forEach(t => d20.engine.select(t));
 			d20plus.ba.executing = false;
-		} else if (!isMultiple && getActions[action]) {
-			getActions[action](selected[0]._model, spec, flags);
 		} else {
-			d20plus.ut.sendHackerChat("Unrecognized error applying menu command", true);
+			d20plus.ba.rollError();
 		}
 	}
 
 	const amDo = (action) => {
-		const amCharId = getSingleChar()?.id;
+		const amCharId = d20plus.ba.getSingleChar()?.id;
 		if (action === "opensheet") d20plus.ba.tTokens[0].character.view.showDialog();
 		else if (action === "openchar") d20plus.tTokens[0].character.editview.showDialog();
 		else if (action === "speakas") {
@@ -23607,58 +23999,170 @@ function baseBetterActions () {
 	const amShow = async () => {
 		if (d20plus.ba.executing) return;
 		d20plus.ba.tree = {rolls: [{type: "mods"}], stats: [], anims: []};
-		d20plus.ba.$buttons.anim.toggle(false);
-		d20plus.ba.$buttons.roll.toggle(false);
-		d20plus.ba.$buttons.stat.toggle(false);
+		d20plus.ba.$dom.buttons.anim.toggle(false);
+		d20plus.ba.$dom.buttons.roll.toggle(false);
+		d20plus.ba.$dom.buttons.stat.toggle(false);
 		if (d20plus.ba.hasChars) {
 			if (!d20plus.ba.singleSelected) prepareAllChars();
-			else await prepareChar();
+			else await d20plus.ba.fetchChar();
 			buildAbilities();
 			buildSkills();
 			if (d20plus.ba.singleSelected) {
 				buildAttacks();
 				buildSpells();
 				buildActions();
-				d20plus.ba.$stats.html(buildStatsHtml());
-				d20plus.ba.$buttons.stat.toggle(true);
+				d20plus.ba.$dom.statsList.html(buildStatsHtml());
+				d20plus.ba.$dom.buttons.stat.toggle(true);
 			}
 			addCommonRolls();
-			d20plus.ba.$rolls.html(buildHtml());
-			d20plus.ba.$buttons.roll.toggle(true);
+			d20plus.ba.$dom.rollsList.html(buildHtml());
+			d20plus.ba.$dom.buttons.roll.toggle(true);
 		}
 		if (d20plus.ba.hasAnimatable) {
 			buildAnimations();
-			d20plus.ba.$animations.html(buildHtml(d20plus.ba.tree.anims));
-			if (d20plus.ba.tree.anims.length) d20plus.ba.$buttons.anim.toggle(true);
+			d20plus.ba.$dom.animationsList.html(buildHtml(d20plus.ba.tree.anims));
+			if (d20plus.ba.tree.anims.length) d20plus.ba.$dom.buttons.anim.toggle(true);
 		}
-		d20plus.ba.$buttons.toggle(true);
-		if (d20plus.ba.$r20toolbar.css("display") === "none") {
-			d20plus.ba.$r20toolbar.toggle(true);
-			d20plus.ba.$r20tokenActions.css("display", "none");
+		d20plus.ba.$dom.buttons.toggle(true);
+		if (d20plus.ba.$dom.r20toolbar.css("display") === "none") {
+			d20plus.ba.$dom.r20toolbar.toggle(true);
+			d20plus.ba.$dom.r20tokenActions.css("display", "none");
 		} else {
-			d20plus.ba.$r20tokenActions.css("display", "inline-block");
+			d20plus.ba.$dom.r20tokenActions.css("display", "inline-block");
 		}
 	}
 
 	const amHide = () => {
-		d20plus.ba.$buttons.toggle(false);
+		d20plus.ba.$dom.buttons.toggle(false);
+	}
+
+	d20plus.ba.rollError = () => {
+		d20plus.ut.sendHackerChat("Unrecognized error applying menu command", true);
+	}
+
+	d20plus.ba.alterHP = (alter) => {
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
+		const bar = {
+			val: `bar${barID}_value`,
+			link: `bar${barID}_link`,
+			max: `bar${barID}_max`,
+		};
+		const calcHP = (token) => {
+			if (!token?.get) return false;
+			const current = token.get(bar.val);
+			const max = token.get(bar.max);
+			if (isNaN(max) || isNaN(current) || current === "") return false;
+			const hp = {old: current, new: current - alter.dmg};
+			if (hp.new < 0) hp.new = 0;
+			if (max !== "") {
+				if (hp.new > max) hp.new = max;
+				if (hp.new <= -max) hp.dead = true;
+				if (hp.old <= 0 && hp.new > 0) hp.alive = true;
+			}
+			return hp;
+		}
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const author = `${playerName} applied ${alter.dmg} damage`;
+		const transport = {type: "automation", author};
+		const targets = alter.targets;
+		d20.engine.unselect();
+		targets.forEach(async token => {
+			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
+			else if (token.model) token = token.model;
+			const hp = calcHP(token);
+			if (!hp) return d20plus.ut.sendHackerChat("You have to select proper token bar in the settings", true);
+			if (!token.currentPlayerControls()) return;
+			if (alter.restore !== undefined) hp.new = alter.restore;
+			const barLinked = token.get(bar.link);
+			const tokenName = token.get("name");
+			if (barLinked) {
+				if (!token.character?.currentPlayerControls()) return;
+				const charID = token.character?.id;
+				const fetched = await d20plus.ut.fetchCharAttribs(token.character);
+				if (fetched && charID) {
+					const attrib = token.character.attribs.get(barLinked);
+					const charName = token.character.get("name");
+					attrib.save({current: hp.new});
+					attrib.syncTokenBars();
+					hp.msg = `/w "${charName}" ${tokenName} from ${hp.old} to ${hp.new} HP`;
+					if (alter.restore !== undefined) hp.msg = `/w "${charName}" ${tokenName} HP back to ${hp.new}`;
+				}
+			} else {
+				token.save({[bar.val]: hp.new});
+				hp.msg = `/w gm ${tokenName} from ${hp.old} to ${hp.new} HP`;
+				if (alter.restore !== undefined) hp.msg = `/w gm ${tokenName} HP back to ${hp.new}`;
+			}
+			if (hp.msg) {
+				hp.undo = {type: "hp", dmg: alter.dmg, restore: hp.old, targets: [token.id]};
+				if (alter.restore === undefined) hp.transport = Object.assign({undo: hp.undo}, transport);
+				else transport.author = `${playerName} restored HP to ${alter.restore}`;
+				d20.textchat.doChatInput(hp.msg, undefined, hp.transport || transport);
+				if (hp.dead) d20.textchat.doChatInput(`${tokenName} is instantly dead`, undefined, transport);
+				else if (hp.alive) d20.textchat.doChatInput(`${tokenName} is conscious again`, undefined, transport);
+				else if (hp.new === 0) d20.textchat.doChatInput(`${tokenName} falls unconscious`, undefined, transport);
+			}
+		})
+	}
+
+	d20plus.ba.addTurn = (tokenId, init) => {
+		const token = d20plus.ut.getTokenById(tokenId);
+		const pageId = token?.collection.page.id;
+		const tracker = d20.Campaign.initiativewindow;
+		const actor = {_pageid: pageId, id: tokenId, pr: init, custom: ""};
+
+		const needsOpening = !tracker.windowopen;
+		needsOpening && tracker.openWindow();
+		needsOpening && tracker.model.save();
+		// for some reason we need to pretend the turn tracker was opened long ago (2s seems enough)
+		// otherwise the tokens won't show on the list until the next token is added
+		setTimeout(() => {
+			let trackerIt = d20.Campaign.currentOrderArray
+				.find(it => it._pageid === pageId && it.id === tokenId);
+			if (!trackerIt) {
+				d20.Campaign.currentOrderArray.push(actor);
+				trackerIt = d20.Campaign.currentOrderArray.last();
+			}
+			trackerIt.pr = init;
+			tracker.model.save({turnorder: JSON.stringify(d20.Campaign.currentOrderArray)});
+		}, needsOpening ? 2000 : 0);
+	}
+
+	d20plus.ba.fetchChar = async (token) => {
+		const tokenRef = token || d20plus.ba.tTokens[0];
+		const charRef = tokenRef?.character;
+		const isUp2Date = d20plus.ba.chars[charRef.id]?.lastGroup === d20plus.ba.thisGroup;
+		if (!charRef || isUp2Date) return;
+
+		const name = {ch: charRef?.attributes.name, tk: tokenRef?.attributes.name};
+		const hp = {val: tokenRef.attributes.bar1_value, max: tokenRef.attributes.bar1_max};
+		await d20plus.ut.fetchCharAttribs(charRef);
+
+		d20plus.ba.chars[charRef.id] = {id: charRef.id, lastTokenId: tokenRef.id, name, hp};
+		return prepareChar(d20plus.ba.chars[charRef.id], charRef);
+	}
+
+	d20plus.ba.getSingleChar = (token) => {
+		const ref = token || d20plus.ba.singleSelected || d20plus.ba.currentToken;
+		const id = ref?.character?.id;
+		return id && d20plus.ba.chars[id];
 	}
 
 	d20plus.ba.initBetterActions = () => {
 		d20plus.ba.chars = {};
 		skills = i18n("skills-list", skills).split(",");
 
-		d20plus.ba.$buttons = $(d20plus.html.bActionsButtons);
+		d20plus.ba.$dom = {buttons: $(d20plus.html.bActionsButtons)};
 
-		d20plus.ba.$buttons.roll = d20plus.ba.$buttons.find(`[data-type=rolls]`);
-		d20plus.ba.$buttons.stat = d20plus.ba.$buttons.find(`[data-type=stats]`);
-		d20plus.ba.$buttons.anim = d20plus.ba.$buttons.find(`[data-type=animate]`);
-		d20plus.ba.$rolls = d20plus.ba.$buttons.find(`.b20-rolls > ul`);
-		d20plus.ba.$stats = d20plus.ba.$buttons.find(`.b20-stats > ul`);
-		d20plus.ba.$animations = d20plus.ba.$buttons.find(`.b20-animations > ul`);
-		d20plus.ba.$r20toolbar = $("#secondary-toolbar");
-		d20plus.ba.$r20toolbar.prepend(d20plus.ba.$buttons);
-		d20plus.ba.$r20tokenActions = d20plus.ba.$r20toolbar.find(".mode.tokenactions");
+		d20plus.ba.$dom.targetingNote = $("#targetinginstructions");
+		d20plus.ba.$dom.buttons.roll = d20plus.ba.$dom.buttons.find(`[data-type=rolls]`);
+		d20plus.ba.$dom.buttons.stat = d20plus.ba.$dom.buttons.find(`[data-type=stats]`);
+		d20plus.ba.$dom.buttons.anim = d20plus.ba.$dom.buttons.find(`[data-type=animate]`);
+		d20plus.ba.$dom.rollsList = d20plus.ba.$dom.buttons.find(`.b20-rolls > ul`);
+		d20plus.ba.$dom.statsList = d20plus.ba.$dom.buttons.find(`.b20-stats > ul`);
+		d20plus.ba.$dom.animationsList = d20plus.ba.$dom.buttons.find(`.b20-animations > ul`);
+		d20plus.ba.$dom.r20toolbar = $("#secondary-toolbar");
+		d20plus.ba.$dom.r20toolbar.prepend(d20plus.ba.$dom.buttons);
+		d20plus.ba.$dom.r20tokenActions = d20plus.ba.$dom.r20toolbar.find(".mode.tokenactions");
 
 		$("body").on("shape_selected", "#editor", evt => {
 			const enabled = getAmConfig();
@@ -23685,7 +24189,7 @@ function baseBetterActions () {
 			amHide();
 		});
 
-		d20plus.ba.$buttons.on("click", "[data-action], [data-spec]", evt => {
+		d20plus.ba.$dom.buttons.on("click", "[data-action], [data-spec]", evt => {
 			const $clicked = $(evt.target);
 			const action = $clicked.data("action");
 			const spec = $clicked.data("spec");
