@@ -11,6 +11,7 @@ function initHTMLroll20actionsMenu () {
 				<$ if(this.view && this.view.graphic.type == "image" && this.get("cardid") !== "") { $>
 				<li class='head hasSub' data-action-type='takecard'>Take Card</li>
 				<li class='head hasSub' data-action-type='flipcard'>Flip Card</li>
+				<li class='head hasSub' data-action-type='removecard'>Remove Card</li>
 				<$ } $>
 				<$ if(window.is_gm) { $>
 				<$ if(this.view && this.get("isdrawing") === false && window.currentEditingLayer != "map") { $>
@@ -67,6 +68,9 @@ function initHTMLroll20actionsMenu () {
 						<li data-action-type='token-fly'>Set&nbsp;Flight&nbsp;Height</li>
 						<li data-action-type='token-light'>Set&nbsp;Light</li>
 						<$ } $>
+						<div class="ctx__divider"></div>
+						<li data-action-type='ping'>Ping Everyone</li>
+						<li data-action-type='focusping'>Focus Ping</li>
 					</ul>
 				</li>
 				<!-- END MOD -->

@@ -82,6 +82,35 @@ function baseMenu () {
 			var d = t.height()
 				, h = t.width()
 				, p = {};
+			
+			// BEGIN MOD
+			// This block is pasted from newer version of roll20 Menu code, with appropriate changes to vars etc
+			const r20ping = (u,i)=>{
+				var y, d;
+				const {canvasZoom: r, currentCanvasOffset: n, paddingOffset: c, pings: p} = d20.engine
+					, {currentPlayer: {id: C}, currentEditingLayer: b, is_gm: S} = window;
+				if (C && ((d = (y = p[C]) == null ? void 0 : y.radius) != null ? d : 0) <= 20) {
+					const x = Math.floor(o / r + n[0] - c[0] / r)
+						, k = Math.floor(a / r + n[1] - c[1] / r)
+						, D = {
+						left: x,
+						top: k,
+						radius: -5,
+						player: C,
+						pageid: d20.Campaign.activePage().id,
+						currentLayer: b
+					};
+					(S && u.shiftKey || i) && (D.scrollto = !0),
+					p[C] = D,
+					d20.engine.pinging = {
+						downx: o,
+						downy: a
+					},
+					d20.engine.redrawScreenNextTick(!0)
+				}
+			}
+			;
+			// END MOD
 			return p.top = a > $("#editor-wrapper").height() - $("#playerzone").height() - d - 100 ? a - d + "px" : a + "px",
 				p.left = o > $("#editor-wrapper").width() - h ? o + 10 - h + "px" : o + 10 + "px",
 				t.css(p),
@@ -117,7 +146,7 @@ function baseMenu () {
 							e = !1
 					}, 500))
 				}),
-				$(".actions_menu li").on(clicktype, function() {
+				$(".actions_menu li").on(clicktype, function(evt) {
 					var e = $(this).attr("data-action-type");
 					if (null != e) {
 						if ("copy" == e)
@@ -149,6 +178,15 @@ function baseMenu () {
 								}),
 								d20.Campaign.activePage().debounced_recordZIndexes(),
 								i();
+						// BEGIN MOD
+						// This block is pasted from newer version of roll20 Menu code, with appropriate changes to vars etc
+						else if (e === "ping")
+							r20ping(evt),
+							i();
+						else if (e === "focusping")
+							r20ping(evt, !0),
+							i();
+						// END MOD
 						else if (-1 !== e.indexOf("tolayer_")) {
 							d20.engine.unselect();
 							var o = e.replace("tolayer_", "");
@@ -244,6 +282,23 @@ function baseMenu () {
 										}).save()
 								}),
 								i();
+						// BEGIN MOD
+						// This block is pasted from newer version of roll20 Menu code, with appropriate changes to vars etc
+	                    else if (e === "removecard")
+							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+								_.each(n, function(e) {
+									d20.decks.cardByID(e.model.get("cardid")).save({
+										is_removed: !0
+									}),
+									_.defer(()=>{
+										e.model.destroy()
+									}
+									),
+									d20.decks.refreshRemovedPiles()
+								}
+								),
+								i();
+						// END MOD
 						else if ("setdimensions" == e) {
 							var l = n[0]
 								, c = $($("#tmpl_setdimensions").jqote()).dialog({
