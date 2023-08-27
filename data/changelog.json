@@ -391,5 +391,10 @@
 		"ver": "1.35.3",
 		"date": "2023-05-18",
 		"txt": "- Added \"Fake Latin\" as a transcription language (thanks @ redweller)\n- Fixed excessive loading of sheets for GMs when initializing language system (thanks @ redweller)\n- Fixed custom grid units being un-saveable in page settings (thanks @ redweller)"
+	},
+	{
+		"ver": "1.35.4",
+		"date": "2023-08-27",
+		"txt": "- Updated menus to reflect latest Roll20 changes (thanks @ redweller)"
 	}
 ]
