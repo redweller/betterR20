@@ -1,4 +1,5 @@
 {
+	"AATM": "bestiary-aatm.json",
 	"AI": "bestiary-ai.json",
 	"AitFR-ISF": "bestiary-aitfr-isf.json",
 	"AitFR-THP": "bestiary-aitfr-thp.json",
@@ -47,6 +48,7 @@
 	"MGELFT": "bestiary-mgelft.json",
 	"MM": "bestiary-mm.json",
 	"MPMM": "bestiary-mpmm.json",
+	"MPP": "bestiary-mpp.json",
 	"MOT": "bestiary-mot.json",
 	"MTF": "bestiary-mtf.json",
 	"NRH-TCMC": "bestiary-nrh-tcmc.json",
@@ -80,6 +82,7 @@
 	"TTP": "bestiary-ttp.json",
 	"TftYP": "bestiary-tftyp.json",
 	"ToA": "bestiary-toa.json",
+	"ToFW": "bestiary-tofw.json",
 	"VD": "bestiary-vd.json",
 	"VGM": "bestiary-vgm.json",
 	"VRGR": "bestiary-vrgr.json",

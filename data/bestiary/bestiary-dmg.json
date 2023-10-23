@@ -144,6 +144,12 @@
 			"otherSources": [
 				{
 					"source": "BGDIA"
+				},
+				{
+					"source": "SatO"
+				},
+				{
+					"source": "ToFW"
 				}
 			],
 			"size": [

@@ -3427,6 +3427,11 @@
 			"name": "Medusa",
 			"source": "MOT",
 			"page": 206,
+			"otherSources": [
+				{
+					"source": "SatO"
+				}
+			],
 			"_copy": {
 				"name": "Medusa",
 				"source": "MM",

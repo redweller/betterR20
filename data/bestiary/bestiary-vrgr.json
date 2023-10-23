@@ -2419,6 +2419,11 @@
 			"name": "Necrichor",
 			"source": "VRGR",
 			"page": 238,
+			"otherSources": [
+				{
+					"source": "AATM"
+				}
+			],
 			"size": [
 				"M"
 			],

@@ -43,6 +43,170 @@
 			]
 		},
 		{
+			"name": "Alyxian the Absolved",
+			"source": "CRCotN",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), Alyxian can take one of the following lair actions; he can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Avandra's Grasp",
+							"entries": [
+								"Alyxian uses the power of Avandra's ruined temple (area H2) to create a watery tendril that rises out of the lake. One creature Alyxian can see that's not submerged in the lake must succeed on a {@dc 15} Dexterity saving throw or be {@condition restrained} by the tendril. The tendril is a Large object that has AC 10, 15 hit points, and immunity to poison and psychic damage. The tendril disappears when it is reduced to 0 hit points or the next time Alyxian takes a lair action."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Corellon's Charm",
+							"entries": [
+								"Alyxian causes a magical wisp of light to emerge from Corellon's ruined temple (area H3). The wisp enters the body of one creature Alyxian can see that isn't inside Corellon's ruined temple or atop the rocky island that supports it. The creature must succeed on a {@dc 15} Wisdom saving throw or be {@condition charmed} by Alyxian until initiative count 20 of the next round."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Sehanine's Torment",
+							"entries": [
+								"Alyxian uses the power of Sehanine's ruined temple (area H4) to create a watery form in the space of one creature that is either standing on the lake or submerged in it. The watery form assumes the vague likeness of the creature whose space it occupies and makes one melee weapon attack (+7 to hit) against it. On a hit, the attack deals 8 ({@damage 10d8 + 4}) bludgeoning damage. Whether it hits or misses, the watery form disappears after making its attack."
+							]
+						}
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Prayers to the Gods",
+					"entries": [
+						"A character can use an action to pray to Avandra, Corellon, or Sehanine in the deity's prayer site. The character must succeed on a {@dc 15} Wisdom ({@skill Religion}) check, and the check has advantage if the character is a worshiper of that god. On a successful check, the profane ruins atop the island melt away, and Alyxian can no longer use the lair action associated with that prayer site. In addition, Alyxian takes 14 ({@damage 4d6}) psychic damage, regardless of his current form."
+					]
+				}
+			]
+		},
+		{
+			"name": "Alyxian the Callous",
+			"source": "CRCotN",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), Alyxian can take one of the following lair actions; he can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Avandra's Grasp",
+							"entries": [
+								"Alyxian uses the power of Avandra's ruined temple (area H2) to create a watery tendril that rises out of the lake. One creature Alyxian can see that's not submerged in the lake must succeed on a {@dc 15} Dexterity saving throw or be {@condition restrained} by the tendril. The tendril is a Large object that has AC 10, 15 hit points, and immunity to poison and psychic damage. The tendril disappears when it is reduced to 0 hit points or the next time Alyxian takes a lair action."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Corellon's Charm",
+							"entries": [
+								"Alyxian causes a magical wisp of light to emerge from Corellon's ruined temple (area H3). The wisp enters the body of one creature Alyxian can see that isn't inside Corellon's ruined temple or atop the rocky island that supports it. The creature must succeed on a {@dc 15} Wisdom saving throw or be {@condition charmed} by Alyxian until initiative count 20 of the next round."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Sehanine's Torment",
+							"entries": [
+								"Alyxian uses the power of Sehanine's ruined temple (area H4) to create a watery form in the space of one creature that is either standing on the lake or submerged in it. The watery form assumes the vague likeness of the creature whose space it occupies and makes one melee weapon attack (+7 to hit) against it. On a hit, the attack deals 8 ({@damage 1d8 + 4}) bludgeoning damage. Whether it hits or misses, the watery form disappears after making its attack."
+							]
+						}
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Prayers to the Gods",
+					"entries": [
+						"A character can use an action to pray to Avandra, Corellon, or Sehanine in the deity's prayer site. The character must succeed on a {@dc 15} Wisdom ({@skill Religion}) check, and the check has advantage if the character is a worshiper of that god. On a successful check, the profane ruins atop the island melt away, and Alyxian can no longer use the lair action associated with that prayer site. In addition, Alyxian takes 14 ({@damage 4d6}) psychic damage, regardless of his current form."
+					]
+				}
+			]
+		},
+		{
+			"name": "Alyxian the Dispossessed",
+			"source": "CRCotN",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), Alyxian can take one of the following lair actions; he can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Avandra's Grasp",
+							"entries": [
+								"Alyxian uses the power of Avandra's ruined temple (area H2) to create a watery tendril that rises out of the lake. One creature Alyxian can see that's not submerged in the lake must succeed on a {@dc 15} Dexterity saving throw or be {@condition restrained} by the tendril. The tendril is a Large object that has AC 10, 15 hit points, and immunity to poison and psychic damage. The tendril disappears when it is reduced to 0 hit points or the next time Alyxian takes a lair action."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Corellon's Charm",
+							"entries": [
+								"Alyxian causes a magical wisp of light to emerge from Corellon's ruined temple (area H3). The wisp enters the body of one creature Alyxian can see that isn't inside Corellon's ruined temple or atop the rocky island that supports it. The creature must succeed on a {@dc 15} Wisdom saving throw or be {@condition charmed} by Alyxian until initiative count 20 of the next round."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Sehanine's Torment",
+							"entries": [
+								"Alyxian uses the power of Sehanine's ruined temple (area H4) to create a watery form in the space of one creature that is either standing on the lake or submerged in it. The watery form assumes the vague likeness of the creature whose space it occupies and makes one melee weapon attack (+7 to hit) against it. On a hit, the attack deals 8 ({@damage 1d8 + 4}) bludgeoning damage. Whether it hits or misses, the watery form disappears after making its attack."
+							]
+						}
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Prayers to the Gods",
+					"entries": [
+						"A character can use an action to pray to Avandra, Corellon, or Sehanine in the deity's prayer site. The character must succeed on a {@dc 15} Wisdom ({@skill Religion}) check, and the check has advantage if the character is a worshiper of that god. On a successful check, the profane ruins atop the island melt away, and Alyxian can no longer use the lair action associated with that prayer site. In addition, Alyxian takes 14 ({@damage 4d6}) psychic damage, regardless of his current form."
+					]
+				}
+			]
+		},
+		{
+			"name": "Alyxian the Tormented",
+			"source": "CRCotN",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), Alyxian can take one of the following lair actions; he can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Avandra's Grasp",
+							"entries": [
+								"Alyxian uses the power of Avandra's ruined temple (area H2) to create a watery tendril that rises out of the lake. One creature Alyxian can see that's not submerged in the lake must succeed on a {@dc 15} Dexterity saving throw or be {@condition restrained} by the tendril. The tendril is a Large object that has AC 10, 15 hit points, and immunity to poison and psychic damage. The tendril disappears when it is reduced to 0 hit points or the next time Alyxian takes a lair action."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Corellon's Charm",
+							"entries": [
+								"Alyxian causes a magical wisp of light to emerge from Corellon's ruined temple (area H3). The wisp enters the body of one creature Alyxian can see that isn't inside Corellon's ruined temple or atop the rocky island that supports it. The creature must succeed on a {@dc 15} Wisdom saving throw or be {@condition charmed} by Alyxian until initiative count 20 of the next round."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Sehanine's Torment",
+							"entries": [
+								"Alyxian uses the power of Sehanine's ruined temple (area H4) to create a watery form in the space of one creature that is either standing on the lake or submerged in it. The watery form assumes the vague likeness of the creature whose space it occupies and makes one melee weapon attack (+7 to hit) against it. On a hit, the attack deals 8 ({@damage 1d8 + 4}) bludgeoning damage. Whether it hits or misses, the watery form disappears after making its attack."
+							]
+						}
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Prayers to the Gods",
+					"entries": [
+						"A character can use an action to pray to Avandra, Corellon, or Sehanine in the deity's prayer site. The character must succeed on a {@dc 15} Wisdom ({@skill Religion}) check, and the check has advantage if the character is a worshiper of that god. On a successful check, the profane ruins atop the island melt away, and Alyxian can no longer use the lair action associated with that prayer site. In addition, Alyxian takes 14 ({@damage 4d6}) psychic damage, regardless of his current form."
+					]
+				}
+			]
+		},
+		{
 			"name": "Amethyst Dragon",
 			"source": "FTD",
 			"page": 160,
@@ -272,6 +436,54 @@
 					]
 				},
 				"If Baalzebul dies, the effects fade over the course of {@dice 1d10} days."
+			]
+		},
+		{
+			"name": "Baernaloth",
+			"source": "MPP",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), a baernaloth can take one of the following lair actions; the baernaloth can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Consume Suffering.",
+							"entry": "Until initiative count 20 on the next round, when a creature in the baernaloth's lair other than the baernaloth takes necrotic or psychic damage or drops to 0 hit points, the baernaloth regains 10 ({@dice 3d6}) hit points."
+						},
+						{
+							"type": "item",
+							"name": "Discover Secrets.",
+							"entry": "The baernaloth uses Spellcasting to cast detect thoughts. A creature targeted by the spell cast in this way takes 13 ({@dice 3d8}) psychic damage."
+						},
+						{
+							"type": "item",
+							"name": "Recurring Wound.",
+							"entry": "A creature that doesn't have all its hit points and that the baernaloth can see in its lair must make a DC 19 Constitution saving throw, taking 22 ({@dice 4d10}) necrotic damage on a failed save, or half as much damage on a successful one."
+						}
+					]
+				}
+			],
+			"regionalEffects": [
+				"A region containing a baernaloth's lair becomes warped by the creature's unnatural presence, which creates one or more of the following effects:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Persistent Anguish.",
+							"entry": "Within 10 miles of a baernaloth's lair, when a creature casts a spell that either restores hit points or removes the charmed or frightened condition, the spell fails and is wasted unless the caster succeeds on a DC 19 saving throw using its spellcasting ability. Once a creature succeeds on the saving throw, it is immune to this regional effect for 24 hours."
+						},
+						{
+							"type": "item",
+							"name": "Slow Healing.",
+							"entry": "Within 10 miles of a baernaloth's lair, a creature other than the baernaloth regains only hit points equal to half its hit point maximum when it finishes a long rest, and it regains only half the usual number of hit points when it spends Hit Dice during a short rest."
+						}
+					]
+				},
+				"If the baernaloth dies, these effects end immediately."
 			]
 		},
 		{
@@ -1126,6 +1338,34 @@
 					]
 				},
 				"If the dragon dies, the animal population near the lair returns to normal levels over the course of {@dice 1d10} days. The increased Hit Die recovery ends immediately. The existing abundance of quartz crystals remains, but new crystals form at a normal rate."
+			]
+		},
+		{
+			"name": "Darkweaver",
+			"source": "MPP",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), a darkweaver can take one of the following lair actions; the darkweaver can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Extinguish.",
+							"entry": "All nonmagical flames within 30 feet of the darkweaver are extinguished. In addition, if this area overlaps with an area of light created by a spell of 2nd level or lower, the spell that created the light is dispelled."
+						},
+						{
+							"type": "item",
+							"name": "Shadow Fears.",
+							"entry": "The darkweaver instills frightful magic into its webs. Each creature grappled by the darkweaver's Shadow Web must make a DC 15 Wisdom saving throw. On a failed save, the creature has the frightened condition until the end of its next turn."
+						},
+						{
+							"type": "item",
+							"name": "Shadow Step.",
+							"entry": "If the darkweaver is in dim light or darkness, it teleports, along with any equipment it is wearing or carrying, to an unoccupied space it can see within 60 feet of itself that is in dim light or darkness."
+						}
+					]
+				}
 			]
 		},
 		{
@@ -2846,6 +3086,41 @@
 			]
 		},
 		{
+			"name": "Lunar Dragon",
+			"source": "BAM",
+			"regionalEffects": [
+				"The region containing an ancient or adult lunar dragon's lair is warped by the dragon's magic, which produces one or more of the following effects:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Black Frost",
+							"entries": [
+								"A thin layer of black frost covers the ground, which kills all ordinary plants growing within 6 miles of the lair if the dragon is ancient, or within 3 miles if the dragon is an adult."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Haunting Moan",
+							"entries": [
+								"A haunting sound gets louder or fainter (dragon's choice) the closer one gets to the lair. The moan is audible 6 miles from the lair if the dragon is ancient, or 3 miles if the dragon is an adult."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Moon Devils",
+							"entries": [
+								"Swirling funnels of dust and frost known as moon devils crisscross the area within 1 mile of the lair, intercepting other creatures they encounter. A moon devil is a free-willed air elemental that deals cold damage instead of bludgeoning damage."
+							]
+						}
+					]
+				},
+				"If the dragon dies, the moaning stops, the moon devils dissipate, and the black frost disappears over the course of {@dice 1d10} days, allowing plant life in the area to recover."
+			]
+		},
+		{
 			"name": "Marlos Urnrayle",
 			"source": "PotA",
 			"page": 199,
@@ -3525,6 +3800,64 @@
 			]
 		},
 		{
+			"name": "Riverine",
+			"source": "JttRC",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), the riverine can take one of the following lair actions; the riverine can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "entries",
+							"name": "Phantasmal Mist",
+							"entries": [
+								"The riverine creates fog around a creature it can see within 120 feet of it. The target must succeed on a {@dc 17} Wisdom saving throw or take 5 ({@damage 1d10}) psychic damage and be {@condition frightened} of the riverine until the end of the target's next turn."
+							]
+						},
+						{
+							"type": "entries",
+							"name": "River's Fury",
+							"entries": [
+								"The riverine conjures swampy ground that briefly covers the ground in a 20-foot square the riverine can see within 120 feet of itself. That area becomes {@quickref difficult terrain||3} until initiative count 20 on the next round. Any creature, other than the riverine, that enters the affected area or starts its turn there takes 7 ({@damage 2d6}) cold damage."
+							]
+						}
+					]
+				}
+			],
+			"regionalEffects": [
+				"The region containing a riverine's lair flourishes under the magic of the riverine's presence, which creates one or more of the following effects:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Clearwater Sight",
+							"entries": [
+								"The waters of the river serve as a conduit for the riverine's consciousness. As an action, the riverine can cast the {@spell clairvoyance} spell, requiring no spell components, targeting any point along the river it's connected to."
+							]
+						},
+						{
+							"type": "item",
+							"name": "River's Bounty",
+							"entries": [
+								"Freshwater fauna and flora reproduce rapidly and thrive in the waters within 1 mile of the riverine's lair. Foraging in these waters yields twice the usual amount of food."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Spirit Guidance",
+							"entries": [
+								"Tracks appear along the banks of the river within 6 miles of the riverine's lair. The tracks lead to potential shelters and safe passages across the river's waters, while also leading away from areas that the riverine prefers to remain undisturbed."
+							]
+						}
+					]
+				},
+				"If the riverine dies, the flora and fauna return to normal levels, and its river dries out over the course of {@dice 1d10} days. All other effects cease immediately."
+			]
+		},
+		{
 			"name": "Sapphire Dragon",
 			"source": "FTD",
 			"page": 215,
@@ -4122,7 +4455,7 @@
 			"source": "CoS",
 			"page": 240,
 			"lairActions": [
-				"While Strahd is in Castle Ravenloft, he can take lair actions as long as he isn't {@condition incapacitated}. ",
+				"While Strahd is in Castle Ravenloft, he can take lair actions as long as he isn't {@condition incapacitated}.",
 				"On initiative count 20 (losing initiative ties), Strahd can take one of the following lair action options, or forgo using any of them in that round:",
 				{
 					"type": "list",
@@ -4149,6 +4482,54 @@
 						"The alluring gleam of treasure beneath the water in the thessalkraken's lair compels potential victims to draw near. Each creature within 120 feet of the thessalkraken must succeed on a {@dc 18} Wisdom saving throw or move 10 feet closer to the thessalkraken if able to do so."
 					]
 				}
+			]
+		},
+		{
+			"name": "Time Dragon",
+			"source": "MPP",
+			"lairActions": [
+				"On initiative count 20 (losing initiative ties), the dragon can take one of the following lair actions; the ancient or adult dragon can't take the same lair action two rounds in a row:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Temporal Fling.",
+							"entry": "The dragon attempts to fling a creature it can see within 60 feet of itself forward through time. The target must succeed on a DC 18 Wisdom saving throw or take 26 ({@dice 4d12}) psychic damage and move 1 round forward in time. A target moved forward in time vanishes for the duration. When the effect ends, the target reappears in the space it left or in an unoccupied space nearest to that space if it's occupied."
+						},
+						{
+							"type": "item",
+							"name": "Temporal Lag.",
+							"entry": "The dragon slows time for each creature within 60 feet of itself. Until initiative count 20 of the next round, the affected creature can move or take an action on its turn, not both. The creature also can't take a reaction or a bonus action."
+						},
+						{
+							"type": "item",
+							"name": "Timeline Divergence.",
+							"entry": "The dragon chooses a space it can fit into within its lair. The dragon exists simultaneously in its space and the chosen space until initiative count 20 on the next round. Whenever it moves or takes an action, the dragon chooses which version is moving or acting. If an effect or attack can target both the dragon's spaces at the same time, the dragon is affected only once."
+						}
+					]
+				}
+			],
+			"regionalEffects": [
+				"The region surrounding an ancient or adult time dragon's lair is altered by the dragon's magic, creating one or more of the following effects:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Time Dilations",
+							"entry": "Time fluctuates within 3 miles of the lair. Short rests taken within this area take 10 minutes or 2 hours (your choice)."
+						},
+						{
+							"type": "item",
+							"name": "Timelessness",
+							"entry": "Beasts, Humanoids, and Plants within 3 miles of the lair age only 1 year for every 10 years that pass."
+						}
+					]
+				},
+				"If the dragon dies, these effects fade over the course of {@dice 1d10} days."
 			]
 		},
 		{

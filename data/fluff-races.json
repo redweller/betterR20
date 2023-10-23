@@ -98,7 +98,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/EEPC/Aarakocra.png"
+						"path": "races/EEPC/Aarakocra.webp"
 					}
 				}
 			]
@@ -115,7 +115,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Aarakocra.png"
+						"path": "races/MPMM/Aarakocra.webp"
 					},
 					"credit": "Claudio Pozas"
 				}
@@ -171,7 +171,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Aasimar.png"
+						"path": "races/MPMM/Aasimar.webp"
 					},
 					"credit": "Mike Bierek"
 				}
@@ -330,7 +330,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Aasimar.png"
+						"path": "races/VGM/Aasimar.webp"
 					},
 					"credit": "Shawn Wood"
 				}
@@ -740,7 +740,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Goblinoids.png"
+						"path": "races/ERLW/Goblinoids.webp"
 					},
 					"credit": "Cory Trego-Erdner"
 				}
@@ -758,7 +758,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Bugbear.png"
+						"path": "races/MPMM/Bugbear.webp"
 					},
 					"credit": "Filip Burburan"
 				}
@@ -773,7 +773,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Bugbear.png"
+						"path": "races/VGM/Bugbear.webp"
 					}
 				}
 			]
@@ -845,7 +845,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/GGR/Centaur.png"
+						"path": "races/GGR/Centaur.webp"
 					}
 				}
 			]
@@ -950,7 +950,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Lagonna Band Centaur.png"
+						"path": "races/MOT/Lagonna Band Centaur.webp"
 					},
 					"title": "Lagonna Band Centaur",
 					"credit": "Min Yum"
@@ -959,7 +959,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Pheres Band Centaur.png"
+						"path": "races/MOT/Pheres Band Centaur.webp"
 					},
 					"title": "Pheres Band Centaur",
 					"credit": "Slawomir Maniak"
@@ -977,7 +977,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Centaur.png"
+						"path": "races/MPMM/Centaur.webp"
 					},
 					"credit": "Eric Belisle, Jedd Chevrier"
 				}
@@ -1078,7 +1078,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Changeling.png"
+						"path": "races/ERLW/Changeling.webp"
 					},
 					"title": "Changeling adopting a person's appearance",
 					"credit": "Olga Drebas"
@@ -1087,7 +1087,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Changeling 001.png"
+						"path": "races/ERLW/Changeling 001.webp"
 					}
 				}
 			]
@@ -1106,7 +1106,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Changeling.png"
+						"path": "races/MPMM/Changeling.webp"
 					},
 					"credit": "Sarah Stone"
 				}
@@ -1124,7 +1124,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Deep Gnome.png"
+						"path": "races/MPMM/Deep Gnome.webp"
 					},
 					"credit": "Tom Babbey, Olly Lawson"
 				}
@@ -1360,7 +1360,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VRGR/Dhampir.png"
+						"path": "races/VRGR/Dhampir.webp"
 					},
 					"credit": "Katerina Ladon"
 				}
@@ -1445,7 +1445,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Dragonborn.png"
+						"path": "races/PHB/Dragonborn.webp"
 					}
 				}
 			]
@@ -1501,7 +1501,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/EGW/Dragonborn (Draconblood).png"
+						"path": "races/EGW/Dragonborn (Draconblood).webp"
 					},
 					"credit": "Axel Defois"
 				}
@@ -1575,7 +1575,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/EGW/Dragonborn (Ravenite).png"
+						"path": "races/EGW/Dragonborn (Ravenite).webp"
 					},
 					"credit": "Axel Defois"
 				}
@@ -1593,7 +1593,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Duergar.png"
+						"path": "races/MPMM/Duergar.webp"
 					},
 					"credit": "Christopher Bradley, Zuzanna Wuzyk"
 				}
@@ -1718,7 +1718,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Dwarf.png"
+						"path": "races/PHB/Dwarf.webp"
 					}
 				}
 			]
@@ -1889,7 +1889,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Eladrin.png"
+						"path": "races/MPMM/Eladrin.webp"
 					},
 					"credit": "Eric Belisle"
 				}
@@ -2009,7 +2009,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Elf.png"
+						"path": "races/PHB/Elf.webp"
 					}
 				}
 			]
@@ -2462,7 +2462,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/EGW/Elf (Pallid).png"
+						"path": "races/EGW/Elf (Pallid).webp"
 					},
 					"credit": "Axel Defois"
 				}
@@ -2748,7 +2748,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Fairy.png"
+						"path": "races/MPMM/Fairy.webp"
 					},
 					"credit": "Nikki Dawes"
 				}
@@ -2866,8 +2866,9 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/WBtW/Fairy.png"
-					}
+						"path": "races/WBtW/Fairy.webp"
+					},
+					"credit": "Nikki Dawes"
 				}
 			]
 		},
@@ -2884,7 +2885,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Firbolg.png"
+						"path": "races/MPMM/Firbolg.webp"
 					},
 					"credit": "Shawn Wood"
 				}
@@ -3015,7 +3016,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Firbolg.png"
+						"path": "races/VGM/Firbolg.webp"
 					},
 					"credit": "Shawn Wood"
 				}
@@ -3081,7 +3082,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/EEPC/Genasi.png"
+						"path": "races/EEPC/Genasi.webp"
 					},
 					"credit": "Claudio Pozas"
 				}
@@ -3099,7 +3100,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Genasi.png"
+						"path": "races/MPMM/Genasi.webp"
 					},
 					"credit": "Claudio Pozas"
 				}
@@ -3308,7 +3309,7 @@
 							"type": "image",
 							"href": {
 								"type": "internal",
-								"path": "races/MTF/Githyanki.png"
+								"path": "races/MTF/Githyanki.webp"
 							}
 						}
 					}
@@ -3352,7 +3353,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Githyanki.png"
+						"path": "races/MPMM/Githyanki.webp"
 					},
 					"credit": "Zoltan Boros"
 				}
@@ -3370,7 +3371,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Githzerai.png"
+						"path": "races/MPMM/Githzerai.webp"
 					},
 					"credit": "Scott Murphy"
 				}
@@ -3516,7 +3517,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Gnome.png"
+						"path": "races/PHB/Gnome.webp"
 					}
 				}
 			]
@@ -3742,7 +3743,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Goblin.png"
+						"path": "races/MPMM/Goblin.webp"
 					},
 					"credit": "Mike Jordana"
 				}
@@ -3798,7 +3799,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Goblin.png"
+						"path": "races/VGM/Goblin.webp"
 					}
 				}
 			]
@@ -3939,7 +3940,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Goliath.png"
+						"path": "races/MPMM/Goliath.webp"
 					},
 					"credit": "Eric Belisle, Jon Hodgson"
 				}
@@ -4024,7 +4025,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Goliath.png"
+						"path": "races/VGM/Goliath.webp"
 					}
 				}
 			]
@@ -4107,7 +4108,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Half-Elf.png"
+						"path": "races/PHB/Half-Elf.webp"
 					}
 				}
 			]
@@ -4188,7 +4189,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Half-Orc.png"
+						"path": "races/PHB/Half-Orc.webp"
 					}
 				}
 			]
@@ -4318,7 +4319,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Halfling.png"
+						"path": "races/PHB/Halfling.webp"
 					}
 				}
 			]
@@ -4396,7 +4397,7 @@
 							"type": "image",
 							"href": {
 								"type": "internal",
-								"path": "races/EGW/Halfling (Lotusden).png"
+								"path": "races/EGW/Halfling (Lotusden).webp"
 							},
 							"credit": "Axel Defois"
 						}
@@ -4440,7 +4441,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Harengon.png"
+						"path": "races/MPMM/Harengon.webp"
 					},
 					"credit": "Beth Trott, Shawn Wood"
 				}
@@ -4458,8 +4459,9 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/WBtW/Harengon.png"
-					}
+						"path": "races/WBtW/Harengon.webp"
+					},
+					"credit": "Shawn Wood"
 				}
 			]
 		},
@@ -4607,7 +4609,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VRGR/Hexblood.png"
+						"path": "races/VRGR/Hexblood.webp"
 					},
 					"credit": "Kai Carpenter"
 				}
@@ -4634,7 +4636,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Hobgoblin.png"
+						"path": "races/MPMM/Hobgoblin.webp"
 					},
 					"credit": "Eric Belisle, Julian Kok"
 				}
@@ -4658,7 +4660,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Hobgoblin.png"
+						"path": "races/VGM/Hobgoblin.webp"
 					}
 				}
 			]
@@ -4902,7 +4904,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Human.png"
+						"path": "races/PHB/Human.webp"
 					}
 				}
 			]
@@ -4918,7 +4920,7 @@
 						"Once the fight has begun, of course, victory relies on different factors. But here, the human drive toward perfection once more tilts the scales in their favor. Humans are willing to go to any length, exhausting all available options, to reach the pinnacle of achievement and win the favor of the God-Pharaoh.",
 						{
 							"type": "entries",
-							"name": "Two Roads to Perfection ",
+							"name": "Two Roads to Perfection",
 							"entries": [
 								"As diverse as they are in most respects, the humans of Amonkhet share a drive toward perfection. However, they approach this challenge differently. Some humans specialize in a relatively narrow set of skills, while others seek to master a wide range.",
 								{
@@ -5381,7 +5383,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Kalashtar.png"
+						"path": "races/ERLW/Kalashtar.webp"
 					},
 					"credit": "Eric Belisle"
 				},
@@ -5389,7 +5391,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Kalashtar 001.png"
+						"path": "races/ERLW/Kalashtar 001.webp"
 					}
 				}
 			]
@@ -5441,7 +5443,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Kenku.png"
+						"path": "races/MPMM/Kenku.webp"
 					},
 					"credit": "Scott Murphy"
 				}
@@ -5531,7 +5533,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Kenku.png"
+						"path": "races/VGM/Kenku.webp"
 					}
 				}
 			]
@@ -5600,7 +5602,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Kobold.png"
+						"path": "races/MPMM/Kobold.webp"
 					},
 					"credit": "Christopher Burdett"
 				}
@@ -5623,7 +5625,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Kobold.png"
+						"path": "races/VGM/Kobold.webp"
 					}
 				}
 			]
@@ -5775,7 +5777,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Leonin.png"
+						"path": "races/MOT/Leonin.webp"
 					},
 					"credit": "Wisnu Tan"
 				},
@@ -5783,7 +5785,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Leonin Matron.png"
+						"path": "races/MOT/Leonin Matron.webp"
 					},
 					"title": "Leonin matrons lead the prides of Oreskos, protecting the plains from interlopers",
 					"credit": "Steve Prescott"
@@ -5802,7 +5804,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Lizardfolk.png"
+						"path": "races/MPMM/Lizardfolk.webp"
 					},
 					"credit": "April Prime"
 				}
@@ -5949,7 +5951,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Lizardfolk.png"
+						"path": "races/VGM/Lizardfolk.webp"
 					}
 				}
 			]
@@ -5975,7 +5977,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/LR/Locathah.png"
+						"path": "races/LR/Locathah.webp"
 					}
 				}
 			]
@@ -6054,7 +6056,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/GGR/Loxodon.png"
+						"path": "races/GGR/Loxodon.webp"
 					}
 				}
 			]
@@ -6391,7 +6393,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/GGR/Minotaur.png"
+						"path": "races/GGR/Minotaur.webp"
 					}
 				}
 			]
@@ -6514,7 +6516,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Minotaur.png"
+						"path": "races/MOT/Minotaur.webp"
 					},
 					"credit": "Jason Rainville"
 				},
@@ -6522,7 +6524,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Minotaur 2.png"
+						"path": "races/MOT/Minotaur 2.webp"
 					},
 					"credit": "Steve Prescott"
 				}
@@ -6541,7 +6543,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Minotaur.png"
+						"path": "races/MPMM/Minotaur.webp"
 					},
 					"credit": "Jedd Chevrier, Brynn Metheney"
 				}
@@ -6653,7 +6655,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Orc.png"
+						"path": "races/MPMM/Orc.webp"
 					},
 					"credit": "Mike Jordana"
 				}
@@ -6668,7 +6670,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Orc.png"
+						"path": "races/VGM/Orc.webp"
 					}
 				}
 			]
@@ -6986,7 +6988,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VRGR/Reborn.png"
+						"path": "races/VRGR/Reborn.webp"
 					},
 					"credit": "Nikki Dawes"
 				}
@@ -7119,7 +7121,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Satyr.png"
+						"path": "races/MOT/Satyr.webp"
 					},
 					"credit": "Steve Prescott"
 				},
@@ -7127,7 +7129,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Satyr 2.png"
+						"path": "races/MOT/Satyr 2.webp"
 					},
 					"credit": "Johannes Voss"
 				}
@@ -7144,7 +7146,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Satyr.png"
+						"path": "races/MPMM/Satyr.webp"
 					},
 					"credit": "Nikki Dawes, Thom Tenery"
 				}
@@ -7171,7 +7173,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Sea Elf.png"
+						"path": "races/MPMM/Sea Elf.webp"
 					},
 					"credit": "Nikki Dawes"
 				}
@@ -7200,7 +7202,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Shadar-kai.png"
+						"path": "races/MPMM/Shadar-kai.webp"
 					},
 					"credit": "Eric Belisle, Mark Molnar"
 				}
@@ -7271,7 +7273,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Shifter 001.png"
+						"path": "races/ERLW/Shifter 001.webp"
 					}
 				}
 			]
@@ -7335,7 +7337,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Shifter.png"
+						"path": "races/MPMM/Shifter.webp"
 					},
 					"credit": "Eric Belisle"
 				}
@@ -7440,7 +7442,7 @@
 							"type": "image",
 							"href": {
 								"type": "internal",
-								"path": "races/ERLW/Shifter (Wildhunt).png"
+								"path": "races/ERLW/Shifter (Wildhunt).webp"
 							},
 							"credit": "Eric Belisle"
 						}
@@ -7484,7 +7486,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/GGR/Simic Hybrid.png"
+						"path": "races/GGR/Simic Hybrid.webp"
 					}
 				}
 			]
@@ -7553,7 +7555,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Tabaxi.png"
+						"path": "races/MPMM/Tabaxi.webp"
 					},
 					"credit": "Shawn Wood"
 				}
@@ -7761,7 +7763,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Tabaxi.png"
+						"path": "races/VGM/Tabaxi.webp"
 					}
 				}
 			]
@@ -7866,7 +7868,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/PHB/Tiefling.png"
+						"path": "races/PHB/Tiefling.webp"
 					}
 				}
 			]
@@ -8084,7 +8086,7 @@
 							"type": "image",
 							"href": {
 								"type": "internal",
-								"path": "races/SCAG/Feral Tiefling.png"
+								"path": "races/SCAG/Feral Tiefling.webp"
 							}
 						}
 					}
@@ -8159,7 +8161,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Tortle.png"
+						"path": "races/MPMM/Tortle.webp"
 					},
 					"credit": "Mark Behm, Franz Vohwinkel"
 				}
@@ -8243,7 +8245,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/TTP/Tortle.png"
+						"path": "races/TTP/Tortle.webp"
 					}
 				}
 			]
@@ -8325,7 +8327,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Triton.png"
+						"path": "races/MOT/Triton.webp"
 					},
 					"credit": "Ryan Pancoast"
 				},
@@ -8333,7 +8335,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MOT/Triton 2.png"
+						"path": "races/MOT/Triton 2.webp"
 					},
 					"credit": "Jack Wang"
 				}
@@ -8351,7 +8353,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Triton.png"
+						"path": "races/MPMM/Triton.webp"
 					},
 					"credit": "Eric Belisle"
 				}
@@ -8489,7 +8491,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Triton.png"
+						"path": "races/VGM/Triton.webp"
 					}
 				}
 			]
@@ -8649,7 +8651,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/GGR/Vedalken.png"
+						"path": "races/GGR/Vedalken.webp"
 					}
 				}
 			]
@@ -8857,7 +8859,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/AI/Verdan.png"
+						"path": "races/AI/Verdan.webp"
 					},
 					"title": "Varieties of Adult Verdan",
 					"credit": "Kris Straub"
@@ -9024,7 +9026,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Warforged.png"
+						"path": "races/ERLW/Warforged.webp"
 					},
 					"credit": "Craig J Spearing"
 				},
@@ -9032,7 +9034,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/ERLW/Warforged 001.png"
+						"path": "races/ERLW/Warforged 001.webp"
 					}
 				}
 			]
@@ -9049,7 +9051,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/MPMM/Yuan-ti.png"
+						"path": "races/MPMM/Yuan-ti.webp"
 					},
 					"credit": "Simon Dominic"
 				}
@@ -9064,7 +9066,7 @@
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "races/VGM/Yuan-ti Pureblood.png"
+						"path": "races/VGM/Yuan-ti Pureblood.webp"
 					}
 				}
 			]

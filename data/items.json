@@ -2557,7 +2557,8 @@
 			"value": 5000,
 			"entries": [
 				"An {@creature axe beak}'s splayed toes allow it to run across snow, and it can carry as much weight as a mule. A domesticated axe beak can be purchased in Ten-Towns for 50 gp."
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Axe of the Dwarvish Lords",
@@ -3301,17 +3302,6 @@
 			"lootTables": [
 				"Magic Item Table F"
 			]
-		},
-		{
-			"name": "Bagpipes",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 6,
-			"value": 3000
 		},
 		{
 			"name": "Balance of Harmony",
@@ -4332,16 +4322,6 @@
 			"hasFluffImages": true
 		},
 		{
-			"name": "Birdpipes",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"Pan pipes or satyr pipes, also known as the shalm, these are sacred to {@deity Lliira|Faerûnian|scag} and popular with wood elf and wild elf bards."
-			]
-		},
-		{
 			"name": "Bit and bridle",
 			"source": "PHB",
 			"page": 157,
@@ -4626,7 +4606,8 @@
 			],
 			"attachedSpells": [
 				"haste"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Blackstaff",
@@ -12363,28 +12344,6 @@
 			"hasFluffImages": true
 		},
 		{
-			"name": "Drum",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 3,
-			"value": 600
-		},
-		{
-			"name": "Dulcimer",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 10,
-			"value": 2500
-		},
-		{
 			"name": "Dungeoneer's Pack",
 			"source": "PHB",
 			"page": 151,
@@ -13948,7 +13907,7 @@
 							"The creature sprinkled with dust gains a flying speed of 60 feet for 10 minutes."
 						],
 						[
-							"71-80 ",
+							"71-80",
 							"The creature sprinkled with dust must succeed on a DC 11 Constitution saving throw or fall {@condition unconscious} for 1 minute. The creature awakens if it takes damage or if it is shaken or slapped as an action."
 						],
 						[
@@ -15289,17 +15248,6 @@
 			"value": 2
 		},
 		{
-			"name": "Flute",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 1,
-			"value": 200
-		},
-		{
 			"name": "Flying Chariot",
 			"source": "MOT",
 			"page": 196,
@@ -15635,6 +15583,54 @@
 			]
 		},
 		{
+			"name": "Gate Warden Trinket",
+			"source": "SatO",
+			"type": "G",
+			"rarity": "none",
+			"entries": [
+				{
+					"type": "table",
+					"colStyles": [
+						"col-2 text-center",
+						"col-10"
+					],
+					"colLabels": [
+						"d6",
+						"Trinket"
+					],
+					"rows": [
+						[
+							"1",
+							"A tiny vial pendant filled with a drop of honey that glows faintly"
+						],
+						[
+							"2",
+							"A small lead ingot that has a strange thumbprint pressed into it and whispers when held tightly"
+						],
+						[
+							"3",
+							"Two lodestone spheres that chime when they attract each other"
+						],
+						[
+							"4",
+							"A smoldering pebble of coal that, while always hot, doesn't burn skin, fur, scales, or clothing"
+						],
+						[
+							"5",
+							"A feather that sheds {@quickref Vision and Light||2||dim light} in a 5-foot radius"
+						],
+						[
+							"6",
+							"A ring made from a chain link that, once donned, won't come off without pulling painfully hard"
+						]
+					]
+				}
+			],
+			"miscTags": [
+				"TT"
+			]
+		},
+		{
 			"name": "Gauntlets of Flaming Fury",
 			"source": "BGDIA",
 			"page": 223,
@@ -15959,16 +15955,6 @@
 						]
 					]
 				}
-			]
-		},
-		{
-			"name": "Glaur",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"Short, curved horns like a cornucopia. Played with valves, glaur sound like trumpets, while those without valves, known as gloon, have a more mournful sound."
 			]
 		},
 		{
@@ -17234,16 +17220,6 @@
 				"You can use an action to unfold and place the Hammock of Worlds on a solid surface, whereupon it creates a two-way portal to the Ghost Orchid Tepui in the Feywild or to the Drought Elder in the Far Realm (the user's choice). You can use an action to close an open portal by taking hold of the edges of the cloth and folding it up. Once Hammock of Worlds has opened a portal, it can't do so again for {@dice 1d8} hours."
 			],
 			"hasFluffImages": true
-		},
-		{
-			"name": "Hand Drum",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A double-headed skin drum fitted with handles along its side."
-			]
 		},
 		{
 			"name": "Hand of Vecna",
@@ -18660,17 +18636,6 @@
 			"entries": [
 				"A Horizon puzzle cube is an 8-inch magical cube made of gold, iron, crystal, and copper, and it is worth 5,000 gp to a sage or collector. A functioning puzzle cube can be solved with 30 minutes of work and a successful DC 25 Intelligence ({@skill Investigation}) check. When the cube is solved, a 30-foot-diameter portal appears before the creature who solved the cube, leading to the northeastern platform of Horizon's Edge. The portal is two-way and remains open for 10 minutes or until a creature uses an action to change the puzzle's configuration. Puzzle cubes don't function while on Horizon's Edge, but a device somewhere in the demiplane allows a cube to function in reverse while the cube is fitted into it."
 			]
-		},
-		{
-			"name": "Horn",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 2,
-			"value": 300
 		},
 		{
 			"name": "Horn of Beckoning Death",
@@ -22948,16 +22913,6 @@
 			]
 		},
 		{
-			"name": "Longhorn",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A Faerûnian flute of sophisticated make, found only in areas with skilled artisans, as in great cities or elven enclaves."
-			]
-		},
-		{
 			"name": "Longship",
 			"source": "DMG",
 			"page": 119,
@@ -23352,17 +23307,6 @@
 			"hasFluffImages": true
 		},
 		{
-			"name": "Lute",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 2,
-			"value": 3500
-		},
-		{
 			"name": "Lute crafted of exotic wood with mother-of-pearl inlay and zircon gems (Brazen Coalition)",
 			"source": "PSX",
 			"page": 24,
@@ -23396,17 +23340,6 @@
 				}
 			],
 			"hasFluffImages": true
-		},
-		{
-			"name": "Lyre",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 2,
-			"value": 3000
 		},
 		{
 			"name": "Lyre of Building",
@@ -24502,6 +24435,38 @@
 			"entries": [
 				"A military saddle braces the rider, helping you keep your seat on an active mount in battle. It gives you advantage on any check you make to remain mounted."
 			]
+		},
+		{
+			"name": "Mimir",
+			"source": "SatO",
+			"page": 13,
+			"rarity": "rare",
+			"reqAttune": true,
+			"wondrous": true,
+			"weight": 5,
+			"entries": [
+				"This skull-shaped device is filled with knowledge. The device weighs 5 pounds and is covered with subtle etchings of planar sigils.",
+				"As a bonus action, you can toss the device into the air, whereupon it floats at a distance of {@dice 1d3} feet from you and you can access its properties. While the mimir is floating, a creature other than you can use an action to grasp or net the device, either by making a successful unarmed strike against AC 22 or a successful DC 22 Dexterity ({@skill Acrobatics}) check. You can use a bonus action to seize and stow the device.",
+				"The device has AC 22, 25 hit points, immunity to poison and psychic damage, and resistance to all other damage. It is considered to be an object that is being worn while it is floating near you.",
+				{
+					"type": "entries",
+					"name": "Esoteric Knowledge",
+					"entries": [
+						"While the device is floating, you can use an action to cast {@spell legend lore} from the device. The device speaks the revealed lore aloud. Once this property has been used, it can't be used again until the next dawn."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Planar Knowledge",
+					"entries": [
+						"The device knows basic, useful information about the planes of existence. While the device is floating, it verbally answers questions you or anyone you designate poses to it about that topic. It knows the information about the planes in the Dungeon Master's Guide, as well as basic information about the gate-towns of the Outlands (presented in chapter 3 of Sigil and the Outlands)."
+					]
+				}
+			],
+			"attachedSpells": [
+				"legend lore"
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Mind Crystal (Careful)",
@@ -27431,17 +27396,6 @@
 			]
 		},
 		{
-			"name": "Pan Flute",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 2,
-			"value": 1200
-		},
-		{
 			"name": "Paper (one sheet)",
 			"source": "PHB",
 			"page": 150,
@@ -28076,6 +28030,54 @@
 			]
 		},
 		{
+			"name": "Planar Philosopher Trinket",
+			"source": "SatO",
+			"type": "G",
+			"rarity": "none",
+			"entries": [
+				{
+					"type": "table",
+					"colStyles": [
+						"col-2 text-center",
+						"col-10"
+					],
+					"colLabels": [
+						"d6",
+						"Trinket"
+					],
+					"rows": [
+						[
+							"1",
+							"Locket with a picture of my mentor and an inscription I can't read"
+						],
+						[
+							"2",
+							"Bleached cranium rat skull with colored glass beads in its eye sockets"
+						],
+						[
+							"3",
+							"Torn parchment with half a rebus painted on it"
+						],
+						[
+							"4",
+							"Bracelet of twisted razorvine stems"
+						],
+						[
+							"5",
+							"Fragment of a bronze blade covered in verdigris"
+						],
+						[
+							"6",
+							"Broken holy symbol of a forgotten god"
+						]
+					]
+				}
+			],
+			"miscTags": [
+				"TT"
+			]
+		},
+		{
 			"name": "Planecaller's Codex",
 			"source": "TCE",
 			"page": 134,
@@ -28560,6 +28562,17 @@
 			"entries": [
 				"You can use a portable ram to break down doors. When doing so, you gain a +4 bonus on the Strength check. One other character can help you use the ram, giving you advantage on this check."
 			]
+		},
+		{
+			"name": "Portal Compass",
+			"source": "SatO",
+			"page": 13,
+			"rarity": "uncommon",
+			"wondrous": true,
+			"entries": [
+				"This portable arcane instrument points in the direction of the last portal it passed through while it and the portal are on the same plane of existence. If that portal no longer exists, the needle becomes static until the compass passes through a new portal."
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Portfolio Keeper",
@@ -33477,6 +33490,31 @@
 			"hasFluffImages": true
 		},
 		{
+			"name": "Sensory Stone",
+			"source": "SatO",
+			"page": 13,
+			"rarity": "uncommon",
+			"wondrous": true,
+			"entries": [
+				"This small, smooth stone contains the essence of a single experience.",
+				"As an action, you or a willing creature you designate can touch the stone and experience the sensation as if it happened to the designated creature. The illusory experience is fleeting and harmless, however real it might feel in the moment.",
+				{
+					"type": "entries",
+					"name": "Record Sensation",
+					"entries": [
+						"You can use your reaction to record a short sensation lasting no longer than 6 seconds experienced by a creature of your choice within 30 feet of yourself, infusing the essence of that experience into the stone. This replaces any sensation already stored within the stone."
+					]
+				},
+				{
+					"type": "entries",
+					"name": "Siphon Sensation",
+					"entries": [
+						"As a bonus action, you can draw on the stone's magic to end the charmed or frightened condition on yourself, destroying the stone in the process."
+					]
+				}
+			]
+		},
+		{
 			"name": "Sentinel Shield",
 			"source": "DMG",
 			"page": 199,
@@ -34047,27 +34085,6 @@
 			"weight": 4,
 			"entries": [
 				"A shatterstick is a nonmagical, 12-inch-long, 4-pound stake made of blue-tinged infernal iron mined on Cania, the eighth layer of the Nine Hells. When embedded in earth or pounded into solid rock, the stake emits a seismic vibration in a 20-foot radius centered on itself for 1 minute, shaking the ground in that area for the duration. When the effects ends, the shatterstick breaks apart, becoming useless, and all structures within 20 feet of it take 35 ({@damage 10d6}) bludgeoning damage."
-			]
-		},
-		{
-			"name": "Shawm",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 1,
-			"value": 200
-		},
-		{
-			"name": "Shawm",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A double-reed instrument similar to an oboe or a bassoon, popular with gnomes, who have developed some bellows-powered versions."
 			]
 		},
 		{
@@ -35245,16 +35262,6 @@
 			"type": "G",
 			"rarity": "none",
 			"value": 2
-		},
-		{
-			"name": "Songhorn",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A recorder, a simple type of flute, usually carved from wood."
-			]
 		},
 		{
 			"name": "Soothsalts",
@@ -39421,16 +39428,6 @@
 			]
 		},
 		{
-			"name": "Tantan",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A tambourine, a popular instrument with halflings and humans south of the Dalelands."
-			]
-		},
-		{
 			"name": "Taol",
 			"source": "WDH",
 			"page": 169,
@@ -40551,16 +40548,6 @@
 			]
 		},
 		{
-			"name": "Thelarr",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"Also known as a whistlecane, a simple and easy-to-make wind instrument cut from a reed. They are so simple, in fact, that skilled bards frequently make and give them away to children\u2014to the parents' delight or regret."
-			]
-		},
-		{
 			"name": "Thermal Cube",
 			"source": "IDRotF",
 			"page": 316,
@@ -41084,16 +41071,6 @@
 				}
 			},
 			"hasFluffImages": true
-		},
-		{
-			"name": "Tocken",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A hanging set of carved oval bells, usually played with a pair of light wooden hammers (or open handed). They are most common in underground cultures, where the resonant tones can carry."
-			]
 		},
 		{
 			"name": "Tome of Clear Thought",
@@ -43241,17 +43218,6 @@
 			]
 		},
 		{
-			"name": "Viol",
-			"source": "PHB",
-			"page": 154,
-			"srd": true,
-			"basicRules": true,
-			"type": "INS",
-			"rarity": "none",
-			"weight": 1,
-			"value": 3000
-		},
-		{
 			"name": "Voting Kit",
 			"source": "AI",
 			"page": 22,
@@ -44191,16 +44157,6 @@
 			]
 		},
 		{
-			"name": "Wargong",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A metal gong, traditionally made from a shield, particularly the shield of an enemy. Both goblins and dwarves make and play wargongs, their sound echoing through tunnels in the Underdark."
-			]
-		},
-		{
 			"name": "Warhorse",
 			"source": "PHB",
 			"page": 157,
@@ -44328,7 +44284,8 @@
 			],
 			"attachedSpells": [
 				"speak with animals"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Wayfarer's Boots",
@@ -44638,7 +44595,8 @@
 			"attachedSpells": [
 				"detect evil and good",
 				"locate object"
-			]
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Whetstone",
@@ -45934,16 +45892,6 @@
 			]
 		},
 		{
-			"name": "Yarting",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A southern instrument from Amn and Calimshan that is a Faerûnian analog to the guitar. Numerous variations have spread across the continent."
-			]
-		},
-		{
 			"name": "Yellow Sapphire",
 			"source": "DMG",
 			"page": 134,
@@ -46034,16 +45982,6 @@
 			"value": 5000,
 			"entries": [
 				"A transparent pale blue-green gemstone."
-			]
-		},
-		{
-			"name": "Zulkoon",
-			"source": "SCAG",
-			"page": 124,
-			"type": "INS",
-			"rarity": "none",
-			"entries": [
-				"A complex pump organ that originated with the zulkirs of Thay, who use it in the casting of their spells. It is considered to have a dramatic, but sinister, sound."
 			]
 		}
 	],
@@ -47331,6 +47269,9 @@
 				"Vst"
 			],
 			"recharge": "dawn",
+			"entries": [
+				"The Jewel of Three Prayers is a Vestige of Divergence (see the \"Vestiges of Divergence\" sidebar). In ancient times, Alyxian the Apotheon bore this amulet as a symbol of his covenant with three Prime Deities: Sehanine the Moon Weaver, Avandra the Change Bringer, and Corellon the Arch Heart. When the jewel is found, only Sehanine's power thrums within its dormant heart. The power of the other two deities waits to be reawakened by a hero\u2014or heroes\u2014who can follow in Alyxian's footsteps."
+			],
 			"items": [
 				"Jewel of Three Prayers (Dormant)|CRCotN",
 				"Jewel of Three Prayers (Awakened)|CRCotN",
@@ -47844,7 +47785,7 @@
 			"rarity": "rare",
 			"reqAttune": true,
 			"entries": [
-				"You have resistance to one damage type while wearing this ring. The gem in the ring indicates the type, which the DM chooses or determines randomly. ",
+				"You have resistance to one damage type while wearing this ring. The gem in the ring indicates the type, which the DM chooses or determines randomly.",
 				{
 					"type": "table",
 					"colStyles": [

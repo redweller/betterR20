@@ -704,6 +704,50 @@
 			]
 		},
 		{
+			"name": "Agent of Order",
+			"source": "SatO",
+			"page": 10,
+			"prerequisite": [
+				{
+					"level": 4,
+					"feat": [
+						"scion of the outer planes|sato|scion of the outer planes (lawful outer plane)"
+					]
+				}
+			],
+			"ability": [
+				{
+					"choose": {
+						"from": [
+							"str",
+							"dex",
+							"con",
+							"int",
+							"wis",
+							"cha"
+						],
+						"amount": 1
+					}
+				}
+			],
+			"entries": [
+				"You can channel cosmic forces of order to gain these benefits:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Stasis Strike",
+							"entries": [
+								"Once per turn, when you damage a creature you can see within 60 feet of yourself, you can deal an extra {@damage 1d8} force damage to the target, and it must make a Wisdom saving throw (DC equal to 8 + your proficiency bonus + the modifier of the spellcasting ability you chose for the Scion of the Outer Planes feat) as spectral bindings try to ensnare it. On a successful save, the target escapes. On a failed save, the target has the restrained condition until the start of your next turn. These bindings manifest as chains or some other symbol of stasis. You can use this benefit a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+							]
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "Agent Of Order",
 			"source": "UA2022WondersOfTheMultiverse",
 			"page": 6,
@@ -968,6 +1012,50 @@
 						"When you are {@condition prone}, standing up uses only 5 feet of your movement.",
 						"Climbing doesn't cost you extra movement.",
 						"You can make a running long jump or a running high jump after moving only 5 feet on foot, rather than 10 feet."
+					]
+				}
+			]
+		},
+		{
+			"name": "Baleful Scion",
+			"source": "SatO",
+			"page": 10,
+			"prerequisite": [
+				{
+					"level": 4,
+					"feat": [
+						"scion of the outer planes|sato|scion of the outer planes (evil outer plane)"
+					]
+				}
+			],
+			"ability": [
+				{
+					"choose": {
+						"from": [
+							"str",
+							"dex",
+							"con",
+							"int",
+							"wis",
+							"cha"
+						],
+						"amount": 1
+					}
+				}
+			],
+			"entries": [
+				"You can channel cosmic forces of evil to gain these benefits:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Grasp of Avarice",
+							"entries": [
+								"Once per turn, when you damage a creature you can see within 60 feet of yourself, you can also deal necrotic damage to it. The necrotic damage equals {@dice 1d6} + your proficiency bonus, and you regain a number of hit points equal to this necrotic damage dealt. You can use this benefit a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+							]
+						}
 					]
 				}
 			]
@@ -1278,6 +1366,80 @@
 						"You gain proficiency with {@item cook's utensils|phb} if you don't already have it.",
 						"As part of a short rest, you can cook special food, provided you have ingredients and {@item cook's utensils|phb} on hand. You can prepare enough of this food for a number of creatures equal to 4 + your proficiency bonus. At the end of the short rest, any creature who eats the food and spends one or more Hit Dice to regain hit points regains an extra {@dice 1d8} hit points.",
 						"With one hour of work or when you finish a long rest, you can cook a number of treats equal to your proficiency bonus. These special treats last 8 hours after being made. A creature can use a bonus action to eat one of those treats to gain temporary hit points equal to your proficiency bonus."
+					]
+				}
+			]
+		},
+		{
+			"name": "Cohort of Chaos",
+			"source": "SatO",
+			"page": 10,
+			"prerequisite": [
+				{
+					"level": 4,
+					"feat": [
+						"scion of the outer planes|sato|scion of the outer planes (chaotic outer plane)"
+					]
+				}
+			],
+			"ability": [
+				{
+					"choose": {
+						"from": [
+							"str",
+							"dex",
+							"con",
+							"int",
+							"wis",
+							"cha"
+						],
+						"amount": 1
+					}
+				}
+			],
+			"entries": [
+				"You can channel cosmic forces of chaos to gain these benefits:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "entries",
+							"name": "Chaotic Flare",
+							"entries": [
+								"When you roll a 1 or a 20 on an attack roll or a saving throw, the magic of chaos flows through you. Roll a d4 and consult the Chaotic Flares table to determine what happens. A flare lasts until the end of your next turn, and a new flare can't occur until after the first flare ends.",
+								{
+									"type": "table",
+									"caption": "Chaotic Flares",
+									"colStyles": [
+										"col-2 text-center",
+										"col-10"
+									],
+									"colLabels": [
+										"d4",
+										"Flare"
+									],
+									"rows": [
+										[
+											"1",
+											"{@b Battle Fury.} A creature of your choice that you can see is filled with reckless fury. It has advantage on attack rolls and disadvantage on ability checks."
+										],
+										[
+											"2",
+											"{@b Disruption Field.} Waves of energy ripple around you. Every creature that starts its turn within 5 feet of you, or that moves into that area for the first time on a turn, takes {@damage 1d8} force damage."
+										],
+										[
+											"3",
+											"{@b Unbound.} When you move, you can use some or all of your walking speed to teleport yourself once, along with any equipment you're wearing or carrying, up to the distance used to an unoccupied space that you can see."
+										],
+										[
+											"4",
+											"{@b Wailing Winds.} Winds swirl in a 15-foot-radius sphere centered on you. You and any other creatures in that area have disadvantage on Wisdom saving throws."
+										]
+									]
+								}
+							]
+						}
 					]
 				}
 			]
@@ -6611,6 +6773,50 @@
 		},
 		{
 			"name": "Outlands Envoy",
+			"source": "SatO",
+			"page": 10,
+			"prerequisite": [
+				{
+					"level": 4,
+					"feat": [
+						"scion of the outer planes|sato|scion of the outer planes (the outlands)"
+					]
+				}
+			],
+			"ability": [
+				{
+					"choose": {
+						"from": [
+							"str",
+							"dex",
+							"con",
+							"int",
+							"wis",
+							"cha"
+						],
+						"amount": 1
+					}
+				}
+			],
+			"entries": [
+				"You have spent significant time in Sigil or the Outlands, the crossroads of the multiverse. Being steeped in converging planar energies grants you these benefits:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Crossroads Emissary",
+							"entries": [
+								"You learn the {@spell misty step} and {@spell tongues} spells. You can cast each spell once using this feat without a spell slot, and you must finish a long rest before you can cast that spell in this way again. When you cast {@spell tongues} using this feat, you require no material components. You can also cast these spells using spell slots you have of the appropriate level. The spells' spellcasting ability is the one chosen when you gained the Scion of the Outer Planes feat."
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Outlands Envoy",
 			"source": "UA2022WondersOfTheMultiverse",
 			"page": 7,
 			"prerequisite": [
@@ -6804,6 +7010,50 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Planar Wanderer",
+			"source": "SatO",
+			"page": 11,
+			"prerequisite": [
+				{
+					"level": 4,
+					"feat": [
+						"scion of the outer planes|sato"
+					]
+				}
+			],
+			"entries": [
+				"You can draw on the forces of the multiverse to survive cosmic extremes and to traverse its infinite realms, granting you these benefits:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Planar Adaptation",
+							"entries": [
+								"When you finish a long rest, you gain resistance to either acid, cold, or fire damage (your choice) until you finish your next long rest."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Portal Cracker",
+							"entries": [
+								"Your experience with portals allows you to open them without a portal key. As an action, you can concentrate on a portal you're aware of that is within 5 feet of yourself and make a DC 20 Intelligence ({@skill Arcana}) check. On a failed check, you take {@damage 3d8} psychic damage and can't use this benefit on that portal again until you finish a long rest. On a successful check, you can force the portal open or closed for 1 hour. For that duration, the portal doesn't respond to its portal key unless a creature employing the key succeeds on a DC 20 Intelligence ({@skill Arcana}) check as an action."
+							]
+						},
+						{
+							"type": "item",
+							"name": "Portal Sense",
+							"entries": [
+								"You know the direction to the last planar portal you used while you and the portal are on the same plane of existence. Moreover, as an action, you can detect the location of any portals within 30 feet of you that aren't behind total cover. Once you detect a portal with this action, you can't use the action again until you finish a long rest."
+							]
+						}
+					]
+				}
+			],
+			"hasFluffImages": true
 		},
 		{
 			"name": "Planar Wanderer",
@@ -7259,6 +7509,50 @@
 					"items": [
 						"While you are holding a double-bladed scimitar with two hands, you gain a +1 bonus to Armor Class.",
 						"A double-bladed scimitar has the finesse property when you wield it."
+					]
+				}
+			]
+		},
+		{
+			"name": "Righteous Heritor",
+			"source": "SatO",
+			"page": 11,
+			"prerequisite": [
+				{
+					"level": 4,
+					"feat": [
+						"scion of the outer planes|sato|scion of the outer planes (good outer plane)"
+					]
+				}
+			],
+			"ability": [
+				{
+					"choose": {
+						"from": [
+							"str",
+							"dex",
+							"con",
+							"int",
+							"wis",
+							"cha"
+						],
+						"amount": 1
+					}
+				}
+			],
+			"entries": [
+				"You can channel cosmic forces of good to gain these benefits:",
+				{
+					"type": "list",
+					"style": "list-hang-notitle",
+					"items": [
+						{
+							"type": "item",
+							"name": "Soothe Pain",
+							"entries": [
+								"When you or a creature within 30 feet of you takes damage, you can use your reaction to reduce that damage by {@dice 1d10} + your proficiency bonus. You can use this benefit a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
+							]
+						}
 					]
 				}
 			]
@@ -7941,6 +8235,151 @@
 								"You can use a bonus action to create a forceful surge of water directed at a creature within 15 feet of you that you can see. The target must make a Strength saving throw; the DC for this save is equal to 8 + your proficiency bonus + the spellcasting ability modifier chosen for this feat, and a creature can choose to fail this saving throw. On a failure, the target is pushed up to 10 feet away from you or pulled up to 10 feet toward you (your choice). The water vanishes immediately after the creature succeeds or fails. You can create this effect a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest."
 							]
 						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Scion of the Outer Planes",
+			"source": "SatO",
+			"page": 12,
+			"prerequisite": [
+				{
+					"campaign": [
+						"Planescape"
+					]
+				}
+			],
+			"resist": [
+				{
+					"choose": {
+						"from": [
+							"poison",
+							"necrotic",
+							"radiant",
+							"force",
+							"psychic"
+						]
+					}
+				}
+			],
+			"additionalSpells": [
+				{
+					"name": "Chaotic Outer Plane",
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					},
+					"known": {
+						"_": [
+							"minor illusion#c"
+						]
+					}
+				},
+				{
+					"name": "Evil Outer Plane",
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					},
+					"known": {
+						"_": [
+							"chill touch#c"
+						]
+					}
+				},
+				{
+					"name": "Good Outer Plane",
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					},
+					"known": {
+						"_": [
+							"sacred flame#c"
+						]
+					}
+				},
+				{
+					"name": "Lawful Outer Plane",
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					},
+					"known": {
+						"_": [
+							"guidance#c"
+						]
+					}
+				},
+				{
+					"name": "The Outlands",
+					"ability": {
+						"choose": [
+							"int",
+							"wis",
+							"cha"
+						]
+					},
+					"known": {
+						"_": [
+							"mage hand#c"
+						]
+					}
+				}
+			],
+			"entries": [
+				"Your connection to an Outer Plane infuses you with the energy there. Choose a type of plane listed in the Planar Infusion table. Your choice gives you resistance to a damage type and the ability to cast a cantrip, as specified in the table. You can cast this cantrip without material components, and your spellcasting ability for it is Intelligence, Wisdom, or Charisma (choose when you select this feat).",
+				{
+					"type": "table",
+					"colStyles": [
+						"col-4",
+						"col-4",
+						"col-4"
+					],
+					"colLabels": [
+						"Plane",
+						"Damage Resistance",
+						"Cantrip"
+					],
+					"rows": [
+						[
+							"Chaotic Outer Plane",
+							"Poison",
+							"{@spell Minor illusion}"
+						],
+						[
+							"Evil Outer Plane",
+							"Necrotic",
+							"{@spell Chill touch}"
+						],
+						[
+							"Good Outer Plane",
+							"Radiant",
+							"{@spell Sacred flame}"
+						],
+						[
+							"Lawful Outer Plane",
+							"Force",
+							"{@spell Guidance}"
+						],
+						[
+							"The Outlands",
+							"Psychic",
+							"{@spell Mage hand}"
+						]
 					]
 				}
 			]
