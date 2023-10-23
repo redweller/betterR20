@@ -396,5 +396,10 @@
 		"ver": "1.35.4",
 		"date": "2023-08-27",
 		"txt": "- Updated menus to reflect latest Roll20 changes (thanks @ redweller)"
+	},
+	{
+		"ver": "1.35.5",
+		"date": "2023-10-23",
+		"txt": "(- Updated to latest 5etools dataset (thanks @ darthbeep))"
 	}
 ]
