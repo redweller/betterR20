@@ -283,7 +283,7 @@ function d20plusItems () {
 	};
 
 	d20plus.items.parseProperty = function (property) {
-		if (Renderer.item.propertyMap[property]) return Renderer.item.propertyMap[property].name;
+		if (Renderer.item.getProperty(property)) return Renderer.item.getProperty(property).name;
 		return "n/a";
 	};
 
