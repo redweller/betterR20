@@ -401,5 +401,10 @@
 		"ver": "1.35.5",
 		"date": "2023-10-23",
 		"txt": "(- Updated to latest 5etools dataset (thanks @ darthbeep))"
+	},
+	{
+		"ver": "1.35.6",
+		"date": "2023-10-24",
+		"txt": "(- Updated to latest 5etools libs (thanks @ darthbeep))"
 	}
 ]
