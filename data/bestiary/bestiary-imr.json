@@ -143,6 +143,10 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"battleaxe|phb",
+				"morningstar|phb"
+			],
 			"senseTags": [
 				"D"
 			],
@@ -162,12 +166,18 @@
 			],
 			"miscTags": [
 				"AOE",
+				"MLW",
 				"MW"
 			],
 			"conditionInflict": [
 				"charmed",
 				"incapacitated",
 				"stunned"
+			],
+			"savingThrowForced": [
+				"constitution",
+				"dexterity",
+				"wisdom"
 			],
 			"hasToken": true,
 			"hasFluffImages": true
@@ -221,6 +231,12 @@
 					]
 				}
 			},
+			"type": {
+				"type": "humanoid",
+				"tags": [
+					"human"
+				]
+			},
 			"alignment": [
 				"N",
 				"E"
@@ -242,6 +258,28 @@
 				"P"
 			],
 			"hasToken": true
+		},
+		{
+			"name": "Banrion",
+			"isNpc": true,
+			"isNamedCreature": true,
+			"source": "IMR",
+			"page": 91,
+			"_copy": {
+				"name": "Unicorn",
+				"source": "MM",
+				"_mod": {
+					"*": {
+						"mode": "replaceTxt",
+						"replace": "the unicorn",
+						"with": "Banrion",
+						"flags": "i"
+					}
+				}
+			},
+			"hasToken": true,
+			"hasFluff": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Barbatos",
@@ -363,6 +401,9 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"light crossbow|phb"
+			],
 			"actionTags": [
 				"Multiattack"
 			],
@@ -380,6 +421,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"MLW",
 				"MW",
 				"RNG",
 				"RW"
@@ -390,6 +432,14 @@
 			],
 			"conditionInflictSpell": [
 				"restrained"
+			],
+			"savingThrowForced": [
+				"constitution",
+				"dexterity"
+			],
+			"savingThrowForcedSpell": [
+				"dexterity",
+				"strength"
 			],
 			"hasToken": true
 		},
@@ -514,6 +564,12 @@
 			"conditionInflict": [
 				"petrified",
 				"restrained"
+			],
+			"savingThrowForced": [
+				"constitution"
+			],
+			"savingThrowForcedSpell": [
+				"dexterity"
 			],
 			"hasToken": true
 		},
@@ -674,6 +730,9 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"shortsword|phb"
+			],
 			"traitTags": [
 				"Damage Absorption",
 				"Immutable Form",
@@ -695,6 +754,7 @@
 				"P"
 			],
 			"miscTags": [
+				"MLW",
 				"MW"
 			],
 			"hasToken": true,
@@ -863,6 +923,9 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"ruinblade|imr"
+			],
 			"languageTags": [
 				"AB",
 				"C",
@@ -883,6 +946,14 @@
 			],
 			"miscTags": [
 				"MW"
+			],
+			"savingThrowForced": [
+				"intelligence"
+			],
+			"savingThrowForcedSpell": [
+				"constitution",
+				"dexterity",
+				"wisdom"
 			],
 			"hasToken": true,
 			"hasFluffImages": true
@@ -1016,6 +1087,12 @@
 			"conditionInflictSpell": [
 				"paralyzed",
 				"prone"
+			],
+			"savingThrowForced": [
+				"constitution"
+			],
+			"savingThrowForcedSpell": [
+				"wisdom"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -1187,6 +1264,9 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"spear|phb"
+			],
 			"traitTags": [
 				"Brute"
 			],
@@ -1204,12 +1284,16 @@
 				"S"
 			],
 			"miscTags": [
+				"MLW",
 				"MW",
 				"RW",
 				"THW"
 			],
 			"conditionInflict": [
 				"prone"
+			],
+			"savingThrowForced": [
+				"strength"
 			],
 			"hasToken": true,
 			"hasFluff": true
@@ -1534,6 +1618,9 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"dagger|phb"
+			],
 			"languageTags": [
 				"C",
 				"DR",
@@ -1555,9 +1642,17 @@
 				"CA"
 			],
 			"miscTags": [
+				"MLW",
 				"MW",
 				"RW",
 				"THW"
+			],
+			"savingThrowForced": [
+				"constitution"
+			],
+			"savingThrowForcedSpell": [
+				"constitution",
+				"dexterity"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -1674,6 +1769,9 @@
 			"conditionInflict": [
 				"poisoned",
 				"unconscious"
+			],
+			"savingThrowForced": [
+				"constitution"
 			],
 			"hasToken": true,
 			"hasFluff": true,
@@ -1861,6 +1959,14 @@
 				"grappled",
 				"prone",
 				"restrained"
+			],
+			"savingThrowForced": [
+				"constitution",
+				"dexterity"
+			],
+			"savingThrowForcedLegendary": [
+				"strength",
+				"wisdom"
 			],
 			"hasToken": true,
 			"hasFluff": true

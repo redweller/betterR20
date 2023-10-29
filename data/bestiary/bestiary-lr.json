@@ -195,6 +195,9 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"club|phb"
+			],
 			"traitTags": [
 				"Hold Breath"
 			],
@@ -218,12 +221,18 @@
 			],
 			"miscTags": [
 				"AOE",
+				"MLW",
 				"MW"
 			],
 			"conditionInflictSpell": [
 				"charmed",
 				"paralyzed",
 				"restrained"
+			],
+			"savingThrowForcedSpell": [
+				"constitution",
+				"strength",
+				"wisdom"
 			],
 			"hasToken": true
 		},
@@ -532,6 +541,9 @@
 				"name": "Gar Shatterkeel",
 				"source": "LR"
 			},
+			"attachedItems": [
+				"wave|dmg"
+			],
 			"traitTags": [
 				"Amphibious",
 				"Legendary Resistances"
@@ -572,7 +584,21 @@
 				"prone",
 				"restrained"
 			],
-			"hasToken": true
+			"savingThrowForced": [
+				"constitution"
+			],
+			"savingThrowForcedLegendary": [
+				"strength"
+			],
+			"savingThrowForcedSpell": [
+				"charisma",
+				"constitution",
+				"dexterity",
+				"strength",
+				"wisdom"
+			],
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shoalar Quanderil",
@@ -714,6 +740,9 @@
 					]
 				}
 			],
+			"attachedItems": [
+				"dagger|phb"
+			],
 			"traitTags": [
 				"Amphibious"
 			],
@@ -736,9 +765,15 @@
 				"I"
 			],
 			"miscTags": [
+				"MLW",
 				"MW",
 				"RW",
 				"THW"
+			],
+			"savingThrowForcedSpell": [
+				"dexterity",
+				"strength",
+				"wisdom"
 			],
 			"hasToken": true
 		},
@@ -975,7 +1010,12 @@
 				"prone",
 				"restrained"
 			],
-			"hasToken": true
+			"savingThrowForced": [
+				"constitution",
+				"dexterity"
+			],
+			"hasToken": true,
+			"hasFluffImages": true
 		}
 	]
 }
