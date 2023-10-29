@@ -171,8 +171,10 @@ Shit ?{huh|hits|avoids} the fan
 
 // Волк ------------------------------------
 
-&{template:atkdmg} {{rname=Укус}} {{charname=@{selected|token_name}}} {{mod=4}} {{always=1}} {{r1=[[1d20cs=20+4-@{target|AC}]]}} {{r2=[[1d20cs=20+4-@{target|AC}]]}} {{damage=1}} {{attack=1}} {{save=1}} {{dmg1flag=1}} {{dmg1=[[2d4+2]]}} {{dmg1type=колющий}} {{savedc=}} {{saveattr=[[@{target|d20}+@{target|strength_save_bonus}-11]] СИЛА}} {{savedesc=При провале сбит с ног}} {{crit1=[[1d4]]}}
+&{template:atkdmg} {{rname=Укус}} {{charname=@{selected|token_name}}} {{mod=4}} {{always=1}} {{r1=[[1d20cs=20+4-@{target|AC}]]}} {{r2=[[1d20cs=20+4-@{target|AC}]]}} {{damage=1}} {{attack=1}} {{save=1}} {{dmg1flag=1}} {{dmg1=[[1d6]]}} {{dmg1type=колющий}} {{savedc=}} {{saveattr=[[@{target|d20}+@{target|strength_save_bonus}-11]] СИЛА}} {{savedesc=При провале сбит с ног}} {{crit1=[[1d4]]}}
 
+
+&{template:atkdmg} {{rname=Укус}} {{charname=@{selected|token_name}}} {{mod=4}} {{always=1}} {{r1=[[1d20cs=20+4-@{target|AC}]]}} {{r2=[[1d20cs=20+4-@{target|AC}]]}} {{damage=1}} {{attack=1}} {{dmg1flag=1}} {{dmg1=[[2d4+2]]}} {{dmg1type=колющий}} {{savedc=}}  {{crit1=[[1d4]]}}
 
 
 (-- // Стражник -------------------------------
@@ -768,7 +770,7 @@ Shit ?{huh|hits|avoids} the fan
 (-- // Еверард
 
 &{template:atkdmg} {{dmg1type=поле}} {{mod=120 фт.}} {{rname=Мистический заряд}} {{
-}} damage 1 [[1d10[dmg@{target|token_id}]]] crit 1 [[1d10[dmg@{target|token_id}]]] {{
+}} damage 1 [[1d10[dmg@{target|token_id} + @{selected|charisma_mod}[chk]]]] crit 1 [[1d10[dmg@{target|token_id}]]] {{
 }} roll 1 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|charisma_mod}[chk]]] ]]cs>1cf<0]] {{r1=$[[2]] ($[[5]])}} {{
 }} roll 2 [[ d[[ {@{target|AC}+d0cs>1}<[[@{selected|d20}+@{selected|pb}+@{selected|charisma_mod}[chk]]] ]]cs>1cf<0]] {{r2=$[[3]] ($[[7]])}} {{
 }} {{damage=1}} {{attack=1}} {{always=1}} {{crit=1}} {{range=@{selected|token_name}}} {{
@@ -777,7 +779,8 @@ Shit ?{huh|hits|avoids} the fan
 // Заклинания
 &{template:simple} {{mod=?{Заклинание|
 	Невидимый слуга,Призыв невидимого слуги&#125;&#125;{{r1=Невидимый слуга|
-	Очарование личности,Цель расположена к заклинателю&#125;&#125;{{r1=Очарование}}} {{
+	Понимание языков,Понимаешь все что слышишь или читаешь&#125;&#125;{{r1=Понимание языков|
+	Сглаз,Цель страдает от сглаза (90 фт.)&#125;&#125;{{r1=Очарование}}} {{
 }} [exp@{selected|character_id}|spl1] {{
 }} {{normal=1}} {{charname=@{selected|token_name}}}
 
@@ -852,3 +855,5 @@ For console ctrl+shift+J or F12 opens the console - Red Text is the error messag
 
 Specify your versions,
 do not say "current version", state what the current version is.
+
+[Some text ](" style="border: none; margin: 1px; display: inline-block;color:yellow")

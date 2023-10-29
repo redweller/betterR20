@@ -2,17 +2,52 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.2.44";
+const SCRIPT_VERSION = "1.35.3.47";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
-const SCRIPT_BETA = "1.35.171.1";
+const SCRIPT_BETA = "1.35.172.9";
 const SCRIPT_BETA_REPO = "https://github.com/redweller/betterR20/raw/beta/";
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
--- v.171.1 changes:
-Add Edit Token dialog to context menu
-⦁ manage token images at any moment
-⦁ create and edit multisided tokens on the fly
-⦁ the new dialog replaces Set Side Size`;
+-- v.172.1 changes:
+<strong>Add Edit Token Images dialog</strong>
+⦁ manage token images at any moment via context menu
+⦁ create and edit Multi-Sided tokens on the fly
+⦁ the new dialog replaces Set Side Size (and can set any custom size instead)
+⦁ option to exclude any image from Random Side selection
+⦁ update Random Side randomizer (to give seemingly more random results)
+NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20
+-- v.172.3 changes:
+<strong>Mouseover hints on Conditions</strong>
+⦁ added hints to any chat message on standard D&D conditions, diseases and statuses
+⦁ works with 5etools version only, and uses 5etools data
+⦁ can be disabled in b20 Config in Chat section
+-- v.172.4 changes:
+⦁ condition names with hints are now clickable and send the description to chat
+-- v.172.5 changes:
+<strong>Filter Imports by List</strong>
+⦁ When importing, you can filter by a list of items. This means that when importing, if you press Import by list and enter the items that you want to import, it will automatically choose all of them for you.
+⦁ The UX, explaining, and labeling needs work. Please give suggestions
+-- v.172.6 changes:
+⦁ You can now filter by source. This means the filter is fully compatible with copying csvs from table view in 5etools
+⦁ Some "Filter by List" labeling improvements
+⦁ (not related to Filter) Change players' avatars size
+-- v.172.7 changes:
+<strong>Better token Actions & Automation</strong>
+⦁ New automatic token action buttons appear whenever you select a character:
+Rolls, Stats and Animation (the latter appears only if you've set up animations in current Campaign)
+⦁ Rolls lets you select available actions, including spells and attacks, and send the roll to chat.
+The roll templates have slightly updated look and let you select the target whenever it's required
+⦁ Stats show basic character info. The buttons at the top of the menu let you quickly open character sheet, and let you toggle "Speaking as" this character mode
+⦁ Whenever you roll using Better Actions menu, you gain several benefits:
+- the damage/healing values are clickable and are applied on click
+- spell slots are spent automatically when you use a spell
+- both actions give brief chat reminders that allow reverting the changes
+-- v.172.9 changes:
+⦁ Multiple bug fixes & general refactoring
+⦁ Proper display of hit dice and death saves, also added Concentration
+⦁ Auto roll saves, and show save/attack success or failure
+⦁ Item tracking (enable Ammo tracking and type item name in Ammo field)
+The system is still in an unfinished state, so use with caution!`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -165,6 +200,7 @@ const LIB_SCRIPTS = {
 		"utils.js",
 		"utils-ui.js",
 		"hist-port.js",
+	//	"render.js",
 	],
 	"5etools": [
 		"list.min.js",
@@ -198,7 +234,7 @@ const LIB_SCRIPTS_API = {
 };
 
 const LIB_JSON = {
-	core: [],
+	core: [], // core: ["data/conditionsdiseases.json"],
 	"5etools": getDataDirPaths(),
 };
 
@@ -239,6 +275,8 @@ const SCRIPTS = {
 			"base-chat-emoji",
 			"base-chat-languages",
 			"base-chat",
+			"base-ba",
+			"base-ba-rolltemplates",
 			"base-remote-libre",
 			"base-jukebox-widget",
 
@@ -284,6 +322,8 @@ const SCRIPTS = {
 			"base-chat-emoji",
 			"base-chat-languages",
 			"base-chat",
+			"base-ba",
+			"base-ba-rolltemplates",
 			"base-remote-libre",
 			"base-jukebox-widget",
 
@@ -355,6 +395,8 @@ const CHANGED_SCRIPTS = [
 	"base-chat-languages",
 	"base-chat-emoji",
 	"base-chat",
+	"base-ba",
+	"base-ba-rolltemplates",
 	"base-engine",
 	"base-journal",
 	"base-qpi",
@@ -405,8 +447,9 @@ let upstream_bs_file = fs.readFileSync(upstream_build, "utf-8").toString();
 
 upstream_bs_file = upstream_bs_file
 	.replace(/const SCRIPT_VERSION = "([\d.]+?)";/, `const SCRIPT_VERSION = "${SCRIPT_BETA}";`)
+	.replace(`const BUILD_DIR = "./dist";`, `const BUILD_DIR = "../.test/dist";`)
 	.replaceAll("https://github.com/TheGiddyLimit/betterR20/raw/development/", SCRIPT_BETA_REPO)
-	.replaceAll("// @name         betteR20-", "// @name         betteR20-beta-")
+	.replaceAll(/\/\/ @name *betteR20-([^b]+?)/g, "// @name         betteR20-beta-$1")
 	.replace(`=> fs.readFileSync(\`\${JS_DIR}\${filename}.js\`, "utf-8").toString())`, `=> filename === "base-util"
 			? fs.readFileSync(\`\${JS_DIR}\${filename}.js\`, "utf-8").toString().replace("}, 6000);", \`
 			d20plus.ut.sendHackerChat(\\\`

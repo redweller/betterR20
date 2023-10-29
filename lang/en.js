@@ -42,6 +42,7 @@ module.exports = {
 	cfg_option_quick_3: ["-- Quick action 3"],
 	cfg_option_minify_tracker: ["Shrink Initiative Tracker Text"],
 	cfg_option_interiors_toggle: ["Add interior/outside mode switch"],
+	cfg_option_journal_context: ["Add Custom Journal Context Menu Options"],
 
 	cfg_option_legacy_chat: ["Use green/black style for betteR20 system messages"],
 	cfg_option_resize_sidebar: ["Resize textbox & tabs with sidebar (requires restart)"],
@@ -188,6 +189,20 @@ module.exports = {
 	stat_ab_pers: ["Persuasion"],
 
 	stat_init: ["INITIATIVE"],
+
+	ba_title_rolls: ["Rolls"],
+	ba_title_stats: ["Stats"],
+	ba_title_animations: ["Animations"],
+
+	ba_group_abilities: ["Abilities"],
+	ba_group_skills: ["Skills"],
+	ba_group_attacks: ["Attacks"],
+	ba_group_spells: ["Spells"],
+
+	ba_roll_initiative: ["Initiative"],
+	ba_roll_concentration: ["Concentration"],
+	ba_roll_deathsave: ["Death save"],
+	ba_roll_hitdice: ["Hit dice"],
 
 	lang_common: ["Common"],
 	lang_dwarvish: ["Dwarvish"],

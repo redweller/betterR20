@@ -50,6 +50,9 @@ function baseMenu () {
 			lastSceneUid: null,
 		};
 
+		const tagSize = "?roll20_token_size=";
+		const tagSkip = "?roll20_skip_token=";
+
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
@@ -97,6 +100,35 @@ function baseMenu () {
 			var d = t.height()
 				, h = t.width()
 				, p = {};
+			
+			// BEGIN MOD
+			// This block is pasted from newer version of roll20 Menu code, with appropriate changes to vars etc
+			const r20ping = (u,i)=>{
+				var y, d;
+				const {canvasZoom: r, currentCanvasOffset: n, paddingOffset: c, pings: p} = d20.engine
+					, {currentPlayer: {id: C}, currentEditingLayer: b, is_gm: S} = window;
+				if (C && ((d = (y = p[C]) == null ? void 0 : y.radius) != null ? d : 0) <= 20) {
+					const x = Math.floor(o / r + n[0] - c[0] / r)
+						, k = Math.floor(a / r + n[1] - c[1] / r)
+						, D = {
+						left: x,
+						top: k,
+						radius: -5,
+						player: C,
+						pageid: d20.Campaign.activePage().id,
+						currentLayer: b
+					};
+					(S && u.shiftKey || i) && (D.scrollto = !0),
+					p[C] = D,
+					d20.engine.pinging = {
+						downx: o,
+						downy: a
+					},
+					d20.engine.redrawScreenNextTick(!0)
+				}
+			}
+			;
+			// END MOD
 			return p.top = a > $("#editor-wrapper").height() - $("#playerzone").height() - d - 100 ? a - d + "px" : a + "px",
 				p.left = o > $("#editor-wrapper").width() - h ? o + 10 - h + "px" : o + 10 + "px",
 				t.css(p),
@@ -132,7 +164,7 @@ function baseMenu () {
 							e = !1
 					}, 500))
 				}),
-				$(".actions_menu li").on(clicktype, function() {
+				$(".actions_menu li").on(clicktype, function(evt) {
 					var e = $(this).attr("data-action-type");
 					if (null != e) {
 						if ("copy" == e)
@@ -164,6 +196,15 @@ function baseMenu () {
 								}),
 								d20.Campaign.activePage().debounced_recordZIndexes(),
 								i();
+						// BEGIN MOD
+						// This block is pasted from newer version of roll20 Menu code, with appropriate changes to vars etc
+						else if (e === "ping")
+							r20ping(evt),
+							i();
+						else if (e === "focusping")
+							r20ping(evt, !0),
+							i();
+						// END MOD
 						else if (-1 !== e.indexOf("tolayer_")) {
 							d20.engine.unselect();
 							var o = e.replace("tolayer_", "");
@@ -259,6 +300,23 @@ function baseMenu () {
 										}).save()
 								}),
 								i();
+						// BEGIN MOD
+						// This block is pasted from newer version of roll20 Menu code, with appropriate changes to vars etc
+	                    else if (e === "removecard")
+							d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
+								_.each(n, function(e) {
+									d20.decks.cardByID(e.model.get("cardid")).save({
+										is_removed: !0
+									}),
+									_.defer(()=>{
+										e.model.destroy()
+									}
+									),
+									d20.decks.refreshRemovedPiles()
+								}
+								),
+								i();
+						// END MOD
 						else if ("setdimensions" == e) {
 							var l = n[0]
 								, c = $($("#tmpl_setdimensions").jqote()).dialog({
@@ -317,14 +375,24 @@ function baseMenu () {
 									i();
 						else if ("side_random" == e) {
 							d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
-							var d = [];
+							var d = []
+								// BEGIN MOD
+								, prevUrl = "none";
+								// END MOD
 							_.each(n, function(e) {
 								if (e.model && "" != e.model.get("sides")) {
 									var t = e.model.get("sides").split("|")
 										, n = t.length
-										, i = d20.textchat.diceengine.random(n);
 									// BEGIN MOD
-									const imgUrl = unescape(t[i]);
+										, i = -1
+										, imgUrl = tagSkip;
+									const tweakRandom = t.filter(j => !unescape(j).includes(tagSkip)).length > 1;
+									while (imgUrl.includes(tagSkip)) {
+										i = d20.textchat.diceengine.random(n);
+										const tUrl = unescape(t[i]);
+										imgUrl = tweakRandom && tUrl === prevUrl ? tagSkip : tUrl;
+									}
+									prevUrl = imgUrl;
 									const trueUrl = getRollableTokenUpdate(imgUrl, i, e.model);
 									d.push(trueUrl);
 									// END MOD
@@ -817,7 +885,7 @@ function baseMenu () {
 								d20plus.anim.animatorTool.doStartScene(sceneUid);
 							});
 							i();
-						} else if (["assignview0", "assignview1", "assignview2", "assignview3"].includes(e)) {
+						} else if (["assignview0", "assignview1", "assignview2", "assignview3", "assignview4"].includes(e)) {
 							const viewId = e.at(-1);
 							d20.engine.selected().forEach(it => {
 								if (it.model) {
@@ -841,10 +909,9 @@ function baseMenu () {
 		// END ROLL20 CODE
 
 		/* eslint-enable */
-		const tag = "?roll20_token_size=";
 
 		function getRollableTokenUpdate (imgUrl, currentSide, token) {
-			const [imgsrc, m] = (imgUrl || "").split(tag);
+			const [imgsrc, m] = (imgUrl || "").replace(tagSkip, "").split(tagSize);
 			const toSave = {
 				currentSide,
 				imgsrc,
@@ -870,8 +937,19 @@ function baseMenu () {
 			if (!selection.length) return;
 			const images = [];
 			const added = [];
+			const $dialog = $(d20plus.html.tokenImageEditor);
+			const $list = $dialog.find(".tokenimagelist tbody");
+			const $tokenList = $dialog.find(".tokenlist");
 			const sizes = [["tiny", "0.5"], ["small", "1.0"], ["medium", "1"], ["large", "2"], ["huge", "3"], ["gargantuan", "4"], ["colossal", "5"], ["custom", "0"]];
-			const name = selection.map(t => t.model.attributes.name || "Unnamed").join(", ");
+			const findStandardSize = (w, h) => {
+				return (w === h && sizes.find(s => s[1] === `${w / 70}`)?.last()) || "0";
+			}
+			const addImageOnInit = (img, add) => {
+				const sizeChanged = img.w !== images.last()?.w || img.h !== images.last()?.h;
+				if (images.length && sizeChanged) $list.variedSizes = true;
+				images.push(img);
+				added.push(add || img.url);
+			}
 			selection.forEach(t => {
 				const sides = t.model.attributes.sides?.split("|");
 				const token = t.model.attributes.imgsrc;
@@ -879,10 +957,17 @@ function baseMenu () {
 				if (sides.length > 1) {
 					const curSide = sides[t.model.attributes.currentSide] || token;
 					sides.forEach((s, k) => {
-						const listed = added.indexOf(s);
-						const [url, size] = unescape(s).split(tag);
+						const checked = unescape(s);
+						const listed = added.indexOf(checked);
+						const [url, size] = checked.split(tagSize);
 						const [sw, sh] = (size || "").split("x");
-						const image = {url, face: unescape(curSide).includes(url), w: tw, h: th};
+						const image = {
+							url: url.replaceAll(tagSkip, ""),
+							skip: url.includes(tagSkip),
+							face: unescape(curSide).includes(url),
+							w: tw,
+							h: th,
+						};
 						if (listed !== -1) {
 							if (k === t.model.attributes.currentSide) images[listed].face = true;
 							return;
@@ -891,35 +976,50 @@ function baseMenu () {
 						} else if (!isNaN(sw) && !isNaN(sh)) {
 							Object.merge(image, {size: "0", w: sw, h: sh});
 						}
-						images.push(image);
-						added.push(s);
+						addImageOnInit(image, checked);
 					});
 				} else {
 					const listed = added.indexOf(t.model.attributes.imgsrc);
 					if (listed !== -1) images[listed].face = true;
-					else {
-						images.push({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
-						added.push(t.model.attributes.imgsrc);
-					}
+					else addImageOnInit({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
 				}
 			});
+			if ($list.variedSizes) {
+				images.forEach(i => { if (i.size === undefined) i.size = findStandardSize(i.w, i.h); });
+			}
+			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
 			const description = selection.length > 1 ? `
-				You have selected multiple tokens. If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you will have multiple images on the list below
+				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
 			` : selection[0].model.attributes.sides ? `
 				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
 			` : `
 				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
 			`;
-			const $dialog = $(d20plus.html.tokenImageEditor);
-			const $list = $dialog.find(".tokenimagelist tbody");
+			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
+				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
+					<div class="inner">
+						<img src="${t.model.attributes.imgsrc}">
+						<div class="name">${t.model.attributes.name}</div>
+					</div>
+				</div>
+			`, "");
+			const resetTokens = () => {
+				$tokenList.find(".selected").each((k, t) => {
+					const $token = $(t);
+					const $tokenimage = $token.find("img");
+					$tokenimage.attr("src", $token.data("tokenimg"));
+				});
+			}
 			const buildList = () => {
 				if (images.length === 1) {
 					$list.someImageSelected = true;
 					images[0].selected = true;
 				}
 				$list.html(images.reduce((r, i, k) => `${r}
-					<tr class="tokenimage" data-index="${(i.id = k, k)}">
-						<td style="padding:0px;" title="Current image"><input type="checkbox"${i.selected ? " checked" : ""}></td>
+					<tr class="tokenimage${images.length === 1 ? " lastone" : ""}${i.skip ? " skipped" : ""}" data-index="${(i.id = k, k)}">
+						<td style="padding:0px;" title="Current image">
+							<input class="face" type="checkbox"${i.selected ? " checked" : ""}>
+						</td>
 						<td>
 							<div class="dropbox filled">
 							<div class="inner"><img src="${i.url}"><div class="remove"><span>Drop a file</span></div></div>
@@ -928,37 +1028,19 @@ function baseMenu () {
 						<td>
 							<label>Select size:</label><select>${sizes.reduce((o, s) => `${o}
 								<option value="${s[1]}"${s[1] === i.size ? " selected" : ""}>${s[0]}</option>
-							`, `<option>default</option>`)}</select>
-							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</class>
+							`, `<option>default (keep as is)</option>`)}</select>
+							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</span>
+							<label class="skippable"><input class="toskip" type="checkbox"${i.skip ? " checked" : ""}> Skip side on randomize</label>
 						</td>
 						<td style="padding:0px;">
-							<span class="btn url" title="Set from URL...">j</span>
-							${images.length === 1 ? `` : `<span class="btn delete" title="Delete">#</span>`}
+							<span class="btn url" title="Edit URL...">j</span>
+							<span class="btn delete" title="Delete">#</span>
 						</td>
 					</tr>
 				`, ""));
-				$list.find(".dropbox").droppable({
-					accept: ".resultimage, .library-item",
-					greedy: true,
-					scope: "default",
-					tolerance: "pointer",
-					hoverClass: "drop-highlight",
-					drop: (evt, $d) => {
-						evt.originalEvent.dropHandled = !0;
-						evt.stopPropagation();
-						evt.preventDefault();
-						const $token = $(evt.target).closest(".tokenimage");
-						const id = $token.data("index");
-						const url = $d.draggable.data("fullsizeurl") || $d.draggable.data("url");
-						if (url) {
-							images[id].url = url;
-							$token.find("img").attr("src", url);
-						}
-					},
-				});
 				if (!$list.someImageSelected) {
 					images.forEach((i, k) => {
-						if (i.face) $list.find("[type=checkbox]").eq(k).prop({indeterminate: true});
+						if (i.face) $list.find("input.face").eq(k).prop({indeterminate: true});
 					});
 				}
 			}
@@ -968,10 +1050,56 @@ function baseMenu () {
 				width: 450,
 				open: () => {
 					buildList();
+					$tokenList.html(tokenList);
 					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
 					$dialog.find(".edittitle").text(name);
 					$dialog.find(".editlabel").text(description);
-					$dialog.on("change", "select", (evt) => {
+					$list.droppable({
+						greedy: true,
+						tolerance: "pointer",
+						hoverClass: "ui-dropping",
+						scope: "default",
+						accept: ".resultimage, .library-item, .journalitem.character",
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							$d.helper.detach();
+							const char = d20.Campaign.characters.get($d.draggable.data("itemid"));
+							const dtoken = JSON.parse(char?._blobcache.defaulttoken || "{}");
+							const url = $d.draggable.data("fullsizeurl")
+								|| $d.draggable.data("url")
+								|| dtoken.imgsrc;
+							const img = document.elementFromPoint(evt.clientX, evt.clientY);
+							const id = img.tagName === "IMG" ? $(img).closest(".tokenimage").data("index") : undefined;
+							if (images[id]?.url && url) {
+								images[id].url = url;
+								$list.find(".dropbox img").eq(id).attr("src", url);
+								if (images[id].selected) $tokenList.find(".selected img").attr("src", images[id].url);
+							} else if (url) {
+								if ($list.variedSizes && dtoken.width) {
+									const [w, h] = [dtoken.width, dtoken.height];
+									const size = findStandardSize(w, h);
+									images.push({url, size, w, h});
+								} else {
+									images.push({url, w: 70, h: 70});
+								}
+								buildList();
+							}
+						},
+					});
+					$dialog.on(window.mousedowntype, ".tokenbox", evt => {
+						const $token = $(evt.currentTarget);
+						if ($token.hasClass("selected")) {
+							if ($tokenList.find(".selected").length > 1) {
+								$token.removeClass("selected");
+								$token.find("img").attr("src", $token.data("tokenimg"));
+							}
+						} else {
+							$token.addClass("selected");
+							if ($list.someImageSelected) $token.find("img").attr("src", images.find(i => i.selected)?.url);
+						}
+					}).on("change", "select", evt => {
 						const $changed = $(evt.target);
 						const $token = $changed.parent();
 						const $custom = $token.find(".custom").removeClass("set");
@@ -980,23 +1108,26 @@ function baseMenu () {
 						if (newSize > 0) {
 							$token.find(".w, .h").val(newSize * 70);
 							images[id].size = newSize;
+							$list.variedSizes = true;
 						} else {
 							delete images[id].size;
 							if (newSize === "0") {
+								$list.variedSizes = true;
 								images[id].size = newSize;
 								images[id].w = $token.find(".w").val();
 								images[id].h = $token.find(".h").val();
 								$custom.addClass("set");
 							}
 						}
-					}).on("change", "input[type=checkbox]", (evt) => {
+					}).on("change", "input.face", evt => {
 						const id = $(evt.target).closest(".tokenimage").data("index");
 						const isChecked = $(evt.target).prop("checked");
-						const $allBoxes = $list.find("[type=checkbox]");
+						const $allBoxes = $list.find("input.face");
 						if (isChecked) {
 							$list.someImageSelected = true;
 							$allBoxes.prop({checked: false}).prop({indeterminate: false});
 							$(evt.target).prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[id].url);
 							images.forEach((i, k) => {
 								if (k === id) i.selected = true;
 								else i.selected = false;
@@ -1004,35 +1135,54 @@ function baseMenu () {
 						} else {
 							$list.someImageSelected = false;
 							images[id].selected = false;
+							resetTokens();
 							images.forEach((i, k) => {
 								if (i.face) $allBoxes.eq(k).prop({indeterminate: true});
 							});
 						}
-					}).on("change", "input .w, input.h", (evt) => {
+					}).on("change", "input.toskip", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const isChecked = $(evt.target).prop("checked");
+						if (isChecked) {
+							$token.addClass("skipped");
+							images[id].skip = true;
+						} else {
+							$token.removeClass("skipped");
+							images[id].skip = false;
+						}
+					}).on("change", "input .w, input.h", evt => {
 						const $token = $(evt.target).closest(".tokenimage");
 						const id = $token.data("index");
 						const set = {w: $token.find(".w").val(), h: $token.find(".h").val()};
 						if (isNaN(set.w) || isNaN(set.h)) return;
 						images[id].w = set.w;
 						images[id].h = set.h;
-					}).on(window.mousedowntype, ".url", (evt) => {
+					}).on(window.mousedowntype, ".url", evt => {
 						const $token = $(evt.target).closest(".tokenimage");
+						const $image = $token.find("img");
 						const id = $token.data("index");
-						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						const url = window.prompt("Edit URL", $image.attr("src"));
 						if (!url) return;
 						d20plus.art.setLastImageUrl(url);
 						images[id].url = url;
-						$token.find("img").attr("src", url);
-					}).on(window.mousedowntype, ".delete", (evt) => {
+						$image.attr("src", url);
+					}).on(window.mousedowntype, ".delete", evt => {
 						const $deleted = $(evt.target).closest(".tokenimage");
 						const id = $deleted.data("index");
 						if (images.length <= 1) return;
+						if (images[id].selected) {
+							$list.someImageSelected = false;
+							resetTokens();
+						}
 						images.splice(id, 1);
 						buildList();
-					}).on(window.mousedowntype, ".addimage", (evt) => {
-						images.push({url: "https://app.roll20.net/images/character.png", w: 70, h: 70})
-						buildList();
-					}).on(window.mousedowntype, ".addimageurl", (evt) => {
+						if (images.length === 1) {
+							$list.someImageSelected = true;
+							$list.find("input.face").prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[0].url);
+						}
+					}).on(window.mousedowntype, ".addimageurl", () => {
 						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
 						if (!url) return;
 						d20plus.art.setLastImageUrl(url);
@@ -1048,7 +1198,11 @@ function baseMenu () {
 					"Save changes": () => {
 						const save = {};
 						if (images.length > 1) {
-							save.sides = images.map(i => escape(i.url + (i.size ? tag + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : ""))).join("|");
+							save.sides = images.map(i => {
+								const skipped = i.skip ? tagSkip : "";
+								const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
+								return escape(i.url + skipped + size);
+							}).join("|");
 						} else {
 							save.sides = "";
 						}
@@ -1070,7 +1224,10 @@ function baseMenu () {
 							d20.engine.unselect();
 						}
 						selection.forEach(t => {
-							t.model.save(save);
+							if (selection.length === 1
+								|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
+								t.model.save(save);
+							}
 						});
 						$dialog.off();
 						$dialog.dialog("destroy").remove();
@@ -1135,7 +1292,7 @@ function baseMenu () {
 		"togglefliph": { ln: __("menu_adv_flh"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"fliph\")" },
 		"toggleflipv": { ln: __("menu_adv_flv"), condition: "this.get && this.get(\"type\") == \"image\"", active: "this && this.get(\"flipv\")" },
 		"setdimensions": { ln: __("menu_adv_dimens"), condition: "this.get && this.get(\"type\") == \"image\"" },
-		"edittokenimage": { ln: __("menu_adv_edit"), condition: "this.view && this.get && this.get(\"cardid\") === \"\"", action: "edittokenimages" },
+		"edittokenimage": { ln: __("menu_adv_edit"), condition: "this.view && this.get && this.get(\"type\") == \"image\" && this.get(\"cardid\") === \"\"", action: "edittokenimages" },
 		"aligntogrid": { ln: __("menu_adv_align"), condition: "this.get && this.get(\"type\") == \"image\" && window.currentEditingLayer == \"map\"" },
 		"lock-token": { ln: __("menu_adv_lock"), condition: "this.view && !this.get(\"lockMovement\") && !this.get(\"VeLocked\")" },
 		"unlock-token": { ln: __("menu_adv_unlock"), condition: "this.view && (this.get(\"lockMovement\") || this.get(\"VeLocked\"))", action: "lock-token"},
@@ -1152,6 +1309,7 @@ function baseMenu () {
 		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
 		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
 		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
+		"assignview4": { ln: d20plus.menu._neatActionsView("4"), active: "this && this.get(\"bR20_view4\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views4Enable')" },
 	};
 
 	d20plus.menu._neatStructure = {
@@ -1191,6 +1349,7 @@ function baseMenu () {
 				"assignview1",
 				"assignview2",
 				"assignview3",
+				"assignview4",
 			] },
 		"util": {
 			ln: __("menu_util_title"),

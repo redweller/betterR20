@@ -721,11 +721,6 @@ function baseCss () {
 			s: ".initiativedialog .ui-dialog-buttonpane span.difficulty",
 			r: "width: 40%; margin-top: -9px; font-size: 14px;",
 		},
-		// Spacing between token-actions
-		{
-			s: "#secondary-toolbar .tokenactions .btn",
-			r: "margin-left: 2px;",
-		},
 		// Tweak OGL roll template styles
 		{
 			s: ".sheet-rolltemplate-atkdmg .sheet-desc .sheet-savedc",
@@ -756,7 +751,7 @@ function baseCss () {
 			s: ".sheet-rolltemplate-atkdmg .sheet-sublabel span.showtip.inlinerollresult",
 			r: "font-size: medium; padding: 5px 0px;",
 		},
-		// Style hit dice rolls for auto-updating HP
+		// Style dice rolls for BetterActions
 		{
 			s: ".inlinerollresult.showtip.hit-dice",
 			r: "cursor: pointer",
@@ -768,6 +763,47 @@ function baseCss () {
 		{
 			s: ".inlinerollresult.showtip.hit-dice:hover::after",
 			r: "content: \"\\2694\";font-size: initial; color: rgba(250,100,100,0.6); position: absolute;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check::after",
+			r: "content: \"\\2612\";font-size: 15px;color: #b21a1a;position:absolute;background:inherit;margin-top: 4px;line-height: 15px;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.success::after",
+			r: "content: \"\\2611\";color: #009c00;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.attack-failure::after",
+			r: "content: \"\\26E8\"; padding-top: 2px;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.attack-success::after",
+			r: "content: \"\\2694\";color: #009c00;border: 1px solid;display: inline-block;border-radius: 10px;padding: 2px;font-size: 11px;line-height: 8px;margin-top: 5px;",
+		},
+		{
+			s: ".sheet-grey .inlinerollresult.showtip.check::after",
+			r: "content: \"\";border: none;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check",
+			r: "margin-right: 8px;display: inline-block;height: 24px;line-height: 24px;margin-top: -4px;",
+		},
+		{
+			s: ".sheet-grey .inlinerollresult.showtip.check, .inlinerollresult.showtip.check.attack-success, .inlinerollresult.showtip.attack-fail",
+			r: "margin-right: unset;",
+		},
+		// Styles for betterActions dialog
+		{
+			s: ".better-sheet .tab-content",
+			r: "height: calc(100% - 55px);",
+		},
+		{
+			s: ".better-sheet .tab-pane",
+			r: "display:none;height: 100%;",
+		},
+		{
+			s: ".better-sheet .tab-content > div",
+			r: "width:50%;display: inline-block;height: 100%;overflow: auto;",
 		},
 		// Styles for altered messages
 		{
@@ -1423,6 +1459,245 @@ function baseCss () {
 
 		#initiativewindow ul li .controls {
 			padding: 0 3px;
+		}
+	`;
+
+	d20plus.css.clickableConditionHints = `
+		.hinted.showtip,
+		.message .hinted.showtip,
+		.message .sheet-container .hinted.showtip {
+			color: #b85f74;
+			cursor: help;
+			font-weight: bold;
+			display: inline-block;
+		}
+		.hinted.showtip.clickable,
+		.message .hinted.showtip.clickable,
+		.message .sheet-container .hinted.showtip.clickable {
+			cursor: pointer;
+		}
+		.b20-condition-hint {
+			text-align: left;
+		}
+		.b20-condition-hint div, .b20-condition-hint p {
+			text-align: left;
+			max-height: 400px;
+			overflow-y: hidden;
+			font-size: 12px;
+			line-height: normal;
+		}
+		.b20-condition-hint h2, .b20-condition-hint h3 {
+			color: var(--link-text);
+			font-size: 14px;
+			line-height: normal;
+			display: inline-block;
+			width: 100%;
+		}
+		.b20-condition-hint ul {
+			margin-left: 15px;
+		}
+		.b20-condition-hint td, .b20-condition-hint th {
+			padding-right: 4px;
+		}
+		.b20-condition-hint .rd__h-toggle {
+			display: none;
+		}
+		.b20-condition-hint .ve-flex-vh-center {
+			font-weight: 100;
+			line-height: normal;
+			font-size: smaller;
+			float: right;
+		}
+	`;
+
+	d20plus.css.actionMenu = `
+		#secondary-toolbar {
+			height: 40px;
+			line-height: 40px;
+		}
+		#secondary-toolbar .btn {
+			margin-right: 1px;
+		}
+		#secondary-toolbar .tokenactions:not([style*="display: none"]) {
+			display: inline-block !important;
+		}
+		#secondary-toolbar .b20-token-menu {
+			vertical-align: top;
+			position: relative;
+			top: -5px;
+		}
+		#secondary-toolbar .b20-token-menu > li {
+			overflow: visible;
+			font-size: 0px;
+		}
+		#secondary-toolbar .b20-token-menu span .d20contextmenu {
+			display: none;
+			left: 0px;
+		}
+		#secondary-toolbar .b20-token-menu span:hover .d20contextmenu {
+			display: block;
+		}
+		.b20-token-menu li.head.hasSub > span::after {
+			content: " »";
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu > ul,
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul li ul.submenu {
+			top: 0px;
+			left: 100px;
+			width: 100px;
+			height: unset;
+			border: 2px solid black;
+			margin: 0;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul li > ul.submenu {
+			display: none;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul li:hover > ul.submenu {
+			display: inline-block;
+			overflow: visible;
+		}
+		#secondary-toolbar .b20-token-menu ul > li {
+			display: block;
+			overflow: visible;
+			padding: 2px 3px 2px 3px;
+			font-size: 13px;
+			line-height: 18px;
+			height: 18px;
+			text-align: left;
+			color: inherit;
+		}
+		#secondary-toolbar .b20-token-menu ul > li.hasSub:hover {
+			line-height: 28px;
+			height: 29px;
+		}
+		#secondary-toolbar .b20-token-menu ul > li.hasSub.selector:hover {
+			height: unset;
+			padding-bottom: 0px;
+			line-height: 18px;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector:hover > ul.submenu {
+			position: relative;
+			left: -3px;
+			border: none;
+			border-radius: unset;
+			display: block;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li {
+			display: inline-block;
+			width: 70px;
+			border-left: unset;
+			box-sizing: border-box;
+			border-radius: unset;
+			height: 25px;
+			text-align: center;
+			margin: 0px;
+			line-height: 25px;
+			border-bottom: unset;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu {
+			display: inline-flex;
+			flex-wrap: wrap;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li {
+			flex-basis: 32%;
+			height: 28px;
+			flex-grow: 1;
+			margin-top: 2px;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child {
+			flex-basis: 75px;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child::first-letter {
+			font-size: 24px;
+		}
+		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:last-child {
+			flex-basis: 25px;
+			flex-grow: 0;
+		}
+		.spellaction.unprepared > span {
+			color: #929292;
+		}
+		#secondary-toolbar .b20-token-menu .spellaction > ul > li {
+			font-weight: bolder;
+			font-size: 18px;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li:first-child {
+			width: 30px;
+			font-weight: normal;
+		}
+		#secondary-toolbar .b20-token-menu li.selector.variable > ul > li:last-child {
+			width: 22px;
+			vertical-align: top;
+			border-right: none;
+			font-size: 16px;
+		}
+		#secondary-toolbar .b20-token-menu ul li.selector.variable > ul > li {
+			width: 44px;
+		}
+		#secondary-toolbar .b20-token-menu .spellaction.variable > ul > li > .submenu {
+			left: 23px;
+		}
+		.dark .b20-token-menu ul li.hasSub:hover {
+			background: var(--dark-primary-highlight);
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu label input[type="checkbox"] {
+			vertical-align: top;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span > i {
+			font-style: normal;
+			width: 30px;
+			display: inline-block;
+			font-size: 8px;
+			font-weight: normal;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li:not(.hasSub),
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
+			max-width: 100px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats > ul,
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
+			max-width: unset;
+			width: 210px;
+			font-size: 12px;
+			line-height: 14px;
+			cursor: default;
+			height: unset;
+			min-height: 15px;
+			white-space: unset;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
+			width: 203px;
+		}
+		#secondary-toolbar .b20-token-menu .b20-stats strong {
+			font-weight: bolder;
+		}
+		#secondary-toolbar .d20contextmenu li > label {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		#secondary-toolbar .mods > li:not(.last-in-group) {
+			border-bottom: none;
+		}
+		#secondary-toolbar .b20-stats button {
+			font-family:pictos;
+			background: var(--dark-primary);
+			line-height: 1;
+			border-radius: 5px;
+			margin-left: -2px;
+			vertical-align: super;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li > span {
+			width: unset;
+			max-width: unset;
+			padding-left: 5px;
+			white-space: unset;
+			line-height: 12px;
+		}
+		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
+			display: inline-block;
 		}
 	`;
 

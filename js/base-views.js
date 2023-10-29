@@ -13,6 +13,9 @@ function baseViews () {
 		"views3Enable": false,
 		"views3Exclusive": false,
 		"views3Name": "",
+		"views4Enable": false,
+		"views4Exclusive": false,
+		"views4Name": "",
 	};
 
 	d20plus.views._initMenuActions = () => {
@@ -74,6 +77,49 @@ function baseViews () {
 		d20plus.views.layerMenu.html(menuhtml);
 	}
 
+	d20plus.views.assignPortals = () => {
+		let menuhtml = "";
+		const page = d20.Campaign.activePage();
+		const getPortal = (type) => d20.engine[`selected${type}s`]()[0];
+		const portal = getPortal("Door") || getPortal("Window");
+		if (!page?.get("bR20cfg_viewsEnable")) return;
+		for (let id = 0; id <= 4; id++) {
+			if (id && !page.get(`bR20cfg_views${id}Enable`)) continue;
+			const viewName = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
+			const viewId = `bR20_view${id}`;
+			menuhtml += `<option value="${viewId}">${viewName}</option>`;
+		}
+		if (menuhtml) {
+			const $viewAssigner = $(`
+				<div>
+					Select View from the list below:
+					<select id="viewId">${menuhtml}</select>
+					<br>This view will be assigned to
+					${!portal ? "all unassigned portals (doors and windows)" : "the selected portal (door or window)"}
+				</div>
+			`).dialog({
+				autoopen: true,
+				title: "Choose view",
+				buttons: {
+					"Cancel": () => { $viewAssigner.off(); $viewAssigner.dialog("destroy").remove() },
+					"Assign": () => {
+						const chosen = $viewAssigner.find(`#viewId`).val();
+						const assigned = (p) => {
+							for (let id = 0; id <= 4; id++) if (p.attributes[`bR20_view${id}`]) return true;
+						}
+						[`doors`, `windows`].forEach(e => page[e].models.forEach(it => {
+							if (assigned(it)) return d20plus.ut.log("Taken");
+							it.attributes[chosen] = true;
+							it.save();
+						}));
+						$viewAssigner.off(); $viewAssigner.dialog("destroy").remove();
+					},
+				},
+				close: () => { $viewAssigner.off(); $viewAssigner.dialog("destroy").remove() },
+			})
+		}
+	};
+
 	d20plus.views.changeViewState = (id, state) => {
 		const page = d20.Campaign.activePage();
 		const menuItem = $(".chooseViews > li").get(id);
@@ -81,10 +127,12 @@ function baseViews () {
 			$(menuItem).removeClass("off");
 			page.set(`bR20cfg_views${id}Off`, false);
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, true);
+			d20plus.engine.portalsHideUnhide(`bR20_view${id}`, `view${id}off`, true);
 		} else {
 			$(menuItem).addClass("off");
 			page.set(`bR20cfg_views${id}Off`, true);
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, false);
+			d20plus.engine.portalsHideUnhide(`bR20_view${id}`, `view${id}off`, false);
 		}
 		page.save();
 		$(`#editinglayer .choose${window.currentEditingLayer}`).click();

@@ -147,6 +147,43 @@ function initHTMLpageViews () {
 					<label class="sr-only">input custom name</label>
 					<input class="page-input" name="views3Name" placeholder="View 3">
 				</div>
+				<hr>
+				<div class="pagedetails__header">
+					<h3 class="page_title">View 4</h3>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Enable View 4</h4>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views4Enable">toggle view four</label>
+							<input name="views4Enable" id="views4Enable" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="row pagedetails__subheader">
+					<div class="col-xs-7 pagedetails__header">
+						<h4 class="page_title">Mutually exclusive with previous</h4>
+						<a class="tipsy-w showtip pictos" original-title="Check this, if enabling this or PREVIOUS view should disable another one of them">?</a>
+					</div>
+					<div class="col-xs-3">
+						<label class="switch">
+							<label class="sr-only" for="views4Exclusive">toggle view one</label>
+							<input name="views4Exclusive" id="views4Exclusive" type="checkbox" value="0">
+							<span class="slider round"></span>
+						</label>
+					</div>
+				</div>
+				<div class="pagedetails__subheader">
+					<h4>Custom name</h4>
+					<a class="tipsy-w showtip pictos" original-title="Input your custom name for this view">?</a>
+				</div>
+				<div>
+					<label class="sr-only">input custom name</label>
+					<input class="page-input" name="views4Name" placeholder="View 4">
+				</div>
 			</div>
 		</div>
 		`;

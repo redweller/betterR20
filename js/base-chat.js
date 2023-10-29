@@ -398,6 +398,7 @@ function baseChat () {
 			descr: __("msg_chat_help_fs"),
 			param: "text",
 			tip: "Any formatted text without line breaks",
+			b20: true,
 		},
 		{
 			code: "/fx %%",
@@ -590,21 +591,21 @@ function baseChat () {
 				"default": true,
 				"_type": "boolean",
 				"_player": true,
-			}, */
+			}, */ // RB20 EXCLUDE END
 			"autoExpend": {
 				"name": "Expend spell slots & class resources",
 				"default": "b20",
 				"_type": "_enum",
-				"__values": ["none", "b20", "auto", "debug"],
-				"__texts": ["disabled", "only b20 expressions", "b20 expressions and OGL attack templates", "debug mode (not for actual game!)"],
+				"__values": ["none", "b20"],
+				"__texts": ["disabled", "only b20 expressions"],
 				"_player": true,
 			},
 			"autoDmg": {
 				"name": "Apply damage and attack rolls",
-				"default": "b20mods",
+				"default": "b20",
 				"_type": "_enum",
-				"__values": ["none", "b20", "b20mods", "auto", "debug"],
-				"__texts": ["disabled", "only b20 expressions", "use b20 expressions & suggest actions for every roll", "b20 expressions and OGL attack templates", "debug mode (not for actual game!)"],
+				"__values": ["none", "b20", "b20mods"],
+				"__texts": ["disabled", "only b20 expressions", "use b20 expressions & suggest actions for every roll"],
 				"_player": true,
 			},
 			"dmgTokenBar": {
@@ -613,7 +614,7 @@ function baseChat () {
 				"_type": "_enum",
 				"__values": ["1", "2", "3"],
 				"_player": true,
-			}, // RB20 EXCLUDE END
+			},
 			"executeJSMacro": {
 				"name": "Execute JS script in macros",
 				"default": "own",
@@ -693,7 +694,7 @@ function baseChat () {
 	d20plus.chat.closeSocial = () => {
 		d20plus.chat.social = false;
 		$("#textchat-input").removeClass("social-resized social-default");
-	}// RB20 EXCLUDE START
+	}
 
 	d20plus.chat.parseAOE = ($el) => {
 		const msg = $el.closest(".message.general");
@@ -736,46 +737,59 @@ function baseChat () {
 
 	d20plus.chat.processDice = ($msg) => {
 		const dmgCfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
-		const rollData = /\[(\d*)(?<type>chk|dmg|sdmg|heal)(?<targets>[^\]]*)\]/;
+		const rollData = /\[(\d*)(?<type>chk|atk|dmg|sdmg|heal|init)(?<targets>[^\]]*)\]/g;
 		$msg.find(".inlinerollresult").each((i, el) => {
 			const roll = {$el: $(el)};
 			if (roll.$el.attr("data-damage")) return;
 			const tooltipsrc = roll.$el.attr("title") || roll.$el.attr("original-title");
-			roll.dmg = roll.$el.text();
+			roll.val = roll.$el.text();
 			roll.tooltip = tooltipsrc.replace(rollData, (...parsed) => {
 				Object.assign(roll, parsed.last());
 				roll.$el.attr("data-targets", roll.targets);
 				return "";
 			});
-			// d20plus.ut.log("DICE!!!", roll);
 			if (dmgCfg === "none") {
 				if (roll.type) roll.$el.attr("title", roll.tooltip);
 				return;
-			} else if (roll.type === "chk" || isNaN(roll.dmg)) {
-				if (roll.targets.length > 2) {
-					d20plus.chat.parseAOE(roll.$el);
-					return;
+			} else if (roll.type === "chk") {
+				if (!isNaN(roll.targets) && !isNaN(roll.val)) {
+					const dc = roll.targets;
+					if (Number(dc) > roll.val) roll.$el.addClass("check failure");
+					else roll.$el.addClass("check success");
+					roll.tooltip += ` vs&nbsp;DC&nbsp;${dc}`;
 				}
 				roll.$el.attr("data-damage", "check");
+			} else if (roll.type === "atk") {
+				const ac = atob(roll.targets);
+				if (!isNaN(ac) && !isNaN(roll.val)) {
+					if (Number(ac) > roll.val) roll.$el.addClass("check attack-failure");
+					else roll.$el.addClass("check attack-success");
+					if (is_gm) roll.tooltip += ` vs&nbsp;AC&nbsp;${ac}`;
+				}
+				roll.$el.attr("data-damage", "attack");
+			} else if (roll.type === "init") {
+				if (!roll.$el.closest(".sheet-grey").length && is_gm) {
+					d20plus.ba.addTurn(roll.targets, roll.val);
+				}
 			} else if (roll.type) {
 				if (roll.targets === "aoe") {
 					d20plus.chat.parseAOE(roll.$el);
 					return;
 				}
-				roll.$el.attr("data-damage", roll.type === "heal" ? -roll.dmg : +roll.dmg);
+				roll.$el.attr("data-damage", roll.type === "heal" ? -roll.val : +roll.val);
 				if (roll.type === "heal") roll.$el.addClass("heal-dice");
 				if (roll.targets) roll.tooltip += "<span class=\"hit-dice-tip hit-targeted\"></span>";
 				else roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
 				roll.$el.addClass("hit-dice");
 			} else {
 				if (dmgCfg === "b20") return;
-				roll.$el.attr("data-damage", roll.dmg);
+				roll.$el.attr("data-damage", roll.val);
 				roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
 				roll.$el.addClass("mod-dice");
 			}
 			roll.$el.attr("title", roll.tooltip);
 		});
-	}// RB20 EXCLUDE END
+	}
 
 	d20plus.chat.processPlayersList = (changelist) => {
 		if (!d20plus.chat.players) d20plus.chat.players = {};
@@ -813,13 +827,14 @@ function baseChat () {
 		})
 	}
 
-	d20plus.chat.processIncomingMsg = (msg, msgData) => { // RB20 EXCLUDE START
+	d20plus.chat.processIncomingMsg = (msg, msgData) => {
+		const replaceHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");// RB20 EXCLUDE START
 		const expendSlots = d20plus.cfg.getOrDefault("chat", "autoExpend") !== "none";
 		const b20expend = /\[exp(?<charid>[^\]^|]+?)\|(?<type>spl|res|ammo)(?<slot>[cor\d]?)-?(?<name>[\p{L}\d _]*)(?:\|(?<quantity>\d*)|)\]/ug;// RB20 EXCLUDE END
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
-			const inKnownLanguage = hasLanguageProficiency(speech.languageid);
-			if (window.is_gm || msgData.from_me || inKnownLanguage) {
+			const inKnownLanguage = window.is_gm || hasLanguageProficiency(speech.languageid);
+			if (msgData.from_me || inKnownLanguage) {
 				const translated = speech.message.replace(/\n/g, "<br>").replace(/ --([^ ^-])/g, " $1");
 				msg.content += `<br><i class="showtip tipsy-n-right" title="You understand this because one of your characters speaks ${speech.language}">
 					<strong>(${speech.language})</strong> ${translated}</i>`;
@@ -842,7 +857,7 @@ function baseChat () {
 				$(`#connects${msg.listenerid.id}-state`).attr("checked", "true");
 				$(`#connects${msg.listenerid.id}-info`).text("3");
 				return false;
-			}// RB20 EXCLUDE START
+			}
 		} else if (msg.listenerid?.type === "automation") {
 			const broadcast = msg.type !== "whisper";
 			if (is_gm || broadcast || msgData.to_me) {
@@ -856,8 +871,8 @@ function baseChat () {
 				d20plus.chat.modifyMsg(msg.id, {legalize: true});
 				if (msg.listenerid.undo) d20plus.chat.modifyMsg(msg.id, {action: msg.listenerid.undo});
 				msg.content = `<span ${span} title='${avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
-			}
-		} else if (msgData.from_me && expendSlots) {
+			}// RB20 EXCLUDE START
+		/* } else if (msgData.from_me && expendSlots && false) {
 			const expend = {};
 			const oglStandard = {
 				spellLevel: /{{spelllevel=[\w ]*(?<splvl>\d|cantrip)}}/,
@@ -913,11 +928,15 @@ function baseChat () {
 				msg.id = d20plus.ut.generateRowId(); // this is supposed to trick r20 not to revert msg contents
 			}
 		} else if (!msgData.from_me) {
-			msg.content = msg.content.replace(b20expend, ""); // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
-		}// RB20 EXCLUDE START
-		if (msg.inlinerolls) {
+			msg.content = msg.content.replace(b20expend, "");  */ // hide other's formulas even if you don't use 'em // RB20 EXCLUDE END
+		} else if (msg.inlinerolls && msg.rolltemplate) {				// for some reason r20 refreshes roll template html after a sec
+			msg.id = d20plus.ut.generateRowId();						// this is supposed to trick r20 not to revert msg contents
 			d20plus.chat.modifyMsg(msg.id, {dice: true});
-		}// RB20 EXCLUDE END
+		}
+		if (replaceHints) {
+			const fromHint = msg.listenerid?.excludeHint;
+			d20plus.chat.modifyMsg(msg.id, {hints: true, excludeHint: fromHint});
+		}
 		if (d20.textchat.talktomyself && msgData.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
 		}
@@ -934,7 +953,7 @@ function baseChat () {
 
 		if (d20plus.chat.logAll) d20plus.ut.log("OUTGOING!", params);
 
-		if (dmgCfg !== "none" || expCfg !== "none") {
+		/* if (dmgCfg !== "none" || expCfg !== "none") {
 			const template = /^%\{(?<charRef>[^|^}^{]*)\|(?<ability>[^|^}^{]*)\}$/mg;
 			params[0] = params[0].replace(template, (...string) => {
 				const found = string[0];
@@ -949,7 +968,7 @@ function baseChat () {
 					return found;
 				}
 			});
-		}
+		} */
 
 		// %{Archmage|0: Dagger}
 		// %{selected|repeating_npcaction_$0_npc_action}
@@ -1033,10 +1052,11 @@ function baseChat () {
 		}
 	}
 
-	d20plus.chat.displaying = () => { // RB20 EXCLUDE START
+	d20plus.chat.displaying = () => {
+		const lastDisplayedSysMsg = $(`#textchat .message.system`).last();// RB20 EXCLUDE START
 		if (d20plus.chat.logAll) d20plus.ut.log("DISPLAY", JSON.stringify(d20plus.chat.modify)); // RB20 EXCLUDE END
 		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
-			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
+			const msg = mods.sys ? lastDisplayedSysMsg : $(`[data-messageid=${id}]`);
 
 			if (mods.intro) {
 				const code = "<code style='cursor:pointer'>/help</code>";
@@ -1056,8 +1076,36 @@ function baseChat () {
 				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
 				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
 				if (mods.dice) d20plus.chat.processDice(msg);
+				if (mods.hints) d20plus.chat.giveHints(msg, mods.excludeHint);
 				delete d20plus.chat.modify[id];
 			}
+		});
+	}
+
+	d20plus.chat.giveHints = async (msg, exclude) => {
+		if (!JSON_DATA["data/conditionsdiseases.json"]) return;
+		msg.html(function () {
+			d20plus.chat.htmlRenderer = d20plus.chat.htmlRenderer || new Renderer();
+			const prepareItems = (type) => JSON_DATA["data/conditionsdiseases.json"][type].map(i => {
+				if (i.name.toLowerCase() === exclude) return ["b20-skip-this-entry", ""];
+				return [
+					i.name.toLowerCase(),
+					Object.assign({}, i, {
+						category: type,
+						page: `${i.page}<br>${type.toSentenceCase()}`,
+					})];
+			});
+			const condIndex = Object.fromEntries([].concat(prepareItems("condition"), prepareItems("disease"), prepareItems("status")));
+			const listToSearch = new RegExp(`(?<cond>${Object.keys(condIndex).join("|")})`, "gi");
+			return this.innerHTML.replace(/(?:(?:"|\w)>|^)[^<>]*?(?<t>\p{L}+)[^<>]*?(?:<|$)/ug, (...m) => {
+				return m[0].replace(listToSearch, (...s) => {
+					const condObj = condIndex[s.last()?.cond.toLowerCase()];
+					const resHtml = d20plus.chat.htmlRenderer.render(condObj);
+					return `
+						<span class="hinted clickable showtip tipsy-e" title="<div class=&quot;b20-condition-hint&quot;>${resHtml.replaceAll("\"", "&quot;")}</div>">${s.last()?.cond}</span>
+					`;
+				});
+			})
 		});
 	}
 
@@ -1133,7 +1181,7 @@ function baseChat () {
 				setTimeout(() => d20plus.chat.checkTTMSStatus(), 20);
 			}
 		}
-	}// RB20 EXCLUDE START
+	}
 
 	d20plus.chat.enhanceRolls = () => {
 		d20.textchat.$textchat.on("click", ".inlinerollresult.showtip", event => {
@@ -1169,7 +1217,20 @@ function baseChat () {
 			.ctrl-pressed .hit-dice-tip::after {content:"Ctrl+Click to decrease HP (halved value) to selected tokens"}
 			.ctrl-pressed.shift-pressed .hit-dice-tip::after {content:"Shft+Ctrl+Click to increase HP to selected tokens"}
 		`);
-	}// RB20 EXCLUDE END
+	}
+
+	d20plus.chat.clickableHints = () => {
+		d20.textchat.$textchat.on("click", ".hinted.clickable", (evt) => {
+			const clicked = $(evt.target);
+			const name = clicked.text();
+			const dstyle = `]("style="display: block;max-height: 300px;color: inherit;text-decoration: none;overflow-y: auto;"`;
+			const splDescr = (clicked.attr("original-title") || clicked.attr("title") || "").split(/<\/(?:p|li|h2|tr)>/);
+			const source = splDescr[0].split(/<(?:\/span|br)>/).splice(1).join(" ").replace(/<([^<]*?)>|\[–\]/g, "");
+			const descr = splDescr.splice(1).join("%NEWLINE%").replace(/<(?:li|td|th)([^<]*?)>/g, "- ").replace(/<([^<]*?)>/g, "");
+			const builtTemplate = `&{template:traits} {{name=${name.toSentenceCase()} }} {{source=${source} }} {{description=[${descr}${dstyle}) }}`;
+			d20.textchat.doChatInput(builtTemplate, null, {excludeHint: name.toLowerCase()});
+		});
+	}
 
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
@@ -1183,7 +1244,7 @@ function baseChat () {
 				const openedMacroId = $(target).closest(`[data-macroid]`).data("macroid");
 				d20plus.engine.enhanceMacros(openedMacroId);
 			});
-		availableLanguagesPlayer();
+		is_gm || availableLanguagesPlayer();
 		buildLanguageIndex();// RB20 EXCLUDE START
 		/// d20plus.chat.logAll = true// RB20 EXCLUDE END
 
@@ -1223,7 +1284,7 @@ function baseChat () {
 			d20.textchat.$textchat
 				.on("click", ".userscript-commandintro ul code", d20plus.chat.help)
 				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
-		}// RB20 EXCLUDE START
+		}
 
 		$(window).on("keydown.Shift keydown.Control keyup.Shift keyup.Control", event => {
 			const $root = $(document.body);
@@ -1232,7 +1293,8 @@ function baseChat () {
 				else $root.removeClass(`${mod}-pressed`);
 			})
 		});
-		d20plus.chat.enhanceRolls();// RB20 EXCLUDE END
+		d20plus.chat.enhanceRolls();
+		d20plus.chat.clickableHints();
 
 		$("#textchat-input")
 			.off("click", "button")

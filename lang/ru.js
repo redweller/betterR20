@@ -42,6 +42,7 @@ module.exports = {
 	cfg_option_quick_3: ["-- Быстрое действие 3"],
 	cfg_option_minify_tracker: ["Уменьшить размер элементов трекера инициативы"],
 	cfg_option_interiors_toggle: ["Добавить переключатель режима в помещении/снаружи"],
+	cfg_option_journal_context: ["Добавить действия в контекстное меню журнала"],
 
 	cfg_option_legacy_chat: ["Черно-зелёный (классический) стиль уведомлений betteR20"],
 	cfg_option_resize_sidebar: ["Подгонять размер текстбокса под панель (нужен перезапуск)"],
@@ -188,6 +189,20 @@ module.exports = {
 	stat_ab_pers: ["Убеждение"],
 
 	stat_init: ["ИНИЦИАТИВА"],
+
+	ba_title_rolls: ["Броски"],
+	ba_title_stats: ["Инфо"],
+	ba_title_animations: ["Анимации"],
+
+	ba_group_abilities: ["Способности"],
+	ba_group_skills: ["Умения"],
+	ba_group_attacks: ["Атаки"],
+	ba_group_spells: ["Заклинания"],
+
+	ba_roll_initiative: ["Инициатива"],
+	ba_roll_concentration: ["Концентрация"],
+	ba_roll_deathsave: ["Спас от смерти"],
+	ba_roll_hitdice: ["Кость хитов"],
 
 	lang_common: ["Общий"],
 	lang_dwarvish: ["Дварфийский"],

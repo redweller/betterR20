@@ -63,6 +63,7 @@ const betteR20Core = function () {
 			d20plus.engine.disableFrameRecorder();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
+			d20plus.ba.initBetterActions();
 
 			// apply config
 			if (window.is_gm) {

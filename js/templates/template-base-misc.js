@@ -262,12 +262,15 @@ function initHTMLbaseMisc () {
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.tokenImageEditor = `
 		<div class="dialog largedialog edittokenimages">
-			<h4 class="edittitle">Token names</h4>
-			<span class="editlabel">Currently this token is represented by a single image. Add more images to convert it to multi-sided token</span>
+			<h4 class="edittitle">Token name</h4>
+			<span class="editlabel">
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			</span>
+			<div class="tokenlist"></div>
 			<hr>
 			<button class="addimageurl btn" style="float: right;margin-left:5px;">Add From URL...</button>
-			<button class="addimage btn" style="float: right;"><span class="pictos">&amp;</span> Add Image</button>
 			<h4>Images</h4>
+			You can drop a file or a character below
 			<div class="clear" style="height: 7px;"></div>
 			<table class="table table-striped tokenimagelist"><tbody>
 			</tbody></table>
@@ -277,17 +280,17 @@ function initHTMLbaseMisc () {
 					max-height: 70px;
 				}
 				.tokenimage select {
-					width: auto;
+					width: 100px;
 					margin-right: 10px;
 				}
 				.tokenimage input {
 					width: 25px;
 				}
-				.tokenimage input[type="checkbox"] {
+				.tokenimage input.face {
 					margin: 30px 0px 0px 5px;
 					width: unset;
 				}
-				.tokenimage input[type="checkbox"]:indeterminate {
+				.tokenimage input.face:indeterminate {
 					opacity: 0.8;
 					filter: grayscale(0.7);
 				}
@@ -319,8 +322,23 @@ function initHTMLbaseMisc () {
 				.tokenimage .dropbox.filled {
 					border: 4px solid transparent;
 				}
+				.ui-dropping .dropbox.filled {
+					border: 4px dashed #d1d1d1;
+				}
+				.tokenimagelist .ui-dropping .tokenimage {
+					background: rgba(155, 155, 155, 0.5);
+				}
+				.tokenimagelist .ui-dropping .dropbox {
+					background: gray;
+					border: 4px dashed rgba(155, 155, 155, 0.5);
+				}
 				.tokenimage .ui-droppable.drop-highlight {
 					border: 4px dashed;
+				}
+				.tokenimage.lastone .face,
+				.tokenimage.lastone .skippable,
+				.tokenimage.lastone .btn.delete {
+					display: none;
 				}
 				.tokenimage .custom {
 					visibility: hidden;
@@ -328,8 +346,94 @@ function initHTMLbaseMisc () {
 				.tokenimage .custom.set {
 					visibility: visible;
 				}
+				.tokenimage input.toskip {
+					margin: 0px;
+					width: unset;
+				}
+				.tokenimage .skippable {
+					display: block;
+					margin: 0px;
+				}
+				.tokenimagelist .tokenimage:not(.lastone).skipped td {
+					background-color: rgba(155, 0, 0, 0.1);
+				}
+				.tokenlist {
+					position: sticky;
+					top: -11px;
+					padding: 5px 0px;
+					background: inherit;
+					z-index: 1;
+					overflow-x: auto;
+					white-space: nowrap;
+				}
+				.tokenlist .tokenbox {
+					display: inline-block;
+					position: relative;
+					border: 4px solid transparent;
+					width: 60px;
+					height: 60px;
+					cursor: pointer;
+					vertical-align: bottom;
+				}
+				.tokenlist .tokenbox img {
+					max-width: 60px;
+					max-height: 60px;
+				}
+				.tokenlist .tokenbox .inner {
+					text-align: center;
+				}
+				.tokenbox .name {
+					display: none;
+					position: absolute;
+					bottom: 0px;
+					background-color: rgba(155, 155, 155, 0.7);
+					padding: 3px;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					white-space: nowrap;
+					box-sizing: border-box;
+					color: white;
+					width: 100%;
+				}
+				.tokenbox:hover .name {
+					display: block;
+				}
+				.tokenbox.selected {
+					border: 4px solid gray;
+				}
 			</style>
 		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.bActionsButtons = `
+		<ul style="display: inline-block;" class="b20-token-menu">
+			<li style="color:unset!important;">
+				<span style="position:relative;display: inline-block;">
+					<button class="btn" data-type="rolls">${__("ba_title_rolls")}</button>
+					<div class="b20-rolls d20contextmenu">
+						<ul></ul>
+					</div>
+				</span>
+				<span style="position:relative;">
+					<button class="btn" data-type="stats">${__("ba_title_stats")}</button>
+					<div class="b20-stats d20contextmenu">
+						<ul></ul>
+					</div>
+				</span>
+				<span style="position:relative; display: none">
+					<button class="btn" data-type="effects">Effects</button>
+				</span>
+				<span style="position:relative;">
+					<button class="btn" data-type="animate">Animate</button>
+					<div class="b20-animations d20contextmenu">
+						<ul></ul>
+					</div>
+				</span>
+			</li>
+		</ul>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});

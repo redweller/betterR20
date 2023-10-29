@@ -530,6 +530,26 @@ function baseUtil () {
 		}
 	};
 
+	d20plus.ut.getTokensDistanceText = (tokenAmodel, tokenBmodel) => {
+		if (!tokenAmodel?.attributes || !tokenBmodel?.attributes) return "";
+		const page = d20.Campaign.activePage().attributes;
+		const tokenA = tokenAmodel.attributes;
+		const tokenB = tokenBmodel.attributes;
+		const distX = Math.abs(tokenA.left - tokenB.left) - tokenA.width / 2 - tokenB.width / 2 + 70;
+		const distY = Math.abs(tokenA.top - tokenB.top) - tokenA.height / 2 - tokenB.height / 2 + 70;
+		const distMapUnits = (dist) => Math.round(dist / 70 * (page.scale_number || 5));
+		if (page.diagonaltype === "foure") {
+			const maxDist = Math.max(distX, distY);
+			return `${distMapUnits(maxDist)} ${page.scale_units || "ft."}`;
+		} else if (page.diagonaltype === "manhattan") {
+			const totDist = distX + distY;
+			return `${distMapUnits(totDist)} ${page.scale_units || "ft."}`;
+		} else {
+			const distPixels = Math.sqrt(distX ** 2 + distY ** 2);
+			return `${distMapUnits(distPixels)} ${page.scale_units || "ft."}`;
+		}
+	};
+
 	d20plus.ut.getPathById = (pathId) => {
 		return d20plus.ut._getCanvasElementById(pathId, "thepaths");
 	};
@@ -733,6 +753,11 @@ function baseUtil () {
 			return a[char] || char;
 		}).join("");
 	}// RB20 EXCLUDE END
+
+	d20plus.ut.dialogClose = (evt) => {
+		$(evt.target).off();
+		$(evt.target).dialog("destroy").remove();
+	}
 
 	d20plus.ut.saveAsJson = function (filename, data) {
 		const blob = new Blob([JSON.stringify(data, null, "\t")], {type: "application/json"});

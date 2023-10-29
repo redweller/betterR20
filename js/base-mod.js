@@ -25,14 +25,7 @@ function d20plusMod () {
 
 	d20plus.mod.setMode = function (t) {
 		d20plus.ut.log(`Setting mode ${t}`);
-		try {
-			d20plus.mod.preserveDrawingColor(t);
-			d20.Campaign.activePage().setModeRef(t);
-			d20plus.mod.preserveDrawingColor(t);
-		} catch (e) {
-			d20plus.ut.log(`Switching using legacy because ${e.message}`);
-			d20plus.mod.setModeLegacy(t);
-		}
+		d20plus.mod.setModeLegacy(t)
 	}
 
 	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool

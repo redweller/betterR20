@@ -9,6 +9,19 @@ function baseConfig () {
 			"name": __("cfg_option_whisper_name"),
 			"default": false,
 			"_type": "boolean",
+		},
+		"showTokenMenu": {
+			"name": "Add Quick Token Actions",
+			"default": "char",
+			"_type": "_enum",
+			"_player": true,
+			"__values": ["none", "char-anim", "char", "anim"],
+			"__texts": [
+				"Disabled",
+				"Enabled",
+				"Only character menu",
+				"Only animation menu",
+			],
 		}, // RB20 EXCLUDE START
 		"massRollAssumesOGL": {
 			"name": __("cfg_option_assume_ogl"),
@@ -153,7 +166,7 @@ function baseConfig () {
 			"_player": true,
 		},
 		"journalCommands": {
-			"name": "Additional journal context menu commands",
+			"name": __("cfg_option_journal_context"),
 			"default": true,
 			"_type": "boolean",
 			"_player": true,
@@ -198,6 +211,12 @@ function baseConfig () {
 		"languages": {
 			"name": __("cfg_option_languages"),
 			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showDNDHints": {
+			"name": "Show DND status hints in chat",
+			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
@@ -799,7 +818,7 @@ function baseConfig () {
 			handleProp("weatherEffect1");
 		}
 	};
-	*/ // RB20 EXCLUDE START
+	*/
 
 	d20plus.cfg.handlePlayerImgSize = () => {
 		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
@@ -807,6 +826,7 @@ function baseConfig () {
 		if (setSize === 30) {
 			dynamicStyle.html("");
 		} else {
+			// the "magic numbers" are just quotients handpicked so that resulting sizes look good together
 			const setFont = Math.round((setSize / 150) * 16);
 			const setCol = Math.round((setSize / 150) * 24);
 			const setLine = Math.round((setSize / 150) * 18);
@@ -817,7 +837,7 @@ function baseConfig () {
 			`;
 			dynamicStyle.html(setStyle);
 		}
-	} // RB20 EXCLUDE END
+	}
 
 	d20plus.cfg.handleInitiativeShrink = () => {
 		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
@@ -858,6 +878,14 @@ function baseConfig () {
 				}
 			`);
 		} // RB20 EXCLUDE END
+		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
+		const hintStyle = d20plus.ut.dynamicStyles("hints");
+		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
+		else hintStyle.html("");
+		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
+		const amStyle = d20plus.ut.dynamicStyles("tracker");
+		if (amOn) amStyle.html(d20plus.css.actionMenu);
+		else amStyle.html("");
 		// properly align layer toolbar
 		const $wrpDmModeSw = $(`.dark-mode-switch`);
 		const $wrpBtnsMain = $(`#floatingtoolbar`);

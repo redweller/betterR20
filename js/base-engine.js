@@ -240,10 +240,10 @@ function d20plusEngine () {
 			if (target.name) $(`.${target.name}`).val(target.value);
 		}).on("click", ".chooseablepage .js__settings-page", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
-		}).on("click", ".nav-tabs--beta", () => {
-			d20plus.engine._populateCustomOptions();
+		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
+			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider, .views input, .views .slider", () => {
-			d20plus.engine._updateCustomOptions();
+			d20plus.engine._updatePageCustomOptions();
 		});
 	};
 
@@ -333,17 +333,17 @@ function d20plusEngine () {
 					$overlay.remove();
 				}
 				$saveBtn.before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
+				$(`.btn-apply`).on("click", d20plus.engine.applyPageSettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._preserveCustomOptions(page);
-				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preservePageCustomOptions(page);
+				d20plus.engine._populatePageCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
 					$saveBtn.off("click");
-					$saveBtn.on("click", d20plus.engine.applySettings);
+					$saveBtn.on("click", d20plus.engine.applyPageSettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
@@ -362,7 +362,7 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.applySettings = (evt) => {
+	d20plus.engine.applyPageSettings = (evt) => {
 		evt.stopPropagation();
 		evt.preventDefault();
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
@@ -375,8 +375,8 @@ function d20plusEngine () {
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
 		const $settings = $dialog.find(`.dialog .tab-content`);
 
-		d20plus.engine._saveCustomOptions(page);
-		d20plus.engine._saveNativeOptions(page, $settings);
+		d20plus.engine._savePageCustomOptions(page);
+		d20plus.engine._savePageNativeOptions(page, $settings);
 
 		page.save();
 
@@ -387,7 +387,7 @@ function d20plusEngine () {
 			// page.save resets current dialog, so we need to restore status quo
 			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
 			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-			d20plus.engine._populateCustomOptions();
+			d20plus.engine._populatePageCustomOptions();
 		}
 	}
 
@@ -427,7 +427,7 @@ function d20plusEngine () {
 		lightglobalillum: {class: ".lightglobalillum"},
 	};
 
-	d20plus.engine._saveNativeOptions = (page, dialog) => {
+	d20plus.engine._savePageNativeOptions = (page, dialog) => {
 		if (!page || !page.get) return;
 		const getSlider = (el) => {
 			if (el.style.left?.search("%") > 0) return el.style.left.slice(0, -1) / 100;
@@ -445,29 +445,31 @@ function d20plusEngine () {
 		}
 		Object.entries(d20plus.engine._ROLL20_PAGE_OPTIONS).forEach(([name, option]) => {
 			const $e = dialog.find(option.class || option.id);
-			const val = getVal($e);
+			// this is needed to properly process custom scale label which is represented by 2 inputs instead of 1
+			const isCustomScale = name === "scale_units" && $e.val() === "custom";
+			const val = !isCustomScale ? getVal($e) : getVal(dialog.find("#page-scale-grid-cell-custom-label"));
 			if (val !== undefined) page.attributes[name] = val;
 		});
 	}
 
-	d20plus.engine._preserveCustomOptions = (page) => {
+	d20plus.engine._preservePageCustomOptions = (page) => {
 		if (!page || !page.get) return;
-		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
-		d20plus.engine._customOptions[page.id] = { _defaults: {} };
+		d20plus.engine._customPageOptions = d20plus.engine._customPageOptions || {};
+		d20plus.engine._customPageOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
 			"views",
 		].forEach(category => Object.entries(d20plus[category].props).forEach(([name, deflt]) => {
-			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
-			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
+			d20plus.engine._customPageOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customPageOptions[page.id]._defaults[name] = deflt;
 		}));
 	}
 
-	d20plus.engine._populateCustomOptions = (page, dialog) => {
+	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				if ($e.is(":checkbox")) {
@@ -481,24 +483,24 @@ function d20plusEngine () {
 			});
 		});
 		// ensure all Select elements will update options on change
-		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updatePageCustomOptions() });
 	}
 
-	d20plus.engine._updateCustomOptions = (page, dialog) => {
+	d20plus.engine._updatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-				d20plus.engine._customOptions[page.id][name] = val;
+				d20plus.engine._customPageOptions[page.id][name] = val;
 			});
 		});
 	}
 
-	d20plus.engine._saveCustomOptions = (page) => {
-		const values = d20plus.engine._customOptions[page.id];
+	d20plus.engine._savePageCustomOptions = (page) => {
+		const values = d20plus.engine._customPageOptions[page.id];
 		Object.entries(values).forEach(([name, val]) => {
 			if (name === "_defaults") return;
 			if (val && val !== values._defaults[name]) {
@@ -653,7 +655,7 @@ function d20plusEngine () {
 				}
 			})
 		})
-	} */
+	} */ // RB20 EXCLUDE END
 
 	d20plus.engine.expendResources = async (expend) => {
 		const character = d20.Campaign.characters._byId[expend.charID];
@@ -788,7 +790,7 @@ function d20plusEngine () {
 				else if (hp.new === 0) d20.textchat.doChatInput(`${tokenName} falls unconscious`, undefined, transport);
 			}
 		})
-	}// RB20 EXCLUDE END
+	}
 
 	d20plus.engine.addLineCutterTool = () => {
 		// The code in /overwrites/canvas-handler.js doesn't work
@@ -854,43 +856,39 @@ function d20plusEngine () {
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
-		window.Markdown.parse = function(e) {
-			{
-				var t = e
-					, n = []
-					, i = [];
-				-1 != t.indexOf("\r\n") ? "\r\n" : -1 != t.indexOf("\n") ? "\n" : ""
-			}
-			return t = t.replace(/{{{([\s\S]*?)}}}/g, function(e) {
-				return n.push(e.substring(3, e.length - 3)),
-					"{{{}}}"
+		window.Markdown.parse = function(x) {
+			var g = x, l, t = [], m = [], v = g.indexOf(`\r\n`) != -1 ? `\r\n` : g.indexOf(`\n`) != -1 ? `\n` : "";
+			return g = g.replace(/{{{([\s\S]*?)}}}/g, function(h) {
+				return t.push(h.substring(3, h.length - 3)),
+				"{{{}}}"
 			}),
-				t = t.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(e) {
-					return i.push(e.substring(5, e.length - 6)),
-						"<pre></pre>"
-				}),
-				// BEGIN MOD
-				t = t.replace(/~~(.*?)~~/g, OUT_STRIKE),
-				// END MOD
-				t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-				t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
-				t = t.replace(/``(.*?)``/g, "<code>$1</code>"),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
-				t = t.replace(new RegExp("<pre></pre>","g"), function() {
-					return "<pre>" + i.shift() + "</pre>"
-				}),
-				t = t.replace(/{{{}}}/g, function() {
-					return n.shift()
-				})
-		};
+			g = g.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(h) {
+				return m.push(h.substring(5, h.length - 6)),
+				"<pre></pre>"
+			}),
+			// BEGIN MOD
+			g = g.replace(/~~(.*?)~~/g, OUT_STRIKE),
+			// END MOD
+			g = g.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+			g = g.replace(/\*(.*?)\*/g, "<em>$1</em>"),
+			g = g.replace(/``(.*?)``/g, "<code>$1</code>"),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
+			g = g.replace(new RegExp("<pre></pre>","g"), function(h) {
+				return "<pre>" + m.shift() + "</pre>"
+			}),
+			g = g.replace(/{{{}}}/g, function(h) {
+				return t.shift()
+			}),
+			g
+		},
 		// END ROLL20 CODE
 
 		/* eslint-enable */
 
 		// after a short delay, replace any old content in the chat
 		setTimeout(() => {
-			$(`.message`).each(function () {
+			$(`.message.general`).each(function () {
 				$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
 			})
 		}, 2500);
@@ -1030,15 +1028,16 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine._graphicsStashToRight = (_this, visible) => {
-		if (typeof _this.left !== "number") return;
+		const xAttr = _this.x !== undefined ? "x" : "left";
+		if (typeof _this[xAttr] !== "number") return;
 		if (!visible) {
-			const page = d20.Campaign.pages.get(_this.page_id);
-			const newLeft = _this.left + page.get("width") * 70;
-			_this.bR20_left = _this.left;
-			_this.left = newLeft;
+			const page = d20.Campaign.pages.get(_this.page_id) || d20.Campaign.activePage();
+			const newLeft = _this[xAttr] + page.get("width") * 70;
+			_this.bR20_left = _this[xAttr];
+			_this[xAttr] = newLeft;
 		} else {
 			if (_this.bR20_left) {
-				_this.left = _this.bR20_left;
+				_this[xAttr] = _this.bR20_left;
 				_this.bR20_left = null;
 			}
 		}
@@ -1084,6 +1083,31 @@ function d20plusEngine () {
 		}
 		return some;
 	};
+
+	d20plus.engine.portalsHideUnhide = (viewid, prefix, visible) => {
+		const page = d20.Campaign.activePage();
+		[`doors`, `windows`].forEach(e => page[e].models.forEach(it => {
+			const _this = it.attributes;
+			if (!it.get(viewid)) return;
+			if (visible) {
+				if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
+					_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
+					if (!_this.bR20_hidden) {
+						d20plus.engine._graphicsStashToRight(_this, true);
+					}
+					it.save();
+					it.createView();
+				}
+			} else {
+				if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
+					_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
+					d20plus.engine._graphicsStashToRight(_this, false);
+					it.save();
+					it.createView();
+				}
+			}
+		}))
+	}
 
 	d20plus.engine.addLayers = () => {
 		d20plus.ut.log("Adding layers");
