@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.181.1
+// @version      1.35.181.2
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -252,7 +252,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- v.172.b changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ update Random Side randomizer (to give seemingly more random results)<br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><code>-- v.181.1 changes:</code><br><strong>Compatibility updates</strong><br>⦁ newUI loads properly, but b20 shows a warning message<br>⦁ try to fix polygon drawing in old UI (please test)<br>⦁ update beta to latest release version</p>
+					<p>This version contains following changes<br><code>-- v.172.b changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ update Random Side randomizer (to give seemingly more random results)<br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><code>-- v.181.1 changes:</code><br><strong>Compatibility updates</strong><br>⦁ update beta to latest release version<br>⦁ newUI loads properly, but b20 shows a warning message<br>⦁ try to fix polygon drawing in old UI<br><code>-- v.181.2 changes:</code><br>⦁ polygon draw/reveal fix update (please test)</p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.6.48", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -13138,9 +13138,15 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.fixPolygonTool = () => {
-		d20plus.engine.finishCurrentPolygon = d20.engine.finishCurrentPolygon;
-		d20.engine.finishCurrentPolygon = x => void 0;
-		$(".canvas-container").on("contextmenu", x => d20plus.engine.finishCurrentPolygon());
+		if (d20plus.isOptedInNewUI) return;
+		$("#editor-wrapper").on("pointerdown", x => { d20plus.engine.leftClicked = x.which === 1 });
+		$("#editor-wrapper").on("pointerup", x => { d20plus.engine.leftClicked = false });
+		d20plus.ut.injectCode(d20.engine, "finishCurrentPolygon", (finishDrawing, params) => {
+			if (!d20plus.engine.leftClicked) finishDrawing(...params);
+		});
+		d20plus.ut.injectCode(d20.engine, "finishPolygonReveal", (finishRevealing, params) => {
+			if (!d20plus.engine.leftClicked) finishRevealing(...params);
+		});
 	};
 }
 
