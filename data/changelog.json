@@ -410,6 +410,6 @@
 	{
 		"ver": "1.35.7",
 		"date": "2023-11-26",
-		"txt": "- Fixed crash/added warning when new UI is enabled (thanks @ Redweller)\n- Fixed polygon tool when new UI is disabled (thanks @ Redweller)"
+		"txt": "- Fixed crash/added warning when UI Redesign is enabled (thanks @ Redweller)\n- Fixed polygon tool when UI Redesign is disabled (thanks @ Redweller)"
 	}
 ]

@@ -2,7 +2,7 @@
 // @name         betteR20-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.6
+// @version      1.35.7
 // @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -227,6 +227,10 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
+		d20plus.isOptedInNewUI && !isStreamer && d20plus.ut.sendHackerChat(`
+			betteR20 does not support the new UI preview at this moment!
+			Using it will make some betteR20 functionality unavailable.
+		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
 			.html("");
@@ -11943,6 +11947,9 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.swapTemplates = () => {
+		const oldToolbar = document.getElementById("floatingtoolbar");
+		d20plus.isOptedInNewUI = !oldToolbar;
+
 		d20plus.ut.log("Swapping templates...");
 		$("#tmpl_charactereditor").html($(d20plus.html.characterEditor).html());
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
@@ -12014,21 +12021,25 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		overwriteDraggables();
-		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
-
-		const originalFn = d20.pagetoolbar.refreshPageListing;
-		// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-		const debouncedOverwrite = _.debounce(() => {
+		if (!d20plus.isOptedInNewUI) {
 			overwriteDraggables();
-			// fire an event for other parts of the script to listen for
-			const pageChangeEvt = new Event(`VePageChange`);
-			d20plus.ut.log("Firing page-change event");
-			document.dispatchEvent(pageChangeEvt);
-		}, 110);
-		d20.pagetoolbar.refreshPageListing = () => {
-			originalFn();
-			debouncedOverwrite();
+			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
+
+			const originalFn = d20.pagetoolbar.refreshPageListing;
+			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+			const debouncedOverwrite = _.debounce(() => {
+				overwriteDraggables();
+				// fire an event for other parts of the script to listen for
+				const pageChangeEvt = new Event(`VePageChange`);
+				d20plus.ut.log("Firing page-change event");
+				document.dispatchEvent(pageChangeEvt);
+			}, 110);
+			d20.pagetoolbar.refreshPageListing = () => {
+				originalFn();
+				debouncedOverwrite();
+			}
+		} else {
+			$(`#page-toolbar`).hide();
 		}
 
 		$(`body`).on("mouseup", "li.dl", (evt) => {
@@ -12654,6 +12665,18 @@ function d20plusEngine () {
 			d20.engine.frame_recorder.active = false;
 			d20.engine.frame_recorder._active = false;
 		}
+	};
+
+	d20plus.engine.fixPolygonTool = () => {
+		if (d20plus.isOptedInNewUI) return;
+		$("#editor-wrapper").on("pointerdown", x => { d20plus.engine.leftClicked = x.which === 1 });
+		$("#editor-wrapper").on("pointerup", x => { d20plus.engine.leftClicked = false });
+		d20plus.ut.injectCode(d20.engine, "finishCurrentPolygon", (finishDrawing, params) => {
+			if (!d20plus.engine.leftClicked) finishDrawing(...params);
+		});
+		d20plus.ut.injectCode(d20.engine, "finishPolygonReveal", (finishRevealing, params) => {
+			if (!d20plus.engine.leftClicked) finishRevealing(...params);
+		});
 	};
 }
 
@@ -22006,6 +22029,7 @@ const betteR20Core = function () {
 			d20plus.weather.addWeather();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
+			d20plus.engine.fixPolygonTool();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
 
