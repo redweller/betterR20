@@ -125,6 +125,9 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.swapTemplates = () => {
+		const oldToolbar = document.getElementById("floatingtoolbar");
+		d20plus.isOptedInNewUI = !oldToolbar;
+
 		d20plus.ut.log("Swapping templates...");
 		$("#tmpl_charactereditor").html($(d20plus.html.characterEditor).html());
 		$("#tmpl_handouteditor").html($(d20plus.html.handoutEditor).html());
@@ -196,21 +199,25 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		overwriteDraggables();
-		$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
-
-		const originalFn = d20.pagetoolbar.refreshPageListing;
-		// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-		const debouncedOverwrite = _.debounce(() => {
+		if (!d20plus.isOptedInNewUI) {
 			overwriteDraggables();
-			// fire an event for other parts of the script to listen for
-			const pageChangeEvt = new Event(`VePageChange`);
-			d20plus.ut.log("Firing page-change event");
-			document.dispatchEvent(pageChangeEvt);
-		}, 110);
-		d20.pagetoolbar.refreshPageListing = () => {
-			originalFn();
-			debouncedOverwrite();
+			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
+
+			const originalFn = d20.pagetoolbar.refreshPageListing;
+			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+			const debouncedOverwrite = _.debounce(() => {
+				overwriteDraggables();
+				// fire an event for other parts of the script to listen for
+				const pageChangeEvt = new Event(`VePageChange`);
+				d20plus.ut.log("Firing page-change event");
+				document.dispatchEvent(pageChangeEvt);
+			}, 110);
+			d20.pagetoolbar.refreshPageListing = () => {
+				originalFn();
+				debouncedOverwrite();
+			}
+		} else {
+			$(`#page-toolbar`).hide();
 		}
 
 		$(`body`).on("mouseup", "li.dl", (evt) => {
