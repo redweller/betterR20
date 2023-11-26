@@ -837,6 +837,18 @@ function d20plusEngine () {
 			d20.engine.frame_recorder._active = false;
 		}
 	};
+
+	d20plus.engine.fixPolygonTool = () => {
+		if (d20plus.isOptedInNewUI) return;
+		$("#editor-wrapper").on("pointerdown", x => { d20plus.engine.leftClicked = x.which === 1 });
+		$("#editor-wrapper").on("pointerup", x => { d20plus.engine.leftClicked = false });
+		d20plus.ut.injectCode(d20.engine, "finishCurrentPolygon", (finishDrawing, params) => {
+			if (!d20plus.engine.leftClicked) finishDrawing(...params);
+		});
+		d20plus.ut.injectCode(d20.engine, "finishPolygonReveal", (finishRevealing, params) => {
+			if (!d20plus.engine.leftClicked) finishRevealing(...params);
+		});
+	};
 }
 
 SCRIPT_EXTENSIONS.push(d20plusEngine);
