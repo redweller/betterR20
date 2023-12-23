@@ -406,5 +406,10 @@
 		"ver": "1.35.6",
 		"date": "2023-10-24",
 		"txt": "(- Updated to latest 5etools libs (thanks @ darthbeep))"
+	},
+	{
+		"ver": "1.35.7",
+		"date": "2023-11-26",
+		"txt": "- Fixed crash/added warning when UI Redesign is enabled (thanks @ Redweller)\n- Fixed polygon tool when UI Redesign is disabled (thanks @ Redweller)"
 	}
 ]
