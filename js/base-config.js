@@ -883,7 +883,7 @@ function baseConfig () {
 		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
 		else hintStyle.html("");
 		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
-		const amStyle = d20plus.ut.dynamicStyles("tracker");
+		const amStyle = d20plus.ut.dynamicStyles("actions");
 		if (amOn) amStyle.html(d20plus.css.actionMenu);
 		else amStyle.html("");
 		// properly align layer toolbar
@@ -937,6 +937,7 @@ function baseConfig () {
 				handlePlayerCfg();
 			}, 5000);
 		}
+
 		handlePlayerCfg();
 	};
 }
