@@ -10,7 +10,7 @@ function d20plusMod () {
 		return (t) => {
 			if (!drawingTools.includes(t)) return;
 			drawingProps.forEach(prop => {
-				d20plus.ut.log(`Preserving color`, prop);
+				// d20plus.ut.log(`Preserving color`, prop);
 				if (!prop.stashed) {
 					prop.stashed = true;
 					prop.value = d20.engine.canvas.freeDrawingBrush[prop.nm];
@@ -25,7 +25,15 @@ function d20plusMod () {
 
 	d20plus.mod.setMode = function (t) {
 		d20plus.ut.log(`Setting mode ${t}`);
-		d20plus.mod.setModeLegacy(t)
+		try {
+			d20plus.mod.preserveDrawingColor(t);
+			currentPlayer.setMode(t);
+			d20plus.mod.preserveDrawingColor(t);
+		} catch (e) {
+			d20plus.ut.log(`Switching using legacy because ${e.message}`);
+			d20plus.mod.setModeLegacy(t);
+		}
+		// d20plus.mod.setModeLegacy(t)
 	}
 
 	// modified to allow players to use the FX tool, and to keep current colour selections when switching tool

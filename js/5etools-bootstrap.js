@@ -75,6 +75,7 @@ const betteR205etools = function () {
 			d20plus.views.addViews();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
+			d20plus.engine.fixPolygonTool();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
 			d20plus.ba.initBetterActions();

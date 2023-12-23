@@ -2,52 +2,38 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.3.47";
+const SCRIPT_VERSION = "1.35.6.48";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
-const SCRIPT_BETA = "1.35.172.9";
+const SCRIPT_BETA = "1.35.181.2";
 const SCRIPT_BETA_REPO = "https://github.com/redweller/betterR20/raw/beta/";
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
--- v.172.1 changes:
+-- v.172.b changes:
 <strong>Add Edit Token Images dialog</strong>
 ⦁ manage token images at any moment via context menu
-⦁ create and edit Multi-Sided tokens on the fly
-⦁ the new dialog replaces Set Side Size (and can set any custom size instead)
-⦁ option to exclude any image from Random Side selection
 ⦁ update Random Side randomizer (to give seemingly more random results)
-NOTE: sides with custom size may become unselectable in older versions of betteR20, but should work OK with vanilla roll20
--- v.172.3 changes:
 <strong>Mouseover hints on Conditions</strong>
-⦁ added hints to any chat message on standard D&D conditions, diseases and statuses
-⦁ works with 5etools version only, and uses 5etools data
+⦁ added hints to any chat message on standard D&D conditions
 ⦁ can be disabled in b20 Config in Chat section
--- v.172.4 changes:
-⦁ condition names with hints are now clickable and send the description to chat
--- v.172.5 changes:
 <strong>Filter Imports by List</strong>
-⦁ When importing, you can filter by a list of items. This means that when importing, if you press Import by list and enter the items that you want to import, it will automatically choose all of them for you.
-⦁ The UX, explaining, and labeling needs work. Please give suggestions
--- v.172.6 changes:
-⦁ You can now filter by source. This means the filter is fully compatible with copying csvs from table view in 5etools
-⦁ Some "Filter by List" labeling improvements
-⦁ (not related to Filter) Change players' avatars size
--- v.172.7 changes:
+⦁ when importing, you can filter by a list of items
+⦁ also filter by source, compatible with copying csvs from 5etools
+<strong>Miscellaneous</strong>
+⦁ change players' avatars size
 <strong>Better token Actions & Automation</strong>
-⦁ New automatic token action buttons appear whenever you select a character:
-Rolls, Stats and Animation (the latter appears only if you've set up animations in current Campaign)
-⦁ Rolls lets you select available actions, including spells and attacks, and send the roll to chat.
-The roll templates have slightly updated look and let you select the target whenever it's required
-⦁ Stats show basic character info. The buttons at the top of the menu let you quickly open character sheet, and let you toggle "Speaking as" this character mode
-⦁ Whenever you roll using Better Actions menu, you gain several benefits:
+⦁ new automatic token action buttons: Rolls, Stats and Animation
+⦁ rolls lets you select available actions with custom roll templates
 - the damage/healing values are clickable and are applied on click
-- spell slots are spent automatically when you use a spell
-- both actions give brief chat reminders that allow reverting the changes
--- v.172.9 changes:
-⦁ Multiple bug fixes & general refactoring
-⦁ Proper display of hit dice and death saves, also added Concentration
-⦁ Auto roll saves, and show save/attack success or failure
-⦁ Item tracking (enable Ammo tracking and type item name in Ammo field)
-The system is still in an unfinished state, so use with caution!`;
+- spell slots and items are spent automatically 
+- auto roll saves, and show save/attack success or failure
+The system is still in an unfinished state, so use with caution!
+-- v.181.1 changes:
+<strong>Compatibility updates</strong>
+⦁ update beta to latest release version
+⦁ newUI loads properly, but b20 shows a warning message
+⦁ try to fix polygon drawing in old UI
+-- v.181.2 changes:
+⦁ polygon draw/reveal fix update (please test)`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor

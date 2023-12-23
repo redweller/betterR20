@@ -20,7 +20,7 @@ function baseUtil () {
 
 	d20plus.ut.localize = (str, substitutes) => {
 		if (substitutes) {
-			output = `${d20plus.ln.default[str]}`;
+			let output = `${d20plus.ln.default[str]}`;
 			for (const needle in substitutes) {
 				output = output.replace(`$${needle}`, substitutes[needle]);
 			}
@@ -172,6 +172,10 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
+		d20plus.isOptedInNewUI && !isStreamer && d20plus.ut.sendHackerChat(`
+			betteR20 does not support the new UI preview at this moment!
+			Using it will make some betteR20 functionality unavailable.
+		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
 			.html("");// RB20 EXCLUDE START
