@@ -2,16 +2,13 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.6.48";
+const SCRIPT_VERSION = "1.35.7.48";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
-const SCRIPT_BETA = "1.35.181.2";
+const SCRIPT_BETA = "1.35.183.1";
 const SCRIPT_BETA_REPO = "https://github.com/redweller/betterR20/raw/beta/";
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
--- v.172.b changes:
-<strong>Add Edit Token Images dialog</strong>
-⦁ manage token images at any moment via context menu
-⦁ update Random Side randomizer (to give seemingly more random results)
+-- Beta features overview:
 <strong>Mouseover hints on Conditions</strong>
 ⦁ added hints to any chat message on standard D&D conditions
 ⦁ can be disabled in b20 Config in Chat section
@@ -27,13 +24,13 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 - spell slots and items are spent automatically 
 - auto roll saves, and show save/attack success or failure
 The system is still in an unfinished state, so use with caution!
--- v.181.1 changes:
-<strong>Compatibility updates</strong>
-⦁ update beta to latest release version
-⦁ newUI loads properly, but b20 shows a warning message
-⦁ try to fix polygon drawing in old UI
--- v.181.2 changes:
-⦁ polygon draw/reveal fix update (please test)`;
+<strong>Edit Token Images dialog</strong>
+⦁ manage token images at any moment via context menu
+⦁ a better Random Side randomizer (gives seemingly more random results)
+-- v.183.1 changes:
+⦁ edit token images directly from roll20 Token Editor
+⦁ update Token Editor html (added Open Character button)
+`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -454,12 +451,12 @@ upstream_bs_file = upstream_bs_file
 			if (d20plus.ut.cmpVersions("${SCRIPT_VERSION}", avail) < 0) d20plus.ut.sendHackerChat(\\\`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
-					The testing was completed
-					<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">You can now switch back to release version</p>
+					New release detected
+					<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">Try switching back to release version</p>
 				</h1>
-				<p>It appears the current public version of betteR20 is newer then the version of this beta's origin.
-				It most probably means that the testing is over and the new features were successfully released.<br><br>
-				You can switch back to released script version in TamperMonkey. 
+				<p>The current public version of betteR20 is newer then the version of this beta's origin.
+				It sometimes means that the testing is over and the new features were successfully released.<br><br>
+				You can switch back to released script version in TamperMonkey or keep using this version. 
 				Check the <code>#testing</code> channel in Discord from time to time, if you want to participate in the future tests.</p>
 			</div>
 			\\\`);

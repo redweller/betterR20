@@ -671,7 +671,7 @@ function baseMenu () {
 							d20plus.engine.backwardOneLayer(n);
 							i();
 						} else if ("edittokenimages" === e) {
-							editToken();
+							d20plus.menu.editToken();
 							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
@@ -932,15 +932,37 @@ function baseMenu () {
 			return imgsrc;
 		}
 
-		function editToken () {
-			const selection = d20.engine.selected().filter(t => t.type === "image");
+		function tokenEditorTexts (selection) {
+			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
+			const description = selection.length > 1 ? `
+				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
+			` : selection[0].model.attributes.sides ? `
+				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
+			` : `
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			`;
+			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
+				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
+					<div class="inner">
+						<img src="${t.model.attributes.imgsrc}">
+						<div class="name">${t.model.attributes.name}</div>
+					</div>
+				</div>
+			`, "");
+			return {name, description, tokenList};
+		}
+
+		d20plus.menu.editToken = (tokenId) => {
+			const selection = tokenId
+				? d20.engine.canvas._objects.filter(t => t.model.id === tokenId)
+				: d20.engine.selected().filter(t => t.type === "image");
 			if (!selection.length) return;
 			const images = [];
 			const added = [];
 			const $dialog = $(d20plus.html.tokenImageEditor);
 			const $list = $dialog.find(".tokenimagelist tbody");
 			const $tokenList = $dialog.find(".tokenlist");
-			const sizes = [["tiny", "0.5"], ["small", "1.0"], ["medium", "1"], ["large", "2"], ["huge", "3"], ["gargantuan", "4"], ["colossal", "5"], ["custom", "0"]];
+			const sizes = [["tiny - half square", "0.5"], ["small - 1x1", "1.0"], ["medium - 1x1", "1"], ["large - 2x2", "2"], ["huge - 3x3", "3"], ["gargantuan - 4x4", "4"], ["colossal - 5x5", "5"], ["custom", "0"]];
 			const findStandardSize = (w, h) => {
 				return (w === h && sizes.find(s => s[1] === `${w / 70}`)?.last()) || "0";
 			}
@@ -987,22 +1009,7 @@ function baseMenu () {
 			if ($list.variedSizes) {
 				images.forEach(i => { if (i.size === undefined) i.size = findStandardSize(i.w, i.h); });
 			}
-			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
-			const description = selection.length > 1 ? `
-				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
-			` : selection[0].model.attributes.sides ? `
-				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
-			` : `
-				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
-			`;
-			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
-				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
-					<div class="inner">
-						<img src="${t.model.attributes.imgsrc}">
-						<div class="name">${t.model.attributes.name}</div>
-					</div>
-				</div>
-			`, "");
+			const htmls = tokenEditorTexts(selection);
 			const resetTokens = () => {
 				$tokenList.find(".selected").each((k, t) => {
 					const $token = $(t);
@@ -1050,10 +1057,10 @@ function baseMenu () {
 				width: 450,
 				open: () => {
 					buildList();
-					$tokenList.html(tokenList);
+					$tokenList.html(htmls.tokenList);
 					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
-					$dialog.find(".edittitle").text(name);
-					$dialog.find(".editlabel").text(description);
+					$dialog.find(".edittitle").text(htmls.name);
+					$dialog.find(".editlabel").text(htmls.description);
 					$list.droppable({
 						greedy: true,
 						tolerance: "pointer",
@@ -1195,56 +1202,63 @@ function baseMenu () {
 					$dialog.dialog("destroy").remove();
 				},
 				buttons: {
-					"Save changes": () => {
-						const save = {};
-						if (images.length > 1) {
-							save.sides = images.map(i => {
-								const skipped = i.skip ? tagSkip : "";
-								const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
-								return escape(i.url + skipped + size);
-							}).join("|");
-						} else {
-							save.sides = "";
-						}
-						if ($list.someImageSelected) {
-							const selected = images.find(i => i.selected);
-							if (selected) {
-								save.imgsrc = selected.url;
-								save.currentSide = selected.id;
-								if (selected.size === "0") {
-									save.width = Number(selected.w);
-									save.height = Number(selected.h);
-								} else if (selected.size) {
-									save.width = selected.size * 70;
-									save.height = selected.size * 70;
+					save: {
+						text: "Save changes",
+						click: () => {
+							const save = {};
+							if (images.length > 1) {
+								save.sides = images.map(i => {
+									const skipped = i.skip ? tagSkip : "";
+									const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
+									return escape(i.url + skipped + size);
+								}).join("|");
+							} else {
+								save.sides = "";
+							}
+							if ($list.someImageSelected) {
+								const selected = images.find(i => i.selected);
+								if (selected) {
+									save.imgsrc = selected.url;
+									save.currentSide = selected.id;
+									if (selected.size === "0") {
+										save.width = Number(selected.w);
+										save.height = Number(selected.h);
+									} else if (selected.size) {
+										save.width = selected.size * 70;
+										save.height = selected.size * 70;
+									}
 								}
 							}
-						}
-						if (selection.length > 1) {
-							d20.engine.unselect();
-						}
-						selection.forEach(t => {
-							if (selection.length === 1
-								|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
-								t.model.save(save);
+							if (selection.length > 1) {
+								d20.engine.unselect();
 							}
-						});
-						$dialog.off();
-						$dialog.dialog("destroy").remove();
-						d20.textchat.$textarea.focus();
+							selection.forEach(t => {
+								if (selection.length === 1
+									|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
+									t.model.save(save);
+								}
+							});
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+							d20.textchat.$textarea.focus();
+						},
 					},
-					"Cancel": () => {
-						$dialog.off();
-						$dialog.dialog("destroy").remove();
+					cancel: {
+						text: "Cancel",
+						click: () => {
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+						},
 					},
 				},
 			});
+			return $dialog;
 		}
 
 		d20.token_editor.showContextMenu = r;
 		d20.token_editor.closeContextMenu = i;
 		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
-	};
+	};// RB20 EXCLUDE START
 
 	d20plus.menu._neatActionsView = (id) => {
 		return `
@@ -1489,7 +1503,7 @@ function baseMenu () {
 			"_type": "_enum",
 			"__values": Object.keys(d20plus.menu.neatActions),
 		},
-	});
+	});// RB20 EXCLUDE END
 }
 
 SCRIPT_EXTENSIONS.push(baseMenu);

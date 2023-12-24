@@ -15,7 +15,7 @@ module.exports = {
 	cfg_option_show_fg: ["Include the Foreground layer (reload to apply changes)"],
 	cfg_option_show_rf: ["Include the Roofs layer (reload to apply changes)"],
 	cfg_option_show_light: ["Include (force) light sources button (reload to apply changes)"],
-	cfg_option_show_weather: ["Include Weather layer and settings (reload to apply changes)"],
+	cfg_option_show_weather: ["Include the Weather layer and settings (reload to apply changes)"],
 	cfg_option_import_interval: ["Rest Time between Each Map (msec)"],
 	cfg_option_emoji: ["Add Emoji Replacement to Chat"],
 	cfg_option_art_previews: ["Show Custom Art Previews"],

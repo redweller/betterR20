@@ -251,6 +251,23 @@ function d20plusEngine () {
 			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider, .views input, .views .slider", () => {
 			d20plus.engine._updatePageCustomOptions();
+		}).on("click", ".go_to_image_editor", (evt) => {
+			const {currentTarget: target} = evt;
+			const $modal = $(target).closest(`[data-tokenid]`);
+			if (!$modal.find(".btn.go_to_image_editor").length) return;
+			const tokenId = $modal.data("tokenid");
+			const $tokenEdit = d20plus.menu.editToken(tokenId);
+			$modal.find(".modal-tokeneditor-body")
+				.empty()
+				.append($tokenEdit.parent("div").css({
+					display: "block",
+					position: "initial",
+					width: "auto",
+					"box-shadow": "none",
+				}).attr("style", (i, css) => css.replace("initial", "initial !important")));
+			$modal.parent("div")
+				.find(".ui-dialog-buttonset .btn-primary")
+				.on("mousedown", $tokenEdit.dialog("option", "buttons").save.click);
 		});
 	};
 
@@ -635,7 +652,7 @@ function d20plusEngine () {
 		}
 	};
 
-	/* eslint-enable */
+	/* eslint-enable */// RB20 EXCLUDE START
 
 	d20plus.engine.tokenRepresentsPc = (token) => {
 		if (!token || !token.get) return undefined;
@@ -652,7 +669,7 @@ function d20plusEngine () {
 				else return false;
 			}
 		}
-	}// RB20 EXCLUDE START
+	}
 
 	/* d20plus.engine.updateTokenBars = async (charID, barID) => {
 		d20.Campaign.pages.models.forEach(page => {
@@ -952,7 +969,7 @@ function d20plusEngine () {
 				}
 			}, 35);
 		})
-	};
+	};// RB20 EXCLUDE START
 
 	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
 		const page = d20.Campaign.activePage();
@@ -1114,7 +1131,7 @@ function d20plusEngine () {
 				}
 			}
 		}))
-	}
+	};// RB20 EXCLUDE END
 
 	d20plus.engine.addLayers = () => {
 		d20plus.ut.log("Adding layers");
